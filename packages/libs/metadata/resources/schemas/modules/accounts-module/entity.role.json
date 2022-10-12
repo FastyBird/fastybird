@@ -1,0 +1,49 @@
+{
+  "$schema" : "http://json-schema.org/draft-07/schema#",
+  "type" : "object",
+  "properties" : {
+    "id" : {
+      "type" : "string",
+      "description" : "Entity unique uuid v4 identifier"
+    },
+    "name" : {
+      "type" : "string"
+    },
+    "comment" : {
+      "type" : "string"
+    },
+    "anonymous" : {
+      "type" : "boolean",
+      "default" : false
+    },
+    "authenticated" : {
+      "type" : "boolean",
+      "default" : false
+    },
+    "administrator" : {
+      "type" : "boolean",
+      "default" : false
+    },
+    "parent" : {
+      "oneOf" : [
+        {
+          "type" : "null"
+        },
+        {
+          "type" : "string"
+        }
+      ],
+      "description" : "Parent role unique uuid v4 identifier",
+      "default" : null
+    }
+  },
+  "required" : [
+    "id",
+    "name",
+    "comment",
+    "anonymous",
+    "authenticated",
+    "administrator",
+    "parent"
+  ]
+}

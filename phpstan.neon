@@ -1,0 +1,24 @@
+includes:
+    - packages/libs/exchange/phpstan.neon
+    - packages/libs/metadata/phpstan.neon
+
+    - packages/modules/devices-module/phpstan.neon
+
+    - packages/plugins/redisdb-plugin/phpstan.neon
+    - packages/plugins/web-server-plugin/phpstan.neon
+    - packages/plugins/ws-exchange-plugin/phpstan.neon
+
+    - packages/connectors/fb-mqtt-connector/phpstan.neon
+    - packages/connectors/homekit-connector/phpstan.neon
+    - packages/connectors/modbus-connector/phpstan.neon
+    - packages/connectors/shelly-connector/phpstan.neon
+    - packages/connectors/tuya-connector/phpstan.neon
+
+parameters:
+    level: max
+
+    bootstrapFiles:
+        - phpstan-bootstrap.php
+
+    excludePaths:
+        - packages/**/tests/*

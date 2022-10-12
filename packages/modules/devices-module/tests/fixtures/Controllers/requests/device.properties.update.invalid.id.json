@@ -1,0 +1,16 @@
+{
+  "data" : {
+    "type" : "com.fastybird.devices-module/property/device/dynamic",
+    "id" : "50b0fd41-0a6e-44f0-b513-c536208afccf",
+    "attributes" : {
+      "identifier" : "rssi",
+      "name" : "rssi",
+      "settable" : false,
+      "queryable" : true,
+      "data_type" : "int",
+      "unit" : "%",
+      "format" : "0:150",
+      "invalid" : "999"
+    }
+  }
+}

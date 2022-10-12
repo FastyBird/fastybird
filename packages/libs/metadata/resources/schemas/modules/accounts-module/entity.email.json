@@ -1,0 +1,43 @@
+{
+  "$schema" : "http://json-schema.org/draft-07/schema#",
+  "type" : "object",
+  "properties" : {
+    "id" : {
+      "type" : "string",
+      "description" : "Entity unique uuid v4 identifier"
+    },
+    "address" : {
+      "type" : "string",
+      "description" : "Email address like: john@doe.com"
+    },
+    "default" : {
+      "type" : "boolean",
+      "default" : false
+    },
+    "verified" : {
+      "type" : "boolean",
+      "default" : false
+    },
+    "private" : {
+      "type" : "boolean",
+      "default" : false
+    },
+    "public" : {
+      "type" : "boolean",
+      "default" : false
+    },
+    "account" : {
+      "type" : "string",
+      "description" : "Email owner account unique uuid v4 identifier"
+    }
+  },
+  "required" : [
+    "id",
+    "address",
+    "default",
+    "verified",
+    "private",
+    "public",
+    "account"
+  ]
+}

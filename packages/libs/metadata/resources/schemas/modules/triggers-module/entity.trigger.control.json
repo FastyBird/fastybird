@@ -1,0 +1,33 @@
+{
+  "$schema" : "http://json-schema.org/draft-07/schema#",
+  "type" : "object",
+  "properties" : {
+    "id" : {
+      "type" : "string",
+      "description" : "Entity unique uuid v4 identifier"
+    },
+    "name" : {
+      "type" : "string"
+    },
+    "trigger" : {
+      "type" : "string",
+      "description" : "Trigger unique uuid v4 identifier"
+    },
+    "owner" : {
+      "oneOf" : [
+        {
+          "type" : "null"
+        },
+        {
+          "type" : "string"
+        }
+      ],
+      "description" : "Entity owner uuid v4 identifier"
+    }
+  },
+  "required" : [
+    "id",
+    "name",
+    "trigger"
+  ]
+}

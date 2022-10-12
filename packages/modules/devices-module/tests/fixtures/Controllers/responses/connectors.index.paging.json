@@ -1,0 +1,60 @@
+{
+  "meta" : {
+    "author" : "FastyBird team",
+    "copyright" : "FastyBird s.r.o",
+    "totalCount" : 2
+  },
+  "jsonapi" : {
+    "version" : "1.1"
+  },
+  "links" : {
+    "self" : "/v1/connectors?page%5Boffset%5D=1&page%5Blimit%5D=1",
+    "first" : "/v1/connectors?page%5Boffset%5D=0&page%5Blimit%5D=1",
+    "prev" : "/v1/connectors?page%5Boffset%5D=0&page%5Blimit%5D=1",
+    "last" : "/v1/connectors?page%5Boffset%5D=1&page%5Blimit%5D=1"
+  },
+  "data" : [
+    {
+      "type" : "com.fastybird.devices-module/connector/dummy",
+      "id" : "7a3dd94c-7294-46fd-8c61-1b375c313d4d",
+      "attributes" : {
+        "identifier" : "dummy",
+        "name" : "Dummy",
+        "comment" : null,
+        "enabled" : true
+      },
+      "relationships" : {
+        "devices" : {
+          "data" : []
+        },
+        "properties" : {
+          "links" : {
+            "self" : "/v1/connectors/7a3dd94c-7294-46fd-8c61-1b375c313d4d/relationships/properties",
+            "related" : {
+              "href" : "/v1/connectors/7a3dd94c-7294-46fd-8c61-1b375c313d4d/properties",
+              "meta" : {
+                "count" : 0
+              }
+            }
+          },
+          "data" : []
+        },
+        "controls" : {
+          "links" : {
+            "self" : "/v1/connectors/7a3dd94c-7294-46fd-8c61-1b375c313d4d/relationships/controls",
+            "related" : {
+              "href" : "/v1/connectors/7a3dd94c-7294-46fd-8c61-1b375c313d4d/controls",
+              "meta" : {
+                "count" : 0
+              }
+            }
+          },
+          "data" : []
+        }
+      },
+      "links" : {
+        "self" : "/v1/connectors/7a3dd94c-7294-46fd-8c61-1b375c313d4d"
+      }
+    }
+  ]
+}

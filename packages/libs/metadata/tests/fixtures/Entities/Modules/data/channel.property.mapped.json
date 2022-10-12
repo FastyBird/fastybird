@@ -1,0 +1,54 @@
+{
+  "id" : "176984ad-7cf7-465d-9e53-71668a74a688",
+  "type" : "mapped",
+  "identifier" : "property-identifier",
+  "name" : null,
+  "settable" : true,
+  "queryable" : false,
+  "data_type" : "switch",
+  "unit" : null,
+  "format" : [
+    [
+      [
+        "sw",
+        "switch_on"
+      ],
+      "1000",
+      [
+        "s",
+        "on"
+      ]
+    ],
+    [
+      [
+        "sw",
+        "switch_off"
+      ],
+      "2000",
+      [
+        "s",
+        "off"
+      ]
+    ],
+    [
+      [
+        "sw",
+        "switch_toggle"
+      ],
+      null,
+      [
+        "s",
+        "toggle"
+      ]
+    ]
+  ],
+  "invalid" : 99,
+  "number_of_decimals" : null,
+  "channel" : "247fd6b5-8466-4323-81de-cec3e315015a",
+  "actual_value" : "switch_on",
+  "previous_value" : "switch_off",
+  "expected_value" : null,
+  "pending" : false,
+  "valid" : true,
+  "parent" : "f42a8b4c-d5c8-4242-8ff0-6e5f867dcfb1"
+}

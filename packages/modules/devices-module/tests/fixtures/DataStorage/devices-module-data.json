@@ -1,0 +1,385 @@
+{
+  "17c59dfa-2edd-438e-8c49-faa4e38e5a5e" : {
+    "id" : "17c59dfa-2edd-438e-8c49-faa4e38e5a5e",
+    "type" : "blank",
+    "identifier" : "blank",
+    "name" : "Blank",
+    "comment" : null,
+    "enabled" : true,
+    "owner" : null,
+    "properties" : [],
+    "controls" : {
+      "7c055b2b-60c3-4017-93db-e9478d8aa662" : {
+        "id" : "7c055b2b-60c3-4017-93db-e9478d8aa662",
+        "name" : "search",
+        "connector" : "17c59dfa-2edd-438e-8c49-faa4e38e5a5e",
+        "owner" : null
+      }
+    },
+    "devices" : {
+      "69786d15-fd0c-4d9f-9378-33287c2009fa" : {
+        "id" : "69786d15-fd0c-4d9f-9378-33287c2009fa",
+        "type" : "blank",
+        "identifier" : "first-device",
+        "name" : "First device",
+        "comment" : null,
+        "connector" : "17c59dfa-2edd-438e-8c49-faa4e38e5a5e",
+        "parents" : [],
+        "children" : [
+          "a1036ff8-6ee8-4405-aaed-58bae0814596"
+        ],
+        "owner" : "455354e8-96bd-4c29-84e7-9f10e1d4db4b",
+        "properties" : {
+          "28bc0d38-2f7c-4a71-aa74-27b102f8df4c" : {
+            "id" : "28bc0d38-2f7c-4a71-aa74-27b102f8df4c",
+            "type" : "dynamic",
+            "identifier" : "rssi",
+            "name" : "rssi",
+            "settable" : false,
+            "queryable" : true,
+            "data_type" : "int",
+            "unit" : null,
+            "format" : null,
+            "invalid" : null,
+            "number_of_decimals" : null,
+            "device" : "69786d15-fd0c-4d9f-9378-33287c2009fa",
+            "parent" : null,
+            "children" : [],
+            "owner" : "455354e8-96bd-4c29-84e7-9f10e1d4db4b"
+          },
+          "3134ba8e-f134-4bf2-9c80-c977c4deb0fb" : {
+            "id" : "3134ba8e-f134-4bf2-9c80-c977c4deb0fb",
+            "type" : "variable",
+            "identifier" : "password",
+            "name" : "password",
+            "settable" : false,
+            "queryable" : false,
+            "data_type" : "string",
+            "unit" : null,
+            "format" : null,
+            "invalid" : null,
+            "number_of_decimals" : null,
+            "device" : "69786d15-fd0c-4d9f-9378-33287c2009fa",
+            "parent" : null,
+            "children" : [],
+            "owner" : "455354e8-96bd-4c29-84e7-9f10e1d4db4b",
+            "value" : "device-password",
+            "default" : null
+          },
+          "3ff0029f-7fe3-405e-a3ef-edaad08e2ffa" : {
+            "id" : "3ff0029f-7fe3-405e-a3ef-edaad08e2ffa",
+            "type" : "variable",
+            "identifier" : "status_led",
+            "name" : "status_led",
+            "settable" : false,
+            "queryable" : false,
+            "data_type" : "enum",
+            "unit" : null,
+            "format" : [
+              "on",
+              "off"
+            ],
+            "invalid" : null,
+            "number_of_decimals" : null,
+            "device" : "69786d15-fd0c-4d9f-9378-33287c2009fa",
+            "parent" : null,
+            "children" : [],
+            "owner" : "455354e8-96bd-4c29-84e7-9f10e1d4db4b",
+            "value" : "on",
+            "default" : null
+          },
+          "bbcccf8c-33ab-431b-a795-d7bb38b6b6db" : {
+            "id" : "bbcccf8c-33ab-431b-a795-d7bb38b6b6db",
+            "type" : "dynamic",
+            "identifier" : "uptime",
+            "name" : "uptime",
+            "settable" : false,
+            "queryable" : true,
+            "data_type" : "int",
+            "unit" : null,
+            "format" : null,
+            "invalid" : null,
+            "number_of_decimals" : null,
+            "device" : "69786d15-fd0c-4d9f-9378-33287c2009fa",
+            "parent" : null,
+            "children" : [],
+            "owner" : "455354e8-96bd-4c29-84e7-9f10e1d4db4b"
+          },
+          "c747cfdd-654c-4e50-9715-6d14dbf20552" : {
+            "id" : "c747cfdd-654c-4e50-9715-6d14dbf20552",
+            "type" : "variable",
+            "identifier" : "username",
+            "name" : "username",
+            "settable" : false,
+            "queryable" : false,
+            "data_type" : "string",
+            "unit" : null,
+            "format" : null,
+            "invalid" : null,
+            "number_of_decimals" : null,
+            "device" : "69786d15-fd0c-4d9f-9378-33287c2009fa",
+            "parent" : null,
+            "children" : [],
+            "owner" : "455354e8-96bd-4c29-84e7-9f10e1d4db4b",
+            "value" : "device-username",
+            "default" : null
+          }
+        },
+        "attributes" : {
+          "03164a6d-9628-460c-95cc-90e6216332d9" : {
+            "id" : "03164a6d-9628-460c-95cc-90e6216332d9",
+            "identifier" : "hardware_manufacturer",
+            "name" : null,
+            "content" : "itead",
+            "device" : "69786d15-fd0c-4d9f-9378-33287c2009fa",
+            "owner" : "455354e8-96bd-4c29-84e7-9f10e1d4db4b"
+          },
+          "06599b74-0236-4a98-99c8-c459a3cdb6a4" : {
+            "id" : "06599b74-0236-4a98-99c8-c459a3cdb6a4",
+            "identifier" : "hardware_model",
+            "name" : null,
+            "content" : "sonoff_basic",
+            "device" : "69786d15-fd0c-4d9f-9378-33287c2009fa",
+            "owner" : "455354e8-96bd-4c29-84e7-9f10e1d4db4b"
+          },
+          "090df4f2-5f23-4118-a2bd-6f0646cf2a70" : {
+            "id" : "090df4f2-5f23-4118-a2bd-6f0646cf2a70",
+            "identifier" : "hardware_version",
+            "name" : null,
+            "content" : "rev1",
+            "device" : "69786d15-fd0c-4d9f-9378-33287c2009fa",
+            "owner" : "455354e8-96bd-4c29-84e7-9f10e1d4db4b"
+          },
+          "0e771233-fd53-43dd-bd24-cda3303f902e" : {
+            "id" : "0e771233-fd53-43dd-bd24-cda3303f902e",
+            "identifier" : "hardware_mac_address",
+            "name" : null,
+            "content" : "80:7d:3a:3d:be:6d",
+            "device" : "69786d15-fd0c-4d9f-9378-33287c2009fa",
+            "owner" : "455354e8-96bd-4c29-84e7-9f10e1d4db4b"
+          },
+          "0eb39dae-ef88-4bb5-a9ea-94b0b788101f" : {
+            "id" : "0eb39dae-ef88-4bb5-a9ea-94b0b788101f",
+            "identifier" : "firmware_manufacturer",
+            "name" : null,
+            "content" : "fastybird",
+            "device" : "69786d15-fd0c-4d9f-9378-33287c2009fa",
+            "owner" : "455354e8-96bd-4c29-84e7-9f10e1d4db4b"
+          }
+        },
+        "controls" : {
+          "7c055b2b-60c3-4017-93db-e9478d8aa662" : {
+            "id" : "7c055b2b-60c3-4017-93db-e9478d8aa662",
+            "name" : "configure",
+            "device" : "69786d15-fd0c-4d9f-9378-33287c2009fa",
+            "owner" : "455354e8-96bd-4c29-84e7-9f10e1d4db4b"
+          }
+        },
+        "channels" : {
+          "17c59dfa-2edd-438e-8c49-faa4e38e5a5e" : {
+            "id" : "17c59dfa-2edd-438e-8c49-faa4e38e5a5e",
+            "identifier" : "channel-one",
+            "name" : "Channel one",
+            "comment" : null,
+            "device" : "69786d15-fd0c-4d9f-9378-33287c2009fa",
+            "owner" : "455354e8-96bd-4c29-84e7-9f10e1d4db4b",
+            "properties" : {
+              "bbcccf8c-33ab-431b-a795-d7bb38b6b6db" : {
+                "id" : "bbcccf8c-33ab-431b-a795-d7bb38b6b6db",
+                "type" : "dynamic",
+                "identifier" : "switch",
+                "name" : "switch",
+                "settable" : true,
+                "queryable" : true,
+                "data_type" : "enum",
+                "unit" : null,
+                "format" : [
+                  "on",
+                  "off",
+                  "toggle"
+                ],
+                "invalid" : null,
+                "number_of_decimals" : null,
+                "channel" : "17c59dfa-2edd-438e-8c49-faa4e38e5a5e",
+                "parent" : null,
+                "children" : [],
+                "owner" : "455354e8-96bd-4c29-84e7-9f10e1d4db4b"
+              }
+            },
+            "controls" : {
+              "15db9bef-3b57-4a87-bf67-e3c19fc3ba34" : {
+                "id" : "15db9bef-3b57-4a87-bf67-e3c19fc3ba34",
+                "name" : "configure",
+                "channel" : "17c59dfa-2edd-438e-8c49-faa4e38e5a5e",
+                "owner" : "455354e8-96bd-4c29-84e7-9f10e1d4db4b"
+              }
+            }
+          },
+          "6821f8e9-ae69-4d5c-9b7c-d2b213f1ae0a" : {
+            "id" : "6821f8e9-ae69-4d5c-9b7c-d2b213f1ae0a",
+            "identifier" : "channel-two",
+            "name" : "Channel two",
+            "comment" : null,
+            "device" : "69786d15-fd0c-4d9f-9378-33287c2009fa",
+            "owner" : "455354e8-96bd-4c29-84e7-9f10e1d4db4b",
+            "properties" : {
+              "24c436f4-a2e4-4d2b-b910-1a3ff785b784" : {
+                "id" : "24c436f4-a2e4-4d2b-b910-1a3ff785b784",
+                "type" : "dynamic",
+                "identifier" : "humidity",
+                "name" : "humidity",
+                "settable" : false,
+                "queryable" : true,
+                "data_type" : "float",
+                "unit" : "%",
+                "format" : null,
+                "invalid" : 999.0,
+                "number_of_decimals" : 2,
+                "channel" : "6821f8e9-ae69-4d5c-9b7c-d2b213f1ae0a",
+                "parent" : null,
+                "children" : [],
+                "owner" : "455354e8-96bd-4c29-84e7-9f10e1d4db4b"
+              },
+              "28bc0d38-2f7c-4a71-aa74-27b102f8df4c" : {
+                "id" : "28bc0d38-2f7c-4a71-aa74-27b102f8df4c",
+                "type" : "dynamic",
+                "identifier" : "temperature",
+                "name" : "temperature",
+                "settable" : false,
+                "queryable" : true,
+                "data_type" : "float",
+                "unit" : "°C",
+                "format" : null,
+                "invalid" : 999.0,
+                "number_of_decimals" : 1,
+                "channel" : "6821f8e9-ae69-4d5c-9b7c-d2b213f1ae0a",
+                "parent" : null,
+                "children" : [],
+                "owner" : "455354e8-96bd-4c29-84e7-9f10e1d4db4b"
+              }
+            },
+            "controls" : {
+              "177d6fc7-1905-4fd9-b847-e2da8189dd6a" : {
+                "id" : "177d6fc7-1905-4fd9-b847-e2da8189dd6a",
+                "name" : "configure",
+                "channel" : "6821f8e9-ae69-4d5c-9b7c-d2b213f1ae0a",
+                "owner" : "455354e8-96bd-4c29-84e7-9f10e1d4db4b"
+              }
+            }
+          }
+        }
+      },
+      "a1036ff8-6ee8-4405-aaed-58bae0814596" : {
+        "id" : "a1036ff8-6ee8-4405-aaed-58bae0814596",
+        "type" : "blank",
+        "identifier" : "child-device",
+        "name" : "Child device",
+        "comment" : "This is child",
+        "connector" : "17c59dfa-2edd-438e-8c49-faa4e38e5a5e",
+        "parents" : [
+          "69786d15-fd0c-4d9f-9378-33287c2009fa"
+        ],
+        "children" : [],
+        "owner" : null,
+        "properties" : [],
+        "attributes" : [],
+        "controls" : [],
+        "channels" : []
+      },
+      "bf4cd870-2aac-45f0-a85e-e1cefd2d6d9a" : {
+        "id" : "bf4cd870-2aac-45f0-a85e-e1cefd2d6d9a",
+        "type" : "blank",
+        "identifier" : "second-device",
+        "name" : null,
+        "comment" : null,
+        "connector" : "17c59dfa-2edd-438e-8c49-faa4e38e5a5e",
+        "parents" : [],
+        "children" : [],
+        "owner" : "455354e8-96bd-4c29-84e7-9f10e1d4db4b",
+        "properties" : [],
+        "attributes" : [],
+        "controls" : [],
+        "channels" : {
+          "bbcccf8c-33ab-431b-a795-d7bb38b6b6db" : {
+            "id" : "bbcccf8c-33ab-431b-a795-d7bb38b6b6db",
+            "identifier" : "channel-one",
+            "name" : null,
+            "comment" : null,
+            "device" : "bf4cd870-2aac-45f0-a85e-e1cefd2d6d9a",
+            "owner" : "455354e8-96bd-4c29-84e7-9f10e1d4db4b",
+            "properties" : [],
+            "controls" : []
+          }
+        }
+      },
+      "e36a2788-1ef8-4cdf-ab09-4735f191a509" : {
+        "id" : "e36a2788-1ef8-4cdf-ab09-4735f191a509",
+        "type" : "blank",
+        "identifier" : "third-device",
+        "name" : "Third device",
+        "comment" : "Custom comment",
+        "connector" : "17c59dfa-2edd-438e-8c49-faa4e38e5a5e",
+        "parents" : [],
+        "children" : [],
+        "owner" : "455354e8-96bd-4c29-84e7-9f10e1d4db4b",
+        "properties" : [],
+        "attributes" : {
+          "0f87efbb-cb15-49cf-8b2f-f82ff5163c53" : {
+            "id" : "0f87efbb-cb15-49cf-8b2f-f82ff5163c53",
+            "identifier" : "hardware_manufacturer",
+            "name" : null,
+            "content" : "fastybird",
+            "device" : "e36a2788-1ef8-4cdf-ab09-4735f191a509",
+            "owner" : "455354e8-96bd-4c29-84e7-9f10e1d4db4b"
+          },
+          "125efcd0-492b-4f73-b9bd-42c07d92ccdf" : {
+            "id" : "125efcd0-492b-4f73-b9bd-42c07d92ccdf",
+            "identifier" : "hardware_model",
+            "name" : null,
+            "content" : "fastybird_wifi_gw",
+            "device" : "e36a2788-1ef8-4cdf-ab09-4735f191a509",
+            "owner" : "455354e8-96bd-4c29-84e7-9f10e1d4db4b"
+          },
+          "145595c2-1b1e-4fc2-9a0e-54d0fa23e230" : {
+            "id" : "145595c2-1b1e-4fc2-9a0e-54d0fa23e230",
+            "identifier" : "hardware_version",
+            "name" : null,
+            "content" : "rev1",
+            "device" : "e36a2788-1ef8-4cdf-ab09-4735f191a509",
+            "owner" : "455354e8-96bd-4c29-84e7-9f10e1d4db4b"
+          },
+          "1fd2eb2c-087e-4400-808b-6209dfcc5fda" : {
+            "id" : "1fd2eb2c-087e-4400-808b-6209dfcc5fda",
+            "identifier" : "hardware_mac_address",
+            "name" : null,
+            "content" : "80:7d:3a:3d:be:6d",
+            "device" : "e36a2788-1ef8-4cdf-ab09-4735f191a509",
+            "owner" : "455354e8-96bd-4c29-84e7-9f10e1d4db4b"
+          },
+          "21d9f039-3a91-4015-a824-dd42a5537879" : {
+            "id" : "21d9f039-3a91-4015-a824-dd42a5537879",
+            "identifier" : "firmware_manufacturer",
+            "name" : null,
+            "content" : "fastybird",
+            "device" : "e36a2788-1ef8-4cdf-ab09-4735f191a509",
+            "owner" : "455354e8-96bd-4c29-84e7-9f10e1d4db4b"
+          }
+        },
+        "controls" : [],
+        "channels" : []
+      }
+    }
+  },
+  "7a3dd94c-7294-46fd-8c61-1b375c313d4d": {
+    "id" : "7a3dd94c-7294-46fd-8c61-1b375c313d4d",
+    "type" : "dummy",
+    "identifier" : "dummy",
+    "name" : "Dummy",
+    "comment" : null,
+    "enabled" : true,
+    "owner" : null,
+    "properties" : [],
+    "controls" : [],
+    "devices" : []
+  }
+}

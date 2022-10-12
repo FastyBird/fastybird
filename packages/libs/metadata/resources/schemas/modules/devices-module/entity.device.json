@@ -1,0 +1,80 @@
+{
+  "$schema" : "http://json-schema.org/draft-07/schema#",
+  "type" : "object",
+  "properties" : {
+    "id" : {
+      "type" : "string",
+      "description" : "Entity unique uuid v4 identifier"
+    },
+    "type" : {
+      "type" : "string",
+      "description" : "Device type, related to device connector"
+    },
+    "identifier" : {
+      "type" : "string",
+      "description" : "Unique human readable identifier"
+    },
+    "name" : {
+      "oneOf" : [
+        {
+          "type" : "null"
+        },
+        {
+          "type" : "string"
+        }
+      ],
+      "default" : null
+    },
+    "comment" : {
+      "oneOf" : [
+        {
+          "type" : "null"
+        },
+        {
+          "type" : "string"
+        }
+      ],
+      "default" : null
+    },
+    "connector" : {
+      "type" : "string",
+      "description" : "Entity connector uuid v4 identifier"
+    },
+    "parents" : {
+      "type" : "array",
+      "uniqueItems" : true,
+      "items" : {
+        "type" : "string"
+      },
+      "description" : "Entity parents uuid v4 identifiers",
+      "default" : []
+    },
+    "children" : {
+      "type" : "array",
+      "uniqueItems" : true,
+      "items" : {
+        "type" : "string"
+      },
+      "description" : "Entity children uuid v4 identifiers",
+      "default" : []
+    },
+    "owner" : {
+      "oneOf" : [
+        {
+          "type" : "null"
+        },
+        {
+          "type" : "string"
+        }
+      ],
+      "description" : "Entity owner uuid v4 identifier"
+    }
+  },
+  "required" : [
+    "id",
+    "identifier",
+    "name",
+    "comment",
+    "connector"
+  ]
+}

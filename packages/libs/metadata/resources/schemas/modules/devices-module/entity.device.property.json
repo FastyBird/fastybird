@@ -1,0 +1,511 @@
+{
+  "$schema" : "http://json-schema.org/draft-07/schema#",
+  "type" : "object",
+  "properties" : {
+    "id" : {
+      "type" : "string",
+      "description" : "Entity unique uuid v4 identifier"
+    },
+    "parent" : {
+      "oneOf" : [
+        {
+          "type" : "null"
+        },
+        {
+          "type" : "string"
+        }
+      ],
+      "description" : "Entity parent unique uuid v4 identifier",
+      "default" : null
+    },
+    "type" : {
+      "type" : "string",
+      "enum" : [
+        "variable",
+        "dynamic",
+        "mapped"
+      ]
+    },
+    "identifier" : {
+      "type" : "string",
+      "description" : "Unique human readable identifier"
+    },
+    "name" : {
+      "oneOf" : [
+        {
+          "type" : "null"
+        },
+        {
+          "type" : "string"
+        }
+      ],
+      "default" : null
+    },
+    "settable" : {
+      "type" : "boolean",
+      "default" : false
+    },
+    "queryable" : {
+      "type" : "boolean",
+      "default" : false
+    },
+    "data_type" : {
+      "type" : "string",
+      "enum" : [
+        "char",
+        "uchar",
+        "short",
+        "ushort",
+        "int",
+        "uint",
+        "float",
+        "bool",
+        "string",
+        "enum",
+        "color",
+        "button",
+        "switch",
+        "unknown"
+      ]
+    },
+    "unit" : {
+      "oneOf" : [
+        {
+          "type" : "null"
+        },
+        {
+          "type" : "string"
+        }
+      ],
+      "default" : null
+    },
+    "format" : {
+      "oneOf" : [
+        {
+          "type" : "null"
+        },
+        {
+          "type" : "array",
+          "uniqueItems" : true,
+          "items" : {
+            "type" : "string"
+          }
+        },
+        {
+          "type" : "array",
+          "uniqueItems" : true,
+          "items" : {
+            "type" : "array",
+            "items" : {
+              "oneOf" : [
+                {
+                  "type" : "null"
+                },
+                {
+                  "type" : "string"
+                },
+                {
+                  "type": "array",
+                  "prefixItems" : [
+                    {
+                      "type" : "string",
+                      "enum" : [
+                        "i8",
+                        "u8",
+                        "i16",
+                        "u16",
+                        "i32",
+                        "u32",
+                        "f",
+                        "b",
+                        "s",
+                        "btn",
+                        "sw"
+                      ]
+                    },
+                    {
+                      "oneOf" : [
+                        {
+                          "type" : "string"
+                        },
+                        {
+                          "type" : "number"
+                        },
+                        {
+                          "type" : "boolean"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "minItems" : 3,
+            "maxItems" : 3
+          }
+        },
+        {
+          "type" : "array",
+          "uniqueItems" : true,
+          "items" : {
+            "oneOf" : [
+              {
+                "type" : "null"
+              },
+              {
+                "type" : "number"
+              },
+              {
+                "type": "array",
+                "prefixItems" : [
+                  {
+                    "type" : "string",
+                    "enum" : [
+                      "i8",
+                      "u8",
+                      "i16",
+                      "u16",
+                      "i32",
+                      "u32",
+                      "f"
+                    ]
+                  },
+                  {
+                    "type" : "number"
+                  }
+                ]
+              }
+            ]
+          },
+          "minItems" : 2,
+          "maxItems" : 2
+        }
+      ],
+      "default" : null
+    },
+    "invalid" : {
+      "oneOf" : [
+        {
+          "type" : "null"
+        },
+        {
+          "type" : "string"
+        },
+        {
+          "type" : "number"
+        }
+      ],
+      "default" : null
+    },
+    "number_of_decimals" : {
+      "oneOf" : [
+        {
+          "type" : "null"
+        },
+        {
+          "type" : "number"
+        }
+      ],
+      "default" : null
+    },
+    "device" : {
+      "type" : "string",
+      "description" : "Device unique uuid v4 identifier"
+    },
+    "children" : {
+      "type" : "array",
+      "uniqueItems" : true,
+      "items" : {
+        "type" : "string"
+      },
+      "description" : "Entity children uuid v4 identifiers",
+      "default" : []
+    },
+    "owner" : {
+      "oneOf" : [
+        {
+          "type" : "null"
+        },
+        {
+          "type" : "string"
+        }
+      ],
+      "description" : "Entity owner uuid v4 identifier"
+    }
+  },
+  "if" : {
+    "properties" : {
+      "type" : {
+        "const" : "dynamic"
+      }
+    }
+  },
+  "then" : {
+    "properties" : {
+      "actual_value" : {
+        "oneOf" : [
+          {
+            "type" : "string"
+          },
+          {
+            "type" : "number"
+          },
+          {
+            "type" : "boolean"
+          },
+          {
+            "type" : "null"
+          }
+        ]
+      },
+      "previous_value" : {
+        "oneOf" : [
+          {
+            "type" : "string"
+          },
+          {
+            "type" : "number"
+          },
+          {
+            "type" : "boolean"
+          },
+          {
+            "type" : "null"
+          }
+        ]
+      },
+      "expected_value" : {
+        "oneOf" : [
+          {
+            "type" : "string"
+          },
+          {
+            "type" : "number"
+          },
+          {
+            "type" : "boolean"
+          },
+          {
+            "type" : "null"
+          }
+        ]
+      },
+      "pending" : {
+        "oneOf" : [
+          {
+            "type" : "string"
+          },
+          {
+            "type" : "boolean"
+          },
+          {
+            "type" : "null"
+          }
+        ]
+      },
+      "valid" : {
+        "oneOf" : [
+          {
+            "type" : "null"
+          },
+          {
+            "type" : "boolean"
+          }
+        ]
+      }
+    },
+    "required" : [
+      "id",
+      "type",
+      "identifier",
+      "settable",
+      "queryable",
+      "data_type",
+      "unit",
+      "format",
+      "invalid",
+      "number_of_decimals",
+      "device"
+    ]
+  },
+  "else" : {
+    "if" : {
+      "properties" : {
+        "type" : {
+          "const" : "variable"
+        }
+      }
+    },
+    "then" : {
+      "properties" : {
+        "value" : {
+          "oneOf" : [
+            {
+              "type" : "string"
+            },
+            {
+              "type" : "number"
+            },
+            {
+              "type" : "boolean"
+            },
+            {
+              "type" : "null"
+            }
+          ]
+        },
+        "default" : {
+          "oneOf" : [
+            {
+              "type" : "string"
+            },
+            {
+              "type" : "number"
+            },
+            {
+              "type" : "boolean"
+            },
+            {
+              "type" : "null"
+            }
+          ]
+        }
+      },
+      "required" : [
+        "id",
+        "type",
+        "identifier",
+        "settable",
+        "queryable",
+        "data_type",
+        "unit",
+        "format",
+        "invalid",
+        "number_of_decimals",
+        "value",
+        "default",
+        "device"
+      ]
+    },
+    "else" : {
+      "properties" : {
+        "actual_value" : {
+          "oneOf" : [
+            {
+              "type" : "string"
+            },
+            {
+              "type" : "number"
+            },
+            {
+              "type" : "boolean"
+            },
+            {
+              "type" : "null"
+            }
+          ]
+        },
+        "previous_value" : {
+          "oneOf" : [
+            {
+              "type" : "string"
+            },
+            {
+              "type" : "number"
+            },
+            {
+              "type" : "boolean"
+            },
+            {
+              "type" : "null"
+            }
+          ]
+        },
+        "expected_value" : {
+          "oneOf" : [
+            {
+              "type" : "string"
+            },
+            {
+              "type" : "number"
+            },
+            {
+              "type" : "boolean"
+            },
+            {
+              "type" : "null"
+            }
+          ]
+        },
+        "pending" : {
+          "oneOf" : [
+            {
+              "type" : "string"
+            },
+            {
+              "type" : "boolean"
+            },
+            {
+              "type" : "null"
+            }
+          ]
+        },
+        "valid" : {
+          "oneOf" : [
+            {
+              "type" : "null"
+            },
+            {
+              "type" : "boolean"
+            }
+          ]
+        },
+        "value" : {
+          "oneOf" : [
+            {
+              "type" : "string"
+            },
+            {
+              "type" : "number"
+            },
+            {
+              "type" : "boolean"
+            },
+            {
+              "type" : "null"
+            }
+          ]
+        },
+        "default" : {
+          "oneOf" : [
+            {
+              "type" : "string"
+            },
+            {
+              "type" : "number"
+            },
+            {
+              "type" : "boolean"
+            },
+            {
+              "type" : "null"
+            }
+          ]
+        }
+      },
+      "required" : [
+        "id",
+        "type",
+        "identifier",
+        "settable",
+        "queryable",
+        "data_type",
+        "unit",
+        "format",
+        "invalid",
+        "number_of_decimals",
+        "device"
+      ]
+    }
+  }
+}

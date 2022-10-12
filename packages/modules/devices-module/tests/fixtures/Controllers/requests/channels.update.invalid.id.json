@@ -1,0 +1,10 @@
+{
+  "data" : {
+    "id" : "9f5e5560-72f2-487a-a382-d73d842ba538",
+    "type" : "com.fastybird.devices-module/channel",
+    "attributes" : {
+      "name" : "Updated name",
+      "comment" : "With comment"
+    }
+  }
+}

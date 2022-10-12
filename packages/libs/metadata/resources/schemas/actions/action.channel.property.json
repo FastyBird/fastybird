@@ -1,0 +1,74 @@
+{
+  "$schema" : "http://json-schema.org/draft-07/schema#",
+  "type" : "object",
+  "properties" : {
+    "action" : {
+      "type" : "string",
+      "enum" : [
+        "get",
+        "set"
+      ]
+    },
+    "device" : {
+      "type" : "string",
+      "description" : "Device unique uuid v4 identifier"
+    },
+    "channel" : {
+      "type" : "string",
+      "description" : "Channel unique uuid v4 identifier"
+    },
+    "property" : {
+      "type" : "string",
+      "description" : "Channel property unique uuid v4 identifier"
+    }
+  },
+  "if" : {
+    "properties" : {
+      "action" : {
+        "const" : "get"
+      }
+    }
+  },
+  "then" : {
+    "required" : [
+      "action",
+      "device",
+      "channel",
+      "property"
+    ]
+  },
+  "else" : {
+    "if" : {
+      "properties" : {
+        "action" : {
+          "const" : "set"
+        }
+      }
+    },
+    "then" : {
+      "properties" : {
+        "expected_value" : {
+          "oneOf" : [
+            {
+              "type" : "string"
+            },
+            {
+              "type" : "number"
+            },
+            {
+              "type" : "boolean"
+            }
+          ],
+          "description" : "Property value to be written into property"
+        }
+      },
+      "required" : [
+        "action",
+        "device",
+        "channel",
+        "property",
+        "expected_value"
+      ]
+    }
+  }
+}

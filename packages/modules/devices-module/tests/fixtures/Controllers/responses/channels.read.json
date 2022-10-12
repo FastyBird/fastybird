@@ -1,0 +1,69 @@
+{
+  "meta" : {
+    "author" : "FastyBird team",
+    "copyright" : "FastyBird s.r.o"
+  },
+  "jsonapi" : {
+    "version" : "1.1"
+  },
+  "links" : {
+    "self" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e"
+  },
+  "data" : {
+    "type" : "com.fastybird.devices-module/channel",
+    "id" : "17c59dfa-2edd-438e-8c49-faa4e38e5a5e",
+    "attributes" : {
+      "identifier" : "channel-one",
+      "name" : "Channel one",
+      "comment" : null
+    },
+    "relationships" : {
+      "device" : {
+        "links" : {
+          "related" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa"
+        },
+        "data" : {
+          "type" : "com.fastybird.devices-module/device/blank",
+          "id" : "69786d15-fd0c-4d9f-9378-33287c2009fa"
+        }
+      },
+      "properties" : {
+        "links" : {
+          "self" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/relationships/properties",
+          "related" : {
+            "href" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/properties",
+            "meta" : {
+              "count" : 1
+            }
+          }
+        },
+        "data" : [
+          {
+            "type" : "com.fastybird.devices-module/property/channel/dynamic",
+            "id" : "bbcccf8c-33ab-431b-a795-d7bb38b6b6db"
+          }
+        ]
+      },
+      "controls" : {
+        "links" : {
+          "self" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/relationships/controls",
+          "related" : {
+            "href" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/controls",
+            "meta" : {
+              "count" : 1
+            }
+          }
+        },
+        "data" : [
+          {
+            "type" : "com.fastybird.devices-module/control/channel",
+            "id" : "15db9bef-3b57-4a87-bf67-e3c19fc3ba34"
+          }
+        ]
+      }
+    },
+    "links" : {
+      "self" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e"
+    }
+  }
+}

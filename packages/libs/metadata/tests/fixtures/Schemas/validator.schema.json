@@ -1,0 +1,38 @@
+{
+  "$schema" : "http://json-schema.org/draft-07/schema#",
+  "definitions" : {
+    "types" : {
+      "nullable_string" : {
+        "oneOf" : [
+          {
+            "type" : "null"
+          },
+          {
+            "type" : "string"
+          }
+        ]
+      }
+    }
+  },
+  "type" : "object",
+  "properties" : {
+    "attributeOne" : {
+      "type" : "string"
+    },
+    "attributeTwo" : {
+      "type" : "number"
+    },
+    "attributeThree" : {
+      "type" : "boolean",
+      "default" : true
+    },
+    "attributeFour" : {
+      "$ref" : "#/definitions/types/nullable_string",
+      "default" : null
+    }
+  },
+  "required" : [
+    "attributeOne",
+    "attributeTwo"
+  ]
+}

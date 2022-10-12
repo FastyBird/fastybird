@@ -1,0 +1,91 @@
+{
+    "name": "fastybird/web-server-plugin",
+    "conflict": {
+        "fastybird/homekit-connector": "<7.0.0",
+        "fastybird/fb-mqtt-connector": "<7.0.0",
+        "fastybird/tuya-connector": "<7.0.0",
+        "fastybird/shelly-connector": "<7.0.0",
+        "fastybird/modbus-connector": "<7.0.0",
+        "fastybird/ws-exchange-plugin": "<7.0.0",
+        "fastybird/redisdb-plugin": "<7.0.0",
+        "fastybird/exchange": "<7.0.0",
+        "fastybird/metadata": "<7.0.0",
+        "fastybird/devices-module": "<7.0.0"
+    },
+    "type": "library",
+    "description": "FastyBird IoT simple web server plugin with ReactPHP & Apache or Nginx support",
+    "keywords": ["fastybird", "fb", "libs", "library", "webserver", "server", "http"],
+    "homepage": "https://www.fastybird.com",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "FastyBird s.r.o.",
+            "email": "code@fastybird.com",
+            "homepage": "https://www.fastybird.com"
+        },
+        {
+            "name": "Adam Kadlec",
+            "email": "adam.kadlec@fastybird.com"
+        }
+    ],
+    "require": {
+        "php": ">=8.1.0",
+        "cweagans/composer-patches": "^1.7",
+        "fig/http-message-util": "^1.1",
+        "ipub/slim-router": "^0.2",
+        "nette/bootstrap": "^3.1",
+        "nette/di": "^3.0",
+        "nette/utils": "^3.2",
+        "psr/event-dispatcher": "^1.0",
+        "psr/http-message": "^1.0",
+        "psr/log": "^1.1|^3.0",
+        "react/http": "^1.7",
+        "sunrise/http-server-request": "^2.0",
+        "symfony/console": "^5.0|^6.0",
+        "symfony/event-dispatcher": "^5.4"
+    },
+    "require-dev": {
+        "mockery/mockery": "^1.4",
+        "ninjify/nunjuck": "^0.3",
+        "orisai/coding-standard": "^3.2",
+        "pds/skeleton": "^1.0",
+        "php-parallel-lint/php-parallel-lint": "^1.3",
+        "phpstan/extension-installer": "^1.1",
+        "phpstan/phpstan": "^1.8",
+        "phpstan/phpstan-deprecation-rules": "^1.0",
+        "phpstan/phpstan-nette": "^1.0",
+        "phpstan/phpstan-strict-rules": "^1.1",
+        "tracy/tracy": "^2.9"
+    },
+    "suggest": {
+        "fastybird/json-api": "Handle request with {JSON:API} schemas",
+        "fastybird/simple-auth": "Handle basic user authentication & authorization"
+    },
+    "autoload": {
+        "psr-4": {
+            "FastyBird\\WebServerPlugin\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\Cases\\Unit\\": "tests/cases/unit"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "cweagans/composer-patches": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "phpstan/extension-installer": true
+        }
+    },
+    "extra": {
+        "patches": {
+            "nette/utils": {
+                "Bug: Offset check with null support": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/nette.array.offsetCheck.diff"
+            }
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

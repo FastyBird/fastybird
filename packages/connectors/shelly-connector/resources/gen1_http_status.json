@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "wifi_sta": {
+      "type": "object",
+      "properties": {
+        "ip": {
+          "type": "string",
+          "description": "IP address assigned to this device by the WiFi router"
+        }
+      },
+      "required": [
+        "ip"
+      ]
+    },
+    "cloud": {
+      "type": "object",
+      "properties": {
+        "connected": {
+          "type": "boolean",
+          "description": "Current cloud connection status"
+        }
+      },
+      "required": [
+        "connected"
+      ]
+    },
+    "mqtt": {
+      "type": "object",
+      "properties": {
+        "connected": {
+          "type": "boolean",
+          "description": "MQTT connection status, when MQTT is enabled"
+        }
+      },
+      "required": [
+        "connected"
+      ]
+    },
+    "time": {
+      "type": "string",
+      "description" : "The current hour and minutes, in HH:MM format"
+    },
+    "unixtime": {
+      "type": "number",
+      "description" : "Unix timestamp if synced; 0 otherwise"
+    },
+    "serial": {
+      "type": "number",
+      "description" : "Cloud serial number"
+    }
+  },
+  "required": [
+    "wifi_sta",
+    "cloud",
+    "mqtt",
+    "time",
+    "unixtime",
+    "serial"
+  ]
+}

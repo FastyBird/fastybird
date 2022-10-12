@@ -1,0 +1,249 @@
+{
+  "$schema" : "http://json-schema.org/draft-07/schema#",
+  "type" : "object",
+  "properties" : {
+    "result" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "Device ID"
+        },
+        "name" : {
+          "oneOf" : [
+            {
+              "type" : "null"
+            },
+            {
+              "type" : "string"
+            }
+          ],
+          "description" : "Device name",
+          "default" : null
+        },
+        "uid" : {
+          "type" : "string",
+          "description" : "Device user ID"
+        },
+        "local_key" : {
+          "type" : "string",
+          "description" : "Secret key"
+        },
+        "category" : {
+          "oneOf" : [
+            {
+              "type" : "null"
+            },
+            {
+              "type" : "string"
+            }
+          ],
+          "description" : "Product category",
+          "default" : null
+        },
+        "product_id" : {
+          "oneOf" : [
+            {
+              "type" : "null"
+            },
+            {
+              "type" : "string"
+            }
+          ],
+          "description" : "Product ID",
+          "default" : null
+        },
+        "product_name" : {
+          "oneOf" : [
+            {
+              "type" : "null"
+            },
+            {
+              "type" : "string"
+            }
+          ],
+          "description" : "Product name",
+          "default" : null
+        },
+        "sub" : {
+          "type" : "boolean",
+          "description" : "Determines whether it is a sub-device. Valid values: true = yes, false = no"
+        },
+        "uuid" : {
+          "type" : "string",
+          "description" : "The universally unique identifier (UUID) of a specified device"
+        },
+        "owner_id" : {
+          "oneOf" : [
+            {
+              "type" : "null"
+            },
+            {
+              "type" : "string"
+            }
+          ],
+          "description" : "The ID of a specified home",
+          "default" : null
+        },
+        "online" : {
+          "type" : "boolean",
+          "description" : "The online status of a specified device",
+          "default" : false
+        },
+        "status" : {
+          "type" : "array",
+          "description" : "The status of a specified device feature",
+          "uniqueItems" : true,
+          "items" : {
+            "type" : "object",
+            "properties" : {
+              "code" : {
+                "type" : "string",
+                "description" : "The code of a specified data point"
+              },
+              "value" : {
+                "oneOf" : [
+                  {
+                    "type" : "string"
+                  },
+                  {
+                    "type" : "number"
+                  },
+                  {
+                    "type" : "boolean"
+                  }
+                ],
+                "description" : "The value of a specified data point",
+                "default" : null
+              },
+              "type" : {
+                "oneOf" : [
+                  {
+                    "type" : "null"
+                  },
+                  {
+                    "type" : "string"
+                  }
+                ],
+                "description" : "The type of a specified data point",
+                "default" : null
+              }
+            },
+            "required" : [
+              "code",
+              "value"
+            ]
+          },
+          "default" : []
+        },
+        "active_time" : {
+          "oneOf" : [
+            {
+              "type" : "null"
+            },
+            {
+              "type" : "number"
+            }
+          ],
+          "description" : "The time when a specified device is activated, which is accurate to seconds",
+          "default" : null
+        },
+        "create_time" : {
+          "oneOf" : [
+            {
+              "type" : "null"
+            },
+            {
+              "type" : "number"
+            }
+          ],
+          "description" : "The time when the device is first paired",
+          "default" : null
+        },
+        "update_time" : {
+          "oneOf" : [
+            {
+              "type" : "null"
+            },
+            {
+              "type" : "number"
+            }
+          ],
+          "description" : "The time when the device is last updated",
+          "default" : null
+        },
+        "biz_type" : {
+          "oneOf" : [
+            {
+              "type" : "null"
+            },
+            {
+              "type" : "number"
+            }
+          ],
+          "description" : "The biztype of a specified application",
+          "default" : null
+        },
+        "icon" : {
+          "oneOf" : [
+            {
+              "type" : "null"
+            },
+            {
+              "type" : "string"
+            }
+          ],
+          "description" : "The device icon. The prefix of China Data Center is https://images.tuyacn.com. If the relative path you get is smart/product_icon/cz.png, the actual icon URL is https://images.tuyacn.com/smart/product_icon/cz.png",
+          "default" : null
+        },
+        "ip" : {
+          "oneOf" : [
+            {
+              "type" : "null"
+            },
+            {
+              "type" : "string"
+            }
+          ],
+          "description" : "The IP address of a specified device",
+          "default" : null
+        },
+        "time_zone" : {
+          "oneOf" : [
+            {
+              "type" : "null"
+            },
+            {
+              "type" : "string"
+            }
+          ],
+          "description" : "The time zone",
+          "default" : null
+        }
+      },
+      "required" : [
+        "id",
+        "uid",
+        "local_key"
+      ]
+    },
+    "success" : {
+      "type" : "boolean"
+    },
+    "code" : {
+      "type" : "number"
+    },
+    "t" : {
+      "type" : "number"
+    },
+    "tid" : {
+      "type" : "string"
+    },
+    "msg" : {
+      "type" : "string"
+    }
+  },
+  "required" : [
+    "result"
+  ]
+}

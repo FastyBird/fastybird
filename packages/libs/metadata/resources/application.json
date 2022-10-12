@@ -1,0 +1,727 @@
+{
+  "modules" : {
+    "com.fastybird.accounts-module" : [
+      {
+        "version" : "*",
+        "metadata" : {
+          "exchange" : [
+          ],
+          "routes" : [
+            {
+              "name" : "Get session info",
+              "path" : "/v1/session",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Create new session",
+              "path" : "/v1/session",
+              "method" : "post",
+              "headers" : []
+            },
+            {
+              "name" : "Refresh session",
+              "path" : "/v1/session",
+              "method" : "patch",
+              "headers" : []
+            },
+            {
+              "name" : "Destroy session",
+              "path" : "/v1/session",
+              "method" : "delete",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get session relationship",
+              "path" : "/v1/session/relationships/{relation}",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Read user profile",
+              "path" : "/v1/me",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Update user profile",
+              "path" : "/v1/me",
+              "method" : "patch",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Close user account",
+              "path" : "/v1/me",
+              "method" : "delete",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get profile relationship",
+              "path" : "/v1/me/relationships/{relation}",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get all profile emails",
+              "path" : "/v1/me/emails",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get all profile email",
+              "path" : "/v1/me/emails/{email}",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Create new profile email",
+              "path" : "/v1/me/emails",
+              "method" : "post",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Update existing profile email",
+              "path" : "/v1/me/emails/{email}",
+              "method" : "patch",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Delete existing profile email",
+              "path" : "/v1/me/emails/{email}",
+              "method" : "delete",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get profile email relationship",
+              "path" : "/v1/me/emails/{email}/relationships/{relation}",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get all profile identities",
+              "path" : "/v1/me/identities",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get all profile identity",
+              "path" : "/v1/me/identities/{identity}",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Update existing profile identity",
+              "path" : "/v1/me/identities/{identity}",
+              "method" : "patch",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get profile identity relationship",
+              "path" : "/v1/me/identities/{identity}/relationships/{relation}",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get all accounts",
+              "path" : "/v1/accounts",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get account",
+              "path" : "/v1/accounts/{account}",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get account children",
+              "path" : "/v1/accounts/{account}/children",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Create new account",
+              "path" : "/v1/accounts",
+              "method" : "post",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Update account",
+              "path" : "/v1/accounts/{account}",
+              "method" : "patch",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Delete account",
+              "path" : "/v1/accounts/{account}",
+              "method" : "delete",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get account relationship",
+              "path" : "/v1/accounts/{account}/relationships/{relation}",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get all emails",
+              "path" : "/v1/accounts/{account}/emails",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get email",
+              "path" : "/v1/accounts/{account}/emails/{email}",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Create new email",
+              "path" : "/v1/accounts/{account}/emails",
+              "method" : "post",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Update email",
+              "path" : "/v1/accounts/{account}/emails/{email}",
+              "method" : "patch",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Delete email",
+              "path" : "/v1/accounts/{account}/emails/{email}",
+              "method" : "delete",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get email relationship",
+              "path" : "/v1/accounts/{account}/emails/{email}/relationships/{relation}",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get all identities",
+              "path" : "/v1/accounts/{account}/identities",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get identity",
+              "path" : "/v1/accounts/{account}/identities/{identity}",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Create new identity",
+              "path" : "/v1/accounts/{account}/identities",
+              "method" : "post",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Update identity",
+              "path" : "/v1/accounts/{account}/identities/{identity}",
+              "method" : "patch",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get identity relationship",
+              "path" : "/v1/accounts/{account}/identities/{identity}/relationships/{relation}",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get access roles",
+              "path" : "/v1/roles",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get access role",
+              "path" : "/v1/roles/{role}",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get access role children",
+              "path" : "/v1/roles/{role}/children",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Update access role",
+              "path" : "/v1/roles/{role}",
+              "method" : "patch",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get access role relationship",
+              "path" : "/v1/roles/{role}/relationships/{relation}",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "VerneMQ authentication",
+              "path" : "/v1/authenticate/vernemq",
+              "method" : "post",
+              "headers" : []
+            }
+          ]
+        }
+      }
+    ],
+    "com.fastybird.devices-module" : [
+      {
+        "version" : "*",
+        "metadata" : {
+          "exchange" : [
+            "fb.exchange.action.device",
+            "fb.exchange.action.device.*",
+            "fb.exchange.action.channel",
+            "fb.exchange.action.channel.*",
+            "fb.exchange.action.connector",
+            "fb.exchange.action.connector.*"
+          ],
+          "routes" : [
+            {
+              "name" : "Get devices",
+              "path" : "/v1/devices",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get device",
+              "path" : "/v1/devices/{device}",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Create device",
+              "path" : "/v1/devices",
+              "method" : "post",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Update device",
+              "path" : "/v1/devices/{device}",
+              "method" : "patch",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get device relationship",
+              "path" : "/v1/devices/{device}/relationships/{relation}",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get device children",
+              "path" : "/v1/devices/{device}/children",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get device properties",
+              "path" : "/v1/devices/{device}/properties",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get device property",
+              "path" : "/v1/devices/{device}/properties/{property}",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get device property relationship",
+              "path" : "/v1/devices/{device}/properties/{property}/relationships/{relation}",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get device channels",
+              "path" : "/v1/devices/{device}/channels",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get device channel",
+              "path" : "/v1/devices/{device}/channels/{channel}",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Update device channel",
+              "path" : "/v1/devices/{device}/channels/{channel}",
+              "method" : "patch",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get device channel relationship",
+              "path" : "/v1/devices/{device}/channels/{channel}/relationships/{relation}",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get device channel properties",
+              "path" : "/v1/devices/{device}/channels/{channel}/properties",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get device channel property",
+              "path" : "/v1/devices/{device}/channels/{channel}/properties/{property}",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get device channel property relationship",
+              "path" : "/v1/devices/{device}/channels/{channel}/properties/{property}/relationships/{relation}",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "com.fastybird.triggers-module" : [
+      {
+        "version" : "*",
+        "metadata" : {
+          "exchange" : [
+            "fb.exchange.module.entity.deleted.channel",
+            "fb.exchange.module.entity.*.channel.property",
+            "fb.exchange.module.entity.deleted.device",
+            "fb.exchange.module.entity.*.device.property"
+          ],
+          "routes" : [
+            {
+              "name" : "Get triggers",
+              "path" : "/v1/triggers",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get trigger",
+              "path" : "/v1/triggers/{trigger}",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Create trigger",
+              "path" : "/v1/triggers",
+              "method" : "post",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Update trigger",
+              "path" : "/v1/triggers/{trigger}",
+              "method" : "patch",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Delete trigger",
+              "path" : "/v1/triggers/{trigger}",
+              "method" : "delete",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get trigger relationship",
+              "path" : "/v1/triggers/{trigger}/relationships/{relation}",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get trigger actions",
+              "path" : "/v1/triggers/{trigger}/actions",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get trigger action",
+              "path" : "/v1/triggers/{trigger}/actions/{action}",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Create trigger action",
+              "path" : "/v1/triggers/{trigger}/actions",
+              "method" : "post",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Update trigger action",
+              "path" : "/v1/triggers/{trigger}/actions/{action}",
+              "method" : "patch",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Delete trigger action",
+              "path" : "/v1/triggers/{trigger}/actions/{action}",
+              "method" : "delete",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get trigger action relationship",
+              "path" : "/v1/triggers/{trigger}/actions/{action}/relationships/{relation}",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get trigger notifications",
+              "path" : "/v1/triggers/{trigger}/notifications",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get trigger notification",
+              "path" : "/v1/triggers/{trigger}/notifications/{notification}",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Create trigger notification",
+              "path" : "/v1/triggers/{trigger}/notifications",
+              "method" : "post",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Update trigger notification",
+              "path" : "/v1/triggers/{trigger}/notifications/{notification}",
+              "method" : "patch",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Delete trigger notification",
+              "path" : "/v1/triggers/{trigger}/notifications/{notification}",
+              "method" : "delete",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get trigger notification relationship",
+              "path" : "/v1/triggers/{trigger}/notifications/{notification}/relationships/{relation}",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get trigger conditions",
+              "path" : "/v1/triggers/{trigger}/conditions",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get trigger condition",
+              "path" : "/v1/triggers/{trigger}/conditions/{condition}",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Create trigger condition",
+              "path" : "/v1/triggers/{trigger}/conditions",
+              "method" : "post",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Update trigger condition",
+              "path" : "/v1/triggers/{trigger}/conditions/{condition}",
+              "method" : "patch",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Delete trigger condition",
+              "path" : "/v1/triggers/{trigger}/conditions/{condition}",
+              "method" : "delete",
+              "headers" : [
+                "authorization"
+              ]
+            },
+            {
+              "name" : "Get trigger condition relationship",
+              "path" : "/v1/triggers/{trigger}/conditions/{condition}/relationships/{relation}",
+              "method" : "get",
+              "headers" : [
+                "authorization"
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "com.fastybird.ui-module" : [
+      {
+        "version" : "*",
+        "metadata" : {
+          "exchange" : [
+            "fb.exchange.module.entity.*.device",
+            "fb.exchange.module.entity.*.device.*",
+            "fb.exchange.module.entity.*.channel",
+            "fb.exchange.module.entity.*.channel.*",
+            "fb.exchange.module.entity.*.account",
+            "fb.exchange.module.entity.*.email",
+            "fb.exchange.module.entity.*.identity",
+            "fb.exchange.module.entity.*.trigger",
+            "fb.exchange.module.entity.*.trigger.*"
+          ]
+        }
+      }
+    ]
+  },
+  "plugins" : {
+  },
+  "connectors" : {
+  }
+}

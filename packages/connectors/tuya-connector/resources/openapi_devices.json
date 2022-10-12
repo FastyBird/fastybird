@@ -1,0 +1,299 @@
+{
+  "$schema" : "http://json-schema.org/draft-07/schema#",
+  "type" : "object",
+  "properties" : {
+    "result" : {
+      "type" : "object",
+      "properties" : {
+        "has_more" : {
+          "type" : "boolean",
+          "description" : "Specifies whether there is a next page"
+        },
+        "last_row_key" : {
+          "type" : "string",
+          "description" : "The row key of the last page"
+        },
+        "total" : {
+          "type" : "number",
+          "description" : "The total entries of data that meets the criteria"
+        },
+        "list" : {
+          "type" : "array",
+          "uniqueItems" : true,
+          "items" : {
+            "type" : "object",
+            "properties" : {
+              "id" : {
+                "type" : "string",
+                "description" : "Device ID"
+              },
+              "gateway_id" : {
+                "oneOf" : [
+                  {
+                    "type" : "null"
+                  },
+                  {
+                    "type" : "string"
+                  }
+                ],
+                "description" : "The gateway ID. The value is empty for non-gateway sub-devices",
+                "default" : null
+              },
+              "node_id" : {
+                "oneOf" : [
+                  {
+                    "type" : "null"
+                  },
+                  {
+                    "type" : "string"
+                  }
+                ],
+                "description" : "The node ID. The value is empty for non-gateway sub-devices",
+                "default" : null
+              },
+              "uuid" : {
+                "oneOf" : [
+                  {
+                    "type" : "null"
+                  },
+                  {
+                    "type" : "string"
+                  }
+                ],
+                "description" : "The universally unique identifier (UUID) of a specified device",
+                "default" : null
+              },
+              "category" : {
+                "oneOf" : [
+                  {
+                    "type" : "null"
+                  },
+                  {
+                    "type" : "string"
+                  }
+                ],
+                "description" : "The category of a specified product",
+                "default" : null
+              },
+              "category_name" : {
+                "oneOf" : [
+                  {
+                    "type" : "null"
+                  },
+                  {
+                    "type" : "string"
+                  }
+                ],
+                "description" : "The name of a specified category",
+                "default" : null
+              },
+              "name" : {
+                "oneOf" : [
+                  {
+                    "type" : "null"
+                  },
+                  {
+                    "type" : "string"
+                  }
+                ],
+                "description" : "Device name",
+                "default" : null
+              },
+              "product_id" : {
+                "oneOf" : [
+                  {
+                    "type" : "null"
+                  },
+                  {
+                    "type" : "string"
+                  }
+                ],
+                "description" : "Product ID",
+                "default" : null
+              },
+              "product_name" : {
+                "oneOf" : [
+                  {
+                    "type" : "null"
+                  },
+                  {
+                    "type" : "string"
+                  }
+                ],
+                "description" : "Product name",
+                "default" : null
+              },
+              "local_key" : {
+                "type" : "string",
+                "description" : "Secret key"
+              },
+              "sub" : {
+                "type" : "boolean",
+                "description" : "Determines whether it is a sub-device. Valid values: true = yes, false = no"
+              },
+              "asset_id" : {
+                "oneOf" : [
+                  {
+                    "type" : "null"
+                  },
+                  {
+                    "type" : "string"
+                  }
+                ],
+                "description" : "The asset ID",
+                "default" : null
+              },
+              "owner_id" : {
+                "oneOf" : [
+                  {
+                    "type" : "null"
+                  },
+                  {
+                    "type" : "string"
+                  }
+                ],
+                "description" : "The ID of a specified home",
+                "default" : null
+              },
+              "ip" : {
+                "oneOf" : [
+                  {
+                    "type" : "null"
+                  },
+                  {
+                    "type" : "string"
+                  }
+                ],
+                "description" : "The IP address of a specified device",
+                "default" : null
+              },
+              "lon" : {
+                "oneOf" : [
+                  {
+                    "type" : "null"
+                  },
+                  {
+                    "type" : "string"
+                  }
+                ],
+                "description" : "The longitude of a specified device",
+                "default" : null
+              },
+              "lat" : {
+                "oneOf" : [
+                  {
+                    "type" : "null"
+                  },
+                  {
+                    "type" : "string"
+                  }
+                ],
+                "description" : "The latitude of a specified device",
+                "default" : null
+              },
+              "model" : {
+                "oneOf" : [
+                  {
+                    "type" : "null"
+                  },
+                  {
+                    "type" : "string"
+                  }
+                ],
+                "description" : "The product model",
+                "default" : null
+              },
+              "time_zone" : {
+                "oneOf" : [
+                  {
+                    "type" : "null"
+                  },
+                  {
+                    "type" : "string"
+                  }
+                ],
+                "description" : "The time zone",
+                "default" : null
+              },
+              "active_time" : {
+                "oneOf" : [
+                  {
+                    "type" : "null"
+                  },
+                  {
+                    "type" : "number"
+                  }
+                ],
+                "description" : "The time when a specified device is activated, which is accurate to seconds",
+                "default" : null
+              },
+              "create_time" : {
+                "oneOf" : [
+                  {
+                    "type" : "null"
+                  },
+                  {
+                    "type" : "number"
+                  }
+                ],
+                "description" : "The time when the device is first paired",
+                "default" : null
+              },
+              "update_time" : {
+                "oneOf" : [
+                  {
+                    "type" : "null"
+                  },
+                  {
+                    "type" : "number"
+                  }
+                ],
+                "description" : "The time when the device is last updated",
+                "default" : null
+              },
+              "online" : {
+                "type" : "boolean",
+                "description" : "The online status of a specified device",
+                "default" : false
+              },
+              "icon" : {
+                "oneOf" : [
+                  {
+                    "type" : "null"
+                  },
+                  {
+                    "type" : "string"
+                  }
+                ],
+                "description" : "The device icon. The prefix of China Data Center is https://images.tuyacn.com. If the relative path you get is smart/product_icon/cz.png, the actual icon URL is https://images.tuyacn.com/smart/product_icon/cz.png",
+                "default" : null
+              }
+            },
+            "required" : [
+              "id",
+              "local_key"
+            ]
+          }
+        }
+      }
+    },
+    "success" : {
+      "type" : "boolean"
+    },
+    "code" : {
+      "type" : "number"
+    },
+    "t" : {
+      "type" : "number"
+    },
+    "tid" : {
+      "type" : "string"
+    },
+    "msg" : {
+      "type" : "string"
+    }
+  },
+  "required" : [
+    "result"
+  ]
+}

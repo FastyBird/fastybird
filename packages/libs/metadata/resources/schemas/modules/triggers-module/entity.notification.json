@@ -1,0 +1,90 @@
+{
+  "$schema" : "http://json-schema.org/draft-07/schema#",
+  "type" : "object",
+  "properties" : {
+    "id" : {
+      "type" : "string",
+      "description" : "Entity unique uuid v4 identifier"
+    },
+    "type" : {
+      "type" : "string",
+      "enum" : [
+        "email",
+        "sms"
+      ]
+    },
+    "enabled" : {
+      "type" : "boolean",
+      "default" : false
+    },
+    "trigger" : {
+      "type" : "string",
+      "description" : "Trigger unique uuid v4 identifier"
+    },
+    "owner" : {
+      "oneOf" : [
+        {
+          "type" : "null"
+        },
+        {
+          "type" : "string"
+        }
+      ],
+      "description" : "Entity owner uuid v4 identifier"
+    }
+  },
+  "if" : {
+    "properties" : {
+      "type" : {
+        "const" : "email"
+      }
+    }
+  },
+  "then" : {
+    "properties" : {
+      "email" : {
+        "type" : "string",
+        "description" : "Valid email address"
+      }
+    },
+    "required" : [
+      "id",
+      "type",
+      "enabled",
+      "trigger",
+      "email"
+    ]
+  },
+  "else" : {
+    "if" : {
+      "properties" : {
+        "type" : {
+          "const" : "sms"
+        }
+      }
+    },
+    "then" : {
+      "properties" : {
+        "phone" : {
+          "type" : "string",
+          "description" : "Internation phone number"
+        }
+      },
+      "required" : [
+        "id",
+        "type",
+        "enabled",
+        "trigger",
+        "phone"
+      ]
+    },
+    "else" : {
+      "required" : [
+        "id",
+        "type",
+        "enabled",
+        "trigger"
+      ]
+    }
+  }
+}

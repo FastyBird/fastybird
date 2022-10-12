@@ -1,0 +1,8 @@
+parameters:
+    level: max
+
+    stubFiles:
+        - tests/stubs/PromiseInterface.stub
+        - tests/stubs/ExtendedPromiseInterface.stub
+        - tests/stubs/Client.stub
+        - tests/stubs/EventEmitterInterface.stub

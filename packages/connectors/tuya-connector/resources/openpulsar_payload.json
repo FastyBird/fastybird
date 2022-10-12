@@ -1,0 +1,28 @@
+{
+  "$schema" : "http://json-schema.org/draft-07/schema#",
+  "type" : "object",
+  "properties" : {
+    "data" : {
+      "type" : "string"
+    },
+    "protocol" : {
+      "type" : "number"
+    },
+    "pv" : {
+      "type" : "string"
+    },
+    "sign" : {
+      "type" : "string"
+    },
+    "t" : {
+      "type" : "number"
+    }
+  },
+  "required" : [
+    "data",
+    "protocol",
+    "pv",
+    "sign",
+    "t"
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "data" : {
+    "type" : "com.fastybird.devices-module/property/channel/dynamic",
+    "id" : "17ebf5c3-1485-4235-8f23-99ac9f906739",
+    "attributes" : {
+      "identifier" : "switch_02",
+      "name" : "switch 02",
+      "settable" : true,
+      "queryable" : true,
+      "data_type" : "enum",
+      "unit" : null,
+      "format" : [
+        [
+          "on",
+          "1",
+          "256"
+        ],
+        [
+          "off",
+          "0",
+          "512"
+        ],
+        [
+          "toggle",
+          null,
+          "768"
+        ]
+      ],
+      "invalid" : null
+    },
+    "relationships" : {
+      "channel" : {
+        "data" : {
+          "type" : "com.fastybird.devices-module/channel",
+          "id" : "17c59dfa-2edd-438e-8c49-faa4e38e5a5e"
+        }
+      }
+    }
+  }
+}

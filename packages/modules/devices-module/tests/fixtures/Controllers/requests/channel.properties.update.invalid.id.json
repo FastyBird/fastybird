@@ -1,0 +1,19 @@
+{
+  "data" : {
+    "type" : "com.fastybird.devices-module/property/channel/dynamic",
+    "id" : "9f5e5560-72f2-487a-a382-d73d842ba538",
+    "attributes" : {
+      "identifier" : "switch",
+      "name" : "switch",
+      "settable" : true,
+      "queryable" : true,
+      "data_type" : "bool",
+      "unit" : null,
+      "format" : null,
+      "invalid" : null,
+      "actual_value" : null,
+      "expected_value" : null,
+      "pending" : false
+    }
+  }
+}

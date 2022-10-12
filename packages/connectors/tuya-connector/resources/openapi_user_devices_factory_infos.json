@@ -1,0 +1,73 @@
+{
+  "$schema" : "http://json-schema.org/draft-07/schema#",
+  "type" : "object",
+  "properties" : {
+    "result" : {
+      "type" : "array",
+      "uniqueItems" : true,
+      "items" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "description" : "Device ID"
+          },
+          "uuid" : {
+            "oneOf" : [
+              {
+                "type" : "null"
+              },
+              {
+                "type" : "string"
+              }
+            ],
+            "description" : "The universally unique identifier (UUID) of a specified device"
+          },
+          "sn" : {
+            "oneOf" : [
+              {
+                "type" : "null"
+              },
+              {
+                "type" : "string"
+              }
+            ],
+            "description" : "The serial number of a specified device"
+          },
+          "mac" : {
+            "oneOf" : [
+              {
+                "type" : "null"
+              },
+              {
+                "type" : "string"
+              }
+            ],
+            "description" : "The MAC address of a specified device"
+          }
+        },
+        "required" : [
+          "id"
+        ]
+      }
+    },
+    "success" : {
+      "type" : "boolean"
+    },
+    "code" : {
+      "type" : "number"
+    },
+    "t" : {
+      "type" : "number"
+    },
+    "tid" : {
+      "type" : "string"
+    },
+    "msg" : {
+      "type" : "string"
+    }
+  },
+  "required" : [
+    "result"
+  ]
+}

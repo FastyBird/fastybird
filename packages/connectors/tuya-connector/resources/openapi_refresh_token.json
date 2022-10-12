@@ -1,0 +1,35 @@
+{
+  "$schema" : "http://json-schema.org/draft-07/schema#",
+  "type" : "object",
+  "properties" : {
+    "result" : {
+      "type" : "object",
+      "properties" : {
+        "expire_time" : {
+          "type" : "number"
+        },
+        "access_token" : {
+          "type" : "string"
+        },
+        "refresh_token" : {
+          "type" : "string"
+        },
+        "uid" : {
+          "type" : "string"
+        }
+      }
+    },
+    "success" : {
+      "type" : "boolean"
+    },
+    "t" : {
+      "type" : "number"
+    },
+    "tid" : {
+      "type" : "string"
+    }
+  },
+  "required" : [
+    "result"
+  ]
+}

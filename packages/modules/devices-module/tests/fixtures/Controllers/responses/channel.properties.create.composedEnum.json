@@ -1,0 +1,78 @@
+{
+  "meta" : {
+    "author" : "FastyBird team",
+    "copyright" : "FastyBird s.r.o"
+  },
+  "jsonapi" : {
+    "version" : "1.1"
+  },
+  "links" : {
+    "self" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/properties"
+  },
+  "data" : {
+    "type" : "com.fastybird.devices-module/property/channel/dynamic",
+    "id" : "17ebf5c3-1485-4235-8f23-99ac9f906739",
+    "attributes" : {
+      "identifier" : "switch_02",
+      "name" : "switch 02",
+      "settable" : true,
+      "queryable" : true,
+      "data_type" : "enum",
+      "unit" : null,
+      "format" : [
+        [
+          "on",
+          "1",
+          "256"
+        ],
+        [
+          "off",
+          "0",
+          "512"
+        ],
+        [
+          "toggle",
+          null,
+          "768"
+        ]
+      ],
+      "invalid" : null,
+      "number_of_decimals" : null,
+      "actual_value" : null,
+      "expected_value" : null,
+      "pending" : false
+    },
+    "relationships" : {
+      "channel" : {
+        "links" : {
+          "related" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e"
+        },
+        "data" : {
+          "type" : "com.fastybird.devices-module/channel",
+          "id" : "17c59dfa-2edd-438e-8c49-faa4e38e5a5e"
+        }
+      },
+      "parent" : {
+        "links" : {
+          "self" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/properties/17ebf5c3-1485-4235-8f23-99ac9f906739/relationships/parent"
+        },
+        "data" : null
+      },
+      "children" : {
+        "links" : {
+          "self" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/properties/17ebf5c3-1485-4235-8f23-99ac9f906739/relationships/children",
+          "related" : {
+            "href" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/properties/17ebf5c3-1485-4235-8f23-99ac9f906739/children",
+            "meta" : {
+              "count" : 0
+            }
+          }
+        },
+        "data" : []
+      }
+    },
+    "links" : {
+      "self" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/properties/17ebf5c3-1485-4235-8f23-99ac9f906739"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "data" : [
+    {
+      "id" : "a1036ff8-6ee8-4405-aaed-58bae0814596",
+      "type" : "com.fastybird.devices-module/device/blank"
+    }
+  ],
+  "jsonapi" : {
+    "version" : "1.1"
+  },
+  "links" : {
+    "related" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/children",
+    "self" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/relationships/children"
+  },
+  "meta" : {
+    "author" : "FastyBird team",
+    "copyright" : "FastyBird s.r.o"
+  }
+}

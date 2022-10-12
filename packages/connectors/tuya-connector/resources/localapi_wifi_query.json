@@ -1,0 +1,16 @@
+{
+  "$schema" : "http://json-schema.org/draft-07/schema#",
+  "type" : "object",
+  "properties" : {
+    "ssid_list" : {
+      "type" : "array",
+      "items" : {
+        "type" : "string"
+      },
+      "uniqueItems" : true
+    }
+  },
+  "required" : [
+    "ssid_list"
+  ]
+}

@@ -1,0 +1,603 @@
+{
+  "$schema" : "http://json-schema.org/draft-07/schema#",
+  "type" : "object",
+  "properties" : {
+    "dataId" : {
+      "type" : "string"
+    },
+    "devId" : {
+      "type" : "string"
+    },
+    "productKey" : {
+      "type" : "string"
+    },
+    "status" : {
+      "type" : "array",
+      "uniqueItems" : true,
+      "items" : {
+        "type" : "object",
+        "properties" : {
+          "code" : {
+            "type" : "string"
+          },
+          "value" : {
+            "oneOf" : [
+              {
+                "type" : "string"
+              },
+              {
+                "type" : "number"
+              },
+              {
+                "type" : "boolean"
+              }
+            ]
+          },
+          "t" : {
+            "type" : "number"
+          }
+        }
+      }
+    },
+    "bizCode" : {
+      "type" : "string"
+    },
+    "gid" : {
+      "type" : "string"
+    },
+    "uid" : {
+      "type" : "string"
+    },
+    "ts" : {
+      "type" : "number"
+    }
+  },
+  "if" : {
+    "properties" : {
+      "bizCode" : {
+        "const" : "online"
+      }
+    }
+  },
+  "then" : {
+    "properties" : {
+      "bizData" : {
+        "type" : "object",
+        "properties" : {
+          "time" : {
+            "type" : "number",
+            "description" : "The timestamp"
+          }
+        }
+      }
+    }
+  },
+  "else" : {
+    "if" : {
+      "properties" : {
+        "bizCode" : {
+          "const" : "offline"
+        }
+      }
+    },
+    "then" : {
+      "properties" : {
+        "bizData" : {
+          "type" : "object",
+          "properties" : {
+            "time" : {
+              "type" : "number",
+              "description" : "The timestamp"
+            }
+          }
+        }
+      }
+    },
+    "else" : {
+      "if" : {
+        "properties" : {
+          "bizCode" : {
+            "const" : "nameUpdate"
+          }
+        }
+      },
+      "then" : {
+        "properties" : {
+          "bizData" : {
+            "type" : "object",
+            "properties" : {
+              "devId" : {
+                "type" : "string",
+                "description" : "The device ID"
+              },
+              "name" : {
+                "type" : "string",
+                "description" : "The device name"
+              }
+            }
+          }
+        }
+      },
+      "else" : {
+        "if" : {
+          "properties" : {
+            "bizCode" : {
+              "const" : "dpNameUpdate"
+            }
+          }
+        },
+        "then" : {
+          "properties" : {
+            "bizData" : {
+              "type" : "object",
+              "properties" : {
+                "devId" : {
+                  "type" : "string",
+                  "description" : "The device ID"
+                },
+                "name" : {
+                  "type" : "string",
+                  "description" : "The name of a specified data point"
+                },
+                "dpId" : {
+                  "type" : "string",
+                  "description" : "The ID of a specified data point"
+                }
+              }
+            }
+          }
+        },
+        "else" : {
+          "if" : {
+            "properties" : {
+              "bizCode" : {
+                "const" : "bindUser"
+              }
+            }
+          },
+          "then" : {
+            "properties" : {
+              "bizData" : {
+                "type" : "object",
+                "properties" : {
+                  "devId" : {
+                    "type" : "string",
+                    "description" : "The device ID"
+                  },
+                  "uuid" : {
+                    "type" : "string",
+                    "description" : "The universally unique identifier (UUID) of a specified device"
+                  },
+                  "uid" : {
+                    "type" : "string",
+                    "description" : "The user ID bound with the device"
+                  },
+                  "token" : {
+                    "type" : "string",
+                    "description" : "The device pairing token"
+                  }
+                }
+              }
+            }
+          },
+          "else" : {
+            "if" : {
+              "properties" : {
+                "bizCode" : {
+                  "const" : "delete"
+                }
+              }
+            },
+            "then" : {
+              "properties" : {
+                "bizData" : {
+                  "type" : "object",
+                  "properties" : {
+                    "devId" : {
+                      "type" : "string",
+                      "description" : "The device ID"
+                    },
+                    "uid" : {
+                      "type" : "string",
+                      "description" : "The user ID bound with the device"
+                    }
+                  }
+                }
+              }
+            },
+            "else" : {
+              "if" : {
+                "properties" : {
+                  "bizCode" : {
+                    "const" : "upgradeStatus"
+                  }
+                }
+              },
+              "then" : {
+                "properties" : {
+                  "bizData" : {
+                    "type" : "object",
+                    "properties" : {
+                      "devId" : {
+                        "type" : "string",
+                        "description" : "The device ID"
+                      },
+                      "moduleType" : {
+                        "type" : "number",
+                        "description" : "The types of the modules. Valid values: 0: Wi-Fi, 1: Bluetooth LE, 2: GPRS"
+                      },
+                      "upgradeStatus" : {
+                        "type" : "number",
+                        "description" : "The update status. Valid values: 1: Prepare to update, 2: Updating, 3: Update is completed, 4: An exception occurs during an update process, 7: Timeout"
+                      },
+                      "description" : {
+                        "type" : "string",
+                        "description" : "The description of an update"
+                      },
+                      "oldVersion" : {
+                        "type" : "string",
+                        "description" : "The earlier firmware"
+                      },
+                      "newVersion" : {
+                        "type" : "string",
+                        "description" : "The later firmware"
+                      }
+                    }
+                  }
+                }
+              },
+              "else" : {
+                "if" : {
+                  "properties" : {
+                    "bizCode" : {
+                      "const" : "outdoorsFenceAlarm"
+                    }
+                  }
+                },
+                "then" : {
+                  "properties" : {
+                    "bizData" : {
+                      "type" : "object",
+                      "properties" : {
+                        "devId" : {
+                          "type" : "string",
+                          "description" : "The device ID"
+                        },
+                        "tag" : {
+                          "type" : "string",
+                          "description" : "The dimension tag"
+                        },
+                        "fenceId" : {
+                          "type" : "number",
+                          "description" : "The ID of a specified geofence"
+                        },
+                        "fenceName" : {
+                          "type" : "string",
+                          "description" : "The name of a specified geofence"
+                        },
+                        "bindType" : {
+                          "type" : "number",
+                          "description" : "The binding type of a specified geofence. Valid values: 1: private geofence, 2: public geofence"
+                        },
+                        "lat" : {
+                          "type" : "number",
+                          "description" : "The latitude reported by the current device"
+                        },
+                        "lon" : {
+                          "type" : "number",
+                          "description" : "The longitude reported by the current device"
+                        },
+                        "triggerType" : {
+                          "type" : "string",
+                          "description" : "The type of alert. Valid values: 1: Enter the geofence, 2: Exit the geofence"
+                        },
+                        "reportTime" : {
+                          "type" : "number",
+                          "description" : "The 13-digit timestamp of the reported time"
+                        }
+                      }
+                    }
+                  }
+                },
+                "else" : {
+                  "if" : {
+                    "properties" : {
+                      "bizCode" : {
+                        "const" : "automationExternalAction"
+                      }
+                    }
+                  },
+                  "then" : {
+                    "properties" : {
+                      "bizData" : {
+                        "type" : "object"
+                      },
+                      "automationId" : {
+                        "type" : "string"
+                      }
+                    }
+                  },
+                  "else" : {
+                    "if" : {
+                      "properties" : {
+                        "bizCode" : {
+                          "const" : "simStop"
+                        }
+                      }
+                    },
+                    "then" : {
+                      "properties" : {
+                        "bizData" : {
+                          "type" : "object",
+                          "properties" : {
+                            "deviceId" : {
+                              "type" : "string",
+                              "description" : "The device ID"
+                            },
+                            "uid" : {
+                              "type" : "string",
+                              "description" : "The user ID"
+                            },
+                            "pid" : {
+                              "type" : "string",
+                              "description" : "The product ID"
+                            },
+                            "iccid" : {
+                              "type" : "string",
+                              "description" : "The ID of a specified IoT SIM card"
+                            },
+                            "stopReason" : {
+                              "type" : "string",
+                              "description" : "Reasons for suspending the IoT SIM card. Valid values: PACKAGE_EXHAUSTED: The data is used up, EXPIRE_PACKAGE: The package has expired, INVOKE:****: It is called by the requesting party, UNBIND_PACKAGE: The package has been unbound, UNSUBSCRIBE_PACKAGE: The package has been unsubscribed"
+                            },
+                            "reportTime" : {
+                              "type" : "number",
+                              "description" : "The timestamp when the data is reported"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "else" : {
+                      "if" : {
+                        "properties" : {
+                          "bizCode" : {
+                            "const" : "simLimitAlarm"
+                          }
+                        }
+                      },
+                      "then" : {
+                        "properties" : {
+                          "bizData" : {
+                            "type" : "object",
+                            "properties" : {
+                              "deviceId" : {
+                                "type" : "string",
+                                "description" : "The device ID"
+                              },
+                              "uid" : {
+                                "type" : "string",
+                                "description" : "The user ID"
+                              },
+                              "pid" : {
+                                "type" : "string",
+                                "description" : "The product ID"
+                              },
+                              "iccid" : {
+                                "type" : "string",
+                                "description" : "The ID of a specified IoT SIM card"
+                              },
+                              "totalFlowAmount" : {
+                                "type" : "string",
+                                "description" : "The total available data amount"
+                              },
+                              "usedFlowAmount" : {
+                                "type" : "string",
+                                "description" : "The amount of used data"
+                              },
+                              "reportTime" : {
+                                "type" : "number",
+                                "description" : "The timestamp when the data is reported"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "else" : {
+                        "if" : {
+                          "properties" : {
+                            "bizCode" : {
+                              "const" : "simLimitAlarm"
+                            }
+                          }
+                        },
+                        "then" : {
+                          "properties" : {
+                            "bizData" : {
+                              "type" : "object",
+                              "properties" : {
+                                "brandCode" : {
+                                  "type" : "string",
+                                  "description" : "The brand code of the speaker"
+                                },
+                                "voiceId" : {
+                                  "type" : "string",
+                                  "description" : "The device ID of the speaker"
+                                },
+                                "command" : {
+                                  "type" : "array",
+                                  "description" : "The command",
+                                  "uniqueItems" : true,
+                                  "items" : {
+                                    "type" : "object",
+                                    "properties" : {
+                                      "intent" : {
+                                        "type" : "string",
+                                        "description" : "The intention. For example, welcome can be used for showing welcome"
+                                      },
+                                      "content" : {
+                                        "type" : "object",
+                                        "description" : "The content of a command",
+                                        "properties" : {
+                                          "value" : {
+                                            "type" : "string",
+                                            "description" : "The content for voice alert"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "else" : {
+                          "if" : {
+                            "properties" : {
+                              "bizCode" : {
+                                "const" : "reset"
+                              }
+                            }
+                          },
+                          "then" : {
+                            "properties" : {
+                              "bizData" : {
+                                "type" : "object",
+                                "properties" : {
+                                  "brandCode" : {
+                                    "type" : "string",
+                                    "description" : "The brand code of the speaker"
+                                  },
+                                  "voiceId" : {
+                                    "type" : "string",
+                                    "description" : "The device ID of the speaker"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "else" : {
+                            "if" : {
+                              "properties" : {
+                                "bizCode" : {
+                                  "const" : "customQAChange"
+                                }
+                              }
+                            },
+                            "then" : {
+                              "properties" : {
+                                "bizData" : {
+                                  "type" : "object",
+                                  "properties" : {
+                                    "spaceId" : {
+                                      "type" : "string",
+                                      "description" : "The ID of a specified space"
+                                    },
+                                    "brandCodeList" : {
+                                      "type" : "array",
+                                      "description" : "The code list of the speaker brand",
+                                      "items" : {
+                                        "type" : "string"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "else" : {
+                              "if" : {
+                                "properties" : {
+                                  "bizCode" : {
+                                    "const" : "hotelPmsCustomerCheckin"
+                                  }
+                                }
+                              },
+                              "then" : {
+                                "properties" : {
+                                  "bizData" : {
+                                    "type" : "object",
+                                    "properties" : {
+                                      "hotel_code" : {
+                                        "type" : "string",
+                                        "description" : "The unique code of a specified hotel in the property management system (PMS)"
+                                      },
+                                      "customer_id" : {
+                                        "type" : "string",
+                                        "description" : "The user ID"
+                                      },
+                                      "start_time" : {
+                                        "type" : "number",
+                                        "description" : "The timestamp when a stay in the hotel starts"
+                                      },
+                                      "end_time" : {
+                                        "type" : "number",
+                                        "description" : "The timestamp when a stay in the hotel ends"
+                                      },
+                                      "current_room_path" : {
+                                        "type" : "array",
+                                        "description" : "The multi-level path associated with the current room",
+                                        "items" : {
+                                          "type" : "string"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              "else" : {
+                                "if" : {
+                                  "properties" : {
+                                    "bizCode" : {
+                                      "const" : "hotelPmsCustomerCheckout"
+                                    }
+                                  }
+                                },
+                                "then" : {
+                                  "properties" : {
+                                    "bizData" : {
+                                      "type" : "object",
+                                      "properties" : {
+                                        "hotel_code" : {
+                                          "type" : "string",
+                                          "description" : "The unique code of a specified hotel in the property management system (PMS)"
+                                        },
+                                        "customer_id" : {
+                                          "type" : "string",
+                                          "description" : "The user ID"
+                                        },
+                                        "start_time" : {
+                                          "type" : "number",
+                                          "description" : "The timestamp when a stay in the hotel starts"
+                                        },
+                                        "end_time" : {
+                                          "type" : "number",
+                                          "description" : "The timestamp when a stay in the hotel ends"
+                                        },
+                                        "current_room_path" : {
+                                          "type" : "array",
+                                          "description" : "The multi-level path associated with the current room",
+                                          "items" : {
+                                            "type" : "string"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

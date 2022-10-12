@@ -1,0 +1,57 @@
+{
+  "$schema" : "http://json-schema.org/draft-07/schema#",
+  "type" : "object",
+  "properties" : {
+    "result" : {
+      "type" : "array",
+      "description" : "The status of a specified device feature",
+      "uniqueItems" : true,
+      "items" : {
+        "type" : "object",
+        "properties" : {
+          "code" : {
+            "type" : "string",
+            "description" : "The code of a specified data point"
+          },
+          "value" : {
+            "oneOf" : [
+              {
+                "type" : "string"
+              },
+              {
+                "type" : "number"
+              },
+              {
+                "type" : "boolean"
+              }
+            ],
+            "description" : "The value of a specified data point"
+          }
+        },
+        "required" : [
+          "code",
+          "value"
+        ]
+      },
+      "default" : []
+    },
+    "success" : {
+      "type" : "boolean"
+    },
+    "code" : {
+      "type" : "number"
+    },
+    "t" : {
+      "type" : "number"
+    },
+    "tid" : {
+      "type" : "string"
+    },
+    "msg" : {
+      "type" : "string"
+    }
+  },
+  "required" : [
+    "result"
+  ]
+}

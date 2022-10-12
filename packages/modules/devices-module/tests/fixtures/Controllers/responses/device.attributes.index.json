@@ -1,0 +1,129 @@
+{
+  "meta" : {
+    "author" : "FastyBird team",
+    "copyright" : "FastyBird s.r.o"
+  },
+  "jsonapi" : {
+    "version" : "1.1"
+  },
+  "links" : {
+    "self" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/attributes"
+  },
+  "data" : [
+    {
+      "type" : "com.fastybird.devices-module/attribute/device",
+      "id" : "03164a6d-9628-460c-95cc-90e6216332d9",
+      "attributes" : {
+        "identifier" : "hardware_manufacturer",
+        "name" : null,
+        "content" : "itead"
+      },
+      "relationships" : {
+        "device" : {
+          "links" : {
+            "related" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa"
+          },
+          "data" : {
+            "type" : "com.fastybird.devices-module/device/blank",
+            "id" : "69786d15-fd0c-4d9f-9378-33287c2009fa"
+          }
+        }
+      },
+      "links" : {
+        "self" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/attributes/03164a6d-9628-460c-95cc-90e6216332d9"
+      }
+    },
+    {
+      "type" : "com.fastybird.devices-module/attribute/device",
+      "id" : "06599b74-0236-4a98-99c8-c459a3cdb6a4",
+      "attributes" : {
+        "identifier" : "hardware_model",
+        "name" : null,
+        "content" : "sonoff_basic"
+      },
+      "relationships" : {
+        "device" : {
+          "links" : {
+            "related" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa"
+          },
+          "data" : {
+            "type" : "com.fastybird.devices-module/device/blank",
+            "id" : "69786d15-fd0c-4d9f-9378-33287c2009fa"
+          }
+        }
+      },
+      "links" : {
+        "self" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/attributes/06599b74-0236-4a98-99c8-c459a3cdb6a4"
+      }
+    },
+    {
+      "type" : "com.fastybird.devices-module/attribute/device",
+      "id" : "090df4f2-5f23-4118-a2bd-6f0646cf2a70",
+      "attributes" : {
+        "identifier" : "hardware_version",
+        "name" : null,
+        "content" : "rev1"
+      },
+      "relationships" : {
+        "device" : {
+          "links" : {
+            "related" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa"
+          },
+          "data" : {
+            "type" : "com.fastybird.devices-module/device/blank",
+            "id" : "69786d15-fd0c-4d9f-9378-33287c2009fa"
+          }
+        }
+      },
+      "links" : {
+        "self" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/attributes/090df4f2-5f23-4118-a2bd-6f0646cf2a70"
+      }
+    },
+    {
+      "type" : "com.fastybird.devices-module/attribute/device",
+      "id" : "0e771233-fd53-43dd-bd24-cda3303f902e",
+      "attributes" : {
+        "identifier" : "hardware_mac_address",
+        "name" : null,
+        "content" : "80:7d:3a:3d:be:6d"
+      },
+      "relationships" : {
+        "device" : {
+          "links" : {
+            "related" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa"
+          },
+          "data" : {
+            "type" : "com.fastybird.devices-module/device/blank",
+            "id" : "69786d15-fd0c-4d9f-9378-33287c2009fa"
+          }
+        }
+      },
+      "links" : {
+        "self" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/attributes/0e771233-fd53-43dd-bd24-cda3303f902e"
+      }
+    },
+    {
+      "type" : "com.fastybird.devices-module/attribute/device",
+      "id" : "0eb39dae-ef88-4bb5-a9ea-94b0b788101f",
+      "attributes" : {
+        "identifier" : "firmware_manufacturer",
+        "name" : null,
+        "content" : "fastybird"
+      },
+      "relationships" : {
+        "device" : {
+          "links" : {
+            "related" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa"
+          },
+          "data" : {
+            "type" : "com.fastybird.devices-module/device/blank",
+            "id" : "69786d15-fd0c-4d9f-9378-33287c2009fa"
+          }
+        }
+      },
+      "links" : {
+        "self" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/attributes/0eb39dae-ef88-4bb5-a9ea-94b0b788101f"
+      }
+    }
+  ]
+}

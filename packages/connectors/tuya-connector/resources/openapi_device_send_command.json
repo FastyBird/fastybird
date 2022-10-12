@@ -1,0 +1,18 @@
+{
+  "$schema" : "http://json-schema.org/draft-07/schema#",
+  "type" : "object",
+  "properties" : {
+    "result" : {
+      "type" : "boolean"
+    },
+    "success" : {
+      "type" : "boolean"
+    },
+    "t" : {
+      "type" : "number"
+    }
+  },
+  "required" : [
+    "result"
+  ]
+}

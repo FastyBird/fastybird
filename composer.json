@@ -1,0 +1,180 @@
+{
+    "name": "fastybird/fastybird",
+    "description": "Repository for FastyBird packages development.",
+    "type": "application",
+    "homepage": "https://www.fastybird.com",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "FastyBird s.r.o.",
+            "email": "code@fastybird.com",
+            "homepage": "https://www.fastybird.com"
+        },
+        {
+            "name": "Adam Kadlec",
+            "email": "adam.kadlec@fastybird.com"
+        }
+    ],
+    "require": {
+        "php": ">=8.1.0",
+        "ext-bcmath": "*",
+        "ext-gmp": "*",
+        "ext-openssl": "*",
+        "ext-pcntl": "*",
+        "ext-sockets": "*",
+        "ext-sodium": "*",
+        "binsoul/net-mqtt": "^0.8",
+        "brick/math": "^0.10.2",
+        "clue/multicast-react": "^1.1",
+        "clue/redis-react": "^2.6",
+        "contributte/flysystem": "^0.3",
+        "cweagans/composer-patches": "^1.7",
+        "evenement/evenement": "^3.0",
+        "fastybird/datetime-factory": "^0.6",
+        "fastybird/json-api": "^0.13",
+        "fastybird/simple-auth": "^0.5",
+        "fig/http-message-util": "^1.1",
+        "guzzlehttp/guzzle": "^7.5",
+        "hashids/hashids": "^4.1",
+        "ipub/doctrine-consistence": "^0.4",
+        "ipub/doctrine-dynamic-discriminator-map": "^1.4",
+        "ipub/doctrine-timestampable": "^1.5",
+        "ipub/phone": "^2.3",
+        "ipub/slim-router": "^0.2",
+        "ipub/websockets-wamp": "^1.4",
+        "leigh/curve25519": "^0.1.0",
+        "nette/bootstrap": "^3.1",
+        "nette/di": "^3.0",
+        "nette/utils": "^3.2",
+        "nettrine/fixtures": "^0.6.3",
+        "nettrine/orm": "^0.8",
+        "opis/json-schema": "^2.3",
+        "phpdocumentor/reflection": "^4.0",
+        "phpdocumentor/reflection-common": "^2.2",
+        "predis/predis": "^1.1",
+        "psr/event-dispatcher": "^1.0",
+        "psr/http-message": "^1.0",
+        "psr/log": "^1.1|^3.0",
+        "ramsey/uuid": "^4.2",
+        "ratchet/pawl": "^0.4.1",
+        "react/async": "^4.0",
+        "react/datagram": "^1.8",
+        "react/dns": "^1.10",
+        "react/event-loop": "^1.3",
+        "react/http": "^1.7",
+        "react/socket": "^1.12",
+        "simplito/elliptic-php": "^1.0",
+        "sunrise/http-server-request": "^2.0",
+        "symfony/console": "^5.0|^6.0",
+        "symfony/dependency-injection": "^5.0",
+        "symfony/event-dispatcher": "^5.4",
+        "symfony/http-kernel": "^5.0"
+    },
+    "require-dev": {
+        "contributte/translation": "^0.9",
+        "mockery/mockery": "^1.4",
+        "ninjify/nunjuck": "^0.3",
+        "orisai/coding-standard": "^3.2",
+        "pds/skeleton": "^1.0",
+        "php-parallel-lint/php-parallel-lint": "^1.3",
+        "phpstan/extension-installer": "^1.1",
+        "phpstan/phpstan": "^1.8",
+        "phpstan/phpstan-deprecation-rules": "^1.0",
+        "phpstan/phpstan-doctrine": "^1.3",
+        "phpstan/phpstan-nette": "^1.0",
+        "symplify/monorepo-builder": "^11.1",
+        "tracy/tracy": "^2.9"
+    },
+    "autoload": {
+        "psr-4": {
+            "FastyBird\\DevicesModule\\": "packages/modules/devices-module/src/",
+            "FastyBird\\Exchange\\": "packages/libs/exchange/src/",
+            "FastyBird\\FbMqttConnector\\": "packages/connectors/fb-mqtt-connector/src/",
+            "FastyBird\\HomeKitConnector\\": "packages/connectors/homekit-connector/src/",
+            "FastyBird\\Metadata\\": "packages/libs/metadata/src/",
+            "FastyBird\\ModbusConnector\\": "packages/connectors/modbus-connector/src/",
+            "FastyBird\\RedisDbPlugin\\": "packages/plugins/redisdb-plugin/src/",
+            "FastyBird\\ShellyConnector\\": "packages/connectors/shelly-connector/src/",
+            "FastyBird\\TuyaConnector\\": "packages/connectors/tuya-connector/src/",
+            "FastyBird\\WebServerPlugin\\": "packages/plugins/web-server-plugin/src/",
+            "FastyBird\\WsExchangePlugin\\": "packages/plugins/ws-exchange-plugin/src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\Cases\\": [
+                "packages/connectors/fb-mqtt-connector/tests/cases",
+                "packages/connectors/shelly-connector/tests/cases"
+            ],
+            "Tests\\Cases\\Unit\\": [
+                "packages/connectors/homekit-connector/tests/cases/unit",
+                "packages/connectors/modbus-connector/tests/cases/unit",
+                "packages/connectors/tuya-connector/tests/cases/unit",
+                "packages/libs/exchange/tests/cases/unit",
+                "packages/libs/metadata/tests/cases/unit",
+                "packages/modules/devices-module/tests/cases/unit",
+                "packages/plugins/redisdb-plugin/tests/cases/unit",
+                "packages/plugins/web-server-plugin/tests/cases/unit",
+                "packages/plugins/ws-exchange-plugin/tests/cases/unit"
+            ],
+            "Tests\\Fixtures\\": [
+                "packages/connectors/fb-mqtt-connector/tests/fixtures",
+                "packages/connectors/homekit-connector/tests/fixtures",
+                "packages/libs/metadata/tests/fixtures",
+                "packages/modules/devices-module/tests/fixtures",
+                "packages/plugins/redisdb-plugin/tests/fixtures",
+                "packages/plugins/ws-exchange-plugin/tests/fixtures"
+            ],
+            "Tests\\Fixtures\\Dummy\\": "packages/modules/devices-module/tests/fixtures/dummy",
+            "Tests\\Tools\\": [
+                "packages/connectors/fb-mqtt-connector/tests/tools",
+                "packages/connectors/homekit-connector/tests/tools",
+                "packages/connectors/modbus-connector/tests/tools",
+                "packages/connectors/shelly-connector/tests/tools",
+                "packages/connectors/tuya-connector/tests/tools",
+                "packages/modules/devices-module/tests/tools"
+            ]
+        }
+    },
+    "extra": {
+        "patches": {
+            "doctrine/orm": {
+                "Bug: Ramsey uuid not working - Part 1": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/doctrine.orm.uuid.1.diff",
+                "Bug: Ramsey uuid not working - Part 2": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/doctrine.orm.uuid.2.diff"
+            },
+            "ramsey/uuid-doctrine": {
+                "Bug: Ramsey uuid conversion fallback": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/ramsey.uuid.doctrine.diff"
+            },
+            "nettrine/orm": {
+                "Enable connection overrides": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/nettrine.orm.mangerRegistry.diff"
+            },
+            "nette/utils": {
+                "Bug: Offset check with null support": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/nette.array.offsetCheck.diff"
+            }
+        },
+        "enable-patching": false
+    },
+    "replace": {
+        "fastybird/devices-module": "7.0.0",
+        "fastybird/exchange": "7.0.0",
+        "fastybird/fb-mqtt-connector": "7.0.0",
+        "fastybird/homekit-connector": "7.0.0",
+        "fastybird/metadata": "7.0.0",
+        "fastybird/modbus-connector": "7.0.0",
+        "fastybird/redisdb-plugin": "7.0.0",
+        "fastybird/shelly-connector": "7.0.0",
+        "fastybird/tuya-connector": "7.0.0",
+        "fastybird/web-server-plugin": "7.0.0",
+        "fastybird/ws-exchange-plugin": "7.0.0"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "cweagans/composer-patches": true,
+            "phpstan/extension-installer": true
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

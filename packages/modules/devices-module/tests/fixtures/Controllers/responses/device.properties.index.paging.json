@@ -1,0 +1,68 @@
+{
+  "meta" : {
+    "author" : "FastyBird team",
+    "copyright" : "FastyBird s.r.o",
+    "totalCount" : 5
+  },
+  "jsonapi" : {
+    "version" : "1.1"
+  },
+  "links" : {
+    "self" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties?page%5Boffset%5D=1&page%5Blimit%5D=1",
+    "first" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties?page%5Boffset%5D=0&page%5Blimit%5D=1",
+    "prev" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties?page%5Boffset%5D=0&page%5Blimit%5D=1",
+    "next" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties?page%5Boffset%5D=2&page%5Blimit%5D=1",
+    "last" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties?page%5Boffset%5D=4&page%5Blimit%5D=1"
+  },
+  "data" : [
+    {
+      "type" : "com.fastybird.devices-module/property/device/variable",
+      "id" : "3134ba8e-f134-4bf2-9c80-c977c4deb0fb",
+      "attributes" : {
+        "identifier" : "password",
+        "name" : "password",
+        "settable" : false,
+        "queryable" : false,
+        "data_type" : "string",
+        "unit" : null,
+        "format" : null,
+        "invalid" : null,
+        "number_of_decimals" : null,
+        "value" : "device-password",
+        "default" : null
+      },
+      "relationships" : {
+        "device" : {
+          "links" : {
+            "related" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa"
+          },
+          "data" : {
+            "type" : "com.fastybird.devices-module/device/blank",
+            "id" : "69786d15-fd0c-4d9f-9378-33287c2009fa"
+          }
+        },
+        "parent" : {
+          "links" : {
+            "self" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/3134ba8e-f134-4bf2-9c80-c977c4deb0fb/relationships/parent"
+          },
+          "data" : null
+        },
+        "children" : {
+          "links" : {
+            "self" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/3134ba8e-f134-4bf2-9c80-c977c4deb0fb/relationships/children",
+            "related" : {
+              "href" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/3134ba8e-f134-4bf2-9c80-c977c4deb0fb/children",
+              "meta" : {
+                "count" : 0
+              }
+            }
+          },
+          "data" : []
+        }
+      },
+      "links" : {
+        "self" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/3134ba8e-f134-4bf2-9c80-c977c4deb0fb"
+      }
+    }
+  ]
+}

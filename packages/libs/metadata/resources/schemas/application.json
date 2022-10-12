@@ -1,0 +1,109 @@
+{
+  "$schema" : "http://json-schema.org/draft-07/schema#",
+  "type" : "object",
+  "properties" : {
+    "modules" : {
+      "type" : "object",
+      "additionalProperties" : {
+        "type" : "array",
+        "uniqueItems" : true,
+        "items" : {
+          "type" : "object",
+          "properties" : {
+            "version" : {
+              "type" : "string",
+              "description" : "Module version definition"
+            },
+            "metadata" : {
+              "type" : "object",
+              "properties" : {
+                "exchange" : {
+                  "type" : "array",
+                  "description" : "Module exchange routing keys",
+                  "uniqueItems" : true,
+                  "items" : {
+                    "type" : "string"
+                  }
+                },
+                "routes" : {
+                  "type" : "array",
+                  "description" : "Module api routes",
+                  "uniqueItems" : true,
+                  "items" : {
+                    "type" : "object",
+                    "properties" : {
+                      "name" : {
+                        "type" : "string"
+                      },
+                      "path" : {
+                        "type" : "string"
+                      },
+                      "method" : {
+                        "type" : "string",
+                        "enum" : [
+                          "get",
+                          "post",
+                          "patch",
+                          "delete"
+                        ]
+                      },
+                      "headers" : {
+                        "type" : "array",
+                        "description" : "API call required headers",
+                        "uniqueItems" : true,
+                        "items" : {
+                          "type" : "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required" : [
+            "version",
+            "metadata"
+          ]
+        }
+      }
+    },
+    "plugins" : {
+      "type" : "object",
+      "additionalProperties" : {
+        "type" : "array",
+        "uniqueItems" : true,
+        "items" : {
+          "type" : "object",
+          "properties" : {
+            "version" : {
+              "type" : "string",
+              "description" : "Plugin version definition"
+            }
+          }
+        }
+      }
+    },
+    "connectors" : {
+      "type" : "object",
+      "additionalProperties" : {
+        "type" : "array",
+        "uniqueItems" : true,
+        "items" : {
+          "type" : "object",
+          "properties" : {
+            "version" : {
+              "type" : "string",
+              "description" : "Connector version definition"
+            }
+          }
+        }
+      }
+    }
+  },
+  "required" : [
+    "modules",
+    "plugins",
+    "connectors"
+  ]
+}

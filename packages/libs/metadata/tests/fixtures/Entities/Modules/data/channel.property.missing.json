@@ -1,0 +1,17 @@
+{
+  "id": "176984ad-7cf7-465d-9e53-71668a74a688",
+  "type": "dynamic",
+  "identifier": "property-identifier",
+  "name": null,
+  "settable": true,
+  "queryable": false,
+  "unit": "%",
+  "format": null,
+  "invalid": 99,
+  "number_of_decimals": 0,
+  "channel": "247fd6b5-8466-4323-81de-cec3e315015a",
+  "previous_value" : 48,
+  "expected_value" : null,
+  "pending" : false,
+  "valid" : true
+}

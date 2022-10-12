@@ -1,0 +1,35 @@
+{
+  "$schema" : "http://json-schema.org/draft-07/schema#",
+  "type" : "object",
+  "properties" : {
+    "id" : {
+      "type" : "string",
+      "description" : "Entity unique uuid v4 identifier"
+    },
+    "state" : {
+      "type" : "string",
+      "enum" : [
+        "active",
+        "blocked",
+        "deleted",
+        "invalid"
+      ]
+    },
+    "uid" : {
+      "type" : "string"
+    },
+    "hash" : {
+      "type" : "string"
+    },
+    "account" : {
+      "type" : "string",
+      "description" : "Identity owner account unique uuid v4 identifier"
+    }
+  },
+  "required" : [
+    "id",
+    "state",
+    "uid",
+    "account"
+  ]
+}

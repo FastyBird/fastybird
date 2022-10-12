@@ -1,0 +1,35 @@
+{
+  "meta" : {
+    "author" : "FastyBird team",
+    "copyright" : "FastyBird s.r.o"
+  },
+  "jsonapi" : {
+    "version" : "1.1"
+  },
+  "links" : {
+    "self" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/relationships/properties",
+    "related" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties"
+  },
+  "data" : [
+    {
+      "type" : "com.fastybird.devices-module/property/device/dynamic",
+      "id" : "28bc0d38-2f7c-4a71-aa74-27b102f8df4c"
+    },
+    {
+      "type" : "com.fastybird.devices-module/property/device/variable",
+      "id" : "3134ba8e-f134-4bf2-9c80-c977c4deb0fb"
+    },
+    {
+      "type" : "com.fastybird.devices-module/property/device/variable",
+      "id" : "3ff0029f-7fe3-405e-a3ef-edaad08e2ffa"
+    },
+    {
+      "type" : "com.fastybird.devices-module/property/device/dynamic",
+      "id" : "bbcccf8c-33ab-431b-a795-d7bb38b6b6db"
+    },
+    {
+      "type" : "com.fastybird.devices-module/property/device/variable",
+      "id" : "c747cfdd-654c-4e50-9715-6d14dbf20552"
+    }
+  ]
+}

@@ -1,0 +1,474 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "device": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Device model identifier"
+        },
+        "mac": {
+          "type": "string",
+          "description": "MAC address of the device in hexadecimal"
+        },
+        "hostname": {
+          "type": "string",
+          "description": "Device hostname"
+        }
+      },
+      "required": [
+        "type",
+        "mac",
+        "hostname"
+      ]
+    },
+    "wifi_ap": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Whether AP mode is active"
+        },
+        "ssid": {
+          "type": "string",
+          "description": "SSID created by the device's AP"
+        },
+        "key": {
+          "type": "string",
+          "description": "WiFi password required for association with the device's AP"
+        }
+      },
+      "required": [
+        "enabled",
+        "ssid",
+        "key"
+      ]
+    },
+    "wifi_sta": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Whether STA mode is active"
+        },
+        "ssid": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "SSID of STA the device will associate with"
+        },
+        "ipv4_method": {
+          "type": "string",
+          "enum": [
+            "dhcp",
+            "static"
+          ],
+          "description": "dhcp or static"
+        },
+        "ip": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "Local IP address if ipv4_method is static"
+        },
+        "gw": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "Local gateway IP address if ipv4_method is static"
+        },
+        "mask": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "Mask if ipv4_method is static"
+        },
+        "dns": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "DNS address if ipv4_method is static"
+        }
+      },
+      "required": [
+        "enabled",
+        "ssid",
+        "ipv4_method",
+        "ip",
+        "gw",
+        "mask",
+        "dns"
+      ]
+    },
+    "wifi_sta1": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Whether STA mode is active"
+        },
+        "ssid": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "SSID of STA the device will associate with"
+        },
+        "ipv4_method": {
+          "type": "string",
+          "enum": [
+            "dhcp",
+            "static"
+          ],
+          "description": "dhcp or static"
+        },
+        "ip": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "Local IP address if ipv4_method is static"
+        },
+        "gw": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "Local gateway IP address if ipv4_method is static"
+        },
+        "mask": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "Mask if ipv4_method is static"
+        },
+        "dns": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "DNS address if ipv4_method is static"
+        }
+      },
+      "required": [
+        "enabled",
+        "ssid",
+        "ipv4_method",
+        "ip",
+        "gw",
+        "mask",
+        "dns"
+      ]
+    },
+    "ap_roaming": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "AP roaming enabled flag"
+        },
+        "threshold": {
+          "type": "number",
+          "description": "AP roaming threshold, dBm"
+        }
+      },
+      "required": [
+        "enabled",
+        "threshold"
+      ]
+    },
+    "mqtt": {
+      "type": "object",
+      "properties": {
+        "enable": {
+          "type": "boolean"
+        },
+        "server": {
+          "type": "string"
+        },
+        "user": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "reconnect_timeout_max": {
+          "type": "number"
+        },
+        "reconnect_timeout_min": {
+          "type": "number"
+        },
+        "clean_session": {
+          "type": "boolean"
+        },
+        "keep_alive": {
+          "type": "number"
+        },
+        "max_qos": {
+          "type": "number"
+        },
+        "retain": {
+          "type": "boolean"
+        },
+        "update_period": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "enable",
+        "server",
+        "user",
+        "id",
+        "reconnect_timeout_max",
+        "reconnect_timeout_min",
+        "clean_session",
+        "keep_alive",
+        "max_qos",
+        "retain",
+        "update_period"
+      ]
+    },
+    "coiot": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "CoIoT enabled flag"
+        },
+        "update_period": {
+          "type": "number",
+          "description": "Update period of CoIoT messages, s"
+        },
+        "peer": {
+          "type": "string",
+          "description": "CoIoT peer (in format ip:port, empty means mcast)"
+        }
+      },
+      "required": [
+        "enabled",
+        "update_period",
+        "peer"
+      ]
+    },
+    "sntp": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "SNTP enabled flag"
+        },
+        "server": {
+          "type": "string",
+          "description": "Time server host"
+        }
+      },
+      "required": [
+        "enabled",
+        "server"
+      ]
+    },
+    "login": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "SNTP enabled flag"
+        },
+        "unprotected": {
+          "type": "boolean",
+          "description": "Time server host"
+        },
+        "username": {
+          "type": "string",
+          "description": "Time server host"
+        }
+      },
+      "description": "Credentials used for HTTP Basic authentication for the REST interface. If login.enabled is true clients must include an Authorization: Basic ... HTTP header with valid credentials when performing TP requests",
+      "required": [
+        "enabled",
+        "unprotected",
+        "username"
+      ]
+    },
+    "pin_code": {
+      "type": "string",
+      "description" : "Current generated PIN code"
+    },
+    "name": {
+      "type": "string",
+      "description" : "Unique name of the device"
+    },
+    "fw": {
+      "type": "string",
+      "description" : "Current FW version"
+    },
+    "discoverable": {
+      "type": "boolean",
+      "description" : "Device discoverable (i.e. visible) flag"
+    },
+    "build_info": {
+      "type": "object",
+      "properties": {
+        "build_id": {
+          "type": "string"
+        },
+        "build_timestamp": {
+          "type": "string"
+        },
+        "build_version": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "build_id",
+        "build_timestamp",
+        "build_version"
+      ]
+    },
+    "cloud": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Cloud enabled flag"
+        },
+        "connected": {
+          "type": "boolean",
+          "description": "Cloud connected flag"
+        }
+      },
+      "required": [
+        "enabled",
+        "connected"
+      ]
+    },
+    "timezone": {
+      "type": "string",
+      "description" : "Timezone identifier"
+    },
+    "lat": {
+      "type": "number",
+      "description" : "Degrees latitude in decimal format, South is negative"
+    },
+    "lng": {
+      "type": "number",
+      "description" : "Degrees longitude in decimal fomrat, between -180° and 180°"
+    },
+    "tzautodetect": {
+      "type": "boolean",
+      "description" : "Timezone auto-detect enabled"
+    },
+    "tz_utc_offset": {
+      "type": "number",
+      "description" : "UTC offset"
+    },
+    "tz_dst": {
+      "type": "boolean",
+      "description" : "Daylight saving time"
+    },
+    "tz_dst_auto": {
+      "type": "boolean",
+      "description" : "Auto update daylight saving time"
+    },
+    "time": {
+      "type": "string",
+      "description" : "Current time in HH:MM format if synced"
+    },
+    "unixtime": {
+      "type": "number",
+      "description" : "Unix timestamp if synced; 0 otherwise"
+    },
+    "led_status_disable": {
+      "type": "boolean",
+      "description" : "For Dimmer 1/2, DW2, i3, RGBW2, Plug, Plug S, EM, 3EM, 1L, 1PM, 2.5 and Button1 Whether LED indication for network status is enabled"
+    },
+    "debug_enable": {
+      "type": "boolean",
+      "description" : "Debug file logger enabled flag"
+    },
+    "allow_cross_origin": {
+      "type": "boolean",
+      "description" : "HTTP Cross-Origin Resource Sharing allowed flag"
+    },
+    "wifirecovery_reboot_enabled": {
+      "type": "boolean",
+      "description" : "Whether WiFi-Recovery reboot is enabled. Only applicable for Shelly 1/1PM, Shelly 2, Shelly 2.5, Shelly Plug/PlugS, Shelly EM, Shelly 3EM"
+    }
+  },
+  "required": [
+    "device",
+    "wifi_ap",
+    "wifi_sta",
+    "wifi_sta1",
+    "ap_roaming",
+    "mqtt",
+    "coiot",
+    "sntp",
+    "login",
+    "pin_code",
+    "name",
+    "fw",
+    "discoverable",
+    "build_info",
+    "cloud",
+    "timezone",
+    "lat",
+    "lng",
+    "tzautodetect",
+    "tz_utc_offset",
+    "tz_dst",
+    "tz_dst_auto",
+    "time",
+    "unixtime",
+    "debug_enable",
+    "allow_cross_origin"
+  ]
+}
