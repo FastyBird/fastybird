@@ -30,37 +30,11 @@ jobs:
       - name: "Checkout"
         uses: "actions/checkout@v3"
 
-      - name: "Install PHP"
-        uses: "shivammathur/setup-php@v2"
-        with:
-          php-version: "${{ matrix.php-version }}"
-          extensions: "${{ env.extensions }}"
-          tools: "composer:${{ env.composer-version }}, cs2pr"
-          coverage: "none"
-
-      - name: "Setup problem matchers for PHP"
-        run: 'echo "::add-matcher::${{ runner.tool_cache }}/php.json"'
-
-      - name: "Get Composer cache directory"
-        id: "composercache"
-        run: 'echo "::set-output name=dir::$(composer config cache-files-dir)"'
-
-      - name: "Cache PHP dependencies"
-        uses: "actions/cache@v3"
-        with:
-          path: "${{ steps.composercache.outputs.dir }}"
-          key: "${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}"
-          restore-keys: "${{ runner.os }}-composer-"
-
-      - name: "Validate Composer"
-        run: "composer validate"
-
-      - name: "Install dependencies"
-        run: "${{ env.composer-install }}"
-
       - name: "Get package json list"
         id: "packages"
-        run: echo "::set-output name=matrix::$(vendor/bin/monorepo-builder packages-json --exclude-package easy-coding-standard --exclude-package monorepo-builder --exclude-package config-transformer --exclude-package easy-ci --exclude-package vendor-patches --exclude-package phpstan-rules)"
+        run: |
+          JSON=$(cat ./resources/packages.json)
+          echo "::set-output name=matrix::${JSON//'%'/'%25'}"
 
     # this step is needed, so the output gets to the next defined job
     outputs:
@@ -88,7 +62,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          package-directory: 'packages/${{ matrix.package }}'
+          package-directory: 'src/FastyBird/${{ matrix.package }}'
           split-repository-organization: 'fastybird'
           split-repository-name: '${{ matrix.package }}'
           user-name: "GitHub Action"

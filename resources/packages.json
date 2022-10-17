@@ -1,0 +1,13 @@
+{
+  "fb-mqtt-connector": "src/FastyBird/Connector/FbMqtt",
+  "homekit-connector": "src/FastyBird/Connector/HomeKit",
+  "modbus-connector": "src/FastyBird/Connector/Modbus",
+  "shelly-connector": "src/FastyBird/Connector/Shelly",
+  "tuya-connector": "src/FastyBird/Connector/Tuya",
+  "exchange": "src/FastyBird/Library/Exchange",
+  "metadata": "src/FastyBird/Library/Metadata",
+  "devices-module": "src/FastyBird/Module/DevicesModule",
+  "redisdb-plugin": "src/FastyBird/Plugin/RedisDbPlugin",
+  "web-server-plugin": "src/FastyBird/Plugin/WebServerPlugin",
+  "ws-exchange-plugin": "src/FastyBird/Plugin/WsExchangePlugin"
+}
