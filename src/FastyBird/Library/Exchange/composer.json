@@ -67,6 +67,6 @@
             "dev-main": "2.0-dev"
         }
     },
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "prefer-stable": true
 }
