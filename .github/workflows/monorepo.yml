@@ -34,7 +34,7 @@ jobs:
         id: "packages"
         uses: "JoshuaTheMiller/conditional-build-matrix@main"
         with:
-          inputFile: "./resources/packages.json"
+          inputFile: "resources/packages.json"
 
     # This step is needed, so the output gets to the next defined job
     outputs:
