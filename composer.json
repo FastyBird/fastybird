@@ -148,17 +148,17 @@
         }
     },
     "replace": {
-        "fastybird/devices-module": "7.0.0",
-        "fastybird/exchange": "7.0.0",
-        "fastybird/fb-mqtt-connector": "7.0.0",
-        "fastybird/homekit-connector": "7.0.0",
-        "fastybird/metadata": "7.0.0",
-        "fastybird/modbus-connector": "7.0.0",
-        "fastybird/redisdb-plugin": "7.0.0",
-        "fastybird/shelly-connector": "7.0.0",
-        "fastybird/tuya-connector": "7.0.0",
-        "fastybird/web-server-plugin": "7.0.0",
-        "fastybird/ws-exchange-plugin": "7.0.0"
+        "fastybird/devices-module": "2.0-dev",
+        "fastybird/exchange": "2.0-dev",
+        "fastybird/fb-mqtt-connector": "2.0-dev",
+        "fastybird/homekit-connector": "2.0-dev",
+        "fastybird/metadata": "2.0-dev",
+        "fastybird/modbus-connector": "2.0-dev",
+        "fastybird/redisdb-plugin": "2.0-dev",
+        "fastybird/shelly-connector": "2.0-dev",
+        "fastybird/tuya-connector": "2.0-dev",
+        "fastybird/web-server-plugin": "2.0-dev",
+        "fastybird/ws-exchange-plugin": "2.0-dev"
     },
     "config": {
         "sort-packages": true,
