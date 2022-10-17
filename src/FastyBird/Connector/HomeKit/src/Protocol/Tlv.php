@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:HomeKit!
+ * @package        FastyBird:HomeKitConnector!
  * @subpackage     Protocol
  * @since          0.19.0
  *
@@ -41,7 +41,7 @@ use function unpack;
 /**
  * Apple TLV8 utilities
  *
- * @package        FastyBird:HomeKit!
+ * @package        FastyBird:HomeKitConnector!
  * @subpackage     Protocol
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

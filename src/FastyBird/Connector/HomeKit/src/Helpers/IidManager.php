@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:HomeKit!
+ * @package        FastyBird:HomeKitConnector!
  * @subpackage     Helpers
  * @since          0.19.0
  *
@@ -22,7 +22,7 @@ use SplObjectStorage;
 /**
  * Maintains a mapping between Service/Characteristic objects and IIDs
  *
- * @package        FastyBird:HomeKit!
+ * @package        FastyBird:HomeKitConnector!
  * @subpackage     Helpers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

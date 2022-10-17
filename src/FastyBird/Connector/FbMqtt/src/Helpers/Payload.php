@@ -6,7 +6,7 @@
  * @license        More in license.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:FbMqtt!
+ * @package        FastyBird:FbMqttConnector!
  * @subpackage     Helpers
  * @since          0.1.5
  *
@@ -21,7 +21,7 @@ use function preg_replace;
 /**
  * MQTT payload helpers
  *
- * @package        FastyBird:FbMqtt!
+ * @package        FastyBird:FbMqttConnector!
  * @subpackage     Helpers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

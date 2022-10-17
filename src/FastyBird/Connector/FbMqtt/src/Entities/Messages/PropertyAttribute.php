@@ -6,7 +6,7 @@
  * @license        More in license.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:FbMqtt!
+ * @package        FastyBird:FbMqttConnector!
  * @subpackage     Entities
  * @since          0.1.0
  *
@@ -34,7 +34,7 @@ use function strtolower;
 /**
  * Device or channel property attribute
  *
- * @package        FastyBird:FbMqtt!
+ * @package        FastyBird:FbMqttConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

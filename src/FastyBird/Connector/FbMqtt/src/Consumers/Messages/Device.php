@@ -6,7 +6,7 @@
  * @license        More in license.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:FbMqtt!
+ * @package        FastyBird:FbMqttConnector!
  * @subpackage     Consumers
  * @since          0.4.0
  *
@@ -40,7 +40,7 @@ use function sprintf;
 /**
  * Device attributes MQTT message consumer
  *
- * @package        FastyBird:FbMqtt!
+ * @package        FastyBird:FbMqttConnector!
  * @subpackage     Consumers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

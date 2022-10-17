@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:HomeKit!
+ * @package        FastyBird:HomeKitConnector!
  * @subpackage     Hydrators
  * @since          0.1.0
  *
@@ -23,7 +23,7 @@ use FastyBird\DevicesModule\Hydrators as DevicesModuleHydrators;
  *
  * @extends DevicesModuleHydrators\Connectors\Connector<Entities\HomeKitConnector>
  *
- * @package        FastyBird:HomeKit!
+ * @package        FastyBird:HomeKitConnector!
  * @subpackage     Hydrators
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */

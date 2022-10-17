@@ -6,7 +6,7 @@
  * @license        More in license.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:FbMqtt!
+ * @package        FastyBird:FbMqttConnector!
  * @subpackage     Clients
  * @since          0.1.0
  *
@@ -21,7 +21,7 @@ use React\Promise;
 /**
  * Decorates flows with data required for the {@see Client} class.
  *
- * @package        FastyBird:FbMqtt!
+ * @package        FastyBird:FbMqttConnector!
  * @subpackage     Clients
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

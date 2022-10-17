@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:HomeKit!
+ * @package        FastyBird:HomeKitConnector!
  * @subpackage     Schemas
  * @since          0.1.0
  *
@@ -24,7 +24,7 @@ use FastyBird\Metadata\Types as MetadataTypes;
  *
  * @extends DevicesModuleSchemas\Devices\Device<Entities\HomeKitDevice>
  *
- * @package        FastyBird:HomeKit!
+ * @package        FastyBird:HomeKitConnector!
  * @subpackage     Schemas
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */

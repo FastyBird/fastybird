@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:HomeKit!
+ * @package        FastyBird:HomeKitConnector!
  * @subpackage     Events
  * @since          0.19.0
  *
@@ -21,7 +21,7 @@ use Symfony\Contracts\EventDispatcher;
 /**
  * Http request event
  *
- * @package        FastyBird:HomeKit!
+ * @package        FastyBird:HomeKitConnector!
  * @subpackage     Events
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:FbMqtt!
+ * @package        FastyBird:FbMqttConnector!
  * @subpackage     Types
  * @since          0.5.0
  *
@@ -22,7 +22,7 @@ use function strval;
 /**
  * Connector property name types
  *
- * @package        FastyBird:FbMqtt!
+ * @package        FastyBird:FbMqttConnector!
  * @subpackage     Types
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

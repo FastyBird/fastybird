@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:HomeKit!
+ * @package        FastyBird:HomeKitConnector!
  * @subpackage     Middleware
  * @since          0.19.0
  *
@@ -36,7 +36,7 @@ use Throwable;
 /**
  * Connector HTTP server router middleware
  *
- * @package        FastyBird:HomeKit!
+ * @package        FastyBird:HomeKitConnector!
  * @subpackage     Middleware
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

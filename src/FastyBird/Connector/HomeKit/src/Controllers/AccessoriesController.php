@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:HomeKit!
+ * @package        FastyBird:HomeKitConnector!
  * @subpackage     Controllers
  * @since          0.19.0
  *
@@ -35,7 +35,7 @@ use function strval;
 /**
  * Accessories controller
  *
- * @package        FastyBird:HomeKit!
+ * @package        FastyBird:HomeKitConnector!
  * @subpackage     Controllers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

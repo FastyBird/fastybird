@@ -6,7 +6,7 @@
  * @license        More in license.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:FbMqtt!
+ * @package        FastyBird:FbMqttConnector!
  * @subpackage     Connector
  * @since          0.25.0
  *
@@ -22,7 +22,7 @@ use FastyBird\Metadata\Entities as MetadataEntities;
 /**
  * Connector service executor factory
  *
- * @package        FastyBird:FbMqtt!
+ * @package        FastyBird:FbMqttConnector!
  * @subpackage     Connector
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

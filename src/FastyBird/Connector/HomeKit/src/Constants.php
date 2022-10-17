@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:HomeKit!
+ * @package        FastyBird:HomeKitConnector!
  * @subpackage     common
  * @since          0.19.0
  *
@@ -18,7 +18,7 @@ namespace FastyBird\Connector\HomeKit;
 /**
  * Connector constants
  *
- * @package        FastyBird:HomeKit!
+ * @package        FastyBird:HomeKitConnector!
  * @subpackage     common
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

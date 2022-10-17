@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:FbMqtt!
+ * @package        FastyBird:FbMqttConnector!
  * @subpackage     Schemas
  * @since          0.4.0
  *
@@ -24,7 +24,7 @@ use FastyBird\Metadata\Types as MetadataTypes;
  *
  * @phpstan-extends DevicesModuleSchemas\Connectors\Connector<Entities\FbMqttConnector>
  *
- * @package        FastyBird:FbMqtt!
+ * @package        FastyBird:FbMqttConnector!
  * @subpackage     Schemas
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */

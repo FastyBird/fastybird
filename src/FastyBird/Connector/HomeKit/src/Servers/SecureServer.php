@@ -6,7 +6,7 @@
  * @license        More in license.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:HomeKit!
+ * @package        FastyBird:HomeKitConnector!
  * @subpackage     Servers
  * @since          0.19.0
  *
@@ -25,7 +25,7 @@ use function str_replace;
 /**
  * HTTP secured server wrapper
  *
- * @package        FastyBird:HomeKit!
+ * @package        FastyBird:HomeKitConnector!
  * @subpackage     Servers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

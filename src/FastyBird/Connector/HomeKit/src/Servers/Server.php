@@ -6,7 +6,7 @@
  * @license        More in license.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:HomeKit!
+ * @package        FastyBird:HomeKitConnector!
  * @subpackage     Servers
  * @since          0.19.0
  *
@@ -18,7 +18,7 @@ namespace FastyBird\Connector\HomeKit\Servers;
 /**
  * HomeKit device server interface
  *
- * @package        FastyBird:HomeKit!
+ * @package        FastyBird:HomeKitConnector!
  * @subpackage     Servers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

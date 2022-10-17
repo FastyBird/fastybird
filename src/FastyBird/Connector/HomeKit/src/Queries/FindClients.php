@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:HomeKit!
+ * @package        FastyBird:HomeKitConnector!
  * @subpackage     Queries
  * @since          0.19.0
  *
@@ -28,7 +28,7 @@ use Ramsey\Uuid;
  * @template T of Entities\Client
  * @extends  DoctrineOrmQuery\QueryObject<T>
  *
- * @package          FastyBird:HomeKit!
+ * @package          FastyBird:HomeKitConnector!
  * @subpackage       Queries
  * @author           Adam Kadlec <adam.kadlec@fastybird.com>
  */
