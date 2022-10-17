@@ -25,9 +25,9 @@
                 <element key="src/FastyBird/Connector/HomeKit/tests/cases/unit" value="FastyBird\Connector\HomeKit\Tests\Cases\Unit"/>
                 <element key="src/FastyBird/Connector/HomeKit/tests/tools" value="FastyBird\Connector\HomeKit\Tests\Tools"/>
 
-                <element key="src/FastyBird/Connector/ModbusConnector/src" value="FastyBird\ModbusConnector"/>
-                <element key="src/FastyBird/Connector/ModbusConnector/tests/cases/unit" value="FastyBird\ModbusConnector\Tests\Cases\Unit"/>
-                <element key="src/FastyBird/Connector/ModbusConnector/tests/tools" value="FastyBird\ModbusConnector\Tests\Tools"/>
+                <element key="src/FastyBird/Connector/Modbus/src" value="FastyBird\Connector\Modbus"/>
+                <element key="src/FastyBird/Connector/Modbus/tests/cases/unit" value="FastyBird\Connector\Modbus\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Connector/Modbus/tests/tools" value="FastyBird\Connector\Modbus\Tests\Tools"/>
 
                 <element key="src/FastyBird/Connector/ShellyConnector/src" value="FastyBird\ShellyConnector"/>
                 <element key="src/FastyBird/Connector/ShellyConnector/tests/cases/unit" value="FastyBird\ShellyConnector\Tests\Cases\Unit"/>

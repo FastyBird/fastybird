@@ -2,9 +2,8 @@
 
 namespace FastyBird\Connector\HomeKit\Tests\Cases\Unit;
 
-use FastyBird\Connector\HomeKit;
+use FastyBird\Connector\HomeKit\DI;
 use Nette;
-use Nette\DI;
 use PHPUnit\Framework\TestCase;
 use function constant;
 use function defined;
@@ -15,7 +14,7 @@ use function time;
 abstract class BaseTestCase extends TestCase
 {
 
-	protected DI\Container $container;
+	protected Nette\DI\Container $container;
 
 	protected function setUp(): void
 	{
@@ -41,7 +40,7 @@ abstract class BaseTestCase extends TestCase
 			$config->addConfig($additionalConfig);
 		}
 
-		HomeKit\DI\HomeKitExtension::register($config);
+		DI\HomeKitExtension::register($config);
 
 		return $config->createContainer();
 	}

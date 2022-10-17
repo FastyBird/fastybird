@@ -119,7 +119,7 @@ export interface SonoffConnectorUpdateInterface extends ConnectorUpdateInterface
   name?: string
 }
 
-export interface ModbusConnectorUpdateInterface extends ConnectorUpdateInterface {
+export interface Connector\ModbusUpdateInterface extends ConnectorUpdateInterface {
   serialInterface?: string | null
   baudRate?: number | null
 }

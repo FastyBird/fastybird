@@ -1,8 +1,8 @@
 <?php declare(strict_types = 1);
 
-namespace FastyBird\Connector\FbMqtt\Tests\Cases\Unit;
+namespace FastyBird\Connector\Modbus\Tests\Cases\Unit;
 
-use FastyBird\Connector\FbMqtt\DI;
+use FastyBird\Connector\Modbus\DI;
 use Nette;
 use PHPUnit\Framework\TestCase;
 use function constant;
@@ -40,7 +40,7 @@ abstract class BaseTestCase extends TestCase
 			$config->addConfig($additionalConfig);
 		}
 
-		DI\FbMqttExtension::register($config);
+		DI\ModbusExtension::register($config);
 
 		return $config->createContainer();
 	}

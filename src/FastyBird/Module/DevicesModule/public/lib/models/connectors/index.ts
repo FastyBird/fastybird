@@ -24,7 +24,7 @@ import {
   ConnectorsResponseInterface,
   FbBusConnectorUpdateInterface,
   FbMqttConnectorUpdateInterface,
-  ModbusConnectorUpdateInterface,
+  Connector\ModbusUpdateInterface,
   ShellyConnectorUpdateInterface,
   SonoffConnectorUpdateInterface,
   TuyaConnectorUpdateInterface,
@@ -162,7 +162,7 @@ const moduleActions: ActionTree<ConnectorState, unknown> = {
     }
   },
 
-  async edit({ state, commit }, payload: { connector: ConnectorInterface, data: FbMqttConnectorUpdateInterface | FbBusConnectorUpdateInterface | ShellyConnectorUpdateInterface | TuyaConnectorUpdateInterface | SonoffConnectorUpdateInterface | ModbusConnectorUpdateInterface }): Promise<Item<Connector>> {
+  async edit({ state, commit }, payload: { connector: ConnectorInterface, data: FbMqttConnectorUpdateInterface | FbBusConnectorUpdateInterface | ShellyConnectorUpdateInterface | TuyaConnectorUpdateInterface | SonoffConnectorUpdateInterface | Connector\ModbusUpdateInterface }): Promise<Item<Connector>> {
     if (state.semaphore.updating.includes(payload.connector.id)) {
       throw new Error('devices-module.connectors.update.inProgress')
     }
