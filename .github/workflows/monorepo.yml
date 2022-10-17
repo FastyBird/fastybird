@@ -24,21 +24,21 @@ jobs:
         php-version: [ "8.1" ]
         operating-system: [ "ubuntu-latest" ]
 
+    # This step is needed, so the output gets to the next defined job
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v3"
 
       - name: "Read packages list"
-        id: "packages"
+        id: "set-matrix"
         uses: "JoshuaTheMiller/conditional-build-matrix@main"
         with:
           inputFile: "resources/packages.json"
           filter: "[?runOnBranch=='${{ github.ref }}' || runOnBranch=='always']"
           addInclude: "false"
-
-    # This step is needed, so the output gets to the next defined job
-    outputs:
-      matrix: ${{ steps.packages.outputs.matrix }}
 
   split_monorepo:
     name: "Create list of packages for split"
