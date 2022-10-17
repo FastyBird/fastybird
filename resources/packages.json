@@ -1,46 +1,145 @@
 [
   {
-    "name": "fb-mqtt-connector",
-    "path": "src/FastyBird/Connector/FbMqtt"
+    "runOnBranch": "always",
+    "php-version": [
+      "8.1"
+    ],
+    "operating-system": [
+      "ubuntu-latest"
+    ],
+    "package": {
+      "name": "fb-mqtt-connector",
+      "path": "src/FastyBird/Connector/FbMqtt"
+    }
   },
   {
-    "name": "homekit-connector",
-    "path": "src/FastyBird/Connector/HomeKit"
+    "runOnBranch": "always",
+    "php-version": [
+      "8.1"
+    ],
+    "operating-system": [
+      "ubuntu-latest"
+    ],
+    "package": {
+      "name": "homekit-connector",
+      "path": "src/FastyBird/Connector/HomeKit"
+    }
   },
   {
-    "name": "modbus-connector",
-    "path": "src/FastyBird/Connector/Modbus"
+    "runOnBranch": "always",
+    "php-version": [
+      "8.1"
+    ],
+    "operating-system": [
+      "ubuntu-latest"
+    ],
+    "package": {
+      "name": "modbus-connector",
+      "path": "src/FastyBird/Connector/Modbus"
+    }
   },
   {
-    "name": "shelly-connector",
-    "path": "src/FastyBird/Connector/Shelly"
+    "runOnBranch": "always",
+    "php-version": [
+      "8.1"
+    ],
+    "operating-system": [
+      "ubuntu-latest"
+    ],
+    "package": {
+      "name": "shelly-connector",
+      "path": "src/FastyBird/Connector/Shelly"
+    }
   },
   {
-    "name": "tuya-connector",
-    "path": "src/FastyBird/Connector/Tuya"
+    "runOnBranch": "always",
+    "php-version": [
+      "8.1"
+    ],
+    "operating-system": [
+      "ubuntu-latest"
+    ],
+    "package": {
+      "name": "tuya-connector",
+      "path": "src/FastyBird/Connector/Tuya"
+    }
   },
   {
-    "name": "exchange",
-    "path": "src/FastyBird/Library/Exchange"
+    "runOnBranch": "always",
+    "php-version": [
+      "8.1"
+    ],
+    "operating-system": [
+      "ubuntu-latest"
+    ],
+    "package": {
+      "name": "exchange",
+      "path": "src/FastyBird/Library/Exchange"
+    }
   },
   {
-    "name": "metadata",
-    "path": "src/FastyBird/Library/Metadata"
+    "runOnBranch": "always",
+    "php-version": [
+      "8.1"
+    ],
+    "operating-system": [
+      "ubuntu-latest"
+    ],
+    "package": {
+      "name": "metadata",
+      "path": "src/FastyBird/Library/Metadata"
+    }
   },
   {
-    "name": "devices-module",
-    "path": "src/FastyBird/Module/DevicesModule"
+    "runOnBranch": "always",
+    "php-version": [
+      "8.1"
+    ],
+    "operating-system": [
+      "ubuntu-latest"
+    ],
+    "package": {
+      "name": "devices-module",
+      "path": "src/FastyBird/Module/DevicesModule"
+    }
   },
   {
-    "name": "redisdb-plugin",
-    "path": "src/FastyBird/Plugin/RedisDbPlugin"
+    "runOnBranch": "always",
+    "php-version": [
+      "8.1"
+    ],
+    "operating-system": [
+      "ubuntu-latest"
+    ],
+    "package": {
+      "name": "redisdb-plugin",
+      "path": "src/FastyBird/Plugin/RedisDbPlugin"
+    }
   },
   {
-    "name": "web-server-plugin",
-    "path": "src/FastyBird/Plugin/WebServerPlugin"
+    "runOnBranch": "always",
+    "php-version": [
+      "8.1"
+    ],
+    "operating-system": [
+      "ubuntu-latest"
+    ],
+    "package": {
+      "name": "web-server-plugin",
+      "path": "src/FastyBird/Plugin/WebServerPlugin"
+    }
   },
   {
-    "name": "ws-exchange-plugin",
-    "path": "src/FastyBird/Plugin/WsExchangePlugin"
+    "runOnBranch": "always",
+    "php-version": [
+      "8.1"
+    ],
+    "operating-system": [
+      "ubuntu-latest"
+    ],
+    "package": {
+      "name": "ws-exchange-plugin",
+      "path": "src/FastyBird/Plugin/WsExchangePlugin"
+    }
   }
 ]
