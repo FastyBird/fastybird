@@ -17,25 +17,25 @@
     <rule ref="SlevomatCodingStandard.Files.TypeNameMatchesFileName">
         <properties>
             <property name="rootNamespaces" type="array">
-                <element key="src/FastyBird/Connector/FbMqttConnector/src" value="FastyBird\FbMqttConnector"/>
-                <element key="src/FastyBird/Connector/FbMqttConnector/tests/cases/unit" value="FastyBird\FbMqttConnector\Tests\Cases\Unit"/>
-                <element key="src/FastyBird/Connector/FbMqttConnector/tests/tools" value="FastyBird\FbMqttConnector\Tests\Tools"/>
+                <element key="src/FastyBird/Connector/FbMqtt/src" value="FastyBird\Connector\FbMqtt"/>
+                <element key="src/FastyBird/Connector/FbMqtt/tests/cases/unit" value="FastyBird\Connector\FbMqtt\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Connector/FbMqtt/tests/tools" value="FastyBird\Connector\FbMqtt\Tests\Tools"/>
 
-                <element key="src/FastyBird/Connector/HomeKitConnector/src" value="FastyBird\HomeKitConnector"/>
-                <element key="src/FastyBird/Connector/HomeKitConnector/tests/cases/unit" value="FastyBird\HomekitConnector\Tests\Cases\Unit"/>
-                <element key="src/FastyBird/Connector/HomeKitConnector/tests/tools" value="FastyBird\HomekitConnector\Tests\Tools"/>
+                <element key="src/FastyBird/Connector/HomeKit/src" value="FastyBird\Connector\HomeKit"/>
+                <element key="src/FastyBird/Connector/HomeKit/tests/cases/unit" value="FastyBird\Connector\HomeKit\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Connector/HomeKit/tests/tools" value="FastyBird\Connector\HomeKit\Tests\Tools"/>
 
-                <element key="src/FastyBird/Connector/ModbusConnector/src" value="FastyBird\ModbusConnector"/>
-                <element key="src/FastyBird/Connector/ModbusConnector/tests/cases/unit" value="FastyBird\ModbusConnector\Tests\Cases\Unit"/>
-                <element key="src/FastyBird/Connector/ModbusConnector/tests/tools" value="FastyBird\ModbusConnector\Tests\Tools"/>
+                <element key="src/FastyBird/Connector/Modbus/src" value="FastyBird\Connector\Modbus"/>
+                <element key="src/FastyBird/Connector/Modbus/tests/cases/unit" value="FastyBird\Connector\Modbus\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Connector/Modbus/tests/tools" value="FastyBird\Connector\Modbus\Tests\Tools"/>
 
-                <element key="src/FastyBird/Connector/ShellyConnector/src" value="FastyBird\ShellyConnector"/>
-                <element key="src/FastyBird/Connector/ShellyConnector/tests/cases/unit" value="FastyBird\ShellyConnector\Tests\Cases\Unit"/>
-                <element key="src/FastyBird/Connector/ShellyConnector/tests/tools" value="FastyBird\ShellyConnector\Tests\Tools"/>
+                <element key="src/FastyBird/Connector/Shelly/src" value="FastyBird\Connector\Shelly"/>
+                <element key="src/FastyBird/Connector/Shelly/tests/cases/unit" value="FastyBird\Connector\Shelly\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Connector/Shelly/tests/tools" value="FastyBird\Connector\Shelly\Tests\Tools"/>
 
-                <element key="src/FastyBird/Connector/TuyaConnector/src" value="FastyBird\TuyaConnector"/>
-                <element key="src/FastyBird/Connector/TuyaConnector/tests/cases/unit" value="FastyBird\TuyaConnector\Tests\Cases\Unit"/>
-                <element key="src/FastyBird/Connector/TuyaConnector/tests/tools" value="FastyBird\TuyaConnector\Tests\Tools"/>
+                <element key="src/FastyBird/Connector/Tuya/src" value="FastyBird\Connector\Tuya"/>
+                <element key="src/FastyBird/Connector/Tuya/tests/cases/unit" value="FastyBird\Connector\Tuya\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Connector/Tuya/tests/tools" value="FastyBird\Connector\Tuya\Tests\Tools"/>
 
                 <element key="src/FastyBird/Library/Exchange/src" value="FastyBird\Exchange"/>
                 <element key="src/FastyBird/Library/Exchange/tests/cases/unit" value="FastyBird\Exchange\Tests\Cases\Unit"/>
