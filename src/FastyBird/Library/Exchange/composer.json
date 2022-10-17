@@ -19,7 +19,7 @@
     "require": {
         "php": ">=8.1.0",
         "cweagans/composer-patches": "^1.7",
-        "fastybird/metadata": "2.0",
+        "fastybird/metadata": "2.0-dev",
         "nette/bootstrap": "^3.1",
         "nette/di": "^3.0",
         "nette/utils": "^3.2",

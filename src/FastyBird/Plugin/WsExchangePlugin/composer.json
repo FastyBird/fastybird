@@ -19,8 +19,8 @@
     "require": {
         "php": ">=8.1.0",
         "cweagans/composer-patches": "^1.7",
-        "fastybird/exchange": "2.0",
-        "fastybird/metadata": "2.0",
+        "fastybird/exchange": "2.0-dev",
+        "fastybird/metadata": "2.0-dev",
         "ipub/websockets-wamp": "^1.4",
         "nette/di": "^3.0",
         "nette/utils": "^3.2",
