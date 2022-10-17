@@ -21,9 +21,9 @@
                 <element key="src/FastyBird/Connector/FbMqtt/tests/cases/unit" value="FastyBird\Connector\FbMqtt\Tests\Cases\Unit"/>
                 <element key="src/FastyBird/Connector/FbMqtt/tests/tools" value="FastyBird\Connector\FbMqtt\Tests\Tools"/>
 
-                <element key="src/FastyBird/Connector/HomeKitConnector/src" value="FastyBird\HomeKitConnector"/>
-                <element key="src/FastyBird/Connector/HomeKitConnector/tests/cases/unit" value="FastyBird\HomekitConnector\Tests\Cases\Unit"/>
-                <element key="src/FastyBird/Connector/HomeKitConnector/tests/tools" value="FastyBird\HomekitConnector\Tests\Tools"/>
+                <element key="src/FastyBird/Connector/HomeKit/src" value="FastyBird\Connector\HomeKit"/>
+                <element key="src/FastyBird/Connector/HomeKit/tests/cases/unit" value="FastyBird\Connector\HomeKit\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Connector/HomeKit/tests/tools" value="FastyBird\Connector\HomeKit\Tests\Tools"/>
 
                 <element key="src/FastyBird/Connector/ModbusConnector/src" value="FastyBird\ModbusConnector"/>
                 <element key="src/FastyBird/Connector/ModbusConnector/tests/cases/unit" value="FastyBird\ModbusConnector\Tests\Cases\Unit"/>

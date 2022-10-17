@@ -95,9 +95,9 @@
     "autoload": {
         "psr-4": {
             "FastyBird\\Connector\\FbMqtt\\": "src/FastyBird/Connector/FbMqtt/src/",
+            "FastyBird\\Connector\\HomeKit\\": "src/FastyBird/Connector/HomeKit/src/",
             "FastyBird\\DevicesModule\\": "src/FastyBird/Module/DevicesModule/src/",
             "FastyBird\\Exchange\\": "src/FastyBird/Library/Exchange/src/",
-            "FastyBird\\HomeKitConnector\\": "src/FastyBird/Connector/HomeKitConnector/src/",
             "FastyBird\\Metadata\\": "src/FastyBird/Library/Metadata/src/",
             "FastyBird\\ModbusConnector\\": "src/FastyBird/Connector/ModbusConnector/src/",
             "FastyBird\\RedisDbPlugin\\": "src/FastyBird/Plugin/RedisDbPlugin/src/",
@@ -111,13 +111,13 @@
         "psr-4": {
             "FastyBird\\Connector\\FbMqtt\\Tests\\Cases\\Unit\\": "src/FastyBird/Connector/FbMqtt/tests/cases/unit",
             "FastyBird\\Connector\\FbMqtt\\Tests\\Tools\\": "src/FastyBird/Connector/FbMqtt/tests/tools",
+            "FastyBird\\Connector\\HomeKit\\Tests\\Cases\\Unit\\": "src/FastyBird/Connector/HomeKit/tests/cases/unit",
+            "FastyBird\\Connector\\HomeKit\\Tests\\Tools\\": "src/FastyBird/Connector/HomeKit/tests/tools",
             "FastyBird\\DevicesModule\\Tests\\Cases\\Unit\\": "src/FastyBird/Module/DevicesModule/tests/cases/unit",
             "FastyBird\\DevicesModule\\Tests\\Fixtures\\": "src/FastyBird/Module/DevicesModule/tests/fixtures",
             "FastyBird\\DevicesModule\\Tests\\Fixtures\\Dummy\\": "src/FastyBird/Module/DevicesModule/tests/fixtures/dummy",
             "FastyBird\\DevicesModule\\Tests\\Tools\\": "src/FastyBird/Module/DevicesModule/tests/tools",
             "FastyBird\\Exchange\\Tests\\Cases\\Unit\\": "src/FastyBird/Library/Exchange/tests/cases/unit",
-            "FastyBird\\HomekitConnector\\Tests\\Cases\\Unit\\": "src/FastyBird/Connector/HomeKitConnector/tests/cases/unit",
-            "FastyBird\\HomekitConnector\\Tests\\Tools\\": "src/FastyBird/Connector/HomeKitConnector/tests/tools",
             "FastyBird\\Metadata\\Tests\\Cases\\Unit\\": "src/FastyBird/Library/Metadata/tests/cases/unit",
             "FastyBird\\Metadata\\Tests\\Fixtures\\": "src/FastyBird/Library/Metadata/tests/fixtures",
             "FastyBird\\ModbusConnector\\Tests\\Cases\\Unit\\": "src/FastyBird/Connector/ModbusConnector/tests/cases/unit",
