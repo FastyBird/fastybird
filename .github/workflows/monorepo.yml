@@ -43,7 +43,7 @@ jobs:
   split_monorepo:
     name: "Create list of packages for split"
     runs-on: "${{ matrix.operating-system }}"
-    needs: [ "provide_packages" ]
+    needs: [ "  build_matrix" ]
 
     strategy:
       fail-fast: false
