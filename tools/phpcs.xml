@@ -17,9 +17,9 @@
     <rule ref="SlevomatCodingStandard.Files.TypeNameMatchesFileName">
         <properties>
             <property name="rootNamespaces" type="array">
-                <element key="src/FastyBird/Connector/FbMqttConnector/src" value="FastyBird\FbMqttConnector"/>
-                <element key="src/FastyBird/Connector/FbMqttConnector/tests/cases/unit" value="FastyBird\FbMqttConnector\Tests\Cases\Unit"/>
-                <element key="src/FastyBird/Connector/FbMqttConnector/tests/tools" value="FastyBird\FbMqttConnector\Tests\Tools"/>
+                <element key="src/FastyBird/Connector/FbMqtt/src" value="FastyBird\Connector\FbMqtt"/>
+                <element key="src/FastyBird/Connector/FbMqtt/tests/cases/unit" value="FastyBird\Connector\FbMqtt\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Connector/FbMqtt/tests/tools" value="FastyBird\Connector\FbMqtt\Tests\Tools"/>
 
                 <element key="src/FastyBird/Connector/HomeKitConnector/src" value="FastyBird\HomeKitConnector"/>
                 <element key="src/FastyBird/Connector/HomeKitConnector/tests/cases/unit" value="FastyBird\HomekitConnector\Tests\Cases\Unit"/>
