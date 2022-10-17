@@ -7,139 +7,64 @@
     "operating-system": [
       "ubuntu-latest"
     ],
-    "package": {
-      "name": "fb-mqtt-connector",
-      "path": "src/FastyBird/Connector/FbMqtt"
-    }
-  },
-  {
-    "runOnBranch": "always",
-    "php-version": [
-      "8.1"
+    "package": [
+      "fb-mqtt-connector",
+      "homekit-connector",
+      "modbus-connector",
+      "shelly-connector",
+      "tuya-connector",
+      "exchange",
+      "metadata",
+      "devices-module",
+      "redisdb-plugin",
+      "web-server-plugin",
+      "ws-exchange-plugin"
     ],
-    "operating-system": [
-      "ubuntu-latest"
-    ],
-    "package": {
-      "name": "homekit-connector",
-      "path": "src/FastyBird/Connector/HomeKit"
-    }
-  },
-  {
-    "runOnBranch": "always",
-    "php-version": [
-      "8.1"
-    ],
-    "operating-system": [
-      "ubuntu-latest"
-    ],
-    "package": {
-      "name": "modbus-connector",
-      "path": "src/FastyBird/Connector/Modbus"
-    }
-  },
-  {
-    "runOnBranch": "always",
-    "php-version": [
-      "8.1"
-    ],
-    "operating-system": [
-      "ubuntu-latest"
-    ],
-    "package": {
-      "name": "shelly-connector",
-      "path": "src/FastyBird/Connector/Shelly"
-    }
-  },
-  {
-    "runOnBranch": "always",
-    "php-version": [
-      "8.1"
-    ],
-    "operating-system": [
-      "ubuntu-latest"
-    ],
-    "package": {
-      "name": "tuya-connector",
-      "path": "src/FastyBird/Connector/Tuya"
-    }
-  },
-  {
-    "runOnBranch": "always",
-    "php-version": [
-      "8.1"
-    ],
-    "operating-system": [
-      "ubuntu-latest"
-    ],
-    "package": {
-      "name": "exchange",
-      "path": "src/FastyBird/Library/Exchange"
-    }
-  },
-  {
-    "runOnBranch": "always",
-    "php-version": [
-      "8.1"
-    ],
-    "operating-system": [
-      "ubuntu-latest"
-    ],
-    "package": {
-      "name": "metadata",
-      "path": "src/FastyBird/Library/Metadata"
-    }
-  },
-  {
-    "runOnBranch": "always",
-    "php-version": [
-      "8.1"
-    ],
-    "operating-system": [
-      "ubuntu-latest"
-    ],
-    "package": {
-      "name": "devices-module",
-      "path": "src/FastyBird/Module/DevicesModule"
-    }
-  },
-  {
-    "runOnBranch": "always",
-    "php-version": [
-      "8.1"
-    ],
-    "operating-system": [
-      "ubuntu-latest"
-    ],
-    "package": {
-      "name": "redisdb-plugin",
-      "path": "src/FastyBird/Plugin/RedisDbPlugin"
-    }
-  },
-  {
-    "runOnBranch": "always",
-    "php-version": [
-      "8.1"
-    ],
-    "operating-system": [
-      "ubuntu-latest"
-    ],
-    "package": {
-      "name": "web-server-plugin",
-      "path": "src/FastyBird/Plugin/WebServerPlugin"
-    }
-  },
-  {
-    "runOnBranch": "always",
-    "php-version": [
-      "8.1"
-    ],
-    "operating-system": [
-      "ubuntu-latest"
-    ],
-    "package": {
-      "name": "ws-exchange-plugin",
-      "path": "src/FastyBird/Plugin/WsExchangePlugin"
-    }
+    "include": [
+      {
+        "package": "fb-mqtt-connector",
+        "package-directory": "src/FastyBird/Connector/FbMqtt"
+      },
+      {
+        "package": "homekit-connector",
+        "package-directory": "src/FastyBird/Connector/HomeKit"
+      },
+      {
+        "package": "modbus-connector",
+        "package-directory": "src/FastyBird/Connector/Modbus"
+      },
+      {
+        "package": "shelly-connector",
+        "package-directory": "src/FastyBird/Connector/Shelly"
+      },
+      {
+        "package": "tuya-connector",
+        "package-directory": "src/FastyBird/Connector/Tuya"
+      },
+      {
+        "package": "exchange",
+        "package-directory": "src/FastyBird/Library/Exchange"
+      },
+      {
+        "package": "metadata",
+        "package-directory": "src/FastyBird/Library/Metadata"
+      },
+      {
+        "package": "devices-module",
+        "package-directory": "src/FastyBird/Module/DevicesModule"
+      },
+      {
+        "package": "redisdb-plugin",
+        "package-directory": "src/FastyBird/Plugin/RedisDbPlugin"
+      },
+      {
+        "package": "web-server-plugin",
+        "package-directory": "src/FastyBird/Plugin/WebServerPlugin"
+      },
+      {
+        "package": "ws-exchange-plugin",
+        "package-directory": "src/FastyBird/Plugin/WsExchangePlugin"
+      }
+    ]
   }
 ]

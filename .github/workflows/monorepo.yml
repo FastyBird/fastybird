@@ -14,7 +14,7 @@ env:
   composer-install: "composer update --no-interaction --no-progress --no-suggest --prefer-dist --prefer-stable"
 
 jobs:
-  build_matrix:
+  split_monorepo:
     name: "Create list of packages for split"
     runs-on: "${{ matrix.operating-system }}"
 
@@ -23,59 +23,37 @@ jobs:
       matrix:
         php-version: [ "8.1" ]
         operating-system: [ "ubuntu-latest" ]
+        include:
+          - "fb-mqtt-connector": "src/FastyBird/Connector/FbMqtt"
+          - "homekit-connector": "src/FastyBird/Connector/HomeKit"
 
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v3"
 
-      - name: "Read packages list"
-        id: "packages"
-        uses: "JoshuaTheMiller/conditional-build-matrix@main"
-        with:
-          inputFile: "resources/packages.json"
-          filter: "[?runOnBranch=='${{ github.ref }}' || runOnBranch=='always']"
-          addInclude: "false"
-
-    # This step is needed, so the output gets to the next defined job
-    outputs:
-      matrix: ${{ steps.packages.outputs.matrix }}
-
-  split_monorepo:
-    name: "Create list of packages for split"
-    runs-on: "${{ matrix.operating-system }}"
-    needs: [ "build_matrix" ]
-
-    strategy:
-      fail-fast: false
-      matrix: ${{fromJson(needs.build_matrix.outputs.matrix)}}
-
-    steps:
-      - name: "Checkout"
-        uses: "actions/checkout@v3"
-
-      - name: "Monorepo Split of ${{ matrix.package.name }}"
+      - name: "Monorepo Split of ${{ matrix.package }}"
         if: "!startsWith(github.ref, 'refs/tags/')"
         uses: "symplify/github-action-monorepo-split@2.0"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          package-directory: "${{ matrix.package.path }}"
+          package-directory: "${{ matrix.package-directory }}"
           split-repository-organization: "fastybird"
-          split-repository-name: "${{ matrix.package.name }}"
+          split-repository-name: "${{ matrix.package }}"
           user-name: "GitHub Action"
           user-email: "action@github.com"
           branch: "main"
 
-      - name: "Monorepo Tagged Split of ${{ matrix.package.name }}"
+      - name: "Monorepo Tagged Split of ${{ matrix.package }}"
         if: "startsWith(github.ref, 'refs/tags/')"
         uses: "symplify/github-action-monorepo-split@2.0"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag: ${GITHUB_REF#refs/tags/}
-          package-directory: "${{ matrix.package.path }}"
+          package-directory: "${{ matrix.package-directory }}"
           split-repository-organization: "fastybird"
-          split-repository-name: "${{ matrix.package.name }}"
+          split-repository-name: "${{ matrix.package }}"
           user-name: "GitHub Action"
           user-email: "action@github.com"
           branch: "main"
