@@ -1,0 +1,28 @@
+includes:
+    - phpstan.base.neon
+
+    - ../src/FastyBird/Connector/FbMqttConnector/tools/phpstan.config.tests.neon
+    - ../src/FastyBird/Connector/HomeKitConnector/tools/phpstan.config.tests.neon
+    - ../src/FastyBird/Connector/ModbusConnector/tools/phpstan.config.tests.neon
+    - ../src/FastyBird/Connector/ShellyConnector/tools/phpstan.config.tests.neon
+    - ../src/FastyBird/Connector/TuyaConnector/tools/phpstan.config.tests.neon
+
+    - ../src/FastyBird/Library/Exchange/tools/phpstan.config.tests.neon
+    - ../src/FastyBird/Library/Metadata/tools/phpstan.config.tests.neon
+
+    - ../src/FastyBird/Module/DevicesModule/tools/phpstan.config.tests.neon
+
+    - ../src/FastyBird/Plugin/RedisDbPlugin/tools/phpstan.config.tests.neon
+    - ../src/FastyBird/Plugin/WebServerPlugin/tools/phpstan.config.tests.neon
+    - ../src/FastyBird/Plugin/WsExchangePlugin/tools/phpstan.config.tests.neon
+
+parameters:
+    level: max
+
+    resultCachePath: %currentWorkingDirectory%/var/tools/PHPStan/resultCache.tests.php
+
+    bootstrapFiles:
+        - phpstan-bootstrap.php
+
+    ignoreErrors:
+        - message: '#^Return type of call to method PHPUnit\\Framework\\TestCase::createMock\(\) contains unresolvable type.#'

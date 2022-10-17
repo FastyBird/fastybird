@@ -2,6 +2,7 @@
 
 declare(strict_types = 1);
 
+use Symplify\ComposerJsonManipulator\ValueObject\ComposerJsonSection;
 use Symplify\MonorepoBuilder\Config\MBConfig;
 use Symplify\MonorepoBuilder\Release\ReleaseWorker\PushNextDevReleaseWorker;
 use Symplify\MonorepoBuilder\Release\ReleaseWorker\PushTagReleaseWorker;
@@ -13,17 +14,25 @@ use Symplify\MonorepoBuilder\Release\ReleaseWorker\UpdateBranchAliasReleaseWorke
 use Symplify\MonorepoBuilder\Release\ReleaseWorker\UpdateReplaceReleaseWorker;
 
 return static function (MBConfig $mbConfig): void {
-	$mbConfig->packageDirectories([__DIR__ . '/packages']);
+	$mbConfig->packageDirectories([__DIR__ . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'FastyBird']);
 	$mbConfig->defaultBranch('main');
 
+	$mbConfig->dataToAppend([
+		ComposerJsonSection::REQUIRE => [
+			'fastybird/datetime-factory' => '^0.6',
+			'fastybird/json-api' => '^0.13',
+			'fastybird/simple-auth' => '^0.5',
+		],
+	]);
+
 	$mbConfig->dataToRemove([
-		'require' => [
+		ComposerJsonSection::REQUIRE => [
 			# remove these to merge of packages' composer.json
 			'tracy/tracy' => '*',
 			'phpunit/phpunit' => '*',
 		],
-		'minimum-stability' => 'dev',
-		'prefer-stable' => true,
+		ComposerJsonSection::MINIMUM_STABILITY => 'dev',
+		ComposerJsonSection::PREFER_STABLE => true,
 	]);
 
 	$mbConfig->workers([

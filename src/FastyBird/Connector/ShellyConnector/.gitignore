@@ -1,0 +1,7 @@
+.idea
+/var
+/vendor
+/composer.lock
+/tests/*/output
+/tests/tmp
+.DS_Store
