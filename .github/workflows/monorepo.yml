@@ -14,7 +14,7 @@ env:
   composer-install: "composer update --no-interaction --no-progress --no-suggest --prefer-dist --prefer-stable"
 
 jobs:
-  split_monorepo:
+  build_matrix:
     name: "Create list of packages for split"
     runs-on: "${{ matrix.operating-system }}"
 
@@ -23,9 +23,31 @@ jobs:
       matrix:
         php-version: [ "8.1" ]
         operating-system: [ "ubuntu-latest" ]
-        include:
-          - "fb-mqtt-connector": "src/FastyBird/Connector/FbMqtt"
-          - "homekit-connector": "src/FastyBird/Connector/HomeKit"
+
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v3"
+
+      - name: "Read packages list"
+        id: "packages"
+        uses: "JoshuaTheMiller/conditional-build-matrix@main"
+        with:
+          inputFile: "resources/packages.json"
+          filter: "[?runOnBranch=='${{ github.ref }}' || runOnBranch=='always']"
+          addInclude: "false"
+
+    # This step is needed, so the output gets to the next defined job
+    outputs:
+      matrix: ${{ steps.packages.outputs.matrix }}
+
+  split_monorepo:
+    name: "Create list of packages for split"
+    runs-on: "${{ matrix.operating-system }}"
+    needs: [ "build_matrix" ]
+
+    strategy:
+      fail-fast: false
+      matrix: ${{fromJson(needs.provide_packages.outputs.matrix)}}
 
     steps:
       - name: "Checkout"
