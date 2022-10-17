@@ -1,56 +1,56 @@
 [
   {
-    "organization": "fastybird",
+    "organization": "FastyBird",
     "name": "fb-mqtt-connector",
     "local-path": "src/FastyBird/Connector/FbMqtt"
   },
   {
-    "organization": "fastybird",
+    "organization": "FastyBird",
     "name": "homekit-connector",
     "local-path": "src/FastyBird/Connector/HomeKit"
   },
   {
-    "organization": "fastybird",
+    "organization": "FastyBird",
     "name": "modbus-connector",
     "local-path": "src/FastyBird/Connector/Modbus"
   },
   {
-    "organization": "fastybird",
+    "organization": "FastyBird",
     "name": "shelly-connector",
     "local-path": "src/FastyBird/Connector/Shelly"
   },
   {
-    "organization": "fastybird",
+    "organization": "FastyBird",
     "name": "tuya-connector",
     "local-path": "src/FastyBird/Connector/Tuya"
   },
   {
-    "organization": "fastybird",
+    "organization": "FastyBird",
     "name": "exchange",
     "local-path": "src/FastyBird/Library/Exchange"
   },
   {
-    "organization": "fastybird",
+    "organization": "FastyBird",
     "name": "metadata",
     "local-path": "src/FastyBird/Library/Metadata"
   },
   {
-    "organization": "fastybird",
+    "organization": "FastyBird",
     "name": "devices-module",
     "local-path": "src/FastyBird/Module/DevicesModule"
   },
   {
-    "organization": "fastybird",
+    "organization": "FastyBird",
     "name": "redisdb-plugin",
     "local-path": "src/FastyBird/Plugin/RedisDbPlugin"
   },
   {
-    "organization": "fastybird",
+    "organization": "FastyBird",
     "name": "web-server-plugin",
     "local-path": "src/FastyBird/Plugin/WebServerPlugin"
   },
   {
-    "organization": "fastybird",
+    "organization": "FastyBird",
     "name": "ws-exchange-plugin",
     "local-path": "src/FastyBird/Plugin/WsExchangePlugin"
   }
