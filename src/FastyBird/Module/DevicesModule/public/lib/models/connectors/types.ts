@@ -111,7 +111,7 @@ export interface ShellyConnectorUpdateInterface extends ConnectorUpdateInterface
   name?: string
 }
 
-export interface TuyaConnectorUpdateInterface extends ConnectorUpdateInterface {
+export interface TuyaUpdateInterface extends ConnectorUpdateInterface {
   name?: string
 }
 

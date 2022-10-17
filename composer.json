@@ -8,7 +8,7 @@
         {
             "name": "FastyBird s.r.o.",
             "email": "code@fastybird.com",
-            "homepage": "https://www.fastybird.com/"
+            "homepage": "https://www.fastybird.com"
         },
         {
             "name": "Adam Kadlec",
@@ -98,11 +98,11 @@
             "FastyBird\\Connector\\HomeKit\\": "src/FastyBird/Connector/HomeKit/src/",
             "FastyBird\\Connector\\Modbus\\": "src/FastyBird/Connector/Modbus/src/",
             "FastyBird\\Connector\\Shelly\\": "src/FastyBird/Connector/Shelly/src/",
+            "FastyBird\\Connector\\Tuya\\": "src/FastyBird/Connector/Tuya/src/",
             "FastyBird\\DevicesModule\\": "src/FastyBird/Module/DevicesModule/src/",
             "FastyBird\\Exchange\\": "src/FastyBird/Library/Exchange/src/",
             "FastyBird\\Metadata\\": "src/FastyBird/Library/Metadata/src/",
             "FastyBird\\RedisDbPlugin\\": "src/FastyBird/Plugin/RedisDbPlugin/src/",
-            "FastyBird\\TuyaConnector\\": "src/FastyBird/Connector/TuyaConnector/src/",
             "FastyBird\\WebServerPlugin\\": "src/FastyBird/Plugin/WebServerPlugin/src/",
             "FastyBird\\WsExchangePlugin\\": "src/FastyBird/Plugin/WsExchangePlugin/src/"
         }
@@ -117,6 +117,8 @@
             "FastyBird\\Connector\\Modbus\\Tests\\Tools\\": "src/FastyBird/Connector/Modbus/tests/tools",
             "FastyBird\\Connector\\Shelly\\Tests\\Cases\\Unit\\": "src/FastyBird/Connector/Shelly/tests/cases/unit",
             "FastyBird\\Connector\\Shelly\\Tests\\Tools\\": "src/FastyBird/Connector/Shelly/tests/tools",
+            "FastyBird\\Connector\\Tuya\\Tests\\Cases\\Unit\\": "src/FastyBird/Connector/Tuya/tests/cases/unit",
+            "FastyBird\\Connector\\Tuya\\Tests\\Tools\\": "src/FastyBird/Connector/Tuya/tests/tools",
             "FastyBird\\DevicesModule\\Tests\\Cases\\Unit\\": "src/FastyBird/Module/DevicesModule/tests/cases/unit",
             "FastyBird\\DevicesModule\\Tests\\Fixtures\\": "src/FastyBird/Module/DevicesModule/tests/fixtures",
             "FastyBird\\DevicesModule\\Tests\\Fixtures\\Dummy\\": "src/FastyBird/Module/DevicesModule/tests/fixtures/dummy",
@@ -126,13 +128,12 @@
             "FastyBird\\Metadata\\Tests\\Fixtures\\": "src/FastyBird/Library/Metadata/tests/fixtures",
             "FastyBird\\RedisDbPlugin\\Tests\\Cases\\Unit\\": "src/FastyBird/Plugin/RedisDbPlugin/tests/cases/unit",
             "FastyBird\\RedisDbPlugin\\Tests\\Fixtures\\": "src/FastyBird/Plugin/RedisDbPlugin/tests/fixtures",
-            "FastyBird\\TuyaConnector\\Tests\\Cases\\Unit\\": "src/FastyBird/Connector/TuyaConnector/tests/cases/unit",
-            "FastyBird\\TuyaConnector\\Tests\\Tools\\": "src/FastyBird/Connector/TuyaConnector/tests/tools",
             "FastyBird\\WebServerPlugin\\Tests\\Cases\\Unit\\": "src/FastyBird/Plugin/WebServerPlugin/tests/cases/unit",
             "FastyBird\\WsExchangePlugin\\Tests\\Cases\\Unit\\": "src/FastyBird/Plugin/WsExchangePlugin/tests/cases/unit"
         }
     },
     "extra": {
+        "enable-patching": false,
         "patches": {
             "nettrine/orm": {
                 "Enable connection overrides": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/nettrine.orm.mangerRegistry.diff"
@@ -144,8 +145,7 @@
             "ramsey/uuid-doctrine": {
                 "Bug: Ramsey uuid conversion fallback": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/ramsey.uuid.doctrine.diff"
             }
-        },
-        "enable-patching": false
+        }
     },
     "replace": {
         "fastybird/devices-module": "7.0.0",

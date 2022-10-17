@@ -5,7 +5,7 @@ includes:
     - ../src/FastyBird/Connector/HomeKit/tools/phpstan.config.tests.neon
     - ../src/FastyBird/Connector/Modbus/tools/phpstan.config.tests.neon
     - ../src/FastyBird/Connector/Shelly/tools/phpstan.config.tests.neon
-    - ../src/FastyBird/Connector/TuyaConnector/tools/phpstan.config.tests.neon
+    - ../src/FastyBird/Connector/Tuya/tools/phpstan.config.tests.neon
 
     - ../src/FastyBird/Library/Exchange/tools/phpstan.config.tests.neon
     - ../src/FastyBird/Library/Metadata/tools/phpstan.config.tests.neon
