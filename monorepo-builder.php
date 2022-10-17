@@ -26,10 +26,10 @@ return static function (MBConfig $mbConfig): void {
 	]);
 
 	$mbConfig->dataToRemove([
-		ComposerJsonSection::REQUIRE => [
+		ComposerJsonSection::REQUIRE_DEV => [
 			# remove these to merge of packages' composer.json
-			'tracy/tracy' => '*',
-			'phpunit/phpunit' => '*',
+			'mockery/mockery' => '*',
+			'ninjify/nunjuck' => '*',
 		],
 		ComposerJsonSection::MINIMUM_STABILITY => 'dev',
 		ComposerJsonSection::PREFER_STABLE => true,
