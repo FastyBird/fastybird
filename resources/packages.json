@@ -1,24 +1,21 @@
-[
-  {
-    "runOnBranch": "always",
-    "php-version": [
-      "8.1"
-    ],
-    "operating-system": [
-      "ubuntu-latest"
-    ],
-    "package": [
-      "fb-mqtt-connector",
-      "homekit-connector",
-      "modbus-connector",
-      "shelly-connector",
-      "tuya-connector",
-      "exchange",
-      "metadata",
-      "devices-module",
-      "redisdb-plugin",
-      "web-server-plugin",
-      "ws-exchange-plugin"
-    ]
-  }
-]
+{
+  "php-version": [
+    "8.1"
+  ],
+  "operating-system": [
+    "ubuntu-latest"
+  ],
+  "package": [
+    "fb-mqtt-connector",
+    "homekit-connector",
+    "modbus-connector",
+    "shelly-connector",
+    "tuya-connector",
+    "exchange",
+    "metadata",
+    "devices-module",
+    "redisdb-plugin",
+    "web-server-plugin",
+    "ws-exchange-plugin"
+  ]
+}

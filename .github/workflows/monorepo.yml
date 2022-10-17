@@ -26,19 +26,17 @@ jobs:
 
     # This step is needed, so the output gets to the next defined job
     outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      matrix: ${{ steps.set-matrix.outputs.content }}
 
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v3"
 
-      - name: "Read packages list"
+      - name: "Read matrix configuration"
         id: "set-matrix"
-        uses: "JoshuaTheMiller/conditional-build-matrix@main"
+        uses: "juliangruber/read-file-action@v1"
         with:
-          inputFile: "resources/packages.json"
-          filter: "[?runOnBranch=='${{ github.ref }}' || runOnBranch=='always']"
-          addInclude: "false"
+          path: "./resources/packages.json"
 
   split_monorepo:
     name: "Create list of packages for split"
@@ -47,23 +45,7 @@ jobs:
 
     strategy:
       fail-fast: false
-      matrix:
-        php-version:
-          - '8.1'
-        operating-system:
-          - ubuntu-latest
-        package:
-          - fb-mqtt-connector
-          - homekit-connector
-          - modbus-connector
-          - shelly-connector
-          - tuya-connector
-          - exchange
-          - metadata
-          - devices-module
-          - redisdb-plugin
-          - web-server-plugin
-          - ws-exchange-plugin
+      matrix: ${{fromJson(needs.build_matrix.outputs.matrix)}}
 
     steps:
       - name: "Checkout"
