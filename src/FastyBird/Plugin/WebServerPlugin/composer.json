@@ -72,17 +72,10 @@
             "infection/extension-installer": true
         }
     },
-    "conflict": {
-        "fastybird/devices-module": "<2.1.0-dev",
-        "fastybird/redisdb-plugin": "<2.1.0-dev",
-        "fastybird/ws-exchange-plugin": "<2.1.0-dev",
-        "fastybird/exchange": "<2.1.0-dev",
-        "fastybird/metadata": "<2.1.0-dev",
-        "fastybird/homekit-connector": "<2.1.0-dev",
-        "fastybird/tuya-connector": "<2.1.0-dev",
-        "fastybird/fb-mqtt-connector": "<2.1.0-dev",
-        "fastybird/shelly-connector": "<2.1.0-dev",
-        "fastybird/modbus-connector": "<2.1.0-dev"
+    "extra": {
+        "branch-alias": {
+            "dev-main": "2.0-dev"
+        }
     },
     "minimum-stability": "stable",
     "prefer-stable": true

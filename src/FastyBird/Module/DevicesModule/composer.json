@@ -22,9 +22,9 @@
         "ext-pcntl": "*",
         "contributte/flysystem": "^0.3",
         "cweagans/composer-patches": "^1.7",
-        "fastybird/exchange": "^2.1",
+        "fastybird/exchange": "dev-main",
         "fastybird/json-api": "^0.13",
-        "fastybird/metadata": "^2.1",
+        "fastybird/metadata": "dev-main",
         "fastybird/simple-auth": "^0.5",
         "ipub/doctrine-dynamic-discriminator-map": "^1.4",
         "ipub/doctrine-timestampable": "^1.5",
@@ -76,6 +76,9 @@
         }
     },
     "extra": {
+        "branch-alias": {
+            "dev-main": "2.0-dev"
+        },
         "patches": {
             "doctrine/orm": {
                 "Bug: Ramsey uuid not working - Part 1": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/doctrine.orm.uuid.1.diff",
@@ -88,16 +91,6 @@
                 "Enable connection overrides": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/nettrine.orm.mangerRegistry.diff"
             }
         }
-    },
-    "conflict": {
-        "fastybird/web-server-plugin": "<2.1.0-dev",
-        "fastybird/redisdb-plugin": "<2.1.0-dev",
-        "fastybird/ws-exchange-plugin": "<2.1.0-dev",
-        "fastybird/homekit-connector": "<2.1.0-dev",
-        "fastybird/tuya-connector": "<2.1.0-dev",
-        "fastybird/fb-mqtt-connector": "<2.1.0-dev",
-        "fastybird/shelly-connector": "<2.1.0-dev",
-        "fastybird/modbus-connector": "<2.1.0-dev"
     },
     "minimum-stability": "stable",
     "prefer-stable": true
