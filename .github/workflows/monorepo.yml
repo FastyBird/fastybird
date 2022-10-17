@@ -35,6 +35,7 @@ jobs:
         uses: "JoshuaTheMiller/conditional-build-matrix@main"
         with:
           inputFile: "resources/packages.json"
+          filter: "[?runOnBranch=='${{ github.ref }}' || runOnBranch=='always']"
 
     # This step is needed, so the output gets to the next defined job
     outputs:
