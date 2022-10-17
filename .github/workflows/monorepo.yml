@@ -30,13 +30,13 @@ jobs:
       - name: "Checkout"
         uses: "actions/checkout@v3"
 
-      - name: "Get package json list"
+      - name: "Read packages list"
         id: "packages"
-        run: |
-          JSON=$(cat ./resources/packages.json)
-          echo "::set-output name=matrix::${JSON//'%'/'%25'}"
+        uses: "JoshuaTheMiller/conditional-build-matrix@main"
+        with:
+          inputFile: "./resources/packages.json"
 
-    # this step is needed, so the output gets to the next defined job
+    # This step is needed, so the output gets to the next defined job
     outputs:
       matrix: ${{ steps.packages.outputs.matrix }}
 
@@ -56,29 +56,29 @@ jobs:
       - name: "Checkout"
         uses: "actions/checkout@v3"
 
-      - name: "Monorepo Split of ${{ matrix.package }}"
+      - name: "Monorepo Split of ${{ matrix.package.name }}"
         if: "!startsWith(github.ref, 'refs/tags/')"
         uses: "symplify/github-action-monorepo-split@2.0"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          package-directory: 'src/FastyBird/${{ matrix.package }}'
-          split-repository-organization: 'fastybird'
-          split-repository-name: '${{ matrix.package }}'
+          package-directory: "${{ matrix.package.path }}"
+          split-repository-organization: "fastybird"
+          split-repository-name: "${{ matrix.package.name }}"
           user-name: "GitHub Action"
           user-email: "action@github.com"
           branch: "main"
 
-      - name: "Monorepo Tagged Split of ${{ matrix.package }}"
+      - name: "Monorepo Tagged Split of ${{ matrix.package.name }}"
         if: "startsWith(github.ref, 'refs/tags/')"
         uses: "symplify/github-action-monorepo-split@2.0"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag: ${GITHUB_REF#refs/tags/}
-          package-directory: 'packages/${{ matrix.package }}'
-          split-repository-organization: 'fastybird'
-          split-repository-name: '${{ matrix.package }}'
+          package-directory: "${{ matrix.package.path }}"
+          split-repository-organization: "fastybird"
+          split-repository-name: "${{ matrix.package.name }}"
           user-name: "GitHub Action"
           user-email: "action@github.com"
           branch: "main"

@@ -1,13 +1,46 @@
-{
-  "fb-mqtt-connector": "src/FastyBird/Connector/FbMqtt",
-  "homekit-connector": "src/FastyBird/Connector/HomeKit",
-  "modbus-connector": "src/FastyBird/Connector/Modbus",
-  "shelly-connector": "src/FastyBird/Connector/Shelly",
-  "tuya-connector": "src/FastyBird/Connector/Tuya",
-  "exchange": "src/FastyBird/Library/Exchange",
-  "metadata": "src/FastyBird/Library/Metadata",
-  "devices-module": "src/FastyBird/Module/DevicesModule",
-  "redisdb-plugin": "src/FastyBird/Plugin/RedisDbPlugin",
-  "web-server-plugin": "src/FastyBird/Plugin/WebServerPlugin",
-  "ws-exchange-plugin": "src/FastyBird/Plugin/WsExchangePlugin"
-}
+[
+  {
+    "name": "fb-mqtt-connector",
+    "path": "src/FastyBird/Connector/FbMqtt"
+  },
+  {
+    "name": "homekit-connector",
+    "path": "src/FastyBird/Connector/HomeKit"
+  },
+  {
+    "name": "modbus-connector",
+    "path": "src/FastyBird/Connector/Modbus"
+  },
+  {
+    "name": "shelly-connector",
+    "path": "src/FastyBird/Connector/Shelly"
+  },
+  {
+    "name": "tuya-connector",
+    "path": "src/FastyBird/Connector/Tuya"
+  },
+  {
+    "name": "exchange",
+    "path": "src/FastyBird/Library/Exchange"
+  },
+  {
+    "name": "metadata",
+    "path": "src/FastyBird/Library/Metadata"
+  },
+  {
+    "name": "devices-module",
+    "path": "src/FastyBird/Module/DevicesModule"
+  },
+  {
+    "name": "redisdb-plugin",
+    "path": "src/FastyBird/Plugin/RedisDbPlugin"
+  },
+  {
+    "name": "web-server-plugin",
+    "path": "src/FastyBird/Plugin/WebServerPlugin"
+  },
+  {
+    "name": "ws-exchange-plugin",
+    "path": "src/FastyBird/Plugin/WsExchangePlugin"
+  }
+]
