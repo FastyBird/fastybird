@@ -1,0 +1,67 @@
+{
+  "php-version": [
+    "8.1"
+  ],
+  "operating-system": [
+    "ubuntu-latest"
+  ],
+  "package": [
+    "fb-mqtt-connector",
+    "homekit-connector",
+    "modbus-connector",
+    "shelly-connector",
+    "tuya-connector",
+    "exchange",
+    "metadata",
+    "devices-module",
+    "redisdb-plugin",
+    "web-server-plugin",
+    "ws-exchange-plugin"
+  ],
+  "include": [
+    {
+      "package": "fb-mqtt-connector",
+      "package-directory": "src/FastyBird/Connector/FbMqtt"
+    },
+    {
+      "package": "homekit-connector",
+      "package-directory": "src/FastyBird/Connector/HomeKit"
+    },
+    {
+      "package": "modbus-connector",
+      "package-directory": "src/FastyBird/Connector/Modbus"
+    },
+    {
+      "package": "shelly-connector",
+      "package-directory": "src/FastyBird/Connector/Shelly"
+    },
+    {
+      "package": "tuya-connector",
+      "package-directory": "src/FastyBird/Connector/Tuya"
+    },
+    {
+      "package": "exchange",
+      "package-directory": "src/FastyBird/Library/Exchange"
+    },
+    {
+      "package": "metadata",
+      "package-directory": "src/FastyBird/Library/Metadata"
+    },
+    {
+      "package": "devices-module",
+      "package-directory": "src/FastyBird/Module/DevicesModule"
+    },
+    {
+      "package": "redisdb-plugin",
+      "package-directory": "src/FastyBird/Plugin/RedisDbPlugin"
+    },
+    {
+      "package": "web-server-plugin",
+      "package-directory": "src/FastyBird/Plugin/WebServerPlugin"
+    },
+    {
+      "package": "ws-exchange-plugin",
+      "package-directory": "src/FastyBird/Plugin/WsExchangePlugin"
+    }
+  ]
+}

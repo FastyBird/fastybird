@@ -36,7 +36,7 @@ jobs:
         id: "set-matrix"
         uses: "juliangruber/read-file-action@v1"
         with:
-          path: "./resources/packages.json"
+          path: "./.github/workflows/monorepo-matrix.json"
 
   split_monorepo:
     name: "Create list of packages for split"
