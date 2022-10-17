@@ -47,7 +47,7 @@ jobs:
 
     strategy:
       fail-fast: false
-      matrix: ${{fromJson(needs.provide_packages.outputs.matrix)}}
+      matrix: ${{fromJson(needs.build_matrix.outputs.matrix)}}
 
     steps:
       - name: "Checkout"
