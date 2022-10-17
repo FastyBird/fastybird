@@ -45,35 +45,38 @@ jobs:
 
     strategy:
       fail-fast: false
-      matrix: ${{fromJson(needs.build_matrix.outputs.matrix)}}
+      matrix:
+        php-version: [ "8.1" ]
+        operating-system: [ "ubuntu-latest" ]
+        package: ${{fromJson(needs.build_matrix.outputs.matrix)}}
 
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v3"
 
-      - name: "Monorepo Split of ${{ matrix.package }}"
+      - name: "Monorepo Split of ${{ matrix.package.name }}"
         if: "!startsWith(github.ref, 'refs/tags/')"
         uses: "symplify/github-action-monorepo-split@2.2"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          package-directory: "${{ matrix.package-directory }}"
-          split-repository-organization: "fastybird"
-          split-repository-name: "${{ matrix.package }}"
-          user-name: "GitHub Action"
-          user-email: "action@github.com"
+          package_directory: "${{ matrix.package.local-path }}"
+          repository_organization: "${{ matrix.package.organization }}"
+          repository_name: "${{ matrix.package.name }}"
+          user_name: "GitHub Action"
+          user_email: "action@github.com"
           branch: "main"
 
-      - name: "Monorepo Tagged Split of ${{ matrix.package }}"
+      - name: "Monorepo Tagged Split of ${{ matrix.package.name }}"
         if: "startsWith(github.ref, 'refs/tags/')"
         uses: "symplify/github-action-monorepo-split@2.2"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag: ${GITHUB_REF#refs/tags/}
-          package-directory: "${{ matrix.package-directory }}"
-          split-repository-organization: "fastybird"
-          split-repository-name: "${{ matrix.package }}"
-          user-name: "GitHub Action"
-          user-email: "action@github.com"
+          package_directory: "${{ matrix.package.local-path }}"
+          repository_organization: "${{ matrix.package.organization }}"
+          repository_name: "${{ matrix.package.name }}"
+          user_name: "GitHub Action"
+          user_email: "action@github.com"
           branch: "main"

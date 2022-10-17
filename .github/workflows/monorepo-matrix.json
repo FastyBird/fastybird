@@ -1,67 +1,57 @@
-{
-  "php-version": [
-    "8.1"
-  ],
-  "operating-system": [
-    "ubuntu-latest"
-  ],
-  "package": [
-    "fb-mqtt-connector",
-    "homekit-connector",
-    "modbus-connector",
-    "shelly-connector",
-    "tuya-connector",
-    "exchange",
-    "metadata",
-    "devices-module",
-    "redisdb-plugin",
-    "web-server-plugin",
-    "ws-exchange-plugin"
-  ],
-  "include": [
-    {
-      "package": "fb-mqtt-connector",
-      "package-directory": "src/FastyBird/Connector/FbMqtt"
-    },
-    {
-      "package": "homekit-connector",
-      "package-directory": "src/FastyBird/Connector/HomeKit"
-    },
-    {
-      "package": "modbus-connector",
-      "package-directory": "src/FastyBird/Connector/Modbus"
-    },
-    {
-      "package": "shelly-connector",
-      "package-directory": "src/FastyBird/Connector/Shelly"
-    },
-    {
-      "package": "tuya-connector",
-      "package-directory": "src/FastyBird/Connector/Tuya"
-    },
-    {
-      "package": "exchange",
-      "package-directory": "src/FastyBird/Library/Exchange"
-    },
-    {
-      "package": "metadata",
-      "package-directory": "src/FastyBird/Library/Metadata"
-    },
-    {
-      "package": "devices-module",
-      "package-directory": "src/FastyBird/Module/DevicesModule"
-    },
-    {
-      "package": "redisdb-plugin",
-      "package-directory": "src/FastyBird/Plugin/RedisDbPlugin"
-    },
-    {
-      "package": "web-server-plugin",
-      "package-directory": "src/FastyBird/Plugin/WebServerPlugin"
-    },
-    {
-      "package": "ws-exchange-plugin",
-      "package-directory": "src/FastyBird/Plugin/WsExchangePlugin"
-    }
-  ]
-}
+[
+  {
+    "organization": "fastybird",
+    "name": "fb-mqtt-connector",
+    "local-path": "src/FastyBird/Connector/FbMqtt"
+  },
+  {
+    "organization": "fastybird",
+    "name": "homekit-connector",
+    "local-path": "src/FastyBird/Connector/HomeKit"
+  },
+  {
+    "organization": "fastybird",
+    "name": "modbus-connector",
+    "local-path": "src/FastyBird/Connector/Modbus"
+  },
+  {
+    "organization": "fastybird",
+    "name": "shelly-connector",
+    "local-path": "src/FastyBird/Connector/Shelly"
+  },
+  {
+    "organization": "fastybird",
+    "name": "tuya-connector",
+    "local-path": "src/FastyBird/Connector/Tuya"
+  },
+  {
+    "organization": "fastybird",
+    "name": "exchange",
+    "local-path": "src/FastyBird/Library/Exchange"
+  },
+  {
+    "organization": "fastybird",
+    "name": "metadata",
+    "local-path": "src/FastyBird/Library/Metadata"
+  },
+  {
+    "organization": "fastybird",
+    "name": "devices-module",
+    "local-path": "src/FastyBird/Module/DevicesModule"
+  },
+  {
+    "organization": "fastybird",
+    "name": "redisdb-plugin",
+    "local-path": "src/FastyBird/Plugin/RedisDbPlugin"
+  },
+  {
+    "organization": "fastybird",
+    "name": "web-server-plugin",
+    "local-path": "src/FastyBird/Plugin/WebServerPlugin"
+  },
+  {
+    "organization": "fastybird",
+    "name": "ws-exchange-plugin",
+    "local-path": "src/FastyBird/Plugin/WsExchangePlugin"
+  }
+]
