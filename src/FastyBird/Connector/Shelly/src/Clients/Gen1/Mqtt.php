@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\Shelly\Clients\Gen1;
 
 use FastyBird\DevicesModule\Exceptions as DevicesModuleExceptions;
-use FastyBird\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use Nette;
 use function sprintf;
 

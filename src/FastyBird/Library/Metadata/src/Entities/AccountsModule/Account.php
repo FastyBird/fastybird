@@ -13,11 +13,11 @@
  * @date           01.06.22
  */
 
-namespace FastyBird\Metadata\Entities\AccountsModule;
+namespace FastyBird\Library\Metadata\Entities\AccountsModule;
 
 use DateTimeInterface;
-use FastyBird\Metadata\Entities;
-use FastyBird\Metadata\Types;
+use FastyBird\Library\Metadata\Entities;
+use FastyBird\Library\Metadata\Types;
 use Nette\Utils;
 use Ramsey\Uuid;
 use function array_map;

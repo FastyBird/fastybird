@@ -1,8 +1,8 @@
 <?php declare(strict_types = 1);
 
-namespace FastyBird\Exchange\Tests\Cases\Unit;
+namespace FastyBird\Library\Exchange\Tests\Cases\Unit;
 
-use FastyBird\Exchange;
+use FastyBird\Library\Exchange;
 use Nette;
 use Nette\DI;
 use PHPUnit\Framework\TestCase;

@@ -45,12 +45,12 @@
     },
     "autoload": {
         "psr-4": {
-            "FastyBird\\Exchange\\": "src/"
+            "FastyBird\\Library\\Exchange\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "FastyBird\\Exchange\\Tests\\Cases\\Unit\\": "tests/cases/unit"
+            "FastyBird\\Library\\Exchange\\Tests\\Cases\\Unit\\": "tests/cases/unit"
         }
     },
     "config": {

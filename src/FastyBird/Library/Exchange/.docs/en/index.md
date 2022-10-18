@@ -16,20 +16,20 @@ After that, you have to register extension in *config.neon*.
 
 ```neon
 extensions:
-    fbExchange: FastyBird\Exchange\DI\ExchangeExtension
+    fbExchange: FastyBird\Library\Exchange\DI\ExchangeExtension
 ```
 
 ## Creating custom publisher
 
 If some service of your module have to publish messages to data exchange for other modules, you could just
-implement `FastyBird\Exchange\Publisher\Publisher` interface and register your publisher as service
+implement `FastyBird\Library\Exchange\Publisher\Publisher` interface and register your publisher as service
 
 ```php
 namespace Your\CoolApp\Publishers;
 
-use FastyBird\Exchange\Publisher\Publisher;
-use FastyBird\Metadata\Entities as MetadataEntities;
-use FastyBird\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Exchange\Publisher\Publisher;
+use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette\Utils;
 
 class ModuleDataPublisher implements Publisher
@@ -55,7 +55,7 @@ In your code you could just import one publisher - proxy publisher.
 ```php
 namespace Your\CoolApp\Actions;
 
-use FastyBird\Exchange\Publisher\Container;
+use FastyBird\Library\Exchange\Publisher\Container;
 
 class SomeHandler
 {
@@ -94,9 +94,9 @@ Your consumer could look like this:
 ```php
 namespace Your\CoolApp\Publishers;
 
-use FastyBird\Exchange\Consumer\Consumer;
-use FastyBird\Metadata\Entities as MetadataEntities;
-use FastyBird\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Exchange\Consumer\Consumer;
+use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 
 class DataConsumer implements Consumer
 {

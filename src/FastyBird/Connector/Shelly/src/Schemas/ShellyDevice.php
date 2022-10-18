@@ -17,7 +17,7 @@ namespace FastyBird\Connector\Shelly\Schemas;
 
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\DevicesModule\Schemas as DevicesModuleSchemas;
-use FastyBird\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 
 /**
  * Shelly connector entity schema

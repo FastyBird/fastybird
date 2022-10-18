@@ -16,10 +16,10 @@
 namespace FastyBird\DevicesModule\Consumers;
 
 use FastyBird\DevicesModule\DataStorage;
-use FastyBird\Exchange\Consumer as ExchangeConsumer;
-use FastyBird\Metadata\Constants as MetadataConstants;
-use FastyBird\Metadata\Entities as MetadataEntities;
-use FastyBird\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Exchange\Consumer as ExchangeConsumer;
+use FastyBird\Library\Metadata;
+use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use League\Flysystem;
 use Nette;
 use Nette\Utils;
@@ -53,19 +53,22 @@ final class Connector implements ExchangeConsumer\Consumer
 	): void
 	{
 		if (
-			Utils\Strings::startsWith(strval($routingKey->getValue()), MetadataConstants::MESSAGE_BUS_ENTITY_PREFIX_KEY)
+			Utils\Strings::startsWith(
+				strval($routingKey->getValue()),
+				Metadata\Constants::MESSAGE_BUS_ENTITY_PREFIX_KEY,
+			)
 			&& (
 				Utils\Strings::contains(
 					strval($routingKey->getValue()),
-					MetadataConstants::MESSAGE_BUS_ENTITY_CREATED_KEY,
+					Metadata\Constants::MESSAGE_BUS_ENTITY_CREATED_KEY,
 				)
 				|| Utils\Strings::contains(
 					strval($routingKey->getValue()),
-					MetadataConstants::MESSAGE_BUS_ENTITY_UPDATED_KEY,
+					Metadata\Constants::MESSAGE_BUS_ENTITY_UPDATED_KEY,
 				)
 				|| Utils\Strings::contains(
 					strval($routingKey->getValue()),
-					MetadataConstants::MESSAGE_BUS_ENTITY_DELETED_KEY,
+					Metadata\Constants::MESSAGE_BUS_ENTITY_DELETED_KEY,
 				)
 			)
 		) {

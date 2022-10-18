@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\FbMqtt\Consumers\Messages;
 
 use FastyBird\Connector\FbMqtt\Entities;
-use FastyBird\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use function array_merge;
 use function boolval;
 use function strval;

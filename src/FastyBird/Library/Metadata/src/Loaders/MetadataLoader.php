@@ -13,11 +13,11 @@
  * @date           24.06.20
  */
 
-namespace FastyBird\Metadata\Loaders;
+namespace FastyBird\Library\Metadata\Loaders;
 
-use FastyBird\Metadata;
-use FastyBird\Metadata\Exceptions;
-use FastyBird\Metadata\Schemas;
+use FastyBird\Library\Metadata;
+use FastyBird\Library\Metadata\Exceptions;
+use FastyBird\Library\Metadata\Schemas;
 use Nette\Utils;
 use function file_get_contents;
 use const DIRECTORY_SEPARATOR;

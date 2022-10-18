@@ -13,7 +13,7 @@
  * @date           05.06.22
  */
 
-namespace FastyBird\Metadata\Entities;
+namespace FastyBird\Library\Metadata\Entities;
 
 use Ramsey\Uuid;
 

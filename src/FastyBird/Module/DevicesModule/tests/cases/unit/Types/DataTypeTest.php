@@ -3,7 +3,7 @@
 namespace FastyBird\DevicesModule\Tests\Cases\Unit\Types;
 
 use Consistence\Enum\InvalidEnumValueException;
-use FastyBird\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use PHPUnit\Framework\TestCase;
 
 final class DataTypeTest extends TestCase

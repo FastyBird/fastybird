@@ -13,11 +13,11 @@
  * @date           02.06.22
  */
 
-namespace FastyBird\Metadata\Entities\DevicesModule;
+namespace FastyBird\Library\Metadata\Entities\DevicesModule;
 
 use DateTimeInterface;
 use Exception;
-use FastyBird\Metadata\Exceptions;
+use FastyBird\Library\Metadata\Exceptions;
 use Nette\Utils;
 use function array_merge;
 use function is_string;

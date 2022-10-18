@@ -17,9 +17,9 @@ namespace FastyBird\RedisDbPlugin\Publishers;
 
 use Clue\React\Redis;
 use FastyBird\DateTimeFactory;
-use FastyBird\Exchange\Publisher as ExchangePublisher;
-use FastyBird\Metadata\Entities as MetadataEntities;
-use FastyBird\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
+use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\RedisDbPlugin\Client;
 use FastyBird\RedisDbPlugin\Utils;
 use Nette;

@@ -18,7 +18,7 @@ namespace FastyBird\RedisDbPlugin\Models;
 use Clue\React\Redis;
 use Consistence;
 use DateTimeInterface;
-use FastyBird\Metadata\Types;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\RedisDbPlugin\Client;
 use FastyBird\RedisDbPlugin\Events;
 use FastyBird\RedisDbPlugin\Exceptions;
@@ -90,7 +90,7 @@ class StatesManager
 
 		} catch (Throwable $ex) {
 			$this->logger->error('Record could not be created', [
-				'source' => Types\PluginSource::SOURCE_PLUGIN_REDISDB,
+				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
 				'type' => 'states-manager',
 				'record' => [
 					'id' => $id->toString(),
@@ -127,7 +127,7 @@ class StatesManager
 			return $state;
 		} catch (Throwable $ex) {
 			$this->logger->error('Record could not be updated', [
-				'source' => Types\PluginSource::SOURCE_PLUGIN_REDISDB,
+				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
 				'type' => 'states-manager',
 				'record' => [
 					'id' => $state->getId()->toString(),
@@ -234,7 +234,7 @@ class StatesManager
 			return $raw;
 		} catch (Throwable $ex) {
 			$this->logger->error('Record key could not be created', [
-				'source' => Types\PluginSource::SOURCE_PLUGIN_REDISDB,
+				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
 				'type' => 'states-manager',
 				'record' => [
 					'id' => $id->toString(),
@@ -327,7 +327,7 @@ class StatesManager
 			throw $ex;
 		} catch (Throwable $ex) {
 			$this->logger->error('Record key could not be updated', [
-				'source' => Types\PluginSource::SOURCE_PLUGIN_REDISDB,
+				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
 				'type' => 'states-manager',
 				'record' => [
 					'id' => $state->getId()->toString(),
@@ -359,7 +359,7 @@ class StatesManager
 			return $delResult;
 		} catch (Throwable $ex) {
 			$this->logger->error('Record could not be deleted', [
-				'source' => Types\PluginSource::SOURCE_PLUGIN_REDISDB,
+				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
 				'type' => 'states-manager',
 				'record' => [
 					'id' => $id->toString(),

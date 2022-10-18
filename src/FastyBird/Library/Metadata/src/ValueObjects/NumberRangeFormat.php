@@ -13,10 +13,10 @@
  * @date           05.08.22
  */
 
-namespace FastyBird\Metadata\ValueObjects;
+namespace FastyBird\Library\Metadata\ValueObjects;
 
-use FastyBird\Metadata\Exceptions;
-use FastyBird\Metadata\Types;
+use FastyBird\Library\Metadata\Exceptions;
+use FastyBird\Library\Metadata\Types;
 use Nette;
 use Nette\Utils;
 use function array_map;

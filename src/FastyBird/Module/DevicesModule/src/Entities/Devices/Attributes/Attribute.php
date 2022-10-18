@@ -18,7 +18,7 @@ namespace FastyBird\DevicesModule\Entities\Devices\Attributes;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\DevicesModule\Entities;
 use FastyBird\DevicesModule\Exceptions;
-use FastyBird\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
 use IPub\DoctrineTimestampable;
 use Nette\Utils;

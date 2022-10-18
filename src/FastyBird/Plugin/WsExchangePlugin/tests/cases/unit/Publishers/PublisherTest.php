@@ -2,11 +2,10 @@
 
 namespace FastyBird\WsExchangePlugin\Tests\Cases\Unit\Publishers;
 
-use FastyBird\Exchange\Entities as ExchangeEntities;
-use FastyBird\Exchange\Exceptions as ExchangeExceptions;
-use FastyBird\Metadata;
-use FastyBird\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Exchange\Entities as ExchangeEntities;
+use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\WsExchangePlugin\Publishers;
 use FastyBird\WsExchangePlugin\Tests\Cases\Unit\BaseTestCase;
 use IPub\Phone\Exceptions as PhoneExceptions;
@@ -35,7 +34,7 @@ final class PublisherTest extends BaseTestCase
 	 */
 	public function testPublishSuccessfulDeviceMessage(
 		Utils\ArrayHash $data,
-		Metadata\Types\RoutingKey $routingKey,
+		MetadataTypes\RoutingKey $routingKey,
 		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource $source,
 	): void
 	{
@@ -110,7 +109,7 @@ final class PublisherTest extends BaseTestCase
 	 */
 	public function testPublishSuccessfulDevicePropertyMessage(
 		Utils\ArrayHash $data,
-		Metadata\Types\RoutingKey $routingKey,
+		MetadataTypes\RoutingKey $routingKey,
 		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource $source,
 	): void
 	{
@@ -184,7 +183,7 @@ final class PublisherTest extends BaseTestCase
 	 */
 	public function testPublishSuccessfulChannelMessage(
 		Utils\ArrayHash $data,
-		Metadata\Types\RoutingKey $routingKey,
+		MetadataTypes\RoutingKey $routingKey,
 		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource $source,
 	): void
 	{
@@ -258,7 +257,7 @@ final class PublisherTest extends BaseTestCase
 	 */
 	public function testPublishSuccessfulChannelPropertyMessage(
 		Utils\ArrayHash $data,
-		Metadata\Types\RoutingKey $routingKey,
+		MetadataTypes\RoutingKey $routingKey,
 		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource $source,
 	): void
 	{
@@ -333,8 +332,8 @@ final class PublisherTest extends BaseTestCase
 					'state' => 'ready',
 					'enabled' => true,
 				]),
-				Metadata\Types\RoutingKey::get(Metadata\Types\RoutingKey::ROUTE_DEVICE_ENTITY_CREATED),
-				Metadata\Types\ModuleSource::get(Metadata\Types\ModuleSource::SOURCE_MODULE_DEVICES),
+				MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::ROUTE_DEVICE_ENTITY_CREATED),
+				MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
 			],
 			'update' => [
 				Utils\ArrayHash::from([
@@ -348,8 +347,8 @@ final class PublisherTest extends BaseTestCase
 					'state' => 'ready',
 					'enabled' => true,
 				]),
-				Metadata\Types\RoutingKey::get(Metadata\Types\RoutingKey::ROUTE_DEVICE_ENTITY_UPDATED),
-				Metadata\Types\ModuleSource::get(Metadata\Types\ModuleSource::SOURCE_MODULE_DEVICES),
+				MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::ROUTE_DEVICE_ENTITY_UPDATED),
+				MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
 			],
 			'delete' => [
 				Utils\ArrayHash::from([
@@ -363,8 +362,8 @@ final class PublisherTest extends BaseTestCase
 					'state' => 'ready',
 					'enabled' => true,
 				]),
-				Metadata\Types\RoutingKey::get(Metadata\Types\RoutingKey::ROUTE_DEVICE_ENTITY_DELETED),
-				Metadata\Types\ModuleSource::get(Metadata\Types\ModuleSource::SOURCE_MODULE_DEVICES),
+				MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::ROUTE_DEVICE_ENTITY_DELETED),
+				MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
 			],
 		];
 	}
@@ -378,59 +377,59 @@ final class PublisherTest extends BaseTestCase
 			'create' => [
 				Utils\ArrayHash::from([
 					'id' => 'b41efd22-42e0-4e30-aab4-de471741cd30',
-					'type' => Metadata\Types\PropertyType::TYPE_DYNAMIC,
+					'type' => MetadataTypes\PropertyType::TYPE_DYNAMIC,
 					'device' => '6a6a8525-eb24-4f48-8698-4f446b4a2664',
 					'property' => '667e159f-ad74-4ba7-94d7-775b1930ea11',
 					'identifier' => 'property-name',
 					'name' => null,
 					'settable' => true,
 					'queryable' => true,
-					'data_type' => Metadata\Types\DataType::DATA_TYPE_UNKNOWN,
+					'data_type' => MetadataTypes\DataType::DATA_TYPE_UNKNOWN,
 					'unit' => null,
 					'format' => null,
 					'invalid' => null,
 					'number_of_decimals' => null,
 				]),
-				Metadata\Types\RoutingKey::get(Metadata\Types\RoutingKey::ROUTE_DEVICE_PROPERTY_ENTITY_CREATED),
-				Metadata\Types\ModuleSource::get(Metadata\Types\ModuleSource::SOURCE_MODULE_DEVICES),
+				MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::ROUTE_DEVICE_PROPERTY_ENTITY_CREATED),
+				MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
 			],
 			'update' => [
 				Utils\ArrayHash::from([
 					'id' => 'b41efd22-42e0-4e30-aab4-de471741cd30',
-					'type' => Metadata\Types\PropertyType::TYPE_DYNAMIC,
+					'type' => MetadataTypes\PropertyType::TYPE_DYNAMIC,
 					'device' => '6a6a8525-eb24-4f48-8698-4f446b4a2664',
 					'property' => '667e159f-ad74-4ba7-94d7-775b1930ea11',
 					'identifier' => 'property-name',
 					'name' => null,
 					'settable' => true,
 					'queryable' => true,
-					'data_type' => Metadata\Types\DataType::DATA_TYPE_UNKNOWN,
+					'data_type' => MetadataTypes\DataType::DATA_TYPE_UNKNOWN,
 					'unit' => null,
 					'format' => null,
 					'invalid' => null,
 					'number_of_decimals' => null,
 				]),
-				Metadata\Types\RoutingKey::get(Metadata\Types\RoutingKey::ROUTE_DEVICE_PROPERTY_ENTITY_UPDATED),
-				Metadata\Types\ModuleSource::get(Metadata\Types\ModuleSource::SOURCE_MODULE_DEVICES),
+				MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::ROUTE_DEVICE_PROPERTY_ENTITY_UPDATED),
+				MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
 			],
 			'delete' => [
 				Utils\ArrayHash::from([
 					'id' => 'b41efd22-42e0-4e30-aab4-de471741cd30',
-					'type' => Metadata\Types\PropertyType::TYPE_DYNAMIC,
+					'type' => MetadataTypes\PropertyType::TYPE_DYNAMIC,
 					'device' => '6a6a8525-eb24-4f48-8698-4f446b4a2664',
 					'property' => '667e159f-ad74-4ba7-94d7-775b1930ea11',
 					'identifier' => 'property-name',
 					'name' => null,
 					'settable' => true,
 					'queryable' => true,
-					'data_type' => Metadata\Types\DataType::DATA_TYPE_UNKNOWN,
+					'data_type' => MetadataTypes\DataType::DATA_TYPE_UNKNOWN,
 					'unit' => null,
 					'format' => null,
 					'invalid' => null,
 					'number_of_decimals' => null,
 				]),
-				Metadata\Types\RoutingKey::get(Metadata\Types\RoutingKey::ROUTE_DEVICE_PROPERTY_ENTITY_DELETED),
-				Metadata\Types\ModuleSource::get(Metadata\Types\ModuleSource::SOURCE_MODULE_DEVICES),
+				MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::ROUTE_DEVICE_PROPERTY_ENTITY_DELETED),
+				MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
 			],
 		];
 	}
@@ -451,8 +450,8 @@ final class PublisherTest extends BaseTestCase
 					'title' => null,
 					'comment' => null,
 				]),
-				Metadata\Types\RoutingKey::get(Metadata\Types\RoutingKey::ROUTE_CHANNEL_ENTITY_CREATED),
-				Metadata\Types\ModuleSource::get(Metadata\Types\ModuleSource::SOURCE_MODULE_DEVICES),
+				MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::ROUTE_CHANNEL_ENTITY_CREATED),
+				MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
 			],
 			'update' => [
 				Utils\ArrayHash::from([
@@ -464,8 +463,8 @@ final class PublisherTest extends BaseTestCase
 					'title' => null,
 					'comment' => null,
 				]),
-				Metadata\Types\RoutingKey::get(Metadata\Types\RoutingKey::ROUTE_CHANNEL_ENTITY_UPDATED),
-				Metadata\Types\ModuleSource::get(Metadata\Types\ModuleSource::SOURCE_MODULE_DEVICES),
+				MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::ROUTE_CHANNEL_ENTITY_UPDATED),
+				MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
 			],
 			'delete' => [
 				Utils\ArrayHash::from([
@@ -477,8 +476,8 @@ final class PublisherTest extends BaseTestCase
 					'title' => null,
 					'comment' => null,
 				]),
-				Metadata\Types\RoutingKey::get(Metadata\Types\RoutingKey::ROUTE_CHANNEL_ENTITY_DELETED),
-				Metadata\Types\ModuleSource::get(Metadata\Types\ModuleSource::SOURCE_MODULE_DEVICES),
+				MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::ROUTE_CHANNEL_ENTITY_DELETED),
+				MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
 			],
 		];
 	}
@@ -492,7 +491,7 @@ final class PublisherTest extends BaseTestCase
 			'create' => [
 				Utils\ArrayHash::from([
 					'id' => '73b106f6-bbd4-4bed-b6ac-bc4e8cab9e52',
-					'type' => Metadata\Types\PropertyType::TYPE_DYNAMIC,
+					'type' => MetadataTypes\PropertyType::TYPE_DYNAMIC,
 					'device' => '6a6a8525-eb24-4f48-8698-4f446b4a2664',
 					'channel' => '740a1615-8a61-46ed-8d72-192ed20c7aed',
 					'property' => '667e159f-ad74-4ba7-94d7-775b1930ea11',
@@ -500,19 +499,19 @@ final class PublisherTest extends BaseTestCase
 					'name' => null,
 					'settable' => true,
 					'queryable' => true,
-					'data_type' => Metadata\Types\DataType::DATA_TYPE_UNKNOWN,
+					'data_type' => MetadataTypes\DataType::DATA_TYPE_UNKNOWN,
 					'unit' => null,
 					'format' => null,
 					'invalid' => null,
 					'number_of_decimals' => null,
 				]),
-				Metadata\Types\RoutingKey::get(Metadata\Types\RoutingKey::ROUTE_CHANNEL_PROPERTY_ENTITY_CREATED),
-				Metadata\Types\ModuleSource::get(Metadata\Types\ModuleSource::SOURCE_MODULE_DEVICES),
+				MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::ROUTE_CHANNEL_PROPERTY_ENTITY_CREATED),
+				MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
 			],
 			'update' => [
 				Utils\ArrayHash::from([
 					'id' => '73b106f6-bbd4-4bed-b6ac-bc4e8cab9e52',
-					'type' => Metadata\Types\PropertyType::TYPE_DYNAMIC,
+					'type' => MetadataTypes\PropertyType::TYPE_DYNAMIC,
 					'device' => '6a6a8525-eb24-4f48-8698-4f446b4a2664',
 					'channel' => '740a1615-8a61-46ed-8d72-192ed20c7aed',
 					'property' => '667e159f-ad74-4ba7-94d7-775b1930ea11',
@@ -520,19 +519,19 @@ final class PublisherTest extends BaseTestCase
 					'name' => null,
 					'settable' => true,
 					'queryable' => true,
-					'data_type' => Metadata\Types\DataType::DATA_TYPE_UNKNOWN,
+					'data_type' => MetadataTypes\DataType::DATA_TYPE_UNKNOWN,
 					'unit' => null,
 					'format' => null,
 					'invalid' => null,
 					'number_of_decimals' => null,
 				]),
-				Metadata\Types\RoutingKey::get(Metadata\Types\RoutingKey::ROUTE_CHANNEL_PROPERTY_ENTITY_UPDATED),
-				Metadata\Types\ModuleSource::get(Metadata\Types\ModuleSource::SOURCE_MODULE_DEVICES),
+				MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::ROUTE_CHANNEL_PROPERTY_ENTITY_UPDATED),
+				MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
 			],
 			'delete' => [
 				Utils\ArrayHash::from([
 					'id' => '73b106f6-bbd4-4bed-b6ac-bc4e8cab9e52',
-					'type' => Metadata\Types\PropertyType::TYPE_DYNAMIC,
+					'type' => MetadataTypes\PropertyType::TYPE_DYNAMIC,
 					'device' => '6a6a8525-eb24-4f48-8698-4f446b4a2664',
 					'channel' => '740a1615-8a61-46ed-8d72-192ed20c7aed',
 					'property' => '667e159f-ad74-4ba7-94d7-775b1930ea11',
@@ -540,14 +539,14 @@ final class PublisherTest extends BaseTestCase
 					'name' => null,
 					'settable' => true,
 					'queryable' => true,
-					'data_type' => Metadata\Types\DataType::DATA_TYPE_UNKNOWN,
+					'data_type' => MetadataTypes\DataType::DATA_TYPE_UNKNOWN,
 					'unit' => null,
 					'format' => null,
 					'invalid' => null,
 					'number_of_decimals' => null,
 				]),
-				Metadata\Types\RoutingKey::get(Metadata\Types\RoutingKey::ROUTE_CHANNEL_PROPERTY_ENTITY_DELETED),
-				Metadata\Types\ModuleSource::get(Metadata\Types\ModuleSource::SOURCE_MODULE_DEVICES),
+				MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::ROUTE_CHANNEL_PROPERTY_ENTITY_DELETED),
+				MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
 			],
 		];
 	}

@@ -13,7 +13,7 @@
  * @date           05.08.22
  */
 
-namespace FastyBird\Metadata\ValueObjects;
+namespace FastyBird\Library\Metadata\ValueObjects;
 
 use Nette;
 use function array_filter;

@@ -13,7 +13,7 @@
  * @date           31.05.22
  */
 
-namespace FastyBird\Metadata\Entities;
+namespace FastyBird\Library\Metadata\Entities;
 
 /**
  * Data entity interface

@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\FbMqtt\Types;
 
 use Consistence;
-use FastyBird\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use function strval;
 
 /**

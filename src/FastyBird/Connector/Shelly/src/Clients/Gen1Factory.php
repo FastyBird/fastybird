@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\Shelly\Clients;
 
 use FastyBird\Connector\Shelly\Types;
-use FastyBird\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Entities as MetadataEntities;
 
 /**
  * Generation 1 devices client factory

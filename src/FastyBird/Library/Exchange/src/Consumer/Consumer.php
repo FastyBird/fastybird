@@ -13,10 +13,10 @@
  * @date           19.12.20
  */
 
-namespace FastyBird\Exchange\Consumer;
+namespace FastyBird\Library\Exchange\Consumer;
 
-use FastyBird\Metadata\Entities as MetadataEntities;
-use FastyBird\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 
 /**
  * Exchange consumer interface

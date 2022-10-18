@@ -47,13 +47,13 @@
     },
     "autoload": {
         "psr-4": {
-            "FastyBird\\Metadata\\": "src/"
+            "FastyBird\\Library\\Metadata\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "FastyBird\\Metadata\\Tests\\Cases\\Unit\\": "tests/cases/unit",
-            "FastyBird\\Metadata\\Tests\\Fixtures\\": "tests/fixtures"
+            "FastyBird\\Library\\Metadata\\Tests\\Cases\\Unit\\": "tests/cases/unit",
+            "FastyBird\\Library\\Metadata\\Tests\\Fixtures\\": "tests/fixtures"
         }
     },
     "config": {

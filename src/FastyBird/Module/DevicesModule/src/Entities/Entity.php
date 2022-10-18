@@ -15,7 +15,7 @@
 
 namespace FastyBird\DevicesModule\Entities;
 
-use FastyBird\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use IPub\DoctrineCrud;
 use Ramsey\Uuid;
 

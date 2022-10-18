@@ -13,13 +13,13 @@
  * @date           02.06.22
  */
 
-namespace FastyBird\Metadata\Entities\TriggersModule;
+namespace FastyBird\Library\Metadata\Entities\TriggersModule;
 
-use FastyBird\Metadata\Entities;
-use FastyBird\Metadata\Exceptions;
-use FastyBird\Metadata\Loaders;
-use FastyBird\Metadata\Schemas;
-use FastyBird\Metadata\Types;
+use FastyBird\Library\Metadata\Entities;
+use FastyBird\Library\Metadata\Exceptions;
+use FastyBird\Library\Metadata\Loaders;
+use FastyBird\Library\Metadata\Schemas;
+use FastyBird\Library\Metadata\Types;
 use IPub\Phone;
 use Nette\Utils;
 use function is_string;

@@ -18,7 +18,7 @@ namespace FastyBird\DevicesModule\Models\States;
 use FastyBird\DevicesModule\Entities;
 use FastyBird\DevicesModule\Exceptions;
 use FastyBird\DevicesModule\States;
-use FastyBird\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use Nette;
 use Ramsey\Uuid;
 

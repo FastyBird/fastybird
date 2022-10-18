@@ -24,7 +24,7 @@ use FastyBird\Connector\FbMqtt\Types;
 use FastyBird\DevicesModule\Entities as DevicesModuleEntities;
 use FastyBird\DevicesModule\Models as DevicesModuleModels;
 use FastyBird\DevicesModule\Queries as DevicesModuleQueries;
-use FastyBird\Metadata;
+use FastyBird\Library\Metadata;
 use Nette;
 use Nette\Utils;
 use Psr\Log;

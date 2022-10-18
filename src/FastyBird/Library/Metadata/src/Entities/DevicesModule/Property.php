@@ -13,13 +13,13 @@
  * @date           02.06.22
  */
 
-namespace FastyBird\Metadata\Entities\DevicesModule;
+namespace FastyBird\Library\Metadata\Entities\DevicesModule;
 
-use FastyBird\Metadata;
-use FastyBird\Metadata\Entities;
-use FastyBird\Metadata\Exceptions;
-use FastyBird\Metadata\Types;
-use FastyBird\Metadata\ValueObjects;
+use FastyBird\Library\Metadata;
+use FastyBird\Library\Metadata\Entities;
+use FastyBird\Library\Metadata\Exceptions;
+use FastyBird\Library\Metadata\Types;
+use FastyBird\Library\Metadata\ValueObjects;
 use Ramsey\Uuid;
 use function array_map;
 use function implode;

@@ -13,7 +13,7 @@
  * @date           02.06.22
  */
 
-namespace FastyBird\Metadata\Entities\DevicesModule;
+namespace FastyBird\Library\Metadata\Entities\DevicesModule;
 
 use Exception;
 use Nette\Utils;

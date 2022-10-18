@@ -100,8 +100,8 @@
             "FastyBird\\Connector\\Shelly\\": "src/FastyBird/Connector/Shelly/src/",
             "FastyBird\\Connector\\Tuya\\": "src/FastyBird/Connector/Tuya/src/",
             "FastyBird\\DevicesModule\\": "src/FastyBird/Module/DevicesModule/src/",
-            "FastyBird\\Exchange\\": "src/FastyBird/Library/Exchange/src/",
-            "FastyBird\\Metadata\\": "src/FastyBird/Library/Metadata/src/",
+            "FastyBird\\Library\\Exchange\\": "src/FastyBird/Library/Exchange/src/",
+            "FastyBird\\Library\\Metadata\\": "src/FastyBird/Library/Metadata/src/",
             "FastyBird\\RedisDbPlugin\\": "src/FastyBird/Plugin/RedisDbPlugin/src/",
             "FastyBird\\WebServerPlugin\\": "src/FastyBird/Plugin/WebServerPlugin/src/",
             "FastyBird\\WsExchangePlugin\\": "src/FastyBird/Plugin/WsExchangePlugin/src/"
@@ -123,9 +123,9 @@
             "FastyBird\\DevicesModule\\Tests\\Fixtures\\": "src/FastyBird/Module/DevicesModule/tests/fixtures",
             "FastyBird\\DevicesModule\\Tests\\Fixtures\\Dummy\\": "src/FastyBird/Module/DevicesModule/tests/fixtures/dummy",
             "FastyBird\\DevicesModule\\Tests\\Tools\\": "src/FastyBird/Module/DevicesModule/tests/tools",
-            "FastyBird\\Exchange\\Tests\\Cases\\Unit\\": "src/FastyBird/Library/Exchange/tests/cases/unit",
-            "FastyBird\\Metadata\\Tests\\Cases\\Unit\\": "src/FastyBird/Library/Metadata/tests/cases/unit",
-            "FastyBird\\Metadata\\Tests\\Fixtures\\": "src/FastyBird/Library/Metadata/tests/fixtures",
+            "FastyBird\\Library\\Exchange\\Tests\\Cases\\Unit\\": "src/FastyBird/Library/Exchange/tests/cases/unit",
+            "FastyBird\\Library\\Metadata\\Tests\\Cases\\Unit\\": "src/FastyBird/Library/Metadata/tests/cases/unit",
+            "FastyBird\\Library\\Metadata\\Tests\\Fixtures\\": "src/FastyBird/Library/Metadata/tests/fixtures",
             "FastyBird\\RedisDbPlugin\\Tests\\Cases\\Unit\\": "src/FastyBird/Plugin/RedisDbPlugin/tests/cases/unit",
             "FastyBird\\RedisDbPlugin\\Tests\\Fixtures\\": "src/FastyBird/Plugin/RedisDbPlugin/tests/fixtures",
             "FastyBird\\WebServerPlugin\\Tests\\Cases\\Unit\\": "src/FastyBird/Plugin/WebServerPlugin/tests/cases/unit",
@@ -155,6 +155,19 @@
             "phpstan/extension-installer": true,
             "infection/extension-installer": true
         }
+    },
+    "replace": {
+        "fastybird/devices-module": "self.version",
+        "fastybird/exchange": "self.version",
+        "fastybird/fb-mqtt-connector": "self.version",
+        "fastybird/homekit-connector": "self.version",
+        "fastybird/metadata": "self.version",
+        "fastybird/modbus-connector": "self.version",
+        "fastybird/redisdb-plugin": "self.version",
+        "fastybird/shelly-connector": "self.version",
+        "fastybird/tuya-connector": "self.version",
+        "fastybird/web-server-plugin": "self.version",
+        "fastybird/ws-exchange-plugin": "self.version"
     },
     "minimum-stability": "dev",
     "prefer-stable": true

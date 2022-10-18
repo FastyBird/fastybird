@@ -15,14 +15,14 @@
 
 namespace FastyBird\WsExchangePlugin\Controllers;
 
-use FastyBird\Exchange\Entities as ExchangeEntities;
-use FastyBird\Exchange\Exceptions as ExchangeExceptions;
-use FastyBird\Exchange\Publisher as ExchangePublisher;
-use FastyBird\Metadata;
-use FastyBird\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Metadata\Loaders as MetadataLoaders;
-use FastyBird\Metadata\Schemas as MetadataSchemas;
-use FastyBird\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Exchange\Entities as ExchangeEntities;
+use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
+use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
+use FastyBird\Library\Metadata;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Loaders as MetadataLoaders;
+use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\WsExchangePlugin\Events;
 use FastyBird\WsExchangePlugin\Exceptions;
 use IPub\Phone\Exceptions as PhoneExceptions;
@@ -108,15 +108,15 @@ final class Exchange extends WebSockets\Application\Controller\Controller
 			case Metadata\Constants::MESSAGE_BUS_CONNECTOR_CONTROL_ACTION_ROUTING_KEY:
 			case Metadata\Constants::MESSAGE_BUS_CONNECTOR_PROPERTY_ACTION_ROUTING_KEY:
 			case Metadata\Constants::MESSAGE_BUS_TRIGGER_CONTROL_ACTION_ROUTING_KEY:
-				$schema = $this->schemaLoader->loadByRoutingKey(Metadata\Types\RoutingKey::get($args['routing_key']));
+				$schema = $this->schemaLoader->loadByRoutingKey(MetadataTypes\RoutingKey::get($args['routing_key']));
 				$data = isset($args['data']) ? $this->parseData($args['data'], $schema) : null;
 
 				$this->publisher?->publish(
-					Metadata\Types\ModuleSource::get($args['source']),
-					Metadata\Types\RoutingKey::get($args['routing_key']),
+					MetadataTypes\ModuleSource::get($args['source']),
+					MetadataTypes\RoutingKey::get($args['routing_key']),
 					$this->entityFactory->create(
 						Utils\Json::encode($data),
-						Metadata\Types\RoutingKey::get($args['routing_key']),
+						MetadataTypes\RoutingKey::get($args['routing_key']),
 					),
 				);
 

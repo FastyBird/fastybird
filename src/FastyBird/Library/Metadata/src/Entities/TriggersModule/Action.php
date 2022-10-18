@@ -13,10 +13,10 @@
  * @date           01.06.22
  */
 
-namespace FastyBird\Metadata\Entities\TriggersModule;
+namespace FastyBird\Library\Metadata\Entities\TriggersModule;
 
-use FastyBird\Metadata\Entities;
-use FastyBird\Metadata\Types;
+use FastyBird\Library\Metadata\Entities;
+use FastyBird\Library\Metadata\Types;
 use Ramsey\Uuid;
 
 /**

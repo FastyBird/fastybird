@@ -13,7 +13,7 @@
  * @date           13.06.22
  */
 
-namespace FastyBird\Exchange\Exceptions;
+namespace FastyBird\Library\Exchange\Exceptions;
 
 interface Exception
 {

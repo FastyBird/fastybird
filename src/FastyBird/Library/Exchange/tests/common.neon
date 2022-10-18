@@ -15,4 +15,4 @@ php:
 
 extensions:
     ipubPhone       : IPub\Phone\DI\PhoneExtension
-    fbMetadata      : FastyBird\Metadata\DI\MetadataExtension
+    fbMetadata      : FastyBird\Library\Metadata\DI\MetadataExtension

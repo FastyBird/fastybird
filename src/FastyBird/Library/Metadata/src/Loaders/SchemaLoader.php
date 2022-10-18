@@ -13,11 +13,11 @@
  * @date           09.03.20
  */
 
-namespace FastyBird\Metadata\Loaders;
+namespace FastyBird\Library\Metadata\Loaders;
 
-use FastyBird\Metadata;
-use FastyBird\Metadata\Exceptions;
-use FastyBird\Metadata\Types;
+use FastyBird\Library\Metadata;
+use FastyBird\Library\Metadata\Exceptions;
+use FastyBird\Library\Metadata\Types;
 use function array_key_exists;
 use function file_exists;
 use function file_get_contents;

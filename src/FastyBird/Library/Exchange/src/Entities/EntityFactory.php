@@ -13,12 +13,12 @@
  * @date           13.06.22
  */
 
-namespace FastyBird\Exchange\Entities;
+namespace FastyBird\Library\Exchange\Entities;
 
-use FastyBird\Exchange\Exceptions;
-use FastyBird\Metadata\Entities as MetadataEntities;
-use FastyBird\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Exchange\Exceptions;
+use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use IPub\Phone\Exceptions as PhoneExceptions;
 
 /**

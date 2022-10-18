@@ -13,10 +13,10 @@
  * @date           05.10.21
  */
 
-namespace FastyBird\Metadata\Types;
+namespace FastyBird\Library\Metadata\Types;
 
 use Consistence;
-use FastyBird\Metadata;
+use FastyBird\Library\Metadata;
 use function strval;
 
 /**

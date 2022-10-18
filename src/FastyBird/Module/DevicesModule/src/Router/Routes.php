@@ -18,7 +18,7 @@ namespace FastyBird\DevicesModule\Router;
 use FastyBird\DevicesModule;
 use FastyBird\DevicesModule\Controllers;
 use FastyBird\DevicesModule\Middleware;
-use FastyBird\Metadata;
+use FastyBird\Library\Metadata;
 use FastyBird\SimpleAuth\Middleware as SimpleAuthMiddleware;
 use IPub\SlimRouter\Routing;
 

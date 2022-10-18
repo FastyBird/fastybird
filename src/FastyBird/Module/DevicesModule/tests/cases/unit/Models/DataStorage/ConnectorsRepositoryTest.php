@@ -6,7 +6,7 @@ use FastyBird\DevicesModule\DataStorage;
 use FastyBird\DevicesModule\Exceptions;
 use FastyBird\DevicesModule\Models;
 use FastyBird\DevicesModule\Tests\Cases\Unit\DbTestCase;
-use FastyBird\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use League\Flysystem;
 use Nette;
 use Nette\Utils;

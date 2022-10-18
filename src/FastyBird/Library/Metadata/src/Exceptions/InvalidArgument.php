@@ -13,7 +13,7 @@
  * @date           19.12.20
  */
 
-namespace FastyBird\Metadata\Exceptions;
+namespace FastyBird\Library\Metadata\Exceptions;
 
 use InvalidArgumentException as PHPInvalidArgumentException;
 

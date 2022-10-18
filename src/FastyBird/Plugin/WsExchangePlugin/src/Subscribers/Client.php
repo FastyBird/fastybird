@@ -15,7 +15,7 @@
 
 namespace FastyBird\WsExchangePlugin\Subscribers;
 
-use FastyBird\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\WsExchangePlugin;
 use FastyBird\WsExchangePlugin\Events;
 use IPub\WebSockets;

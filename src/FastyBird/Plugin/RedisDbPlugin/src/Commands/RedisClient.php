@@ -15,7 +15,7 @@
 
 namespace FastyBird\RedisDbPlugin\Commands;
 
-use FastyBird\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\RedisDbPlugin\Client;
 use FastyBird\RedisDbPlugin\Events;
 use FastyBird\RedisDbPlugin\Exceptions;

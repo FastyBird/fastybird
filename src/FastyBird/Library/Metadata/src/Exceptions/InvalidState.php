@@ -13,7 +13,7 @@
  * @date           01.06.22
  */
 
-namespace FastyBird\Metadata\Exceptions;
+namespace FastyBird\Library\Metadata\Exceptions;
 
 use RuntimeException;
 

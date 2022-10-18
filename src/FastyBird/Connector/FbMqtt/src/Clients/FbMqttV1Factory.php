@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\FbMqtt\Clients;
 
 use FastyBird\Connector\FbMqtt\Types;
-use FastyBird\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Entities as MetadataEntities;
 
 /**
  * FastyBird MQTT v1 client factory

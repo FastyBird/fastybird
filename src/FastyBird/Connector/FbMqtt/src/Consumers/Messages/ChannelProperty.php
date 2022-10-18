@@ -25,8 +25,9 @@ use FastyBird\DevicesModule\Exceptions as DevicesModuleExceptions;
 use FastyBird\DevicesModule\Models as DevicesModuleModels;
 use FastyBird\DevicesModule\Queries as DevicesModuleQueries;
 use FastyBird\DevicesModule\Utilities as DevicesModuleUtilities;
-use FastyBird\Metadata;
-use FastyBird\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata;
+use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use Nette;
 use Nette\Utils;
 use Psr\Log;
@@ -70,7 +71,7 @@ final class ChannelProperty implements Consumers\Consumer
 
 	/**
 	 * @throws DBAL\Exception
-	 * @throws Metadata\Exceptions\FileNotFound
+	 * @throws MetadataExceptions\FileNotFound
 	 * @throws Throwable
 	 */
 	public function consume(Entities\Messages\Entity $entity): bool

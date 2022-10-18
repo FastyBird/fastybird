@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\Tuya\Clients;
 
 use FastyBird\Connector\Tuya\Types;
-use FastyBird\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Entities as MetadataEntities;
 
 /**
  * Cloud devices client factory

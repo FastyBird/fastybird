@@ -1,10 +1,10 @@
 <?php declare(strict_types = 1);
 
-namespace FastyBird\Metadata\Tests\Cases\Unit\Schemas;
+namespace FastyBird\Library\Metadata\Tests\Cases\Unit\Schemas;
 
-use FastyBird\Metadata\Exceptions;
-use FastyBird\Metadata\Schemas;
-use FastyBird\Metadata\Tests\Cases\Unit\BaseTestCase;
+use FastyBird\Library\Metadata\Exceptions;
+use FastyBird\Library\Metadata\Schemas;
+use FastyBird\Library\Metadata\Tests\Cases\Unit\BaseTestCase;
 use Nette\Utils;
 use function file_get_contents;
 

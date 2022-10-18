@@ -12,7 +12,7 @@ parameters:
         - ../tests/stubs/SchemaInterface.stub
 
     ignoreErrors:
-        - message: '#^Method FastyBird\\DevicesModule\\Entities\\Devices\\Device::getSource\(\) never returns FastyBird\\Metadata\\Types\\ConnectorSource so it can be removed from the return type.#'
-        - message: '#^Method FastyBird\\DevicesModule\\Entities\\Devices\\Device::getSource\(\) never returns FastyBird\\Metadata\\Types\\PluginSource so it can be removed from the return type.#'
-        - message: '#^Method FastyBird\\DevicesModule\\Entities\\Connectors\\Connector::getSource\(\) never returns FastyBird\\Metadata\\Types\\ConnectorSource so it can be removed from the return type.#'
-        - message: '#^Method FastyBird\\DevicesModule\\Entities\\Connectors\\Connector::getSource\(\) never returns FastyBird\\Metadata\\Types\\PluginSource so it can be removed from the return type.#'
+        - message: '#^Method FastyBird\\DevicesModule\\Entities\\Devices\\Device::getSource\(\) never returns FastyBird\\Library\\Metadata\\Types\\ConnectorSource so it can be removed from the return type.#'
+        - message: '#^Method FastyBird\\DevicesModule\\Entities\\Devices\\Device::getSource\(\) never returns FastyBird\\Library\\Metadata\\Types\\PluginSource so it can be removed from the return type.#'
+        - message: '#^Method FastyBird\\DevicesModule\\Entities\\Connectors\\Connector::getSource\(\) never returns FastyBird\\Library\\Metadata\\Types\\ConnectorSource so it can be removed from the return type.#'
+        - message: '#^Method FastyBird\\DevicesModule\\Entities\\Connectors\\Connector::getSource\(\) never returns FastyBird\\Library\\Metadata\\Types\\PluginSource so it can be removed from the return type.#'

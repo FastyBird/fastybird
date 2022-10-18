@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\Shelly\Consumers;
 
 use FastyBird\Connector\Shelly\Entities;
-use FastyBird\Metadata;
+use FastyBird\Library\Metadata;
 use Nette;
 use Psr\Log;
 use SplObjectStorage;

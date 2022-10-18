@@ -13,11 +13,11 @@
  * @date           19.12.20
  */
 
-namespace FastyBird\Exchange\DI;
+namespace FastyBird\Library\Exchange\DI;
 
-use FastyBird\Exchange\Consumer;
-use FastyBird\Exchange\Entities;
-use FastyBird\Exchange\Publisher;
+use FastyBird\Library\Exchange\Consumer;
+use FastyBird\Library\Exchange\Entities;
+use FastyBird\Library\Exchange\Publisher;
 use Nette;
 use Nette\DI;
 use function assert;

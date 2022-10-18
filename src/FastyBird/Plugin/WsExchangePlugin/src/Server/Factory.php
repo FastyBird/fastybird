@@ -15,8 +15,8 @@
 
 namespace FastyBird\WsExchangePlugin\Server;
 
-use FastyBird\Exchange\Consumer as ExchangeConsumer;
-use FastyBird\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Exchange\Consumer as ExchangeConsumer;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\WsExchangePlugin\Consumers;
 use IPub\WebSockets;
 use Nette\Utils;
