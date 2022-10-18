@@ -1,12 +1,12 @@
 [
   {
     "organization": "FastyBird",
-    "name": "exchange",
+    "name": "exchange-library",
     "local-path": "src/FastyBird/Library/Exchange"
   },
   {
     "organization": "FastyBird",
-    "name": "metadata",
+    "name": "metadata-library",
     "local-path": "src/FastyBird/Library/Metadata"
   },
   {

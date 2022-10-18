@@ -1,5 +1,5 @@
 {
-    "name": "fastybird/metadata",
+    "name": "fastybird/metadata-library",
     "type": "library",
     "description": "FastyBird metadata reader & validator for modules, plugins & etc. used by FastyBird applications",
     "keywords": ["fastybird", "fb", "libs", "library", "metadata", "modules", "plugins", "connectors"],

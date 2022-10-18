@@ -1,5 +1,5 @@
 {
-  "name" : "@fastybird/metadata",
+  "name" : "@fastybird/metadata-library",
   "version" : "1.1.0",
   "description" : "FastyBird metadata reader & validator for modules, plugins & etc. used by FastyBird applications",
   "keywords" : [
@@ -13,7 +13,7 @@
     "connectors"
   ],
   "homepage" : "https://www.fastybird.com",
-  "bugs" : "https://github.com/FastyBird/metadata/issues",
+  "bugs" : "https://github.com/FastyBird/metadata-library/issues",
   "license" : "Apache-2.0",
   "author" : {
     "name" : "FastyBird s.r.o.",
@@ -22,13 +22,13 @@
   },
   "repository" : {
     "type" : "git",
-    "url" : "https://github.com/FastyBird/metadata.git"
+    "url" : "https://github.com/FastyBird/metadata-library.git"
   },
-  "main" : "dist/metadata.ssr.js",
-  "browser" : "dist/metadata.esm.js",
-  "module" : "dist/metadata.esm.js",
-  "unpkg" : "dist/metadata.min.js",
-  "types" : "dist/metadata.d.ts",
+  "main" : "dist/metadata-library.ssr.js",
+  "browser" : "dist/metadata-library.esm.js",
+  "module" : "dist/metadata-library.esm.js",
+  "unpkg" : "dist/metadata-library.min.js",
+  "types" : "dist/metadata-library.d.ts",
   "files" : [
     "dist/*",
     "resources/*"

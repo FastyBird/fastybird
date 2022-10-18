@@ -6,10 +6,10 @@ The purpose of this library is to provide unified interface for data exchange. C
 
 ## Installation
 
-The best way to install **fastybird/exchange** is using [Composer](http://getcomposer.org/):
+The best way to install **fastybird/exchange-library** is using [Composer](http://getcomposer.org/):
 
 ```sh
-composer require fastybird/exchange
+composer require fastybird/exchange-library
 ```
 
 After that, you have to register extension in *config.neon*.
@@ -114,4 +114,4 @@ class DataConsumer implements Consumer
 
 ***
 Homepage [https://www.fastybird.com](https://www.fastybird.com) and
-repository [https://github.com/FastyBird/exchange](https://github.com/FastyBird/exchange).
+repository [https://github.com/FastyBird/exchange-library](https://github.com/FastyBird/exchange-library).

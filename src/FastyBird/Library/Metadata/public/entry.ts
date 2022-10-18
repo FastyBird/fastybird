@@ -1,2 +1,2 @@
 // Re-export plugin typing
-export * from '@/types/metadata'
+export * from '@/types/metadata-library'

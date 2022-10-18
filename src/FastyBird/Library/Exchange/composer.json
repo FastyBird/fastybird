@@ -1,5 +1,5 @@
 {
-    "name": "fastybird/exchange",
+    "name": "fastybird/exchange-library",
     "type": "library",
     "description": "FastyBird application exchange services",
     "keywords": ["fastybird", "fb", "libs", "exchange", "bus", "messages", "library"],

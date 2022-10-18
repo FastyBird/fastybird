@@ -71,7 +71,7 @@ if (!argv.format || argv.format === 'es') {
     ...baseConfig,
     external,
     output: {
-      file: 'dist/metadata.esm.js',
+      file: 'dist/metadata-library.esm.js',
       format: 'esm',
       exports: 'named',
     },
@@ -104,7 +104,7 @@ if (!argv.format || argv.format === 'cjs') {
     external,
     output: {
       compact: true,
-      file: 'dist/metadata.ssr.js',
+      file: 'dist/metadata-library.ssr.js',
       format: 'cjs',
       name: 'Metadata',
       exports: 'named',
@@ -126,7 +126,7 @@ if (!argv.format || argv.format === 'iife') {
     external,
     output: {
       compact: true,
-      file: 'dist/metadata.min.js',
+      file: 'dist/metadata-library.min.js',
       format: 'iife',
       name: 'Metadata',
       exports: 'named',
@@ -151,7 +151,7 @@ buildFormats.push({
   ...baseConfig,
   external,
   output: {
-    file: 'dist/metadata.d.ts',
+    file: 'dist/metadata-library.d.ts',
     format: 'es',
   },
   plugins: [
