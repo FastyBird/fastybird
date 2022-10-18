@@ -556,10 +556,6 @@ class DevicesModuleExtension extends DI\CompilerExtension
 				'addPaths',
 				[[__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'Entities']],
 			);
-			$ormAnnotationDriverService->addSetup(
-				'addPaths',
-				[[__DIR__ . '/../../tests/fixtures/dummy']],
-			);
 		}
 
 		$ormAnnotationDriverChainService = $builder->getDefinitionByType(
@@ -570,10 +566,6 @@ class DevicesModuleExtension extends DI\CompilerExtension
 			$ormAnnotationDriverChainService->addSetup('addDriver', [
 				$ormAnnotationDriverService,
 				'FastyBird\DevicesModule\Entities',
-			]);
-			$ormAnnotationDriverChainService->addSetup('addDriver', [
-				$ormAnnotationDriverService,
-				'FastyBird\DevicesModule\Tests\Fixtures\Dummy',
 			]);
 		}
 
