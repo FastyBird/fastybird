@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:Metadata!
+ * @package        FastyBird:MetadataLibrary!
  * @subpackage     common
  * @since          0.1.0
  *
@@ -20,7 +20,7 @@ use const DIRECTORY_SEPARATOR as DS;
 /**
  * Library constants
  *
- * @package        FastyBird:Metadata!
+ * @package        FastyBird:MetadataLibrary!
  * @subpackage     common
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

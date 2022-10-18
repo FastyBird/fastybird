@@ -38,7 +38,7 @@ use function strval;
  *
  * @implements IteratorAggregate<int, MetadataEntities\DevicesModule\ConnectorVariableProperty|MetadataEntities\DevicesModule\ConnectorDynamicProperty|MetadataEntities\DevicesModule\ConnectorMappedProperty>
  *
- * @package        FastyBird:Devices!
+ * @package        FastyBird:DevicesModule!
  * @subpackage     Models
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */

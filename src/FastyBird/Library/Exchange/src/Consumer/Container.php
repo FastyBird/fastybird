@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:Exchange!
+ * @package        FastyBird:ExchangeLibrary!
  * @subpackage     Consumers
  * @since          0.5.0
  *
@@ -24,7 +24,7 @@ use SplObjectStorage;
 /**
  * Exchange consumer proxy
  *
- * @package        FastyBird:Exchange!
+ * @package        FastyBird:ExchangeLibrary!
  * @subpackage     Consumers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

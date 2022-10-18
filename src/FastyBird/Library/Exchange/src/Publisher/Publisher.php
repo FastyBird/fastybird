@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:Exchange!
+ * @package        FastyBird:ExchangeLibrary!
  * @subpackage     Publishers
  * @since          0.1.0
  *
@@ -21,7 +21,7 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 /**
  * Exchange publisher interface
  *
- * @package        FastyBird:Exchange!
+ * @package        FastyBird:ExchangeLibrary!
  * @subpackage     Publishers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

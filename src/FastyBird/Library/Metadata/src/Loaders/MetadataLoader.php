@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:Metadata!
+ * @package        FastyBird:MetadataLibrary!
  * @subpackage     Loaders
  * @since          0.1.0
  *
@@ -25,7 +25,7 @@ use const DIRECTORY_SEPARATOR;
 /**
  * Metadata loader
  *
- * @package        FastyBird:Metadata!
+ * @package        FastyBird:MetadataLibrary!
  * @subpackage     Loaders
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

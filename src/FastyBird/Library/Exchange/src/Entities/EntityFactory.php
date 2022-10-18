@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:Exchange!
+ * @package        FastyBird:ExchangeLibrary!
  * @subpackage     Entities
  * @since          0.44.0
  *
@@ -24,7 +24,7 @@ use IPub\Phone\Exceptions as PhoneExceptions;
 /**
  * Exchange entity factory
  *
- * @package        FastyBird:Exchange!
+ * @package        FastyBird:ExchangeLibrary!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

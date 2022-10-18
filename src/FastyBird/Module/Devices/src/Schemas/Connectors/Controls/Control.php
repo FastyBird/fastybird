@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:Devices!
+ * @package        FastyBird:DevicesModule!
  * @subpackage     Schemas
  * @since          0.4.0
  *
@@ -29,7 +29,7 @@ use Neomerx\JsonApi;
  *
  * @extends JsonApiSchemas\JsonApi<Entities\Connectors\Controls\Control>
  *
- * @package         FastyBird:Devices!
+ * @package         FastyBird:DevicesModule!
  * @subpackage      Schemas
  * @author          Adam Kadlec <adam.kadlec@fastybird.com>
  */

@@ -14,7 +14,7 @@ includes:
 
     - ../src/FastyBird/Plugin/RedisDb/tools/phpstan.config.src.neon
     - ../src/FastyBird/Plugin/WebServer/tools/phpstan.config.src.neon
-    - ../src/FastyBird/Plugin/WsExchangePlugin/tools/phpstan.config.src.neon
+    - ../src/FastyBird/Plugin/WsExchange/tools/phpstan.config.src.neon
 
 parameters:
     level: max

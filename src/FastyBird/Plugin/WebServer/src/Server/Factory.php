@@ -6,7 +6,7 @@
  * @license        More in license.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:WebServer!
+ * @package        FastyBird:WebServerPlugin!
  * @subpackage     Server
  * @since          0.1.0
  *
@@ -27,10 +27,10 @@ use function str_replace;
 /**
  * HTTP server factory
  *
- * @package         FastyBird:WsServerPlugin!
- * @subpackage      Server
+ * @package        FastyBird:WebServerPlugin!
+ * @subpackage     Server
  *
- * @author          Adam Kadlec <adam.kadlec@fastybird.com>
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 final class Factory
 {

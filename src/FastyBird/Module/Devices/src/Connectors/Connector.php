@@ -6,7 +6,7 @@
  * @license        More in license.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:Devices!
+ * @package        FastyBird:DevicesModule!
  * @subpackage     Connectors
  * @since          0.60.0
  *
@@ -18,7 +18,7 @@ namespace FastyBird\Module\Devices\Connectors;
 /**
  * Devices connector interface
  *
- * @package        FastyBird:Devices!
+ * @package        FastyBird:DevicesModule!
  * @subpackage     Connectors
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:Devices!
+ * @package        FastyBird:DevicesModule!
  * @subpackage     Schemas
  * @since          0.6.0
  *
@@ -24,7 +24,7 @@ use FastyBird\Module\Devices\Schemas;
  *
  * @extends Connector<Entities\Connectors\Blank>
  *
- * @package         FastyBird:Devices!
+ * @package         FastyBird:DevicesModule!
  * @subpackage      Schemas
  * @author          Adam Kadlec <adam.kadlec@fastybird.com>
  */

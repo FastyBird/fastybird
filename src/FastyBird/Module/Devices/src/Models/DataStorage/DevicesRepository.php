@@ -32,7 +32,7 @@ use function strval;
  *
  * @implements IteratorAggregate<int, MetadataEntities\DevicesModule\Device>
  *
- * @package        FastyBird:Devices!
+ * @package        FastyBird:DevicesModule!
  * @subpackage     Models
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */

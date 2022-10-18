@@ -104,7 +104,7 @@
             "FastyBird\\Module\\Devices\\": "src/FastyBird/Module/Devices/src/",
             "FastyBird\\Plugin\\RedisDb\\": "src/FastyBird/Plugin/RedisDb/src/",
             "FastyBird\\Plugin\\WebServer\\": "src/FastyBird/Plugin/WebServer/src/",
-            "FastyBird\\WsExchangePlugin\\": "src/FastyBird/Plugin/WsExchangePlugin/src/"
+            "FastyBird\\Plugin\\WsExchange\\": "src/FastyBird/Plugin/WsExchange/src/"
         }
     },
     "autoload-dev": {
@@ -129,7 +129,7 @@
             "FastyBird\\Plugin\\RedisDb\\Tests\\Cases\\Unit\\": "src/FastyBird/Plugin/RedisDb/tests/cases/unit",
             "FastyBird\\Plugin\\RedisDb\\Tests\\Fixtures\\": "src/FastyBird/Plugin/RedisDb/tests/fixtures",
             "FastyBird\\Plugin\\WebServer\\Tests\\Cases\\Unit\\": "src/FastyBird/Plugin/WebServer/tests/cases/unit",
-            "FastyBird\\WsExchangePlugin\\Tests\\Cases\\Unit\\": "src/FastyBird/Plugin/WsExchangePlugin/tests/cases/unit"
+            "FastyBird\\Plugin\\WsExchange\\Tests\\Cases\\Unit\\": "src/FastyBird/Plugin/WsExchange/tests/cases/unit"
         }
     },
     "extra": {

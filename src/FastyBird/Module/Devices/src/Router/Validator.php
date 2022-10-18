@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:Devices!
+ * @package        FastyBird:DevicesModule!
  * @subpackage     Router
  * @since          0.9.0
  *
@@ -27,7 +27,7 @@ use function assert;
 /**
  * Route validator
  *
- * @package        FastyBird:Devices!
+ * @package        FastyBird:DevicesModule!
  * @subpackage     Router
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

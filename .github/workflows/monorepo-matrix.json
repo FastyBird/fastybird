@@ -52,6 +52,6 @@
   {
     "organization": "FastyBird",
     "name": "ws-exchange-plugin",
-    "local-path": "src/FastyBird/Plugin/WsExchangePlugin"
+    "local-path": "src/FastyBird/Plugin/WsExchange"
   }
 ]
