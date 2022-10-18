@@ -1,6 +1,21 @@
 [
   {
     "organization": "FastyBird",
+    "name": "exchange",
+    "local-path": "src/FastyBird/Library/Exchange"
+  },
+  {
+    "organization": "FastyBird",
+    "name": "metadata",
+    "local-path": "src/FastyBird/Library/Metadata"
+  },
+  {
+    "organization": "FastyBird",
+    "name": "devices-module",
+    "local-path": "src/FastyBird/Module/Devices"
+  },
+  {
+    "organization": "FastyBird",
     "name": "fb-mqtt-connector",
     "local-path": "src/FastyBird/Connector/FbMqtt"
   },
@@ -23,21 +38,6 @@
     "organization": "FastyBird",
     "name": "tuya-connector",
     "local-path": "src/FastyBird/Connector/Tuya"
-  },
-  {
-    "organization": "FastyBird",
-    "name": "exchange",
-    "local-path": "src/FastyBird/Library/Exchange"
-  },
-  {
-    "organization": "FastyBird",
-    "name": "metadata",
-    "local-path": "src/FastyBird/Library/Metadata"
-  },
-  {
-    "organization": "FastyBird",
-    "name": "devices-module",
-    "local-path": "src/FastyBird/Module/DevicesModule"
   },
   {
     "organization": "FastyBird",
