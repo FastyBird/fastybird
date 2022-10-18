@@ -22,7 +22,6 @@ jobs:
   tests:
     name: "Code tests"
     runs-on: "${{ matrix.operating-system }}"
-    needs: [ "qa", "static-analysis" ]
 
     strategy:
       fail-fast: false
