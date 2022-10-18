@@ -102,7 +102,7 @@
             "FastyBird\\Library\\Exchange\\": "src/FastyBird/Library/Exchange/src/",
             "FastyBird\\Library\\Metadata\\": "src/FastyBird/Library/Metadata/src/",
             "FastyBird\\Module\\Devices\\": "src/FastyBird/Module/Devices/src/",
-            "FastyBird\\RedisDbPlugin\\": "src/FastyBird/Plugin/RedisDbPlugin/src/",
+            "FastyBird\\Plugin\\RedisDb\\": "src/FastyBird/Plugin/RedisDb/src/",
             "FastyBird\\WebServerPlugin\\": "src/FastyBird/Plugin/WebServerPlugin/src/",
             "FastyBird\\WsExchangePlugin\\": "src/FastyBird/Plugin/WsExchangePlugin/src/"
         }
@@ -126,8 +126,8 @@
             "FastyBird\\Module\\Devices\\Tests\\Fixtures\\": "src/FastyBird/Module/Devices/tests/fixtures",
             "FastyBird\\Module\\Devices\\Tests\\Fixtures\\Dummy\\": "src/FastyBird/Module/Devices/tests/fixtures/dummy",
             "FastyBird\\Module\\Devices\\Tests\\Tools\\": "src/FastyBird/Module/Devices/tests/tools",
-            "FastyBird\\RedisDbPlugin\\Tests\\Cases\\Unit\\": "src/FastyBird/Plugin/RedisDbPlugin/tests/cases/unit",
-            "FastyBird\\RedisDbPlugin\\Tests\\Fixtures\\": "src/FastyBird/Plugin/RedisDbPlugin/tests/fixtures",
+            "FastyBird\\Plugin\\RedisDb\\Tests\\Cases\\Unit\\": "src/FastyBird/Plugin/RedisDb/tests/cases/unit",
+            "FastyBird\\Plugin\\RedisDb\\Tests\\Fixtures\\": "src/FastyBird/Plugin/RedisDb/tests/fixtures",
             "FastyBird\\WebServerPlugin\\Tests\\Cases\\Unit\\": "src/FastyBird/Plugin/WebServerPlugin/tests/cases/unit",
             "FastyBird\\WsExchangePlugin\\Tests\\Cases\\Unit\\": "src/FastyBird/Plugin/WsExchangePlugin/tests/cases/unit"
         }

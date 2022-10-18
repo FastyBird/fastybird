@@ -42,7 +42,7 @@
   {
     "organization": "FastyBird",
     "name": "redisdb-plugin",
-    "local-path": "src/FastyBird/Plugin/RedisDbPlugin"
+    "local-path": "src/FastyBird/Plugin/RedisDb"
   },
   {
     "organization": "FastyBird",
