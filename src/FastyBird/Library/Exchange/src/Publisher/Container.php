@@ -13,9 +13,9 @@
  * @date           19.12.20
  */
 
-namespace FastyBird\Exchange\Publisher;
+namespace FastyBird\Library\Exchange\Publisher;
 
-use FastyBird\Exchange\Events;
+use FastyBird\Library\Exchange\Events;
 use FastyBird\Metadata\Entities as MetadataEntities;
 use FastyBird\Metadata\Types as MetadataTypes;
 use Psr\EventDispatcher as PsrEventDispatcher;

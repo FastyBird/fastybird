@@ -13,9 +13,9 @@
  * @date           13.06.22
  */
 
-namespace FastyBird\Exchange\Entities;
+namespace FastyBird\Library\Exchange\Entities;
 
-use FastyBird\Exchange\Exceptions;
+use FastyBird\Library\Exchange\Exceptions;
 use FastyBird\Metadata\Entities as MetadataEntities;
 use FastyBird\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Metadata\Types as MetadataTypes;

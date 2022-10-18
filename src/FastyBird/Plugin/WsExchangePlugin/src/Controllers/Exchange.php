@@ -15,9 +15,9 @@
 
 namespace FastyBird\WsExchangePlugin\Controllers;
 
-use FastyBird\Exchange\Entities as ExchangeEntities;
-use FastyBird\Exchange\Exceptions as ExchangeExceptions;
-use FastyBird\Exchange\Publisher as ExchangePublisher;
+use FastyBird\Library\Exchange\Entities as ExchangeEntities;
+use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
+use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Metadata;
 use FastyBird\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Metadata\Loaders as MetadataLoaders;

@@ -15,7 +15,7 @@ php:
 
 extensions:
     fbMetadata              : FastyBird\Metadata\DI\MetadataExtension
-    fbExchange              : FastyBird\Exchange\DI\ExchangeExtension
+    fbExchange              : FastyBird\Library\Exchange\DI\ExchangeExtension
     ipubWebSocketsWAMP      : IPub\WebSocketsWAMP\DI\WebSocketsWAMPExtension
     ipubWebSockets          : IPub\WebSockets\DI\WebSocketsExtension
     ipubPhone               : IPub\Phone\DI\PhoneExtension

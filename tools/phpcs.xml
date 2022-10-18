@@ -37,8 +37,8 @@
                 <element key="src/FastyBird/Connector/Tuya/tests/cases/unit" value="FastyBird\Connector\Tuya\Tests\Cases\Unit"/>
                 <element key="src/FastyBird/Connector/Tuya/tests/tools" value="FastyBird\Connector\Tuya\Tests\Tools"/>
 
-                <element key="src/FastyBird/Library/Exchange/src" value="FastyBird\Exchange"/>
-                <element key="src/FastyBird/Library/Exchange/tests/cases/unit" value="FastyBird\Exchange\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Library/Exchange/src" value="FastyBird\Library\Exchange"/>
+                <element key="src/FastyBird/Library/Exchange/tests/cases/unit" value="FastyBird\Library\Exchange\Tests\Cases\Unit"/>
 
                 <element key="src/FastyBird/Library/Metadata/src" value="FastyBird\Metadata"/>
                 <element key="src/FastyBird/Library/Metadata/tests/cases/unit" value="FastyBird\Metadata\Tests\Cases\Unit"/>

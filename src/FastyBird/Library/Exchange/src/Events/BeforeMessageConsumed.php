@@ -13,7 +13,7 @@
  * @date           19.06.22
  */
 
-namespace FastyBird\Exchange\Events;
+namespace FastyBird\Library\Exchange\Events;
 
 use FastyBird\Metadata\Entities as MetadataEntities;
 use FastyBird\Metadata\Types as MetadataTypes;

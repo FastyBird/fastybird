@@ -16,7 +16,7 @@
 namespace FastyBird\DevicesModule\Consumers;
 
 use FastyBird\DevicesModule\DataStorage;
-use FastyBird\Exchange\Consumer as ExchangeConsumer;
+use FastyBird\Library\Exchange\Consumer as ExchangeConsumer;
 use FastyBird\Metadata\Constants as MetadataConstants;
 use FastyBird\Metadata\Entities as MetadataEntities;
 use FastyBird\Metadata\Types as MetadataTypes;

@@ -19,7 +19,7 @@ use FastyBird\Connector\HomeKit\Clients;
 use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Protocol;
 use FastyBird\DevicesModule\Models as DevicesModuleModels;
-use FastyBird\Exchange\Consumer as ExchangeConsumer;
+use FastyBird\Library\Exchange\Consumer as ExchangeConsumer;
 use FastyBird\Metadata;
 use FastyBird\Metadata\Entities as MetadataEntities;
 use FastyBird\Metadata\Exceptions as MetadataExceptions;

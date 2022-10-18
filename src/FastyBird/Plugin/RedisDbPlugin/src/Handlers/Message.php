@@ -15,8 +15,8 @@
 
 namespace FastyBird\RedisDbPlugin\Handlers;
 
-use FastyBird\Exchange\Consumer as ExchangeConsumer;
-use FastyBird\Exchange\Entities as ExchangeEntities;
+use FastyBird\Library\Exchange\Consumer as ExchangeConsumer;
+use FastyBird\Library\Exchange\Entities as ExchangeEntities;
 use FastyBird\Metadata\Types as MetadataTypes;
 use FastyBird\RedisDbPlugin\Events;
 use FastyBird\RedisDbPlugin\Exceptions;

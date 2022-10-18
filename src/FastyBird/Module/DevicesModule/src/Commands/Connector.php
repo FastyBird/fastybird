@@ -22,7 +22,7 @@ use FastyBird\DevicesModule\Consumers;
 use FastyBird\DevicesModule\Events;
 use FastyBird\DevicesModule\Exceptions;
 use FastyBird\DevicesModule\Models;
-use FastyBird\Exchange\Consumer as ExchangeConsumer;
+use FastyBird\Library\Exchange\Consumer as ExchangeConsumer;
 use FastyBird\Metadata;
 use FastyBird\Metadata\Entities as MetadataEntities;
 use FastyBird\Metadata\Exceptions as MetadataExceptions;

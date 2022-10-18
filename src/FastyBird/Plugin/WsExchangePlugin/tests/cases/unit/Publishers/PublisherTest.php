@@ -2,8 +2,8 @@
 
 namespace FastyBird\WsExchangePlugin\Tests\Cases\Unit\Publishers;
 
-use FastyBird\Exchange\Entities as ExchangeEntities;
-use FastyBird\Exchange\Exceptions as ExchangeExceptions;
+use FastyBird\Library\Exchange\Entities as ExchangeEntities;
+use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Metadata;
 use FastyBird\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Metadata\Types as MetadataTypes;
