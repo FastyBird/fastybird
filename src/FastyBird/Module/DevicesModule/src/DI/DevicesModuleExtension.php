@@ -36,7 +36,6 @@ use Nette\PhpGenerator;
 use Nette\Schema;
 use stdClass;
 use function assert;
-use function is_dir;
 use function is_string;
 use function ucfirst;
 use const DIRECTORY_SEPARATOR;
@@ -557,13 +556,6 @@ class DevicesModuleExtension extends DI\CompilerExtension
 				'addPaths',
 				[[__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'Entities']],
 			);
-
-			if (is_dir(__DIR__ . '/../../tests/fixtures/dummy')) {
-				$ormAnnotationDriverService->addSetup(
-					'addPaths',
-					[[__DIR__ . '/../../tests/fixtures/dummy']],
-				);
-			}
 		}
 
 		$ormAnnotationDriverChainService = $builder->getDefinitionByType(
@@ -575,13 +567,6 @@ class DevicesModuleExtension extends DI\CompilerExtension
 				$ormAnnotationDriverService,
 				'FastyBird\DevicesModule\Entities',
 			]);
-
-			if (is_dir(__DIR__ . '/../../tests/fixtures/dummy')) {
-				$ormAnnotationDriverChainService->addSetup('addDriver', [
-					$ormAnnotationDriverService,
-					'FastyBird\DevicesModule\Tests\Fixtures\Dummy',
-				]);
-			}
 		}
 
 		/**
