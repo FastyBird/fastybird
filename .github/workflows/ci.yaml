@@ -195,6 +195,9 @@ jobs:
       - name: "Install dependencies"
         run: "${{ env.composer-install }} ${{ matrix.composer-args }}"
 
+      - name: "Rebuild autoload"
+        run: "composer dump"
+
       - name: "Tests"
         run: "make tests"
 
