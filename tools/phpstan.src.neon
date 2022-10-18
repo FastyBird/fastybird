@@ -13,7 +13,7 @@ includes:
     - ../src/FastyBird/Module/Devices/tools/phpstan.config.src.neon
 
     - ../src/FastyBird/Plugin/RedisDb/tools/phpstan.config.src.neon
-    - ../src/FastyBird/Plugin/WebServerPlugin/tools/phpstan.config.src.neon
+    - ../src/FastyBird/Plugin/WebServer/tools/phpstan.config.src.neon
     - ../src/FastyBird/Plugin/WsExchangePlugin/tools/phpstan.config.src.neon
 
 parameters:
