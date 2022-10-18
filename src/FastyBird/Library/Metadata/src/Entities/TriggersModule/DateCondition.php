@@ -13,10 +13,10 @@
  * @date           02.06.22
  */
 
-namespace FastyBird\Metadata\Entities\TriggersModule;
+namespace FastyBird\Library\Metadata\Entities\TriggersModule;
 
 use DateTimeInterface;
-use FastyBird\Metadata\Exceptions;
+use FastyBird\Library\Metadata\Exceptions;
 use Nette\Utils;
 use function array_merge;
 

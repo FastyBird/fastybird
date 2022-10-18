@@ -15,7 +15,7 @@
 
 namespace FastyBird\DevicesModule;
 
-use FastyBird\Metadata;
+use FastyBird\Library\Metadata;
 
 /**
  * Service constants

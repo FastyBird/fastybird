@@ -17,7 +17,7 @@ namespace FastyBird\Connector\Tuya\API;
 
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\DateTimeFactory;
-use FastyBird\Metadata\Schemas as MetadataSchemas;
+use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use Psr\Log;
 use React\EventLoop;
 

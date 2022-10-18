@@ -15,8 +15,8 @@
 
 namespace FastyBird\Library\Exchange\Publisher;
 
-use FastyBird\Metadata\Entities as MetadataEntities;
-use FastyBird\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 
 /**
  * Exchange publisher interface

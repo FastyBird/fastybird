@@ -13,7 +13,7 @@
  * @date           04.04.20
  */
 
-namespace FastyBird\Metadata\Types;
+namespace FastyBird\Library\Metadata\Types;
 
 use Consistence;
 use function strval;

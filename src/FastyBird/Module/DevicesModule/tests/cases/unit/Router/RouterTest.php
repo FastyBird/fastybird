@@ -4,7 +4,7 @@ namespace FastyBird\DevicesModule\Tests\Cases\Unit\Router;
 
 use FastyBird\DevicesModule\Exceptions;
 use FastyBird\DevicesModule\Tests\Cases\Unit\DbTestCase;
-use FastyBird\Metadata;
+use FastyBird\Library\Metadata;
 use Fig\Http\Message\RequestMethodInterface;
 use Fig\Http\Message\StatusCodeInterface;
 use InvalidArgumentException;

@@ -13,7 +13,7 @@
  * @date           04.05.20
  */
 
-namespace FastyBird\Metadata;
+namespace FastyBird\Library\Metadata;
 
 use const DIRECTORY_SEPARATOR as DS;
 

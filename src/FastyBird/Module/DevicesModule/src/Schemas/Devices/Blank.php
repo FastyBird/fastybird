@@ -17,7 +17,7 @@ namespace FastyBird\DevicesModule\Schemas\Devices;
 
 use FastyBird\DevicesModule\Entities;
 use FastyBird\DevicesModule\Schemas;
-use FastyBird\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 
 /**
  * Blank device entity schema

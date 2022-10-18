@@ -13,9 +13,9 @@
  * @date           02.06.22
  */
 
-namespace FastyBird\Metadata\Entities;
+namespace FastyBird\Library\Metadata\Entities;
 
-use FastyBird\Metadata\Exceptions;
+use FastyBird\Library\Metadata\Exceptions;
 use Nette\Utils;
 use phpDocumentor;
 use ReflectionClass;

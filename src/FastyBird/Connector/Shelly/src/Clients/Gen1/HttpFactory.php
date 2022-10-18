@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\Shelly\Clients\Gen1;
 
-use FastyBird\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Entities as MetadataEntities;
 
 /**
  * HTTP api client factory

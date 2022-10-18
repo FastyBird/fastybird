@@ -17,7 +17,7 @@ namespace FastyBird\Connector\Tuya\Connector;
 
 use FastyBird\Connector\Tuya\Connector;
 use FastyBird\DevicesModule\Connectors as DevicesModuleConnectors;
-use FastyBird\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Entities as MetadataEntities;
 
 /**
  * Connector service executor factory

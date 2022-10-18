@@ -17,9 +17,9 @@ namespace FastyBird\DevicesModule\Models\States;
 
 use FastyBird\DevicesModule\Exceptions;
 use FastyBird\DevicesModule\Models;
-use FastyBird\Metadata;
-use FastyBird\Metadata\Entities as MetadataEntities;
-use FastyBird\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata;
+use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use Nette;
 use Nette\Utils;
 use Psr\Log;

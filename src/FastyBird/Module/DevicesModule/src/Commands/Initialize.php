@@ -16,7 +16,7 @@
 namespace FastyBird\DevicesModule\Commands;
 
 use FastyBird\DevicesModule\DataStorage;
-use FastyBird\Metadata;
+use FastyBird\Library\Metadata;
 use Psr\Log;
 use Symfony\Component\Console;
 use Symfony\Component\Console\Input;

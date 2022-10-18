@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\Tuya\Consumers;
 
 use FastyBird\Connector\Tuya\Entities;
-use FastyBird\Metadata;
+use FastyBird\Library\Metadata;
 use Nette;
 use Psr\Log;
 use SplObjectStorage;

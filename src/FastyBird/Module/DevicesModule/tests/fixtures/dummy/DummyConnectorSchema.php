@@ -3,7 +3,7 @@
 namespace FastyBird\DevicesModule\Tests\Fixtures\Dummy;
 
 use FastyBird\DevicesModule\Schemas;
-use FastyBird\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 
 final class DummyConnectorSchema extends Schemas\Connectors\Connector
 {

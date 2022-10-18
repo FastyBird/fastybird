@@ -13,9 +13,9 @@
  * @date           02.06.22
  */
 
-namespace FastyBird\Metadata\Entities\TriggersModule;
+namespace FastyBird\Library\Metadata\Entities\TriggersModule;
 
-use FastyBird\Metadata\Entities;
+use FastyBird\Library\Metadata\Entities;
 use Ramsey\Uuid;
 
 /**

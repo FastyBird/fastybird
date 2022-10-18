@@ -16,8 +16,8 @@
 namespace FastyBird\WsExchangePlugin\Consumers;
 
 use FastyBird\Library\Exchange\Consumer as ExchangeConsumer;
-use FastyBird\Metadata\Entities as MetadataEntities;
-use FastyBird\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\WsExchangePlugin\Publishers;
 use Nette;
 

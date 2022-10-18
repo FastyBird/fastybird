@@ -16,7 +16,7 @@
 namespace FastyBird\RedisDbPlugin\Models;
 
 use Clue\React\Redis;
-use FastyBird\Metadata\Types;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\RedisDbPlugin\Client;
 use FastyBird\RedisDbPlugin\Exceptions;
 use FastyBird\RedisDbPlugin\States;
@@ -88,7 +88,7 @@ class StatesRepository
 			return $getResult;
 		} catch (Throwable $ex) {
 			$this->logger->error('Content could not be loaded', [
-				'source' => Types\PluginSource::SOURCE_PLUGIN_REDISDB,
+				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
 				'type' => 'state-repository',
 				'record' => [
 					'id' => $id->toString(),

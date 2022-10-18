@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\Tuya\Entities\Messages;
 
 use FastyBird\Connector\Tuya\Types;
-use FastyBird\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette;
 use function is_scalar;
 use function strval;

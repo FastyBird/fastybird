@@ -13,9 +13,9 @@
  * @date           05.08.22
  */
 
-namespace FastyBird\Metadata\ValueObjects;
+namespace FastyBird\Library\Metadata\ValueObjects;
 
-use FastyBird\Metadata\Exceptions;
+use FastyBird\Library\Metadata\Exceptions;
 use Nette;
 use function array_map;
 use function explode;

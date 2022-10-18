@@ -19,8 +19,8 @@ use FastyBird\DevicesModule\Entities;
 use FastyBird\DevicesModule\Exceptions;
 use FastyBird\DevicesModule\Schemas;
 use FastyBird\DevicesModule\Utilities;
-use FastyBird\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Neomerx\JsonApi;
 use function array_merge;
 

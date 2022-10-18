@@ -15,7 +15,7 @@
 
 namespace FastyBird\DevicesModule\Connectors;
 
-use FastyBird\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Entities as MetadataEntities;
 
 /**
  * Connector factory interface

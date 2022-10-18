@@ -13,9 +13,9 @@
  * @date           04.06.22
  */
 
-namespace FastyBird\Metadata\Entities\DevicesModule;
+namespace FastyBird\Library\Metadata\Entities\DevicesModule;
 
-use FastyBird\Metadata\Entities;
+use FastyBird\Library\Metadata\Entities;
 use Nette\Utils;
 use Ramsey\Uuid;
 use function array_map;

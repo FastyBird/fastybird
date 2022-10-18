@@ -16,9 +16,9 @@
 namespace FastyBird\Connector\Shelly\API;
 
 use DateTimeInterface;
-use FastyBird\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Metadata\Types as MetadataTypes;
-use FastyBird\Metadata\ValueObjects as MetadataValueObjects;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
 use Nette;
 use Nette\Utils;
 use function array_filter;

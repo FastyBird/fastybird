@@ -16,8 +16,8 @@
 namespace FastyBird\DevicesModule\Models\DataStorage;
 
 use Countable;
-use FastyBird\Metadata\Entities as MetadataEntities;
-use FastyBird\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use IteratorAggregate;
 use Nette;
 use Ramsey\Uuid;

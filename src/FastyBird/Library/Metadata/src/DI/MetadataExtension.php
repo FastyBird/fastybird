@@ -13,11 +13,11 @@
  * @date           24.06.20
  */
 
-namespace FastyBird\Metadata\DI;
+namespace FastyBird\Library\Metadata\DI;
 
-use FastyBird\Metadata\Entities;
-use FastyBird\Metadata\Loaders;
-use FastyBird\Metadata\Schemas;
+use FastyBird\Library\Metadata\Entities;
+use FastyBird\Library\Metadata\Loaders;
+use FastyBird\Library\Metadata\Schemas;
 use Nette;
 use Nette\DI;
 

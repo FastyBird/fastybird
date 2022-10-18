@@ -15,8 +15,8 @@
 
 namespace FastyBird\WsExchangePlugin\Publishers;
 
-use FastyBird\Metadata\Entities as MetadataEntities;
-use FastyBird\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use IPub\WebSockets;
 use IPub\WebSocketsWAMP;
 use Nette;

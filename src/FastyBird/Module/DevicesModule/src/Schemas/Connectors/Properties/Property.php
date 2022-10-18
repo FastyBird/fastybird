@@ -20,7 +20,7 @@ use FastyBird\DevicesModule\Entities;
 use FastyBird\DevicesModule\Router;
 use FastyBird\DevicesModule\Schemas;
 use FastyBird\JsonApi\Schemas as JsonApiSchemas;
-use FastyBird\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use IPub\SlimRouter\Routing;
 use Neomerx\JsonApi;
 use function strval;

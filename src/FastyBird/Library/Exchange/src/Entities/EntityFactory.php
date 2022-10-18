@@ -16,9 +16,9 @@
 namespace FastyBird\Library\Exchange\Entities;
 
 use FastyBird\Library\Exchange\Exceptions;
-use FastyBird\Metadata\Entities as MetadataEntities;
-use FastyBird\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use IPub\Phone\Exceptions as PhoneExceptions;
 
 /**

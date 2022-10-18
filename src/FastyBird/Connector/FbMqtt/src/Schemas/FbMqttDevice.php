@@ -17,7 +17,7 @@ namespace FastyBird\Connector\FbMqtt\Schemas;
 
 use FastyBird\Connector\FbMqtt\Entities;
 use FastyBird\DevicesModule\Schemas as DevicesModuleSchemas;
-use FastyBird\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 
 /**
  * FastyBird MQTT connector entity schema

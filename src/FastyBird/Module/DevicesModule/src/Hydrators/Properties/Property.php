@@ -17,7 +17,7 @@ namespace FastyBird\DevicesModule\Hydrators\Properties;
 
 use FastyBird\DevicesModule\Entities;
 use FastyBird\JsonApi\Hydrators as JsonApiHydrators;
-use FastyBird\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use IPub\JsonAPIDocument;
 use function array_map;
 use function boolval;

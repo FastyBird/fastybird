@@ -13,9 +13,9 @@
  * @date           02.06.22
  */
 
-namespace FastyBird\Metadata\Entities\TriggersModule;
+namespace FastyBird\Library\Metadata\Entities\TriggersModule;
 
-use FastyBird\Metadata\Types;
+use FastyBird\Library\Metadata\Types;
 use Ramsey\Uuid;
 use function array_merge;
 

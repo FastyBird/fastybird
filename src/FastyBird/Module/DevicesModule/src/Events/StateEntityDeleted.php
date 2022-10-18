@@ -16,7 +16,7 @@
 namespace FastyBird\DevicesModule\Events;
 
 use FastyBird\DevicesModule\Entities;
-use FastyBird\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use Symfony\Contracts\EventDispatcher;
 
 /**

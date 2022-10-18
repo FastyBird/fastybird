@@ -13,12 +13,12 @@
  * @date           04.06.22
  */
 
-namespace FastyBird\Metadata\Entities\DevicesModule;
+namespace FastyBird\Library\Metadata\Entities\DevicesModule;
 
-use FastyBird\Metadata\Entities;
-use FastyBird\Metadata\Exceptions;
-use FastyBird\Metadata\Loaders;
-use FastyBird\Metadata\Schemas;
+use FastyBird\Library\Metadata\Entities;
+use FastyBird\Library\Metadata\Exceptions;
+use FastyBird\Library\Metadata\Loaders;
+use FastyBird\Library\Metadata\Schemas;
 use Nette\Utils;
 use function is_string;
 

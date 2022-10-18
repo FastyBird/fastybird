@@ -23,7 +23,7 @@ use FastyBird\DevicesModule\Queries;
 use FastyBird\DevicesModule\Router;
 use FastyBird\DevicesModule\Schemas;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
-use FastyBird\Metadata;
+use FastyBird\Library\Metadata;
 use Fig\Http\Message\StatusCodeInterface;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette\Utils;

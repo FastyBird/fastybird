@@ -13,9 +13,9 @@
  * @date           01.06.22
  */
 
-namespace FastyBird\Metadata\Entities\AccountsModule;
+namespace FastyBird\Library\Metadata\Entities\AccountsModule;
 
-use FastyBird\Metadata\Entities;
+use FastyBird\Library\Metadata\Entities;
 use Ramsey\Uuid;
 
 /**

@@ -15,7 +15,7 @@
 
 namespace FastyBird\WsExchangePlugin\Commands;
 
-use FastyBird\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\WsExchangePlugin\Events;
 use FastyBird\WsExchangePlugin\Server;
 use IPub\WebSockets;

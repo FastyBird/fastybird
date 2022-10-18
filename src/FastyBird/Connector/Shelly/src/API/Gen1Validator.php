@@ -16,8 +16,8 @@
 namespace FastyBird\Connector\Shelly\API;
 
 use FastyBird\Connector\Shelly;
-use FastyBird\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Metadata\Schemas as MetadataSchemas;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use Nette;
 use Nette\Utils;
 use const DIRECTORY_SEPARATOR;

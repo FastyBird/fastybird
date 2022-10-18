@@ -13,9 +13,9 @@
  * @date           24.06.20
  */
 
-namespace FastyBird\Metadata\Schemas;
+namespace FastyBird\Library\Metadata\Schemas;
 
-use FastyBird\Metadata\Exceptions;
+use FastyBird\Library\Metadata\Exceptions;
 use Nette;
 use Nette\Utils;
 use Opis\JsonSchema;

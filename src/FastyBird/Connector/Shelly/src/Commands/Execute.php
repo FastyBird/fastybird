@@ -17,8 +17,8 @@ namespace FastyBird\Connector\Shelly\Commands;
 
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\DevicesModule\Models as DevicesModuleModels;
-use FastyBird\Metadata;
-use FastyBird\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use Psr\Log;
 use Ramsey\Uuid;
 use Symfony\Component\Console;

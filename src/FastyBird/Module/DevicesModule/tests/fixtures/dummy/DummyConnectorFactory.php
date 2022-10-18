@@ -4,7 +4,7 @@ namespace FastyBird\DevicesModule\Tests\Fixtures\Dummy;
 
 use FastyBird\DevicesModule\Connectors;
 use FastyBird\DevicesModule\Connectors\Connector;
-use FastyBird\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Entities as MetadataEntities;
 
 class DummyConnectorFactory implements Connectors\ConnectorFactory
 {

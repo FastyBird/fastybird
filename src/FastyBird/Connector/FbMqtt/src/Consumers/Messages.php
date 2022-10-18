@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\FbMqtt\Consumers;
 
 use FastyBird\Connector\FbMqtt\Entities;
-use FastyBird\Metadata;
+use FastyBird\Library\Metadata;
 use Nette;
 use Psr\Log;
 use SplObjectStorage;

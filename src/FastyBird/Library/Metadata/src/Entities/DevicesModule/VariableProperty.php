@@ -13,9 +13,9 @@
  * @date           02.06.22
  */
 
-namespace FastyBird\Metadata\Entities\DevicesModule;
+namespace FastyBird\Library\Metadata\Entities\DevicesModule;
 
-use FastyBird\Metadata\Exceptions;
+use FastyBird\Library\Metadata\Exceptions;
 use function array_merge;
 
 /**

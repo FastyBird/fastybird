@@ -16,7 +16,7 @@
 namespace FastyBird\DevicesModule\Entities\Devices\Properties;
 
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 
 /**
  * @ORM\Entity

@@ -16,8 +16,8 @@
 namespace FastyBird\Library\Exchange\Consumer;
 
 use FastyBird\Library\Exchange\Events;
-use FastyBird\Metadata\Entities as MetadataEntities;
-use FastyBird\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Psr\EventDispatcher as PsrEventDispatcher;
 use SplObjectStorage;
 

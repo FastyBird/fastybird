@@ -40,9 +40,9 @@
                 <element key="src/FastyBird/Library/Exchange/src" value="FastyBird\Library\Exchange"/>
                 <element key="src/FastyBird/Library/Exchange/tests/cases/unit" value="FastyBird\Library\Exchange\Tests\Cases\Unit"/>
 
-                <element key="src/FastyBird/Library/Metadata/src" value="FastyBird\Metadata"/>
-                <element key="src/FastyBird/Library/Metadata/tests/cases/unit" value="FastyBird\Metadata\Tests\Cases\Unit"/>
-                <element key="src/FastyBird/Library/Metadata/tests/fixtures" value="FastyBird\Metadata\Tests\Fixtures"/>
+                <element key="src/FastyBird/Library/Metadata/src" value="FastyBird\Library\Metadata"/>
+                <element key="src/FastyBird/Library/Metadata/tests/cases/unit" value="FastyBird\Library\Metadata\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Library/Metadata/tests/fixtures" value="FastyBird\Library\Metadata\Tests\Fixtures"/>
 
                 <element key="src/FastyBird/Module/DevicesModule/src" value="FastyBird\DevicesModule"/>
                 <element key="src/FastyBird/Module/DevicesModule/tests/cases/unit" value="FastyBird\DevicesModule\Tests\Cases\Unit"/>
