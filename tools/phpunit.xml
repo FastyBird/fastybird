@@ -8,6 +8,7 @@
          failOnWarning="true"
          stderr="true"
          verbose="true"
+         processIsolation="true"
 >
     <testsuites>
         <testsuite name="connectors">
