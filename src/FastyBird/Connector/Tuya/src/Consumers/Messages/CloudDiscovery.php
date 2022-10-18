@@ -21,12 +21,12 @@ use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Types;
-use FastyBird\DevicesModule\Entities as DevicesModuleEntities;
-use FastyBird\DevicesModule\Exceptions as DevicesModuleExceptions;
-use FastyBird\DevicesModule\Models as DevicesModuleModels;
-use FastyBird\DevicesModule\Queries as DevicesModuleQueries;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Module\Devices\Entities as DevicesEntities;
+use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
 use Nette\Utils;
 use Psr\Log;
@@ -50,21 +50,21 @@ final class CloudDiscovery implements Consumer
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
-		private readonly DevicesModuleModels\Connectors\ConnectorsRepository $connectorsRepository,
-		private readonly DevicesModuleModels\Devices\DevicesRepository $devicesRepository,
-		private readonly DevicesModuleModels\Devices\DevicesManager $devicesManager,
-		private readonly DevicesModuleModels\Devices\Properties\PropertiesRepository $propertiesRepository,
-		private readonly DevicesModuleModels\Devices\Properties\PropertiesManager $propertiesManager,
-		private readonly DevicesModuleModels\Devices\Attributes\AttributesRepository $attributesRepository,
-		private readonly DevicesModuleModels\Devices\Attributes\AttributesManager $attributesManager,
-		private readonly DevicesModuleModels\Channels\ChannelsRepository $channelsRepository,
-		private readonly DevicesModuleModels\Channels\ChannelsManager $channelsManager,
-		private readonly DevicesModuleModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
-		private readonly DevicesModuleModels\Channels\Properties\PropertiesManager $channelsPropertiesManager,
-		private readonly DevicesModuleModels\DataStorage\DevicesRepository $devicesDataStorageRepository,
-		private readonly DevicesModuleModels\DataStorage\DevicePropertiesRepository $propertiesDataStorageRepository,
-		private readonly DevicesModuleModels\DataStorage\DeviceAttributesRepository $attributesDataStorageRepository,
-		private readonly DevicesModuleModels\DataStorage\ChannelPropertiesRepository $channelsPropertiesDataStorageRepository,
+		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
+		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Devices\DevicesManager $devicesManager,
+		private readonly DevicesModels\Devices\Properties\PropertiesRepository $propertiesRepository,
+		private readonly DevicesModels\Devices\Properties\PropertiesManager $propertiesManager,
+		private readonly DevicesModels\Devices\Attributes\AttributesRepository $attributesRepository,
+		private readonly DevicesModels\Devices\Attributes\AttributesManager $attributesManager,
+		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
+		private readonly DevicesModels\Channels\ChannelsManager $channelsManager,
+		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
+		private readonly DevicesModels\Channels\Properties\PropertiesManager $channelsPropertiesManager,
+		private readonly DevicesModels\DataStorage\DevicesRepository $devicesDataStorageRepository,
+		private readonly DevicesModels\DataStorage\DevicePropertiesRepository $propertiesDataStorageRepository,
+		private readonly DevicesModels\DataStorage\DeviceAttributesRepository $attributesDataStorageRepository,
+		private readonly DevicesModels\DataStorage\ChannelPropertiesRepository $channelsPropertiesDataStorageRepository,
 		private readonly Helpers\Database $databaseHelper,
 		Log\LoggerInterface|null $logger = null,
 	)
@@ -74,7 +74,7 @@ final class CloudDiscovery implements Consumer
 
 	/**
 	 * @throws DBAL\Exception
-	 * @throws DevicesModuleExceptions\InvalidState
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\FileNotFound
@@ -98,7 +98,7 @@ final class CloudDiscovery implements Consumer
 		if ($deviceItem === null) {
 			$connectorEntity = $this->databaseHelper->query(
 				function () use ($entity): Entities\TuyaConnector|null {
-					$findConnectorQuery = new DevicesModuleQueries\FindConnectors();
+					$findConnectorQuery = new DevicesQueries\FindConnectors();
 					$findConnectorQuery->byId($entity->getConnector());
 
 					$connector = $this->connectorsRepository->findOneBy(
@@ -145,7 +145,7 @@ final class CloudDiscovery implements Consumer
 		} else {
 			$deviceEntity = $this->databaseHelper->query(
 				function () use ($deviceItem): Entities\TuyaDevice|null {
-					$findDeviceQuery = new DevicesModuleQueries\FindDevices();
+					$findDeviceQuery = new DevicesQueries\FindDevices();
 					$findDeviceQuery->byId($deviceItem->getId());
 
 					$deviceEntity = $this->devicesRepository->findOneBy(
@@ -245,7 +245,7 @@ final class CloudDiscovery implements Consumer
 		);
 
 		$this->databaseHelper->transaction(function () use ($entity, $deviceEntity): bool {
-			$findChannelQuery = new DevicesModuleQueries\FindChannels();
+			$findChannelQuery = new DevicesQueries\FindChannels();
 			$findChannelQuery->byIdentifier(Types\DataPoint::DATA_POINT_CLOUD);
 			$findChannelQuery->forDevice($deviceEntity);
 
@@ -281,7 +281,7 @@ final class CloudDiscovery implements Consumer
 				if ($propertyItem === null) {
 					$this->channelsPropertiesManager->create(Utils\ArrayHash::from([
 						'channel' => $channelEntity,
-						'entity' => DevicesModuleEntities\Channels\Properties\Dynamic::class,
+						'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 						'identifier' => $dataPoint->getCode(),
 						'name' => $dataPoint->getCode(),
 						'dataType' => $dataPoint->getDataType(),
@@ -292,7 +292,7 @@ final class CloudDiscovery implements Consumer
 					]));
 
 				} else {
-					$findPropertyQuery = new DevicesModuleQueries\FindChannelProperties();
+					$findPropertyQuery = new DevicesQueries\FindChannelProperties();
 					$findPropertyQuery->byId($propertyItem->getId());
 
 					$propertyEntity = $this->channelsPropertiesRepository->findOneBy($findPropertyQuery);

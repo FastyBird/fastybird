@@ -21,12 +21,12 @@ use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Types;
-use FastyBird\DevicesModule\Entities as DevicesModuleEntities;
-use FastyBird\DevicesModule\Exceptions as DevicesModuleExceptions;
-use FastyBird\DevicesModule\Models as DevicesModuleModels;
-use FastyBird\DevicesModule\Queries as DevicesModuleQueries;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Module\Devices\Entities as DevicesEntities;
+use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
 use Nette\Utils;
 use Psr\Log;
@@ -50,16 +50,16 @@ final class Discovery implements Consumer
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
-		private readonly DevicesModuleModels\Connectors\ConnectorsRepository $connectorsRepository,
-		private readonly DevicesModuleModels\Devices\DevicesRepository $devicesRepository,
-		private readonly DevicesModuleModels\Devices\DevicesManager $devicesManager,
-		private readonly DevicesModuleModels\Devices\Properties\PropertiesRepository $propertiesRepository,
-		private readonly DevicesModuleModels\Devices\Properties\PropertiesManager $propertiesManager,
-		private readonly DevicesModuleModels\Devices\Attributes\AttributesRepository $attributesRepository,
-		private readonly DevicesModuleModels\Devices\Attributes\AttributesManager $attributesManager,
-		private readonly DevicesModuleModels\DataStorage\DevicesRepository $devicesDataStorageRepository,
-		private readonly DevicesModuleModels\DataStorage\DevicePropertiesRepository $propertiesDataStorageRepository,
-		private readonly DevicesModuleModels\DataStorage\DeviceAttributesRepository $attributesDataStorageRepository,
+		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
+		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Devices\DevicesManager $devicesManager,
+		private readonly DevicesModels\Devices\Properties\PropertiesRepository $propertiesRepository,
+		private readonly DevicesModels\Devices\Properties\PropertiesManager $propertiesManager,
+		private readonly DevicesModels\Devices\Attributes\AttributesRepository $attributesRepository,
+		private readonly DevicesModels\Devices\Attributes\AttributesManager $attributesManager,
+		private readonly DevicesModels\DataStorage\DevicesRepository $devicesDataStorageRepository,
+		private readonly DevicesModels\DataStorage\DevicePropertiesRepository $propertiesDataStorageRepository,
+		private readonly DevicesModels\DataStorage\DeviceAttributesRepository $attributesDataStorageRepository,
 		private readonly Helpers\Database $databaseHelper,
 		Log\LoggerInterface|null $logger = null,
 	)
@@ -69,7 +69,7 @@ final class Discovery implements Consumer
 
 	/**
 	 * @throws DBAL\Exception
-	 * @throws DevicesModuleExceptions\InvalidState
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\FileNotFound
@@ -92,8 +92,8 @@ final class Discovery implements Consumer
 
 		if ($deviceItem === null) {
 			$connectorEntity = $this->databaseHelper->query(
-				function () use ($entity): DevicesModuleEntities\Connectors\Connector|null {
-					$findConnectorQuery = new DevicesModuleQueries\FindConnectors();
+				function () use ($entity): DevicesEntities\Connectors\Connector|null {
+					$findConnectorQuery = new DevicesQueries\FindConnectors();
 					$findConnectorQuery->byId($entity->getConnector());
 
 					return $this->connectorsRepository->findOneBy($findConnectorQuery);

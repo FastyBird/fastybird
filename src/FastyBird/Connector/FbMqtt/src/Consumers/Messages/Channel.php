@@ -20,11 +20,11 @@ use FastyBird\Connector\FbMqtt\Consumers;
 use FastyBird\Connector\FbMqtt\Entities;
 use FastyBird\Connector\FbMqtt\Exceptions;
 use FastyBird\Connector\FbMqtt\Helpers;
-use FastyBird\DevicesModule\Entities as DevicesModuleEntities;
-use FastyBird\DevicesModule\Models as DevicesModuleModels;
-use FastyBird\DevicesModule\Queries as DevicesModuleQueries;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Entities as DevicesEntities;
+use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
 use Nette;
 use Nette\Utils;
@@ -49,10 +49,10 @@ final class Channel implements Consumers\Consumer
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
-		private readonly DevicesModuleModels\Devices\DevicesRepository $deviceRepository,
-		private readonly DevicesModuleModels\Channels\ChannelsManager $channelsManager,
-		private readonly DevicesModuleModels\Channels\Properties\PropertiesManager $channelPropertiesManager,
-		private readonly DevicesModuleModels\Channels\Controls\ControlsManager $channelControlManager,
+		private readonly DevicesModels\Devices\DevicesRepository $deviceRepository,
+		private readonly DevicesModels\Channels\ChannelsManager $channelsManager,
+		private readonly DevicesModels\Channels\Properties\PropertiesManager $channelPropertiesManager,
+		private readonly DevicesModels\Channels\Controls\ControlsManager $channelControlManager,
 		private readonly Helpers\Database $databaseHelper,
 		Log\LoggerInterface|null $logger = null,
 	)
@@ -71,8 +71,8 @@ final class Channel implements Consumers\Consumer
 			return false;
 		}
 
-		$device = $this->databaseHelper->query(function () use ($entity): DevicesModuleEntities\Devices\Device|null {
-			$findDeviceQuery = new DevicesModuleQueries\FindDevices();
+		$device = $this->databaseHelper->query(function () use ($entity): DevicesEntities\Devices\Device|null {
+			$findDeviceQuery = new DevicesQueries\FindDevices();
 			$findDeviceQuery->byIdentifier($entity->getDevice());
 
 			return $this->deviceRepository->findOneBy($findDeviceQuery);
@@ -154,14 +154,14 @@ final class Channel implements Consumers\Consumer
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 */
 	private function setChannelProperties(
-		DevicesModuleEntities\Channels\Channel $channel,
+		DevicesEntities\Channels\Channel $channel,
 		Utils\ArrayHash $properties,
 	): void
 	{
 		foreach ($properties as $propertyName) {
 			if ($channel->findProperty($propertyName) === null) {
 				$this->channelPropertiesManager->create(Utils\ArrayHash::from([
-					'entity' => DevicesModuleEntities\Channels\Properties\Dynamic::class,
+					'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 					'channel' => $channel,
 					'identifier' => $propertyName,
 					'settable' => false,
@@ -185,7 +185,7 @@ final class Channel implements Consumers\Consumer
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 */
 	private function setChannelControls(
-		DevicesModuleEntities\Channels\Channel $channel,
+		DevicesEntities\Channels\Channel $channel,
 		Utils\ArrayHash $controls,
 	): void
 	{

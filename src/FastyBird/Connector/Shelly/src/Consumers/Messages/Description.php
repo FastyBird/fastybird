@@ -22,12 +22,12 @@ use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Mappers;
 use FastyBird\Connector\Shelly\Types;
-use FastyBird\DevicesModule\Entities as DevicesModuleEntities;
-use FastyBird\DevicesModule\Exceptions as DevicesModuleExceptions;
-use FastyBird\DevicesModule\Models as DevicesModuleModels;
-use FastyBird\DevicesModule\Queries as DevicesModuleQueries;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Module\Devices\Entities as DevicesEntities;
+use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
 use Nette\Utils;
 use Psr\Log;
@@ -53,20 +53,20 @@ final class Description implements Consumer
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
-		private readonly DevicesModuleModels\Devices\DevicesRepository $devicesRepository,
-		private readonly DevicesModuleModels\Devices\DevicesManager $devicesManager,
-		private readonly DevicesModuleModels\Devices\Properties\PropertiesRepository $propertiesRepository,
-		private readonly DevicesModuleModels\Devices\Properties\PropertiesManager $propertiesManager,
-		private readonly DevicesModuleModels\Devices\Attributes\AttributesRepository $attributesRepository,
-		private readonly DevicesModuleModels\Devices\Attributes\AttributesManager $attributesManager,
-		private readonly DevicesModuleModels\Channels\ChannelsRepository $channelsRepository,
-		private readonly DevicesModuleModels\Channels\ChannelsManager $channelsManager,
-		private readonly DevicesModuleModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
-		private readonly DevicesModuleModels\Channels\Properties\PropertiesManager $channelsPropertiesManager,
-		private readonly DevicesModuleModels\DataStorage\DevicesRepository $devicesDataStorageRepository,
-		private readonly DevicesModuleModels\DataStorage\DevicePropertiesRepository $propertiesDataStorageRepository,
-		private readonly DevicesModuleModels\DataStorage\DeviceAttributesRepository $attributesDataStorageRepository,
-		private readonly DevicesModuleModels\DataStorage\ChannelsRepository $channelsDataStorageRepository,
+		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Devices\DevicesManager $devicesManager,
+		private readonly DevicesModels\Devices\Properties\PropertiesRepository $propertiesRepository,
+		private readonly DevicesModels\Devices\Properties\PropertiesManager $propertiesManager,
+		private readonly DevicesModels\Devices\Attributes\AttributesRepository $attributesRepository,
+		private readonly DevicesModels\Devices\Attributes\AttributesManager $attributesManager,
+		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
+		private readonly DevicesModels\Channels\ChannelsManager $channelsManager,
+		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
+		private readonly DevicesModels\Channels\Properties\PropertiesManager $channelsPropertiesManager,
+		private readonly DevicesModels\DataStorage\DevicesRepository $devicesDataStorageRepository,
+		private readonly DevicesModels\DataStorage\DevicePropertiesRepository $propertiesDataStorageRepository,
+		private readonly DevicesModels\DataStorage\DeviceAttributesRepository $attributesDataStorageRepository,
+		private readonly DevicesModels\DataStorage\ChannelsRepository $channelsDataStorageRepository,
 		private readonly Mappers\Sensor $sensorMapper,
 		private readonly Helpers\Database $databaseHelper,
 		Log\LoggerInterface|null $logger = null,
@@ -77,7 +77,7 @@ final class Description implements Consumer
 
 	/**
 	 * @throws DBAL\Exception
-	 * @throws DevicesModuleExceptions\InvalidState
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\FileNotFound
@@ -105,7 +105,7 @@ final class Description implements Consumer
 		if ($deviceItem->getName() === null && $deviceItem->getName() !== $entity->getType()) {
 			$deviceEntity = $this->databaseHelper->query(
 				function () use ($deviceItem): Entities\ShellyDevice|null {
-					$findDeviceQuery = new DevicesModuleQueries\FindDevices();
+					$findDeviceQuery = new DevicesQueries\FindDevices();
 					$findDeviceQuery->byId($deviceItem->getId());
 
 					$deviceEntity = $this->devicesRepository->findOneBy(
@@ -151,7 +151,7 @@ final class Description implements Consumer
 			if ($channelItem === null) {
 				$deviceEntity = $this->databaseHelper->query(
 					function () use ($deviceItem): Entities\ShellyDevice|null {
-						$findDeviceQuery = new DevicesModuleQueries\FindDevices();
+						$findDeviceQuery = new DevicesQueries\FindDevices();
 						$findDeviceQuery->byId($deviceItem->getId());
 
 						$deviceEntity = $this->devicesRepository->findOneBy($findDeviceQuery);
@@ -183,8 +183,8 @@ final class Description implements Consumer
 
 				if ($channelProperty === null) {
 					$channelEntity = $this->databaseHelper->query(
-						function () use ($deviceItem, $block): DevicesModuleEntities\Channels\Channel|null {
-							$findChannelQuery = new DevicesModuleQueries\FindChannels();
+						function () use ($deviceItem, $block): DevicesEntities\Channels\Channel|null {
+							$findChannelQuery = new DevicesQueries\FindChannels();
 							$findChannelQuery->byDeviceId($deviceItem->getId());
 							$findChannelQuery->byIdentifier($block->getIdentifier() . '_' . $block->getDescription());
 
@@ -197,10 +197,10 @@ final class Description implements Consumer
 					}
 
 					$property = $this->databaseHelper->transaction(
-						fn (): DevicesModuleEntities\Channels\Properties\Property => $this->channelsPropertiesManager->create(
+						fn (): DevicesEntities\Channels\Properties\Property => $this->channelsPropertiesManager->create(
 							Utils\ArrayHash::from([
 								'channel' => $channelEntity,
-								'entity' => DevicesModuleEntities\Channels\Properties\Dynamic::class,
+								'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 								'identifier' => sprintf(
 									'%d_%s_%s',
 									$sensor->getIdentifier(),
@@ -237,8 +237,8 @@ final class Description implements Consumer
 
 				} else {
 					$propertyEntity = $this->databaseHelper->query(
-						function () use ($channelProperty): DevicesModuleEntities\Channels\Properties\Property|null {
-							$findPropertyQuery = new DevicesModuleQueries\FindChannelProperties();
+						function () use ($channelProperty): DevicesEntities\Channels\Properties\Property|null {
+							$findPropertyQuery = new DevicesQueries\FindChannelProperties();
 							$findPropertyQuery->byId($channelProperty->getId());
 
 							return $this->channelsPropertiesRepository->findOneBy($findPropertyQuery);
@@ -247,7 +247,7 @@ final class Description implements Consumer
 
 					if ($propertyEntity !== null) {
 						$propertyEntity = $this->databaseHelper->transaction(
-							fn (): DevicesModuleEntities\Channels\Properties\Property => $this->channelsPropertiesManager->update(
+							fn (): DevicesEntities\Channels\Properties\Property => $this->channelsPropertiesManager->update(
 								$propertyEntity,
 								Utils\ArrayHash::from([
 									'identifier' => sprintf(

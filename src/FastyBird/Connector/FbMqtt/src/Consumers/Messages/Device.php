@@ -21,13 +21,13 @@ use FastyBird\Connector\FbMqtt\Entities;
 use FastyBird\Connector\FbMqtt\Exceptions;
 use FastyBird\Connector\FbMqtt\Helpers;
 use FastyBird\Connector\FbMqtt\Types;
-use FastyBird\DevicesModule\Entities as DevicesModuleEntities;
-use FastyBird\DevicesModule\Exceptions as DevicesModuleExceptions;
-use FastyBird\DevicesModule\Models as DevicesModuleModels;
-use FastyBird\DevicesModule\Queries as DevicesModuleQueries;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Entities as DevicesEntities;
+use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette;
@@ -53,14 +53,14 @@ final class Device implements Consumers\Consumer
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
-		private readonly DevicesModuleModels\Devices\DevicesRepository $deviceRepository,
-		private readonly DevicesModuleModels\Devices\DevicesManager $devicesManager,
-		private readonly DevicesModuleModels\Devices\Properties\PropertiesManager $devicePropertiesManager,
-		private readonly DevicesModuleModels\Devices\Controls\ControlsManager $deviceControlManager,
-		private readonly DevicesModuleModels\Devices\Attributes\AttributesManager $deviceAttributesManager,
-		private readonly DevicesModuleModels\Channels\ChannelsManager $channelsManager,
-		private readonly DevicesModuleModels\DataStorage\DevicesRepository $deviceDataStorageRepository,
-		private readonly DevicesModuleModels\States\DeviceConnectionStateManager $deviceConnectionStateManager,
+		private readonly DevicesModels\Devices\DevicesRepository $deviceRepository,
+		private readonly DevicesModels\Devices\DevicesManager $devicesManager,
+		private readonly DevicesModels\Devices\Properties\PropertiesManager $devicePropertiesManager,
+		private readonly DevicesModels\Devices\Controls\ControlsManager $deviceControlManager,
+		private readonly DevicesModels\Devices\Attributes\AttributesManager $deviceAttributesManager,
+		private readonly DevicesModels\Channels\ChannelsManager $channelsManager,
+		private readonly DevicesModels\DataStorage\DevicesRepository $deviceDataStorageRepository,
+		private readonly DevicesModels\States\DeviceConnectionStateManager $deviceConnectionStateManager,
 		private readonly Helpers\Database $databaseHelper,
 		Log\LoggerInterface|null $logger = null,
 	)
@@ -70,7 +70,7 @@ final class Device implements Consumers\Consumer
 
 	/**
 	 * @throws DBAL\Exception
-	 * @throws DevicesModuleExceptions\InvalidState
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
 	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws Exceptions\InvalidState
@@ -117,8 +117,8 @@ final class Device implements Consumers\Consumer
 			}
 		} else {
 			$device = $this->databaseHelper->query(
-				function () use ($entity): DevicesModuleEntities\Devices\Device|null {
-					$findDeviceQuery = new DevicesModuleQueries\FindDevices();
+				function () use ($entity): DevicesEntities\Devices\Device|null {
+					$findDeviceQuery = new DevicesQueries\FindDevices();
 					$findDeviceQuery->byIdentifier($entity->getDevice());
 
 					return $this->deviceRepository->findOneBy($findDeviceQuery);
@@ -199,7 +199,7 @@ final class Device implements Consumers\Consumer
 	/**
 	 * @phpstan-param Utils\ArrayHash<string> $properties
 	 *
-	 * @throws DevicesModuleExceptions\InvalidState
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
 	 * @throws DoctrineOrmQueryExceptions\QueryException
@@ -211,7 +211,7 @@ final class Device implements Consumers\Consumer
 	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function setDeviceProperties(
-		DevicesModuleEntities\Devices\Device $device,
+		DevicesEntities\Devices\Device $device,
 		Utils\ArrayHash $properties,
 	): void
 	{
@@ -228,7 +228,7 @@ final class Device implements Consumers\Consumer
 						Types\DevicePropertyIdentifier::IDENTIFIER_STATUS_LED,
 					], true)) {
 						$this->devicePropertiesManager->create(Utils\ArrayHash::from([
-							'entity' => DevicesModuleEntities\Devices\Properties\Dynamic::class,
+							'entity' => DevicesEntities\Devices\Properties\Dynamic::class,
 							'device' => $device,
 							'identifier' => $propertyName,
 							'name' => $propertyName,
@@ -245,7 +245,7 @@ final class Device implements Consumers\Consumer
 						Types\DevicePropertyIdentifier::IDENTIFIER_RSSI,
 					], true)) {
 						$this->devicePropertiesManager->create(Utils\ArrayHash::from([
-							'entity' => DevicesModuleEntities\Devices\Properties\Dynamic::class,
+							'entity' => DevicesEntities\Devices\Properties\Dynamic::class,
 							'device' => $device,
 							'identifier' => $propertyName,
 							'name' => $propertyName,
@@ -256,7 +256,7 @@ final class Device implements Consumers\Consumer
 
 					} else {
 						$this->devicePropertiesManager->create(Utils\ArrayHash::from([
-							'entity' => DevicesModuleEntities\Devices\Properties\Dynamic::class,
+							'entity' => DevicesEntities\Devices\Properties\Dynamic::class,
 							'device' => $device,
 							'identifier' => $propertyName,
 							'settable' => false,
@@ -280,7 +280,7 @@ final class Device implements Consumers\Consumer
 	 * @phpstan-param Utils\ArrayHash<string> $extensions
 	 */
 	private function setDeviceExtensions(
-		DevicesModuleEntities\Devices\Device $device,
+		DevicesEntities\Devices\Device $device,
 		Utils\ArrayHash $extensions,
 	): void
 	{
@@ -322,7 +322,7 @@ final class Device implements Consumers\Consumer
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 */
 	private function setDeviceControls(
-		DevicesModuleEntities\Devices\Device $device,
+		DevicesEntities\Devices\Device $device,
 		Utils\ArrayHash $controls,
 	): void
 	{
@@ -349,7 +349,7 @@ final class Device implements Consumers\Consumer
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 */
 	private function setDeviceChannels(
-		DevicesModuleEntities\Devices\Device $device,
+		DevicesEntities\Devices\Device $device,
 		Utils\ArrayHash $channels,
 	): void
 	{

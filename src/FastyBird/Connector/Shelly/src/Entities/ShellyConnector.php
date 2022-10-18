@@ -16,13 +16,13 @@
 namespace FastyBird\Connector\Shelly\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\DevicesModule\Entities as DevicesModuleEntities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Entities as DevicesEntities;
 
 /**
  * @ORM\Entity
  */
-class ShellyConnector extends DevicesModuleEntities\Connectors\Connector
+class ShellyConnector extends DevicesEntities\Connectors\Connector
 {
 
 	public const CONNECTOR_TYPE = 'shelly';

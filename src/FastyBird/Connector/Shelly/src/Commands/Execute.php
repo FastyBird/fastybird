@@ -16,9 +16,9 @@
 namespace FastyBird\Connector\Shelly\Commands;
 
 use FastyBird\Connector\Shelly\Entities;
-use FastyBird\DevicesModule\Models as DevicesModuleModels;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Module\Devices\Models as DevicesModels;
 use Psr\Log;
 use Ramsey\Uuid;
 use Symfony\Component\Console;
@@ -46,7 +46,7 @@ class Execute extends Console\Command\Command
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
-		private readonly DevicesModuleModels\DataStorage\ConnectorsRepository $connectorsRepository,
+		private readonly DevicesModels\DataStorage\ConnectorsRepository $connectorsRepository,
 		Log\LoggerInterface|null $logger = null,
 		string|null $name = null,
 	)

@@ -24,13 +24,13 @@ use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\DateTimeFactory;
-use FastyBird\DevicesModule\Exceptions as DevicesModuleExceptions;
-use FastyBird\DevicesModule\Models as DevicesModuleModels;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use FastyBird\Module\Devices\Models as DevicesModels;
 use InvalidArgumentException;
 use Nette;
 use Nette\Utils;
@@ -111,7 +111,7 @@ final class Cloud implements Client
 	private Log\LoggerInterface $logger;
 
 	/**
-	 * @throws DevicesModuleExceptions\InvalidState
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
@@ -126,10 +126,10 @@ final class Cloud implements Client
 		private readonly Helpers\Property $propertyStateHelper,
 		private readonly Consumers\Messages $consumer,
 		API\OpenApiFactory $openApiApiFactory,
-		private readonly DevicesModuleModels\DataStorage\DevicesRepository $devicesRepository,
-		private readonly DevicesModuleModels\DataStorage\ChannelsRepository $channelsRepository,
-		private readonly DevicesModuleModels\DataStorage\ChannelPropertiesRepository $channelPropertiesRepository,
-		private readonly DevicesModuleModels\States\DeviceConnectionStateManager $deviceConnectionStateManager,
+		private readonly DevicesModels\DataStorage\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\DataStorage\ChannelsRepository $channelsRepository,
+		private readonly DevicesModels\DataStorage\ChannelPropertiesRepository $channelPropertiesRepository,
+		private readonly DevicesModels\States\DeviceConnectionStateManager $deviceConnectionStateManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly MetadataSchemas\Validator $schemaValidator,
 		private readonly EventLoop\LoopInterface $eventLoop,
@@ -142,7 +142,7 @@ final class Cloud implements Client
 	}
 
 	/**
-	 * @throws DevicesModuleExceptions\InvalidState
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws InvalidArgumentException
 	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
@@ -245,7 +245,7 @@ final class Cloud implements Client
 						],
 					);
 
-					throw new DevicesModuleExceptions\Terminate(
+					throw new DevicesExceptions\Terminate(
 						'Connection to WS server was terminated',
 						$ex->getCode(),
 						$ex,
@@ -284,7 +284,7 @@ final class Cloud implements Client
 					],
 				);
 
-				throw new DevicesModuleExceptions\Terminate(
+				throw new DevicesExceptions\Terminate(
 					'Connection to Tuya WS server failed',
 					$ex->getCode(),
 					$ex,
@@ -323,7 +323,7 @@ final class Cloud implements Client
 	}
 
 	/**
-	 * @throws DevicesModuleExceptions\Terminate
+	 * @throws DevicesExceptions\Terminate
 	 * @throws Throwable
 	 */
 	private function handleCommunication(): void
@@ -363,7 +363,7 @@ final class Cloud implements Client
 	}
 
 	/**
-	 * @throws DevicesModuleExceptions\Terminate
+	 * @throws DevicesExceptions\Terminate
 	 * @throws Throwable
 	 */
 	private function processDevice(MetadataEntities\DevicesModule\Device $deviceItem): bool
@@ -476,7 +476,7 @@ final class Cloud implements Client
 						],
 					);
 
-					throw new DevicesModuleExceptions\Terminate(
+					throw new DevicesExceptions\Terminate(
 						'Could not call cloud openapi',
 						$ex->getCode(),
 						$ex,
@@ -522,7 +522,7 @@ final class Cloud implements Client
 							],
 						);
 
-						throw new DevicesModuleExceptions\Terminate(
+						throw new DevicesExceptions\Terminate(
 							'Calling Tuya cloud failed',
 							$ex->getCode(),
 							$ex,
@@ -535,7 +535,7 @@ final class Cloud implements Client
 	}
 
 	/**
-	 * @throws DevicesModuleExceptions\Terminate
+	 * @throws DevicesExceptions\Terminate
 	 * @throws Throwable
 	 */
 	private function writeChannelsProperty(MetadataEntities\DevicesModule\Device $deviceItem): bool
@@ -623,7 +623,7 @@ final class Cloud implements Client
 										],
 									);
 
-									throw new DevicesModuleExceptions\Terminate(
+									throw new DevicesExceptions\Terminate(
 										'Calling Tuya cloud failed',
 										$ex->getCode(),
 										$ex,
@@ -641,7 +641,7 @@ final class Cloud implements Client
 	}
 
 	/**
-	 * @throws DevicesModuleExceptions\InvalidState
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidData
@@ -933,7 +933,7 @@ final class Cloud implements Client
 	}
 
 	/**
-	 * @throws DevicesModuleExceptions\InvalidState
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidData
@@ -959,7 +959,7 @@ final class Cloud implements Client
 	}
 
 	/**
-	 * @throws DevicesModuleExceptions\InvalidState
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidData

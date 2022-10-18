@@ -20,13 +20,13 @@ use Doctrine\Persistence;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Types;
-use FastyBird\DevicesModule\Entities as DevicesModuleEntities;
-use FastyBird\DevicesModule\Exceptions as DevicesModuleExceptions;
-use FastyBird\DevicesModule\Models as DevicesModuleModels;
-use FastyBird\DevicesModule\Queries as DevicesModuleQueries;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Entities as DevicesEntities;
+use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette\Utils;
 use Psr\Log;
@@ -72,12 +72,12 @@ class Initialize extends Console\Command\Command
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
-		private readonly DevicesModuleModels\Connectors\ConnectorsRepository $connectorsRepository,
-		private readonly DevicesModuleModels\Connectors\ConnectorsManager $connectorsManager,
-		private readonly DevicesModuleModels\Connectors\Properties\PropertiesRepository $propertiesRepository,
-		private readonly DevicesModuleModels\Connectors\Properties\PropertiesManager $propertiesManager,
-		private readonly DevicesModuleModels\Connectors\Controls\ControlsManager $controlsManager,
-		private readonly DevicesModuleModels\DataStorage\ConnectorsRepository $connectorsDataStorageRepository,
+		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
+		private readonly DevicesModels\Connectors\ConnectorsManager $connectorsManager,
+		private readonly DevicesModels\Connectors\Properties\PropertiesRepository $propertiesRepository,
+		private readonly DevicesModels\Connectors\Properties\PropertiesManager $propertiesManager,
+		private readonly DevicesModels\Connectors\Controls\ControlsManager $controlsManager,
+		private readonly DevicesModels\DataStorage\ConnectorsRepository $connectorsDataStorageRepository,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 		Log\LoggerInterface|null $logger = null,
 		string|null $name = null,
@@ -113,7 +113,7 @@ class Initialize extends Console\Command\Command
 	 * @throws DBAL\Exception
 	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
 	 * @throws DoctrineOrmQueryExceptions\QueryException
-	 * @throws DevicesModuleExceptions\InvalidState
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\FileNotFound
@@ -266,7 +266,7 @@ class Initialize extends Console\Command\Command
 			]));
 
 			$this->propertiesManager->create(Utils\ArrayHash::from([
-				'entity' => DevicesModuleEntities\Connectors\Properties\Variable::class,
+				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 				'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_VERSION,
 				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 				'value' => $generation->getValue(),
@@ -275,7 +275,7 @@ class Initialize extends Console\Command\Command
 
 			if ($generation->getValue() === Types\ClientVersion::TYPE_GEN_1) {
 				$this->propertiesManager->create(Utils\ArrayHash::from([
-					'entity' => DevicesModuleEntities\Connectors\Properties\Variable::class,
+					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE,
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 					'value' => $clientMode?->getValue(),
@@ -283,7 +283,7 @@ class Initialize extends Console\Command\Command
 				]));
 			} elseif ($generation->getValue() === Types\ClientVersion::TYPE_CLOUD) {
 				$this->propertiesManager->create(Utils\ArrayHash::from([
-					'entity' => DevicesModuleEntities\Connectors\Properties\Variable::class,
+					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_CLOUD_AUTH_KEY,
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 					'value' => $cloudAuthKey,
@@ -291,7 +291,7 @@ class Initialize extends Console\Command\Command
 				]));
 
 				$this->propertiesManager->create(Utils\ArrayHash::from([
-					'entity' => DevicesModuleEntities\Connectors\Properties\Variable::class,
+					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_CLOUD_SERVER,
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 					'value' => $cloudServer,
@@ -343,7 +343,7 @@ class Initialize extends Console\Command\Command
 	 * @throws DBAL\Exception
 	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
 	 * @throws DoctrineOrmQueryExceptions\QueryException
-	 * @throws DevicesModuleExceptions\InvalidState
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\FileNotFound
@@ -408,7 +408,7 @@ class Initialize extends Console\Command\Command
 			return;
 		}
 
-		$findConnectorQuery = new DevicesModuleQueries\FindConnectors();
+		$findConnectorQuery = new DevicesQueries\FindConnectors();
 		$findConnectorQuery->byIdentifier($connectorIdentifier);
 
 		$connector = $this->connectorsRepository->findOneBy($findConnectorQuery);
@@ -427,7 +427,7 @@ class Initialize extends Console\Command\Command
 			return;
 		}
 
-		$findPropertyQuery = new DevicesModuleQueries\FindConnectorProperties();
+		$findPropertyQuery = new DevicesQueries\FindConnectorProperties();
 		$findPropertyQuery->forConnector($connector);
 		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_VERSION);
 
@@ -467,7 +467,7 @@ class Initialize extends Console\Command\Command
 			$versionProperty?->getValue() === Types\ClientVersion::TYPE_GEN_1
 			|| $generation?->getValue() === Types\ClientVersion::TYPE_GEN_1
 		) {
-			$findPropertyQuery = new DevicesModuleQueries\FindConnectorProperties();
+			$findPropertyQuery = new DevicesQueries\FindConnectorProperties();
 			$findPropertyQuery->forConnector($connector);
 			$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE);
 
@@ -508,7 +508,7 @@ class Initialize extends Console\Command\Command
 			$versionProperty?->getValue() === Types\ClientVersion::TYPE_CLOUD
 			|| $generation->getValue() === Types\ClientVersion::TYPE_CLOUD
 		) {
-			$findPropertyQuery = new DevicesModuleQueries\FindConnectorProperties();
+			$findPropertyQuery = new DevicesQueries\FindConnectorProperties();
 			$findPropertyQuery->forConnector($connector);
 			$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLOUD_AUTH_KEY);
 
@@ -531,7 +531,7 @@ class Initialize extends Console\Command\Command
 				$cloudAuthKey = $io->askQuestion($question);
 			}
 
-			$findPropertyQuery = new DevicesModuleQueries\FindConnectorProperties();
+			$findPropertyQuery = new DevicesQueries\FindConnectorProperties();
 			$findPropertyQuery->forConnector($connector);
 			$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLOUD_SERVER);
 
@@ -592,7 +592,7 @@ class Initialize extends Console\Command\Command
 				}
 
 				$this->propertiesManager->create(Utils\ArrayHash::from([
-					'entity' => DevicesModuleEntities\Connectors\Properties\Variable::class,
+					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_VERSION,
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 					'value' => $generation->getValue(),
@@ -615,7 +615,7 @@ class Initialize extends Console\Command\Command
 						]));
 					} else {
 						$this->propertiesManager->create(Utils\ArrayHash::from([
-							'entity' => DevicesModuleEntities\Connectors\Properties\Variable::class,
+							'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 							'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE,
 							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 							'value' => $clientMode->getValue(),
@@ -633,7 +633,7 @@ class Initialize extends Console\Command\Command
 					]));
 				} else {
 					$this->propertiesManager->create(Utils\ArrayHash::from([
-						'entity' => DevicesModuleEntities\Connectors\Properties\Variable::class,
+						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 						'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_CLOUD_AUTH_KEY,
 						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 						'value' => $cloudAuthKey,
@@ -647,7 +647,7 @@ class Initialize extends Console\Command\Command
 					]));
 				} else {
 					$this->propertiesManager->create(Utils\ArrayHash::from([
-						'entity' => DevicesModuleEntities\Connectors\Properties\Variable::class,
+						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 						'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_CLOUD_SERVER,
 						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 						'value' => $cloudServer,
@@ -744,7 +744,7 @@ class Initialize extends Console\Command\Command
 			return;
 		}
 
-		$findConnectorQuery = new DevicesModuleQueries\FindConnectors();
+		$findConnectorQuery = new DevicesQueries\FindConnectors();
 		$findConnectorQuery->byIdentifier($connectorIdentifier);
 
 		$connector = $this->connectorsRepository->findOneBy($findConnectorQuery);

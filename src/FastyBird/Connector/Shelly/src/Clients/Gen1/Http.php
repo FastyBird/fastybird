@@ -22,12 +22,12 @@ use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\DateTimeFactory;
-use FastyBird\DevicesModule\Exceptions as DevicesModuleExceptions;
-use FastyBird\DevicesModule\Models as DevicesModuleModels;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use FastyBird\Module\Devices\Models as DevicesModels;
 use InvalidArgumentException;
 use Nette;
 use Nette\Utils;
@@ -105,10 +105,10 @@ final class Http
 		private readonly Helpers\Device $deviceHelper,
 		private readonly Helpers\Property $propertyStateHelper,
 		private readonly Consumers\Messages $consumer,
-		private readonly DevicesModuleModels\DataStorage\DevicesRepository $devicesRepository,
-		private readonly DevicesModuleModels\DataStorage\ChannelsRepository $channelsRepository,
-		private readonly DevicesModuleModels\DataStorage\ChannelPropertiesRepository $channelPropertiesRepository,
-		private readonly DevicesModuleModels\States\DeviceConnectionStateManager $deviceConnectionStateManager,
+		private readonly DevicesModels\DataStorage\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\DataStorage\ChannelsRepository $channelsRepository,
+		private readonly DevicesModels\DataStorage\ChannelPropertiesRepository $channelPropertiesRepository,
+		private readonly DevicesModels\States\DeviceConnectionStateManager $deviceConnectionStateManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		Log\LoggerInterface|null $logger = null,
@@ -140,7 +140,7 @@ final class Http
 	}
 
 	/**
-	 * @throws DevicesModuleExceptions\Terminate
+	 * @throws DevicesExceptions\Terminate
 	 * @throws Throwable
 	 */
 	private function handleCommunication(): void
@@ -181,7 +181,7 @@ final class Http
 	}
 
 	/**
-	 * @throws DevicesModuleExceptions\Terminate
+	 * @throws DevicesExceptions\Terminate
 	 * @throws Throwable
 	 */
 	private function processDevice(MetadataEntities\DevicesModule\Device $device): bool
@@ -205,7 +205,7 @@ final class Http
 	}
 
 	/**
-	 * @throws DevicesModuleExceptions\Terminate
+	 * @throws DevicesExceptions\Terminate
 	 * @throws Throwable
 	 */
 	private function readDeviceData(string $cmd, MetadataEntities\DevicesModule\Device $device): bool
@@ -282,7 +282,7 @@ final class Http
 	}
 
 	/**
-	 * @throws DevicesModuleExceptions\Terminate
+	 * @throws DevicesExceptions\Terminate
 	 * @throws Throwable
 	 */
 	private function writeChannelsProperty(MetadataEntities\DevicesModule\Device $device): bool
@@ -412,7 +412,7 @@ final class Http
 	}
 
 	/**
-	 * @throws DevicesModuleExceptions\Terminate
+	 * @throws DevicesExceptions\Terminate
 	 * @throws Throwable
 	 */
 	private function readDeviceInfo(
@@ -494,7 +494,7 @@ final class Http
 	}
 
 	/**
-	 * @throws DevicesModuleExceptions\Terminate
+	 * @throws DevicesExceptions\Terminate
 	 * @throws Throwable
 	 */
 	private function readDeviceDescription(
@@ -576,7 +576,7 @@ final class Http
 	}
 
 	/**
-	 * @throws DevicesModuleExceptions\Terminate
+	 * @throws DevicesExceptions\Terminate
 	 * @throws Throwable
 	 */
 	private function writeSensor(
@@ -742,7 +742,7 @@ final class Http
 	}
 
 	/**
-	 * @throws DevicesModuleExceptions\Terminate
+	 * @throws DevicesExceptions\Terminate
 	 * @throws InvalidArgumentException
 	 */
 	private function getBrowser(): ReactHttp\Browser
@@ -752,14 +752,14 @@ final class Http
 		}
 
 		if ($this->browser === null) {
-			throw new DevicesModuleExceptions\Terminate('HTTP client could not be established');
+			throw new DevicesExceptions\Terminate('HTTP client could not be established');
 		}
 
 		return $this->browser;
 	}
 
 	/**
-	 * @throws DevicesModuleExceptions\InvalidState
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidData

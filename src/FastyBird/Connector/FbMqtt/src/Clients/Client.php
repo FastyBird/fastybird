@@ -22,11 +22,11 @@ use FastyBird\Connector\FbMqtt\Consumers;
 use FastyBird\Connector\FbMqtt\Exceptions;
 use FastyBird\Connector\FbMqtt\Helpers;
 use FastyBird\Connector\FbMqtt\Types;
-use FastyBird\DevicesModule\Exceptions as DevicesModuleExceptions;
-use FastyBird\DevicesModule\Models as DevicesModuleModels;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use FastyBird\Module\Devices\Models as DevicesModels;
 use InvalidArgumentException;
 use Nette;
 use Psr\Log;
@@ -109,7 +109,7 @@ abstract class Client
 
 	public function __construct(
 		protected MetadataEntities\DevicesModule\Connector $connector,
-		protected DevicesModuleModels\DataStorage\ConnectorPropertiesRepository $connectorPropertiesRepository,
+		protected DevicesModels\DataStorage\ConnectorPropertiesRepository $connectorPropertiesRepository,
 		protected Helpers\Connector $connectorHelper,
 		protected Consumers\Messages $consumer,
 		protected EventLoop\LoopInterface $eventLoop,
@@ -140,7 +140,7 @@ abstract class Client
 	 * Connects to a broker
 	 *
 	 * @throws InvalidArgumentException
-	 * @throws DevicesModuleExceptions\InvalidState
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidData
@@ -238,7 +238,7 @@ abstract class Client
 	/**
 	 * Disconnects from a broker
 	 *
-	 * @throws DevicesModuleExceptions\Terminate
+	 * @throws DevicesExceptions\Terminate
 	 */
 	public function disconnect(int $timeout = 5): Promise\ExtendedPromiseInterface
 	{
@@ -298,7 +298,7 @@ abstract class Client
 	/**
 	 * Subscribes to a topic filter
 	 *
-	 * @throws DevicesModuleExceptions\Terminate
+	 * @throws DevicesExceptions\Terminate
 	 */
 	public function subscribe(Mqtt\Subscription $subscription): Promise\ExtendedPromiseInterface
 	{
@@ -315,7 +315,7 @@ abstract class Client
 	/**
 	 * Unsubscribes from a topic filter
 	 *
-	 * @throws DevicesModuleExceptions\Terminate
+	 * @throws DevicesExceptions\Terminate
 	 */
 	public function unsubscribe(Mqtt\Subscription $subscription): Promise\ExtendedPromiseInterface
 	{
@@ -343,7 +343,7 @@ abstract class Client
 	}
 
 	/**
-	 * @throws DevicesModuleExceptions\Terminate
+	 * @throws DevicesExceptions\Terminate
 	 */
 	public function publish(
 		string $topic,
@@ -445,7 +445,7 @@ abstract class Client
 	}
 
 	/**
-	 * @throws DevicesModuleExceptions\Terminate
+	 * @throws DevicesExceptions\Terminate
 	 */
 	protected function onWarning(Throwable $ex): void
 	{
@@ -465,7 +465,7 @@ abstract class Client
 			],
 		);
 
-		throw new DevicesModuleExceptions\Terminate(
+		throw new DevicesExceptions\Terminate(
 			'There was an error during handling requests',
 			$ex->getCode(),
 			$ex,
@@ -473,7 +473,7 @@ abstract class Client
 	}
 
 	/**
-	 * @throws DevicesModuleExceptions\Terminate
+	 * @throws DevicesExceptions\Terminate
 	 */
 	protected function onError(Throwable $ex): void
 	{
@@ -493,7 +493,7 @@ abstract class Client
 			],
 		);
 
-		throw new DevicesModuleExceptions\Terminate(
+		throw new DevicesExceptions\Terminate(
 			'There was an error during handling requests',
 			$ex->getCode(),
 			$ex,
@@ -615,7 +615,7 @@ abstract class Client
 	/**
 	 * Registers a new client with the broker
 	 *
-	 * @throws DevicesModuleExceptions\Terminate
+	 * @throws DevicesExceptions\Terminate
 	 */
 	private function registerClient(Mqtt\Connection $connection, int $timeout): Promise\ExtendedPromiseInterface
 	{
@@ -656,7 +656,7 @@ abstract class Client
 	/**
 	 * Handles incoming data
 	 *
-	 * @throws DevicesModuleExceptions\Terminate
+	 * @throws DevicesExceptions\Terminate
 	 * @throws Exceptions\Runtime
 	 */
 	private function handleReceive(string $data): void
@@ -683,7 +683,7 @@ abstract class Client
 	/**
 	 * Handles an incoming packet
 	 *
-	 * @throws DevicesModuleExceptions\Terminate
+	 * @throws DevicesExceptions\Terminate
 	 * @throws Exceptions\Runtime
 	 */
 	private function handlePacket(Mqtt\Packet $packet): void
@@ -807,7 +807,7 @@ abstract class Client
 	/**
 	 * Handles errors of the stream
 	 *
-	 * @throws DevicesModuleExceptions\Terminate
+	 * @throws DevicesExceptions\Terminate
 	 */
 	private function handleError(Throwable $error): void
 	{
@@ -817,7 +817,7 @@ abstract class Client
 	/**
 	 * Starts the given flow
 	 *
-	 * @throws DevicesModuleExceptions\Terminate
+	 * @throws DevicesExceptions\Terminate
 	 */
 	private function startFlow(Mqtt\Flow $flow, bool $isSilent = false): Promise\ExtendedPromiseInterface
 	{
@@ -860,7 +860,7 @@ abstract class Client
 	/**
 	 * Continues the given flow
 	 *
-	 * @throws DevicesModuleExceptions\Terminate
+	 * @throws DevicesExceptions\Terminate
 	 */
 	private function continueFlow(Flow $flow, Mqtt\Packet $packet): void
 	{
@@ -892,7 +892,7 @@ abstract class Client
 	/**
 	 * Finishes the given flow
 	 *
-	 * @throws DevicesModuleExceptions\Terminate
+	 * @throws DevicesExceptions\Terminate
 	 */
 	private function finishFlow(Flow $flow): void
 	{

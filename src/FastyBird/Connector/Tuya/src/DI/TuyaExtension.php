@@ -27,7 +27,7 @@ use FastyBird\Connector\Tuya\Hydrators;
 use FastyBird\Connector\Tuya\Mappers;
 use FastyBird\Connector\Tuya\Schemas;
 use FastyBird\Connector\Tuya\Subscribers;
-use FastyBird\DevicesModule\DI as DevicesModuleDI;
+use FastyBird\Module\Devices\DI as DevicesDI;
 use Nette;
 use Nette\DI;
 use const DIRECTORY_SEPARATOR;
@@ -146,7 +146,7 @@ class TuyaExtension extends DI\CompilerExtension
 		$builder->addFactoryDefinition($this->prefix('executor.factory'))
 			->setImplement(Connector\ConnectorFactory::class)
 			->addTag(
-				DevicesModuleDI\DevicesModuleExtension::CONNECTOR_TYPE_TAG,
+				DevicesDI\DevicesExtension::CONNECTOR_TYPE_TAG,
 				Entities\TuyaConnector::CONNECTOR_TYPE,
 			)
 			->getResultDefinition()

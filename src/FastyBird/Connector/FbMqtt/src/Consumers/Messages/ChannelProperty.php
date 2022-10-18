@@ -20,14 +20,14 @@ use FastyBird\Connector\FbMqtt;
 use FastyBird\Connector\FbMqtt\Consumers;
 use FastyBird\Connector\FbMqtt\Entities;
 use FastyBird\Connector\FbMqtt\Helpers;
-use FastyBird\DevicesModule\Entities as DevicesModuleEntities;
-use FastyBird\DevicesModule\Exceptions as DevicesModuleExceptions;
-use FastyBird\DevicesModule\Models as DevicesModuleModels;
-use FastyBird\DevicesModule\Queries as DevicesModuleQueries;
-use FastyBird\DevicesModule\Utilities as DevicesModuleUtilities;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Module\Devices\Entities as DevicesEntities;
+use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Nette\Utils;
 use Psr\Log;
@@ -54,14 +54,14 @@ final class ChannelProperty implements Consumers\Consumer
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
-		private readonly DevicesModuleModels\Devices\DevicesRepository $deviceRepository,
-		private readonly DevicesModuleModels\Channels\Properties\PropertiesRepository $propertiesRepository,
-		private readonly DevicesModuleModels\Channels\Properties\PropertiesManager $propertiesManager,
-		private readonly DevicesModuleModels\DataStorage\DevicesRepository $devicesDataStorageRepository,
-		private readonly DevicesModuleModels\DataStorage\ChannelsRepository $channelsDataStorageRepository,
-		private readonly DevicesModuleModels\DataStorage\ChannelPropertiesRepository $propertiesDataStorageRepository,
-		private readonly DevicesModuleModels\States\ChannelPropertiesManager $propertiesStatesManager,
-		private readonly DevicesModuleModels\States\ChannelPropertiesRepository $propertyStateRepository,
+		private readonly DevicesModels\Devices\DevicesRepository $deviceRepository,
+		private readonly DevicesModels\Channels\Properties\PropertiesRepository $propertiesRepository,
+		private readonly DevicesModels\Channels\Properties\PropertiesManager $propertiesManager,
+		private readonly DevicesModels\DataStorage\DevicesRepository $devicesDataStorageRepository,
+		private readonly DevicesModels\DataStorage\ChannelsRepository $channelsDataStorageRepository,
+		private readonly DevicesModels\DataStorage\ChannelPropertiesRepository $propertiesDataStorageRepository,
+		private readonly DevicesModels\States\ChannelPropertiesManager $propertiesStatesManager,
+		private readonly DevicesModels\States\ChannelPropertiesRepository $propertyStateRepository,
 		private readonly Helpers\Database $databaseHelper,
 		Log\LoggerInterface|null $logger = null,
 	)
@@ -131,17 +131,17 @@ final class ChannelProperty implements Consumers\Consumer
 
 			if ($propertyItem instanceof MetadataEntities\DevicesModule\ChannelVariableProperty) {
 				$property = $this->databaseHelper->query(
-					function () use ($propertyItem): DevicesModuleEntities\Channels\Properties\Property|null {
-						$findPropertyQuery = new DevicesModuleQueries\FindChannelProperties();
+					function () use ($propertyItem): DevicesEntities\Channels\Properties\Property|null {
+						$findPropertyQuery = new DevicesQueries\FindChannelProperties();
 						$findPropertyQuery->byId($propertyItem->getId());
 
 						return $this->propertiesRepository->findOneBy($findPropertyQuery);
 					},
 				);
-				assert($property instanceof DevicesModuleEntities\Channels\Properties\Property);
+				assert($property instanceof DevicesEntities\Channels\Properties\Property);
 
 				$this->databaseHelper->transaction(
-					fn (): DevicesModuleEntities\Channels\Properties\Property => $this->propertiesManager->update(
+					fn (): DevicesEntities\Channels\Properties\Property => $this->propertiesManager->update(
 						$property,
 						Utils\ArrayHash::from([
 							'value' => $entity->getValue(),
@@ -152,7 +152,7 @@ final class ChannelProperty implements Consumers\Consumer
 				try {
 					$propertyState = $this->propertyStateRepository->findOne($propertyItem);
 
-				} catch (DevicesModuleExceptions\NotImplemented) {
+				} catch (DevicesExceptions\NotImplemented) {
 					$this->logger->warning(
 						'States repository is not configured. State could not be fetched',
 						[
@@ -173,8 +173,8 @@ final class ChannelProperty implements Consumers\Consumer
 					return true;
 				}
 
-				$actualValue = DevicesModuleUtilities\ValueHelper::flattenValue(
-					DevicesModuleUtilities\ValueHelper::normalizeValue(
+				$actualValue = DevicesUtilities\ValueHelper::flattenValue(
+					DevicesUtilities\ValueHelper::normalizeValue(
 						$propertyItem->getDataType(),
 						$entity->getValue(),
 						$propertyItem->getFormat(),
@@ -209,7 +209,7 @@ final class ChannelProperty implements Consumers\Consumer
 							]),
 						);
 					}
-				} catch (DevicesModuleExceptions\NotImplemented) {
+				} catch (DevicesExceptions\NotImplemented) {
 					$this->logger->warning(
 						'States manager is not configured. State could not be saved',
 						[
@@ -230,8 +230,8 @@ final class ChannelProperty implements Consumers\Consumer
 			}
 		} else {
 			$device = $this->databaseHelper->query(
-				function () use ($entity): DevicesModuleEntities\Devices\Device|null {
-					$findDeviceQuery = new DevicesModuleQueries\FindDevices();
+				function () use ($entity): DevicesEntities\Devices\Device|null {
+					$findDeviceQuery = new DevicesQueries\FindDevices();
 					$findDeviceQuery->byIdentifier($entity->getDevice());
 
 					return $this->deviceRepository->findOneBy($findDeviceQuery);

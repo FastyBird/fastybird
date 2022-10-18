@@ -24,7 +24,7 @@ use FastyBird\Connector\FbMqtt\Entities;
 use FastyBird\Connector\FbMqtt\Helpers;
 use FastyBird\Connector\FbMqtt\Hydrators;
 use FastyBird\Connector\FbMqtt\Schemas;
-use FastyBird\DevicesModule\DI as DevicesModuleDI;
+use FastyBird\Module\Devices\DI as DevicesDI;
 use Nette;
 use Nette\DI;
 use const DIRECTORY_SEPARATOR;
@@ -140,7 +140,7 @@ class FbMqttExtension extends DI\CompilerExtension
 		$builder->addFactoryDefinition($this->prefix('executor.factory'))
 			->setImplement(Connector\ConnectorFactory::class)
 			->addTag(
-				DevicesModuleDI\DevicesModuleExtension::CONNECTOR_TYPE_TAG,
+				DevicesDI\DevicesExtension::CONNECTOR_TYPE_TAG,
 				Entities\FbMqttConnector::CONNECTOR_TYPE,
 			)
 			->getResultDefinition()

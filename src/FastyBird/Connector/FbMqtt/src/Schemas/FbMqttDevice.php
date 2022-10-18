@@ -16,19 +16,19 @@
 namespace FastyBird\Connector\FbMqtt\Schemas;
 
 use FastyBird\Connector\FbMqtt\Entities;
-use FastyBird\DevicesModule\Schemas as DevicesModuleSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Schemas as DevicesSchemas;
 
 /**
  * FastyBird MQTT connector entity schema
  *
- * @phpstan-extends DevicesModuleSchemas\Devices\Device<Entities\FbMqttDevice>
+ * @phpstan-extends DevicesSchemas\Devices\Device<Entities\FbMqttDevice>
  *
  * @package        FastyBird:FbMqttConnector!
  * @subpackage     Schemas
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class FbMqttDevice extends DevicesModuleSchemas\Devices\Device
+final class FbMqttDevice extends DevicesSchemas\Devices\Device
 {
 
 	/**

@@ -19,9 +19,9 @@ use Doctrine\Common;
 use Doctrine\ORM;
 use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Types;
-use FastyBird\DevicesModule\Entities as DevicesModuleEntities;
-use FastyBird\DevicesModule\Models as DevicesModuleModels;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Entities as DevicesEntities;
+use FastyBird\Module\Devices\Models as DevicesModels;
 use Nette;
 use Nette\Utils;
 
@@ -39,7 +39,7 @@ final class Properties implements Common\EventSubscriber
 	use Nette\SmartObject;
 
 	public function __construct(
-		private readonly DevicesModuleModels\Devices\Properties\PropertiesManager $propertiesManager,
+		private readonly DevicesModels\Devices\Properties\PropertiesManager $propertiesManager,
 	)
 	{
 	}
@@ -69,7 +69,7 @@ final class Properties implements Common\EventSubscriber
 
 		$this->propertiesManager->create(Utils\ArrayHash::from([
 			'device' => $entity,
-			'entity' => DevicesModuleEntities\Devices\Properties\Dynamic::class,
+			'entity' => DevicesEntities\Devices\Properties\Dynamic::class,
 			'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_STATE,
 			'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
 			'unit' => null,

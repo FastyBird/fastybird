@@ -16,13 +16,13 @@
 namespace FastyBird\Connector\Tuya\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\DevicesModule\Entities as DevicesModuleEntities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Entities as DevicesEntities;
 
 /**
  * @ORM\Entity
  */
-class TuyaConnector extends DevicesModuleEntities\Connectors\Connector
+class TuyaConnector extends DevicesEntities\Connectors\Connector
 {
 
 	public const CONNECTOR_TYPE = 'tuya';

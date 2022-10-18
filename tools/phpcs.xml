@@ -44,11 +44,11 @@
                 <element key="src/FastyBird/Library/Metadata/tests/cases/unit" value="FastyBird\Library\Metadata\Tests\Cases\Unit"/>
                 <element key="src/FastyBird/Library/Metadata/tests/fixtures" value="FastyBird\Library\Metadata\Tests\Fixtures"/>
 
-                <element key="src/FastyBird/Module/DevicesModule/src" value="FastyBird\DevicesModule"/>
-                <element key="src/FastyBird/Module/DevicesModule/tests/cases/unit" value="FastyBird\DevicesModule\Tests\Cases\Unit"/>
-                <element key="src/FastyBird/Module/DevicesModule/tests/fixtures" value="FastyBird\DevicesModule\Tests\Fixtures"/>
-                <element key="src/FastyBird/Module/DevicesModule/tests/fixtures/dummy" value="FastyBird\DevicesModule\Tests\Fixtures\Dummy"/>
-                <element key="src/FastyBird/Module/DevicesModule/tests/tools" value="FastyBird\DevicesModule\Tests\Tools"/>
+                <element key="src/FastyBird/Module/Devices/src" value="FastyBird\Module\Devices"/>
+                <element key="src/FastyBird/Module/Devices/tests/cases/unit" value="FastyBird\Module\Devices\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Module/Devices/tests/fixtures" value="FastyBird\Module\Devices\Tests\Fixtures"/>
+                <element key="src/FastyBird/Module/Devices/tests/fixtures/dummy" value="FastyBird\Module\Devices\Tests\Fixtures\Dummy"/>
+                <element key="src/FastyBird/Module/Devices/tests/tools" value="FastyBird\Module\Devices\Tests\Tools"/>
 
                 <element key="src/FastyBird/Plugin/RedisDbPlugin/src" value="FastyBird\RedisDbPlugin"/>
                 <element key="src/FastyBird/Plugin/RedisDbPlugin/tests/cases/unit" value="FastyBird\RedisDbPlugin\Tests\Cases\Unit"/>
@@ -70,27 +70,27 @@
 
     <!--Exclude rules/files -->
     <rule ref="SlevomatCodingStandard.Files.LineLength.LineTooLong">
-        <exclude-pattern>src/FastyBird/Module/DevicesModule/src/Entities/Channels/Properties/Property\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Module/DevicesModule/src/Entities/Devices/Properties/Property\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Module/DevicesModule/src/Entities/Property\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Module/DevicesModule/src/Models/DataStorage/ChannelPropertiesRepository\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Module/DevicesModule/src/Models/DataStorage/ConnectorPropertiesRepository\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Module/DevicesModule/src/Models/DataStorage/DevicePropertiesRepository\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Module/DevicesModule/src/Models/States/ChannelPropertiesRepository\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Module/DevicesModule/src/Models/States/ChannelPropertiesManager\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Module/DevicesModule/src/Models/States/ConnectorPropertiesRepository\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Module/DevicesModule/src/Models/States/ConnectorPropertiesManager\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Module/DevicesModule/src/Models/States/DevicePropertiesRepository\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Module/DevicesModule/src/Models/States/DevicePropertiesManager\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Module/DevicesModule/src/Models/States/IChannelPropertiesRepository\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Module/DevicesModule/src/Models/States/IChannelPropertiesManager\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Module/DevicesModule/src/Models/States/IConnectorPropertiesRepository\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Module/DevicesModule/src/Models/States/IConnectorPropertiesManager\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Module/DevicesModule/src/Models/States/IDevicePropertiesRepository\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Module/DevicesModule/src/Models/States/IDevicePropertiesManager\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Module/DevicesModule/src/Events/StateEntityCreated\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Module/DevicesModule/src/Events/StateEntityUpdated\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Module/DevicesModule/src/Events/StateEntityDeleted\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Module/DevicesModule/src/Subscribers/DynamicProperties\.php</exclude-pattern>
+        <exclude-pattern>src/FastyBird/Module/Devices/src/Entities/Channels/Properties/Property\.php</exclude-pattern>
+        <exclude-pattern>src/FastyBird/Module/Devices/src/Entities/Devices/Properties/Property\.php</exclude-pattern>
+        <exclude-pattern>src/FastyBird/Module/Devices/src/Entities/Property\.php</exclude-pattern>
+        <exclude-pattern>src/FastyBird/Module/Devices/src/Models/DataStorage/ChannelPropertiesRepository\.php</exclude-pattern>
+        <exclude-pattern>src/FastyBird/Module/Devices/src/Models/DataStorage/ConnectorPropertiesRepository\.php</exclude-pattern>
+        <exclude-pattern>src/FastyBird/Module/Devices/src/Models/DataStorage/DevicePropertiesRepository\.php</exclude-pattern>
+        <exclude-pattern>src/FastyBird/Module/Devices/src/Models/States/ChannelPropertiesRepository\.php</exclude-pattern>
+        <exclude-pattern>src/FastyBird/Module/Devices/src/Models/States/ChannelPropertiesManager\.php</exclude-pattern>
+        <exclude-pattern>src/FastyBird/Module/Devices/src/Models/States/ConnectorPropertiesRepository\.php</exclude-pattern>
+        <exclude-pattern>src/FastyBird/Module/Devices/src/Models/States/ConnectorPropertiesManager\.php</exclude-pattern>
+        <exclude-pattern>src/FastyBird/Module/Devices/src/Models/States/DevicePropertiesRepository\.php</exclude-pattern>
+        <exclude-pattern>src/FastyBird/Module/Devices/src/Models/States/DevicePropertiesManager\.php</exclude-pattern>
+        <exclude-pattern>src/FastyBird/Module/Devices/src/Models/States/IChannelPropertiesRepository\.php</exclude-pattern>
+        <exclude-pattern>src/FastyBird/Module/Devices/src/Models/States/IChannelPropertiesManager\.php</exclude-pattern>
+        <exclude-pattern>src/FastyBird/Module/Devices/src/Models/States/IConnectorPropertiesRepository\.php</exclude-pattern>
+        <exclude-pattern>src/FastyBird/Module/Devices/src/Models/States/IConnectorPropertiesManager\.php</exclude-pattern>
+        <exclude-pattern>src/FastyBird/Module/Devices/src/Models/States/IDevicePropertiesRepository\.php</exclude-pattern>
+        <exclude-pattern>src/FastyBird/Module/Devices/src/Models/States/IDevicePropertiesManager\.php</exclude-pattern>
+        <exclude-pattern>src/FastyBird/Module/Devices/src/Events/StateEntityCreated\.php</exclude-pattern>
+        <exclude-pattern>src/FastyBird/Module/Devices/src/Events/StateEntityUpdated\.php</exclude-pattern>
+        <exclude-pattern>src/FastyBird/Module/Devices/src/Events/StateEntityDeleted\.php</exclude-pattern>
+        <exclude-pattern>src/FastyBird/Module/Devices/src/Subscribers/DynamicProperties\.php</exclude-pattern>
     </rule>
 </ruleset>

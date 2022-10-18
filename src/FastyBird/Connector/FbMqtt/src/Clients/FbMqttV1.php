@@ -25,12 +25,12 @@ use FastyBird\Connector\FbMqtt\Exceptions;
 use FastyBird\Connector\FbMqtt\Helpers;
 use FastyBird\Connector\FbMqtt\Types;
 use FastyBird\DateTimeFactory;
-use FastyBird\DevicesModule\Exceptions as DevicesModuleExceptions;
-use FastyBird\DevicesModule\Models as DevicesModuleModels;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use FastyBird\Module\Devices\Models as DevicesModels;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette\Utils;
 use Psr\Log;
@@ -84,12 +84,12 @@ final class FbMqttV1 extends Client
 		Helpers\Connector $connectorHelper,
 		private readonly Helpers\Property $propertyStateHelper,
 		Consumers\Messages $consumer,
-		DevicesModuleModels\DataStorage\ConnectorPropertiesRepository $connectorPropertiesRepository,
-		private readonly DevicesModuleModels\DataStorage\DevicesRepository $devicesRepository,
-		private readonly DevicesModuleModels\DataStorage\DevicePropertiesRepository $devicePropertiesRepository,
-		private readonly DevicesModuleModels\DataStorage\ChannelsRepository $channelsRepository,
-		private readonly DevicesModuleModels\DataStorage\ChannelPropertiesRepository $channelPropertiesRepository,
-		private readonly DevicesModuleModels\States\DeviceConnectionStateManager $deviceConnectionStateManager,
+		DevicesModels\DataStorage\ConnectorPropertiesRepository $connectorPropertiesRepository,
+		private readonly DevicesModels\DataStorage\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\DataStorage\DevicePropertiesRepository $devicePropertiesRepository,
+		private readonly DevicesModels\DataStorage\ChannelsRepository $channelsRepository,
+		private readonly DevicesModels\DataStorage\ChannelPropertiesRepository $channelPropertiesRepository,
+		private readonly DevicesModels\States\DeviceConnectionStateManager $deviceConnectionStateManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		EventLoop\LoopInterface $loop,
 		Mqtt\ClientIdentifierGenerator|null $identifierGenerator = null,
@@ -117,7 +117,7 @@ final class FbMqttV1 extends Client
 	}
 
 	/**
-	 * @throws DevicesModuleExceptions\Terminate
+	 * @throws DevicesExceptions\Terminate
 	 * @throws MetadataExceptions\FileNotFound
 	 * @throws Throwable
 	 */
@@ -153,7 +153,7 @@ final class FbMqttV1 extends Client
 	}
 
 	/**
-	 * @throws DevicesModuleExceptions\InvalidState
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
 	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws MetadataExceptions\FileNotFound
@@ -179,7 +179,7 @@ final class FbMqttV1 extends Client
 	}
 
 	/**
-	 * @throws DevicesModuleExceptions\Terminate
+	 * @throws DevicesExceptions\Terminate
 	 */
 	protected function onConnect(Mqtt\Connection $connection): void
 	{
@@ -424,7 +424,7 @@ final class FbMqttV1 extends Client
 	}
 
 	/**
-	 * @throws DevicesModuleExceptions\Terminate
+	 * @throws DevicesExceptions\Terminate
 	 * @throws MetadataExceptions\FileNotFound
 	 * @throws Throwable
 	 */
@@ -438,7 +438,7 @@ final class FbMqttV1 extends Client
 	}
 
 	/**
-	 * @throws DevicesModuleExceptions\Terminate
+	 * @throws DevicesExceptions\Terminate
 	 * @throws MetadataExceptions\FileNotFound
 	 * @throws Throwable
 	 */
@@ -503,7 +503,7 @@ final class FbMqttV1 extends Client
 	}
 
 	/**
-	 * @throws DevicesModuleExceptions\Terminate
+	 * @throws DevicesExceptions\Terminate
 	 * @throws MetadataExceptions\FileNotFound
 	 * @throws Throwable
 	 */

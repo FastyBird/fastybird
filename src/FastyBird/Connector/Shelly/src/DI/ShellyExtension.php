@@ -27,7 +27,7 @@ use FastyBird\Connector\Shelly\Hydrators;
 use FastyBird\Connector\Shelly\Mappers;
 use FastyBird\Connector\Shelly\Schemas;
 use FastyBird\Connector\Shelly\Subscribers;
-use FastyBird\DevicesModule\DI as DevicesModuleDI;
+use FastyBird\Module\Devices\DI as DevicesDI;
 use Nette;
 use Nette\DI;
 use const DIRECTORY_SEPARATOR;
@@ -165,7 +165,7 @@ class ShellyExtension extends DI\CompilerExtension
 		$builder->addFactoryDefinition($this->prefix('executor.factory'))
 			->setImplement(Connector\ConnectorFactory::class)
 			->addTag(
-				DevicesModuleDI\DevicesModuleExtension::CONNECTOR_TYPE_TAG,
+				DevicesDI\DevicesExtension::CONNECTOR_TYPE_TAG,
 				Entities\ShellyConnector::CONNECTOR_TYPE,
 			)
 			->getResultDefinition()
