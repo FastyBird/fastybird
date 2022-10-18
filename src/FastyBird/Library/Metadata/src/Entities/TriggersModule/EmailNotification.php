@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:Metadata!
+ * @package        FastyBird:MetadataLibrary!
  * @subpackage     Entities
  * @since          0.57.0
  *
@@ -20,7 +20,7 @@ use function array_merge;
 /**
  * Email notification entity
  *
- * @package        FastyBird:Metadata!
+ * @package        FastyBird:MetadataLibrary!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

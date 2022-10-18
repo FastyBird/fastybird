@@ -30,7 +30,7 @@ use function count;
  *
  * @implements IteratorAggregate<int, MetadataEntities\DevicesModule\ChannelControl>
  *
- * @package        FastyBird:Devices!
+ * @package        FastyBird:DevicesModule!
  * @subpackage     Models
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */

@@ -6,7 +6,7 @@
  * @license        More in license.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:Exchange!
+ * @package        FastyBird:ExchangeLibrary!
  * @subpackage     Events
  * @since          0.45.0
  *
@@ -22,7 +22,7 @@ use Symfony\Contracts\EventDispatcher;
 /**
  * After message published event
  *
- * @package        FastyBird:Exchange!
+ * @package        FastyBird:ExchangeLibrary!
  * @subpackage     Events
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:Metadata!
+ * @package        FastyBird:MetadataLibrary!
  * @subpackage     Schemas
  * @since          0.1.0
  *
@@ -27,7 +27,7 @@ use function sprintf;
 /**
  * JSON schema validator
  *
- * @package        FastyBird:Metadata!
+ * @package        FastyBird:MetadataLibrary!
  * @subpackage     Schemas
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

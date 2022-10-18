@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:Devices!
+ * @package        FastyBird:DevicesModule!
  * @subpackage     Models
  * @since          0.1.0
  *
@@ -26,7 +26,7 @@ use function assert;
 /**
  * Channels entities manager
  *
- * @package        FastyBird:Devices!
+ * @package        FastyBird:DevicesModule!
  * @subpackage     Models
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

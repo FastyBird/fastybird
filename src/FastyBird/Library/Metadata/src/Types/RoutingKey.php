@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:Metadata!
+ * @package        FastyBird:MetadataLibrary!
  * @subpackage     Types
  * @since          0.7.4
  *
@@ -22,7 +22,7 @@ use function strval;
 /**
  * Routing keys types
  *
- * @package        FastyBird:Metadata!
+ * @package        FastyBird:MetadataLibrary!
  * @subpackage     Types
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

@@ -6,7 +6,7 @@
  * @license        More in license.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:Devices!
+ * @package        FastyBird:DevicesModule!
  * @subpackage     Events
  * @since          0.65.0
  *
@@ -21,7 +21,7 @@ use Symfony\Contracts\EventDispatcher;
 /**
  * Event fired before connector has been terminated
  *
- * @package        FastyBird:Devices!
+ * @package        FastyBird:DevicesModule!
  * @subpackage     Events
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

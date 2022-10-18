@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:Devices!
+ * @package        FastyBird:DevicesModule!
  * @subpackage     Hydrators
  * @since          0.1.0
  *
@@ -27,7 +27,7 @@ use function is_scalar;
  * @template  TEntityClass of Entities\Devices\Device
  * @extends   JsonApiHydrators\Hydrator<TEntityClass>
  *
- * @package        FastyBird:Devices!
+ * @package        FastyBird:DevicesModule!
  * @subpackage     Hydrators
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */

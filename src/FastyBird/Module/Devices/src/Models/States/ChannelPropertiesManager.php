@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:Devices!
+ * @package        FastyBird:DevicesModule!
  * @subpackage     Models
  * @since          0.32.0
  *
@@ -33,7 +33,7 @@ use function strval;
 /**
  * Channel property states manager
  *
- * @package        FastyBird:Devices!
+ * @package        FastyBird:DevicesModule!
  * @subpackage     Models
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

@@ -42,16 +42,16 @@
   {
     "organization": "FastyBird",
     "name": "redisdb-plugin",
-    "local-path": "src/FastyBird/Plugin/RedisDbPlugin"
+    "local-path": "src/FastyBird/Plugin/RedisDb"
   },
   {
     "organization": "FastyBird",
     "name": "web-server-plugin",
-    "local-path": "src/FastyBird/Plugin/WebServerPlugin"
+    "local-path": "src/FastyBird/Plugin/WebServer"
   },
   {
     "organization": "FastyBird",
     "name": "ws-exchange-plugin",
-    "local-path": "src/FastyBird/Plugin/WsExchangePlugin"
+    "local-path": "src/FastyBird/Plugin/WsExchange"
   }
 ]

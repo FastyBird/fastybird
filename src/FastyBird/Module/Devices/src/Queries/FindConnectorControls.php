@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:Devices!
+ * @package        FastyBird:DevicesModule!
  * @subpackage     Queries
  * @since          0.4.0
  *
@@ -29,9 +29,9 @@ use function in_array;
  *
  * @extends  DoctrineOrmQuery\QueryObject<Entities\Connectors\Controls\Control>
  *
- * @package          FastyBird:Devices!
- * @subpackage       Queries
- * @author           Adam Kadlec <adam.kadlec@fastybird.com>
+ * @package        FastyBird:DevicesModule!
+ * @subpackage     Queries
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 class FindConnectorControls extends DoctrineOrmQuery\QueryObject
 {

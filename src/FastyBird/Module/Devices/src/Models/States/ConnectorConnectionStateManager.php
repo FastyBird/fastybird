@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:Devices!
+ * @package        FastyBird:DevicesModule!
  * @subpackage     DynamicProperties
  * @since          0.73.0
  *
@@ -31,7 +31,7 @@ use Psr\Log;
 /**
  * Connector connection states manager
  *
- * @package        FastyBird:Devices!
+ * @package        FastyBird:DevicesModule!
  * @subpackage     DynamicProperties
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:Devices!
+ * @package        FastyBird:DevicesModule!
  * @subpackage     Router
  * @since          0.1.0
  *
@@ -25,7 +25,7 @@ use IPub\SlimRouter\Routing;
 /**
  * Module routes configuration
  *
- * @package        FastyBird:Devices!
+ * @package        FastyBird:DevicesModule!
  * @subpackage     Router
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

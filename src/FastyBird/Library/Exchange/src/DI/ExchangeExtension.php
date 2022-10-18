@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:Exchange!
+ * @package        FastyBird:ExchangeLibrary!
  * @subpackage     DI
  * @since          0.1.0
  *
@@ -26,7 +26,7 @@ use function is_bool;
 /**
  * Exchange plugin extension container
  *
- * @package        FastyBird:Exchange!
+ * @package        FastyBird:ExchangeLibrary!
  * @subpackage     DI
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:Devices!
+ * @package        FastyBird:DevicesModule!
  * @subpackage     Schemas
  * @since          0.47.0
  *
@@ -31,7 +31,7 @@ use function array_merge;
  *
  * @extends Property<Entities\Devices\Properties\Mapped>
  *
- * @package         FastyBird:Devices!
+ * @package         FastyBird:DevicesModule!
  * @subpackage      Schemas
  * @author          Adam Kadlec <adam.kadlec@fastybird.com>
  */

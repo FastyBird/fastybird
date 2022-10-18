@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:Metadata!
+ * @package        FastyBird:MetadataLibrary!
  * @subpackage     Types
  * @since          0.71.0
  *
@@ -21,7 +21,7 @@ use function strval;
 /**
  * Device or channel property data types
  *
- * @package        FastyBird:Metadata!
+ * @package        FastyBird:MetadataLibrary!
  * @subpackage     Types
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
