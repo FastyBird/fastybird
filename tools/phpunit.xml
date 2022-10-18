@@ -9,12 +9,20 @@
          stderr="true"
          verbose="true"
 >
-    <testsuite name="all">
-        <directory>../src/FastyBird/Library/**/tests/cases/</directory>
-        <directory>../src/FastyBird/Module/**/tests/cases/</directory>
-        <directory>../src/FastyBird/Plugin/**/tests/cases/</directory>
-        <directory>../src/FastyBird/Connector/**/tests/cases/</directory>
-    </testsuite>
+    <testsuites>
+        <testsuite name="connectors">
+            <directory>../src/FastyBird/Connector/**/tests/cases/</directory>
+        </testsuite>
+        <testsuite name="libraries">
+            <directory>../src/FastyBird/Library/**/tests/cases/</directory>
+        </testsuite>
+        <testsuite name="modules">
+            <directory>../src/FastyBird/Module/**/tests/cases/</directory>
+        </testsuite>
+        <testsuite name="plugins">
+            <directory>../src/FastyBird/Plugin/**/tests/cases/</directory>
+        </testsuite>
+    </testsuites>
 
     <coverage cacheDirectory="../var/tools/PHPUnit/coverage" processUncoveredFiles="true">
         <include>
