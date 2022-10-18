@@ -5,10 +5,10 @@ namespace FastyBird\Connector\FbMqtt\Tests\Cases\Unit\Connector;
 use FastyBird\Connector\FbMqtt\Connector;
 use FastyBird\Connector\FbMqtt\Exceptions;
 use FastyBird\Connector\FbMqtt\Tests\Cases\Unit\DbTestCase;
-use FastyBird\DevicesModule;
-use FastyBird\DevicesModule\DataStorage as DevicesModuleDataStorage;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Module\Devices\DataStorage as DevicesDataStorage;
+use FastyBird\Module\Devices\Models as DevicesModels;
 use League\Flysystem;
 use Nette;
 use Ramsey\Uuid;
@@ -29,8 +29,8 @@ final class ConnectorFactoryTest extends DbTestCase
 	{
 		parent::setUp();
 
-		$writer = $this->getContainer()->getByType(DevicesModuleDataStorage\Writer::class);
-		$reader = $this->getContainer()->getByType(DevicesModuleDataStorage\Reader::class);
+		$writer = $this->getContainer()->getByType(DevicesDataStorage\Writer::class);
+		$reader = $this->getContainer()->getByType(DevicesDataStorage\Reader::class);
 
 		$writer->write();
 		$reader->read();
@@ -47,7 +47,7 @@ final class ConnectorFactoryTest extends DbTestCase
 	public function testCreateConnector(): void
 	{
 		$connectorsRepository = $this->getContainer()->getByType(
-			DevicesModule\Models\DataStorage\ConnectorsRepository::class,
+			DevicesModels\DataStorage\ConnectorsRepository::class,
 		);
 
 		$factory = $this->getContainer()->getByType(Connector\ConnectorFactory::class);

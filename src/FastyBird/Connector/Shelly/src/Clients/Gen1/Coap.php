@@ -20,10 +20,10 @@ use Clue\React\Multicast;
 use FastyBird\Connector\Shelly\API;
 use FastyBird\Connector\Shelly\Consumers;
 use FastyBird\Connector\Shelly\Exceptions;
-use FastyBird\DevicesModule\Exceptions as DevicesModuleExceptions;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Nette;
 use Psr\Log;
 use React\Datagram;
@@ -83,7 +83,7 @@ final class Coap
 	}
 
 	/**
-	 * @throws DevicesModuleExceptions\Terminate
+	 * @throws DevicesExceptions\Terminate
 	 */
 	public function discover(): void
 	{
@@ -100,7 +100,7 @@ final class Coap
 			);
 
 			if ($this->onlyDiscovery) {
-				throw new DevicesModuleExceptions\Terminate(
+				throw new DevicesExceptions\Terminate(
 					'Discovery client is not created, discovery could not be performed',
 				);
 			}
@@ -156,7 +156,7 @@ final class Coap
 				],
 			);
 
-			throw new DevicesModuleExceptions\Terminate(
+			throw new DevicesExceptions\Terminate(
 				'Devices state listener client was terminated',
 				$ex->getCode(),
 				$ex,
@@ -197,7 +197,7 @@ final class Coap
 	}
 
 	/**
-	 * @throws DevicesModuleExceptions\InvalidState
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidData

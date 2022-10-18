@@ -21,10 +21,10 @@ use FastyBird\Connector\FbMqtt\Entities;
 use FastyBird\Connector\FbMqtt\Exceptions;
 use FastyBird\Connector\FbMqtt\Helpers;
 use FastyBird\Connector\FbMqtt\Types;
-use FastyBird\DevicesModule\Entities as DevicesModuleEntities;
-use FastyBird\DevicesModule\Models as DevicesModuleModels;
-use FastyBird\DevicesModule\Queries as DevicesModuleQueries;
 use FastyBird\Library\Metadata;
+use FastyBird\Module\Devices\Entities as DevicesEntities;
+use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
 use Nette\Utils;
 use Psr\Log;
@@ -46,8 +46,8 @@ final class ExtensionAttribute implements Consumers\Consumer
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
-		private readonly DevicesModuleModels\Devices\DevicesRepository $deviceRepository,
-		private readonly DevicesModuleModels\Devices\Attributes\AttributesManager $attributesManager,
+		private readonly DevicesModels\Devices\DevicesRepository $deviceRepository,
+		private readonly DevicesModels\Devices\Attributes\AttributesManager $attributesManager,
 		private readonly Helpers\Database $databaseHelper,
 		Log\LoggerInterface|null $logger = null,
 	)
@@ -66,8 +66,8 @@ final class ExtensionAttribute implements Consumers\Consumer
 			return false;
 		}
 
-		$device = $this->databaseHelper->query(function () use ($entity): DevicesModuleEntities\Devices\Device|null {
-			$findDeviceQuery = new DevicesModuleQueries\FindDevices();
+		$device = $this->databaseHelper->query(function () use ($entity): DevicesEntities\Devices\Device|null {
+			$findDeviceQuery = new DevicesQueries\FindDevices();
 			$findDeviceQuery->byIdentifier($entity->getDevice());
 
 			return $this->deviceRepository->findOneBy($findDeviceQuery);

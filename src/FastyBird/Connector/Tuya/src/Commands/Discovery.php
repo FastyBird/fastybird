@@ -22,11 +22,11 @@ use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\DateTimeFactory;
-use FastyBird\DevicesModule\Exceptions as DevicesModuleExceptions;
-use FastyBird\DevicesModule\Models as DevicesModuleModels;
-use FastyBird\DevicesModule\Queries as DevicesModuleQueries;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Psr\Log;
 use Ramsey\Uuid;
 use React\EventLoop;
@@ -79,8 +79,8 @@ class Discovery extends Console\Command\Command
 		private readonly Helpers\Connector $connectorHelper,
 		private readonly Helpers\Device $deviceHelper,
 		private readonly Consumers\Messages $consumer,
-		private readonly DevicesModuleModels\DataStorage\ConnectorsRepository $connectorsRepository,
-		private readonly DevicesModuleModels\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\DataStorage\ConnectorsRepository $connectorsRepository,
+		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		Log\LoggerInterface|null $logger = null,
@@ -121,7 +121,7 @@ class Discovery extends Console\Command\Command
 
 	/**
 	 * @throws Console\Exception\InvalidArgumentException
-	 * @throws DevicesModuleExceptions\InvalidState
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidData
@@ -348,7 +348,7 @@ class Discovery extends Console\Command\Command
 
 			$io->newLine();
 
-			$FindDevices = new DevicesModuleQueries\FindDevices();
+			$FindDevices = new DevicesQueries\FindDevices();
 			$FindDevices->byConnectorId($connector->getId());
 
 			$devices = $this->devicesRepository->findAllBy($FindDevices);
@@ -409,7 +409,7 @@ class Discovery extends Console\Command\Command
 			$io->success('Devices discovery was successfully finished');
 
 			return Console\Command\Command::SUCCESS;
-		} catch (DevicesModuleExceptions\Terminate $ex) {
+		} catch (DevicesExceptions\Terminate $ex) {
 			$this->logger->error(
 				'An error occurred',
 				[

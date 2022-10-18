@@ -16,19 +16,19 @@
 namespace FastyBird\Connector\Shelly\Schemas;
 
 use FastyBird\Connector\Shelly\Entities;
-use FastyBird\DevicesModule\Schemas as DevicesModuleSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Schemas as DevicesSchemas;
 
 /**
  * Shelly connector entity schema
  *
- * @phpstan-extends DevicesModuleSchemas\Connectors\Connector<Entities\ShellyConnector>
+ * @phpstan-extends DevicesSchemas\Connectors\Connector<Entities\ShellyConnector>
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Schemas
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ShellyConnector extends DevicesModuleSchemas\Connectors\Connector
+final class ShellyConnector extends DevicesSchemas\Connectors\Connector
 {
 
 	/**

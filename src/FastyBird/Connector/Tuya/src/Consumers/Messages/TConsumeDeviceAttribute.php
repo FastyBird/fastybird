@@ -19,11 +19,11 @@ use Doctrine\DBAL;
 use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Helpers;
-use FastyBird\DevicesModule\Entities as DevicesModuleEntities;
-use FastyBird\DevicesModule\Models as DevicesModuleModels;
-use FastyBird\DevicesModule\Queries as DevicesModuleQueries;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Module\Devices\Entities as DevicesEntities;
+use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette\Utils;
 use Psr\Log;
 use Ramsey\Uuid;
@@ -37,10 +37,10 @@ use function assert;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *
- * @property-read DevicesModuleModels\Devices\DevicesRepository $devicesRepository
- * @property-read DevicesModuleModels\Devices\Attributes\AttributesRepository $attributesRepository
- * @property-read DevicesModuleModels\Devices\Attributes\AttributesManager $attributesManager
- * @property-read DevicesModuleModels\DataStorage\DeviceAttributesRepository $attributesDataStorageRepository
+ * @property-read DevicesModels\Devices\DevicesRepository $devicesRepository
+ * @property-read DevicesModels\Devices\Attributes\AttributesRepository $attributesRepository
+ * @property-read DevicesModels\Devices\Attributes\AttributesManager $attributesManager
+ * @property-read DevicesModels\DataStorage\DeviceAttributesRepository $attributesDataStorageRepository
  * @property-read Helpers\Database $databaseHelper
  * @property-read Log\LoggerInterface $logger
  */
@@ -71,8 +71,8 @@ trait TConsumeDeviceAttribute
 
 		if ($attributeItem !== null && $value === null) {
 			$attributeEntity = $this->databaseHelper->query(
-				function () use ($attributeItem): DevicesModuleEntities\Devices\Attributes\Attribute|null {
-					$findAttributeQuery = new DevicesModuleQueries\FindDeviceAttributes();
+				function () use ($attributeItem): DevicesEntities\Devices\Attributes\Attribute|null {
+					$findAttributeQuery = new DevicesQueries\FindDeviceAttributes();
 					$findAttributeQuery->byId($attributeItem->getId());
 
 					return $this->attributesRepository->findOneBy($findAttributeQuery);
@@ -101,7 +101,7 @@ trait TConsumeDeviceAttribute
 		if ($attributeItem === null) {
 			$deviceEntity = $this->databaseHelper->query(
 				function () use ($deviceId): Entities\TuyaDevice|null {
-					$findDeviceQuery = new DevicesModuleQueries\FindDevices();
+					$findDeviceQuery = new DevicesQueries\FindDevices();
 					$findDeviceQuery->byId($deviceId);
 
 					$deviceEntity = $this->devicesRepository->findOneBy(
@@ -119,7 +119,7 @@ trait TConsumeDeviceAttribute
 			}
 
 			$attributeEntity = $this->databaseHelper->transaction(
-				fn (): DevicesModuleEntities\Devices\Attributes\Attribute => $this->attributesManager->create(
+				fn (): DevicesEntities\Devices\Attributes\Attribute => $this->attributesManager->create(
 					Utils\ArrayHash::from([
 						'device' => $deviceEntity,
 						'identifier' => $identifier,
@@ -145,8 +145,8 @@ trait TConsumeDeviceAttribute
 
 		} else {
 			$attributeEntity = $this->databaseHelper->query(
-				function () use ($attributeItem): DevicesModuleEntities\Devices\Attributes\Attribute|null {
-					$findAttributeQuery = new DevicesModuleQueries\FindDeviceAttributes();
+				function () use ($attributeItem): DevicesEntities\Devices\Attributes\Attribute|null {
+					$findAttributeQuery = new DevicesQueries\FindDeviceAttributes();
 					$findAttributeQuery->byId($attributeItem->getId());
 
 					return $this->attributesRepository->findOneBy($findAttributeQuery);
@@ -155,7 +155,7 @@ trait TConsumeDeviceAttribute
 
 			if ($attributeEntity !== null) {
 				$attributeEntity = $this->databaseHelper->transaction(
-					fn (): DevicesModuleEntities\Devices\Attributes\Attribute => $this->attributesManager->update(
+					fn (): DevicesEntities\Devices\Attributes\Attribute => $this->attributesManager->update(
 						$attributeEntity,
 						Utils\ArrayHash::from([
 							'content' => $value,

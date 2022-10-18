@@ -10,7 +10,7 @@ includes:
     - ../src/FastyBird/Library/Exchange/tools/phpstan.config.tests.neon
     - ../src/FastyBird/Library/Metadata/tools/phpstan.config.tests.neon
 
-    - ../src/FastyBird/Module/DevicesModule/tools/phpstan.config.tests.neon
+    - ../src/FastyBird/Module/Devices/tools/phpstan.config.tests.neon
 
     - ../src/FastyBird/Plugin/RedisDbPlugin/tools/phpstan.config.tests.neon
     - ../src/FastyBird/Plugin/WebServerPlugin/tools/phpstan.config.tests.neon

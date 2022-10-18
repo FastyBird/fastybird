@@ -16,19 +16,19 @@
 namespace FastyBird\Connector\Tuya\Schemas;
 
 use FastyBird\Connector\Tuya\Entities;
-use FastyBird\DevicesModule\Schemas as DevicesModuleSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Schemas as DevicesSchemas;
 
 /**
  * Tuya connector entity schema
  *
- * @phpstan-extends DevicesModuleSchemas\Devices\Device<Entities\TuyaDevice>
+ * @phpstan-extends DevicesSchemas\Devices\Device<Entities\TuyaDevice>
  *
  * @package        FastyBird:TuyaConnector!
  * @subpackage     Schemas
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class TuyaDevice extends DevicesModuleSchemas\Devices\Device
+final class TuyaDevice extends DevicesSchemas\Devices\Device
 {
 
 	/**

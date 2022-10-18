@@ -19,10 +19,10 @@ use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\DateTimeFactory;
-use FastyBird\DevicesModule\Exceptions as DevicesModuleExceptions;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
+use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Psr\Log;
 use function strval;
 
@@ -51,7 +51,7 @@ final class OpenApiFactory
 	}
 
 	/**
-	 * @throws DevicesModuleExceptions\InvalidState
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument

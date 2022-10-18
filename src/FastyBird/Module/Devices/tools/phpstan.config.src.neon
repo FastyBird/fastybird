@@ -1,0 +1,18 @@
+parameters:
+    level: max
+
+    paths:
+        - ../src/
+
+    stubFiles:
+        - ../tests/stubs/BaseLinkInterface.stub
+        - ../tests/stubs/ContextInterface.stub
+        - ../tests/stubs/LinkInterface.stub
+        - ../tests/stubs/PositionInterface.stub
+        - ../tests/stubs/SchemaInterface.stub
+
+    ignoreErrors:
+        - message: '#^Method FastyBird\\Module\\Devices\\Entities\\Devices\\Device::getSource\(\) never returns FastyBird\\Library\\Metadata\\Types\\ConnectorSource so it can be removed from the return type.#'
+        - message: '#^Method FastyBird\\Module\\Devices\\Entities\\Devices\\Device::getSource\(\) never returns FastyBird\\Library\\Metadata\\Types\\PluginSource so it can be removed from the return type.#'
+        - message: '#^Method FastyBird\\Module\\Devices\\Entities\\Connectors\\Connector::getSource\(\) never returns FastyBird\\Library\\Metadata\\Types\\ConnectorSource so it can be removed from the return type.#'
+        - message: '#^Method FastyBird\\Module\\Devices\\Entities\\Connectors\\Connector::getSource\(\) never returns FastyBird\\Library\\Metadata\\Types\\PluginSource so it can be removed from the return type.#'

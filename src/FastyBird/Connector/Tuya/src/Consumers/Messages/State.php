@@ -18,11 +18,11 @@ namespace FastyBird\Connector\Tuya\Consumers\Messages;
 use FastyBird\Connector\Tuya\Consumers\Consumer;
 use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Helpers;
-use FastyBird\DevicesModule\Exceptions as DevicesModuleExceptions;
-use FastyBird\DevicesModule\Models as DevicesModuleModels;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use FastyBird\Module\Devices\Models as DevicesModels;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette;
 use Psr\Log;
@@ -44,11 +44,11 @@ final class State implements Consumer
 
 	public function __construct(
 		private readonly Helpers\Property $propertyStateHelper,
-		private readonly DevicesModuleModels\DataStorage\DevicesRepository $devicesDataStorageRepository,
-		private readonly DevicesModuleModels\DataStorage\DevicePropertiesRepository $devicePropertiesRepository,
-		private readonly DevicesModuleModels\DataStorage\ChannelsRepository $channelsRepository,
-		private readonly DevicesModuleModels\DataStorage\ChannelPropertiesRepository $channelPropertiesRepository,
-		private readonly DevicesModuleModels\States\DeviceConnectionStateManager $deviceConnectionStateManager,
+		private readonly DevicesModels\DataStorage\DevicesRepository $devicesDataStorageRepository,
+		private readonly DevicesModels\DataStorage\DevicePropertiesRepository $devicePropertiesRepository,
+		private readonly DevicesModels\DataStorage\ChannelsRepository $channelsRepository,
+		private readonly DevicesModels\DataStorage\ChannelPropertiesRepository $channelPropertiesRepository,
+		private readonly DevicesModels\States\DeviceConnectionStateManager $deviceConnectionStateManager,
 		Log\LoggerInterface|null $logger,
 	)
 	{
@@ -56,7 +56,7 @@ final class State implements Consumer
 	}
 
 	/**
-	 * @throws DevicesModuleExceptions\InvalidState
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
 	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws MetadataExceptions\FileNotFound

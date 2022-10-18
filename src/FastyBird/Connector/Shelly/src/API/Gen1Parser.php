@@ -20,10 +20,10 @@ use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Mappers;
 use FastyBird\Connector\Shelly\Types;
-use FastyBird\DevicesModule\Exceptions as DevicesModuleExceptions;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Nette;
 use Nette\Utils;
 use Ramsey\Uuid;
@@ -108,7 +108,7 @@ final class Gen1Parser
 	}
 
 	/**
-	 * @throws DevicesModuleExceptions\InvalidState
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\ParseMessage
 	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument

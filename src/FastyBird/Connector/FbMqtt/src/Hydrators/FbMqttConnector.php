@@ -16,18 +16,18 @@
 namespace FastyBird\Connector\FbMqtt\Hydrators;
 
 use FastyBird\Connector\FbMqtt\Entities;
-use FastyBird\DevicesModule\Hydrators as DevicesModuleHydrators;
+use FastyBird\Module\Devices\Hydrators as DevicesHydrators;
 
 /**
  * FastyBird MQTT Connector entity hydrator
  *
- * @phpstan-extends DevicesModuleHydrators\Connectors\Connector<Entities\FbMqttConnector>
+ * @phpstan-extends DevicesHydrators\Connectors\Connector<Entities\FbMqttConnector>
  *
  * @package        FastyBird:FbMqttConnector!
  * @subpackage     Hydrators
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class FbMqttConnector extends DevicesModuleHydrators\Connectors\Connector
+final class FbMqttConnector extends DevicesHydrators\Connectors\Connector
 {
 
 	public function getEntityName(): string

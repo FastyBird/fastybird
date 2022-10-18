@@ -15,8 +15,8 @@
 
 namespace FastyBird\Connector\Shelly\Clients\Gen1;
 
-use FastyBird\DevicesModule\Exceptions as DevicesModuleExceptions;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Nette;
 use function sprintf;
 
@@ -40,21 +40,21 @@ final class Mqtt
 	}
 
 	/**
-	 * @throws DevicesModuleExceptions\Terminate
+	 * @throws DevicesExceptions\Terminate
 	 */
 	public function connect(): void
 	{
-		throw new DevicesModuleExceptions\Terminate(
+		throw new DevicesExceptions\Terminate(
 			sprintf('MQTT client is not implemented for connector %s', $this->connector->getIdentifier()),
 		);
 	}
 
 	/**
-	 * @throws DevicesModuleExceptions\Terminate
+	 * @throws DevicesExceptions\Terminate
 	 */
 	public function disconnect(): void
 	{
-		throw new DevicesModuleExceptions\Terminate(
+		throw new DevicesExceptions\Terminate(
 			sprintf('MQTT client is not implemented for connector %s', $this->connector->getIdentifier()),
 		);
 	}

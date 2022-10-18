@@ -16,18 +16,18 @@
 namespace FastyBird\Connector\Shelly\Hydrators;
 
 use FastyBird\Connector\Shelly\Entities;
-use FastyBird\DevicesModule\Hydrators as DevicesModuleHydrators;
+use FastyBird\Module\Devices\Hydrators as DevicesHydrators;
 
 /**
  * Shelly device entity hydrator
  *
- * @phpstan-extends DevicesModuleHydrators\Devices\Device<Entities\ShellyDevice>
+ * @phpstan-extends DevicesHydrators\Devices\Device<Entities\ShellyDevice>
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Hydrators
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ShellyDevice extends DevicesModuleHydrators\Devices\Device
+final class ShellyDevice extends DevicesHydrators\Devices\Device
 {
 
 	public function getEntityName(): string

@@ -1,0 +1,37 @@
+<?php declare(strict_types = 1);
+
+/**
+ * Blank.php
+ *
+ * @license        More in LICENSE.md
+ * @copyright      https://www.fastybird.com
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
+ * @package        FastyBird:Devices!
+ * @subpackage     Hydrators
+ * @since          0.9.0
+ *
+ * @date           07.02.22
+ */
+
+namespace FastyBird\Module\Devices\Hydrators\Devices;
+
+use FastyBird\Module\Devices\Entities;
+
+/**
+ * Blank device entity hydrator
+ *
+ * @extends Device<Entities\Devices\Blank>
+ *
+ * @package        FastyBird:Devices!
+ * @subpackage     Hydrators
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
+ */
+final class Blank extends Device
+{
+
+	public function getEntityName(): string
+	{
+		return Entities\Devices\Blank::class;
+	}
+
+}

@@ -16,18 +16,18 @@
 namespace FastyBird\Connector\Tuya\Hydrators;
 
 use FastyBird\Connector\Tuya\Entities;
-use FastyBird\DevicesModule\Hydrators as DevicesModuleHydrators;
+use FastyBird\Module\Devices\Hydrators as DevicesHydrators;
 
 /**
  * Tuya connector entity hydrator
  *
- * @phpstan-extends DevicesModuleHydrators\Connectors\Connector<Entities\TuyaConnector>
+ * @phpstan-extends DevicesHydrators\Connectors\Connector<Entities\TuyaConnector>
  *
  * @package        FastyBird:TuyaConnector!
  * @subpackage     Hydrators
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class TuyaConnector extends DevicesModuleHydrators\Connectors\Connector
+final class TuyaConnector extends DevicesHydrators\Connectors\Connector
 {
 
 	public function getEntityName(): string

@@ -19,10 +19,10 @@ use FastyBird\Connector\FbMqtt\Clients;
 use FastyBird\Connector\FbMqtt\Consumers;
 use FastyBird\Connector\FbMqtt\Helpers;
 use FastyBird\Connector\FbMqtt\Types;
-use FastyBird\DevicesModule\Connectors as DevicesModuleConnectors;
-use FastyBird\DevicesModule\Exceptions as DevicesModuleExceptions;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Module\Devices\Connectors as DevicesConnectors;
+use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use InvalidArgumentException;
 use Nette;
 use React\EventLoop;
@@ -38,7 +38,7 @@ use function React\Async\async;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Connector implements DevicesModuleConnectors\Connector
+final class Connector implements DevicesConnectors\Connector
 {
 
 	use Nette\SmartObject;
@@ -63,8 +63,8 @@ final class Connector implements DevicesModuleConnectors\Connector
 	}
 
 	/**
-	 * @throws DevicesModuleExceptions\InvalidState
-	 * @throws DevicesModuleExceptions\Terminate
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws DevicesExceptions\Terminate
 	 * @throws InvalidArgumentException
 	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
@@ -81,7 +81,7 @@ final class Connector implements DevicesModuleConnectors\Connector
 		);
 
 		if ($version === null) {
-			throw new DevicesModuleExceptions\Terminate('Connector protocol version is not configured');
+			throw new DevicesExceptions\Terminate('Connector protocol version is not configured');
 		}
 
 		foreach ($this->clientsFactories as $clientFactory) {
@@ -98,7 +98,7 @@ final class Connector implements DevicesModuleConnectors\Connector
 		}
 
 		if ($this->client === null) {
-			throw new DevicesModuleExceptions\Terminate('Connector client is not configured');
+			throw new DevicesExceptions\Terminate('Connector client is not configured');
 		}
 
 		$this->client->connect();
@@ -112,7 +112,7 @@ final class Connector implements DevicesModuleConnectors\Connector
 	}
 
 	/**
-	 * @throws DevicesModuleExceptions\Terminate
+	 * @throws DevicesExceptions\Terminate
 	 */
 	public function terminate(): void
 	{

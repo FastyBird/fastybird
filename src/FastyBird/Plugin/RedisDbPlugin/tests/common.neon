@@ -14,10 +14,10 @@ php:
     date.timezone: Europe/Prague
 
 extensions:
-    fbDateTimeFactory       : FastyBird\DateTimeFactory\DI\DateTimeFactoryExtension
-    fbMetadata              : FastyBird\Library\Metadata\DI\MetadataExtension
-    fbExchange              : FastyBird\Library\Exchange\DI\ExchangeExtension
     ipubPhone               : IPub\Phone\DI\PhoneExtension
+    fbDateTimeFactory       : FastyBird\DateTimeFactory\DI\DateTimeFactoryExtension
+    fbExchangeLibrary       : FastyBird\Library\Exchange\DI\ExchangeExtension
+    fbMetadataLibrary       : FastyBird\Library\Metadata\DI\MetadataExtension
 
 services:
     - {

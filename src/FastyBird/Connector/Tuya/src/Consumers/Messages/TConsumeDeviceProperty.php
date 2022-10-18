@@ -19,14 +19,14 @@ use Doctrine\DBAL;
 use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Helpers;
-use FastyBird\DevicesModule\Entities as DevicesModuleEntities;
-use FastyBird\DevicesModule\Exceptions as DevicesModuleExceptions;
-use FastyBird\DevicesModule\Models as DevicesModuleModels;
-use FastyBird\DevicesModule\Queries as DevicesModuleQueries;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Entities as DevicesEntities;
+use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette\Utils;
 use Psr\Log;
 use Ramsey\Uuid;
@@ -40,10 +40,10 @@ use function assert;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *
- * @property-read DevicesModuleModels\Devices\DevicesRepository $devicesRepository
- * @property-read DevicesModuleModels\Devices\Properties\PropertiesRepository $propertiesRepository
- * @property-read DevicesModuleModels\Devices\Properties\PropertiesManager $propertiesManager
- * @property-read DevicesModuleModels\DataStorage\DevicePropertiesRepository $propertiesDataStorageRepository
+ * @property-read DevicesModels\Devices\DevicesRepository $devicesRepository
+ * @property-read DevicesModels\Devices\Properties\PropertiesRepository $propertiesRepository
+ * @property-read DevicesModels\Devices\Properties\PropertiesManager $propertiesManager
+ * @property-read DevicesModels\DataStorage\DevicePropertiesRepository $propertiesDataStorageRepository
  * @property-read Helpers\Database $databaseHelper
  * @property-read Log\LoggerInterface $logger
  */
@@ -52,7 +52,7 @@ trait TConsumeDeviceProperty
 
 	/**
 	 * @throws DBAL\Exception
-	 * @throws DevicesModuleExceptions\InvalidState
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\FileNotFound
@@ -75,8 +75,8 @@ trait TConsumeDeviceProperty
 
 		if ($propertyItem !== null && $value === null) {
 			$propertyEntity = $this->databaseHelper->query(
-				function () use ($propertyItem): DevicesModuleEntities\Devices\Properties\Property|null {
-					$findPropertyQuery = new DevicesModuleQueries\FindDeviceProperties();
+				function () use ($propertyItem): DevicesEntities\Devices\Properties\Property|null {
+					$findPropertyQuery = new DevicesQueries\FindDeviceProperties();
 					$findPropertyQuery->byId($propertyItem->getId());
 
 					return $this->propertiesRepository->findOneBy($findPropertyQuery);
@@ -110,8 +110,8 @@ trait TConsumeDeviceProperty
 			&& !$propertyItem instanceof MetadataEntities\DevicesModule\DeviceVariableProperty
 		) {
 			$propertyEntity = $this->databaseHelper->query(
-				function () use ($propertyItem): DevicesModuleEntities\Devices\Properties\Property|null {
-					$findPropertyQuery = new DevicesModuleQueries\FindDeviceProperties();
+				function () use ($propertyItem): DevicesEntities\Devices\Properties\Property|null {
+					$findPropertyQuery = new DevicesQueries\FindDeviceProperties();
 					$findPropertyQuery->byId($propertyItem->getId());
 
 					return $this->propertiesRepository->findOneBy($findPropertyQuery);
@@ -145,7 +145,7 @@ trait TConsumeDeviceProperty
 		if ($propertyItem === null) {
 			$deviceEntity = $this->databaseHelper->query(
 				function () use ($deviceId): Entities\TuyaDevice|null {
-					$findDeviceQuery = new DevicesModuleQueries\FindDevices();
+					$findDeviceQuery = new DevicesQueries\FindDevices();
 					$findDeviceQuery->byId($deviceId);
 
 					$deviceEntity = $this->devicesRepository->findOneBy(
@@ -163,9 +163,9 @@ trait TConsumeDeviceProperty
 			}
 
 			$propertyEntity = $this->databaseHelper->transaction(
-				fn (): DevicesModuleEntities\Devices\Properties\Property => $this->propertiesManager->create(
+				fn (): DevicesEntities\Devices\Properties\Property => $this->propertiesManager->create(
 					Utils\ArrayHash::from([
-						'entity' => DevicesModuleEntities\Devices\Properties\Variable::class,
+						'entity' => DevicesEntities\Devices\Properties\Variable::class,
 						'device' => $deviceEntity,
 						'identifier' => $identifier,
 						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
@@ -193,8 +193,8 @@ trait TConsumeDeviceProperty
 
 		} else {
 			$propertyEntity = $this->databaseHelper->query(
-				function () use ($propertyItem): DevicesModuleEntities\Devices\Properties\Property|null {
-					$findPropertyQuery = new DevicesModuleQueries\FindDeviceProperties();
+				function () use ($propertyItem): DevicesEntities\Devices\Properties\Property|null {
+					$findPropertyQuery = new DevicesQueries\FindDeviceProperties();
 					$findPropertyQuery->byId($propertyItem->getId());
 
 					return $this->propertiesRepository->findOneBy($findPropertyQuery);
@@ -203,7 +203,7 @@ trait TConsumeDeviceProperty
 
 			if ($propertyEntity !== null) {
 				$propertyEntity = $this->databaseHelper->transaction(
-					fn (): DevicesModuleEntities\Devices\Properties\Property => $this->propertiesManager->update(
+					fn (): DevicesEntities\Devices\Properties\Property => $this->propertiesManager->update(
 						$propertyEntity,
 						Utils\ArrayHash::from([
 							'value' => $value,

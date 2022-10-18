@@ -19,11 +19,11 @@ use FastyBird\Connector\Tuya\Consumers\Consumer;
 use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Mappers;
-use FastyBird\DevicesModule\Exceptions as DevicesModuleExceptions;
-use FastyBird\DevicesModule\Models as DevicesModuleModels;
-use FastyBird\DevicesModule\Utilities as DevicesModuleUtilities;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette;
 use Nette\Utils;
@@ -45,8 +45,8 @@ final class Status implements Consumer
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
-		private readonly DevicesModuleModels\DataStorage\DevicesRepository $devicesDataStorageRepository,
-		private readonly DevicesModuleModels\States\DeviceConnectionStateManager $deviceConnectionStateManager,
+		private readonly DevicesModels\DataStorage\DevicesRepository $devicesDataStorageRepository,
+		private readonly DevicesModels\States\DeviceConnectionStateManager $deviceConnectionStateManager,
 		private readonly Mappers\DataPoint $dataPointMapper,
 		private readonly Helpers\Property $propertyStateHelper,
 		Log\LoggerInterface|null $logger,
@@ -56,7 +56,7 @@ final class Status implements Consumer
 	}
 
 	/**
-	 * @throws DevicesModuleExceptions\InvalidState
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
 	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws MetadataExceptions\FileNotFound
@@ -102,8 +102,8 @@ final class Status implements Consumer
 			);
 
 			if ($property !== null) {
-				$actualValue = DevicesModuleUtilities\ValueHelper::flattenValue(
-					DevicesModuleUtilities\ValueHelper::normalizeValue(
+				$actualValue = DevicesUtilities\ValueHelper::flattenValue(
+					DevicesUtilities\ValueHelper::normalizeValue(
 						$property->getDataType(),
 						$dataPoint->getValue(),
 						$property->getFormat(),

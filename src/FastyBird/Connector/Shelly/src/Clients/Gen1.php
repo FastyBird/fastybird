@@ -18,10 +18,10 @@ namespace FastyBird\Connector\Shelly\Clients;
 use FastyBird\Connector\Shelly\Clients;
 use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Types;
-use FastyBird\DevicesModule\Exceptions as DevicesModuleExceptions;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Nette;
 use Psr\Log;
 use Throwable;
@@ -63,7 +63,7 @@ final class Gen1 implements Client
 	}
 
 	/**
-	 * @throws DevicesModuleExceptions\Terminate
+	 * @throws DevicesExceptions\Terminate
 	 */
 	public function discover(): void
 	{
@@ -88,7 +88,7 @@ final class Gen1 implements Client
 				],
 			);
 
-			throw new DevicesModuleExceptions\Terminate(
+			throw new DevicesExceptions\Terminate(
 				'CoAP client could not be started',
 				$ex->getCode(),
 				$ex,
@@ -113,7 +113,7 @@ final class Gen1 implements Client
 				],
 			);
 
-			throw new DevicesModuleExceptions\Terminate(
+			throw new DevicesExceptions\Terminate(
 				'mDNS client could not be started',
 				$ex->getCode(),
 				$ex,
@@ -122,8 +122,8 @@ final class Gen1 implements Client
 	}
 
 	/**
-	 * @throws DevicesModuleExceptions\InvalidState
-	 * @throws DevicesModuleExceptions\Terminate
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws DevicesExceptions\Terminate
 	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidData
@@ -139,7 +139,7 @@ final class Gen1 implements Client
 		);
 
 		if ($mode === null) {
-			throw new DevicesModuleExceptions\Terminate('Connector client mode is not configured');
+			throw new DevicesExceptions\Terminate('Connector client mode is not configured');
 		}
 
 		if ($mode === Types\ClientMode::TYPE_GEN_1_CLASSIC) {
@@ -165,7 +165,7 @@ final class Gen1 implements Client
 					],
 				);
 
-				throw new DevicesModuleExceptions\Terminate(
+				throw new DevicesExceptions\Terminate(
 					'CoAP client could not be started',
 					$ex->getCode(),
 					$ex,
@@ -190,7 +190,7 @@ final class Gen1 implements Client
 					],
 				);
 
-				throw new DevicesModuleExceptions\Terminate(
+				throw new DevicesExceptions\Terminate(
 					'mDNS client could not be started',
 					$ex->getCode(),
 					$ex,
@@ -215,7 +215,7 @@ final class Gen1 implements Client
 					],
 				);
 
-				throw new DevicesModuleExceptions\Terminate(
+				throw new DevicesExceptions\Terminate(
 					'Http api client could not be started',
 					$ex->getCode(),
 					$ex,
@@ -242,14 +242,14 @@ final class Gen1 implements Client
 					],
 				);
 
-				throw new DevicesModuleExceptions\Terminate(
+				throw new DevicesExceptions\Terminate(
 					'MQTT client could not be started',
 					$ex->getCode(),
 					$ex,
 				);
 			}
 		} else {
-			throw new DevicesModuleExceptions\Terminate('Client mode is not configured');
+			throw new DevicesExceptions\Terminate('Client mode is not configured');
 		}
 	}
 
