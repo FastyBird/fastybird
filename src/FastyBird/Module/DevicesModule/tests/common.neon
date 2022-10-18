@@ -48,6 +48,14 @@ services:
         tags: [connector_type: dummy]
     - {factory: FastyBird\DevicesModule\Tests\Fixtures\Dummy\DummyConnectorSchema}
 
+decorator:
+    Doctrine\Persistence\Mapping\Driver\MappingDriverChain:
+        setup:
+            - addDriver(@nettrineOrmAnnotations.annotationDriver, 'FastyBird\DevicesModule\Tests\Fixtures\Dummy')
+    Doctrine\ORM\Mapping\Driver\AnnotationDriver:
+        setup:
+            - addPaths([%appDir%/fixtures/dummy])
+
 contributteTranslation:
     locales:
         default: en_US
