@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Tuya\Clients;
 
 use DateTimeInterface;
+use Exception;
 use FastyBird\Connector\Tuya\API;
 use FastyBird\Connector\Tuya\Consumers;
 use FastyBird\Connector\Tuya\Entities;
@@ -137,8 +138,15 @@ final class Local implements Client
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Terminate
-	 * @throws Throwable
+	 * @throws MetadataExceptions\FileNotFound
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws Exception
 	 */
 	private function handleCommunication(): void
 	{
@@ -173,8 +181,15 @@ final class Local implements Client
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Terminate
-	 * @throws Throwable
+	 * @throws MetadataExceptions\FileNotFound
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws Exception
 	 */
 	private function processDevice(MetadataEntities\DevicesModule\Device $deviceItem): bool
 	{
@@ -227,7 +242,7 @@ final class Local implements Client
 	}
 
 	/**
-	 * @throws Throwable
+	 * @throws Exceptions\InvalidState
 	 */
 	private function readDeviceData(
 		string $cmd,
@@ -313,7 +328,9 @@ final class Local implements Client
 
 	/**
 	 * @throws DevicesExceptions\Terminate
-	 * @throws Throwable
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
+	 * @throws Exception
 	 */
 	private function writeChannelsProperty(MetadataEntities\DevicesModule\Device $deviceItem): bool
 	{

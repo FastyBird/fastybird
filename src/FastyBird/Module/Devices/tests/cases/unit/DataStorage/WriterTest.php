@@ -2,6 +2,7 @@
 
 namespace FastyBird\Module\Devices\Tests\Cases\Unit\DataStorage;
 
+use Exception;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\DataStorage;
 use FastyBird\Module\Devices\Exceptions;
@@ -15,7 +16,9 @@ final class WriterTest extends DbTestCase
 {
 
 	/**
+	 * @throws Exception
 	 * @throws Exceptions\InvalidArgument
+	 * @throws Flysystem\FilesystemException
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
 	 */

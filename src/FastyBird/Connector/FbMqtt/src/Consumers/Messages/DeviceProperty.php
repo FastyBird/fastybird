@@ -16,9 +16,11 @@
 namespace FastyBird\Connector\FbMqtt\Consumers\Messages;
 
 use Doctrine\DBAL;
+use Exception;
 use FastyBird\Connector\FbMqtt;
 use FastyBird\Connector\FbMqtt\Consumers;
 use FastyBird\Connector\FbMqtt\Entities;
+use FastyBird\Connector\FbMqtt\Exceptions;
 use FastyBird\Connector\FbMqtt\Helpers;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
@@ -31,7 +33,6 @@ use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Nette\Utils;
 use Psr\Log;
-use Throwable;
 use function array_merge;
 use function assert;
 use function count;
@@ -70,8 +71,16 @@ final class DeviceProperty implements Consumers\Consumer
 
 	/**
 	 * @throws DBAL\Exception
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\FileNotFound
-	 * @throws Throwable
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws Exception
 	 */
 	public function consume(Entities\Messages\Entity $entity): bool
 	{

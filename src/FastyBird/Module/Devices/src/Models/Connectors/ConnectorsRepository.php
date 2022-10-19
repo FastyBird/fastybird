@@ -17,12 +17,12 @@ namespace FastyBird\Module\Devices\Models\Connectors;
 
 use Doctrine\ORM;
 use Doctrine\Persistence;
+use Exception;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Queries;
 use IPub\DoctrineOrmQuery;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette;
-use Throwable;
 use function is_array;
 
 /**
@@ -64,8 +64,8 @@ final class ConnectorsRepository
 	 *
 	 * @phpstan-return Array<Entities\Connectors\Connector>
 	 *
+	 * @throws Exception
 	 * @throws DoctrineOrmQueryExceptions\QueryException
-	 * @throws Throwable
 	 */
 	public function findAllBy(
 		Queries\FindConnectors $queryObject,

@@ -2,6 +2,7 @@
 
 namespace FastyBird\Connector\FbMqtt\Tests\Cases\Unit\Connector;
 
+use Exception;
 use FastyBird\Connector\FbMqtt\Connector;
 use FastyBird\Connector\FbMqtt\Exceptions;
 use FastyBird\Connector\FbMqtt\Tests\Cases\Unit\DbTestCase;
@@ -19,6 +20,7 @@ final class ConnectorFactoryTest extends DbTestCase
 {
 
 	/**
+	 * @throws Exception
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws Nette\Utils\JsonException

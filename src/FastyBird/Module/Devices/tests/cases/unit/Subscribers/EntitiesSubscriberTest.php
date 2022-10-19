@@ -3,6 +3,7 @@
 namespace FastyBird\Module\Devices\Tests\Cases\Unit\Subscribers;
 
 use Doctrine\ORM;
+use Exception;
 use FastyBird\Library\Exchange\Entities as ExchangeEntities;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata;
@@ -12,6 +13,7 @@ use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Subscribers;
+use League\Flysystem;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid;
@@ -73,6 +75,10 @@ final class EntitiesSubscriberTest extends TestCase
 		], $subscriber->getSubscribedEvents());
 	}
 
+	/**
+	 * @throws Exception
+	 * @throws Flysystem\FilesystemException
+	 */
 	public function testPublishCreatedEntity(): void
 	{
 		$publisher = $this->createMock(ExchangePublisher\Publisher::class);
@@ -191,6 +197,10 @@ final class EntitiesSubscriberTest extends TestCase
 		$subscriber->postPersist($eventArgs);
 	}
 
+	/**
+	 * @throws Exception
+	 * @throws Flysystem\FilesystemException
+	 */
 	public function testPublishUpdatedEntity(): void
 	{
 		$publisher = $this->createMock(ExchangePublisher\Publisher::class);
@@ -309,6 +319,10 @@ final class EntitiesSubscriberTest extends TestCase
 		$subscriber->postUpdate($eventArgs);
 	}
 
+	/**
+	 * @throws Exception
+	 * @throws Flysystem\FilesystemException
+	 */
 	public function testPublishDeletedEntity(): void
 	{
 		$publisher = $this->createMock(ExchangePublisher\Publisher::class);

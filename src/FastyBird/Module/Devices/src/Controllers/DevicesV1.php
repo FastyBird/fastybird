@@ -362,8 +362,10 @@ class DevicesV1 extends BaseV1
 	}
 
 	/**
+	 * @throws Exception
+	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
+	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws JsonApiExceptions\JsonApi
-	 * @throws Throwable
 	 */
 	public function readRelationship(
 		Message\ServerRequestInterface $request,

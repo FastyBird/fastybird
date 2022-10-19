@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Tuya\Clients;
 
 use DateTimeInterface;
+use Exception;
 use FastyBird\Connector\Tuya;
 use FastyBird\Connector\Tuya\API;
 use FastyBird\Connector\Tuya\Consumers;
@@ -39,6 +40,7 @@ use Ratchet;
 use Ratchet\RFC6455;
 use React\EventLoop;
 use React\Socket;
+use RuntimeException;
 use Throwable;
 use function array_key_exists;
 use function base64_decode;
@@ -324,7 +326,14 @@ final class Cloud implements Client
 
 	/**
 	 * @throws DevicesExceptions\Terminate
-	 * @throws Throwable
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\FileNotFound
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws Exception
 	 */
 	private function handleCommunication(): void
 	{
@@ -364,7 +373,14 @@ final class Cloud implements Client
 
 	/**
 	 * @throws DevicesExceptions\Terminate
-	 * @throws Throwable
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\FileNotFound
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws Exception
 	 */
 	private function processDevice(MetadataEntities\DevicesModule\Device $deviceItem): bool
 	{
@@ -392,7 +408,16 @@ final class Cloud implements Client
 	}
 
 	/**
-	 * @throws Throwable
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\FileNotFound
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws RuntimeException
 	 */
 	private function readDeviceData(
 		string $cmd,
@@ -535,8 +560,15 @@ final class Cloud implements Client
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Terminate
-	 * @throws Throwable
+	 * @throws Exception
+	 * @throws MetadataExceptions\FileNotFound
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function writeChannelsProperty(MetadataEntities\DevicesModule\Device $deviceItem): bool
 	{

@@ -15,7 +15,9 @@
 
 namespace FastyBird\Module\Devices\Subscribers;
 
+use Exception;
 use FastyBird\Library\Exchange\Entities as ExchangeEntities;
+use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -25,10 +27,10 @@ use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\States;
+use IPub\Phone\Exceptions as PhoneExceptions;
 use Nette;
 use Nette\Utils;
 use Symfony\Component\EventDispatcher;
-use Throwable;
 use function array_merge;
 
 /**
@@ -64,9 +66,18 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	}
 
 	/**
+	 * @throws Exception
+	 * @throws ExchangeExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\FileNotFound
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
 	 * @throws Utils\JsonException
-	 * @throws Throwable
+	 * @throws PhoneExceptions\NoValidCountryException
+	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
 	public function stateCreated(Events\StateEntityCreated $event): void
 	{
@@ -84,9 +95,18 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	}
 
 	/**
+	 * @throws Exception
+	 * @throws ExchangeExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\FileNotFound
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
 	 * @throws Utils\JsonException
-	 * @throws Throwable
+	 * @throws PhoneExceptions\NoValidCountryException
+	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
 	public function stateUpdated(Events\StateEntityUpdated $event): void
 	{
@@ -108,9 +128,18 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	}
 
 	/**
+	 * @throws Exception
+	 * @throws ExchangeExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\FileNotFound
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
 	 * @throws Utils\JsonException
-	 * @throws Throwable
+	 * @throws PhoneExceptions\NoValidCountryException
+	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
 	public function stateDeleted(Events\StateEntityDeleted $event): void
 	{
@@ -128,9 +157,17 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	}
 
 	/**
+	 * @throws Exception
+	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\FileNotFound
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
 	 * @throws Utils\JsonException
-	 * @throws Throwable
+	 * @throws PhoneExceptions\NoValidCountryException
+	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
 	private function publishEntity(
 		MetadataEntities\DevicesModule\DynamicProperty|MetadataEntities\DevicesModule\VariableProperty|MetadataEntities\DevicesModule\MappedProperty|Entities\Property $property,
@@ -188,6 +225,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	}
 
 	/**
+	 * @throws Exception
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument

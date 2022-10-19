@@ -15,6 +15,7 @@
 
 namespace FastyBird\Module\Devices\Schemas\Devices;
 
+use Exception;
 use FastyBird\JsonApi\Schemas as JsonApiSchemas;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Entities;
@@ -22,9 +23,9 @@ use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\Router;
 use FastyBird\Module\Devices\Schemas;
+use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use IPub\SlimRouter\Routing;
 use Neomerx\JsonApi;
-use Throwable;
 use function count;
 
 /**
@@ -110,7 +111,8 @@ abstract class Device extends JsonApiSchemas\JsonApi
 	 *
 	 * @phpstan-return iterable<string, mixed>
 	 *
-	 * @throws Throwable
+	 * @throws Exception
+	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -160,6 +162,9 @@ abstract class Device extends JsonApiSchemas\JsonApi
 
 	/**
 	 * @phpstan-param T $resource
+	 *
+	 * @throws Exception
+	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -307,7 +312,8 @@ abstract class Device extends JsonApiSchemas\JsonApi
 	/**
 	 * @phpstan-return Array<Entities\Channels\Channel>
 	 *
-	 * @throws Throwable
+	 * @throws Exception
+	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 */
 	private function getChannels(Entities\Devices\Device $device): array
 	{
@@ -319,6 +325,9 @@ abstract class Device extends JsonApiSchemas\JsonApi
 
 	/**
 	 * @phpstan-return Array<Entities\Devices\Device>
+	 *
+	 * @throws Exception
+	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 */
 	private function getParents(Entities\Devices\Device $device): array
 	{
@@ -330,6 +339,9 @@ abstract class Device extends JsonApiSchemas\JsonApi
 
 	/**
 	 * @phpstan-return Array<Entities\Devices\Device>
+	 *
+	 * @throws Exception
+	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 */
 	private function getChildren(Entities\Devices\Device $device): array
 	{

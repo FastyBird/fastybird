@@ -2,6 +2,7 @@
 
 namespace FastyBird\Module\Devices\Tests\Cases\Unit\Models\DataStorage;
 
+use Exception;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\DataStorage;
 use FastyBird\Module\Devices\Exceptions;
@@ -17,6 +18,7 @@ final class ConnectorsRepositoryTest extends DbTestCase
 {
 
 	/**
+	 * @throws Exception
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Flysystem\FilesystemException
 	 * @throws RuntimeException
