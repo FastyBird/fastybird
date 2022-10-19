@@ -19,7 +19,7 @@
 
 ## What is FastyBird metadata library?
 
-This is library for [FastyBird](https://www.fastybird.com) ecosystem which is
+This is library for [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem which is
 implementing [json schemas](https://json-schema.org) data validation helpers and is central place for application
 constants.
 
@@ -43,7 +43,7 @@ yarn add @fastybird/metadata-library
 
 ## Updating metadata
 
-If you want to place your module, plugin or connector here, feel free to create pull request with your updates.
+If you want to place your module, plugin or connector here, feel free to create [pull request](https://github.com/FastyBird/fastybird/pulls) with your updates.
 
 ***
 Homepage [https://www.fastybird.com](https://www.fastybird.com) and

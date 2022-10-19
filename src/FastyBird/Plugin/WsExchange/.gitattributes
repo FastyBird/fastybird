@@ -2,6 +2,7 @@
 /.docs export-ignore
 /.github export-ignore
 /tests export-ignore
+/tools export-ignore
 .browserslistrc export-ignore
 .editorconfig export-ignore
 .eslintrc export-ignore
@@ -9,6 +10,4 @@
 .gitignore export-ignore
 .npmignore export-ignore
 Makefile export-ignore
-phpcs.xml export-ignore
-phpstan.neon export-ignore
 tslint.json export-ignore

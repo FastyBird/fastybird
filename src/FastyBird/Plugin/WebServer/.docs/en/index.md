@@ -137,12 +137,12 @@ class AccessControlMiddleware implements MiddlewareInterface
         ServerRequestInterface $request,
         RequestHandlerInterface $handler
     ): ResponseInterface {
-        // Do you logic here eg. modify request
+        // Do you logic here e.g. modify request
 
         // With $handler call another middleware
         $response = $handler->handle($request);
 
-        // Do another logic eg. modify response
+        // Do another logic e.g. modify response
 
         return $response;
     }

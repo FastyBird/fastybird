@@ -7,7 +7,7 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:DevicesModule!
- * @subpackage     DynamicProperties
+ * @subpackage     StateEntities
  * @since          0.73.0
  *
  * @date           23.08.22
@@ -29,7 +29,7 @@ use function is_array;
  * Useful device dynamic property state helpers
  *
  * @package        FastyBird:DevicesModule!
- * @subpackage     DynamicProperties
+ * @subpackage     StateEntities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
@@ -63,7 +63,7 @@ final class DevicePropertyStateManager
 			$propertyState = $this->devicePropertyStateRepository->findOne($property);
 		} catch (Exceptions\NotImplemented) {
 			$this->logger->warning(
-				'DynamicProperties repository is not configured. State could not be fetched',
+				'StateEntities repository is not configured. State could not be fetched',
 				[
 					'source' => Metadata\Constants::MODULE_DEVICES_SOURCE,
 					'type' => 'device-property-state-manager',
@@ -120,7 +120,7 @@ final class DevicePropertyStateManager
 			}
 		} catch (Exceptions\NotImplemented) {
 			$this->logger->warning(
-				'DynamicProperties manager is not configured. State could not be saved',
+				'StateEntities manager is not configured. State could not be saved',
 				[
 					'source' => Metadata\Constants::MODULE_DEVICES_SOURCE,
 					'type' => 'device-property-state-manager',

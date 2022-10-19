@@ -7,7 +7,7 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:DevicesModule!
- * @subpackage     DynamicProperties
+ * @subpackage     StateEntities
  * @since          0.73.0
  *
  * @date           23.08.22
@@ -68,7 +68,7 @@ final class ChannelPropertyStateManager
 			$propertyState = $this->channelPropertyStateRepository->findOne($property);
 		} catch (Exceptions\NotImplemented) {
 			$this->logger->warning(
-				'DynamicProperties repository is not configured. State could not be fetched',
+				'StateEntities repository is not configured. State could not be fetched',
 				[
 					'source' => Metadata\Constants::MODULE_DEVICES_SOURCE,
 					'type' => 'channel-property-state-manager',
@@ -135,7 +135,7 @@ final class ChannelPropertyStateManager
 			}
 		} catch (Exceptions\NotImplemented) {
 			$this->logger->warning(
-				'DynamicProperties manager is not configured. State could not be saved',
+				'StateEntities manager is not configured. State could not be saved',
 				[
 					'source' => Metadata\Constants::MODULE_DEVICES_SOURCE,
 					'type' => 'channel-property-state-manager',

@@ -1,6 +1,8 @@
 # Quick start
 
-The purpose of this library is to provide unified interface for data exchange. Create consumers and publishers proxies, collect registered application consumers and publishers and control them.
+The purpose of this library is to provide unified interface for data exchange.
+
+Create consumers and publishers proxies, collect registered application consumers and publishers and control them.
 
 ***
 
@@ -40,7 +42,7 @@ class ModuleDataPublisher implements Publisher
         MetadataTypes\RoutingKey $routingKey,
         MetadataEntities\Entity|null $entity,
     ) : void {
-        // Service logic here, eg. publish message to RabbitMQ or Redis etc. 
+        // Service logic here, e.g. publish message to RabbitMQ or Redis etc. 
     }
 
 }

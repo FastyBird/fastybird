@@ -14,7 +14,7 @@
 
 ## What is FastyBird exchange library?
 
-This is library for [FastyBird IoT](https://www.fastybird.com) ecosystem which is
+This is library for [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem which is
 implementing data exchange services.
 
 ### Features

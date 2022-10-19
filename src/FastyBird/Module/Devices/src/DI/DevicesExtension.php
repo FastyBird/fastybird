@@ -206,7 +206,7 @@ class DevicesExtension extends DI\CompilerExtension
 			->setType(Subscribers\ModuleEntities::class);
 
 		$builder->addDefinition($this->prefix('subscribers.states'), new DI\Definitions\ServiceDefinition())
-			->setType(Subscribers\DynamicProperties::class);
+			->setType(Subscribers\StateEntities::class);
 
 		// API controllers
 		$builder->addDefinition($this->prefix('controllers.devices'), new DI\Definitions\ServiceDefinition())
@@ -399,7 +399,7 @@ class DevicesExtension extends DI\CompilerExtension
 		)
 			->setType(Hydrators\Properties\ConnectorVariable::class);
 
-		// DynamicProperties repositories
+		// StateEntities repositories
 		$builder->addDefinition(
 			$this->prefix('states.repositories.connectors.properties'),
 			new DI\Definitions\ServiceDefinition(),
@@ -418,7 +418,7 @@ class DevicesExtension extends DI\CompilerExtension
 		)
 			->setType(Models\States\ChannelPropertiesRepository::class);
 
-		// DynamicProperties managers
+		// StateEntities managers
 		$builder->addDefinition(
 			$this->prefix('states.managers.connectors.properties'),
 			new DI\Definitions\ServiceDefinition(),

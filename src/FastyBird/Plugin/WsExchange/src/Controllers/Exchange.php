@@ -51,7 +51,7 @@ final class Exchange extends WebSockets\Application\Controller\Controller
 		private readonly MetadataLoaders\SchemaLoader $schemaLoader,
 		private readonly MetadataSchemas\Validator $jsonValidator,
 		private readonly ExchangeEntities\EntityFactory $entityFactory,
-		private readonly ExchangePublisher\Container|null $publisher = null,
+		private readonly ExchangePublisher\Container $publisher,
 		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 		Log\LoggerInterface|null $logger = null,
 	)
@@ -111,7 +111,7 @@ final class Exchange extends WebSockets\Application\Controller\Controller
 				$schema = $this->schemaLoader->loadByRoutingKey(MetadataTypes\RoutingKey::get($args['routing_key']));
 				$data = isset($args['data']) ? $this->parseData($args['data'], $schema) : null;
 
-				$this->publisher?->publish(
+				$this->publisher->publish(
 					MetadataTypes\ModuleSource::get($args['source']),
 					MetadataTypes\RoutingKey::get($args['routing_key']),
 					$this->entityFactory->create(

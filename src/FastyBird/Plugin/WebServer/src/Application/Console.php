@@ -15,6 +15,7 @@
 
 namespace FastyBird\Plugin\WebServer\Application;
 
+use FastyBird\Plugin\WebServer\Commands;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input;
 use Symfony\Component\Console\Output;
@@ -45,11 +46,11 @@ class Console
 	{
 		if ($input === null) {
 			$input = new Input\ArrayInput([
-				'command' => 'fb:web-server:start',
+				'command' => Commands\HttpServer::NAME,
 			]);
 
 		} else {
-			$input->setArgument('command', 'fb:web-server:start');
+			$input->setArgument('command', Commands\HttpServer::NAME);
 		}
 
 		return $this->application->run($input, $output);

@@ -18,7 +18,7 @@ Tuya connector is extension for [FastyBird](https://www.fastybird.com) [IoT](htt
 which is integrating [Tuya](https://www.tuya.com) devices.
 
 Tuya connector is an [Apache2 licensed](http://www.apache.org/licenses/LICENSE-2.0) distributed extension, developed
-in [PHP](https://www.php.net) with [Nette framework](https://nette.org).
+in [PHP](https://www.php.net) on top of the [Nette framework](https://nette.org) and [Symfony framework](https://symfony.com).
 
 ### Features:
 
@@ -46,17 +46,17 @@ composer require fastybird/tuya-connector
 
 ### Marketplace installation [WIP]
 
-You could install this connector in your [FastyBird IoT](https://www.fastybird.com) application under marketplace
-section
+You could install this connector in your [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things)
+application under marketplace section
 
 ## Documentation
 
-Learn how to connect Tuya devices and manage them with [FastyBird IoT](https://www.fastybird.com) system
+Learn how to connect Tuya devices and manage them with [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) system
 in [documentation](https://github.com/FastyBird/tuya-connector/blob/master/.docs/en/index.md).
 
 ## Feedback
 
-Use the [issue tracker](https://github.com/FastyBird/tuya-connector/issues) for bugs
+Use the [issue tracker](https://github.com/FastyBird/fastybird/issues) for bugs
 or [mail](mailto:code@fastybird.com) or [Tweet](https://twitter.com/fastybird) us for any idea that can improve the
 project.
 
@@ -64,7 +64,11 @@ Thank you for testing, reporting and contributing.
 
 ## Changelog
 
-For release info check [release page](https://github.com/FastyBird/tuya-connector/releases)
+For release info check [release page](https://github.com/FastyBird/fastybird/releases)
+
+## Contribute
+
+The sources of this package are contained in the [FastyBird monorepo](https://github.com/FastyBird/fastybird). We welcome contributions for this package on [FastyBird/fastybird](https://github.com/FastyBird/).
 
 ## Maintainers
 

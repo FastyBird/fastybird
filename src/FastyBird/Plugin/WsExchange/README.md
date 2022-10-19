@@ -50,7 +50,7 @@ Learn how to connect, consume & call RPC messages in [documentation](https://git
 
 ## Feedback
 
-Use the [issue tracker](https://github.com/FastyBird/ws-exchange-plugin/issues) for bugs
+Use the [issue tracker](https://github.com/FastyBird/fastybird/issues) for bugs
 or [mail](mailto:code@fastybird.com) or [Tweet](https://twitter.com/fastybird) us for any idea that can improve the
 project.
 
@@ -58,7 +58,13 @@ Thank you for testing, reporting and contributing.
 
 ## Changelog
 
-For release info check [release page](https://github.com/FastyBird/ws-exchange-plugin/releases)
+For release info check [release page](https://github.com/FastyBird/fastybird/releases)
+
+## Contribute
+
+The sources of this package are contained in the [FastyBird monorepo](https://github.com/FastyBird/fastybird). We welcome contributions for this package on [FastyBird/fastybird](https://github.com/FastyBird/).
+
+For release info check [release page](https://github.com/FastyBird/web-server-plugin/releases)
 
 ## Maintainers
 

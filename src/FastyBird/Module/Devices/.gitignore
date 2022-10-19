@@ -4,7 +4,5 @@
 /var
 /vendor
 /composer.lock
-/tests/*/output
-/tests/tmp
 /yarn.lock
 .DS_Store

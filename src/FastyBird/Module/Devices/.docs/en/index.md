@@ -1,6 +1,6 @@
 # Getting started
 
-This module adds support for managing [FastyBird](https://www.fastybird.com) IoT devices.
+This module adds support for managing [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) devices.
 
 ***
 
@@ -52,7 +52,7 @@ npm install @fastybird/devices-module
 
 ## Configuration
 
-This module is dependent on other Nette extensions. All this extensions have to enabled and configured in NEON
+This module is dependent on other Nette extensions. All this extensions have to be enabled and configured in NEON
 configuration file.
 
 Example configuration could be found [here](https://github.com/FastyBird/devices-module/blob/main/config/example.neon)

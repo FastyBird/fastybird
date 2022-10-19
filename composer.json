@@ -158,10 +158,10 @@
     },
     "replace": {
         "fastybird/devices-module": "self.version",
-        "fastybird/exchange": "self.version",
+        "fastybird/exchange-library": "self.version",
         "fastybird/fb-mqtt-connector": "self.version",
         "fastybird/homekit-connector": "self.version",
-        "fastybird/metadata": "self.version",
+        "fastybird/metadata-library": "self.version",
         "fastybird/modbus-connector": "self.version",
         "fastybird/redisdb-plugin": "self.version",
         "fastybird/shelly-connector": "self.version",

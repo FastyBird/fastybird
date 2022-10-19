@@ -7,7 +7,7 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:DevicesModule!
- * @subpackage     DynamicProperties
+ * @subpackage     StateEntities
  * @since          0.73.0
  *
  * @date           19.07.22
@@ -32,7 +32,7 @@ use Psr\Log;
  * Connector connection states manager
  *
  * @package        FastyBird:DevicesModule!
- * @subpackage     DynamicProperties
+ * @subpackage     StateEntities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
@@ -115,7 +115,7 @@ final class ConnectorConnectionStateManager
 
 			} catch (Exceptions\NotImplemented) {
 				$this->logger->warning(
-					'DynamicProperties repository is not configured. State could not be fetched',
+					'StateEntities repository is not configured. State could not be fetched',
 					[
 						'source' => Metadata\Constants::MODULE_DEVICES_SOURCE,
 						'type' => 'connector-connection-state-manager',
@@ -139,7 +139,7 @@ final class ConnectorConnectionStateManager
 					return true;
 				} catch (Exceptions\NotImplemented) {
 					$this->logger->warning(
-						'DynamicProperties manager is not configured. State could not be saved',
+						'StateEntities manager is not configured. State could not be saved',
 						[
 							'source' => Metadata\Constants::MODULE_DEVICES_SOURCE,
 							'type' => 'connector-connection-state-manager',
@@ -162,7 +162,7 @@ final class ConnectorConnectionStateManager
 					return true;
 				} catch (Exceptions\NotImplemented) {
 					$this->logger->warning(
-						'DynamicProperties manager is not configured. State could not be saved',
+						'StateEntities manager is not configured. State could not be saved',
 						[
 							'source' => Metadata\Constants::MODULE_DEVICES_SOURCE,
 							'type' => 'connector-connection-state-manager',

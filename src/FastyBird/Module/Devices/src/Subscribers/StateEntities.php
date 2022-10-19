@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * DynamicProperties.php
+ * StateEntities.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -39,7 +39,7 @@ use function array_merge;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DynamicProperties implements EventDispatcher\EventSubscriberInterface
+final class StateEntities implements EventDispatcher\EventSubscriberInterface
 {
 
 	use Nette\SmartObject;

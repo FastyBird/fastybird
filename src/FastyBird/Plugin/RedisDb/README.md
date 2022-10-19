@@ -39,7 +39,7 @@ in [documentation](https://github.com/FastyBird/redisdb-plugin/blob/main/.docs/e
 
 ## Feedback
 
-Use the [issue tracker](https://github.com/FastyBird/redisdb-plugin/issues) for bugs
+Use the [issue tracker](https://github.com/FastyBird/fastybird/issues) for bugs
 or [mail](mailto:code@fastybird.com) or [Tweet](https://twitter.com/fastybird) us for any idea that can improve the
 project.
 
@@ -47,7 +47,11 @@ Thank you for testing, reporting and contributing.
 
 ## Changelog
 
-For release info check [release page](https://github.com/FastyBird/redisdb-plugin/releases)
+For release info check [release page](https://github.com/FastyBird/fastybird/releases)
+
+## Contribute
+
+The sources of this package are contained in the [FastyBird monorepo](https://github.com/FastyBird/fastybird). We welcome contributions for this package on [FastyBird/fastybird](https://github.com/FastyBird/).
 
 ## Maintainers
 

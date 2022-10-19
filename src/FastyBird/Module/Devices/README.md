@@ -24,13 +24,13 @@ extension for managing connectors and connected devices and their basic logic.
 
 [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) devices module is
 an [Apache2 licensed](http://www.apache.org/licenses/LICENSE-2.0) distributed extension, developed
-in [PHP](https://www.php.net) with [Nette framework](https://nette.org) and in [Typescript](https://www.typescriptlang.org).
+in [PHP](https://www.php.net) on top of the [Nette framework](https://nette.org) and [Symfony framework](https://symfony.com) and in [Typescript](https://www.typescriptlang.org) on top of the [Vue framework](https://vuejs.org).
 
 ### Features:
 
 - Devices connectors management
 - Devices and their channels management
-- Support for data [exchange bus](https://github.com/FastyBird/exchange)
+- Support for data [exchange bus](https://github.com/FastyBird/exchange-library)
 - [{JSON:API}](https://jsonapi.org/) schemas for full api access
 - User access [check & validation](https://github.com/FastyBird/simple-auth)
 - Multilingual
@@ -39,8 +39,9 @@ in [PHP](https://www.php.net) with [Nette framework](https://nette.org) and in [
 
 ## Requirements
 
-PHP part of [FastyBird](https://www.fastybird.com) devices module is tested against PHP 8.1
-and [Nette framework](https://nette.org/en/) 3.0 PHP framework for real programmers
+
+PHP part of [FastyBird](https://www.fastybird.com) devices module is tested against PHP 8.1 and require installed [BCMath Arbitrary Precision Mathematics](https://www.php.net/manual/en/book.bc.php) and [Process Control](https://www.php.net/manual/en/book.pcntl.php)
+PHP extensions.
 
 JavaScript part of [FastyBird](https://www.fastybird.com) devices module is tested
 against [ECMAScript 6](https://www.w3schools.com/JS/js_es6.asp)
@@ -72,7 +73,7 @@ in [documentation](https://github.com/FastyBird/devices-module/blob/main/.docs/e
 
 ## Feedback
 
-Use the [issue tracker](https://github.com/FastyBird/devices-module/issues) for bugs
+Use the [issue tracker](https://github.com/FastyBird/fastybird/issues) for bugs
 or [mail](mailto:code@fastybird.com) or [Tweet](https://twitter.com/fastybird) us for any idea that can improve the
 project.
 
@@ -80,7 +81,11 @@ Thank you for testing, reporting and contributing.
 
 ## Changelog
 
-For release info check [release page](https://github.com/FastyBird/devices-module/releases)
+For release info check [release page](https://github.com/FastyBird/fastybird/releases)
+
+## Contribute
+
+The sources of this package are contained in the [FastyBird monorepo](https://github.com/FastyBird/fastybird). We welcome contributions for this package on [FastyBird/fastybird](https://github.com/FastyBird/).
 
 ## Maintainers
 
