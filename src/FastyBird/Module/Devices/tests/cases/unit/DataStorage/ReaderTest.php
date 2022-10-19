@@ -2,6 +2,7 @@
 
 namespace FastyBird\Module\Devices\Tests\Cases\Unit\DataStorage;
 
+use Exception;
 use FastyBird\Module\Devices\DataStorage;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
@@ -14,6 +15,7 @@ final class ReaderTest extends DbTestCase
 {
 
 	/**
+	 * @throws Exception
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Flysystem\FilesystemException
 	 * @throws Nette\DI\MissingServiceException

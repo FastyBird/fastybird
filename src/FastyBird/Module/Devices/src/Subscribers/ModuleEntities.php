@@ -17,6 +17,7 @@ namespace FastyBird\Module\Devices\Subscribers;
 
 use Doctrine\Common;
 use Doctrine\ORM;
+use Exception;
 use FastyBird\Library\Exchange\Entities as ExchangeEntities;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
@@ -27,12 +28,12 @@ use FastyBird\Module\Devices\DataStorage;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
+use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use IPub\Phone\Exceptions as PhoneExceptions;
 use League\Flysystem;
 use Nette;
 use Nette\Utils;
 use ReflectionClass;
-use Throwable;
 use function array_merge;
 use function count;
 use function is_a;
@@ -82,10 +83,20 @@ final class ModuleEntities implements Common\EventSubscriber
 	}
 
 	/**
-	 * @throws MetadataExceptions\FileNotFound
-	 * @throws Utils\JsonException
+	 * @throws Exception
+	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws ExchangeExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
 	 * @throws Flysystem\FilesystemException
-	 * @throws Throwable
+	 * @throws MetadataExceptions\FileNotFound
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws Utils\JsonException
+	 * @throws PhoneExceptions\NoValidCountryException
+	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
 	public function postPersist(ORM\Event\LifecycleEventArgs $eventArgs): void
 	{
@@ -103,10 +114,20 @@ final class ModuleEntities implements Common\EventSubscriber
 	}
 
 	/**
+	 * @throws Exception
+	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws ExchangeExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
 	 * @throws Flysystem\FilesystemException
 	 * @throws MetadataExceptions\FileNotFound
-	 * @throws Throwable
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
 	 * @throws Utils\JsonException
+	 * @throws PhoneExceptions\NoValidCountryException
+	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
 	public function postUpdate(ORM\Event\LifecycleEventArgs $eventArgs): void
 	{
@@ -138,10 +159,20 @@ final class ModuleEntities implements Common\EventSubscriber
 	}
 
 	/**
+	 * @throws Exception
+	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws ExchangeExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
 	 * @throws Flysystem\FilesystemException
 	 * @throws MetadataExceptions\FileNotFound
-	 * @throws Throwable
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
 	 * @throws Utils\JsonException
+	 * @throws PhoneExceptions\NoValidCountryException
+	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
 	public function postRemove(ORM\Event\LifecycleEventArgs $eventArgs): void
 	{

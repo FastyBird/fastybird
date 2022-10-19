@@ -15,15 +15,18 @@
 
 namespace FastyBird\Module\Devices\DataStorage;
 
+use Exception;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Events;
+use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
+use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use League\Flysystem;
 use Nette;
 use Nette\Utils;
 use Psr\EventDispatcher;
-use Throwable;
 use function array_merge;
 
 /**
@@ -58,9 +61,13 @@ final class Writer
 	}
 
 	/**
+	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws Exception
+	 * @throws Exceptions\InvalidState
 	 * @throws Flysystem\FilesystemException
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
 	 * @throws Utils\JsonException
-	 * @throws Throwable
 	 */
 	public function write(): void
 	{

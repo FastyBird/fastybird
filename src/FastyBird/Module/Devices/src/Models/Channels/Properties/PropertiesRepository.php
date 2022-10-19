@@ -17,12 +17,12 @@ namespace FastyBird\Module\Devices\Models\Channels\Properties;
 
 use Doctrine\ORM;
 use Doctrine\Persistence;
+use Exception;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Queries;
 use IPub\DoctrineOrmQuery;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette;
-use Throwable;
 use function is_array;
 
 /**
@@ -64,8 +64,8 @@ final class PropertiesRepository
 	 *
 	 * @phpstan-return Array<Entities\Channels\Properties\Property>
 	 *
+	 * @throws Exception
 	 * @throws DoctrineOrmQueryExceptions\QueryException
-	 * @throws Throwable
 	 */
 	public function findAllBy(
 		Queries\FindChannelProperties $queryObject,

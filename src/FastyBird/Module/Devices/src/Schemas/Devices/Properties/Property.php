@@ -15,6 +15,7 @@
 
 namespace FastyBird\Module\Devices\Schemas\Devices\Properties;
 
+use Exception;
 use FastyBird\JsonApi\Schemas as JsonApiSchemas;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices;
@@ -23,9 +24,9 @@ use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\Router;
 use FastyBird\Module\Devices\Schemas;
+use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use IPub\SlimRouter\Routing;
 use Neomerx\JsonApi;
-use Throwable;
 use function count;
 use function strval;
 
@@ -111,7 +112,8 @@ abstract class Property extends JsonApiSchemas\JsonApi
 	 *
 	 * @phpstan-return iterable<string, mixed>
 	 *
-	 * @throws Throwable
+	 * @throws Exception
+	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -227,7 +229,8 @@ abstract class Property extends JsonApiSchemas\JsonApi
 	/**
 	 * @phpstan-return Array<Entities\Devices\Properties\Property>
 	 *
-	 * @throws Throwable
+	 * @throws Exception
+	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 */
 	private function getChildren(Entities\Devices\Properties\Property $property): array
 	{
