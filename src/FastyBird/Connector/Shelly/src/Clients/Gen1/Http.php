@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Shelly\Clients\Gen1;
 
 use DateTimeInterface;
+use Exception;
 use FastyBird\Connector\Shelly\API;
 use FastyBird\Connector\Shelly\Consumers;
 use FastyBird\Connector\Shelly\Exceptions;
@@ -140,8 +141,16 @@ final class Http
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Terminate
-	 * @throws Throwable
+	 * @throws MetadataExceptions\FileNotFound
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws InvalidArgumentException
+	 * @throws Exception
 	 */
 	private function handleCommunication(): void
 	{
@@ -181,8 +190,16 @@ final class Http
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Terminate
-	 * @throws Throwable
+	 * @throws MetadataExceptions\FileNotFound
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws InvalidArgumentException
+	 * @throws Exception
 	 */
 	private function processDevice(MetadataEntities\DevicesModule\Device $device): bool
 	{
@@ -205,8 +222,15 @@ final class Http
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Terminate
-	 * @throws Throwable
+	 * @throws MetadataExceptions\FileNotFound
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws InvalidArgumentException
 	 */
 	private function readDeviceData(string $cmd, MetadataEntities\DevicesModule\Device $device): bool
 	{
@@ -283,7 +307,13 @@ final class Http
 
 	/**
 	 * @throws DevicesExceptions\Terminate
-	 * @throws Throwable
+	 * @throws MetadataExceptions\FileNotFound
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws Exception
 	 */
 	private function writeChannelsProperty(MetadataEntities\DevicesModule\Device $device): bool
 	{
@@ -412,8 +442,15 @@ final class Http
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Terminate
-	 * @throws Throwable
+	 * @throws MetadataExceptions\FileNotFound
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws InvalidArgumentException
 	 */
 	private function readDeviceInfo(
 		MetadataEntities\DevicesModule\Device $device,
@@ -495,7 +532,14 @@ final class Http
 
 	/**
 	 * @throws DevicesExceptions\Terminate
-	 * @throws Throwable
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\FileNotFound
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws InvalidArgumentException
 	 */
 	private function readDeviceDescription(
 		MetadataEntities\DevicesModule\Device $device,
@@ -577,7 +621,13 @@ final class Http
 
 	/**
 	 * @throws DevicesExceptions\Terminate
-	 * @throws Throwable
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\FileNotFound
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function writeSensor(
 		MetadataEntities\DevicesModule\Device $device,

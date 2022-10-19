@@ -137,7 +137,13 @@ final class OpenApi
 	}
 
 	/**
-	 * @throws Throwable
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\OpenApiCall
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws RuntimeException
 	 */
 	public function connect(): void
 	{
@@ -193,7 +199,10 @@ final class OpenApi
 	}
 
 	/**
-	 * @throws Throwable
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\OpenApiCall
+	 * @throws MetadataExceptions\Logic
+	 * @throws RuntimeException
 	 */
 	public function getUid(): string
 	{
@@ -209,7 +218,10 @@ final class OpenApi
 	}
 
 	/**
-	 * @throws Throwable
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
+	 * @throws MetadataExceptions\Logic
+	 * @throws RuntimeException
 	 */
 	public function getUserDevices(
 		string $userId,
@@ -268,7 +280,10 @@ final class OpenApi
 	/**
 	 * @param Array<string> $deviceIds
 	 *
-	 * @throws Throwable
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
+	 * @throws MetadataExceptions\Logic
+	 * @throws RuntimeException
 	 */
 	public function getUserDevicesFactoryInfos(
 		array $deviceIds,
@@ -328,7 +343,10 @@ final class OpenApi
 	}
 
 	/**
-	 * @throws Throwable
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
+	 * @throws MetadataExceptions\Logic
+	 * @throws RuntimeException
 	 */
 	public function getUserDeviceDetail(
 		string $deviceId,
@@ -396,7 +414,10 @@ final class OpenApi
 	}
 
 	/**
-	 * @throws Throwable
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
+	 * @throws MetadataExceptions\Logic
+	 * @throws RuntimeException
 	 */
 	public function getUserDeviceSpecifications(
 		string $deviceId,
@@ -485,7 +506,10 @@ final class OpenApi
 	}
 
 	/**
-	 * @throws Throwable
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
+	 * @throws MetadataExceptions\Logic
+	 * @throws RuntimeException
 	 */
 	public function getUserDeviceStatus(
 		string $deviceId,
@@ -544,7 +568,10 @@ final class OpenApi
 	/**
 	 * @param Array<string, mixed> $params
 	 *
-	 * @throws Throwable
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
+	 * @throws MetadataExceptions\Logic
+	 * @throws RuntimeException
 	 */
 	public function getDevices(
 		array $params = [],
@@ -610,7 +637,10 @@ final class OpenApi
 	/**
 	 * @param Array<string> $deviceIds
 	 *
-	 * @throws Throwable
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
+	 * @throws MetadataExceptions\Logic
+	 * @throws RuntimeException
 	 */
 	public function getDevicesFactoryInfos(
 		array $deviceIds,
@@ -670,7 +700,10 @@ final class OpenApi
 	}
 
 	/**
-	 * @throws Throwable
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
+	 * @throws MetadataExceptions\Logic
+	 * @throws RuntimeException
 	 */
 	public function getDeviceInformation(
 		string $deviceId,
@@ -717,7 +750,10 @@ final class OpenApi
 	}
 
 	/**
-	 * @throws Throwable
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
+	 * @throws MetadataExceptions\Logic
+	 * @throws RuntimeException
 	 */
 	public function getDeviceSpecification(
 		string $deviceId,
@@ -806,7 +842,10 @@ final class OpenApi
 	}
 
 	/**
-	 * @throws Throwable
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
+	 * @throws MetadataExceptions\Logic
+	 * @throws RuntimeException
 	 */
 	public function getDeviceStatus(
 		string $deviceId,
@@ -863,7 +902,10 @@ final class OpenApi
 	}
 
 	/**
-	 * @throws Throwable
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
+	 * @throws MetadataExceptions\Logic
+	 * @throws RuntimeException
 	 */
 	public function setDeviceStatus(
 		string $deviceId,
@@ -924,7 +966,9 @@ final class OpenApi
 	/**
 	 * @param Array<string, mixed> $params
 	 *
-	 * @throws Throwable
+	 * @throws Exceptions\InvalidArgument
+	 * @throws MetadataExceptions\Logic
+	 * @throws RuntimeException
 	 */
 	private function callRequest(
 		string $method,
@@ -1072,7 +1116,10 @@ final class OpenApi
 	}
 
 	/**
-	 * @throws Throwable
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\OpenApiCall
+	 * @throws MetadataExceptions\Logic
+	 * @throws RuntimeException
 	 */
 	private function checkResponse(string $path, Message\ResponseInterface $response): Message\ResponseInterface
 	{

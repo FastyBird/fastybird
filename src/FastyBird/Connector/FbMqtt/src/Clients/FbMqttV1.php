@@ -17,6 +17,7 @@ namespace FastyBird\Connector\FbMqtt\Clients;
 
 use BinSoul\Net\Mqtt;
 use DateTimeInterface;
+use Exception;
 use FastyBird\Connector\FbMqtt;
 use FastyBird\Connector\FbMqtt\API;
 use FastyBird\Connector\FbMqtt\Consumers;
@@ -118,8 +119,14 @@ final class FbMqttV1 extends Client
 
 	/**
 	 * @throws DevicesExceptions\Terminate
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\FileNotFound
-	 * @throws Throwable
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws Exception
 	 */
 	protected function handleCommunication(): void
 	{
@@ -425,8 +432,14 @@ final class FbMqttV1 extends Client
 
 	/**
 	 * @throws DevicesExceptions\Terminate
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\FileNotFound
-	 * @throws Throwable
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws Exception
 	 */
 	private function processDevice(MetadataEntities\DevicesModule\Device $device): bool
 	{
@@ -439,8 +452,14 @@ final class FbMqttV1 extends Client
 
 	/**
 	 * @throws DevicesExceptions\Terminate
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\FileNotFound
-	 * @throws Throwable
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws Exception
 	 */
 	private function writeDeviceProperty(MetadataEntities\DevicesModule\Device $device): bool
 	{
@@ -504,8 +523,14 @@ final class FbMqttV1 extends Client
 
 	/**
 	 * @throws DevicesExceptions\Terminate
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\FileNotFound
-	 * @throws Throwable
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws Exception
 	 */
 	private function writeChannelsProperty(MetadataEntities\DevicesModule\Device $device): bool
 	{

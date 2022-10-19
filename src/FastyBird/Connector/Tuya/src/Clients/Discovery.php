@@ -24,11 +24,14 @@ use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Nette;
 use Nette\Utils;
 use Psr\Log;
 use React\Datagram;
 use React\EventLoop;
+use RuntimeException;
 use SplObjectStorage;
 use Throwable;
 use function array_filter;
@@ -107,7 +110,16 @@ final class Discovery implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @throws Throwable
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
+	 * @throws MetadataExceptions\FileNotFound
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws RuntimeException
 	 */
 	public function discover(): void
 	{
@@ -134,7 +146,16 @@ final class Discovery implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @throws Throwable
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
+	 * @throws MetadataExceptions\FileNotFound
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws RuntimeException
 	 */
 	private function discoverLocalDevices(): void
 	{
@@ -220,6 +241,14 @@ final class Discovery implements Evenement\EventEmitterInterface
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\FileNotFound
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
 	 * @throws Throwable
 	 */
 	private function discoverCloudDevices(): void
@@ -376,7 +405,16 @@ final class Discovery implements Evenement\EventEmitterInterface
 	 *
 	 * @return Array<Entities\Messages\DiscoveredLocalDevice>
 	 *
-	 * @throws Throwable
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
+	 * @throws MetadataExceptions\FileNotFound
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws RuntimeException
 	 */
 	private function handleFoundLocalDevices(array $devices): array
 	{
@@ -517,6 +555,14 @@ final class Discovery implements Evenement\EventEmitterInterface
 	 *
 	 * @return Array<Entities\Messages\DiscoveredCloudDevice>
 	 *
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\FileNotFound
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
 	 * @throws Throwable
 	 */
 	private function handleFoundCloudDevices(
