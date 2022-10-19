@@ -91,6 +91,6 @@
         <exclude-pattern>src/FastyBird/Module/Devices/src/Events/StateEntityCreated\.php</exclude-pattern>
         <exclude-pattern>src/FastyBird/Module/Devices/src/Events/StateEntityUpdated\.php</exclude-pattern>
         <exclude-pattern>src/FastyBird/Module/Devices/src/Events/StateEntityDeleted\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Module/Devices/src/Subscribers/DynamicProperties\.php</exclude-pattern>
+        <exclude-pattern>src/FastyBird/Module/Devices/src/Subscribers/StateEntities\.php</exclude-pattern>
     </rule>
 </ruleset>
