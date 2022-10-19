@@ -52,6 +52,6 @@
         <exclude-pattern>src/Events/StateEntityCreated\.php</exclude-pattern>
         <exclude-pattern>src/Events/StateEntityUpdated\.php</exclude-pattern>
         <exclude-pattern>src/Events/StateEntityDeleted\.php</exclude-pattern>
-        <exclude-pattern>src/Subscribers/DynamicProperties\.php</exclude-pattern>
+        <exclude-pattern>src/Subscribers/StateEntities\.php</exclude-pattern>
     </rule>
 </ruleset>
