@@ -15,11 +15,9 @@
 
 namespace FastyBird\Plugin\WebServer\Application;
 
+use Exception;
 use FastyBird\Plugin\WebServer\Commands;
-use Symfony\Component\Console\Application;
-use Symfony\Component\Console\Input;
-use Symfony\Component\Console\Output;
-use Throwable;
+use Symfony\Component\Console as SymfonyConsole;
 
 /**
  * Console application
@@ -32,20 +30,24 @@ use Throwable;
 class Console
 {
 
-	private Application $application;
+	private SymfonyConsole\Application $application;
 
-	public function __construct(Application|null $application = null)
+	public function __construct(SymfonyConsole\Application|null $application = null)
 	{
-		$this->application = $application ?? new Application();
+		$this->application = $application ?? new SymfonyConsole\Application();
 	}
 
 	/**
-	 * @throws Throwable
+	 * @throws Exception
+	 * @throws SymfonyConsole\Exception\InvalidArgumentException
 	 */
-	public function run(Input\InputInterface|null $input = null, Output\OutputInterface|null $output = null): int
+	public function run(
+		SymfonyConsole\Input\InputInterface|null $input = null,
+		SymfonyConsole\Output\OutputInterface|null $output = null,
+	): int
 	{
 		if ($input === null) {
-			$input = new Input\ArrayInput([
+			$input = new SymfonyConsole\Input\ArrayInput([
 				'command' => Commands\HttpServer::NAME,
 			]);
 
