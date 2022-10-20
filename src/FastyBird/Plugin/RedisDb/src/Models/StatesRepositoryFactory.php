@@ -3,7 +3,7 @@
 /**
  * StatesRepositoryFactory.php
  *
- * @license        More in license.md
+ * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:RedisDbPlugin!
@@ -27,9 +27,10 @@ use function sprintf;
 /**
  * State repository factory
  *
+ * @template T of States\State
+ *
  * @package        FastyBird:RedisDbPlugin!
  * @subpackage     Models
- *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 class StatesRepositoryFactory
@@ -47,6 +48,10 @@ class StatesRepositoryFactory
 	}
 
 	/**
+	 * @phpstan-param class-string<T> $entity
+	 *
+	 * @phpstan-return StatesRepository<T>
+	 *
 	 * @throws Exceptions\InvalidArgument
 	 */
 	public function create(string $entity = States\State::class): StatesRepository

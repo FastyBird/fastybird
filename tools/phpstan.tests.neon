@@ -1,6 +1,8 @@
 includes:
     - phpstan.base.neon
 
+    - ../src/FastyBird/Bridge/RedisDbDevicesStates/tools/phpstan.config.tests.neon
+
     - ../src/FastyBird/Connector/FbMqtt/tools/phpstan.config.tests.neon
     - ../src/FastyBird/Connector/HomeKit/tools/phpstan.config.tests.neon
     - ../src/FastyBird/Connector/Modbus/tools/phpstan.config.tests.neon

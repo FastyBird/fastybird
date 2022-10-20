@@ -4,6 +4,7 @@ namespace FastyBird\Plugin\RedisDb\Tests\Cases\Unit\States;
 
 use FastyBird\Plugin\RedisDb\Exceptions;
 use FastyBird\Plugin\RedisDb\States;
+use FastyBird\Plugin\RedisDb\Tests\Fixtures;
 use Nette\Utils;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
@@ -15,6 +16,7 @@ final class FactoryTest extends TestCase
 {
 
 	/**
+	 * @phpstan-param class-string<Fixtures\CustomState> $class
 	 * @phpstan-param Array<string, Array<string|Array<string, mixed>>> $data
 	 *
 	 * @throws Exceptions\InvalidArgument
@@ -43,6 +45,7 @@ final class FactoryTest extends TestCase
 	}
 
 	/**
+	 * @phpstan-param class-string<Fixtures\CustomState> $class
 	 * @phpstan-param Array<string, Array<string|Array<string, mixed>>> $data
 	 * @phpstan-param class-string<Throwable> $exception
 	 *

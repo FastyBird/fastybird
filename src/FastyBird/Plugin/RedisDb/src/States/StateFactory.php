@@ -3,7 +3,7 @@
 /**
  * StateFactory.php
  *
- * @license        More in license.md
+ * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:RedisDbPlugin!
@@ -16,6 +16,7 @@
 namespace FastyBird\Plugin\RedisDb\States;
 
 use FastyBird\Plugin\RedisDb\Exceptions;
+use FastyBird\Plugin\RedisDb\States;
 use Nette\Utils;
 use phpDocumentor;
 use ReflectionClass;
@@ -57,6 +58,12 @@ final class StateFactory
 {
 
 	/**
+	 * @template T of States\State
+	 *
+	 * @phpstan-param class-string<T> $stateClass
+	 *
+	 * @phpstan-return T
+	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 */
@@ -141,11 +148,7 @@ final class StateFactory
 			}
 		}
 
-		if ($state instanceof State) {
-			return $state;
-		}
-
-		throw new Exceptions\InvalidState('State could not be created');
+		return $state;
 	}
 
 	/**

@@ -3,7 +3,7 @@
 /**
  * StatesManager.php
  *
- * @license        More in license.md
+ * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:RedisDbPlugin!
@@ -48,14 +48,11 @@ use const DATE_ATOM;
 /**
  * States manager
  *
+ * @template T of States\State
+ *
  * @package        FastyBird:RedisDbPlugin!
  * @subpackage     Models
- *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- *
- * @method onAfterCreate(States\State $state)
- * @method onAfterUpdate(States\State $state, States\State $old)
- * @method onAfterDelete(States\State $state)
  */
 class StatesManager
 {
@@ -64,6 +61,9 @@ class StatesManager
 
 	private Log\LoggerInterface $logger;
 
+	/**
+	 * @phpstan-param class-string<T> $entity
+	 */
 	public function __construct(
 		private readonly Client\Client|Redis\Client $client,
 		private readonly string $entity = States\State::class,
@@ -75,12 +75,14 @@ class StatesManager
 	}
 
 	/**
+	 * @phpstan-return T
+	 *
 	 * @throws Exceptions\InvalidState
 	 */
 	public function create(
 		Uuid\UuidInterface $id,
 		Utils\ArrayHash $values,
-		int $database = 1,
+		int $database = 0,
 	): States\State
 	{
 		try {
@@ -110,12 +112,16 @@ class StatesManager
 	}
 
 	/**
+	 * @phpstan-param T $state
+	 *
+	 * @phpstan-return T
+	 *
 	 * @throws Exceptions\InvalidState
 	 */
 	public function update(
 		States\State $state,
 		Utils\ArrayHash $values,
-		int $database = 1,
+		int $database = 0,
 	): States\State
 	{
 		try {
@@ -146,7 +152,10 @@ class StatesManager
 		return $updatedState;
 	}
 
-	public function delete(States\State $state, int $database = 1): bool
+	/**
+	 * @phpstan-param T $state
+	 */
+	public function delete(States\State $state, int $database = 0): bool
 	{
 		$result = $this->deleteKey($state->getId(), $database);
 
@@ -160,7 +169,7 @@ class StatesManager
 	}
 
 	/**
-	 * @param Array<int|string, int|string|bool> $fields
+	 * @phpstan-param Array<string>|Array<string, int|string|bool|null> $fields
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -250,7 +259,8 @@ class StatesManager
 	}
 
 	/**
-	 * @param Array<string> $fields
+	 * @phpstan-param T $state
+	 * @phpstan-param Array<string> $fields
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -342,7 +352,7 @@ class StatesManager
 		}
 	}
 
-	private function deleteKey(Uuid\UuidInterface $id, int $database = 1): bool
+	private function deleteKey(Uuid\UuidInterface $id, int $database = 0): bool
 	{
 		try {
 			$this->client->select($database);

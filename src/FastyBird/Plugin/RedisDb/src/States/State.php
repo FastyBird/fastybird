@@ -3,7 +3,7 @@
 /**
  * State.php
  *
- * @license        More in license.md
+ * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:RedisDbPlugin!
@@ -47,7 +47,7 @@ class State
 	}
 
 	/**
-	 * @return Array<string>|Array<string, mixed|null>
+	 * @return Array<string>|Array<int, int|string|bool|null>
 	 */
 	public static function getCreateFields(): array
 	{
