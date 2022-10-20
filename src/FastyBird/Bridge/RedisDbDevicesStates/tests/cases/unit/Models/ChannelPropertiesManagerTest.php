@@ -33,7 +33,7 @@ final class ChannelPropertiesManagerTest extends BaseTestCase
 			->method('set')
 			->with(
 				$id->toString(),
-				self::callback(function(string $data) use ($id): bool {
+				self::callback(static function (string $data) use ($id): bool {
 					JsonAssert::assertMatch(Utils\Json::encode([
 						'id' => $id->toString(),
 						'actual_value' => 10,
@@ -99,7 +99,7 @@ final class ChannelPropertiesManagerTest extends BaseTestCase
 			->method('set')
 			->with(
 				$id->toString(),
-				self::callback(function(string $data) use ($id): bool {
+				self::callback(static function (string $data) use ($id): bool {
 					JsonAssert::assertMatch(Utils\Json::encode([
 						'id' => $id->toString(),
 						'actual_value' => 10,
