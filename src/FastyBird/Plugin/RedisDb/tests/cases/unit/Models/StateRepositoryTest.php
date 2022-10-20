@@ -55,7 +55,7 @@ final class StateRepositoryTest extends TestCase
 		$redisClient
 			->expects(self::once())
 			->method('select')
-			->with(1);
+			->with(0);
 		$redisClient
 			->expects(self::once())
 			->method('get')
@@ -65,6 +65,9 @@ final class StateRepositoryTest extends TestCase
 		return $redisClient;
 	}
 
+	/**
+	 * @phpstan-return Models\StatesRepository<States\State>
+	 */
 	private function createRepository(
 		Client\Client&MockObject\MockObject $redisClient,
 	): Models\StatesRepository

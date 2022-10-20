@@ -3,7 +3,7 @@
 /**
  * AsyncClient.php
  *
- * @license        More in license.md
+ * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:RedisDbPlugin!
@@ -22,15 +22,29 @@ use FastyBird\Plugin\RedisDb\Exceptions;
 use FastyBird\Plugin\RedisDb\Handlers;
 use FastyBird\Plugin\RedisDb\Models;
 use FastyBird\Plugin\RedisDb\Publishers;
+use FastyBird\Plugin\RedisDb\States;
 use Psr\EventDispatcher;
 use React\EventLoop;
 use React\Promise;
 use React\Socket;
 use Throwable;
 
+/**
+ * Redis DB async client factory
+ *
+ * @template T of States\State
+ *
+ * @package        FastyBird:RedisDbPlugin!
+ * @subpackage     Client
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
+ */
 final class Factory
 {
 
+	/**
+	 * @phpstan-param Models\StatesRepositoryFactory<T> $statesRepositoryFactory
+	 * @phpstan-param Models\StatesManagerFactory<T> $statesManagerFactory
+	 */
 	public function __construct(
 		private readonly string $channel,
 		private readonly Connections\Connection $connection,

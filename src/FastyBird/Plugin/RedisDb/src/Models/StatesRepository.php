@@ -3,7 +3,7 @@
 /**
  * StatesRepository.php
  *
- * @license        More in license.md
+ * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:RedisDbPlugin!
@@ -32,9 +32,10 @@ use function React\Async\await;
 /**
  * State repository
  *
+ * @template T of States\State
+ *
  * @package        FastyBird:RedisDbPlugin!
  * @subpackage     Models
- *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 class StatesRepository
@@ -44,6 +45,9 @@ class StatesRepository
 
 	private Log\LoggerInterface $logger;
 
+	/**
+	 * @param class-string<T> $entity
+	 */
 	public function __construct(
 		private readonly Client\Client|Redis\Client $client,
 		private readonly string $entity = States\State::class,
@@ -54,10 +58,12 @@ class StatesRepository
 	}
 
 	/**
+	 * @phpstan-return T|null
+	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 */
-	public function findOne(Uuid\UuidInterface $id, int $database = 1): States\State|null
+	public function findOne(Uuid\UuidInterface $id, int $database = 0): States\State|null
 	{
 		$raw = $this->getRaw($id, $database);
 
@@ -99,7 +105,7 @@ class StatesRepository
 				],
 			]);
 
-			throw new Exceptions\InvalidState('Content could not be loaded from database', 0, $ex);
+			throw new Exceptions\InvalidState('Content could not be loaded from database' . $ex->getMessage(), 0, $ex);
 		}
 	}
 

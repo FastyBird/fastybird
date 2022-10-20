@@ -10,6 +10,7 @@
          verbose="true"
 >
     <testsuite name="all">
+        <directory>../src/FastyBird/Bridge/**/tests/cases/</directory>
         <directory>../src/FastyBird/Connector/**/tests/cases/</directory>
         <directory>../src/FastyBird/Library/**/tests/cases/</directory>
         <directory>../src/FastyBird/Module/**/tests/cases/</directory>
@@ -18,12 +19,14 @@
 
     <coverage cacheDirectory="../var/tools/PHPUnit/coverage" processUncoveredFiles="true">
         <include>
+            <directory suffix=".php">../src/FastyBird/Bridge/**/tests/cases/</directory>
             <directory suffix=".php">../src/FastyBird/Connector/**/tests/cases/</directory>
             <directory suffix=".php">../src/FastyBird/Library/**/tests/cases/</directory>
             <directory suffix=".php">../src/FastyBird/Module/**/tests/cases/</directory>
             <directory suffix=".php">../src/FastyBird/Plugin/**/tests/cases/</directory>
         </include>
         <exclude>
+            <directory>./src/FastyBird/Bridge/**/tests</directory>
             <directory>./src/FastyBird/Connector/**/tests</directory>
             <directory>./src/FastyBird/Library/**/tests</directory>
             <directory>./src/FastyBird/Module/**/tests</directory>

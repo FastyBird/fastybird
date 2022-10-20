@@ -3,7 +3,7 @@
 /**
  * StatesManagerFactory.php
  *
- * @license        More in license.md
+ * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:RedisDbPlugin!
@@ -16,6 +16,7 @@
 namespace FastyBird\Plugin\RedisDb\Models;
 
 use Clue\React\Redis;
+use FastyBird\DateTimeFactory;
 use FastyBird\Plugin\RedisDb\Client;
 use FastyBird\Plugin\RedisDb\Exceptions;
 use FastyBird\Plugin\RedisDb\States;
@@ -28,9 +29,10 @@ use function sprintf;
 /**
  * States manager factory
  *
+ * @template T of States\State
+ *
  * @package        FastyBird:RedisDbPlugin!
  * @subpackage     Models
- *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 class StatesManagerFactory
@@ -42,6 +44,7 @@ class StatesManagerFactory
 
 	public function __construct(
 		private readonly Client\Client $client,
+		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 		private readonly Log\LoggerInterface|null $logger = null,
 	)
@@ -49,6 +52,10 @@ class StatesManagerFactory
 	}
 
 	/**
+	 * @phpstan-param class-string<T> $entity
+	 *
+	 * @phpstan-return StatesManager<T>
+	 *
 	 * @throws Exceptions\InvalidArgument
 	 */
 	public function create(string $entity = States\State::class): StatesManager
@@ -57,7 +64,7 @@ class StatesManagerFactory
 			throw new Exceptions\InvalidArgument(sprintf('Provided entity class %s does not exists', $entity));
 		}
 
-		return new StatesManager($this->getClient(), $entity, $this->dispatcher, $this->logger);
+		return new StatesManager($this->getClient(), $this->dateTimeFactory, $entity, $this->dispatcher, $this->logger);
 	}
 
 	/**

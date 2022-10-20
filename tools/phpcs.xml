@@ -17,6 +17,10 @@
     <rule ref="SlevomatCodingStandard.Files.TypeNameMatchesFileName">
         <properties>
             <property name="rootNamespaces" type="array">
+                <element key="src/FastyBird/Bridge/RedisDbDevicesStates/src" value="FastyBird\Bridge\RedisDbDevicesStates"/>
+                <element key="src/FastyBird/Bridge/RedisDbDevicesStates/tests/cases/unit" value="FastyBird\Bridge\RedisDbDevicesStates\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Bridge/RedisDbDevicesStates/tests/tools" value="FastyBird\Bridge\RedisDbDevicesStates\Tests\Tools"/>
+
                 <element key="src/FastyBird/Connector/FbMqtt/src" value="FastyBird\Connector\FbMqtt"/>
                 <element key="src/FastyBird/Connector/FbMqtt/tests/cases/unit" value="FastyBird\Connector\FbMqtt\Tests\Cases\Unit"/>
                 <element key="src/FastyBird/Connector/FbMqtt/tests/tools" value="FastyBird\Connector\FbMqtt\Tests\Tools"/>
@@ -70,6 +74,15 @@
 
     <!--Exclude rules/files -->
     <rule ref="SlevomatCodingStandard.Files.LineLength.LineTooLong">
+        <!--Bridges -->
+        <exclude-pattern>src/FastyBird/Bridge/RedisDbDevicesStates/src/Models/ChannelPropertiesManager\.php</exclude-pattern>
+        <exclude-pattern>src/FastyBird/Bridge/RedisDbDevicesStates/src/Models/ChannelPropertiesRepository\.php</exclude-pattern>
+        <exclude-pattern>src/FastyBird/Bridge/RedisDbDevicesStates/src/Models/ConnectorPropertiesManager\.php</exclude-pattern>
+        <exclude-pattern>src/FastyBird/Bridge/RedisDbDevicesStates/src/Models/ConnectorPropertiesRepository\.php</exclude-pattern>
+        <exclude-pattern>src/FastyBird/Bridge/RedisDbDevicesStates/src/Models/DevicePropertiesManager\.php</exclude-pattern>
+        <exclude-pattern>src/FastyBird/Bridge/RedisDbDevicesStates/src/Models/DevicePropertiesRepository\.php</exclude-pattern>
+
+        <!--Modules -->
         <exclude-pattern>src/FastyBird/Module/Devices/src/Entities/Channels/Properties/Property\.php</exclude-pattern>
         <exclude-pattern>src/FastyBird/Module/Devices/src/Entities/Devices/Properties/Property\.php</exclude-pattern>
         <exclude-pattern>src/FastyBird/Module/Devices/src/Entities/Property\.php</exclude-pattern>

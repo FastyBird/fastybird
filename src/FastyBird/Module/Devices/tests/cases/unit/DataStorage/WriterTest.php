@@ -38,6 +38,12 @@ final class WriterTest extends DbTestCase
 					return true;
 				}),
 			);
+		$filesystem
+			->method('read')
+			->with(Devices\Constants::CONFIGURATION_FILE_FILENAME)
+			->willReturn(
+				Nette\Utils\FileSystem::read(__DIR__ . '/../../../fixtures/DataStorage/devices-module-data.json'),
+			);
 
 		$this->mockContainerService(Flysystem\Filesystem::class, $filesystem);
 
