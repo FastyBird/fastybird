@@ -32,6 +32,10 @@ class State
 
 	use Nette\SmartObject;
 
+	public const CREATED_AT_FIELD = 'createdAt';
+
+	public const UPDATED_AT_FIELD = 'updatedAt';
+
 	private Uuid\UuidInterface $id;
 
 	/**

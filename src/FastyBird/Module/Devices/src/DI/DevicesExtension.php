@@ -625,8 +625,6 @@ class DevicesExtension extends DI\CompilerExtension
 	{
 		$builder = $this->getContainerBuilder();
 
-		$initialize = $class->getMethods()['initialize'];
-
 		$entityFactoryServiceName = $builder->getByType(DoctrineCrud\Crud\IEntityCrudFactory::class, true);
 
 		$devicesManagerService = $class->getMethod('createService' . ucfirst($this->name) . '__models__devicesManager');
@@ -706,10 +704,6 @@ class DevicesExtension extends DI\CompilerExtension
 			'return new ' . Models\Connectors\Controls\ControlsManager::class
 			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Connectors\Controls\Control::class . '\'));',
 		);
-
-		$dataStorageReaderServiceName = $builder->getByType(DataStorage\Reader::class, true);
-
-		$initialize->addBody('$this->getService(\'' . $dataStorageReaderServiceName . '\')->read();');
 	}
 
 }

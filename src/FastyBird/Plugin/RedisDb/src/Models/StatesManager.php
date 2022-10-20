@@ -18,6 +18,7 @@ namespace FastyBird\Plugin\RedisDb\Models;
 use Clue\React\Redis;
 use Consistence;
 use DateTimeInterface;
+use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\RedisDb\Client;
 use FastyBird\Plugin\RedisDb\Events;
@@ -66,6 +67,7 @@ class StatesManager
 	 */
 	public function __construct(
 		private readonly Client\Client|Redis\Client $client,
+		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly string $entity = States\State::class,
 		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 		Log\LoggerInterface|null $logger = null,
@@ -215,6 +217,10 @@ class StatesManager
 					} else {
 						$value = null;
 					}
+				} else {
+					if ($field === States\State::CREATED_AT_FIELD) {
+						$value = $this->dateTimeFactory->getNow()->format(DATE_ATOM);
+					}
 				}
 
 				$data->{$this->camelToSnake($field)} = $value;
@@ -303,6 +309,10 @@ class StatesManager
 						$data->{$this->camelToSnake($field)} = $value;
 
 						$isUpdated = true;
+					}
+				} else {
+					if ($field === States\State::UPDATED_AT_FIELD) {
+						$data->{$this->camelToSnake($field)} = $this->dateTimeFactory->getNow()->format(DATE_ATOM);
 					}
 				}
 			}

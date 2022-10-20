@@ -34,7 +34,7 @@ extensions:
     fbExchangeLibrary                   : FastyBird\Library\Exchange\DI\ExchangeExtension
     fbMetadataLibrary                   : FastyBird\Library\Metadata\DI\MetadataExtension
     fbDevicesModule                     : FastyBird\Module\Devices\DI\DevicesExtension
-    fbRedisDbDevicesStatesBridge        : FastyBird\Bridge\RedisDbDevicesStates\DI\RedisDbDevicesStatesExtension
+    fbRedisDbPlugin                     : FastyBird\Plugin\RedisDb\DI\RedisDbExtension
 
 services:
     - {factory: Symfony\Component\Console\Application}

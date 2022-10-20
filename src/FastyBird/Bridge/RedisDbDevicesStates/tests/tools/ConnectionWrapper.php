@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace FastyBird\Connector\FbMqtt\Tests\Tools;
+namespace FastyBird\Bridge\RedisDbDevicesStates\Tests\Tools;
 
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL;

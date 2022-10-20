@@ -89,7 +89,10 @@ class RedisDbDevicesStatesExtension extends DI\CompilerExtension
 			->setType(Models\ConnectorPropertiesManager::class)
 			->setArguments(['database' => $configuration->database]);
 
-		$builder->addDefinition($this->prefix('models.devicePropertiesManager'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition(
+			$this->prefix('models.devicePropertiesManager'),
+			new DI\Definitions\ServiceDefinition(),
+		)
 			->setType(Models\DevicePropertiesManager::class)
 			->setArguments(['database' => $configuration->database]);
 

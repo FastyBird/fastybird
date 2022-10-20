@@ -55,7 +55,7 @@ final class StateRepositoryTest extends TestCase
 		$redisClient
 			->expects(self::once())
 			->method('select')
-			->with(1);
+			->with(0);
 		$redisClient
 			->expects(self::once())
 			->method('get')

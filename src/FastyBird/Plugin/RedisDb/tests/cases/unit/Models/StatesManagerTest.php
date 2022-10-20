@@ -3,6 +3,7 @@
 namespace FastyBird\Plugin\RedisDb\Tests\Cases\Unit\Models;
 
 use DateTimeImmutable;
+use FastyBird\DateTimeFactory;
 use FastyBird\Plugin\RedisDb\Client;
 use FastyBird\Plugin\RedisDb\Exceptions;
 use FastyBird\Plugin\RedisDb\Models;
@@ -32,7 +33,7 @@ final class StatesManagerTest extends TestCase
 		$redisClient
 			->expects(self::once())
 			->method('select')
-			->with(1);
+			->with(0);
 		$redisClient
 			->expects(self::once())
 			->method('set')
@@ -44,7 +45,9 @@ final class StatesManagerTest extends TestCase
 			->with($id->toString())
 			->willReturn(Utils\Json::encode($dbData));
 
-		$manager = new Models\StatesManager($redisClient, Fixtures\CustomState::class);
+		$dateTimeFactory = $this->createMock(DateTimeFactory\Factory::class);
+
+		$manager = new Models\StatesManager($redisClient, $dateTimeFactory, Fixtures\CustomState::class);
 
 		$state = $manager->create($id, Utils\ArrayHash::from($data));
 
@@ -76,7 +79,7 @@ final class StatesManagerTest extends TestCase
 		$redisClient
 			->expects(self::once())
 			->method('select')
-			->with(1);
+			->with(0);
 		$redisClient
 			->expects(self::once())
 			->method('set')
@@ -88,7 +91,9 @@ final class StatesManagerTest extends TestCase
 			->with($id->toString())
 			->willReturn(Utils\Json::encode($dbData));
 
-		$manager = new Models\StatesManager($redisClient, Fixtures\CustomState::class);
+		$dateTimeFactory = $this->createMock(DateTimeFactory\Factory::class);
+
+		$manager = new Models\StatesManager($redisClient, $dateTimeFactory, Fixtures\CustomState::class);
 
 		$original = States\StateFactory::create(Fixtures\CustomState::class, Utils\Json::encode($originalData));
 
@@ -116,14 +121,16 @@ final class StatesManagerTest extends TestCase
 		$redisClient
 			->expects(self::once())
 			->method('select')
-			->with(1);
+			->with(0);
 		$redisClient
 			->expects(self::once())
 			->method('del')
 			->with($id->toString())
 			->willReturn(true);
 
-		$manager = new Models\StatesManager($redisClient, Fixtures\CustomState::class);
+		$dateTimeFactory = $this->createMock(DateTimeFactory\Factory::class);
+
+		$manager = new Models\StatesManager($redisClient, $dateTimeFactory, Fixtures\CustomState::class);
 
 		$original = new Fixtures\CustomState($originalData['id'], Utils\Json::encode($originalData));
 

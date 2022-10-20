@@ -3,8 +3,8 @@
 namespace FastyBird\Bridge\RedisDbDevicesStates\Tests\Cases\Unit;
 
 use DateTimeImmutable;
-use FastyBird\DateTimeFactory;
 use FastyBird\Bridge\RedisDbDevicesStates;
+use FastyBird\DateTimeFactory;
 use Nette;
 use Nette\DI;
 use PHPUnit\Framework\TestCase;
