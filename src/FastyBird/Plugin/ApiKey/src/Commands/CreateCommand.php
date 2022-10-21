@@ -15,11 +15,12 @@
 
 namespace FastyBird\Plugin\ApiKey\Commands;
 
-use Contributte\Translation;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\ApiKey\Models;
 use FastyBird\Plugin\ApiKey\Types;
 use Nette;
 use Nette\Utils;
+use Psr\Log;
 use Ramsey\Uuid;
 use Symfony\Component\Console;
 use Symfony\Component\Console\Input;
@@ -41,19 +42,19 @@ class CreateCommand extends Console\Command\Command
 
 	use Nette\SmartObject;
 
-	private Translation\PrefixedTranslator $translator;
+	public const NAME = 'fb:api-key:create';
 
-	private string $translationDomain = 'commands.apiKeyCreate';
+	private Log\LoggerInterface $logger;
 
 	public function __construct(
 		private readonly Models\KeysManager $keysManager,
-		Translation\Translator $translator,
 		string|null $name = null,
+		Log\LoggerInterface|null $logger = null,
 	)
 	{
-		$this->translator = new Translation\PrefixedTranslator($translator, $this->translationDomain);
-
 		parent::__construct($name);
+
+		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	/**
@@ -62,26 +63,29 @@ class CreateCommand extends Console\Command\Command
 	protected function configure(): void
 	{
 		$this
-			->setName('fb:api-keys:create')
-			->addArgument('name', Input\InputArgument::OPTIONAL, $this->translator->translate('name.title'))
-			->addOption('noconfirm', null, Input\InputOption::VALUE_NONE, 'do not ask for any confirmation')
-			->setDescription('Create API access key.');
+			->setName(self::NAME)
+			->setDescription('Create API access key')
+			->setDefinition(
+				new Input\InputDefinition([
+					new Input\InputOption(
+						'no-confirm',
+						null,
+						Input\InputOption::VALUE_NONE,
+						'Do not ask for any confirmation',
+					),
+				]),
+			);
 	}
 
-	/**
-	 * @throws Console\Exception\InvalidArgumentException
-	 */
 	protected function execute(Input\InputInterface $input, Output\OutputInterface $output)
 	{
 		$io = new Style\SymfonyStyle($input, $output);
 
-		$io->title('FB miniserver - create api key');
+		$io->title('Api key plugin - create api key');
 
-		$name = $input->hasArgument('name') && $input->getArgument('name') !== ''
-			? $input->getArgument('name')
-			: $io->ask(
-				$this->translator->translate('inputs.name.title'),
-			);
+		$question = new Console\Question\Question('Provide key name');
+
+		$name = $io->askQuestion($question);
 
 		try {
 			$createKey = new Utils\ArrayHash();
@@ -91,23 +95,30 @@ class CreateCommand extends Console\Command\Command
 
 			$key = $this->keysManager->create($createKey);
 
-			$io->text(
+			$io->success(
 				sprintf(
-					'<info>%s</info>',
-					$this->translator->translate('success', ['name' => $key->getName(), 'key' => $key->getKey()]),
+					'API key: %s - %s was successfully created',
+					$key->getName(),
+					$key->getKey(),
 				),
 			);
 
+			return self::SUCCESS;
 		} catch (Throwable $ex) {
-			$io->text(
-				sprintf(
-					'<error>%s</error>',
-					$this->translator->translate('validation.key.wasNotCreated', ['error' => $ex->getMessage()]),
-				),
-			);
-		}
+			$this->logger->error('Api key could not be created', [
+				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_API_KEY,
+				'type' => 'command',
+				'exception' => [
+					'message' => $ex->getMessage(),
+					'code' => $ex->getCode(),
+				],
+				'cmd' => $this->getName(),
+			]);
 
-		return 0;
+			$io->error('Key could not be created. Please try again later.');
+
+			return self::FAILURE;
+		}
 	}
 
 }

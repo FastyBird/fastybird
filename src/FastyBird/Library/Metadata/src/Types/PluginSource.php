@@ -45,6 +45,8 @@ class PluginSource extends Consistence\Enum\Enum
 
 	public const SOURCE_PLUGIN_WEB_SERVER = Metadata\Constants::PLUGIN_WEB_SERVER_SOURCE;
 
+	public const SOURCE_PLUGIN_API_KEY = Metadata\Constants::PLUGIN_API_KEY;
+
 	public function __toString(): string
 	{
 		return strval(self::getValue());

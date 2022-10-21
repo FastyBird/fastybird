@@ -15,10 +15,10 @@
 
 namespace FastyBird\Plugin\ApiKey\Middleware;
 
-use Contributte\Translation;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
 use FastyBird\Plugin\ApiKey\Models;
 use Fig\Http\Message\StatusCodeInterface;
+use Nette\Localization;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -46,7 +46,7 @@ final class ApiKeyValidatorMiddleware implements MiddlewareInterface
 
 	public function __construct(
 		private readonly Models\KeyRepository $keyRepository,
-		private readonly Translation\Translator $translator,
+		private readonly Localization\Translator $translator,
 	)
 	{
 	}

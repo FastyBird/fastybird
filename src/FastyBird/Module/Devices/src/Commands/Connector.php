@@ -130,7 +130,7 @@ class Connector extends Console\Command\Command
 		$io = new Style\SymfonyStyle($input, $output);
 
 		if ($input->getOption('quiet') === false) {
-			$io->title('FB devices module - service');
+			$io->title('Devices module - service');
 
 			$io->note('This action will run module services.');
 		}

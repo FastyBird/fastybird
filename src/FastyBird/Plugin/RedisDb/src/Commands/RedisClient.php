@@ -72,7 +72,7 @@ class RedisClient extends Console\Command\Command
 
 		$this
 			->setName(self::NAME)
-			->setDescription('Start redis client.');
+			->setDescription('Start redis client');
 	}
 
 	protected function execute(

@@ -72,7 +72,7 @@ class HttpServer extends Console\Command\Command
 
 		$this
 			->setName(self::NAME)
-			->setDescription('Start http server.');
+			->setDescription('Start http server');
 	}
 
 	protected function execute(
