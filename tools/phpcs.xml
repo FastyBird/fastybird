@@ -54,6 +54,10 @@
                 <element key="src/FastyBird/Module/Devices/tests/fixtures/dummy" value="FastyBird\Module\Devices\Tests\Fixtures\Dummy"/>
                 <element key="src/FastyBird/Module/Devices/tests/tools" value="FastyBird\Module\Devices\Tests\Tools"/>
 
+                <element key="src/FastyBird/Plugin/ApiKey/src" value="FastyBird\Plugin\ApiKey"/>
+                <element key="src/FastyBird/Plugin/ApiKey/tests/cases/unit" value="FastyBird\Plugin\ApiKey\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Plugin/ApiKey/tests/fixtures" value="FastyBird\Plugin\ApiKey\Tests\Fixtures"/>
+
                 <element key="src/FastyBird/Plugin/RedisDb/src" value="FastyBird\Plugin\RedisDb"/>
                 <element key="src/FastyBird/Plugin/RedisDb/tests/cases/unit" value="FastyBird\Plugin\RedisDb\Tests\Cases\Unit"/>
                 <element key="src/FastyBird/Plugin/RedisDb/tests/fixtures" value="FastyBird\Plugin\RedisDb\Tests\Fixtures"/>

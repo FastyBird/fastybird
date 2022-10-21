@@ -58,6 +58,8 @@ final class Constants
 
 	public const PLUGIN_WEB_SERVER_SOURCE = 'com.fastybird.web-server-plugin';
 
+	public const PLUGIN_API_KEY = 'com.fastybird.api-key-plugin';
+
 	public const CONNECTOR_FB_BUS_SOURCE = 'com.fastybird.fb-bus-connector';
 
 	public const CONNECTOR_FB_MQTT_SOURCE = 'com.fastybird.fb-mqtt-connector';

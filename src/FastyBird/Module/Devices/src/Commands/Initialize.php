@@ -92,7 +92,7 @@ class Initialize extends Console\Command\Command
 		$io = new Style\SymfonyStyle($input, $output);
 
 		if ($input->getOption('quiet') === false) {
-			$io->title('FB devices module - initialization');
+			$io->title('Devices module - initialization');
 
 			$io->note('This action will create|update module database structure and build module configuration.');
 		}

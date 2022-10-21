@@ -43,6 +43,8 @@ use function sprintf;
 class Execute extends Console\Command\Command
 {
 
+	public const NAME = 'fb:shelly-connector:execute';
+
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
@@ -62,7 +64,7 @@ class Execute extends Console\Command\Command
 	protected function configure(): void
 	{
 		$this
-			->setName('fb:shelly-connector:execute')
+			->setName(self::NAME)
 			->setDescription('Shelly connector service')
 			->setDefinition(
 				new Input\InputDefinition([
