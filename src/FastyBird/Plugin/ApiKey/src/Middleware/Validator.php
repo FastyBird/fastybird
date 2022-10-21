@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ApiKeyValidatorMiddleware.php
+ * Validator.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -39,7 +39,7 @@ use const CASE_LOWER;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ApiKeyValidatorMiddleware implements MiddlewareInterface
+final class Validator implements MiddlewareInterface
 {
 
 	private const API_KEY_HEADER = 'X-Api-Key';

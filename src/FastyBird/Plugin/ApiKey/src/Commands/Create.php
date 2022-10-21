@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * CreateCommand.php
+ * Create.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -37,7 +37,7 @@ use function sprintf;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class CreateCommand extends Console\Command\Command
+class Create extends Console\Command\Command
 {
 
 	use Nette\SmartObject;
