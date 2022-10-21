@@ -38,8 +38,8 @@ final class ChannelPropertiesRepositoryTest extends BaseTestCase
 			->with($id->toString())
 			->willReturn(Utils\Json::encode([
 				'id' => $id->toString(),
-				'actualValue' => 10,
-				'expectedValue' => 20,
+				'actual_value' => 10,
+				'expected_value' => 20,
 			]));
 
 		$this->mockContainerService(RedisDbClient\Client::class, $redisDbClient);
@@ -79,8 +79,8 @@ final class ChannelPropertiesRepositoryTest extends BaseTestCase
 			->with($id->toString())
 			->willReturn(Utils\Json::encode([
 				'id' => $id->toString(),
-				'actualValue' => 10,
-				'expectedValue' => 20,
+				'actual_value' => 10,
+				'expected_value' => 20,
 			]));
 
 		$this->mockContainerService(RedisDbClient\Client::class, $redisDbClient);
