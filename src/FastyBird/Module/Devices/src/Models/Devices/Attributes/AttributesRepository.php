@@ -91,17 +91,14 @@ final class AttributesRepository
 	}
 
 	/**
-	 * @param class-string $type
+	 * @param class-string<Entities\Devices\Attributes\Attribute> $type
 	 *
 	 * @return ORM\EntityRepository<Entities\Devices\Attributes\Attribute>
 	 */
 	private function getRepository(string $type = Entities\Devices\Attributes\Attribute::class): ORM\EntityRepository
 	{
 		if ($this->repository === null) {
-			/** @var ORM\EntityRepository<Entities\Devices\Attributes\Attribute> $repository */
-			$repository = $this->managerRegistry->getRepository($type);
-
-			$this->repository = $repository;
+			$this->repository = $this->managerRegistry->getRepository($type);
 		}
 
 		return $this->repository;

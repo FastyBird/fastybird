@@ -91,17 +91,14 @@ final class ControlsRepository
 	}
 
 	/**
-	 * @param class-string $type
+	 * @param class-string<Entities\Channels\Controls\Control> $type
 	 *
 	 * @return ORM\EntityRepository<Entities\Channels\Controls\Control>
 	 */
 	private function getRepository(string $type = Entities\Channels\Controls\Control::class): ORM\EntityRepository
 	{
 		if ($this->repository === null) {
-			/** @var ORM\EntityRepository<Entities\Channels\Controls\Control> $repository */
-			$repository = $this->managerRegistry->getRepository($type);
-
-			$this->repository = $repository;
+			$this->repository = $this->managerRegistry->getRepository($type);
 		}
 
 		return $this->repository;

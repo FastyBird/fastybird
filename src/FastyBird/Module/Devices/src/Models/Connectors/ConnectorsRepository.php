@@ -46,7 +46,7 @@ final class ConnectorsRepository
 	}
 
 	/**
-	 * @phpstan-param class-string $type
+	 * @phpstan-param class-string<Entities\Connectors\Connector> $type
 	 *
 	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
 	 * @throws DoctrineOrmQueryExceptions\QueryException
@@ -60,7 +60,7 @@ final class ConnectorsRepository
 	}
 
 	/**
-	 * @phpstan-param class-string $type
+	 * @phpstan-param class-string<Entities\Connectors\Connector> $type
 	 *
 	 * @phpstan-return Array<Entities\Connectors\Connector>
 	 *
@@ -86,7 +86,7 @@ final class ConnectorsRepository
 	}
 
 	/**
-	 * @phpstan-param class-string $type
+	 * @phpstan-param class-string<Entities\Connectors\Connector> $type
 	 *
 	 * @phpstan-return DoctrineOrmQuery\ResultSet<Entities\Connectors\Connector>
 	 *
@@ -104,17 +104,14 @@ final class ConnectorsRepository
 	}
 
 	/**
-	 * @param class-string $type
+	 * @param class-string<Entities\Connectors\Connector> $type
 	 *
 	 * @return ORM\EntityRepository<Entities\Connectors\Connector>
 	 */
 	private function getRepository(string $type): ORM\EntityRepository
 	{
 		if (!isset($this->repository[$type])) {
-			/** @var ORM\EntityRepository<Entities\Connectors\Connector> $repository */
-			$repository = $this->managerRegistry->getRepository($type);
-
-			$this->repository[$type] = $repository;
+			$this->repository[$type] = $this->managerRegistry->getRepository($type);
 		}
 
 		return $this->repository[$type];

@@ -46,7 +46,7 @@ final class PropertiesRepository
 	}
 
 	/**
-	 * @phpstan-param class-string $type
+	 * @phpstan-param class-string<Entities\Devices\Properties\Property> $type
 	 *
 	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
 	 * @throws DoctrineOrmQueryExceptions\QueryException
@@ -60,7 +60,7 @@ final class PropertiesRepository
 	}
 
 	/**
-	 * @phpstan-param class-string $type
+	 * @phpstan-param class-string<Entities\Devices\Properties\Property> $type
 	 *
 	 * @phpstan-return  Array<Entities\Devices\Properties\Property>
 	 *
@@ -86,7 +86,7 @@ final class PropertiesRepository
 	}
 
 	/**
-	 * @phpstan-param class-string $type
+	 * @phpstan-param class-string<Entities\Devices\Properties\Property> $type
 	 *
 	 * @phpstan-return DoctrineOrmQuery\ResultSet<Entities\Devices\Properties\Property>
 	 *
@@ -104,17 +104,14 @@ final class PropertiesRepository
 	}
 
 	/**
-	 * @param class-string $type
+	 * @param class-string<Entities\Devices\Properties\Property> $type
 	 *
 	 * @return ORM\EntityRepository<Entities\Devices\Properties\Property>
 	 */
 	private function getRepository(string $type): ORM\EntityRepository
 	{
 		if (!isset($this->repository[$type])) {
-			/** @var  ORM\EntityRepository<Entities\Devices\Properties\Property> $repository */
-			$repository = $this->managerRegistry->getRepository($type);
-
-			$this->repository[$type] = $repository;
+			$this->repository[$type] = $this->managerRegistry->getRepository($type);
 		}
 
 		return $this->repository[$type];
