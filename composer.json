@@ -133,6 +133,7 @@
             "FastyBird\\Module\\Devices\\Tests\\Fixtures\\Dummy\\": "src/FastyBird/Module/Devices/tests/fixtures/dummy",
             "FastyBird\\Module\\Devices\\Tests\\Tools\\": "src/FastyBird/Module/Devices/tests/tools",
             "FastyBird\\Plugin\\ApiKey\\Tests\\Cases\\Unit\\": "src/FastyBird/Plugin/ApiKey/tests/cases/unit",
+            "FastyBird\\Plugin\\ApiKey\\Tests\\Tools\\": "src/FastyBird/Plugin/ApiKey/tests/tools",
             "FastyBird\\Plugin\\RedisDb\\Tests\\Cases\\Unit\\": "src/FastyBird/Plugin/RedisDb/tests/cases/unit",
             "FastyBird\\Plugin\\RedisDb\\Tests\\Fixtures\\": "src/FastyBird/Plugin/RedisDb/tests/fixtures",
             "FastyBird\\Plugin\\WebServer\\Tests\\Cases\\Unit\\": "src/FastyBird/Plugin/WebServer/tests/cases/unit",

@@ -69,8 +69,8 @@ final class Validator implements MiddlewareInterface
 				if ($apiKey === null) {
 					throw new JsonApiExceptions\JsonApiError(
 						StatusCodeInterface::STATUS_UNAUTHORIZED,
-						$this->translator->translate('//node.base.messages.notAuthorized.heading'),
-						$this->translator->translate('//node.base.messages.notAuthorized.message'),
+						$this->translator->translate('//apikey-plugin.base.messages.unauthorized.heading'),
+						$this->translator->translate('//apikey-plugin.base.messages.unauthorized.message'),
 					);
 				}
 
@@ -80,8 +80,8 @@ final class Validator implements MiddlewareInterface
 
 		throw new JsonApiExceptions\JsonApiError(
 			StatusCodeInterface::STATUS_UNAUTHORIZED,
-			$this->translator->translate('//node.base.messages.notAuthorized.heading'),
-			$this->translator->translate('//node.base.messages.notAuthorized.message'),
+			$this->translator->translate('//apikey-plugin.base.messages.unauthorized.heading'),
+			$this->translator->translate('//apikey-plugin.base.messages.unauthorized.message'),
 		);
 	}
 
