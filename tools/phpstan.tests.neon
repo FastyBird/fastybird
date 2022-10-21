@@ -14,6 +14,7 @@ includes:
 
     - ../src/FastyBird/Module/Devices/tools/phpstan.config.tests.neon
 
+    - ../src/FastyBird/Plugin/ApiKey/tools/phpstan.config.tests.neon
     - ../src/FastyBird/Plugin/RedisDb/tools/phpstan.config.tests.neon
     - ../src/FastyBird/Plugin/WebServer/tools/phpstan.config.tests.neon
     - ../src/FastyBird/Plugin/WsExchange/tools/phpstan.config.tests.neon

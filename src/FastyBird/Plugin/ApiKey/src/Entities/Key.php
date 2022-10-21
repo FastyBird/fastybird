@@ -6,36 +6,37 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:MiniServer!
+ * @package        FastyBird:ApiKeyPlugin!
  * @subpackage     Entities
  * @since          0.1.0
  *
- * @date           16.05.21
+ * @date           21.10.22
  */
 
-namespace FastyBird\MiniServer\Entities\ApiKeys;
+namespace FastyBird\Plugin\ApiKey\Entities;
 
 use Consistence\Doctrine\Enum\EnumAnnotation as Enum;
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\MiniServer\Entities;
-use FastyBird\MiniServer\Types;
+use FastyBird\Plugin\ApiKey\Entities;
+use FastyBird\Plugin\ApiKey\Types;
+use IPub\DoctrineCrud;
 use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
 use IPub\DoctrineTimestampable;
 use Ramsey\Uuid;
-use Throwable;
 
 /**
  * @ORM\Entity
  * @ORM\Table(
- *     name="fb_miniserver_api_keys",
+ *     name="fb_api_key_plugin_keys",
  *     options={
  *       "collate"="utf8mb4_general_ci",
  *       "charset"="utf8mb4",
- *       "comment"="API access keys"
+ *       "comment"="API Key plugin access keys"
  *     }
  * )
  */
-class Key extends Entities\Entity implements IKey
+class Key extends Entities\Entity implements DoctrineCrud\Entities\IEntity,
+	DoctrineTimestampable\Entities\IEntityCreated, DoctrineTimestampable\Entities\IEntityUpdated
 {
 
 	use DoctrineTimestampable\Entities\TEntityCreated;
@@ -50,32 +51,27 @@ class Key extends Entities\Entity implements IKey
 
 	/**
 	 * @IPubDoctrine\Crud(is={"required", "writable"})
-	 * @ORM\Column(type="string", name="key_name", length=50, nullable=FALSE)
+	 * @ORM\Column(type="string", name="key_name", length=50, nullable=false)
 	 */
 	private string $name;
 
 	/**
 	 * @IPubDoctrine\Crud(is={"required", "writable"})
-	 * @ORM\Column(type="string", name="key_key", length=150, nullable=FALSE)
+	 * @ORM\Column(type="string", name="key_key", length=150, nullable=false)
 	 */
 	private string $key;
 
 	/**
 	 * @Enum(class=Types\KeyStateType::class)
 	 * @IPubDoctrine\Crud(is={"writable"})
-	 * @ORM\Column(type="string_enum", name="key_state", length=10, nullable=FALSE, options={"default": "active"})
+	 * @ORM\Column(type="string_enum", name="key_state", length=10, nullable=false, options={"default": "active"})
 	 */
-	private Types\KeyStateType $state;
+	private Types\KeyState $state;
 
-	/**
-	 * @param Uuid\UuidInterface|NULL $id
-	 *
-	 * @throws Throwable
-	 */
 	public function __construct(
 		string $name,
 		string $key,
-		Types\KeyStateType $state,
+		Types\KeyState $state,
 		Uuid\UuidInterface|null $id = null,
 	)
 	{
@@ -107,12 +103,12 @@ class Key extends Entities\Entity implements IKey
 		return $this->key;
 	}
 
-	public function setState(Types\KeyStateType $state): void
+	public function setState(Types\KeyState $state): void
 	{
 		$this->state = $state;
 	}
 
-	public function getState(): Types\KeyStateType
+	public function getState(): Types\KeyState
 	{
 		return $this->state;
 	}

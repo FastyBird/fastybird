@@ -6,18 +6,18 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:MiniServer!
+ * @package        FastyBird:ApiKeyPlugin!
  * @subpackage     Middleware
  * @since          0.1.0
  *
- * @date           16.05.20
+ * @date           21.10.22
  */
 
-namespace FastyBird\MiniServer\Middleware;
+namespace FastyBird\Plugin\ApiKey\Middleware;
 
 use Contributte\Translation;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
-use FastyBird\MiniServer\Models;
+use FastyBird\Plugin\ApiKey\Models;
 use Fig\Http\Message\StatusCodeInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -34,7 +34,7 @@ use const CASE_LOWER;
 /**
  * API key check middleware
  *
- * @package        FastyBird:MiniServer!
+ * @package        FastyBird:ApiKeyPlugin!
  * @subpackage     Middleware
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
@@ -45,15 +45,14 @@ final class ApiKeyValidatorMiddleware implements MiddlewareInterface
 	private const API_KEY_HEADER = 'X-Api-Key';
 
 	public function __construct(
-		private Models\ApiKeys\IKeyRepository $keyRepository,
-		private Translation\Translator $translator,
+		private readonly Models\KeyRepository $keyRepository,
+		private readonly Translation\Translator $translator,
 	)
 	{
 	}
 
 	/**
-	 * @throws JsonApiExceptions\IJsonApiException
-	 * @throws Translation\Exceptions\InvalidArgument
+	 * @throws JsonApiExceptions\JsonApiError
 	 */
 	public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
 	{
@@ -68,7 +67,7 @@ final class ApiKeyValidatorMiddleware implements MiddlewareInterface
 				$apiKey = $this->keyRepository->findOneByKey($headerApiKey);
 
 				if ($apiKey === null) {
-					throw new JsonApiExceptions\JsonApiErrorException(
+					throw new JsonApiExceptions\JsonApiError(
 						StatusCodeInterface::STATUS_UNAUTHORIZED,
 						$this->translator->translate('//node.base.messages.notAuthorized.heading'),
 						$this->translator->translate('//node.base.messages.notAuthorized.message'),
@@ -79,7 +78,7 @@ final class ApiKeyValidatorMiddleware implements MiddlewareInterface
 			}
 		}
 
-		throw new JsonApiExceptions\JsonApiErrorException(
+		throw new JsonApiExceptions\JsonApiError(
 			StatusCodeInterface::STATUS_UNAUTHORIZED,
 			$this->translator->translate('//node.base.messages.notAuthorized.heading'),
 			$this->translator->translate('//node.base.messages.notAuthorized.message'),
@@ -87,7 +86,7 @@ final class ApiKeyValidatorMiddleware implements MiddlewareInterface
 	}
 
 	/**
-	 * @return array<mixed>
+	 * @return Array<string, mixed>
 	 */
 	private function readHeaders(ServerRequestInterface $request): array
 	{

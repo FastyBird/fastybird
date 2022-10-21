@@ -6,18 +6,18 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:MiniServer!
+ * @package        FastyBird:ApiKeyPlugin!
  * @subpackage     Commands
  * @since          0.1.0
  *
- * @date           14.04.20
+ * @date           21.10.22
  */
 
-namespace FastyBird\MiniServer\Commands\ApiKeys;
+namespace FastyBird\Plugin\ApiKey\Commands;
 
 use Contributte\Translation;
-use FastyBird\MiniServer\Models;
-use FastyBird\MiniServer\Types;
+use FastyBird\Plugin\ApiKey\Models;
+use FastyBird\Plugin\ApiKey\Types;
 use Nette;
 use Nette\Utils;
 use Ramsey\Uuid;
@@ -31,7 +31,7 @@ use function sprintf;
 /**
  * API key creation command
  *
- * @package        FastyBird:MiniServer!
+ * @package        FastyBird:ApiKeyPlugin!
  * @subpackage     Commands
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
@@ -46,18 +46,19 @@ class CreateCommand extends Console\Command\Command
 	private string $translationDomain = 'commands.apiKeyCreate';
 
 	public function __construct(
-		private Models\ApiKeys\IKeysManager $keysManager,
+		private readonly Models\KeysManager $keysManager,
 		Translation\Translator $translator,
 		string|null $name = null,
 	)
 	{
-		// Modules models
-
 		$this->translator = new Translation\PrefixedTranslator($translator, $this->translationDomain);
 
 		parent::__construct($name);
 	}
 
+	/**
+	 * @throws Console\Exception\InvalidArgumentException
+	 */
 	protected function configure(): void
 	{
 		$this
@@ -68,7 +69,7 @@ class CreateCommand extends Console\Command\Command
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * @throws Console\Exception\InvalidArgumentException
 	 */
 	protected function execute(Input\InputInterface $input, Output\OutputInterface $output)
 	{
@@ -86,7 +87,7 @@ class CreateCommand extends Console\Command\Command
 			$createKey = new Utils\ArrayHash();
 			$createKey->offsetSet('name', $name);
 			$createKey->offsetSet('key', Uuid\Uuid::uuid4());
-			$createKey->offsetSet('state', Types\KeyStateType::get(Types\KeyStateType::STATE_ACTIVE));
+			$createKey->offsetSet('state', Types\KeyState::get(Types\KeyState::STATE_ACTIVE));
 
 			$key = $this->keysManager->create($createKey);
 

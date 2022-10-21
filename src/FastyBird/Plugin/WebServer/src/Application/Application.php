@@ -92,7 +92,7 @@ class Application
 	}
 
 	/**
-	 * @param array<string> $values
+	 * @param Array<string> $values
 	 */
 	protected function sendHeader(string $name, array $values): void
 	{

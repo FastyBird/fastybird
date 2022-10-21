@@ -6,26 +6,27 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:MiniServer!
+ * @package        FastyBird:ApiKeyPlugin!
  * @subpackage     Types
  * @since          0.1.0
  *
- * @date           16.05.21
+ * @date           21.10.22
  */
 
-namespace FastyBird\MiniServer\Types;
+namespace FastyBird\Plugin\ApiKey\Types;
 
 use Consistence;
+use function strval;
 
 /**
- * API access key state column
+ * API access key state
  *
- * @package        FastyBird:MiniServer!
+ * @package        FastyBird:ApiKeyPlugin!
  * @subpackage     Types
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class KeyStateType extends Consistence\Enum\Enum
+class KeyState extends Consistence\Enum\Enum
 {
 
 	/**
@@ -39,7 +40,7 @@ class KeyStateType extends Consistence\Enum\Enum
 
 	public function __toString(): string
 	{
-		return (string) self::getValue();
+		return strval(self::getValue());
 	}
 
 }
