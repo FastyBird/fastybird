@@ -19,7 +19,6 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\RedisDb\Client;
 use FastyBird\Plugin\RedisDb\Events;
 use FastyBird\Plugin\RedisDb\Exceptions;
-use FastyBird\Plugin\RedisDb\States;
 use Nette;
 use Psr\EventDispatcher;
 use Psr\Log;
@@ -31,8 +30,6 @@ use Throwable;
 
 /**
  * Redis client command
- *
- * @template T of States\State
  *
  * @package        FastyBird:RedisDbPlugin!
  * @subpackage     Commands
@@ -47,9 +44,6 @@ class RedisClient extends Console\Command\Command
 
 	private Log\LoggerInterface $logger;
 
-	/**
-	 * @phpstan-param Client\Factory<T> $clientFactory
-	 */
 	public function __construct(
 		private readonly Client\Factory $clientFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,

@@ -1,14 +1,14 @@
 #
 # Plugin DI configuration
 #
-# @license      More in LICENSE.md
-# @copyright    https://www.fastybird.com
-# @author       Adam Kadlec <adam.kadlec@fastybird.com>
-# @package      FastyBird:WsExchange!
-# @subpackage   config
-# @since        0.1.0
+# @license       More in LICENSE.md
+# @copyright     https://www.fastybird.com
+# @author        Adam Kadlec <adam.kadlec@fastybird.com>
+# @package       FastyBird:WsExchangePlugin!
+# @subpackage    config
+# @since         0.1.0
 #
-# @date         19.07.20
+# @date          19.07.20
 
 php:
     date.timezone: Europe/Prague
@@ -17,10 +17,10 @@ extensions:
     ipubWebSocketsWAMP      : IPub\WebSocketsWAMP\DI\WebSocketsWAMPExtension
     ipubWebSockets          : IPub\WebSockets\DI\WebSocketsExtension
     ipubPhone               : IPub\Phone\DI\PhoneExtension
-    fbExchangeLibrary       : FastyBird\Library\Exchange\DI\ExchangeExtension
     fbMetadataLibrary       : FastyBird\Library\Metadata\DI\MetadataExtension
 
 services:
+    - {factory: Symfony\Component\Console\Application}
     - {factory: Symfony\Component\EventDispatcher\EventDispatcher}
 
 ipubWebSockets:

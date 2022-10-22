@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:WsExchange!
+ * @package        FastyBird:WsExchangePlugin!
  * @subpackage     Publishers
  * @since          0.2.0
  *
@@ -26,7 +26,7 @@ use Throwable;
 /**
  * Websockets exchange publisher
  *
- * @package        FastyBird:WsExchange!
+ * @package        FastyBird:WsExchangePlugin!
  * @subpackage     Publishers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

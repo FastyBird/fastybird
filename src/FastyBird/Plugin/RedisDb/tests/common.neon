@@ -16,7 +16,6 @@ php:
 extensions:
     ipubPhone               : IPub\Phone\DI\PhoneExtension
     fbDateTimeFactory       : FastyBird\DateTimeFactory\DI\DateTimeFactoryExtension
-    fbExchangeLibrary       : FastyBird\Library\Exchange\DI\ExchangeExtension
     fbMetadataLibrary       : FastyBird\Library\Metadata\DI\MetadataExtension
 
 services:
@@ -24,7 +23,3 @@ services:
       create: React\EventLoop\Factory::create()
       type: React\EventLoop\LoopInterface
     }
-
-fbRedisDbPlugin:
-    client:
-        host: 127.0.0.1

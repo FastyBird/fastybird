@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:WsExchange!
+ * @package        FastyBird:WsExchangePlugin!
  * @subpackage     DI
  * @since          0.1.0
  *
@@ -16,7 +16,6 @@
 namespace FastyBird\Plugin\WsExchange\DI;
 
 use FastyBird\Plugin\WsExchange\Commands;
-use FastyBird\Plugin\WsExchange\Consumers;
 use FastyBird\Plugin\WsExchange\Controllers;
 use FastyBird\Plugin\WsExchange\Events;
 use FastyBird\Plugin\WsExchange\Exceptions;
@@ -37,7 +36,7 @@ use function sprintf;
 /**
  * WS server plugin
  *
- * @package        FastyBird:WsExchange!
+ * @package        FastyBird:WsExchangePlugin!
  * @subpackage     DI
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
@@ -76,35 +75,33 @@ class WsExchangeExtension extends DI\CompilerExtension
 		$configuration = $this->getConfig();
 		assert($configuration instanceof stdClass);
 
-		$builder->addDefinition($this->prefix('subscribers.client'), new DI\Definitions\ServiceDefinition())
-			->setType(Subscribers\Client::class)
-			->setArgument('wsKeys', $configuration->access->keys)
-			->setArgument('allowedOrigins', $configuration->access->origins);
-
 		// Controllers
+
 		$builder->addDefinition($this->prefix('controllers.exchange'), new DI\Definitions\ServiceDefinition())
 			->setType(Controllers\Exchange::class)
 			->addTag('nette.inject');
 
 		// Publisher
+
 		$builder->addDefinition($this->prefix('exchange.publisher'), new DI\Definitions\ServiceDefinition())
 			->setType(Publishers\Publisher::class);
 
-		// Consumers
-		$builder->addDefinition($this->prefix('consumers.exchange'), new DI\Definitions\ServiceDefinition())
-			->setType(Consumers\Consumer::class)
-			->setAutowired(false);
-
 		// Commands
+
 		$builder->addDefinition($this->prefix('command.server'), new DI\Definitions\ServiceDefinition())
 			->setType(Commands\WsServer::class);
 
 		// Server
+
 		$builder->addDefinition($this->prefix('server.factory'), new DI\Definitions\ServiceDefinition())
-			->setType(Server\Factory::class)
-			->setArguments([
-				'exchangeConsumer' => '@' . $this->prefix('consumers.exchange'),
-			]);
+			->setType(Server\Factory::class);
+
+		// Subscribers
+
+		$builder->addDefinition($this->prefix('subscribers.client'), new DI\Definitions\ServiceDefinition())
+			->setType(Subscribers\Client::class)
+			->setArgument('wsKeys', $configuration->access->keys)
+			->setArgument('allowedOrigins', $configuration->access->origins);
 	}
 
 	/**

@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:WsExchange!
+ * @package        FastyBird:WsExchangePlugin!
  * @subpackage     Server
  * @since          0.1.0
  *
@@ -15,9 +15,7 @@
 
 namespace FastyBird\Plugin\WsExchange\Server;
 
-use FastyBird\Library\Exchange\Consumer as ExchangeConsumer;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Plugin\WsExchange\Consumers;
 use IPub\WebSockets;
 use Nette\Utils;
 use Psr\Log;
@@ -29,10 +27,10 @@ use function property_exists;
 /**
  * WS server factory
  *
- * @package         FastyBird:WsExchange!
- * @subpackage      Server
+ * @package        FastyBird:WsExchangePlugin!
+ * @subpackage     Server
  *
- * @author          Adam Kadlec <adam.kadlec@fastybird.com>
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 final class Factory
 {
@@ -42,8 +40,6 @@ final class Factory
 	public function __construct(
 		private readonly WebSockets\Server\Handlers $handlers,
 		private readonly WebSockets\Server\Configuration $configuration,
-		private readonly Consumers\Consumer $exchangeConsumer,
-		private readonly ExchangeConsumer\Container $consumer,
 		Log\LoggerInterface|null $logger = null,
 	)
 	{
@@ -52,8 +48,6 @@ final class Factory
 
 	public function create(Socket\ServerInterface $server): void
 	{
-		$this->consumer->register($this->exchangeConsumer);
-
 		$server->on('connection', function (Socket\ConnectionInterface $connection): void {
 			if ($connection->getLocalAddress() === null) {
 				return;
@@ -84,7 +78,7 @@ final class Factory
 		});
 
 		$this->logger->debug(
-			'Launching WebSockets WS Server',
+			'Launching WebSockets Server',
 			[
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_EXCHANGE,
 				'type' => 'factory',

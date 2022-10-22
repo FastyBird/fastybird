@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:WsExchange!
+ * @package        FastyBird:WsExchangePlugin!
  * @subpackage     Commands
  * @since          0.13.0
  *
@@ -32,7 +32,7 @@ use Throwable;
 /**
  * WS server command
  *
- * @package        FastyBird:WsExchange!
+ * @package        FastyBird:WsExchangePlugin!
  * @subpackage     Commands
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
@@ -135,9 +135,11 @@ final class WsServer extends Console\Command\Command
 			);
 
 			$this->eventLoop->stop();
+
+			return self::FAILURE;
 		}
 
-		return 0;
+		return self::SUCCESS;
 	}
 
 }

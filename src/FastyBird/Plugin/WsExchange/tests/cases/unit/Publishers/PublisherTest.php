@@ -2,13 +2,10 @@
 
 namespace FastyBird\Plugin\WsExchange\Tests\Cases\Unit\Publishers;
 
-use FastyBird\Library\Exchange\Entities as ExchangeEntities;
-use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\WsExchange\Publishers;
 use FastyBird\Plugin\WsExchange\Tests\Cases\Unit\BaseTestCase;
-use IPub\Phone\Exceptions as PhoneExceptions;
 use IPub\WebSockets;
 use IPub\WebSocketsWAMP;
 use Nette;
@@ -18,17 +15,7 @@ final class PublisherTest extends BaseTestCase
 {
 
 	/**
-	 * @throws ExchangeExceptions\InvalidState
-	 * @throws PhoneExceptions\NoValidCountryException
-	 * @throws PhoneExceptions\NoValidPhoneException
-	 * @throws MetadataExceptions\FileNotFound
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 * @throws Nette\DI\MissingServiceException
-	 * @throws Utils\JsonException
 	 *
 	 * @dataProvider deviceSuccessfulMessage
 	 */
@@ -38,9 +25,10 @@ final class PublisherTest extends BaseTestCase
 		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource $source,
 	): void
 	{
-		$entityFactory = $this->container->getByType(ExchangeEntities\EntityFactory::class);
-
-		$entity = $entityFactory->create(Utils\Json::encode($data), $routingKey);
+		$entity = $this->createMock(MetadataEntities\DevicesModule\Device::class);
+		$entity
+			->method('toArray')
+			->willReturn((array) $data);
 
 		$linkGenerator = $this->createMock(WebSockets\Router\LinkGenerator::class);
 		$linkGenerator
@@ -93,17 +81,7 @@ final class PublisherTest extends BaseTestCase
 	}
 
 	/**
-	 * @throws ExchangeExceptions\InvalidState
-	 * @throws PhoneExceptions\NoValidCountryException
-	 * @throws PhoneExceptions\NoValidPhoneException
-	 * @throws MetadataExceptions\FileNotFound
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 * @throws Nette\DI\MissingServiceException
-	 * @throws Utils\JsonException
 	 *
 	 * @dataProvider devicePropertySuccessfulMessage
 	 */
@@ -113,9 +91,10 @@ final class PublisherTest extends BaseTestCase
 		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource $source,
 	): void
 	{
-		$entityFactory = $this->container->getByType(ExchangeEntities\EntityFactory::class);
-
-		$entity = $entityFactory->create(Utils\Json::encode($data), $routingKey);
+		$entity = $this->createMock(MetadataEntities\DevicesModule\DeviceDynamicProperty::class);
+		$entity
+			->method('toArray')
+			->willReturn((array) $data);
 
 		$linkGenerator = $this->createMock(WebSockets\Router\LinkGenerator::class);
 		$linkGenerator
@@ -167,17 +146,7 @@ final class PublisherTest extends BaseTestCase
 	}
 
 	/**
-	 * @throws ExchangeExceptions\InvalidState
-	 * @throws PhoneExceptions\NoValidCountryException
-	 * @throws PhoneExceptions\NoValidPhoneException
-	 * @throws MetadataExceptions\FileNotFound
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 * @throws Nette\DI\MissingServiceException
-	 * @throws Utils\JsonException
 	 *
 	 * @dataProvider channelSuccessfulMessage
 	 */
@@ -187,9 +156,10 @@ final class PublisherTest extends BaseTestCase
 		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource $source,
 	): void
 	{
-		$entityFactory = $this->container->getByType(ExchangeEntities\EntityFactory::class);
-
-		$entity = $entityFactory->create(Utils\Json::encode($data), $routingKey);
+		$entity = $this->createMock(MetadataEntities\DevicesModule\Channel::class);
+		$entity
+			->method('toArray')
+			->willReturn((array) $data);
 
 		$linkGenerator = $this->createMock(WebSockets\Router\LinkGenerator::class);
 		$linkGenerator
@@ -241,17 +211,7 @@ final class PublisherTest extends BaseTestCase
 	}
 
 	/**
-	 * @throws ExchangeExceptions\InvalidState
-	 * @throws PhoneExceptions\NoValidCountryException
-	 * @throws PhoneExceptions\NoValidPhoneException
-	 * @throws MetadataExceptions\FileNotFound
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 * @throws Nette\DI\MissingServiceException
-	 * @throws Utils\JsonException
 	 *
 	 * @dataProvider channelPropertySuccessfulMessage
 	 */
@@ -261,9 +221,10 @@ final class PublisherTest extends BaseTestCase
 		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource $source,
 	): void
 	{
-		$entityFactory = $this->container->getByType(ExchangeEntities\EntityFactory::class);
-
-		$entity = $entityFactory->create(Utils\Json::encode($data), $routingKey);
+		$entity = $this->createMock(MetadataEntities\DevicesModule\ChannelDynamicProperty::class);
+		$entity
+			->method('toArray')
+			->willReturn((array) $data);
 
 		$linkGenerator = $this->createMock(WebSockets\Router\LinkGenerator::class);
 		$linkGenerator

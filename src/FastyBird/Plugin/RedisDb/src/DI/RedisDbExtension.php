@@ -15,12 +15,14 @@
 
 namespace FastyBird\Plugin\RedisDb\DI;
 
+use FastyBird\Library\Metadata;
 use FastyBird\Plugin\RedisDb\Client;
 use FastyBird\Plugin\RedisDb\Commands;
 use FastyBird\Plugin\RedisDb\Connections;
 use FastyBird\Plugin\RedisDb\Handlers;
 use FastyBird\Plugin\RedisDb\Models;
 use FastyBird\Plugin\RedisDb\Publishers;
+use FastyBird\Plugin\RedisDb\Subscribers;
 use FastyBird\Plugin\RedisDb\Utils;
 use Nette;
 use Nette\DI;
@@ -64,7 +66,7 @@ class RedisDbExtension extends DI\CompilerExtension
 				'password' => Schema\Expect::string()->nullable(),
 			]),
 			'exchange' => Schema\Expect::structure([
-				'channel' => Schema\Expect::string()->default('fb_exchange'),
+				'channel' => Schema\Expect::string()->default(Metadata\Constants::EXCHANGE_CHANNEL_NAME),
 			]),
 		]);
 	}
@@ -75,7 +77,7 @@ class RedisDbExtension extends DI\CompilerExtension
 		$configuration = $this->getConfig();
 		assert($configuration instanceof stdClass);
 
-		$publisher = $builder->addDefinition($this->prefix('publisher'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition($this->prefix('publisher.exchange'), new DI\Definitions\ServiceDefinition())
 			->setType(Publishers\Publisher::class)
 			->setArguments([
 				'channel' => $configuration->exchange->channel,
@@ -106,7 +108,6 @@ class RedisDbExtension extends DI\CompilerExtension
 			->setType(Client\Factory::class)
 			->setArguments([
 				'channel' => $configuration->exchange->channel,
-				'publisher' => $publisher,
 			]);
 
 		// Models
@@ -123,9 +124,9 @@ class RedisDbExtension extends DI\CompilerExtension
 		)
 			->setType(Models\StatesRepositoryFactory::class);
 
-		// Subscribers
+		// Handlers
 
-		$builder->addDefinition($this->prefix('subscribers.client'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition($this->prefix('handler.message'), new DI\Definitions\ServiceDefinition())
 			->setType(Handlers\Message::class);
 
 		// Commands
@@ -137,6 +138,11 @@ class RedisDbExtension extends DI\CompilerExtension
 
 		$builder->addDefinition($this->prefix('utils.identifier'), new DI\Definitions\ServiceDefinition())
 			->setType(Utils\IdentifierGenerator::class);
+
+		// Subscribers
+
+		$builder->addDefinition($this->prefix('subscriber.client'), new DI\Definitions\ServiceDefinition())
+			->setType(Subscribers\Client::class);
 	}
 
 }

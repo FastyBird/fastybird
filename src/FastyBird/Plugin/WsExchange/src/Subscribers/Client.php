@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:WsExchange!
+ * @package        FastyBird:WsExchangePlugin!
  * @subpackage     Subscribers
  * @since          0.2.0
  *
@@ -27,10 +27,10 @@ use function in_array;
 /**
  * WS client events subscriber
  *
- * @package         FastyBird:WsExchange!
- * @subpackage      Subscribers
+ * @package        FastyBird:WsExchangePlugin!
+ * @subpackage     Subscribers
  *
- * @author          Adam Kadlec <adam.kadlec@fastybird.com>
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 class Client implements EventDispatcher\EventSubscriberInterface
 {

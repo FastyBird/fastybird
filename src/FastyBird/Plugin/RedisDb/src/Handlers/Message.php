@@ -15,8 +15,7 @@
 
 namespace FastyBird\Plugin\RedisDb\Handlers;
 
-use FastyBird\Library\Exchange\Consumer as ExchangeConsumer;
-use FastyBird\Library\Exchange\Entities as ExchangeEntities;
+use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\RedisDb\Events;
 use FastyBird\Plugin\RedisDb\Exceptions;
@@ -44,9 +43,8 @@ class Message
 
 	public function __construct(
 		private readonly Utils\IdentifierGenerator $identifier,
-		private readonly ExchangeEntities\EntityFactory $entityFactory,
+		private readonly MetadataEntities\RoutingFactory $entityFactory,
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
-		private readonly ExchangeConsumer\Consumer|null $consumer = null,
 		Log\LoggerInterface|null $logger = null,
 	)
 	{
@@ -102,10 +100,6 @@ class Message
 		string|null $senderId = null,
 	): void
 	{
-		if ($this->consumer === null) {
-			return;
-		}
-
 		if ($senderId === $this->identifier->getIdentifier()) {
 			$this->logger->debug('Received message published by itself', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
@@ -138,7 +132,11 @@ class Message
 		}
 
 		try {
-			$this->consumer->consume($source, $routingKey, $entity);
+			$this->dispatcher?->dispatch(new Events\MessageReceived(
+				$source,
+				$routingKey,
+				$entity,
+			));
 
 		} catch (Exceptions\UnprocessableMessage $ex) {
 			// Log error consume reason

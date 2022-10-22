@@ -23,7 +23,7 @@ use function assert;
 use function is_int;
 
 /**
- * Redis database client
+ * Redis DB proxy client to PREDIS instance
  *
  * @package        FastyBird:RedisDbPlugin!
  * @subpackage     Client
@@ -35,31 +35,32 @@ class Client
 
 	use Nette\SmartObject;
 
-	/** @var Predis\Client<mixed> */
-	private Predis\Client $redis;
+	/** @var Predis\Client<mixed>|null */
+	private Predis\Client|null $redis = null;
+
+	/** @var Array<string, int|string|null> */
+	private array $options;
 
 	public function __construct(Connections\Connection $connection)
 	{
-		$options = [
+		$this->options = [
 			'scheme' => 'tcp',
 			'host' => $connection->getHost(),
 			'port' => $connection->getPort(),
 		];
 
 		if ($connection->getUsername() !== null) {
-			$options['username'] = $connection->getUsername();
+			$this->options['username'] = $connection->getUsername();
 		}
 
 		if ($connection->getPassword() !== null) {
-			$options['password'] = $connection->getPassword();
+			$this->options['password'] = $connection->getPassword();
 		}
-
-		$this->redis = new Predis\Client($options);
 	}
 
 	public function set(string $key, string $content): bool
 	{
-		$response = $this->redis->set($key, $content);
+		$response = $this->getClient()->set($key, $content);
 		assert($response instanceof PredisResponse\Status);
 
 		return $response->getPayload() === 'OK';
@@ -67,13 +68,13 @@ class Client
 
 	public function get(string $key): string|null
 	{
-		return $this->redis->get($key);
+		return $this->getClient()->get($key);
 	}
 
 	public function del(string $key): bool
 	{
-		if ($this->redis->get($key) !== null) {
-			$response = $this->redis->del($key);
+		if ($this->getClient()->get($key) !== null) {
+			$response = $this->getClient()->del($key);
 
 			return $response === 1;
 		}
@@ -84,7 +85,7 @@ class Client
 	public function publish(string $channel, string $content): bool
 	{
 		/** @var mixed $response */
-		$response = $this->redis->publish($channel, $content);
+		$response = $this->getClient()->publish($channel, $content);
 		assert(is_int($response) || $response instanceof PredisResponse\ResponseInterface);
 
 		return !$response instanceof PredisResponse\ErrorInterface;
@@ -92,7 +93,16 @@ class Client
 
 	public function select(int $database): void
 	{
-		$this->redis->select($database);
+		$this->getClient()->select($database);
+	}
+
+	private function getClient(): Predis\Client
+	{
+		if ($this->redis === null) {
+			$this->redis = new Predis\Client($this->options);
+		}
+
+		return $this->redis;
 	}
 
 }
