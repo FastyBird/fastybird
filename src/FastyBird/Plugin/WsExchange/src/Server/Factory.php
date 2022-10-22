@@ -78,7 +78,7 @@ final class Factory
 		});
 
 		$this->logger->debug(
-			'Launching WebSockets WS Server',
+			'Launching WebSockets Server',
 			[
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_EXCHANGE,
 				'type' => 'factory',
