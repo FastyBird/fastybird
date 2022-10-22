@@ -19,7 +19,6 @@
             <property name="rootNamespaces" type="array">
                 <element key="src" value="FastyBird\Bridge\RedisDbWsExchange"/>
                 <element key="tests/cases/unit" value="FastyBird\Bridge\RedisDbWsExchange\Tests\Cases\Unit"/>
-                <element key="tests/tools" value="FastyBird\Bridge\RedisDbWsExchange\Tests\Tools"/>
             </property>
         </properties>
     </rule>

@@ -62,7 +62,7 @@ final class Exchange extends WebSockets\Application\Controller\Controller
 				'type' => 'controller',
 				'client' => $client->getId(),
 				'topic' => $topic->getId(),
-			]
+			],
 		);
 
 		$this->dispatcher?->dispatch(new Events\ClientSubscribed($client, $topic));
@@ -88,7 +88,7 @@ final class Exchange extends WebSockets\Application\Controller\Controller
 				'client' => $client->getId(),
 				'topic' => $topic->getId(),
 				'data' => $args,
-			]
+			],
 		);
 
 		if (!array_key_exists('routing_key', $args) || !array_key_exists('source', $args)) {

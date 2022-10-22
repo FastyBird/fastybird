@@ -23,7 +23,6 @@
 
                 <element key="src/FastyBird/Bridge/RedisDbWsExchange/src" value="FastyBird\Bridge\RedisDbWsExchange"/>
                 <element key="src/FastyBird/Bridge/RedisDbWsExchange/tests/cases/unit" value="FastyBird\Bridge\RedisDbWsExchange\Tests\Cases\Unit"/>
-                <element key="src/FastyBird/Bridge/RedisDbWsExchange/tests/tools" value="FastyBird\Bridge\RedisDbWsExchange\Tests\Tools"/>
 
                 <element key="src/FastyBird/Connector/FbMqtt/src" value="FastyBird\Connector\FbMqtt"/>
                 <element key="src/FastyBird/Connector/FbMqtt/tests/cases/unit" value="FastyBird\Connector\FbMqtt\Tests\Cases\Unit"/>

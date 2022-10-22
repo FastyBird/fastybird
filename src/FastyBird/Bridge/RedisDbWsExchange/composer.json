@@ -66,8 +66,7 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "FastyBird\\Bridge\\RedisDbWsExchange\\Tests\\Cases\\Unit\\": "tests/cases/unit",
-      "FastyBird\\Bridge\\RedisDbWsExchange\\Tests\\Tools\\": "tests/tools"
+      "FastyBird\\Bridge\\RedisDbWsExchange\\Tests\\Cases\\Unit\\": "tests/cases/unit"
     }
   },
   "config": {
