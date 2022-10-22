@@ -98,6 +98,7 @@
     "autoload": {
         "psr-4": {
             "FastyBird\\Bridge\\RedisDbDevicesStates\\": "src/FastyBird/Bridge/RedisDbDevicesStates/src/",
+            "FastyBird\\Bridge\\RedisDbWsExchange\\": "src/FastyBird/Bridge/RedisDbWsExchange/src/",
             "FastyBird\\Connector\\FbMqtt\\": "src/FastyBird/Connector/FbMqtt/src/",
             "FastyBird\\Connector\\HomeKit\\": "src/FastyBird/Connector/HomeKit/src/",
             "FastyBird\\Connector\\Modbus\\": "src/FastyBird/Connector/Modbus/src/",
@@ -116,6 +117,8 @@
         "psr-4": {
             "FastyBird\\Bridge\\RedisDbDevicesStates\\Tests\\Cases\\Unit\\": "src/FastyBird/Bridge/RedisDbDevicesStates/tests/cases/unit",
             "FastyBird\\Bridge\\RedisDbDevicesStates\\Tests\\Tools\\": "src/FastyBird/Bridge/RedisDbDevicesStates/tests/tools",
+            "FastyBird\\Bridge\\RedisDbWsExchange\\Tests\\Cases\\Unit\\": "src/FastyBird/Bridge/RedisDbWsExchange/tests/cases/unit",
+            "FastyBird\\Bridge\\RedisDbWsExchange\\Tests\\Tools\\": "src/FastyBird/Bridge/RedisDbWsExchange/tests/tools",
             "FastyBird\\Connector\\FbMqtt\\Tests\\Cases\\Unit\\": "src/FastyBird/Connector/FbMqtt/tests/cases/unit",
             "FastyBird\\Connector\\FbMqtt\\Tests\\Tools\\": "src/FastyBird/Connector/FbMqtt/tests/tools",
             "FastyBird\\Connector\\HomeKit\\Tests\\Cases\\Unit\\": "src/FastyBird/Connector/HomeKit/tests/cases/unit",
@@ -175,6 +178,7 @@
         "fastybird/modbus-connector": "self.version",
         "fastybird/redisdb-devices-states-bridge": "self.version",
         "fastybird/redisdb-plugin": "self.version",
+        "fastybird/redisdb-ws-exchange-bridge": "self.version",
         "fastybird/shelly-connector": "self.version",
         "fastybird/tuya-connector": "self.version",
         "fastybird/web-server-plugin": "self.version",

@@ -17,7 +17,6 @@ namespace FastyBird\Plugin\RedisDb\Publishers;
 
 use Clue\React\Redis;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\RedisDb\Client;
@@ -36,7 +35,7 @@ use const DATE_ATOM;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Publisher implements ExchangePublisher\Publisher
+final class Publisher
 {
 
 	use Nette\SmartObject;
@@ -83,19 +82,22 @@ final class Publisher implements ExchangePublisher\Publisher
 			);
 
 		} catch (Nette\Utils\JsonException $ex) {
-			$this->logger->error('Data could not be converted to message', [
-				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
-				'type' => 'publish',
-				'message' => [
-					'routingKey' => $routingKey->getValue(),
-					'source' => $source->getValue(),
-					'data' => $entity?->toArray(),
+			$this->logger->error(
+				'Data could not be converted to message',
+				[
+					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
+					'type' => 'publish',
+					'message' => [
+						'routingKey' => $routingKey->getValue(),
+						'source' => $source->getValue(),
+						'data' => $entity?->toArray(),
+					],
+					'exception' => [
+						'message' => $ex->getMessage(),
+						'code' => $ex->getCode(),
+					],
 				],
-				'exception' => [
-					'message' => $ex->getMessage(),
-					'code' => $ex->getCode(),
-				],
-			]);
+			);
 
 			return;
 		}
@@ -103,53 +105,65 @@ final class Publisher implements ExchangePublisher\Publisher
 		if ($result instanceof Promise\PromiseInterface) {
 			$result->then(
 				function () use ($routingKey, $source, $entity): void {
-					$this->logger->debug('Received message was pushed into data exchange', [
-						'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
-						'type' => 'publish',
-						'message' => [
-							'routingKey' => $routingKey->getValue(),
-							'source' => $source->getValue(),
-							'data' => $entity?->toArray(),
+					$this->logger->debug(
+						'Received message was pushed into data exchange',
+						[
+							'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
+							'type' => 'publish',
+							'message' => [
+								'routingKey' => $routingKey->getValue(),
+								'source' => $source->getValue(),
+								'data' => $entity?->toArray(),
+							],
 						],
-					]);
+					);
 				},
 				function (Throwable $ex) use ($routingKey, $source, $entity): void {
-					$this->logger->error('Received message could not be pushed into data exchange', [
-						'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
-						'type' => 'publish',
-						'message' => [
-							'routingKey' => $routingKey->getValue(),
-							'source' => $source->getValue(),
-							'data' => $entity?->toArray(),
+					$this->logger->error(
+						'Received message could not be pushed into data exchange',
+						[
+							'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
+							'type' => 'publish',
+							'message' => [
+								'routingKey' => $routingKey->getValue(),
+								'source' => $source->getValue(),
+								'data' => $entity?->toArray(),
+							],
+							'exception' => [
+								'message' => $ex->getMessage(),
+								'code' => $ex->getCode(),
+							],
 						],
-						'exception' => [
-							'message' => $ex->getMessage(),
-							'code' => $ex->getCode(),
-						],
-					]);
+					);
 				},
 			);
 		} else {
 			if ($result === true) {
-				$this->logger->debug('Received message was pushed into data exchange', [
-					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
-					'type' => 'publish',
-					'message' => [
-						'routingKey' => $routingKey->getValue(),
-						'source' => $source->getValue(),
-						'data' => $entity?->toArray(),
+				$this->logger->debug(
+					'Received message was pushed into data exchange',
+					[
+						'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
+						'type' => 'publish',
+						'message' => [
+							'routingKey' => $routingKey->getValue(),
+							'source' => $source->getValue(),
+							'data' => $entity?->toArray(),
+						],
 					],
-				]);
+				);
 			} else {
-				$this->logger->error('Received message could not be pushed into data exchange', [
-					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
-					'type' => 'publish',
-					'message' => [
-						'routingKey' => $routingKey->getValue(),
-						'source' => $source->getValue(),
-						'data' => $entity?->toArray(),
+				$this->logger->error(
+					'Received message could not be pushed into data exchange',
+					[
+						'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
+						'type' => 'publish',
+						'message' => [
+							'routingKey' => $routingKey->getValue(),
+							'source' => $source->getValue(),
+							'data' => $entity?->toArray(),
+						],
 					],
-				]);
+				);
 			}
 		}
 	}

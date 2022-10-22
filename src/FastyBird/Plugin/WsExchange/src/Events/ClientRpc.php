@@ -1,12 +1,12 @@
 <?php declare(strict_types = 1);
 
 /**
- * ClientRpc.php
+ * WsClientRpc.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:WsExchange!
+ * @package        FastyBird:WsExchangePlugin!
  * @subpackage     Events
  * @since          0.12.0
  *
@@ -20,7 +20,7 @@ use IPub\WebSocketsWAMP;
 /**
  * WS client called RPC to topic event
  *
- * @package        FastyBird:WsExchange!
+ * @package        FastyBird:WsExchangePlugin!
  * @subpackage     Events
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

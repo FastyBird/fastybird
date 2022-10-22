@@ -6,7 +6,7 @@ use FastyBird\Bridge\RedisDbDevicesStates\Models;
 use FastyBird\Bridge\RedisDbDevicesStates\Tests\Cases\Unit\BaseTestCase;
 use Nette;
 
-final class RedisDbExtensionTest extends BaseTestCase
+final class RedisDbDevicesStatesExtensionTest extends BaseTestCase
 {
 
 	/**

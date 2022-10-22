@@ -20,9 +20,6 @@ use FastyBird\Plugin\RedisDb\Connections;
 use FastyBird\Plugin\RedisDb\Events;
 use FastyBird\Plugin\RedisDb\Exceptions;
 use FastyBird\Plugin\RedisDb\Handlers;
-use FastyBird\Plugin\RedisDb\Models;
-use FastyBird\Plugin\RedisDb\Publishers;
-use FastyBird\Plugin\RedisDb\States;
 use Psr\EventDispatcher;
 use React\EventLoop;
 use React\Promise;
@@ -32,8 +29,6 @@ use Throwable;
 /**
  * Redis DB async client factory
  *
- * @template T of States\State
- *
  * @package        FastyBird:RedisDbPlugin!
  * @subpackage     Client
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
@@ -41,17 +36,10 @@ use Throwable;
 final class Factory
 {
 
-	/**
-	 * @phpstan-param Models\StatesRepositoryFactory<T> $statesRepositoryFactory
-	 * @phpstan-param Models\StatesManagerFactory<T> $statesManagerFactory
-	 */
 	public function __construct(
 		private readonly string $channel,
 		private readonly Connections\Connection $connection,
 		private readonly Handlers\Message $messagesHandler,
-		private readonly Publishers\Publisher $publisher,
-		private readonly Models\StatesRepositoryFactory $statesRepositoryFactory,
-		private readonly Models\StatesManagerFactory $statesManagerFactory,
 		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
@@ -69,9 +57,7 @@ final class Factory
 		$factory->createClient($this->connection->getHost() . ':' . $this->connection->getPort())
 			->then(
 				function (Redis\Client $redis) use ($deferred): void {
-					$this->publisher->setAsyncClient($redis);
-					$this->statesRepositoryFactory->setAsyncClient($redis);
-					$this->statesManagerFactory->setAsyncClient($redis);
+					$this->dispatcher?->dispatch(new Events\ClientCreated($redis));
 
 					$redis->subscribe($this->channel);
 

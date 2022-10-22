@@ -1,12 +1,12 @@
 <?php declare(strict_types = 1);
 
 /**
- * Startup.php
+ * WsStartup.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:WsExchange!
+ * @package        FastyBird:WsExchangePlugin!
  * @subpackage     Events
  * @since          0.3.0
  *
@@ -20,7 +20,7 @@ use Symfony\Contracts\EventDispatcher;
 /**
  * When WS server started
  *
- * @package        FastyBird:WsExchange!
+ * @package        FastyBird:WsExchangePlugin!
  * @subpackage     Events
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

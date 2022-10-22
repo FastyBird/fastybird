@@ -59,6 +59,9 @@ class MetadataExtension extends DI\CompilerExtension
 			->setType(Loaders\SchemaLoader::class);
 
 		// Entity factories
+		$builder->addDefinition('entity.factory.routing', new DI\Definitions\ServiceDefinition())
+			->setType(Entities\RoutingFactory::class);
+
 		$builder->addDefinition('entity.factory.actions.connector.action', new DI\Definitions\ServiceDefinition())
 			->setType(Entities\Actions\ActionConnectorControlEntityFactory::class);
 
