@@ -34,7 +34,6 @@
     "ext-pcntl": "*",
     "contributte/flysystem": "^0.3",
     "cweagans/composer-patches": "^1.7",
-    "fastybird/exchange-library": "dev-main",
     "fastybird/json-api": "^0.13",
     "fastybird/metadata-library": "dev-main",
     "fastybird/simple-auth": "^0.5",

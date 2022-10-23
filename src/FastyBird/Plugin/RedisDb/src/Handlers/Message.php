@@ -15,6 +15,7 @@
 
 namespace FastyBird\Plugin\RedisDb\Handlers;
 
+use Evenement;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\RedisDb\Events;
@@ -36,7 +37,7 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Message
+final class Message extends Evenement\EventEmitter
 {
 
 	private Log\LoggerInterface $logger;
@@ -137,6 +138,8 @@ class Message
 				$routingKey,
 				$entity,
 			));
+
+			$this->emit('message', [$source, $routingKey, $entity]);
 
 		} catch (Exceptions\UnprocessableMessage $ex) {
 			// Log error consume reason

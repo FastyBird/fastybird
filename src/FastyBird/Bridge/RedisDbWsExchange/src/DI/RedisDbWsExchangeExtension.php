@@ -50,22 +50,10 @@ class RedisDbWsExchangeExtension extends DI\CompilerExtension
 		$builder = $this->getContainerBuilder();
 
 		$builder->addDefinition(
-			$this->prefix('subscribers.redis.exchange'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Subscribers\RedisMessageReceived::class);
-
-		$builder->addDefinition(
-			$this->prefix('subscribers.ws.clientRpc'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Subscribers\WsClientRpc::class);
-
-		$builder->addDefinition(
 			$this->prefix('subscribers.ws.startup'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Subscribers\WsStartup::class);
+			->setType(Subscribers\WsServer::class);
 	}
 
 }

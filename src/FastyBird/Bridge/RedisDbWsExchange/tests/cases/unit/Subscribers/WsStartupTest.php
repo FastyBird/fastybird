@@ -42,7 +42,7 @@ final class WsStartupTest extends Unit\BaseTestCase
 		$dispatcher = $this->container->getByType(EventDispatcher\EventDispatcherInterface::class);
 
 		if (method_exists($dispatcher, 'addSubscriber')) {
-			$dispatcher->addSubscriber($this->container->getByType(Subscribers\WsStartup::class));
+			$dispatcher->addSubscriber($this->container->getByType(Subscribers\WsServer::class));
 		}
 
 		$application = new Application();

@@ -17,9 +17,9 @@
     <rule ref="SlevomatCodingStandard.Files.TypeNameMatchesFileName">
         <properties>
             <property name="rootNamespaces" type="array">
-                <element key="src/FastyBird/Bridge/RedisDbDevicesStates/src" value="FastyBird\Bridge\RedisDbDevicesStates"/>
-                <element key="src/FastyBird/Bridge/RedisDbDevicesStates/tests/cases/unit" value="FastyBird\Bridge\RedisDbDevicesStates\Tests\Cases\Unit"/>
-                <element key="src/FastyBird/Bridge/RedisDbDevicesStates/tests/tools" value="FastyBird\Bridge\RedisDbDevicesStates\Tests\Tools"/>
+                <element key="src/FastyBird/Bridge/RedisDbDevicesModule/src" value="FastyBird\Bridge\RedisDbDevicesModule"/>
+                <element key="src/FastyBird/Bridge/RedisDbDevicesModule/tests/cases/unit" value="FastyBird\Bridge\RedisDbDevicesModule\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Bridge/RedisDbDevicesModule/tests/tools" value="FastyBird\Bridge\RedisDbDevicesModule\Tests\Tools"/>
 
                 <element key="src/FastyBird/Bridge/RedisDbWsExchange/src" value="FastyBird\Bridge\RedisDbWsExchange"/>
                 <element key="src/FastyBird/Bridge/RedisDbWsExchange/tests/cases/unit" value="FastyBird\Bridge\RedisDbWsExchange\Tests\Cases\Unit"/>
@@ -82,12 +82,17 @@
     <!--Exclude rules/files -->
     <rule ref="SlevomatCodingStandard.Files.LineLength.LineTooLong">
         <!--Bridges -->
-        <exclude-pattern>src/FastyBird/Bridge/RedisDbDevicesStates/src/Models/ChannelPropertiesManager\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Bridge/RedisDbDevicesStates/src/Models/ChannelPropertiesRepository\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Bridge/RedisDbDevicesStates/src/Models/ConnectorPropertiesManager\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Bridge/RedisDbDevicesStates/src/Models/ConnectorPropertiesRepository\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Bridge/RedisDbDevicesStates/src/Models/DevicePropertiesManager\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Bridge/RedisDbDevicesStates/src/Models/DevicePropertiesRepository\.php</exclude-pattern>
+        <exclude-pattern>src/FastyBird/Bridge/RedisDbDevicesModule/src/Models/ChannelPropertiesManager\.php</exclude-pattern>
+        <exclude-pattern>src/FastyBird/Bridge/RedisDbDevicesModule/src/Models/ChannelPropertiesRepository\.php</exclude-pattern>
+        <exclude-pattern>src/FastyBird/Bridge/RedisDbDevicesModule/src/Models/ConnectorPropertiesManager\.php</exclude-pattern>
+        <exclude-pattern>src/FastyBird/Bridge/RedisDbDevicesModule/src/Models/ConnectorPropertiesRepository\.php</exclude-pattern>
+        <exclude-pattern>src/FastyBird/Bridge/RedisDbDevicesModule/src/Models/DevicePropertiesManager\.php</exclude-pattern>
+        <exclude-pattern>src/FastyBird/Bridge/RedisDbDevicesModule/src/Models/DevicePropertiesRepository\.php</exclude-pattern>
+        <exclude-pattern>src/FastyBird/Bridge/RedisDbDevicesModule/src/Subscribers/RedisClient\.php</exclude-pattern>
+        <exclude-pattern>src/FastyBird/Bridge/RedisDbDevicesModule/src/Subscribers/StateEntities\.php</exclude-pattern>
+
+        <!--Connectors -->
+        <exclude-pattern>src/FastyBird/Connector/HomeKit/src/Controllers/CharacteristicsController\.php</exclude-pattern>
 
         <!--Modules -->
         <exclude-pattern>src/FastyBird/Module/Devices/src/Entities/Channels/Properties/Property\.php</exclude-pattern>
@@ -98,19 +103,14 @@
         <exclude-pattern>src/FastyBird/Module/Devices/src/Models/DataStorage/DevicePropertiesRepository\.php</exclude-pattern>
         <exclude-pattern>src/FastyBird/Module/Devices/src/Models/States/ChannelPropertiesRepository\.php</exclude-pattern>
         <exclude-pattern>src/FastyBird/Module/Devices/src/Models/States/ChannelPropertiesManager\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Module/Devices/src/Models/States/ConnectorPropertiesRepository\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Module/Devices/src/Models/States/ConnectorPropertiesManager\.php</exclude-pattern>
         <exclude-pattern>src/FastyBird/Module/Devices/src/Models/States/DevicePropertiesRepository\.php</exclude-pattern>
         <exclude-pattern>src/FastyBird/Module/Devices/src/Models/States/DevicePropertiesManager\.php</exclude-pattern>
         <exclude-pattern>src/FastyBird/Module/Devices/src/Models/States/IChannelPropertiesRepository\.php</exclude-pattern>
         <exclude-pattern>src/FastyBird/Module/Devices/src/Models/States/IChannelPropertiesManager\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Module/Devices/src/Models/States/IConnectorPropertiesRepository\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Module/Devices/src/Models/States/IConnectorPropertiesManager\.php</exclude-pattern>
         <exclude-pattern>src/FastyBird/Module/Devices/src/Models/States/IDevicePropertiesRepository\.php</exclude-pattern>
         <exclude-pattern>src/FastyBird/Module/Devices/src/Models/States/IDevicePropertiesManager\.php</exclude-pattern>
         <exclude-pattern>src/FastyBird/Module/Devices/src/Events/StateEntityCreated\.php</exclude-pattern>
         <exclude-pattern>src/FastyBird/Module/Devices/src/Events/StateEntityUpdated\.php</exclude-pattern>
         <exclude-pattern>src/FastyBird/Module/Devices/src/Events/StateEntityDeleted\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Module/Devices/src/Subscribers/StateEntities\.php</exclude-pattern>
     </rule>
 </ruleset>

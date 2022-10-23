@@ -14,9 +14,7 @@ final class RedisDbWsExchangeExtensionTest extends BaseTestCase
 	 */
 	public function testServicesRegistration(): void
 	{
-		self::assertNotNull($this->container->getByType(Subscribers\RedisMessageReceived::class, false));
-		self::assertNotNull($this->container->getByType(Subscribers\WsClientRpc::class, false));
-		self::assertNotNull($this->container->getByType(Subscribers\WsStartup::class, false));
+		self::assertNotNull($this->container->getByType(Subscribers\WsServer::class, false));
 	}
 
 }

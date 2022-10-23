@@ -43,7 +43,7 @@ final class ConnectorPropertiesRepository
 	 * @throws Exceptions\NotImplemented
 	 */
 	public function findOne(
-		MetadataEntities\DevicesModule\ConnectorDynamicProperty|MetadataEntities\DevicesModule\ConnectorMappedProperty|Entities\Connectors\Properties\Dynamic $property,
+		MetadataEntities\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
 	): States\ConnectorProperty|null
 	{
 		if ($this->repository === null) {

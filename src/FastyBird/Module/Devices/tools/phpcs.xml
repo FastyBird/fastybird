@@ -39,19 +39,14 @@
         <exclude-pattern>src/Models/DataStorage/DevicePropertiesRepository\.php</exclude-pattern>
         <exclude-pattern>src/Models/States/ChannelPropertiesRepository\.php</exclude-pattern>
         <exclude-pattern>src/Models/States/ChannelPropertiesManager\.php</exclude-pattern>
-        <exclude-pattern>src/Models/States/ConnectorPropertiesRepository\.php</exclude-pattern>
-        <exclude-pattern>src/Models/States/ConnectorPropertiesManager\.php</exclude-pattern>
         <exclude-pattern>src/Models/States/DevicePropertiesRepository\.php</exclude-pattern>
         <exclude-pattern>src/Models/States/DevicePropertiesManager\.php</exclude-pattern>
         <exclude-pattern>src/Models/States/IChannelPropertiesRepository\.php</exclude-pattern>
         <exclude-pattern>src/Models/States/IChannelPropertiesManager\.php</exclude-pattern>
-        <exclude-pattern>src/Models/States/IConnectorPropertiesRepository\.php</exclude-pattern>
-        <exclude-pattern>src/Models/States/IConnectorPropertiesManager\.php</exclude-pattern>
         <exclude-pattern>src/Models/States/IDevicePropertiesRepository\.php</exclude-pattern>
         <exclude-pattern>src/Models/States/IDevicePropertiesManager\.php</exclude-pattern>
         <exclude-pattern>src/Events/StateEntityCreated\.php</exclude-pattern>
         <exclude-pattern>src/Events/StateEntityUpdated\.php</exclude-pattern>
         <exclude-pattern>src/Events/StateEntityDeleted\.php</exclude-pattern>
-        <exclude-pattern>src/Subscribers/StateEntities\.php</exclude-pattern>
     </rule>
 </ruleset>
