@@ -104,7 +104,6 @@
             "FastyBird\\Connector\\Modbus\\": "src/FastyBird/Connector/Modbus/src/",
             "FastyBird\\Connector\\Shelly\\": "src/FastyBird/Connector/Shelly/src/",
             "FastyBird\\Connector\\Tuya\\": "src/FastyBird/Connector/Tuya/src/",
-            "FastyBird\\Library\\Exchange\\": "src/FastyBird/Library/Exchange/src/",
             "FastyBird\\Library\\Metadata\\": "src/FastyBird/Library/Metadata/src/",
             "FastyBird\\Module\\Devices\\": "src/FastyBird/Module/Devices/src/",
             "FastyBird\\Plugin\\ApiKey\\": "src/FastyBird/Plugin/ApiKey/src/",
@@ -129,7 +128,6 @@
             "FastyBird\\Connector\\Shelly\\Tests\\Tools\\": "src/FastyBird/Connector/Shelly/tests/tools",
             "FastyBird\\Connector\\Tuya\\Tests\\Cases\\Unit\\": "src/FastyBird/Connector/Tuya/tests/cases/unit",
             "FastyBird\\Connector\\Tuya\\Tests\\Tools\\": "src/FastyBird/Connector/Tuya/tests/tools",
-            "FastyBird\\Library\\Exchange\\Tests\\Cases\\Unit\\": "src/FastyBird/Library/Exchange/tests/cases/unit",
             "FastyBird\\Library\\Metadata\\Tests\\Cases\\Unit\\": "src/FastyBird/Library/Metadata/tests/cases/unit",
             "FastyBird\\Library\\Metadata\\Tests\\Fixtures\\": "src/FastyBird/Library/Metadata/tests/fixtures",
             "FastyBird\\Module\\Devices\\Tests\\Cases\\Unit\\": "src/FastyBird/Module/Devices/tests/cases/unit",
@@ -171,7 +169,6 @@
     "replace": {
         "fastybird/apikey-plugin": "self.version",
         "fastybird/devices-module": "self.version",
-        "fastybird/exchange-library": "self.version",
         "fastybird/fb-mqtt-connector": "self.version",
         "fastybird/homekit-connector": "self.version",
         "fastybird/metadata-library": "self.version",

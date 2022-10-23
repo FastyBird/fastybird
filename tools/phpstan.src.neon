@@ -10,7 +10,6 @@ includes:
     - ../src/FastyBird/Connector/Shelly/tools/phpstan.config.src.neon
     - ../src/FastyBird/Connector/Tuya/tools/phpstan.config.src.neon
 
-    - ../src/FastyBird/Library/Exchange/tools/phpstan.config.src.neon
     - ../src/FastyBird/Library/Metadata/tools/phpstan.config.src.neon
 
     - ../src/FastyBird/Module/Devices/tools/phpstan.config.src.neon
