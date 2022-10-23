@@ -30,7 +30,6 @@ in [PHP](https://www.php.net) on top of the [Nette framework](https://nette.org)
 
 - Devices connectors management
 - Devices and their channels management
-- Support for data [exchange bus](https://github.com/FastyBird/exchange-library)
 - [{JSON:API}](https://jsonapi.org/) schemas for full api access
 - User access [check & validation](https://github.com/FastyBird/simple-auth)
 - Multilingual

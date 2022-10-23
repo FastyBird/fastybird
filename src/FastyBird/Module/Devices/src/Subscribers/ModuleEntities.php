@@ -18,25 +18,17 @@ namespace FastyBird\Module\Devices\Subscribers;
 use Doctrine\Common;
 use Doctrine\ORM;
 use Exception;
-use FastyBird\Library\Exchange\Entities as ExchangeEntities;
-use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
-use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\DataStorage;
 use FastyBird\Module\Devices\Entities;
+use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
-use IPub\Phone\Exceptions as PhoneExceptions;
 use League\Flysystem;
 use Nette;
-use Nette\Utils;
+use Psr\EventDispatcher as PsrEventDispatcher;
 use ReflectionClass;
-use function array_merge;
 use function count;
-use function is_a;
 use function str_starts_with;
 
 /**
@@ -52,12 +44,6 @@ final class ModuleEntities implements Common\EventSubscriber
 
 	use Nette\SmartObject;
 
-	private const ACTION_CREATED = 'created';
-
-	private const ACTION_UPDATED = 'updated';
-
-	private const ACTION_DELETED = 'deleted';
-
 	public function __construct(
 		private readonly ORM\EntityManagerInterface $entityManager,
 		private readonly Models\States\DevicePropertiesRepository $devicePropertiesStatesRepository,
@@ -67,8 +53,7 @@ final class ModuleEntities implements Common\EventSubscriber
 		private readonly Models\States\ConnectorPropertiesRepository $connectorPropertiesStatesRepository,
 		private readonly Models\States\ConnectorPropertiesManager $connectorPropertiesStatesManager,
 		private readonly DataStorage\Writer $configurationDataWriter,
-		private readonly ExchangeEntities\EntityFactory $entityFactory,
-		private readonly ExchangePublisher\Publisher|null $publisher = null,
+		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
 	}
@@ -85,18 +70,8 @@ final class ModuleEntities implements Common\EventSubscriber
 	/**
 	 * @throws Exception
 	 * @throws DoctrineOrmQueryExceptions\QueryException
-	 * @throws ExchangeExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws Flysystem\FilesystemException
-	 * @throws MetadataExceptions\FileNotFound
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws Utils\JsonException
-	 * @throws PhoneExceptions\NoValidCountryException
-	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
 	public function postPersist(ORM\Event\LifecycleEventArgs $eventArgs): void
 	{
@@ -108,7 +83,7 @@ final class ModuleEntities implements Common\EventSubscriber
 			return;
 		}
 
-		$this->publishEntity($entity, self::ACTION_CREATED);
+		$this->dispatcher?->dispatch(new Events\EntityCreated($entity));
 
 		$this->configurationDataWriter->write();
 	}
@@ -116,18 +91,8 @@ final class ModuleEntities implements Common\EventSubscriber
 	/**
 	 * @throws Exception
 	 * @throws DoctrineOrmQueryExceptions\QueryException
-	 * @throws ExchangeExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws Flysystem\FilesystemException
-	 * @throws MetadataExceptions\FileNotFound
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws Utils\JsonException
-	 * @throws PhoneExceptions\NoValidCountryException
-	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
 	public function postUpdate(ORM\Event\LifecycleEventArgs $eventArgs): void
 	{
@@ -153,7 +118,7 @@ final class ModuleEntities implements Common\EventSubscriber
 			return;
 		}
 
-		$this->publishEntity($entity, self::ACTION_UPDATED);
+		$this->dispatcher?->dispatch(new Events\EntityUpdated($entity));
 
 		$this->configurationDataWriter->write();
 	}
@@ -161,18 +126,8 @@ final class ModuleEntities implements Common\EventSubscriber
 	/**
 	 * @throws Exception
 	 * @throws DoctrineOrmQueryExceptions\QueryException
-	 * @throws ExchangeExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws Flysystem\FilesystemException
-	 * @throws MetadataExceptions\FileNotFound
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws Utils\JsonException
-	 * @throws PhoneExceptions\NoValidCountryException
-	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
 	public function postRemove(ORM\Event\LifecycleEventArgs $eventArgs): void
 	{
@@ -184,7 +139,7 @@ final class ModuleEntities implements Common\EventSubscriber
 			return;
 		}
 
-		$this->publishEntity($entity, self::ACTION_DELETED);
+		$this->dispatcher?->dispatch(new Events\EntityDeleted($entity));
 
 		// Property states cleanup
 		if ($entity instanceof Entities\Connectors\Properties\Dynamic) {
@@ -220,140 +175,6 @@ final class ModuleEntities implements Common\EventSubscriber
 		}
 
 		$this->configurationDataWriter->write();
-	}
-
-	/**
-	 * @throws Exceptions\InvalidState
-	 * @throws ExchangeExceptions\InvalidState
-	 * @throws PhoneExceptions\NoValidPhoneException
-	 * @throws PhoneExceptions\NoValidCountryException
-	 * @throws Utils\JsonException
-	 * @throws MetadataExceptions\FileNotFound
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
-	 */
-	private function publishEntity(Entities\Entity $entity, string $action): void
-	{
-		if ($this->publisher === null) {
-			return;
-		}
-
-		$publishRoutingKey = null;
-
-		switch ($action) {
-			case self::ACTION_CREATED:
-				foreach (Devices\Constants::MESSAGE_BUS_CREATED_ENTITIES_ROUTING_KEYS_MAPPING as $class => $routingKey) {
-					if (is_a($entity, $class)) {
-						$publishRoutingKey = MetadataTypes\RoutingKey::get($routingKey);
-					}
-				}
-
-				break;
-			case self::ACTION_UPDATED:
-				foreach (Devices\Constants::MESSAGE_BUS_UPDATED_ENTITIES_ROUTING_KEYS_MAPPING as $class => $routingKey) {
-					if (is_a($entity, $class)) {
-						$publishRoutingKey = MetadataTypes\RoutingKey::get($routingKey);
-					}
-				}
-
-				break;
-			case self::ACTION_DELETED:
-				foreach (Devices\Constants::MESSAGE_BUS_DELETED_ENTITIES_ROUTING_KEYS_MAPPING as $class => $routingKey) {
-					if (is_a($entity, $class)) {
-						$publishRoutingKey = MetadataTypes\RoutingKey::get($routingKey);
-					}
-				}
-
-				break;
-		}
-
-		if ($publishRoutingKey !== null) {
-			if ($entity instanceof Entities\Devices\Properties\Dynamic) {
-				try {
-					$state = $this->devicePropertiesStatesRepository->findOne($entity);
-
-					$this->publisher->publish(
-						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
-						$publishRoutingKey,
-						$this->entityFactory->create(
-							Utils\Json::encode(
-								array_merge(
-									$entity->toArray(),
-									$state?->toArray() ?? [],
-								),
-							),
-							$publishRoutingKey,
-						),
-					);
-
-				} catch (Exceptions\NotImplemented) {
-					$this->publisher->publish(
-						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
-						$publishRoutingKey,
-						$this->entityFactory->create(Utils\Json::encode($entity->toArray()), $publishRoutingKey),
-					);
-				}
-			} elseif ($entity instanceof Entities\Channels\Properties\Dynamic) {
-				try {
-					$state = $this->channelPropertiesStatesRepository->findOne($entity);
-
-					$this->publisher->publish(
-						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
-						$publishRoutingKey,
-						$this->entityFactory->create(
-							Utils\Json::encode(
-								array_merge(
-									$entity->toArray(),
-									$state?->toArray() ?? [],
-								),
-							),
-							$publishRoutingKey,
-						),
-					);
-
-				} catch (Exceptions\NotImplemented) {
-					$this->publisher->publish(
-						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
-						$publishRoutingKey,
-						$this->entityFactory->create(Utils\Json::encode($entity->toArray()), $publishRoutingKey),
-					);
-				}
-			} elseif ($entity instanceof Entities\Connectors\Properties\Dynamic) {
-				try {
-					$state = $this->connectorPropertiesStatesRepository->findOne($entity);
-
-					$this->publisher->publish(
-						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
-						$publishRoutingKey,
-						$this->entityFactory->create(
-							Utils\Json::encode(
-								array_merge(
-									$entity->toArray(),
-									$state?->toArray() ?? [],
-								),
-							),
-							$publishRoutingKey,
-						),
-					);
-
-				} catch (Exceptions\NotImplemented) {
-					$this->publisher->publish(
-						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
-						$publishRoutingKey,
-						$this->entityFactory->create(Utils\Json::encode($entity->toArray()), $publishRoutingKey),
-					);
-				}
-			} else {
-				$this->publisher->publish(
-					MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
-					$publishRoutingKey,
-					$this->entityFactory->create(Utils\Json::encode($entity->toArray()), $publishRoutingKey),
-				);
-			}
-		}
 	}
 
 	private function validateNamespace(object $entity): bool

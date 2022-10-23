@@ -55,7 +55,7 @@ final class ConnectorPropertiesManager
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function create(
-		MetadataEntities\DevicesModule\ConnectorDynamicProperty|MetadataEntities\DevicesModule\ConnectorMappedProperty|Entities\Connectors\Properties\Dynamic $property,
+		MetadataEntities\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
 		Utils\ArrayHash $values,
 	): States\ConnectorProperty
 	{
@@ -100,7 +100,7 @@ final class ConnectorPropertiesManager
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function update(
-		MetadataEntities\DevicesModule\ConnectorDynamicProperty|MetadataEntities\DevicesModule\ConnectorMappedProperty|Entities\Connectors\Properties\Dynamic $property,
+		MetadataEntities\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
 		States\ConnectorProperty $state,
 		Utils\ArrayHash $values,
 	): States\ConnectorProperty
@@ -145,7 +145,7 @@ final class ConnectorPropertiesManager
 	 * @throws Exceptions\NotImplemented
 	 */
 	public function delete(
-		MetadataEntities\DevicesModule\ConnectorDynamicProperty|MetadataEntities\DevicesModule\ConnectorMappedProperty|Entities\Connectors\Properties\Dynamic $property,
+		MetadataEntities\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
 		States\ConnectorProperty $state,
 	): bool
 	{

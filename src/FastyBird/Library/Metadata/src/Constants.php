@@ -84,7 +84,7 @@ final class Constants
 
 	public const TRIGGER_DATE_TIME = 'com.fastybird.date-time-trigger';
 
-	public const BRIDGE_REDISDB_DEVICES_STATES = 'com.fastybird.redisdb-devices-states-bridge';
+	public const BRIDGE_REDISDB_DEVICES_STATES = 'com.fastybird.redisdb-devices-module-bridge';
 
 	public const BRIDGE_REDISDB_WS_EXCHANGE = 'com.fastybird.redisdb-ws-exchange-bridge';
 

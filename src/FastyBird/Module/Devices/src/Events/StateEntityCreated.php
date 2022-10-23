@@ -31,14 +31,11 @@ use Symfony\Contracts\EventDispatcher;
 class StateEntityCreated extends EventDispatcher\Event
 {
 
-	private States\DeviceProperty|States\ChannelProperty|States\ConnectorProperty $state;
-
 	public function __construct(
 		private readonly MetadataEntities\DevicesModule\DynamicProperty|MetadataEntities\DevicesModule\VariableProperty|MetadataEntities\DevicesModule\MappedProperty|Entities\Property $property,
-		States\ConnectorProperty|States\ChannelProperty|States\DeviceProperty $state,
+		private readonly States\ConnectorProperty|States\ChannelProperty|States\DeviceProperty $state,
 	)
 	{
-		$this->state = $state;
 	}
 
 	public function getProperty(): MetadataEntities\DevicesModule\DynamicProperty|MetadataEntities\DevicesModule\VariableProperty|MetadataEntities\DevicesModule\MappedProperty|Entities\Property

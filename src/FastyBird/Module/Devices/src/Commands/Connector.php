@@ -17,13 +17,11 @@ namespace FastyBird\Module\Devices\Commands;
 
 use BadMethodCallException;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Exchange\Consumer as ExchangeConsumer;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Connectors;
-use FastyBird\Module\Devices\Consumers;
 use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
@@ -74,8 +72,6 @@ class Connector extends Console\Command\Command
 		private readonly Models\States\DeviceConnectionStateManager $deviceConnectionStateManager,
 		private readonly Models\States\DevicePropertyStateManager $devicePropertyStateManager,
 		private readonly Models\States\ChannelPropertyStateManager $channelPropertyStateManager,
-		private readonly Consumers\Connector $connectorConsumer,
-		private readonly ExchangeConsumer\Container $consumer,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher,
@@ -202,8 +198,6 @@ class Connector extends Console\Command\Command
 		if ($input->getOption('quiet') === false) {
 			$io->section('Preparing connector');
 		}
-
-		$this->consumer->register($this->connectorConsumer);
 
 		if (
 			$input->hasOption('connector')

@@ -1,14 +1,13 @@
 {
   "name": "fastybird/redisdb-ws-exchange-bridge",
   "type": "bridge",
-  "description": "Redis DB states storage for devices module",
+  "description": "Redis DB bridge for WS exchange plugin",
   "keywords": [
     "fastybird",
     "fb",
     "iot",
     "redisdb",
-    "storage",
-    "states"
+    "exchange"
   ],
   "homepage": "https://www.fastybird.com",
   "license": "Apache-2.0",
@@ -31,7 +30,6 @@
   "require": {
     "php": ">=8.1.0",
     "cweagans/composer-patches": "^1.7",
-    "fastybird/exchange-library": "dev-main",
     "fastybird/redisdb-plugin": "dev-main",
     "fastybird/ws-exchange-plugin": "dev-main",
     "nette/di": "^3.0",

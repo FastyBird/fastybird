@@ -73,9 +73,6 @@ final class ConnectorPropertyEntityFactory extends Entities\EntityFactory
 		} elseif ($type->equalsValue(Types\PropertyType::TYPE_VARIABLE)) {
 			$entity = $this->build(ConnectorVariableProperty::class, $data);
 
-		} elseif ($type->equalsValue(Types\PropertyType::TYPE_MAPPED)) {
-			$entity = $this->build(ConnectorMappedProperty::class, $data);
-
 		} else {
 			throw new Exceptions\InvalidArgument('Provided data and routing key is for unsupported property type');
 		}

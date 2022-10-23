@@ -18,7 +18,6 @@ namespace FastyBird\Module\Devices\DI;
 use Doctrine\Persistence;
 use FastyBird\Module\Devices\Commands;
 use FastyBird\Module\Devices\Connectors;
-use FastyBird\Module\Devices\Consumers;
 use FastyBird\Module\Devices\Controllers;
 use FastyBird\Module\Devices\DataStorage;
 use FastyBird\Module\Devices\Entities;
@@ -204,9 +203,6 @@ class DevicesExtension extends DI\CompilerExtension
 		// Events subscribers
 		$builder->addDefinition($this->prefix('subscribers.entities'), new DI\Definitions\ServiceDefinition())
 			->setType(Subscribers\ModuleEntities::class);
-
-		$builder->addDefinition($this->prefix('subscribers.states'), new DI\Definitions\ServiceDefinition())
-			->setType(Subscribers\StateEntities::class);
 
 		// API controllers
 		$builder->addDefinition($this->prefix('controllers.devices'), new DI\Definitions\ServiceDefinition())
@@ -439,22 +435,22 @@ class DevicesExtension extends DI\CompilerExtension
 
 		// Connection states manager
 		$builder->addDefinition(
-			$this->prefix('consumer.connectionState.connector'),
+			$this->prefix('states.connectionState.connector'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Models\States\ConnectorConnectionStateManager::class);
 
 		$builder->addDefinition(
-			$this->prefix('consumer.connectionState.device'),
+			$this->prefix('states.connectionState.device'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Models\States\DeviceConnectionStateManager::class);
 
 		// Properties states manager
-		$builder->addDefinition($this->prefix('consumer.propertyState.device'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition($this->prefix('states.propertyState.device'), new DI\Definitions\ServiceDefinition())
 			->setType(Models\States\DevicePropertyStateManager::class);
 
-		$builder->addDefinition($this->prefix('consumer.propertyState.channel'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition($this->prefix('states.propertyState.channel'), new DI\Definitions\ServiceDefinition())
 			->setType(Models\States\ChannelPropertyStateManager::class);
 
 		// Data storage
@@ -521,20 +517,12 @@ class DevicesExtension extends DI\CompilerExtension
 		)
 			->setType(Models\DataStorage\ChannelControlsRepository::class);
 
-		// Consumers
-		$builder->addDefinition($this->prefix('consumer.connector'), new DI\Definitions\ServiceDefinition())
-			->setType(Consumers\Connector::class)
-			->setAutowired(false);
-
 		// Console commands
 		$builder->addDefinition($this->prefix('commands.initialize'), new DI\Definitions\ServiceDefinition())
 			->setType(Commands\Initialize::class);
 
 		$builder->addDefinition($this->prefix('commands.service'), new DI\Definitions\ServiceDefinition())
-			->setType(Commands\Connector::class)
-			->setArguments([
-				'connectorConsumer' => '@' . $this->prefix('consumer.connector'),
-			]);
+			->setType(Commands\Connector::class);
 	}
 
 	/**
