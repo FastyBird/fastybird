@@ -4,6 +4,9 @@ namespace FastyBird\Module\Devices\Tests\Cases\Unit\Subscribers;
 
 use Doctrine\ORM;
 use Exception;
+use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
+use FastyBird\Library\Metadata;
+use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Module\Devices\DataStorage;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
@@ -20,6 +23,8 @@ final class EntitiesSubscriberTest extends TestCase
 
 	public function testSubscriberEvents(): void
 	{
+		$publisher = $this->createMock(ExchangePublisher\Publisher::class);
+
 		$entityManager = $this->createMock(ORM\EntityManagerInterface::class);
 
 		$connectorPropertiesStateRepository = $this->createMock(Models\States\ConnectorPropertiesRepository::class);
@@ -43,6 +48,8 @@ final class EntitiesSubscriberTest extends TestCase
 
 		$channelPropertiesStateManager = $this->createMock(Models\States\ChannelPropertiesManager::class);
 
+		$entityFactory = $this->createMock(MetadataEntities\RoutingFactory::class);
+
 		$configurationWriter = $this->createMock(DataStorage\Writer::class);
 		$configurationWriter
 			->method('write');
@@ -56,6 +63,8 @@ final class EntitiesSubscriberTest extends TestCase
 			$connectorPropertiesStateRepository,
 			$connectorPropertiesStateManager,
 			$configurationWriter,
+			$entityFactory,
+			$publisher,
 		);
 
 		self::assertSame([
@@ -71,6 +80,46 @@ final class EntitiesSubscriberTest extends TestCase
 	 */
 	public function testPublishCreatedEntity(): void
 	{
+		$publisher = $this->createMock(ExchangePublisher\Publisher::class);
+		$publisher
+			->expects(self::once())
+			->method('publish')
+			->with(
+				self::callback(static function ($source): bool {
+					self::assertTrue($source instanceof Metadata\Types\ModuleSource);
+					self::assertSame(Metadata\Constants::MODULE_DEVICES_SOURCE, $source->getValue());
+
+					return true;
+				}),
+				self::callback(static function ($key): bool {
+					self::assertTrue($key instanceof Metadata\Types\RoutingKey);
+					self::assertSame(
+						Metadata\Constants::MESSAGE_BUS_DEVICE_ENTITY_CREATED_ROUTING_KEY,
+						$key->getValue(),
+					);
+
+					return true;
+				}),
+				self::callback(static function ($data): bool {
+					$asArray = $data->toArray();
+
+					unset($asArray['id']);
+
+					self::assertEquals([
+						'identifier' => 'device-name',
+						'type' => 'blank',
+						'owner' => null,
+						'name' => 'Device custom name',
+						'comment' => null,
+						'connector' => 'dd6aa4bc-2611-40c3-84ef-0a438cf51e67',
+						'parents' => [],
+						'children' => [],
+					], $asArray);
+
+					return true;
+				}),
+			);
+
 		$entityManager = $this->getEntityManager();
 
 		$connectorPropertiesStateRepository = $this->createMock(Models\States\ConnectorPropertiesRepository::class);
@@ -94,6 +143,25 @@ final class EntitiesSubscriberTest extends TestCase
 
 		$channelPropertiesStateManager = $this->createMock(Models\States\ChannelPropertiesManager::class);
 
+		$entityItem = $this->createMock(MetadataEntities\DevicesModule\Device::class);
+		$entityItem
+			->method('toArray')
+			->willReturn([
+				'identifier' => 'device-name',
+				'type' => 'blank',
+				'owner' => null,
+				'name' => 'Device custom name',
+				'comment' => null,
+				'connector' => 'dd6aa4bc-2611-40c3-84ef-0a438cf51e67',
+				'parents' => [],
+				'children' => [],
+			]);
+
+		$entityFactory = $this->createMock(MetadataEntities\RoutingFactory::class);
+		$entityFactory
+			->method('create')
+			->willReturn($entityItem);
+
 		$configurationWriter = $this->createMock(DataStorage\Writer::class);
 		$configurationWriter
 			->method('write');
@@ -107,6 +175,8 @@ final class EntitiesSubscriberTest extends TestCase
 			$connectorPropertiesStateRepository,
 			$connectorPropertiesStateManager,
 			$configurationWriter,
+			$entityFactory,
+			$publisher,
 		);
 
 		$connectorEntity = new Entities\Connectors\Blank(
@@ -132,6 +202,46 @@ final class EntitiesSubscriberTest extends TestCase
 	 */
 	public function testPublishUpdatedEntity(): void
 	{
+		$publisher = $this->createMock(ExchangePublisher\Publisher::class);
+		$publisher
+			->expects(self::once())
+			->method('publish')
+			->with(
+				self::callback(static function ($source): bool {
+					self::assertTrue($source instanceof Metadata\Types\ModuleSource);
+					self::assertSame(Metadata\Constants::MODULE_DEVICES_SOURCE, $source->getValue());
+
+					return true;
+				}),
+				self::callback(static function ($key): bool {
+					self::assertTrue($key instanceof Metadata\Types\RoutingKey);
+					self::assertSame(
+						Metadata\Constants::MESSAGE_BUS_DEVICE_ENTITY_UPDATED_ROUTING_KEY,
+						$key->getValue(),
+					);
+
+					return true;
+				}),
+				self::callback(static function ($data): bool {
+					$asArray = $data->toArray();
+
+					unset($asArray['id']);
+
+					self::assertEquals([
+						'identifier' => 'device-name',
+						'type' => 'blank',
+						'owner' => null,
+						'name' => 'Device custom name',
+						'comment' => null,
+						'connector' => 'dd6aa4bc-2611-40c3-84ef-0a438cf51e67',
+						'parents' => [],
+						'children' => [],
+					], $asArray);
+
+					return true;
+				}),
+			);
+
 		$entityManager = $this->getEntityManager(true);
 
 		$connectorPropertiesStateRepository = $this->createMock(Models\States\ConnectorPropertiesRepository::class);
@@ -155,6 +265,25 @@ final class EntitiesSubscriberTest extends TestCase
 
 		$channelPropertiesStateManager = $this->createMock(Models\States\ChannelPropertiesManager::class);
 
+		$entityItem = $this->createMock(MetadataEntities\DevicesModule\Device::class);
+		$entityItem
+			->method('toArray')
+			->willReturn([
+				'identifier' => 'device-name',
+				'type' => 'blank',
+				'owner' => null,
+				'name' => 'Device custom name',
+				'comment' => null,
+				'connector' => 'dd6aa4bc-2611-40c3-84ef-0a438cf51e67',
+				'parents' => [],
+				'children' => [],
+			]);
+
+		$entityFactory = $this->createMock(MetadataEntities\RoutingFactory::class);
+		$entityFactory
+			->method('create')
+			->willReturn($entityItem);
+
 		$configurationWriter = $this->createMock(DataStorage\Writer::class);
 		$configurationWriter
 			->method('write');
@@ -168,6 +297,8 @@ final class EntitiesSubscriberTest extends TestCase
 			$connectorPropertiesStateRepository,
 			$connectorPropertiesStateManager,
 			$configurationWriter,
+			$entityFactory,
+			$publisher,
 		);
 
 		$connectorEntity = new Entities\Connectors\Blank(
@@ -193,6 +324,46 @@ final class EntitiesSubscriberTest extends TestCase
 	 */
 	public function testPublishDeletedEntity(): void
 	{
+		$publisher = $this->createMock(ExchangePublisher\Publisher::class);
+		$publisher
+			->expects(self::once())
+			->method('publish')
+			->with(
+				self::callback(static function ($source): bool {
+					self::assertTrue($source instanceof Metadata\Types\ModuleSource);
+					self::assertSame(Metadata\Constants::MODULE_DEVICES_SOURCE, $source->getValue());
+
+					return true;
+				}),
+				self::callback(static function ($key): bool {
+					self::assertTrue($key instanceof Metadata\Types\RoutingKey);
+					self::assertSame(
+						Metadata\Constants::MESSAGE_BUS_DEVICE_ENTITY_DELETED_ROUTING_KEY,
+						$key->getValue(),
+					);
+
+					return true;
+				}),
+				self::callback(static function ($data): bool {
+					$asArray = $data->toArray();
+
+					unset($asArray['id']);
+
+					self::assertEquals([
+						'identifier' => 'device-name',
+						'type' => 'blank',
+						'owner' => null,
+						'name' => 'Device custom name',
+						'comment' => null,
+						'connector' => 'dd6aa4bc-2611-40c3-84ef-0a438cf51e67',
+						'parents' => [],
+						'children' => [],
+					], $asArray);
+
+					return true;
+				}),
+			);
+
 		$connectorEntity = new Entities\Connectors\Blank(
 			'blank-connector-name',
 			Uuid\Uuid::fromString('dd6aa4bc-2611-40c3-84ef-0a438cf51e67'),
@@ -224,6 +395,25 @@ final class EntitiesSubscriberTest extends TestCase
 
 		$channelPropertiesStateManager = $this->createMock(Models\States\ChannelPropertiesManager::class);
 
+		$entityItem = $this->createMock(MetadataEntities\DevicesModule\Device::class);
+		$entityItem
+			->method('toArray')
+			->willReturn([
+				'identifier' => 'device-name',
+				'type' => 'blank',
+				'owner' => null,
+				'name' => 'Device custom name',
+				'comment' => null,
+				'connector' => 'dd6aa4bc-2611-40c3-84ef-0a438cf51e67',
+				'parents' => [],
+				'children' => [],
+			]);
+
+		$entityFactory = $this->createMock(MetadataEntities\RoutingFactory::class);
+		$entityFactory
+			->method('create')
+			->willReturn($entityItem);
+
 		$configurationWriter = $this->createMock(DataStorage\Writer::class);
 		$configurationWriter
 			->method('write');
@@ -237,6 +427,8 @@ final class EntitiesSubscriberTest extends TestCase
 			$connectorPropertiesStateRepository,
 			$connectorPropertiesStateManager,
 			$configurationWriter,
+			$entityFactory,
+			$publisher,
 		);
 
 		$eventArgs = $this->createMock(ORM\Event\LifecycleEventArgs::class);

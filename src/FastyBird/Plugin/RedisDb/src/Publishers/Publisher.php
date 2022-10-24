@@ -17,6 +17,7 @@ namespace FastyBird\Plugin\RedisDb\Publishers;
 
 use Clue\React\Redis;
 use FastyBird\DateTimeFactory;
+use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\RedisDb\Client;
@@ -35,7 +36,7 @@ use const DATE_ATOM;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Publisher
+final class Publisher implements ExchangePublisher\Publisher
 {
 
 	use Nette\SmartObject;
