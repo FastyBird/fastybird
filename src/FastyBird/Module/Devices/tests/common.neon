@@ -32,6 +32,7 @@ extensions:
     fbJsonApi                           : FastyBird\JsonApi\DI\JsonApiExtension
     fbSimpleAuth                        : FastyBird\SimpleAuth\DI\SimpleAuthExtension
     fbMetadataLibrary                   : FastyBird\Library\Metadata\DI\MetadataExtension
+    fbExchangeLibrary                   : FastyBird\Library\Exchange\DI\ExchangeExtension
 
 services:
     - {factory: Symfony\Component\Console\Application}

@@ -15,8 +15,6 @@
 
 namespace FastyBird\Library\Exchange\DI;
 
-use FastyBird\Library\Exchange\Consumer;
-use FastyBird\Library\Exchange\Entities;
 use FastyBird\Library\Exchange\Publisher;
 use Nette;
 use Nette\DI;
@@ -36,7 +34,7 @@ class ExchangeExtension extends DI\CompilerExtension
 
 	public static function register(
 		Nette\Configurator $config,
-		string $extensionName = 'fbExchange',
+		string $extensionName = 'fbExchangeLibrary',
 	): void
 	{
 		$config->onCompile[] = static function (
@@ -51,14 +49,8 @@ class ExchangeExtension extends DI\CompilerExtension
 	{
 		$builder = $this->getContainerBuilder();
 
-		$builder->addDefinition($this->prefix('consumer'), new DI\Definitions\ServiceDefinition())
-			->setType(Consumer\Container::class);
-
 		$builder->addDefinition($this->prefix('publisher'), new DI\Definitions\ServiceDefinition())
 			->setType(Publisher\Container::class);
-
-		$builder->addDefinition($this->prefix('entityFactory'), new DI\Definitions\ServiceDefinition())
-			->setType(Entities\EntityFactory::class);
 	}
 
 	/**
@@ -69,37 +61,6 @@ class ExchangeExtension extends DI\CompilerExtension
 		parent::beforeCompile();
 
 		$builder = $this->getContainerBuilder();
-
-		/**
-		 * CONSUMERS PROXY
-		 */
-
-		$consumerProxyServiceName = $builder->getByType(Consumer\Container::class);
-
-		if ($consumerProxyServiceName !== null) {
-			$consumerProxyService = $builder->getDefinition($consumerProxyServiceName);
-			assert($consumerProxyService instanceof DI\Definitions\ServiceDefinition);
-
-			$consumerServices = $builder->findByType(Consumer\Consumer::class);
-
-			foreach ($consumerServices as $consumerService) {
-				if (
-					$consumerService->getType() !== Consumer\Container::class
-					&& (
-						$consumerService->getAutowired() !== false
-						|| !is_bool($consumerService->getAutowired())
-					)
-				) {
-					// Container is not allowed to be autowired
-					$consumerService->setAutowired(false);
-
-					$consumerProxyService->addSetup('?->register(?)', [
-						'@self',
-						$consumerService,
-					]);
-				}
-			}
-		}
 
 		/**
 		 * PUBLISHERS PROXY

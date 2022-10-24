@@ -34,7 +34,7 @@ class MetadataExtension extends DI\CompilerExtension
 
 	public static function register(
 		Nette\Configurator $config,
-		string $extensionName = 'fbMetadata',
+		string $extensionName = 'fbMetadataLibrary',
 	): void
 	{
 		$config->onCompile[] = static function (

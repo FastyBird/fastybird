@@ -15,6 +15,7 @@
 
 namespace FastyBird\Bridge\RedisDbDevicesModule\Subscribers;
 
+use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -23,7 +24,6 @@ use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use FastyBird\Plugin\RedisDb\Events as RedisDbEvents;
 use FastyBird\Plugin\RedisDb\Handlers as RedisDbHandlers;
-use FastyBird\Plugin\RedisDb\Publishers as RedisDbPublishers;
 use Nette\Utils;
 use Psr\Log;
 use Symfony\Component\EventDispatcher;
@@ -50,7 +50,7 @@ class RedisClient implements EventDispatcher\EventSubscriberInterface
 
 	public function __construct(
 		private readonly RedisDbHandlers\Message $messageHandler,
-		private readonly RedisDbPublishers\Publisher $publisher,
+		private readonly ExchangePublisher\Container $publisher,
 		private readonly DevicesModels\DataStorage\ConnectorPropertiesRepository $connectorPropertiesRepository,
 		private readonly DevicesModels\DataStorage\DevicePropertiesRepository $devicePropertiesRepository,
 		private readonly DevicesModels\DataStorage\ChannelPropertiesRepository $channelPropertiesRepository,

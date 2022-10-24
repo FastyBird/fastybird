@@ -36,6 +36,5 @@
         <exclude-pattern>src/Models/DevicePropertiesManager\.php</exclude-pattern>
         <exclude-pattern>src/Models/DevicePropertiesRepository\.php</exclude-pattern>
         <exclude-pattern>src/Subscribers/RedisClient\.php</exclude-pattern>
-        <exclude-pattern>src/Subscribers/StateEntities\.php</exclude-pattern>
     </rule>
 </ruleset>

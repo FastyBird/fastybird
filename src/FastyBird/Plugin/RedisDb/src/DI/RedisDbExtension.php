@@ -77,7 +77,7 @@ class RedisDbExtension extends DI\CompilerExtension
 		$configuration = $this->getConfig();
 		assert($configuration instanceof stdClass);
 
-		$builder->addDefinition($this->prefix('publisher.exchange'), new DI\Definitions\ServiceDefinition())
+		$publisher = $builder->addDefinition($this->prefix('publisher'), new DI\Definitions\ServiceDefinition())
 			->setType(Publishers\Publisher::class)
 			->setArguments([
 				'channel' => $configuration->exchange->channel,
@@ -142,7 +142,10 @@ class RedisDbExtension extends DI\CompilerExtension
 		// Subscribers
 
 		$builder->addDefinition($this->prefix('subscriber.client'), new DI\Definitions\ServiceDefinition())
-			->setType(Subscribers\Client::class);
+			->setType(Subscribers\Client::class)
+			->setArguments([
+				'publisher' => $publisher,
+			]);
 	}
 
 }

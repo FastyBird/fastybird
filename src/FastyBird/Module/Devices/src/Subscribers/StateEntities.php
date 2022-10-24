@@ -6,25 +6,25 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:RedisDbDevicesModuleBridge!
+ * @package        FastyBird:DevicesModule!
  * @subpackage     Subscribers
  * @since          0.1.0
  *
  * @date           22.10.22
  */
 
-namespace FastyBird\Bridge\RedisDbDevicesModule\Subscribers;
+namespace FastyBird\Module\Devices\Subscribers;
 
 use Exception;
+use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Module\Devices\Entities as DevicesEntities;
-use FastyBird\Module\Devices\Events as DevicesEvents;
-use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
-use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\States as DevicesStates;
-use FastyBird\Plugin\RedisDb\Publishers as RedisDbPublishers;
+use FastyBird\Module\Devices\Entities;
+use FastyBird\Module\Devices\Events;
+use FastyBird\Module\Devices\Exceptions;
+use FastyBird\Module\Devices\Models;
+use FastyBird\Module\Devices\States;
 use IPub\Phone\Exceptions as PhoneExceptions;
 use Nette;
 use Nette\Utils;
@@ -32,9 +32,9 @@ use Symfony\Component\EventDispatcher;
 use function array_merge;
 
 /**
- * Doctrine entities events
+ * Devices state entities events
  *
- * @package        FastyBird:RedisDbDevicesModuleBridge!
+ * @package        FastyBird:DevicesModule!
  * @subpackage     Subscribers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
@@ -45,11 +45,11 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	use Nette\SmartObject;
 
 	public function __construct(
-		private readonly DevicesModels\DataStorage\ConnectorPropertiesRepository $connectorPropertiesRepository,
-		private readonly DevicesModels\DataStorage\DevicePropertiesRepository $devicePropertiesRepository,
-		private readonly DevicesModels\DataStorage\ChannelPropertiesRepository $channelPropertiesRepository,
+		private readonly Models\DataStorage\ConnectorPropertiesRepository $connectorPropertiesRepository,
+		private readonly Models\DataStorage\DevicePropertiesRepository $devicePropertiesRepository,
+		private readonly Models\DataStorage\ChannelPropertiesRepository $channelPropertiesRepository,
 		private readonly MetadataEntities\RoutingFactory $entityFactory,
-		private readonly RedisDbPublishers\Publisher $publisher,
+		private readonly ExchangePublisher\Container $publisher,
 	)
 	{
 	}
@@ -57,15 +57,15 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	public static function getSubscribedEvents(): array
 	{
 		return [
-			DevicesEvents\StateEntityCreated::class => 'stateCreated',
-			DevicesEvents\StateEntityUpdated::class => 'stateUpdated',
-			DevicesEvents\StateEntityDeleted::class => 'stateDeleted',
+			Events\StateEntityCreated::class => 'stateCreated',
+			Events\StateEntityUpdated::class => 'stateUpdated',
+			Events\StateEntityDeleted::class => 'stateDeleted',
 		];
 	}
 
 	/**
 	 * @throws Exception
-	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidData
@@ -76,7 +76,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	 * @throws PhoneExceptions\NoValidCountryException
 	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
-	public function stateCreated(DevicesEvents\StateEntityCreated $event): void
+	public function stateCreated(Events\StateEntityCreated $event): void
 	{
 		$this->refreshRepository($event->getProperty());
 
@@ -93,7 +93,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 
 	/**
 	 * @throws Exception
-	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidData
@@ -104,7 +104,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	 * @throws PhoneExceptions\NoValidCountryException
 	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
-	public function stateUpdated(DevicesEvents\StateEntityUpdated $event): void
+	public function stateUpdated(Events\StateEntityUpdated $event): void
 	{
 		if ($event->getPreviousState()->toArray() !== $event->getState()->toArray()) {
 			$this->refreshRepository($event->getProperty());
@@ -125,7 +125,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 
 	/**
 	 * @throws Exception
-	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidData
@@ -136,7 +136,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	 * @throws PhoneExceptions\NoValidCountryException
 	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
-	public function stateDeleted(DevicesEvents\StateEntityDeleted $event): void
+	public function stateDeleted(Events\StateEntityDeleted $event): void
 	{
 		$this->refreshRepository($event->getProperty());
 
@@ -164,13 +164,13 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
 	private function publishEntity(
-		MetadataEntities\DevicesModule\DynamicProperty|MetadataEntities\DevicesModule\VariableProperty|MetadataEntities\DevicesModule\MappedProperty|DevicesEntities\Property $property,
-		DevicesStates\ConnectorProperty|DevicesStates\ChannelProperty|DevicesStates\DeviceProperty|null $state = null,
+		MetadataEntities\DevicesModule\DynamicProperty|MetadataEntities\DevicesModule\VariableProperty|MetadataEntities\DevicesModule\MappedProperty|Entities\Property $property,
+		States\ConnectorProperty|States\ChannelProperty|States\DeviceProperty|null $state = null,
 	): void
 	{
 		if (
 			$property instanceof MetadataEntities\DevicesModule\ConnectorDynamicProperty
-			|| $property instanceof DevicesEntities\Connectors\Properties\Property
+			|| $property instanceof Entities\Connectors\Properties\Property
 		) {
 			$routingKey = MetadataTypes\RoutingKey::get(
 				MetadataTypes\RoutingKey::ROUTE_CONNECTOR_PROPERTY_ENTITY_REPORTED,
@@ -179,7 +179,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 		} elseif (
 			$property instanceof MetadataEntities\DevicesModule\DeviceDynamicProperty
 			|| $property instanceof MetadataEntities\DevicesModule\DeviceMappedProperty
-			|| $property instanceof DevicesEntities\Devices\Properties\Property
+			|| $property instanceof Entities\Devices\Properties\Property
 		) {
 			$routingKey = MetadataTypes\RoutingKey::get(
 				MetadataTypes\RoutingKey::ROUTE_DEVICE_PROPERTY_ENTITY_REPORTED,
@@ -188,7 +188,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 		} elseif (
 			$property instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty
 			|| $property instanceof MetadataEntities\DevicesModule\ChannelMappedProperty
-			|| $property instanceof DevicesEntities\Channels\Properties\Property
+			|| $property instanceof Entities\Channels\Properties\Property
 		) {
 			$routingKey = MetadataTypes\RoutingKey::get(
 				MetadataTypes\RoutingKey::ROUTE_CHANNEL_PROPERTY_ENTITY_REPORTED,
@@ -215,7 +215,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 
 	/**
 	 * @throws Exception
-	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidData
@@ -224,12 +224,12 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function findParent(
-		MetadataEntities\DevicesModule\DynamicProperty|MetadataEntities\DevicesModule\VariableProperty|MetadataEntities\DevicesModule\MappedProperty|DevicesEntities\Property $property,
-	): MetadataEntities\DevicesModule\DynamicProperty|MetadataEntities\DevicesModule\VariableProperty|MetadataEntities\DevicesModule\MappedProperty|DevicesEntities\Property|null
+		MetadataEntities\DevicesModule\DynamicProperty|MetadataEntities\DevicesModule\VariableProperty|MetadataEntities\DevicesModule\MappedProperty|Entities\Property $property,
+	): MetadataEntities\DevicesModule\DynamicProperty|MetadataEntities\DevicesModule\VariableProperty|MetadataEntities\DevicesModule\MappedProperty|Entities\Property|null
 	{
 		if (
 			$property instanceof MetadataEntities\DevicesModule\ConnectorDynamicProperty
-			|| $property instanceof DevicesEntities\Connectors\Properties\Dynamic
+			|| $property instanceof Entities\Connectors\Properties\Dynamic
 		) {
 			return null;
 		} elseif (
@@ -247,13 +247,13 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 				return $this->channelPropertiesRepository->findById($property->getParent());
 			}
 		} elseif (
-			$property instanceof DevicesEntities\Devices\Properties\Dynamic
-			|| $property instanceof DevicesEntities\Devices\Properties\Mapped
+			$property instanceof Entities\Devices\Properties\Dynamic
+			|| $property instanceof Entities\Devices\Properties\Mapped
 		) {
 			return $property->getParent();
 		} elseif (
-			$property instanceof DevicesEntities\Channels\Properties\Dynamic
-			|| $property instanceof DevicesEntities\Channels\Properties\Mapped
+			$property instanceof Entities\Channels\Properties\Dynamic
+			|| $property instanceof Entities\Channels\Properties\Mapped
 		) {
 			return $property->getParent();
 		}
@@ -262,26 +262,26 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	}
 
 	private function refreshRepository(
-		MetadataEntities\DevicesModule\DynamicProperty|MetadataEntities\DevicesModule\VariableProperty|MetadataEntities\DevicesModule\MappedProperty|DevicesEntities\Property $property,
+		MetadataEntities\DevicesModule\DynamicProperty|MetadataEntities\DevicesModule\VariableProperty|MetadataEntities\DevicesModule\MappedProperty|Entities\Property $property,
 	): void
 	{
 		if (
 			$property instanceof MetadataEntities\DevicesModule\ConnectorDynamicProperty
-			|| $property instanceof DevicesEntities\Connectors\Properties\Dynamic
+			|| $property instanceof Entities\Connectors\Properties\Dynamic
 		) {
 			$this->connectorPropertiesRepository->reset($property->getId());
 		} elseif (
 			$property instanceof MetadataEntities\DevicesModule\DeviceDynamicProperty
 			|| $property instanceof MetadataEntities\DevicesModule\DeviceMappedProperty
-			|| $property instanceof DevicesEntities\Devices\Properties\Dynamic
-			|| $property instanceof DevicesEntities\Devices\Properties\Mapped
+			|| $property instanceof Entities\Devices\Properties\Dynamic
+			|| $property instanceof Entities\Devices\Properties\Mapped
 		) {
 			$this->devicePropertiesRepository->reset($property->getId());
 		} elseif (
 			$property instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty
 			|| $property instanceof MetadataEntities\DevicesModule\ChannelMappedProperty
-			|| $property instanceof DevicesEntities\Channels\Properties\Dynamic
-			|| $property instanceof DevicesEntities\Channels\Properties\Mapped
+			|| $property instanceof Entities\Channels\Properties\Dynamic
+			|| $property instanceof Entities\Channels\Properties\Mapped
 		) {
 			$this->channelPropertiesRepository->reset($property->getId());
 		}

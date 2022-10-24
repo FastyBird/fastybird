@@ -18,7 +18,7 @@ After that, you have to register extension in *config.neon*.
 
 ```neon
 extensions:
-    fbExchange: FastyBird\Library\Exchange\DI\ExchangeExtension
+    fbExchangeLibrary: FastyBird\Library\Exchange\DI\ExchangeExtension
 ```
 
 ## Creating custom publisher
