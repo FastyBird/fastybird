@@ -486,6 +486,12 @@ class DevicesExtension extends DI\CompilerExtension
 		// Utilities
 
 		$builder->addDefinition(
+			$this->prefix('utilities.database'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Utilities\Database::class);
+
+		$builder->addDefinition(
 			$this->prefix('utilities.channels.states'),
 			new DI\Definitions\ServiceDefinition(),
 		)

@@ -107,6 +107,7 @@ final class DevicesModuleExtensionTests extends DbTestCase
 		self::assertNotNull($this->getContainer()->getByType(Subscribers\ModuleEntities::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Subscribers\StateEntities::class, false));
 
+		self::assertNotNull($this->getContainer()->getByType(Utilities\Database::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Utilities\ChannelPropertiesStates::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Utilities\ConnectorPropertiesStates::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Utilities\DevicePropertiesStates::class, false));
