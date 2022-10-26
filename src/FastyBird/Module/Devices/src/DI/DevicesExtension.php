@@ -36,7 +36,6 @@ use Nette\PhpGenerator;
 use Nette\Schema;
 use stdClass;
 use function assert;
-use function is_dir;
 use function is_string;
 use function ucfirst;
 use const DIRECTORY_SEPARATOR;
