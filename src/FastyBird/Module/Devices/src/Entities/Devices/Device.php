@@ -323,7 +323,7 @@ abstract class Device implements Entities\Entity,
 		$found = $this->channels
 			->filter(static fn (Entities\Channels\Channel $row): bool => $id === $row->getPlainId());
 
-		return $found->isEmpty() === true || $found->first() === false ? null : $found->first();
+		return $found->isEmpty() === true ? null : $found->first();
 	}
 
 	public function findChannel(string $identifier): Entities\Channels\Channel|null
@@ -331,7 +331,7 @@ abstract class Device implements Entities\Entity,
 		$found = $this->channels
 			->filter(static fn (Entities\Channels\Channel $row): bool => $identifier === $row->getIdentifier());
 
-		return $found->isEmpty() === true || $found->first() === false ? null : $found->first();
+		return $found->isEmpty() === true ? null : $found->first();
 	}
 
 	public function removeChannel(Entities\Channels\Channel $channel): void
@@ -379,7 +379,7 @@ abstract class Device implements Entities\Entity,
 		$found = $this->controls
 			->filter(static fn (Entities\Devices\Controls\Control $row): bool => $id === $row->getPlainId());
 
-		return $found->isEmpty() === true || $found->first() === false ? null : $found->first();
+		return $found->isEmpty() === true ? null : $found->first();
 	}
 
 	public function findControl(string $name): Entities\Devices\Controls\Control|null
@@ -387,7 +387,7 @@ abstract class Device implements Entities\Entity,
 		$found = $this->controls
 			->filter(static fn (Entities\Devices\Controls\Control $row): bool => $name === $row->getName());
 
-		return $found->isEmpty() === true || $found->first() === false ? null : $found->first();
+		return $found->isEmpty() === true ? null : $found->first();
 	}
 
 	public function removeControl(Entities\Devices\Controls\Control $control): void
@@ -435,7 +435,7 @@ abstract class Device implements Entities\Entity,
 		$found = $this->properties
 			->filter(static fn (Entities\Devices\Properties\Property $row): bool => $id === $row->getPlainId());
 
-		return $found->isEmpty() === true || $found->first() === false ? null : $found->first();
+		return $found->isEmpty() === true ? null : $found->first();
 	}
 
 	public function findProperty(string $identifier): Entities\Devices\Properties\Property|null
@@ -445,7 +445,7 @@ abstract class Device implements Entities\Entity,
 				static fn (Entities\Devices\Properties\Property $row): bool => $identifier === $row->getIdentifier()
 			);
 
-		return $found->isEmpty() === true || $found->first() === false ? null : $found->first();
+		return $found->isEmpty() === true ? null : $found->first();
 	}
 
 	public function removeProperty(Entities\Devices\Properties\Property $property): void
@@ -493,7 +493,7 @@ abstract class Device implements Entities\Entity,
 		$found = $this->attributes
 			->filter(static fn (Entities\Devices\Attributes\Attribute $row): bool => $id === $row->getPlainId());
 
-		return $found->isEmpty() === true || $found->first() === false ? null : $found->first();
+		return $found->isEmpty() === true ? null : $found->first();
 	}
 
 	public function findAttribute(string $identifier): Entities\Devices\Attributes\Attribute|null
@@ -503,7 +503,7 @@ abstract class Device implements Entities\Entity,
 				static fn (Entities\Devices\Attributes\Attribute $row): bool => $identifier === $row->getIdentifier()
 			);
 
-		return $found->isEmpty() === true || $found->first() === false ? null : $found->first();
+		return $found->isEmpty() === true ? null : $found->first();
 	}
 
 	public function removeAttribute(Entities\Devices\Attributes\Attribute $attribute): void

@@ -187,7 +187,7 @@ class Channel implements Entities\Entity,
 		$found = $this->properties
 			->filter(static fn (Entities\Channels\Properties\Property $row): bool => $id === $row->getPlainId());
 
-		return $found->isEmpty() === true || $found->first() === false ? null : $found->first();
+		return $found->isEmpty() === true ? null : $found->first();
 	}
 
 	public function findProperty(string $identifier): Entities\Channels\Properties\Property|null
@@ -197,7 +197,7 @@ class Channel implements Entities\Entity,
 				static fn (Entities\Channels\Properties\Property $row): bool => $identifier === $row->getIdentifier()
 			);
 
-		return $found->isEmpty() === true || $found->first() === false ? null : $found->first();
+		return $found->isEmpty() === true ? null : $found->first();
 	}
 
 	public function removeProperty(Entities\Channels\Properties\Property $property): void
@@ -245,7 +245,7 @@ class Channel implements Entities\Entity,
 		$found = $this->controls
 			->filter(static fn (Entities\Channels\Controls\Control $row): bool => $id === $row->getPlainId());
 
-		return $found->isEmpty() === true || $found->first() === false ? null : $found->first();
+		return $found->isEmpty() === true ? null : $found->first();
 	}
 
 	public function findControl(string $name): Entities\Channels\Controls\Control|null
@@ -253,7 +253,7 @@ class Channel implements Entities\Entity,
 		$found = $this->controls
 			->filter(static fn (Entities\Channels\Controls\Control $row): bool => $name === $row->getName());
 
-		return $found->isEmpty() === true || $found->first() === false ? null : $found->first();
+		return $found->isEmpty() === true ? null : $found->first();
 	}
 
 	public function removeControl(Entities\Channels\Controls\Control $control): void
