@@ -47,35 +47,26 @@ final class ReaderTest extends DbTestCase
 		$connectorsRepository = $this->getContainer()->getByType(Models\DataStorage\ConnectorsRepository::class);
 		$connectorPropertiesRepository = $this->getContainer()
 			->getByType(Models\DataStorage\ConnectorPropertiesRepository::class);
-		$connectorControlsRepository = $this->getContainer()
-			->getByType(Models\DataStorage\ConnectorControlsRepository::class);
 
 		$devicesRepository = $this->getContainer()->getByType(Models\DataStorage\DevicesRepository::class);
 		$devicePropertiesRepository = $this->getContainer()
 			->getByType(Models\DataStorage\DevicePropertiesRepository::class);
-		$deviceControlsRepository = $this->getContainer()
-			->getByType(Models\DataStorage\DeviceControlsRepository::class);
 		$deviceAttributesRepository = $this->getContainer()
 			->getByType(Models\DataStorage\DeviceAttributesRepository::class);
 
 		$channelsRepository = $this->getContainer()->getByType(Models\DataStorage\ChannelsRepository::class);
 		$channelPropertiesRepository = $this->getContainer()
 			->getByType(Models\DataStorage\ChannelPropertiesRepository::class);
-		$channelControlsRepository = $this->getContainer()
-			->getByType(Models\DataStorage\ChannelControlsRepository::class);
 
 		self::assertCount(2, $connectorsRepository);
 		self::assertCount(0, $connectorPropertiesRepository);
-		self::assertCount(1, $connectorControlsRepository);
 
 		self::assertCount(4, $devicesRepository);
 		self::assertCount(5, $devicePropertiesRepository);
-		self::assertCount(1, $deviceControlsRepository);
 		self::assertCount(10, $deviceAttributesRepository);
 
 		self::assertCount(3, $channelsRepository);
 		self::assertCount(3, $channelPropertiesRepository);
-		self::assertCount(2, $channelControlsRepository);
 	}
 
 }

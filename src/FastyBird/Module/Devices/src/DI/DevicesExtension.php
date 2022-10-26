@@ -475,12 +475,6 @@ class DevicesExtension extends DI\CompilerExtension
 		)
 			->setType(Models\DataStorage\ConnectorPropertiesRepository::class);
 
-		$builder->addDefinition(
-			$this->prefix('dataStorage.repository.connector.controls'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Models\DataStorage\ConnectorControlsRepository::class);
-
 		$builder->addDefinition($this->prefix('dataStorage.repository.devices'), new DI\Definitions\ServiceDefinition())
 			->setType(Models\DataStorage\DevicesRepository::class);
 
@@ -489,12 +483,6 @@ class DevicesExtension extends DI\CompilerExtension
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Models\DataStorage\DevicePropertiesRepository::class);
-
-		$builder->addDefinition(
-			$this->prefix('dataStorage.repository.device.controls'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Models\DataStorage\DeviceControlsRepository::class);
 
 		$builder->addDefinition(
 			$this->prefix('dataStorage.repository.device.attributes'),
@@ -513,12 +501,6 @@ class DevicesExtension extends DI\CompilerExtension
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Models\DataStorage\ChannelPropertiesRepository::class);
-
-		$builder->addDefinition(
-			$this->prefix('dataStorage.repository.channel.controls'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Models\DataStorage\ChannelControlsRepository::class);
 
 		// Console commands
 		$builder->addDefinition($this->prefix('commands.initialize'), new DI\Definitions\ServiceDefinition())

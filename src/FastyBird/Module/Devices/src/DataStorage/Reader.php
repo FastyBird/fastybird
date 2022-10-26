@@ -43,14 +43,11 @@ final class Reader
 	public function __construct(
 		private readonly Models\DataStorage\ConnectorsRepository $connectorsRepository,
 		private readonly Models\DataStorage\ConnectorPropertiesRepository $connectorPropertiesRepository,
-		private readonly Models\DataStorage\ConnectorControlsRepository $connectorControlsRepository,
 		private readonly Models\DataStorage\DevicesRepository $devicesRepository,
 		private readonly Models\DataStorage\DevicePropertiesRepository $devicePropertiesRepository,
-		private readonly Models\DataStorage\DeviceControlsRepository $deviceControlsRepository,
 		private readonly Models\DataStorage\DeviceAttributesRepository $deviceAttributesRepository,
 		private readonly Models\DataStorage\ChannelsRepository $channelsRepository,
 		private readonly Models\DataStorage\ChannelPropertiesRepository $channelPropertiesRepository,
-		private readonly Models\DataStorage\ChannelControlsRepository $channelControlsRepository,
 		private readonly Flysystem\Filesystem $filesystem,
 		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher,
 	)
@@ -74,14 +71,11 @@ final class Reader
 
 		$this->connectorsRepository->clear();
 		$this->connectorPropertiesRepository->clear();
-		$this->connectorControlsRepository->clear();
 		$this->devicesRepository->clear();
 		$this->devicePropertiesRepository->clear();
-		$this->deviceControlsRepository->clear();
 		$this->deviceAttributesRepository->clear();
 		$this->channelsRepository->clear();
 		$this->channelPropertiesRepository->clear();
-		$this->channelControlsRepository->clear();
 
 		if (!is_array($dataConfiguration)) {
 			return;
@@ -158,20 +152,6 @@ final class Reader
 						$this->channelPropertiesRepository->append(Uuid::fromString($propertyId), $propertyData);
 					}
 
-					foreach ($channelData[Devices\Constants::DATA_STORAGE_CONTROLS_KEY] as $controlId => $controlData) {
-						// Validate channel control identifier
-						if (!is_string($controlId) || !Uuid::isValid($controlId)) {
-							continue;
-						}
-
-						// Validate channel control data
-						if (!is_array($controlData)) {
-							continue;
-						}
-
-						$this->channelControlsRepository->append(Uuid::fromString($controlId), $controlData);
-					}
-
 					$this->channelsRepository->append(Uuid::fromString($channelId), $channelData);
 				}
 
@@ -187,20 +167,6 @@ final class Reader
 					}
 
 					$this->devicePropertiesRepository->append(Uuid::fromString($propertyId), $propertyData);
-				}
-
-				foreach ($deviceData[Devices\Constants::DATA_STORAGE_CONTROLS_KEY] as $controlId => $controlData) {
-					// Validate device control identifier
-					if (!is_string($controlId) || !Uuid::isValid($controlId)) {
-						continue;
-					}
-
-					// Validate device control data
-					if (!is_array($controlData)) {
-						continue;
-					}
-
-					$this->deviceControlsRepository->append(Uuid::fromString($controlId), $controlData);
 				}
 
 				foreach ($deviceData[Devices\Constants::DATA_STORAGE_ATTRIBUTES_KEY] as $attributeId => $attributeData) {
@@ -232,20 +198,6 @@ final class Reader
 				}
 
 				$this->connectorPropertiesRepository->append(Uuid::fromString($propertyId), $propertyData);
-			}
-
-			foreach ($connectorData[Devices\Constants::DATA_STORAGE_CONTROLS_KEY] as $controlId => $controlData) {
-				// Validate connector control identifier
-				if (!is_string($controlId) || !Uuid::isValid($controlId)) {
-					continue;
-				}
-
-				// Validate connector control data
-				if (!is_array($controlData)) {
-					continue;
-				}
-
-				$this->connectorControlsRepository->append(Uuid::fromString($controlId), $controlData);
 			}
 
 			$this->connectorsRepository->append(Uuid::fromString($connectorId), $connectorData);
