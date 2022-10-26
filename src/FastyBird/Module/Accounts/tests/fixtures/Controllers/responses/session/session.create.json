@@ -1,0 +1,37 @@
+{
+  "meta" : {
+    "author" : "FastyBird team",
+    "copyright" : "FastyBird s.r.o"
+  },
+  "jsonapi" : {
+    "version" : "1.1"
+  },
+  "links" : {
+    "self" : "/v1/session"
+  },
+  "data" : {
+    "type" : "com.fastybird.accounts-module/session",
+    "id" : "__ENTITY_ID__",
+    "attributes" : {
+      "token" : "__ACCESS_TOKEN__",
+      "expiration" : "2020-04-01T18:00:00+00:00",
+      "token_type" : "Bearer",
+      "refresh" : "__REFRESH_TOKEN__"
+    },
+    "relationships" : {
+      "account" : {
+        "links" : {
+          "self" : "/v1/session/relationships/account",
+          "related" : "/v1/me"
+        },
+        "data" : {
+          "type" : "com.fastybird.accounts-module/account",
+          "id" : "5e79efbf-bd0d-5b7c-46ef-bfbdefbfbd34"
+        }
+      }
+    },
+    "links" : {
+      "self" : "/v1/session"
+    }
+  }
+}

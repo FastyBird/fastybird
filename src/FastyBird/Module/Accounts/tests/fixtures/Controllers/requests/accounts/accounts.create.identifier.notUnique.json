@@ -1,0 +1,12 @@
+{
+  "data" : {
+    "type" : "com.fastybird.accounts-module/account",
+    "id" : "efbfbdef-bfbd-68ef-bfbd-770b40efbfbd",
+    "attributes" : {
+      "details" : {
+        "first_name" : "Pepa",
+        "last_name" : "Novák"
+      }
+    }
+  }
+}

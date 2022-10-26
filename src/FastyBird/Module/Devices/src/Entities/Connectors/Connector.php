@@ -213,7 +213,7 @@ abstract class Connector implements Entities\Entity,
 		$found = $this->properties
 			->filter(static fn (Entities\Connectors\Properties\Property $row): bool => $id === $row->getPlainId());
 
-		return $found->isEmpty() === true || $found->first() === false ? null : $found->first();
+		return $found->isEmpty() === true ? null : $found->first();
 	}
 
 	public function removeProperty(Entities\Connectors\Properties\Property $property): void
@@ -237,7 +237,7 @@ abstract class Connector implements Entities\Entity,
 				static fn (Entities\Connectors\Properties\Property $row): bool => $property === $row->getIdentifier()
 			);
 
-		return $found->isEmpty() === true || $found->first() === false ? null : $found->first();
+		return $found->isEmpty() === true ? null : $found->first();
 	}
 
 	/**
@@ -276,7 +276,7 @@ abstract class Connector implements Entities\Entity,
 		$found = $this->controls
 			->filter(static fn (Entities\Connectors\Controls\Control $row): bool => $name === $row->getName());
 
-		return $found->isEmpty() === true || $found->first() === false ? null : $found->first();
+		return $found->isEmpty() === true ? null : $found->first();
 	}
 
 	public function removeControl(Entities\Connectors\Controls\Control $control): void
@@ -298,7 +298,7 @@ abstract class Connector implements Entities\Entity,
 		$found = $this->controls
 			->filter(static fn (Entities\Connectors\Controls\Control $row): bool => $name === $row->getName());
 
-		return $found->isEmpty() === true || $found->first() === false ? null : $found->first();
+		return $found->isEmpty() === true ? null : $found->first();
 	}
 
 	/**

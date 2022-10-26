@@ -21,7 +21,7 @@ return static function (MBConfig $mbConfig): void {
 		ComposerJsonSection::REQUIRE => [
 			'fastybird/datetime-factory' => '^0.6',
 			'fastybird/json-api' => '^0.13',
-			'fastybird/simple-auth' => '^0.5',
+			'fastybird/simple-auth' => '^0.6',
 		],
 	]);
 

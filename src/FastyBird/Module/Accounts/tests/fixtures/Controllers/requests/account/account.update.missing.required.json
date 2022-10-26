@@ -1,0 +1,18 @@
+{
+  "data" : {
+    "type" : "com.fastybird.accounts-module/account",
+    "id" : "efbfbdef-bfbd-68ef-bfbd-770b40efbfbd",
+    "attributes" : {
+      "details" : {
+        "last_name" : "Smith",
+        "middle_name" : null
+      },
+      "week_start" : 1,
+      "datetime" : {
+        "timezone" : "Europe/Prague",
+        "date_format" : "YYYY/DD/MM",
+        "time_format" : "HH:mm"
+      }
+    }
+  }
+}

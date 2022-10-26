@@ -1,0 +1,13 @@
+{
+  "errors" : [
+    {
+      "status" : "422",
+      "code" : "422",
+      "title" : "Email is default",
+      "detail" : "Default email address could not be deleted"
+    }
+  ],
+  "jsonapi" : {
+    "version" : "1.1"
+  }
+}

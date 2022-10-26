@@ -1,0 +1,74 @@
+{
+  "meta" : {
+    "author" : "FastyBird team",
+    "copyright" : "FastyBird s.r.o"
+  },
+  "jsonapi" : {
+    "version" : "1.1"
+  },
+  "links" : {
+    "self" : "/v1/accounts"
+  },
+  "data" : {
+    "type" : "com.fastybird.accounts-module/account",
+    "id" : "3de0c345-ea83-4585-a7ca-7759a2e1e66e",
+    "attributes" : {
+      "state" : "not_activated",
+      "last_visit" : null,
+      "registered" : "__TIME_PLACEHOLDER__",
+      "name" : "Novák Pepa",
+      "details" : {
+        "first_name" : "Pepa",
+        "last_name" : "Novák",
+        "middle_name" : null
+      },
+      "language" : "en",
+      "week_start" : 1,
+      "datetime" : {
+        "timezone" : "Europe/London",
+        "date_format" : "DD.MM.YYYY",
+        "time_format" : "HH:mm"
+      }
+    },
+    "relationships" : {
+      "identities" : {
+        "links" : {
+          "self" : "/v1/accounts/3de0c345-ea83-4585-a7ca-7759a2e1e66e/relationships/identities",
+          "related" : {
+            "href" : "/v1/accounts/3de0c345-ea83-4585-a7ca-7759a2e1e66e/identities",
+            "meta" : {
+              "count" : 0
+            }
+          }
+        },
+        "data" : []
+      },
+      "roles" : {
+        "links" : {
+          "self" : "/v1/accounts/3de0c345-ea83-4585-a7ca-7759a2e1e66e/relationships/roles"
+        },
+        "data" : [
+          {
+            "type" : "com.fastybird.accounts-module/role",
+            "id" : "efbfbdef-bfbd-efbf-bd0f-efbfbd5c4f61"
+          }
+        ]
+      },
+      "emails" : {
+        "links" : {
+          "self" : "/v1/accounts/3de0c345-ea83-4585-a7ca-7759a2e1e66e/relationships/emails",
+          "related" : {
+            "href" : "/v1/accounts/3de0c345-ea83-4585-a7ca-7759a2e1e66e/emails",
+            "meta" : {
+              "count" : 0
+            }
+          }
+        },
+        "data" : []
+      }
+    },
+    "links" : {
+      "self" : "/v1/accounts/3de0c345-ea83-4585-a7ca-7759a2e1e66e"
+    }
+  }
+}

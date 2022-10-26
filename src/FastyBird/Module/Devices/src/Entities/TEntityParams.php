@@ -53,10 +53,17 @@ trait TEntityParams
 
 	/**
 	 * @param Array<string, mixed> $params
+	 *
+	 * @throws Utils\JsonException
 	 */
 	public function setParams(array $params): void
 	{
-		$this->params = $this->params !== null ? array_merge($this->params, $params) : $params;
+		$toUpdate = $this->params !== null ? array_merge($this->params, $params) : $params;
+		$toUpdate = Utils\Json::decode(Utils\Json::encode($toUpdate), Utils\Json::FORCE_ARRAY);
+
+		if (is_array($toUpdate)) {
+			$this->params = $toUpdate;
+		}
 	}
 
 	public function setParam(string $key, mixed $value = null): void

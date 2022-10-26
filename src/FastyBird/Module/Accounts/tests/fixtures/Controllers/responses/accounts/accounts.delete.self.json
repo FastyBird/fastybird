@@ -1,0 +1,13 @@
+{
+  "errors" : [
+    {
+      "status" : "422",
+      "code" : "422",
+      "title" : "Self account",
+      "detail" : "You can't delete your account"
+    }
+  ],
+  "jsonapi" : {
+    "version" : "1.1"
+  }
+}

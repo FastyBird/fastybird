@@ -1,0 +1,35 @@
+{
+  "meta" : {
+    "author" : "FastyBird team",
+    "copyright" : "FastyBird s.r.o"
+  },
+  "jsonapi" : {
+    "version" : "1.1"
+  },
+  "links" : {
+    "self" : "/v1/accounts/5e79efbf-bd0d-5b7c-46ef-bfbdefbfbd34/identities"
+  },
+  "data" : {
+    "type" : "com.fastybird.accounts-module/identity",
+    "id" : "0feb8e33-04b2-4925-9bc8-e497f49595b4",
+    "attributes" : {
+      "uid" : "petr@novak.cz",
+      "state" : "active"
+    },
+    "relationships" : {
+      "account" : {
+        "links" : {
+          "self" : "/v1/accounts/5e79efbf-bd0d-5b7c-46ef-bfbdefbfbd34/identities/0feb8e33-04b2-4925-9bc8-e497f49595b4/relationships/account",
+          "related" : "/v1/accounts/5e79efbf-bd0d-5b7c-46ef-bfbdefbfbd34"
+        },
+        "data" : {
+          "type" : "com.fastybird.accounts-module/account",
+          "id" : "5e79efbf-bd0d-5b7c-46ef-bfbdefbfbd34"
+        }
+      }
+    },
+    "links" : {
+      "self" : "/v1/accounts/5e79efbf-bd0d-5b7c-46ef-bfbdefbfbd34/identities/0feb8e33-04b2-4925-9bc8-e497f49595b4"
+    }
+  }
+}

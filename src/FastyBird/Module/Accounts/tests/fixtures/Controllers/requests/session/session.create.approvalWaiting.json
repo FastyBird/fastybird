@@ -1,0 +1,9 @@
+{
+  "data" : {
+    "type" : "com.fastybird.accounts-module/session",
+    "attributes" : {
+      "uid" : "clark.kent@fastybird.com",
+      "password" : "123456789"
+    }
+  }
+}

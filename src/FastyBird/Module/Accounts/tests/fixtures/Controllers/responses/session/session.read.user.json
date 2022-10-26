@@ -1,0 +1,37 @@
+{
+  "meta" : {
+    "author" : "FastyBird team",
+    "copyright" : "FastyBird s.r.o"
+  },
+  "jsonapi" : {
+    "version" : "1.1"
+  },
+  "links" : {
+    "self" : "/v1/session"
+  },
+  "data" : {
+    "type" : "com.fastybird.accounts-module/session",
+    "id" : "956a7e26-e8c0-4bdb-894a-dd21b14e4a94",
+    "attributes" : {
+      "token" : "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJjb20uZmFzdHliaXJkLmF1dGgtbW9kdWxlIiwianRpIjoiYTVkMTliNDktNjI3Mi00ZGJkLWI3YWItNTJhY2QwMzY3MWE5IiwiaWF0IjoxNTg1NzQyNDAwLCJleHAiOjE1ODU3NDk2MDAsInVzZXIiOiJlZmJmYmRlZi1iZmJkLTY4ZWYtYmZiZC03NzBiNDBlZmJmYmQiLCJyb2xlcyI6WyJ1c2VyIl19.wi_KC5aDT-y6wKbA4wG29KPHUqFyEcNTI-TUvwIH5yc",
+      "expiration" : "2020-04-01T18:00:00+02:00",
+      "token_type" : "Bearer",
+      "refresh" : "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1ODU3NDI0MDAsImV4cCI6MTU4NjAwMTYwMCwianRpIjoiODUwZTBlMjctMTYyOS00MTM2LWIxOGQtZDQ2Mjg1NTdhNzI0Iiwic3ViIjoiZWZiZmJkZWYtYmZiZC02OGVmLWJmYmQtNzcwYjQwZWZiZmJkIiwidHlwZSI6InJlZnJlc2gifQ.G-nrGqBdMFWivJOqpdVnjI-MxlJ-Jo8f-BVDesUVNZk"
+    },
+    "relationships" : {
+      "account" : {
+        "links" : {
+          "self" : "/v1/session/relationships/account",
+          "related" : "/v1/me"
+        },
+        "data" : {
+          "type" : "com.fastybird.accounts-module/account",
+          "id" : "efbfbdef-bfbd-68ef-bfbd-770b40efbfbd"
+        }
+      }
+    },
+    "links" : {
+      "self" : "/v1/session"
+    }
+  }
+}

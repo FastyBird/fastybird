@@ -1,0 +1,8 @@
+{
+  "data" : {
+    "type" : "com.fastybird.accounts-module/session",
+    "attributes" : {
+      "refresh" : "ayJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NjU4OTc2ODMsImV4cCI6MTU2NjE1Njg4MywianRpIjoiNTA1NTIyY2MtMzg1Ni00OGIzLWI0MzUtMDk3MDQ4MWY1MWMyIn0.f3xN8CY5x5cM8htYp8v4hqEFqBpGu-zNOCSUcAOdiwY"
+    }
+  }
+}

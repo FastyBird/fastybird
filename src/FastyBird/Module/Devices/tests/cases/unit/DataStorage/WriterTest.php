@@ -12,6 +12,10 @@ use League\Flysystem;
 use Nette;
 use RuntimeException;
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class WriterTest extends DbTestCase
 {
 

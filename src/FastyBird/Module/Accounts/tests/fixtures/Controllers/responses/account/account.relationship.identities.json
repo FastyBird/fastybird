@@ -1,0 +1,19 @@
+{
+  "data" : [
+    {
+      "id" : "77331268-efbf-bd34-49ef-bfbdefbfbd04",
+      "type" : "com.fastybird.accounts-module/identity"
+    }
+  ],
+  "jsonapi" : {
+    "version" : "1.1"
+  },
+  "links" : {
+    "related" : "/v1/me/identities",
+    "self" : "/v1/me/relationships/identities"
+  },
+  "meta" : {
+    "author" : "FastyBird team",
+    "copyright" : "FastyBird s.r.o"
+  }
+}

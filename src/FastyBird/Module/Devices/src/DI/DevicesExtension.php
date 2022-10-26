@@ -16,6 +16,7 @@
 namespace FastyBird\Module\Devices\DI;
 
 use Doctrine\Persistence;
+use FastyBird\Bootstrap;
 use FastyBird\Module\Devices\Commands;
 use FastyBird\Module\Devices\Connectors;
 use FastyBird\Module\Devices\Controllers;
@@ -35,7 +36,6 @@ use Nette\PhpGenerator;
 use Nette\Schema;
 use stdClass;
 use function assert;
-use function is_dir;
 use function is_string;
 use function ucfirst;
 use const DIRECTORY_SEPARATOR;
@@ -56,12 +56,12 @@ class DevicesExtension extends DI\CompilerExtension
 	public const CONNECTOR_TYPE_TAG = 'connector_type';
 
 	public static function register(
-		Nette\Configurator $config,
+		Nette\Configurator|Bootstrap\Boot\Configurator $config,
 		string $extensionName = self::NAME,
 	): void
 	{
 		$config->onCompile[] = static function (
-			Nette\Configurator $config,
+			Nette\Configurator|Bootstrap\Boot\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new DevicesExtension());
@@ -548,13 +548,6 @@ class DevicesExtension extends DI\CompilerExtension
 				'addPaths',
 				[[__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'Entities']],
 			);
-
-			if (is_dir(__DIR__ . '/../../tests/fixtures/dummy')) {
-				$ormAnnotationDriverService->addSetup(
-					'addPaths',
-					[[__DIR__ . '/../../tests/fixtures/dummy']],
-				);
-			}
 		}
 
 		$ormAnnotationDriverChainService = $builder->getDefinitionByType(
@@ -566,13 +559,6 @@ class DevicesExtension extends DI\CompilerExtension
 				$ormAnnotationDriverService,
 				'FastyBird\Module\Devices\Entities',
 			]);
-
-			if (is_dir(__DIR__ . '/../../tests/fixtures/dummy')) {
-				$ormAnnotationDriverChainService->addSetup('addDriver', [
-					$ormAnnotationDriverService,
-					'FastyBird\Module\Devices\Tests\Fixtures\Dummy',
-				]);
-			}
 		}
 
 		/**

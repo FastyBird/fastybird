@@ -1,0 +1,16 @@
+{
+  "errors" : [
+    {
+      "status" : "422",
+      "code" : "422",
+      "title" : "Invalid attribute",
+      "detail" : "Provided entity attribute is not valid",
+      "source" : {
+        "pointer" : "/data/attributes/address"
+      }
+    }
+  ],
+  "jsonapi" : {
+    "version" : "1.1"
+  }
+}

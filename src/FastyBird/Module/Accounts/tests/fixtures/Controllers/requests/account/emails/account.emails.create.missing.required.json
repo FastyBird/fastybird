@@ -1,0 +1,10 @@
+{
+  "data" : {
+    "type" : "com.fastybird.accounts-module/email",
+    "id" : "66295a83-0f85-4e8f-9c3d-9d9f5a947737",
+    "attributes" : {
+      "default" : false,
+      "private" : true
+    }
+  }
+}

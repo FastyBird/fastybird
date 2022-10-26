@@ -1,0 +1,29 @@
+{
+  "data" : {
+    "type" : "com.fastybird.accounts-module/account",
+    "id" : "83985c13-238c-46bd-aacb-2359d5c921a7",
+    "attributes" : {
+      "details" : {
+        "first_name" : "Jane",
+        "last_name" : "Smith",
+        "middle_name" : null
+      },
+      "week_start" : 1,
+      "datetime" : {
+        "timezone" : "Europe/Prague",
+        "date_format" : "YYYY/DD/MM",
+        "time_format" : "HH:mm"
+      }
+    },
+    "relationships" : {
+      "roles" : {
+        "data" : [
+          {
+            "type" : "com.fastybird.accounts-module/role",
+            "id" : "89f4a14f-7f78-4216-99b8-584ab9229f1c"
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "data" : {
+    "type" : "com.fastybird.accounts-module/identity",
+    "id" : "0feb8e33-04b2-4925-9bc8-e497f49595b4",
+    "attributes" : {
+      "uid" : "petr@novak.cz"
+    },
+    "relationships" : {
+      "account" : {
+        "data" : {
+          "type" : "com.fastybird.accounts-module/account",
+          "id" : "5e79efbf-bd0d-5b7c-46ef-bfbdefbfbd34"
+        }
+      }
+    }
+  }
+}

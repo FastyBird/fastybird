@@ -1,0 +1,11 @@
+{
+  "data" : {
+    "type" : "com.fastybird.accounts-module/email",
+    "id" : "0b46d3d6-c980-494a-8b40-f19e6095e610",
+    "attributes" : {
+      "address" : "john@doe.com",
+      "default" : false,
+      "private" : true
+    }
+  }
+}

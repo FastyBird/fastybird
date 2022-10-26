@@ -23,21 +23,22 @@
       "email": "adam.kadlec@fastybird.com"
     }
   ],
-    "support": {
-        "email": "code@fastybird.com",
-        "issues": "https://github.com/FastyBird/fastybird/issues",
-        "source": "https://github.com/FastyBird/devices-module"
-    },
+  "support": {
+    "email": "code@fastybird.com",
+    "issues": "https://github.com/FastyBird/fastybird/issues",
+    "source": "https://github.com/FastyBird/devices-module"
+  },
   "require": {
     "php": ">=8.1.0",
     "ext-bcmath": "*",
     "ext-pcntl": "*",
     "contributte/flysystem": "^0.3",
     "cweagans/composer-patches": "^1.7",
+    "fastybird/bootstrap": "^0.9",
     "fastybird/exchange-library": "dev-main",
     "fastybird/json-api": "^0.13",
     "fastybird/metadata-library": "dev-main",
-    "fastybird/simple-auth": "^0.5",
+    "fastybird/simple-auth": "^0.6",
     "ipub/doctrine-dynamic-discriminator-map": "^1.4",
     "ipub/doctrine-timestampable": "^1.5",
     "ipub/slim-router": "^0.2",

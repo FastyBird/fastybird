@@ -1,0 +1,12 @@
+{
+  "data" : {
+    "type" : "com.fastybird.accounts-module/identity",
+    "id" : "83985c13-238c-46bd-aacb-2359d5c921a7",
+    "attributes" : {
+      "password" : {
+        "current" : "123456789",
+        "new" : "987654321"
+      }
+    }
+  }
+}

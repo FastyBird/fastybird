@@ -13,6 +13,7 @@ includes:
     - ../src/FastyBird/Library/Exchange/tools/phpstan.config.src.neon
     - ../src/FastyBird/Library/Metadata/tools/phpstan.config.src.neon
 
+    - ../src/FastyBird/Module/Accounts/tools/phpstan.config.src.neon
     - ../src/FastyBird/Module/Devices/tools/phpstan.config.src.neon
 
     - ../src/FastyBird/Plugin/ApiKey/tools/phpstan.config.src.neon

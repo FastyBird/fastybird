@@ -1,0 +1,17 @@
+{
+  "data" : {
+    "id" : "efbfbd04-0158-efbf-bdef-bfbd4defbfbd",
+    "type" : "com.fastybird.accounts-module/role"
+  },
+  "jsonapi" : {
+    "version" : "1.1"
+  },
+  "links" : {
+    "related" : "/v1/roles/efbfbd04-0158-efbf-bdef-bfbd4defbfbd",
+    "self" : "/v1/roles/efbfbdef-bfbd-efbf-bd0f-efbfbd5c4f61/relationships/parent"
+  },
+  "meta" : {
+    "author" : "FastyBird team",
+    "copyright" : "FastyBird s.r.o"
+  }
+}
