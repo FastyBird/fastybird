@@ -32,7 +32,7 @@
         "evenement/evenement": "^3.0",
         "fastybird/datetime-factory": "^0.6",
         "fastybird/json-api": "^0.13",
-        "fastybird/simple-auth": "^0.5",
+        "fastybird/simple-auth": "^0.6",
         "fig/http-message-util": "^1.1",
         "guzzlehttp/guzzle": "^7.5",
         "hashids/hashids": "^4.1",
