@@ -29,6 +29,7 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use InvalidArgumentException;
 use Nette;
 use Nette\Utils;
@@ -109,7 +110,7 @@ final class Http
 		private readonly DevicesModels\DataStorage\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\DataStorage\ChannelsRepository $channelsRepository,
 		private readonly DevicesModels\DataStorage\ChannelPropertiesRepository $channelPropertiesRepository,
-		private readonly DevicesModels\States\DeviceConnectionStateManager $deviceConnectionStateManager,
+		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		Log\LoggerInterface|null $logger = null,
@@ -171,7 +172,7 @@ final class Http
 			if (
 				!in_array($device->getId()->toString(), $this->processedDevices, true)
 				&& is_string($ipAddress)
-				&& !$this->deviceConnectionStateManager->getState($device)
+				&& !$this->deviceConnectionManager->getState($device)
 					->equalsValue(MetadataTypes\ConnectionState::STATE_STOPPED)
 			) {
 				$this->processedDevices[] = $device->getId()->toString();
@@ -212,7 +213,7 @@ final class Http
 		}
 
 		if (
-			$this->deviceConnectionStateManager->getState($device)
+			$this->deviceConnectionManager->getState($device)
 				->equalsValue(MetadataTypes\ConnectionState::STATE_CONNECTED)
 		) {
 			return $this->writeChannelsProperty($device);
@@ -273,19 +274,19 @@ final class Http
 			->otherwise(function (Throwable $ex) use ($cmd, $device): void {
 				if ($ex instanceof ReactHttp\Message\ResponseException) {
 					if ($ex->getCode() >= 400 && $ex->getCode() < 499) {
-						$this->deviceConnectionStateManager->setState(
+						$this->deviceConnectionManager->setState(
 							$device,
 							MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_STOPPED),
 						);
 
 					} elseif ($ex->getCode() >= 500 && $ex->getCode() < 599) {
-						$this->deviceConnectionStateManager->setState(
+						$this->deviceConnectionManager->setState(
 							$device,
 							MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_LOST),
 						);
 
 					} else {
-						$this->deviceConnectionStateManager->setState(
+						$this->deviceConnectionManager->setState(
 							$device,
 							MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_UNKNOWN),
 						);
@@ -293,7 +294,7 @@ final class Http
 				}
 
 				if ($ex instanceof Exceptions\Runtime) {
-					$this->deviceConnectionStateManager->setState(
+					$this->deviceConnectionManager->setState(
 						$device,
 						MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_LOST),
 					);
@@ -420,7 +421,7 @@ final class Http
 										);
 
 									} elseif ($ex->getCode() >= 500 && $ex->getCode() < 599) {
-										$this->deviceConnectionStateManager->setState(
+										$this->deviceConnectionManager->setState(
 											$device,
 											MetadataTypes\ConnectionState::get(
 												MetadataTypes\ConnectionState::STATE_LOST,

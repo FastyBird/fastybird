@@ -55,9 +55,11 @@ final class ChannelPropertiesManager
 	 * @throws Exceptions\NotImplemented
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 *
+	 * @interal
 	 */
 	public function create(
-		MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped $property,
+		MetadataEntities\DevicesModule\ChannelDynamicProperty|Entities\Channels\Properties\Dynamic $property,
 		Utils\ArrayHash $values,
 	): States\ChannelProperty
 	{
@@ -93,7 +95,7 @@ final class ChannelPropertiesManager
 			}
 		}
 
-		$createdState = $this->manager->create($property, $values);
+		$createdState = $this->manager->create($property->getId(), $values);
 
 		$this->dispatcher?->dispatch(new Events\StateEntityCreated($property, $createdState));
 
@@ -105,9 +107,11 @@ final class ChannelPropertiesManager
 	 * @throws Exceptions\NotImplemented
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 *
+	 * @interal
 	 */
 	public function update(
-		MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped $property,
+		MetadataEntities\DevicesModule\ChannelDynamicProperty|Entities\Channels\Properties\Dynamic $property,
 		States\ChannelProperty $state,
 		Utils\ArrayHash $values,
 	): States\ChannelProperty
@@ -120,7 +124,7 @@ final class ChannelPropertiesManager
 			throw new Exceptions\InvalidState('Child property can\'t have state');
 		}
 
-		$updatedState = $this->manager->update($property, $state, $values);
+		$updatedState = $this->manager->update($state, $values);
 
 		$actualValue = Utilities\ValueHelper::normalizeValue(
 			$property->getDataType(),
@@ -138,7 +142,6 @@ final class ChannelPropertiesManager
 
 		if ($expectedValue === $actualValue) {
 			$updatedState = $this->manager->update(
-				$property,
 				$updatedState,
 				Utils\ArrayHash::from([
 					'expectedValue' => null,
@@ -155,9 +158,11 @@ final class ChannelPropertiesManager
 	/**
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\NotImplemented
+	 *
+	 * @interal
 	 */
 	public function delete(
-		MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped $property,
+		MetadataEntities\DevicesModule\ChannelDynamicProperty|Entities\Channels\Properties\Dynamic $property,
 		States\ChannelProperty $state,
 	): bool
 	{
@@ -169,7 +174,7 @@ final class ChannelPropertiesManager
 			throw new Exceptions\InvalidState('Child property can\'t have state');
 		}
 
-		$result = $this->manager->delete($property, $state);
+		$result = $this->manager->delete($state);
 
 		$this->dispatcher?->dispatch(new Events\StateEntityDeleted($property));
 

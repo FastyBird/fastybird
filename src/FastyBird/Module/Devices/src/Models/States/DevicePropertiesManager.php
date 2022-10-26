@@ -54,9 +54,11 @@ final class DevicePropertiesManager
 	 * @throws Exceptions\NotImplemented
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 *
+	 * @interal
 	 */
 	public function create(
-		MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
+		MetadataEntities\DevicesModule\DeviceDynamicProperty|Entities\Devices\Properties\Dynamic $property,
 		Utils\ArrayHash $values,
 	): States\DeviceProperty
 	{
@@ -92,7 +94,7 @@ final class DevicePropertiesManager
 			}
 		}
 
-		$createdState = $this->manager->create($property, $values);
+		$createdState = $this->manager->create($property->getId(), $values);
 
 		$this->dispatcher?->dispatch(new Events\StateEntityCreated($property, $createdState));
 
@@ -104,9 +106,11 @@ final class DevicePropertiesManager
 	 * @throws Exceptions\NotImplemented
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 *
+	 * @interal
 	 */
 	public function update(
-		MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
+		MetadataEntities\DevicesModule\DeviceDynamicProperty|Entities\Devices\Properties\Dynamic $property,
 		States\DeviceProperty $state,
 		Utils\ArrayHash $values,
 	): States\DeviceProperty
@@ -119,7 +123,7 @@ final class DevicePropertiesManager
 			throw new Exceptions\InvalidState('Child property can\'t have state');
 		}
 
-		$updatedState = $this->manager->update($property, $state, $values);
+		$updatedState = $this->manager->update($state, $values);
 
 		$actualValue = Utilities\ValueHelper::normalizeValue(
 			$property->getDataType(),
@@ -137,7 +141,6 @@ final class DevicePropertiesManager
 
 		if ($expectedValue === $actualValue) {
 			$updatedState = $this->manager->update(
-				$property,
 				$updatedState,
 				Utils\ArrayHash::from([
 					'expectedValue' => null,
@@ -154,9 +157,11 @@ final class DevicePropertiesManager
 	/**
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\NotImplemented
+	 *
+	 * @interal
 	 */
 	public function delete(
-		MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
+		MetadataEntities\DevicesModule\DeviceDynamicProperty|Entities\Devices\Properties\Dynamic $property,
 		States\DeviceProperty $state,
 	): bool
 	{
@@ -168,7 +173,7 @@ final class DevicePropertiesManager
 			throw new Exceptions\InvalidState('Child property can\'t have state');
 		}
 
-		$result = $this->manager->delete($property, $state);
+		$result = $this->manager->delete($state);
 
 		$this->dispatcher?->dispatch(new Events\StateEntityDeleted($property));
 

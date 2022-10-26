@@ -117,5 +117,7 @@
         <exclude-pattern>src/FastyBird/Module/Devices/src/Events/StateEntityUpdated\.php</exclude-pattern>
         <exclude-pattern>src/FastyBird/Module/Devices/src/Events/StateEntityDeleted\.php</exclude-pattern>
         <exclude-pattern>src/FastyBird/Module/Devices/src/Subscribers/StateEntities\.php</exclude-pattern>
+        <exclude-pattern>src/FastyBird/Module/Devices/src/Utilities/ChannelPropertiesStates\.php</exclude-pattern>
+        <exclude-pattern>src/FastyBird/Module/Devices/src/Utilities/DevicePropertiesStates\.php</exclude-pattern>
     </rule>
 </ruleset>

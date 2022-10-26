@@ -30,6 +30,7 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Nette\Utils;
 use Psr\Log;
@@ -89,7 +90,7 @@ final class Local implements Client
 		private readonly DevicesModels\DataStorage\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\DataStorage\ChannelsRepository $channelsRepository,
 		private readonly DevicesModels\DataStorage\ChannelPropertiesRepository $channelPropertiesRepository,
-		private readonly DevicesModels\States\DeviceConnectionStateManager $deviceConnectionStateManager,
+		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		Log\LoggerInterface|null $logger = null,
@@ -161,7 +162,7 @@ final class Local implements Client
 		foreach ($this->devicesRepository->findAllByConnector($this->connector->getId()) as $device) {
 			if (
 				!in_array($device->getId()->toString(), $this->processedDevices, true)
-				&& !$this->deviceConnectionStateManager->getState($device)->equalsValue(
+				&& !$this->deviceConnectionManager->getState($device)->equalsValue(
 					MetadataTypes\ConnectionState::STATE_STOPPED,
 				)
 			) {
@@ -227,7 +228,7 @@ final class Local implements Client
 		}
 
 		if (
-			!$this->deviceConnectionStateManager->getState($deviceItem)->equalsValue(
+			!$this->deviceConnectionManager->getState($deviceItem)->equalsValue(
 				MetadataTypes\ConnectionState::STATE_CONNECTED,
 			)
 		) {

@@ -15,10 +15,9 @@
 
 namespace FastyBird\Module\Devices\Models\States;
 
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
-use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\States;
 use Nette\Utils;
+use Ramsey\Uuid;
 
 /**
  * Device properties manager interface
@@ -31,20 +30,10 @@ use Nette\Utils;
 interface IDevicePropertiesManager
 {
 
-	public function create(
-		MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
-		Utils\ArrayHash $values,
-	): States\DeviceProperty;
+	public function create(Uuid\UuidInterface $id, Utils\ArrayHash $values): States\DeviceProperty;
 
-	public function update(
-		MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
-		States\DeviceProperty $state,
-		Utils\ArrayHash $values,
-	): States\DeviceProperty;
+	public function update(States\DeviceProperty $state, Utils\ArrayHash $values): States\DeviceProperty;
 
-	public function delete(
-		MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
-		States\DeviceProperty $state,
-	): bool;
+	public function delete(States\DeviceProperty $state): bool;
 
 }

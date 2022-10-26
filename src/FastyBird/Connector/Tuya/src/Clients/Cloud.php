@@ -32,6 +32,7 @@ use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use InvalidArgumentException;
 use Nette;
 use Nette\Utils;
@@ -131,7 +132,7 @@ final class Cloud implements Client
 		private readonly DevicesModels\DataStorage\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\DataStorage\ChannelsRepository $channelsRepository,
 		private readonly DevicesModels\DataStorage\ChannelPropertiesRepository $channelPropertiesRepository,
-		private readonly DevicesModels\States\DeviceConnectionStateManager $deviceConnectionStateManager,
+		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly MetadataSchemas\Validator $schemaValidator,
 		private readonly EventLoop\LoopInterface $eventLoop,
@@ -352,7 +353,7 @@ final class Cloud implements Client
 		foreach ($this->devicesRepository->findAllByConnector($this->connector->getId()) as $device) {
 			if (
 				!in_array($device->getId()->toString(), $this->processedDevices, true)
-				&& !$this->deviceConnectionStateManager->getState($device)->equalsValue(
+				&& !$this->deviceConnectionManager->getState($device)->equalsValue(
 					MetadataTypes\ConnectionState::STATE_STOPPED,
 				)
 			) {
@@ -397,7 +398,7 @@ final class Cloud implements Client
 		}
 
 		if (
-			$this->deviceConnectionStateManager->getState($deviceItem)->equalsValue(
+			$this->deviceConnectionManager->getState($deviceItem)->equalsValue(
 				MetadataTypes\ConnectionState::STATE_CONNECTED,
 			)
 		) {
@@ -450,7 +451,7 @@ final class Cloud implements Client
 		if ($cmd === self::CMD_INFO || $cmd === self::CMD_HEARTBEAT) {
 			if (
 				$cmd === self::CMD_INFO
-				&& $this->deviceConnectionStateManager->getState($deviceItem)->equalsValue(
+				&& $this->deviceConnectionManager->getState($deviceItem)->equalsValue(
 					MetadataTypes\ConnectionState::STATE_CONNECTED,
 				)
 			) {

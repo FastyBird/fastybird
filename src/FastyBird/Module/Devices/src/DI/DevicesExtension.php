@@ -28,6 +28,7 @@ use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Router;
 use FastyBird\Module\Devices\Schemas;
 use FastyBird\Module\Devices\Subscribers;
+use FastyBird\Module\Devices\Utilities;
 use IPub\DoctrineCrud;
 use IPub\SlimRouter\Routing as SlimRouterRouting;
 use Nette;
@@ -436,26 +437,6 @@ class DevicesExtension extends DI\CompilerExtension
 		)
 			->setType(Models\States\ChannelPropertiesManager::class);
 
-		// Connection states manager
-		$builder->addDefinition(
-			$this->prefix('states.connectionState.connector'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Models\States\ConnectorConnectionStateManager::class);
-
-		$builder->addDefinition(
-			$this->prefix('states.connectionState.device'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Models\States\DeviceConnectionStateManager::class);
-
-		// Properties states manager
-		$builder->addDefinition($this->prefix('states.propertyState.device'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\States\DevicePropertyStateManager::class);
-
-		$builder->addDefinition($this->prefix('states.propertyState.channel'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\States\ChannelPropertyStateManager::class);
-
 		// Data storage
 		$builder->addDefinition($this->prefix('dataStorage.writer'), new DI\Definitions\ServiceDefinition())
 			->setType(DataStorage\Writer::class);
@@ -501,6 +482,38 @@ class DevicesExtension extends DI\CompilerExtension
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Models\DataStorage\ChannelPropertiesRepository::class);
+
+		// Utilities
+
+		$builder->addDefinition(
+			$this->prefix('utilities.channels.states'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Utilities\ChannelPropertiesStates::class);
+
+		$builder->addDefinition(
+			$this->prefix('utilities.connectors.states'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Utilities\ConnectorPropertiesStates::class);
+
+		$builder->addDefinition(
+			$this->prefix('utilities.devices.states'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Utilities\DevicePropertiesStates::class);
+
+		$builder->addDefinition(
+			$this->prefix('utilities.devices.connection'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Utilities\DeviceConnection::class);
+
+		$builder->addDefinition(
+			$this->prefix('utilities.connector.connection'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Utilities\ConnectorConnection::class);
 
 		// Console commands
 		$builder->addDefinition($this->prefix('commands.initialize'), new DI\Definitions\ServiceDefinition())

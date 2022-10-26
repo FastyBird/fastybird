@@ -49,5 +49,7 @@
         <exclude-pattern>src/Events/StateEntityUpdated\.php</exclude-pattern>
         <exclude-pattern>src/Events/StateEntityDeleted\.php</exclude-pattern>
         <exclude-pattern>src/Subscribers/StateEntities\.php</exclude-pattern>
+        <exclude-pattern>src/Utilities/ChannelPropertiesStates\.php</exclude-pattern>
+        <exclude-pattern>src/Utilities/DevicePropertiesStates\.php</exclude-pattern>
     </rule>
 </ruleset>

@@ -16,14 +16,13 @@
 namespace FastyBird\Bridge\RedisDbDevicesModule\Models;
 
 use FastyBird\Bridge\RedisDbDevicesModule\States;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
-use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Plugin\RedisDb\Exceptions as RedisDbExceptions;
 use FastyBird\Plugin\RedisDb\Models as RedisDbModels;
 use Nette;
 use Nette\Utils;
+use Ramsey\Uuid;
 use function assert;
 
 /**
@@ -58,19 +57,15 @@ class ConnectorPropertiesManager implements DevicesModels\States\IConnectorPrope
 	/**
 	 * @throws RedisDbExceptions\InvalidState
 	 */
-	public function create(
-		MetadataEntities\DevicesModule\ConnectorDynamicProperty|DevicesEntities\Connectors\Properties\Dynamic $property,
-		Utils\ArrayHash $values,
-	): States\ConnectorProperty
+	public function create(Uuid\UuidInterface $id, Utils\ArrayHash $values): States\ConnectorProperty
 	{
-		return $this->statesManager->create($property->getId(), $values, $this->database);
+		return $this->statesManager->create($id, $values, $this->database);
 	}
 
 	/**
 	 * @throws RedisDbExceptions\InvalidState
 	 */
 	public function update(
-		MetadataEntities\DevicesModule\ConnectorDynamicProperty|DevicesEntities\Connectors\Properties\Dynamic $property,
 		DevicesStates\ConnectorProperty $state,
 		Utils\ArrayHash $values,
 	): States\ConnectorProperty
@@ -80,10 +75,7 @@ class ConnectorPropertiesManager implements DevicesModels\States\IConnectorPrope
 		return $this->statesManager->update($state, $values, $this->database);
 	}
 
-	public function delete(
-		MetadataEntities\DevicesModule\ConnectorDynamicProperty|DevicesEntities\Connectors\Properties\Dynamic $property,
-		DevicesStates\ConnectorProperty $state,
-	): bool
+	public function delete(DevicesStates\ConnectorProperty $state): bool
 	{
 		assert($state instanceof States\ConnectorProperty);
 

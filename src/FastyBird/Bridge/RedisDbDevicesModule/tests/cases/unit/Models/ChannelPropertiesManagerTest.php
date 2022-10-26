@@ -70,7 +70,7 @@ final class ChannelPropertiesManagerTest extends BaseTestCase
 			->method('getId')
 			->willReturn($id);
 
-		$state = $manager->create($property, Utils\ArrayHash::from([
+		$state = $manager->create($property->getId(), Utils\ArrayHash::from([
 			'actualValue' => 10,
 			'expectedValue' => 20,
 		]));
@@ -140,7 +140,7 @@ final class ChannelPropertiesManagerTest extends BaseTestCase
 
 		$manager = $this->container->getByType(Models\ChannelPropertiesManager::class);
 
-		$state = $manager->update($property, $state, Utils\ArrayHash::from([
+		$state = $manager->update($state, Utils\ArrayHash::from([
 			'expectedValue' => 40,
 		]));
 

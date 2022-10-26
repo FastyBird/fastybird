@@ -15,10 +15,9 @@
 
 namespace FastyBird\Module\Devices\Models\States;
 
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
-use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\States;
 use Nette\Utils;
+use Ramsey\Uuid;
 
 /**
  * Channel properties manager interface
@@ -31,20 +30,10 @@ use Nette\Utils;
 interface IChannelPropertiesManager
 {
 
-	public function create(
-		MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped $property,
-		Utils\ArrayHash $values,
-	): States\ChannelProperty;
+	public function create(Uuid\UuidInterface $id, Utils\ArrayHash $values): States\ChannelProperty;
 
-	public function update(
-		MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped $property,
-		States\ChannelProperty $state,
-		Utils\ArrayHash $values,
-	): States\ChannelProperty;
+	public function update(States\ChannelProperty $state, Utils\ArrayHash $values): States\ChannelProperty;
 
-	public function delete(
-		MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped $property,
-		States\ChannelProperty $state,
-	): bool;
+	public function delete(States\ChannelProperty $state): bool;
 
 }
