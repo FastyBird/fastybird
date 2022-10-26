@@ -18,6 +18,7 @@ extensions:
     ipubWebSocketsWAMP      : IPub\WebSocketsWAMP\DI\WebSocketsWAMPExtension
     ipubWebSockets          : IPub\WebSockets\DI\WebSocketsExtension
     fbDateTimeFactory       : FastyBird\DateTimeFactory\DI\DateTimeFactoryExtension
+    fbExchangeLibrary       : FastyBird\Library\Exchange\DI\ExchangeExtension
     fbMetadataLibrary       : FastyBird\Library\Metadata\DI\MetadataExtension
     fbRedisDbPlugin         : FastyBird\Plugin\RedisDb\DI\RedisDbExtension
     fbWsExchangePlugin      : FastyBird\Plugin\WsExchange\DI\WsExchangeExtension
