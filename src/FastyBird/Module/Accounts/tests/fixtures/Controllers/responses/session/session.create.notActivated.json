@@ -1,0 +1,13 @@
+{
+  "errors" : [
+    {
+      "code" : "422",
+      "status" : "422",
+      "title" : "Invalid attribute",
+      "detail" : "Provided account credentials could not be found in our system"
+    }
+  ],
+  "jsonapi" : {
+    "version" : "1.1"
+  }
+}

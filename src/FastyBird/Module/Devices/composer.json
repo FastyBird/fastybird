@@ -23,11 +23,11 @@
       "email": "adam.kadlec@fastybird.com"
     }
   ],
-    "support": {
-        "email": "code@fastybird.com",
-        "issues": "https://github.com/FastyBird/fastybird/issues",
-        "source": "https://github.com/FastyBird/devices-module"
-    },
+  "support": {
+    "email": "code@fastybird.com",
+    "issues": "https://github.com/FastyBird/fastybird/issues",
+    "source": "https://github.com/FastyBird/devices-module"
+  },
   "require": {
     "php": ">=8.1.0",
     "ext-bcmath": "*",
@@ -51,6 +51,7 @@
     "brianium/paratest": "^6.6",
     "contributte/translation": "^0.9",
     "dg/bypass-finals": "^1.4",
+    "fastybird/bootstrap": "^0.9",
     "infection/infection": "^0.26",
     "orisai/coding-standard": "^3.2",
     "pds/skeleton": "^1.0",

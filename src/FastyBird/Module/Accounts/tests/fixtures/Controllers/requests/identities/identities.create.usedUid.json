@@ -1,0 +1,18 @@
+{
+  "data" : {
+    "type" : "com.fastybird.accounts-module/identity",
+    "id" : "e09fba77-f9c3-4b6f-bdc2-91d6fa2a5eaf",
+    "attributes" : {
+      "uid" : "john.doe@fastybird.com",
+      "password" : "123456789"
+    },
+    "relationships" : {
+      "account" : {
+        "data" : {
+          "type" : "com.fastybird.accounts-module/account",
+          "id" : "5e79efbf-bd0d-5b7c-46ef-bfbdefbfbd34"
+        }
+      }
+    }
+  }
+}

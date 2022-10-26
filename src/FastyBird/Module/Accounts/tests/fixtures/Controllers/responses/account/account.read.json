@@ -1,0 +1,88 @@
+{
+  "meta" : {
+    "author" : "FastyBird team",
+    "copyright" : "FastyBird s.r.o"
+  },
+  "jsonapi" : {
+    "version" : "1.1"
+  },
+  "links" : {
+    "self" : "/v1/me"
+  },
+  "data" : {
+    "type" : "com.fastybird.accounts-module/account",
+    "id" : "5e79efbf-bd0d-5b7c-46ef-bfbdefbfbd34",
+    "attributes" : {
+      "state" : "active",
+      "last_visit" : "2019-11-07T22:30:56+01:00",
+      "registered" : "2017-01-03T11:30:00+01:00",
+      "name" : "Doe John",
+      "details" : {
+        "first_name" : "John",
+        "last_name" : "Doe",
+        "middle_name" : null
+      },
+      "language" : "en",
+      "week_start" : 1,
+      "datetime" : {
+        "timezone" : "Europe/Prague",
+        "date_format" : "DD.MM.YYYY",
+        "time_format" : "HH:mm"
+      }
+    },
+    "relationships" : {
+      "identities" : {
+        "links" : {
+          "self" : "/v1/me/relationships/identities",
+          "related" : {
+            "href" : "/v1/me/identities",
+            "meta" : {
+              "count" : 1
+            }
+          }
+        },
+        "data" : [
+          {
+            "type" : "com.fastybird.accounts-module/identity",
+            "id" : "77331268-efbf-bd34-49ef-bfbdefbfbd04"
+          }
+        ]
+      },
+      "roles" : {
+        "links" : {
+          "self" : "/v1/me/relationships/roles"
+        },
+        "data" : [
+          {
+            "type" : "com.fastybird.accounts-module/role",
+            "id" : "337a0518-664b-40ef-bfbd-efbfbd7914ef"
+          }
+        ]
+      },
+      "emails" : {
+        "links" : {
+          "self" : "/v1/me/relationships/emails",
+          "related" : {
+            "href" : "/v1/me/emails",
+            "meta" : {
+              "count" : 2
+            }
+          }
+        },
+        "data" : [
+          {
+            "type" : "com.fastybird.accounts-module/email",
+            "id" : "0b46d3d6-c980-494a-8b40-f19e6095e610"
+          },
+          {
+            "type" : "com.fastybird.accounts-module/email",
+            "id" : "32ebe3c3-0238-482e-ab79-6b1d9ee2147c"
+          }
+        ]
+      }
+    },
+    "links" : {
+      "self" : "/v1/me"
+    }
+  }
+}

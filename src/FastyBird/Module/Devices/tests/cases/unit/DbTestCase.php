@@ -5,6 +5,7 @@ namespace FastyBird\Module\Devices\Tests\Cases\Unit;
 use DateTimeImmutable;
 use Doctrine\DBAL;
 use Doctrine\ORM;
+use FastyBird\Bootstrap;
 use FastyBird\DateTimeFactory;
 use FastyBird\Module\Devices\DI;
 use FastyBird\Module\Devices\Exceptions;
@@ -130,7 +131,8 @@ abstract class DbTestCase extends TestCase
 		$rootDir = __DIR__ . '/../..';
 		$vendorDir = defined('FB_VENDOR_DIR') ? constant('FB_VENDOR_DIR') : $rootDir . '/../vendor';
 
-		$config = new Nette\Configurator();
+		$config = new Bootstrap\Boot\Configurator();
+		$config->setForceReloadContainer();
 		$config->setTempDirectory(FB_TEMP_DIR);
 
 		$config->addParameters(['container' => ['class' => 'SystemContainer_' . md5((string) time())]]);

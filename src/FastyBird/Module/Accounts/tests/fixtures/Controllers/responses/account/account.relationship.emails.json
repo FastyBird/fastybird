@@ -1,0 +1,23 @@
+{
+  "data" : [
+    {
+      "id" : "0b46d3d6-c980-494a-8b40-f19e6095e610",
+      "type" : "com.fastybird.accounts-module/email"
+    },
+    {
+      "id" : "32ebe3c3-0238-482e-ab79-6b1d9ee2147c",
+      "type" : "com.fastybird.accounts-module/email"
+    }
+  ],
+  "jsonapi" : {
+    "version" : "1.1"
+  },
+  "links" : {
+    "related" : "/v1/me/emails",
+    "self" : "/v1/me/relationships/emails"
+  },
+  "meta" : {
+    "author" : "FastyBird team",
+    "copyright" : "FastyBird s.r.o"
+  }
+}

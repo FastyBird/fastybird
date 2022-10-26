@@ -1,0 +1,13 @@
+{
+  "data" : {
+    "type" : "com.fastybird.accounts-module/account",
+    "id" : "83985c13-238c-46bd-aacb-2359d5c921a7",
+    "attributes" : {
+      "details" : {
+        "first_name" : "Jane",
+        "last_name" : "Doe",
+        "middle_name" : null
+      }
+    }
+  }
+}

@@ -1,0 +1,430 @@
+{
+  "meta" : {
+    "author" : "FastyBird team",
+    "copyright" : "FastyBird s.r.o"
+  },
+  "jsonapi" : {
+    "version" : "1.1"
+  },
+  "links" : {
+    "self" : "/v1/accounts"
+  },
+  "data" : [
+    {
+      "type" : "com.fastybird.accounts-module/account",
+      "id" : "5e79efbf-bd0d-5b7c-46ef-bfbdefbfbd34",
+      "attributes" : {
+        "state" : "active",
+        "last_visit" : "2019-11-07T22:30:56+01:00",
+        "registered" : "2017-01-03T11:30:00+01:00",
+        "name" : "Doe John",
+        "details" : {
+          "first_name" : "John",
+          "last_name" : "Doe",
+          "middle_name" : null
+        },
+        "language" : "en",
+        "week_start" : 1,
+        "datetime" : {
+          "timezone" : "Europe/Prague",
+          "date_format" : "DD.MM.YYYY",
+          "time_format" : "HH:mm"
+        }
+      },
+      "relationships" : {
+        "identities" : {
+          "links" : {
+            "self" : "/v1/accounts/5e79efbf-bd0d-5b7c-46ef-bfbdefbfbd34/relationships/identities",
+            "related" : {
+              "href" : "/v1/accounts/5e79efbf-bd0d-5b7c-46ef-bfbdefbfbd34/identities",
+              "meta" : {
+                "count" : 1
+              }
+            }
+          },
+          "data" : [
+            {
+              "type" : "com.fastybird.accounts-module/identity",
+              "id" : "77331268-efbf-bd34-49ef-bfbdefbfbd04"
+            }
+          ]
+        },
+        "roles" : {
+          "links" : {
+            "self" : "/v1/accounts/5e79efbf-bd0d-5b7c-46ef-bfbdefbfbd34/relationships/roles"
+          },
+          "data" : [
+            {
+              "type" : "com.fastybird.accounts-module/role",
+              "id" : "337a0518-664b-40ef-bfbd-efbfbd7914ef"
+            }
+          ]
+        },
+        "emails" : {
+          "links" : {
+            "self" : "/v1/accounts/5e79efbf-bd0d-5b7c-46ef-bfbdefbfbd34/relationships/emails",
+            "related" : {
+              "href" : "/v1/accounts/5e79efbf-bd0d-5b7c-46ef-bfbdefbfbd34/emails",
+              "meta" : {
+                "count" : 2
+              }
+            }
+          },
+          "data" : [
+            {
+              "type" : "com.fastybird.accounts-module/email",
+              "id" : "0b46d3d6-c980-494a-8b40-f19e6095e610"
+            },
+            {
+              "type" : "com.fastybird.accounts-module/email",
+              "id" : "32ebe3c3-0238-482e-ab79-6b1d9ee2147c"
+            }
+          ]
+        }
+      },
+      "links" : {
+        "self" : "/v1/accounts/5e79efbf-bd0d-5b7c-46ef-bfbdefbfbd34"
+      }
+    },
+    {
+      "type" : "com.fastybird.accounts-module/account",
+      "id" : "efbfbdef-bfbd-68ef-bfbd-770b40efbfbd",
+      "attributes" : {
+        "state" : "active",
+        "last_visit" : "2019-05-29T07:38:24+02:00",
+        "registered" : "2017-01-04T12:30:00+01:00",
+        "name" : "Doe Jane",
+        "details" : {
+          "first_name" : "Jane",
+          "last_name" : "Doe",
+          "middle_name" : null
+        },
+        "language" : "en",
+        "week_start" : 1,
+        "datetime" : {
+          "timezone" : "Europe/Prague",
+          "date_format" : "DD.MM.YYYY",
+          "time_format" : "HH:mm"
+        }
+      },
+      "relationships" : {
+        "identities" : {
+          "links" : {
+            "self" : "/v1/accounts/efbfbdef-bfbd-68ef-bfbd-770b40efbfbd/relationships/identities",
+            "related" : {
+              "href" : "/v1/accounts/efbfbdef-bfbd-68ef-bfbd-770b40efbfbd/identities",
+              "meta" : {
+                "count" : 1
+              }
+            }
+          },
+          "data" : [
+            {
+              "type" : "com.fastybird.accounts-module/identity",
+              "id" : "faf7a863-a49c-4428-a757-1de537773355"
+            }
+          ]
+        },
+        "roles" : {
+          "links" : {
+            "self" : "/v1/accounts/efbfbdef-bfbd-68ef-bfbd-770b40efbfbd/relationships/roles"
+          },
+          "data" : [
+            {
+              "type" : "com.fastybird.accounts-module/role",
+              "id" : "efbfbdef-bfbd-efbf-bd0f-efbfbd5c4f61"
+            }
+          ]
+        },
+        "emails" : {
+          "links" : {
+            "self" : "/v1/accounts/efbfbdef-bfbd-68ef-bfbd-770b40efbfbd/relationships/emails",
+            "related" : {
+              "href" : "/v1/accounts/efbfbdef-bfbd-68ef-bfbd-770b40efbfbd/emails",
+              "meta" : {
+                "count" : 1
+              }
+            }
+          },
+          "data" : [
+            {
+              "type" : "com.fastybird.accounts-module/email",
+              "id" : "73efbfbd-efbf-bd36-44ef-bfbdefbfbd7a"
+            }
+          ]
+        }
+      },
+      "links" : {
+        "self" : "/v1/accounts/efbfbdef-bfbd-68ef-bfbd-770b40efbfbd"
+      }
+    },
+    {
+      "type" : "com.fastybird.accounts-module/account",
+      "id" : "fae8d781-7e2c-4318-9c85-43ba637d14c5",
+      "attributes" : {
+        "state" : "approval_waiting",
+        "last_visit" : "2019-05-29T07:38:24+02:00",
+        "registered" : "2017-01-04T12:30:00+01:00",
+        "name" : "Kent Clark",
+        "details" : {
+          "first_name" : "Clark",
+          "last_name" : "Kent",
+          "middle_name" : "Waiting"
+        },
+        "language" : "en",
+        "week_start" : 1,
+        "datetime" : {
+          "timezone" : "Europe/Prague",
+          "date_format" : "DD.MM.YYYY",
+          "time_format" : "HH:mm"
+        }
+      },
+      "relationships" : {
+        "identities" : {
+          "links" : {
+            "self" : "/v1/accounts/fae8d781-7e2c-4318-9c85-43ba637d14c5/relationships/identities",
+            "related" : {
+              "href" : "/v1/accounts/fae8d781-7e2c-4318-9c85-43ba637d14c5/identities",
+              "meta" : {
+                "count" : 1
+              }
+            }
+          },
+          "data" : [
+            {
+              "type" : "com.fastybird.accounts-module/identity",
+              "id" : "ff99f3c4-70b9-43f9-9ef6-c9b33b43abcb"
+            }
+          ]
+        },
+        "roles" : {
+          "links" : {
+            "self" : "/v1/accounts/fae8d781-7e2c-4318-9c85-43ba637d14c5/relationships/roles"
+          },
+          "data" : []
+        },
+        "emails" : {
+          "links" : {
+            "self" : "/v1/accounts/fae8d781-7e2c-4318-9c85-43ba637d14c5/relationships/emails",
+            "related" : {
+              "href" : "/v1/accounts/fae8d781-7e2c-4318-9c85-43ba637d14c5/emails",
+              "meta" : {
+                "count" : 1
+              }
+            }
+          },
+          "data" : [
+            {
+              "type" : "com.fastybird.accounts-module/email",
+              "id" : "ed987404-f14c-40b4-9150-15b6590deb8c"
+            }
+          ]
+        }
+      },
+      "links" : {
+        "self" : "/v1/accounts/fae8d781-7e2c-4318-9c85-43ba637d14c5"
+      }
+    },
+    {
+      "type" : "com.fastybird.accounts-module/account",
+      "id" : "fd23ccb4-8d87-4eb3-94da-638ab4e10ae3",
+      "attributes" : {
+        "state" : "not_activated",
+        "last_visit" : "2019-05-29T07:38:24+02:00",
+        "registered" : "2017-01-04T12:30:00+01:00",
+        "name" : "Wane Bruce",
+        "details" : {
+          "first_name" : "Bruce",
+          "last_name" : "Wane",
+          "middle_name" : "Unactivated"
+        },
+        "language" : "en",
+        "week_start" : 1,
+        "datetime" : {
+          "timezone" : "Europe/Prague",
+          "date_format" : "DD.MM.YYYY",
+          "time_format" : "HH:mm"
+        }
+      },
+      "relationships" : {
+        "identities" : {
+          "links" : {
+            "self" : "/v1/accounts/fd23ccb4-8d87-4eb3-94da-638ab4e10ae3/relationships/identities",
+            "related" : {
+              "href" : "/v1/accounts/fd23ccb4-8d87-4eb3-94da-638ab4e10ae3/identities",
+              "meta" : {
+                "count" : 1
+              }
+            }
+          },
+          "data" : [
+            {
+              "type" : "com.fastybird.accounts-module/identity",
+              "id" : "fe115286-8cfd-41bf-aceb-6ca95baf6fe9"
+            }
+          ]
+        },
+        "roles" : {
+          "links" : {
+            "self" : "/v1/accounts/fd23ccb4-8d87-4eb3-94da-638ab4e10ae3/relationships/roles"
+          },
+          "data" : []
+        },
+        "emails" : {
+          "links" : {
+            "self" : "/v1/accounts/fd23ccb4-8d87-4eb3-94da-638ab4e10ae3/relationships/emails",
+            "related" : {
+              "href" : "/v1/accounts/fd23ccb4-8d87-4eb3-94da-638ab4e10ae3/emails",
+              "meta" : {
+                "count" : 1
+              }
+            }
+          },
+          "data" : [
+            {
+              "type" : "com.fastybird.accounts-module/email",
+              "id" : "baefec20-1927-41ce-a7e0-ae74bd641b9c"
+            }
+          ]
+        }
+      },
+      "links" : {
+        "self" : "/v1/accounts/fd23ccb4-8d87-4eb3-94da-638ab4e10ae3"
+      }
+    },
+    {
+      "type" : "com.fastybird.accounts-module/account",
+      "id" : "fdbe2ce2-3b18-41f1-aaab-c3c56d286eb4",
+      "attributes" : {
+        "state" : "deleted",
+        "last_visit" : "2019-05-29T07:38:24+02:00",
+        "registered" : "2017-01-04T12:30:00+01:00",
+        "name" : "Parker Peter",
+        "details" : {
+          "first_name" : "Peter",
+          "last_name" : "Parker",
+          "middle_name" : "Deleted"
+        },
+        "language" : "en",
+        "week_start" : 1,
+        "datetime" : {
+          "timezone" : "Europe/Prague",
+          "date_format" : "DD.MM.YYYY",
+          "time_format" : "HH:mm"
+        }
+      },
+      "relationships" : {
+        "identities" : {
+          "links" : {
+            "self" : "/v1/accounts/fdbe2ce2-3b18-41f1-aaab-c3c56d286eb4/relationships/identities",
+            "related" : {
+              "href" : "/v1/accounts/fdbe2ce2-3b18-41f1-aaab-c3c56d286eb4/identities",
+              "meta" : {
+                "count" : 1
+              }
+            }
+          },
+          "data" : [
+            {
+              "type" : "com.fastybird.accounts-module/identity",
+              "id" : "f2ab51a8-0b6f-4adb-b51e-1c648d41f24e"
+            }
+          ]
+        },
+        "roles" : {
+          "links" : {
+            "self" : "/v1/accounts/fdbe2ce2-3b18-41f1-aaab-c3c56d286eb4/relationships/roles"
+          },
+          "data" : []
+        },
+        "emails" : {
+          "links" : {
+            "self" : "/v1/accounts/fdbe2ce2-3b18-41f1-aaab-c3c56d286eb4/relationships/emails",
+            "related" : {
+              "href" : "/v1/accounts/fdbe2ce2-3b18-41f1-aaab-c3c56d286eb4/emails",
+              "meta" : {
+                "count" : 1
+              }
+            }
+          },
+          "data" : [
+            {
+              "type" : "com.fastybird.accounts-module/email",
+              "id" : "eb54a59e-5c7a-41e5-bfac-4fb6ec4d6ad9"
+            }
+          ]
+        }
+      },
+      "links" : {
+        "self" : "/v1/accounts/fdbe2ce2-3b18-41f1-aaab-c3c56d286eb4"
+      }
+    },
+    {
+      "type" : "com.fastybird.accounts-module/account",
+      "id" : "fe115286-8cfd-41bf-aceb-6ca95baf6fe9",
+      "attributes" : {
+        "state" : "blocked",
+        "last_visit" : "2019-05-29T07:38:24+02:00",
+        "registered" : "2017-01-04T12:30:00+01:00",
+        "name" : "Pan Peter",
+        "details" : {
+          "first_name" : "Peter",
+          "last_name" : "Pan",
+          "middle_name" : "Blocked"
+        },
+        "language" : "en",
+        "week_start" : 1,
+        "datetime" : {
+          "timezone" : "Europe/Prague",
+          "date_format" : "DD.MM.YYYY",
+          "time_format" : "HH:mm"
+        }
+      },
+      "relationships" : {
+        "identities" : {
+          "links" : {
+            "self" : "/v1/accounts/fe115286-8cfd-41bf-aceb-6ca95baf6fe9/relationships/identities",
+            "related" : {
+              "href" : "/v1/accounts/fe115286-8cfd-41bf-aceb-6ca95baf6fe9/identities",
+              "meta" : {
+                "count" : 1
+              }
+            }
+          },
+          "data" : [
+            {
+              "type" : "com.fastybird.accounts-module/identity",
+              "id" : "fd3385a5-d8d7-44fb-b7f1-151c62a4a7b4"
+            }
+          ]
+        },
+        "roles" : {
+          "links" : {
+            "self" : "/v1/accounts/fe115286-8cfd-41bf-aceb-6ca95baf6fe9/relationships/roles"
+          },
+          "data" : []
+        },
+        "emails" : {
+          "links" : {
+            "self" : "/v1/accounts/fe115286-8cfd-41bf-aceb-6ca95baf6fe9/relationships/emails",
+            "related" : {
+              "href" : "/v1/accounts/fe115286-8cfd-41bf-aceb-6ca95baf6fe9/emails",
+              "meta" : {
+                "count" : 1
+              }
+            }
+          },
+          "data" : [
+            {
+              "type" : "com.fastybird.accounts-module/email",
+              "id" : "7d60dd96-efbf-bd53-4e2b-efbfbdefbfbd"
+            }
+          ]
+        }
+      },
+      "links" : {
+        "self" : "/v1/accounts/fe115286-8cfd-41bf-aceb-6ca95baf6fe9"
+      }
+    }
+  ]
+}

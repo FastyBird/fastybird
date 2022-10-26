@@ -16,6 +16,7 @@
 namespace FastyBird\Module\Devices\DI;
 
 use Doctrine\Persistence;
+use FastyBird\Bootstrap;
 use FastyBird\Module\Devices\Commands;
 use FastyBird\Module\Devices\Connectors;
 use FastyBird\Module\Devices\Controllers;
@@ -56,12 +57,12 @@ class DevicesExtension extends DI\CompilerExtension
 	public const CONNECTOR_TYPE_TAG = 'connector_type';
 
 	public static function register(
-		Nette\Configurator $config,
+		Nette\Configurator|Bootstrap\Boot\Configurator $config,
 		string $extensionName = self::NAME,
 	): void
 	{
 		$config->onCompile[] = static function (
-			Nette\Configurator $config,
+			Nette\Configurator|Bootstrap\Boot\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new DevicesExtension());

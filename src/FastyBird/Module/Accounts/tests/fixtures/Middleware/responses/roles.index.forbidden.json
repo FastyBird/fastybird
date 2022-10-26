@@ -1,0 +1,13 @@
+{
+  "errors" : [
+    {
+      "code" : "403",
+      "detail" : "You are not allowed to perform this action",
+      "status" : "403",
+      "title" : "Not allowed"
+    }
+  ],
+  "jsonapi" : {
+    "version" : "1.1"
+  }
+}

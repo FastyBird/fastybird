@@ -1,0 +1,45 @@
+{
+  "compilerOptions" : {
+    "target" : "esnext",
+    "module" : "esnext",
+    "strict" : true,
+    "declaration" : true,
+    "declarationDir" : "dist/dts",
+    "emitDeclarationOnly" : true,
+    "noUnusedLocals" : true,
+    "noUnusedParameters" : true,
+    "importHelpers" : true,
+    "moduleResolution" : "node",
+    "experimentalDecorators" : true,
+    "esModuleInterop" : true,
+    "allowSyntheticDefaultImports" : true,
+    "sourceMap" : true,
+    "resolveJsonModule" : true,
+    "baseUrl" : ".",
+    "types" : [
+      "node",
+      "@fastybird/metadata",
+      "@fastybird/vue-wamp-v1",
+      "@fastybird/vuex-orm-wamp",
+      "@types/lodash",
+      "@types/uuid",
+      "@vuex-orm/core",
+      "@vuex-orm/plugin-axios"
+    ],
+    "paths" : {
+      "@/*" : [
+        "public/*"
+      ]
+    },
+    "lib" : [
+      "esnext",
+      "dom",
+      "dom.iterable",
+      "scripthost"
+    ]
+  },
+  "exclude" : [
+    "node_modules",
+    "dist"
+  ]
+}

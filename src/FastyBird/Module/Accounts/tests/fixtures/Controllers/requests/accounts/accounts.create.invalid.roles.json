@@ -1,0 +1,26 @@
+{
+  "data" : {
+    "type" : "com.fastybird.accounts-module/account",
+    "id" : "3de0c345-ea83-4585-a7ca-7759a2e1e66e",
+    "attributes" : {
+      "details" : {
+        "first_name" : "Pepa",
+        "last_name" : "Novák"
+      }
+    },
+    "relationships" : {
+      "roles" : {
+        "data" : [
+          {
+            "type" : "com.fastybird.accounts-module/role",
+            "id" : "89f4a14f-7f78-4216-99b8-584ab9229f1c"
+          },
+          {
+            "type" : "com.fastybird.accounts-module/role",
+            "id" : "efbfbdef-bfbd-efbf-bd0f-efbfbd5c4f61"
+          }
+        ]
+      }
+    }
+  }
+}

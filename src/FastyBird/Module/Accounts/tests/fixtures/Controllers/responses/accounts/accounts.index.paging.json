@@ -1,0 +1,91 @@
+{
+  "meta" : {
+    "author" : "FastyBird team",
+    "copyright" : "FastyBird s.r.o",
+    "totalCount" : 6
+  },
+  "jsonapi" : {
+    "version" : "1.1"
+  },
+  "links" : {
+    "self" : "/v1/accounts?page%5Boffset%5D=1&page%5Blimit%5D=1",
+    "first" : "/v1/accounts?page%5Boffset%5D=0&page%5Blimit%5D=1",
+    "prev" : "/v1/accounts?page%5Boffset%5D=0&page%5Blimit%5D=1",
+    "next" : "/v1/accounts?page%5Boffset%5D=2&page%5Blimit%5D=1",
+    "last" : "/v1/accounts?page%5Boffset%5D=5&page%5Blimit%5D=1"
+  },
+  "data" : [
+    {
+      "type" : "com.fastybird.accounts-module/account",
+      "id" : "efbfbdef-bfbd-68ef-bfbd-770b40efbfbd",
+      "attributes" : {
+        "state" : "active",
+        "last_visit" : "2019-05-29T07:38:24+02:00",
+        "registered" : "2017-01-04T12:30:00+01:00",
+        "name" : "Doe Jane",
+        "details" : {
+          "first_name" : "Jane",
+          "last_name" : "Doe",
+          "middle_name" : null
+        },
+        "language" : "en",
+        "week_start" : 1,
+        "datetime" : {
+          "timezone" : "Europe/Prague",
+          "date_format" : "DD.MM.YYYY",
+          "time_format" : "HH:mm"
+        }
+      },
+      "relationships" : {
+        "identities" : {
+          "links" : {
+            "self" : "/v1/accounts/efbfbdef-bfbd-68ef-bfbd-770b40efbfbd/relationships/identities",
+            "related" : {
+              "href" : "/v1/accounts/efbfbdef-bfbd-68ef-bfbd-770b40efbfbd/identities",
+              "meta" : {
+                "count" : 1
+              }
+            }
+          },
+          "data" : [
+            {
+              "type" : "com.fastybird.accounts-module/identity",
+              "id" : "faf7a863-a49c-4428-a757-1de537773355"
+            }
+          ]
+        },
+        "roles" : {
+          "links" : {
+            "self" : "/v1/accounts/efbfbdef-bfbd-68ef-bfbd-770b40efbfbd/relationships/roles"
+          },
+          "data" : [
+            {
+              "type" : "com.fastybird.accounts-module/role",
+              "id" : "efbfbdef-bfbd-efbf-bd0f-efbfbd5c4f61"
+            }
+          ]
+        },
+        "emails" : {
+          "links" : {
+            "self" : "/v1/accounts/efbfbdef-bfbd-68ef-bfbd-770b40efbfbd/relationships/emails",
+            "related" : {
+              "href" : "/v1/accounts/efbfbdef-bfbd-68ef-bfbd-770b40efbfbd/emails",
+              "meta" : {
+                "count" : 1
+              }
+            }
+          },
+          "data" : [
+            {
+              "type" : "com.fastybird.accounts-module/email",
+              "id" : "73efbfbd-efbf-bd36-44ef-bfbdefbfbd7a"
+            }
+          ]
+        }
+      },
+      "links" : {
+        "self" : "/v1/accounts/efbfbdef-bfbd-68ef-bfbd-770b40efbfbd"
+      }
+    }
+  ]
+}

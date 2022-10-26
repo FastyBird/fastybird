@@ -1,0 +1,10 @@
+{
+  "data" : {
+    "type" : "com.fastybird.accounts-module/identity",
+    "id" : "0feb8e33-04b2-4925-9bc8-e497f49595b4",
+    "attributes" : {
+      "uid" : "petr@novak.cz",
+      "password" : "123456789"
+    }
+  }
+}

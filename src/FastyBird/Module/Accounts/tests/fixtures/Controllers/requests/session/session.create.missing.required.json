@@ -1,0 +1,8 @@
+{
+  "data" : {
+    "type" : "com.fastybird.accounts-module/session",
+    "attributes" : {
+      "uid" : "john.doe@fastybird.com"
+    }
+  }
+}

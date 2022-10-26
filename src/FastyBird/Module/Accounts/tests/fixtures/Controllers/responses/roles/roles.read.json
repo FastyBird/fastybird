@@ -1,0 +1,55 @@
+{
+  "meta" : {
+    "author" : "FastyBird team",
+    "copyright" : "FastyBird s.r.o"
+  },
+  "jsonapi" : {
+    "version" : "1.1"
+  },
+  "links" : {
+    "self" : "/v1/roles/efbfbdef-bfbd-efbf-bd0f-efbfbd5c4f61"
+  },
+  "data" : {
+    "type" : "com.fastybird.accounts-module/role",
+    "id" : "efbfbdef-bfbd-efbf-bd0f-efbfbd5c4f61",
+    "attributes" : {
+      "name" : "user",
+      "comment" : "User",
+      "anonymous" : false,
+      "authenticated" : true,
+      "administrator" : false
+    },
+    "relationships" : {
+      "children" : {
+        "links" : {
+          "self" : "/v1/roles/efbfbdef-bfbd-efbf-bd0f-efbfbd5c4f61/relationships/children",
+          "related" : {
+            "href" : "/v1/roles/efbfbdef-bfbd-efbf-bd0f-efbfbd5c4f61/children",
+            "meta" : {
+              "count" : 1
+            }
+          }
+        },
+        "data" : [
+          {
+            "type" : "com.fastybird.accounts-module/role",
+            "id" : "89f4a14f-7f78-4216-99b8-584ab9229f1c"
+          }
+        ]
+      },
+      "parent" : {
+        "links" : {
+          "self" : "/v1/roles/efbfbdef-bfbd-efbf-bd0f-efbfbd5c4f61/relationships/parent",
+          "related" : "/v1/roles/efbfbdef-bfbd-efbf-bd0f-efbfbd5c4f61"
+        },
+        "data" : {
+          "type" : "com.fastybird.accounts-module/role",
+          "id" : "efbfbd04-0158-efbf-bdef-bfbd4defbfbd"
+        }
+      }
+    },
+    "links" : {
+      "self" : "/v1/roles/efbfbdef-bfbd-efbf-bd0f-efbfbd5c4f61"
+    }
+  }
+}

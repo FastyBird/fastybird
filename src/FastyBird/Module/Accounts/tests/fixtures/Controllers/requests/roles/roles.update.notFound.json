@@ -1,0 +1,9 @@
+{
+  "data" : {
+    "id" : "83985c13-238c-46bd-aacb-2359d5c921a7",
+    "type" : "com.fastybird.accounts-module/role",
+    "attributes" : {
+      "comment" : "Authenticated with update"
+    }
+  }
+}

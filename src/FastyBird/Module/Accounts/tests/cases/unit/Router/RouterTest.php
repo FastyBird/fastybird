@@ -1,0 +1,72 @@
+<?php declare(strict_types = 1);
+
+namespace FastyBird\Module\Accounts\Tests\Cases\Unit\Router;
+
+use FastyBird\Library\Metadata;
+use FastyBird\Module\Accounts\Exceptions;
+use FastyBird\Module\Accounts\Tests\Cases\Unit\DbTestCase;
+use Fig\Http\Message\RequestMethodInterface;
+use Fig\Http\Message\StatusCodeInterface;
+use InvalidArgumentException;
+use IPub\SlimRouter;
+use Nette;
+use React\Http\Message\ServerRequest;
+use RuntimeException;
+
+final class RouterTest extends DbTestCase
+{
+
+	public function setUp(): void
+	{
+		$this->registerNeonConfigurationFile(__DIR__ . '/prefixedRoutes.neon');
+
+		parent::setUp();
+	}
+
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 * @throws InvalidArgumentException
+	 * @throws Nette\DI\MissingServiceException
+	 * @throws RuntimeException
+	 *
+	 * @dataProvider prefixedRoutes
+	 */
+	public function testPrefixedRoutes(string $url, string $token, int $statusCode): void
+	{
+		$router = $this->getContainer()->getByType(SlimRouter\Routing\IRouter::class);
+
+		$headers = [
+			'authorization' => $token,
+		];
+
+		$request = new ServerRequest(
+			RequestMethodInterface::METHOD_GET,
+			$url,
+			$headers,
+		);
+
+		$response = $router->handle($request);
+
+		self::assertSame($statusCode, $response->getStatusCode());
+	}
+
+	/**
+	 * @return Array<string, Array<int|string>>
+	 */
+	public function prefixedRoutes(): array
+	{
+		return [
+			'readAllValid' => [
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/me',
+				'Bearer ' . self::ADMINISTRATOR_TOKEN,
+				StatusCodeInterface::STATUS_OK,
+			],
+			'readAllInvalid' => [
+				'/v1/me',
+				'Bearer ' . self::ADMINISTRATOR_TOKEN,
+				StatusCodeInterface::STATUS_NOT_FOUND,
+			],
+		];
+	}
+
+}

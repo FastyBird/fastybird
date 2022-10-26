@@ -1,0 +1,19 @@
+{
+  "data" : {
+    "type" : "com.fastybird.accounts-module/invalid-type",
+    "id" : "66295a83-0f85-4e8f-9c3d-9d9f5a947737",
+    "attributes" : {
+      "address" : "john@doe.com",
+      "default" : false,
+      "private" : true
+    },
+    "relationships" : {
+      "account" : {
+        "data" : {
+          "type" : "com.fastybird.accounts-module/account",
+          "id" : "5e79efbf-bd0d-5b7c-46ef-bfbdefbfbd34"
+        }
+      }
+    }
+  }
+}

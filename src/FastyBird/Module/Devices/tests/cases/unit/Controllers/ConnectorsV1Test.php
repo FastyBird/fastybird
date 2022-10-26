@@ -15,6 +15,10 @@ use React\Http\Message\ServerRequest;
 use RuntimeException;
 use function file_get_contents;
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class ConnectorsV1Test extends DbTestCase
 {
 

@@ -1,0 +1,37 @@
+{
+  "meta" : {
+    "author" : "FastyBird team",
+    "copyright" : "FastyBird s.r.o"
+  },
+  "jsonapi" : {
+    "version" : "1.1"
+  },
+  "links" : {
+    "self" : "/v1/accounts/fae8d781-7e2c-4318-9c85-43ba637d14c5/emails/ed987404-f14c-40b4-9150-15b6590deb8c"
+  },
+  "data" : {
+    "type" : "com.fastybird.accounts-module/email",
+    "id" : "ed987404-f14c-40b4-9150-15b6590deb8c",
+    "attributes" : {
+      "address" : "clark.kent@fastybird.com",
+      "default" : true,
+      "verified" : true,
+      "private" : false
+    },
+    "relationships" : {
+      "account" : {
+        "links" : {
+          "self" : "/v1/accounts/fae8d781-7e2c-4318-9c85-43ba637d14c5/emails/ed987404-f14c-40b4-9150-15b6590deb8c/relationships/account",
+          "related" : "/v1/accounts/fae8d781-7e2c-4318-9c85-43ba637d14c5"
+        },
+        "data" : {
+          "type" : "com.fastybird.accounts-module/account",
+          "id" : "fae8d781-7e2c-4318-9c85-43ba637d14c5"
+        }
+      }
+    },
+    "links" : {
+      "self" : "/v1/accounts/fae8d781-7e2c-4318-9c85-43ba637d14c5/emails/ed987404-f14c-40b4-9150-15b6590deb8c"
+    }
+  }
+}

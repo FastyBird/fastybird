@@ -14,6 +14,10 @@ use Nette\Utils;
 use React\Http\Message\ServerRequest;
 use RuntimeException;
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class DeviceParentsV1Test extends DbTestCase
 {
 

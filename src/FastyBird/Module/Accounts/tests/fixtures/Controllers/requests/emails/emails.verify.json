@@ -1,0 +1,12 @@
+{
+  "data" : {
+    "type" : "com.fastybird.accounts-module/email",
+    "id" : "ed987404-f14c-40b4-9150-15b6590deb8c",
+    "attributes" : {
+      "address" : "clark.kent@fastybird.com",
+      "default" : true,
+      "verified" : true,
+      "private" : false
+    }
+  }
+}
