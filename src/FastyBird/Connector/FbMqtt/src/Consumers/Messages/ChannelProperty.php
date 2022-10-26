@@ -33,7 +33,6 @@ use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Nette\Utils;
 use Psr\Log;
-use function array_merge;
 use function assert;
 use function count;
 use function sprintf;
@@ -61,8 +60,7 @@ final class ChannelProperty implements Consumers\Consumer
 		private readonly DevicesModels\DataStorage\DevicesRepository $devicesDataStorageRepository,
 		private readonly DevicesModels\DataStorage\ChannelsRepository $channelsDataStorageRepository,
 		private readonly DevicesModels\DataStorage\ChannelPropertiesRepository $propertiesDataStorageRepository,
-		private readonly DevicesModels\States\ChannelPropertiesManager $propertiesStatesManager,
-		private readonly DevicesModels\States\ChannelPropertiesRepository $propertyStateRepository,
+		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly Helpers\Database $databaseHelper,
 		Log\LoggerInterface|null $logger = null,
 	)
@@ -158,30 +156,6 @@ final class ChannelProperty implements Consumers\Consumer
 					),
 				);
 			} elseif ($propertyItem instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty) {
-				try {
-					$propertyState = $this->propertyStateRepository->findOne($propertyItem);
-
-				} catch (DevicesExceptions\NotImplemented) {
-					$this->logger->warning(
-						'States repository is not configured. State could not be fetched',
-						[
-							'source' => Metadata\Constants::CONNECTOR_FB_MQTT_SOURCE,
-							'type' => 'channel-property-message-consumer',
-							'device' => [
-								'id' => $deviceItem->getId()->toString(),
-							],
-							'channel' => [
-								'id' => $channelItem->getId()->toString(),
-							],
-							'property' => [
-								'id' => $propertyItem->getId()->toString(),
-							],
-						],
-					);
-
-					return true;
-				}
-
 				$actualValue = DevicesUtilities\ValueHelper::flattenValue(
 					DevicesUtilities\ValueHelper::normalizeValue(
 						$propertyItem->getDataType(),
@@ -191,51 +165,13 @@ final class ChannelProperty implements Consumers\Consumer
 					),
 				);
 
-				try {
-					// In case synchronization failed...
-					if ($propertyState === null) {
-						// ...create state in storage
-						$this->propertiesStatesManager->create(
-							$propertyItem,
-							Utils\ArrayHash::from(array_merge(
-								$propertyItem->toArray(),
-								[
-									'actualValue' => $actualValue,
-									'expectedValue' => null,
-									'pending' => false,
-									'valid' => true,
-								],
-							)),
-						);
-
-					} else {
-						$this->propertiesStatesManager->update(
-							$propertyItem,
-							$propertyState,
-							Utils\ArrayHash::from([
-								'actualValue' => $actualValue,
-								'valid' => true,
-							]),
-						);
-					}
-				} catch (DevicesExceptions\NotImplemented) {
-					$this->logger->warning(
-						'States manager is not configured. State could not be saved',
-						[
-							'source' => Metadata\Constants::CONNECTOR_FB_MQTT_SOURCE,
-							'type' => 'channel-property-message-consumer',
-							'device' => [
-								'id' => $deviceItem->getId()->toString(),
-							],
-							'channel' => [
-								'id' => $channelItem->getId()->toString(),
-							],
-							'property' => [
-								'id' => $propertyItem->getId()->toString(),
-							],
-						],
-					);
-				}
+				$this->channelPropertiesStates->setValue(
+					$propertyItem,
+					Utils\ArrayHash::from([
+						'actualValue' => $actualValue,
+						'valid' => true,
+					]),
+				);
 			}
 		} else {
 			$device = $this->databaseHelper->query(

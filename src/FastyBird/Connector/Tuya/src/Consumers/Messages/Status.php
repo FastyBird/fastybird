@@ -46,7 +46,7 @@ final class Status implements Consumer
 
 	public function __construct(
 		private readonly DevicesModels\DataStorage\DevicesRepository $devicesDataStorageRepository,
-		private readonly DevicesModels\States\DeviceConnectionStateManager $deviceConnectionStateManager,
+		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly Mappers\DataPoint $dataPointMapper,
 		private readonly Helpers\Property $propertyStateHelper,
 		Log\LoggerInterface|null $logger,
@@ -83,12 +83,12 @@ final class Status implements Consumer
 
 		// Check device state...
 		if (
-			!$this->deviceConnectionStateManager->getState($deviceItem)->equalsValue(
+			!$this->deviceConnectionManager->getState($deviceItem)->equalsValue(
 				Metadata\Types\ConnectionState::STATE_CONNECTED,
 			)
 		) {
 			// ... and if it is not ready, set it to ready
-			$this->deviceConnectionStateManager->setState(
+			$this->deviceConnectionManager->setState(
 				$deviceItem,
 				Metadata\Types\ConnectionState::get(Metadata\Types\ConnectionState::STATE_CONNECTED),
 			);

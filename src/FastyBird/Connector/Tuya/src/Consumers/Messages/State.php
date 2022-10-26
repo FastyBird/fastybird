@@ -23,6 +23,7 @@ use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette;
 use Psr\Log;
@@ -48,7 +49,7 @@ final class State implements Consumer
 		private readonly DevicesModels\DataStorage\DevicePropertiesRepository $devicePropertiesRepository,
 		private readonly DevicesModels\DataStorage\ChannelsRepository $channelsRepository,
 		private readonly DevicesModels\DataStorage\ChannelPropertiesRepository $channelPropertiesRepository,
-		private readonly DevicesModels\States\DeviceConnectionStateManager $deviceConnectionStateManager,
+		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		Log\LoggerInterface|null $logger,
 	)
 	{
@@ -87,10 +88,10 @@ final class State implements Consumer
 
 		// Check device state...
 		if (
-			!$this->deviceConnectionStateManager->getState($deviceItem)->equals($actualDeviceState)
+			!$this->deviceConnectionManager->getState($deviceItem)->equals($actualDeviceState)
 		) {
 			// ... and if it is not ready, set it to ready
-			$this->deviceConnectionStateManager->setState(
+			$this->deviceConnectionManager->setState(
 				$deviceItem,
 				$actualDeviceState,
 			);

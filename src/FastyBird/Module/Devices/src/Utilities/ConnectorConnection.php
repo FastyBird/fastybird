@@ -1,21 +1,20 @@
 <?php declare(strict_types = 1);
 
 /**
- * ConnectorConnectionStateManager.php
+ * ConnectorConnection.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:DevicesModule!
- * @subpackage     StateEntities
+ * @subpackage     Utilities
  * @since          0.73.0
  *
  * @date           19.07.22
  */
 
-namespace FastyBird\Module\Devices\Models\States;
+namespace FastyBird\Module\Devices\Utilities;
 
-use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -26,33 +25,28 @@ use FastyBird\Module\Devices\Queries;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette;
 use Nette\Utils;
-use Psr\Log;
+use function assert;
 
 /**
  * Connector connection states manager
  *
  * @package        FastyBird:DevicesModule!
- * @subpackage     StateEntities
+ * @subpackage     Utilities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ConnectorConnectionStateManager
+final class ConnectorConnection
 {
 
 	use Nette\SmartObject;
-
-	private Log\LoggerInterface $logger;
 
 	public function __construct(
 		private readonly Models\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly Models\DataStorage\ConnectorPropertiesRepository $repository,
 		private readonly Models\Connectors\Properties\PropertiesManager $manager,
-		private readonly Models\States\ConnectorPropertiesRepository $statesRepository,
-		private readonly Models\States\ConnectorPropertiesManager $statesManager,
-		Log\LoggerInterface|null $logger = null,
+		private readonly ConnectorPropertiesStates $propertiesStates,
 	)
 	{
-		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	/**
@@ -71,12 +65,12 @@ final class ConnectorConnectionStateManager
 		MetadataTypes\ConnectionState $state,
 	): bool
 	{
-		$stateProperty = $this->repository->findByIdentifier(
+		$property = $this->repository->findByIdentifier(
 			$connector->getId(),
 			MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_STATE,
 		);
 
-		if ($stateProperty === null) {
+		if ($property === null) {
 			if (!$connector instanceof Entities\Connectors\Connector) {
 				$findConnectorQuery = new Queries\FindConnectors();
 				$findConnectorQuery->byId($connector->getId());
@@ -88,7 +82,7 @@ final class ConnectorConnectionStateManager
 				}
 			}
 
-			$stateProperty = $this->manager->create(Utils\ArrayHash::from([
+			$property = $this->manager->create(Utils\ArrayHash::from([
 				'connector' => $connector,
 				'entity' => Entities\Connectors\Properties\Dynamic::class,
 				'identifier' => MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_STATE,
@@ -106,71 +100,20 @@ final class ConnectorConnectionStateManager
 			]));
 		}
 
-		if (
-			$stateProperty instanceof MetadataEntities\DevicesModule\ConnectorDynamicProperty
-			|| $stateProperty instanceof Entities\Connectors\Properties\Dynamic
-		) {
-			try {
-				$statePropertyState = $this->statesRepository->findOne($stateProperty);
+		assert(
+			$property instanceof MetadataEntities\DevicesModule\ConnectorDynamicProperty
+			|| $property instanceof Entities\Connectors\Properties\Dynamic,
+		);
 
-			} catch (Exceptions\NotImplemented) {
-				$this->logger->warning(
-					'StateEntities repository is not configured. State could not be fetched',
-					[
-						'source' => Metadata\Constants::MODULE_DEVICES_SOURCE,
-						'type' => 'connector-connection-state-manager',
-					],
-				);
-
-				MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_UNKNOWN);
-
-				return false;
-			}
-
-			if ($statePropertyState === null) {
-				try {
-					$this->statesManager->create($stateProperty, Utils\ArrayHash::from([
-						'actualValue' => $state->getValue(),
-						'expectedValue' => null,
-						'pending' => false,
-						'valid' => true,
-					]));
-
-					return true;
-				} catch (Exceptions\NotImplemented) {
-					$this->logger->warning(
-						'StateEntities manager is not configured. State could not be saved',
-						[
-							'source' => Metadata\Constants::MODULE_DEVICES_SOURCE,
-							'type' => 'connector-connection-state-manager',
-						],
-					);
-				}
-			} else {
-				try {
-					$this->statesManager->update(
-						$stateProperty,
-						$statePropertyState,
-						Utils\ArrayHash::from([
-							'actualValue' => $state->getValue(),
-							'expectedValue' => null,
-							'pending' => false,
-							'valid' => true,
-						]),
-					);
-
-					return true;
-				} catch (Exceptions\NotImplemented) {
-					$this->logger->warning(
-						'StateEntities manager is not configured. State could not be saved',
-						[
-							'source' => Metadata\Constants::MODULE_DEVICES_SOURCE,
-							'type' => 'connector-connection-state-manager',
-						],
-					);
-				}
-			}
-		}
+		$this->propertiesStates->setValue(
+			$property,
+			Utils\ArrayHash::from([
+				'actualValue' => $state->getValue(),
+				'expectedValue' => null,
+				'pending' => false,
+				'valid' => true,
+			]),
+		);
 
 		return false;
 	}

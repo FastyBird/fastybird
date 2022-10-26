@@ -16,14 +16,13 @@
 namespace FastyBird\Bridge\RedisDbDevicesModule\Models;
 
 use FastyBird\Bridge\RedisDbDevicesModule\States;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
-use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Plugin\RedisDb\Exceptions as RedisDbExceptions;
 use FastyBird\Plugin\RedisDb\Models as RedisDbModels;
 use Nette;
 use Nette\Utils;
+use Ramsey\Uuid;
 use function assert;
 
 /**
@@ -58,32 +57,22 @@ class ChannelPropertiesManager implements DevicesModels\States\IChannelPropertie
 	/**
 	 * @throws RedisDbExceptions\InvalidState
 	 */
-	public function create(
-		MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelMappedProperty|DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped $property,
-		Utils\ArrayHash $values,
-	): States\ChannelProperty
+	public function create(Uuid\UuidInterface $id, Utils\ArrayHash $values): States\ChannelProperty
 	{
-		return $this->statesManager->create($property->getId(), $values, $this->database);
+		return $this->statesManager->create($id, $values, $this->database);
 	}
 
 	/**
 	 * @throws RedisDbExceptions\InvalidState
 	 */
-	public function update(
-		MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelMappedProperty|DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped $property,
-		DevicesStates\ChannelProperty $state,
-		Utils\ArrayHash $values,
-	): States\ChannelProperty
+	public function update(DevicesStates\ChannelProperty $state, Utils\ArrayHash $values): States\ChannelProperty
 	{
 		assert($state instanceof States\ChannelProperty);
 
 		return $this->statesManager->update($state, $values, $this->database);
 	}
 
-	public function delete(
-		MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelMappedProperty|DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped $property,
-		DevicesStates\ChannelProperty $state,
-	): bool
+	public function delete(DevicesStates\ChannelProperty $state): bool
 	{
 		assert($state instanceof States\ChannelProperty);
 

@@ -25,6 +25,7 @@ use FastyBird\Module\Devices\Connectors;
 use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
+use FastyBird\Module\Devices\Utilities;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Psr\EventDispatcher as PsrEventDispatcher;
 use Psr\Log;
@@ -68,10 +69,10 @@ class Connector extends Console\Command\Command
 		private readonly Models\DataStorage\DevicePropertiesRepository $devicesPropertiesRepository,
 		private readonly Models\DataStorage\ChannelsRepository $channelsRepository,
 		private readonly Models\DataStorage\ChannelPropertiesRepository $channelsPropertiesRepository,
-		private readonly Models\States\ConnectorConnectionStateManager $connectorConnectionStateManager,
-		private readonly Models\States\DeviceConnectionStateManager $deviceConnectionStateManager,
-		private readonly Models\States\DevicePropertyStateManager $devicePropertyStateManager,
-		private readonly Models\States\ChannelPropertyStateManager $channelPropertyStateManager,
+		private readonly Utilities\ConnectorConnection $connectorConnectionManager,
+		private readonly Utilities\DeviceConnection $deviceConnectionManager,
+		private readonly Utilities\DevicePropertiesStates $devicePropertiesStateManager,
+		private readonly Utilities\ChannelPropertiesStates $channelPropertiesStateManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher,
@@ -314,7 +315,7 @@ class Connector extends Console\Command\Command
 				// Start connector service
 				$service->execute();
 
-				$this->connectorConnectionStateManager->setState(
+				$this->connectorConnectionManager->setState(
 					$connector,
 					MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_RUNNING),
 				);
@@ -359,7 +360,7 @@ class Connector extends Console\Command\Command
 
 				$this->dispatcher?->dispatch(new Events\AfterConnectorTerminate($service));
 
-				$this->connectorConnectionStateManager->setState(
+				$this->connectorConnectionManager->setState(
 					$connector,
 					MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_STOPPED),
 				);
@@ -401,7 +402,7 @@ class Connector extends Console\Command\Command
 	): void
 	{
 		foreach ($this->devicesRepository->findAllByConnector($connector->getId()) as $device) {
-			$this->deviceConnectionStateManager->setState($device, $state);
+			$this->deviceConnectionManager->setState($device, $state);
 
 			/** @var Array<MetadataEntities\DevicesModule\DeviceDynamicProperty> $properties */
 			$properties = $this->devicesPropertiesRepository->findAllByDevice(
@@ -409,7 +410,7 @@ class Connector extends Console\Command\Command
 				MetadataEntities\DevicesModule\DeviceDynamicProperty::class,
 			);
 
-			$this->devicePropertyStateManager->setValidState($properties, false);
+			$this->devicePropertiesStateManager->setValidState($properties, false);
 
 			foreach ($this->channelsRepository->findAllByDevice($device->getId()) as $channel) {
 				/** @var Array<MetadataEntities\DevicesModule\ChannelDynamicProperty> $properties */
@@ -418,7 +419,7 @@ class Connector extends Console\Command\Command
 					MetadataEntities\DevicesModule\ChannelDynamicProperty::class,
 				);
 
-				$this->channelPropertyStateManager->setValidState($properties, false);
+				$this->channelPropertiesStateManager->setValidState($properties, false);
 			}
 		}
 	}

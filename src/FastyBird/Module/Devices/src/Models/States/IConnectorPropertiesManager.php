@@ -15,10 +15,9 @@
 
 namespace FastyBird\Module\Devices\Models\States;
 
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
-use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\States;
 use Nette\Utils;
+use Ramsey\Uuid;
 
 /**
  * Connector properties manager interface
@@ -31,20 +30,10 @@ use Nette\Utils;
 interface IConnectorPropertiesManager
 {
 
-	public function create(
-		MetadataEntities\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
-		Utils\ArrayHash $values,
-	): States\ConnectorProperty;
+	public function create(Uuid\UuidInterface $id, Utils\ArrayHash $values): States\ConnectorProperty;
 
-	public function update(
-		MetadataEntities\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
-		States\ConnectorProperty $state,
-		Utils\ArrayHash $values,
-	): States\ConnectorProperty;
+	public function update(States\ConnectorProperty $state, Utils\ArrayHash $values): States\ConnectorProperty;
 
-	public function delete(
-		MetadataEntities\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
-		States\ConnectorProperty $state,
-	): bool;
+	public function delete(States\ConnectorProperty $state): bool;
 
 }

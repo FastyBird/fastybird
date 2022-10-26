@@ -67,7 +67,7 @@ final class ModuleEntities implements Common\EventSubscriber
 		private readonly Models\States\ConnectorPropertiesManager $connectorPropertiesStatesManager,
 		private readonly DataStorage\Writer $configurationDataWriter,
 		private readonly MetadataEntities\RoutingFactory $entityFactory,
-		private readonly ExchangePublisher\Publisher|null $publisher = null,
+		private readonly ExchangePublisher\Publisher $publisher,
 	)
 	{
 	}
@@ -232,10 +232,6 @@ final class ModuleEntities implements Common\EventSubscriber
 	 */
 	private function publishEntity(Entities\Entity $entity, string $action): void
 	{
-		if ($this->publisher === null) {
-			return;
-		}
-
 		$publishRoutingKey = null;
 
 		switch ($action) {

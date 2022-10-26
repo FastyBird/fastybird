@@ -28,6 +28,7 @@ use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette;
@@ -60,7 +61,7 @@ final class Device implements Consumers\Consumer
 		private readonly DevicesModels\Devices\Attributes\AttributesManager $deviceAttributesManager,
 		private readonly DevicesModels\Channels\ChannelsManager $channelsManager,
 		private readonly DevicesModels\DataStorage\DevicesRepository $deviceDataStorageRepository,
-		private readonly DevicesModels\States\DeviceConnectionStateManager $deviceConnectionStateManager,
+		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly Helpers\Database $databaseHelper,
 		Log\LoggerInterface|null $logger = null,
 	)
@@ -110,7 +111,7 @@ final class Device implements Consumers\Consumer
 			}
 
 			if (MetadataTypes\ConnectionState::isValidValue($entity->getValue())) {
-				$this->deviceConnectionStateManager->setState(
+				$this->deviceConnectionManager->setState(
 					$deviceItem,
 					MetadataTypes\ConnectionState::get($entity->getValue()),
 				);
@@ -217,7 +218,7 @@ final class Device implements Consumers\Consumer
 	{
 		foreach ($properties as $propertyName) {
 			if ($propertyName === Types\DevicePropertyIdentifier::IDENTIFIER_STATE) {
-				$this->deviceConnectionStateManager->setState(
+				$this->deviceConnectionManager->setState(
 					$device,
 					MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_UNKNOWN),
 				);

@@ -12,6 +12,7 @@ use FastyBird\Module\Devices\Router;
 use FastyBird\Module\Devices\Schemas;
 use FastyBird\Module\Devices\Subscribers;
 use FastyBird\Module\Devices\Tests\Cases\Unit\DbTestCase;
+use FastyBird\Module\Devices\Utilities;
 use Nette;
 use RuntimeException;
 
@@ -105,6 +106,12 @@ final class DevicesModuleExtensionTests extends DbTestCase
 
 		self::assertNotNull($this->getContainer()->getByType(Subscribers\ModuleEntities::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Subscribers\StateEntities::class, false));
+
+		self::assertNotNull($this->getContainer()->getByType(Utilities\ChannelPropertiesStates::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Utilities\ConnectorPropertiesStates::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Utilities\DevicePropertiesStates::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Utilities\DeviceConnection::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Utilities\ConnectorConnection::class, false));
 	}
 
 }

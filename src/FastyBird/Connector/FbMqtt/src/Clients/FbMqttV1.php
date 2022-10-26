@@ -32,6 +32,7 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette\Utils;
 use Psr\Log;
@@ -90,7 +91,7 @@ final class FbMqttV1 extends Client
 		private readonly DevicesModels\DataStorage\DevicePropertiesRepository $devicePropertiesRepository,
 		private readonly DevicesModels\DataStorage\ChannelsRepository $channelsRepository,
 		private readonly DevicesModels\DataStorage\ChannelPropertiesRepository $channelPropertiesRepository,
-		private readonly DevicesModels\States\DeviceConnectionStateManager $deviceConnectionStateManager,
+		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		EventLoop\LoopInterface $loop,
 		Mqtt\ClientIdentifierGenerator|null $identifierGenerator = null,
@@ -141,7 +142,7 @@ final class FbMqttV1 extends Client
 		foreach ($this->devicesRepository->findAllByConnector($this->connector->getId()) as $device) {
 			if (
 				!in_array($device->getId()->toString(), $this->processedDevices, true)
-				&& $this->deviceConnectionStateManager->getState($device)
+				&& $this->deviceConnectionManager->getState($device)
 					->equalsValue(MetadataTypes\ConnectionState::STATE_READY)
 			) {
 				$this->processedDevices[] = $device->getId()->toString();
@@ -175,9 +176,9 @@ final class FbMqttV1 extends Client
 		parent::onClose($connection);
 
 		foreach ($this->devicesRepository->findAllByConnector($this->connector->getId()) as $device) {
-			if ($this->deviceConnectionStateManager->getState($device)
+			if ($this->deviceConnectionManager->getState($device)
 				->equalsValue(MetadataTypes\ConnectionState::STATE_READY)) {
-				$this->deviceConnectionStateManager->setState(
+				$this->deviceConnectionManager->setState(
 					$device,
 					MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_DISCONNECTED),
 				);

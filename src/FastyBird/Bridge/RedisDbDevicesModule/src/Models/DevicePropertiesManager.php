@@ -16,14 +16,13 @@
 namespace FastyBird\Bridge\RedisDbDevicesModule\Models;
 
 use FastyBird\Bridge\RedisDbDevicesModule\States;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
-use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Plugin\RedisDb\Exceptions as RedisDbExceptions;
 use FastyBird\Plugin\RedisDb\Models as RedisDbModels;
 use Nette;
 use Nette\Utils;
+use Ramsey\Uuid;
 use function assert;
 
 /**
@@ -58,32 +57,22 @@ class DevicePropertiesManager implements DevicesModels\States\IDevicePropertiesM
 	/**
 	 * @throws RedisDbExceptions\InvalidState
 	 */
-	public function create(
-		MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty|DevicesEntities\Devices\Properties\Dynamic|DevicesEntities\Devices\Properties\Mapped $property,
-		Utils\ArrayHash $values,
-	): States\DeviceProperty
+	public function create(Uuid\UuidInterface $id, Utils\ArrayHash $values): States\DeviceProperty
 	{
-		return $this->statesManager->create($property->getId(), $values, $this->database);
+		return $this->statesManager->create($id, $values, $this->database);
 	}
 
 	/**
 	 * @throws RedisDbExceptions\InvalidState
 	 */
-	public function update(
-		MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty|DevicesEntities\Devices\Properties\Dynamic|DevicesEntities\Devices\Properties\Mapped $property,
-		DevicesStates\DeviceProperty $state,
-		Utils\ArrayHash $values,
-	): States\DeviceProperty
+	public function update(DevicesStates\DeviceProperty $state, Utils\ArrayHash $values): States\DeviceProperty
 	{
 		assert($state instanceof States\DeviceProperty);
 
 		return $this->statesManager->update($state, $values, $this->database);
 	}
 
-	public function delete(
-		MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty|DevicesEntities\Devices\Properties\Dynamic|DevicesEntities\Devices\Properties\Mapped $property,
-		DevicesStates\DeviceProperty $state,
-	): bool
+	public function delete(DevicesStates\DeviceProperty $state): bool
 	{
 		assert($state instanceof States\DeviceProperty);
 

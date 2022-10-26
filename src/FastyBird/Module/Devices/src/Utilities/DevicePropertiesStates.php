@@ -1,23 +1,24 @@
 <?php declare(strict_types = 1);
 
 /**
- * DevicePropertyStateManager.php
+ * DevicePropertiesStates.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:DevicesModule!
- * @subpackage     StateEntities
+ * @subpackage     Utilities
  * @since          0.73.0
  *
  * @date           23.08.22
  */
 
-namespace FastyBird\Module\Devices\Models\States;
+namespace FastyBird\Module\Devices\Utilities;
 
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use Nette;
@@ -29,11 +30,11 @@ use function is_array;
  * Useful device dynamic property state helpers
  *
  * @package        FastyBird:DevicesModule!
- * @subpackage     StateEntities
+ * @subpackage     Utilities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DevicePropertyStateManager
+final class DevicePropertiesStates
 {
 
 	use Nette\SmartObject;
@@ -41,6 +42,7 @@ final class DevicePropertyStateManager
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
+		private readonly Models\DataStorage\DevicePropertiesRepository $devicePropertiesRepository,
 		private readonly Models\States\DevicePropertiesRepository $devicePropertyStateRepository,
 		private readonly Models\States\DevicePropertiesManager $devicePropertiesStatesManager,
 		Log\LoggerInterface|null $logger,
@@ -51,22 +53,46 @@ final class DevicePropertyStateManager
 
 	/**
 	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function setValue(
-		MetadataEntities\DevicesModule\DeviceDynamicProperty $property,
+		MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
 		Utils\ArrayHash $data,
 	): void
 	{
+		if ($property instanceof MetadataEntities\DevicesModule\DeviceMappedProperty) {
+			if ($property->getParent() === null) {
+				throw new Exceptions\InvalidState('Parent identifier for mapped property is missing');
+			}
+
+			$parent = $this->devicePropertiesRepository->findById($property->getParent());
+
+			if (!$parent instanceof MetadataEntities\DevicesModule\DeviceDynamicProperty) {
+				throw new Exceptions\InvalidState('Mapped property parent could not be loaded');
+			}
+
+			$property = $parent;
+		} elseif ($property instanceof Entities\Devices\Properties\Mapped) {
+			$property = $property->getParent();
+
+			if (!$property instanceof Entities\Devices\Properties\Dynamic) {
+				throw new Exceptions\InvalidState('Mapped property parent is invalid type');
+			}
+		}
+
 		try {
-			$propertyState = $this->devicePropertyStateRepository->findOne($property);
+			$propertyState = $this->devicePropertyStateRepository->findOneById($property->getId());
 		} catch (Exceptions\NotImplemented) {
 			$this->logger->warning(
-				'StateEntities repository is not configured. State could not be fetched',
+				'Devices states repository is not configured. State could not be fetched',
 				[
 					'source' => Metadata\Constants::MODULE_DEVICES_SOURCE,
-					'type' => 'device-property-state-manager',
+					'type' => 'device-properties-states',
 				],
 			);
 
@@ -86,10 +112,7 @@ final class DevicePropertyStateManager
 					'Device property state was created',
 					[
 						'source' => Metadata\Constants::MODULE_DEVICES_SOURCE,
-						'type' => 'device-property-state-manager',
-						'device' => [
-							'id' => $property->getDevice()->toString(),
-						],
+						'type' => 'device-properties-states',
 						'property' => [
 							'id' => $property->getId()->toString(),
 							'state' => $propertyState->toArray(),
@@ -107,10 +130,7 @@ final class DevicePropertyStateManager
 					'Device property state was updated',
 					[
 						'source' => Metadata\Constants::MODULE_DEVICES_SOURCE,
-						'type' => 'device-property-state-manager',
-						'device' => [
-							'id' => $property->getDevice()->toString(),
-						],
+						'type' => 'device-properties-states',
 						'property' => [
 							'id' => $property->getId()->toString(),
 							'state' => $propertyState->toArray(),
@@ -120,24 +140,28 @@ final class DevicePropertyStateManager
 			}
 		} catch (Exceptions\NotImplemented) {
 			$this->logger->warning(
-				'StateEntities manager is not configured. State could not be saved',
+				'Devices states manager is not configured. State could not be saved',
 				[
 					'source' => Metadata\Constants::MODULE_DEVICES_SOURCE,
-					'type' => 'device-property-state-manager',
+					'type' => 'device-properties-states',
 				],
 			);
 		}
 	}
 
 	/**
-	 * @param MetadataEntities\DevicesModule\DeviceDynamicProperty|Array<MetadataEntities\DevicesModule\DeviceDynamicProperty> $property
+	 * @param MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty|Array<MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty>|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped|Array<Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped> $property
 	 *
 	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function setValidState(
-		MetadataEntities\DevicesModule\DeviceDynamicProperty|array $property,
+		MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped|array $property,
 		bool $state,
 	): void
 	{

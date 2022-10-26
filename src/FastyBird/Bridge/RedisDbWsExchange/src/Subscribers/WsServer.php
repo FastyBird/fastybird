@@ -16,6 +16,7 @@
 namespace FastyBird\Bridge\RedisDbWsExchange\Subscribers;
 
 use FastyBird\Bridge\RedisDbWsExchange\Exceptions;
+use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -54,7 +55,7 @@ class WsServer implements EventDispatcher\EventSubscriberInterface
 		private readonly MetadataEntities\RoutingFactory $entityFactory,
 		private readonly RedisDbClient\Factory $clientFactory,
 		private readonly RedisDbHandlers\Message $messageHandler,
-		private readonly RedisDbPublishers\Publisher $redisPublisher,
+		private readonly ExchangePublisher\Container $exchangePublisher,
 		private readonly WsExchangePublishers\Publisher $wsPublisher,
 		private readonly EventLoop\LoopInterface|null $eventLoop = null,
 		Log\LoggerInterface|null $logger = null,
@@ -83,7 +84,7 @@ class WsServer implements EventDispatcher\EventSubscriberInterface
 							MetadataTypes\RoutingKey $routingKey,
 							MetadataEntities\Entity|null $entity,
 						): void {
-							$this->redisPublisher->publish($source, $routingKey, $entity);
+							$this->exchangePublisher->publish($source, $routingKey, $entity);
 
 							$this->logger->warning('Received message from exchange was pushed to WS clients', [
 								'source' => MetadataTypes\BridgeSource::SOURCE_BRIDGE_REDISDB_WS_EXCHANGE,

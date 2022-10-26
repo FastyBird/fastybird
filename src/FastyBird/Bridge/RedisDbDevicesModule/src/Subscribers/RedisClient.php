@@ -54,12 +54,9 @@ class RedisClient implements EventDispatcher\EventSubscriberInterface
 		private readonly DevicesModels\DataStorage\ConnectorPropertiesRepository $connectorPropertiesRepository,
 		private readonly DevicesModels\DataStorage\DevicePropertiesRepository $devicePropertiesRepository,
 		private readonly DevicesModels\DataStorage\ChannelPropertiesRepository $channelPropertiesRepository,
-		private readonly DevicesModels\States\ConnectorPropertiesManager $connectorPropertiesStatesManager,
-		private readonly DevicesModels\States\ConnectorPropertiesRepository $connectorPropertiesStatesRepository,
-		private readonly DevicesModels\States\DevicePropertiesManager $devicePropertiesStatesManager,
-		private readonly DevicesModels\States\DevicePropertiesRepository $devicePropertiesStatesRepository,
-		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
-		private readonly DevicesModels\States\ChannelPropertiesRepository $channelPropertiesStatesRepository,
+		private readonly DevicesUtilities\ConnectorPropertiesStates $connectorPropertiesStates,
+		private readonly DevicesUtilities\DevicePropertiesStates $devicePropertiesStates,
+		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		Log\LoggerInterface|null $logger = null,
 	)
 	{
@@ -89,7 +86,6 @@ class RedisClient implements EventDispatcher\EventSubscriberInterface
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws DevicesExceptions\NotImplemented
 	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidData
@@ -113,24 +109,13 @@ class RedisClient implements EventDispatcher\EventSubscriberInterface
 							return;
 						}
 
-						$valueToWrite = $this->normalizeValue($property, $entity->getExpectedValue());
-
-						$state = $this->connectorPropertiesStatesRepository->findOne($property);
-
-						if ($state !== null) {
-							$this->connectorPropertiesStatesManager->update($property, $state, Utils\ArrayHash::from([
-								'expectedValue' => $valueToWrite,
+						$this->connectorPropertiesStates->setValue(
+							$property,
+							Utils\ArrayHash::from([
+								'expectedValue' => $this->normalizeValue($property, $entity->getExpectedValue()),
 								'pending' => true,
-							]));
-
-						} else {
-							$this->connectorPropertiesStatesManager->create($property, Utils\ArrayHash::from([
-								'actualValue' => null,
-								'expectedValue' => $valueToWrite,
-								'pending' => true,
-								'valid' => false,
-							]));
-						}
+							]),
+						);
 					} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
 						$property = $this->connectorPropertiesRepository->findById($entity->getProperty());
 
@@ -157,24 +142,13 @@ class RedisClient implements EventDispatcher\EventSubscriberInterface
 							return;
 						}
 
-						$valueToWrite = $this->normalizeValue($property, $entity->getExpectedValue());
-
-						$state = $this->devicePropertiesStatesRepository->findOne($property);
-
-						if ($state !== null) {
-							$this->devicePropertiesStatesManager->update($property, $state, Utils\ArrayHash::from([
-								'expectedValue' => $valueToWrite,
+						$this->devicePropertiesStates->setValue(
+							$property,
+							Utils\ArrayHash::from([
+								'expectedValue' => $this->normalizeValue($property, $entity->getExpectedValue()),
 								'pending' => true,
-							]));
-
-						} else {
-							$this->devicePropertiesStatesManager->create($property, Utils\ArrayHash::from([
-								'actualValue' => null,
-								'expectedValue' => $valueToWrite,
-								'pending' => true,
-								'valid' => false,
-							]));
-						}
+							]),
+						);
 					} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
 						$property = $this->devicePropertiesRepository->findById($entity->getProperty());
 
@@ -201,24 +175,13 @@ class RedisClient implements EventDispatcher\EventSubscriberInterface
 							return;
 						}
 
-						$valueToWrite = $this->normalizeValue($property, $entity->getExpectedValue());
-
-						$state = $this->channelPropertiesStatesRepository->findOne($property);
-
-						if ($state !== null) {
-							$this->channelPropertiesStatesManager->update($property, $state, Utils\ArrayHash::from([
-								'expectedValue' => $valueToWrite,
+						$this->channelPropertiesStates->setValue(
+							$property,
+							Utils\ArrayHash::from([
+								'expectedValue' => $this->normalizeValue($property, $entity->getExpectedValue()),
 								'pending' => true,
-							]));
-
-						} else {
-							$this->channelPropertiesStatesManager->create($property, Utils\ArrayHash::from([
-								'actualValue' => null,
-								'expectedValue' => $valueToWrite,
-								'pending' => true,
-								'valid' => false,
-							]));
-						}
+							]),
+						);
 					} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
 						$property = $this->channelPropertiesRepository->findById($entity->getProperty());
 
