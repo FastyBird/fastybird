@@ -14,6 +14,10 @@ use Nette\Utils;
 use Ramsey\Uuid;
 use RuntimeException;
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class ConnectorsRepositoryTest extends DbTestCase
 {
 
