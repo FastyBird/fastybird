@@ -25,7 +25,6 @@ use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\RedisDb\Client as RedisDbClient;
 use FastyBird\Plugin\RedisDb\Handlers as RedisDbHandlers;
-use FastyBird\Plugin\RedisDb\Publishers as RedisDbPublishers;
 use FastyBird\Plugin\WsExchange\Events as WsExchangeEvents;
 use FastyBird\Plugin\WsExchange\Publishers as WsExchangePublishers;
 use IPub\Phone\Exceptions as PhoneExceptions;
