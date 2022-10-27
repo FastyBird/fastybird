@@ -35,7 +35,6 @@ extensions:
     fbExchangeLibrary                   : FastyBird\Library\Exchange\DI\ExchangeExtension
 
 services:
-    - {factory: Symfony\Component\Console\Application}
     - {factory: IPub\SlimRouter\Http\ResponseFactory}
     -
         factory: IPub\SlimRouter\Routing\Router
