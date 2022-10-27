@@ -15,7 +15,6 @@ php:
 
 extensions:
     contributteTranslation              : Contributte\Translation\DI\TranslationExtension
-    contributeFlysystem                 : Contributte\Flysystem\DI\FlysystemExtension
     nettrineAnnotations                 : Nettrine\Annotations\DI\AnnotationsExtension
     nettrineCache                       : Nettrine\Cache\DI\CacheExtension
     nettrineDbal                        : Nettrine\DBAL\DI\DbalExtension
