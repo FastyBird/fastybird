@@ -17,9 +17,10 @@ namespace FastyBird\Module\Devices\Models\Connectors\Controls;
 
 use Doctrine\ORM;
 use Doctrine\Persistence;
-use Exception;
 use FastyBird\Module\Devices\Entities;
+use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Queries;
+use FastyBird\Module\Devices\Utilities;
 use IPub\DoctrineOrmQuery;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette;
@@ -41,38 +42,45 @@ final class ControlsRepository
 	/** @var ORM\EntityRepository<Entities\Connectors\Controls\Control>|null */
 	private ORM\EntityRepository|null $repository = null;
 
-	public function __construct(private readonly Persistence\ManagerRegistry $managerRegistry)
+	public function __construct(
+		private readonly Utilities\Database $database,
+		private readonly Persistence\ManagerRegistry $managerRegistry,
+	)
 	{
 	}
 
 	/**
-	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
-	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws Exceptions\InvalidState
 	 */
 	public function findOneBy(Queries\FindConnectorControls $queryObject): Entities\Connectors\Controls\Control|null
 	{
-		return $queryObject->fetchOne($this->getRepository());
+		return $this->database->query(
+			fn (): Entities\Connectors\Controls\Control|null => $queryObject->fetchOne($this->getRepository()),
+		);
 	}
 
 	/**
 	 * @phpstan-return Array<Entities\Connectors\Controls\Control>
 	 *
-	 * @throws Exception
-	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws Exceptions\InvalidState
 	 */
 	public function findAllBy(Queries\FindConnectorControls $queryObject): array
 	{
-		/** @var Array<Entities\Connectors\Controls\Control>|DoctrineOrmQuery\ResultSet<Entities\Connectors\Controls\Control> $result */
-		$result = $queryObject->fetch($this->getRepository());
+		return $this->database->query(
+			function () use ($queryObject): array {
+				/** @var Array<Entities\Connectors\Controls\Control>|DoctrineOrmQuery\ResultSet<Entities\Connectors\Controls\Control> $result */
+				$result = $queryObject->fetch($this->getRepository());
 
-		if (is_array($result)) {
-			return $result;
-		}
+				if (is_array($result)) {
+					return $result;
+				}
 
-		/** @var Array<Entities\Connectors\Controls\Control> $data */
-		$data = $result->toArray();
+				/** @var Array<Entities\Connectors\Controls\Control> $data */
+				$data = $result->toArray();
 
-		return $data;
+				return $data;
+			},
+		);
 	}
 
 	/**

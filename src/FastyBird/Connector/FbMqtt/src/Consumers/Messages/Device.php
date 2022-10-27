@@ -18,8 +18,6 @@ namespace FastyBird\Connector\FbMqtt\Consumers\Messages;
 use Doctrine\DBAL;
 use FastyBird\Connector\FbMqtt\Consumers;
 use FastyBird\Connector\FbMqtt\Entities;
-use FastyBird\Connector\FbMqtt\Exceptions;
-use FastyBird\Connector\FbMqtt\Helpers;
 use FastyBird\Connector\FbMqtt\Types;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -30,7 +28,6 @@ use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
-use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette;
 use Nette\Utils;
 use Psr\Log;
@@ -62,7 +59,7 @@ final class Device implements Consumers\Consumer
 		private readonly DevicesModels\Channels\ChannelsManager $channelsManager,
 		private readonly DevicesModels\DataStorage\DevicesRepository $deviceDataStorageRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
-		private readonly Helpers\Database $databaseHelper,
+		private readonly DevicesUtilities\Database $databaseHelper,
 		Log\LoggerInterface|null $logger = null,
 	)
 	{
@@ -72,10 +69,7 @@ final class Device implements Consumers\Consumer
 	/**
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
-	 * @throws DoctrineOrmQueryExceptions\QueryException
-	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\Runtime
+	 * @throws DevicesExceptions\Runtime
 	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidData
@@ -202,8 +196,6 @@ final class Device implements Consumers\Consumer
 	 *
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
-	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
-	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidData

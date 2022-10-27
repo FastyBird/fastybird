@@ -17,9 +17,10 @@ namespace FastyBird\Module\Devices\Models\Channels\Properties;
 
 use Doctrine\ORM;
 use Doctrine\Persistence;
-use Exception;
 use FastyBird\Module\Devices\Entities;
+use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Queries;
+use FastyBird\Module\Devices\Utilities;
 use IPub\DoctrineOrmQuery;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette;
@@ -41,22 +42,26 @@ final class PropertiesRepository
 	/** @var Array<ORM\EntityRepository<Entities\Channels\Properties\Property>> */
 	private array $repository = [];
 
-	public function __construct(private readonly Persistence\ManagerRegistry $managerRegistry)
+	public function __construct(
+		private readonly Utilities\Database $database,
+		private readonly Persistence\ManagerRegistry $managerRegistry,
+	)
 	{
 	}
 
 	/**
 	 * @phpstan-param class-string<Entities\Channels\Properties\Property> $type
 	 *
-	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
-	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws Exceptions\InvalidState
 	 */
 	public function findOneBy(
 		Queries\FindChannelProperties $queryObject,
 		string $type = Entities\Channels\Properties\Property::class,
 	): Entities\Channels\Properties\Property|null
 	{
-		return $queryObject->fetchOne($this->getRepository($type));
+		return $this->database->query(
+			fn (): Entities\Channels\Properties\Property|null => $queryObject->fetchOne($this->getRepository($type)),
+		);
 	}
 
 	/**
@@ -64,25 +69,28 @@ final class PropertiesRepository
 	 *
 	 * @phpstan-return Array<Entities\Channels\Properties\Property>
 	 *
-	 * @throws Exception
-	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws Exceptions\InvalidState
 	 */
 	public function findAllBy(
 		Queries\FindChannelProperties $queryObject,
 		string $type = Entities\Channels\Properties\Property::class,
 	): array
 	{
-		/** @var Array<Entities\Channels\Properties\Property>|DoctrineOrmQuery\ResultSet<Entities\Channels\Properties\Property> $result */
-		$result = $queryObject->fetch($this->getRepository($type));
+		return $this->database->query(
+			function () use ($queryObject, $type): array {
+				/** @var Array<Entities\Channels\Properties\Property>|DoctrineOrmQuery\ResultSet<Entities\Channels\Properties\Property> $result */
+				$result = $queryObject->fetch($this->getRepository($type));
 
-		if (is_array($result)) {
-			return $result;
-		}
+				if (is_array($result)) {
+					return $result;
+				}
 
-		/** @var Array<Entities\Channels\Properties\Property> $data */
-		$data = $result->toArray();
+				/** @var Array<Entities\Channels\Properties\Property> $data */
+				$data = $result->toArray();
 
-		return $data;
+				return $data;
+			},
+		);
 	}
 
 	/**

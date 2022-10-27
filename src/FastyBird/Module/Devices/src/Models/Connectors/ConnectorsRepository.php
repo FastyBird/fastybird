@@ -17,9 +17,10 @@ namespace FastyBird\Module\Devices\Models\Connectors;
 
 use Doctrine\ORM;
 use Doctrine\Persistence;
-use Exception;
 use FastyBird\Module\Devices\Entities;
+use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Queries;
+use FastyBird\Module\Devices\Utilities;
 use IPub\DoctrineOrmQuery;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette;
@@ -41,22 +42,26 @@ final class ConnectorsRepository
 	/** @var Array<ORM\EntityRepository<Entities\Connectors\Connector>> */
 	private array $repository = [];
 
-	public function __construct(private readonly Persistence\ManagerRegistry $managerRegistry)
+	public function __construct(
+		private readonly Utilities\Database $database,
+		private readonly Persistence\ManagerRegistry $managerRegistry,
+	)
 	{
 	}
 
 	/**
 	 * @phpstan-param class-string<Entities\Connectors\Connector> $type
 	 *
-	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
-	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws Exceptions\InvalidState
 	 */
 	public function findOneBy(
 		Queries\FindConnectors $queryObject,
 		string $type = Entities\Connectors\Connector::class,
 	): Entities\Connectors\Connector|null
 	{
-		return $queryObject->fetchOne($this->getRepository($type));
+		return $this->database->query(
+			fn (): Entities\Connectors\Connector|null => $queryObject->fetchOne($this->getRepository($type)),
+		);
 	}
 
 	/**
@@ -64,25 +69,28 @@ final class ConnectorsRepository
 	 *
 	 * @phpstan-return Array<Entities\Connectors\Connector>
 	 *
-	 * @throws Exception
-	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws Exceptions\InvalidState
 	 */
 	public function findAllBy(
 		Queries\FindConnectors $queryObject,
 		string $type = Entities\Connectors\Connector::class,
 	): array
 	{
-		/** @var Array<Entities\Connectors\Connector>|DoctrineOrmQuery\ResultSet<Entities\Connectors\Connector> $result */
-		$result = $queryObject->fetch($this->getRepository($type));
+		return $this->database->query(
+			function () use ($queryObject, $type): array {
+				/** @var Array<Entities\Connectors\Connector>|DoctrineOrmQuery\ResultSet<Entities\Connectors\Connector> $result */
+				$result = $queryObject->fetch($this->getRepository($type));
 
-		if (is_array($result)) {
-			return $result;
-		}
+				if (is_array($result)) {
+					return $result;
+				}
 
-		/** @var Array<Entities\Connectors\Connector> $data */
-		$data = $result->toArray();
+				/** @var Array<Entities\Connectors\Connector> $data */
+				$data = $result->toArray();
 
-		return $data;
+				return $data;
+			},
+		);
 	}
 
 	/**

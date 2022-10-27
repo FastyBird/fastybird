@@ -18,10 +18,10 @@ namespace FastyBird\Module\Devices\Utilities;
 use Doctrine\DBAL;
 use Doctrine\ORM;
 use Doctrine\Persistence;
+use FastyBird\Bootstrap;
 use FastyBird\Module\Devices\Exceptions;
 use Nette;
 use Throwable;
-use function gc_collect_cycles;
 
 /**
  * Useful database utilities
@@ -36,7 +36,10 @@ final class Database
 
 	use Nette\SmartObject;
 
-	public function __construct(private readonly Persistence\ManagerRegistry $managerRegistry)
+	public function __construct(
+		private readonly Bootstrap\Helpers\Database $database,
+		private readonly Persistence\ManagerRegistry $managerRegistry,
+	)
 	{
 	}
 
@@ -112,62 +115,27 @@ final class Database
 	/**
 	 * @throws Exceptions\Runtime
 	 */
-	public function ping(): bool
-	{
-		$connection = $this->getConnection();
-
-		try {
-			$connection->executeQuery($connection->getDatabasePlatform()
-				->getDummySelectSQL(), [], []);
-
-		} catch (DBAL\Exception) {
-			return false;
-		}
-
-		return true;
-	}
-
-	/**
-	 * @throws DBAL\Exception
-	 * @throws Exceptions\Runtime
-	 */
-	public function reconnect(): void
-	{
-		$connection = $this->getConnection();
-
-		$connection->close();
-		$connection->connect();
-	}
-
-	/**
-	 * @throws DBAL\Exception
-	 * @throws Exceptions\Runtime
-	 */
 	private function pingAndReconnect(): void
 	{
-		// Check if ping to DB is possible...
-		if (!$this->ping()) {
-			// ...if not, try to reconnect
-			$this->reconnect();
+		try {
+			// Check if ping to DB is possible...
+			if (!$this->database->ping()) {
+				// ...if not, try to reconnect
+				$this->database->reconnect();
 
-			// ...and ping again
-			if (!$this->ping()) {
-				throw new Exceptions\Runtime('Connection to database could not be established');
+				// ...and ping again
+				if (!$this->database->ping()) {
+					throw new Exceptions\Runtime('Connection to database could not be established');
+				}
+
+				$this->database->clear();
 			}
-
-			$em = $this->getEntityManager();
-
-			if ($em === null) {
-				throw new Exceptions\Runtime('Entity manager could not be loaded');
-			}
-
-			$em->flush();
-			$em->clear();
-
-			// Just in case PHP would choose not to run garbage collection,
-			// we run it manually at the end of each batch so that memory is
-			// regularly released
-			gc_collect_cycles();
+		} catch (Throwable $ex) {
+			throw new Exceptions\Runtime(
+				'Connection to database could not be reestablished',
+				$ex->getCode(),
+				$ex,
+			);
 		}
 	}
 

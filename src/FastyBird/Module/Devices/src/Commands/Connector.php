@@ -26,7 +26,6 @@ use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Utilities;
-use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Psr\EventDispatcher as PsrEventDispatcher;
 use Psr\Log;
 use Ramsey\Uuid;
@@ -386,8 +385,6 @@ class Connector extends Console\Command\Command
 	}
 
 	/**
-	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
-	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument

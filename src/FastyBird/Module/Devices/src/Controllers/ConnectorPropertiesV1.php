@@ -302,6 +302,7 @@ final class ConnectorPropertiesV1 extends BaseV1
 	 * @throws Doctrine\DBAL\Exception
 	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
 	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws InvalidArgumentException
 	 * @throws JsonApiExceptions\JsonApi
@@ -384,8 +385,7 @@ final class ConnectorPropertiesV1 extends BaseV1
 	}
 
 	/**
-	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
-	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws Exceptions\InvalidState
 	 * @throws JsonApiExceptions\JsonApi
 	 */
 	private function findProperty(

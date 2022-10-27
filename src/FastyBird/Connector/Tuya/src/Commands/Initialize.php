@@ -27,7 +27,6 @@ use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
-use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette\Utils;
 use Psr\Log;
 use RuntimeException;
@@ -107,8 +106,6 @@ class Initialize extends Console\Command\Command
 	/**
 	 * @throws Console\Exception\InvalidArgumentException
 	 * @throws DBAL\Exception
-	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
-	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
@@ -311,8 +308,6 @@ class Initialize extends Console\Command\Command
 
 	/**
 	 * @throws DBAL\Exception
-	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
-	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
@@ -655,8 +650,7 @@ class Initialize extends Console\Command\Command
 
 	/**
 	 * @throws DBAL\Exception
-	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
-	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 */
 	private function deleteExistingConfiguration(Style\SymfonyStyle $io): void

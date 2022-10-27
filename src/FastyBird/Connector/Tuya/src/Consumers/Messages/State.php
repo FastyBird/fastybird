@@ -24,7 +24,6 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
-use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette;
 use Psr\Log;
 
@@ -58,8 +57,6 @@ final class State implements Consumer
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
-	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidData

@@ -20,8 +20,6 @@ use Exception;
 use FastyBird\Connector\FbMqtt;
 use FastyBird\Connector\FbMqtt\Consumers;
 use FastyBird\Connector\FbMqtt\Entities;
-use FastyBird\Connector\FbMqtt\Exceptions;
-use FastyBird\Connector\FbMqtt\Helpers;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -61,7 +59,7 @@ final class ChannelProperty implements Consumers\Consumer
 		private readonly DevicesModels\DataStorage\ChannelsRepository $channelsDataStorageRepository,
 		private readonly DevicesModels\DataStorage\ChannelPropertiesRepository $propertiesDataStorageRepository,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
-		private readonly Helpers\Database $databaseHelper,
+		private readonly DevicesUtilities\Database $databaseHelper,
 		Log\LoggerInterface|null $logger = null,
 	)
 	{
@@ -71,8 +69,7 @@ final class ChannelProperty implements Consumers\Consumer
 	/**
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\Runtime
+	 * @throws DevicesExceptions\Runtime
 	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidData

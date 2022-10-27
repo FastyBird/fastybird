@@ -17,10 +17,10 @@ namespace FastyBird\Module\Devices\Controllers\Finders;
 
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
 use FastyBird\Module\Devices\Entities;
+use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
 use Fig\Http\Message\StatusCodeInterface;
-use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette\Localization;
 use Ramsey\Uuid;
 
@@ -32,8 +32,7 @@ trait TDeviceProperty
 {
 
 	/**
-	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
-	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws Exceptions\InvalidState
 	 * @throws JsonApiExceptions\JsonApi
 	 */
 	private function findProperty(
