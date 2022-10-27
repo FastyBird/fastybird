@@ -22,7 +22,6 @@ use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\Utilities;
 use IPub\DoctrineOrmQuery;
-use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette;
 use function is_array;
 
@@ -86,16 +85,20 @@ final class ChannelsRepository
 	/**
 	 * @phpstan-return DoctrineOrmQuery\ResultSet<Entities\Channels\Channel>
 	 *
-	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws Exceptions\InvalidState
 	 */
 	public function getResultSet(
 		Queries\FindChannels $queryObject,
 	): DoctrineOrmQuery\ResultSet
 	{
-		/** @var DoctrineOrmQuery\ResultSet<Entities\Channels\Channel> $result */
-		$result = $queryObject->fetch($this->getRepository());
+		return $this->database->query(
+			function () use ($queryObject): DoctrineOrmQuery\ResultSet {
+				/** @var DoctrineOrmQuery\ResultSet<Entities\Channels\Channel> $result */
+				$result = $queryObject->fetch($this->getRepository());
 
-		return $result;
+				return $result;
+			},
+		);
 	}
 
 	/**

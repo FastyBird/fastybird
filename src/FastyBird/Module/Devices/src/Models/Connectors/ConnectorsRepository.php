@@ -22,7 +22,6 @@ use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\Utilities;
 use IPub\DoctrineOrmQuery;
-use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette;
 use function is_array;
 
@@ -98,17 +97,21 @@ final class ConnectorsRepository
 	 *
 	 * @phpstan-return DoctrineOrmQuery\ResultSet<Entities\Connectors\Connector>
 	 *
-	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws Exceptions\InvalidState
 	 */
 	public function getResultSet(
 		Queries\FindConnectors $queryObject,
 		string $type = Entities\Connectors\Connector::class,
 	): DoctrineOrmQuery\ResultSet
 	{
-		/** @var DoctrineOrmQuery\ResultSet<Entities\Connectors\Connector> $result */
-		$result = $queryObject->fetch($this->getRepository($type));
+		return $this->database->query(
+			function () use ($queryObject, $type): DoctrineOrmQuery\ResultSet {
+				/** @var DoctrineOrmQuery\ResultSet<Entities\Connectors\Connector> $result */
+				$result = $queryObject->fetch($this->getRepository($type));
 
-		return $result;
+				return $result;
+			},
+		);
 	}
 
 	/**

@@ -22,7 +22,6 @@ use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\Utilities;
 use IPub\DoctrineOrmQuery;
-use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette;
 use function is_array;
 
@@ -98,17 +97,21 @@ final class PropertiesRepository
 	 *
 	 * @phpstan-return DoctrineOrmQuery\ResultSet<Entities\Channels\Properties\Property>
 	 *
-	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws Exceptions\InvalidState
 	 */
 	public function getResultSet(
 		Queries\FindChannelProperties $queryObject,
 		string $type = Entities\Channels\Properties\Property::class,
 	): DoctrineOrmQuery\ResultSet
 	{
-		/** @var DoctrineOrmQuery\ResultSet<Entities\Channels\Properties\Property> $result */
-		$result = $queryObject->fetch($this->getRepository($type));
+		return $this->database->query(
+			function () use ($queryObject, $type): DoctrineOrmQuery\ResultSet {
+				/** @var DoctrineOrmQuery\ResultSet<Entities\Channels\Properties\Property> $result */
+				$result = $queryObject->fetch($this->getRepository($type));
 
-		return $result;
+				return $result;
+			},
+		);
 	}
 
 	/**
