@@ -1,0 +1,114 @@
+<?php declare(strict_types=1);
+
+namespace Neomerx\JsonApi\Contracts\Schema;
+
+/**
+ * @template T of object
+ */
+interface SchemaInterface
+{
+    const RELATIONSHIP_DATA = 0;
+    const RELATIONSHIP_LINKS = self::RELATIONSHIP_DATA + 1;
+    const RELATIONSHIP_META = self::RELATIONSHIP_LINKS + 1;
+    const RELATIONSHIP_LINKS_SELF = self::RELATIONSHIP_META + 1;
+    const RELATIONSHIP_LINKS_RELATED = self::RELATIONSHIP_LINKS_SELF + 1;
+
+    public function getType(): string;
+
+    /**
+     * @param T $resource
+     *
+     * @return string|null
+     */
+    public function getId($resource): string|null;
+
+    /**
+     * @param T $resource
+     * @param ContextInterface $context
+     *
+     * @return iterable<string, mixed>
+     */
+    public function getAttributes($resource, ContextInterface $context): iterable;
+
+    /**
+     * @param T $resource
+     * @param ContextInterface $context
+     *
+     * @return iterable<string, mixed>
+     */
+    public function getRelationships($resource, ContextInterface $context): iterable;
+
+    /**
+     * @param T $resource
+     *
+     * @return LinkInterface
+     */
+    public function getSelfLink($resource): LinkInterface;
+
+    /**
+     * @param T $resource
+     *
+     * @see LinkInterface
+     *
+     * @return iterable<string, mixed>
+     */
+    public function getLinks($resource): iterable;
+
+    /**
+     * @param T $resource
+     * @param string $name
+     *
+     * @return LinkInterface
+     */
+    public function getRelationshipSelfLink($resource, string $name): LinkInterface;
+
+    /**
+     * @param T $resource
+     * @param string $name
+     *
+     * @return LinkInterface
+     */
+    public function getRelationshipRelatedLink($resource, string $name): LinkInterface;
+
+    /**
+     * @param T $resource
+     *
+     * @return bool
+     */
+    public function hasIdentifierMeta($resource): bool;
+
+    /**
+     * @param T $resource
+     *
+     * @return mixed
+     */
+    public function getIdentifierMeta($resource);
+
+    /**
+     * @param T $resource
+     *
+     * @return bool
+     */
+    public function hasResourceMeta($resource): bool;
+
+    /**
+     * @param T $resource
+     *
+     * @return mixed
+     */
+    public function getResourceMeta($resource);
+
+    /**
+     * @param string $relationshipName
+     *
+     * @return bool
+     */
+    public function isAddSelfLinkInRelationshipByDefault(string $relationshipName): bool;
+
+    /**
+     * @param string $relationshipName
+     *
+     * @return bool
+     */
+    public function isAddRelatedLinkInRelationshipByDefault(string $relationshipName): bool;
+}
