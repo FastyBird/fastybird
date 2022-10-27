@@ -18,13 +18,13 @@ namespace FastyBird\Connector\FbMqtt\Consumers\Messages;
 use Doctrine\DBAL;
 use FastyBird\Connector\FbMqtt\Consumers;
 use FastyBird\Connector\FbMqtt\Entities;
-use FastyBird\Connector\FbMqtt\Exceptions;
-use FastyBird\Connector\FbMqtt\Helpers;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
+use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
 use Nette;
 use Nette\Utils;
@@ -53,7 +53,7 @@ final class Channel implements Consumers\Consumer
 		private readonly DevicesModels\Channels\ChannelsManager $channelsManager,
 		private readonly DevicesModels\Channels\Properties\PropertiesManager $channelPropertiesManager,
 		private readonly DevicesModels\Channels\Controls\ControlsManager $channelControlManager,
-		private readonly Helpers\Database $databaseHelper,
+		private readonly DevicesUtilities\Database $databaseHelper,
 		Log\LoggerInterface|null $logger = null,
 	)
 	{
@@ -62,8 +62,8 @@ final class Channel implements Consumers\Consumer
 
 	/**
 	 * @throws DBAL\Exception
-	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\Runtime
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws DevicesExceptions\Runtime
 	 */
 	public function consume(Entities\Messages\Entity $entity): bool
 	{

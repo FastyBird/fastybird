@@ -17,8 +17,6 @@ namespace FastyBird\Connector\Tuya\Consumers\Messages;
 
 use Doctrine\DBAL;
 use FastyBird\Connector\Tuya\Entities;
-use FastyBird\Connector\Tuya\Exceptions;
-use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -27,6 +25,7 @@ use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette\Utils;
 use Psr\Log;
 use Ramsey\Uuid;
@@ -44,7 +43,7 @@ use function assert;
  * @property-read DevicesModels\Devices\Properties\PropertiesRepository $propertiesRepository
  * @property-read DevicesModels\Devices\Properties\PropertiesManager $propertiesManager
  * @property-read DevicesModels\DataStorage\DevicePropertiesRepository $propertiesDataStorageRepository
- * @property-read Helpers\Database $databaseHelper
+ * @property-read DevicesUtilities\Database $databaseHelper
  * @property-read Log\LoggerInterface $logger
  */
 trait TConsumeDeviceProperty
@@ -53,8 +52,7 @@ trait TConsumeDeviceProperty
 	/**
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\Runtime
+	 * @throws DevicesExceptions\Runtime
 	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidData

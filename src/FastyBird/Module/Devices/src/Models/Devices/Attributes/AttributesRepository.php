@@ -17,11 +17,11 @@ namespace FastyBird\Module\Devices\Models\Devices\Attributes;
 
 use Doctrine\ORM;
 use Doctrine\Persistence;
-use Exception;
 use FastyBird\Module\Devices\Entities;
+use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Queries;
+use FastyBird\Module\Devices\Utilities;
 use IPub\DoctrineOrmQuery;
-use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette;
 use function is_array;
 
@@ -41,53 +41,64 @@ final class AttributesRepository
 	/** @var ORM\EntityRepository<Entities\Devices\Attributes\Attribute>|null */
 	private ORM\EntityRepository|null $repository = null;
 
-	public function __construct(private readonly Persistence\ManagerRegistry $managerRegistry)
+	public function __construct(
+		private readonly Utilities\Database $database,
+		private readonly Persistence\ManagerRegistry $managerRegistry,
+	)
 	{
 	}
 
 	/**
-	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
-	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws Exceptions\InvalidState
 	 */
 	public function findOneBy(Queries\FindDeviceAttributes $queryObject): Entities\Devices\Attributes\Attribute|null
 	{
-		return $queryObject->fetchOne($this->getRepository());
+		return $this->database->query(
+			fn (): Entities\Devices\Attributes\Attribute|null => $queryObject->fetchOne($this->getRepository()),
+		);
 	}
 
 	/**
 	 * @phpstan-return Array<Entities\Devices\Attributes\Attribute>
 	 *
-	 * @throws Exception
-	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws Exceptions\InvalidState
 	 */
 	public function findAllBy(Queries\FindDeviceAttributes $queryObject): array
 	{
-		/** @var Array<Entities\Devices\Attributes\Attribute>|DoctrineOrmQuery\ResultSet<Entities\Devices\Attributes\Attribute> $result */
-		$result = $queryObject->fetch($this->getRepository());
+		return $this->database->query(
+			function () use ($queryObject): array {
+				/** @var Array<Entities\Devices\Attributes\Attribute>|DoctrineOrmQuery\ResultSet<Entities\Devices\Attributes\Attribute> $result */
+				$result = $queryObject->fetch($this->getRepository());
 
-		if (is_array($result)) {
-			return $result;
-		}
+				if (is_array($result)) {
+					return $result;
+				}
 
-		/** @var Array<Entities\Devices\Attributes\Attribute> $data */
-		$data = $result->toArray();
+				/** @var Array<Entities\Devices\Attributes\Attribute> $data */
+				$data = $result->toArray();
 
-		return $data;
+				return $data;
+			},
+		);
 	}
 
 	/**
 	 * @phpstan-return DoctrineOrmQuery\ResultSet<Entities\Devices\Attributes\Attribute>
 	 *
-	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws Exceptions\InvalidState
 	 */
 	public function getResultSet(
 		Queries\FindDeviceAttributes $queryObject,
 	): DoctrineOrmQuery\ResultSet
 	{
-		/** @var DoctrineOrmQuery\ResultSet<Entities\Devices\Attributes\Attribute> $result */
-		$result = $queryObject->fetch($this->getRepository());
+		return $this->database->query(
+			function () use ($queryObject): DoctrineOrmQuery\ResultSet {
+				/** @var DoctrineOrmQuery\ResultSet<Entities\Devices\Attributes\Attribute> $result */
+				$result = $queryObject->fetch($this->getRepository());
 
-		return $result;
+				return $result;
+			},
+		);
 	}
 
 	/**
