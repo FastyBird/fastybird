@@ -18,7 +18,7 @@ namespace FastyBird\Module\Devices\Utilities;
 use Doctrine\DBAL;
 use Doctrine\ORM;
 use Doctrine\Persistence;
-use FastyBird\Connector\Modbus\Exceptions;
+use FastyBird\Module\Devices\Exceptions;
 use Nette;
 use Throwable;
 use function gc_collect_cycles;
