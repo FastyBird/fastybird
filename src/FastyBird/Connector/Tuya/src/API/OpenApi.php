@@ -20,9 +20,9 @@ use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use GuzzleHttp;
 use Nette;
 use Nette\Utils;
@@ -987,7 +987,7 @@ final class OpenApi
 			$method,
 			$this->endpoint->getValue() . $path,
 		), [
-			'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+			'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 			'type' => 'openapi-api',
 			'request' => [
 				'method' => $method,
@@ -1020,7 +1020,7 @@ final class OpenApi
 
 						} catch (Exceptions\OpenApiCall $ex) {
 							$this->logger->error('Received payload is not valid', [
-								'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 								'type' => 'openapi-api',
 								'exception' => [
 									'message' => $ex->getMessage(),
@@ -1044,7 +1044,7 @@ final class OpenApi
 				)
 				->otherwise(function (Throwable $ex) use ($deferred, $method, $path, $params, $body): void {
 					$this->logger->error('Calling api endpoint failed', [
-						'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'openapi-api',
 						'exception' => [
 							'message' => $ex->getMessage(),
@@ -1077,7 +1077,7 @@ final class OpenApi
 
 			} catch (GuzzleHttp\Exception\GuzzleException $ex) {
 				$this->logger->error('Calling api endpoint failed', [
-					'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'openapi-api',
 					'exception' => [
 						'message' => $ex->getMessage(),
@@ -1094,7 +1094,7 @@ final class OpenApi
 				return false;
 			} catch (Exceptions\OpenApiCall $ex) {
 				$this->logger->error('Received payload is not valid', [
-					'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'openapi-api',
 					'exception' => [
 						'message' => $ex->getMessage(),
@@ -1227,7 +1227,7 @@ final class OpenApi
 			$this->logger->error(
 				'Could not refresh access token',
 				[
-					'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'openapi-api',
 					'exception' => [
 						'message' => $ex->getMessage(),

@@ -17,7 +17,6 @@ namespace FastyBird\Connector\Tuya\Consumers\Messages;
 
 use Doctrine\DBAL;
 use FastyBird\Connector\Tuya\Entities;
-use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -124,7 +123,7 @@ trait TConsumeDeviceProperty
 				$this->logger->warning(
 					'Device property is not valid type',
 					[
-						'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'message-consumer',
 						'device' => [
 							'id' => $deviceId->toString(),
@@ -177,7 +176,7 @@ trait TConsumeDeviceProperty
 			$this->logger->debug(
 				'Device ip address property was created',
 				[
-					'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'message-consumer',
 					'device' => [
 						'id' => $deviceId->toString(),
@@ -212,7 +211,7 @@ trait TConsumeDeviceProperty
 				$this->logger->debug(
 					'Device ip address property was updated',
 					[
-						'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'message-consumer',
 						'device' => [
 							'id' => $deviceId->toString(),
@@ -228,7 +227,7 @@ trait TConsumeDeviceProperty
 				$this->logger->error(
 					'Device ip address property could not be updated',
 					[
-						'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'message-consumer',
 						'device' => [
 							'id' => $deviceId->toString(),

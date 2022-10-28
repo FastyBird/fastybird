@@ -18,9 +18,9 @@ namespace FastyBird\Connector\Shelly\Clients;
 use FastyBird\Connector\Shelly\Clients;
 use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Types;
-use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Nette;
 use Psr\Log;
@@ -76,7 +76,7 @@ final class Gen1 implements Client
 			$this->logger->error(
 				'CoAP client could not be started',
 				[
-					'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'gen1-client',
 					'exception' => [
 						'message' => $ex->getMessage(),
@@ -101,7 +101,7 @@ final class Gen1 implements Client
 			$this->logger->error(
 				'mDNS client could not be started',
 				[
-					'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'gen1-client',
 					'exception' => [
 						'message' => $ex->getMessage(),
@@ -153,7 +153,7 @@ final class Gen1 implements Client
 				$this->logger->error(
 					'CoAP client could not be started',
 					[
-						'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'gen1-client',
 						'exception' => [
 							'message' => $ex->getMessage(),
@@ -178,7 +178,7 @@ final class Gen1 implements Client
 				$this->logger->error(
 					'mDNS client could not be started',
 					[
-						'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'gen1-client',
 						'exception' => [
 							'message' => $ex->getMessage(),
@@ -203,7 +203,7 @@ final class Gen1 implements Client
 				$this->logger->error(
 					'Http api client could not be started',
 					[
-						'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'gen1-client',
 						'exception' => [
 							'message' => $ex->getMessage(),
@@ -230,7 +230,7 @@ final class Gen1 implements Client
 				$this->logger->error(
 					'MQTT client could not be started',
 					[
-						'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'gen1-client',
 						'exception' => [
 							'message' => $ex->getMessage(),
@@ -261,7 +261,7 @@ final class Gen1 implements Client
 			$this->logger->error(
 				'CoAP client could not be disconnected',
 				[
-					'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'gen1-client',
 					'exception' => [
 						'message' => $ex->getMessage(),
@@ -280,7 +280,7 @@ final class Gen1 implements Client
 			$this->logger->error(
 				'mDNS client could not be disconnected',
 				[
-					'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'gen1-client',
 					'exception' => [
 						'message' => $ex->getMessage(),
@@ -299,7 +299,7 @@ final class Gen1 implements Client
 			$this->logger->error(
 				'Http api client could not be disconnected',
 				[
-					'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'gen1-client',
 					'exception' => [
 						'message' => $ex->getMessage(),
@@ -318,7 +318,7 @@ final class Gen1 implements Client
 			$this->logger->error(
 				'MQTT client could not be disconnected',
 				[
-					'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'gen1-client',
 					'exception' => [
 						'message' => $ex->getMessage(),

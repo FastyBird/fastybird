@@ -19,7 +19,6 @@ use FastyBird\Connector\Shelly\Consumers\Consumer;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Mappers;
-use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -120,7 +119,7 @@ final class Status implements Consumer
 		$this->logger->debug(
 			'Consumed device status message',
 			[
-				'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 				'type' => 'status-message-consumer',
 				'device' => [
 					'id' => $deviceItem->getId()->toString(),

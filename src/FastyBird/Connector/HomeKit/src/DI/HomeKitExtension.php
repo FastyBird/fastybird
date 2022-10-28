@@ -19,6 +19,7 @@ use Doctrine\Persistence;
 use FastyBird\Connector\HomeKit\Clients;
 use FastyBird\Connector\HomeKit\Commands;
 use FastyBird\Connector\HomeKit\Connector;
+use FastyBird\Connector\HomeKit\Consumers;
 use FastyBird\Connector\HomeKit\Controllers;
 use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Helpers;
@@ -29,6 +30,8 @@ use FastyBird\Connector\HomeKit\Protocol;
 use FastyBird\Connector\HomeKit\Router;
 use FastyBird\Connector\HomeKit\Schemas;
 use FastyBird\Connector\HomeKit\Servers;
+use FastyBird\Connector\HomeKit\Subscribers;
+use FastyBird\Library\Exchange\DI as ExchangeDI;
 use FastyBird\Module\Devices\DI as DevicesDI;
 use IPub\DoctrineCrud;
 use Nette;
@@ -149,7 +152,6 @@ class HomeKitExtension extends DI\CompilerExtension
 		$builder->addDefinition($this->prefix('models.clientsRepository'), new DI\Definitions\ServiceDefinition())
 			->setType(Models\Clients\ClientsRepository::class);
 
-		// Database managers
 		$builder->addDefinition($this->prefix('models.clientsManager'), new DI\Definitions\ServiceDefinition())
 			->setType(Models\Clients\ClientsManager::class)
 			->setArgument('entityCrud', '__placeholder__');
@@ -165,6 +167,13 @@ class HomeKitExtension extends DI\CompilerExtension
 			->setArguments([
 				'serversFactories' => $builder->findByType(Servers\ServerFactory::class),
 			]);
+
+		$builder->addDefinition($this->prefix('consumers.exchange'), new DI\Definitions\ServiceDefinition())
+			->setType(Consumers\Consumer::class)
+			->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATUS, false);
+
+		$builder->addDefinition($this->prefix('subscribers.connector'), new DI\Definitions\ServiceDefinition())
+			->setType(Subscribers\Connector::class);
 
 		$builder->addDefinition($this->prefix('commands.initialize'), new DI\Definitions\ServiceDefinition())
 			->setType(Commands\Initialize::class);

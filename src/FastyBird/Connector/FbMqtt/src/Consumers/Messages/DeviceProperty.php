@@ -20,9 +20,9 @@ use Exception;
 use FastyBird\Connector\FbMqtt;
 use FastyBird\Connector\FbMqtt\Consumers;
 use FastyBird\Connector\FbMqtt\Entities;
-use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -93,7 +93,7 @@ final class DeviceProperty implements Consumers\Consumer
 				$this->logger->error(
 					sprintf('Device "%s" is not registered', $entity->getDevice()),
 					[
-						'source' => Metadata\Constants::CONNECTOR_FB_MQTT_SOURCE,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 						'type' => 'device-property-message-consumer',
 						'device' => [
 							'identifier' => $entity->getDevice(),
@@ -159,7 +159,7 @@ final class DeviceProperty implements Consumers\Consumer
 				$this->logger->error(
 					sprintf('Device "%s" is not registered', $entity->getDevice()),
 					[
-						'source' => Metadata\Constants::CONNECTOR_FB_MQTT_SOURCE,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 						'type' => 'device-property-message-consumer',
 						'device' => [
 							'identifier' => $entity->getDevice(),
@@ -176,7 +176,7 @@ final class DeviceProperty implements Consumers\Consumer
 				$this->logger->error(
 					sprintf('Property "%s" is not registered', $entity->getProperty()),
 					[
-						'source' => Metadata\Constants::CONNECTOR_FB_MQTT_SOURCE,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 						'type' => 'device-property-message-consumer',
 						'device' => [
 							'identifier' => $entity->getDevice(),
@@ -204,7 +204,7 @@ final class DeviceProperty implements Consumers\Consumer
 		$this->logger->debug(
 			'Consumed channel property message',
 			[
-				'source' => Metadata\Constants::CONNECTOR_FB_MQTT_SOURCE,
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 				'type' => 'device-property-message-consumer',
 				'device' => [
 					'identifier' => $entity->getDevice(),

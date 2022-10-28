@@ -109,12 +109,6 @@ class RedisDbDevicesModuleExtension extends DI\CompilerExtension
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Subscribers\RedisClient::class);
-
-		$builder->addDefinition(
-			$this->prefix('subscribers.connector'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Subscribers\Connector::class);
 	}
 
 }

@@ -22,8 +22,8 @@ use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -224,7 +224,7 @@ class Discovery extends Console\Command\Command
 					$this->logger->alert(
 						'Connector identifier was not able to get from answer',
 						[
-							'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 							'type' => 'discovery-cmd',
 						],
 					);
@@ -241,7 +241,7 @@ class Discovery extends Console\Command\Command
 				$this->logger->alert(
 					'Connector was not found',
 					[
-						'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'discovery-cmd',
 					],
 				);
@@ -281,7 +281,7 @@ class Discovery extends Console\Command\Command
 				$this->logger->info(
 					'Stopping Tuya connector discovery...',
 					[
-						'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'discovery-cmd',
 					],
 				);
@@ -298,7 +298,7 @@ class Discovery extends Console\Command\Command
 					$this->logger->info(
 						'Starting Tuya connector discovery...',
 						[
-							'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 							'type' => 'discovery-cmd',
 						],
 					);
@@ -413,7 +413,7 @@ class Discovery extends Console\Command\Command
 			$this->logger->error(
 				'An error occurred',
 				[
-					'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'discovery-cmd',
 					'exception' => [
 						'message' => $ex->getMessage(),
@@ -433,7 +433,7 @@ class Discovery extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'discovery-cmd',
 					'exception' => [
 						'message' => $ex->getMessage(),
@@ -473,7 +473,7 @@ class Discovery extends Console\Command\Command
 				$this->logger->error(
 					'Discovery exceeded reserved time and have been terminated',
 					[
-						'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'discovery-cmd',
 					],
 				);

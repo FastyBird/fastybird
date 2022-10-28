@@ -168,7 +168,7 @@ final class Exchange extends WebSockets\Application\Controller\Controller
 			return $this->jsonValidator->validate(Utils\Json::encode($data), $schema);
 		} catch (Utils\JsonException $ex) {
 			$this->logger->error('Received message could not be validated', [
-				'source' => MetadataTypes\BridgeSource::SOURCE_BRIDGE_REDISDB_WS_EXCHANGE,
+				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_EXCHANGE,
 				'type' => 'subscriber',
 				'exception' => [
 					'message' => $ex->getMessage(),
@@ -179,7 +179,7 @@ final class Exchange extends WebSockets\Application\Controller\Controller
 			throw new Exceptions\InvalidArgument('Provided data are not valid json format', 0, $ex);
 		} catch (MetadataExceptions\InvalidData $ex) {
 			$this->logger->debug('Received message is not valid', [
-				'source' => MetadataTypes\BridgeSource::SOURCE_BRIDGE_REDISDB_WS_EXCHANGE,
+				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_EXCHANGE,
 				'type' => 'subscriber',
 				'exception' => [
 					'message' => $ex->getMessage(),
@@ -190,7 +190,7 @@ final class Exchange extends WebSockets\Application\Controller\Controller
 			throw new Exceptions\InvalidArgument('Provided data are not in valid structure', 0, $ex);
 		} catch (Throwable $ex) {
 			$this->logger->error('Received message is not valid', [
-				'source' => MetadataTypes\BridgeSource::SOURCE_BRIDGE_REDISDB_WS_EXCHANGE,
+				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_EXCHANGE,
 				'type' => 'subscriber',
 				'exception' => [
 					'message' => $ex->getMessage(),

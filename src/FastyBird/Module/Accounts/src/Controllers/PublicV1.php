@@ -18,6 +18,7 @@ namespace FastyBird\Module\Accounts\Controllers;
 use Doctrine;
 use Exception;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Accounts\Controllers;
 use FastyBird\Module\Accounts\Helpers;
 use FastyBird\Module\Accounts\Models;
@@ -181,8 +182,8 @@ final class PublicV1 extends BaseV1
 		} catch (Throwable $ex) {
 			// Log caught exception
 			$this->logger->error('An unhandled error occurred', [
-				'source' => 'accounts-module-public-controller',
-				'type' => 'reset-identity',
+				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_ACCOUNTS,
+				'type' => 'public-controller',
 				'exception' => [
 					'message' => $ex->getMessage(),
 					'code' => $ex->getCode(),

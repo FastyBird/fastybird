@@ -21,8 +21,8 @@ use FastyBird\Connector\Shelly\Consumers;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Entities\Clients\MdnsResult;
 use FastyBird\Connector\Shelly\Types;
-use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use InvalidArgumentException;
 use Nette;
 use Nette\Utils;
@@ -98,7 +98,7 @@ final class Mdns
 				$this->logger->warning(
 					'Invalid DNS question response received',
 					[
-						'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'mdns-client',
 						'connector' => [
 							'id' => $this->connector->getId()->toString(),
@@ -113,7 +113,7 @@ final class Mdns
 				$this->logger->warning(
 					'The server set the truncated bit although we issued a TCP request',
 					[
-						'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'mdns-client',
 						'connector' => [
 							'id' => $this->connector->getId()->toString(),

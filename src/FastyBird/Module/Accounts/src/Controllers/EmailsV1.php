@@ -18,6 +18,7 @@ namespace FastyBird\Module\Accounts\Controllers;
 use Doctrine;
 use Exception;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Accounts\Controllers;
 use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\Module\Accounts\Helpers;
@@ -215,8 +216,8 @@ final class EmailsV1 extends BaseV1
 		} catch (Throwable $ex) {
 			// Log caught exception
 			$this->logger->error('An unhandled error occurred', [
-				'source' => 'accounts-module-emails-controller',
-				'type' => 'create',
+				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_ACCOUNTS,
+				'type' => 'emails-controller',
 				'exception' => [
 					'message' => $ex->getMessage(),
 					'code' => $ex->getCode(),
@@ -301,8 +302,8 @@ final class EmailsV1 extends BaseV1
 		} catch (Throwable $ex) {
 			// Log caught exception
 			$this->logger->error('An unhandled error occurred', [
-				'source' => 'accounts-module-emails-controller',
-				'type' => 'update',
+				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_ACCOUNTS,
+				'type' => 'emails-controller',
 				'exception' => [
 					'message' => $ex->getMessage(),
 					'code' => $ex->getCode(),
@@ -360,8 +361,8 @@ final class EmailsV1 extends BaseV1
 		} catch (Throwable $ex) {
 			// Log caught exception
 			$this->logger->error('An unhandled error occurred', [
-				'source' => 'accounts-module-emails-controller',
-				'type' => 'delete',
+				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_ACCOUNTS,
+				'type' => 'emails-controller',
 				'exception' => [
 					'message' => $ex->getMessage(),
 					'code' => $ex->getCode(),

@@ -22,9 +22,9 @@ use FastyBird\Connector\FbMqtt\Consumers;
 use FastyBird\Connector\FbMqtt\Exceptions;
 use FastyBird\Connector\FbMqtt\Helpers;
 use FastyBird\Connector\FbMqtt\Types;
-use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use InvalidArgumentException;
@@ -372,7 +372,7 @@ abstract class Client
 		$this->logger->info(
 			'Established connection to MQTT broker',
 			[
-				'source' => Metadata\Constants::CONNECTOR_FB_MQTT_SOURCE,
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 				'type' => 'client',
 				'credentials' => [
 					'username' => $connection->getUsername(),
@@ -390,7 +390,7 @@ abstract class Client
 		$this->logger->info(
 			'Connection to MQTT broker',
 			[
-				'source' => Metadata\Constants::CONNECTOR_FB_MQTT_SOURCE,
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 				'type' => 'client',
 				'credentials' => [
 					'username' => $connection->getUsername(),
@@ -412,7 +412,7 @@ abstract class Client
 		$this->logger->info(
 			sprintf('Connected to MQTT broker with client id %s', $connection->getClientID()),
 			[
-				'source' => Metadata\Constants::CONNECTOR_FB_MQTT_SOURCE,
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 				'type' => 'client',
 				'credentials' => [
 					'username' => $connection->getUsername(),
@@ -432,7 +432,7 @@ abstract class Client
 		$this->logger->info(
 			sprintf('Disconnected from MQTT broker with client id %s', $connection->getClientID()),
 			[
-				'source' => Metadata\Constants::CONNECTOR_FB_MQTT_SOURCE,
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 				'type' => 'client',
 				'credentials' => [
 					'username' => $connection->getUsername(),
@@ -453,7 +453,7 @@ abstract class Client
 		$this->logger->warning(
 			sprintf('There was an error  %s', $ex->getMessage()),
 			[
-				'source' => Metadata\Constants::CONNECTOR_FB_MQTT_SOURCE,
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 				'type' => 'client',
 				'error' => [
 					'message' => $ex->getMessage(),
@@ -481,7 +481,7 @@ abstract class Client
 		$this->logger->error(
 			sprintf('There was an error  %s', $ex->getMessage()),
 			[
-				'source' => Metadata\Constants::CONNECTOR_FB_MQTT_SOURCE,
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 				'type' => 'client',
 				'error' => [
 					'message' => $ex->getMessage(),
@@ -510,7 +510,7 @@ abstract class Client
 				$message->getPayload(),
 			),
 			[
-				'source' => Metadata\Constants::CONNECTOR_FB_MQTT_SOURCE,
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 				'type' => 'client',
 				'message' => [
 					'topic' => $message->getTopic(),

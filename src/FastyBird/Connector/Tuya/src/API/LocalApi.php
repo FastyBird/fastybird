@@ -22,9 +22,9 @@ use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette;
 use Nette\Utils;
 use Psr\Log;
@@ -178,7 +178,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 								$this->logger->debug(
 									'Device has replied to heartbeat',
 									[
-										'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 										'type' => 'localapi-api',
 										'device' => [
 											'identifier' => $this->identifier,
@@ -191,7 +191,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 								$this->logger->debug(
 									'Device has reported its status',
 									[
-										'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 										'type' => 'localapi-api',
 										'message' => [
 											'data' => $message->getData(),
@@ -213,7 +213,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 						$this->logger->error(
 							'An error occurred on device connection',
 							[
-								'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 								'type' => 'localapi-api',
 								'exception' => [
 									'message' => $ex->getMessage(),
@@ -232,7 +232,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 						$this->logger->debug(
 							'Connection with device was closed',
 							[
-								'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 								'type' => 'localapi-api',
 								'device' => [
 									'identifier' => $this->identifier,
@@ -256,7 +256,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 								$this->logger->debug(
 									'Sending ping to device',
 									[
-										'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 										'type' => 'localapi-api',
 										'device' => [
 											'identifier' => $this->identifier,
@@ -294,7 +294,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 			$this->logger->error(
 				'Could not create connector',
 				[
-					'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'localapi-api',
 					'exception' => [
 						'message' => $ex->getMessage(),
@@ -462,7 +462,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 		$this->logger->debug(
 			'Sending message to device',
 			[
-				'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 				'type' => 'localapi-api',
 				'message' => [
 					'command' => $command->getValue(),
@@ -598,7 +598,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 				$this->logger->error(
 					'Received unknown command',
 					[
-						'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'localapi-api',
 						'message' => [
 							'command' => $command,
@@ -644,7 +644,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 					$this->logger->info(
 						'Received message from device in version 3.1. This code is untested',
 						[
-							'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 							'type' => 'localapi-api',
 							'device' => [
 								'identifier' => $this->identifier,
@@ -668,7 +668,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 						$this->logger->error(
 							'Received message payload could not be decoded',
 							[
-								'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 								'type' => 'localapi-api',
 								'device' => [
 									'identifier' => $this->identifier,
@@ -700,7 +700,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 						$this->logger->error(
 							'Received message payload could not be decoded',
 							[
-								'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 								'type' => 'localapi-api',
 								'device' => [
 									'identifier' => $this->identifier,
@@ -715,7 +715,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 				$this->logger->warning(
 					'Received message from device with unsupported version',
 					[
-						'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'localapi-api',
 						'message' => [
 							'command' => $command->getValue(),
@@ -734,7 +734,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 			$this->logger->debug(
 				'Received message from device',
 				[
-					'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'localapi-api',
 					'message' => [
 						'command' => $command->getValue(),
@@ -879,7 +879,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 			$this->logger->error(
 				'Message payload could not be build',
 				[
-					'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'localapi-api',
 					'exception' => [
 						'message' => $ex->getMessage(),

@@ -23,7 +23,6 @@ use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -399,7 +398,7 @@ final class Http
 										$this->logger->warning(
 											'Expected value could not be set',
 											[
-												'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+												'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 												'type' => 'http-client',
 												'exception' => [
 													'message' => $ex->getMessage(),
@@ -488,7 +487,7 @@ final class Http
 						$this->logger->warning(
 							'Received message could not be parsed into entity',
 							[
-								'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 								'type' => 'http-client',
 								'exception' => [
 									'message' => $ex->getMessage(),
@@ -506,7 +505,7 @@ final class Http
 				$this->logger->error(
 					'Failed to call device http api',
 					[
-						'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'http-client',
 						'exception' => [
 							'message' => $ex->getMessage(),
@@ -577,7 +576,7 @@ final class Http
 						$this->logger->warning(
 							'Received message could not be parsed into entity',
 							[
-								'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 								'type' => 'http-client',
 								'exception' => [
 									'message' => $ex->getMessage(),
@@ -595,7 +594,7 @@ final class Http
 				$this->logger->error(
 					'Failed to call device http api',
 					[
-						'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'http-client',
 						'exception' => [
 							'message' => $ex->getMessage(),
@@ -651,7 +650,7 @@ final class Http
 			$this->logger->error(
 				'Channel identifier is not in expected format',
 				[
-					'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'http-client',
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
@@ -679,7 +678,7 @@ final class Http
 			$this->logger->error(
 				'Channel - block description is not in expected format',
 				[
-					'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'http-client',
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
@@ -708,7 +707,7 @@ final class Http
 			$this->logger->error(
 				'Sensor action could not be created',
 				[
-					'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'http-client',
 					'exception' => [
 						'message' => $ex->getMessage(),
@@ -757,7 +756,7 @@ final class Http
 				$this->logger->error(
 					'Failed to call device http api',
 					[
-						'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'http-client',
 						'exception' => [
 							'message' => $ex->getMessage(),
@@ -829,7 +828,7 @@ final class Http
 			$this->logger->error(
 				'Device IP address could not be determined',
 				[
-					'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'http-client',
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),

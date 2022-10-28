@@ -20,7 +20,6 @@ use Doctrine\Persistence;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Types;
-use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
@@ -320,7 +319,7 @@ class Initialize extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'initialize-cmd',
 					'exception' => [
 						'message' => $ex->getMessage(),
@@ -397,7 +396,7 @@ class Initialize extends Console\Command\Command
 			$this->logger->alert(
 				'Connector identifier was not able to get from answer',
 				[
-					'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'initialize-cmd',
 				],
 			);
@@ -416,7 +415,7 @@ class Initialize extends Console\Command\Command
 			$this->logger->alert(
 				'Connector was not found',
 				[
-					'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'initialize-cmd',
 				],
 			);
@@ -673,7 +672,7 @@ class Initialize extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'initialize-cmd',
 					'exception' => [
 						'message' => $ex->getMessage(),
@@ -732,7 +731,7 @@ class Initialize extends Console\Command\Command
 			$this->logger->alert(
 				'Connector identifier was not able to get from answer',
 				[
-					'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'initialize-cmd',
 				],
 			);
@@ -751,7 +750,7 @@ class Initialize extends Console\Command\Command
 			$this->logger->alert(
 				'Connector was not found',
 				[
-					'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'initialize-cmd',
 				],
 			);
@@ -788,7 +787,7 @@ class Initialize extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'initialize-cmd',
 					'exception' => [
 						'message' => $ex->getMessage(),

@@ -25,6 +25,7 @@ use FastyBird\Connector\Tuya\Types;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Nette;
 use Nette\Utils;
@@ -173,7 +174,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$this->logger->debug(
 				'Starting local devices discovery',
 				[
-					'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'discovery-client',
 					'protocol' => $protocolVersion,
 				],
@@ -194,7 +195,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$this->logger->error(
 					'Could not create local discovery server',
 					[
-						'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'discovery-client',
 						'exception' => [
 							'message' => $ex->getMessage(),
@@ -258,7 +259,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 		$this->logger->debug(
 			'Starting cloud devices discovery',
 			[
-				'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 				'type' => 'discovery-client',
 			],
 		);
@@ -277,7 +278,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$this->logger->error(
 				'Loading devices from cloud failed',
 				[
-					'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'discovery-client',
 					'exception' => [
 						'message' => $ex->getMessage(),
@@ -302,7 +303,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$this->logger->error(
 				'Loading devices factory infos from cloud failed',
 				[
-					'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'discovery-client',
 					'exception' => [
 						'message' => $ex->getMessage(),
@@ -332,7 +333,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$this->logger->error(
 				'Received invalid packet. Received data could not be decrypted',
 				[
-					'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'discovery-client',
 				],
 			);
@@ -347,7 +348,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$this->logger->error(
 					'Decoded discovered local message has invalid format',
 					[
-						'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'discovery-client',
 					],
 				);
@@ -367,7 +368,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$this->logger->error(
 					'Decoded discovered local message has invalid format',
 					[
-						'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'discovery-client',
 					],
 				);
@@ -387,7 +388,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$this->logger->error(
 				'Received invalid packet. Received data are not valid JSON string',
 				[
-					'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'discovery-client',
 					'exception' => [
 						'message' => $ex->getMessage(),
@@ -434,7 +435,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$this->logger->error(
 					'Could not load device basic information from Tuya cloud',
 					[
-						'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'discovery-client',
 						'exception' => [
 							'message' => $ex->getMessage(),
@@ -460,7 +461,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$this->logger->error(
 					'Could not create connection with device',
 					[
-						'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'discovery-client',
 						'exception' => [
 							'message' => $ex->getMessage(),
@@ -509,7 +510,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					$this->logger->error(
 						'Could not connect to device',
 						[
-							'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 							'type' => 'discovery-client',
 						],
 					);
@@ -533,7 +534,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$this->logger->error(
 					'Could not read device data points states',
 					[
-						'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'discovery-client',
 						'exception' => [
 							'message' => $ex->getMessage(),
@@ -691,7 +692,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$this->logger->error(
 					'Device specification could not be loaded',
 					[
-						'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'discovery-client',
 						'exception' => [
 							'message' => $ex->getMessage(),

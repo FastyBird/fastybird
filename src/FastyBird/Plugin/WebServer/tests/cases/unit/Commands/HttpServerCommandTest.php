@@ -2,6 +2,7 @@
 
 namespace FastyBird\Plugin\WebServer\Tests\Cases\Unit\Commands;
 
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\WebServer\Commands;
 use FastyBird\Plugin\WebServer\Middleware;
 use FastyBird\Plugin\WebServer\Server;
@@ -36,14 +37,14 @@ final class HttpServerCommandTest extends TestCase
 				[
 					'Launching HTTP Server',
 					[
-						'source' => 'web-server-plugin',
+						'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WEB_SERVER,
 						'type' => 'command',
 					],
 				],
 				[
 					'Listening on "http://127.0.0.1:8001"',
 					[
-						'source' => 'web-server-plugin',
+						'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WEB_SERVER,
 						'type' => 'factory',
 					],
 				],

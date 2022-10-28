@@ -15,8 +15,8 @@
 
 namespace FastyBird\Module\Devices\Utilities;
 
-use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
@@ -60,7 +60,7 @@ final class ConnectorPropertiesStates
 			$this->logger->warning(
 				'Connectors states repository is not configured. State could not be fetched',
 				[
-					'source' => Metadata\Constants::MODULE_DEVICES_SOURCE,
+					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
 					'type' => 'connector-properties-states',
 				],
 			);
@@ -80,7 +80,7 @@ final class ConnectorPropertiesStates
 				$this->logger->debug(
 					'Connector property state was created',
 					[
-						'source' => Metadata\Constants::MODULE_DEVICES_SOURCE,
+						'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
 						'type' => 'connector-properties-states',
 						'property' => [
 							'id' => $property->getId()->toString(),
@@ -98,7 +98,7 @@ final class ConnectorPropertiesStates
 				$this->logger->debug(
 					'Connector property state was updated',
 					[
-						'source' => Metadata\Constants::MODULE_DEVICES_SOURCE,
+						'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
 						'type' => 'connector-properties-states',
 						'property' => [
 							'id' => $property->getId()->toString(),
@@ -111,7 +111,7 @@ final class ConnectorPropertiesStates
 			$this->logger->warning(
 				'Connectors states manager is not configured. State could not be saved',
 				[
-					'source' => Metadata\Constants::MODULE_DEVICES_SOURCE,
+					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
 					'type' => 'connector-properties-states',
 				],
 			);

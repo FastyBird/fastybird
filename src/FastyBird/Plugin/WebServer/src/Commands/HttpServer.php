@@ -15,6 +15,7 @@
 
 namespace FastyBird\Plugin\WebServer\Commands;
 
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\WebServer\Events;
 use FastyBird\Plugin\WebServer\Exceptions;
 use FastyBird\Plugin\WebServer\Server;
@@ -83,7 +84,7 @@ class HttpServer extends Console\Command\Command
 		$this->logger->info(
 			'Launching HTTP Server',
 			[
-				'source' => 'web-server-plugin',
+				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WEB_SERVER,
 				'type' => 'command',
 			],
 		);
@@ -124,7 +125,7 @@ class HttpServer extends Console\Command\Command
 			$this->logger->error(
 				'HTTP server was forced to close',
 				[
-					'source' => 'web-server-plugin',
+					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WEB_SERVER,
 					'type' => 'command',
 					'exception' => [
 						'message' => $ex->getMessage(),
@@ -141,7 +142,7 @@ class HttpServer extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred. Stopping HTTP server',
 				[
-					'source' => 'web-server-plugin',
+					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WEB_SERVER,
 					'type' => 'command',
 					'exception' => [
 						'message' => $ex->getMessage(),

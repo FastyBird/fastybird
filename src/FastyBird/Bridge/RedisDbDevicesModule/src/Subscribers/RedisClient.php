@@ -15,13 +15,17 @@
 
 namespace FastyBird\Bridge\RedisDbDevicesModule\Subscribers;
 
-use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
-use FastyBird\Module\Devices\Consumers as DevicesConsumers;
-use FastyBird\Plugin\RedisDb\Events as RedisDbEvents;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Events as DevicesEvents;
+use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use FastyBird\Plugin\RedisDb\Client as RedisDbClient;
+use Psr\Log;
+use React\EventLoop;
 use Symfony\Component\EventDispatcher;
+use Throwable;
 
 /**
- * Redis DB client subscriber
+ * Devices module subscriber
  *
  * @package         FastyBird:RedisDbDevicesModuleBridge!
  * @subpackage      Subscribers
@@ -31,22 +35,58 @@ use Symfony\Component\EventDispatcher;
 class RedisClient implements EventDispatcher\EventSubscriberInterface
 {
 
+	private Log\LoggerInterface $logger;
+
 	public function __construct(
-		private readonly ExchangeConsumers\Container $consumer,
+		private readonly RedisDbClient\Factory $clientFactory,
+		private readonly EventLoop\LoopInterface|null $eventLoop = null,
+		Log\LoggerInterface|null $logger = null,
 	)
 	{
+		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	public static function getSubscribedEvents(): array
 	{
 		return [
-			RedisDbEvents\Startup::class => 'startup',
+			DevicesEvents\ConnectorStartup::class => 'startup',
+			DevicesEvents\ExchangeStartup::class => 'startup',
 		];
 	}
 
 	public function startup(): void
 	{
-		$this->consumer->enable(DevicesConsumers\States::class);
+		$this->clientFactory->create($this->eventLoop)
+			->then(
+				function (): void {
+					$this->logger->debug(
+						'Redis client was successfully started with devices service',
+						[
+							'source' => MetadataTypes\BridgeSource::SOURCE_BRIDGE_REDISDB_DEVICES_STATES,
+							'type' => 'subscriber',
+						],
+					);
+				},
+				function (Throwable $ex): void {
+					$this->logger->error(
+						'Redis client could not be created',
+						[
+							'source' => MetadataTypes\BridgeSource::SOURCE_BRIDGE_REDISDB_DEVICES_STATES,
+							'type' => 'subscriber',
+							'exception' => [
+								'message' => $ex->getMessage(),
+								'code' => $ex->getCode(),
+							],
+						],
+					);
+
+					throw new DevicesExceptions\Terminate(
+						'Redis client could not be created',
+						$ex->getCode(),
+						$ex,
+					);
+				},
+			);
 	}
 
 }

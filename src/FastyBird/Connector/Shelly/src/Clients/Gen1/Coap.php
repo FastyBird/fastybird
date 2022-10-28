@@ -20,9 +20,9 @@ use Clue\React\Multicast;
 use FastyBird\Connector\Shelly\API;
 use FastyBird\Connector\Shelly\Consumers;
 use FastyBird\Connector\Shelly\Exceptions;
-use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Nette;
 use Psr\Log;
@@ -91,7 +91,7 @@ final class Coap
 			$this->logger->warning(
 				'Client is not running, discovery process could not be processed',
 				[
-					'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'coap-client',
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
@@ -113,7 +113,7 @@ final class Coap
 		$this->logger->debug(
 			'Sending discover devices packet',
 			[
-				'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 				'type' => 'coap-client',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -144,7 +144,7 @@ final class Coap
 			$this->logger->error(
 				'An error occurred during handling requests',
 				[
-					'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'coap-client',
 					'exception' => [
 						'message' => $ex->getMessage(),
@@ -167,7 +167,7 @@ final class Coap
 			$this->logger->info(
 				'Client connection was successfully closed',
 				[
-					'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'coap-client',
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
@@ -294,7 +294,7 @@ final class Coap
 					str_replace(' ', '', $message),
 				),
 				[
-					'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'coap-client',
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
@@ -323,7 +323,7 @@ final class Coap
 					$this->logger->warning(
 						'Received message could not be parsed into entity',
 						[
-							'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 							'type' => 'coap-client',
 							'exception' => [
 								'message' => $ex->getMessage(),
@@ -355,7 +355,7 @@ final class Coap
 					$this->logger->warning(
 						'Received message could not be parsed into entity',
 						[
-							'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 							'type' => 'coap-client',
 							'exception' => [
 								'message' => $ex->getMessage(),

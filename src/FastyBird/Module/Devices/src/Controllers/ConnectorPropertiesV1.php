@@ -18,7 +18,7 @@ namespace FastyBird\Module\Devices\Controllers;
 use Doctrine;
 use Exception;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
-use FastyBird\Library\Metadata;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Controllers;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
@@ -187,7 +187,7 @@ final class ConnectorPropertiesV1 extends BaseV1
 			} catch (Throwable $ex) {
 				// Log caught exception
 				$this->logger->error('An unhandled error occurred', [
-					'source' => Metadata\Constants::MODULE_DEVICES_SOURCE,
+					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
 					'type' => 'connector-properties-controller',
 					'exception' => [
 						'message' => $ex->getMessage(),
@@ -265,7 +265,7 @@ final class ConnectorPropertiesV1 extends BaseV1
 			} catch (Throwable $ex) {
 				// Log caught exception
 				$this->logger->error('An unhandled error occurred', [
-					'source' => Metadata\Constants::MODULE_DEVICES_SOURCE,
+					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
 					'type' => 'connector-properties-controller',
 					'exception' => [
 						'message' => $ex->getMessage(),
@@ -334,7 +334,7 @@ final class ConnectorPropertiesV1 extends BaseV1
 		} catch (Throwable $ex) {
 			// Log caught exception
 			$this->logger->error('An unhandled error occurred', [
-				'source' => Metadata\Constants::MODULE_DEVICES_SOURCE,
+				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
 				'type' => 'connector-properties-controller',
 				'exception' => [
 					'message' => $ex->getMessage(),
