@@ -17,8 +17,8 @@ namespace FastyBird\Connector\Tuya\Consumers\Messages;
 
 use Doctrine\DBAL;
 use FastyBird\Connector\Tuya\Entities;
-use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -131,7 +131,7 @@ trait TConsumeDeviceAttribute
 			$this->logger->debug(
 				'Device attribute was created',
 				[
-					'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'message-consumer',
 					'device' => [
 						'id' => $deviceId->toString(),
@@ -166,7 +166,7 @@ trait TConsumeDeviceAttribute
 				$this->logger->debug(
 					'Device attribute was updated',
 					[
-						'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'message-consumer',
 						'device' => [
 							'id' => $deviceId->toString(),
@@ -182,7 +182,7 @@ trait TConsumeDeviceAttribute
 				$this->logger->error(
 					'Device attribute could not be updated',
 					[
-						'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'message-consumer',
 						'device' => [
 							'id' => $deviceId->toString(),

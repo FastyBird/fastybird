@@ -8,7 +8,7 @@ use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\RedisDb\Client;
 use FastyBird\Plugin\RedisDb\Publishers;
-use FastyBird\Plugin\RedisDb\Utils;
+use FastyBird\Plugin\RedisDb\Utilities;
 use Nette;
 use PHPUnit\Framework\TestCase;
 use const DATE_ATOM;
@@ -48,7 +48,7 @@ final class PublisherTest extends TestCase
 			->method('getNow')
 			->willReturn($now);
 
-		$identifierGenerator = $this->createMock(Utils\IdentifierGenerator::class);
+		$identifierGenerator = $this->createMock(Utilities\IdentifierGenerator::class);
 		$identifierGenerator
 			->expects(self::once())
 			->method('getIdentifier')

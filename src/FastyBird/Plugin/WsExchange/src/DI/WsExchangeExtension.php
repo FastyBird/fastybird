@@ -15,7 +15,9 @@
 
 namespace FastyBird\Plugin\WsExchange\DI;
 
+use FastyBird\Library\Exchange\DI as ExchangeDI;
 use FastyBird\Plugin\WsExchange\Commands;
+use FastyBird\Plugin\WsExchange\Consumers;
 use FastyBird\Plugin\WsExchange\Controllers;
 use FastyBird\Plugin\WsExchange\Events;
 use FastyBird\Plugin\WsExchange\Exceptions;
@@ -75,28 +77,22 @@ class WsExchangeExtension extends DI\CompilerExtension
 		$configuration = $this->getConfig();
 		assert($configuration instanceof stdClass);
 
-		// Controllers
-
 		$builder->addDefinition($this->prefix('controllers.exchange'), new DI\Definitions\ServiceDefinition())
 			->setType(Controllers\Exchange::class)
 			->addTag('nette.inject');
 
-		// Publisher
-
 		$builder->addDefinition($this->prefix('exchange.publisher'), new DI\Definitions\ServiceDefinition())
 			->setType(Publishers\Publisher::class);
 
-		// Commands
+		$builder->addDefinition($this->prefix('exchange.consumer'), new DI\Definitions\ServiceDefinition())
+			->setType(Consumers\Consumer::class)
+			->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATUS, false);
 
-		$builder->addDefinition($this->prefix('command.server'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition($this->prefix('commands.server'), new DI\Definitions\ServiceDefinition())
 			->setType(Commands\WsServer::class);
-
-		// Server
 
 		$builder->addDefinition($this->prefix('server.factory'), new DI\Definitions\ServiceDefinition())
 			->setType(Server\Factory::class);
-
-		// Subscribers
 
 		$builder->addDefinition($this->prefix('subscribers.client'), new DI\Definitions\ServiceDefinition())
 			->setType(Subscribers\Client::class)

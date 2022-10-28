@@ -4,6 +4,7 @@ namespace FastyBird\Module\Devices\Tests\Cases\Unit\Subscribers;
 
 use Doctrine\ORM;
 use Exception;
+use FastyBird\Library\Exchange\Entities as ExchangeEntities;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
@@ -48,7 +49,7 @@ final class EntitiesSubscriberTest extends TestCase
 
 		$channelPropertiesStateManager = $this->createMock(Models\States\ChannelPropertiesManager::class);
 
-		$entityFactory = $this->createMock(MetadataEntities\RoutingFactory::class);
+		$entityFactory = $this->createMock(ExchangeEntities\EntityFactory::class);
 
 		$configurationWriter = $this->createMock(DataStorage\Writer::class);
 		$configurationWriter
@@ -157,7 +158,7 @@ final class EntitiesSubscriberTest extends TestCase
 				'children' => [],
 			]);
 
-		$entityFactory = $this->createMock(MetadataEntities\RoutingFactory::class);
+		$entityFactory = $this->createMock(ExchangeEntities\EntityFactory::class);
 		$entityFactory
 			->method('create')
 			->willReturn($entityItem);
@@ -279,7 +280,7 @@ final class EntitiesSubscriberTest extends TestCase
 				'children' => [],
 			]);
 
-		$entityFactory = $this->createMock(MetadataEntities\RoutingFactory::class);
+		$entityFactory = $this->createMock(ExchangeEntities\EntityFactory::class);
 		$entityFactory
 			->method('create')
 			->willReturn($entityItem);
@@ -409,7 +410,7 @@ final class EntitiesSubscriberTest extends TestCase
 				'children' => [],
 			]);
 
-		$entityFactory = $this->createMock(MetadataEntities\RoutingFactory::class);
+		$entityFactory = $this->createMock(ExchangeEntities\EntityFactory::class);
 		$entityFactory
 			->method('create')
 			->willReturn($entityItem);

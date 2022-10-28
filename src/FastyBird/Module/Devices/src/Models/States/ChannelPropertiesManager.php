@@ -15,6 +15,7 @@
 
 namespace FastyBird\Module\Devices\Models\States;
 
+use FastyBird\Library\Exchange\Entities as ExchangeEntities;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Entities;
@@ -43,7 +44,7 @@ final class ChannelPropertiesManager
 	use Nette\SmartObject;
 
 	public function __construct(
-		protected readonly MetadataEntities\RoutingFactory $entityFactory,
+		protected readonly ExchangeEntities\EntityFactory $entityFactory,
 		protected readonly IChannelPropertiesManager|null $manager,
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher,
 	)

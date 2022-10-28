@@ -19,8 +19,8 @@ use Doctrine\DBAL;
 use FastyBird\Connector\Shelly\Consumers\Consumer;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Types;
-use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -118,7 +118,7 @@ final class Discovery implements Consumer
 			$this->logger->info(
 				'Creating new device',
 				[
-					'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'discovery-message-consumer',
 					'device' => [
 						'id' => $deviceEntity->getPlainId(),
@@ -138,7 +138,7 @@ final class Discovery implements Consumer
 			$this->logger->error(
 				'Newly created device could not be loaded',
 				[
-					'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'discovery-message-consumer',
 					'device' => [
 						'identifier' => $entity->getIdentifier(),
@@ -164,7 +164,7 @@ final class Discovery implements Consumer
 		$this->logger->debug(
 			'Consumed device found message',
 			[
-				'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 				'type' => 'discovery-message-consumer',
 				'device' => [
 					'id' => $deviceItem->getId()->toString(),

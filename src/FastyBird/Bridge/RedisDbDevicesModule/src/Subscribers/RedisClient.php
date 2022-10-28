@@ -15,22 +15,17 @@
 
 namespace FastyBird\Bridge\RedisDbDevicesModule\Subscribers;
 
-use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
-use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Utilities as DevicesUtilities;
-use FastyBird\Plugin\RedisDb\Events as RedisDbEvents;
-use FastyBird\Plugin\RedisDb\Handlers as RedisDbHandlers;
-use Nette\Utils;
+use FastyBird\Plugin\RedisDb\Client as RedisDbClient;
 use Psr\Log;
+use React\EventLoop;
 use Symfony\Component\EventDispatcher;
-use function in_array;
+use Throwable;
 
 /**
- * Redis DB client subscriber
+ * Devices module subscriber
  *
  * @package         FastyBird:RedisDbDevicesModuleBridge!
  * @subpackage      Subscribers
@@ -40,23 +35,11 @@ use function in_array;
 class RedisClient implements EventDispatcher\EventSubscriberInterface
 {
 
-	private const PROPERTIES_ACTIONS_ROUTING_KEYS = [
-		MetadataTypes\RoutingKey::ROUTE_CONNECTOR_PROPERTY_ACTION,
-		MetadataTypes\RoutingKey::ROUTE_DEVICE_PROPERTY_ACTION,
-		MetadataTypes\RoutingKey::ROUTE_CHANNEL_PROPERTY_ACTION,
-	];
-
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
-		private readonly RedisDbHandlers\Message $messageHandler,
-		private readonly ExchangePublisher\Container $publisher,
-		private readonly DevicesModels\DataStorage\ConnectorPropertiesRepository $connectorPropertiesRepository,
-		private readonly DevicesModels\DataStorage\DevicePropertiesRepository $devicePropertiesRepository,
-		private readonly DevicesModels\DataStorage\ChannelPropertiesRepository $channelPropertiesRepository,
-		private readonly DevicesUtilities\ConnectorPropertiesStates $connectorPropertiesStates,
-		private readonly DevicesUtilities\DevicePropertiesStates $devicePropertiesStates,
-		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
+		private readonly RedisDbClient\Factory $clientFactory,
+		private readonly EventLoop\LoopInterface|null $eventLoop = null,
 		Log\LoggerInterface|null $logger = null,
 	)
 	{
@@ -66,175 +49,44 @@ class RedisClient implements EventDispatcher\EventSubscriberInterface
 	public static function getSubscribedEvents(): array
 	{
 		return [
-			RedisDbEvents\Startup::class => 'startup',
+			DevicesEvents\ConnectorStartup::class => 'startup',
+			DevicesEvents\ExchangeStartup::class => 'startup',
 		];
 	}
 
 	public function startup(): void
 	{
-		$this->messageHandler->on(
-			'message',
-			function (
-				MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|MetadataTypes\TriggerSource $source,
-				MetadataTypes\RoutingKey $routingKey,
-				MetadataEntities\Entity|null $entity,
-			): void {
-				$this->handle($source, $routingKey, $entity);
-			},
-		);
-	}
+		$this->clientFactory->create($this->eventLoop)
+			->then(
+				function (): void {
+					$this->logger->debug(
+						'Redis client was successfully started with devices service',
+						[
+							'source' => MetadataTypes\BridgeSource::SOURCE_BRIDGE_REDISDB_DEVICES_STATES,
+							'type' => 'subscriber',
+						],
+					);
+				},
+				function (Throwable $ex): void {
+					$this->logger->error(
+						'Redis client could not be created',
+						[
+							'source' => MetadataTypes\BridgeSource::SOURCE_BRIDGE_REDISDB_DEVICES_STATES,
+							'type' => 'subscriber',
+							'exception' => [
+								'message' => $ex->getMessage(),
+								'code' => $ex->getCode(),
+							],
+						],
+					);
 
-	/**
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
-	 */
-	private function handle(
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|MetadataTypes\TriggerSource $source,
-		MetadataTypes\RoutingKey $routingKey,
-		MetadataEntities\Entity|null $entity,
-	): void
-	{
-		if ($entity !== null) {
-			if (in_array($routingKey->getValue(), self::PROPERTIES_ACTIONS_ROUTING_KEYS, true)) {
-				if ($entity instanceof MetadataEntities\Actions\ActionConnectorProperty) {
-					if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_SET)) {
-						$property = $this->connectorPropertiesRepository->findById($entity->getProperty());
-
-						if (!$property instanceof MetadataEntities\DevicesModule\ConnectorDynamicProperty) {
-							return;
-						}
-
-						$this->connectorPropertiesStates->setValue(
-							$property,
-							Utils\ArrayHash::from([
-								'expectedValue' => $this->normalizeValue($property, $entity->getExpectedValue()),
-								'pending' => true,
-							]),
-						);
-					} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
-						$property = $this->connectorPropertiesRepository->findById($entity->getProperty());
-
-						if ($property === null) {
-							return;
-						}
-
-						$this->publisher->publish(
-							MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
-							MetadataTypes\RoutingKey::get(
-								MetadataTypes\RoutingKey::ROUTE_CONNECTOR_PROPERTY_ENTITY_REPORTED,
-							),
-							$property,
-						);
-					}
-				} elseif ($entity instanceof MetadataEntities\Actions\ActionDeviceProperty) {
-					if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_SET)) {
-						$property = $this->devicePropertiesRepository->findById($entity->getProperty());
-
-						if (
-							!$property instanceof MetadataEntities\DevicesModule\DeviceDynamicProperty
-							&& !$property instanceof MetadataEntities\DevicesModule\DeviceMappedProperty
-						) {
-							return;
-						}
-
-						$this->devicePropertiesStates->setValue(
-							$property,
-							Utils\ArrayHash::from([
-								'expectedValue' => $this->normalizeValue($property, $entity->getExpectedValue()),
-								'pending' => true,
-							]),
-						);
-					} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
-						$property = $this->devicePropertiesRepository->findById($entity->getProperty());
-
-						if ($property === null) {
-							return;
-						}
-
-						$this->publisher->publish(
-							MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
-							MetadataTypes\RoutingKey::get(
-								MetadataTypes\RoutingKey::ROUTE_DEVICE_PROPERTY_ENTITY_REPORTED,
-							),
-							$property,
-						);
-					}
-				} elseif ($entity instanceof MetadataEntities\Actions\ActionChannelProperty) {
-					if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_SET)) {
-						$property = $this->channelPropertiesRepository->findById($entity->getProperty());
-
-						if (
-							!$property instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty
-							&& !$property instanceof MetadataEntities\DevicesModule\ChannelMappedProperty
-						) {
-							return;
-						}
-
-						$this->channelPropertiesStates->setValue(
-							$property,
-							Utils\ArrayHash::from([
-								'expectedValue' => $this->normalizeValue($property, $entity->getExpectedValue()),
-								'pending' => true,
-							]),
-						);
-					} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
-						$property = $this->channelPropertiesRepository->findById($entity->getProperty());
-
-						if ($property === null) {
-							return;
-						}
-
-						$this->publisher->publish(
-							MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
-							MetadataTypes\RoutingKey::get(
-								MetadataTypes\RoutingKey::ROUTE_CHANNEL_PROPERTY_ENTITY_REPORTED,
-							),
-							$property,
-						);
-					}
-				}
-			}
-		} else {
-			$this->logger->warning('Received data message without data', [
-				'source' => MetadataTypes\BridgeSource::SOURCE_BRIDGE_REDISDB_DEVICES_STATES,
-				'type' => 'subscriber',
-			]);
-		}
-	}
-
-	/**
-	 * @throws MetadataExceptions\InvalidState
-	 */
-	private function normalizeValue(
-		MetadataEntities\DevicesModule\ChannelMappedProperty|MetadataEntities\DevicesModule\ConnectorDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty|MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\ChannelDynamicProperty $property,
-		float|bool|int|string|null $expectedValue,
-	): float|bool|int|string|null
-	{
-		$valueToWrite = DevicesUtilities\ValueHelper::normalizeValue(
-			$property->getDataType(),
-			$expectedValue,
-			$property->getFormat(),
-			$property->getInvalid(),
-		);
-
-		if (
-			$valueToWrite instanceof MetadataTypes\SwitchPayload
-			&& $property->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_SWITCH)
-			&& $valueToWrite->equalsValue(MetadataTypes\SwitchPayload::PAYLOAD_TOGGLE)
-		) {
-			$valueToWrite = $property->getActualValue() === MetadataTypes\SwitchPayload::PAYLOAD_ON
-				? MetadataTypes\SwitchPayload::get(MetadataTypes\SwitchPayload::PAYLOAD_OFF)
-				: MetadataTypes\SwitchPayload::get(
-					MetadataTypes\SwitchPayload::PAYLOAD_ON,
-				);
-		}
-
-		return DevicesUtilities\ValueHelper::flattenValue($valueToWrite);
+					throw new DevicesExceptions\Terminate(
+						'Redis client could not be created',
+						$ex->getCode(),
+						$ex,
+					);
+				},
+			);
 	}
 
 }

@@ -24,7 +24,6 @@ use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -303,7 +302,7 @@ final class Local implements Client
 					$this->logger->warning(
 						'Could not call local api',
 						[
-							'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 							'type' => 'local-client',
 							'exception' => [
 								'message' => $ex->getMessage(),
@@ -398,7 +397,7 @@ final class Local implements Client
 								$this->logger->error(
 									'Could not call local device api',
 									[
-										'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 										'type' => 'local-client',
 										'exception' => [
 											'message' => $ex->getMessage(),
@@ -503,7 +502,7 @@ final class Local implements Client
 				$this->logger->debug(
 					'Connected to device',
 					[
-						'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'local-client',
 						'connector' => [
 							'id' => $this->connector->getId()->toString(),
@@ -529,7 +528,7 @@ final class Local implements Client
 				$this->logger->warning(
 					'Connection with device failed',
 					[
-						'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'local-client',
 						'exception' => [
 							'message' => $ex->getMessage(),

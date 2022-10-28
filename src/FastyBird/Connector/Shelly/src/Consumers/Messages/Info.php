@@ -19,8 +19,8 @@ use Doctrine\DBAL;
 use FastyBird\Connector\Shelly\Consumers\Consumer;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Types;
-use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -143,7 +143,7 @@ final class Info implements Consumer
 		$this->logger->debug(
 			'Consumed device info message',
 			[
-				'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 				'type' => 'info-message-consumer',
 				'device' => [
 					'id' => $deviceItem->getId()->toString(),

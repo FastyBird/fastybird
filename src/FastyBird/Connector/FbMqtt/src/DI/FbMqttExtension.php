@@ -59,13 +59,11 @@ class FbMqttExtension extends DI\CompilerExtension
 	{
 		$builder = $this->getContainerBuilder();
 
-		// MQTT v1 API client
 		$builder->addFactoryDefinition($this->prefix('client.apiv1'))
 			->setImplement(Clients\FbMqttV1Factory::class)
 			->getResultDefinition()
 			->setType(Clients\FbMqttV1::class);
 
-		// MQTT API
 		$builder->addDefinition($this->prefix('api.v1parser'), new DI\Definitions\ServiceDefinition())
 			->setType(API\V1Parser::class);
 
@@ -75,65 +73,60 @@ class FbMqttExtension extends DI\CompilerExtension
 		$builder->addDefinition($this->prefix('api.v1builder'), new DI\Definitions\ServiceDefinition())
 			->setType(API\V1Builder::class);
 
-		// Consumers
 		$builder->addDefinition(
-			$this->prefix('consumer.device.attribute.message'),
+			$this->prefix('consumers.device.attribute.message'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Consumers\Messages\Device::class);
 
 		$builder->addDefinition(
-			$this->prefix('consumer.device.extension.message'),
+			$this->prefix('consumers.device.extension.message'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Consumers\Messages\ExtensionAttribute::class);
 
 		$builder->addDefinition(
-			$this->prefix('consumer.device.property.message'),
+			$this->prefix('consumers.device.property.message'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Consumers\Messages\DeviceProperty::class);
 
 		$builder->addDefinition(
-			$this->prefix('consumer.channel.attribute.message'),
+			$this->prefix('consumers.channel.attribute.message'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Consumers\Messages\Channel::class);
 
 		$builder->addDefinition(
-			$this->prefix('consumer.channel.property.message'),
+			$this->prefix('consumers.channel.property.message'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Consumers\Messages\ChannelProperty::class);
 
-		$builder->addDefinition($this->prefix('consumer.proxy'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition($this->prefix('consumers.proxy'), new DI\Definitions\ServiceDefinition())
 			->setType(Consumers\Messages::class)
 			->setArguments([
 				'consumers' => $builder->findByType(Consumers\Consumer::class),
 			]);
 
-		// API schemas
 		$builder->addDefinition($this->prefix('schemas.connector.fbMqtt'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\FbMqttConnector::class);
 
 		$builder->addDefinition($this->prefix('schemas.device.fbMqtt'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\FbMqttDevice::class);
 
-		// API hydrators
 		$builder->addDefinition($this->prefix('hydrators.connector.fbMqtt'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\FbMqttConnector::class);
 
 		$builder->addDefinition($this->prefix('hydrators.device.fbMqtt'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\FbMqttDevice::class);
 
-		// Helpers
 		$builder->addDefinition($this->prefix('helpers.connector'), new DI\Definitions\ServiceDefinition())
 			->setType(Helpers\Connector::class);
 
 		$builder->addDefinition($this->prefix('helpers.property'), new DI\Definitions\ServiceDefinition())
 			->setType(Helpers\Property::class);
 
-		// Service factory
 		$builder->addFactoryDefinition($this->prefix('executor.factory'))
 			->setImplement(Connector\ConnectorFactory::class)
 			->addTag(

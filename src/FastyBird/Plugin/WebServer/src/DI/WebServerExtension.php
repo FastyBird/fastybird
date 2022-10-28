@@ -120,7 +120,7 @@ class WebServerExtension extends DI\CompilerExtension
 		$builder->addDefinition($this->prefix('routing.router'), new DI\Definitions\ServiceDefinition())
 			->setType(SlimRouter\Routing\Router::class);
 
-		$builder->addDefinition($this->prefix('command.server'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition($this->prefix('commands.server'), new DI\Definitions\ServiceDefinition())
 			->setType(Commands\HttpServer::class)
 			->setArguments([
 				'serverAddress' => $configuration->server->address,
@@ -128,7 +128,6 @@ class WebServerExtension extends DI\CompilerExtension
 				'serverCertificate' => $configuration->server->certificate,
 			]);
 
-		// Web server middlewares
 		$builder->addDefinition($this->prefix('middlewares.cors'), new DI\Definitions\ServiceDefinition())
 			->setType(Middleware\Cors::class)
 			->setArguments([
@@ -147,8 +146,6 @@ class WebServerExtension extends DI\CompilerExtension
 		$builder->addDefinition($this->prefix('middlewares.router'), new DI\Definitions\ServiceDefinition())
 			->setType(Middleware\Router::class);
 
-		// Applications
-
 		if ($this->cliMode === true) {
 			$builder->addDefinition($this->prefix('application.console'), new DI\Definitions\ServiceDefinition())
 				->setType(Application\Console::class);
@@ -156,8 +153,6 @@ class WebServerExtension extends DI\CompilerExtension
 
 		$builder->addDefinition($this->prefix('application.classic'), new DI\Definitions\ServiceDefinition())
 			->setType(Application\Application::class);
-
-		// Web server factory
 
 		$builder->addDefinition($this->prefix('server.factory'), new DI\Definitions\ServiceDefinition())
 			->setType(Server\Factory::class);

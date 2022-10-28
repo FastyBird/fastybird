@@ -15,6 +15,7 @@
 
 namespace FastyBird\Module\Accounts\Commands;
 
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Psr\Log;
 use RuntimeException;
 use Symfony\Component\Console;
@@ -124,8 +125,8 @@ class Initialize extends Console\Command\Command
 		} catch (Throwable $ex) {
 			// Log caught exception
 			$this->logger->error('An unhandled error occurred', [
-				'source' => 'accounts-module-initialize',
-				'type' => 'run',
+				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_ACCOUNTS,
+				'type' => 'command',
 				'exception' => [
 					'message' => $ex->getMessage(),
 					'code' => $ex->getCode(),

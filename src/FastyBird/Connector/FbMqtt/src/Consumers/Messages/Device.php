@@ -19,7 +19,6 @@ use Doctrine\DBAL;
 use FastyBird\Connector\FbMqtt\Consumers;
 use FastyBird\Connector\FbMqtt\Entities;
 use FastyBird\Connector\FbMqtt\Types;
-use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
@@ -93,7 +92,7 @@ final class Device implements Consumers\Consumer
 				$this->logger->error(
 					sprintf('Device "%s" is not registered', $entity->getDevice()),
 					[
-						'source' => Metadata\Constants::CONNECTOR_FB_MQTT_SOURCE,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 						'type' => 'device-message-consumer',
 						'device' => [
 							'identifier' => $entity->getDevice(),
@@ -124,7 +123,7 @@ final class Device implements Consumers\Consumer
 				$this->logger->error(
 					sprintf('Device "%s" is not registered', $entity->getDevice()),
 					[
-						'source' => Metadata\Constants::CONNECTOR_FB_MQTT_SOURCE,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 						'type' => 'device-message-consumer',
 						'device' => [
 							'identifier' => $entity->getDevice(),
@@ -179,7 +178,7 @@ final class Device implements Consumers\Consumer
 		$this->logger->debug(
 			'Consumed device message',
 			[
-				'source' => Metadata\Constants::CONNECTOR_FB_MQTT_SOURCE,
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 				'type' => 'device-message-consumer',
 				'device' => [
 					'identifier' => $entity->getDevice(),

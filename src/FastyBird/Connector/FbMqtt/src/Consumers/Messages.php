@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\FbMqtt\Consumers;
 
 use FastyBird\Connector\FbMqtt\Entities;
-use FastyBird\Library\Metadata;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette;
 use Psr\Log;
 use SplObjectStorage;
@@ -65,7 +65,7 @@ final class Messages
 		$this->logger->debug(
 			sprintf('Registered %d messages consumers', count($this->consumers)),
 			[
-				'source' => Metadata\Constants::CONNECTOR_FB_MQTT_SOURCE,
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 				'type' => 'consumer',
 			],
 		);
@@ -78,7 +78,7 @@ final class Messages
 		$this->logger->debug(
 			'Appended new message into consumers queue',
 			[
-				'source' => Metadata\Constants::CONNECTOR_FB_MQTT_SOURCE,
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 				'type' => 'consumer',
 				'message' => $entity->toArray(),
 			],
@@ -99,7 +99,7 @@ final class Messages
 			$this->logger->error(
 				'No consumer is registered, messages could not be consumed',
 				[
-					'source' => Metadata\Constants::CONNECTOR_FB_MQTT_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 					'type' => 'consumer',
 				],
 			);
@@ -118,7 +118,7 @@ final class Messages
 		$this->logger->error(
 			'Message could not be consumed',
 			[
-				'source' => Metadata\Constants::CONNECTOR_FB_MQTT_SOURCE,
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 				'type' => 'consumer',
 				'message' => $entity->toArray(),
 			],

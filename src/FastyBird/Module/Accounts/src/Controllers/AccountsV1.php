@@ -194,8 +194,8 @@ final class AccountsV1 extends BaseV1
 			var_dump($ex->getMessage());
 			// Log caught exception
 			$this->logger->error('An unhandled error occurred', [
-				'source' => 'accounts-module-accounts-controller',
-				'type' => 'create',
+				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_ACCOUNTS,
+				'type' => 'accounts-controller',
 				'exception' => [
 					'message' => $ex->getMessage(),
 					'code' => $ex->getCode(),
@@ -278,8 +278,8 @@ final class AccountsV1 extends BaseV1
 		} catch (Throwable $ex) {
 			// Log caught exception
 			$this->logger->error('An unhandled error occurred', [
-				'source' => 'accounts-module-accounts-controller',
-				'type' => 'update',
+				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_ACCOUNTS,
+				'type' => 'accounts-controller',
 				'exception' => [
 					'message' => $ex->getMessage(),
 					'code' => $ex->getCode(),
@@ -353,8 +353,8 @@ final class AccountsV1 extends BaseV1
 		} catch (Throwable $ex) {
 			// Log caught exception
 			$this->logger->error('An unhandled error occurred', [
-				'source' => 'accounts-module-accounts-controller',
-				'type' => 'delete',
+				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_ACCOUNTS,
+				'type' => 'accounts-controller',
 				'exception' => [
 					'message' => $ex->getMessage(),
 					'code' => $ex->getCode(),

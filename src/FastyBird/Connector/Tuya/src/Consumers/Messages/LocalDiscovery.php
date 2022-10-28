@@ -19,8 +19,8 @@ use Doctrine\DBAL;
 use FastyBird\Connector\Tuya\Consumers\Consumer;
 use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Types;
-use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -129,7 +129,7 @@ final class LocalDiscovery implements Consumer
 			$this->logger->info(
 				'Creating new device',
 				[
-					'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'local-discovery-message-consumer',
 					'device' => [
 						'id' => $deviceEntity->getPlainId(),
@@ -158,7 +158,7 @@ final class LocalDiscovery implements Consumer
 				$this->logger->error(
 					'Device could not be updated',
 					[
-						'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'local-discovery-message-consumer',
 						'device' => [
 							'id' => $deviceItem->getId()->toString(),
@@ -179,7 +179,7 @@ final class LocalDiscovery implements Consumer
 			$this->logger->error(
 				'Newly created device could not be loaded',
 				[
-					'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'local-discovery-message-consumer',
 					'device' => [
 						'identifier' => $entity->getId(),
@@ -228,7 +228,7 @@ final class LocalDiscovery implements Consumer
 				$this->logger->debug(
 					'Creating new device channel',
 					[
-						'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'local-discovery-message-consumer',
 						'device' => [
 							'id' => $deviceEntity->getPlainId(),
@@ -279,7 +279,7 @@ final class LocalDiscovery implements Consumer
 						$this->logger->error(
 							'Channel property could not be updated',
 							[
-								'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 								'type' => 'local-discovery-message-consumer',
 								'device' => [
 									'id' => $channelEntity->getDevice()->getId()->toString(),
@@ -302,7 +302,7 @@ final class LocalDiscovery implements Consumer
 		$this->logger->debug(
 			'Consumed device found message',
 			[
-				'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 				'type' => 'local-discovery-message-consumer',
 				'device' => [
 					'id' => $deviceItem->getId()->toString(),

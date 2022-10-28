@@ -19,6 +19,7 @@ use DateTimeImmutable;
 use Doctrine;
 use Exception;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Accounts\Entities;
 use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\Module\Accounts\Router;
@@ -155,8 +156,8 @@ final class SessionV1 extends BaseV1
 			} else {
 				// Log caught exception
 				$this->logger->error('An unhandled error occurred', [
-					'source' => 'accounts-module-session-controller',
-					'type' => 'create',
+					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_ACCOUNTS,
+					'type' => 'session-controller',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -211,8 +212,8 @@ final class SessionV1 extends BaseV1
 		} catch (Throwable $ex) {
 			// Log caught exception
 			$this->logger->error('An unhandled error occurred', [
-				'source' => 'accounts-module-session-controller',
-				'type' => 'create',
+				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_ACCOUNTS,
+				'type' => 'session-controller',
 				'exception' => [
 					'message' => $ex->getMessage(),
 					'code' => $ex->getCode(),
@@ -350,8 +351,8 @@ final class SessionV1 extends BaseV1
 		} catch (Throwable $ex) {
 			// Log caught exception
 			$this->logger->error('An unhandled error occurred', [
-				'source' => 'accounts-module-session-controller',
-				'type' => 'update',
+				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_ACCOUNTS,
+				'type' => 'session-controller',
 				'exception' => [
 					'message' => $ex->getMessage(),
 					'code' => $ex->getCode(),
@@ -411,8 +412,8 @@ final class SessionV1 extends BaseV1
 		} catch (Throwable $ex) {
 			// Log caught exception
 			$this->logger->error('An unhandled error occurred', [
-				'source' => 'accounts-module-session-controller',
-				'type' => 'delete',
+				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_ACCOUNTS,
+				'type' => 'session-controller',
 				'exception' => [
 					'message' => $ex->getMessage(),
 					'code' => $ex->getCode(),

@@ -39,7 +39,7 @@ services:
         factory: IPub\SlimRouter\Routing\Router
         setup:
             - addMiddleware(@fbJsonApi.middlewares.jsonapi)
-            - addMiddleware(@fbAccountsModule.middleware.urlFormat)
+            - addMiddleware(@fbAccountsModule.middlewares.urlFormat)
 
 contributteTranslation:
     locales:

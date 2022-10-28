@@ -16,6 +16,7 @@
 namespace FastyBird\Module\Devices\Subscribers;
 
 use Exception;
+use FastyBird\Library\Exchange\Entities as ExchangeEntities;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -48,7 +49,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 		private readonly Models\DataStorage\ConnectorPropertiesRepository $connectorPropertiesRepository,
 		private readonly Models\DataStorage\DevicePropertiesRepository $devicePropertiesRepository,
 		private readonly Models\DataStorage\ChannelPropertiesRepository $channelPropertiesRepository,
-		private readonly MetadataEntities\RoutingFactory $entityFactory,
+		private readonly ExchangeEntities\EntityFactory $entityFactory,
 		private readonly ExchangePublisher\Container $publisher,
 	)
 	{

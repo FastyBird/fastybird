@@ -20,8 +20,8 @@ use FastyBird\Connector\Shelly\Consumers\Consumer;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Mappers;
 use FastyBird\Connector\Shelly\Types;
-use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -219,7 +219,7 @@ final class Description implements Consumer
 					$this->logger->debug(
 						'Device sensor was created',
 						[
-							'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 							'type' => 'description-message-consumer',
 							'device' => [
 								'id' => $deviceItem->getId()->toString(),
@@ -268,7 +268,7 @@ final class Description implements Consumer
 						$this->logger->debug(
 							'Device sensor was updated',
 							[
-								'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 								'type' => 'description-message-consumer',
 								'device' => [
 									'id' => $deviceItem->getId()->toString(),
@@ -286,7 +286,7 @@ final class Description implements Consumer
 						$this->logger->error(
 							'Device sensor could not be updated',
 							[
-								'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 								'type' => 'description-message-consumer',
 								'device' => [
 									'id' => $deviceItem->getId()->toString(),
@@ -309,7 +309,7 @@ final class Description implements Consumer
 		$this->logger->debug(
 			'Consumed device description message',
 			[
-				'source' => Metadata\Constants::CONNECTOR_SHELLY_SOURCE,
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 				'type' => 'description-message-consumer',
 				'device' => [
 					'id' => $deviceItem->getId()->toString(),

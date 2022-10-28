@@ -15,7 +15,6 @@
 
 namespace FastyBird\Module\Accounts\DI;
 
-use Contributte\Translation;
 use Doctrine\Persistence;
 use FastyBird\Bootstrap;
 use FastyBird\Module\Accounts\Commands;
@@ -48,7 +47,7 @@ use const DIRECTORY_SEPARATOR;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class AccountsExtension extends DI\CompilerExtension implements Translation\DI\TranslationProviderInterface
+class AccountsExtension extends DI\CompilerExtension
 {
 
 	public const NAME = 'fbAccountsModule';
@@ -79,13 +78,12 @@ class AccountsExtension extends DI\CompilerExtension implements Translation\DI\T
 		$configuration = $this->getConfig();
 		assert($configuration instanceof stdClass);
 
-		// Http router
-		$builder->addDefinition($this->prefix('middleware.access'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition($this->prefix('middlewares.access'), new DI\Definitions\ServiceDefinition())
 			->setType(Middleware\Access::class);
 
-		$builder->addDefinition($this->prefix('middleware.urlFormat'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition($this->prefix('middlewares.urlFormat'), new DI\Definitions\ServiceDefinition())
 			->setType(Middleware\UrlFormat::class)
-			->addTag('middleware', ['priority' => 150]);
+			->addTag('middleware');
 
 		$builder->addDefinition($this->prefix('router.routes'), new DI\Definitions\ServiceDefinition())
 			->setType(Router\Routes::class)
@@ -94,14 +92,12 @@ class AccountsExtension extends DI\CompilerExtension implements Translation\DI\T
 		$builder->addDefinition($this->prefix('router.validator'), new DI\Definitions\ServiceDefinition())
 			->setType(Router\Validator::class);
 
-		// Console commands
 		$builder->addDefinition($this->prefix('commands.create'), new DI\Definitions\ServiceDefinition())
 			->setType(Commands\Accounts\Create::class);
 
 		$builder->addDefinition($this->prefix('commands.initialize'), new DI\Definitions\ServiceDefinition())
 			->setType(Commands\Initialize::class);
 
-		// Database repositories
 		$builder->addDefinition($this->prefix('models.accountsRepository'), new DI\Definitions\ServiceDefinition())
 			->setType(Models\Accounts\AccountsRepository::class);
 
@@ -131,7 +127,6 @@ class AccountsExtension extends DI\CompilerExtension implements Translation\DI\T
 			->setType(Models\Roles\RolesManager::class)
 			->setArgument('entityCrud', '__placeholder__');
 
-		// Events subscribers
 		$builder->addDefinition($this->prefix('subscribers.entities'), new DI\Definitions\ServiceDefinition())
 			->setType(Subscribers\ModuleEntities::class);
 
@@ -141,7 +136,6 @@ class AccountsExtension extends DI\CompilerExtension implements Translation\DI\T
 		$builder->addDefinition($this->prefix('subscribers.emailEntity'), new DI\Definitions\ServiceDefinition())
 			->setType(Subscribers\EmailEntity::class);
 
-		// API controllers
 		$builder->addDefinition($this->prefix('controllers.session'), new DI\Definitions\ServiceDefinition())
 			->setType(Controllers\SessionV1::class)
 			->addTag('nette.inject');
@@ -182,14 +176,13 @@ class AccountsExtension extends DI\CompilerExtension implements Translation\DI\T
 			->setType(Controllers\PublicV1::class)
 			->addTag('nette.inject');
 
-		// API schemas
 		$builder->addDefinition($this->prefix('schemas.account'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\Accounts\Account::class);
 
 		$builder->addDefinition($this->prefix('schemas.email'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\Emails\Email::class);
 
-		$builder->addDefinition($this->prefix('schemas.accountIdentity'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition($this->prefix('schemas.identity'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\Identities\Identity::class);
 
 		$builder->addDefinition($this->prefix('schemas.role'), new DI\Definitions\ServiceDefinition())
@@ -198,7 +191,6 @@ class AccountsExtension extends DI\CompilerExtension implements Translation\DI\T
 		$builder->addDefinition($this->prefix('schemas.session'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\Sessions\Session::class);
 
-		// API hydrators
 		$builder->addDefinition($this->prefix('hydrators.accounts.profile'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\Accounts\ProfileAccount::class);
 
@@ -217,7 +209,6 @@ class AccountsExtension extends DI\CompilerExtension implements Translation\DI\T
 		$builder->addDefinition($this->prefix('hydrators.role'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\Roles\Role::class);
 
-		// Security
 		$builder->addDefinition($this->prefix('security.hash'), new DI\Definitions\ServiceDefinition())
 			->setType(Helpers\SecurityHash::class);
 
@@ -227,7 +218,6 @@ class AccountsExtension extends DI\CompilerExtension implements Translation\DI\T
 		$builder->addDefinition($this->prefix('security.authenticator'), new DI\Definitions\ServiceDefinition())
 			->setType(Security\Authenticator::class);
 
-		// Nette services overwrite
 		$builder->addDefinition('security.user', new DI\Definitions\ServiceDefinition())
 			->setType(Security\User::class);
 	}
@@ -315,16 +305,6 @@ class AccountsExtension extends DI\CompilerExtension implements Translation\DI\T
 			'return new ' . Models\Roles\RolesManager::class
 			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Roles\Role::class . '\'));',
 		);
-	}
-
-	/**
-	 * @return Array<string>
-	 */
-	public function getTranslationResources(): array
-	{
-		return [
-			__DIR__ . '/../Translations',
-		];
 	}
 
 }

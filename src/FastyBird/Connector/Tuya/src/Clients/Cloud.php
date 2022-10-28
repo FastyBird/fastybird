@@ -25,7 +25,6 @@ use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
@@ -193,7 +192,7 @@ final class Cloud implements Client
 				$this->logger->debug(
 					'Connected to Tuya sockets server',
 					[
-						'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'cloud-client',
 						'connector' => [
 							'id' => $this->connector->getId()->toString(),
@@ -211,7 +210,7 @@ final class Cloud implements Client
 					$this->logger->debug(
 						'Connection to Tuya WS server was closed',
 						[
-							'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 							'type' => 'cloud-client',
 							'connection' => [
 								'code' => $code,
@@ -236,7 +235,7 @@ final class Cloud implements Client
 					$this->logger->error(
 						'An error occurred on WS server connection',
 						[
-							'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 							'type' => 'cloud-client',
 							'exception' => [
 								'message' => $ex->getMessage(),
@@ -275,7 +274,7 @@ final class Cloud implements Client
 				$this->logger->error(
 					'Connection to Tuya WS server failed',
 					[
-						'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'cloud-client',
 						'exception' => [
 							'message' => $ex->getMessage(),
@@ -490,7 +489,7 @@ final class Cloud implements Client
 					$this->logger->error(
 						'Could not call cloud openapi',
 						[
-							'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 							'type' => 'cloud-client',
 							'exception' => [
 								'message' => $ex->getMessage(),
@@ -536,7 +535,7 @@ final class Cloud implements Client
 						$this->logger->error(
 							'Calling Tuya cloud failed',
 							[
-								'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 								'type' => 'cloud-client',
 								'exception' => [
 									'message' => $ex->getMessage(),
@@ -644,7 +643,7 @@ final class Cloud implements Client
 									$this->logger->error(
 										'Calling Tuya cloud failed',
 										[
-											'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+											'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 											'type' => 'cloud-client',
 											'exception' => [
 												'message' => $ex->getMessage(),
@@ -694,7 +693,7 @@ final class Cloud implements Client
 			$this->logger->error(
 				'Could not decode received Tuya WS message',
 				[
-					'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'cloud-client',
 					'exception' => [
 						'message' => $ex->getMessage(),
@@ -722,7 +721,7 @@ final class Cloud implements Client
 				$this->logger->error(
 					'Could not confirm received Tuya WS message',
 					[
-						'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'cloud-client',
 						'exception' => [
 							'message' => $ex->getMessage(),
@@ -743,7 +742,7 @@ final class Cloud implements Client
 			$this->logger->error(
 				'Received Tuya WS message is invalid',
 				[
-					'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'cloud-client',
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
@@ -760,7 +759,7 @@ final class Cloud implements Client
 			$this->logger->error(
 				'Received Tuya WS message payload could not be decoded',
 				[
-					'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'cloud-client',
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
@@ -774,7 +773,7 @@ final class Cloud implements Client
 		$this->logger->debug(
 			'Received message origin payload',
 			[
-				'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 				'type' => 'cloud-client',
 				'data' => [
 					'payload' => $payload,
@@ -795,7 +794,7 @@ final class Cloud implements Client
 			$this->logger->error(
 				'Could not decode received Tuya WS message payload',
 				[
-					'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'cloud-client',
 					'exception' => [
 						'message' => $ex->getMessage(),
@@ -817,7 +816,7 @@ final class Cloud implements Client
 			$this->logger->error(
 				'Received Tuya WS message payload is invalid',
 				[
-					'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'cloud-client',
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
@@ -834,7 +833,7 @@ final class Cloud implements Client
 			$this->logger->error(
 				'Received Tuya WS message payload data could not be decoded',
 				[
-					'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'cloud-client',
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
@@ -863,7 +862,7 @@ final class Cloud implements Client
 			$this->logger->error(
 				'Received Tuya WS message payload data could not be decrypted',
 				[
-					'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'cloud-client',
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
@@ -877,7 +876,7 @@ final class Cloud implements Client
 		$this->logger->debug(
 			'Received message decrypted',
 			[
-				'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 				'type' => 'cloud-client',
 				'data' => $decryptedData,
 				'connector' => [
@@ -896,7 +895,7 @@ final class Cloud implements Client
 			$this->logger->error(
 				'Could not decode received Tuya WS message payload data decrypted',
 				[
-					'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'cloud-client',
 					'exception' => [
 						'message' => $ex->getMessage(),

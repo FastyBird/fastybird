@@ -17,7 +17,6 @@ namespace FastyBird\Module\Devices\Commands;
 
 use BadMethodCallException;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -126,9 +125,9 @@ class Connector extends Console\Command\Command
 		$io = new Style\SymfonyStyle($input, $output);
 
 		if ($input->getOption('quiet') === false) {
-			$io->title('Devices module - service');
+			$io->title('Devices module - connector');
 
-			$io->note('This action will run module services.');
+			$io->note('This action will run module connector service');
 		}
 
 		if ($input->getOption('no-confirm') === false) {
@@ -152,8 +151,8 @@ class Connector extends Console\Command\Command
 			return Console\Command\Command::SUCCESS;
 		} catch (Exceptions\Terminate $ex) {
 			$this->logger->debug('Stopping connector', [
-				'source' => Metadata\Constants::MODULE_DEVICES_SOURCE,
-				'type' => 'service-cmd',
+				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+				'type' => 'command',
 				'exception' => [
 					'message' => $ex->getMessage(),
 					'code' => $ex->getCode(),
@@ -166,8 +165,8 @@ class Connector extends Console\Command\Command
 		} catch (Throwable $ex) {
 			// Log caught exception
 			$this->logger->error('An unhandled error occurred', [
-				'source' => Metadata\Constants::MODULE_DEVICES_SOURCE,
-				'type' => 'service-cmd',
+				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+				'type' => 'command',
 				'exception' => [
 					'message' => $ex->getMessage(),
 					'code' => $ex->getCode(),
@@ -248,8 +247,8 @@ class Connector extends Console\Command\Command
 				}
 
 				$this->logger->error('Connector identifier was not able to get from answer', [
-					'source' => Metadata\Constants::MODULE_DEVICES_SOURCE,
-					'type' => 'service-cmd',
+					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+					'type' => 'command',
 				]);
 
 				return;
@@ -263,8 +262,8 @@ class Connector extends Console\Command\Command
 				}
 
 				$this->logger->error('Connector was not found', [
-					'source' => Metadata\Constants::MODULE_DEVICES_SOURCE,
-					'type' => 'service-cmd',
+					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+					'type' => 'command',
 				]);
 
 				return;
@@ -283,7 +282,7 @@ class Connector extends Console\Command\Command
 			$io->section('Initializing connector');
 		}
 
-		$this->dispatcher?->dispatch(new Events\ConnectorStartup());
+		$this->dispatcher?->dispatch(new Events\ConnectorStartup($connector));
 
 		$service = null;
 
@@ -301,8 +300,8 @@ class Connector extends Console\Command\Command
 			$this->dispatcher?->dispatch(new Events\BeforeConnectorStart($connector));
 
 			$this->logger->info('Starting connector...', [
-				'source' => Metadata\Constants::MODULE_DEVICES_SOURCE,
-				'type' => 'service-cmd',
+				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+				'type' => 'command',
 			]);
 
 			try {
@@ -327,8 +326,8 @@ class Connector extends Console\Command\Command
 
 		$this->eventLoop->addSignal(SIGINT, function () use ($connector, $service): void {
 			$this->logger->info('Stopping connector...', [
-				'source' => Metadata\Constants::MODULE_DEVICES_SOURCE,
-				'type' => 'service-cmd',
+				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+				'type' => 'command',
 			]);
 
 			try {
@@ -367,8 +366,8 @@ class Connector extends Console\Command\Command
 				$this->eventLoop->stop();
 			} catch (Throwable $ex) {
 				$this->logger->error('Connector could not be stopped. An unexpected error occurred', [
-					'source' => Metadata\Constants::MODULE_DEVICES_SOURCE,
-					'type' => 'service-cmd',
+					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+					'type' => 'command',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),

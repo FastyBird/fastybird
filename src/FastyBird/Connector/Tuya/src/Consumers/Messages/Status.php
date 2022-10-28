@@ -21,6 +21,7 @@ use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Mappers;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
@@ -118,7 +119,7 @@ final class Status implements Consumer
 		$this->logger->debug(
 			'Consumed device status message',
 			[
-				'source' => Metadata\Constants::CONNECTOR_TUYA_SOURCE,
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 				'type' => 'status-message-consumer',
 				'device' => [
 					'id' => $deviceItem->getId()->toString(),

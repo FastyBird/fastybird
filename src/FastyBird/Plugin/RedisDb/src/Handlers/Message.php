@@ -16,11 +16,12 @@
 namespace FastyBird\Plugin\RedisDb\Handlers;
 
 use Evenement;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Exchange\Consumers as ExchangeConsumer;
+use FastyBird\Library\Exchange\Entities as ExchangeEntities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\RedisDb\Events;
 use FastyBird\Plugin\RedisDb\Exceptions;
-use FastyBird\Plugin\RedisDb\Utils;
+use FastyBird\Plugin\RedisDb\Utilities;
 use Nette;
 use Psr\EventDispatcher as PsrEventDispatcher;
 use Psr\Log;
@@ -43,8 +44,9 @@ final class Message extends Evenement\EventEmitter
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
-		private readonly Utils\IdentifierGenerator $identifier,
-		private readonly MetadataEntities\RoutingFactory $entityFactory,
+		private readonly Utilities\IdentifierGenerator $identifier,
+		private readonly ExchangeEntities\EntityFactory $entityFactory,
+		private readonly ExchangeConsumer\Container $consumer,
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 		Log\LoggerInterface|null $logger = null,
 	)
@@ -138,6 +140,8 @@ final class Message extends Evenement\EventEmitter
 				$routingKey,
 				$entity,
 			));
+
+			$this->consumer->consume($source, $routingKey, $entity);
 
 			$this->emit('message', [$source, $routingKey, $entity]);
 

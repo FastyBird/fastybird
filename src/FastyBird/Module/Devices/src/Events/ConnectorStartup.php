@@ -15,10 +15,11 @@
 
 namespace FastyBird\Module\Devices\Events;
 
+use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use Symfony\Contracts\EventDispatcher;
 
 /**
- * When WS server started
+ * When module connector service started
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Events
@@ -27,5 +28,16 @@ use Symfony\Contracts\EventDispatcher;
  */
 class ConnectorStartup extends EventDispatcher\Event
 {
+
+	public function __construct(
+		private readonly MetadataEntities\DevicesModule\Connector $connector,
+	)
+	{
+	}
+
+	public function getConnector(): MetadataEntities\DevicesModule\Connector
+	{
+		return $this->connector;
+	}
 
 }

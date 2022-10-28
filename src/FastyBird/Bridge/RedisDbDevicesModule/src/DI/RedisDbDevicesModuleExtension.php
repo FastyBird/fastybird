@@ -62,8 +62,6 @@ class RedisDbDevicesModuleExtension extends DI\CompilerExtension
 		$configuration = $this->getConfig();
 		assert($configuration instanceof stdClass);
 
-		// Models
-
 		$builder->addDefinition(
 			$this->prefix('models.connectorPropertyRepository'),
 			new DI\Definitions\ServiceDefinition(),
@@ -106,19 +104,11 @@ class RedisDbDevicesModuleExtension extends DI\CompilerExtension
 			->setType(Models\ChannelPropertiesManager::class)
 			->setArguments(['database' => $configuration->database]);
 
-		// Subscribers
-
 		$builder->addDefinition(
 			$this->prefix('subscribers.redisClient'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Subscribers\RedisClient::class);
-
-		$builder->addDefinition(
-			$this->prefix('subscribers.connector'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Subscribers\Connector::class);
 	}
 
 }

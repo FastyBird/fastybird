@@ -15,6 +15,7 @@
 
 namespace FastyBird\Plugin\WebServer\Server;
 
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\WebServer\Middleware;
 use Psr\Log;
 use React\EventLoop;
@@ -62,7 +63,7 @@ final class Factory
 			$this->logger->error(
 				'An error occurred during handling request. Stopping HTTP server',
 				[
-					'source' => 'web-server-plugin',
+					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WEB_SERVER,
 					'type' => 'factory',
 					'exception' => [
 						'message' => $ex->getMessage(),
@@ -81,7 +82,7 @@ final class Factory
 				$this->logger->info(
 					sprintf('Listening on "%s"', str_replace('tls:', 'https:', $server->getAddress())),
 					[
-						'source' => 'web-server-plugin',
+						'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WEB_SERVER,
 						'type' => 'factory',
 					],
 				);
@@ -90,7 +91,7 @@ final class Factory
 				$this->logger->info(
 					sprintf('Listening on "%s"', str_replace('tcp:', 'http:', $server->getAddress())),
 					[
-						'source' => 'web-server-plugin',
+						'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WEB_SERVER,
 						'type' => 'factory',
 					],
 				);

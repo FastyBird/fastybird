@@ -6,18 +6,16 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:RedisDbWsExchangeBridge!
+ * @package        FastyBird:ExchangeLibrary!
  * @subpackage     Exceptions
- * @since          0.1.0
+ * @since          0.44.0
  *
- * @date           21.10.22
+ * @date           13.06.22
  */
 
-namespace FastyBird\Bridge\RedisDbWsExchange\Exceptions;
+namespace FastyBird\Library\Exchange\Exceptions;
 
-use Throwable;
-
-interface Exception extends Throwable
+interface Exception
 {
 
 }
