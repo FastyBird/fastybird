@@ -62,26 +62,30 @@ class TuyaExtension extends DI\CompilerExtension
 	{
 		$builder = $this->getContainerBuilder();
 
-		// Consumers
-		$builder->addDefinition($this->prefix('consumer.discovery.cloudDevice'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition(
+			$this->prefix('consumers.discovery.cloudDevice'),
+			new DI\Definitions\ServiceDefinition(),
+		)
 			->setType(Consumers\Messages\CloudDiscovery::class);
 
-		$builder->addDefinition($this->prefix('consumer.discovery.localDevice'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition(
+			$this->prefix('consumers.discovery.localDevice'),
+			new DI\Definitions\ServiceDefinition(),
+		)
 			->setType(Consumers\Messages\LocalDiscovery::class);
 
-		$builder->addDefinition($this->prefix('consumer.discovery.status'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition($this->prefix('consumers.discovery.status'), new DI\Definitions\ServiceDefinition())
 			->setType(Consumers\Messages\Status::class);
 
-		$builder->addDefinition($this->prefix('consumer.discovery.state'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition($this->prefix('consumers.discovery.state'), new DI\Definitions\ServiceDefinition())
 			->setType(Consumers\Messages\State::class);
 
-		$builder->addDefinition($this->prefix('consumer.proxy'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition($this->prefix('consumers.proxy'), new DI\Definitions\ServiceDefinition())
 			->setType(Consumers\Messages::class)
 			->setArguments([
 				'consumers' => $builder->findByType(Consumers\Consumer::class),
 			]);
 
-		// API
 		$builder->addDefinition($this->prefix('api.openApi.api'))
 			->setType(API\OpenApiFactory::class);
 
@@ -91,41 +95,36 @@ class TuyaExtension extends DI\CompilerExtension
 		$builder->addDefinition($this->prefix('api.localApi.api'))
 			->setType(API\LocalApiFactory::class);
 
-		// Clients
-		$builder->addFactoryDefinition($this->prefix('client.local'))
+		$builder->addFactoryDefinition($this->prefix('clients.local'))
 			->setImplement(Clients\LocalFactory::class)
 			->getResultDefinition()
 			->setType(Clients\Local::class);
 
-		$builder->addFactoryDefinition($this->prefix('client.cloud'))
+		$builder->addFactoryDefinition($this->prefix('clients.cloud'))
 			->setImplement(Clients\CloudFactory::class)
 			->getResultDefinition()
 			->setType(Clients\Cloud::class);
 
-		$builder->addFactoryDefinition($this->prefix('client.discover'))
+		$builder->addFactoryDefinition($this->prefix('clients.discover'))
 			->setImplement(Clients\DiscoveryFactory::class)
 			->getResultDefinition()
 			->setType(Clients\Discovery::class);
 
-		// Events subscribers
 		$builder->addDefinition($this->prefix('subscribers.properties'), new DI\Definitions\ServiceDefinition())
 			->setType(Subscribers\Properties::class);
 
-		// API schemas
 		$builder->addDefinition($this->prefix('schemas.connector.tuya'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\TuyaConnector::class);
 
 		$builder->addDefinition($this->prefix('schemas.device.tuya'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\TuyaDevice::class);
 
-		// API hydrators
 		$builder->addDefinition($this->prefix('hydrators.connector.tuya'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\TuyaConnector::class);
 
 		$builder->addDefinition($this->prefix('hydrators.device.tuya'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\TuyaDevice::class);
 
-		// Helpers
 		$builder->addDefinition($this->prefix('helpers.connector'), new DI\Definitions\ServiceDefinition())
 			->setType(Helpers\Connector::class);
 
@@ -135,11 +134,9 @@ class TuyaExtension extends DI\CompilerExtension
 		$builder->addDefinition($this->prefix('helpers.property'), new DI\Definitions\ServiceDefinition())
 			->setType(Helpers\Property::class);
 
-		// Mappers
 		$builder->addDefinition($this->prefix('mappers.dataPoint'), new DI\Definitions\ServiceDefinition())
 			->setType(Mappers\DataPoint::class);
 
-		// Service factory
 		$builder->addFactoryDefinition($this->prefix('executor.factory'))
 			->setImplement(Connector\ConnectorFactory::class)
 			->addTag(
@@ -152,7 +149,6 @@ class TuyaExtension extends DI\CompilerExtension
 				'clientsFactories' => $builder->findByType(Clients\ClientFactory::class),
 			]);
 
-		// Console commands
 		$builder->addDefinition($this->prefix('commands.initialize'), new DI\Definitions\ServiceDefinition())
 			->setType(Commands\Initialize::class);
 

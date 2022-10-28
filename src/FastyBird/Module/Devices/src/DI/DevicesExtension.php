@@ -17,8 +17,10 @@ namespace FastyBird\Module\Devices\DI;
 
 use Doctrine\Persistence;
 use FastyBird\Bootstrap;
+use FastyBird\Library\Exchange\DI as ExchangeDI;
 use FastyBird\Module\Devices\Commands;
 use FastyBird\Module\Devices\Connectors;
+use FastyBird\Module\Devices\Consumers;
 use FastyBird\Module\Devices\Controllers;
 use FastyBird\Module\Devices\DataStorage;
 use FastyBird\Module\Devices\Entities;
@@ -82,8 +84,7 @@ class DevicesExtension extends DI\CompilerExtension
 		$configuration = $this->getConfig();
 		assert($configuration instanceof stdClass);
 
-		// Http router
-		$builder->addDefinition($this->prefix('middleware.access'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition($this->prefix('middlewares.access'), new DI\Definitions\ServiceDefinition())
 			->setType(Middleware\Access::class);
 
 		$builder->addDefinition($this->prefix('router.routes'), new DI\Definitions\ServiceDefinition())
@@ -93,7 +94,6 @@ class DevicesExtension extends DI\CompilerExtension
 		$builder->addDefinition($this->prefix('router.validator'), new DI\Definitions\ServiceDefinition())
 			->setType(Router\Validator::class);
 
-		// Database repositories
 		$builder->addDefinition($this->prefix('models.devicesRepository'), new DI\Definitions\ServiceDefinition())
 			->setType(Models\Devices\DevicesRepository::class);
 
@@ -145,7 +145,6 @@ class DevicesExtension extends DI\CompilerExtension
 		)
 			->setType(Models\Connectors\Controls\ControlsRepository::class);
 
-		// Database managers
 		$builder->addDefinition($this->prefix('models.devicesManager'), new DI\Definitions\ServiceDefinition())
 			->setType(Models\Devices\DevicesManager::class)
 			->setArgument('entityCrud', '__placeholder__');
@@ -201,14 +200,12 @@ class DevicesExtension extends DI\CompilerExtension
 			->setType(Models\Connectors\Controls\ControlsManager::class)
 			->setArgument('entityCrud', '__placeholder__');
 
-		// Events subscribers
 		$builder->addDefinition($this->prefix('subscribers.entities'), new DI\Definitions\ServiceDefinition())
 			->setType(Subscribers\ModuleEntities::class);
 
 		$builder->addDefinition($this->prefix('subscribers.states'), new DI\Definitions\ServiceDefinition())
 			->setType(Subscribers\StateEntities::class);
 
-		// API controllers
 		$builder->addDefinition($this->prefix('controllers.devices'), new DI\Definitions\ServiceDefinition())
 			->setType(Controllers\DevicesV1::class)
 			->addTag('nette.inject');
@@ -274,7 +271,6 @@ class DevicesExtension extends DI\CompilerExtension
 			->setType(Controllers\ConnectorControlsV1::class)
 			->addTag('nette.inject');
 
-		// API schemas
 		$builder->addDefinition($this->prefix('schemas.device.blank'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\Devices\Blank::class);
 
@@ -341,7 +337,6 @@ class DevicesExtension extends DI\CompilerExtension
 		$builder->addDefinition($this->prefix('schemas.connector.controls'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\Connectors\Controls\Control::class);
 
-		// API hydrators
 		$builder->addDefinition($this->prefix('hydrators.device.blank'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\Devices\Blank::class);
 
@@ -399,7 +394,6 @@ class DevicesExtension extends DI\CompilerExtension
 		)
 			->setType(Hydrators\Properties\ConnectorVariable::class);
 
-		// StateEntities repositories
 		$builder->addDefinition(
 			$this->prefix('states.repositories.connectors.properties'),
 			new DI\Definitions\ServiceDefinition(),
@@ -418,7 +412,6 @@ class DevicesExtension extends DI\CompilerExtension
 		)
 			->setType(Models\States\ChannelPropertiesRepository::class);
 
-		// StateEntities managers
 		$builder->addDefinition(
 			$this->prefix('states.managers.connectors.properties'),
 			new DI\Definitions\ServiceDefinition(),
@@ -437,7 +430,6 @@ class DevicesExtension extends DI\CompilerExtension
 		)
 			->setType(Models\States\ChannelPropertiesManager::class);
 
-		// Data storage
 		$builder->addDefinition($this->prefix('dataStorage.writer'), new DI\Definitions\ServiceDefinition())
 			->setType(DataStorage\Writer::class);
 
@@ -483,8 +475,6 @@ class DevicesExtension extends DI\CompilerExtension
 		)
 			->setType(Models\DataStorage\ChannelPropertiesRepository::class);
 
-		// Utilities
-
 		$builder->addDefinition(
 			$this->prefix('utilities.database'),
 			new DI\Definitions\ServiceDefinition(),
@@ -521,7 +511,14 @@ class DevicesExtension extends DI\CompilerExtension
 		)
 			->setType(Utilities\ConnectorConnection::class);
 
-		// Console commands
+		$builder->addDefinition($this->prefix('exchange.consumer.connector'), new DI\Definitions\ServiceDefinition())
+			->setType(Consumers\Connector::class)
+			->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATUS, false);
+
+		$builder->addDefinition($this->prefix('exchange.consumer.states'), new DI\Definitions\ServiceDefinition())
+			->setType(Consumers\States::class)
+			->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATUS, false);
+
 		$builder->addDefinition($this->prefix('commands.initialize'), new DI\Definitions\ServiceDefinition())
 			->setType(Commands\Initialize::class);
 

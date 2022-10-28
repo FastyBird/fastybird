@@ -17,6 +17,7 @@ extensions:
     ipubPhone               : IPub\Phone\DI\PhoneExtension
     fbDateTimeFactory       : FastyBird\DateTimeFactory\DI\DateTimeFactoryExtension
     fbMetadataLibrary       : FastyBird\Library\Metadata\DI\MetadataExtension
+    fbExchangeLibrary       : FastyBird\Library\Exchange\DI\ExchangeExtension
 
 services:
     - {

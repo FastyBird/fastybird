@@ -15,6 +15,8 @@
 
 namespace FastyBird\Library\Exchange\DI;
 
+use FastyBird\Library\Exchange\Consumers;
+use FastyBird\Library\Exchange\Entities;
 use FastyBird\Library\Exchange\Publisher;
 use Nette;
 use Nette\DI;
@@ -31,6 +33,8 @@ use function is_bool;
  */
 class ExchangeExtension extends DI\CompilerExtension
 {
+
+	public const CONSUMER_STATUS = 'consumer_status';
 
 	public static function register(
 		Nette\Configurator $config,
@@ -49,8 +53,14 @@ class ExchangeExtension extends DI\CompilerExtension
 	{
 		$builder = $this->getContainerBuilder();
 
+		$builder->addDefinition($this->prefix('consumer'), new DI\Definitions\ServiceDefinition())
+			->setType(Consumers\Container::class);
+
 		$builder->addDefinition($this->prefix('publisher'), new DI\Definitions\ServiceDefinition())
 			->setType(Publisher\Container::class);
+
+		$builder->addDefinition($this->prefix('entityFactory'), new DI\Definitions\ServiceDefinition())
+			->setType(Entities\EntityFactory::class);
 	}
 
 	/**
@@ -61,6 +71,40 @@ class ExchangeExtension extends DI\CompilerExtension
 		parent::beforeCompile();
 
 		$builder = $this->getContainerBuilder();
+
+		/**
+		 * CONSUMERS PROXY
+		 */
+
+		$consumerProxyServiceName = $builder->getByType(Consumers\Container::class);
+
+		if ($consumerProxyServiceName !== null) {
+			$consumerProxyService = $builder->getDefinition($consumerProxyServiceName);
+			assert($consumerProxyService instanceof DI\Definitions\ServiceDefinition);
+
+			$consumerServices = $builder->findByType(Consumers\Consumer::class);
+
+			foreach ($consumerServices as $consumerService) {
+				if (
+					$consumerService->getType() !== Consumers\Container::class
+					&& (
+						$consumerService->getAutowired() !== false
+						|| !is_bool($consumerService->getAutowired())
+					)
+				) {
+					// Container is not allowed to be autowired
+					$consumerService->setAutowired(false);
+
+					$consumerStatus = $consumerService->getTag(self::CONSUMER_STATUS);
+
+					$consumerProxyService->addSetup('?->register(?, ?)', [
+						'@self',
+						$consumerService,
+						$consumerStatus ?? true,
+					]);
+				}
+			}
+		}
 
 		/**
 		 * PUBLISHERS PROXY

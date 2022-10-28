@@ -62,33 +62,31 @@ class ShellyExtension extends DI\CompilerExtension
 	{
 		$builder = $this->getContainerBuilder();
 
-		// Clients
-		$builder->addFactoryDefinition($this->prefix('client.gen1'))
+		$builder->addFactoryDefinition($this->prefix('clients.gen1'))
 			->setImplement(Clients\Gen1Factory::class)
 			->getResultDefinition()
 			->setType(Clients\Gen1::class);
 
-		$builder->addFactoryDefinition($this->prefix('client.gen1.coap'))
+		$builder->addFactoryDefinition($this->prefix('clients.gen1.coap'))
 			->setImplement(Clients\Gen1\CoapFactory::class)
 			->getResultDefinition()
 			->setType(Clients\Gen1\Coap::class);
 
-		$builder->addFactoryDefinition($this->prefix('client.gen1.mdns'))
+		$builder->addFactoryDefinition($this->prefix('clients.gen1.mdns'))
 			->setImplement(Clients\Gen1\MdnsFactory::class)
 			->getResultDefinition()
 			->setType(Clients\Gen1\Mdns::class);
 
-		$builder->addFactoryDefinition($this->prefix('client.gen1.http'))
+		$builder->addFactoryDefinition($this->prefix('clients.gen1.http'))
 			->setImplement(Clients\Gen1\HttpFactory::class)
 			->getResultDefinition()
 			->setType(Clients\Gen1\Http::class);
 
-		$builder->addFactoryDefinition($this->prefix('client.gen1.mqtt'))
+		$builder->addFactoryDefinition($this->prefix('clients.gen1.mqtt'))
 			->setImplement(Clients\Gen1\MqttFactory::class)
 			->getResultDefinition()
 			->setType(Clients\Gen1\Mqtt::class);
 
-		// Messages API
 		$builder->addDefinition($this->prefix('api.gen1parser'), new DI\Definitions\ServiceDefinition())
 			->setType(API\Gen1Parser::class);
 
@@ -98,53 +96,48 @@ class ShellyExtension extends DI\CompilerExtension
 		$builder->addDefinition($this->prefix('api.gen1transformer'), new DI\Definitions\ServiceDefinition())
 			->setType(API\Gen1Transformer::class);
 
-		// Consumers
 		$builder->addDefinition(
-			$this->prefix('consumer.messages.device.description'),
+			$this->prefix('consumers.messages.device.description'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Consumers\Messages\Description::class);
 
 		$builder->addDefinition(
-			$this->prefix('consumer.messages.device.status'),
+			$this->prefix('consumers.messages.device.status'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Consumers\Messages\Status::class);
 
-		$builder->addDefinition($this->prefix('consumer.messages.device.info'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition($this->prefix('consumers.messages.device.info'), new DI\Definitions\ServiceDefinition())
 			->setType(Consumers\Messages\Info::class);
 
 		$builder->addDefinition(
-			$this->prefix('consumer.messages.device.discovery'),
+			$this->prefix('consumers.messages.device.discovery'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Consumers\Messages\Discovery::class);
 
-		$builder->addDefinition($this->prefix('consumer.messages'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition($this->prefix('consumers.messages'), new DI\Definitions\ServiceDefinition())
 			->setType(Consumers\Messages::class)
 			->setArguments([
 				'consumers' => $builder->findByType(Consumers\Consumer::class),
 			]);
 
-		// Events subscribers
 		$builder->addDefinition($this->prefix('subscribers.properties'), new DI\Definitions\ServiceDefinition())
 			->setType(Subscribers\Properties::class);
 
-		// API schemas
 		$builder->addDefinition($this->prefix('schemas.connector.shelly'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\ShellyConnector::class);
 
 		$builder->addDefinition($this->prefix('schemas.device.shelly'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\ShellyDevice::class);
 
-		// API hydrators
 		$builder->addDefinition($this->prefix('hydrators.connector.shelly'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\ShellyConnector::class);
 
 		$builder->addDefinition($this->prefix('hydrators.device.shelly'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\ShellyDevice::class);
 
-		// Helpers
 		$builder->addDefinition($this->prefix('helpers.connector'), new DI\Definitions\ServiceDefinition())
 			->setType(Helpers\Connector::class);
 
@@ -154,11 +147,9 @@ class ShellyExtension extends DI\CompilerExtension
 		$builder->addDefinition($this->prefix('helpers.property'), new DI\Definitions\ServiceDefinition())
 			->setType(Helpers\Property::class);
 
-		// Mappers
 		$builder->addDefinition($this->prefix('mappers.sensor'), new DI\Definitions\ServiceDefinition())
 			->setType(Mappers\Sensor::class);
 
-		// Service factory
 		$builder->addFactoryDefinition($this->prefix('executor.factory'))
 			->setImplement(Connector\ConnectorFactory::class)
 			->addTag(
@@ -171,7 +162,6 @@ class ShellyExtension extends DI\CompilerExtension
 				'clientsFactories' => $builder->findByType(Clients\ClientFactory::class),
 			]);
 
-		// Console commands
 		$builder->addDefinition($this->prefix('commands.initialize'), new DI\Definitions\ServiceDefinition())
 			->setType(Commands\Initialize::class);
 

@@ -18,8 +18,9 @@ namespace FastyBird\Module\Devices\Subscribers;
 use Doctrine\Common;
 use Doctrine\ORM;
 use Exception;
+use FastyBird\Library\Exchange\Entities as ExchangeEntities;
+use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
@@ -66,7 +67,7 @@ final class ModuleEntities implements Common\EventSubscriber
 		private readonly Models\States\ConnectorPropertiesRepository $connectorPropertiesStatesRepository,
 		private readonly Models\States\ConnectorPropertiesManager $connectorPropertiesStatesManager,
 		private readonly DataStorage\Writer $configurationDataWriter,
-		private readonly MetadataEntities\RoutingFactory $entityFactory,
+		private readonly ExchangeEntities\EntityFactory $entityFactory,
 		private readonly ExchangePublisher\Publisher $publisher,
 	)
 	{
@@ -82,9 +83,10 @@ final class ModuleEntities implements Common\EventSubscriber
 	}
 
 	/**
-	 * @throws Exception
 	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws Exception
 	 * @throws Exceptions\InvalidState
+	 * @throws ExchangeExceptions\InvalidState
 	 * @throws Flysystem\FilesystemException
 	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
@@ -112,8 +114,9 @@ final class ModuleEntities implements Common\EventSubscriber
 	}
 
 	/**
-	 * @throws Exception
 	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws Exception
+	 * @throws ExchangeExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws Flysystem\FilesystemException
 	 * @throws MetadataExceptions\FileNotFound
@@ -156,8 +159,9 @@ final class ModuleEntities implements Common\EventSubscriber
 	}
 
 	/**
-	 * @throws Exception
 	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws Exception
+	 * @throws ExchangeExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws Flysystem\FilesystemException
 	 * @throws MetadataExceptions\FileNotFound
@@ -220,6 +224,7 @@ final class ModuleEntities implements Common\EventSubscriber
 
 	/**
 	 * @throws Exceptions\InvalidState
+	 * @throws ExchangeExceptions\InvalidState
 	 * @throws PhoneExceptions\NoValidPhoneException
 	 * @throws PhoneExceptions\NoValidCountryException
 	 * @throws Utils\JsonException

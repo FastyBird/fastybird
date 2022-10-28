@@ -23,7 +23,7 @@ use FastyBird\Plugin\RedisDb\Handlers;
 use FastyBird\Plugin\RedisDb\Models;
 use FastyBird\Plugin\RedisDb\Publishers;
 use FastyBird\Plugin\RedisDb\Subscribers;
-use FastyBird\Plugin\RedisDb\Utils;
+use FastyBird\Plugin\RedisDb\Utilities;
 use Nette;
 use Nette\DI;
 use Nette\Schema;
@@ -83,10 +83,7 @@ class RedisDbExtension extends DI\CompilerExtension
 				'channel' => $configuration->exchange->channel,
 			]);
 
-		$builder->addDefinition(
-			$this->prefix('redis.connection'),
-			new DI\Definitions\ServiceDefinition(),
-		)
+		$builder->addDefinition($this->prefix('redis.connection'), new DI\Definitions\ServiceDefinition())
 			->setType(Connections\Connection::class)
 			->setArguments([
 				'host' => $configuration->client->host,
@@ -95,53 +92,31 @@ class RedisDbExtension extends DI\CompilerExtension
 				'password' => $configuration->client->password,
 			]);
 
-		$builder->addDefinition(
-			$this->prefix('client.sync'),
-			new DI\Definitions\ServiceDefinition(),
-		)
+		$builder->addDefinition($this->prefix('clients.sync'), new DI\Definitions\ServiceDefinition())
 			->setType(Client\Client::class);
 
-		$builder->addDefinition(
-			$this->prefix('client.async.factory'),
-			new DI\Definitions\ServiceDefinition(),
-		)
+		$builder->addDefinition($this->prefix('clients.async.factory'), new DI\Definitions\ServiceDefinition())
 			->setType(Client\Factory::class)
 			->setArguments([
 				'channel' => $configuration->exchange->channel,
 			]);
 
-		// Models
-
-		$builder->addDefinition(
-			$this->prefix('model.statesManagerFactory'),
-			new DI\Definitions\ServiceDefinition(),
-		)
+		$builder->addDefinition($this->prefix('models.statesManagerFactory'), new DI\Definitions\ServiceDefinition())
 			->setType(Models\StatesManagerFactory::class);
 
-		$builder->addDefinition(
-			$this->prefix('model.statesRepositoryFactory'),
-			new DI\Definitions\ServiceDefinition(),
-		)
+		$builder->addDefinition($this->prefix('models.statesRepositoryFactory'), new DI\Definitions\ServiceDefinition())
 			->setType(Models\StatesRepositoryFactory::class);
 
-		// Handlers
-
-		$builder->addDefinition($this->prefix('handler.message'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition($this->prefix('handlers.message'), new DI\Definitions\ServiceDefinition())
 			->setType(Handlers\Message::class);
 
-		// Commands
-
-		$builder->addDefinition($this->prefix('command.client'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition($this->prefix('commands.client'), new DI\Definitions\ServiceDefinition())
 			->setType(Commands\RedisClient::class);
 
-		// Utilities
+		$builder->addDefinition($this->prefix('utilities.identifier'), new DI\Definitions\ServiceDefinition())
+			->setType(Utilities\IdentifierGenerator::class);
 
-		$builder->addDefinition($this->prefix('utils.identifier'), new DI\Definitions\ServiceDefinition())
-			->setType(Utils\IdentifierGenerator::class);
-
-		// Subscribers
-
-		$builder->addDefinition($this->prefix('subscriber.client'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition($this->prefix('subscribers.client'), new DI\Definitions\ServiceDefinition())
 			->setType(Subscribers\Client::class)
 			->setArguments([
 				'publisher' => $publisher,

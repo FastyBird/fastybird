@@ -52,16 +52,13 @@ class MetadataExtension extends DI\CompilerExtension
 		$builder->addDefinition('schema.validator', new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\Validator::class);
 
-		$builder->addDefinition('loader.metadata', new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition('loaders.metadata', new DI\Definitions\ServiceDefinition())
 			->setType(Loaders\MetadataLoader::class);
 
-		$builder->addDefinition('loader.schema', new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition('loaders.schema', new DI\Definitions\ServiceDefinition())
 			->setType(Loaders\SchemaLoader::class);
 
 		// Entity factories
-		$builder->addDefinition('entity.factory.routing', new DI\Definitions\ServiceDefinition())
-			->setType(Entities\RoutingFactory::class);
-
 		$builder->addDefinition('entity.factory.actions.connector.action', new DI\Definitions\ServiceDefinition())
 			->setType(Entities\Actions\ActionConnectorControlEntityFactory::class);
 

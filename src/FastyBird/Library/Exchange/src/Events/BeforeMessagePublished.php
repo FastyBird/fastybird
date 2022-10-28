@@ -31,10 +31,16 @@ class BeforeMessagePublished extends EventDispatcher\Event
 {
 
 	public function __construct(
+		private readonly MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|MetadataTypes\TriggerSource $source,
 		private readonly MetadataTypes\RoutingKey $routingKey,
 		private readonly MetadataEntities\Entity|null $entity,
 	)
 	{
+	}
+
+	public function getSource(): MetadataTypes\TriggerSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource
+	{
+		return $this->source;
 	}
 
 	public function getRoutingKey(): MetadataTypes\RoutingKey

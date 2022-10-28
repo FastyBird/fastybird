@@ -15,20 +15,16 @@
 
 namespace FastyBird\Bridge\RedisDbDevicesModule\Subscribers;
 
-use FastyBird\Library\Metadata;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Module\Devices\DataStorage as DevicesDataStorage;
+use FastyBird\Module\Devices\Consumers as DevicesConsumers;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Plugin\RedisDb\Client as RedisDbClient;
-use FastyBird\Plugin\RedisDb\Handlers as RedisDbHandlers;
-use Nette\Utils;
 use Psr\Log;
 use React\EventLoop;
 use Symfony\Component\EventDispatcher;
 use Throwable;
-use function strval;
 
 /**
  * Devices connector subscriber
@@ -45,8 +41,7 @@ class Connector implements EventDispatcher\EventSubscriberInterface
 
 	public function __construct(
 		private readonly RedisDbClient\Factory $clientFactory,
-		private readonly RedisDbHandlers\Message $messageHandler,
-		private readonly DevicesDataStorage\Reader $reader,
+		private readonly ExchangeConsumers\Container $consumer,
 		private readonly EventLoop\LoopInterface|null $eventLoop = null,
 		Log\LoggerInterface|null $logger = null,
 	)
@@ -66,37 +61,7 @@ class Connector implements EventDispatcher\EventSubscriberInterface
 		$this->clientFactory->create($this->eventLoop)
 			->then(
 				function (): void {
-					$this->messageHandler->on(
-						'message',
-						function (
-							MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|MetadataTypes\TriggerSource $source,
-							MetadataTypes\RoutingKey $routingKey,
-							MetadataEntities\Entity|null $entity,
-						): void {
-							if (
-								Utils\Strings::startsWith(
-									strval($routingKey->getValue()),
-									Metadata\Constants::MESSAGE_BUS_ENTITY_PREFIX_KEY,
-								)
-								&& (
-									Utils\Strings::contains(
-										strval($routingKey->getValue()),
-										Metadata\Constants::MESSAGE_BUS_ENTITY_CREATED_KEY,
-									)
-									|| Utils\Strings::contains(
-										strval($routingKey->getValue()),
-										Metadata\Constants::MESSAGE_BUS_ENTITY_UPDATED_KEY,
-									)
-									|| Utils\Strings::contains(
-										strval($routingKey->getValue()),
-										Metadata\Constants::MESSAGE_BUS_ENTITY_DELETED_KEY,
-									)
-								)
-							) {
-								$this->reader->read();
-							}
-						},
-					);
+					$this->consumer->enable(DevicesConsumers\Connector::class);
 
 					$this->logger->debug(
 						'Redis client was successfully started with devices connector',

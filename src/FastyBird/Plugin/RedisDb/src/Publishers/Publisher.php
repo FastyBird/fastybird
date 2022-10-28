@@ -21,7 +21,7 @@ use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\RedisDb\Client;
-use FastyBird\Plugin\RedisDb\Utils;
+use FastyBird\Plugin\RedisDb\Utilities;
 use Nette;
 use Psr\Log;
 use React\Promise;
@@ -46,7 +46,7 @@ final class Publisher implements ExchangePublisher\Publisher
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
-		private readonly Utils\IdentifierGenerator $identifier,
+		private readonly Utilities\IdentifierGenerator $identifier,
 		private readonly string $channel,
 		private readonly Client\Client $client,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,

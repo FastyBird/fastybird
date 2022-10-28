@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * AfterMessagePublished.php
+ * BeforeMessageConsumed.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -20,14 +20,14 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Symfony\Contracts\EventDispatcher;
 
 /**
- * After message published event
+ * Before message consumed event
  *
  * @package        FastyBird:ExchangeLibrary!
  * @subpackage     Events
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class AfterMessagePublished extends EventDispatcher\Event
+class BeforeMessageConsumed extends EventDispatcher\Event
 {
 
 	public function __construct(

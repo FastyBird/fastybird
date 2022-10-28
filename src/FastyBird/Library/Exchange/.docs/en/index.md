@@ -96,7 +96,7 @@ Your consumer could look like this:
 ```php
 namespace Your\CoolApp\Publishers;
 
-use FastyBird\Library\Exchange\Consumer\Consumer;
+use FastyBird\Library\Exchange\Consumers\Consumer;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 

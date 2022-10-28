@@ -48,7 +48,7 @@ class Container implements Publisher
 		MetadataEntities\Entity|null $entity,
 	): void
 	{
-		$this->dispatcher?->dispatch(new Events\BeforeMessagePublished($routingKey, $entity));
+		$this->dispatcher?->dispatch(new Events\BeforeMessagePublished($source, $routingKey, $entity));
 
 		$this->publishers->rewind();
 
@@ -56,7 +56,7 @@ class Container implements Publisher
 			$publisher->publish($source, $routingKey, $entity);
 		}
 
-		$this->dispatcher?->dispatch(new Events\AfterMessagePublished($routingKey, $entity));
+		$this->dispatcher?->dispatch(new Events\AfterMessagePublished($source, $routingKey, $entity));
 	}
 
 	public function register(Publisher $publisher): void

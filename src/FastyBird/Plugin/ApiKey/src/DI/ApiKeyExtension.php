@@ -57,21 +57,17 @@ class ApiKeyExtension extends DI\CompilerExtension
 	{
 		$builder = $this->getContainerBuilder();
 
-		// Database repositories
 		$builder->addDefinition($this->prefix('models.keysRepository'), new DI\Definitions\ServiceDefinition())
 			->setType(Models\KeyRepository::class);
 
-		// Database managers
 		$builder->addDefinition($this->prefix('models.keysManager'), new DI\Definitions\ServiceDefinition())
 			->setType(Models\KeysManager::class)
 			->setArgument('entityCrud', '__placeholder__');
 
-		// Console commands
 		$builder->addDefinition($this->prefix('commands.create'), new DI\Definitions\ServiceDefinition())
 			->setType(Commands\Create::class);
 
-		// Middleware
-		$builder->addDefinition($this->prefix('middleware.validator'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition($this->prefix('middlewares.validator'), new DI\Definitions\ServiceDefinition())
 			->setType(Middleware\Validator::class);
 	}
 

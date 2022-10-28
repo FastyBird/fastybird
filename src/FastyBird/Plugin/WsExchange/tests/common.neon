@@ -18,6 +18,7 @@ extensions:
     ipubWebSockets          : IPub\WebSockets\DI\WebSocketsExtension
     ipubPhone               : IPub\Phone\DI\PhoneExtension
     fbMetadataLibrary       : FastyBird\Library\Metadata\DI\MetadataExtension
+    fbExchangeLibrary       : FastyBird\Library\Exchange\DI\ExchangeExtension
 
 services:
     - {factory: Symfony\Component\Console\Application}
