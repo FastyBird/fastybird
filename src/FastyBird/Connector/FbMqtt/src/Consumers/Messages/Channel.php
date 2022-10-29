@@ -70,12 +70,10 @@ final class Channel implements Consumers\Consumer
 			return false;
 		}
 
-		$device = $this->databaseHelper->query(function () use ($entity): DevicesEntities\Devices\Device|null {
-			$findDeviceQuery = new DevicesQueries\FindDevices();
-			$findDeviceQuery->byIdentifier($entity->getDevice());
+		$findDeviceQuery = new DevicesQueries\FindDevices();
+		$findDeviceQuery->byIdentifier($entity->getDevice());
 
-			return $this->deviceRepository->findOneBy($findDeviceQuery);
-		});
+		$device = $this->deviceRepository->findOneBy($findDeviceQuery);
 
 		if ($device === null) {
 			$this->logger->error(

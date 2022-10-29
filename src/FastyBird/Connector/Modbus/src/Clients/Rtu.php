@@ -19,6 +19,7 @@ use DateTimeInterface;
 use Exception;
 use FastyBird\Connector\Modbus\API;
 use FastyBird\Connector\Modbus\Clients;
+use FastyBird\Connector\Modbus\Entities;
 use FastyBird\Connector\Modbus\Exceptions;
 use FastyBird\Connector\Modbus\Helpers;
 use FastyBird\Connector\Modbus\Types;
@@ -27,8 +28,10 @@ use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Nette\Utils;
@@ -42,6 +45,7 @@ use function array_reduce;
 use function array_reverse;
 use function array_slice;
 use function array_values;
+use function assert;
 use function current;
 use function func_get_args;
 use function func_num_args;
@@ -138,9 +142,9 @@ class Rtu implements Client
 		private readonly Helpers\Channel $channelHelper,
 		private readonly Helpers\Property $propertyStateHelper,
 		private readonly API\Transformer $transformer,
-		private readonly DevicesModels\DataStorage\DevicesRepository $devicesRepository,
-		private readonly DevicesModels\DataStorage\ChannelsRepository $channelsRepository,
-		private readonly DevicesModels\DataStorage\ChannelPropertiesRepository $channelPropertiesRepository,
+		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\States\DevicePropertiesRepository $devicePropertiesRepository,
+		private readonly DevicesModels\States\ChannelPropertiesRepository $channelPropertiesRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
@@ -268,7 +272,12 @@ class Rtu implements Client
 			}
 		}
 
-		foreach ($this->devicesRepository->findAllByConnector($this->connector->getId()) as $device) {
+		$findDevicesQuery = new DevicesQueries\FindDevices();
+		$findDevicesQuery->byConnectorId($this->connector->getId());
+
+		foreach ($this->devicesRepository->findAllBy($findDevicesQuery, Entities\ModbusDevice::class) as $device) {
+			assert($device instanceof Entities\ModbusDevice);
+
 			if (
 				!in_array($device->getId()->toString(), $this->processedDevices, true)
 				&& !$this->deviceConnectionManager->getState($device)
@@ -374,7 +383,7 @@ class Rtu implements Client
 	 * @throws MetadataExceptions\Logic
 	 * @throws MetadataExceptions\MalformedInput
 	 */
-	private function processDevice(MetadataEntities\DevicesModule\Device $device): bool
+	private function processDevice(Entities\ModbusDevice $device): bool
 	{
 		$station = (int) $this->deviceHelper->getConfiguration(
 			$device->getId(),
@@ -383,7 +392,7 @@ class Rtu implements Client
 			),
 		);
 
-		foreach ($this->channelsRepository->findAllByDevice($device->getId()) as $channel) {
+		foreach ($device->getChannels() as $channel) {
 			$address = $this->channelHelper->getConfiguration(
 				$channel->getId(),
 				Types\DevicePropertyIdentifier::get(
@@ -392,10 +401,11 @@ class Rtu implements Client
 			);
 
 			if (!is_int($address)) {
-				foreach ($this->channelPropertiesRepository->findAllByChannel(
-					$channel->getId(),
-					MetadataEntities\DevicesModule\ChannelDynamicProperty::class,
-				) as $property) {
+				foreach ($channel->getProperties() as $property) {
+					if (!$property instanceof DevicesEntities\Channels\Properties\Dynamic) {
+						continue;
+					}
+
 					$this->propertyStateHelper->setValue(
 						$property,
 						Utils\ArrayHash::from([
@@ -426,10 +436,11 @@ class Rtu implements Client
 				continue;
 			}
 
-			foreach ($this->channelPropertiesRepository->findAllByChannel(
-				$channel->getId(),
-				MetadataEntities\DevicesModule\ChannelDynamicProperty::class,
-			) as $property) {
+			foreach ($channel->getProperties() as $property) {
+				if (!$property instanceof DevicesEntities\Channels\Properties\Dynamic) {
+					continue;
+				}
+
 				$logContext = [
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
 					'type' => 'rtu-client',
@@ -587,24 +598,26 @@ class Rtu implements Client
 	private function writeProperty(
 		int $station,
 		int $address,
-		MetadataEntities\DevicesModule\Device $device,
-		MetadataEntities\DevicesModule\Property $property,
+		Entities\ModbusDevice $device,
+		DevicesEntities\Devices\Properties\Dynamic|DevicesEntities\Channels\Properties\Dynamic $property,
 	): bool
 	{
 		$now = $this->dateTimeFactory->getNow();
 
 		$propertyUuid = $property->getId()->toString();
 
+		$state = $property instanceof DevicesEntities\Devices\Properties\Dynamic
+			? $this->devicePropertiesRepository->findOneById($property->getId())
+			: $this->channelPropertiesRepository->findOneById(
+				$property->getId(),
+			);
+
 		if (
-			(
-				// Only dynamic properties could be processed
-				$property instanceof MetadataEntities\DevicesModule\DeviceDynamicProperty
-				|| $property instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty
-			)
+			$state !== null
 			// Property have to be writable
 			&& $property->isSettable()
-			&& $property->getExpectedValue() !== null
-			&& $property->isPending() === true
+			&& $state->getExpectedValue() !== null
+			&& $state->isPending() === true
 		) {
 			if (!in_array($property->getDataType()->getValue(), [
 				MetadataTypes\DataType::DATA_TYPE_CHAR,
@@ -668,10 +681,10 @@ class Rtu implements Client
 				return false;
 			}
 
-			$pending = is_string($property->getPending())
+			$pending = is_string($state->getPending())
 				? Utils\DateTime::createFromFormat(
 					DateTimeInterface::ATOM,
-					$property->getPending(),
+					$state->getPending(),
 				)
 				: true;
 
@@ -685,7 +698,7 @@ class Rtu implements Client
 				$valueToWrite = $this->transformer->transformValueToDevice(
 					$property->getDataType(),
 					$property->getFormat(),
-					$property->getExpectedValue(),
+					$state->getExpectedValue(),
 				);
 
 				if ($valueToWrite === null) {
@@ -876,8 +889,8 @@ class Rtu implements Client
 	private function readProperty(
 		int $station,
 		int $address,
-		MetadataEntities\DevicesModule\Device $device,
-		MetadataEntities\DevicesModule\Property $property,
+		Entities\ModbusDevice $device,
+		DevicesEntities\Devices\Properties\Dynamic|DevicesEntities\Channels\Properties\Dynamic $property,
 	): bool
 	{
 		$now = $this->dateTimeFactory->getNow();
@@ -885,13 +898,8 @@ class Rtu implements Client
 		$propertyUuid = $property->getId()->toString();
 
 		if (
-			(
-				// Only dynamic properties could be processed
-				$property instanceof MetadataEntities\DevicesModule\DeviceDynamicProperty
-				|| $property instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty
-			)
 			// Property have to be readable
-			&& $property->isQueryable()
+			$property->isQueryable()
 		) {
 			$deviceExpectedDataType = $this->transformer->determineDeviceReadDataType(
 				$property->getDataType(),

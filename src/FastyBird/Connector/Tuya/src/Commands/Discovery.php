@@ -348,10 +348,10 @@ class Discovery extends Console\Command\Command
 
 			$io->newLine();
 
-			$FindDevices = new DevicesQueries\FindDevices();
-			$FindDevices->byConnectorId($connector->getId());
+			$findDevicesQuery = new DevicesQueries\FindDevices();
+			$findDevicesQuery->byConnectorId($connector->getId());
 
-			$devices = $this->devicesRepository->findAllBy($FindDevices);
+			$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\TuyaDevice::class);
 
 			$table = new Console\Helper\Table($output);
 			$table->setHeaders([

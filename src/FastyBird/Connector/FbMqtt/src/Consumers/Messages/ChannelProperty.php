@@ -55,7 +55,6 @@ final class ChannelProperty implements Consumers\Consumer
 		private readonly DevicesModels\Devices\DevicesRepository $deviceRepository,
 		private readonly DevicesModels\Channels\Properties\PropertiesRepository $propertiesRepository,
 		private readonly DevicesModels\Channels\Properties\PropertiesManager $propertiesManager,
-		private readonly DevicesModels\DataStorage\DevicesRepository $devicesDataStorageRepository,
 		private readonly DevicesModels\DataStorage\ChannelsRepository $channelsDataStorageRepository,
 		private readonly DevicesModels\DataStorage\ChannelPropertiesRepository $propertiesDataStorageRepository,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
@@ -85,12 +84,13 @@ final class ChannelProperty implements Consumers\Consumer
 		}
 
 		if ($entity->getValue() !== FbMqtt\Constants::VALUE_NOT_SET) {
-			$deviceItem = $this->devicesDataStorageRepository->findByIdentifier(
-				$entity->getConnector(),
-				$entity->getDevice(),
-			);
+			$findDeviceQuery = new DevicesQueries\FindDevices();
+			$findDeviceQuery->byConnectorId($entity->getConnector());
+			$findDeviceQuery->byIdentifier($entity->getDevice());
 
-			if ($deviceItem === null) {
+			$device = $this->deviceRepository->findOneBy($findDeviceQuery, Entities\FbMqttDevice::class);
+
+			if ($device === null) {
 				$this->logger->error(
 					sprintf('Device "%s" is not registered', $entity->getDevice()),
 					[
@@ -106,7 +106,7 @@ final class ChannelProperty implements Consumers\Consumer
 			}
 
 			$channelItem = $this->channelsDataStorageRepository->findByIdentifier(
-				$deviceItem->getId(),
+				$device->getId(),
 				$entity->getChannel(),
 			);
 
@@ -134,14 +134,11 @@ final class ChannelProperty implements Consumers\Consumer
 			);
 
 			if ($propertyItem instanceof MetadataEntities\DevicesModule\ChannelVariableProperty) {
-				$property = $this->databaseHelper->query(
-					function () use ($propertyItem): DevicesEntities\Channels\Properties\Property|null {
-						$findPropertyQuery = new DevicesQueries\FindChannelProperties();
-						$findPropertyQuery->byId($propertyItem->getId());
+				$findPropertyQuery = new DevicesQueries\FindChannelProperties();
+				$findPropertyQuery->byId($propertyItem->getId());
 
-						return $this->propertiesRepository->findOneBy($findPropertyQuery);
-					},
-				);
+				$property = $this->propertiesRepository->findOneBy($findPropertyQuery);
+
 				assert($property instanceof DevicesEntities\Channels\Properties\Property);
 
 				$this->databaseHelper->transaction(
@@ -171,14 +168,10 @@ final class ChannelProperty implements Consumers\Consumer
 				);
 			}
 		} else {
-			$device = $this->databaseHelper->query(
-				function () use ($entity): DevicesEntities\Devices\Device|null {
-					$findDeviceQuery = new DevicesQueries\FindDevices();
-					$findDeviceQuery->byIdentifier($entity->getDevice());
+			$findDeviceQuery = new DevicesQueries\FindDevices();
+			$findDeviceQuery->byIdentifier($entity->getDevice());
 
-					return $this->deviceRepository->findOneBy($findDeviceQuery);
-				},
-			);
+			$device = $this->deviceRepository->findOneBy($findDeviceQuery);
 
 			if ($device === null) {
 				$this->logger->error(

@@ -198,7 +198,6 @@ final class Coap
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState

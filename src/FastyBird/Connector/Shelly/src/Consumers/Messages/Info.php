@@ -54,7 +54,6 @@ final class Info implements Consumer
 		private readonly DevicesModels\Devices\Properties\PropertiesManager $propertiesManager,
 		private readonly DevicesModels\Devices\Attributes\AttributesRepository $attributesRepository,
 		private readonly DevicesModels\Devices\Attributes\AttributesManager $attributesManager,
-		private readonly DevicesModels\DataStorage\DevicesRepository $devicesDataStorageRepository,
 		private readonly DevicesModels\DataStorage\DevicePropertiesRepository $propertiesDataStorageRepository,
 		private readonly DevicesModels\DataStorage\DeviceAttributesRepository $attributesDataStorageRepository,
 		private readonly DevicesUtilities\Database $databaseHelper,
@@ -81,27 +80,22 @@ final class Info implements Consumer
 			return false;
 		}
 
-		$deviceItem = $this->devicesDataStorageRepository->findByIdentifier(
-			$entity->getConnector(),
-			$entity->getIdentifier(),
-		);
+		$findDeviceQuery = new DevicesQueries\FindDevices();
+		$findDeviceQuery->byConnectorId($entity->getConnector());
+		$findDeviceQuery->byIdentifier($entity->getIdentifier());
 
-		if ($deviceItem === null) {
+		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\ShellyDevice::class);
+
+		if ($device === null) {
 			return true;
 		}
 
-		if ($deviceItem->getName() === null && $deviceItem->getName() !== $entity->getType()) {
-			$deviceEntity = $this->databaseHelper->query(
-				function () use ($deviceItem): Entities\ShellyDevice|null {
-					$findDeviceQuery = new DevicesQueries\FindDevices();
-					$findDeviceQuery->byId($deviceItem->getId());
+		if ($device->getName() === null && $device->getName() !== $entity->getType()) {
+			$findDeviceQuery = new DevicesQueries\FindDevices();
+			$findDeviceQuery->byId($device->getId());
 
-					$deviceEntity = $this->devicesRepository->findOneBy($findDeviceQuery);
-					assert($deviceEntity instanceof Entities\ShellyDevice || $deviceEntity === null);
-
-					return $deviceEntity;
-				},
-			);
+			$deviceEntity = $this->devicesRepository->findOneBy($findDeviceQuery);
+			assert($deviceEntity instanceof Entities\ShellyDevice || $deviceEntity === null);
 
 			if ($deviceEntity === null) {
 				return true;
@@ -115,27 +109,27 @@ final class Info implements Consumer
 		}
 
 		$this->setDeviceProperty(
-			$deviceItem->getId(),
+			$device->getId(),
 			$entity->getIpAddress(),
 			Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS,
 		);
 		$this->setDeviceProperty(
-			$deviceItem->getId(),
+			$device->getId(),
 			$entity->isAuthEnabled(),
 			Types\DevicePropertyIdentifier::IDENTIFIER_AUTH_ENABLED,
 		);
 		$this->setDeviceAttribute(
-			$deviceItem->getId(),
+			$device->getId(),
 			$entity->getType(),
 			Types\DeviceAttributeIdentifier::IDENTIFIER_MODEL,
 		);
 		$this->setDeviceAttribute(
-			$deviceItem->getId(),
+			$device->getId(),
 			$entity->getMacAddress(),
 			Types\DeviceAttributeIdentifier::IDENTIFIER_MAC_ADDRESS,
 		);
 		$this->setDeviceAttribute(
-			$deviceItem->getId(),
+			$device->getId(),
 			$entity->getFirmwareVersion(),
 			Types\DeviceAttributeIdentifier::IDENTIFIER_FIRMWARE_VERSION,
 		);
@@ -146,7 +140,7 @@ final class Info implements Consumer
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 				'type' => 'info-message-consumer',
 				'device' => [
-					'id' => $deviceItem->getId()->toString(),
+					'id' => $device->getId()->toString(),
 				],
 				'data' => $entity->toArray(),
 			],

@@ -49,7 +49,10 @@ final class DevicesRepository
 	}
 
 	/**
-	 * @phpstan-param class-string<Entities\Devices\Device> $type
+	 * @template T of Entities\Devices\Device
+	 *
+	 * @phpstan-param Queries\FindDevices<T> $queryObject
+	 * @phpstan-param class-string<T> $type
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -64,9 +67,12 @@ final class DevicesRepository
 	}
 
 	/**
-	 * @phpstan-param class-string<Entities\Devices\Device> $type
+	 * @template T of Entities\Devices\Device
 	 *
-	 * @phpstan-return Array<Entities\Devices\Device>
+	 * @phpstan-param Queries\FindDevices<T> $queryObject
+	 * @phpstan-param class-string<T> $type
+	 *
+	 * @phpstan-return Array<T>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -75,27 +81,33 @@ final class DevicesRepository
 		string $type = Entities\Devices\Device::class,
 	): array
 	{
-		return $this->database->query(
+		/** @var Array<T> $result */
+		$result = $this->database->query(
 			function () use ($queryObject, $type): array {
-				/** @var Array<Entities\Devices\Device>|DoctrineOrmQuery\ResultSet<Entities\Devices\Device> $result */
+				/** @var Array<T>|DoctrineOrmQuery\ResultSet<T> $result */
 				$result = $queryObject->fetch($this->getRepository($type));
 
 				if (is_array($result)) {
 					return $result;
 				}
 
-				/** @var Array<Entities\Devices\Device> $data */
+				/** @var Array<T> $data */
 				$data = $result->toArray();
 
 				return $data;
 			},
 		);
+
+		return $result;
 	}
 
 	/**
-	 * @phpstan-param class-string<Entities\Devices\Device> $type
+	 * @template T of Entities\Devices\Device
 	 *
-	 * @phpstan-return DoctrineOrmQuery\ResultSet<Entities\Devices\Device>
+	 * @phpstan-param Queries\FindDevices<T> $queryObject
+	 * @phpstan-param class-string<T> $type
+	 *
+	 * @phpstan-return DoctrineOrmQuery\ResultSet<T>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -106,8 +118,11 @@ final class DevicesRepository
 	{
 		return $this->database->query(
 			function () use ($queryObject, $type): DoctrineOrmQuery\ResultSet {
-				/** @var DoctrineOrmQuery\ResultSet<Entities\Devices\Device> $result */
 				$result = $queryObject->fetch($this->getRepository($type));
+
+				if (is_array($result)) {
+					throw new Exceptions\InvalidState('Err');
+				}
 
 				return $result;
 			},
@@ -115,9 +130,11 @@ final class DevicesRepository
 	}
 
 	/**
-	 * @param class-string<Entities\Devices\Device> $type
+	 * @template T of Entities\Devices\Device
 	 *
-	 * @return ORM\EntityRepository<Entities\Devices\Device>
+	 * @phpstan-param class-string<T> $type
+	 *
+	 * @phpstan-return ORM\EntityRepository<T>
 	 */
 	private function getRepository(string $type): ORM\EntityRepository
 	{
@@ -125,7 +142,10 @@ final class DevicesRepository
 			$this->repository[$type] = $this->managerRegistry->getRepository($type);
 		}
 
-		return $this->repository[$type];
+		/** @var ORM\EntityRepository<T> $repository */
+		$repository = $this->repository[$type];
+
+		return $repository;
 	}
 
 }

@@ -127,6 +127,7 @@ final class Consumer implements ExchangeConsumers\Consumer
 	}
 
 	/**
+	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	private function processProperty(

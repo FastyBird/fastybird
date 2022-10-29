@@ -27,8 +27,10 @@ use FastyBird\Connector\HomeKit\Types;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -77,9 +79,7 @@ final class Http implements Server
 		private readonly Entities\Protocol\AccessoryFactory $accessoryFactory,
 		private readonly Entities\Protocol\ServiceFactory $serviceFactory,
 		private readonly Entities\Protocol\CharacteristicsFactory $characteristicsFactory,
-		private readonly DevicesModels\DataStorage\DevicesRepository $devicesRepository,
-		private readonly DevicesModels\DataStorage\ChannelsRepository $channelsRepository,
-		private readonly DevicesModels\DataStorage\ChannelPropertiesRepository $channelPropertiesRepository,
+		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		Log\LoggerInterface|null $logger = null,
 	)
@@ -172,7 +172,12 @@ final class Http implements Server
 		$this->accessoriesDriver->reset();
 		$this->accessoriesDriver->addBridge($bridge);
 
-		foreach ($this->devicesRepository->findAllByConnector($this->connector->getId()) as $device) {
+		$findDevicesQuery = new DevicesQueries\FindDevices();
+		$findDevicesQuery->byConnectorId($this->connector->getId());
+
+		foreach ($this->devicesRepository->findAllBy($findDevicesQuery, Entities\HomeKitDevice::class) as $device) {
+			assert($device instanceof Entities\HomeKitDevice);
+
 			$accessory = $this->accessoryFactory->create(
 				$device,
 				null,
@@ -180,17 +185,17 @@ final class Http implements Server
 			);
 			assert($accessory instanceof Entities\Protocol\Device);
 
-			foreach ($this->channelsRepository->findAllByDevice($device->getId()) as $channel) {
+			foreach ($device->getChannels() as $channel) {
 				$service = $this->serviceFactory->create(
 					$channel->getIdentifier(),
 					$accessory,
 					$channel,
 				);
 
-				foreach ($this->channelPropertiesRepository->findAllByChannel($channel->getId()) as $property) {
+				foreach ($channel->getProperties() as $property) {
 					if (
-						$property instanceof MetadataEntities\DevicesModule\ChannelMappedProperty
-						|| $property instanceof MetadataEntities\DevicesModule\ChannelVariableProperty
+						$property instanceof DevicesEntities\Channels\Properties\Mapped
+						|| $property instanceof DevicesEntities\Channels\Properties\Variable
 					) {
 						$characteristic = $this->characteristicsFactory->create(
 							$property->getIdentifier(),
@@ -198,7 +203,7 @@ final class Http implements Server
 							$property,
 						);
 
-						if ($property instanceof MetadataEntities\DevicesModule\ChannelVariableProperty) {
+						if ($property instanceof DevicesEntities\Channels\Properties\Variable) {
 							$characteristic->setActualValue($property->getValue());
 						}
 

@@ -24,6 +24,7 @@ use FastyBird\Module\Devices\Connectors;
 use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
+use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\Utilities;
 use Psr\EventDispatcher as PsrEventDispatcher;
 use Psr\Log;
@@ -63,7 +64,7 @@ class Connector extends Console\Command\Command
 
 	public function __construct(
 		private readonly Models\DataStorage\ConnectorsRepository $connectorsRepository,
-		private readonly Models\DataStorage\DevicesRepository $devicesRepository,
+		private readonly Models\Devices\DevicesRepository $devicesRepository,
 		private readonly Models\DataStorage\DevicePropertiesRepository $devicesPropertiesRepository,
 		private readonly Models\DataStorage\ChannelsRepository $channelsRepository,
 		private readonly Models\DataStorage\ChannelPropertiesRepository $channelsPropertiesRepository,
@@ -397,7 +398,10 @@ class Connector extends Console\Command\Command
 		MetadataTypes\ConnectionState $state,
 	): void
 	{
-		foreach ($this->devicesRepository->findAllByConnector($connector->getId()) as $device) {
+		$findDevicesQuery = new Queries\FindDevices();
+		$findDevicesQuery->byConnectorId($connector->getId());
+
+		foreach ($this->devicesRepository->findAllBy($findDevicesQuery) as $device) {
 			$this->deviceConnectionManager->setState($device, $state);
 
 			/** @var Array<MetadataEntities\DevicesModule\DeviceDynamicProperty> $properties */

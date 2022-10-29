@@ -48,7 +48,6 @@ final class ReaderTest extends DbTestCase
 		$connectorPropertiesRepository = $this->getContainer()
 			->getByType(Models\DataStorage\ConnectorPropertiesRepository::class);
 
-		$devicesRepository = $this->getContainer()->getByType(Models\DataStorage\DevicesRepository::class);
 		$devicePropertiesRepository = $this->getContainer()
 			->getByType(Models\DataStorage\DevicePropertiesRepository::class);
 		$deviceAttributesRepository = $this->getContainer()
@@ -61,7 +60,6 @@ final class ReaderTest extends DbTestCase
 		self::assertCount(2, $connectorsRepository);
 		self::assertCount(0, $connectorPropertiesRepository);
 
-		self::assertCount(4, $devicesRepository);
 		self::assertCount(5, $devicePropertiesRepository);
 		self::assertCount(10, $deviceAttributesRepository);
 

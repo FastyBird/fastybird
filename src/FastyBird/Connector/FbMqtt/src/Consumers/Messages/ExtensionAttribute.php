@@ -20,7 +20,6 @@ use FastyBird\Connector\FbMqtt\Consumers;
 use FastyBird\Connector\FbMqtt\Entities;
 use FastyBird\Connector\FbMqtt\Types;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -66,12 +65,10 @@ final class ExtensionAttribute implements Consumers\Consumer
 			return false;
 		}
 
-		$device = $this->databaseHelper->query(function () use ($entity): DevicesEntities\Devices\Device|null {
-			$findDeviceQuery = new DevicesQueries\FindDevices();
-			$findDeviceQuery->byIdentifier($entity->getDevice());
+		$findDeviceQuery = new DevicesQueries\FindDevices();
+		$findDeviceQuery->byIdentifier($entity->getDevice());
 
-			return $this->deviceRepository->findOneBy($findDeviceQuery);
-		});
+		$device = $this->deviceRepository->findOneBy($findDeviceQuery);
 
 		if ($device === null) {
 			$this->logger->error(

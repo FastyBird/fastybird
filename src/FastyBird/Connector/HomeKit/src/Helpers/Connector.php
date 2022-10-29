@@ -132,22 +132,16 @@ final class Connector extends Evenement\EventEmitter
 		string|int|float|bool|null $value = null,
 	): void
 	{
-		$property = $this->databaseHelper->query(
-			function () use ($connectorId, $type): DevicesEntities\Connectors\Properties\Variable|null {
-				$findConnectorProperty = new DevicesQueries\FindConnectorProperties();
-				$findConnectorProperty->byConnectorId($connectorId);
-				$findConnectorProperty->byIdentifier(strval($type->getValue()));
+		$findConnectorProperty = new DevicesQueries\FindConnectorProperties();
+		$findConnectorProperty->byConnectorId($connectorId);
+		$findConnectorProperty->byIdentifier(strval($type->getValue()));
 
-				$property = $this->propertiesEntitiesRepository->findOneBy(
-					$findConnectorProperty,
-					DevicesEntities\Connectors\Properties\Variable::class,
-				);
-				assert(
-					$property instanceof DevicesEntities\Connectors\Properties\Variable || $property === null,
-				);
-
-				return $property;
-			},
+		$property = $this->propertiesEntitiesRepository->findOneBy(
+			$findConnectorProperty,
+			DevicesEntities\Connectors\Properties\Variable::class,
+		);
+		assert(
+			$property instanceof DevicesEntities\Connectors\Properties\Variable || $property === null,
 		);
 
 		if ($property === null) {

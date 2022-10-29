@@ -50,13 +50,12 @@ final class Device implements Consumers\Consumer
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
-		private readonly DevicesModels\Devices\DevicesRepository $deviceRepository,
+		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Devices\DevicesManager $devicesManager,
 		private readonly DevicesModels\Devices\Properties\PropertiesManager $devicePropertiesManager,
 		private readonly DevicesModels\Devices\Controls\ControlsManager $deviceControlManager,
 		private readonly DevicesModels\Devices\Attributes\AttributesManager $deviceAttributesManager,
 		private readonly DevicesModels\Channels\ChannelsManager $channelsManager,
-		private readonly DevicesModels\DataStorage\DevicesRepository $deviceDataStorageRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DevicesUtilities\Database $databaseHelper,
 		Log\LoggerInterface|null $logger = null,
@@ -83,12 +82,13 @@ final class Device implements Consumers\Consumer
 		}
 
 		if ($entity->getAttribute() === Entities\Messages\Attribute::STATE) {
-			$deviceItem = $this->deviceDataStorageRepository->findByIdentifier(
-				$entity->getConnector(),
-				$entity->getDevice(),
-			);
+			$findDeviceQuery = new DevicesQueries\FindDevices();
+			$findDeviceQuery->byConnectorId($entity->getConnector());
+			$findDeviceQuery->byIdentifier($entity->getDevice());
 
-			if ($deviceItem === null) {
+			$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\FbMqttDevice::class);
+
+			if ($device === null) {
 				$this->logger->error(
 					sprintf('Device "%s" is not registered', $entity->getDevice()),
 					[
@@ -105,19 +105,15 @@ final class Device implements Consumers\Consumer
 
 			if (MetadataTypes\ConnectionState::isValidValue($entity->getValue())) {
 				$this->deviceConnectionManager->setState(
-					$deviceItem,
+					$device,
 					MetadataTypes\ConnectionState::get($entity->getValue()),
 				);
 			}
 		} else {
-			$device = $this->databaseHelper->query(
-				function () use ($entity): DevicesEntities\Devices\Device|null {
-					$findDeviceQuery = new DevicesQueries\FindDevices();
-					$findDeviceQuery->byIdentifier($entity->getDevice());
+			$findDeviceQuery = new DevicesQueries\FindDevices();
+			$findDeviceQuery->byIdentifier($entity->getDevice());
 
-					return $this->deviceRepository->findOneBy($findDeviceQuery);
-				},
-			);
+			$device = $this->devicesRepository->findOneBy($findDeviceQuery);
 
 			if ($device === null) {
 				$this->logger->error(

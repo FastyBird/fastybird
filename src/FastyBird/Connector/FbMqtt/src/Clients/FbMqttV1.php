@@ -31,12 +31,14 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette\Utils;
 use Psr\Log;
 use React\EventLoop;
 use Throwable;
 use function array_key_exists;
+use function assert;
 use function explode;
 use function in_array;
 use function is_string;
@@ -85,7 +87,7 @@ final class FbMqttV1 extends Client
 		private readonly Helpers\Property $propertyStateHelper,
 		Consumers\Messages $consumer,
 		DevicesModels\DataStorage\ConnectorPropertiesRepository $connectorPropertiesRepository,
-		private readonly DevicesModels\DataStorage\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\DataStorage\DevicePropertiesRepository $devicePropertiesRepository,
 		private readonly DevicesModels\DataStorage\ChannelsRepository $channelsRepository,
 		private readonly DevicesModels\DataStorage\ChannelPropertiesRepository $channelPropertiesRepository,
@@ -137,7 +139,12 @@ final class FbMqttV1 extends Client
 			}
 		}
 
-		foreach ($this->devicesRepository->findAllByConnector($this->connector->getId()) as $device) {
+		$findDevicesQuery = new DevicesQueries\FindDevices();
+		$findDevicesQuery->byConnectorId($this->connector->getId());
+
+		foreach ($this->devicesRepository->findAllBy($findDevicesQuery, Entities\FbMqttDevice::class) as $device) {
+			assert($device instanceof Entities\FbMqttDevice);
+
 			if (
 				!in_array($device->getId()->toString(), $this->processedDevices, true)
 				&& $this->deviceConnectionManager->getState($device)
@@ -171,7 +178,12 @@ final class FbMqttV1 extends Client
 	{
 		parent::onClose($connection);
 
-		foreach ($this->devicesRepository->findAllByConnector($this->connector->getId()) as $device) {
+		$findDevicesQuery = new DevicesQueries\FindDevices();
+		$findDevicesQuery->byConnectorId($this->connector->getId());
+
+		foreach ($this->devicesRepository->findAllBy($findDevicesQuery, Entities\FbMqttDevice::class) as $device) {
+			assert($device instanceof Entities\FbMqttDevice);
+
 			if ($this->deviceConnectionManager->getState($device)
 				->equalsValue(MetadataTypes\ConnectionState::STATE_READY)) {
 				$this->deviceConnectionManager->setState(
@@ -438,7 +450,7 @@ final class FbMqttV1 extends Client
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws Exception
 	 */
-	private function processDevice(MetadataEntities\DevicesModule\Device $device): bool
+	private function processDevice(Entities\FbMqttDevice $device): bool
 	{
 		if ($this->writeDeviceProperty($device)) {
 			return true;
@@ -458,7 +470,7 @@ final class FbMqttV1 extends Client
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws Exception
 	 */
-	private function writeDeviceProperty(MetadataEntities\DevicesModule\Device $device): bool
+	private function writeDeviceProperty(Entities\FbMqttDevice $device): bool
 	{
 		$now = $this->dateTimeFactory->getNow();
 
@@ -529,7 +541,7 @@ final class FbMqttV1 extends Client
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws Exception
 	 */
-	private function writeChannelsProperty(MetadataEntities\DevicesModule\Device $device): bool
+	private function writeChannelsProperty(Entities\FbMqttDevice $device): bool
 	{
 		$now = $this->dateTimeFactory->getNow();
 

@@ -29,8 +29,10 @@ use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use InvalidArgumentException;
 use Nette;
@@ -43,6 +45,7 @@ use React\Socket;
 use RuntimeException;
 use Throwable;
 use function array_key_exists;
+use function assert;
 use function base64_decode;
 use function in_array;
 use function is_bool;
@@ -128,9 +131,8 @@ final class Cloud implements Client
 		private readonly Helpers\Property $propertyStateHelper,
 		private readonly Consumers\Messages $consumer,
 		API\OpenApiFactory $openApiApiFactory,
-		private readonly DevicesModels\DataStorage\DevicesRepository $devicesRepository,
-		private readonly DevicesModels\DataStorage\ChannelsRepository $channelsRepository,
-		private readonly DevicesModels\DataStorage\ChannelPropertiesRepository $channelPropertiesRepository,
+		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\States\ChannelPropertiesRepository $channelPropertiesRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly MetadataSchemas\Validator $schemaValidator,
@@ -349,7 +351,12 @@ final class Cloud implements Client
 			}
 		}
 
-		foreach ($this->devicesRepository->findAllByConnector($this->connector->getId()) as $device) {
+		$findDevicesQuery = new DevicesQueries\FindDevices();
+		$findDevicesQuery->byConnectorId($this->connector->getId());
+
+		foreach ($this->devicesRepository->findAllBy($findDevicesQuery, Entities\TuyaDevice::class) as $device) {
+			assert($device instanceof Entities\TuyaDevice);
+
 			if (
 				!in_array($device->getId()->toString(), $this->processedDevices, true)
 				&& !$this->deviceConnectionManager->getState($device)->equalsValue(
@@ -382,26 +389,26 @@ final class Cloud implements Client
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws Exception
 	 */
-	private function processDevice(MetadataEntities\DevicesModule\Device $deviceItem): bool
+	private function processDevice(Entities\TuyaDevice $device): bool
 	{
-		if ($this->readDeviceData(self::CMD_INFO, $deviceItem)) {
+		if ($this->readDeviceData(self::CMD_INFO, $device)) {
 			return true;
 		}
 
-		if ($this->readDeviceData(self::CMD_STATUS, $deviceItem)) {
+		if ($this->readDeviceData(self::CMD_STATUS, $device)) {
 			return true;
 		}
 
-		if ($this->readDeviceData(self::CMD_HEARTBEAT, $deviceItem)) {
+		if ($this->readDeviceData(self::CMD_HEARTBEAT, $device)) {
 			return true;
 		}
 
 		if (
-			$this->deviceConnectionManager->getState($deviceItem)->equalsValue(
+			$this->deviceConnectionManager->getState($device)->equalsValue(
 				MetadataTypes\ConnectionState::STATE_CONNECTED,
 			)
 		) {
-			return $this->writeChannelsProperty($deviceItem);
+			return $this->writeChannelsProperty($device);
 		}
 
 		return true;
@@ -419,19 +426,16 @@ final class Cloud implements Client
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws RuntimeException
 	 */
-	private function readDeviceData(
-		string $cmd,
-		MetadataEntities\DevicesModule\Device $deviceItem,
-	): bool
+	private function readDeviceData(string $cmd, Entities\TuyaDevice $device): bool
 	{
 		$httpCmdResult = null;
 
-		if (!array_key_exists($deviceItem->getId()->toString(), $this->processedDevicesCommands)) {
-			$this->processedDevicesCommands[$deviceItem->getId()->toString()] = [];
+		if (!array_key_exists($device->getId()->toString(), $this->processedDevicesCommands)) {
+			$this->processedDevicesCommands[$device->getId()->toString()] = [];
 		}
 
-		if (array_key_exists($cmd, $this->processedDevicesCommands[$deviceItem->getId()->toString()])) {
-			$httpCmdResult = $this->processedDevicesCommands[$deviceItem->getId()->toString()][$cmd];
+		if (array_key_exists($cmd, $this->processedDevicesCommands[$device->getId()->toString()])) {
+			$httpCmdResult = $this->processedDevicesCommands[$device->getId()->toString()][$cmd];
 		}
 
 		if ($httpCmdResult === true) {
@@ -445,42 +449,42 @@ final class Cloud implements Client
 			return true;
 		}
 
-		$this->processedDevicesCommands[$deviceItem->getId()->toString()][$cmd] = $this->dateTimeFactory->getNow();
+		$this->processedDevicesCommands[$device->getId()->toString()][$cmd] = $this->dateTimeFactory->getNow();
 
 		if ($cmd === self::CMD_INFO || $cmd === self::CMD_HEARTBEAT) {
 			if (
 				$cmd === self::CMD_INFO
-				&& $this->deviceConnectionManager->getState($deviceItem)->equalsValue(
+				&& $this->deviceConnectionManager->getState($device)->equalsValue(
 					MetadataTypes\ConnectionState::STATE_CONNECTED,
 				)
 			) {
-				$this->processedDevicesCommands[$deviceItem->getId()->toString()][$cmd] = true;
+				$this->processedDevicesCommands[$device->getId()->toString()][$cmd] = true;
 
 				return false;
 			}
 
-			$this->openApiApi->getDeviceInformation($deviceItem->getIdentifier())
-				->then(function (Entities\API\DeviceInformation $deviceInformation) use ($cmd, $deviceItem): void {
+			$this->openApiApi->getDeviceInformation($device->getIdentifier())
+				->then(function (Entities\API\DeviceInformation $deviceInformation) use ($cmd, $device): void {
 					if ($cmd === self::CMD_HEARTBEAT) {
-						$this->processedDevicesCommands[$deviceItem->getId()->toString()][$cmd] = true;
+						$this->processedDevicesCommands[$device->getId()->toString()][$cmd] = true;
 					} else {
 						if ($deviceInformation->isOnline()) {
-							$this->processedDevicesCommands[$deviceItem->getId()->toString()][$cmd] = true;
+							$this->processedDevicesCommands[$device->getId()->toString()][$cmd] = true;
 						}
 					}
 
 					$this->consumer->append(new Entities\Messages\DeviceState(
 						Types\MessageSource::get(Types\MessageSource::SOURCE_CLOUD_OPENAPI),
 						$this->connector->getId(),
-						$deviceItem->getIdentifier(),
+						$device->getIdentifier(),
 						$deviceInformation->isOnline(),
 					));
 
 					if ($cmd === self::CMD_HEARTBEAT) {
-						$this->heartbeatTimers[$deviceItem->getId()->toString()] = $this->eventLoop->addTimer(
+						$this->heartbeatTimers[$device->getId()->toString()] = $this->eventLoop->addTimer(
 							self::HEARTBEAT_TIMEOUT,
-							function () use ($cmd, $deviceItem): void {
-								unset($this->processedDevicesCommands[$deviceItem->getId()->toString()][$cmd]);
+							function () use ($cmd, $device): void {
+								unset($this->processedDevicesCommands[$device->getId()->toString()][$cmd]);
 							},
 						);
 					}
@@ -509,9 +513,9 @@ final class Cloud implements Client
 				});
 
 		} elseif ($cmd === self::CMD_STATUS) {
-			$this->openApiApi->getDeviceStatus($deviceItem->getIdentifier())
-				->then(function (array $statuses) use ($cmd, $deviceItem): void {
-					$this->processedDevicesCommands[$deviceItem->getId()->toString()][$cmd] = true;
+			$this->openApiApi->getDeviceStatus($device->getIdentifier())
+				->then(function (array $statuses) use ($cmd, $device): void {
+					$this->processedDevicesCommands[$device->getId()->toString()][$cmd] = true;
 
 					$dataPointsStatuses = [];
 
@@ -526,7 +530,7 @@ final class Cloud implements Client
 					$this->consumer->append(new Entities\Messages\DeviceStatus(
 						Types\MessageSource::get(Types\MessageSource::SOURCE_CLOUD_OPENAPI),
 						$this->connector->getId(),
-						$deviceItem->getIdentifier(),
+						$device->getIdentifier(),
 						$dataPointsStatuses,
 					));
 				})
@@ -570,31 +574,38 @@ final class Cloud implements Client
 	 * @throws MetadataExceptions\Logic
 	 * @throws MetadataExceptions\MalformedInput
 	 */
-	private function writeChannelsProperty(MetadataEntities\DevicesModule\Device $deviceItem): bool
+	private function writeChannelsProperty(Entities\TuyaDevice $device): bool
 	{
 		$now = $this->dateTimeFactory->getNow();
 
-		foreach ($this->channelsRepository->findAllByDevice($deviceItem->getId()) as $channelItem) {
-			foreach ($this->channelPropertiesRepository->findAllByChannel(
-				$channelItem->getId(),
-				MetadataEntities\DevicesModule\ChannelDynamicProperty::class,
-			) as $propertyItem) {
+		foreach ($device->getChannels() as $channel) {
+			foreach ($channel->getProperties() as $property) {
+				if (!$property instanceof DevicesEntities\Channels\Properties\Dynamic) {
+					continue;
+				}
+
+				$state = $this->channelPropertiesRepository->findOneById($property->getId());
+
+				if ($state === null) {
+					continue;
+				}
+
 				if (
-					$propertyItem->isSettable()
-					&& $propertyItem->getExpectedValue() !== null
-					&& $propertyItem->isPending() === true
+					$property->isSettable()
+					&& $state->getExpectedValue() !== null
+					&& $state->isPending() === true
 				) {
-					$pending = is_string($propertyItem->getPending())
+					$pending = is_string($state->getPending())
 						? Utils\DateTime::createFromFormat(
 							DateTimeInterface::ATOM,
-							$propertyItem->getPending(),
+							$state->getPending(),
 						)
 						: true;
 					$debounce = array_key_exists(
-						$propertyItem->getId()->toString(),
+						$property->getId()->toString(),
 						$this->processedProperties,
 					)
-						? $this->processedProperties[$propertyItem->getId()->toString()]
+						? $this->processedProperties[$property->getId()->toString()]
 						: false;
 
 					if (
@@ -604,7 +615,7 @@ final class Cloud implements Client
 						continue;
 					}
 
-					unset($this->processedProperties[$propertyItem->getId()->toString()]);
+					unset($this->processedProperties[$property->getId()->toString()]);
 
 					if (
 						$pending === true
@@ -613,31 +624,31 @@ final class Cloud implements Client
 							&& (float) $now->format('Uv') - (float) $pending->format('Uv') > 2_000
 						)
 					) {
-						$this->processedProperties[$propertyItem->getId()->toString()] = $now;
+						$this->processedProperties[$property->getId()->toString()] = $now;
 
 						$this->openApiApi->setDeviceStatus(
-							$deviceItem->getIdentifier(),
-							$propertyItem->getIdentifier(),
-							$propertyItem->getExpectedValue(),
+							$device->getIdentifier(),
+							$property->getIdentifier(),
+							$state->getExpectedValue(),
 						)
-							->then(function () use ($propertyItem): void {
+							->then(function () use ($property): void {
 								$this->propertyStateHelper->setValue(
-									$propertyItem,
+									$property,
 									Utils\ArrayHash::from([
 										'pending' => $this->dateTimeFactory->getNow()->format(DateTimeInterface::ATOM),
 									]),
 								);
 							})
-							->otherwise(function (Throwable $ex) use ($propertyItem): void {
+							->otherwise(function (Throwable $ex) use ($property): void {
 								$this->propertyStateHelper->setValue(
-									$propertyItem,
+									$property,
 									Utils\ArrayHash::from([
 										'expectedValue' => null,
 										'pending' => false,
 									]),
 								);
 
-								unset($this->processedProperties[$propertyItem->getId()->toString()]);
+								unset($this->processedProperties[$property->getId()->toString()]);
 
 								if (!$ex instanceof Exceptions\OpenApiCall) {
 									$this->logger->error(

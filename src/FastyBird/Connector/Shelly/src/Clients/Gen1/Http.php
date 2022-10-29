@@ -19,6 +19,7 @@ use DateTimeInterface;
 use Exception;
 use FastyBird\Connector\Shelly\API;
 use FastyBird\Connector\Shelly\Consumers;
+use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Types;
@@ -26,8 +27,10 @@ use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use InvalidArgumentException;
 use Nette;
@@ -39,6 +42,7 @@ use React\Http as ReactHttp;
 use React\Promise;
 use Throwable;
 use function array_key_exists;
+use function assert;
 use function in_array;
 use function is_string;
 use function preg_match;
@@ -106,9 +110,8 @@ final class Http
 		private readonly Helpers\Device $deviceHelper,
 		private readonly Helpers\Property $propertyStateHelper,
 		private readonly Consumers\Messages $consumer,
-		private readonly DevicesModels\DataStorage\DevicesRepository $devicesRepository,
-		private readonly DevicesModels\DataStorage\ChannelsRepository $channelsRepository,
-		private readonly DevicesModels\DataStorage\ChannelPropertiesRepository $channelPropertiesRepository,
+		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\States\ChannelPropertiesRepository $channelPropertiesRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
@@ -162,7 +165,12 @@ final class Http
 			}
 		}
 
-		foreach ($this->devicesRepository->findAllByConnector($this->connector->getId()) as $device) {
+		$findDevicesQuery = new DevicesQueries\FindDevices();
+		$findDevicesQuery->byConnectorId($this->connector->getId());
+
+		foreach ($this->devicesRepository->findAllBy($findDevicesQuery, Entities\ShellyDevice::class) as $device) {
+			assert($device instanceof Entities\ShellyDevice);
+
 			$ipAddress = $this->deviceHelper->getConfiguration(
 				$device->getId(),
 				Types\DevicePropertyIdentifier::get(Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS),
@@ -201,7 +209,7 @@ final class Http
 	 * @throws InvalidArgumentException
 	 * @throws Exception
 	 */
-	private function processDevice(MetadataEntities\DevicesModule\Device $device): bool
+	private function processDevice(Entities\ShellyDevice $device): bool
 	{
 		if ($this->readDeviceData(self::CMD_SHELLY, $device)) {
 			return true;
@@ -232,7 +240,7 @@ final class Http
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws InvalidArgumentException
 	 */
-	private function readDeviceData(string $cmd, MetadataEntities\DevicesModule\Device $device): bool
+	private function readDeviceData(string $cmd, Entities\ShellyDevice $device): bool
 	{
 		$httpCmdResult = null;
 
@@ -315,24 +323,31 @@ final class Http
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws Exception
 	 */
-	private function writeChannelsProperty(MetadataEntities\DevicesModule\Device $device): bool
+	private function writeChannelsProperty(Entities\ShellyDevice $device): bool
 	{
 		$now = $this->dateTimeFactory->getNow();
 
-		foreach ($this->channelsRepository->findAllByDevice($device->getId()) as $channel) {
-			foreach ($this->channelPropertiesRepository->findAllByChannel(
-				$channel->getId(),
-				MetadataEntities\DevicesModule\ChannelDynamicProperty::class,
-			) as $property) {
+		foreach ($device->getChannels() as $channel) {
+			foreach ($channel->getProperties() as $property) {
+				if (!$property instanceof DevicesEntities\Channels\Properties\Dynamic) {
+					continue;
+				}
+
+				$state = $this->channelPropertiesRepository->findOneById($property->getId());
+
+				if ($state === null) {
+					continue;
+				}
+
 				if (
 					$property->isSettable()
-					&& $property->getExpectedValue() !== null
-					&& $property->isPending() === true
+					&& $state->getExpectedValue() !== null
+					&& $state->isPending() === true
 				) {
-					$pending = is_string($property->getPending())
+					$pending = is_string($state->getPending())
 						? Utils\DateTime::createFromFormat(
 							DateTimeInterface::ATOM,
-							$property->getPending(),
+							$state->getPending(),
 						)
 						: true;
 					$debounce = array_key_exists(
@@ -363,7 +378,7 @@ final class Http
 						$valueToWrite = $this->transformer->transformValueToDevice(
 							$property->getDataType(),
 							$property->getFormat(),
-							$property->getExpectedValue(),
+							$state->getExpectedValue(),
 						);
 
 						if ($valueToWrite === null) {
@@ -453,7 +468,7 @@ final class Http
 	 * @throws InvalidArgumentException
 	 */
 	private function readDeviceInfo(
-		MetadataEntities\DevicesModule\Device $device,
+		Entities\ShellyDevice $device,
 	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface
 	{
 		$address = $this->buildDeviceAddress($device);
@@ -542,7 +557,7 @@ final class Http
 	 * @throws InvalidArgumentException
 	 */
 	private function readDeviceDescription(
-		MetadataEntities\DevicesModule\Device $device,
+		Entities\ShellyDevice $device,
 	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface
 	{
 		$address = $this->buildDeviceAddress($device);
@@ -630,9 +645,9 @@ final class Http
 	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function writeSensor(
-		MetadataEntities\DevicesModule\Device $device,
-		MetadataEntities\DevicesModule\Channel $channel,
-		MetadataEntities\DevicesModule\ChannelDynamicProperty $property,
+		Entities\ShellyDevice $device,
+		DevicesEntities\Channels\Channel $channel,
+		DevicesEntities\Channels\Properties\Dynamic $property,
 		float|bool|int|string $valueToWrite,
 	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface
 	{
@@ -817,7 +832,7 @@ final class Http
 	 * @throws MetadataExceptions\Logic
 	 * @throws MetadataExceptions\MalformedInput
 	 */
-	private function buildDeviceAddress(MetadataEntities\DevicesModule\Device $device): string|null
+	private function buildDeviceAddress(Entities\ShellyDevice $device): string|null
 	{
 		$ipAddress = $this->deviceHelper->getConfiguration(
 			$device->getId(),
@@ -863,7 +878,7 @@ final class Http
 	 * @throws Exceptions\InvalidState
 	 */
 	private function buildSensorAction(
-		MetadataEntities\DevicesModule\ChannelDynamicProperty $property,
+		DevicesEntities\Channels\Properties\Dynamic $property,
 	): string
 	{
 		if (preg_match(self::PROPERTY_SENSOR, $property->getIdentifier(), $propertyMatches) !== 1) {

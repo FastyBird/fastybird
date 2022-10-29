@@ -17,6 +17,7 @@ namespace FastyBird\Connector\HomeKit\Entities\Protocol;
 
 use Composer;
 use FastyBird\Connector\HomeKit;
+use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Types;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
@@ -55,7 +56,7 @@ final class AccessoryFactory
 	 * @throws Nette\IOException
 	 */
 	public function create(
-		MetadataEntities\DevicesModule\Connector|MetadataEntities\DevicesModule\Device $owner,
+		MetadataEntities\DevicesModule\Connector|Entities\HomeKitDevice $owner,
 		int|null $aid = null,
 		Types\AccessoryCategory|null $category = null,
 	): Accessory
@@ -87,7 +88,7 @@ final class AccessoryFactory
 
 			$accessory->addService($accessoryProtocolInformation);
 		} else {
-			if (!$owner instanceof MetadataEntities\DevicesModule\Device) {
+			if (!$owner instanceof Entities\HomeKitDevice) {
 				throw new Exceptions\InvalidArgument('Device accessory owner have to be device item instance');
 			}
 

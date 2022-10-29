@@ -70,14 +70,10 @@ trait TConsumeDeviceAttribute
 		);
 
 		if ($attributeItem !== null && $value === null) {
-			$attributeEntity = $this->databaseHelper->query(
-				function () use ($attributeItem): DevicesEntities\Devices\Attributes\Attribute|null {
-					$findAttributeQuery = new DevicesQueries\FindDeviceAttributes();
-					$findAttributeQuery->byId($attributeItem->getId());
+			$findAttributeQuery = new DevicesQueries\FindDeviceAttributes();
+			$findAttributeQuery->byId($attributeItem->getId());
 
-					return $this->attributesRepository->findOneBy($findAttributeQuery);
-				},
-			);
+			$attributeEntity = $this->attributesRepository->findOneBy($findAttributeQuery);
 
 			if ($attributeEntity !== null) {
 				$this->databaseHelper->transaction(
@@ -99,20 +95,14 @@ trait TConsumeDeviceAttribute
 		}
 
 		if ($attributeItem === null) {
-			$deviceEntity = $this->databaseHelper->query(
-				function () use ($deviceId): Entities\ShellyDevice|null {
-					$findDeviceQuery = new DevicesQueries\FindDevices();
-					$findDeviceQuery->byId($deviceId);
+			$findDeviceQuery = new DevicesQueries\FindDevices();
+			$findDeviceQuery->byId($deviceId);
 
-					$deviceEntity = $this->devicesRepository->findOneBy(
-						$findDeviceQuery,
-						Entities\ShellyDevice::class,
-					);
-					assert($deviceEntity instanceof Entities\ShellyDevice || $deviceEntity === null);
-
-					return $deviceEntity;
-				},
+			$deviceEntity = $this->devicesRepository->findOneBy(
+				$findDeviceQuery,
+				Entities\ShellyDevice::class,
 			);
+			assert($deviceEntity instanceof Entities\ShellyDevice || $deviceEntity === null);
 
 			if ($deviceEntity === null) {
 				return;
@@ -144,14 +134,10 @@ trait TConsumeDeviceAttribute
 			);
 
 		} else {
-			$attributeEntity = $this->databaseHelper->query(
-				function () use ($attributeItem): DevicesEntities\Devices\Attributes\Attribute|null {
-					$findAttributeQuery = new DevicesQueries\FindDeviceAttributes();
-					$findAttributeQuery->byId($attributeItem->getId());
+			$findAttributeQuery = new DevicesQueries\FindDeviceAttributes();
+			$findAttributeQuery->byId($attributeItem->getId());
 
-					return $this->attributesRepository->findOneBy($findAttributeQuery);
-				},
-			);
+			$attributeEntity = $this->attributesRepository->findOneBy($findAttributeQuery);
 
 			if ($attributeEntity !== null) {
 				$attributeEntity = $this->databaseHelper->transaction(

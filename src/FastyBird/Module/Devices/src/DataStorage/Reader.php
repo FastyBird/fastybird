@@ -43,7 +43,6 @@ final class Reader
 	public function __construct(
 		private readonly Models\DataStorage\ConnectorsRepository $connectorsRepository,
 		private readonly Models\DataStorage\ConnectorPropertiesRepository $connectorPropertiesRepository,
-		private readonly Models\DataStorage\DevicesRepository $devicesRepository,
 		private readonly Models\DataStorage\DevicePropertiesRepository $devicePropertiesRepository,
 		private readonly Models\DataStorage\DeviceAttributesRepository $deviceAttributesRepository,
 		private readonly Models\DataStorage\ChannelsRepository $channelsRepository,
@@ -71,7 +70,6 @@ final class Reader
 
 		$this->connectorsRepository->clear();
 		$this->connectorPropertiesRepository->clear();
-		$this->devicesRepository->clear();
 		$this->devicePropertiesRepository->clear();
 		$this->deviceAttributesRepository->clear();
 		$this->channelsRepository->clear();
@@ -182,8 +180,6 @@ final class Reader
 
 					$this->deviceAttributesRepository->append(Uuid::fromString($attributeId), $attributeData);
 				}
-
-				$this->devicesRepository->append(Uuid::fromString($deviceId), $deviceData);
 			}
 
 			foreach ($connectorData[Devices\Constants::DATA_STORAGE_PROPERTIES_KEY] as $propertyId => $propertyData) {

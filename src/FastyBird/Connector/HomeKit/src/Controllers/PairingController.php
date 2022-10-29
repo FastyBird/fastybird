@@ -34,7 +34,6 @@ use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Fig\Http\Message\StatusCodeInterface;
 use InvalidArgumentException;
-use IPub\DoctrineOrmQuery;
 use IPub\SlimRouter;
 use Nette\Utils\ArrayHash;
 use Psr\Http\Message;
@@ -1081,21 +1080,14 @@ final class PairingController extends BaseController
 			];
 		}
 
-		/** @var mixed $connectorEntity */
-		$connectorEntity = $this->databaseHelper->query(
-			function () use ($connectorId): Entities\HomeKitConnector|null {
-				$findConnectorQuery = new DevicesQueries\FindConnectors();
-				$findConnectorQuery->byId($connectorId);
+		$findConnectorQuery = new DevicesQueries\FindConnectors();
+		$findConnectorQuery->byId($connectorId);
 
-				$connector = $this->connectorsRepository->findOneBy(
-					$findConnectorQuery,
-					Entities\HomeKitConnector::class,
-				);
-				assert($connector instanceof Entities\HomeKitConnector || $connector === null);
-
-				return $connector;
-			},
+		$connectorEntity = $this->connectorsRepository->findOneBy(
+			$findConnectorQuery,
+			Entities\HomeKitConnector::class,
 		);
+
 		assert($connectorEntity instanceof Entities\HomeKitConnector || $connectorEntity === null);
 
 		if ($connectorEntity === null) {
@@ -1583,15 +1575,11 @@ final class PairingController extends BaseController
 			];
 		}
 
-		$client = $this->databaseHelper->query(
-			function () use ($tlvEntry, $connectorId) {
-				$findClientQuery = new Queries\FindClients();
-				$findClientQuery->byConnectorId($connectorId);
-				$findClientQuery->byUid($tlvEntry[Types\TlvCode::CODE_IDENTIFIER]);
+		$findClientQuery = new Queries\FindClients();
+		$findClientQuery->byConnectorId($connectorId);
+		$findClientQuery->byUid($tlvEntry[Types\TlvCode::CODE_IDENTIFIER]);
 
-				return $this->clientsRepository->findOneBy($findClientQuery);
-			},
-		);
+		$client = $this->clientsRepository->findOneBy($findClientQuery);
 
 		if ($client === null) {
 			$this->logger->error(
@@ -1705,13 +1693,10 @@ final class PairingController extends BaseController
 		];
 
 		try {
-			/** @var DoctrineOrmQuery\ResultSet<Entities\Client> $clients */
-			$clients = $this->databaseHelper->query(function () use ($connectorId): DoctrineOrmQuery\ResultSet {
-				$findClientsQuery = new Queries\FindClients();
-				$findClientsQuery->byConnectorId($connectorId);
+			$findClientsQuery = new Queries\FindClients();
+			$findClientsQuery->byConnectorId($connectorId);
 
-				return $this->clientsRepository->getResultSet($findClientsQuery);
-			});
+			$clients = $this->clientsRepository->getResultSet($findClientsQuery);
 		} catch (Throwable) {
 			return [
 				[
@@ -1757,13 +1742,11 @@ final class PairingController extends BaseController
 		);
 
 		try {
-			$client = $this->databaseHelper->query(function () use ($connectorId, $clientUid): Entities\Client|null {
-				$findClientQuery = new Queries\FindClients();
-				$findClientQuery->byUid($clientUid);
-				$findClientQuery->byConnectorId($connectorId);
+			$findClientQuery = new Queries\FindClients();
+			$findClientQuery->byUid($clientUid);
+			$findClientQuery->byConnectorId($connectorId);
 
-				return $this->clientsRepository->findOneBy($findClientQuery);
-			});
+			$client = $this->clientsRepository->findOneBy($findClientQuery);
 		} catch (Throwable) {
 			return [
 				[

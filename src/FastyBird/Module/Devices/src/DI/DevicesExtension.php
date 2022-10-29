@@ -454,9 +454,6 @@ class DevicesExtension extends DI\CompilerExtension
 		)
 			->setType(Models\DataStorage\ConnectorPropertiesRepository::class);
 
-		$builder->addDefinition($this->prefix('dataStorage.repository.devices'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\DataStorage\DevicesRepository::class);
-
 		$builder->addDefinition(
 			$this->prefix('dataStorage.repository.device.properties'),
 			new DI\Definitions\ServiceDefinition(),

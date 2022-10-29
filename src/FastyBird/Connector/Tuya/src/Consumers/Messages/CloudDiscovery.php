@@ -60,7 +60,6 @@ final class CloudDiscovery implements Consumer
 		private readonly DevicesModels\Channels\ChannelsManager $channelsManager,
 		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly DevicesModels\Channels\Properties\PropertiesManager $channelsPropertiesManager,
-		private readonly DevicesModels\DataStorage\DevicesRepository $devicesDataStorageRepository,
 		private readonly DevicesModels\DataStorage\DevicePropertiesRepository $propertiesDataStorageRepository,
 		private readonly DevicesModels\DataStorage\DeviceAttributesRepository $attributesDataStorageRepository,
 		private readonly DevicesModels\DataStorage\ChannelPropertiesRepository $channelsPropertiesDataStorageRepository,
@@ -88,26 +87,21 @@ final class CloudDiscovery implements Consumer
 			return false;
 		}
 
-		$deviceItem = $this->devicesDataStorageRepository->findByIdentifier(
-			$entity->getConnector(),
-			$entity->getId(),
-		);
+		$findDeviceQuery = new DevicesQueries\FindDevices();
+		$findDeviceQuery->byConnectorId($entity->getConnector());
+		$findDeviceQuery->byIdentifier($entity->getId());
 
-		if ($deviceItem === null) {
-			$connectorEntity = $this->databaseHelper->query(
-				function () use ($entity): Entities\TuyaConnector|null {
-					$findConnectorQuery = new DevicesQueries\FindConnectors();
-					$findConnectorQuery->byId($entity->getConnector());
+		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\TuyaDevice::class);
 
-					$connector = $this->connectorsRepository->findOneBy(
-						$findConnectorQuery,
-						Entities\TuyaConnector::class,
-					);
-					assert($connector instanceof Entities\TuyaConnector || $connector === null);
+		if ($device === null) {
+			$findConnectorQuery = new DevicesQueries\FindConnectors();
+			$findConnectorQuery->byId($entity->getConnector());
 
-					return $connector;
-				},
+			$connectorEntity = $this->connectorsRepository->findOneBy(
+				$findConnectorQuery,
+				Entities\TuyaConnector::class,
 			);
+			assert($connectorEntity instanceof Entities\TuyaConnector || $connectorEntity === null);
 
 			if ($connectorEntity === null) {
 				return true;
@@ -141,20 +135,14 @@ final class CloudDiscovery implements Consumer
 				],
 			);
 		} else {
-			$deviceEntity = $this->databaseHelper->query(
-				function () use ($deviceItem): Entities\TuyaDevice|null {
-					$findDeviceQuery = new DevicesQueries\FindDevices();
-					$findDeviceQuery->byId($deviceItem->getId());
+			$findDeviceQuery = new DevicesQueries\FindDevices();
+			$findDeviceQuery->byId($device->getId());
 
-					$deviceEntity = $this->devicesRepository->findOneBy(
-						$findDeviceQuery,
-						Entities\TuyaDevice::class,
-					);
-					assert($deviceEntity instanceof Entities\TuyaDevice || $deviceEntity === null);
-
-					return $deviceEntity;
-				},
+			$deviceEntity = $this->devicesRepository->findOneBy(
+				$findDeviceQuery,
+				Entities\TuyaDevice::class,
 			);
+			assert($deviceEntity instanceof Entities\TuyaDevice || $deviceEntity === null);
 
 			if ($deviceEntity !== null) {
 				$deviceEntity = $this->databaseHelper->transaction(
@@ -186,7 +174,7 @@ final class CloudDiscovery implements Consumer
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'cloud-discovery-message-consumer',
 						'device' => [
-							'id' => $deviceItem->getId()->toString(),
+							'id' => $device->getId()->toString(),
 						],
 					],
 				);
@@ -195,12 +183,13 @@ final class CloudDiscovery implements Consumer
 			}
 		}
 
-		$deviceItem = $this->devicesDataStorageRepository->findByIdentifier(
-			$entity->getConnector(),
-			$entity->getId(),
-		);
+		$findDeviceQuery = new DevicesQueries\FindDevices();
+		$findDeviceQuery->byConnectorId($entity->getConnector());
+		$findDeviceQuery->byIdentifier($entity->getId());
 
-		if ($deviceItem === null) {
+		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\TuyaDevice::class);
+
+		if ($device === null) {
 			$this->logger->error(
 				'Newly created device could not be loaded',
 				[
@@ -217,27 +206,27 @@ final class CloudDiscovery implements Consumer
 		}
 
 		$this->setDeviceProperty(
-			$deviceItem->getId(),
+			$device->getId(),
 			$entity->getLocalKey(),
 			Types\DevicePropertyIdentifier::IDENTIFIER_LOCAL_KEY,
 		);
 		$this->setDeviceProperty(
-			$deviceItem->getId(),
+			$device->getId(),
 			$entity->getIpAddress(),
 			Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS,
 		);
 		$this->setDeviceAttribute(
-			$deviceItem->getId(),
+			$device->getId(),
 			$entity->getModel(),
 			Types\DeviceAttributeIdentifier::IDENTIFIER_HARDWARE_MODEL,
 		);
 		$this->setDeviceAttribute(
-			$deviceItem->getId(),
+			$device->getId(),
 			$entity->getMac(),
 			Types\DeviceAttributeIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS,
 		);
 		$this->setDeviceAttribute(
-			$deviceItem->getId(),
+			$device->getId(),
 			$entity->getSn(),
 			Types\DeviceAttributeIdentifier::IDENTIFIER_SERIAL_NUMBER,
 		);
@@ -335,7 +324,7 @@ final class CloudDiscovery implements Consumer
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 				'type' => 'cloud-discovery-message-consumer',
 				'device' => [
-					'id' => $deviceItem->getId()->toString(),
+					'id' => $device->getId()->toString(),
 				],
 				'data' => $entity->toArray(),
 			],

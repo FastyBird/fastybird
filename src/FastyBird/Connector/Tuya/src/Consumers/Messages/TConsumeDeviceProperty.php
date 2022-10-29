@@ -71,14 +71,10 @@ trait TConsumeDeviceProperty
 		);
 
 		if ($propertyItem !== null && $value === null) {
-			$propertyEntity = $this->databaseHelper->query(
-				function () use ($propertyItem): DevicesEntities\Devices\Properties\Property|null {
-					$findPropertyQuery = new DevicesQueries\FindDeviceProperties();
-					$findPropertyQuery->byId($propertyItem->getId());
+			$findPropertyQuery = new DevicesQueries\FindDeviceProperties();
+			$findPropertyQuery->byId($propertyItem->getId());
 
-					return $this->propertiesRepository->findOneBy($findPropertyQuery);
-				},
-			);
+			$propertyEntity = $this->propertiesRepository->findOneBy($findPropertyQuery);
 
 			if ($propertyEntity !== null) {
 				$this->databaseHelper->transaction(
@@ -106,14 +102,10 @@ trait TConsumeDeviceProperty
 			$propertyItem !== null
 			&& !$propertyItem instanceof MetadataEntities\DevicesModule\DeviceVariableProperty
 		) {
-			$propertyEntity = $this->databaseHelper->query(
-				function () use ($propertyItem): DevicesEntities\Devices\Properties\Property|null {
-					$findPropertyQuery = new DevicesQueries\FindDeviceProperties();
-					$findPropertyQuery->byId($propertyItem->getId());
+			$findPropertyQuery = new DevicesQueries\FindDeviceProperties();
+			$findPropertyQuery->byId($propertyItem->getId());
 
-					return $this->propertiesRepository->findOneBy($findPropertyQuery);
-				},
-			);
+			$propertyEntity = $this->propertiesRepository->findOneBy($findPropertyQuery);
 
 			if ($propertyEntity !== null) {
 				$this->databaseHelper->transaction(function () use ($propertyEntity): void {
@@ -140,20 +132,14 @@ trait TConsumeDeviceProperty
 		}
 
 		if ($propertyItem === null) {
-			$deviceEntity = $this->databaseHelper->query(
-				function () use ($deviceId): Entities\TuyaDevice|null {
-					$findDeviceQuery = new DevicesQueries\FindDevices();
-					$findDeviceQuery->byId($deviceId);
+			$findDeviceQuery = new DevicesQueries\FindDevices();
+			$findDeviceQuery->byId($deviceId);
 
-					$deviceEntity = $this->devicesRepository->findOneBy(
-						$findDeviceQuery,
-						Entities\TuyaDevice::class,
-					);
-					assert($deviceEntity instanceof Entities\TuyaDevice || $deviceEntity === null);
-
-					return $deviceEntity;
-				},
+			$deviceEntity = $this->devicesRepository->findOneBy(
+				$findDeviceQuery,
+				Entities\TuyaDevice::class,
 			);
+			assert($deviceEntity instanceof Entities\TuyaDevice || $deviceEntity === null);
 
 			if ($deviceEntity === null) {
 				return;
@@ -189,14 +175,10 @@ trait TConsumeDeviceProperty
 			);
 
 		} else {
-			$propertyEntity = $this->databaseHelper->query(
-				function () use ($propertyItem): DevicesEntities\Devices\Properties\Property|null {
-					$findPropertyQuery = new DevicesQueries\FindDeviceProperties();
-					$findPropertyQuery->byId($propertyItem->getId());
+			$findPropertyQuery = new DevicesQueries\FindDeviceProperties();
+			$findPropertyQuery->byId($propertyItem->getId());
 
-					return $this->propertiesRepository->findOneBy($findPropertyQuery);
-				},
-			);
+			$propertyEntity = $this->propertiesRepository->findOneBy($findPropertyQuery);
 
 			if ($propertyEntity !== null) {
 				$propertyEntity = $this->databaseHelper->transaction(

@@ -21,7 +21,6 @@ use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -56,7 +55,6 @@ final class Discovery implements Consumer
 		private readonly DevicesModels\Devices\Properties\PropertiesManager $propertiesManager,
 		private readonly DevicesModels\Devices\Attributes\AttributesRepository $attributesRepository,
 		private readonly DevicesModels\Devices\Attributes\AttributesManager $attributesManager,
-		private readonly DevicesModels\DataStorage\DevicesRepository $devicesDataStorageRepository,
 		private readonly DevicesModels\DataStorage\DevicePropertiesRepository $propertiesDataStorageRepository,
 		private readonly DevicesModels\DataStorage\DeviceAttributesRepository $attributesDataStorageRepository,
 		private readonly DevicesUtilities\Database $databaseHelper,
@@ -83,20 +81,17 @@ final class Discovery implements Consumer
 			return false;
 		}
 
-		$deviceItem = $this->devicesDataStorageRepository->findByIdentifier(
-			$entity->getConnector(),
-			$entity->getIdentifier(),
-		);
+		$findDeviceQuery = new DevicesQueries\FindDevices();
+		$findDeviceQuery->byConnectorId($entity->getConnector());
+		$findDeviceQuery->byIdentifier($entity->getIdentifier());
 
-		if ($deviceItem === null) {
-			$connectorEntity = $this->databaseHelper->query(
-				function () use ($entity): DevicesEntities\Connectors\Connector|null {
-					$findConnectorQuery = new DevicesQueries\FindConnectors();
-					$findConnectorQuery->byId($entity->getConnector());
+		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\ShellyDevice::class);
 
-					return $this->connectorsRepository->findOneBy($findConnectorQuery);
-				},
-			);
+		if ($device === null) {
+			$findConnectorQuery = new DevicesQueries\FindConnectors();
+			$findConnectorQuery->byId($entity->getConnector());
+
+			$connectorEntity = $this->connectorsRepository->findOneBy($findConnectorQuery);
 
 			if ($connectorEntity === null) {
 				return true;
@@ -129,12 +124,13 @@ final class Discovery implements Consumer
 			);
 		}
 
-		$deviceItem = $this->devicesDataStorageRepository->findByIdentifier(
-			$entity->getConnector(),
-			$entity->getIdentifier(),
-		);
+		$findDeviceQuery = new DevicesQueries\FindDevices();
+		$findDeviceQuery->byConnectorId($entity->getConnector());
+		$findDeviceQuery->byIdentifier($entity->getIdentifier());
 
-		if ($deviceItem === null) {
+		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\ShellyDevice::class);
+
+		if ($device === null) {
 			$this->logger->error(
 				'Newly created device could not be loaded',
 				[
@@ -151,12 +147,12 @@ final class Discovery implements Consumer
 		}
 
 		$this->setDeviceProperty(
-			$deviceItem->getId(),
+			$device->getId(),
 			$entity->getIpAddress(),
 			Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS,
 		);
 		$this->setDeviceAttribute(
-			$deviceItem->getId(),
+			$device->getId(),
 			$entity->getType(),
 			Types\DeviceAttributeIdentifier::IDENTIFIER_MODEL,
 		);
@@ -167,7 +163,7 @@ final class Discovery implements Consumer
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 				'type' => 'discovery-message-consumer',
 				'device' => [
-					'id' => $deviceItem->getId()->toString(),
+					'id' => $device->getId()->toString(),
 				],
 				'data' => $entity->toArray(),
 			],

@@ -55,8 +55,6 @@ final class DeviceProperty implements Consumers\Consumer
 		private readonly DevicesModels\Devices\DevicesRepository $deviceRepository,
 		private readonly DevicesModels\Devices\Properties\PropertiesRepository $propertiesRepository,
 		private readonly DevicesModels\Devices\Properties\PropertiesManager $propertiesManager,
-		private readonly DevicesModels\DataStorage\DevicesRepository $devicesDataStorageRepository,
-		private readonly DevicesModels\DataStorage\DevicePropertiesRepository $propertiesDataStorageRepository,
 		private readonly DevicesUtilities\DevicePropertiesStates $devicePropertiesStates,
 		private readonly DevicesUtilities\Database $databaseHelper,
 		Log\LoggerInterface|null $logger = null,
@@ -84,12 +82,13 @@ final class DeviceProperty implements Consumers\Consumer
 		}
 
 		if ($entity->getValue() !== FbMqtt\Constants::VALUE_NOT_SET) {
-			$deviceItem = $this->devicesDataStorageRepository->findByIdentifier(
-				$entity->getConnector(),
-				$entity->getDevice(),
-			);
+			$findDeviceQuery = new DevicesQueries\FindDevices();
+			$findDeviceQuery->byConnectorId($entity->getConnector());
+			$findDeviceQuery->byIdentifier($entity->getDevice());
 
-			if ($deviceItem === null) {
+			$device = $this->deviceRepository->findOneBy($findDeviceQuery, Entities\FbMqttDevice::class);
+
+			if ($device === null) {
 				$this->logger->error(
 					sprintf('Device "%s" is not registered', $entity->getDevice()),
 					[
@@ -104,20 +103,14 @@ final class DeviceProperty implements Consumers\Consumer
 				return true;
 			}
 
-			$propertyItem = $this->propertiesDataStorageRepository->findByIdentifier(
-				$deviceItem->getId(),
-				$entity->getProperty(),
-			);
+			$property = $device->findProperty($entity->getProperty());
 
-			if ($propertyItem instanceof MetadataEntities\DevicesModule\DeviceVariableProperty) {
-				$property = $this->databaseHelper->query(
-					function () use ($propertyItem): DevicesEntities\Devices\Properties\Property|null {
-						$findPropertyQuery = new DevicesQueries\FindDeviceProperties();
-						$findPropertyQuery->byId($propertyItem->getId());
+			if ($property instanceof DevicesEntities\Devices\Properties\Variable) {
+				$findPropertyQuery = new DevicesQueries\FindDeviceProperties();
+				$findPropertyQuery->byId($property->getId());
 
-						return $this->propertiesRepository->findOneBy($findPropertyQuery);
-					},
-				);
+				$property = $this->propertiesRepository->findOneBy($findPropertyQuery);
+
 				assert($property instanceof DevicesEntities\Devices\Properties\Property);
 
 				if ($property instanceof DevicesEntities\Devices\Properties\Variable) {
@@ -127,18 +120,18 @@ final class DeviceProperty implements Consumers\Consumer
 						]));
 					});
 				}
-			} elseif ($propertyItem instanceof MetadataEntities\DevicesModule\DeviceDynamicProperty) {
+			} elseif ($property instanceof DevicesEntities\Devices\Properties\Dynamic) {
 				$actualValue = DevicesUtilities\ValueHelper::flattenValue(
 					DevicesUtilities\ValueHelper::normalizeValue(
-						$propertyItem->getDataType(),
+						$property->getDataType(),
 						$entity->getValue(),
-						$propertyItem->getFormat(),
-						$propertyItem->getInvalid(),
+						$property->getFormat(),
+						$property->getInvalid(),
 					),
 				);
 
 				$this->devicePropertiesStates->setValue(
-					$propertyItem,
+					$property,
 					Utils\ArrayHash::from([
 						'actualValue' => $actualValue,
 						'valid' => true,
@@ -146,14 +139,10 @@ final class DeviceProperty implements Consumers\Consumer
 				);
 			}
 		} else {
-			$device = $this->databaseHelper->query(
-				function () use ($entity): DevicesEntities\Devices\Device|null {
-					$findDeviceQuery = new DevicesQueries\FindDevices();
-					$findDeviceQuery->byIdentifier($entity->getDevice());
+			$findDeviceQuery = new DevicesQueries\FindDevices();
+			$findDeviceQuery->byIdentifier($entity->getDevice());
 
-					return $this->deviceRepository->findOneBy($findDeviceQuery);
-				},
-			);
+			$device = $this->deviceRepository->findOneBy($findDeviceQuery);
 
 			if ($device === null) {
 				$this->logger->error(

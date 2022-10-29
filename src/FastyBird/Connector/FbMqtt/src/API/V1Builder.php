@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\FbMqtt\API;
 
 use FastyBird\Connector\FbMqtt;
+use FastyBird\Connector\FbMqtt\Entities;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use Nette;
 use function str_replace;
@@ -104,7 +105,7 @@ final class V1Builder
 		. 'set';
 
 	public function buildDevicePropertyTopic(
-		MetadataEntities\DevicesModule\Device $device,
+		Entities\FbMqttDevice $device,
 		MetadataEntities\DevicesModule\DeviceDynamicProperty $property,
 	): string
 	{
@@ -115,7 +116,7 @@ final class V1Builder
 	}
 
 	public function buildDeviceCommandTopic(
-		MetadataEntities\DevicesModule\Device $device,
+		Entities\FbMqttDevice $device,
 		MetadataEntities\DevicesModule\DeviceControl $command,
 	): string
 	{
@@ -126,7 +127,7 @@ final class V1Builder
 	}
 
 	public function buildChannelPropertyTopic(
-		MetadataEntities\DevicesModule\Device $device,
+		Entities\FbMqttDevice $device,
 		MetadataEntities\DevicesModule\Channel $channel,
 		MetadataEntities\DevicesModule\ChannelDynamicProperty $property,
 	): string
@@ -139,7 +140,7 @@ final class V1Builder
 	}
 
 	public function buildChannelCommandTopic(
-		MetadataEntities\DevicesModule\Device $device,
+		Entities\FbMqttDevice $device,
 		MetadataEntities\DevicesModule\Channel $channel,
 		MetadataEntities\DevicesModule\ChannelControl $command,
 	): string
