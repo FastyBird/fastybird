@@ -29,6 +29,7 @@ use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -88,9 +89,8 @@ final class FbMqttV1 extends Client
 		Consumers\Messages $consumer,
 		DevicesModels\DataStorage\ConnectorPropertiesRepository $connectorPropertiesRepository,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
-		private readonly DevicesModels\DataStorage\DevicePropertiesRepository $devicePropertiesRepository,
-		private readonly DevicesModels\DataStorage\ChannelsRepository $channelsRepository,
-		private readonly DevicesModels\DataStorage\ChannelPropertiesRepository $channelPropertiesRepository,
+		private readonly DevicesModels\States\DevicePropertiesRepository $devicePropertiesRepository,
+		private readonly DevicesModels\States\ChannelPropertiesRepository $channelPropertiesRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		EventLoop\LoopInterface $loop,
@@ -474,19 +474,26 @@ final class FbMqttV1 extends Client
 	{
 		$now = $this->dateTimeFactory->getNow();
 
-		foreach ($this->devicePropertiesRepository->findAllByDevice(
-			$device->getId(),
-			MetadataEntities\DevicesModule\DeviceDynamicProperty::class,
-		) as $property) {
+		foreach ($device->getProperties() as $property) {
+			if (!$property instanceof DevicesEntities\Devices\Properties\Dynamic) {
+				continue;
+			}
+
+			$state = $this->devicePropertiesRepository->findOneById($property->getId());
+
+			if ($state === null) {
+				continue;
+			}
+
 			if (
 				$property->isSettable()
-				&& $property->getExpectedValue() !== null
-				&& $property->isPending() === true
+				&& $state->getExpectedValue() !== null
+				&& $state->isPending() === true
 			) {
-				$pending = is_string($property->getPending())
+				$pending = is_string($state->getPending())
 					? Utils\DateTime::createFromFormat(
 						DateTimeInterface::ATOM,
-						$property->getPending(),
+						$state->getPending(),
 					)
 					: true;
 				$debounce = array_key_exists($property->getId()
@@ -513,7 +520,7 @@ final class FbMqttV1 extends Client
 
 					$this->publish(
 						$this->apiBuilder->buildDevicePropertyTopic($device, $property),
-						strval($property->getExpectedValue()),
+						strval($state->getExpectedValue()),
 					)->then(function () use ($property, $now): void {
 						$this->propertyStateHelper->setValue($property, Utils\ArrayHash::from([
 							'pending' => $now->format(DateTimeInterface::ATOM),
@@ -545,20 +552,27 @@ final class FbMqttV1 extends Client
 	{
 		$now = $this->dateTimeFactory->getNow();
 
-		foreach ($this->channelsRepository->findAllByDevice($device->getId()) as $channel) {
-			foreach ($this->channelPropertiesRepository->findAllByChannel(
-				$channel->getId(),
-				MetadataEntities\DevicesModule\ChannelDynamicProperty::class,
-			) as $property) {
+		foreach ($device->getChannels() as $channel) {
+			foreach ($channel->getProperties() as $property) {
+				if (!$property instanceof DevicesEntities\Channels\Properties\Dynamic) {
+					continue;
+				}
+
+				$state = $this->channelPropertiesRepository->findOneById($property->getId());
+
+				if ($state === null) {
+					continue;
+				}
+
 				if (
 					$property->isSettable()
-					&& $property->getExpectedValue() !== null
-					&& $property->isPending() === true
+					&& $state->getExpectedValue() !== null
+					&& $state->isPending() === true
 				) {
-					$pending = is_string($property->getPending())
+					$pending = is_string($state->getPending())
 						? Utils\DateTime::createFromFormat(
 							DateTimeInterface::ATOM,
-							$property->getPending(),
+							$state->getPending(),
 						)
 						: true;
 					$debounce = array_key_exists($property->getId()
@@ -585,7 +599,7 @@ final class FbMqttV1 extends Client
 
 						$this->publish(
 							$this->apiBuilder->buildChannelPropertyTopic($device, $channel, $property),
-							strval($property->getExpectedValue()),
+							strval($state->getExpectedValue()),
 						)->then(function () use ($property, $now): void {
 							$this->propertyStateHelper->setValue($property, Utils\ArrayHash::from([
 								'pending' => $now->format(DateTimeInterface::ATOM),

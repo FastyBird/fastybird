@@ -55,7 +55,6 @@ final class ChannelProperty implements Consumers\Consumer
 		private readonly DevicesModels\Devices\DevicesRepository $deviceRepository,
 		private readonly DevicesModels\Channels\Properties\PropertiesRepository $propertiesRepository,
 		private readonly DevicesModels\Channels\Properties\PropertiesManager $propertiesManager,
-		private readonly DevicesModels\DataStorage\ChannelsRepository $channelsDataStorageRepository,
 		private readonly DevicesModels\DataStorage\ChannelPropertiesRepository $propertiesDataStorageRepository,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly DevicesUtilities\Database $databaseHelper,
@@ -105,12 +104,9 @@ final class ChannelProperty implements Consumers\Consumer
 				return true;
 			}
 
-			$channelItem = $this->channelsDataStorageRepository->findByIdentifier(
-				$device->getId(),
-				$entity->getChannel(),
-			);
+			$channel = $device->findChannel($entity->getChannel());
 
-			if ($channelItem === null) {
+			if ($channel === null) {
 				$this->logger->error(
 					sprintf('Devices channel "%s" is not registered', $entity->getChannel()),
 					[
@@ -129,7 +125,7 @@ final class ChannelProperty implements Consumers\Consumer
 			}
 
 			$propertyItem = $this->propertiesDataStorageRepository->findByIdentifier(
-				$channelItem->getId(),
+				$channel->getId(),
 				$entity->getProperty(),
 			);
 

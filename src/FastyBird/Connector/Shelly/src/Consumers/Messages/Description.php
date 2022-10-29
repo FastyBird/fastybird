@@ -63,8 +63,6 @@ final class Description implements Consumer
 		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly DevicesModels\Channels\Properties\PropertiesManager $channelsPropertiesManager,
 		private readonly DevicesModels\DataStorage\DevicePropertiesRepository $propertiesDataStorageRepository,
-		private readonly DevicesModels\DataStorage\DeviceAttributesRepository $attributesDataStorageRepository,
-		private readonly DevicesModels\DataStorage\ChannelsRepository $channelsDataStorageRepository,
 		private readonly Mappers\Sensor $sensorMapper,
 		private readonly DevicesUtilities\Database $databaseHelper,
 		Log\LoggerInterface|null $logger = null,
@@ -104,19 +102,19 @@ final class Description implements Consumer
 			$findDeviceQuery = new DevicesQueries\FindDevices();
 			$findDeviceQuery->byId($device->getId());
 
-			$deviceEntity = $this->devicesRepository->findOneBy(
+			$device = $this->devicesRepository->findOneBy(
 				$findDeviceQuery,
 				Entities\ShellyDevice::class,
 			);
-			assert($deviceEntity instanceof Entities\ShellyDevice || $deviceEntity === null);
+			assert($device instanceof Entities\ShellyDevice || $device === null);
 
-			if ($deviceEntity === null) {
+			if ($device === null) {
 				return true;
 			}
 
 			$this->databaseHelper->transaction(
-				function () use ($entity, $deviceEntity): void {
-					$this->devicesManager->update($deviceEntity, Utils\ArrayHash::from([
+				function () use ($entity, $device): void {
+					$this->devicesManager->update($device, Utils\ArrayHash::from([
 						'name' => $entity->getType(),
 					]));
 				},
@@ -135,31 +133,12 @@ final class Description implements Consumer
 		);
 
 		foreach ($entity->getBlocks() as $block) {
-			$channelItem = $this->channelsDataStorageRepository->findByIdentifier(
-				$device->getId(),
-				$block->getIdentifier() . '_' . $block->getDescription(),
-			);
+			$channel = $device->findChannel($block->getIdentifier() . '_' . $block->getDescription());
 
-			if ($channelItem === null) {
-				$deviceEntity = $this->databaseHelper->query(
-					function () use ($device): Entities\ShellyDevice|null {
-						$findDeviceQuery = new DevicesQueries\FindDevices();
-						$findDeviceQuery->byId($device->getId());
-
-						$deviceEntity = $this->devicesRepository->findOneBy($findDeviceQuery);
-						assert($deviceEntity instanceof Entities\ShellyDevice || $deviceEntity === null);
-
-						return $deviceEntity;
-					},
-				);
-
-				if ($deviceEntity === null) {
-					return true;
-				}
-
-				$this->databaseHelper->transaction(function () use ($block, $deviceEntity): void {
+			if ($channel === null) {
+				$this->databaseHelper->transaction(function () use ($block, $device): void {
 					$this->channelsManager->create(Utils\ArrayHash::from([
-						'device' => $deviceEntity,
+						'device' => $device,
 						'identifier' => sprintf('%d_%s', $block->getIdentifier(), $block->getDescription()),
 						'name' => $block->getDescription(),
 					]));

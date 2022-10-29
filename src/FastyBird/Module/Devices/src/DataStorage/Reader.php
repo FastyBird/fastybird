@@ -44,8 +44,6 @@ final class Reader
 		private readonly Models\DataStorage\ConnectorsRepository $connectorsRepository,
 		private readonly Models\DataStorage\ConnectorPropertiesRepository $connectorPropertiesRepository,
 		private readonly Models\DataStorage\DevicePropertiesRepository $devicePropertiesRepository,
-		private readonly Models\DataStorage\DeviceAttributesRepository $deviceAttributesRepository,
-		private readonly Models\DataStorage\ChannelsRepository $channelsRepository,
 		private readonly Models\DataStorage\ChannelPropertiesRepository $channelPropertiesRepository,
 		private readonly Flysystem\Filesystem $filesystem,
 		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher,
@@ -71,8 +69,6 @@ final class Reader
 		$this->connectorsRepository->clear();
 		$this->connectorPropertiesRepository->clear();
 		$this->devicePropertiesRepository->clear();
-		$this->deviceAttributesRepository->clear();
-		$this->channelsRepository->clear();
 		$this->channelPropertiesRepository->clear();
 
 		if (!is_array($dataConfiguration)) {
@@ -149,8 +145,6 @@ final class Reader
 
 						$this->channelPropertiesRepository->append(Uuid::fromString($propertyId), $propertyData);
 					}
-
-					$this->channelsRepository->append(Uuid::fromString($channelId), $channelData);
 				}
 
 				foreach ($deviceData[Devices\Constants::DATA_STORAGE_PROPERTIES_KEY] as $propertyId => $propertyData) {
@@ -177,8 +171,6 @@ final class Reader
 					if (!is_array($attributeData)) {
 						continue;
 					}
-
-					$this->deviceAttributesRepository->append(Uuid::fromString($attributeId), $attributeData);
 				}
 			}
 

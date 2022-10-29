@@ -66,7 +66,6 @@ class Connector extends Console\Command\Command
 		private readonly Models\DataStorage\ConnectorsRepository $connectorsRepository,
 		private readonly Models\Devices\DevicesRepository $devicesRepository,
 		private readonly Models\DataStorage\DevicePropertiesRepository $devicesPropertiesRepository,
-		private readonly Models\DataStorage\ChannelsRepository $channelsRepository,
 		private readonly Models\DataStorage\ChannelPropertiesRepository $channelsPropertiesRepository,
 		private readonly Utilities\ConnectorConnection $connectorConnectionManager,
 		private readonly Utilities\DeviceConnection $deviceConnectionManager,
@@ -412,7 +411,7 @@ class Connector extends Console\Command\Command
 
 			$this->devicePropertiesStateManager->setValidState($properties, false);
 
-			foreach ($this->channelsRepository->findAllByDevice($device->getId()) as $channel) {
+			foreach ($device->getChannels() as $channel) {
 				/** @var Array<MetadataEntities\DevicesModule\ChannelDynamicProperty> $properties */
 				$properties = $this->channelsPropertiesRepository->findAllByChannel(
 					$channel->getId(),

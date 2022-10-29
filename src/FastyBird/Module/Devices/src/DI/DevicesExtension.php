@@ -461,18 +461,6 @@ class DevicesExtension extends DI\CompilerExtension
 			->setType(Models\DataStorage\DevicePropertiesRepository::class);
 
 		$builder->addDefinition(
-			$this->prefix('dataStorage.repository.device.attributes'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Models\DataStorage\DeviceAttributesRepository::class);
-
-		$builder->addDefinition(
-			$this->prefix('dataStorage.repository.channels'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Models\DataStorage\ChannelsRepository::class);
-
-		$builder->addDefinition(
 			$this->prefix('dataStorage.repository.channel.properties'),
 			new DI\Definitions\ServiceDefinition(),
 		)

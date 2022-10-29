@@ -19,9 +19,9 @@ use FastyBird\Connector\Tuya\Consumers\Consumer;
 use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Library\Metadata;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -47,9 +47,6 @@ final class State implements Consumer
 	public function __construct(
 		private readonly Helpers\Property $propertyStateHelper,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
-		private readonly DevicesModels\DataStorage\DevicePropertiesRepository $devicePropertiesRepository,
-		private readonly DevicesModels\DataStorage\ChannelsRepository $channelsRepository,
-		private readonly DevicesModels\DataStorage\ChannelPropertiesRepository $channelPropertiesRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		Log\LoggerInterface|null $logger,
 	)
@@ -97,31 +94,27 @@ final class State implements Consumer
 			);
 
 			if ($actualDeviceState->equalsValue(Metadata\Types\ConnectionState::STATE_DISCONNECTED)) {
-				$devicePropertiesItems = $this->devicePropertiesRepository->findAllByDevice(
-					$device->getId(),
-					MetadataEntities\DevicesModule\DeviceDynamicProperty::class,
-				);
+				foreach ($device->getProperties() as $property) {
+					if (!$property instanceof DevicesEntities\Devices\Properties\Dynamic) {
+						continue;
+					}
 
-				foreach ($devicePropertiesItems as $propertyItem) {
 					$this->propertyStateHelper->setValue(
-						$propertyItem,
+						$property,
 						Nette\Utils\ArrayHash::from([
 							'valid' => false,
 						]),
 					);
 				}
 
-				$channelItems = $this->channelsRepository->findAllByDevice($device->getId());
+				foreach ($device->getChannels() as $channel) {
+					foreach ($channel->getProperties() as $property) {
+						if (!$property instanceof DevicesEntities\Channels\Properties\Dynamic) {
+							continue;
+						}
 
-				foreach ($channelItems as $channelItem) {
-					$channelProperties = $this->channelPropertiesRepository->findAllByChannel(
-						$channelItem->getId(),
-						MetadataEntities\DevicesModule\ChannelDynamicProperty::class,
-					);
-
-					foreach ($channelProperties as $propertyItem) {
 						$this->propertyStateHelper->setValue(
-							$propertyItem,
+							$property,
 							Nette\Utils\ArrayHash::from([
 								'valid' => false,
 							]),
