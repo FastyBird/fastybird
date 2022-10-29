@@ -17,10 +17,10 @@ namespace FastyBird\Module\Devices\Commands;
 
 use BadMethodCallException;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Connectors;
+use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
@@ -63,10 +63,8 @@ class Connector extends Console\Command\Command
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
-		private readonly Models\DataStorage\ConnectorsRepository $connectorsRepository,
+		private readonly Models\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly Models\Devices\DevicesRepository $devicesRepository,
-		private readonly Models\DataStorage\DevicePropertiesRepository $devicesPropertiesRepository,
-		private readonly Models\DataStorage\ChannelPropertiesRepository $channelsPropertiesRepository,
 		private readonly Utilities\ConnectorConnection $connectorConnectionManager,
 		private readonly Utilities\DeviceConnection $deviceConnectionManager,
 		private readonly Utilities\DevicePropertiesStates $devicePropertiesStateManager,
@@ -184,13 +182,8 @@ class Connector extends Console\Command\Command
 	/**
 	 * @throws Console\Exception\InvalidArgumentException
 	 * @throws BadMethodCallException
+	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Terminate
-	 * @throws MetadataExceptions\FileNotFound
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function executeConnector(Style\SymfonyStyle $io, Input\InputInterface $input): void
 	{
@@ -205,9 +198,15 @@ class Connector extends Console\Command\Command
 		) {
 			$connectorId = $input->getOption('connector');
 
-			$connector = Uuid\Uuid::isValid($connectorId)
-				? $this->connectorsRepository->findById(Uuid\Uuid::fromString($connectorId))
-				: $this->connectorsRepository->findByIdentifier($connectorId);
+			$findConnectorQuery = new Queries\FindConnectors();
+
+			if (Uuid\Uuid::isValid($connectorId)) {
+				$findConnectorQuery->byId(Uuid\Uuid::fromString($connectorId));
+			} else {
+				$findConnectorQuery->byIdentifier($connectorId);
+			}
+
+			$connector = $this->connectorsRepository->findOneBy($findConnectorQuery);
 
 			if ($connector === null) {
 				if ($input->getOption('quiet') === false) {
@@ -219,7 +218,9 @@ class Connector extends Console\Command\Command
 		} else {
 			$connectors = [];
 
-			foreach ($this->connectorsRepository as $connector) {
+			$findConnectorsQuery = new Queries\FindConnectors();
+
+			foreach ($this->connectorsRepository->findAllBy($findConnectorsQuery) as $connector) {
 				$connectors[$connector->getIdentifier()] = $connector->getIdentifier() .
 					($connector->getName() !== null ? ' [' . $connector->getName() . ']' : '');
 			}
@@ -254,7 +255,10 @@ class Connector extends Console\Command\Command
 				return;
 			}
 
-			$connector = $this->connectorsRepository->findByIdentifier($connectorIdentifierKey);
+			$findConnectorQuery = new Queries\FindConnectors();
+			$findConnectorQuery->byIdentifier($connectorIdentifierKey);
+
+			$connector = $this->connectorsRepository->findOneBy($findConnectorQuery);
 
 			if ($connector === null) {
 				if ($input->getOption('quiet') === false) {
@@ -393,7 +397,7 @@ class Connector extends Console\Command\Command
 	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function resetConnectorDevices(
-		MetadataEntities\DevicesModule\Connector $connector,
+		Entities\Connectors\Connector $connector,
 		MetadataTypes\ConnectionState $state,
 	): void
 	{
@@ -403,22 +407,18 @@ class Connector extends Console\Command\Command
 		foreach ($this->devicesRepository->findAllBy($findDevicesQuery) as $device) {
 			$this->deviceConnectionManager->setState($device, $state);
 
-			/** @var Array<MetadataEntities\DevicesModule\DeviceDynamicProperty> $properties */
-			$properties = $this->devicesPropertiesRepository->findAllByDevice(
-				$device->getId(),
-				MetadataEntities\DevicesModule\DeviceDynamicProperty::class,
-			);
-
-			$this->devicePropertiesStateManager->setValidState($properties, false);
+			foreach ($device->getProperties() as $property) {
+				if ($property instanceof Entities\Devices\Properties\Dynamic) {
+					$this->devicePropertiesStateManager->setValidState($property, false);
+				}
+			}
 
 			foreach ($device->getChannels() as $channel) {
-				/** @var Array<MetadataEntities\DevicesModule\ChannelDynamicProperty> $properties */
-				$properties = $this->channelsPropertiesRepository->findAllByChannel(
-					$channel->getId(),
-					MetadataEntities\DevicesModule\ChannelDynamicProperty::class,
-				);
-
-				$this->channelPropertiesStateManager->setValidState($properties, false);
+				foreach ($channel->getProperties() as $property) {
+					if ($property instanceof Entities\Channels\Properties\Dynamic) {
+						$this->channelPropertiesStateManager->setValidState($property, false);
+					}
+				}
 			}
 		}
 	}

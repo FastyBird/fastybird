@@ -41,7 +41,6 @@ final class Reader
 	use Nette\SmartObject;
 
 	public function __construct(
-		private readonly Models\DataStorage\ConnectorsRepository $connectorsRepository,
 		private readonly Models\DataStorage\ConnectorPropertiesRepository $connectorPropertiesRepository,
 		private readonly Models\DataStorage\DevicePropertiesRepository $devicePropertiesRepository,
 		private readonly Models\DataStorage\ChannelPropertiesRepository $channelPropertiesRepository,
@@ -66,7 +65,6 @@ final class Reader
 
 		$dataConfiguration = Utils\Json::decode($dataConfiguration, Utils\Json::FORCE_ARRAY);
 
-		$this->connectorsRepository->clear();
 		$this->connectorPropertiesRepository->clear();
 		$this->devicePropertiesRepository->clear();
 		$this->channelPropertiesRepository->clear();
@@ -187,8 +185,6 @@ final class Reader
 
 				$this->connectorPropertiesRepository->append(Uuid::fromString($propertyId), $propertyData);
 			}
-
-			$this->connectorsRepository->append(Uuid::fromString($connectorId), $connectorData);
 		}
 
 		$this->dispatcher?->dispatch(new Events\DataStorageRead());

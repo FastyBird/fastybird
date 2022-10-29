@@ -15,8 +15,8 @@
 
 namespace FastyBird\Connector\Tuya\Clients;
 
+use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Types;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
 
 /**
  * Local devices client factory
@@ -31,6 +31,6 @@ interface LocalFactory extends ClientFactory
 
 	public const MODE = Types\ClientMode::MODE_LOCAL;
 
-	public function create(MetadataEntities\DevicesModule\Connector $connector): Local;
+	public function create(Entities\TuyaConnector $connector): Local;
 
 }

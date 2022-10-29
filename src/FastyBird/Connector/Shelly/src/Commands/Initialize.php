@@ -35,6 +35,7 @@ use Symfony\Component\Console\Style;
 use Throwable;
 use function array_search;
 use function array_values;
+use function assert;
 use function count;
 use function sprintf;
 
@@ -77,7 +78,6 @@ class Initialize extends Console\Command\Command
 		private readonly DevicesModels\Connectors\Properties\PropertiesRepository $propertiesRepository,
 		private readonly DevicesModels\Connectors\Properties\PropertiesManager $propertiesManager,
 		private readonly DevicesModels\Connectors\Controls\ControlsManager $controlsManager,
-		private readonly DevicesModels\DataStorage\ConnectorsRepository $connectorsDataStorageRepository,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 		Log\LoggerInterface|null $logger = null,
 		string|null $name = null,
@@ -114,12 +114,8 @@ class Initialize extends Console\Command\Command
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	protected function execute(Input\InputInterface $input, Output\OutputInterface $output): int
 	{
@@ -170,14 +166,9 @@ class Initialize extends Console\Command\Command
 
 	/**
 	 * @throws DBAL\Exception
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
-	 * @throws MetadataExceptions\FileNotFound
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function createNewConfiguration(Style\SymfonyStyle $io): void
 	{
@@ -186,8 +177,16 @@ class Initialize extends Console\Command\Command
 		$question = new Console\Question\Question('Provide connector identifier');
 
 		$question->setValidator(function ($answer) {
-			if ($answer !== null && $this->connectorsDataStorageRepository->findByIdentifier($answer) !== null) {
-				throw new Exceptions\Runtime('This identifier is already used');
+			if ($answer !== null) {
+				$findConnectorQuery = new DevicesQueries\FindConnectors();
+				$findConnectorQuery->byIdentifier($answer);
+
+				if ($this->connectorsRepository->findOneBy(
+					$findConnectorQuery,
+					Entities\ShellyConnector::class,
+				) !== null) {
+					throw new Exceptions\Runtime('This identifier is already used');
+				}
 			}
 
 			return $answer;
@@ -201,7 +200,13 @@ class Initialize extends Console\Command\Command
 			for ($i = 1; $i <= 100; $i++) {
 				$identifier = sprintf($identifierPattern, $i);
 
-				if ($this->connectorsDataStorageRepository->findByIdentifier($identifier) === null) {
+				$findConnectorQuery = new DevicesQueries\FindConnectors();
+				$findConnectorQuery->byIdentifier($identifier);
+
+				if ($this->connectorsRepository->findOneBy(
+					$findConnectorQuery,
+					Entities\ShellyConnector::class,
+				) === null) {
 					break;
 				}
 			}
@@ -342,12 +347,8 @@ class Initialize extends Console\Command\Command
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function editExistingConfiguration(Style\SymfonyStyle $io): void
 	{
@@ -355,10 +356,13 @@ class Initialize extends Console\Command\Command
 
 		$connectors = [];
 
-		foreach ($this->connectorsDataStorageRepository as $connector) {
-			if ($connector->getType() !== Entities\ShellyConnector::CONNECTOR_TYPE) {
-				continue;
-			}
+		$findConnectorsQuery = new DevicesQueries\FindConnectors();
+
+		foreach ($this->connectorsRepository->findAllBy(
+			$findConnectorsQuery,
+			Entities\ShellyConnector::class,
+		) as $connector) {
+			assert($connector instanceof Entities\ShellyConnector);
 
 			$connectors[$connector->getIdentifier()] = $connector->getIdentifier()
 				. ($connector->getName() !== null ? ' [' . $connector->getName() . ']' : '');
@@ -701,10 +705,13 @@ class Initialize extends Console\Command\Command
 
 		$connectors = [];
 
-		foreach ($this->connectorsDataStorageRepository as $connector) {
-			if ($connector->getType() !== Entities\ShellyConnector::CONNECTOR_TYPE) {
-				continue;
-			}
+		$findConnectorsQuery = new DevicesQueries\FindConnectors();
+
+		foreach ($this->connectorsRepository->findAllBy(
+			$findConnectorsQuery,
+			Entities\ShellyConnector::class,
+		) as $connector) {
+			assert($connector instanceof Entities\ShellyConnector);
 
 			$connectors[$connector->getIdentifier()] = $connector->getIdentifier()
 				. ($connector->getName() !== null ? ' [' . $connector->getName() . ']' : '');

@@ -17,9 +17,9 @@ namespace FastyBird\Connector\Tuya\Connector;
 
 use FastyBird\Connector\Tuya\Clients;
 use FastyBird\Connector\Tuya\Consumers;
+use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Types;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Connectors as DevicesConnectors;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -52,7 +52,7 @@ final class Connector implements DevicesConnectors\Connector
 	 * @param Array<Clients\ClientFactory> $clientsFactories
 	 */
 	public function __construct(
-		private readonly MetadataEntities\DevicesModule\Connector $connector,
+		private readonly Entities\TuyaConnector $connector,
 		private readonly array $clientsFactories,
 		private readonly Helpers\Connector $connectorHelper,
 		private readonly Consumers\Messages $consumer,

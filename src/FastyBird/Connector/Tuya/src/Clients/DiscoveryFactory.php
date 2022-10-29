@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\Tuya\Clients;
 
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Connector\Tuya\Entities;
 
 /**
  * Local devices client factory
@@ -28,6 +28,6 @@ use FastyBird\Library\Metadata\Entities as MetadataEntities;
 interface DiscoveryFactory
 {
 
-	public function create(MetadataEntities\DevicesModule\Connector $connector): Discovery;
+	public function create(Entities\TuyaConnector $connector): Discovery;
 
 }

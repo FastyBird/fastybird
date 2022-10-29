@@ -16,9 +16,9 @@
 namespace FastyBird\Connector\Modbus\Connector;
 
 use FastyBird\Connector\Modbus\Clients;
+use FastyBird\Connector\Modbus\Entities;
 use FastyBird\Connector\Modbus\Helpers;
 use FastyBird\Connector\Modbus\Types;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Connectors as DevicesConnectors;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -45,7 +45,7 @@ final class Connector implements DevicesConnectors\Connector
 	 * @param Array<Clients\ClientFactory> $clientsFactories
 	 */
 	public function __construct(
-		private readonly MetadataEntities\DevicesModule\Connector $connector,
+		private readonly Entities\ModbusConnector $connector,
 		private readonly array $clientsFactories,
 		private readonly Helpers\Connector $connectorHelper,
 	)

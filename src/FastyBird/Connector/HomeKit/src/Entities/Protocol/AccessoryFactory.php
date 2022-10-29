@@ -20,7 +20,6 @@ use FastyBird\Connector\HomeKit;
 use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Types;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use Hashids;
 use Nette;
 use Ramsey\Uuid;
@@ -56,7 +55,7 @@ final class AccessoryFactory
 	 * @throws Nette\IOException
 	 */
 	public function create(
-		MetadataEntities\DevicesModule\Connector|Entities\HomeKitDevice $owner,
+		Entities\HomeKitConnector|Entities\HomeKitDevice $owner,
 		int|null $aid = null,
 		Types\AccessoryCategory|null $category = null,
 	): Accessory
@@ -64,7 +63,7 @@ final class AccessoryFactory
 		$category ??= Types\AccessoryCategory::get(Types\AccessoryCategory::CATEGORY_OTHER);
 
 		if ($category->equalsValue(Types\AccessoryCategory::CATEGORY_BRIDGE)) {
-			if (!$owner instanceof MetadataEntities\DevicesModule\Connector) {
+			if (!$owner instanceof Entities\HomeKitConnector) {
 				throw new Exceptions\InvalidArgument('Bridge accessory owner have to be connector item instance');
 			}
 

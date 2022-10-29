@@ -70,7 +70,7 @@ final class Http implements Server
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
-		private readonly MetadataEntities\DevicesModule\Connector $connector,
+		private readonly Entities\HomeKitConnector $connector,
 		private readonly Helpers\Connector $connectorHelper,
 		private readonly Middleware\Router $routerMiddleware,
 		private readonly SecureServerFactory $secureServerFactory,
