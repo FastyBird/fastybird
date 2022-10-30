@@ -8,12 +8,10 @@ use FastyBird\Library\Exchange\Entities as ExchangeEntities;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
-use FastyBird\Module\Devices\DataStorage;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Subscribers;
-use League\Flysystem;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid;
@@ -51,10 +49,6 @@ final class EntitiesSubscriberTest extends TestCase
 
 		$entityFactory = $this->createMock(ExchangeEntities\EntityFactory::class);
 
-		$configurationWriter = $this->createMock(DataStorage\Writer::class);
-		$configurationWriter
-			->method('write');
-
 		$subscriber = new Subscribers\ModuleEntities(
 			$entityManager,
 			$devicePropertiesStateRepository,
@@ -63,7 +57,6 @@ final class EntitiesSubscriberTest extends TestCase
 			$channelPropertiesStateManager,
 			$connectorPropertiesStateRepository,
 			$connectorPropertiesStateManager,
-			$configurationWriter,
 			$entityFactory,
 			$publisher,
 		);
@@ -77,7 +70,6 @@ final class EntitiesSubscriberTest extends TestCase
 
 	/**
 	 * @throws Exception
-	 * @throws Flysystem\FilesystemException
 	 */
 	public function testPublishCreatedEntity(): void
 	{
@@ -163,10 +155,6 @@ final class EntitiesSubscriberTest extends TestCase
 			->method('create')
 			->willReturn($entityItem);
 
-		$configurationWriter = $this->createMock(DataStorage\Writer::class);
-		$configurationWriter
-			->method('write');
-
 		$subscriber = new Subscribers\ModuleEntities(
 			$entityManager,
 			$devicePropertiesStateRepository,
@@ -175,7 +163,6 @@ final class EntitiesSubscriberTest extends TestCase
 			$channelPropertiesStateManager,
 			$connectorPropertiesStateRepository,
 			$connectorPropertiesStateManager,
-			$configurationWriter,
 			$entityFactory,
 			$publisher,
 		);
@@ -199,7 +186,6 @@ final class EntitiesSubscriberTest extends TestCase
 
 	/**
 	 * @throws Exception
-	 * @throws Flysystem\FilesystemException
 	 */
 	public function testPublishUpdatedEntity(): void
 	{
@@ -285,10 +271,6 @@ final class EntitiesSubscriberTest extends TestCase
 			->method('create')
 			->willReturn($entityItem);
 
-		$configurationWriter = $this->createMock(DataStorage\Writer::class);
-		$configurationWriter
-			->method('write');
-
 		$subscriber = new Subscribers\ModuleEntities(
 			$entityManager,
 			$devicePropertiesStateRepository,
@@ -297,7 +279,6 @@ final class EntitiesSubscriberTest extends TestCase
 			$channelPropertiesStateManager,
 			$connectorPropertiesStateRepository,
 			$connectorPropertiesStateManager,
-			$configurationWriter,
 			$entityFactory,
 			$publisher,
 		);
@@ -321,7 +302,6 @@ final class EntitiesSubscriberTest extends TestCase
 
 	/**
 	 * @throws Exception
-	 * @throws Flysystem\FilesystemException
 	 */
 	public function testPublishDeletedEntity(): void
 	{
@@ -415,10 +395,6 @@ final class EntitiesSubscriberTest extends TestCase
 			->method('create')
 			->willReturn($entityItem);
 
-		$configurationWriter = $this->createMock(DataStorage\Writer::class);
-		$configurationWriter
-			->method('write');
-
 		$subscriber = new Subscribers\ModuleEntities(
 			$entityManager,
 			$devicePropertiesStateRepository,
@@ -427,7 +403,6 @@ final class EntitiesSubscriberTest extends TestCase
 			$channelPropertiesStateManager,
 			$connectorPropertiesStateRepository,
 			$connectorPropertiesStateManager,
-			$configurationWriter,
 			$entityFactory,
 			$publisher,
 		);

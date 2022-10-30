@@ -22,7 +22,6 @@ use FastyBird\Module\Devices\Commands;
 use FastyBird\Module\Devices\Connectors;
 use FastyBird\Module\Devices\Consumers;
 use FastyBird\Module\Devices\Controllers;
-use FastyBird\Module\Devices\DataStorage;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Hydrators;
 use FastyBird\Module\Devices\Middleware;
@@ -436,12 +435,6 @@ class DevicesExtension extends DI\CompilerExtension
 		)
 			->setType(Models\States\ChannelPropertiesManager::class);
 
-		$builder->addDefinition($this->prefix('dataStorage.writer'), new DI\Definitions\ServiceDefinition())
-			->setType(DataStorage\Writer::class);
-
-		$builder->addDefinition($this->prefix('dataStorage.reader'), new DI\Definitions\ServiceDefinition())
-			->setType(DataStorage\Reader::class);
-
 		$builder->addDefinition(
 			$this->prefix('utilities.database'),
 			new DI\Definitions\ServiceDefinition(),
@@ -477,10 +470,6 @@ class DevicesExtension extends DI\CompilerExtension
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Utilities\ConnectorConnection::class);
-
-		$builder->addDefinition($this->prefix('exchange.consumer.connector'), new DI\Definitions\ServiceDefinition())
-			->setType(Consumers\Connector::class)
-			->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATUS, false);
 
 		$builder->addDefinition($this->prefix('exchange.consumer.states'), new DI\Definitions\ServiceDefinition())
 			->setType(Consumers\States::class)

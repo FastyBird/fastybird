@@ -15,9 +15,7 @@
 
 namespace FastyBird\Module\Devices\Subscribers;
 
-use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Module\Devices\Consumers;
 use FastyBird\Module\Devices\Events;
 use Psr\Log;
 use Symfony\Component\EventDispatcher;
@@ -35,10 +33,7 @@ class Exchange implements EventDispatcher\EventSubscriberInterface
 
 	private Log\LoggerInterface $logger;
 
-	public function __construct(
-		private readonly ExchangeConsumers\Container $consumer,
-		Log\LoggerInterface|null $logger = null,
-	)
+	public function __construct(Log\LoggerInterface|null $logger = null)
 	{
 		$this->logger = $logger ?? new Log\NullLogger();
 	}
@@ -52,8 +47,6 @@ class Exchange implements EventDispatcher\EventSubscriberInterface
 
 	public function startup(): void
 	{
-		$this->consumer->enable(Consumers\Connector::class);
-
 		$this->logger->debug(
 			'Registering exchange consumer',
 			[

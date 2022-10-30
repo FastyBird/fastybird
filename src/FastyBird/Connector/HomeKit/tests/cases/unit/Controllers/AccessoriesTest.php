@@ -2,7 +2,6 @@
 
 namespace FastyBird\Connector\HomeKit\Tests\Cases\Unit\Controllers;
 
-use Exception;
 use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Middleware;
 use FastyBird\Connector\HomeKit\Protocol;
@@ -10,15 +9,12 @@ use FastyBird\Connector\HomeKit\Servers;
 use FastyBird\Connector\HomeKit\Tests\Cases\Unit\DbTestCase;
 use FastyBird\Connector\HomeKit\Tests\Tools;
 use FastyBird\Connector\HomeKit\Types;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Module\Devices\DataStorage as DevicesDataStorage;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Fig\Http\Message\RequestMethodInterface;
 use Fig\Http\Message\StatusCodeInterface;
 use InvalidArgumentException;
 use IPub\SlimRouter\Http as SlimRouterHttp;
-use League\Flysystem;
 use Nette;
 use Nette\Utils;
 use Ramsey\Uuid;
@@ -30,25 +26,9 @@ use function call_user_func;
 final class AccessoriesTest extends DbTestCase
 {
 
-	/**
-	 * @throws Exception
-	 * @throws InvalidArgumentException
-	 * @throws Flysystem\FilesystemException
-	 * @throws MetadataExceptions\FileNotFound
-	 * @throws MetadataExceptions\Logic
-	 * @throws Nette\DI\MissingServiceException
-	 * @throws RuntimeException
-	 * @throws Utils\JsonException
-	 */
 	public function setUp(): void
 	{
 		parent::setUp();
-
-		$writer = $this->getContainer()->getByType(DevicesDataStorage\Writer::class);
-		$reader = $this->getContainer()->getByType(DevicesDataStorage\Reader::class);
-
-		$writer->write();
-		$reader->read();
 
 		$repository = $this->getContainer()->getByType(DevicesModels\Connectors\ConnectorsRepository::class);
 

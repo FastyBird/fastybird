@@ -24,13 +24,11 @@ use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
-use FastyBird\Module\Devices\DataStorage;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use IPub\Phone\Exceptions as PhoneExceptions;
-use League\Flysystem;
 use Nette;
 use Nette\Utils;
 use ReflectionClass;
@@ -66,7 +64,6 @@ final class ModuleEntities implements Common\EventSubscriber
 		private readonly Models\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly Models\States\ConnectorPropertiesRepository $connectorPropertiesStatesRepository,
 		private readonly Models\States\ConnectorPropertiesManager $connectorPropertiesStatesManager,
-		private readonly DataStorage\Writer $configurationDataWriter,
 		private readonly ExchangeEntities\EntityFactory $entityFactory,
 		private readonly ExchangePublisher\Publisher $publisher,
 	)
@@ -87,7 +84,6 @@ final class ModuleEntities implements Common\EventSubscriber
 	 * @throws Exception
 	 * @throws Exceptions\InvalidState
 	 * @throws ExchangeExceptions\InvalidState
-	 * @throws Flysystem\FilesystemException
 	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidData
@@ -109,8 +105,6 @@ final class ModuleEntities implements Common\EventSubscriber
 		}
 
 		$this->publishEntity($entity, self::ACTION_CREATED);
-
-		$this->configurationDataWriter->write();
 	}
 
 	/**
@@ -118,7 +112,6 @@ final class ModuleEntities implements Common\EventSubscriber
 	 * @throws Exception
 	 * @throws ExchangeExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
-	 * @throws Flysystem\FilesystemException
 	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidData
@@ -154,8 +147,6 @@ final class ModuleEntities implements Common\EventSubscriber
 		}
 
 		$this->publishEntity($entity, self::ACTION_UPDATED);
-
-		$this->configurationDataWriter->write();
 	}
 
 	/**
@@ -163,7 +154,6 @@ final class ModuleEntities implements Common\EventSubscriber
 	 * @throws Exception
 	 * @throws ExchangeExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
-	 * @throws Flysystem\FilesystemException
 	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidData
@@ -218,8 +208,6 @@ final class ModuleEntities implements Common\EventSubscriber
 				return;
 			}
 		}
-
-		$this->configurationDataWriter->write();
 	}
 
 	/**
