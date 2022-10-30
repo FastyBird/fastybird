@@ -55,9 +55,6 @@ final class States implements ExchangeConsumers\Consumer
 		private readonly Models\Connectors\Properties\PropertiesRepository $connectorPropertiesRepository,
 		private readonly Models\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
 		private readonly Models\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
-		private readonly Models\States\DevicePropertiesRepository $devicePropertiesStatesRepository,
-		private readonly Models\States\ChannelPropertiesRepository $channelPropertiesStatesRepository,
-		private readonly Models\States\ConnectorPropertiesRepository $connectorPropertiesStatesRepository,
 		private readonly Utilities\ConnectorPropertiesStates $connectorPropertiesStates,
 		private readonly Utilities\DevicePropertiesStates $devicePropertiesStates,
 		private readonly Utilities\ChannelPropertiesStates $channelPropertiesStates,
@@ -67,7 +64,6 @@ final class States implements ExchangeConsumers\Consumer
 
 	/**
 	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\NotImplemented
 	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
@@ -118,7 +114,9 @@ final class States implements ExchangeConsumers\Consumer
 						return;
 					}
 
-					$state = $this->connectorPropertiesStatesRepository->findOneById($property->getId());
+					$state = $property instanceof Entities\Connectors\Properties\Dynamic
+						? $this->connectorPropertiesStates->getValue($property)
+						: null;
 
 					$publishRoutingKey = MetadataTypes\RoutingKey::get(
 						MetadataTypes\RoutingKey::ROUTE_CONNECTOR_PROPERTY_ENTITY_REPORTED,
@@ -169,7 +167,9 @@ final class States implements ExchangeConsumers\Consumer
 						return;
 					}
 
-					$state = $this->devicePropertiesStatesRepository->findOneById($property->getId());
+					$state = $property instanceof Entities\Devices\Properties\Dynamic
+						|| $property instanceof Entities\Devices\Properties\Mapped
+					 ? $this->devicePropertiesStates->getValue($property) : null;
 
 					$publishRoutingKey = MetadataTypes\RoutingKey::get(
 						MetadataTypes\RoutingKey::ROUTE_DEVICE_PROPERTY_ENTITY_REPORTED,
@@ -220,7 +220,9 @@ final class States implements ExchangeConsumers\Consumer
 						return;
 					}
 
-					$state = $this->channelPropertiesStatesRepository->findOneById($property->getId());
+					$state = $property instanceof Entities\Channels\Properties\Dynamic
+						|| $property instanceof Entities\Channels\Properties\Mapped
+					 ? $this->channelPropertiesStates->getValue($property) : null;
 
 					$publishRoutingKey = MetadataTypes\RoutingKey::get(
 						MetadataTypes\RoutingKey::ROUTE_CHANNEL_PROPERTY_ENTITY_REPORTED,
@@ -245,7 +247,6 @@ final class States implements ExchangeConsumers\Consumer
 	}
 
 	/**
-	 * @throws Exceptions\NotImplemented
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -274,14 +275,14 @@ final class States implements ExchangeConsumers\Consumer
 			)
 		) {
 			if ($property instanceof Entities\Connectors\Properties\Dynamic) {
-				$state = $this->connectorPropertiesStatesRepository->findOneById($property->getId());
+				$state = $this->connectorPropertiesStates->getValue($property);
 			} elseif (
 				$property instanceof Entities\Devices\Properties\Dynamic
 				|| $property instanceof Entities\Devices\Properties\Mapped
 			) {
-				$state = $this->devicePropertiesStatesRepository->findOneById($property->getId());
+				$state = $this->devicePropertiesStates->getValue($property);
 			} else {
-				$state = $this->channelPropertiesStatesRepository->findOneById($property->getId());
+				$state = $this->channelPropertiesStates->getValue($property);
 			}
 
 			if ($state !== null) {

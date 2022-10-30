@@ -30,7 +30,6 @@ use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
-use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use InvalidArgumentException;
@@ -126,8 +125,8 @@ final class Cloud implements Client
 		private readonly Helpers\Property $propertyStateHelper,
 		private readonly Consumers\Messages $consumer,
 		API\OpenApiFactory $openApiApiFactory,
-		private readonly DevicesModels\States\ChannelPropertiesRepository $channelPropertiesRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
+		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly MetadataSchemas\Validator $schemaValidator,
 		private readonly EventLoop\LoopInterface $eventLoop,
@@ -558,7 +557,7 @@ final class Cloud implements Client
 					continue;
 				}
 
-				$state = $this->channelPropertiesRepository->findOneById($property->getId());
+				$state = $this->channelPropertiesStates->getValue($property);
 
 				if ($state === null) {
 					continue;

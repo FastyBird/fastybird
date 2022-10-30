@@ -29,7 +29,6 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
-use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Nette\Utils;
@@ -141,9 +140,9 @@ class Rtu implements Client
 		private readonly Helpers\Channel $channelHelper,
 		private readonly Helpers\Property $propertyStateHelper,
 		private readonly API\Transformer $transformer,
-		private readonly DevicesModels\States\DevicePropertiesRepository $devicePropertiesRepository,
-		private readonly DevicesModels\States\ChannelPropertiesRepository $channelPropertiesRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
+		private readonly DevicesUtilities\DevicePropertiesStates $devicePropertiesStates,
+		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		Log\LoggerInterface|null $logger = null,
@@ -581,10 +580,8 @@ class Rtu implements Client
 		$propertyUuid = $property->getPlainId();
 
 		$state = $property instanceof DevicesEntities\Devices\Properties\Dynamic
-			? $this->devicePropertiesRepository->findOneById($property->getId())
-			: $this->channelPropertiesRepository->findOneById(
-				$property->getId(),
-			);
+			? $this->devicePropertiesStates->getValue($property)
+			: $this->channelPropertiesStates->getValue($property);
 
 		if (
 			$state !== null

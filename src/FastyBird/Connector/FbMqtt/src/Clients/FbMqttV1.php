@@ -30,7 +30,6 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
-use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette\Utils;
 use Psr\Log;
@@ -85,8 +84,8 @@ final class FbMqttV1 extends Client
 		Helpers\Connector $connectorHelper,
 		private readonly Helpers\Property $propertyStateHelper,
 		Consumers\Messages $consumer,
-		private readonly DevicesModels\States\DevicePropertiesRepository $devicePropertiesRepository,
-		private readonly DevicesModels\States\ChannelPropertiesRepository $channelPropertiesRepository,
+		private readonly DevicesUtilities\DevicePropertiesStates $devicePropertiesStates,
+		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		EventLoop\LoopInterface $loop,
@@ -464,7 +463,7 @@ final class FbMqttV1 extends Client
 				continue;
 			}
 
-			$state = $this->devicePropertiesRepository->findOneById($property->getId());
+			$state = $this->devicePropertiesStates->getValue($property);
 
 			if ($state === null) {
 				continue;
@@ -543,7 +542,7 @@ final class FbMqttV1 extends Client
 					continue;
 				}
 
-				$state = $this->channelPropertiesRepository->findOneById($property->getId());
+				$state = $this->channelPropertiesStates->getValue($property);
 
 				if ($state === null) {
 					continue;

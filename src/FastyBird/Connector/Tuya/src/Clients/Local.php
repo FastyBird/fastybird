@@ -28,7 +28,6 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
-use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Nette\Utils;
@@ -87,8 +86,8 @@ final class Local implements Client
 		private readonly Helpers\Property $propertyStateHelper,
 		private readonly Consumers\Messages $consumer,
 		private readonly API\LocalApiFactory $localApiFactory,
-		private readonly DevicesModels\States\ChannelPropertiesRepository $channelPropertiesRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
+		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		Log\LoggerInterface|null $logger = null,
@@ -337,7 +336,7 @@ final class Local implements Client
 					continue;
 				}
 
-				$state = $this->channelPropertiesRepository->findOneById($property->getId());
+				$state = $this->channelPropertiesStates->getValue($property);
 
 				if ($state === null) {
 					continue;
