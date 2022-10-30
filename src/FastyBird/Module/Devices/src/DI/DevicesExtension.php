@@ -443,24 +443,6 @@ class DevicesExtension extends DI\CompilerExtension
 			->setType(DataStorage\Reader::class);
 
 		$builder->addDefinition(
-			$this->prefix('dataStorage.repository.connector.properties'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Models\DataStorage\ConnectorPropertiesRepository::class);
-
-		$builder->addDefinition(
-			$this->prefix('dataStorage.repository.device.properties'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Models\DataStorage\DevicePropertiesRepository::class);
-
-		$builder->addDefinition(
-			$this->prefix('dataStorage.repository.channel.properties'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Models\DataStorage\ChannelPropertiesRepository::class);
-
-		$builder->addDefinition(
 			$this->prefix('utilities.database'),
 			new DI\Definitions\ServiceDefinition(),
 		)

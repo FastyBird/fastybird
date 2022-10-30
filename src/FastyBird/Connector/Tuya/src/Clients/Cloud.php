@@ -400,8 +400,6 @@ final class Cloud implements Client
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
-	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\Logic
 	 * @throws RuntimeException

@@ -240,12 +240,8 @@ class Rtu implements Client
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exception
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function handleCommunication(): void
 	{
@@ -361,12 +357,8 @@ class Rtu implements Client
 	 * @throws Exception
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function processDevice(Entities\ModbusDevice $device): bool
 	{
@@ -574,12 +566,8 @@ class Rtu implements Client
 	 * @throws Exceptions\ModbusRtu
 	 * @throws Exceptions\NotReachable
 	 * @throws Exceptions\NotSupported
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function writeProperty(
 		int $station,
@@ -865,12 +853,8 @@ class Rtu implements Client
 	 * @throws Exceptions\NotReachable
 	 * @throws Exceptions\NotSupported
 	 * @throws Exceptions\Runtime
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function readProperty(
 		int $station,

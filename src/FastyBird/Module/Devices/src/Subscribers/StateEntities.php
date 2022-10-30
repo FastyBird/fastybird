@@ -25,6 +25,7 @@ use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
+use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\States;
 use IPub\Phone\Exceptions as PhoneExceptions;
 use Nette;
@@ -46,9 +47,8 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	use Nette\SmartObject;
 
 	public function __construct(
-		private readonly Models\DataStorage\ConnectorPropertiesRepository $connectorPropertiesRepository,
-		private readonly Models\DataStorage\DevicePropertiesRepository $devicePropertiesRepository,
-		private readonly Models\DataStorage\ChannelPropertiesRepository $channelPropertiesRepository,
+		private readonly Models\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
+		private readonly Models\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
 		private readonly ExchangeEntities\EntityFactory $entityFactory,
 		private readonly ExchangePublisher\Container $publisher,
 	)
@@ -79,15 +79,11 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	 */
 	public function stateCreated(Events\StateEntityCreated $event): void
 	{
-		$this->refreshRepository($event->getProperty());
-
 		$this->publishEntity($event->getProperty(), $event->getState());
 
 		$parent = $this->findParent($event->getProperty());
 
 		if ($parent !== null) {
-			$this->refreshRepository($parent);
-
 			$this->publishEntity($parent, $event->getState());
 		}
 	}
@@ -107,19 +103,11 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	 */
 	public function stateUpdated(Events\StateEntityUpdated $event): void
 	{
-		if ($event->getPreviousState()->toArray() !== $event->getState()->toArray()) {
-			$this->refreshRepository($event->getProperty());
-		}
-
 		$this->publishEntity($event->getProperty(), $event->getState());
 
 		$parent = $this->findParent($event->getProperty());
 
 		if ($parent !== null) {
-			if ($event->getPreviousState()->toArray() !== $event->getState()->toArray()) {
-				$this->refreshRepository($parent);
-			}
-
 			$this->publishEntity($parent, $event->getState());
 		}
 	}
@@ -139,15 +127,11 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	 */
 	public function stateDeleted(Events\StateEntityDeleted $event): void
 	{
-		$this->refreshRepository($event->getProperty());
-
 		$this->publishEntity($event->getProperty());
 
 		$parent = $this->findParent($event->getProperty());
 
 		if ($parent !== null) {
-			$this->refreshRepository($parent);
-
 			$this->publishEntity($parent);
 		}
 	}
@@ -226,7 +210,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	 */
 	private function findParent(
 		MetadataEntities\DevicesModule\DynamicProperty|MetadataEntities\DevicesModule\VariableProperty|MetadataEntities\DevicesModule\MappedProperty|Entities\Property $property,
-	): MetadataEntities\DevicesModule\DynamicProperty|MetadataEntities\DevicesModule\VariableProperty|MetadataEntities\DevicesModule\MappedProperty|Entities\Property|null
+	): Entities\Property|null
 	{
 		if (
 			$property instanceof MetadataEntities\DevicesModule\ConnectorDynamicProperty
@@ -238,14 +222,20 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 			|| $property instanceof MetadataEntities\DevicesModule\DeviceMappedProperty
 		) {
 			if ($property->getParent() !== null) {
-				return $this->devicePropertiesRepository->findById($property->getParent());
+				$findPropertyQuery = new Queries\FindDeviceProperties();
+				$findPropertyQuery->byId($property->getParent());
+
+				return $this->devicePropertiesRepository->findOneBy($findPropertyQuery);
 			}
 		} elseif (
 			$property instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty
 			|| $property instanceof MetadataEntities\DevicesModule\ChannelMappedProperty
 		) {
 			if ($property->getParent() !== null) {
-				return $this->channelPropertiesRepository->findById($property->getParent());
+				$findPropertyQuery = new Queries\FindChannelProperties();
+				$findPropertyQuery->byId($property->getParent());
+
+				return $this->channelPropertiesRepository->findOneBy($findPropertyQuery);
 			}
 		} elseif (
 			$property instanceof Entities\Devices\Properties\Dynamic
@@ -260,32 +250,6 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 		}
 
 		return null;
-	}
-
-	private function refreshRepository(
-		MetadataEntities\DevicesModule\DynamicProperty|MetadataEntities\DevicesModule\VariableProperty|MetadataEntities\DevicesModule\MappedProperty|Entities\Property $property,
-	): void
-	{
-		if (
-			$property instanceof MetadataEntities\DevicesModule\ConnectorDynamicProperty
-			|| $property instanceof Entities\Connectors\Properties\Dynamic
-		) {
-			$this->connectorPropertiesRepository->reset($property->getId());
-		} elseif (
-			$property instanceof MetadataEntities\DevicesModule\DeviceDynamicProperty
-			|| $property instanceof MetadataEntities\DevicesModule\DeviceMappedProperty
-			|| $property instanceof Entities\Devices\Properties\Dynamic
-			|| $property instanceof Entities\Devices\Properties\Mapped
-		) {
-			$this->devicePropertiesRepository->reset($property->getId());
-		} elseif (
-			$property instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty
-			|| $property instanceof MetadataEntities\DevicesModule\ChannelMappedProperty
-			|| $property instanceof Entities\Channels\Properties\Dynamic
-			|| $property instanceof Entities\Channels\Properties\Mapped
-		) {
-			$this->channelPropertiesRepository->reset($property->getId());
-		}
 	}
 
 }

@@ -20,6 +20,7 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
+use FastyBird\Module\Devices\States;
 use Nette;
 use Nette\Utils;
 use Psr\Log;
@@ -47,6 +48,25 @@ final class ConnectorPropertiesStates
 	)
 	{
 		$this->logger = $logger ?? new Log\NullLogger();
+	}
+
+	public function getValue(
+		MetadataEntities\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
+	): States\ConnectorProperty|null
+	{
+		try {
+			return $this->connectorPropertyStateRepository->findOneById($property->getId());
+		} catch (Exceptions\NotImplemented) {
+			$this->logger->warning(
+				'Connectors states repository is not configured. State could not be fetched',
+				[
+					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+					'type' => 'connector-properties-states',
+				],
+			);
+		}
+
+		return null;
 	}
 
 	public function setValue(

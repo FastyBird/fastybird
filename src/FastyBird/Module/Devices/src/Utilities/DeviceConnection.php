@@ -15,13 +15,11 @@
 
 namespace FastyBird\Module\Devices\Utilities;
 
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
-use FastyBird\Module\Devices\Queries;
 use Nette;
 use Nette\Utils;
 use function assert;
@@ -40,8 +38,6 @@ final class DeviceConnection
 	use Nette\SmartObject;
 
 	public function __construct(
-		private readonly Models\Devices\DevicesRepository $devicesRepository,
-		private readonly Models\DataStorage\DevicePropertiesRepository $repository,
 		private readonly Models\Devices\Properties\PropertiesManager $manager,
 		private readonly DevicePropertiesStates $propertiesStates,
 	)
@@ -50,35 +46,17 @@ final class DeviceConnection
 
 	/**
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function setState(
-		Entities\Devices\Device|MetadataEntities\DevicesModule\Device $device,
+		Entities\Devices\Device $device,
 		MetadataTypes\ConnectionState $state,
 	): bool
 	{
-		$property = $this->repository->findByIdentifier(
-			$device->getId(),
-			MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_STATE,
-		);
+		$property = $device->findProperty(MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_STATE);
 
 		if ($property === null) {
-			if (!$device instanceof Entities\Devices\Device) {
-				$findDeviceQuery = new Queries\FindDevices();
-				$findDeviceQuery->byId($device->getId());
-
-				$device = $this->devicesRepository->findOneBy($findDeviceQuery);
-
-				if ($device === null) {
-					throw new Exceptions\InvalidState('Connector could not be loaded');
-				}
-			}
-
 			$property = $this->manager->create(Utils\ArrayHash::from([
 				'device' => $device,
 				'entity' => Entities\Devices\Properties\Dynamic::class,
@@ -102,10 +80,7 @@ final class DeviceConnection
 			]));
 		}
 
-		assert(
-			$property instanceof MetadataEntities\DevicesModule\DeviceDynamicProperty
-			|| $property instanceof Entities\Devices\Properties\Dynamic,
-		);
+		assert($property instanceof Entities\Devices\Properties\Dynamic);
 
 		$this->propertiesStates->setValue(
 			$property,
@@ -120,30 +95,21 @@ final class DeviceConnection
 		return false;
 	}
 
-	/**
-	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
-	 */
 	public function getState(
-		Entities\Devices\Device|MetadataEntities\DevicesModule\Device $device,
+		Entities\Devices\Device $device,
 	): MetadataTypes\ConnectionState
 	{
-		$stateProperty = $this->repository->findByIdentifier(
-			$device->getId(),
-			MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_STATE,
-		);
+		$property = $device->findProperty(MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_STATE);
 
-		if (
-			$stateProperty instanceof MetadataEntities\DevicesModule\DeviceDynamicProperty
-			&& $stateProperty->getActualValue() !== null
-			&& MetadataTypes\ConnectionState::isValidValue($stateProperty->getActualValue())
-		) {
-			return MetadataTypes\ConnectionState::get($stateProperty->getActualValue());
+		if ($property instanceof Entities\Devices\Properties\Dynamic) {
+			$state = $this->propertiesStates->getValue($property);
+
+			if (
+				$state?->getActualValue() !== null
+				&& MetadataTypes\ConnectionState::isValidValue($state->getActualValue())
+			) {
+				return MetadataTypes\ConnectionState::get($state->getActualValue());
+			}
 		}
 
 		return MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_UNKNOWN);

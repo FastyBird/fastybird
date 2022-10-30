@@ -17,7 +17,6 @@ namespace FastyBird\Module\Devices\DataStorage;
 
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Events;
-use FastyBird\Module\Devices\Models;
 use League\Flysystem;
 use Nette;
 use Nette\Utils;
@@ -41,9 +40,6 @@ final class Reader
 	use Nette\SmartObject;
 
 	public function __construct(
-		private readonly Models\DataStorage\ConnectorPropertiesRepository $connectorPropertiesRepository,
-		private readonly Models\DataStorage\DevicePropertiesRepository $devicePropertiesRepository,
-		private readonly Models\DataStorage\ChannelPropertiesRepository $channelPropertiesRepository,
 		private readonly Flysystem\Filesystem $filesystem,
 		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher,
 	)
@@ -64,10 +60,6 @@ final class Reader
 		}
 
 		$dataConfiguration = Utils\Json::decode($dataConfiguration, Utils\Json::FORCE_ARRAY);
-
-		$this->connectorPropertiesRepository->clear();
-		$this->devicePropertiesRepository->clear();
-		$this->channelPropertiesRepository->clear();
 
 		if (!is_array($dataConfiguration)) {
 			return;
@@ -140,8 +132,6 @@ final class Reader
 						if (!is_array($propertyData)) {
 							continue;
 						}
-
-						$this->channelPropertiesRepository->append(Uuid::fromString($propertyId), $propertyData);
 					}
 				}
 
@@ -155,8 +145,6 @@ final class Reader
 					if (!is_array($propertyData)) {
 						continue;
 					}
-
-					$this->devicePropertiesRepository->append(Uuid::fromString($propertyId), $propertyData);
 				}
 
 				foreach ($deviceData[Devices\Constants::DATA_STORAGE_ATTRIBUTES_KEY] as $attributeId => $attributeData) {
@@ -182,8 +170,6 @@ final class Reader
 				if (!is_array($propertyData)) {
 					continue;
 				}
-
-				$this->connectorPropertiesRepository->append(Uuid::fromString($propertyId), $propertyData);
 			}
 		}
 

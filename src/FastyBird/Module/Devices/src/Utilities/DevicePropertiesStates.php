@@ -21,6 +21,8 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
+use FastyBird\Module\Devices\Queries;
+use FastyBird\Module\Devices\States;
 use Nette;
 use Nette\Utils;
 use Psr\Log;
@@ -42,7 +44,7 @@ final class DevicePropertiesStates
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
-		private readonly Models\DataStorage\DevicePropertiesRepository $devicePropertiesRepository,
+		private readonly Models\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
 		private readonly Models\States\DevicePropertiesRepository $devicePropertyStateRepository,
 		private readonly Models\States\DevicePropertiesManager $devicePropertiesStatesManager,
 		Log\LoggerInterface|null $logger,
@@ -51,14 +53,29 @@ final class DevicePropertiesStates
 		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
+	public function getValue(
+		MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
+	): States\DeviceProperty|null
+	{
+		try {
+			return $this->devicePropertyStateRepository->findOneById($property->getId());
+		} catch (Exceptions\NotImplemented) {
+			$this->logger->warning(
+				'Devices states repository is not configured. State could not be fetched',
+				[
+					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+					'type' => 'device-properties-states',
+				],
+			);
+		}
+
+		return null;
+	}
+
 	/**
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function setValue(
 		MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
@@ -70,9 +87,12 @@ final class DevicePropertiesStates
 				throw new Exceptions\InvalidState('Parent identifier for mapped property is missing');
 			}
 
-			$parent = $this->devicePropertiesRepository->findById($property->getParent());
+			$findPropertyQuery = new Queries\FindDeviceProperties();
+			$findPropertyQuery->byId($property->getParent());
 
-			if (!$parent instanceof MetadataEntities\DevicesModule\DeviceDynamicProperty) {
+			$parent = $this->devicePropertiesRepository->findOneBy($findPropertyQuery);
+
+			if (!$parent instanceof Entities\Devices\Properties\Dynamic) {
 				throw new Exceptions\InvalidState('Mapped property parent could not be loaded');
 			}
 
@@ -153,12 +173,8 @@ final class DevicePropertiesStates
 	 * @param MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty|Array<MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty>|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped|Array<Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped> $property
 	 *
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function setValidState(
 		MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped|array $property,
