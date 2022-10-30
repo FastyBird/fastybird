@@ -255,7 +255,7 @@ class Execute extends Console\Command\Command
 		$serviceCmd = $symfonyApp->find('fb:devices-module:service');
 
 		$result = $serviceCmd->run(new Input\ArrayInput([
-			'--connector' => $connector->getId()->toString(),
+			'--connector' => $connector->getPlainId(),
 			'--no-confirm' => true,
 			'--quiet' => true,
 		]), $output);

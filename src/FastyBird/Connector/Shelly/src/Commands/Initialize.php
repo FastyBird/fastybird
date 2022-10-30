@@ -75,7 +75,6 @@ class Initialize extends Console\Command\Command
 	public function __construct(
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Connectors\ConnectorsManager $connectorsManager,
-		private readonly DevicesModels\Connectors\Properties\PropertiesRepository $propertiesRepository,
 		private readonly DevicesModels\Connectors\Properties\PropertiesManager $propertiesManager,
 		private readonly DevicesModels\Connectors\Controls\ControlsManager $controlsManager,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
@@ -411,7 +410,7 @@ class Initialize extends Console\Command\Command
 		$findConnectorQuery = new DevicesQueries\FindConnectors();
 		$findConnectorQuery->byIdentifier($connectorIdentifier);
 
-		$connector = $this->connectorsRepository->findOneBy($findConnectorQuery);
+		$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\ShellyConnector::class);
 
 		if ($connector === null) {
 			$io->error('Something went wrong, connector could not be loaded');
@@ -427,11 +426,7 @@ class Initialize extends Console\Command\Command
 			return;
 		}
 
-		$findPropertyQuery = new DevicesQueries\FindConnectorProperties();
-		$findPropertyQuery->forConnector($connector);
-		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_VERSION);
-
-		$versionProperty = $this->propertiesRepository->findOneBy($findPropertyQuery);
+		$versionProperty = $connector->findProperty(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_VERSION);
 
 		if ($versionProperty === null) {
 			$changeGeneration = true;
@@ -467,11 +462,7 @@ class Initialize extends Console\Command\Command
 			$versionProperty?->getValue() === Types\ClientVersion::TYPE_GEN_1
 			|| $generation?->getValue() === Types\ClientVersion::TYPE_GEN_1
 		) {
-			$findPropertyQuery = new DevicesQueries\FindConnectorProperties();
-			$findPropertyQuery->forConnector($connector);
-			$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE);
-
-			$clientModeProperty = $this->propertiesRepository->findOneBy($findPropertyQuery);
+			$clientModeProperty = $connector->findProperty(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE);
 
 			if ($clientModeProperty !== null) {
 				$question = new Console\Question\ConfirmationQuestion(
@@ -508,11 +499,9 @@ class Initialize extends Console\Command\Command
 			$versionProperty?->getValue() === Types\ClientVersion::TYPE_CLOUD
 			|| $generation->getValue() === Types\ClientVersion::TYPE_CLOUD
 		) {
-			$findPropertyQuery = new DevicesQueries\FindConnectorProperties();
-			$findPropertyQuery->forConnector($connector);
-			$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLOUD_AUTH_KEY);
-
-			$cloudAuthKeyProperty = $this->propertiesRepository->findOneBy($findPropertyQuery);
+			$cloudAuthKeyProperty = $connector->findProperty(
+				Types\ConnectorPropertyIdentifier::IDENTIFIER_CLOUD_AUTH_KEY,
+			);
 
 			$changeCloudAuthKey = false;
 
@@ -531,11 +520,7 @@ class Initialize extends Console\Command\Command
 				$cloudAuthKey = $io->askQuestion($question);
 			}
 
-			$findPropertyQuery = new DevicesQueries\FindConnectorProperties();
-			$findPropertyQuery->forConnector($connector);
-			$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLOUD_SERVER);
-
-			$cloudServerProperty = $this->propertiesRepository->findOneBy($findPropertyQuery);
+			$cloudServerProperty = $connector->findProperty(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLOUD_SERVER);
 
 			$changeCloudServer = false;
 
@@ -749,7 +734,7 @@ class Initialize extends Console\Command\Command
 		$findConnectorQuery = new DevicesQueries\FindConnectors();
 		$findConnectorQuery->byIdentifier($connectorIdentifier);
 
-		$connector = $this->connectorsRepository->findOneBy($findConnectorQuery);
+		$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\ShellyConnector::class);
 
 		if ($connector === null) {
 			$io->error('Something went wrong, connector could not be loaded');

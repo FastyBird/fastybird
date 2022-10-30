@@ -25,7 +25,6 @@ use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -118,20 +117,15 @@ final class Cloud implements Client
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function __construct(
-		private readonly MetadataEntities\DevicesModule\Connector $connector,
+		private readonly Entities\TuyaConnector $connector,
 		private readonly Helpers\Connector $connectorHelper,
 		private readonly Helpers\Property $propertyStateHelper,
 		private readonly Consumers\Messages $consumer,
 		API\OpenApiFactory $openApiApiFactory,
-		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\States\ChannelPropertiesRepository $channelPropertiesRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
@@ -148,12 +142,8 @@ final class Cloud implements Client
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws InvalidArgumentException
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function connect(): void
 	{
@@ -184,7 +174,7 @@ final class Cloud implements Client
 			[
 				'Connection' => 'Upgrade',
 				'username' => $this->connectorHelper->getConfiguration(
-					$this->connector->getId(),
+					$this->connector,
 					Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_ACCESS_ID),
 				),
 				'password' => $this->generatePassword(),
@@ -197,7 +187,7 @@ final class Cloud implements Client
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'cloud-client',
 						'connector' => [
-							'id' => $this->connector->getId()->toString(),
+							'id' => $this->connector->getPlainId(),
 						],
 					],
 				);
@@ -219,7 +209,7 @@ final class Cloud implements Client
 								'reason' => $reason,
 							],
 							'connector' => [
-								'id' => $this->connector->getId()->toString(),
+								'id' => $this->connector->getPlainId(),
 							],
 						],
 					);
@@ -244,7 +234,7 @@ final class Cloud implements Client
 								'code' => $ex->getCode(),
 							],
 							'connector' => [
-								'id' => $this->connector->getId()->toString(),
+								'id' => $this->connector->getPlainId(),
 							],
 						],
 					);
@@ -261,7 +251,7 @@ final class Cloud implements Client
 					async(function () use ($connection): void {
 						$connection->send(new RFC6455\Messaging\Frame(
 							strval($this->connectorHelper->getConfiguration(
-								$this->connector->getId(),
+								$this->connector,
 								Types\ConnectorPropertyIdentifier::get(
 									Types\ConnectorPropertyIdentifier::IDENTIFIER_ACCESS_ID,
 								),
@@ -283,7 +273,7 @@ final class Cloud implements Client
 							'code' => $ex->getCode(),
 						],
 						'connector' => [
-							'id' => $this->connector->getId()->toString(),
+							'id' => $this->connector->getPlainId(),
 						],
 					],
 				);
@@ -329,12 +319,8 @@ final class Cloud implements Client
 	/**
 	 * @throws DevicesExceptions\Terminate
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 * @throws Exception
 	 */
 	private function handleCommunication(): void
@@ -354,16 +340,16 @@ final class Cloud implements Client
 		$findDevicesQuery = new DevicesQueries\FindDevices();
 		$findDevicesQuery->byConnectorId($this->connector->getId());
 
-		foreach ($this->devicesRepository->findAllBy($findDevicesQuery, Entities\TuyaDevice::class) as $device) {
+		foreach ($this->connector->getDevices() as $device) {
 			assert($device instanceof Entities\TuyaDevice);
 
 			if (
-				!in_array($device->getId()->toString(), $this->processedDevices, true)
+				!in_array($device->getPlainId(), $this->processedDevices, true)
 				&& !$this->deviceConnectionManager->getState($device)->equalsValue(
 					MetadataTypes\ConnectionState::STATE_STOPPED,
 				)
 			) {
-				$this->processedDevices[] = $device->getId()->toString();
+				$this->processedDevices[] = $device->getPlainId();
 
 				if ($this->processDevice($device)) {
 					$this->registerLoopHandler();
@@ -381,12 +367,8 @@ final class Cloud implements Client
 	/**
 	 * @throws DevicesExceptions\Terminate
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 * @throws Exception
 	 */
 	private function processDevice(Entities\TuyaDevice $device): bool
@@ -420,22 +402,20 @@ final class Cloud implements Client
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 * @throws RuntimeException
 	 */
 	private function readDeviceData(string $cmd, Entities\TuyaDevice $device): bool
 	{
 		$httpCmdResult = null;
 
-		if (!array_key_exists($device->getId()->toString(), $this->processedDevicesCommands)) {
-			$this->processedDevicesCommands[$device->getId()->toString()] = [];
+		if (!array_key_exists($device->getPlainId(), $this->processedDevicesCommands)) {
+			$this->processedDevicesCommands[$device->getPlainId()] = [];
 		}
 
-		if (array_key_exists($cmd, $this->processedDevicesCommands[$device->getId()->toString()])) {
-			$httpCmdResult = $this->processedDevicesCommands[$device->getId()->toString()][$cmd];
+		if (array_key_exists($cmd, $this->processedDevicesCommands[$device->getPlainId()])) {
+			$httpCmdResult = $this->processedDevicesCommands[$device->getPlainId()][$cmd];
 		}
 
 		if ($httpCmdResult === true) {
@@ -449,7 +429,7 @@ final class Cloud implements Client
 			return true;
 		}
 
-		$this->processedDevicesCommands[$device->getId()->toString()][$cmd] = $this->dateTimeFactory->getNow();
+		$this->processedDevicesCommands[$device->getPlainId()][$cmd] = $this->dateTimeFactory->getNow();
 
 		if ($cmd === self::CMD_INFO || $cmd === self::CMD_HEARTBEAT) {
 			if (
@@ -458,7 +438,7 @@ final class Cloud implements Client
 					MetadataTypes\ConnectionState::STATE_CONNECTED,
 				)
 			) {
-				$this->processedDevicesCommands[$device->getId()->toString()][$cmd] = true;
+				$this->processedDevicesCommands[$device->getPlainId()][$cmd] = true;
 
 				return false;
 			}
@@ -466,10 +446,10 @@ final class Cloud implements Client
 			$this->openApiApi->getDeviceInformation($device->getIdentifier())
 				->then(function (Entities\API\DeviceInformation $deviceInformation) use ($cmd, $device): void {
 					if ($cmd === self::CMD_HEARTBEAT) {
-						$this->processedDevicesCommands[$device->getId()->toString()][$cmd] = true;
+						$this->processedDevicesCommands[$device->getPlainId()][$cmd] = true;
 					} else {
 						if ($deviceInformation->isOnline()) {
-							$this->processedDevicesCommands[$device->getId()->toString()][$cmd] = true;
+							$this->processedDevicesCommands[$device->getPlainId()][$cmd] = true;
 						}
 					}
 
@@ -481,10 +461,10 @@ final class Cloud implements Client
 					));
 
 					if ($cmd === self::CMD_HEARTBEAT) {
-						$this->heartbeatTimers[$device->getId()->toString()] = $this->eventLoop->addTimer(
+						$this->heartbeatTimers[$device->getPlainId()] = $this->eventLoop->addTimer(
 							self::HEARTBEAT_TIMEOUT,
 							function () use ($cmd, $device): void {
-								unset($this->processedDevicesCommands[$device->getId()->toString()][$cmd]);
+								unset($this->processedDevicesCommands[$device->getPlainId()][$cmd]);
 							},
 						);
 					}
@@ -500,7 +480,7 @@ final class Cloud implements Client
 								'code' => $ex->getCode(),
 							],
 							'connector' => [
-								'id' => $this->connector->getId()->toString(),
+								'id' => $this->connector->getPlainId(),
 							],
 						],
 					);
@@ -515,7 +495,7 @@ final class Cloud implements Client
 		} elseif ($cmd === self::CMD_STATUS) {
 			$this->openApiApi->getDeviceStatus($device->getIdentifier())
 				->then(function (array $statuses) use ($cmd, $device): void {
-					$this->processedDevicesCommands[$device->getId()->toString()][$cmd] = true;
+					$this->processedDevicesCommands[$device->getPlainId()][$cmd] = true;
 
 					$dataPointsStatuses = [];
 
@@ -546,7 +526,7 @@ final class Cloud implements Client
 									'code' => $ex->getCode(),
 								],
 								'connector' => [
-									'id' => $this->connector->getId()->toString(),
+									'id' => $this->connector->getPlainId(),
 								],
 							],
 						);
@@ -567,12 +547,8 @@ final class Cloud implements Client
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Terminate
 	 * @throws Exception
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function writeChannelsProperty(Entities\TuyaDevice $device): bool
 	{
@@ -602,10 +578,10 @@ final class Cloud implements Client
 						)
 						: true;
 					$debounce = array_key_exists(
-						$property->getId()->toString(),
+						$property->getPlainId(),
 						$this->processedProperties,
 					)
-						? $this->processedProperties[$property->getId()->toString()]
+						? $this->processedProperties[$property->getPlainId()]
 						: false;
 
 					if (
@@ -615,7 +591,7 @@ final class Cloud implements Client
 						continue;
 					}
 
-					unset($this->processedProperties[$property->getId()->toString()]);
+					unset($this->processedProperties[$property->getPlainId()]);
 
 					if (
 						$pending === true
@@ -624,7 +600,7 @@ final class Cloud implements Client
 							&& (float) $now->format('Uv') - (float) $pending->format('Uv') > 2_000
 						)
 					) {
-						$this->processedProperties[$property->getId()->toString()] = $now;
+						$this->processedProperties[$property->getPlainId()] = $now;
 
 						$this->openApiApi->setDeviceStatus(
 							$device->getIdentifier(),
@@ -648,7 +624,7 @@ final class Cloud implements Client
 									]),
 								);
 
-								unset($this->processedProperties[$property->getId()->toString()]);
+								unset($this->processedProperties[$property->getPlainId()]);
 
 								if (!$ex instanceof Exceptions\OpenApiCall) {
 									$this->logger->error(
@@ -661,7 +637,7 @@ final class Cloud implements Client
 												'code' => $ex->getCode(),
 											],
 											'connector' => [
-												'id' => $this->connector->getId()->toString(),
+												'id' => $this->connector->getPlainId(),
 											],
 										],
 									);
@@ -685,12 +661,8 @@ final class Cloud implements Client
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function handleWsMessage(string $message): void
 	{
@@ -714,7 +686,7 @@ final class Cloud implements Client
 						'message' => $message,
 					],
 					'connector' => [
-						'id' => $this->connector->getId()->toString(),
+						'id' => $this->connector->getPlainId(),
 					],
 				],
 			);
@@ -742,7 +714,7 @@ final class Cloud implements Client
 							'message' => $message,
 						],
 						'connector' => [
-							'id' => $this->connector->getId()->toString(),
+							'id' => $this->connector->getPlainId(),
 						],
 					],
 				);
@@ -756,7 +728,7 @@ final class Cloud implements Client
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'cloud-client',
 					'connector' => [
-						'id' => $this->connector->getId()->toString(),
+						'id' => $this->connector->getPlainId(),
 					],
 				],
 			);
@@ -773,7 +745,7 @@ final class Cloud implements Client
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'cloud-client',
 					'connector' => [
-						'id' => $this->connector->getId()->toString(),
+						'id' => $this->connector->getPlainId(),
 					],
 				],
 			);
@@ -790,7 +762,7 @@ final class Cloud implements Client
 					'payload' => $payload,
 				],
 				'connector' => [
-					'id' => $this->connector->getId()->toString(),
+					'id' => $this->connector->getPlainId(),
 				],
 			],
 		);
@@ -815,7 +787,7 @@ final class Cloud implements Client
 						'payload' => $payload,
 					],
 					'connector' => [
-						'id' => $this->connector->getId()->toString(),
+						'id' => $this->connector->getPlainId(),
 					],
 				],
 			);
@@ -830,7 +802,7 @@ final class Cloud implements Client
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'cloud-client',
 					'connector' => [
-						'id' => $this->connector->getId()->toString(),
+						'id' => $this->connector->getPlainId(),
 					],
 				],
 			);
@@ -847,7 +819,7 @@ final class Cloud implements Client
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'cloud-client',
 					'connector' => [
-						'id' => $this->connector->getId()->toString(),
+						'id' => $this->connector->getPlainId(),
 					],
 				],
 			);
@@ -856,7 +828,7 @@ final class Cloud implements Client
 		}
 
 		$accessSecret = $this->connectorHelper->getConfiguration(
-			$this->connector->getId(),
+			$this->connector,
 			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_ACCESS_SECRET),
 		);
 
@@ -876,7 +848,7 @@ final class Cloud implements Client
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'cloud-client',
 					'connector' => [
-						'id' => $this->connector->getId()->toString(),
+						'id' => $this->connector->getPlainId(),
 					],
 				],
 			);
@@ -891,7 +863,7 @@ final class Cloud implements Client
 				'type' => 'cloud-client',
 				'data' => $decryptedData,
 				'connector' => [
-					'id' => $this->connector->getId()->toString(),
+					'id' => $this->connector->getPlainId(),
 				],
 			],
 		);
@@ -916,7 +888,7 @@ final class Cloud implements Client
 						'data' => $decryptedData,
 					],
 					'connector' => [
-						'id' => $this->connector->getId()->toString(),
+						'id' => $this->connector->getPlainId(),
 					],
 				],
 			);
@@ -977,50 +949,53 @@ final class Cloud implements Client
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function buildWsTopicUrl(): string
 	{
-		return $this->connectorHelper->getConfiguration(
-			$this->connector->getId(),
+		$endpoint = $this->connectorHelper->getConfiguration(
+			$this->connector,
 			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_OPENPULSAR_ENDPOINT),
-		) . 'ws/v2/consumer/persistent/' . $this->connectorHelper->getConfiguration(
-			$this->connector->getId(),
+		);
+		assert(is_string($endpoint));
+
+		$accessId = $this->connectorHelper->getConfiguration(
+			$this->connector,
 			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_ACCESS_ID),
-		) . '/out/' . $this->connectorHelper->getConfiguration(
-			$this->connector->getId(),
+		);
+		assert(is_string($accessId));
+
+		$topic = $this->connectorHelper->getConfiguration(
+			$this->connector,
 			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_OPENPULSAR_TOPIC),
-		) . '/' . $this->connectorHelper->getConfiguration(
-			$this->connector->getId(),
-			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_ACCESS_ID),
-		) . '-sub?ackTimeoutMillis=3000&subscriptionType=Failover';
+		);
+		assert(is_string($topic));
+
+		return $endpoint . 'ws/v2/consumer/persistent/'
+			. $accessId . '/out/' . $topic . '/' . $accessId . '-sub?ackTimeoutMillis=3000&subscriptionType=Failover';
 	}
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function generatePassword(): string
 	{
-		$passString = $this->connectorHelper->getConfiguration(
-			$this->connector->getId(),
+		$accessId = $this->connectorHelper->getConfiguration(
+			$this->connector,
 			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_ACCESS_ID),
-		) . md5(
-			strval($this->connectorHelper->getConfiguration(
-				$this->connector->getId(),
-				Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_ACCESS_SECRET),
-			)),
 		);
+		assert(is_string($accessId));
+
+		$accessSecret = $this->connectorHelper->getConfiguration(
+			$this->connector,
+			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_ACCESS_SECRET),
+		);
+		assert(is_string($accessSecret));
+
+		$passString = $accessId . md5($accessSecret);
 
 		return Utils\Strings::substring(md5($passString), 8, 16);
 	}

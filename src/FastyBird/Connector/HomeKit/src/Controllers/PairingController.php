@@ -184,11 +184,9 @@ final class PairingController extends BaseController
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws InvalidArgumentException
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws RuntimeException
 	 */
@@ -304,11 +302,9 @@ final class PairingController extends BaseController
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws InvalidArgumentException
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws RuntimeException
 	 */
@@ -522,12 +518,8 @@ final class PairingController extends BaseController
 	 * @throws InvalidArgumentException
 	 * @throws Math\Exception\MathException
 	 * @throws Math\Exception\NegativeNumberException
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function srpStart(Uuid\UuidInterface $connectorId): array
 	{
@@ -867,12 +859,8 @@ final class PairingController extends BaseController
 	 * @throws DevicesExceptions\Runtime
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function exchange(
 		Uuid\UuidInterface $connectorId,
@@ -1083,21 +1071,21 @@ final class PairingController extends BaseController
 		$findConnectorQuery = new DevicesQueries\FindConnectors();
 		$findConnectorQuery->byId($connectorId);
 
-		$connectorEntity = $this->connectorsRepository->findOneBy(
+		$connector = $this->connectorsRepository->findOneBy(
 			$findConnectorQuery,
 			Entities\HomeKitConnector::class,
 		);
 
-		assert($connectorEntity instanceof Entities\HomeKitConnector || $connectorEntity === null);
+		assert($connector instanceof Entities\HomeKitConnector || $connector === null);
 
-		if ($connectorEntity === null) {
+		if ($connector === null) {
 			throw new Exceptions\InvalidState('Connector entity could not be loaded from database');
 		}
 
 		$this->databaseHelper->transaction(
-			function () use ($tlvEntry, $connectorEntity): void {
+			function () use ($tlvEntry, $connector): void {
 				$findClientQuery = new Queries\FindClients();
-				$findClientQuery->forConnector($connectorEntity);
+				$findClientQuery->forConnector($connector);
 				$findClientQuery->byUid($tlvEntry[Types\TlvCode::CODE_IDENTIFIER]);
 
 				$client = $this->clientsRepository->findOneBy($findClientQuery);
@@ -1110,7 +1098,7 @@ final class PairingController extends BaseController
 					$this->clientsManager->create(ArrayHash::from([
 						'uid' => $tlvEntry[Types\TlvCode::CODE_IDENTIFIER],
 						'publicKey' => pack('C*', ...$tlvEntry[Types\TlvCode::CODE_PUBLIC_KEY]),
-						'connector' => $connectorEntity,
+						'connector' => $connector,
 					]));
 				}
 			},
@@ -1140,6 +1128,7 @@ final class PairingController extends BaseController
 			$connectorId,
 			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_MAC_ADDRESS),
 		);
+		assert(is_string($macAddress));
 
 		$serverInfo = $serverX . $macAddress . pack('C*', ...$serverPublicKey);
 		$serverSignature = $serverPrivateKey->sign(unpack('C*', $serverInfo))->toBytes();
@@ -1252,12 +1241,8 @@ final class PairingController extends BaseController
 	 * @throws DevicesExceptions\Runtime
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function verifyStart(
 		Uuid\UuidInterface $connectorId,
@@ -1435,12 +1420,8 @@ final class PairingController extends BaseController
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Runtime
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function verifyFinish(
 		Uuid\UuidInterface $connectorId,

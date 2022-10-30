@@ -58,10 +58,7 @@ final class CloudDiscovery implements Consumer
 		private readonly DevicesModels\Devices\Attributes\AttributesManager $attributesManager,
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		private readonly DevicesModels\Channels\ChannelsManager $channelsManager,
-		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly DevicesModels\Channels\Properties\PropertiesManager $channelsPropertiesManager,
-		private readonly DevicesModels\DataStorage\DevicePropertiesRepository $propertiesDataStorageRepository,
-		private readonly DevicesModels\DataStorage\ChannelPropertiesRepository $channelsPropertiesDataStorageRepository,
 		private readonly DevicesUtilities\Database $databaseHelper,
 		Log\LoggerInterface|null $logger = null,
 	)
@@ -73,12 +70,8 @@ final class CloudDiscovery implements Consumer
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Runtime
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function consume(Entities\Messages\Entity $entity): bool
 	{
@@ -96,27 +89,27 @@ final class CloudDiscovery implements Consumer
 			$findConnectorQuery = new DevicesQueries\FindConnectors();
 			$findConnectorQuery->byId($entity->getConnector());
 
-			$connectorEntity = $this->connectorsRepository->findOneBy(
+			$connector = $this->connectorsRepository->findOneBy(
 				$findConnectorQuery,
 				Entities\TuyaConnector::class,
 			);
-			assert($connectorEntity instanceof Entities\TuyaConnector || $connectorEntity === null);
+			assert($connector instanceof Entities\TuyaConnector || $connector === null);
 
-			if ($connectorEntity === null) {
+			if ($connector === null) {
 				return true;
 			}
 
-			$deviceEntity = $this->databaseHelper->transaction(
-				function () use ($entity, $connectorEntity): Entities\TuyaDevice {
-					$deviceEntity = $this->devicesManager->create(Utils\ArrayHash::from([
+			$device = $this->databaseHelper->transaction(
+				function () use ($entity, $connector): Entities\TuyaDevice {
+					$device = $this->devicesManager->create(Utils\ArrayHash::from([
 						'entity' => Entities\TuyaDevice::class,
-						'connector' => $connectorEntity,
+						'connector' => $connector,
 						'identifier' => $entity->getId(),
 						'name' => $entity->getName(),
 					]));
-					assert($deviceEntity instanceof Entities\TuyaDevice);
+					assert($device instanceof Entities\TuyaDevice);
 
-					return $deviceEntity;
+					return $device;
 				},
 			);
 
@@ -126,7 +119,7 @@ final class CloudDiscovery implements Consumer
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'cloud-discovery-message-consumer',
 					'device' => [
-						'id' => $deviceEntity->getPlainId(),
+						'id' => $device->getPlainId(),
 						'identifier' => $entity->getId(),
 						'address' => $entity->getIpAddress(),
 						'name' => $entity->getName(),
@@ -134,52 +127,27 @@ final class CloudDiscovery implements Consumer
 				],
 			);
 		} else {
-			$findDeviceQuery = new DevicesQueries\FindDevices();
-			$findDeviceQuery->byId($device->getId());
+			$device = $this->databaseHelper->transaction(
+				function () use ($entity, $device): Entities\TuyaDevice {
+					$device = $this->devicesManager->update($device, Utils\ArrayHash::from([
+						'name' => $entity->getName(),
+					]));
+					assert($device instanceof Entities\TuyaDevice);
 
-			$deviceEntity = $this->devicesRepository->findOneBy(
-				$findDeviceQuery,
-				Entities\TuyaDevice::class,
+					return $device;
+				},
 			);
-			assert($deviceEntity instanceof Entities\TuyaDevice || $deviceEntity === null);
 
-			if ($deviceEntity !== null) {
-				$deviceEntity = $this->databaseHelper->transaction(
-					function () use ($entity, $deviceEntity): Entities\TuyaDevice {
-						$deviceEntity = $this->devicesManager->update($deviceEntity, Utils\ArrayHash::from([
-							'name' => $entity->getName(),
-						]));
-						assert($deviceEntity instanceof Entities\TuyaDevice);
-
-						return $deviceEntity;
-					},
-				);
-
-				$this->logger->debug(
-					'Device was updated',
-					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-						'type' => 'cloud-discovery-message-consumer',
-						'device' => [
-							'id' => $deviceEntity->getPlainId(),
-						],
+			$this->logger->debug(
+				'Device was updated',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'type' => 'cloud-discovery-message-consumer',
+					'device' => [
+						'id' => $device->getPlainId(),
 					],
-				);
-
-			} else {
-				$this->logger->error(
-					'Device could not be updated',
-					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-						'type' => 'cloud-discovery-message-consumer',
-						'device' => [
-							'id' => $device->getId()->toString(),
-						],
-					],
-				);
-
-				return false;
-			}
+				],
+			);
 		}
 
 		$findDeviceQuery = new DevicesQueries\FindDevices();
@@ -230,16 +198,16 @@ final class CloudDiscovery implements Consumer
 			Types\DeviceAttributeIdentifier::IDENTIFIER_SERIAL_NUMBER,
 		);
 
-		$this->databaseHelper->transaction(function () use ($entity, $deviceEntity): bool {
+		$this->databaseHelper->transaction(function () use ($entity, $device): bool {
 			$findChannelQuery = new DevicesQueries\FindChannels();
 			$findChannelQuery->byIdentifier(Types\DataPoint::DATA_POINT_CLOUD);
-			$findChannelQuery->forDevice($deviceEntity);
+			$findChannelQuery->forDevice($device);
 
-			$channelEntity = $this->channelsRepository->findOneBy($findChannelQuery);
+			$channel = $this->channelsRepository->findOneBy($findChannelQuery);
 
-			if ($channelEntity === null) {
-				$channelEntity = $this->channelsManager->create(Utils\ArrayHash::from([
-					'device' => $deviceEntity,
+			if ($channel === null) {
+				$channel = $this->channelsManager->create(Utils\ArrayHash::from([
+					'device' => $device,
 					'identifier' => Types\DataPoint::DATA_POINT_CLOUD,
 				]));
 
@@ -249,24 +217,21 @@ final class CloudDiscovery implements Consumer
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'cloud-discovery-message-consumer',
 						'device' => [
-							'id' => $deviceEntity->getPlainId(),
+							'id' => $device->getPlainId(),
 						],
 						'channel' => [
-							'id' => $channelEntity->getPlainId(),
+							'id' => $channel->getPlainId(),
 						],
 					],
 				);
 			}
 
 			foreach ($entity->getDataPoints() as $dataPoint) {
-				$propertyItem = $this->channelsPropertiesDataStorageRepository->findByIdentifier(
-					$channelEntity->getId(),
-					$dataPoint->getCode(),
-				);
+				$property = $channel->findProperty($dataPoint->getCode());
 
-				if ($propertyItem === null) {
+				if ($property === null) {
 					$this->channelsPropertiesManager->create(Utils\ArrayHash::from([
-						'channel' => $channelEntity,
+						'channel' => $channel,
 						'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 						'identifier' => $dataPoint->getCode(),
 						'name' => $dataPoint->getCode(),
@@ -278,39 +243,14 @@ final class CloudDiscovery implements Consumer
 					]));
 
 				} else {
-					$findPropertyQuery = new DevicesQueries\FindChannelProperties();
-					$findPropertyQuery->byId($propertyItem->getId());
-
-					$propertyEntity = $this->channelsPropertiesRepository->findOneBy($findPropertyQuery);
-
-					if ($propertyEntity !== null) {
-						$this->channelsPropertiesManager->update($propertyEntity, Utils\ArrayHash::from([
-							'name' => $propertyEntity->getName() ?? $dataPoint->getCode(),
-							'dataType' => $dataPoint->getDataType(),
-							'unit' => $dataPoint->getUnit(),
-							'format' => $dataPoint->getFormat(),
-							'queryable' => $dataPoint->isQueryable(),
-							'settable' => $dataPoint->isSettable(),
-						]));
-
-					} else {
-						$this->logger->error(
-							'Channel property could not be updated',
-							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-								'type' => 'cloud-discovery-message-consumer',
-								'device' => [
-									'id' => $channelEntity->getDevice()->getId()->toString(),
-								],
-								'channel' => [
-									'id' => $channelEntity->getId()->toString(),
-								],
-								'property' => [
-									'id' => $propertyItem->getId(),
-								],
-							],
-						);
-					}
+					$this->channelsPropertiesManager->update($property, Utils\ArrayHash::from([
+						'name' => $property->getName() ?? $dataPoint->getCode(),
+						'dataType' => $dataPoint->getDataType(),
+						'unit' => $dataPoint->getUnit(),
+						'format' => $dataPoint->getFormat(),
+						'queryable' => $dataPoint->isQueryable(),
+						'settable' => $dataPoint->isSettable(),
+					]));
 				}
 			}
 
@@ -323,7 +263,7 @@ final class CloudDiscovery implements Consumer
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 				'type' => 'cloud-discovery-message-consumer',
 				'device' => [
-					'id' => $device->getId()->toString(),
+					'id' => $device->getPlainId(),
 				],
 				'data' => $entity->toArray(),
 			],

@@ -16,9 +16,9 @@
 namespace FastyBird\Connector\Shelly\Clients;
 
 use FastyBird\Connector\Shelly\Clients;
+use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Types;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -50,7 +50,7 @@ final class Gen1 implements Client
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
-		private readonly MetadataEntities\DevicesModule\Connector $connector,
+		private readonly Entities\ShellyConnector $connector,
 		private readonly Clients\Gen1\CoapFactory $coapClientFactory,
 		private readonly Clients\Gen1\MdnsFactory $mdnsClientFactory,
 		private readonly Clients\Gen1\HttpFactory $httpClientFactory,
@@ -83,7 +83,7 @@ final class Gen1 implements Client
 						'code' => $ex->getCode(),
 					],
 					'connector' => [
-						'id' => $this->connector->getId()->toString(),
+						'id' => $this->connector->getPlainId(),
 					],
 				],
 			);
@@ -108,7 +108,7 @@ final class Gen1 implements Client
 						'code' => $ex->getCode(),
 					],
 					'connector' => [
-						'id' => $this->connector->getId()->toString(),
+						'id' => $this->connector->getPlainId(),
 					],
 				],
 			);
@@ -124,17 +124,13 @@ final class Gen1 implements Client
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Terminate
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function connect(): void
 	{
 		$mode = $this->connectorHelper->getConfiguration(
-			$this->connector->getId(),
+			$this->connector,
 			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE),
 		);
 
@@ -160,7 +156,7 @@ final class Gen1 implements Client
 							'code' => $ex->getCode(),
 						],
 						'connector' => [
-							'id' => $this->connector->getId()->toString(),
+							'id' => $this->connector->getPlainId(),
 						],
 					],
 				);
@@ -185,7 +181,7 @@ final class Gen1 implements Client
 							'code' => $ex->getCode(),
 						],
 						'connector' => [
-							'id' => $this->connector->getId()->toString(),
+							'id' => $this->connector->getPlainId(),
 						],
 					],
 				);
@@ -210,7 +206,7 @@ final class Gen1 implements Client
 							'code' => $ex->getCode(),
 						],
 						'connector' => [
-							'id' => $this->connector->getId()->toString(),
+							'id' => $this->connector->getPlainId(),
 						],
 					],
 				);
@@ -237,7 +233,7 @@ final class Gen1 implements Client
 							'code' => $ex->getCode(),
 						],
 						'connector' => [
-							'id' => $this->connector->getId()->toString(),
+							'id' => $this->connector->getPlainId(),
 						],
 					],
 				);
@@ -268,7 +264,7 @@ final class Gen1 implements Client
 						'code' => $ex->getCode(),
 					],
 					'connector' => [
-						'id' => $this->connector->getId()->toString(),
+						'id' => $this->connector->getPlainId(),
 					],
 				],
 			);
@@ -287,7 +283,7 @@ final class Gen1 implements Client
 						'code' => $ex->getCode(),
 					],
 					'connector' => [
-						'id' => $this->connector->getId()->toString(),
+						'id' => $this->connector->getPlainId(),
 					],
 				],
 			);
@@ -306,7 +302,7 @@ final class Gen1 implements Client
 						'code' => $ex->getCode(),
 					],
 					'connector' => [
-						'id' => $this->connector->getId()->toString(),
+						'id' => $this->connector->getPlainId(),
 					],
 				],
 			);
@@ -325,7 +321,7 @@ final class Gen1 implements Client
 						'code' => $ex->getCode(),
 					],
 					'connector' => [
-						'id' => $this->connector->getId()->toString(),
+						'id' => $this->connector->getPlainId(),
 					],
 				],
 			);

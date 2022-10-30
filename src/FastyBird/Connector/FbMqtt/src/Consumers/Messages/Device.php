@@ -81,28 +81,28 @@ final class Device implements Consumers\Consumer
 			return false;
 		}
 
-		if ($entity->getAttribute() === Entities\Messages\Attribute::STATE) {
-			$findDeviceQuery = new DevicesQueries\FindDevices();
-			$findDeviceQuery->byConnectorId($entity->getConnector());
-			$findDeviceQuery->byIdentifier($entity->getDevice());
+		$findDeviceQuery = new DevicesQueries\FindDevices();
+		$findDeviceQuery->byConnectorId($entity->getConnector());
+		$findDeviceQuery->byIdentifier($entity->getDevice());
 
-			$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\FbMqttDevice::class);
+		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\FbMqttDevice::class);
 
-			if ($device === null) {
-				$this->logger->error(
-					sprintf('Device "%s" is not registered', $entity->getDevice()),
-					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
-						'type' => 'device-message-consumer',
-						'device' => [
-							'identifier' => $entity->getDevice(),
-						],
+		if ($device === null) {
+			$this->logger->error(
+				sprintf('Device "%s" is not registered', $entity->getDevice()),
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+					'type' => 'device-message-consumer',
+					'device' => [
+						'identifier' => $entity->getDevice(),
 					],
-				);
+				],
+			);
 
-				return true;
-			}
+			return true;
+		}
 
+		if ($entity->getAttribute() === Entities\Messages\Attribute::STATE) {
 			if (MetadataTypes\ConnectionState::isValidValue($entity->getValue())) {
 				$this->deviceConnectionManager->setState(
 					$device,
@@ -110,26 +110,6 @@ final class Device implements Consumers\Consumer
 				);
 			}
 		} else {
-			$findDeviceQuery = new DevicesQueries\FindDevices();
-			$findDeviceQuery->byIdentifier($entity->getDevice());
-
-			$device = $this->devicesRepository->findOneBy($findDeviceQuery);
-
-			if ($device === null) {
-				$this->logger->error(
-					sprintf('Device "%s" is not registered', $entity->getDevice()),
-					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
-						'type' => 'device-message-consumer',
-						'device' => [
-							'identifier' => $entity->getDevice(),
-						],
-					],
-				);
-
-				return true;
-			}
-
 			$this->databaseHelper->transaction(function () use ($entity, $device): void {
 				$toUpdate = [];
 

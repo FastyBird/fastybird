@@ -26,13 +26,11 @@ use FastyBird\Connector\FbMqtt\Exceptions;
 use FastyBird\Connector\FbMqtt\Helpers;
 use FastyBird\Connector\FbMqtt\Types;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette\Utils;
 use Psr\Log;
@@ -80,15 +78,13 @@ final class FbMqttV1 extends Client
 	private array $processedProperties = [];
 
 	public function __construct(
-		MetadataEntities\DevicesModule\Connector $connector,
+		Entities\FbMqttConnector $connector,
 		private readonly API\V1Validator $apiValidator,
 		private readonly API\V1Parser $apiParser,
 		private readonly API\V1Builder $apiBuilder,
 		Helpers\Connector $connectorHelper,
 		private readonly Helpers\Property $propertyStateHelper,
 		Consumers\Messages $consumer,
-		DevicesModels\DataStorage\ConnectorPropertiesRepository $connectorPropertiesRepository,
-		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\States\DevicePropertiesRepository $devicePropertiesRepository,
 		private readonly DevicesModels\States\ChannelPropertiesRepository $channelPropertiesRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
@@ -102,7 +98,6 @@ final class FbMqttV1 extends Client
 	{
 		parent::__construct(
 			$connector,
-			$connectorPropertiesRepository,
 			$connectorHelper,
 			$consumer,
 			$loop,
@@ -139,18 +134,15 @@ final class FbMqttV1 extends Client
 			}
 		}
 
-		$findDevicesQuery = new DevicesQueries\FindDevices();
-		$findDevicesQuery->byConnectorId($this->connector->getId());
-
-		foreach ($this->devicesRepository->findAllBy($findDevicesQuery, Entities\FbMqttDevice::class) as $device) {
+		foreach ($this->connector->getDevices() as $device) {
 			assert($device instanceof Entities\FbMqttDevice);
 
 			if (
-				!in_array($device->getId()->toString(), $this->processedDevices, true)
+				!in_array($device->getPlainId(), $this->processedDevices, true)
 				&& $this->deviceConnectionManager->getState($device)
 					->equalsValue(MetadataTypes\ConnectionState::STATE_READY)
 			) {
-				$this->processedDevices[] = $device->getId()->toString();
+				$this->processedDevices[] = $device->getPlainId();
 
 				if ($this->processDevice($device)) {
 					$this->registerLoopHandler();
@@ -178,10 +170,7 @@ final class FbMqttV1 extends Client
 	{
 		parent::onClose($connection);
 
-		$findDevicesQuery = new DevicesQueries\FindDevices();
-		$findDevicesQuery->byConnectorId($this->connector->getId());
-
-		foreach ($this->devicesRepository->findAllBy($findDevicesQuery, Entities\FbMqttDevice::class) as $device) {
+		foreach ($this->connector->getDevices() as $device) {
 			assert($device instanceof Entities\FbMqttDevice);
 
 			if ($this->deviceConnectionManager->getState($device)
@@ -214,7 +203,7 @@ final class FbMqttV1 extends Client
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 							'type' => 'fb-mqtt-v1-client',
 							'connector' => [
-								'id' => $this->connector->getId()->toString(),
+								'id' => $this->connector->getPlainId(),
 							],
 						],
 					);
@@ -230,7 +219,7 @@ final class FbMqttV1 extends Client
 								'code' => $ex->getCode(),
 							],
 							'connector' => [
-								'id' => $this->connector->getId()->toString(),
+								'id' => $this->connector->getPlainId(),
 							],
 						],
 					);
@@ -252,7 +241,7 @@ final class FbMqttV1 extends Client
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 								'type' => 'fb-mqtt-v1-client',
 								'connector' => [
-									'id' => $this->connector->getId()->toString(),
+									'id' => $this->connector->getPlainId(),
 								],
 							],
 						);
@@ -268,7 +257,7 @@ final class FbMqttV1 extends Client
 									'code' => $ex->getCode(),
 								],
 								'connector' => [
-									'id' => $this->connector->getId()->toString(),
+									'id' => $this->connector->getPlainId(),
 								],
 							],
 						);
@@ -310,7 +299,7 @@ final class FbMqttV1 extends Client
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 								'type' => 'fb-mqtt-v1-client',
 								'connector' => [
-									'id' => $this->connector->getId()->toString(),
+									'id' => $this->connector->getPlainId(),
 								],
 							],
 						);
@@ -358,7 +347,7 @@ final class FbMqttV1 extends Client
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 								'type' => 'fb-mqtt-v1-client',
 								'connector' => [
-									'id' => $this->connector->getId()->toString(),
+									'id' => $this->connector->getPlainId(),
 								],
 							],
 						);
@@ -373,7 +362,7 @@ final class FbMqttV1 extends Client
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 								'type' => 'fb-mqtt-v1-client',
 								'connector' => [
-									'id' => $this->connector->getId()->toString(),
+									'id' => $this->connector->getPlainId(),
 								],
 							],
 						);
@@ -386,7 +375,7 @@ final class FbMqttV1 extends Client
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 								'type' => 'fb-mqtt-v1-client',
 								'connector' => [
-									'id' => $this->connector->getId()->toString(),
+									'id' => $this->connector->getPlainId(),
 								],
 							],
 						);
@@ -427,7 +416,7 @@ final class FbMqttV1 extends Client
 							'code' => $ex->getCode(),
 						],
 						'connector' => [
-							'id' => $this->connector->getId()->toString(),
+							'id' => $this->connector->getPlainId(),
 						],
 					],
 				);
@@ -507,7 +496,7 @@ final class FbMqttV1 extends Client
 					continue;
 				}
 
-				unset($this->processedProperties[$property->getId()->toString()]);
+				unset($this->processedProperties[$property->getPlainId()]);
 
 				if (
 					$pending === true
@@ -516,7 +505,7 @@ final class FbMqttV1 extends Client
 						&& (float) $now->format('Uv') - (float) $pending->format('Uv') > 2_000
 					)
 				) {
-					$this->processedProperties[$property->getId()->toString()] = $now;
+					$this->processedProperties[$property->getPlainId()] = $now;
 
 					$this->publish(
 						$this->apiBuilder->buildDevicePropertyTopic($device, $property),
@@ -526,7 +515,7 @@ final class FbMqttV1 extends Client
 							'pending' => $now->format(DateTimeInterface::ATOM),
 						]));
 					})->otherwise(function () use ($property): void {
-						unset($this->processedProperties[$property->getId()->toString()]);
+						unset($this->processedProperties[$property->getPlainId()]);
 					});
 
 					return true;
@@ -586,7 +575,7 @@ final class FbMqttV1 extends Client
 						continue;
 					}
 
-					unset($this->processedProperties[$property->getId()->toString()]);
+					unset($this->processedProperties[$property->getPlainId()]);
 
 					if (
 						$pending === true
@@ -595,7 +584,7 @@ final class FbMqttV1 extends Client
 							&& (float) $now->format('Uv') - (float) $pending->format('Uv') > 2_000
 						)
 					) {
-						$this->processedProperties[$property->getId()->toString()] = $now;
+						$this->processedProperties[$property->getPlainId()] = $now;
 
 						$this->publish(
 							$this->apiBuilder->buildChannelPropertyTopic($device, $channel, $property),
@@ -605,7 +594,7 @@ final class FbMqttV1 extends Client
 								'pending' => $now->format(DateTimeInterface::ATOM),
 							]));
 						})->otherwise(function () use ($property): void {
-							unset($this->processedProperties[$property->getId()->toString()]);
+							unset($this->processedProperties[$property->getPlainId()]);
 						});
 
 						return true;

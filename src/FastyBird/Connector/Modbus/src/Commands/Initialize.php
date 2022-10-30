@@ -66,7 +66,6 @@ class Initialize extends Console\Command\Command
 	public function __construct(
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Connectors\ConnectorsManager $connectorsManager,
-		private readonly DevicesModels\Connectors\Properties\PropertiesRepository $propertiesRepository,
 		private readonly DevicesModels\Connectors\Properties\PropertiesManager $propertiesManager,
 		private readonly DevicesModels\Connectors\Controls\ControlsManager $controlsManager,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
@@ -331,7 +330,7 @@ class Initialize extends Console\Command\Command
 		$findConnectorQuery = new DevicesQueries\FindConnectors();
 		$findConnectorQuery->byIdentifier($connectorIdentifier);
 
-		$connector = $this->connectorsRepository->findOneBy($findConnectorQuery);
+		$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\ModbusConnector::class);
 
 		if ($connector === null) {
 			$io->error('Something went wrong, connector could not be loaded');
@@ -347,11 +346,7 @@ class Initialize extends Console\Command\Command
 			return;
 		}
 
-		$findPropertyQuery = new DevicesQueries\FindConnectorProperties();
-		$findPropertyQuery->forConnector($connector);
-		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE);
-
-		$modeProperty = $this->propertiesRepository->findOneBy($findPropertyQuery);
+		$modeProperty = $connector->findProperty(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE);
 
 		if ($modeProperty === null) {
 			$changeMode = true;
@@ -509,7 +504,7 @@ class Initialize extends Console\Command\Command
 		$findConnectorQuery = new DevicesQueries\FindConnectors();
 		$findConnectorQuery->byIdentifier($connectorIdentifier);
 
-		$connector = $this->connectorsRepository->findOneBy($findConnectorQuery);
+		$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\ModbusConnector::class);
 
 		if ($connector === null) {
 			$io->error('Something went wrong, connector could not be loaded');

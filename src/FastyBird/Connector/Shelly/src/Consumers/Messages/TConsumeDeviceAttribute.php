@@ -84,20 +84,20 @@ trait TConsumeDeviceAttribute
 			$findDeviceQuery = new DevicesQueries\FindDevices();
 			$findDeviceQuery->byId($deviceId);
 
-			$deviceEntity = $this->devicesRepository->findOneBy(
+			$device = $this->devicesRepository->findOneBy(
 				$findDeviceQuery,
 				Entities\ShellyDevice::class,
 			);
-			assert($deviceEntity instanceof Entities\ShellyDevice || $deviceEntity === null);
+			assert($device instanceof Entities\ShellyDevice || $device === null);
 
-			if ($deviceEntity === null) {
+			if ($device === null) {
 				return;
 			}
 
 			$attribute = $this->databaseHelper->transaction(
 				fn (): DevicesEntities\Devices\Attributes\Attribute => $this->attributesManager->create(
 					Utils\ArrayHash::from([
-						'device' => $deviceEntity,
+						'device' => $device,
 						'identifier' => $identifier,
 						'content' => $value,
 					]),

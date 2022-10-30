@@ -19,8 +19,8 @@ use BadMethodCallException;
 use Clue\React\Multicast;
 use FastyBird\Connector\Shelly\API;
 use FastyBird\Connector\Shelly\Consumers;
+use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -71,7 +71,7 @@ final class Coap
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
-		private readonly MetadataEntities\DevicesModule\Connector $connector,
+		private readonly Entities\ShellyConnector $connector,
 		private readonly API\Gen1Validator $validator,
 		private readonly API\Gen1Parser $parser,
 		private readonly Consumers\Messages $consumer,
@@ -94,7 +94,7 @@ final class Coap
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'coap-client',
 					'connector' => [
-						'id' => $this->connector->getId()->toString(),
+						'id' => $this->connector->getPlainId(),
 					],
 				],
 			);
@@ -116,7 +116,7 @@ final class Coap
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 				'type' => 'coap-client',
 				'connector' => [
-					'id' => $this->connector->getId()->toString(),
+					'id' => $this->connector->getPlainId(),
 				],
 			],
 		);
@@ -151,7 +151,7 @@ final class Coap
 						'code' => $ex->getCode(),
 					],
 					'connector' => [
-						'id' => $this->connector->getId()->toString(),
+						'id' => $this->connector->getPlainId(),
 					],
 				],
 			);
@@ -170,7 +170,7 @@ final class Coap
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'coap-client',
 					'connector' => [
-						'id' => $this->connector->getId()->toString(),
+						'id' => $this->connector->getPlainId(),
 					],
 				],
 			);
@@ -296,7 +296,7 @@ final class Coap
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'coap-client',
 					'connector' => [
-						'id' => $this->connector->getId()->toString(),
+						'id' => $this->connector->getPlainId(),
 					],
 				],
 			);
@@ -329,7 +329,7 @@ final class Coap
 								'code' => $ex->getCode(),
 							],
 							'connector' => [
-								'id' => $this->connector->getId()->toString(),
+								'id' => $this->connector->getPlainId(),
 							],
 						],
 					);
@@ -361,7 +361,7 @@ final class Coap
 								'code' => $ex->getCode(),
 							],
 							'connector' => [
-								'id' => $this->connector->getId()->toString(),
+								'id' => $this->connector->getPlainId(),
 							],
 						],
 					);

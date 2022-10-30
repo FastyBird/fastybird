@@ -84,7 +84,6 @@ class Discovery extends Console\Command\Command
 		private readonly Helpers\Device $deviceHelper,
 		private readonly Consumers\Messages $consumer,
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
-		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		Log\LoggerInterface|null $logger = null,
@@ -126,12 +125,8 @@ class Discovery extends Console\Command\Command
 	/**
 	 * @throws Console\Exception\InvalidArgumentException
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	protected function execute(Input\InputInterface $input, Output\OutputInterface $output): int
 	{
@@ -169,7 +164,8 @@ class Discovery extends Console\Command\Command
 				$findConnectorQuery->byIdentifier($connectorId);
 			}
 
-			$connector = $this->connectorsRepository->findOneBy($findConnectorQuery);
+			$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\ShellyConnector::class);
+			assert($connector instanceof Entities\ShellyConnector || $connector === null);
 
 			if ($connector === null) {
 				$io->warning('Connector was not found in system');
@@ -207,6 +203,7 @@ class Discovery extends Console\Command\Command
 					$findConnectorQuery,
 					Entities\ShellyConnector::class,
 				);
+				assert($connector instanceof Entities\ShellyConnector || $connector === null);
 
 				if ($connector === null) {
 					$io->warning('Connector was not found in system');
@@ -258,6 +255,7 @@ class Discovery extends Console\Command\Command
 					$findConnectorQuery,
 					Entities\ShellyConnector::class,
 				);
+				assert($connector instanceof Entities\ShellyConnector || $connector === null);
 			}
 
 			if ($connector === null) {
@@ -282,7 +280,7 @@ class Discovery extends Console\Command\Command
 		}
 
 		$version = $this->connectorHelper->getConfiguration(
-			$connector->getId(),
+			$connector,
 			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_VERSION),
 		);
 
@@ -291,8 +289,6 @@ class Discovery extends Console\Command\Command
 
 			return Console\Command\Command::FAILURE;
 		}
-
-		assert($connector instanceof Entities\ShellyConnector);
 
 		foreach ($this->clientsFactories as $clientFactory) {
 			$rc = new ReflectionClass($clientFactory);
@@ -376,10 +372,7 @@ class Discovery extends Console\Command\Command
 
 					$io->newLine();
 
-					$findDevicesQuery = new DevicesQueries\FindDevices();
-					$findDevicesQuery->byConnectorId($connector->getId());
-
-					$devices = $this->devicesRepository->findAllBy($findDevicesQuery);
+					$devices = $connector->getDevices();
 
 					$table = new Console\Helper\Table($output);
 					$table->setHeaders([
@@ -393,6 +386,8 @@ class Discovery extends Console\Command\Command
 					$foundDevices = 0;
 
 					foreach ($devices as $device) {
+						assert($device instanceof Entities\ShellyDevice);
+
 						$createdAt = $device->getCreatedAt();
 
 						if (
@@ -403,7 +398,7 @@ class Discovery extends Console\Command\Command
 							$foundDevices++;
 
 							$ipAddress = $this->deviceHelper->getConfiguration(
-								$device->getId(),
+								$device,
 								Types\DevicePropertyIdentifier::get(
 									Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS,
 								),

@@ -17,7 +17,6 @@ namespace FastyBird\Connector\Shelly\Consumers\Messages;
 
 use Doctrine\DBAL;
 use FastyBird\Connector\Shelly\Entities;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
@@ -41,7 +40,6 @@ use function assert;
  * @property-read DevicesModels\Devices\DevicesRepository $devicesRepository
  * @property-read DevicesModels\Devices\Properties\PropertiesRepository $propertiesRepository
  * @property-read DevicesModels\Devices\Properties\PropertiesManager $propertiesManager
- * @property-read DevicesModels\DataStorage\DevicePropertiesRepository $propertiesDataStorageRepository
  * @property-read DevicesUtilities\Database $databaseHelper
  * @property-read Log\LoggerInterface $logger
  */
@@ -52,12 +50,8 @@ trait TConsumeDeviceProperty
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Runtime
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function setDeviceProperty(
 		Uuid\UuidInterface $deviceId,
@@ -65,24 +59,18 @@ trait TConsumeDeviceProperty
 		string $identifier,
 	): void
 	{
-		$propertyItem = $this->propertiesDataStorageRepository->findByIdentifier(
-			$deviceId,
-			$identifier,
-		);
+		$findPropertyQuery = new DevicesQueries\FindDeviceProperties();
+		$findPropertyQuery->byDeviceId($deviceId);
+		$findPropertyQuery->byIdentifier($identifier);
 
-		if ($propertyItem !== null && $value === null) {
-			$findPropertyQuery = new DevicesQueries\FindDeviceProperties();
-			$findPropertyQuery->byId($propertyItem->getId());
+		$property = $this->propertiesRepository->findOneBy($findPropertyQuery);
 
-			$propertyEntity = $this->propertiesRepository->findOneBy($findPropertyQuery);
-
-			if ($propertyEntity !== null) {
-				$this->databaseHelper->transaction(
-					function () use ($propertyEntity): void {
-						$this->propertiesManager->delete($propertyEntity);
-					},
-				);
-			}
+		if ($property !== null && $value === null) {
+			$this->databaseHelper->transaction(
+				function () use ($property): void {
+					$this->propertiesManager->delete($property);
+				},
+			);
 
 			return;
 		}
@@ -92,64 +80,57 @@ trait TConsumeDeviceProperty
 		}
 
 		if (
-			$propertyItem instanceof MetadataEntities\DevicesModule\DeviceVariableProperty
-			&& $propertyItem->getValue() === $value
+			$property instanceof DevicesEntities\Devices\Properties\Variable
+			&& $property->getValue() === $value
 		) {
 			return;
 		}
 
 		if (
-			$propertyItem !== null
-			&& !$propertyItem instanceof MetadataEntities\DevicesModule\DeviceVariableProperty
+			$property !== null
+			&& !$property instanceof DevicesEntities\Devices\Properties\Variable
 		) {
-			$findPropertyQuery = new DevicesQueries\FindDeviceProperties();
-			$findPropertyQuery->byId($propertyItem->getId());
+			$this->databaseHelper->transaction(function () use ($property): void {
+				$this->propertiesManager->delete($property);
+			});
 
-			$propertyEntity = $this->propertiesRepository->findOneBy($findPropertyQuery);
-
-			if ($propertyEntity !== null) {
-				$this->databaseHelper->transaction(function () use ($propertyEntity): void {
-					$this->propertiesManager->delete($propertyEntity);
-				});
-
-				$this->logger->warning(
-					'Device property is not valid type',
-					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-						'type' => 'message-consumer',
-						'device' => [
-							'id' => $deviceId->toString(),
-						],
-						'property' => [
-							'id' => $propertyEntity->getPlainId(),
-							'identifier' => $identifier,
-						],
+			$this->logger->warning(
+				'Device property is not valid type',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+					'type' => 'message-consumer',
+					'device' => [
+						'id' => $deviceId->toString(),
 					],
-				);
-			}
+					'property' => [
+						'id' => $property->getPlainId(),
+						'identifier' => $identifier,
+					],
+				],
+			);
 
-			$propertyItem = null;
+			$property = null;
 		}
 
-		if ($propertyItem === null) {
+		if ($property === null) {
 			$findDeviceQuery = new DevicesQueries\FindDevices();
 			$findDeviceQuery->byId($deviceId);
 
-			$deviceEntity = $this->devicesRepository->findOneBy(
+			$device = $this->devicesRepository->findOneBy(
 				$findDeviceQuery,
 				Entities\ShellyDevice::class,
 			);
-			assert($deviceEntity instanceof Entities\ShellyDevice || $deviceEntity === null);
+			assert($device instanceof Entities\ShellyDevice || $device === null);
 
-			if ($deviceEntity === null) {
+			if ($device === null) {
 				return;
 			}
 
-			$propertyEntity = $this->databaseHelper->transaction(
+			$property = $this->databaseHelper->transaction(
 				fn (): DevicesEntities\Devices\Properties\Property => $this->propertiesManager->create(
 					Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Devices\Properties\Variable::class,
-						'device' => $deviceEntity,
+						'device' => $device,
 						'identifier' => $identifier,
 						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 						'settable' => false,
@@ -168,59 +149,36 @@ trait TConsumeDeviceProperty
 						'id' => $deviceId->toString(),
 					],
 					'property' => [
-						'id' => $propertyEntity->getPlainId(),
+						'id' => $property->getPlainId(),
 						'identifier' => $identifier,
 					],
 				],
 			);
 
 		} else {
-			$findPropertyQuery = new DevicesQueries\FindDeviceProperties();
-			$findPropertyQuery->byId($propertyItem->getId());
+			$property = $this->databaseHelper->transaction(
+				fn (): DevicesEntities\Devices\Properties\Property => $this->propertiesManager->update(
+					$property,
+					Utils\ArrayHash::from([
+						'value' => $value,
+					]),
+				),
+			);
 
-			$propertyEntity = $this->propertiesRepository->findOneBy($findPropertyQuery);
-
-			if ($propertyEntity !== null) {
-				$propertyEntity = $this->databaseHelper->transaction(
-					fn (): DevicesEntities\Devices\Properties\Property => $this->propertiesManager->update(
-						$propertyEntity,
-						Utils\ArrayHash::from([
-							'value' => $value,
-						]),
-					),
-				);
-
-				$this->logger->debug(
-					'Device property was updated',
-					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-						'type' => 'message-consumer',
-						'device' => [
-							'id' => $deviceId->toString(),
-						],
-						'property' => [
-							'id' => $propertyEntity->getPlainId(),
-							'identifier' => $identifier,
-						],
+			$this->logger->debug(
+				'Device property was updated',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+					'type' => 'message-consumer',
+					'device' => [
+						'id' => $deviceId->toString(),
 					],
-				);
-
-			} else {
-				$this->logger->error(
-					'Device property could not be updated',
-					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-						'type' => 'message-consumer',
-						'device' => [
-							'id' => $deviceId->toString(),
-						],
-						'property' => [
-							'id' => $propertyItem->getId()->toString(),
-							'identifier' => $identifier,
-						],
+					'property' => [
+						'id' => $property->getPlainId(),
+						'identifier' => $identifier,
 					],
-				);
-			}
+				],
+			);
 		}
 	}
 

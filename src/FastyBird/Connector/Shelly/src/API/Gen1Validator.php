@@ -47,7 +47,7 @@ final class Gen1Validator
 
 	public const HTTP_SETTINGS_MESSAGE_SCHEMA_FILENAME = 'gen1_http_settings.json';
 
-	public function __construct(private MetadataSchemas\Validator $schemaValidator)
+	public function __construct(private readonly MetadataSchemas\Validator $schemaValidator)
 	{
 	}
 

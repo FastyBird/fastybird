@@ -55,7 +55,6 @@ final class Discovery implements Consumer
 		private readonly DevicesModels\Devices\Properties\PropertiesManager $propertiesManager,
 		private readonly DevicesModels\Devices\Attributes\AttributesRepository $attributesRepository,
 		private readonly DevicesModels\Devices\Attributes\AttributesManager $attributesManager,
-		private readonly DevicesModels\DataStorage\DevicePropertiesRepository $propertiesDataStorageRepository,
 		private readonly DevicesUtilities\Database $databaseHelper,
 		Log\LoggerInterface|null $logger = null,
 	)
@@ -67,12 +66,8 @@ final class Discovery implements Consumer
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Runtime
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function consume(Entities\Messages\Entity $entity): bool
 	{
@@ -90,22 +85,22 @@ final class Discovery implements Consumer
 			$findConnectorQuery = new DevicesQueries\FindConnectors();
 			$findConnectorQuery->byId($entity->getConnector());
 
-			$connectorEntity = $this->connectorsRepository->findOneBy($findConnectorQuery);
+			$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\ShellyConnector::class);
 
-			if ($connectorEntity === null) {
+			if ($connector === null) {
 				return true;
 			}
 
-			$deviceEntity = $this->databaseHelper->transaction(
-				function () use ($entity, $connectorEntity): Entities\ShellyDevice {
-					$deviceEntity = $this->devicesManager->create(Utils\ArrayHash::from([
+			$device = $this->databaseHelper->transaction(
+				function () use ($entity, $connector): Entities\ShellyDevice {
+					$device = $this->devicesManager->create(Utils\ArrayHash::from([
 						'entity' => Entities\ShellyDevice::class,
-						'connector' => $connectorEntity,
+						'connector' => $connector,
 						'identifier' => $entity->getIdentifier(),
 					]));
-					assert($deviceEntity instanceof Entities\ShellyDevice);
+					assert($device instanceof Entities\ShellyDevice);
 
-					return $deviceEntity;
+					return $device;
 				},
 			);
 
@@ -115,7 +110,7 @@ final class Discovery implements Consumer
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'discovery-message-consumer',
 					'device' => [
-						'id' => $deviceEntity->getPlainId(),
+						'id' => $device->getPlainId(),
 						'identifier' => $entity->getIdentifier(),
 						'address' => $entity->getIpAddress(),
 					],
@@ -162,7 +157,7 @@ final class Discovery implements Consumer
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 				'type' => 'discovery-message-consumer',
 				'device' => [
-					'id' => $device->getId()->toString(),
+					'id' => $device->getPlainId(),
 				],
 				'data' => $entity->toArray(),
 			],

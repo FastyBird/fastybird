@@ -54,7 +54,6 @@ final class Info implements Consumer
 		private readonly DevicesModels\Devices\Properties\PropertiesManager $propertiesManager,
 		private readonly DevicesModels\Devices\Attributes\AttributesRepository $attributesRepository,
 		private readonly DevicesModels\Devices\Attributes\AttributesManager $attributesManager,
-		private readonly DevicesModels\DataStorage\DevicePropertiesRepository $propertiesDataStorageRepository,
 		private readonly DevicesUtilities\Database $databaseHelper,
 		Log\LoggerInterface|null $logger = null,
 	)
@@ -66,12 +65,8 @@ final class Info implements Consumer
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Runtime
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function consume(Entities\Messages\Entity $entity): bool
 	{
@@ -84,24 +79,15 @@ final class Info implements Consumer
 		$findDeviceQuery->byIdentifier($entity->getIdentifier());
 
 		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\ShellyDevice::class);
+		assert($device instanceof Entities\ShellyDevice || $device === null);
 
 		if ($device === null) {
 			return true;
 		}
 
 		if ($device->getName() === null && $device->getName() !== $entity->getType()) {
-			$findDeviceQuery = new DevicesQueries\FindDevices();
-			$findDeviceQuery->byId($device->getId());
-
-			$deviceEntity = $this->devicesRepository->findOneBy($findDeviceQuery);
-			assert($deviceEntity instanceof Entities\ShellyDevice || $deviceEntity === null);
-
-			if ($deviceEntity === null) {
-				return true;
-			}
-
-			$this->databaseHelper->transaction(function () use ($entity, $deviceEntity): void {
-				$this->devicesManager->update($deviceEntity, Utils\ArrayHash::from([
+			$this->databaseHelper->transaction(function () use ($entity, $device): void {
+				$this->devicesManager->update($device, Utils\ArrayHash::from([
 					'name' => $entity->getType(),
 				]));
 			});
@@ -139,7 +125,7 @@ final class Info implements Consumer
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 				'type' => 'info-message-consumer',
 				'device' => [
-					'id' => $device->getId()->toString(),
+					'id' => $device->getPlainId(),
 				],
 				'data' => $entity->toArray(),
 			],

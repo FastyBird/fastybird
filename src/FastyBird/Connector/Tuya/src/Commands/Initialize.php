@@ -67,7 +67,6 @@ class Initialize extends Console\Command\Command
 	public function __construct(
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Connectors\ConnectorsManager $connectorsManager,
-		private readonly DevicesModels\Connectors\Properties\PropertiesRepository $propertiesRepository,
 		private readonly DevicesModels\Connectors\Properties\PropertiesManager $propertiesManager,
 		private readonly DevicesModels\Connectors\Controls\ControlsManager $controlsManager,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
@@ -173,7 +172,10 @@ class Initialize extends Console\Command\Command
 				$findConnectorQuery = new DevicesQueries\FindConnectors();
 				$findConnectorQuery->byIdentifier($answer);
 
-				if ($this->connectorsRepository->findOneBy($findConnectorQuery) !== null) {
+				if ($this->connectorsRepository->findOneBy(
+					$findConnectorQuery,
+					Entities\TuyaConnector::class,
+				) !== null) {
 					throw new Exceptions\Runtime('This identifier is already used');
 				}
 			}
@@ -192,7 +194,10 @@ class Initialize extends Console\Command\Command
 				$findConnectorQuery = new DevicesQueries\FindConnectors();
 				$findConnectorQuery->byIdentifier($identifier);
 
-				if ($this->connectorsRepository->findOneBy($findConnectorQuery) === null) {
+				if ($this->connectorsRepository->findOneBy(
+					$findConnectorQuery,
+					Entities\TuyaConnector::class,
+				) === null) {
 					break;
 				}
 			}
@@ -373,7 +378,7 @@ class Initialize extends Console\Command\Command
 		$findConnectorQuery = new DevicesQueries\FindConnectors();
 		$findConnectorQuery->byIdentifier($connectorIdentifier);
 
-		$connector = $this->connectorsRepository->findOneBy($findConnectorQuery);
+		$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\TuyaConnector::class);
 
 		if ($connector === null) {
 			$io->error('Something went wrong, connector could not be loaded');
@@ -389,11 +394,7 @@ class Initialize extends Console\Command\Command
 			return;
 		}
 
-		$findPropertyQuery = new DevicesQueries\FindConnectorProperties();
-		$findPropertyQuery->forConnector($connector);
-		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE);
-
-		$modeProperty = $this->propertiesRepository->findOneBy($findPropertyQuery);
+		$modeProperty = $connector->findProperty(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE);
 
 		if ($modeProperty === null) {
 			$changeMode = true;
@@ -441,11 +442,7 @@ class Initialize extends Console\Command\Command
 
 		$accessId = $accessSecret = null;
 
-		$findPropertyQuery = new DevicesQueries\FindConnectorProperties();
-		$findPropertyQuery->forConnector($connector);
-		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_ACCESS_ID);
-
-		$accessIdProperty = $this->propertiesRepository->findOneBy($findPropertyQuery);
+		$accessIdProperty = $connector->findProperty(Types\ConnectorPropertyIdentifier::IDENTIFIER_ACCESS_ID);
 
 		if ($accessIdProperty === null) {
 			$changeAccessId = true;
@@ -463,11 +460,7 @@ class Initialize extends Console\Command\Command
 			$accessId = $this->askAccessId($io);
 		}
 
-		$findPropertyQuery = new DevicesQueries\FindConnectorProperties();
-		$findPropertyQuery->forConnector($connector);
-		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_ACCESS_SECRET);
-
-		$accessSecretProperty = $this->propertiesRepository->findOneBy($findPropertyQuery);
+		$accessSecretProperty = $connector->findProperty(Types\ConnectorPropertyIdentifier::IDENTIFIER_ACCESS_SECRET);
 
 		if ($accessSecretProperty === null) {
 			$changeAccessSecret = true;
@@ -497,11 +490,7 @@ class Initialize extends Console\Command\Command
 				&& $mode->equalsValue(Types\ClientMode::MODE_CLOUD)
 			)
 		) {
-			$findPropertyQuery = new DevicesQueries\FindConnectorProperties();
-			$findPropertyQuery->forConnector($connector);
-			$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_UID);
-
-			$uidProperty = $this->propertiesRepository->findOneBy($findPropertyQuery);
+			$uidProperty = $connector->findProperty(Types\ConnectorPropertyIdentifier::IDENTIFIER_UID);
 
 			if ($uidProperty === null) {
 				$changeUid = true;
@@ -702,7 +691,7 @@ class Initialize extends Console\Command\Command
 		$findConnectorQuery = new DevicesQueries\FindConnectors();
 		$findConnectorQuery->byIdentifier($connectorIdentifier);
 
-		$connector = $this->connectorsRepository->findOneBy($findConnectorQuery);
+		$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\TuyaConnector::class);
 
 		if ($connector === null) {
 			$io->error('Something went wrong, connector could not be loaded');

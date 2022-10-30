@@ -368,7 +368,7 @@ class Initialize extends Console\Command\Command
 		$findConnectorQuery = new DevicesQueries\FindConnectors();
 		$findConnectorQuery->byIdentifier($connectorIdentifier);
 
-		$connector = $this->connectorsRepository->findOneBy($findConnectorQuery);
+		$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\HomeKitConnector::class);
 
 		if ($connector === null) {
 			$io->error('Something went wrong, connector could not be loaded');
@@ -504,7 +504,7 @@ class Initialize extends Console\Command\Command
 		$findConnectorQuery = new DevicesQueries\FindConnectors();
 		$findConnectorQuery->byIdentifier($connectorIdentifier);
 
-		$connector = $this->connectorsRepository->findOneBy($findConnectorQuery);
+		$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\HomeKitConnector::class);
 
 		if ($connector === null) {
 			$io->error('Something went wrong, connector could not be loaded');

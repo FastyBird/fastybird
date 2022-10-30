@@ -66,9 +66,10 @@ final class ExtensionAttribute implements Consumers\Consumer
 		}
 
 		$findDeviceQuery = new DevicesQueries\FindDevices();
+		$findDeviceQuery->byConnectorId($entity->getConnector());
 		$findDeviceQuery->byIdentifier($entity->getDevice());
 
-		$device = $this->deviceRepository->findOneBy($findDeviceQuery);
+		$device = $this->deviceRepository->findOneBy($findDeviceQuery, Entities\FbMqttDevice::class);
 
 		if ($device === null) {
 			$this->logger->error(
@@ -170,7 +171,7 @@ final class ExtensionAttribute implements Consumers\Consumer
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 				'type' => 'extension-attribute-message-consumer',
 				'device' => [
-					'id' => $device->getId()->toString(),
+					'id' => $device->getPlainId(),
 				],
 				'data' => $entity->toArray(),
 			],

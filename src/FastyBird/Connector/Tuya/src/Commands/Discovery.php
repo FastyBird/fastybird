@@ -81,7 +81,6 @@ class Discovery extends Console\Command\Command
 		private readonly Helpers\Device $deviceHelper,
 		private readonly Consumers\Messages $consumer,
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
-		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		Log\LoggerInterface|null $logger = null,
@@ -123,12 +122,8 @@ class Discovery extends Console\Command\Command
 	/**
 	 * @throws Console\Exception\InvalidArgumentException
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	protected function execute(Input\InputInterface $input, Output\OutputInterface $output): int
 	{
@@ -202,6 +197,7 @@ class Discovery extends Console\Command\Command
 				$findConnectorQuery->byIdentifier($connectorIdentifier);
 
 				$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\TuyaConnector::class);
+				assert($connector instanceof Entities\TuyaConnector || $connector === null);
 
 				if ($connector === null) {
 					$io->warning('Connector was not found in system');
@@ -275,7 +271,7 @@ class Discovery extends Console\Command\Command
 		}
 
 		$mode = $this->connectorHelper->getConfiguration(
-			$connector->getId(),
+			$connector,
 			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE),
 		);
 
@@ -284,8 +280,6 @@ class Discovery extends Console\Command\Command
 
 			return Console\Command\Command::FAILURE;
 		}
-
-		assert($connector instanceof Entities\TuyaConnector);
 
 		$this->client = $this->clientFactory->create($connector);
 
@@ -371,7 +365,7 @@ class Discovery extends Console\Command\Command
 			$findDevicesQuery = new DevicesQueries\FindDevices();
 			$findDevicesQuery->byConnectorId($connector->getId());
 
-			$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\TuyaDevice::class);
+			$devices = $connector->getDevices();
 
 			$table = new Console\Helper\Table($output);
 			$table->setHeaders([
@@ -385,6 +379,8 @@ class Discovery extends Console\Command\Command
 			$foundDevices = 0;
 
 			foreach ($devices as $device) {
+				assert($device instanceof Entities\TuyaDevice);
+
 				$createdAt = $device->getCreatedAt();
 
 				if (
@@ -395,7 +391,7 @@ class Discovery extends Console\Command\Command
 					$foundDevices++;
 
 					$ipAddress = $this->deviceHelper->getConfiguration(
-						$device->getId(),
+						$device,
 						Types\DevicePropertyIdentifier::get(Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS),
 					);
 

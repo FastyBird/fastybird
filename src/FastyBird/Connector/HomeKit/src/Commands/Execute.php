@@ -140,7 +140,7 @@ class Execute extends Console\Command\Command
 				$findConnectorQuery->byIdentifier($connectorId);
 			}
 
-			$connector = $this->connectorsRepository->findOneBy($findConnectorQuery);
+			$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\HomeKitConnector::class);
 
 			if ($connector === null) {
 				$io->warning('Connector was not found in system');
@@ -255,7 +255,7 @@ class Execute extends Console\Command\Command
 		$serviceCmd = $symfonyApp->find('fb:devices-module:service');
 
 		$result = $serviceCmd->run(new Input\ArrayInput([
-			'--connector' => $connector->getId()->toString(),
+			'--connector' => $connector->getPlainId(),
 			'--no-confirm' => true,
 			'--quiet' => true,
 		]), $output);

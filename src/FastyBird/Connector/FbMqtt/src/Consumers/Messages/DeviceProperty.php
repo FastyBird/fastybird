@@ -80,30 +80,48 @@ final class DeviceProperty implements Consumers\Consumer
 			return false;
 		}
 
-		if ($entity->getValue() !== FbMqtt\Constants::VALUE_NOT_SET) {
-			$findDeviceQuery = new DevicesQueries\FindDevices();
-			$findDeviceQuery->byConnectorId($entity->getConnector());
-			$findDeviceQuery->byIdentifier($entity->getDevice());
+		$findDeviceQuery = new DevicesQueries\FindDevices();
+		$findDeviceQuery->byConnectorId($entity->getConnector());
+		$findDeviceQuery->byIdentifier($entity->getDevice());
 
-			$device = $this->deviceRepository->findOneBy($findDeviceQuery, Entities\FbMqttDevice::class);
+		$device = $this->deviceRepository->findOneBy($findDeviceQuery, Entities\FbMqttDevice::class);
 
-			if ($device === null) {
-				$this->logger->error(
-					sprintf('Device "%s" is not registered', $entity->getDevice()),
-					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
-						'type' => 'device-property-message-consumer',
-						'device' => [
-							'identifier' => $entity->getDevice(),
-						],
+		if ($device === null) {
+			$this->logger->error(
+				sprintf('Device "%s" is not registered', $entity->getDevice()),
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+					'type' => 'device-property-message-consumer',
+					'device' => [
+						'identifier' => $entity->getDevice(),
 					],
-				);
+				],
+			);
 
-				return true;
-			}
+			return true;
+		}
 
-			$property = $device->findProperty($entity->getProperty());
+		$property = $device->findProperty($entity->getProperty());
 
+		if ($property === null) {
+			$this->logger->error(
+				sprintf('Property "%s" is not registered', $entity->getProperty()),
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+					'type' => 'device-property-message-consumer',
+					'device' => [
+						'identifier' => $entity->getDevice(),
+					],
+					'property' => [
+						'identifier' => $entity->getProperty(),
+					],
+				],
+			);
+
+			return true;
+		}
+
+		if ($entity->getValue() !== FbMqtt\Constants::VALUE_NOT_SET) {
 			if ($property instanceof DevicesEntities\Devices\Properties\Variable) {
 				$findPropertyQuery = new DevicesQueries\FindDeviceProperties();
 				$findPropertyQuery->byId($property->getId());
@@ -138,46 +156,6 @@ final class DeviceProperty implements Consumers\Consumer
 				);
 			}
 		} else {
-			$findDeviceQuery = new DevicesQueries\FindDevices();
-			$findDeviceQuery->byIdentifier($entity->getDevice());
-
-			$device = $this->deviceRepository->findOneBy($findDeviceQuery);
-
-			if ($device === null) {
-				$this->logger->error(
-					sprintf('Device "%s" is not registered', $entity->getDevice()),
-					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
-						'type' => 'device-property-message-consumer',
-						'device' => [
-							'identifier' => $entity->getDevice(),
-						],
-					],
-				);
-
-				return true;
-			}
-
-			$property = $device->findProperty($entity->getProperty());
-
-			if ($property === null) {
-				$this->logger->error(
-					sprintf('Property "%s" is not registered', $entity->getProperty()),
-					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
-						'type' => 'device-property-message-consumer',
-						'device' => [
-							'identifier' => $entity->getDevice(),
-						],
-						'property' => [
-							'identifier' => $entity->getProperty(),
-						],
-					],
-				);
-
-				return true;
-			}
-
 			if (count($entity->getAttributes()) > 0) {
 				$this->databaseHelper->transaction(function () use ($entity, $property): void {
 					$toUpdate = $this->handlePropertyConfiguration($entity);
