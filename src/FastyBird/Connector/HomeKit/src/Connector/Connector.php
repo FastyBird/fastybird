@@ -21,8 +21,10 @@ use FastyBird\Connector\HomeKit\Servers;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Connectors as DevicesConnectors;
+use FastyBird\Module\Devices\Entities as DevicesEntities;
 use Nette;
 use Psr\Log;
+use function assert;
 
 /**
  * Connector service executor
@@ -46,7 +48,7 @@ final class Connector implements DevicesConnectors\Connector
 	 * @param Array<Servers\ServerFactory> $serversFactories
 	 */
 	public function __construct(
-		private readonly Entities\HomeKitConnector $connector,
+		private readonly DevicesEntities\Connectors\Connector $connector,
 		private readonly array $serversFactories,
 		private readonly ExchangeConsumers\Container $consumer,
 		Log\LoggerInterface|null $logger = null,
@@ -57,6 +59,8 @@ final class Connector implements DevicesConnectors\Connector
 
 	public function execute(): void
 	{
+		assert($this->connector instanceof Entities\HomeKitConnector);
+
 		$this->consumer->enable(Consumers\Consumer::class);
 
 		$this->logger->debug(

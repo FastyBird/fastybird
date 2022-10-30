@@ -22,11 +22,13 @@ use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Connectors as DevicesConnectors;
+use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Nette;
 use React\EventLoop;
 use ReflectionClass;
 use function array_key_exists;
+use function assert;
 use function React\Async\async;
 
 /**
@@ -52,7 +54,7 @@ final class Connector implements DevicesConnectors\Connector
 	 * @param Array<Clients\ClientFactory> $clientsFactories
 	 */
 	public function __construct(
-		private readonly Entities\TuyaConnector $connector,
+		private readonly DevicesEntities\Connectors\Connector $connector,
 		private readonly array $clientsFactories,
 		private readonly Helpers\Connector $connectorHelper,
 		private readonly Consumers\Messages $consumer,
@@ -69,6 +71,8 @@ final class Connector implements DevicesConnectors\Connector
 	 */
 	public function execute(): void
 	{
+		assert($this->connector instanceof Entities\TuyaConnector);
+
 		$mode = $this->connectorHelper->getConfiguration(
 			$this->connector,
 			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE),
