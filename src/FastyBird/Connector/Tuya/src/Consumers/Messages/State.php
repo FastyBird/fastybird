@@ -25,6 +25,7 @@ use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Psr\Log;
@@ -98,7 +99,7 @@ final class State implements Consumer
 					$this->propertyStateHelper->setValue(
 						$property,
 						Nette\Utils\ArrayHash::from([
-							'valid' => false,
+							DevicesStates\Property::VALID_KEY => false,
 						]),
 					);
 				}
@@ -112,7 +113,7 @@ final class State implements Consumer
 						$this->propertyStateHelper->setValue(
 							$property,
 							Nette\Utils\ArrayHash::from([
-								'valid' => false,
+								DevicesStates\Property::VALID_KEY => false,
 							]),
 						);
 					}

@@ -31,6 +31,7 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use InvalidArgumentException;
 use Nette;
@@ -399,6 +400,7 @@ final class Cloud implements Client
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\Logic
 	 * @throws RuntimeException
@@ -563,9 +565,11 @@ final class Cloud implements Client
 					continue;
 				}
 
+				$expectedValue = DevicesUtilities\ValueHelper::flattenValue($state->getExpectedValue());
+
 				if (
 					$property->isSettable()
-					&& $state->getExpectedValue() !== null
+					&& $expectedValue !== null
 					&& $state->isPending() === true
 				) {
 					$pending = is_string($state->getPending())
@@ -602,13 +606,15 @@ final class Cloud implements Client
 						$this->openApiApi->setDeviceStatus(
 							$device->getIdentifier(),
 							$property->getIdentifier(),
-							$state->getExpectedValue(),
+							$expectedValue,
 						)
 							->then(function () use ($property): void {
 								$this->propertyStateHelper->setValue(
 									$property,
 									Utils\ArrayHash::from([
-										'pending' => $this->dateTimeFactory->getNow()->format(DateTimeInterface::ATOM),
+										DevicesStates\Property::PENDING_KEY => $this->dateTimeFactory->getNow()->format(
+											DateTimeInterface::ATOM,
+										),
 									]),
 								);
 							})
@@ -616,8 +622,8 @@ final class Cloud implements Client
 								$this->propertyStateHelper->setValue(
 									$property,
 									Utils\ArrayHash::from([
-										'expectedValue' => null,
-										'pending' => false,
+										DevicesStates\Property::EXPECTED_VALUE_KEY => null,
+										DevicesStates\Property::PENDING_KEY => false,
 									]),
 								);
 

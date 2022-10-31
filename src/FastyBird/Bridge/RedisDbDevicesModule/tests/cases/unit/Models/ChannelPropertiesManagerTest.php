@@ -7,6 +7,7 @@ use FastyBird\Bridge\RedisDbDevicesModule\Models;
 use FastyBird\Bridge\RedisDbDevicesModule\Tests\Cases\Unit\BaseTestCase;
 use FastyBird\Bridge\RedisDbDevicesModule\Tests\Tools\JsonAssert;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
+use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Plugin\RedisDb\Client as RedisDbClient;
 use Nette\Utils;
 use Ramsey\Uuid\Uuid;
@@ -71,8 +72,8 @@ final class ChannelPropertiesManagerTest extends BaseTestCase
 			->willReturn($id);
 
 		$state = $manager->create($property->getId(), Utils\ArrayHash::from([
-			'actualValue' => 10,
-			'expectedValue' => 20,
+			DevicesStates\Property::ACTUAL_VALUE_KEY => 10,
+			DevicesStates\Property::EXPECTED_VALUE_KEY => 20,
 		]));
 
 		self::assertSame(10, $state->getActualValue());
@@ -141,7 +142,7 @@ final class ChannelPropertiesManagerTest extends BaseTestCase
 		$manager = $this->container->getByType(Models\ChannelPropertiesManager::class);
 
 		$state = $manager->update($state, Utils\ArrayHash::from([
-			'expectedValue' => 40,
+			DevicesStates\Property::EXPECTED_VALUE_KEY => 40,
 		]));
 
 		self::assertSame(10, $state->getActualValue());

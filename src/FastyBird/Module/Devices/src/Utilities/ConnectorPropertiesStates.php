@@ -16,6 +16,7 @@
 namespace FastyBird\Module\Devices\Utilities;
 
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
@@ -50,12 +51,42 @@ final class ConnectorPropertiesStates
 		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
+	/**
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
 	public function getValue(
 		MetadataEntities\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
 	): States\ConnectorProperty|null
 	{
 		try {
-			return $this->connectorPropertyStateRepository->findOneById($property->getId());
+			$state = $this->connectorPropertyStateRepository->findOneById($property->getId());
+
+			if ($state !== null) {
+				if ($state->getActualValue() !== null) {
+					$state->setActualValue(
+						ValueHelper::normalizeValue(
+							$property->getDataType(),
+							$state->getActualValue(),
+							$property->getFormat(),
+							$property->getInvalid(),
+						),
+					);
+				}
+
+				if ($state->getExpectedValue() !== null) {
+					$state->setActualValue(
+						ValueHelper::normalizeValue(
+							$property->getDataType(),
+							$state->getExpectedValue(),
+							$property->getFormat(),
+							$property->getInvalid(),
+						),
+					);
+				}
+			}
+
+			return $state;
 		} catch (Exceptions\NotImplemented) {
 			$this->logger->warning(
 				'Connectors states repository is not configured. State could not be fetched',
@@ -69,6 +100,10 @@ final class ConnectorPropertiesStates
 		return null;
 	}
 
+	/**
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
 	public function setValue(
 		MetadataEntities\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
 		Utils\ArrayHash $data,
@@ -86,6 +121,36 @@ final class ConnectorPropertiesStates
 			);
 
 			return;
+		}
+
+		if ($data->offsetExists(States\Property::ACTUAL_VALUE_KEY)) {
+			$data->offsetSet(
+				States\Property::ACTUAL_VALUE_KEY,
+				ValueHelper::flattenValue(
+					ValueHelper::normalizeValue(
+						$property->getDataType(),
+						/** @phpstan-ignore-next-line */
+						$data->offsetGet(States\Property::ACTUAL_VALUE_KEY),
+						$property->getFormat(),
+						$property->getInvalid(),
+					),
+				),
+			);
+		}
+
+		if ($data->offsetExists(States\Property::EXPECTED_VALUE_KEY)) {
+			$data->offsetSet(
+				States\Property::EXPECTED_VALUE_KEY,
+				ValueHelper::flattenValue(
+					ValueHelper::normalizeValue(
+						$property->getDataType(),
+						/** @phpstan-ignore-next-line */
+						$data->offsetGet(States\Property::EXPECTED_VALUE_KEY),
+						$property->getFormat(),
+						$property->getInvalid(),
+					),
+				),
+			);
 		}
 
 		try {
@@ -140,6 +205,9 @@ final class ConnectorPropertiesStates
 
 	/**
 	 * @param MetadataEntities\DevicesModule\ConnectorDynamicProperty|Array<MetadataEntities\DevicesModule\ConnectorDynamicProperty>|Entities\Connectors\Properties\Dynamic|Array<Entities\Connectors\Properties\Dynamic> $property
+	 *
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function setValidState(
 		MetadataEntities\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic|array $property,
@@ -149,12 +217,12 @@ final class ConnectorPropertiesStates
 		if (is_array($property)) {
 			foreach ($property as $item) {
 				$this->setValue($item, Utils\ArrayHash::from([
-					'valid' => $state,
+					States\Property::VALID_KEY => $state,
 				]));
 			}
 		} else {
 			$this->setValue($property, Utils\ArrayHash::from([
-				'valid' => $state,
+				States\Property::VALID_KEY => $state,
 			]));
 		}
 	}

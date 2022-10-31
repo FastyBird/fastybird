@@ -53,12 +53,42 @@ final class DevicePropertiesStates
 		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
+	/**
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
 	public function getValue(
 		MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
 	): States\DeviceProperty|null
 	{
 		try {
-			return $this->devicePropertyStateRepository->findOneById($property->getId());
+			$state = $this->devicePropertyStateRepository->findOneById($property->getId());
+
+			if ($state !== null) {
+				if ($state->getActualValue() !== null) {
+					$state->setActualValue(
+						ValueHelper::normalizeValue(
+							$property->getDataType(),
+							$state->getActualValue(),
+							$property->getFormat(),
+							$property->getInvalid(),
+						),
+					);
+				}
+
+				if ($state->getExpectedValue() !== null) {
+					$state->setActualValue(
+						ValueHelper::normalizeValue(
+							$property->getDataType(),
+							$state->getExpectedValue(),
+							$property->getFormat(),
+							$property->getInvalid(),
+						),
+					);
+				}
+			}
+
+			return $state;
 		} catch (Exceptions\NotImplemented) {
 			$this->logger->warning(
 				'Devices states repository is not configured. State could not be fetched',
@@ -117,6 +147,36 @@ final class DevicePropertiesStates
 			);
 
 			return;
+		}
+
+		if ($data->offsetExists(States\Property::ACTUAL_VALUE_KEY)) {
+			$data->offsetSet(
+				States\Property::ACTUAL_VALUE_KEY,
+				ValueHelper::flattenValue(
+					ValueHelper::normalizeValue(
+						$property->getDataType(),
+						/** @phpstan-ignore-next-line */
+						$data->offsetGet(States\Property::ACTUAL_VALUE_KEY),
+						$property->getFormat(),
+						$property->getInvalid(),
+					),
+				),
+			);
+		}
+
+		if ($data->offsetExists(States\Property::EXPECTED_VALUE_KEY)) {
+			$data->offsetSet(
+				States\Property::EXPECTED_VALUE_KEY,
+				ValueHelper::flattenValue(
+					ValueHelper::normalizeValue(
+						$property->getDataType(),
+						/** @phpstan-ignore-next-line */
+						$data->offsetGet(States\Property::EXPECTED_VALUE_KEY),
+						$property->getFormat(),
+						$property->getInvalid(),
+					),
+				),
+			);
 		}
 
 		try {
@@ -184,12 +244,12 @@ final class DevicePropertiesStates
 		if (is_array($property)) {
 			foreach ($property as $item) {
 				$this->setValue($item, Utils\ArrayHash::from([
-					'valid' => $state,
+					States\Property::VALID_KEY => $state,
 				]));
 			}
 		} else {
 			$this->setValue($property, Utils\ArrayHash::from([
-				'valid' => $state,
+				States\Property::VALID_KEY => $state,
 			]));
 		}
 	}

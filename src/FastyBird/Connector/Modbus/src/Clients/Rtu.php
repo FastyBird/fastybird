@@ -29,6 +29,7 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Nette\Utils;
@@ -386,9 +387,9 @@ class Rtu implements Client
 					$this->propertyStateHelper->setValue(
 						$property,
 						Utils\ArrayHash::from([
-							'valid' => false,
-							'expectedValue' => null,
-							'pending' => false,
+							DevicesStates\Property::VALID_KEY => false,
+							DevicesStates\Property::EXPECTED_VALUE_KEY => null,
+							DevicesStates\Property::PENDING_KEY => false,
 						]),
 					);
 				}
@@ -609,8 +610,8 @@ class Rtu implements Client
 				$this->propertyStateHelper->setValue(
 					$property,
 					Utils\ArrayHash::from([
-						'expectedValue' => null,
-						'pending' => false,
+						DevicesStates\Property::EXPECTED_VALUE_KEY => null,
+						DevicesStates\Property::PENDING_KEY => false,
 					]),
 				);
 
@@ -634,8 +635,8 @@ class Rtu implements Client
 				$this->propertyStateHelper->setValue(
 					$property,
 					Utils\ArrayHash::from([
-						'expectedValue' => null,
-						'pending' => false,
+						DevicesStates\Property::EXPECTED_VALUE_KEY => null,
+						DevicesStates\Property::PENDING_KEY => false,
 					]),
 				);
 
@@ -693,8 +694,8 @@ class Rtu implements Client
 							$this->propertyStateHelper->setValue(
 								$property,
 								Utils\ArrayHash::from([
-									'expectedValue' => null,
-									'pending' => false,
+									DevicesStates\Property::EXPECTED_VALUE_KEY => null,
+									DevicesStates\Property::PENDING_KEY => false,
 								]),
 							);
 
@@ -708,8 +709,8 @@ class Rtu implements Client
 						$this->propertyStateHelper->setValue(
 							$property,
 							Utils\ArrayHash::from([
-								'expectedValue' => null,
-								'pending' => false,
+								DevicesStates\Property::EXPECTED_VALUE_KEY => null,
+								DevicesStates\Property::PENDING_KEY => false,
 							]),
 						);
 
@@ -723,8 +724,8 @@ class Rtu implements Client
 						$this->propertyStateHelper->setValue(
 							$property,
 							Utils\ArrayHash::from([
-								'expectedValue' => null,
-								'pending' => false,
+								DevicesStates\Property::EXPECTED_VALUE_KEY => null,
+								DevicesStates\Property::PENDING_KEY => false,
 							]),
 						);
 
@@ -752,8 +753,8 @@ class Rtu implements Client
 						$this->propertyStateHelper->setValue(
 							$property,
 							Utils\ArrayHash::from([
-								'expectedValue' => null,
-								'pending' => false,
+								DevicesStates\Property::EXPECTED_VALUE_KEY => null,
+								DevicesStates\Property::PENDING_KEY => false,
 							]),
 						);
 
@@ -764,8 +765,8 @@ class Rtu implements Client
 						$this->propertyStateHelper->setValue(
 							$property,
 							Utils\ArrayHash::from([
-								'expectedValue' => null,
-								'pending' => false,
+								DevicesStates\Property::EXPECTED_VALUE_KEY => null,
+								DevicesStates\Property::PENDING_KEY => false,
 							]),
 						);
 
@@ -776,8 +777,8 @@ class Rtu implements Client
 						$this->propertyStateHelper->setValue(
 							$property,
 							Utils\ArrayHash::from([
-								'expectedValue' => null,
-								'pending' => false,
+								DevicesStates\Property::EXPECTED_VALUE_KEY => null,
+								DevicesStates\Property::PENDING_KEY => false,
 							]),
 						);
 
@@ -788,8 +789,8 @@ class Rtu implements Client
 						$this->propertyStateHelper->setValue(
 							$property,
 							Utils\ArrayHash::from([
-								'expectedValue' => null,
-								'pending' => false,
+								DevicesStates\Property::EXPECTED_VALUE_KEY => null,
+								DevicesStates\Property::PENDING_KEY => false,
 							]),
 						);
 
@@ -804,8 +805,8 @@ class Rtu implements Client
 					$this->propertyStateHelper->setValue(
 						$property,
 						Utils\ArrayHash::from([
-							'expectedValue' => null,
-							'pending' => false,
+							DevicesStates\Property::EXPECTED_VALUE_KEY => null,
+							DevicesStates\Property::PENDING_KEY => false,
 						]),
 					);
 
@@ -830,7 +831,9 @@ class Rtu implements Client
 					$this->propertyStateHelper->setValue(
 						$property,
 						Utils\ArrayHash::from([
-							'pending' => $this->dateTimeFactory->getNow()->format(DateTimeInterface::ATOM),
+							DevicesStates\Property::PENDING_KEY => $this->dateTimeFactory->getNow()->format(
+								DateTimeInterface::ATOM,
+							),
 						]),
 					);
 				}
@@ -892,7 +895,7 @@ class Rtu implements Client
 				$this->propertyStateHelper->setValue(
 					$property,
 					Utils\ArrayHash::from([
-						'valid' => false,
+						DevicesStates\Property::VALID_KEY => false,
 					]),
 				);
 
@@ -916,7 +919,7 @@ class Rtu implements Client
 				$this->propertyStateHelper->setValue(
 					$property,
 					Utils\ArrayHash::from([
-						'valid' => false,
+						DevicesStates\Property::VALID_KEY => false,
 					]),
 				);
 
@@ -949,7 +952,7 @@ class Rtu implements Client
 					$this->propertyStateHelper->setValue(
 						$property,
 						Utils\ArrayHash::from([
-							'valid' => false,
+							DevicesStates\Property::VALID_KEY => false,
 						]),
 					);
 
@@ -963,7 +966,7 @@ class Rtu implements Client
 					$this->propertyStateHelper->setValue(
 						$property,
 						Utils\ArrayHash::from([
-							'valid' => false,
+							DevicesStates\Property::VALID_KEY => false,
 						]),
 					);
 
@@ -1006,7 +1009,7 @@ class Rtu implements Client
 					$this->propertyStateHelper->setValue(
 						$property,
 						Utils\ArrayHash::from([
-							'valid' => false,
+							DevicesStates\Property::VALID_KEY => false,
 						]),
 					);
 
@@ -1017,7 +1020,7 @@ class Rtu implements Client
 					$this->propertyStateHelper->setValue(
 						$property,
 						Utils\ArrayHash::from([
-							'valid' => false,
+							DevicesStates\Property::VALID_KEY => false,
 						]),
 					);
 
@@ -1028,7 +1031,7 @@ class Rtu implements Client
 					$this->propertyStateHelper->setValue(
 						$property,
 						Utils\ArrayHash::from([
-							'valid' => false,
+							DevicesStates\Property::VALID_KEY => false,
 						]),
 					);
 
@@ -1039,7 +1042,7 @@ class Rtu implements Client
 					$this->propertyStateHelper->setValue(
 						$property,
 						Utils\ArrayHash::from([
-							'valid' => false,
+							DevicesStates\Property::VALID_KEY => false,
 						]),
 					);
 
@@ -1050,7 +1053,7 @@ class Rtu implements Client
 					$this->propertyStateHelper->setValue(
 						$property,
 						Utils\ArrayHash::from([
-							'valid' => false,
+							DevicesStates\Property::VALID_KEY => false,
 						]),
 					);
 
@@ -1062,7 +1065,7 @@ class Rtu implements Client
 				$this->propertyStateHelper->setValue(
 					$property,
 					Utils\ArrayHash::from([
-						'valid' => false,
+						DevicesStates\Property::VALID_KEY => false,
 					]),
 				);
 
@@ -1086,7 +1089,7 @@ class Rtu implements Client
 				$this->propertyStateHelper->setValue(
 					$property,
 					Utils\ArrayHash::from([
-						'valid' => false,
+						DevicesStates\Property::VALID_KEY => false,
 					]),
 				);
 
@@ -1096,14 +1099,14 @@ class Rtu implements Client
 				$this->propertyStateHelper->setValue(
 					$property,
 					Utils\ArrayHash::from([
-						'actualValue' => DevicesUtilities\ValueHelper::flattenValue(
+						DevicesStates\Property::ACTUAL_VALUE_KEY => DevicesUtilities\ValueHelper::flattenValue(
 							$this->transformer->transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$value,
 							),
 						),
-						'valid' => true,
+						DevicesStates\Property::VALID_KEY => true,
 					]),
 				);
 			}

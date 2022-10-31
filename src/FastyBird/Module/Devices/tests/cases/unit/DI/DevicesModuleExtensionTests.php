@@ -28,7 +28,6 @@ final class DevicesModuleExtensionTests extends DbTestCase
 	{
 		self::assertNotNull($this->getContainer()->getByType(Commands\Initialize::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Commands\Connector::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Commands\Exchange::class, false));
 
 		self::assertNotNull($this->getContainer()->getByType(Middleware\Access::class, false));
 

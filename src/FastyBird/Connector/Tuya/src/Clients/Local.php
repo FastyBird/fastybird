@@ -28,6 +28,7 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Nette\Utils;
@@ -342,9 +343,11 @@ final class Local implements Client
 					continue;
 				}
 
+				$expectedValue = DevicesUtilities\ValueHelper::flattenValue($state->getExpectedValue());
+
 				if (
 					$property->isSettable()
-					&& $state->getExpectedValue() !== null
+					&& $expectedValue !== null
 					&& $state->isPending() === true
 				) {
 					$pending = is_string($state->getPending())
@@ -380,13 +383,15 @@ final class Local implements Client
 
 						$this->devicesClients[$device->getPlainId()]->writeState(
 							$property->getIdentifier(),
-							$state->getExpectedValue(),
+							$expectedValue,
 						)
 							->then(function () use ($property): void {
 								$this->propertyStateHelper->setValue(
 									$property,
 									Utils\ArrayHash::from([
-										'pending' => $this->dateTimeFactory->getNow()->format(DateTimeInterface::ATOM),
+										DevicesStates\Property::PENDING_KEY => $this->dateTimeFactory->getNow()->format(
+											DateTimeInterface::ATOM,
+										),
 									]),
 								);
 							})
@@ -409,8 +414,8 @@ final class Local implements Client
 								$this->propertyStateHelper->setValue(
 									$property,
 									Utils\ArrayHash::from([
-										'expectedValue' => null,
-										'pending' => false,
+										DevicesStates\Property::EXPECTED_VALUE_KEY => null,
+										DevicesStates\Property::PENDING_KEY => false,
 									]),
 								);
 

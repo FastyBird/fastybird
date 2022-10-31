@@ -20,6 +20,7 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
+use FastyBird\Module\Devices\States;
 use Nette;
 use Nette\Utils;
 use function assert;
@@ -85,16 +86,20 @@ final class DeviceConnection
 		$this->propertiesStates->setValue(
 			$property,
 			Utils\ArrayHash::from([
-				'actualValue' => $state->getValue(),
-				'expectedValue' => null,
-				'pending' => false,
-				'valid' => true,
+				States\Property::ACTUAL_VALUE_KEY => $state->getValue(),
+				States\Property::EXPECTED_VALUE_KEY => null,
+				States\Property::PENDING_KEY => false,
+				States\Property::VALID_KEY => true,
 			]),
 		);
 
 		return false;
 	}
 
+	/**
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
 	public function getState(
 		Entities\Devices\Device $device,
 	): MetadataTypes\ConnectionState

@@ -28,6 +28,7 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use InvalidArgumentException;
 use Nette;
@@ -372,7 +373,9 @@ final class Http
 								$this->propertyStateHelper->setValue(
 									$property,
 									Utils\ArrayHash::from([
-										'pending' => $this->dateTimeFactory->getNow()->format(DateTimeInterface::ATOM),
+										DevicesStates\Property::PENDING_KEY => $this->dateTimeFactory->getNow()->format(
+											DateTimeInterface::ATOM,
+										),
 									]),
 								);
 							})
@@ -382,8 +385,8 @@ final class Http
 										$this->propertyStateHelper->setValue(
 											$property,
 											Utils\ArrayHash::from([
-												'expectedValue' => null,
-												'pending' => false,
+												DevicesStates\Property::EXPECTED_VALUE_KEY => null,
+												DevicesStates\Property::PENDING_KEY => false,
 											]),
 										);
 

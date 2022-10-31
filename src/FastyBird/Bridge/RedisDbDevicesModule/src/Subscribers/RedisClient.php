@@ -95,7 +95,7 @@ class RedisClient implements EventDispatcher\EventSubscriberInterface
 
 	public function exchangeStartup(): void
 	{
-		$this->consumer->enable(DevicesConsumers\States::class);
+		$this->consumer->enable(DevicesConsumers\State::class);
 	}
 
 }

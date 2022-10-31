@@ -26,6 +26,7 @@ use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
+use FastyBird\Module\Devices\States;
 use FastyBird\Module\Devices\Utilities;
 use IPub\Phone\Exceptions as PhoneExceptions;
 use Nette\Utils;
@@ -40,7 +41,7 @@ use function in_array;
  *
  * @author          Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class States implements ExchangeConsumers\Consumer
+final class State implements ExchangeConsumers\Consumer
 {
 
 	private const PROPERTIES_ACTIONS_ROUTING_KEYS = [
@@ -100,8 +101,11 @@ final class States implements ExchangeConsumers\Consumer
 					$this->connectorPropertiesStates->setValue(
 						$property,
 						Utils\ArrayHash::from([
-							'expectedValue' => $this->normalizeValue($property, $entity->getExpectedValue()),
-							'pending' => true,
+							States\Property::EXPECTED_VALUE_KEY => $this->normalizeValue(
+								$property,
+								$entity->getExpectedValue(),
+							),
+							States\Property::PENDING_KEY => true,
 						]),
 					);
 				} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
@@ -153,8 +157,11 @@ final class States implements ExchangeConsumers\Consumer
 					$this->devicePropertiesStates->setValue(
 						$property,
 						Utils\ArrayHash::from([
-							'expectedValue' => $this->normalizeValue($property, $entity->getExpectedValue()),
-							'pending' => true,
+							States\Property::EXPECTED_VALUE_KEY => $this->normalizeValue(
+								$property,
+								$entity->getExpectedValue(),
+							),
+							States\Property::PENDING_KEY => true,
 						]),
 					);
 				} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
@@ -206,8 +213,11 @@ final class States implements ExchangeConsumers\Consumer
 					$this->channelPropertiesStates->setValue(
 						$property,
 						Utils\ArrayHash::from([
-							'expectedValue' => $this->normalizeValue($property, $entity->getExpectedValue()),
-							'pending' => true,
+							States\Property::EXPECTED_VALUE_KEY => $this->normalizeValue(
+								$property,
+								$entity->getExpectedValue(),
+							),
+							States\Property::PENDING_KEY => true,
 						]),
 					);
 				} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {

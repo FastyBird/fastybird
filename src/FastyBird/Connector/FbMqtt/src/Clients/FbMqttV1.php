@@ -30,6 +30,7 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette\Utils;
 use Psr\Log;
@@ -507,7 +508,7 @@ final class FbMqttV1 extends Client
 						strval($state->getExpectedValue()),
 					)->then(function () use ($property, $now): void {
 						$this->propertyStateHelper->setValue($property, Utils\ArrayHash::from([
-							'pending' => $now->format(DateTimeInterface::ATOM),
+							DevicesStates\Property::PENDING_KEY => $now->format(DateTimeInterface::ATOM),
 						]));
 					})->otherwise(function () use ($property): void {
 						unset($this->processedProperties[$property->getPlainId()]);
@@ -586,7 +587,7 @@ final class FbMqttV1 extends Client
 							strval($state->getExpectedValue()),
 						)->then(function () use ($property, $now): void {
 							$this->propertyStateHelper->setValue($property, Utils\ArrayHash::from([
-								'pending' => $now->format(DateTimeInterface::ATOM),
+								DevicesStates\Property::PENDING_KEY => $now->format(DateTimeInterface::ATOM),
 							]));
 						})->otherwise(function () use ($property): void {
 							unset($this->processedProperties[$property->getPlainId()]);

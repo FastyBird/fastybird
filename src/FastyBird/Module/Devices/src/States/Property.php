@@ -15,6 +15,8 @@
 
 namespace FastyBird\Module\Devices\States;
 
+use DateTimeInterface;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Ramsey\Uuid;
 
 /**
@@ -28,15 +30,27 @@ use Ramsey\Uuid;
 interface Property
 {
 
+	public const ACTUAL_VALUE_KEY = 'actualValue';
+
+	public const EXPECTED_VALUE_KEY = 'expectedValue';
+
+	public const PENDING_KEY = 'pending';
+
+	public const VALID_KEY = 'valid';
+
 	public function getId(): Uuid\UuidInterface;
 
-	public function setActualValue(float|bool|int|string|null $actual): void;
+	public function setActualValue(
+		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|null $actual,
+	): void;
 
-	public function getActualValue(): float|bool|int|string|null;
+	public function getActualValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|null;
 
-	public function setExpectedValue(float|bool|int|string|null $expected): void;
+	public function setExpectedValue(
+		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|null $expected,
+	): void;
 
-	public function getExpectedValue(): float|bool|int|string|null;
+	public function getExpectedValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|null;
 
 	public function setPending(bool|string|null $pending): void;
 

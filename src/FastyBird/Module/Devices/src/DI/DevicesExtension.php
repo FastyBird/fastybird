@@ -466,7 +466,7 @@ class DevicesExtension extends DI\CompilerExtension
 			->setType(Utilities\ConnectorConnection::class);
 
 		$builder->addDefinition($this->prefix('exchange.consumer.states'), new DI\Definitions\ServiceDefinition())
-			->setType(Consumers\States::class)
+			->setType(Consumers\State::class)
 			->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATUS, false);
 
 		$builder->addDefinition($this->prefix('commands.initialize'), new DI\Definitions\ServiceDefinition())
@@ -474,9 +474,6 @@ class DevicesExtension extends DI\CompilerExtension
 
 		$builder->addDefinition($this->prefix('commands.connector'), new DI\Definitions\ServiceDefinition())
 			->setType(Commands\Connector::class);
-
-		$builder->addDefinition($this->prefix('commands.exchange'), new DI\Definitions\ServiceDefinition())
-			->setType(Commands\Exchange::class);
 	}
 
 	/**
