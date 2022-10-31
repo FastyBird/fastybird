@@ -205,12 +205,6 @@ class DevicesExtension extends DI\CompilerExtension
 		$builder->addDefinition($this->prefix('subscribers.states'), new DI\Definitions\ServiceDefinition())
 			->setType(Subscribers\StateEntities::class);
 
-		$builder->addDefinition($this->prefix('subscribers.connector'), new DI\Definitions\ServiceDefinition())
-			->setType(Subscribers\Connector::class);
-
-		$builder->addDefinition($this->prefix('subscribers.exchange'), new DI\Definitions\ServiceDefinition())
-			->setType(Subscribers\Exchange::class);
-
 		$builder->addDefinition($this->prefix('controllers.devices'), new DI\Definitions\ServiceDefinition())
 			->setType(Controllers\DevicesV1::class)
 			->addTag('nette.inject');
