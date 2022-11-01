@@ -31,7 +31,7 @@
 
     <!--Exclude rules/files -->
     <rule ref="SlevomatCodingStandard.Files.LineLength.LineTooLong">
-        <exclude-pattern>src/Consumers/States.\php</exclude-pattern>
+        <exclude-pattern>src/Consumers/States\.php</exclude-pattern>
         <exclude-pattern>src/Entities/Channels/Properties/Property\.php</exclude-pattern>
         <exclude-pattern>src/Entities/Devices/Properties/Property\.php</exclude-pattern>
         <exclude-pattern>src/Entities/Property\.php</exclude-pattern>
