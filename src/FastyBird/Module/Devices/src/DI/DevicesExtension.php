@@ -22,7 +22,6 @@ use FastyBird\Module\Devices\Commands;
 use FastyBird\Module\Devices\Connectors;
 use FastyBird\Module\Devices\Consumers;
 use FastyBird\Module\Devices\Controllers;
-use FastyBird\Module\Devices\DataStorage;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Hydrators;
 use FastyBird\Module\Devices\Middleware;
@@ -205,12 +204,6 @@ class DevicesExtension extends DI\CompilerExtension
 
 		$builder->addDefinition($this->prefix('subscribers.states'), new DI\Definitions\ServiceDefinition())
 			->setType(Subscribers\StateEntities::class);
-
-		$builder->addDefinition($this->prefix('subscribers.connector'), new DI\Definitions\ServiceDefinition())
-			->setType(Subscribers\Connector::class);
-
-		$builder->addDefinition($this->prefix('subscribers.exchange'), new DI\Definitions\ServiceDefinition())
-			->setType(Subscribers\Exchange::class);
 
 		$builder->addDefinition($this->prefix('controllers.devices'), new DI\Definitions\ServiceDefinition())
 			->setType(Controllers\DevicesV1::class)
@@ -436,51 +429,6 @@ class DevicesExtension extends DI\CompilerExtension
 		)
 			->setType(Models\States\ChannelPropertiesManager::class);
 
-		$builder->addDefinition($this->prefix('dataStorage.writer'), new DI\Definitions\ServiceDefinition())
-			->setType(DataStorage\Writer::class);
-
-		$builder->addDefinition($this->prefix('dataStorage.reader'), new DI\Definitions\ServiceDefinition())
-			->setType(DataStorage\Reader::class);
-
-		$builder->addDefinition(
-			$this->prefix('dataStorage.repository.connectors'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Models\DataStorage\ConnectorsRepository::class);
-
-		$builder->addDefinition(
-			$this->prefix('dataStorage.repository.connector.properties'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Models\DataStorage\ConnectorPropertiesRepository::class);
-
-		$builder->addDefinition($this->prefix('dataStorage.repository.devices'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\DataStorage\DevicesRepository::class);
-
-		$builder->addDefinition(
-			$this->prefix('dataStorage.repository.device.properties'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Models\DataStorage\DevicePropertiesRepository::class);
-
-		$builder->addDefinition(
-			$this->prefix('dataStorage.repository.device.attributes'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Models\DataStorage\DeviceAttributesRepository::class);
-
-		$builder->addDefinition(
-			$this->prefix('dataStorage.repository.channels'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Models\DataStorage\ChannelsRepository::class);
-
-		$builder->addDefinition(
-			$this->prefix('dataStorage.repository.channel.properties'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Models\DataStorage\ChannelPropertiesRepository::class);
-
 		$builder->addDefinition(
 			$this->prefix('utilities.database'),
 			new DI\Definitions\ServiceDefinition(),
@@ -517,12 +465,8 @@ class DevicesExtension extends DI\CompilerExtension
 		)
 			->setType(Utilities\ConnectorConnection::class);
 
-		$builder->addDefinition($this->prefix('exchange.consumer.connector'), new DI\Definitions\ServiceDefinition())
-			->setType(Consumers\Connector::class)
-			->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATUS, false);
-
 		$builder->addDefinition($this->prefix('exchange.consumer.states'), new DI\Definitions\ServiceDefinition())
-			->setType(Consumers\States::class)
+			->setType(Consumers\State::class)
 			->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATUS, false);
 
 		$builder->addDefinition($this->prefix('commands.initialize'), new DI\Definitions\ServiceDefinition())
@@ -530,9 +474,6 @@ class DevicesExtension extends DI\CompilerExtension
 
 		$builder->addDefinition($this->prefix('commands.connector'), new DI\Definitions\ServiceDefinition())
 			->setType(Commands\Connector::class);
-
-		$builder->addDefinition($this->prefix('commands.exchange'), new DI\Definitions\ServiceDefinition())
-			->setType(Commands\Exchange::class);
 	}
 
 	/**

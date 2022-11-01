@@ -15,10 +15,13 @@
 
 namespace FastyBird\Bridge\RedisDbDevicesModule\Subscribers;
 
+use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Consumers as DevicesConsumers;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Plugin\RedisDb\Client as RedisDbClient;
+use FastyBird\Plugin\RedisDb\Events as RedisDbEvents;
 use Psr\Log;
 use React\EventLoop;
 use Symfony\Component\EventDispatcher;
@@ -39,6 +42,7 @@ class RedisClient implements EventDispatcher\EventSubscriberInterface
 
 	public function __construct(
 		private readonly RedisDbClient\Factory $clientFactory,
+		private readonly ExchangeConsumers\Container $consumer,
 		private readonly EventLoop\LoopInterface|null $eventLoop = null,
 		Log\LoggerInterface|null $logger = null,
 	)
@@ -49,12 +53,12 @@ class RedisClient implements EventDispatcher\EventSubscriberInterface
 	public static function getSubscribedEvents(): array
 	{
 		return [
-			DevicesEvents\ConnectorStartup::class => 'startup',
-			DevicesEvents\ExchangeStartup::class => 'startup',
+			DevicesEvents\ConnectorStartup::class => 'connectorStartup',
+			RedisDbEvents\Startup::class => 'exchangeStartup',
 		];
 	}
 
-	public function startup(): void
+	public function connectorStartup(): void
 	{
 		$this->clientFactory->create($this->eventLoop)
 			->then(
@@ -87,6 +91,11 @@ class RedisClient implements EventDispatcher\EventSubscriberInterface
 					);
 				},
 			);
+	}
+
+	public function exchangeStartup(): void
+	{
+		$this->consumer->enable(DevicesConsumers\State::class);
 	}
 
 }

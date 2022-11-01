@@ -15,13 +15,14 @@
 
 namespace FastyBird\Connector\Tuya\Helpers;
 
+use DateTimeInterface;
+use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Types;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
-use FastyBird\Module\Devices\Models as DevicesModels;
 use Nette;
-use Ramsey\Uuid;
 use function is_bool;
 use function is_string;
 use function strval;
@@ -39,29 +40,19 @@ final class Device
 
 	use Nette\SmartObject;
 
-	public function __construct(
-		private readonly DevicesModels\DataStorage\DevicePropertiesRepository $propertiesRepository,
-	)
-	{
-	}
-
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getConfiguration(
-		Uuid\UuidInterface $deviceId,
+		Entities\TuyaDevice $device,
 		Types\DevicePropertyIdentifier $type,
-	): float|bool|int|string|null
+	): float|bool|int|string|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|DateTimeInterface|null
 	{
-		$configuration = $this->propertiesRepository->findByIdentifier($deviceId, strval($type->getValue()));
+		$configuration = $device->findProperty(strval($type->getValue()));
 
-		if ($configuration instanceof MetadataEntities\DevicesModule\DeviceVariableProperty) {
+		if ($configuration instanceof DevicesEntities\Devices\Properties\Variable) {
 			if ($type->getValue() === Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS) {
 				return is_string($configuration->getValue()) ? $configuration->getValue() : null;
 			} elseif (

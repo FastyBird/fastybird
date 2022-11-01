@@ -73,26 +73,26 @@ final class ChannelPropertiesManager
 		}
 
 		if (
-			property_exists($values, 'actualValue')
-			&& property_exists($values, 'expectedValue')
+			property_exists($values, States\Property::ACTUAL_VALUE_KEY)
+			&& property_exists($values, States\Property::EXPECTED_VALUE_KEY)
 		) {
 			$actualValue = Utilities\ValueHelper::normalizeValue(
 				$property->getDataType(),
-				strval($values->offsetGet('actualValue')),
+				strval($values->offsetGet(States\Property::ACTUAL_VALUE_KEY)),
 				$property->getFormat(),
 				$property->getInvalid(),
 			);
 
 			$expectedValue = Utilities\ValueHelper::normalizeValue(
 				$property->getDataType(),
-				strval($values->offsetGet('expectedValue')),
+				strval($values->offsetGet(States\Property::EXPECTED_VALUE_KEY)),
 				$property->getFormat(),
 				$property->getInvalid(),
 			);
 
 			if ($expectedValue === $actualValue) {
-				$values->offsetSet('expectedValue', null);
-				$values->offsetSet('pending', null);
+				$values->offsetSet(States\Property::EXPECTED_VALUE_KEY, null);
+				$values->offsetSet(States\Property::PENDING_KEY, null);
 			}
 		}
 
@@ -145,8 +145,8 @@ final class ChannelPropertiesManager
 			$updatedState = $this->manager->update(
 				$updatedState,
 				Utils\ArrayHash::from([
-					'expectedValue' => null,
-					'pending' => null,
+					States\Property::EXPECTED_VALUE_KEY => null,
+					States\Property::PENDING_KEY => null,
 				]),
 			);
 		}

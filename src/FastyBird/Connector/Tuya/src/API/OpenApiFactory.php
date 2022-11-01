@@ -15,11 +15,11 @@
 
 namespace FastyBird\Connector\Tuya\API;
 
+use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -53,17 +53,13 @@ final class OpenApiFactory
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
-	public function create(MetadataEntities\DevicesModule\Connector $connector): OpenApi
+	public function create(Entities\TuyaConnector $connector): OpenApi
 	{
 		$endpoint = $this->connectorHelper->getConfiguration(
-			$connector->getId(),
+			$connector,
 			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_OPENAPI_ENDPOINT),
 		);
 
@@ -72,12 +68,12 @@ final class OpenApiFactory
 		}
 
 		$accessId = $this->connectorHelper->getConfiguration(
-			$connector->getId(),
+			$connector,
 			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_ACCESS_ID),
 		);
 
 		$accessSecret = $this->connectorHelper->getConfiguration(
-			$connector->getId(),
+			$connector,
 			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_ACCESS_SECRET),
 		);
 

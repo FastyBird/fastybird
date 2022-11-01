@@ -17,17 +17,19 @@ namespace FastyBird\Connector\FbMqtt\Connector;
 
 use FastyBird\Connector\FbMqtt\Clients;
 use FastyBird\Connector\FbMqtt\Consumers;
+use FastyBird\Connector\FbMqtt\Entities;
 use FastyBird\Connector\FbMqtt\Helpers;
 use FastyBird\Connector\FbMqtt\Types;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Connectors as DevicesConnectors;
+use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use InvalidArgumentException;
 use Nette;
 use React\EventLoop;
 use ReflectionClass;
 use function array_key_exists;
+use function assert;
 use function React\Async\async;
 
 /**
@@ -53,7 +55,7 @@ final class Connector implements DevicesConnectors\Connector
 	 * @param Array<Clients\ClientFactory> $clientsFactories
 	 */
 	public function __construct(
-		private readonly MetadataEntities\DevicesModule\Connector $connector,
+		private readonly DevicesEntities\Connectors\Connector $connector,
 		private readonly array $clientsFactories,
 		private readonly Helpers\Connector $connectorHelper,
 		private readonly Consumers\Messages $consumer,
@@ -66,17 +68,15 @@ final class Connector implements DevicesConnectors\Connector
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Terminate
 	 * @throws InvalidArgumentException
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function execute(): void
 	{
+		assert($this->connector instanceof Entities\FbMqttConnector);
+
 		$version = $this->connectorHelper->getConfiguration(
-			$this->connector->getId(),
+			$this->connector,
 			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_PROTOCOL_VERSION),
 		);
 

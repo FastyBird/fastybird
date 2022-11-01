@@ -62,12 +62,14 @@ final class ConnectorPropertiesManager
 		}
 
 		if (
-			property_exists($values, 'actualValue')
-			&& property_exists($values, 'expectedValue')
+			property_exists($values, States\Property::ACTUAL_VALUE_KEY)
+			&& property_exists($values, States\Property::EXPECTED_VALUE_KEY)
 		) {
-			if (strval($values->offsetGet('actualValue')) === strval($values->offsetGet('expectedValue'))) {
-				$values->offsetSet('expectedValue', null);
-				$values->offsetSet('pending', null);
+			if (strval($values->offsetGet(States\Property::ACTUAL_VALUE_KEY)) === strval(
+				$values->offsetGet(States\Property::EXPECTED_VALUE_KEY),
+			)) {
+				$values->offsetSet(States\Property::EXPECTED_VALUE_KEY, null);
+				$values->offsetSet(States\Property::PENDING_KEY, null);
 			}
 		}
 
@@ -99,8 +101,8 @@ final class ConnectorPropertiesManager
 			$updatedState = $this->manager->update(
 				$updatedState,
 				Utils\ArrayHash::from([
-					'expectedValue' => null,
-					'pending' => null,
+					States\Property::EXPECTED_VALUE_KEY => null,
+					States\Property::PENDING_KEY => null,
 				]),
 			);
 		}

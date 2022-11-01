@@ -58,12 +58,7 @@ final class LocalDiscovery implements Consumer
 		private readonly DevicesModels\Devices\Attributes\AttributesManager $attributesManager,
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		private readonly DevicesModels\Channels\ChannelsManager $channelsManager,
-		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly DevicesModels\Channels\Properties\PropertiesManager $channelsPropertiesManager,
-		private readonly DevicesModels\DataStorage\DevicesRepository $devicesDataStorageRepository,
-		private readonly DevicesModels\DataStorage\DevicePropertiesRepository $propertiesDataStorageRepository,
-		private readonly DevicesModels\DataStorage\DeviceAttributesRepository $attributesDataStorageRepository,
-		private readonly DevicesModels\DataStorage\ChannelPropertiesRepository $channelsPropertiesDataStorageRepository,
 		private readonly DevicesUtilities\Database $databaseHelper,
 		Log\LoggerInterface|null $logger = null,
 	)
@@ -75,12 +70,8 @@ final class LocalDiscovery implements Consumer
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Runtime
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function consume(Entities\Messages\Entity $entity): bool
 	{
@@ -88,41 +79,36 @@ final class LocalDiscovery implements Consumer
 			return false;
 		}
 
-		$deviceItem = $this->devicesDataStorageRepository->findByIdentifier(
-			$entity->getConnector(),
-			$entity->getId(),
-		);
+		$findDeviceQuery = new DevicesQueries\FindDevices();
+		$findDeviceQuery->byConnectorId($entity->getConnector());
+		$findDeviceQuery->byIdentifier($entity->getId());
 
-		if ($deviceItem === null) {
-			$connectorEntity = $this->databaseHelper->query(
-				function () use ($entity): Entities\TuyaConnector|null {
-					$findConnectorQuery = new DevicesQueries\FindConnectors();
-					$findConnectorQuery->byId($entity->getConnector());
+		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\TuyaDevice::class);
 
-					$connector = $this->connectorsRepository->findOneBy(
-						$findConnectorQuery,
-						Entities\TuyaConnector::class,
-					);
-					assert($connector instanceof Entities\TuyaConnector || $connector === null);
+		if ($device === null) {
+			$findConnectorQuery = new DevicesQueries\FindConnectors();
+			$findConnectorQuery->byId($entity->getConnector());
 
-					return $connector;
-				},
+			$connector = $this->connectorsRepository->findOneBy(
+				$findConnectorQuery,
+				Entities\TuyaConnector::class,
 			);
+			assert($connector instanceof Entities\TuyaConnector || $connector === null);
 
-			if ($connectorEntity === null) {
+			if ($connector === null) {
 				return true;
 			}
 
-			$deviceEntity = $this->databaseHelper->transaction(
-				function () use ($entity, $connectorEntity): Entities\TuyaDevice {
-					$deviceEntity = $this->devicesManager->create(Utils\ArrayHash::from([
+			$device = $this->databaseHelper->transaction(
+				function () use ($entity, $connector): Entities\TuyaDevice {
+					$device = $this->devicesManager->create(Utils\ArrayHash::from([
 						'entity' => Entities\TuyaDevice::class,
-						'connector' => $connectorEntity,
+						'connector' => $connector,
 						'identifier' => $entity->getId(),
 					]));
-					assert($deviceEntity instanceof Entities\TuyaDevice);
+					assert($device instanceof Entities\TuyaDevice);
 
-					return $deviceEntity;
+					return $device;
 				},
 			);
 
@@ -132,96 +118,45 @@ final class LocalDiscovery implements Consumer
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'local-discovery-message-consumer',
 					'device' => [
-						'id' => $deviceEntity->getPlainId(),
+						'id' => $device->getPlainId(),
 						'identifier' => $entity->getId(),
 						'address' => $entity->getIpAddress(),
 					],
 				],
 			);
-		} else {
-			$deviceEntity = $this->databaseHelper->query(
-				function () use ($deviceItem): Entities\TuyaDevice|null {
-					$findDeviceQuery = new DevicesQueries\FindDevices();
-					$findDeviceQuery->byId($deviceItem->getId());
-
-					$deviceEntity = $this->devicesRepository->findOneBy(
-						$findDeviceQuery,
-						Entities\TuyaDevice::class,
-					);
-					assert($deviceEntity instanceof Entities\TuyaDevice || $deviceEntity === null);
-
-					return $deviceEntity;
-				},
-			);
-
-			if ($deviceEntity === null) {
-				$this->logger->error(
-					'Device could not be updated',
-					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-						'type' => 'local-discovery-message-consumer',
-						'device' => [
-							'id' => $deviceItem->getId()->toString(),
-						],
-					],
-				);
-
-				return false;
-			}
-		}
-
-		$deviceItem = $this->devicesDataStorageRepository->findByIdentifier(
-			$entity->getConnector(),
-			$entity->getId(),
-		);
-
-		if ($deviceItem === null) {
-			$this->logger->error(
-				'Newly created device could not be loaded',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-					'type' => 'local-discovery-message-consumer',
-					'device' => [
-						'identifier' => $entity->getId(),
-						'address' => $entity->getIpAddress(),
-					],
-				],
-			);
-
-			return true;
 		}
 
 		$this->setDeviceProperty(
-			$deviceItem->getId(),
+			$device->getId(),
 			$entity->getIpAddress(),
 			Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS,
 		);
 		$this->setDeviceProperty(
-			$deviceItem->getId(),
+			$device->getId(),
 			$entity->getVersion(),
 			Types\DevicePropertyIdentifier::IDENTIFIER_PROTOCOL_VERSION,
 		);
 		$this->setDeviceProperty(
-			$deviceItem->getId(),
+			$device->getId(),
 			$entity->getLocalKey(),
 			Types\DevicePropertyIdentifier::IDENTIFIER_LOCAL_KEY,
 		);
 		$this->setDeviceProperty(
-			$deviceItem->getId(),
+			$device->getId(),
 			$entity->isEncrypted(),
 			Types\DevicePropertyIdentifier::IDENTIFIER_ENCRYPTED,
 		);
 
-		$this->databaseHelper->transaction(function () use ($entity, $deviceEntity): bool {
+		$this->databaseHelper->transaction(function () use ($entity, $device): bool {
 			$findChannelQuery = new DevicesQueries\FindChannels();
 			$findChannelQuery->byIdentifier(Types\DataPoint::DATA_POINT_LOCAL);
-			$findChannelQuery->forDevice($deviceEntity);
+			$findChannelQuery->forDevice($device);
 
-			$channelEntity = $this->channelsRepository->findOneBy($findChannelQuery);
+			$channel = $this->channelsRepository->findOneBy($findChannelQuery);
 
-			if ($channelEntity === null) {
-				$channelEntity = $this->channelsManager->create(Utils\ArrayHash::from([
-					'device' => $deviceEntity,
+			if ($channel === null) {
+				$channel = $this->channelsManager->create(Utils\ArrayHash::from([
+					'device' => $device,
 					'identifier' => Types\DataPoint::DATA_POINT_LOCAL,
 				]));
 
@@ -231,24 +166,21 @@ final class LocalDiscovery implements Consumer
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'local-discovery-message-consumer',
 						'device' => [
-							'id' => $deviceEntity->getPlainId(),
+							'id' => $device->getPlainId(),
 						],
 						'channel' => [
-							'id' => $channelEntity->getPlainId(),
+							'id' => $channel->getPlainId(),
 						],
 					],
 				);
 			}
 
 			foreach ($entity->getDataPoints() as $dataPoint) {
-				$propertyItem = $this->channelsPropertiesDataStorageRepository->findByIdentifier(
-					$channelEntity->getId(),
-					$dataPoint->getCode(),
-				);
+				$property = $channel->findProperty($dataPoint->getCode());
 
-				if ($propertyItem === null) {
+				if ($property === null) {
 					$this->channelsPropertiesManager->create(Utils\ArrayHash::from([
-						'channel' => $channelEntity,
+						'channel' => $channel,
 						'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 						'identifier' => $dataPoint->getCode(),
 						'name' => $dataPoint->getCode(),
@@ -260,39 +192,14 @@ final class LocalDiscovery implements Consumer
 					]));
 
 				} else {
-					$findPropertyQuery = new DevicesQueries\FindChannelProperties();
-					$findPropertyQuery->byId($propertyItem->getId());
-
-					$propertyEntity = $this->channelsPropertiesRepository->findOneBy($findPropertyQuery);
-
-					if ($propertyEntity !== null) {
-						$this->channelsPropertiesManager->update($propertyEntity, Utils\ArrayHash::from([
-							'name' => $propertyEntity->getName() ?? $dataPoint->getCode(),
-							'dataType' => $dataPoint->getDataType(),
-							'unit' => $dataPoint->getUnit(),
-							'format' => $dataPoint->getFormat(),
-							'queryable' => $dataPoint->isQueryable(),
-							'settable' => $dataPoint->isSettable(),
-						]));
-
-					} else {
-						$this->logger->error(
-							'Channel property could not be updated',
-							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-								'type' => 'local-discovery-message-consumer',
-								'device' => [
-									'id' => $channelEntity->getDevice()->getId()->toString(),
-								],
-								'channel' => [
-									'id' => $channelEntity->getId()->toString(),
-								],
-								'property' => [
-									'id' => $propertyItem->getId(),
-								],
-							],
-						);
-					}
+					$this->channelsPropertiesManager->update($property, Utils\ArrayHash::from([
+						'name' => $property->getName() ?? $dataPoint->getCode(),
+						'dataType' => $dataPoint->getDataType(),
+						'unit' => $dataPoint->getUnit(),
+						'format' => $dataPoint->getFormat(),
+						'queryable' => $dataPoint->isQueryable(),
+						'settable' => $dataPoint->isSettable(),
+					]));
 				}
 			}
 
@@ -305,7 +212,7 @@ final class LocalDiscovery implements Consumer
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 				'type' => 'local-discovery-message-consumer',
 				'device' => [
-					'id' => $deviceItem->getId()->toString(),
+					'id' => $device->getPlainId(),
 				],
 				'data' => $entity->toArray(),
 			],

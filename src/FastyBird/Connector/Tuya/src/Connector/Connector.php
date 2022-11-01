@@ -17,16 +17,18 @@ namespace FastyBird\Connector\Tuya\Connector;
 
 use FastyBird\Connector\Tuya\Clients;
 use FastyBird\Connector\Tuya\Consumers;
+use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Types;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Connectors as DevicesConnectors;
+use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Nette;
 use React\EventLoop;
 use ReflectionClass;
 use function array_key_exists;
+use function assert;
 use function React\Async\async;
 
 /**
@@ -52,7 +54,7 @@ final class Connector implements DevicesConnectors\Connector
 	 * @param Array<Clients\ClientFactory> $clientsFactories
 	 */
 	public function __construct(
-		private readonly MetadataEntities\DevicesModule\Connector $connector,
+		private readonly DevicesEntities\Connectors\Connector $connector,
 		private readonly array $clientsFactories,
 		private readonly Helpers\Connector $connectorHelper,
 		private readonly Consumers\Messages $consumer,
@@ -64,17 +66,15 @@ final class Connector implements DevicesConnectors\Connector
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Terminate
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function execute(): void
 	{
+		assert($this->connector instanceof Entities\TuyaConnector);
+
 		$mode = $this->connectorHelper->getConfiguration(
-			$this->connector->getId(),
+			$this->connector,
 			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE),
 		);
 

@@ -24,6 +24,8 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Nette\Utils;
@@ -45,7 +47,7 @@ final class Status implements Consumer
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
-		private readonly DevicesModels\DataStorage\DevicesRepository $devicesDataStorageRepository,
+		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly Mappers\DataPoint $dataPointMapper,
 		private readonly Helpers\Property $propertyStateHelper,
@@ -57,12 +59,8 @@ final class Status implements Consumer
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function consume(Entities\Messages\Entity $entity): bool
 	{
@@ -70,24 +68,25 @@ final class Status implements Consumer
 			return false;
 		}
 
-		$deviceItem = $this->devicesDataStorageRepository->findByIdentifier(
-			$entity->getConnector(),
-			$entity->getIdentifier(),
-		);
+		$findDeviceQuery = new DevicesQueries\FindDevices();
+		$findDeviceQuery->byConnectorId($entity->getConnector());
+		$findDeviceQuery->byIdentifier($entity->getIdentifier());
 
-		if ($deviceItem === null) {
+		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\TuyaDevice::class);
+
+		if ($device === null) {
 			return true;
 		}
 
 		// Check device state...
 		if (
-			!$this->deviceConnectionManager->getState($deviceItem)->equalsValue(
+			!$this->deviceConnectionManager->getState($device)->equalsValue(
 				Metadata\Types\ConnectionState::STATE_CONNECTED,
 			)
 		) {
 			// ... and if it is not ready, set it to ready
 			$this->deviceConnectionManager->setState(
-				$deviceItem,
+				$device,
 				Metadata\Types\ConnectionState::get(Metadata\Types\ConnectionState::STATE_CONNECTED),
 			);
 		}
@@ -110,8 +109,8 @@ final class Status implements Consumer
 				);
 
 				$this->propertyStateHelper->setValue($property, Utils\ArrayHash::from([
-					'actualValue' => $actualValue,
-					'valid' => true,
+					DevicesStates\Property::ACTUAL_VALUE_KEY => $actualValue,
+					DevicesStates\Property::VALID_KEY => true,
 				]));
 			}
 		}
@@ -122,7 +121,7 @@ final class Status implements Consumer
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 				'type' => 'status-message-consumer',
 				'device' => [
-					'id' => $deviceItem->getId()->toString(),
+					'id' => $device->getPlainId(),
 				],
 				'data' => $entity->toArray(),
 			],

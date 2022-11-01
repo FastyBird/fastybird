@@ -15,13 +15,11 @@
 
 namespace FastyBird\Module\Devices\Utilities;
 
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities;
-use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
-use FastyBird\Module\Devices\Queries;
+use FastyBird\Module\Devices\States;
 use Nette;
 use Nette\Utils;
 use function assert;
@@ -40,8 +38,6 @@ final class ConnectorConnection
 	use Nette\SmartObject;
 
 	public function __construct(
-		private readonly Models\Connectors\ConnectorsRepository $connectorsRepository,
-		private readonly Models\DataStorage\ConnectorPropertiesRepository $repository,
 		private readonly Models\Connectors\Properties\PropertiesManager $manager,
 		private readonly ConnectorPropertiesStates $propertiesStates,
 	)
@@ -49,36 +45,17 @@ final class ConnectorConnection
 	}
 
 	/**
-	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function setState(
-		Entities\Connectors\Connector|MetadataEntities\DevicesModule\Connector $connector,
+		Entities\Connectors\Connector $connector,
 		MetadataTypes\ConnectionState $state,
 	): bool
 	{
-		$property = $this->repository->findByIdentifier(
-			$connector->getId(),
-			MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_STATE,
-		);
+		$property = $connector->findProperty(MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_STATE);
 
 		if ($property === null) {
-			if (!$connector instanceof Entities\Connectors\Connector) {
-				$findConnectorQuery = new Queries\FindConnectors();
-				$findConnectorQuery->byId($connector->getId());
-
-				$connector = $this->connectorsRepository->findOneBy($findConnectorQuery);
-
-				if ($connector === null) {
-					throw new Exceptions\InvalidState('Connector could not be loaded');
-				}
-			}
-
 			$property = $this->manager->create(Utils\ArrayHash::from([
 				'connector' => $connector,
 				'entity' => Entities\Connectors\Properties\Dynamic::class,
@@ -97,18 +74,15 @@ final class ConnectorConnection
 			]));
 		}
 
-		assert(
-			$property instanceof MetadataEntities\DevicesModule\ConnectorDynamicProperty
-			|| $property instanceof Entities\Connectors\Properties\Dynamic,
-		);
+		assert($property instanceof Entities\Connectors\Properties\Dynamic);
 
 		$this->propertiesStates->setValue(
 			$property,
 			Utils\ArrayHash::from([
-				'actualValue' => $state->getValue(),
-				'expectedValue' => null,
-				'pending' => false,
-				'valid' => true,
+				States\Property::ACTUAL_VALUE_KEY => $state->getValue(),
+				States\Property::EXPECTED_VALUE_KEY => null,
+				States\Property::PENDING_KEY => false,
+				States\Property::VALID_KEY => true,
 			]),
 		);
 
@@ -116,29 +90,24 @@ final class ConnectorConnection
 	}
 
 	/**
-	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getState(
-		Entities\Connectors\Connector|MetadataEntities\DevicesModule\Connector $connector,
+		Entities\Connectors\Connector $connector,
 	): MetadataTypes\ConnectionState
 	{
-		$stateProperty = $this->repository->findByIdentifier(
-			$connector->getId(),
-			MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_STATE,
-		);
+		$property = $connector->findProperty(MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_STATE);
 
-		if (
-			$stateProperty instanceof MetadataEntities\DevicesModule\ConnectorDynamicProperty
-			&& $stateProperty->getActualValue() !== null
-			&& MetadataTypes\ConnectionState::isValidValue($stateProperty->getActualValue())
-		) {
-			return MetadataTypes\ConnectionState::get($stateProperty->getActualValue());
+		if ($property instanceof Entities\Connectors\Properties\Dynamic) {
+			$state = $this->propertiesStates->getValue($property);
+
+			if (
+				$state?->getActualValue() !== null
+				&& MetadataTypes\ConnectionState::isValidValue($state->getActualValue())
+			) {
+				return MetadataTypes\ConnectionState::get($state->getActualValue());
+			}
 		}
 
 		return MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_UNKNOWN);

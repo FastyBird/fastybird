@@ -21,7 +21,6 @@ use FastyBird\Connector\Shelly\Consumers;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Entities\Clients\MdnsResult;
 use FastyBird\Connector\Shelly\Types;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use InvalidArgumentException;
 use Nette;
@@ -66,7 +65,7 @@ final class Mdns
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
-		private readonly MetadataEntities\DevicesModule\Connector $connector,
+		private readonly Entities\ShellyConnector $connector,
 		private readonly Consumers\Messages $consumer,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		Log\LoggerInterface|null $logger = null,
@@ -101,7 +100,7 @@ final class Mdns
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'mdns-client',
 						'connector' => [
-							'id' => $this->connector->getId()->toString(),
+							'id' => $this->connector->getPlainId(),
 						],
 					],
 				);
@@ -116,7 +115,7 @@ final class Mdns
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'mdns-client',
 						'connector' => [
-							'id' => $this->connector->getId()->toString(),
+							'id' => $this->connector->getPlainId(),
 						],
 					],
 				);

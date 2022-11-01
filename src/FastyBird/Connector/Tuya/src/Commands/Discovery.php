@@ -38,6 +38,7 @@ use Throwable;
 use function array_key_first;
 use function array_search;
 use function array_values;
+use function assert;
 use function count;
 use function intval;
 use function is_string;
@@ -79,8 +80,7 @@ class Discovery extends Console\Command\Command
 		private readonly Helpers\Connector $connectorHelper,
 		private readonly Helpers\Device $deviceHelper,
 		private readonly Consumers\Messages $consumer,
-		private readonly DevicesModels\DataStorage\ConnectorsRepository $connectorsRepository,
-		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		Log\LoggerInterface|null $logger = null,
@@ -122,12 +122,8 @@ class Discovery extends Console\Command\Command
 	/**
 	 * @throws Console\Exception\InvalidArgumentException
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	protected function execute(Input\InputInterface $input, Output\OutputInterface $output): int
 	{
@@ -157,9 +153,16 @@ class Discovery extends Console\Command\Command
 		) {
 			$connectorId = $input->getOption('connector');
 
-			$connector = Uuid\Uuid::isValid($connectorId)
-				? $this->connectorsRepository->findById(Uuid\Uuid::fromString($connectorId))
-				: $this->connectorsRepository->findByIdentifier($connectorId);
+			$findConnectorQuery = new DevicesQueries\FindConnectors();
+
+			if (Uuid\Uuid::isValid($connectorId)) {
+				$findConnectorQuery->byId(Uuid\Uuid::fromString($connectorId));
+			} else {
+				$findConnectorQuery->byIdentifier($connectorId);
+			}
+
+			$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\TuyaConnector::class);
+			assert($connector instanceof Entities\TuyaConnector || $connector === null);
 
 			if ($connector === null) {
 				$io->warning('Connector was not found in system');
@@ -169,10 +172,13 @@ class Discovery extends Console\Command\Command
 		} else {
 			$connectors = [];
 
-			foreach ($this->connectorsRepository as $connector) {
-				if ($connector->getType() !== Entities\TuyaConnector::CONNECTOR_TYPE) {
-					continue;
-				}
+			$findConnectorsQuery = new DevicesQueries\FindConnectors();
+
+			foreach ($this->connectorsRepository->findAllBy(
+				$findConnectorsQuery,
+				Entities\TuyaConnector::class,
+			) as $connector) {
+				assert($connector instanceof Entities\TuyaConnector);
 
 				$connectors[$connector->getIdentifier()] = $connector->getIdentifier()
 					. ($connector->getName() !== null ? ' [' . $connector->getName() . ']' : '');
@@ -187,7 +193,11 @@ class Discovery extends Console\Command\Command
 			if (count($connectors) === 1) {
 				$connectorIdentifier = array_key_first($connectors);
 
-				$connector = $this->connectorsRepository->findByIdentifier($connectorIdentifier);
+				$findConnectorQuery = new DevicesQueries\FindConnectors();
+				$findConnectorQuery->byIdentifier($connectorIdentifier);
+
+				$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\TuyaConnector::class);
+				assert($connector instanceof Entities\TuyaConnector || $connector === null);
 
 				if ($connector === null) {
 					$io->warning('Connector was not found in system');
@@ -232,7 +242,11 @@ class Discovery extends Console\Command\Command
 					return Console\Command\Command::FAILURE;
 				}
 
-				$connector = $this->connectorsRepository->findByIdentifier($connectorIdentifier);
+				$findConnectorQuery = new DevicesQueries\FindConnectors();
+				$findConnectorQuery->byIdentifier($connectorIdentifier);
+
+				$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\TuyaConnector::class);
+				assert($connector instanceof Entities\TuyaConnector || $connector === null);
 			}
 
 			if ($connector === null) {
@@ -257,7 +271,7 @@ class Discovery extends Console\Command\Command
 		}
 
 		$mode = $this->connectorHelper->getConfiguration(
-			$connector->getId(),
+			$connector,
 			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE),
 		);
 
@@ -348,10 +362,10 @@ class Discovery extends Console\Command\Command
 
 			$io->newLine();
 
-			$FindDevices = new DevicesQueries\FindDevices();
-			$FindDevices->byConnectorId($connector->getId());
+			$findDevicesQuery = new DevicesQueries\FindDevices();
+			$findDevicesQuery->byConnectorId($connector->getId());
 
-			$devices = $this->devicesRepository->findAllBy($FindDevices);
+			$devices = $connector->getDevices();
 
 			$table = new Console\Helper\Table($output);
 			$table->setHeaders([
@@ -365,6 +379,8 @@ class Discovery extends Console\Command\Command
 			$foundDevices = 0;
 
 			foreach ($devices as $device) {
+				assert($device instanceof Entities\TuyaDevice);
+
 				$createdAt = $device->getCreatedAt();
 
 				if (
@@ -375,7 +391,7 @@ class Discovery extends Console\Command\Command
 					$foundDevices++;
 
 					$ipAddress = $this->deviceHelper->getConfiguration(
-						$device->getId(),
+						$device,
 						Types\DevicePropertyIdentifier::get(Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS),
 					);
 

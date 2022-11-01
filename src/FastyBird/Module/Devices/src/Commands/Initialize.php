@@ -16,7 +16,6 @@
 namespace FastyBird\Module\Devices\Commands;
 
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Module\Devices\DataStorage;
 use Psr\Log;
 use Symfony\Component\Console;
 use Symfony\Component\Console\Input;
@@ -40,7 +39,6 @@ class Initialize extends Console\Command\Command
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
-		private readonly DataStorage\Writer $writer,
 		Log\LoggerInterface|null $logger = null,
 		string|null $name = null,
 	)
@@ -60,13 +58,6 @@ class Initialize extends Console\Command\Command
 			->setDescription('Devices module initialization')
 			->setDefinition(
 				new Input\InputDefinition([
-					new Input\InputOption('database', 'd', Input\InputOption::VALUE_NONE, 'Initialize module database'),
-					new Input\InputOption(
-						'data-storage',
-						's',
-						Input\InputOption::VALUE_NONE,
-						'Initialize module data storage',
-					),
 					new Input\InputOption(
 						'no-confirm',
 						null,
@@ -111,13 +102,7 @@ class Initialize extends Console\Command\Command
 		}
 
 		try {
-			if ($input->getOption('database') === true) {
-				$this->initializeDatabase($io, $input, $output);
-			}
-
-			if ($input->getOption('data-storage') === true) {
-				$this->initializeDataStorage($io, $input);
-			}
+			$this->initializeDatabase($io, $input, $output);
 
 			if ($input->getOption('quiet') === false) {
 				$io->success('Devices module has been successfully initialized and can be now used.');
@@ -193,44 +178,6 @@ class Initialize extends Console\Command\Command
 
 		if ($input->getOption('quiet') === false) {
 			$io->success('Devices module database has been successfully initialized.');
-		}
-	}
-
-	/**
-	 * @throws Console\Exception\InvalidArgumentException
-	 */
-	private function initializeDataStorage(Style\SymfonyStyle $io, Input\InputInterface $input): void
-	{
-		if ($input->getOption('quiet') === false) {
-			$io->section('Preparing module data storage');
-		}
-
-		try {
-			$this->writer->write();
-
-			if ($input->getOption('quiet') === false) {
-				$io->success('Devices module data storage has been successfully initialized.');
-			}
-
-			return;
-		} catch (Throwable $ex) {
-			// Log caught exception
-			$this->logger->error('An unhandled error occurred', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
-				'type' => 'command',
-				'exception' => [
-					'message' => $ex->getMessage(),
-					'code' => $ex->getCode(),
-				],
-			]);
-
-			if ($input->getOption('quiet') === false) {
-				$io->error(
-					'Something went wrong, data storage initialization could not be finished. Error was logged.',
-				);
-			}
-
-			return;
 		}
 	}
 

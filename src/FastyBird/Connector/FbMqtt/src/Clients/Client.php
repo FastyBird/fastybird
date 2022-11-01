@@ -19,14 +19,13 @@ use BinSoul\Net\Mqtt;
 use Closure;
 use FastyBird\Connector\FbMqtt;
 use FastyBird\Connector\FbMqtt\Consumers;
+use FastyBird\Connector\FbMqtt\Entities;
 use FastyBird\Connector\FbMqtt\Exceptions;
 use FastyBird\Connector\FbMqtt\Helpers;
 use FastyBird\Connector\FbMqtt\Types;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
-use FastyBird\Module\Devices\Models as DevicesModels;
 use InvalidArgumentException;
 use Nette;
 use Psr\Log;
@@ -108,8 +107,7 @@ abstract class Client
 	protected Log\LoggerInterface $logger;
 
 	public function __construct(
-		protected MetadataEntities\DevicesModule\Connector $connector,
-		protected DevicesModels\DataStorage\ConnectorPropertiesRepository $connectorPropertiesRepository,
+		protected Entities\FbMqttConnector $connector,
 		protected Helpers\Connector $connectorHelper,
 		protected Consumers\Messages $consumer,
 		protected EventLoop\LoopInterface $eventLoop,
@@ -141,12 +139,8 @@ abstract class Client
 	 *
 	 * @throws InvalidArgumentException
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function connect(int $timeout = 5): Promise\ExtendedPromiseInterface
 	{
@@ -163,22 +157,22 @@ abstract class Client
 		$this->isConnected = false;
 
 		$username = $this->connectorHelper->getConfiguration(
-			$this->connector->getId(),
+			$this->connector,
 			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_USERNAME),
 		);
 
 		$password = $this->connectorHelper->getConfiguration(
-			$this->connector->getId(),
+			$this->connector,
 			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_PASSWORD),
 		);
 
 		$server = $this->connectorHelper->getConfiguration(
-			$this->connector->getId(),
+			$this->connector,
 			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_SERVER),
 		);
 
 		$port = $this->connectorHelper->getConfiguration(
-			$this->connector->getId(),
+			$this->connector,
 			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_PORT),
 		);
 
@@ -186,7 +180,7 @@ abstract class Client
 			is_string($username) ? $username : '',
 			is_string($password) ? $password : '',
 			null,
-			$this->connector->getId()->toString(),
+			$this->connector->getPlainId(),
 		);
 
 		if ($connection->getClientID() === '') {
@@ -378,7 +372,7 @@ abstract class Client
 					'username' => $connection->getUsername(),
 				],
 				'connector' => [
-					'id' => $this->connector->getId()->toString(),
+					'id' => $this->connector->getPlainId(),
 				],
 			],
 		);
@@ -396,7 +390,7 @@ abstract class Client
 					'username' => $connection->getUsername(),
 				],
 				'connector' => [
-					'id' => $this->connector->getId()->toString(),
+					'id' => $this->connector->getPlainId(),
 				],
 			],
 		);
@@ -418,7 +412,7 @@ abstract class Client
 					'username' => $connection->getUsername(),
 				],
 				'connector' => [
-					'id' => $this->connector->getId()->toString(),
+					'id' => $this->connector->getPlainId(),
 				],
 			],
 		);
@@ -438,7 +432,7 @@ abstract class Client
 					'username' => $connection->getUsername(),
 				],
 				'connector' => [
-					'id' => $this->connector->getId()->toString(),
+					'id' => $this->connector->getPlainId(),
 				],
 			],
 		);
@@ -460,7 +454,7 @@ abstract class Client
 					'code' => $ex->getCode(),
 				],
 				'connector' => [
-					'id' => $this->connector->getId()->toString(),
+					'id' => $this->connector->getPlainId(),
 				],
 			],
 		);
@@ -488,7 +482,7 @@ abstract class Client
 					'code' => $ex->getCode(),
 				],
 				'connector' => [
-					'id' => $this->connector->getId()->toString(),
+					'id' => $this->connector->getPlainId(),
 				],
 			],
 		);
@@ -519,7 +513,7 @@ abstract class Client
 					'qos' => $message->getQosLevel(),
 				],
 				'connector' => [
-					'id' => $this->connector->getId()->toString(),
+					'id' => $this->connector->getPlainId(),
 				],
 			],
 		);

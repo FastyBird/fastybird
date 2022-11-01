@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\Shelly\Clients\Gen1;
 
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Nette;
 use function sprintf;
@@ -34,7 +34,7 @@ final class Mqtt
 	use Nette\SmartObject;
 
 	public function __construct(
-		private readonly MetadataEntities\DevicesModule\Connector $connector,
+		private readonly Entities\ShellyConnector $connector,
 	)
 	{
 	}

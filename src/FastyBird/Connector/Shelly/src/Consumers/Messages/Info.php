@@ -54,9 +54,6 @@ final class Info implements Consumer
 		private readonly DevicesModels\Devices\Properties\PropertiesManager $propertiesManager,
 		private readonly DevicesModels\Devices\Attributes\AttributesRepository $attributesRepository,
 		private readonly DevicesModels\Devices\Attributes\AttributesManager $attributesManager,
-		private readonly DevicesModels\DataStorage\DevicesRepository $devicesDataStorageRepository,
-		private readonly DevicesModels\DataStorage\DevicePropertiesRepository $propertiesDataStorageRepository,
-		private readonly DevicesModels\DataStorage\DeviceAttributesRepository $attributesDataStorageRepository,
 		private readonly DevicesUtilities\Database $databaseHelper,
 		Log\LoggerInterface|null $logger = null,
 	)
@@ -68,12 +65,8 @@ final class Info implements Consumer
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Runtime
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function consume(Entities\Messages\Entity $entity): bool
 	{
@@ -81,61 +74,47 @@ final class Info implements Consumer
 			return false;
 		}
 
-		$deviceItem = $this->devicesDataStorageRepository->findByIdentifier(
-			$entity->getConnector(),
-			$entity->getIdentifier(),
-		);
+		$findDeviceQuery = new DevicesQueries\FindDevices();
+		$findDeviceQuery->byConnectorId($entity->getConnector());
+		$findDeviceQuery->byIdentifier($entity->getIdentifier());
 
-		if ($deviceItem === null) {
+		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\ShellyDevice::class);
+		assert($device instanceof Entities\ShellyDevice || $device === null);
+
+		if ($device === null) {
 			return true;
 		}
 
-		if ($deviceItem->getName() === null && $deviceItem->getName() !== $entity->getType()) {
-			$deviceEntity = $this->databaseHelper->query(
-				function () use ($deviceItem): Entities\ShellyDevice|null {
-					$findDeviceQuery = new DevicesQueries\FindDevices();
-					$findDeviceQuery->byId($deviceItem->getId());
-
-					$deviceEntity = $this->devicesRepository->findOneBy($findDeviceQuery);
-					assert($deviceEntity instanceof Entities\ShellyDevice || $deviceEntity === null);
-
-					return $deviceEntity;
-				},
-			);
-
-			if ($deviceEntity === null) {
-				return true;
-			}
-
-			$this->databaseHelper->transaction(function () use ($entity, $deviceEntity): void {
-				$this->devicesManager->update($deviceEntity, Utils\ArrayHash::from([
+		if ($device->getName() === null && $device->getName() !== $entity->getType()) {
+			$this->databaseHelper->transaction(function () use ($entity, $device): void {
+				$this->devicesManager->update($device, Utils\ArrayHash::from([
 					'name' => $entity->getType(),
 				]));
 			});
 		}
 
 		$this->setDeviceProperty(
-			$deviceItem->getId(),
+			$device->getId(),
 			$entity->getIpAddress(),
 			Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS,
 		);
 		$this->setDeviceProperty(
-			$deviceItem->getId(),
+			$device->getId(),
 			$entity->isAuthEnabled(),
 			Types\DevicePropertyIdentifier::IDENTIFIER_AUTH_ENABLED,
 		);
 		$this->setDeviceAttribute(
-			$deviceItem->getId(),
+			$device->getId(),
 			$entity->getType(),
 			Types\DeviceAttributeIdentifier::IDENTIFIER_MODEL,
 		);
 		$this->setDeviceAttribute(
-			$deviceItem->getId(),
+			$device->getId(),
 			$entity->getMacAddress(),
 			Types\DeviceAttributeIdentifier::IDENTIFIER_MAC_ADDRESS,
 		);
 		$this->setDeviceAttribute(
-			$deviceItem->getId(),
+			$device->getId(),
 			$entity->getFirmwareVersion(),
 			Types\DeviceAttributeIdentifier::IDENTIFIER_FIRMWARE_VERSION,
 		);
@@ -146,7 +125,7 @@ final class Info implements Consumer
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 				'type' => 'info-message-consumer',
 				'device' => [
-					'id' => $deviceItem->getId()->toString(),
+					'id' => $device->getPlainId(),
 				],
 				'data' => $entity->toArray(),
 			],

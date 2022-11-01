@@ -28,7 +28,6 @@ final class DevicesModuleExtensionTests extends DbTestCase
 	{
 		self::assertNotNull($this->getContainer()->getByType(Commands\Initialize::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Commands\Connector::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Commands\Exchange::class, false));
 
 		self::assertNotNull($this->getContainer()->getByType(Middleware\Access::class, false));
 
@@ -108,8 +107,6 @@ final class DevicesModuleExtensionTests extends DbTestCase
 
 		self::assertNotNull($this->getContainer()->getByType(Subscribers\ModuleEntities::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Subscribers\StateEntities::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Subscribers\Connector::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Subscribers\Exchange::class, false));
 
 		self::assertNotNull($this->getContainer()->getByType(Utilities\Database::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Utilities\ChannelPropertiesStates::class, false));

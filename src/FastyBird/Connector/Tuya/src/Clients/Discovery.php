@@ -23,7 +23,6 @@ use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\Library\Metadata;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -96,7 +95,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
-		private readonly MetadataEntities\DevicesModule\Connector $connector,
+		private readonly Entities\TuyaConnector $connector,
 		private readonly API\OpenApiFactory $openApiApiFactory,
 		private readonly API\LocalApiFactory $localApiFactory,
 		private readonly Helpers\Connector $connectorHelper,
@@ -114,7 +113,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
@@ -127,7 +125,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 		$this->discoveredLocalDevices = new SplObjectStorage();
 
 		$mode = $this->connectorHelper->getConfiguration(
-			$this->connector->getId(),
+			$this->connector,
 			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE),
 		);
 
@@ -150,7 +148,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
@@ -268,7 +265,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			/** @var Array<Entities\API\DeviceInformation> $devices */
 			$devices = await($this->openApiApi->getDevices([
 				'source_id' => $this->connectorHelper->getConfiguration(
-					$this->connector->getId(),
+					$this->connector,
 					Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_UID),
 				),
 				'source_type' => 'tuyaUser',
@@ -409,7 +406,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState

@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\Shelly\Clients\Gen1;
 
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Connector\Shelly\Entities;
 
 /**
  * CoAP client factory
@@ -28,6 +28,6 @@ use FastyBird\Library\Metadata\Entities as MetadataEntities;
 interface CoapFactory
 {
 
-	public function create(MetadataEntities\DevicesModule\Connector $connector): Coap;
+	public function create(Entities\ShellyConnector $connector): Coap;
 
 }

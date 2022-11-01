@@ -24,13 +24,12 @@ use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
-use FastyBird\Module\Devices\DataStorage;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
+use FastyBird\Module\Devices\Utilities;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use IPub\Phone\Exceptions as PhoneExceptions;
-use League\Flysystem;
 use Nette;
 use Nette\Utils;
 use ReflectionClass;
@@ -60,13 +59,12 @@ final class ModuleEntities implements Common\EventSubscriber
 
 	public function __construct(
 		private readonly ORM\EntityManagerInterface $entityManager,
-		private readonly Models\States\DevicePropertiesRepository $devicePropertiesStatesRepository,
-		private readonly Models\States\DevicePropertiesManager $devicePropertiesStatesManager,
-		private readonly Models\States\ChannelPropertiesRepository $channelPropertiesStatesRepository,
-		private readonly Models\States\ChannelPropertiesManager $channelPropertiesStatesManager,
-		private readonly Models\States\ConnectorPropertiesRepository $connectorPropertiesStatesRepository,
 		private readonly Models\States\ConnectorPropertiesManager $connectorPropertiesStatesManager,
-		private readonly DataStorage\Writer $configurationDataWriter,
+		private readonly Models\States\DevicePropertiesManager $devicePropertiesStatesManager,
+		private readonly Models\States\ChannelPropertiesManager $channelPropertiesStatesManager,
+		private readonly Utilities\ConnectorPropertiesStates $connectorPropertiesStates,
+		private readonly Utilities\DevicePropertiesStates $devicePropertiesStates,
+		private readonly Utilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly ExchangeEntities\EntityFactory $entityFactory,
 		private readonly ExchangePublisher\Publisher $publisher,
 	)
@@ -87,7 +85,6 @@ final class ModuleEntities implements Common\EventSubscriber
 	 * @throws Exception
 	 * @throws Exceptions\InvalidState
 	 * @throws ExchangeExceptions\InvalidState
-	 * @throws Flysystem\FilesystemException
 	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidData
@@ -109,8 +106,6 @@ final class ModuleEntities implements Common\EventSubscriber
 		}
 
 		$this->publishEntity($entity, self::ACTION_CREATED);
-
-		$this->configurationDataWriter->write();
 	}
 
 	/**
@@ -118,7 +113,6 @@ final class ModuleEntities implements Common\EventSubscriber
 	 * @throws Exception
 	 * @throws ExchangeExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
-	 * @throws Flysystem\FilesystemException
 	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidData
@@ -154,8 +148,6 @@ final class ModuleEntities implements Common\EventSubscriber
 		}
 
 		$this->publishEntity($entity, self::ACTION_UPDATED);
-
-		$this->configurationDataWriter->write();
 	}
 
 	/**
@@ -163,7 +155,6 @@ final class ModuleEntities implements Common\EventSubscriber
 	 * @throws Exception
 	 * @throws ExchangeExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
-	 * @throws Flysystem\FilesystemException
 	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidData
@@ -189,7 +180,7 @@ final class ModuleEntities implements Common\EventSubscriber
 		// Property states cleanup
 		if ($entity instanceof Entities\Connectors\Properties\Dynamic) {
 			try {
-				$state = $this->connectorPropertiesStatesRepository->findOne($entity);
+				$state = $this->connectorPropertiesStates->getValue($entity);
 
 				if ($state !== null) {
 					$this->connectorPropertiesStatesManager->delete($entity, $state);
@@ -199,7 +190,7 @@ final class ModuleEntities implements Common\EventSubscriber
 			}
 		} elseif ($entity instanceof Entities\Devices\Properties\Dynamic) {
 			try {
-				$state = $this->devicePropertiesStatesRepository->findOne($entity);
+				$state = $this->devicePropertiesStates->getValue($entity);
 
 				if ($state !== null) {
 					$this->devicePropertiesStatesManager->delete($entity, $state);
@@ -209,7 +200,7 @@ final class ModuleEntities implements Common\EventSubscriber
 			}
 		} elseif ($entity instanceof Entities\Channels\Properties\Dynamic) {
 			try {
-				$state = $this->channelPropertiesStatesRepository->findOne($entity);
+				$state = $this->channelPropertiesStates->getValue($entity);
 
 				if ($state !== null) {
 					$this->channelPropertiesStatesManager->delete($entity, $state);
@@ -218,8 +209,6 @@ final class ModuleEntities implements Common\EventSubscriber
 				return;
 			}
 		}
-
-		$this->configurationDataWriter->write();
 	}
 
 	/**
@@ -269,7 +258,7 @@ final class ModuleEntities implements Common\EventSubscriber
 		if ($publishRoutingKey !== null) {
 			if ($entity instanceof Entities\Devices\Properties\Dynamic) {
 				try {
-					$state = $this->devicePropertiesStatesRepository->findOne($entity);
+					$state = $this->devicePropertiesStates->getValue($entity);
 
 					$this->publisher->publish(
 						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
@@ -294,7 +283,7 @@ final class ModuleEntities implements Common\EventSubscriber
 				}
 			} elseif ($entity instanceof Entities\Channels\Properties\Dynamic) {
 				try {
-					$state = $this->channelPropertiesStatesRepository->findOne($entity);
+					$state = $this->channelPropertiesStates->getValue($entity);
 
 					$this->publisher->publish(
 						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
@@ -319,7 +308,7 @@ final class ModuleEntities implements Common\EventSubscriber
 				}
 			} elseif ($entity instanceof Entities\Connectors\Properties\Dynamic) {
 				try {
-					$state = $this->connectorPropertiesStatesRepository->findOne($entity);
+					$state = $this->connectorPropertiesStates->getValue($entity);
 
 					$this->publisher->publish(
 						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),

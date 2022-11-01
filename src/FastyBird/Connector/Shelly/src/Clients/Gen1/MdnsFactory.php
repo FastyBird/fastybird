@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\Shelly\Clients\Gen1;
 
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Connector\Shelly\Entities;
 
 /**
  * mDNS client factory
@@ -28,6 +28,6 @@ use FastyBird\Library\Metadata\Entities as MetadataEntities;
 interface MdnsFactory
 {
 
-	public function create(MetadataEntities\DevicesModule\Connector $connector): Mdns;
+	public function create(Entities\ShellyConnector $connector): Mdns;
 
 }

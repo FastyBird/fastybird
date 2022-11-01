@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\FbMqtt\Clients;
 
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Connector\FbMqtt\Entities;
 
 /**
  * Base client factory
@@ -30,6 +30,6 @@ interface ClientFactory
 
 	public const VERSION_CONSTANT_NAME = 'VERSION';
 
-	public function create(MetadataEntities\DevicesModule\Connector $connector): Client;
+	public function create(Entities\FbMqttConnector $connector): Client;
 
 }

@@ -15,8 +15,8 @@
 
 namespace FastyBird\Connector\FbMqtt\Clients;
 
+use FastyBird\Connector\FbMqtt\Entities;
 use FastyBird\Connector\FbMqtt\Types;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
 
 /**
  * FastyBird MQTT v1 client factory
@@ -31,6 +31,6 @@ interface FbMqttV1Factory extends ClientFactory
 
 	public const VERSION = Types\ProtocolVersion::VERSION_1;
 
-	public function create(MetadataEntities\DevicesModule\Connector $connector): FbMqttV1;
+	public function create(Entities\FbMqttConnector $connector): FbMqttV1;
 
 }

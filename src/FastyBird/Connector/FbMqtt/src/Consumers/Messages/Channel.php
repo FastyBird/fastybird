@@ -70,12 +70,10 @@ final class Channel implements Consumers\Consumer
 			return false;
 		}
 
-		$device = $this->databaseHelper->query(function () use ($entity): DevicesEntities\Devices\Device|null {
-			$findDeviceQuery = new DevicesQueries\FindDevices();
-			$findDeviceQuery->byIdentifier($entity->getDevice());
+		$findDeviceQuery = new DevicesQueries\FindDevices();
+		$findDeviceQuery->byIdentifier($entity->getDevice());
 
-			return $this->deviceRepository->findOneBy($findDeviceQuery);
-		});
+		$device = $this->deviceRepository->findOneBy($findDeviceQuery, Entities\FbMqttDevice::class);
 
 		if ($device === null) {
 			$this->logger->error(
@@ -138,7 +136,7 @@ final class Channel implements Consumers\Consumer
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 				'type' => 'channel-message-consumer',
 				'device' => [
-					'id' => $device->getId()->toString(),
+					'id' => $device->getPlainId(),
 				],
 				'data' => $entity->toArray(),
 			],

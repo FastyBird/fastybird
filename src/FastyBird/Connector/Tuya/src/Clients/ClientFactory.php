@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\Tuya\Clients;
 
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Connector\Tuya\Entities;
 
 /**
  * Base client factory
@@ -30,6 +30,6 @@ interface ClientFactory
 
 	public const MODE_CONSTANT_NAME = 'MODE';
 
-	public function create(MetadataEntities\DevicesModule\Connector $connector): Client;
+	public function create(Entities\TuyaConnector $connector): Client;
 
 }

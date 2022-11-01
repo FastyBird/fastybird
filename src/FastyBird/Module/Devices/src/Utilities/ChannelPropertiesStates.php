@@ -21,6 +21,8 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
+use FastyBird\Module\Devices\Queries;
+use FastyBird\Module\Devices\States;
 use Nette;
 use Nette\Utils;
 use Psr\Log;
@@ -42,7 +44,7 @@ final class ChannelPropertiesStates
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
-		private readonly Models\DataStorage\ChannelPropertiesRepository $channelPropertiesRepository,
+		private readonly Models\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
 		private readonly Models\States\ChannelPropertiesRepository $channelPropertyStateRepository,
 		private readonly Models\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 		Log\LoggerInterface|null $logger,
@@ -52,13 +54,58 @@ final class ChannelPropertiesStates
 	}
 
 	/**
-	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
+	 */
+	public function getValue(
+		MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped $property,
+	): States\ChannelProperty|null
+	{
+		try {
+			$state = $this->channelPropertyStateRepository->findOneById($property->getId());
+
+			if ($state !== null) {
+				if ($state->getActualValue() !== null) {
+					$state->setActualValue(
+						ValueHelper::normalizeValue(
+							$property->getDataType(),
+							$state->getActualValue(),
+							$property->getFormat(),
+							$property->getInvalid(),
+						),
+					);
+				}
+
+				if ($state->getExpectedValue() !== null) {
+					$state->setActualValue(
+						ValueHelper::normalizeValue(
+							$property->getDataType(),
+							$state->getExpectedValue(),
+							$property->getFormat(),
+							$property->getInvalid(),
+						),
+					);
+				}
+			}
+
+			return $state;
+		} catch (Exceptions\NotImplemented) {
+			$this->logger->warning(
+				'Channels states repository is not configured. State could not be fetched',
+				[
+					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+					'type' => 'channel-properties-states',
+				],
+			);
+		}
+
+		return null;
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function setValue(
 		MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped $property,
@@ -70,9 +117,12 @@ final class ChannelPropertiesStates
 				throw new Exceptions\InvalidState('Parent identifier for mapped property is missing');
 			}
 
-			$parent = $this->channelPropertiesRepository->findById($property->getParent());
+			$findPropertyQuery = new Queries\FindChannelProperties();
+			$findPropertyQuery->byId($property->getParent());
 
-			if (!$parent instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty) {
+			$parent = $this->channelPropertiesRepository->findOneBy($findPropertyQuery);
+
+			if (!$parent instanceof Entities\Channels\Properties\Dynamic) {
 				throw new Exceptions\InvalidState('Mapped property parent could not be loaded');
 			}
 
@@ -97,6 +147,36 @@ final class ChannelPropertiesStates
 			);
 
 			return;
+		}
+
+		if ($data->offsetExists(States\Property::ACTUAL_VALUE_KEY)) {
+			$data->offsetSet(
+				States\Property::ACTUAL_VALUE_KEY,
+				ValueHelper::flattenValue(
+					ValueHelper::normalizeValue(
+						$property->getDataType(),
+						/** @phpstan-ignore-next-line */
+						$data->offsetGet(States\Property::ACTUAL_VALUE_KEY),
+						$property->getFormat(),
+						$property->getInvalid(),
+					),
+				),
+			);
+		}
+
+		if ($data->offsetExists(States\Property::EXPECTED_VALUE_KEY)) {
+			$data->offsetSet(
+				States\Property::EXPECTED_VALUE_KEY,
+				ValueHelper::flattenValue(
+					ValueHelper::normalizeValue(
+						$property->getDataType(),
+						/** @phpstan-ignore-next-line */
+						$data->offsetGet(States\Property::EXPECTED_VALUE_KEY),
+						$property->getFormat(),
+						$property->getInvalid(),
+					),
+				),
+			);
 		}
 
 		try {
@@ -153,12 +233,8 @@ final class ChannelPropertiesStates
 	 * @param MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelMappedProperty|Array<MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelMappedProperty>|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped|Array<Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped> $property
 	 *
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function setValidState(
 		MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped|array $property,
@@ -168,12 +244,12 @@ final class ChannelPropertiesStates
 		if (is_array($property)) {
 			foreach ($property as $item) {
 				$this->setValue($item, Utils\ArrayHash::from([
-					'valid' => $state,
+					States\Property::VALID_KEY => $state,
 				]));
 			}
 		} else {
 			$this->setValue($property, Utils\ArrayHash::from([
-				'valid' => $state,
+				States\Property::VALID_KEY => $state,
 			]));
 		}
 	}

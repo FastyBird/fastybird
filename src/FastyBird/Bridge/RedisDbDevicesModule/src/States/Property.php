@@ -19,6 +19,7 @@ use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Exception;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Plugin\RedisDb\States as RedisDbStates;
 use function array_merge;
@@ -35,9 +36,9 @@ use function is_bool;
 class Property extends RedisDbStates\State implements DevicesStates\Property
 {
 
-	private float|bool|int|string|null $actualValue = null;
+	private bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|null $actualValue = null;
 
-	private float|bool|int|string|null $expectedValue = null;
+	private bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|null $expectedValue = null;
 
 	private bool|string|null $pending = null;
 
@@ -74,22 +75,26 @@ class Property extends RedisDbStates\State implements DevicesStates\Property
 		$this->updatedAt = $updatedAt;
 	}
 
-	public function getActualValue(): float|bool|int|string|null
+	public function getActualValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|null
 	{
 		return $this->actualValue;
 	}
 
-	public function setActualValue(float|bool|int|string|null $actual): void
+	public function setActualValue(
+		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|null $actual,
+	): void
 	{
 		$this->actualValue = $actual;
 	}
 
-	public function getExpectedValue(): float|bool|int|string|null
+	public function getExpectedValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|null
 	{
 		return $this->expectedValue;
 	}
 
-	public function setExpectedValue(float|bool|int|string|null $expected): void
+	public function setExpectedValue(
+		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|null $expected,
+	): void
 	{
 		$this->expectedValue = $expected;
 	}
@@ -123,10 +128,10 @@ class Property extends RedisDbStates\State implements DevicesStates\Property
 	{
 		return [
 			0 => 'id',
-			'actualValue' => null,
-			'expectedValue' => null,
-			'pending' => false,
-			'valid' => false,
+			DevicesStates\Property::ACTUAL_VALUE_KEY => null,
+			DevicesStates\Property::EXPECTED_VALUE_KEY => null,
+			DevicesStates\Property::PENDING_KEY => false,
+			DevicesStates\Property::VALID_KEY => false,
 			'createdAt' => null,
 			'updatedAt' => null,
 		];
@@ -135,10 +140,10 @@ class Property extends RedisDbStates\State implements DevicesStates\Property
 	public static function getUpdateFields(): array
 	{
 		return [
-			'actualValue',
-			'expectedValue',
-			'pending',
-			'valid',
+			DevicesStates\Property::ACTUAL_VALUE_KEY,
+			DevicesStates\Property::EXPECTED_VALUE_KEY,
+			DevicesStates\Property::PENDING_KEY,
+			DevicesStates\Property::VALID_KEY,
 			'updatedAt',
 		];
 	}

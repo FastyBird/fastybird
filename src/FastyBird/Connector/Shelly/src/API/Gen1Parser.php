@@ -110,7 +110,6 @@ final class Gen1Parser
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\ParseMessage
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState

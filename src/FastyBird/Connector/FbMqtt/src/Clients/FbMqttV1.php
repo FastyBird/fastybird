@@ -26,17 +26,18 @@ use FastyBird\Connector\FbMqtt\Exceptions;
 use FastyBird\Connector\FbMqtt\Helpers;
 use FastyBird\Connector\FbMqtt\Types;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
-use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette\Utils;
 use Psr\Log;
 use React\EventLoop;
 use Throwable;
 use function array_key_exists;
+use function assert;
 use function explode;
 use function in_array;
 use function is_string;
@@ -77,18 +78,15 @@ final class FbMqttV1 extends Client
 	private array $processedProperties = [];
 
 	public function __construct(
-		MetadataEntities\DevicesModule\Connector $connector,
+		Entities\FbMqttConnector $connector,
 		private readonly API\V1Validator $apiValidator,
 		private readonly API\V1Parser $apiParser,
 		private readonly API\V1Builder $apiBuilder,
 		Helpers\Connector $connectorHelper,
 		private readonly Helpers\Property $propertyStateHelper,
 		Consumers\Messages $consumer,
-		DevicesModels\DataStorage\ConnectorPropertiesRepository $connectorPropertiesRepository,
-		private readonly DevicesModels\DataStorage\DevicesRepository $devicesRepository,
-		private readonly DevicesModels\DataStorage\DevicePropertiesRepository $devicePropertiesRepository,
-		private readonly DevicesModels\DataStorage\ChannelsRepository $channelsRepository,
-		private readonly DevicesModels\DataStorage\ChannelPropertiesRepository $channelPropertiesRepository,
+		private readonly DevicesUtilities\DevicePropertiesStates $devicePropertiesStates,
+		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		EventLoop\LoopInterface $loop,
@@ -100,7 +98,6 @@ final class FbMqttV1 extends Client
 	{
 		parent::__construct(
 			$connector,
-			$connectorPropertiesRepository,
 			$connectorHelper,
 			$consumer,
 			$loop,
@@ -137,13 +134,15 @@ final class FbMqttV1 extends Client
 			}
 		}
 
-		foreach ($this->devicesRepository->findAllByConnector($this->connector->getId()) as $device) {
+		foreach ($this->connector->getDevices() as $device) {
+			assert($device instanceof Entities\FbMqttDevice);
+
 			if (
-				!in_array($device->getId()->toString(), $this->processedDevices, true)
+				!in_array($device->getPlainId(), $this->processedDevices, true)
 				&& $this->deviceConnectionManager->getState($device)
 					->equalsValue(MetadataTypes\ConnectionState::STATE_READY)
 			) {
-				$this->processedDevices[] = $device->getId()->toString();
+				$this->processedDevices[] = $device->getPlainId();
 
 				if ($this->processDevice($device)) {
 					$this->registerLoopHandler();
@@ -160,18 +159,16 @@ final class FbMqttV1 extends Client
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	protected function onClose(Mqtt\Connection $connection): void
 	{
 		parent::onClose($connection);
 
-		foreach ($this->devicesRepository->findAllByConnector($this->connector->getId()) as $device) {
+		foreach ($this->connector->getDevices() as $device) {
+			assert($device instanceof Entities\FbMqttDevice);
+
 			if ($this->deviceConnectionManager->getState($device)
 				->equalsValue(MetadataTypes\ConnectionState::STATE_READY)) {
 				$this->deviceConnectionManager->setState(
@@ -202,7 +199,7 @@ final class FbMqttV1 extends Client
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 							'type' => 'fb-mqtt-v1-client',
 							'connector' => [
-								'id' => $this->connector->getId()->toString(),
+								'id' => $this->connector->getPlainId(),
 							],
 						],
 					);
@@ -218,7 +215,7 @@ final class FbMqttV1 extends Client
 								'code' => $ex->getCode(),
 							],
 							'connector' => [
-								'id' => $this->connector->getId()->toString(),
+								'id' => $this->connector->getPlainId(),
 							],
 						],
 					);
@@ -240,7 +237,7 @@ final class FbMqttV1 extends Client
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 								'type' => 'fb-mqtt-v1-client',
 								'connector' => [
-									'id' => $this->connector->getId()->toString(),
+									'id' => $this->connector->getPlainId(),
 								],
 							],
 						);
@@ -256,7 +253,7 @@ final class FbMqttV1 extends Client
 									'code' => $ex->getCode(),
 								],
 								'connector' => [
-									'id' => $this->connector->getId()->toString(),
+									'id' => $this->connector->getPlainId(),
 								],
 							],
 						);
@@ -298,7 +295,7 @@ final class FbMqttV1 extends Client
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 								'type' => 'fb-mqtt-v1-client',
 								'connector' => [
-									'id' => $this->connector->getId()->toString(),
+									'id' => $this->connector->getPlainId(),
 								],
 							],
 						);
@@ -346,7 +343,7 @@ final class FbMqttV1 extends Client
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 								'type' => 'fb-mqtt-v1-client',
 								'connector' => [
-									'id' => $this->connector->getId()->toString(),
+									'id' => $this->connector->getPlainId(),
 								],
 							],
 						);
@@ -361,7 +358,7 @@ final class FbMqttV1 extends Client
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 								'type' => 'fb-mqtt-v1-client',
 								'connector' => [
-									'id' => $this->connector->getId()->toString(),
+									'id' => $this->connector->getPlainId(),
 								],
 							],
 						);
@@ -374,7 +371,7 @@ final class FbMqttV1 extends Client
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 								'type' => 'fb-mqtt-v1-client',
 								'connector' => [
-									'id' => $this->connector->getId()->toString(),
+									'id' => $this->connector->getPlainId(),
 								],
 							],
 						);
@@ -415,7 +412,7 @@ final class FbMqttV1 extends Client
 							'code' => $ex->getCode(),
 						],
 						'connector' => [
-							'id' => $this->connector->getId()->toString(),
+							'id' => $this->connector->getPlainId(),
 						],
 					],
 				);
@@ -438,7 +435,7 @@ final class FbMqttV1 extends Client
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws Exception
 	 */
-	private function processDevice(MetadataEntities\DevicesModule\Device $device): bool
+	private function processDevice(Entities\FbMqttDevice $device): bool
 	{
 		if ($this->writeDeviceProperty($device)) {
 			return true;
@@ -458,23 +455,30 @@ final class FbMqttV1 extends Client
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws Exception
 	 */
-	private function writeDeviceProperty(MetadataEntities\DevicesModule\Device $device): bool
+	private function writeDeviceProperty(Entities\FbMqttDevice $device): bool
 	{
 		$now = $this->dateTimeFactory->getNow();
 
-		foreach ($this->devicePropertiesRepository->findAllByDevice(
-			$device->getId(),
-			MetadataEntities\DevicesModule\DeviceDynamicProperty::class,
-		) as $property) {
+		foreach ($device->getProperties() as $property) {
+			if (!$property instanceof DevicesEntities\Devices\Properties\Dynamic) {
+				continue;
+			}
+
+			$state = $this->devicePropertiesStates->getValue($property);
+
+			if ($state === null) {
+				continue;
+			}
+
 			if (
 				$property->isSettable()
-				&& $property->getExpectedValue() !== null
-				&& $property->isPending() === true
+				&& $state->getExpectedValue() !== null
+				&& $state->isPending() === true
 			) {
-				$pending = is_string($property->getPending())
+				$pending = is_string($state->getPending())
 					? Utils\DateTime::createFromFormat(
 						DateTimeInterface::ATOM,
-						$property->getPending(),
+						$state->getPending(),
 					)
 					: true;
 				$debounce = array_key_exists($property->getId()
@@ -488,7 +492,7 @@ final class FbMqttV1 extends Client
 					continue;
 				}
 
-				unset($this->processedProperties[$property->getId()->toString()]);
+				unset($this->processedProperties[$property->getPlainId()]);
 
 				if (
 					$pending === true
@@ -497,17 +501,17 @@ final class FbMqttV1 extends Client
 						&& (float) $now->format('Uv') - (float) $pending->format('Uv') > 2_000
 					)
 				) {
-					$this->processedProperties[$property->getId()->toString()] = $now;
+					$this->processedProperties[$property->getPlainId()] = $now;
 
 					$this->publish(
 						$this->apiBuilder->buildDevicePropertyTopic($device, $property),
-						strval($property->getExpectedValue()),
+						strval($state->getExpectedValue()),
 					)->then(function () use ($property, $now): void {
 						$this->propertyStateHelper->setValue($property, Utils\ArrayHash::from([
-							'pending' => $now->format(DateTimeInterface::ATOM),
+							DevicesStates\Property::PENDING_KEY => $now->format(DateTimeInterface::ATOM),
 						]));
 					})->otherwise(function () use ($property): void {
-						unset($this->processedProperties[$property->getId()->toString()]);
+						unset($this->processedProperties[$property->getPlainId()]);
 					});
 
 					return true;
@@ -529,24 +533,31 @@ final class FbMqttV1 extends Client
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws Exception
 	 */
-	private function writeChannelsProperty(MetadataEntities\DevicesModule\Device $device): bool
+	private function writeChannelsProperty(Entities\FbMqttDevice $device): bool
 	{
 		$now = $this->dateTimeFactory->getNow();
 
-		foreach ($this->channelsRepository->findAllByDevice($device->getId()) as $channel) {
-			foreach ($this->channelPropertiesRepository->findAllByChannel(
-				$channel->getId(),
-				MetadataEntities\DevicesModule\ChannelDynamicProperty::class,
-			) as $property) {
+		foreach ($device->getChannels() as $channel) {
+			foreach ($channel->getProperties() as $property) {
+				if (!$property instanceof DevicesEntities\Channels\Properties\Dynamic) {
+					continue;
+				}
+
+				$state = $this->channelPropertiesStates->getValue($property);
+
+				if ($state === null) {
+					continue;
+				}
+
 				if (
 					$property->isSettable()
-					&& $property->getExpectedValue() !== null
-					&& $property->isPending() === true
+					&& $state->getExpectedValue() !== null
+					&& $state->isPending() === true
 				) {
-					$pending = is_string($property->getPending())
+					$pending = is_string($state->getPending())
 						? Utils\DateTime::createFromFormat(
 							DateTimeInterface::ATOM,
-							$property->getPending(),
+							$state->getPending(),
 						)
 						: true;
 					$debounce = array_key_exists($property->getId()
@@ -560,7 +571,7 @@ final class FbMqttV1 extends Client
 						continue;
 					}
 
-					unset($this->processedProperties[$property->getId()->toString()]);
+					unset($this->processedProperties[$property->getPlainId()]);
 
 					if (
 						$pending === true
@@ -569,17 +580,17 @@ final class FbMqttV1 extends Client
 							&& (float) $now->format('Uv') - (float) $pending->format('Uv') > 2_000
 						)
 					) {
-						$this->processedProperties[$property->getId()->toString()] = $now;
+						$this->processedProperties[$property->getPlainId()] = $now;
 
 						$this->publish(
 							$this->apiBuilder->buildChannelPropertyTopic($device, $channel, $property),
-							strval($property->getExpectedValue()),
+							strval($state->getExpectedValue()),
 						)->then(function () use ($property, $now): void {
 							$this->propertyStateHelper->setValue($property, Utils\ArrayHash::from([
-								'pending' => $now->format(DateTimeInterface::ATOM),
+								DevicesStates\Property::PENDING_KEY => $now->format(DateTimeInterface::ATOM),
 							]));
 						})->otherwise(function () use ($property): void {
-							unset($this->processedProperties[$property->getId()->toString()]);
+							unset($this->processedProperties[$property->getPlainId()]);
 						});
 
 						return true;

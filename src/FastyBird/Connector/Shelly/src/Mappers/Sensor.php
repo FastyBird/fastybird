@@ -16,10 +16,11 @@
 namespace FastyBird\Connector\Shelly\Mappers;
 
 use FastyBird\Connector\Shelly;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Connector\Shelly\Entities;
+use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
 use Ramsey\Uuid;
 use function array_key_exists;
@@ -43,34 +44,33 @@ final class Sensor
 	private array $sensorsToProperties = [];
 
 	public function __construct(
-		private readonly DevicesModels\DataStorage\DevicesRepository $devicesRepository,
-		private readonly DevicesModels\DataStorage\ChannelsRepository $channelsRepository,
-		private readonly DevicesModels\DataStorage\ChannelPropertiesRepository $channelPropertiesRepository,
+		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
 	)
 	{
 	}
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function findProperty(
 		Uuid\UuidInterface $connector,
 		string $deviceIdentifier,
 		int $sensorIdentifier,
-	): MetadataEntities\DevicesModule\ChannelDynamicProperty|null
+	): DevicesEntities\Channels\Properties\Dynamic|null
 	{
 		$key = $deviceIdentifier . '-' . $sensorIdentifier;
 
 		if (array_key_exists($key, $this->sensorsToProperties)) {
-			$property = $this->channelPropertiesRepository->findById($this->sensorsToProperties[$key]);
+			$findPropertyQuery = new DevicesQueries\FindChannelProperties();
+			$findPropertyQuery->byId($this->sensorsToProperties[$key]);
 
-			if ($property instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty) {
+			$property = $this->channelPropertiesRepository->findOneBy(
+				$findPropertyQuery,
+				DevicesEntities\Channels\Properties\Dynamic::class,
+			);
+
+			if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
 				return $property;
 			}
 		}
@@ -86,31 +86,25 @@ final class Sensor
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function loadProperty(
 		Uuid\UuidInterface $connector,
 		string $deviceIdentifier,
 		int $sensorIdentifier,
-	): MetadataEntities\DevicesModule\ChannelDynamicProperty|null
+	): DevicesEntities\Channels\Properties\Dynamic|null
 	{
-		$device = $this->devicesRepository->findByIdentifier($connector, $deviceIdentifier);
+		$findDeviceQuery = new DevicesQueries\FindDevices();
+		$findDeviceQuery->byConnectorId($connector);
+		$findDeviceQuery->byIdentifier($deviceIdentifier);
+
+		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\ShellyDevice::class);
 
 		if ($device === null) {
 			return null;
 		}
 
-		$channels = $this->channelsRepository->findAllByDevice($device->getId());
-
-		foreach ($channels as $channel) {
-			$properties = $this->channelPropertiesRepository->findAllByChannel($channel->getId());
-
-			foreach ($properties as $property) {
+		foreach ($device->getChannels() as $channel) {
+			foreach ($channel->getProperties() as $property) {
 				if (
 					preg_match(
 						Shelly\Constants::GEN_1_PROPERTY_SENSOR,
@@ -122,7 +116,7 @@ final class Sensor
 					&& array_key_exists('description', $propertyMatches)
 					&& intval($propertyMatches['identifier']) === $sensorIdentifier
 				) {
-					if ($property instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty) {
+					if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
 						return $property;
 					}
 

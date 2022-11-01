@@ -18,7 +18,9 @@ namespace FastyBird\Connector\Tuya\Commands;
 use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Psr\Log;
 use Ramsey\Uuid;
 use Symfony\Component\Console;
@@ -28,6 +30,7 @@ use Symfony\Component\Console\Style;
 use function array_key_first;
 use function array_search;
 use function array_values;
+use function assert;
 use function count;
 use function is_string;
 use function sprintf;
@@ -48,7 +51,7 @@ class Execute extends Console\Command\Command
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
-		private readonly DevicesModels\DataStorage\ConnectorsRepository $connectorsRepository,
+		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
 		Log\LoggerInterface|null $logger = null,
 		string|null $name = null,
 	)
@@ -87,12 +90,9 @@ class Execute extends Console\Command\Command
 
 	/**
 	 * @throws Console\Exception\ExceptionInterface
-	 * @throws MetadataExceptions\FileNotFound
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	protected function execute(Input\InputInterface $input, Output\OutputInterface $output): int
 	{
@@ -128,9 +128,15 @@ class Execute extends Console\Command\Command
 		) {
 			$connectorId = $input->getOption('connector');
 
-			$connector = Uuid\Uuid::isValid($connectorId)
-				? $this->connectorsRepository->findById(Uuid\Uuid::fromString($connectorId))
-				: $this->connectorsRepository->findByIdentifier($connectorId);
+			$findConnectorQuery = new DevicesQueries\FindConnectors();
+
+			if (Uuid\Uuid::isValid($connectorId)) {
+				$findConnectorQuery->byId(Uuid\Uuid::fromString($connectorId));
+			} else {
+				$findConnectorQuery->byIdentifier($connectorId);
+			}
+
+			$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\TuyaConnector::class);
 
 			if ($connector === null) {
 				$io->warning('Connector was not found in system');
@@ -140,10 +146,13 @@ class Execute extends Console\Command\Command
 		} else {
 			$connectors = [];
 
-			foreach ($this->connectorsRepository as $connector) {
-				if ($connector->getType() !== Entities\TuyaConnector::CONNECTOR_TYPE) {
-					continue;
-				}
+			$findConnectorsQuery = new DevicesQueries\FindConnectors();
+
+			foreach ($this->connectorsRepository->findAllBy(
+				$findConnectorsQuery,
+				Entities\TuyaConnector::class,
+			) as $connector) {
+				assert($connector instanceof Entities\TuyaConnector);
 
 				$connectors[$connector->getIdentifier()] = $connector->getIdentifier()
 					. ($connector->getName() !== null ? ' [' . $connector->getName() . ']' : '');
@@ -158,7 +167,10 @@ class Execute extends Console\Command\Command
 			if (count($connectors) === 1) {
 				$connectorIdentifier = array_key_first($connectors);
 
-				$connector = $this->connectorsRepository->findByIdentifier($connectorIdentifier);
+				$findConnectorQuery = new DevicesQueries\FindConnectors();
+				$findConnectorQuery->byIdentifier($connectorIdentifier);
+
+				$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\TuyaConnector::class);
 
 				if ($connector === null) {
 					$io->warning('Connector was not found in system');
@@ -203,7 +215,10 @@ class Execute extends Console\Command\Command
 					return Console\Command\Command::FAILURE;
 				}
 
-				$connector = $this->connectorsRepository->findByIdentifier($connectorIdentifierKey);
+				$findConnectorQuery = new DevicesQueries\FindConnectors();
+				$findConnectorQuery->byIdentifier($connectorIdentifierKey);
+
+				$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\TuyaConnector::class);
 			}
 
 			if ($connector === null) {
@@ -230,7 +245,7 @@ class Execute extends Console\Command\Command
 		$serviceCmd = $symfonyApp->find('fb:devices-module:service');
 
 		$result = $serviceCmd->run(new Input\ArrayInput([
-			'--connector' => $connector->getId()->toString(),
+			'--connector' => $connector->getPlainId(),
 			'--no-confirm' => true,
 			'--quiet' => true,
 		]), $output);

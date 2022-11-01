@@ -19,15 +19,16 @@ use DateTimeInterface;
 use Exception;
 use FastyBird\Connector\Shelly\API;
 use FastyBird\Connector\Shelly\Consumers;
+use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
-use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use InvalidArgumentException;
 use Nette;
@@ -39,6 +40,7 @@ use React\Http as ReactHttp;
 use React\Promise;
 use Throwable;
 use function array_key_exists;
+use function assert;
 use function in_array;
 use function is_string;
 use function preg_match;
@@ -99,17 +101,15 @@ final class Http
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
-		private readonly MetadataEntities\DevicesModule\Connector $connector,
+		private readonly Entities\ShellyConnector $connector,
 		private readonly API\Gen1Validator $validator,
 		private readonly API\Gen1Parser $parser,
 		private readonly API\Gen1Transformer $transformer,
 		private readonly Helpers\Device $deviceHelper,
 		private readonly Helpers\Property $propertyStateHelper,
 		private readonly Consumers\Messages $consumer,
-		private readonly DevicesModels\DataStorage\DevicesRepository $devicesRepository,
-		private readonly DevicesModels\DataStorage\ChannelsRepository $channelsRepository,
-		private readonly DevicesModels\DataStorage\ChannelPropertiesRepository $channelPropertiesRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
+		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		Log\LoggerInterface|null $logger = null,
@@ -143,12 +143,8 @@ final class Http
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Terminate
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 * @throws InvalidArgumentException
 	 * @throws Exception
 	 */
@@ -162,19 +158,21 @@ final class Http
 			}
 		}
 
-		foreach ($this->devicesRepository->findAllByConnector($this->connector->getId()) as $device) {
+		foreach ($this->connector->getDevices() as $device) {
+			assert($device instanceof Entities\ShellyDevice);
+
 			$ipAddress = $this->deviceHelper->getConfiguration(
-				$device->getId(),
+				$device,
 				Types\DevicePropertyIdentifier::get(Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS),
 			);
 
 			if (
-				!in_array($device->getId()->toString(), $this->processedDevices, true)
+				!in_array($device->getPlainId(), $this->processedDevices, true)
 				&& is_string($ipAddress)
 				&& !$this->deviceConnectionManager->getState($device)
 					->equalsValue(MetadataTypes\ConnectionState::STATE_STOPPED)
 			) {
-				$this->processedDevices[] = $device->getId()->toString();
+				$this->processedDevices[] = $device->getPlainId();
 
 				if ($this->processDevice($device)) {
 					$this->registerLoopHandler();
@@ -192,16 +190,12 @@ final class Http
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Terminate
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 * @throws InvalidArgumentException
 	 * @throws Exception
 	 */
-	private function processDevice(MetadataEntities\DevicesModule\Device $device): bool
+	private function processDevice(Entities\ShellyDevice $device): bool
 	{
 		if ($this->readDeviceData(self::CMD_SHELLY, $device)) {
 			return true;
@@ -224,24 +218,20 @@ final class Http
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Terminate
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 * @throws InvalidArgumentException
 	 */
-	private function readDeviceData(string $cmd, MetadataEntities\DevicesModule\Device $device): bool
+	private function readDeviceData(string $cmd, Entities\ShellyDevice $device): bool
 	{
 		$httpCmdResult = null;
 
-		if (!array_key_exists($device->getId()->toString(), $this->processedDevicesCommands)) {
-			$this->processedDevicesCommands[$device->getId()->toString()] = [];
+		if (!array_key_exists($device->getPlainId(), $this->processedDevicesCommands)) {
+			$this->processedDevicesCommands[$device->getPlainId()] = [];
 		}
 
-		if (array_key_exists($cmd, $this->processedDevicesCommands[$device->getId()->toString()])) {
-			$httpCmdResult = $this->processedDevicesCommands[$device->getId()->toString()][$cmd];
+		if (array_key_exists($cmd, $this->processedDevicesCommands[$device->getPlainId()])) {
+			$httpCmdResult = $this->processedDevicesCommands[$device->getPlainId()][$cmd];
 		}
 
 		if ($httpCmdResult === true) {
@@ -264,11 +254,11 @@ final class Http
 			$result = $this->readDeviceDescription($device);
 		}
 
-		$this->processedDevicesCommands[$device->getId()->toString()][$cmd] = $this->dateTimeFactory->getNow();
+		$this->processedDevicesCommands[$device->getPlainId()][$cmd] = $this->dateTimeFactory->getNow();
 
 		$result
 			?->then(function () use ($cmd, $device): void {
-				$this->processedDevicesCommands[$device->getId()->toString()][$cmd] = true;
+				$this->processedDevicesCommands[$device->getPlainId()][$cmd] = true;
 			})
 			->otherwise(function (Throwable $ex) use ($cmd, $device): void {
 				if ($ex instanceof ReactHttp\Message\ResponseException) {
@@ -299,7 +289,7 @@ final class Http
 					);
 				}
 
-				$this->processedDevicesCommands[$device->getId()->toString()][$cmd] = $this->dateTimeFactory->getNow();
+				$this->processedDevicesCommands[$device->getPlainId()][$cmd] = $this->dateTimeFactory->getNow();
 			});
 
 		return true;
@@ -307,39 +297,42 @@ final class Http
 
 	/**
 	 * @throws DevicesExceptions\Terminate
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 * @throws Exception
 	 */
-	private function writeChannelsProperty(MetadataEntities\DevicesModule\Device $device): bool
+	private function writeChannelsProperty(Entities\ShellyDevice $device): bool
 	{
 		$now = $this->dateTimeFactory->getNow();
 
-		foreach ($this->channelsRepository->findAllByDevice($device->getId()) as $channel) {
-			foreach ($this->channelPropertiesRepository->findAllByChannel(
-				$channel->getId(),
-				MetadataEntities\DevicesModule\ChannelDynamicProperty::class,
-			) as $property) {
+		foreach ($device->getChannels() as $channel) {
+			foreach ($channel->getProperties() as $property) {
+				if (!$property instanceof DevicesEntities\Channels\Properties\Dynamic) {
+					continue;
+				}
+
+				$state = $this->channelPropertiesStates->getValue($property);
+
+				if ($state === null) {
+					continue;
+				}
+
 				if (
 					$property->isSettable()
-					&& $property->getExpectedValue() !== null
-					&& $property->isPending() === true
+					&& $state->getExpectedValue() !== null
+					&& $state->isPending() === true
 				) {
-					$pending = is_string($property->getPending())
+					$pending = is_string($state->getPending())
 						? Utils\DateTime::createFromFormat(
 							DateTimeInterface::ATOM,
-							$property->getPending(),
+							$state->getPending(),
 						)
 						: true;
 					$debounce = array_key_exists(
-						$property->getId()->toString(),
+						$property->getPlainId(),
 						$this->processedProperties,
 					)
-						? $this->processedProperties[$property->getId()->toString()]
+						? $this->processedProperties[$property->getPlainId()]
 						: false;
 
 					if (
@@ -349,7 +342,7 @@ final class Http
 						continue;
 					}
 
-					unset($this->processedProperties[$property->getId()->toString()]);
+					unset($this->processedProperties[$property->getPlainId()]);
 
 					if (
 						$pending === true
@@ -358,12 +351,12 @@ final class Http
 							&& (float) $now->format('Uv') - (float) $pending->format('Uv') > 2_000
 						)
 					) {
-						$this->processedProperties[$property->getId()->toString()] = $now;
+						$this->processedProperties[$property->getPlainId()] = $now;
 
 						$valueToWrite = $this->transformer->transformValueToDevice(
 							$property->getDataType(),
 							$property->getFormat(),
-							$property->getExpectedValue(),
+							$state->getExpectedValue(),
 						);
 
 						if ($valueToWrite === null) {
@@ -380,7 +373,9 @@ final class Http
 								$this->propertyStateHelper->setValue(
 									$property,
 									Utils\ArrayHash::from([
-										'pending' => $this->dateTimeFactory->getNow()->format(DateTimeInterface::ATOM),
+										DevicesStates\Property::PENDING_KEY => $this->dateTimeFactory->getNow()->format(
+											DateTimeInterface::ATOM,
+										),
 									]),
 								);
 							})
@@ -390,8 +385,8 @@ final class Http
 										$this->propertyStateHelper->setValue(
 											$property,
 											Utils\ArrayHash::from([
-												'expectedValue' => null,
-												'pending' => false,
+												DevicesStates\Property::EXPECTED_VALUE_KEY => null,
+												DevicesStates\Property::PENDING_KEY => false,
 											]),
 										);
 
@@ -405,16 +400,16 @@ final class Http
 													'code' => $ex->getCode(),
 												],
 												'connector' => [
-													'id' => $this->connector->getId()->toString(),
+													'id' => $this->connector->getPlainId(),
 												],
 												'device' => [
-													'id' => $device->getId()->toString(),
+													'id' => $device->getPlainId(),
 												],
 												'channel' => [
-													'id' => $channel->getId()->toString(),
+													'id' => $channel->getPlainId(),
 												],
 												'property' => [
-													'id' => $property->getId()->toString(),
+													'id' => $property->getPlainId(),
 												],
 											],
 										);
@@ -429,7 +424,7 @@ final class Http
 									}
 								}
 
-								unset($this->processedProperties[$property->getId()->toString()]);
+								unset($this->processedProperties[$property->getPlainId()]);
 							});
 
 						return true;
@@ -444,16 +439,12 @@ final class Http
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Terminate
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 * @throws InvalidArgumentException
 	 */
 	private function readDeviceInfo(
-		MetadataEntities\DevicesModule\Device $device,
+		Entities\ShellyDevice $device,
 	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface
 	{
 		$address = $this->buildDeviceAddress($device);
@@ -494,7 +485,7 @@ final class Http
 									'code' => $ex->getCode(),
 								],
 								'connector' => [
-									'id' => $this->connector->getId()->toString(),
+									'id' => $this->connector->getPlainId(),
 								],
 							],
 						);
@@ -518,10 +509,10 @@ final class Http
 							],
 						),
 						'connector' => [
-							'id' => $this->connector->getId()->toString(),
+							'id' => $this->connector->getPlainId(),
 						],
 						'device' => [
-							'id' => $device->getId()->toString(),
+							'id' => $device->getPlainId(),
 						],
 					],
 				);
@@ -533,16 +524,12 @@ final class Http
 	/**
 	 * @throws DevicesExceptions\Terminate
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 * @throws InvalidArgumentException
 	 */
 	private function readDeviceDescription(
-		MetadataEntities\DevicesModule\Device $device,
+		Entities\ShellyDevice $device,
 	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface
 	{
 		$address = $this->buildDeviceAddress($device);
@@ -583,7 +570,7 @@ final class Http
 									'code' => $ex->getCode(),
 								],
 								'connector' => [
-									'id' => $this->connector->getId()->toString(),
+									'id' => $this->connector->getPlainId(),
 								],
 							],
 						);
@@ -607,10 +594,10 @@ final class Http
 							],
 						),
 						'connector' => [
-							'id' => $this->connector->getId()->toString(),
+							'id' => $this->connector->getPlainId(),
 						],
 						'device' => [
-							'id' => $device->getId()->toString(),
+							'id' => $device->getPlainId(),
 						],
 					],
 				);
@@ -622,17 +609,13 @@ final class Http
 	/**
 	 * @throws DevicesExceptions\Terminate
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function writeSensor(
-		MetadataEntities\DevicesModule\Device $device,
-		MetadataEntities\DevicesModule\Channel $channel,
-		MetadataEntities\DevicesModule\ChannelDynamicProperty $property,
+		Entities\ShellyDevice $device,
+		DevicesEntities\Channels\Channel $channel,
+		DevicesEntities\Channels\Properties\Dynamic $property,
 		float|bool|int|string $valueToWrite,
 	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface
 	{
@@ -653,16 +636,16 @@ final class Http
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'http-client',
 					'connector' => [
-						'id' => $this->connector->getId()->toString(),
+						'id' => $this->connector->getPlainId(),
 					],
 					'device' => [
-						'id' => $device->getId()->toString(),
+						'id' => $device->getPlainId(),
 					],
 					'channel' => [
-						'id' => $channel->getId()->toString(),
+						'id' => $channel->getPlainId(),
 					],
 					'property' => [
-						'id' => $property->getId()->toString(),
+						'id' => $property->getPlainId(),
 					],
 				],
 			);
@@ -681,16 +664,16 @@ final class Http
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'http-client',
 					'connector' => [
-						'id' => $this->connector->getId()->toString(),
+						'id' => $this->connector->getPlainId(),
 					],
 					'device' => [
-						'id' => $device->getId()->toString(),
+						'id' => $device->getPlainId(),
 					],
 					'channel' => [
-						'id' => $channel->getId()->toString(),
+						'id' => $channel->getPlainId(),
 					],
 					'property' => [
-						'id' => $property->getId()->toString(),
+						'id' => $property->getPlainId(),
 					],
 				],
 			);
@@ -714,16 +697,16 @@ final class Http
 						'code' => $ex->getCode(),
 					],
 					'connector' => [
-						'id' => $this->connector->getId()->toString(),
+						'id' => $this->connector->getPlainId(),
 					],
 					'device' => [
-						'id' => $device->getId()->toString(),
+						'id' => $device->getPlainId(),
 					],
 					'channel' => [
-						'id' => $channel->getId()->toString(),
+						'id' => $channel->getPlainId(),
 					],
 					'property' => [
-						'id' => $property->getId()->toString(),
+						'id' => $property->getPlainId(),
 					],
 				],
 			);
@@ -773,16 +756,16 @@ final class Http
 							],
 						),
 						'connector' => [
-							'id' => $this->connector->getId()->toString(),
+							'id' => $this->connector->getPlainId(),
 						],
 						'device' => [
-							'id' => $device->getId()->toString(),
+							'id' => $device->getPlainId(),
 						],
 						'channel' => [
-							'id' => $channel->getId()->toString(),
+							'id' => $channel->getPlainId(),
 						],
 						'property' => [
-							'id' => $property->getId()->toString(),
+							'id' => $property->getPlainId(),
 						],
 					],
 				);
@@ -810,17 +793,13 @@ final class Http
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
-	private function buildDeviceAddress(MetadataEntities\DevicesModule\Device $device): string|null
+	private function buildDeviceAddress(Entities\ShellyDevice $device): string|null
 	{
 		$ipAddress = $this->deviceHelper->getConfiguration(
-			$device->getId(),
+			$device,
 			Types\DevicePropertyIdentifier::get(Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS),
 		);
 
@@ -831,10 +810,10 @@ final class Http
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'http-client',
 					'connector' => [
-						'id' => $this->connector->getId()->toString(),
+						'id' => $this->connector->getPlainId(),
 					],
 					'device' => [
-						'id' => $device->getId()->toString(),
+						'id' => $device->getPlainId(),
 					],
 				],
 			);
@@ -843,12 +822,12 @@ final class Http
 		}
 
 		$username = $this->deviceHelper->getConfiguration(
-			$device->getId(),
+			$device,
 			Types\DevicePropertyIdentifier::get(Types\DevicePropertyIdentifier::IDENTIFIER_USERNAME),
 		);
 
 		$password = $this->deviceHelper->getConfiguration(
-			$device->getId(),
+			$device,
 			Types\DevicePropertyIdentifier::get(Types\DevicePropertyIdentifier::IDENTIFIER_PASSWORD),
 		);
 
@@ -863,7 +842,7 @@ final class Http
 	 * @throws Exceptions\InvalidState
 	 */
 	private function buildSensorAction(
-		MetadataEntities\DevicesModule\ChannelDynamicProperty $property,
+		DevicesEntities\Channels\Properties\Dynamic $property,
 	): string
 	{
 		if (preg_match(self::PROPERTY_SENSOR, $property->getIdentifier(), $propertyMatches) !== 1) {

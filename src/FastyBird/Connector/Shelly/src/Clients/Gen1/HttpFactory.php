@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\Shelly\Clients\Gen1;
 
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Connector\Shelly\Entities;
 
 /**
  * HTTP api client factory
@@ -28,6 +28,6 @@ use FastyBird\Library\Metadata\Entities as MetadataEntities;
 interface HttpFactory
 {
 
-	public function create(MetadataEntities\DevicesModule\Connector $connector): Http;
+	public function create(Entities\ShellyConnector $connector): Http;
 
 }
