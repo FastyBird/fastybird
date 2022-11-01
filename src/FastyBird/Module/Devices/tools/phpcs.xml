@@ -31,15 +31,10 @@
 
     <!--Exclude rules/files -->
     <rule ref="SlevomatCodingStandard.Files.LineLength.LineTooLong">
-        <exclude-pattern>src/Consumers/States\.php</exclude-pattern>
         <exclude-pattern>src/Entities/Channels/Properties/Property\.php</exclude-pattern>
         <exclude-pattern>src/Entities/Devices/Properties/Property\.php</exclude-pattern>
         <exclude-pattern>src/Entities/Property\.php</exclude-pattern>
-        <exclude-pattern>src/Models/DataStorage/ChannelPropertiesRepository\.php</exclude-pattern>
-        <exclude-pattern>src/Models/DataStorage/ConnectorPropertiesRepository\.php</exclude-pattern>
-        <exclude-pattern>src/Models/DataStorage/DevicePropertiesRepository\.php</exclude-pattern>
         <exclude-pattern>src/Models/States/ChannelPropertiesRepository\.php</exclude-pattern>
-        <exclude-pattern>src/Models/States/ChannelPropertiesManager\.php</exclude-pattern>
         <exclude-pattern>src/Models/States/DevicePropertiesRepository\.php</exclude-pattern>
         <exclude-pattern>src/Models/States/IChannelPropertiesRepository\.php</exclude-pattern>
         <exclude-pattern>src/Models/States/IDevicePropertiesRepository\.php</exclude-pattern>
