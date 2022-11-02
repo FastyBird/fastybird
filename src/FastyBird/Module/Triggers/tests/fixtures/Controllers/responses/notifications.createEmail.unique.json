@@ -1,0 +1,16 @@
+{
+  "errors" : [
+    {
+      "code" : "422",
+      "status" : "422",
+      "title" : "Email not unique",
+      "detail" : "Provided email address have to be unique per trigger",
+      "source" : {
+        "pointer" : "/data/attributes/email"
+      }
+    }
+  ],
+  "jsonapi" : {
+    "version" : "1.1"
+  }
+}

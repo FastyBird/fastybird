@@ -1,0 +1,9 @@
+{
+  "data" : {
+    "id" : "05f28df9-5f19-4923-b3f8-b9090116dadc",
+    "type" : "com.fastybird.triggers-module/notification/email",
+    "attributes" : {
+      "email" : "john.doe@fastybird.ovh"
+    }
+  }
+}

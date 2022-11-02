@@ -1,0 +1,110 @@
+{
+  "name" : "fastybird/triggers-module",
+  "type" : "module",
+  "description" : "FastyBird IoT module for triggers management & basic automation logic",
+  "keywords" : [
+    "fastybird",
+    "fb",
+    "iot",
+    "triggers",
+    "automation",
+    "controlling",
+    "service"
+  ],
+
+  "homepage" : "https://www.fastybird.com",
+
+  "license" : "Apache-2.0",
+
+  "authors" : [
+    {
+      "name" : "FastyBird s.r.o.",
+      "email" : "code@fastybird.com",
+      "homepage" : "https://www.fastybird.com"
+    },
+    {
+      "name" : "Adam Kadlec",
+      "email" : "adam.kadlec@fastybird.com"
+    }
+  ],
+
+  "support" : {
+    "email" : "code@fastybird.com",
+    "issues" : "https://github.com/FastyBird/triggers-module/issues",
+    "source" : "https://github.com/FastyBird/triggers-module"
+  },
+
+  "prefer-stable" : true,
+
+  "minimum-stability" : "stable",
+
+  "require" : {
+    "php" : ">=8.0.0|>=8.1.0",
+    "cweagans/composer-patches" : "^1.7",
+    "fastybird/exchange" : "^0.59",
+    "fastybird/json-api" : "^0.11",
+    "fastybird/metadata" : "^0.76",
+    "fastybird/simple-auth" : "^0.4",
+    "ipub/doctrine-phone" : "^1.6",
+    "ipub/doctrine-timestampable" : "^1.5",
+    "ipub/slim-router": "^0.2",
+    "nettrine/orm" : "^0.8",
+    "symfony/console": "^5.0"
+  },
+
+  "require-dev" : {
+    "contributte/translation" : "^0.9",
+    "mockery/mockery" : "^1.4",
+    "ninjify/nunjuck" : "^0.3",
+    "ninjify/qa" : "^0.12",
+    "pds/skeleton" : "~1.0",
+    "phpstan/extension-installer" : "^1.1",
+    "phpstan/phpstan" : "^0.12",
+    "phpstan/phpstan-deprecation-rules" : "^0.12",
+    "phpstan/phpstan-doctrine" : "^0.12",
+    "phpstan/phpstan-nette" : "^0.12",
+    "react/http": "^1.6",
+    "tracy/tracy" : "^2.9"
+  },
+
+  "autoload" : {
+    "psr-4" : {
+      "FastyBird\\TriggersModule\\" : "src/"
+    }
+  },
+
+  "autoload-dev" : {
+    "psr-4" : {
+      "Tests\\Cases\\" : "tests/cases",
+      "Tests\\Fixtures\\" : "tests/fixtures",
+      "Tests\\Tools\\" : "tests/tools"
+    }
+  },
+
+  "config" : {
+    "sort-packages" : true,
+    "allow-plugins": {
+      "cweagans/composer-patches": true,
+      "dealerdirect/phpcodesniffer-composer-installer": true,
+      "phpstan/extension-installer": true
+    }
+  },
+
+  "extra" : {
+    "patches" : {
+      "doctrine/orm" : {
+        "Bug: Ramsey uuid not working - Part 1" : "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/doctrine.orm.uuid.1.diff",
+        "Bug: Ramsey uuid not working - Part 2" : "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/doctrine.orm.uuid.2.diff"
+      },
+      "ramsey/uuid-doctrine" : {
+        "Bug: Ramsey uuid conversion fallback" : "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/ramsey.uuid.doctrine.diff"
+      },
+      "nettrine/orm" : {
+        "Enable connection overrides" : "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/nettrine.orm.mangerRegistry.diff"
+      },
+      "nette/utils" : {
+        "Bug: Offset check with null support" : "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/nette.array.offsetCheck.diff"
+      }
+    }
+  }
+}

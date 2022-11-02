@@ -1,0 +1,13 @@
+{
+  "errors" : [
+    {
+      "status" : "400",
+      "code" : "400",
+      "title" : "Invalid identifier",
+      "detail" : "Provided entity identifier is not valid"
+    }
+  ],
+  "jsonapi" : {
+    "version" : "1.1"
+  }
+}

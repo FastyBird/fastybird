@@ -1,0 +1,35 @@
+{
+  "data" : {
+    "attributes" : {
+      "phone" : "+420 777 888 999",
+      "enabled" : true
+    },
+    "id" : "ef011ee6-82b9-4324-aeaf-33241d81b721",
+    "links" : {
+      "self" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/notifications/ef011ee6-82b9-4324-aeaf-33241d81b721"
+    },
+    "relationships" : {
+      "trigger" : {
+        "data" : {
+          "id" : "c64ba1c4-0eda-4cab-87a0-4d634f7b67f4",
+          "type" : "com.fastybird.triggers-module/trigger/manual"
+        },
+        "links" : {
+          "related" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4",
+          "self" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/notifications/ef011ee6-82b9-4324-aeaf-33241d81b721/relationships/trigger"
+        }
+      }
+    },
+    "type" : "com.fastybird.triggers-module/notification/sms"
+  },
+  "jsonapi" : {
+    "version" : "1.1"
+  },
+  "links" : {
+    "self" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/notifications"
+  },
+  "meta" : {
+    "author" : "FastyBird team",
+    "copyright" : "FastyBird s.r.o"
+  }
+}
