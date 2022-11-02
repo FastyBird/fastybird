@@ -22,7 +22,7 @@ use FastyBird\Module\Devices\Schemas as DevicesSchemas;
 /**
  * Tuya connector entity schema
  *
- * @phpstan-extends DevicesSchemas\Connectors\Connector<Entities\TuyaConnector>
+ * @extends DevicesSchemas\Connectors\Connector<Entities\TuyaConnector>
  *
  * @package        FastyBird:TuyaConnector!
  * @subpackage     Schemas

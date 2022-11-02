@@ -22,7 +22,7 @@ use FastyBird\Module\Devices\Schemas as DevicesSchemas;
 /**
  * Shelly connector entity schema
  *
- * @phpstan-extends DevicesSchemas\Devices\Device<Entities\ShellyDevice>
+ * @extends DevicesSchemas\Devices\Device<Entities\ShellyDevice>
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Schemas

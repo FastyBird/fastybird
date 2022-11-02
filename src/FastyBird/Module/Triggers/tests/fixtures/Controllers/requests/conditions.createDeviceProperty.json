@@ -1,0 +1,20 @@
+{
+  "data" : {
+    "id" : "f333fc7a-6e23-4b2f-808d-ed35105b8430",
+    "type" : "com.fastybird.triggers-module/condition/device-property",
+    "attributes" : {
+      "device" : "26ad687c-0332-4388-b0f4-131a93baa4b7",
+      "property" : "1dde1643-9ad8-406a-acf1-c470474b1a63",
+      "operator" : "eq",
+      "operand" : 2
+    },
+    "relationships" : {
+      "trigger" : {
+        "data" : {
+          "id" : "1b17bcaa-a19e-45f0-98b4-56211cc648ae",
+          "type" : "com.fastybird.triggers-module/trigger/automatic"
+        }
+      }
+    }
+  }
+}

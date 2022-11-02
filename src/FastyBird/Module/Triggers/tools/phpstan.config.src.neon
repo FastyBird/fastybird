@@ -1,0 +1,17 @@
+parameters:
+    level: max
+
+    paths:
+        - ../src/
+
+    ignoreErrors:
+        - message: '#^Method FastyBird\\Module\\Triggers\\Entities\\Triggers\\Trigger::getSource\(\) never returns FastyBird\\Library\\Metadata\\Types\\ConnectorSource so it can be removed from the return type.#'
+        - message: '#^Method FastyBird\\Module\\Triggers\\Entities\\Triggers\\Trigger::getSource\(\) never returns FastyBird\\Library\\Metadata\\Types\\PluginSource so it can be removed from the return type.#'
+        - message: '#^Method FastyBird\\Module\\Triggers\\Entities\\Triggers\\Controls\\Control::getSource\(\) never returns FastyBird\\Library\\Metadata\\Types\\ConnectorSource so it can be removed from the return type.#'
+        - message: '#^Method FastyBird\\Module\\Triggers\\Entities\\Triggers\\Controls\\Control::getSource\(\) never returns FastyBird\\Library\\Metadata\\Types\\PluginSource so it can be removed from the return type.#'
+        - message: '#^Method FastyBird\\Module\\Triggers\\Entities\\Actions\\Action::getSource\(\) never returns FastyBird\\Library\\Metadata\\Types\\ConnectorSource so it can be removed from the return type.#'
+        - message: '#^Method FastyBird\\Module\\Triggers\\Entities\\Actions\\Action::getSource\(\) never returns FastyBird\\Library\\Metadata\\Types\\PluginSource so it can be removed from the return type.#'
+        - message: '#^Method FastyBird\\Module\\Triggers\\Entities\\Conditions\\Condition::getSource\(\) never returns FastyBird\\Library\\Metadata\\Types\\ConnectorSource so it can be removed from the return type.#'
+        - message: '#^Method FastyBird\\Module\\Triggers\\Entities\\Conditions\\Condition::getSource\(\) never returns FastyBird\\Library\\Metadata\\Types\\PluginSource so it can be removed from the return type.#'
+        - message: '#^Method FastyBird\\Module\\Triggers\\Entities\\Notifications\\Notification::getSource\(\) never returns FastyBird\\Library\\Metadata\\Types\\ConnectorSource so it can be removed from the return type.#'
+        - message: '#^Method FastyBird\\Module\\Triggers\\Entities\\Notifications\\Notification::getSource\(\) never returns FastyBird\\Library\\Metadata\\Types\\PluginSource so it can be removed from the return type.#'

@@ -1,0 +1,60 @@
+{
+  "data" : [
+    {
+      "attributes" : {
+        "email" : "john.doe@fastybird.com",
+        "enabled" : true
+      },
+      "id" : "05f28df9-5f19-4923-b3f8-b9090116dadc",
+      "links" : {
+        "self" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/notifications/05f28df9-5f19-4923-b3f8-b9090116dadc"
+      },
+      "relationships" : {
+        "trigger" : {
+          "data" : {
+            "id" : "c64ba1c4-0eda-4cab-87a0-4d634f7b67f4",
+            "type" : "com.fastybird.triggers-module/trigger/manual"
+          },
+          "links" : {
+            "related" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4",
+            "self" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/notifications/05f28df9-5f19-4923-b3f8-b9090116dadc/relationships/trigger"
+          }
+        }
+      },
+      "type" : "com.fastybird.triggers-module/notification/email"
+    },
+    {
+      "attributes" : {
+        "phone" : "+420 778 776 776",
+        "enabled" : true
+      },
+      "id" : "4fe1019c-f49e-4cbf-83e6-20b394e76317",
+      "links" : {
+        "self" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/notifications/4fe1019c-f49e-4cbf-83e6-20b394e76317"
+      },
+      "relationships" : {
+        "trigger" : {
+          "data" : {
+            "id" : "c64ba1c4-0eda-4cab-87a0-4d634f7b67f4",
+            "type" : "com.fastybird.triggers-module/trigger/manual"
+          },
+          "links" : {
+            "related" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4",
+            "self" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/notifications/4fe1019c-f49e-4cbf-83e6-20b394e76317/relationships/trigger"
+          }
+        }
+      },
+      "type" : "com.fastybird.triggers-module/notification/sms"
+    }
+  ],
+  "jsonapi" : {
+    "version" : "1.1"
+  },
+  "links" : {
+    "self" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/notifications"
+  },
+  "meta" : {
+    "author" : "FastyBird team",
+    "copyright" : "FastyBird s.r.o"
+  }
+}

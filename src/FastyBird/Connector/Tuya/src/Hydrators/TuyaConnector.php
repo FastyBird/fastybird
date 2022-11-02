@@ -21,7 +21,7 @@ use FastyBird\Module\Devices\Hydrators as DevicesHydrators;
 /**
  * Tuya connector entity hydrator
  *
- * @phpstan-extends DevicesHydrators\Connectors\Connector<Entities\TuyaConnector>
+ * @extends DevicesHydrators\Connectors\Connector<Entities\TuyaConnector>
  *
  * @package        FastyBird:TuyaConnector!
  * @subpackage     Hydrators

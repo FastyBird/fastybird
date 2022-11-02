@@ -1,0 +1,20 @@
+{
+  "data" : {
+    "id" : "05f28df9-5f19-4923-b3f8-b9090116dadc",
+    "type" : "com.fastybird.triggers-module/action/channel-property",
+    "attributes" : {
+      "device" : "05c68591-3af7-4194-95e6-82424e91ed79",
+      "channel" : "f74d8978-f123-4bbc-b6aa-665c4ae8f671",
+      "property" : "215b4ea2-9657-47be-b2d5-0793de1f68c9",
+      "value" : "on"
+    },
+    "relationships" : {
+      "trigger" : {
+        "data" : {
+          "id" : "c64ba1c4-0eda-4cab-87a0-4d634f7b67f4",
+          "type" : "com.fastybird.triggers-module/trigger/manual"
+        }
+      }
+    }
+  }
+}

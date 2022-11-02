@@ -1,0 +1,10 @@
+{
+  "data" : {
+    "id" : "bbbf5caa-b30e-4558-b83a-699617958cea",
+    "type" : "com.fastybird.triggers-module/trigger/manual",
+    "attributes" : {
+      "comment" : null,
+      "enabled" : true
+    }
+  }
+}

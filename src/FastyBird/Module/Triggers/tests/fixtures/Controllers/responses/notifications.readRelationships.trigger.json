@@ -1,0 +1,17 @@
+{
+  "data" : {
+    "id" : "c64ba1c4-0eda-4cab-87a0-4d634f7b67f4",
+    "type" : "com.fastybird.triggers-module/trigger/manual"
+  },
+  "jsonapi" : {
+    "version" : "1.1"
+  },
+  "links" : {
+    "related" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4",
+    "self" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/notifications/05f28df9-5f19-4923-b3f8-b9090116dadc/relationships/trigger"
+  },
+  "meta" : {
+    "author" : "FastyBird team",
+    "copyright" : "FastyBird s.r.o"
+  }
+}
