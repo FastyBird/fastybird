@@ -49,7 +49,7 @@ final class ConditionsRepository
 	}
 
 	/**
-	 * @phpstan-param class-string<Entities\Conditions\Condition> $type
+	 * @param class-string<Entities\Conditions\Condition> $type
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -64,9 +64,9 @@ final class ConditionsRepository
 	}
 
 	/**
-	 * @phpstan-param class-string<Entities\Conditions\Condition> $type
+	 * @param class-string<Entities\Conditions\Condition> $type
 	 *
-	 * @phpstan-return Array<Entities\Conditions\Condition>
+	 * @return Array<Entities\Conditions\Condition>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */

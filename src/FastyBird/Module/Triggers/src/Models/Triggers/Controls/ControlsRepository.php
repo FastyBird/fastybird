@@ -59,7 +59,7 @@ final class ControlsRepository
 	}
 
 	/**
-	 * @phpstan-return Array<Entities\Triggers\Controls\Control>
+	 * @return Array<Entities\Triggers\Controls\Control>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */

@@ -49,7 +49,7 @@ final class TriggersRepository
 	}
 
 	/**
-	 * @phpstan-param class-string<Entities\Triggers\Trigger> $type
+	 * @param class-string<Entities\Triggers\Trigger> $type
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -64,9 +64,9 @@ final class TriggersRepository
 	}
 
 	/**
-	 * @phpstan-param class-string<Entities\Triggers\Trigger> $type
+	 * @param class-string<Entities\Triggers\Trigger> $type
 	 *
-	 * @phpstan-return Array<Entities\Triggers\Trigger>
+	 * @return Array<Entities\Triggers\Trigger>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */

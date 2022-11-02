@@ -49,7 +49,7 @@ final class NotificationsRepository
 	}
 
 	/**
-	 * @phpstan-param class-string<Entities\Notifications\Notification> $type
+	 * @param class-string<Entities\Notifications\Notification> $type
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -64,9 +64,9 @@ final class NotificationsRepository
 	}
 
 	/**
-	 * @phpstan-param class-string<Entities\Notifications\Notification> $type
+	 * @param class-string<Entities\Notifications\Notification> $type
 	 *
-	 * @phpstan-return Array<Entities\Notifications\Notification>
+	 * @return Array<Entities\Notifications\Notification>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */

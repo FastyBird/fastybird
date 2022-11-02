@@ -49,7 +49,7 @@ final class ActionsRepository
 	}
 
 	/**
-	 * @phpstan-param class-string<Entities\Actions\Action> $type
+	 * @param class-string<Entities\Actions\Action> $type
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -64,9 +64,9 @@ final class ActionsRepository
 	}
 
 	/**
-	 * @phpstan-param class-string<Entities\Actions\Action> $type
+	 * @param class-string<Entities\Actions\Action> $type
 	 *
-	 * @phpstan-return Array<Entities\Actions\Action>
+	 * @return Array<Entities\Actions\Action>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
