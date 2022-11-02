@@ -13,12 +13,15 @@
  * @date           04.04.20
  */
 
-namespace FastyBird\TriggersModule\Models\Actions;
+namespace FastyBird\Module\Triggers\Models\Actions;
 
-use FastyBird\TriggersModule\Entities;
-use IPub\DoctrineCrud\Crud;
+use FastyBird\Module\Triggers\Entities;
+use FastyBird\Module\Triggers\Models;
+use IPub\DoctrineCrud\Crud as DoctrineCrudCrud;
+use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
 use Nette;
 use Nette\Utils;
+use function assert;
 
 /**
  * Actions entities manager
@@ -28,59 +31,46 @@ use Nette\Utils;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ActionsManager implements IActionsManager
+final class ActionsManager
 {
 
 	use Nette\SmartObject;
 
 	/**
-	 * @var Crud\IEntityCrud
-	 *
-	 * @phpstan-var Crud\IEntityCrud<Entities\Actions\IAction>
+	 * @param DoctrineCrudCrud\IEntityCrud<Entities\Actions\Action> $entityCrud
 	 */
-	private Crud\IEntityCrud $entityCrud;
-
-	/**
-	 * @phpstan-param Crud\IEntityCrud<Entities\Actions\IAction> $entityCrud
-	 */
-	public function __construct(
-		Crud\IEntityCrud $entityCrud
-	) {
+	public function __construct(private readonly DoctrineCrudCrud\IEntityCrud $entityCrud)
+	{
 		// Entity CRUD for handling entities
-		$this->entityCrud = $entityCrud;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function create(
-		Utils\ArrayHash $values
-	): Entities\Actions\IAction {
-		/** @var Entities\Actions\IAction $entity */
+	public function create(Utils\ArrayHash $values): Entities\Actions\Action
+	{
 		$entity = $this->entityCrud->getEntityCreator()->create($values);
+		assert($entity instanceof Entities\Actions\Action);
 
 		return $entity;
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 */
 	public function update(
-		Entities\Actions\IAction $entity,
-		Utils\ArrayHash $values
-	): Entities\Actions\IAction {
-		/** @var Entities\Actions\IAction $entity */
+		Entities\Actions\Action $entity,
+		Utils\ArrayHash $values,
+	): Entities\Actions\Action
+	{
 		$entity = $this->entityCrud->getEntityUpdater()->update($values, $entity);
+		assert($entity instanceof Entities\Actions\Action);
 
 		return $entity;
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 */
-	public function delete(
-		Entities\Actions\IAction $entity
-	): bool {
+	public function delete(Entities\Actions\Action $entity): bool
+	{
 		// Delete entity from database
 		return $this->entityCrud->getEntityDeleter()->delete($entity);
 	}

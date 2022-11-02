@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ManualTriggerHydrator.php
+ * ManualTrigger.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -20,19 +20,15 @@ use FastyBird\Module\Triggers\Entities;
 /**
  * Manual trigger entity hydrator
  *
+ * @extends Trigger<Entities\Triggers\ManualTrigger>
+ *
  * @package         FastyBird:TriggersModule!
  * @subpackage      Hydrators
- *
  * @author          Adam Kadlec <adam.kadlec@fastybird.com>
- *
- * @phpstan-extends TriggerHydrator<Entities\Triggers\IManualTrigger>
  */
-final class ManualTriggerHydrator extends TriggerHydrator
+final class ManualTrigger extends Trigger
 {
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function getEntityName(): string
 	{
 		return Entities\Triggers\ManualTrigger::class;

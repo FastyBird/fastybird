@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ActionHydrator.php
+ * Action.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -20,31 +20,26 @@ use FastyBird\Module\Triggers\Entities;
 use FastyBird\Module\Triggers\Hydrators;
 use FastyBird\Module\Triggers\Schemas;
 use IPub\JsonAPIDocument;
+use function is_scalar;
 
 /**
  * Action entity hydrator
  *
+ * @template T of Entities\Actions\Action
+ * @extends  JsonApiHydrators\Hydrator<T>
+ *
  * @package         FastyBird:TriggersModule!
  * @subpackage      Hydrators
- *
  * @author          Adam Kadlec <adam.kadlec@fastybird.com>
- *
- * @phpstan-template TEntityClass of Entities\Actions\IAction
- * @phpstan-extends  JsonApiHydrators\Hydrator<TEntityClass>
  */
-abstract class ActionHydrator extends JsonApiHydrators\Hydrator
+abstract class Action extends JsonApiHydrators\Hydrator
 {
 
-	/** @var string[] */
+	/** @var Array<string> */
 	protected array $relationships = [
-		Schemas\Actions\ActionSchema::RELATIONSHIPS_TRIGGER,
+		Schemas\Actions\Action::RELATIONSHIPS_TRIGGER,
 	];
 
-	/**
-	 * @param JsonAPIDocument\Objects\IStandardObject $attributes
-	 *
-	 * @return bool
-	 */
 	protected function hydrateEnabledAttribute(JsonAPIDocument\Objects\IStandardObject $attributes): bool
 	{
 		return is_scalar($attributes->get('enabled')) && (bool) $attributes->get('enabled');

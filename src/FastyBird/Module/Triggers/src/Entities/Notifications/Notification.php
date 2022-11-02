@@ -13,15 +13,15 @@
  * @date           04.04.20
  */
 
-namespace FastyBird\TriggersModule\Entities\Notifications;
+namespace FastyBird\Module\Triggers\Entities\Notifications;
 
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\Metadata\Types as MetadataTypes;
-use FastyBird\TriggersModule\Entities;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Triggers\Entities;
 use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
 use IPub\DoctrineTimestampable;
 use Ramsey\Uuid;
-use Throwable;
+use function assert;
 
 /**
  * @ORM\Entity
@@ -36,12 +36,13 @@ use Throwable;
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="notification_type", type="string", length=40)
  * @ORM\DiscriminatorMap({
- *    "sms"     = "FastyBird\TriggersModule\Entities\Notifications\SmsNotification",
- *    "email"   = "FastyBird\TriggersModule\Entities\Notifications\EmailNotification",
+ *    "sms"     = "FastyBird\Module\Triggers\Entities\Notifications\SmsNotification",
+ *    "email"   = "FastyBird\Module\Triggers\Entities\Notifications\EmailNotification",
  * })
  * @ORM\MappedSuperclass
  */
-abstract class Notification implements INotification
+abstract class Notification implements Entities\Entity,
+	DoctrineTimestampable\Entities\IEntityCreated, DoctrineTimestampable\Entities\IEntityUpdated
 {
 
 	use Entities\TEntity;
@@ -49,8 +50,6 @@ abstract class Notification implements INotification
 	use DoctrineTimestampable\Entities\TEntityUpdated;
 
 	/**
-	 * @var Uuid\UuidInterface
-	 *
 	 * @ORM\Id
 	 * @ORM\Column(type="uuid_binary", name="notification_id")
 	 * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
@@ -58,35 +57,45 @@ abstract class Notification implements INotification
 	protected Uuid\UuidInterface $id;
 
 	/**
-	 * @var bool
-	 *
 	 * @IPubDoctrine\Crud(is="writable")
 	 * @ORM\Column(type="boolean", name="notification_enabled", length=1, nullable=false, options={"default": true})
 	 */
 	protected bool $enabled = true;
 
 	/**
-	 * @var Entities\Triggers\ITrigger
-	 *
 	 * @IPubDoctrine\Crud(is="required")
-	 * @ORM\ManyToOne(targetEntity="FastyBird\TriggersModule\Entities\Triggers\Trigger", inversedBy="notifications")
+	 * @ORM\ManyToOne(targetEntity="FastyBird\Module\Triggers\Entities\Triggers\Trigger", inversedBy="notifications")
 	 * @ORM\JoinColumn(name="trigger_id", referencedColumnName="trigger_id", onDelete="CASCADE")
 	 */
-	protected Entities\Triggers\ITrigger $trigger;
+	protected Entities\Triggers\Trigger|null $trigger;
 
-	/**
-	 * @param Entities\Triggers\ITrigger $trigger
-	 * @param Uuid\UuidInterface|null $id
-	 *
-	 * @throws Throwable
-	 */
 	public function __construct(
-		Entities\Triggers\ITrigger $trigger,
-		?Uuid\UuidInterface $id = null
-	) {
+		Entities\Triggers\Trigger $trigger,
+		Uuid\UuidInterface|null $id = null,
+	)
+	{
 		$this->id = $id ?? Uuid\Uuid::uuid4();
 
 		$this->trigger = $trigger;
+	}
+
+	abstract public function getType(): MetadataTypes\TriggerNotificationType;
+
+	public function isEnabled(): bool
+	{
+		return $this->enabled;
+	}
+
+	public function setEnabled(bool $enabled): void
+	{
+		$this->enabled = $enabled;
+	}
+
+	public function getTrigger(): Entities\Triggers\Trigger
+	{
+		assert($this->trigger instanceof Entities\Triggers\Trigger);
+
+		return $this->trigger;
 	}
 
 	/**
@@ -95,43 +104,14 @@ abstract class Notification implements INotification
 	public function toArray(): array
 	{
 		return [
-			'id'      => $this->getPlainId(),
-			'type'    => $this->getType()->getValue(),
+			'id' => $this->getPlainId(),
+			'type' => $this->getType()->getValue(),
 			'enabled' => $this->isEnabled(),
 
 			'trigger' => $this->getTrigger()->getPlainId(),
 
 			'owner' => $this->getTrigger()->getOwnerId(),
 		];
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	abstract public function getType(): MetadataTypes\TriggerNotificationTypeType;
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function isEnabled(): bool
-	{
-		return $this->enabled;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function setEnabled(bool $enabled): void
-	{
-		$this->enabled = $enabled;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getTrigger(): Entities\Triggers\ITrigger
-	{
-		return $this->trigger;
 	}
 
 }

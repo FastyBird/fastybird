@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid;
 use stdClass;
 
-final class EntitiesSubscriberTest extends TestCase
+final class ModuleEntitiesTest extends TestCase
 {
 
 	public function testSubscriberEvents(): void

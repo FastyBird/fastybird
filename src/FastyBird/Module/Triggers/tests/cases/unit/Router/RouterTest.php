@@ -1,18 +1,22 @@
 <?php declare(strict_types = 1);
 
-namespace Tests\Cases;
+namespace FastyBird\Module\Triggers\Tests\Cases\Unit\Router;
 
+use FastyBird\Library\Metadata;
+use FastyBird\Module\Triggers\Exceptions;
+use FastyBird\Module\Triggers\Tests\Cases\Unit\DbTestCase;
 use Fig\Http\Message\RequestMethodInterface;
+use Fig\Http\Message\StatusCodeInterface;
+use InvalidArgumentException;
 use IPub\SlimRouter;
+use Nette;
 use React\Http\Message\ServerRequest;
-use Tester\Assert;
+use RuntimeException;
 
-require_once __DIR__ . '/../../../bootstrap.php';
-require_once __DIR__ . '/../DbTestCase.php';
+const VALID_TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJjb20uZmFzdHliaXJkLmF1dGgtbW9kdWxlIiwianRpIjoiMjQ3MTBlOTYtYTZmYi00ZmM3LWFhMzAtNDc'
+	. 'yNzkwNWQzMDRjIiwiaWF0IjoxNTg1NzQyNDAwLCJleHAiOjE1ODU3NDk2MDAsInVzZXIiOiI1ZTc5ZWZiZi1iZDBkLTViN2MtNDZlZi1iZmJkZWZiZmJkMzQiLCJyb2xlcyI6WyJhZG1pb'
+	. 'mlzdHJhdG9yIl19.QH_Oo_uzTXAb3pNnHvXYnnX447nfVq2_ggQ9ZxStu4s';
 
-/**
- * @testCase
- */
 final class RouterTest extends DbTestCase
 {
 
@@ -24,15 +28,15 @@ final class RouterTest extends DbTestCase
 	}
 
 	/**
-	 * @param string $url
-	 * @param string $token
-	 * @param int $statusCode
+	 * @throws Exceptions\InvalidArgument
+	 * @throws InvalidArgumentException
+	 * @throws Nette\DI\MissingServiceException
+	 * @throws RuntimeException
 	 *
-	 * @dataProvider ./../../../fixtures/Routes/prefixedRoutes.php
+	 * @dataProvider prefixedRoutes
 	 */
 	public function testPrefixedRoutes(string $url, string $token, int $statusCode): void
 	{
-		/** @var SlimRouter\Routing\IRouter $router */
 		$router = $this->getContainer()->getByType(SlimRouter\Routing\IRouter::class);
 
 		$headers = [
@@ -42,15 +46,31 @@ final class RouterTest extends DbTestCase
 		$request = new ServerRequest(
 			RequestMethodInterface::METHOD_GET,
 			$url,
-			$headers
+			$headers,
 		);
 
 		$response = $router->handle($request);
 
-		Assert::same($statusCode, $response->getStatusCode());
+		self::assertSame($statusCode, $response->getStatusCode());
+	}
+
+	/**
+	 * @return Array<string, Array<string|int>>
+	 */
+	public function prefixedRoutes(): array
+	{
+		return [
+			'readAllValid' => [
+				'/' . Metadata\Constants::MODULE_TRIGGERS_PREFIX . '/v1/triggers',
+				'Bearer ' . VALID_TOKEN,
+				StatusCodeInterface::STATUS_OK,
+			],
+			'readAllInvalid' => [
+				'/v1/triggers',
+				'Bearer ' . VALID_TOKEN,
+				StatusCodeInterface::STATUS_NOT_FOUND,
+			],
+		];
 	}
 
 }
-
-$test_case = new RouterTest();
-$test_case->run();

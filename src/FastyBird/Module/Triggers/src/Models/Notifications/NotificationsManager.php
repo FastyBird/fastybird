@@ -13,12 +13,15 @@
  * @date           04.04.20
  */
 
-namespace FastyBird\TriggersModule\Models\Notifications;
+namespace FastyBird\Module\Triggers\Models\Notifications;
 
-use FastyBird\TriggersModule\Entities;
-use IPub\DoctrineCrud\Crud;
+use FastyBird\Module\Triggers\Entities;
+use FastyBird\Module\Triggers\Models;
+use IPub\DoctrineCrud\Crud as DoctrineCrudCrud;
+use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
 use Nette;
 use Nette\Utils;
+use function assert;
 
 /**
  * Notifications entities manager
@@ -28,59 +31,46 @@ use Nette\Utils;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class NotificationsManager implements INotificationsManager
+final class NotificationsManager
 {
 
 	use Nette\SmartObject;
 
 	/**
-	 * @var Crud\IEntityCrud
-	 *
-	 * @phpstan-var Crud\IEntityCrud<Entities\Notifications\INotification>
+	 * @param DoctrineCrudCrud\IEntityCrud<Entities\Notifications\Notification> $entityCrud
 	 */
-	private Crud\IEntityCrud $entityCrud;
-
-	/**
-	 * @phpstan-param Crud\IEntityCrud<Entities\Notifications\INotification> $entityCrud
-	 */
-	public function __construct(
-		Crud\IEntityCrud $entityCrud
-	) {
+	public function __construct(private readonly DoctrineCrudCrud\IEntityCrud $entityCrud)
+	{
 		// Entity CRUD for handling entities
-		$this->entityCrud = $entityCrud;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function create(
-		Utils\ArrayHash $values
-	): Entities\Notifications\INotification {
-		/** @var Entities\Notifications\INotification $entity */
+	public function create(Utils\ArrayHash $values): Entities\Notifications\Notification
+	{
 		$entity = $this->entityCrud->getEntityCreator()->create($values);
+		assert($entity instanceof Entities\Notifications\Notification);
 
 		return $entity;
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 */
 	public function update(
-		Entities\Notifications\INotification $entity,
-		Utils\ArrayHash $values
-	): Entities\Notifications\INotification {
-		/** @var Entities\Notifications\INotification $entity */
+		Entities\Notifications\Notification $entity,
+		Utils\ArrayHash $values,
+	): Entities\Notifications\Notification
+	{
 		$entity = $this->entityCrud->getEntityUpdater()->update($values, $entity);
+		assert($entity instanceof Entities\Notifications\Notification);
 
 		return $entity;
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 */
-	public function delete(
-		Entities\Notifications\INotification $entity
-	): bool {
+	public function delete(Entities\Notifications\Notification $entity): bool
+	{
 		// Delete entity from database
 		return $this->entityCrud->getEntityDeleter()->delete($entity);
 	}

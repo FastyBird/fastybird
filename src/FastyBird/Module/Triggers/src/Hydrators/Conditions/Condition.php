@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ConditionHydrator.php
+ * Condition.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -20,31 +20,26 @@ use FastyBird\Module\Triggers\Entities;
 use FastyBird\Module\Triggers\Hydrators;
 use FastyBird\Module\Triggers\Schemas;
 use IPub\JsonAPIDocument;
+use function is_scalar;
 
 /**
  * Condition entity hydrator
  *
+ * @template T of Entities\Conditions\Condition
+ * @extends  JsonApiHydrators\Hydrator<T>
+ *
  * @package         FastyBird:TriggersModule!
  * @subpackage      Hydrators
- *
  * @author          Adam Kadlec <adam.kadlec@fastybird.com>
- *
- * @phpstan-template TEntityClass of Entities\Conditions\ICondition
- * @phpstan-extends  JsonApiHydrators\Hydrator<TEntityClass>
  */
-abstract class ConditionHydrator extends JsonApiHydrators\Hydrator
+abstract class Condition extends JsonApiHydrators\Hydrator
 {
 
-	/** @var string[] */
+	/** @var Array<string> */
 	protected array $relationships = [
-		Schemas\Conditions\ConditionSchema::RELATIONSHIPS_TRIGGER,
+		Schemas\Conditions\Condition::RELATIONSHIPS_TRIGGER,
 	];
 
-	/**
-	 * @param JsonAPIDocument\Objects\IStandardObject $attributes
-	 *
-	 * @return bool
-	 */
 	protected function hydrateEnabledAttribute(JsonAPIDocument\Objects\IStandardObject $attributes): bool
 	{
 		return is_scalar($attributes->get('enabled')) && (bool) $attributes->get('enabled');

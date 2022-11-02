@@ -28,19 +28,20 @@ extensions:
     ipubDoctrinePhone                   : IPub\DoctrinePhone\DI\DoctrinePhoneExtension
     ipubDoctrineTimestampable           : IPub\DoctrineTimestampable\DI\DoctrineTimestampableExtension
     ipubPhone                           : IPub\Phone\DI\PhoneExtension
+    fbBootstrap                         : FastyBird\Bootstrap\DI\BootstrapExtension
     fbDateTimeFactory                   : FastyBird\DateTimeFactory\DI\DateTimeFactoryExtension
-    fbExchange                          : FastyBird\Exchange\DI\ExchangeExtension
     fbJsonApi                           : FastyBird\JsonApi\DI\JsonApiExtension
-    fbMetadata                          : FastyBird\Metadata\DI\MetadataExtension
     fbSimpleAuth                        : FastyBird\SimpleAuth\DI\SimpleAuthExtension
+    fbMetadataLibrary                   : FastyBird\Library\Metadata\DI\MetadataExtension
+    fbExchangeLibrary                   : FastyBird\Library\Exchange\DI\ExchangeExtension
 
 services:
-    - {factory: Symfony\Component\Console\Application}
     - {factory: IPub\SlimRouter\Http\ResponseFactory}
     -
         factory: IPub\SlimRouter\Routing\Router
         setup:
             - addMiddleware(@fbJsonApi.middlewares.jsonapi)
+    - {factory: React\EventLoop\Loop::get}
 
 contributteTranslation:
     locales:
@@ -49,7 +50,7 @@ contributteTranslation:
     localeResolvers: []
     dirs:
         - %appDir%/../src/Translations
-        - %appDir%/../vendor/fastybird/json-api/src/Translations
+        - %vendorDir%/fastybird/json-api/src/Translations
 
 nettrineDbal:
     connection:
@@ -62,7 +63,7 @@ nettrineDbal:
         user: root
         password: root
         charset: utf8
-        wrapperClass: \Tests\Tools\ConnectionWrapper
+        wrapperClass: \FastyBird\Module\Triggers\Tests\Tools\ConnectionWrapper
 
         types:
             uuid_binary:

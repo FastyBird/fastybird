@@ -13,17 +13,16 @@
  * @date           04.04.20
  */
 
-namespace FastyBird\TriggersModule\Entities\Triggers;
+namespace FastyBird\Module\Triggers\Entities\Triggers;
 
 use Doctrine\Common;
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Triggers\Entities;
 use FastyBird\SimpleAuth\Entities as SimpleAuthEntities;
-use FastyBird\TriggersModule\Entities;
 use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
 use IPub\DoctrineTimestampable;
 use Ramsey\Uuid;
-use Throwable;
 
 /**
  * @ORM\Entity
@@ -38,23 +37,24 @@ use Throwable;
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="trigger_type", type="string", length=40)
  * @ORM\DiscriminatorMap({
- *    "automatic"  = "FastyBird\TriggersModule\Entities\Triggers\AutomaticTrigger",
- *    "manual"     = "FastyBird\TriggersModule\Entities\Triggers\ManualTrigger"
+ *    "automatic"  = "FastyBird\Module\Triggers\Entities\Triggers\AutomaticTrigger",
+ *    "manual"     = "FastyBird\Module\Triggers\Entities\Triggers\ManualTrigger"
  * })
  * @ORM\MappedSuperclass
  */
-abstract class Trigger implements ITrigger
+abstract class Trigger implements Entities\Entity,
+	Entities\EntityParams,
+	SimpleAuthEntities\Owner,
+	DoctrineTimestampable\Entities\IEntityCreated, DoctrineTimestampable\Entities\IEntityUpdated
 {
 
 	use Entities\TEntity;
 	use Entities\TEntityParams;
-	use SimpleAuthEntities\TEntityOwner;
+	use SimpleAuthEntities\TOwner;
 	use DoctrineTimestampable\Entities\TEntityCreated;
 	use DoctrineTimestampable\Entities\TEntityUpdated;
 
 	/**
-	 * @var Uuid\UuidInterface
-	 *
 	 * @ORM\Id
 	 * @ORM\Column(type="uuid_binary", name="trigger_id")
 	 * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
@@ -62,63 +62,49 @@ abstract class Trigger implements ITrigger
 	protected Uuid\UuidInterface $id;
 
 	/**
-	 * @var string
-	 *
 	 * @IPubDoctrine\Crud(is={"required", "writable"})
 	 * @ORM\Column(type="string", name="trigger_name", length=100, nullable=false)
 	 */
 	protected string $name;
 
 	/**
-	 * @var string|null
-	 *
 	 * @IPubDoctrine\Crud(is="writable")
 	 * @ORM\Column(type="text", name="trigger_comment", nullable=true, options={"default": null})
 	 */
-	protected ?string $comment = null;
+	protected string|null $comment = null;
 
 	/**
-	 * @var bool
-	 *
 	 * @IPubDoctrine\Crud(is="writable")
 	 * @ORM\Column(type="boolean", name="trigger_enabled", length=1, nullable=false, options={"default": true})
 	 */
 	protected bool $enabled = true;
 
 	/**
-	 * @var Common\Collections\Collection<int, Entities\Actions\IAction>
+	 * @var Common\Collections\Collection<int, Entities\Actions\Action>
 	 *
 	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\OneToMany(targetEntity="FastyBird\TriggersModule\Entities\Actions\Action", mappedBy="trigger", cascade={"persist", "remove"}, orphanRemoval=true)
+	 * @ORM\OneToMany(targetEntity="FastyBird\Module\Triggers\Entities\Actions\Action", mappedBy="trigger", cascade={"persist", "remove"}, orphanRemoval=true)
 	 */
 	protected Common\Collections\Collection $actions;
 
 	/**
-	 * @var Common\Collections\Collection<int, Entities\Notifications\INotification>
+	 * @var Common\Collections\Collection<int, Entities\Notifications\Notification>
 	 *
 	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\OneToMany(targetEntity="FastyBird\TriggersModule\Entities\Notifications\Notification", mappedBy="trigger", cascade={"persist", "remove"}, orphanRemoval=true)
+	 * @ORM\OneToMany(targetEntity="FastyBird\Module\Triggers\Entities\Notifications\Notification", mappedBy="trigger", cascade={"persist", "remove"}, orphanRemoval=true)
 	 */
 	protected Common\Collections\Collection $notifications;
 
 	/**
-	 * @var Common\Collections\Collection<int, Entities\Triggers\Controls\IControl>
+	 * @var Common\Collections\Collection<int, Entities\Triggers\Controls\Control>
 	 *
 	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\OneToMany(targetEntity="FastyBird\TriggersModule\Entities\Triggers\Controls\Control", mappedBy="trigger", cascade={"persist", "remove"}, orphanRemoval=true)
+	 * @ORM\OneToMany(targetEntity="FastyBird\Module\Triggers\Entities\Triggers\Controls\Control", mappedBy="trigger", cascade={"persist", "remove"}, orphanRemoval=true)
 	 */
 	private Common\Collections\Collection $controls;
 
-	/**
-	 * @param string $name
-	 * @param Uuid\UuidInterface|null $id
-	 *
-	 * @throws Throwable
-	 */
-	public function __construct(
-		string $name,
-		?Uuid\UuidInterface $id = null
-	) {
+	public function __construct(string $name, Uuid\UuidInterface|null $id = null)
+	{
 		$this->id = $id ?? Uuid\Uuid::uuid4();
 
 		$this->setName($name);
@@ -129,7 +115,7 @@ abstract class Trigger implements ITrigger
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * @return array<Entities\Actions\Action>
 	 */
 	public function getActions(): array
 	{
@@ -137,26 +123,18 @@ abstract class Trigger implements ITrigger
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * @param array<Entities\Actions\Action> $actions
 	 */
 	public function setActions(array $actions = []): void
 	{
 		$this->actions = new Common\Collections\ArrayCollection();
 
-		// Process all passed entities...
-		/** @var Entities\Actions\IAction $entity */
 		foreach ($actions as $entity) {
-			if (!$this->actions->contains($entity)) {
-				// ...and assign them to collection
-				$this->actions->add($entity);
-			}
+			$this->actions->add($entity);
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function addAction(Entities\Actions\IAction $action): void
+	public function addAction(Entities\Actions\Action $action): void
 	{
 		// Check if collection does not contain inserting entity
 		if (!$this->actions->contains($action)) {
@@ -165,23 +143,15 @@ abstract class Trigger implements ITrigger
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getAction(string $id): ?Entities\Actions\IAction
+	public function getAction(string $id): Entities\Actions\Action|null
 	{
 		$found = $this->actions
-			->filter(function (Entities\Actions\IAction $row) use ($id): bool {
-				return $id === $row->getPlainId();
-			});
+			->filter(static fn (Entities\Actions\Action $row): bool => $id === $row->getPlainId());
 
 		return $found->isEmpty() ? null : $found->first();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function removeAction(Entities\Actions\IAction $action): void
+	public function removeAction(Entities\Actions\Action $action): void
 	{
 		// Check if collection contain removing entity...
 		if ($this->actions->contains($action)) {
@@ -191,7 +161,7 @@ abstract class Trigger implements ITrigger
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * @return array<Entities\Notifications\Notification>
 	 */
 	public function getNotifications(): array
 	{
@@ -199,26 +169,18 @@ abstract class Trigger implements ITrigger
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * @param array<Entities\Notifications\Notification> $notifications
 	 */
 	public function setNotifications(array $notifications = []): void
 	{
 		$this->notifications = new Common\Collections\ArrayCollection();
 
-		// Process all passed entities...
-		/** @var Entities\Notifications\INotification $entity */
 		foreach ($notifications as $entity) {
-			if (!$this->notifications->contains($entity)) {
-				// ...and assign them to collection
-				$this->notifications->add($entity);
-			}
+			$this->notifications->add($entity);
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function addNotification(Entities\Notifications\INotification $notification): void
+	public function addNotification(Entities\Notifications\Notification $notification): void
 	{
 		// Check if collection does not contain inserting entity
 		if (!$this->notifications->contains($notification)) {
@@ -227,23 +189,15 @@ abstract class Trigger implements ITrigger
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getNotification(string $id): ?Entities\Notifications\INotification
+	public function getNotification(string $id): Entities\Notifications\Notification|null
 	{
 		$found = $this->notifications
-			->filter(function (Entities\Notifications\INotification $row) use ($id): bool {
-				return $id === $row->getPlainId();
-			});
+			->filter(static fn (Entities\Notifications\Notification $row): bool => $id === $row->getPlainId());
 
 		return $found->isEmpty() ? null : $found->first();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function removeNotification(Entities\Notifications\INotification $notification): void
+	public function removeNotification(Entities\Notifications\Notification $notification): void
 	{
 		// Check if collection contain removing entity...
 		if ($this->notifications->contains($notification)) {
@@ -253,7 +207,7 @@ abstract class Trigger implements ITrigger
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * @return array<Entities\Triggers\Controls\Control>
 	 */
 	public function getControls(): array
 	{
@@ -261,25 +215,18 @@ abstract class Trigger implements ITrigger
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * @param array<Entities\Triggers\Controls\Control> $controls
 	 */
 	public function setControls(array $controls = []): void
 	{
 		$this->controls = new Common\Collections\ArrayCollection();
 
-		// Process all passed entities...
 		foreach ($controls as $entity) {
-			if (!$this->controls->contains($entity)) {
-				// ...and assign them to collection
-				$this->controls->add($entity);
-			}
+			$this->controls->add($entity);
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function addControl(Entities\Triggers\Controls\IControl $control): void
+	public function addControl(Entities\Triggers\Controls\Control $control): void
 	{
 		// Check if collection does not contain inserting entity
 		if (!$this->controls->contains($control)) {
@@ -288,23 +235,15 @@ abstract class Trigger implements ITrigger
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getControl(string $name): ?Entities\Triggers\Controls\IControl
+	public function getControl(string $name): Entities\Triggers\Controls\Control|null
 	{
 		$found = $this->controls
-			->filter(function (Entities\Triggers\Controls\IControl $row) use ($name): bool {
-				return $name === $row->getName();
-			});
+			->filter(static fn (Entities\Triggers\Controls\Control $row): bool => $name === $row->getName());
 
 		return $found->isEmpty() ? null : $found->first();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function removeControl(Entities\Triggers\Controls\IControl $control): void
+	public function removeControl(Entities\Triggers\Controls\Control $control): void
 	{
 		// Check if collection contain removing entity...
 		if ($this->controls->contains($control)) {
@@ -313,25 +252,49 @@ abstract class Trigger implements ITrigger
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function hasControl(string $name): bool
 	{
 		return $this->findControl($name) !== null;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function findControl(string $name): ?Entities\Triggers\Controls\IControl
+	public function findControl(string $name): Entities\Triggers\Controls\Control|null
 	{
 		$found = $this->controls
-			->filter(function (Entities\Triggers\Controls\IControl $row) use ($name): bool {
-				return $name === $row->getName();
-			});
+			->filter(static fn (Entities\Triggers\Controls\Control $row): bool => $name === $row->getName());
 
 		return $found->isEmpty() ? null : $found->first();
+	}
+
+	abstract public function getType(): MetadataTypes\TriggerType;
+
+	public function getName(): string
+	{
+		return $this->name;
+	}
+
+	public function setName(string $name): void
+	{
+		$this->name = $name;
+	}
+
+	public function getComment(): string|null
+	{
+		return $this->comment;
+	}
+
+	public function setComment(string|null $comment = null): void
+	{
+		$this->comment = $comment;
+	}
+
+	public function isEnabled(): bool
+	{
+		return $this->enabled;
+	}
+
+	public function setEnabled(bool $enabled): void
+	{
+		$this->enabled = $enabled;
 	}
 
 	/**
@@ -340,67 +303,14 @@ abstract class Trigger implements ITrigger
 	public function toArray(): array
 	{
 		return [
-			'id'      => $this->getPlainId(),
-			'type'    => $this->getType()->getValue(),
-			'name'    => $this->getName(),
+			'id' => $this->getPlainId(),
+			'type' => $this->getType()->getValue(),
+			'name' => $this->getName(),
 			'comment' => $this->getComment(),
 			'enabled' => $this->isEnabled(),
 
 			'owner' => $this->getOwnerId(),
 		];
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	abstract public function getType(): MetadataTypes\TriggerTypeType;
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getName(): string
-	{
-		return $this->name;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function setName(string $name): void
-	{
-		$this->name = $name;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getComment(): ?string
-	{
-		return $this->comment;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function setComment(?string $comment = null): void
-	{
-		$this->comment = $comment;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function isEnabled(): bool
-	{
-		return $this->enabled;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function setEnabled(bool $enabled): void
-	{
-		$this->enabled = $enabled;
 	}
 
 }

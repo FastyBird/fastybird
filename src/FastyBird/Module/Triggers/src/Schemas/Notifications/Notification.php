@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * NotificationSchema.php
+ * Notification.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -26,15 +26,14 @@ use Neomerx\JsonApi;
 /**
  * Notification entity schema
  *
+ * @template T of Entities\Notifications\Notification
+ * @extends  JsonApiSchemas\JsonApi<T>
+ *
  * @package          FastyBird:TriggersModule!
  * @subpackage       Schemas
- *
  * @author           Adam Kadlec <adam.kadlec@fastybird.com>
- *
- * @phpstan-template T of Entities\Notifications\INotification
- * @phpstan-extends  JsonApiSchemas\JsonApiSchema<T>
  */
-abstract class NotificationSchema extends JsonApiSchemas\JsonApiSchema
+abstract class Notification extends JsonApiSchemas\JsonApi
 {
 
 	/**
@@ -42,133 +41,122 @@ abstract class NotificationSchema extends JsonApiSchemas\JsonApiSchema
 	 */
 	public const RELATIONSHIPS_TRIGGER = 'trigger';
 
-	/** @var Routing\IRouter */
-	protected Routing\IRouter $router;
-
-	public function __construct(
-		Routing\IRouter $router
-	) {
-		$this->router = $router;
+	public function __construct(protected Routing\IRouter $router)
+	{
 	}
 
 	/**
-	 * @param Entities\Notifications\INotification $notification
-	 * @param JsonApi\Contracts\Schema\ContextInterface $context
+	 * @param T $resource
 	 *
-	 * @return iterable<string, bool>
-	 *
-	 * @phpstan-param T $notification
+	 * @return iterable<string, string|bool|null>
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
-	public function getAttributes($notification, JsonApi\Contracts\Schema\ContextInterface $context): iterable
+	public function getAttributes(
+		$resource,
+		JsonApi\Contracts\Schema\ContextInterface $context,
+	): iterable
 	{
 		return [
-			'enabled' => $notification->isEnabled(),
+			'enabled' => $resource->isEnabled(),
 		];
 	}
 
 	/**
-	 * @param Entities\Notifications\INotification $notification
-	 *
-	 * @return JsonApi\Contracts\Schema\LinkInterface
-	 *
-	 * @phpstan-param T $notification
+	 * @param T $resource
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
-	public function getSelfLink($notification): JsonApi\Contracts\Schema\LinkInterface
+	public function getSelfLink(
+		$resource,
+	): JsonApi\Contracts\Schema\LinkInterface
 	{
 		return new JsonApi\Schema\Link(
 			false,
 			$this->router->urlFor(
-				TriggersModule\Constants::ROUTE_NAME_TRIGGER_NOTIFICATION,
+				Triggers\Constants::ROUTE_NAME_TRIGGER_NOTIFICATION,
 				[
-					Router\Routes::URL_TRIGGER_ID => $notification->getTrigger()->getPlainId(),
-					Router\Routes::URL_ITEM_ID    => $notification->getPlainId(),
-				]
+					Router\Routes::URL_TRIGGER_ID => $resource->getTrigger()->getPlainId(),
+					Router\Routes::URL_ITEM_ID => $resource->getPlainId(),
+				],
 			),
-			false
+			false,
 		);
 	}
 
 	/**
-	 * @param Entities\Notifications\INotification $notification
-	 * @param JsonApi\Contracts\Schema\ContextInterface $context
+	 * @param T $resource
 	 *
 	 * @return iterable<string, mixed>
 	 *
-	 * @phpstan-param T $notification
-	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
-	public function getRelationships($notification, JsonApi\Contracts\Schema\ContextInterface $context): iterable
+	public function getRelationships(
+		$resource,
+		JsonApi\Contracts\Schema\ContextInterface $context,
+	): iterable
 	{
 		return [
 			self::RELATIONSHIPS_TRIGGER => [
-				self::RELATIONSHIP_DATA          => $notification->getTrigger(),
-				self::RELATIONSHIP_LINKS_SELF    => true,
+				self::RELATIONSHIP_DATA => $resource->getTrigger(),
+				self::RELATIONSHIP_LINKS_SELF => true,
 				self::RELATIONSHIP_LINKS_RELATED => true,
 			],
 		];
 	}
 
 	/**
-	 * @param Entities\Notifications\INotification $notification
-	 * @param string $name
-	 *
-	 * @return JsonApi\Contracts\Schema\LinkInterface
-	 *
-	 * @phpstan-param T $notification
+	 * @param T $resource
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
-	public function getRelationshipRelatedLink($notification, string $name): JsonApi\Contracts\Schema\LinkInterface
+	public function getRelationshipRelatedLink(
+		$resource,
+		string $name,
+	): JsonApi\Contracts\Schema\LinkInterface
 	{
 		if ($name === self::RELATIONSHIPS_TRIGGER) {
 			return new JsonApi\Schema\Link(
 				false,
 				$this->router->urlFor(
-					TriggersModule\Constants::ROUTE_NAME_TRIGGER,
+					Triggers\Constants::ROUTE_NAME_TRIGGER,
 					[
-						Router\Routes::URL_ITEM_ID => $notification->getTrigger()->getPlainId(),
-					]
+						Router\Routes::URL_ITEM_ID => $resource->getTrigger()->getPlainId(),
+					],
 				),
-				false
+				false,
 			);
 		}
 
-		return parent::getRelationshipRelatedLink($notification, $name);
+		return parent::getRelationshipRelatedLink($resource, $name);
 	}
 
 	/**
-	 * @param Entities\Notifications\INotification $notification
-	 * @param string $name
-	 *
-	 * @return JsonApi\Contracts\Schema\LinkInterface
-	 *
-	 * @phpstan-param T $notification
+	 * @param T $resource
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
-	public function getRelationshipSelfLink($notification, string $name): JsonApi\Contracts\Schema\LinkInterface
+	public function getRelationshipSelfLink(
+		$resource,
+		string $name,
+	): JsonApi\Contracts\Schema\LinkInterface
 	{
 		if ($name === self::RELATIONSHIPS_TRIGGER) {
 			return new JsonApi\Schema\Link(
 				false,
 				$this->router->urlFor(
-					TriggersModule\Constants::ROUTE_NAME_TRIGGER_NOTIFICATION_RELATIONSHIP,
+					Triggers\Constants::ROUTE_NAME_TRIGGER_NOTIFICATION_RELATIONSHIP,
 					[
-						Router\Routes::URL_TRIGGER_ID  => $notification->getTrigger()->getPlainId(),
-						Router\Routes::URL_ITEM_ID     => $notification->getPlainId(),
+						Router\Routes::URL_TRIGGER_ID => $resource->getTrigger()->getPlainId(),
+						Router\Routes::URL_ITEM_ID => $resource->getPlainId(),
 						Router\Routes::RELATION_ENTITY => $name,
-					]
+					],
 				),
-				false
+				false,
 			);
 		}
 
-		return parent::getRelationshipSelfLink($notification, $name);
+		return parent::getRelationshipSelfLink($resource, $name);
 	}
 
 }

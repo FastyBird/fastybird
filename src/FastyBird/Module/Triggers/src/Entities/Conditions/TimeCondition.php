@@ -13,18 +13,24 @@
  * @date           04.04.20
  */
 
-namespace FastyBird\TriggersModule\Entities\Conditions;
+namespace FastyBird\Module\Triggers\Entities\Conditions;
 
 use DateTimeInterface;
 use DateTimeZone;
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\Metadata\Types as MetadataTypes;
-use FastyBird\TriggersModule\Entities;
-use FastyBird\TriggersModule\Exceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Triggers\Entities;
+use FastyBird\Module\Triggers\Exceptions;
 use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
 use Nette\Utils;
 use Ramsey\Uuid;
-use Throwable;
+use function array_merge;
+use function assert;
+use function in_array;
+use function intval;
+use function is_array;
+use function method_exists;
+use const DATE_ATOM;
 
 /**
  * @ORM\Entity
@@ -37,108 +43,80 @@ use Throwable;
  *     }
  * )
  */
-class TimeCondition extends Condition implements ITimeCondition
+class TimeCondition extends Condition
 {
 
 	/**
-	 * @var DateTimeInterface
-	 *
 	 * @IPubDoctrine\Crud(is={"required", "writable"})
 	 * @ORM\Column(type="time", name="condition_time", nullable=true)
 	 */
-	private DateTimeInterface $time;
+	private DateTimeInterface|null $time;
 
 	/**
-	 * @var int[]|mixed[]
+	 * @var Array<int>|null
 	 *
 	 * @IPubDoctrine\Crud(is={"required", "writable"})
 	 * @ORM\Column(type="simple_array", name="condition_days", nullable=true)
 	 */
-	private array $days;
+	private array|null $days;
 
 	/**
-	 * @param DateTimeInterface $time
-	 * @param Utils\ArrayHash $days
-	 * @param Entities\Triggers\IAutomaticTrigger $trigger
-	 * @param Uuid\UuidInterface|null $id
-	 *
-	 * @throws Throwable
+	 * @throws Exceptions\InvalidArgument
 	 */
 	public function __construct(
 		DateTimeInterface $time,
 		Utils\ArrayHash $days,
-		Entities\Triggers\IAutomaticTrigger $trigger,
-		?Uuid\UuidInterface $id = null
-	) {
+		Entities\Triggers\AutomaticTrigger $trigger,
+		Uuid\UuidInterface|null $id = null,
+	)
+	{
 		parent::__construct($trigger, $id);
 
 		$this->setTime($time);
 		$this->setDays($days);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getType(): MetadataTypes\TriggerConditionTypeType
+	public function getType(): MetadataTypes\TriggerConditionType
 	{
-		return MetadataTypes\TriggerConditionTypeType::get(MetadataTypes\TriggerConditionTypeType::TYPE_TIME);
+		return MetadataTypes\TriggerConditionType::get(MetadataTypes\TriggerConditionType::TYPE_TIME);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function validate(DateTimeInterface $date): bool
-	{
-		if (in_array((int) $date->format('N'), (array) $this->getDays()) === false) {
-			return false;
-		}
-
-		return $date->format('h:i:s') === $this->getTime()->format('h:i:s');
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public function getDays(): Utils\ArrayHash
 	{
+		assert(is_array($this->days));
+
 		$days = [];
 
 		foreach ($this->days as $day) {
-			$days[] = (int) $day;
+			$days[] = intval($day);
 		}
 
 		return Utils\ArrayHash::from($days);
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * @param Array<int> $days
+	 *
+	 * @throws Exceptions\InvalidArgument
 	 */
-	public function setDays($days): void
+	public function setDays(Utils\ArrayHash|array $days): void
 	{
-		if (!is_array($days) && !$days instanceof Utils\ArrayHash) {
-			throw new Exceptions\InvalidArgumentException('Provided days have to be valid array.');
-		}
-
 		foreach ($days as $day) {
 			if (!in_array($day, [1, 2, 3, 4, 5, 6, 7], true)) {
-				throw new Exceptions\InvalidArgumentException('Provided days array is not valid.');
+				throw new Exceptions\InvalidArgument('Provided days array is not valid.');
 			}
 		}
 
 		$this->days = (array) $days;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function getTime(): DateTimeInterface
 	{
+		assert($this->time instanceof DateTimeInterface);
+
 		return $this->time;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function setTime(DateTimeInterface $time): void
 	{
 		if (method_exists($time, 'setTimezone')) {
@@ -146,6 +124,15 @@ class TimeCondition extends Condition implements ITimeCondition
 		}
 
 		$this->time = $time;
+	}
+
+	public function validate(DateTimeInterface $date): bool
+	{
+		if (in_array((int) $date->format('N'), (array) $this->getDays(), true) === false) {
+			return false;
+		}
+
+		return $date->format('h:i:s') === $this->getTime()->format('h:i:s');
 	}
 
 	/**

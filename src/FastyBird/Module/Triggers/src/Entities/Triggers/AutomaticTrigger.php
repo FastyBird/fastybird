@@ -13,15 +13,14 @@
  * @date           04.04.20
  */
 
-namespace FastyBird\TriggersModule\Entities\Triggers;
+namespace FastyBird\Module\Triggers\Entities\Triggers;
 
 use Doctrine\Common;
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\Metadata\Types as MetadataTypes;
-use FastyBird\TriggersModule\Entities;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Triggers\Entities;
 use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
 use Ramsey\Uuid;
-use Throwable;
 
 /**
  * @ORM\Entity
@@ -34,44 +33,50 @@ use Throwable;
  *     }
  * )
  */
-class AutomaticTrigger extends Trigger implements IAutomaticTrigger
+class AutomaticTrigger extends Trigger
 {
 
 	/**
-	 * @var Common\Collections\Collection<int, Entities\Conditions\ICondition>
+	 * @var Common\Collections\Collection<int, Entities\Conditions\Condition>
 	 *
 	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\OneToMany(targetEntity="FastyBird\TriggersModule\Entities\Conditions\Condition", mappedBy="trigger", cascade={"persist", "remove"}, orphanRemoval=true)
+	 * @ORM\OneToMany(targetEntity="FastyBird\Module\Triggers\Entities\Conditions\Condition", mappedBy="trigger", cascade={"persist", "remove"}, orphanRemoval=true)
 	 */
 	private Common\Collections\Collection $conditions;
 
-	/**
-	 * @param string $name
-	 * @param Uuid\UuidInterface|null $id
-	 *
-	 * @throws Throwable
-	 */
-	public function __construct(
-		string $name,
-		?Uuid\UuidInterface $id = null
-	) {
+	public function __construct(string $name, Uuid\UuidInterface|null $id = null)
+	{
 		parent::__construct($name, $id);
 
 		$this->conditions = new Common\Collections\ArrayCollection();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getType(): MetadataTypes\TriggerTypeType
+	public function getType(): MetadataTypes\TriggerType
 	{
-		return MetadataTypes\TriggerTypeType::get(MetadataTypes\TriggerTypeType::TYPE_AUTOMATIC);
+		return MetadataTypes\TriggerType::get(MetadataTypes\TriggerType::TYPE_AUTOMATIC);
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * @return array<Entities\Conditions\Condition>
 	 */
-	public function addCondition(Entities\Conditions\ICondition $condition): void
+	public function getConditions(): array
+	{
+		return $this->conditions->toArray();
+	}
+
+	/**
+	 * @param array<Entities\Conditions\Condition> $conditions
+	 */
+	public function setConditions(array $conditions = []): void
+	{
+		$this->conditions = new Common\Collections\ArrayCollection();
+
+		foreach ($conditions as $entity) {
+			$this->conditions->add($entity);
+		}
+	}
+
+	public function addCondition(Entities\Conditions\Condition $condition): void
 	{
 		// Check if collection does not contain inserting entity
 		if (!$this->conditions->contains($condition)) {
@@ -80,48 +85,15 @@ class AutomaticTrigger extends Trigger implements IAutomaticTrigger
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getCondition(string $id): ?Entities\Conditions\ICondition
+	public function getCondition(string $id): Entities\Conditions\Condition|null
 	{
 		$found = $this->conditions
-			->filter(function (Entities\Conditions\ICondition $row) use ($id): bool {
-				return $id === $row->getPlainId();
-			});
+			->filter(static fn (Entities\Conditions\Condition $row): bool => $id === $row->getPlainId());
 
 		return $found->isEmpty() ? null : $found->first();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getConditions(): array
-	{
-		return $this->conditions->toArray();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function setConditions(array $conditions = []): void
-	{
-		$this->conditions = new Common\Collections\ArrayCollection();
-
-		// Process all passed entities...
-		/** @var Entities\Conditions\ICondition $entity */
-		foreach ($conditions as $entity) {
-			if (!$this->conditions->contains($entity)) {
-				// ...and assign them to collection
-				$this->conditions->add($entity);
-			}
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function removeCondition(Entities\Conditions\ICondition $condition): void
+	public function removeCondition(Entities\Conditions\Condition $condition): void
 	{
 		// Check if collection contain removing entity...
 		if ($this->conditions->contains($condition)) {

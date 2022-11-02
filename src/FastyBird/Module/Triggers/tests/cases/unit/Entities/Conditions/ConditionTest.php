@@ -1,26 +1,28 @@
 <?php declare(strict_types = 1);
 
-namespace Tests\Cases;
+namespace FastyBird\Module\Triggers\Tests\Cases\Unit\Entities\Conditions;
 
 use DateTime;
 use FastyBird\Module\Triggers\Entities;
+use FastyBird\Module\Triggers\Exceptions;
 use FastyBird\Module\Triggers\Models;
 use FastyBird\Module\Triggers\Queries;
+use FastyBird\Module\Triggers\Tests\Cases\Unit\DbTestCase;
+use Nette;
 use Ramsey\Uuid;
-use Tester\Assert;
+use RuntimeException;
 
-require_once __DIR__ . '/../../../../bootstrap.php';
-require_once __DIR__ . '/../../DbTestCase.php';
-
-/**
- * @testCase
- */
-final class ConditionEntityTest extends DbTestCase
+final class ConditionTest extends DbTestCase
 {
 
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws Nette\DI\MissingServiceException
+	 * @throws RuntimeException
+	 */
 	public function testTimeConditionValidation(): void
 	{
-		/** @var Models\Conditions\ConditionsRepository $repository */
 		$repository = $this->getContainer()->getByType(Models\Conditions\ConditionsRepository::class);
 
 		$findQuery = new Queries\FindConditions();
@@ -28,21 +30,26 @@ final class ConditionEntityTest extends DbTestCase
 
 		$entity = $repository->findOneBy($findQuery);
 
-		Assert::true(is_object($entity));
-		Assert::type(Entities\Conditions\TimeCondition::class, $entity);
+		self::assertIsObject($entity);
+		self::assertTrue($entity instanceof Entities\Conditions\TimeCondition);
 
-		Assert::true($entity->validate(new DateTime('1970-01-01T07:30:00+00:00')));
-		Assert::true($entity->validate(new DateTime('07:30:00+00:00')));
-		Assert::true($entity->validate(new DateTime('07:30:00')));
+		self::assertTrue($entity->validate(new DateTime('1970-01-01T07:30:00+00:00')));
+		self::assertTrue($entity->validate(new DateTime('07:30:00+00:00')));
+		self::assertTrue($entity->validate(new DateTime('07:30:00')));
 
-		Assert::false($entity->validate(new DateTime('1970-01-01T07:31:00+00:00')));
-		Assert::false($entity->validate(new DateTime('07:31:00+00:00')));
-		Assert::false($entity->validate(new DateTime('07:31:00')));
+		self::assertFalse($entity->validate(new DateTime('1970-01-01T07:31:00+00:00')));
+		self::assertFalse($entity->validate(new DateTime('07:31:00+00:00')));
+		self::assertFalse($entity->validate(new DateTime('07:31:00')));
 	}
 
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws Nette\DI\MissingServiceException
+	 * @throws RuntimeException
+	 */
 	public function testPropertyConditionValidation(): void
 	{
-		/** @var Models\Conditions\ConditionsRepository $repository */
 		$repository = $this->getContainer()->getByType(Models\Conditions\ConditionsRepository::class);
 
 		$findQuery = new Queries\FindConditions();
@@ -50,15 +57,11 @@ final class ConditionEntityTest extends DbTestCase
 
 		$entity = $repository->findOneBy($findQuery);
 
-		Assert::true(is_object($entity));
-		Assert::type(Entities\Conditions\ChannelPropertyCondition::class, $entity);
+		self::assertIsObject($entity);
+		self::assertTrue($entity instanceof Entities\Conditions\ChannelPropertyCondition);
 
-		Assert::true($entity->validate('3'));
-
-		Assert::false($entity->validate('1'));
+		self::assertTrue($entity->validate('3'));
+		self::assertFalse($entity->validate('1'));
 	}
 
 }
-
-$test_case = new ConditionEntityTest();
-$test_case->run();

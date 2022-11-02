@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * EntitiesSubscriber.php
+ * ModuleEntities.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -18,17 +18,27 @@ namespace FastyBird\Module\Triggers\Subscribers;
 use Doctrine\Common;
 use Doctrine\ORM;
 use Doctrine\Persistence;
+use Exception;
 use FastyBird\Library\Exchange\Entities as ExchangeEntities;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Triggers;
 use FastyBird\Module\Triggers\Entities;
 use FastyBird\Module\Triggers\Exceptions;
 use FastyBird\Module\Triggers\Models;
+use IPub\Phone\Exceptions as PhoneExceptions;
 use Nette;
 use Nette\Utils;
 use ReflectionClass;
-use ReflectionException;
+use function array_merge;
+use function count;
+use function implode;
+use function in_array;
+use function is_a;
+use function str_starts_with;
+use function strrpos;
+use function substr;
 
 /**
  * Doctrine entities events
@@ -38,48 +48,31 @@ use ReflectionException;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class EntitiesSubscriber implements Common\EventSubscriber
+final class ModuleEntities implements Common\EventSubscriber
 {
-
-	private const ACTION_CREATED = 'created';
-	private const ACTION_UPDATED = 'updated';
-	private const ACTION_DELETED = 'deleted';
 
 	use Nette\SmartObject;
 
-	/** @var Models\States\ActionsRepository */
-	private Models\States\ActionsRepository $actionStateRepository;
+	private const ACTION_CREATED = 'created';
 
-	/** @var Models\States\ConditionsRepository */
-	private Models\States\ConditionsRepository $conditionStateRepository;
+	private const ACTION_UPDATED = 'updated';
 
-	/** @var ExchangePublisher\Publisher|null */
-	private ?ExchangePublisher\Publisher $publisher;
-
-	/** @var ExchangeEntities\EntityFactory */
-	private ExchangeEntities\EntityFactory $entityFactory;
-
-	/** @var ORM\EntityManagerInterface */
-	private ORM\EntityManagerInterface $entityManager;
+	private const ACTION_DELETED = 'deleted';
 
 	public function __construct(
-		Models\States\ActionsRepository $actionStateRepository,
-		Models\States\ConditionsRepository $conditionStateRepository,
-		ExchangeEntities\EntityFactory $entityFactory,
-		ORM\EntityManagerInterface $entityManager,
-		?ExchangePublisher\Publisher $publisher = null
-	) {
-		$this->actionStateRepository = $actionStateRepository;
-		$this->conditionStateRepository = $conditionStateRepository;
-		$this->entityFactory = $entityFactory;
-		$this->publisher = $publisher;
-		$this->entityManager = $entityManager;
+		private readonly Models\States\ActionsRepository $actionStateRepository,
+		private readonly Models\States\ConditionsRepository $conditionStateRepository,
+		private readonly ExchangeEntities\EntityFactory $entityFactory,
+		private readonly ORM\EntityManagerInterface $entityManager,
+		private readonly ExchangePublisher\Publisher $publisher,
+	)
+	{
 	}
 
 	/**
 	 * Register events
 	 *
-	 * @return string[]
+	 * @return Array<string>
 	 */
 	public function getSubscribedEvents(): array
 	{
@@ -92,7 +85,16 @@ final class EntitiesSubscriber implements Common\EventSubscriber
 	}
 
 	/**
-	 * @return void
+	 * @throws Exception
+	 * @throws MetadataExceptions\FileNotFound
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws Utils\JsonException
+	 * @throws PhoneExceptions\NoValidCountryException
+	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
 	public function onFlush(): void
 	{
@@ -104,7 +106,7 @@ final class EntitiesSubscriber implements Common\EventSubscriber
 
 		foreach ($uow->getScheduledEntityDeletions() as $entity) {
 			// Check for valid entity
-			if (!$entity instanceof Entities\IEntity || !$this->validateNamespace($entity)) {
+			if (!$entity instanceof Entities\Entity || !$this->validateNamespace($entity)) {
 				continue;
 			}
 
@@ -125,261 +127,34 @@ final class EntitiesSubscriber implements Common\EventSubscriber
 		}
 	}
 
-	/**
-	 * @param object $entity
-	 *
-	 * @return bool
-	 */
-	private function validateNamespace(object $entity): bool
-	{
-		try {
-			$rc = new ReflectionClass($entity);
-
-		} catch (ReflectionException $ex) {
-			return false;
-		}
-
-		return str_starts_with($rc->getNamespaceName(), 'FastyBird\Module\Triggers');
-	}
-
-	/**
-	 * @param Entities\IEntity $entity
-	 * @param mixed[] $identifier
-	 *
-	 * @return string
-	 */
-	private function getHash(Entities\IEntity $entity, array $identifier): string
-	{
-		return implode(
-			' ',
-			array_merge(
-				[$this->getRealClass(get_class($entity))],
-				$identifier
-			)
-		);
-	}
-
-	/**
-	 * @param string $class
-	 *
-	 * @return string
-	 */
-	private function getRealClass(string $class): string
-	{
-		$pos = strrpos($class, '\\' . Persistence\Proxy::MARKER . '\\');
-
-		if ($pos === false) {
-			return $class;
-		}
-
-		return substr($class, $pos + Persistence\Proxy::MARKER_LENGTH + 2);
-	}
-
-	/**
-	 * @param Entities\IEntity $entity
-	 * @param string $action
-	 *
-	 * @return void
-	 */
-	private function publishEntity(Entities\IEntity $entity, string $action): void
-	{
-		if ($this->publisher === null) {
-			return;
-		}
-
-		if (!method_exists($entity, 'toArray')) {
-			return;
-		}
-
-		$publishRoutingKey = null;
-
-		switch ($action) {
-			case self::ACTION_CREATED:
-				foreach (TriggersModule\Constants::MESSAGE_BUS_CREATED_ENTITIES_ROUTING_KEYS_MAPPING as $class => $routingKey) {
-					if ($this->validateEntity($entity, $class)) {
-						$publishRoutingKey = MetadataTypes\RoutingKeyType::get($routingKey);
-					}
-				}
-
-				break;
-
-			case self::ACTION_UPDATED:
-				foreach (TriggersModule\Constants::MESSAGE_BUS_UPDATED_ENTITIES_ROUTING_KEYS_MAPPING as $class => $routingKey) {
-					if ($this->validateEntity($entity, $class)) {
-						$publishRoutingKey = MetadataTypes\RoutingKeyType::get($routingKey);
-					}
-				}
-
-				break;
-
-			case self::ACTION_DELETED:
-				foreach (TriggersModule\Constants::MESSAGE_BUS_DELETED_ENTITIES_ROUTING_KEYS_MAPPING as $class => $routingKey) {
-					if ($this->validateEntity($entity, $class)) {
-						$publishRoutingKey = MetadataTypes\RoutingKeyType::get($routingKey);
-					}
-				}
-
-				break;
-		}
-
-		if ($publishRoutingKey !== null) {
-			if ($entity instanceof Entities\Actions\IAction) {
-				try {
-					$state = $this->actionStateRepository->findOne($entity);
-
-				} catch (Exceptions\NotImplementedException $ex) {
-					$this->publisher->publish(
-						$entity->getSource(),
-						$publishRoutingKey,
-						$this->entityFactory->create(Utils\Json::encode($entity->toArray()), $publishRoutingKey)
-					);
-
-					return;
-				}
-
-				$this->publisher->publish(
-					$entity->getSource(),
-					$publishRoutingKey,
-					$this->entityFactory->create(Utils\Json::encode(array_merge($state !== null ? [
-						'is_triggered' => $state->isTriggered(),
-					] : [], $entity->toArray())), $publishRoutingKey)
-				);
-
-			} elseif ($entity instanceof Entities\Conditions\ICondition) {
-				try {
-					$state = $this->conditionStateRepository->findOne($entity);
-
-				} catch (Exceptions\NotImplementedException $ex) {
-					$this->publisher->publish(
-						$entity->getSource(),
-						$publishRoutingKey,
-						$this->entityFactory->create(Utils\Json::encode($entity->toArray()), $publishRoutingKey)
-					);
-
-					return;
-				}
-
-				$this->publisher->publish(
-					$entity->getSource(),
-					$publishRoutingKey,
-					$this->entityFactory->create(Utils\Json::encode(array_merge($state !== null ? [
-						'is_fulfilled' => $state->isFulfilled(),
-					] : [], $entity->toArray())), $publishRoutingKey)
-				);
-
-			} elseif ($entity instanceof Entities\Triggers\ITrigger) {
-				try {
-					if (count($entity->getActions()) > 0) {
-						$isTriggered = true;
-
-						foreach ($entity->getActions() as $action) {
-							$state = $this->actionStateRepository->findOne($action);
-
-							if ($state === null || $state->isTriggered() === false) {
-								$isTriggered = false;
-							}
-						}
-					} else {
-						$isTriggered = false;
-					}
-				} catch (Exceptions\NotImplementedException $ex) {
-					$isTriggered = null;
-				}
-
-				if ($entity instanceof Entities\Triggers\IAutomaticTrigger) {
-					try {
-						if (count($entity->getActions()) > 0) {
-							$isFulfilled = true;
-
-							foreach ($entity->getConditions() as $condition) {
-								$state = $this->conditionStateRepository->findOne($condition);
-
-								if ($state === null || $state->isFulfilled() === false) {
-									$isFulfilled = false;
-								}
-							}
-						} else {
-							$isFulfilled = false;
-						}
-					} catch (Exceptions\NotImplementedException $ex) {
-						$isFulfilled = null;
-					}
-
-					$this->publisher->publish(
-						$entity->getSource(),
-						$publishRoutingKey,
-						$this->entityFactory->create(Utils\Json::encode(array_merge([
-							'is_triggered' => $isTriggered,
-							'is_fulfilled' => $isFulfilled,
-						], $entity->toArray())), $publishRoutingKey)
-					);
-
-				} else {
-					$this->publisher->publish(
-						$entity->getSource(),
-						$publishRoutingKey,
-						$this->entityFactory->create(Utils\Json::encode(array_merge([
-							'is_triggered' => $isTriggered,
-						], $entity->toArray())), $publishRoutingKey)
-					);
-				}
-			} else {
-				$this->publisher->publish(
-					$entity->getSource(),
-					$publishRoutingKey,
-					$this->entityFactory->create(Utils\Json::encode($entity->toArray()), $publishRoutingKey)
-				);
-			}
-		}
-	}
-
-	/**
-	 * @param Entities\IEntity $entity
-	 * @param string $class
-	 *
-	 * @return bool
-	 */
-	private function validateEntity(Entities\IEntity $entity, string $class): bool
-	{
-		$result = false;
-
-		if (get_class($entity) === $class) {
-			$result = true;
-		}
-
-		if (is_subclass_of($entity, $class)) {
-			$result = true;
-		}
-
-		return $result;
-	}
-
-	/**
-	 * @param ORM\Event\LifecycleEventArgs $eventArgs
-	 *
-	 * @return void
-	 */
 	public function prePersist(ORM\Event\LifecycleEventArgs $eventArgs): void
 	{
 		$entity = $eventArgs->getObject();
 
 		// Check for valid entity
-		if (!$entity instanceof Entities\IEntity || !$this->validateNamespace($entity)) {
+		if (!$entity instanceof Entities\Entity || !$this->validateNamespace($entity)) {
 			return;
 		}
 
-		if ($entity instanceof Entities\Triggers\IManualTrigger) {
+		if ($entity instanceof Entities\Triggers\ManualTrigger) {
 			new Entities\Triggers\Controls\Control(
-				MetadataTypes\ControlNameType::NAME_TRIGGER,
+				MetadataTypes\ControlName::NAME_TRIGGER,
 				$entity,
 			);
 		}
 	}
 
 	/**
-	 * @param ORM\Event\LifecycleEventArgs $eventArgs
-	 *
-	 * @return void
+	 * @throws Exception
+	 * @throws MetadataExceptions\FileNotFound
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws Utils\JsonException
+	 * @throws PhoneExceptions\NoValidCountryException
+	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
 	public function postPersist(ORM\Event\LifecycleEventArgs $eventArgs): void
 	{
@@ -387,7 +162,7 @@ final class EntitiesSubscriber implements Common\EventSubscriber
 		$entity = $eventArgs->getObject();
 
 		// Check for valid entity
-		if (!$entity instanceof Entities\IEntity || !$this->validateNamespace($entity)) {
+		if (!$entity instanceof Entities\Entity || !$this->validateNamespace($entity)) {
 			return;
 		}
 
@@ -395,9 +170,16 @@ final class EntitiesSubscriber implements Common\EventSubscriber
 	}
 
 	/**
-	 * @param ORM\Event\LifecycleEventArgs $eventArgs
-	 *
-	 * @return void
+	 * @throws Exception
+	 * @throws MetadataExceptions\FileNotFound
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws Utils\JsonException
+	 * @throws PhoneExceptions\NoValidCountryException
+	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
 	public function postUpdate(ORM\Event\LifecycleEventArgs $eventArgs): void
 	{
@@ -416,7 +198,7 @@ final class EntitiesSubscriber implements Common\EventSubscriber
 
 		// Check for valid entity
 		if (
-			!$entity instanceof Entities\IEntity
+			!$entity instanceof Entities\Entity
 			|| !$this->validateNamespace($entity)
 			|| $uow->isScheduledForDelete($entity)
 		) {
@@ -424,6 +206,202 @@ final class EntitiesSubscriber implements Common\EventSubscriber
 		}
 
 		$this->publishEntity($entity, self::ACTION_UPDATED);
+	}
+
+	/**
+	 * @throws Exception
+	 * @throws MetadataExceptions\FileNotFound
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws Utils\JsonException
+	 * @throws PhoneExceptions\NoValidCountryException
+	 * @throws PhoneExceptions\NoValidPhoneException
+	 */
+	private function publishEntity(Entities\Entity $entity, string $action): void
+	{
+		$publishRoutingKey = null;
+
+		switch ($action) {
+			case self::ACTION_CREATED:
+				foreach (Triggers\Constants::MESSAGE_BUS_CREATED_ENTITIES_ROUTING_KEYS_MAPPING as $class => $routingKey) {
+					if (is_a($entity, $class)) {
+						$publishRoutingKey = MetadataTypes\RoutingKey::get($routingKey);
+					}
+				}
+
+				break;
+			case self::ACTION_UPDATED:
+				foreach (Triggers\Constants::MESSAGE_BUS_UPDATED_ENTITIES_ROUTING_KEYS_MAPPING as $class => $routingKey) {
+					if (is_a($entity, $class)) {
+						$publishRoutingKey = MetadataTypes\RoutingKey::get($routingKey);
+					}
+				}
+
+				break;
+			case self::ACTION_DELETED:
+				foreach (Triggers\Constants::MESSAGE_BUS_DELETED_ENTITIES_ROUTING_KEYS_MAPPING as $class => $routingKey) {
+					if (is_a($entity, $class)) {
+						$publishRoutingKey = MetadataTypes\RoutingKey::get($routingKey);
+					}
+				}
+
+				break;
+		}
+
+		if ($publishRoutingKey !== null) {
+			if ($entity instanceof Entities\Actions\Action) {
+				try {
+					$state = $this->actionStateRepository->findOne($entity);
+
+				} catch (Exceptions\NotImplemented) {
+					$this->publisher->publish(
+						$entity->getSource(),
+						$publishRoutingKey,
+						$this->entityFactory->create(Utils\Json::encode($entity->toArray()), $publishRoutingKey),
+					);
+
+					return;
+				}
+
+				$this->publisher->publish(
+					$entity->getSource(),
+					$publishRoutingKey,
+					$this->entityFactory->create(Utils\Json::encode(array_merge($state !== null ? [
+						'is_triggered' => $state->isTriggered(),
+					] : [], $entity->toArray())), $publishRoutingKey),
+				);
+
+			} elseif ($entity instanceof Entities\Conditions\Condition) {
+				try {
+					$state = $this->conditionStateRepository->findOne($entity);
+
+				} catch (Exceptions\NotImplemented) {
+					$this->publisher->publish(
+						$entity->getSource(),
+						$publishRoutingKey,
+						$this->entityFactory->create(Utils\Json::encode($entity->toArray()), $publishRoutingKey),
+					);
+
+					return;
+				}
+
+				$this->publisher->publish(
+					$entity->getSource(),
+					$publishRoutingKey,
+					$this->entityFactory->create(Utils\Json::encode(array_merge($state !== null ? [
+						'is_fulfilled' => $state->isFulfilled(),
+					] : [], $entity->toArray())), $publishRoutingKey),
+				);
+
+			} elseif ($entity instanceof Entities\Triggers\Trigger) {
+				try {
+					if (count($entity->getActions()) > 0) {
+						$isTriggered = true;
+
+						foreach ($entity->getActions() as $item) {
+							$state = $this->actionStateRepository->findOne($item);
+
+							if ($state === null || $state->isTriggered() === false) {
+								$isTriggered = false;
+							}
+						}
+					} else {
+						$isTriggered = false;
+					}
+				} catch (Exceptions\NotImplemented) {
+					$isTriggered = null;
+				}
+
+				if ($entity instanceof Entities\Triggers\AutomaticTrigger) {
+					try {
+						if (count($entity->getActions()) > 0) {
+							$isFulfilled = true;
+
+							foreach ($entity->getConditions() as $item) {
+								$state = $this->conditionStateRepository->findOne($item);
+
+								if ($state === null || $state->isFulfilled() === false) {
+									$isFulfilled = false;
+								}
+							}
+						} else {
+							$isFulfilled = false;
+						}
+					} catch (Exceptions\NotImplemented) {
+						$isFulfilled = null;
+					}
+
+					$this->publisher->publish(
+						$entity->getSource(),
+						$publishRoutingKey,
+						$this->entityFactory->create(Utils\Json::encode(array_merge([
+							'is_triggered' => $isTriggered,
+							'is_fulfilled' => $isFulfilled,
+						], $entity->toArray())), $publishRoutingKey),
+					);
+
+				} else {
+					$this->publisher->publish(
+						$entity->getSource(),
+						$publishRoutingKey,
+						$this->entityFactory->create(Utils\Json::encode(array_merge([
+							'is_triggered' => $isTriggered,
+						], $entity->toArray())), $publishRoutingKey),
+					);
+				}
+			} else {
+				$this->publisher->publish(
+					$entity->getSource(),
+					$publishRoutingKey,
+					$this->entityFactory->create(Utils\Json::encode($entity->toArray()), $publishRoutingKey),
+				);
+			}
+		}
+	}
+
+	/**
+	 * @param Array<mixed> $identifier
+	 */
+	private function getHash(Entities\Entity $entity, array $identifier): string
+	{
+		return implode(
+			' ',
+			array_merge(
+				[$this->getRealClass($entity::class)],
+				$identifier,
+			),
+		);
+	}
+
+	private function getRealClass(string $class): string
+	{
+		$pos = strrpos($class, '\\' . Persistence\Proxy::MARKER . '\\');
+
+		if ($pos === false) {
+			return $class;
+		}
+
+		return substr($class, $pos + Persistence\Proxy::MARKER_LENGTH + 2);
+	}
+
+	private function validateNamespace(object $entity): bool
+	{
+		$rc = new ReflectionClass($entity);
+
+		if (str_starts_with($rc->getNamespaceName(), 'FastyBird\Module\Triggers')) {
+			return true;
+		}
+
+		foreach ($rc->getInterfaces() as $interface) {
+			if (str_starts_with($interface->getNamespaceName(), 'FastyBird\Module\Triggers')) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 }

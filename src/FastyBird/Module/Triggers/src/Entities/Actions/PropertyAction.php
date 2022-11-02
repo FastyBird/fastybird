@@ -13,60 +13,67 @@
  * @date           04.04.20
  */
 
-namespace FastyBird\TriggersModule\Entities\Actions;
+namespace FastyBird\Module\Triggers\Entities\Actions;
 
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\Metadata\Types as MetadataTypes;
-use FastyBird\TriggersModule\Entities;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Triggers\Entities;
 use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
 use Ramsey\Uuid;
+use function array_merge;
 
 /**
  * @ORM\MappedSuperclass
  */
-abstract class PropertyAction extends Action implements IPropertyAction
+abstract class PropertyAction extends Action
 {
 
 	/**
-	 * @var Uuid\UuidInterface
-	 *
 	 * @IPubDoctrine\Crud(is="required")
 	 * @ORM\Column(type="uuid_binary", name="action_device", nullable=true)
 	 */
 	protected Uuid\UuidInterface $device;
 
 	/**
-	 * @var string
-	 *
 	 * @IPubDoctrine\Crud(is={"required", "writable"})
 	 * @ORM\Column(type="string", name="action_value", length=100, nullable=true)
 	 */
 	protected string $value;
 
-	/**
-	 * @param Uuid\UuidInterface $device
-	 * @param string $value
-	 * @param Entities\Triggers\ITrigger $trigger
-	 * @param Uuid\UuidInterface|null $id
-	 */
 	public function __construct(
 		Uuid\UuidInterface $device,
 		string $value,
-		Entities\Triggers\ITrigger $trigger,
-		?Uuid\UuidInterface $id = null
-	) {
+		Entities\Triggers\Trigger $trigger,
+		Uuid\UuidInterface|null $id = null,
+	)
+	{
 		parent::__construct($trigger, $id);
 
 		$this->device = $device;
 		$this->value = $value;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	public function getValue(): string|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload
+	{
+		if (MetadataTypes\ButtonPayload::isValidValue($this->value)) {
+			return MetadataTypes\ButtonPayload::get($this->value);
+		}
+
+		if (MetadataTypes\SwitchPayload::isValidValue($this->value)) {
+			return MetadataTypes\SwitchPayload::get($this->value);
+		}
+
+		return $this->value;
+	}
+
 	public function validate(string $value): bool
 	{
-		return (string) $this->value === $value;
+		return $this->value === $value;
+	}
+
+	public function getDevice(): Uuid\UuidInterface
+	{
+		return $this->device;
 	}
 
 	/**
@@ -76,32 +83,8 @@ abstract class PropertyAction extends Action implements IPropertyAction
 	{
 		return array_merge(parent::toArray(), [
 			'device' => $this->getDevice()->toString(),
-			'value'  => (string) $this->getValue(),
+			'value' => (string) $this->getValue(),
 		]);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getDevice(): Uuid\UuidInterface
-	{
-		return $this->device;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getValue()
-	{
-		if (MetadataTypes\ButtonPayloadType::isValidValue($this->value)) {
-			return MetadataTypes\ButtonPayloadType::get($this->value);
-		}
-
-		if (MetadataTypes\SwitchPayloadType::isValidValue($this->value)) {
-			return MetadataTypes\SwitchPayloadType::get($this->value);
-		}
-
-		return $this->value;
 	}
 
 }

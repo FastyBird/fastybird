@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ChannelPropertyConditionHydrator.php
+ * ChannelPropertyCondition.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -20,21 +20,21 @@ use FastyBird\Module\Triggers\Entities;
 use Fig\Http\Message\StatusCodeInterface;
 use IPub\JsonAPIDocument;
 use Ramsey\Uuid;
+use function is_scalar;
 
 /**
  * Channel property condition entity hydrator
  *
+ * @extends PropertyCondition<Entities\Conditions\ChannelPropertyCondition>
+ *
  * @package         FastyBird:TriggersModule!
  * @subpackage      Hydrators
- *
  * @author          Adam Kadlec <adam.kadlec@fastybird.com>
- *
- * @phpstan-extends PropertyConditionHydrator<Entities\Conditions\IChannelPropertyCondition>
  */
-final class ChannelPropertyConditionHydrator extends PropertyConditionHydrator
+final class ChannelPropertyCondition extends PropertyCondition
 {
 
-	/** @var string[] */
+	/** @var Array<int|string, string> */
 	protected array $attributes = [
 		'device',
 		'channel',
@@ -44,37 +44,31 @@ final class ChannelPropertyConditionHydrator extends PropertyConditionHydrator
 		'enabled',
 	];
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function getEntityName(): string
 	{
 		return Entities\Conditions\ChannelPropertyCondition::class;
 	}
 
 	/**
-	 * @param JsonAPIDocument\Objects\IStandardObject $attributes
-	 *
-	 * @return Uuid\UuidInterface
-	 *
-	 * @throws JsonApiExceptions\IJsonApiException
+	 * @throws JsonApiExceptions\JsonApi
 	 */
 	protected function hydrateChannelAttribute(
-		JsonAPIDocument\Objects\IStandardObject $attributes
-	): Uuid\UuidInterface {
+		JsonAPIDocument\Objects\IStandardObject $attributes,
+	): Uuid\UuidInterface
+	{
 		if (
 			!is_scalar($attributes->get('channel'))
 			|| !$attributes->has('channel')
 			|| $attributes->get('channel') === ''
 			|| !Uuid\Uuid::isValid((string) $attributes->get('channel'))
 		) {
-			throw new JsonApiExceptions\JsonApiErrorException(
+			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
 				$this->translator->translate('//triggers-module.base.messages.missingAttribute.heading'),
 				$this->translator->translate('//triggers-module.base.messages.missingAttribute.message'),
 				[
 					'pointer' => '/data/attributes/channel',
-				]
+				],
 			);
 		}
 

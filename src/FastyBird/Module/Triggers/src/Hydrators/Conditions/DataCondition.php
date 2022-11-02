@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * DataConditionHydrator.php
+ * DataCondition.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -21,66 +21,63 @@ use FastyBird\Module\Triggers\Entities;
 use Fig\Http\Message\StatusCodeInterface;
 use IPub\JsonAPIDocument;
 use Nette\Utils;
+use function is_scalar;
 
 /**
  * Time condition entity hydrator
  *
+ * @extends Condition<Entities\Conditions\DateCondition>
+ *
  * @package         FastyBird:TriggersModule!
  * @subpackage      Hydrators
- *
  * @author          Adam Kadlec <adam.kadlec@fastybird.com>
- *
- * @phpstan-extends ConditionHydrator<Entities\Conditions\IDateCondition>
  */
-final class DataConditionHydrator extends ConditionHydrator
+final class DataCondition extends Condition
 {
 
-	/** @var string[] */
+	/** @var Array<int|string, string> */
 	protected array $attributes = [
 		'date',
 		'enabled',
 	];
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function getEntityName(): string
 	{
 		return Entities\Conditions\DateCondition::class;
 	}
 
 	/**
-	 * @param JsonAPIDocument\Objects\IStandardObject $attributes
-	 *
-	 * @return DateTimeInterface
-	 *
-	 * @throws JsonApiExceptions\IJsonApiException
+	 * @throws JsonApiExceptions\JsonApi
 	 */
 	protected function hydrateDateAttribute(
-		JsonAPIDocument\Objects\IStandardObject $attributes
-	): DateTimeInterface {
+		JsonAPIDocument\Objects\IStandardObject $attributes,
+	): DateTimeInterface
+	{
 		// Condition date have to be set
 		if (!is_scalar($attributes->get('date')) || !$attributes->has('date')) {
-			throw new JsonApiExceptions\JsonApiErrorException(
+			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
 				$this->translator->translate('//triggers-module.base.messages.missingAttribute.heading'),
 				$this->translator->translate('//triggers-module.base.messages.missingAttribute.message'),
 				[
 					'pointer' => '/data/attributes/date',
-				]
+				],
 			);
 		}
 
 		$date = Utils\DateTime::createFromFormat(DateTimeInterface::ATOM, (string) $attributes->get('date'));
 
-		if (!$date instanceof DateTimeInterface || $date->format(DateTimeInterface::ATOM) !== $attributes->get('date')) {
-			throw new JsonApiExceptions\JsonApiErrorException(
+		if (
+			!$date instanceof DateTimeInterface
+			|| $date->format(DateTimeInterface::ATOM) !== $attributes->get('date')
+		) {
+			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
 				$this->translator->translate('//triggers-module.conditions.messages.invalidTime.heading'),
 				$this->translator->translate('//triggers-module.conditions.messages.invalidTime.message'),
 				[
 					'pointer' => '/data/attributes/date',
-				]
+				],
 			);
 		}
 

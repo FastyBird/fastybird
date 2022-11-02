@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * DevicePropertyActionHydrator.php
+ * DevicePropertyAction.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -20,17 +20,16 @@ use FastyBird\Module\Triggers\Entities;
 /**
  * Device property action entity hydrator
  *
+ * @extends PropertyAction<Entities\Actions\DevicePropertyAction>
+ *
  * @package         FastyBird:TriggersModule!
  * @subpackage      Hydrators
- *
  * @author          Adam Kadlec <adam.kadlec@fastybird.com>
- *
- * @phpstan-extends PropertyActionHydrator<Entities\Actions\IDevicePropertyAction>
  */
-final class DevicePropertyActionHydrator extends PropertyActionHydrator
+final class DevicePropertyAction extends PropertyAction
 {
 
-	/** @var string[] */
+	/** @var Array<int|string, string> */
 	protected array $attributes = [
 		'device',
 		'property',
@@ -38,9 +37,6 @@ final class DevicePropertyActionHydrator extends PropertyActionHydrator
 		'enabled',
 	];
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function getEntityName(): string
 	{
 		return Entities\Actions\DevicePropertyAction::class;

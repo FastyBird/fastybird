@@ -13,9 +13,9 @@
  * @date           04.04.20
  */
 
-namespace FastyBird\TriggersModule\Exceptions;
+namespace FastyBird\Module\Triggers\Exceptions;
 
-class UniqueNotificationNumberConstraint extends InvalidStateException implements IException
+class UniqueNotificationNumberConstraint extends InvalidState implements Exception
 {
 
 }

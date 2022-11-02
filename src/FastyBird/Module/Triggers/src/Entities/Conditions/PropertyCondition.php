@@ -13,63 +13,53 @@
  * @date           04.04.20
  */
 
-namespace FastyBird\TriggersModule\Entities\Conditions;
+namespace FastyBird\Module\Triggers\Entities\Conditions;
 
 use Consistence\Doctrine\Enum\EnumAnnotation as Enum;
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\Metadata\Types as MetadataTypes;
-use FastyBird\TriggersModule\Entities;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Triggers\Entities;
 use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
 use Ramsey\Uuid;
-use Throwable;
+use function array_merge;
 
 /**
  * @ORM\MappedSuperclass
  */
-abstract class PropertyCondition extends Condition implements IPropertyCondition
+abstract class PropertyCondition extends Condition
 {
 
 	/**
-	 * @var Uuid\UuidInterface
-	 *
 	 * @IPubDoctrine\Crud(is="required")
 	 * @ORM\Column(type="uuid_binary", name="condition_device", nullable=true)
 	 */
 	protected Uuid\UuidInterface $device;
 
 	/**
-	 * @var MetadataTypes\TriggerConditionOperatorType
+	 * @var MetadataTypes\TriggerConditionOperator
+	 *
+	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
 	 *
 	 * @IPubDoctrine\Crud(is={"required", "writable"})
-	 * @Enum(class=MetadataTypes\TriggerConditionOperatorType::class)
+	 * @Enum(class=MetadataTypes\TriggerConditionOperator::class)
 	 * @ORM\Column(type="string_enum", name="condition_operator", length=15, nullable=true)
 	 */
 	protected $operator;
 
 	/**
-	 * @var string
-	 *
 	 * @IPubDoctrine\Crud(is={"required", "writable"})
 	 * @ORM\Column(type="string", name="condition_operand", length=20, nullable=true)
 	 */
 	protected string $operand;
 
-	/**
-	 * @param Uuid\UuidInterface $device
-	 * @param MetadataTypes\TriggerConditionOperatorType $operator
-	 * @param string $operand
-	 * @param Entities\Triggers\IAutomaticTrigger $trigger
-	 * @param Uuid\UuidInterface|null $id
-	 *
-	 * @throws Throwable
-	 */
 	public function __construct(
 		Uuid\UuidInterface $device,
-		MetadataTypes\TriggerConditionOperatorType $operator,
+		MetadataTypes\TriggerConditionOperator $operator,
 		string $operand,
-		Entities\Triggers\IAutomaticTrigger $trigger,
-		?Uuid\UuidInterface $id = null
-	) {
+		Entities\Triggers\AutomaticTrigger $trigger,
+		Uuid\UuidInterface|null $id = null,
+	)
+	{
 		parent::__construct($trigger, $id);
 
 		$this->device = $device;
@@ -77,21 +67,51 @@ abstract class PropertyCondition extends Condition implements IPropertyCondition
 		$this->operand = $operand;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	public function getDevice(): Uuid\UuidInterface
+	{
+		return $this->device;
+	}
+
+	public function getOperator(): MetadataTypes\TriggerConditionOperator
+	{
+		return $this->operator;
+	}
+
+	public function setOperator(MetadataTypes\TriggerConditionOperator $operator): void
+	{
+		$this->operator = $operator;
+	}
+
+	public function getOperand(): string|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload
+	{
+		if (MetadataTypes\ButtonPayload::isValidValue($this->operand)) {
+			return MetadataTypes\ButtonPayload::get($this->operand);
+		}
+
+		if (MetadataTypes\SwitchPayload::isValidValue($this->operand)) {
+			return MetadataTypes\SwitchPayload::get($this->operand);
+		}
+
+		return $this->operand;
+	}
+
+	public function setOperand(string $operand): void
+	{
+		$this->operand = $operand;
+	}
+
 	public function validate(string $value): bool
 	{
-		if ($this->operator->equalsValue(MetadataTypes\TriggerConditionOperatorType::OPERATOR_VALUE_EQUAL)) {
-			return (string) $this->operand === $value;
+		if ($this->operator->equalsValue(MetadataTypes\TriggerConditionOperator::OPERATOR_VALUE_EQUAL)) {
+			return $this->operand === $value;
 		}
 
-		if ($this->operator->equalsValue(MetadataTypes\TriggerConditionOperatorType::OPERATOR_VALUE_ABOVE)) {
-			return (float) ((string) $this->operand) < (float) $value;
+		if ($this->operator->equalsValue(MetadataTypes\TriggerConditionOperator::OPERATOR_VALUE_ABOVE)) {
+			return (float) ($this->operand) < (float) $value;
 		}
 
-		if ($this->operator->equalsValue(MetadataTypes\TriggerConditionOperatorType::OPERATOR_VALUE_BELOW)) {
-			return (float) ((string) $this->operand) > (float) $value;
+		if ($this->operator->equalsValue(MetadataTypes\TriggerConditionOperator::OPERATOR_VALUE_BELOW)) {
+			return (float) ($this->operand) > (float) $value;
 		}
 
 		return false;
@@ -103,58 +123,10 @@ abstract class PropertyCondition extends Condition implements IPropertyCondition
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), [
-			'device'   => $this->getDevice()->toString(),
+			'device' => $this->getDevice()->toString(),
 			'operator' => $this->getOperator()->getValue(),
-			'operand'  => (string) $this->getOperand(),
+			'operand' => (string) $this->getOperand(),
 		]);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getDevice(): Uuid\UuidInterface
-	{
-		return $this->device;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getOperator(): MetadataTypes\TriggerConditionOperatorType
-	{
-		return $this->operator;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function setOperator(MetadataTypes\TriggerConditionOperatorType $operator): void
-	{
-		$this->operator = $operator;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getOperand()
-	{
-		if (MetadataTypes\ButtonPayloadType::isValidValue($this->operand)) {
-			return MetadataTypes\ButtonPayloadType::get($this->operand);
-		}
-
-		if (MetadataTypes\SwitchPayloadType::isValidValue($this->operand)) {
-			return MetadataTypes\SwitchPayloadType::get($this->operand);
-		}
-
-		return $this->operand;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function setOperand(string $operand): void
-	{
-		$this->operand = $operand;
 	}
 
 }

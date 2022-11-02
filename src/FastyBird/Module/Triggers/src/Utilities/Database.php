@@ -6,27 +6,27 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:DevicesModule!
+ * @package        FastyBird:TriggersModule!
  * @subpackage     Utilities
  * @since          0.73.0
  *
  * @date           26.10.22
  */
 
-namespace FastyBird\Module\Devices\Utilities;
+namespace FastyBird\Module\Triggers\Utilities;
 
 use Doctrine\DBAL;
 use Doctrine\ORM;
 use Doctrine\Persistence;
 use FastyBird\Bootstrap;
-use FastyBird\Module\Devices\Exceptions;
+use FastyBird\Module\Triggers\Exceptions;
 use Nette;
 use Throwable;
 
 /**
  * Useful database utilities
  *
- * @package        FastyBird:DevicesModule!
+ * @package        FastyBird:TriggersModule!
  * @subpackage     Helpers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

@@ -13,16 +13,17 @@
  * @date           04.04.20
  */
 
-namespace FastyBird\TriggersModule\Models\Notifications;
+namespace FastyBird\Module\Triggers\Models\Notifications;
 
 use Doctrine\ORM;
 use Doctrine\Persistence;
-use FastyBird\TriggersModule\Entities;
-use FastyBird\TriggersModule\Exceptions;
-use FastyBird\TriggersModule\Queries;
+use FastyBird\Module\Triggers\Entities;
+use FastyBird\Module\Triggers\Exceptions;
+use FastyBird\Module\Triggers\Queries;
+use FastyBird\Module\Triggers\Utilities;
 use IPub\DoctrineOrmQuery;
 use Nette;
-use Throwable;
+use function is_array;
 
 /**
  * Notification repository
@@ -32,93 +33,99 @@ use Throwable;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class NotificationsRepository implements INotificationsRepository
+final class NotificationsRepository
 {
 
 	use Nette\SmartObject;
 
-	/**
-	 * @var ORM\EntityRepository[]
-	 *
-	 * @phpstan-var ORM\EntityRepository<Entities\Notifications\INotification>[]
-	 */
+	/** @var Array<ORM\EntityRepository<Entities\Notifications\Notification>> */
 	private array $repository = [];
 
-	/** @var Persistence\ManagerRegistry */
-	private Persistence\ManagerRegistry $managerRegistry;
-
-	public function __construct(Persistence\ManagerRegistry $managerRegistry)
+	public function __construct(
+		private readonly Utilities\Database $database,
+		private readonly Persistence\ManagerRegistry $managerRegistry,
+	)
 	{
-		$this->managerRegistry = $managerRegistry;
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * @phpstan-param class-string<Entities\Notifications\Notification> $type
+	 *
+	 * @throws Exceptions\InvalidState
 	 */
 	public function findOneBy(
-		Queries\FindNotificationsQuery $queryObject,
-		string $type = Entities\Notifications\Notification::class
-	): ?Entities\Notifications\INotification {
-		/** @var Entities\Notifications\INotification|null $notification */
-		$notification = $queryObject->fetchOne($this->getRepository($type));
-
-		return $notification;
+		Queries\FindNotifications $queryObject,
+		string $type = Entities\Notifications\Notification::class,
+	): Entities\Notifications\Notification|null
+	{
+		return $this->database->query(
+			fn (): Entities\Notifications\Notification|null => $queryObject->fetchOne($this->getRepository($type)),
+		);
 	}
 
 	/**
-	 * @param string $type
+	 * @phpstan-param class-string<Entities\Notifications\Notification> $type
 	 *
-	 * @return ORM\EntityRepository
+	 * @phpstan-return Array<Entities\Notifications\Notification>
 	 *
-	 * @phpstan-param class-string $type
+	 * @throws Exceptions\InvalidState
+	 */
+	public function findAllBy(
+		Queries\FindNotifications $queryObject,
+		string $type = Entities\Notifications\Notification::class,
+	): array
+	{
+		return $this->database->query(
+			function () use ($queryObject, $type): array {
+				/** @var Array<Entities\Notifications\Notification>|DoctrineOrmQuery\ResultSet<Entities\Notifications\Notification> $result */
+				$result = $queryObject->fetch($this->getRepository($type));
+
+				if (is_array($result)) {
+					return $result;
+				}
+
+				/** @var Array<Entities\Notifications\Notification> $data */
+				$data = $result->toArray();
+
+				return $data;
+			},
+		);
+	}
+
+	/**
+	 * @phpstan-param class-string<Entities\Notifications\Notification> $type
 	 *
-	 * @phpstan-return ORM\EntityRepository<Entities\Notifications\INotification>
+	 * @phpstan-return DoctrineOrmQuery\ResultSet<Entities\Notifications\Notification>
+	 *
+	 * @throws Exceptions\InvalidState
+	 */
+	public function getResultSet(
+		Queries\FindNotifications $queryObject,
+		string $type = Entities\Notifications\Notification::class,
+	): DoctrineOrmQuery\ResultSet
+	{
+		return $this->database->query(
+			function () use ($queryObject, $type): DoctrineOrmQuery\ResultSet {
+				/** @var DoctrineOrmQuery\ResultSet<Entities\Notifications\Notification> $result */
+				$result = $queryObject->fetch($this->getRepository($type));
+
+				return $result;
+			},
+		);
+	}
+
+	/**
+	 * @param class-string<Entities\Notifications\Notification> $type
+	 *
+	 * @return ORM\EntityRepository<Entities\Notifications\Notification>
 	 */
 	private function getRepository(string $type): ORM\EntityRepository
 	{
 		if (!isset($this->repository[$type])) {
-			$repository = $this->managerRegistry->getRepository($type);
-
-			if (!$repository instanceof ORM\EntityRepository) {
-				throw new Exceptions\InvalidStateException('Entity repository could not be loaded');
-			}
-
-			$this->repository[$type] = $repository;
+			$this->repository[$type] = $this->managerRegistry->getRepository($type);
 		}
 
 		return $this->repository[$type];
-	}
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @throws Throwable
-	 */
-	public function findAllBy(
-		Queries\FindNotificationsQuery $queryObject,
-		string $type = Entities\Notifications\Notification::class
-	): array {
-		$result = $queryObject->fetch($this->getRepository($type));
-
-		return is_array($result) ? $result : $result->toArray();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @throws Throwable
-	 */
-	public function getResultSet(
-		Queries\FindNotificationsQuery $queryObject,
-		string $type = Entities\Notifications\Notification::class
-	): DoctrineOrmQuery\ResultSet {
-		$result = $queryObject->fetch($this->getRepository($type));
-
-		if (!$result instanceof DoctrineOrmQuery\ResultSet) {
-			throw new Exceptions\InvalidStateException('Result set for given query could not be loaded.');
-		}
-
-		return $result;
 	}
 
 }

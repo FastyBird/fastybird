@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * TriggerHydrator.php
+ * Trigger.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -19,39 +19,34 @@ use FastyBird\JsonApi\Hydrators as JsonApiHydrators;
 use FastyBird\Module\Triggers\Entities;
 use FastyBird\Module\Triggers\Schemas;
 use IPub\JsonAPIDocument;
+use function is_scalar;
 
 /**
  * Trigger entity hydrator
  *
+ * @template T of Entities\Triggers\Trigger
+ * @extends  JsonApiHydrators\Hydrator<T>
+ *
  * @package         FastyBird:TriggersModule!
  * @subpackage      Hydrators
- *
  * @author          Adam Kadlec <adam.kadlec@fastybird.com>
- *
- * @phpstan-template TEntityClass of Entities\Triggers\ITrigger
- * @phpstan-extends  JsonApiHydrators\Hydrator<TEntityClass>
  */
-abstract class TriggerHydrator extends JsonApiHydrators\Hydrator
+abstract class Trigger extends JsonApiHydrators\Hydrator
 {
 
-	/** @var string[] */
+	/** @var Array<int|string, string> */
 	protected array $attributes = [
 		'name',
 		'comment',
 		'enabled',
 	];
 
-	/** @var string[] */
+	/** @var Array<string> */
 	protected array $relationships = [
-		Schemas\Triggers\TriggerSchema::RELATIONSHIPS_ACTIONS,
-		Schemas\Triggers\TriggerSchema::RELATIONSHIPS_NOTIFICATIONS,
+		Schemas\Triggers\Trigger::RELATIONSHIPS_ACTIONS,
+		Schemas\Triggers\Trigger::RELATIONSHIPS_NOTIFICATIONS,
 	];
 
-	/**
-	 * @param JsonAPIDocument\Objects\IStandardObject $attributes
-	 *
-	 * @return bool
-	 */
 	protected function hydrateEnabledAttribute(JsonAPIDocument\Objects\IStandardObject $attributes): bool
 	{
 		return is_scalar($attributes->get('enabled')) && (bool) $attributes->get('enabled');

@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ChannelPropertyActionHydrator.php
+ * ChannelPropertyAction.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -20,21 +20,21 @@ use FastyBird\Module\Triggers\Entities;
 use Fig\Http\Message\StatusCodeInterface;
 use IPub\JsonAPIDocument;
 use Ramsey\Uuid;
+use function is_scalar;
 
 /**
  * Channel property action entity hydrator
  *
+ * @extends PropertyAction<Entities\Actions\ChannelPropertyAction>
+ *
  * @package         FastyBird:TriggersModule!
  * @subpackage      Hydrators
- *
  * @author          Adam Kadlec <adam.kadlec@fastybird.com>
- *
- * @phpstan-extends PropertyAction<Entities\Actions\IChannelPropertyAction>
  */
-final class ChannelPropertyActionHydrator extends PropertyAction
+final class ChannelPropertyAction extends PropertyAction
 {
 
-	/** @var string[] */
+	/** @var Array<int|string, string> */
 	protected array $attributes = [
 		'device',
 		'channel',
@@ -43,37 +43,31 @@ final class ChannelPropertyActionHydrator extends PropertyAction
 		'enabled',
 	];
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function getEntityName(): string
 	{
 		return Entities\Actions\ChannelPropertyAction::class;
 	}
 
 	/**
-	 * @param JsonAPIDocument\Objects\IStandardObject $attributes
-	 *
-	 * @return Uuid\UuidInterface
-	 *
-	 * @throws JsonApiExceptions\IJsonApiException
+	 * @throws JsonApiExceptions\JsonApi
 	 */
 	protected function hydrateChannelAttribute(
-		JsonAPIDocument\Objects\IStandardObject $attributes
-	): Uuid\UuidInterface {
+		JsonAPIDocument\Objects\IStandardObject $attributes,
+	): Uuid\UuidInterface
+	{
 		if (
 			!is_scalar($attributes->get('channel'))
 			|| !$attributes->has('channel')
 			|| $attributes->get('channel') === ''
 			|| !Uuid\Uuid::isValid((string) $attributes->get('channel'))
 		) {
-			throw new JsonApiExceptions\JsonApiErrorException(
+			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
 				$this->translator->translate('//triggers-module.base.messages.missingAttribute.heading'),
 				$this->translator->translate('//triggers-module.base.messages.missingAttribute.message'),
 				[
 					'pointer' => '/data/attributes/channel',
-				]
+				],
 			);
 		}
 

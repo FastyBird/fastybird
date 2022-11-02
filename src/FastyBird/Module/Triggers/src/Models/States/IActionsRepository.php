@@ -13,10 +13,10 @@
  * @date           09.01.22
  */
 
-namespace FastyBird\TriggersModule\Models\States;
+namespace FastyBird\Module\Triggers\Models\States;
 
-use FastyBird\TriggersModule\Entities;
-use FastyBird\TriggersModule\States;
+use FastyBird\Module\Triggers\Entities;
+use FastyBird\Module\Triggers\States;
 
 /**
  * Action state repository interface
@@ -29,13 +29,6 @@ use FastyBird\TriggersModule\States;
 interface IActionsRepository
 {
 
-	/**
-	 * @param Entities\Actions\IAction $action
-	 *
-	 * @return States\IAction|null
-	 */
-	public function findOne(
-		Entities\Actions\IAction $action
-	): ?States\IAction;
+	public function findOne(Entities\Actions\Action $action): States\Action|null;
 
 }

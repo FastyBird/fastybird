@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ChannelPropertyConditionSchema.php
+ * ChannelPropertyCondition.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -15,60 +15,55 @@
 
 namespace FastyBird\Module\Triggers\Schemas\Conditions;
 
-use FastyBird\Library\Metadata\Types\ModuleSourceType;
+use FastyBird\Library\Metadata\Types\ModuleSource;
 use FastyBird\Module\Triggers\Entities;
 use Neomerx\JsonApi;
+use function array_merge;
+use function strval;
 
 /**
  * Channel property condition entity schema
  *
+ * @extends Condition<Entities\Conditions\ChannelPropertyCondition>
+ *
  * @package         FastyBird:TriggersModule!
  * @subpackage      Schemas
- *
  * @author          Adam Kadlec <adam.kadlec@fastybird.com>
- *
- * @phpstan-extends ConditionSchema<Entities\Conditions\IChannelPropertyCondition>
  */
-final class ChannelPropertyConditionSchema extends ConditionSchema
+final class ChannelPropertyCondition extends Condition
 {
 
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = ModuleSourceType::SOURCE_MODULE_TRIGGERS . '/condition/channel-property';
+	public const SCHEMA_TYPE = ModuleSource::SOURCE_MODULE_TRIGGERS . '/condition/channel-property';
 
-	/**
-	 * @return string
-	 */
 	public function getType(): string
 	{
 		return self::SCHEMA_TYPE;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function getEntityClass(): string
 	{
 		return Entities\Conditions\ChannelPropertyCondition::class;
 	}
 
 	/**
-	 * @param Entities\Conditions\IChannelPropertyCondition $condition
-	 * @param JsonApi\Contracts\Schema\ContextInterface $context
-	 *
-	 * @return iterable<string, string|bool>
+	 * @return iterable<string, string|bool|Array<int>|null>
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
-	public function getAttributes($condition, JsonApi\Contracts\Schema\ContextInterface $context): iterable
+	public function getAttributes(
+		$resource,
+		JsonApi\Contracts\Schema\ContextInterface $context,
+	): iterable
 	{
-		return array_merge((array) parent::getAttributes($condition, $context), [
-			'device'   => $condition->getDevice()->toString(),
-			'channel'  => $condition->getChannel()->toString(),
-			'property' => $condition->getProperty()->toString(),
-			'operator' => $condition->getOperator()->getValue(),
-			'operand'  => (string) $condition->getOperand(),
+		return array_merge((array) parent::getAttributes($resource, $context), [
+			'device' => $resource->getDevice()->toString(),
+			'channel' => $resource->getChannel()->toString(),
+			'property' => $resource->getProperty()->toString(),
+			'operator' => strval($resource->getOperator()->getValue()),
+			'operand' => strval($resource->getOperand()),
 		]);
 	}
 

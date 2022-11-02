@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * DevicePropertyActionSchema.php
+ * DevicePropertyAction.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -15,58 +15,53 @@
 
 namespace FastyBird\Module\Triggers\Schemas\Actions;
 
-use FastyBird\Library\Metadata\Types\ModuleSourceType;
+use FastyBird\Library\Metadata\Types\ModuleSource;
 use FastyBird\Module\Triggers\Entities;
 use Neomerx\JsonApi;
+use function array_merge;
+use function strval;
 
 /**
  * Trigger device state action entity schema
  *
+ * @extends Action<Entities\Actions\DevicePropertyAction>
+ *
  * @package         FastyBird:TriggersModule!
  * @subpackage      Schemas
- *
  * @author          Adam Kadlec <adam.kadlec@fastybird.com>
- *
- * @phpstan-extends ActionSchema<Entities\Actions\IDevicePropertyAction>
  */
-final class DevicePropertyActionSchema extends ActionSchema
+final class DevicePropertyAction extends Action
 {
 
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = ModuleSourceType::SOURCE_MODULE_TRIGGERS . '/action/device-property';
+	public const SCHEMA_TYPE = ModuleSource::SOURCE_MODULE_TRIGGERS . '/action/device-property';
 
-	/**
-	 * @return string
-	 */
 	public function getType(): string
 	{
 		return self::SCHEMA_TYPE;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function getEntityClass(): string
 	{
 		return Entities\Actions\DevicePropertyAction::class;
 	}
 
 	/**
-	 * @param Entities\Actions\IDevicePropertyAction $action
-	 * @param JsonApi\Contracts\Schema\ContextInterface $context
-	 *
 	 * @return iterable<string, string|bool>
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
-	public function getAttributes($action, JsonApi\Contracts\Schema\ContextInterface $context): iterable
+	public function getAttributes(
+		$resource,
+		JsonApi\Contracts\Schema\ContextInterface $context,
+	): iterable
 	{
-		return array_merge((array) parent::getAttributes($action, $context), [
-			'device'   => $action->getDevice()->toString(),
-			'property' => $action->getProperty()->toString(),
-			'value'    => (string) $action->getValue(),
+		return array_merge((array) parent::getAttributes($resource, $context), [
+			'device' => $resource->getDevice()->toString(),
+			'property' => $resource->getProperty()->toString(),
+			'value' => strval($resource->getValue()),
 		]);
 	}
 

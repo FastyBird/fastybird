@@ -13,112 +13,119 @@
  * @date           04.04.20
  */
 
-namespace FastyBird\TriggersModule\Models\Actions;
+namespace FastyBird\Module\Triggers\Models\Actions;
 
 use Doctrine\ORM;
 use Doctrine\Persistence;
-use FastyBird\TriggersModule\Entities;
-use FastyBird\TriggersModule\Exceptions;
-use FastyBird\TriggersModule\Queries;
+use FastyBird\Module\Triggers\Entities;
+use FastyBird\Module\Triggers\Exceptions;
+use FastyBird\Module\Triggers\Queries;
+use FastyBird\Module\Triggers\Utilities;
 use IPub\DoctrineOrmQuery;
 use Nette;
-use Throwable;
+use function is_array;
 
 /**
- * Action repository
+ * Actions repository
  *
  * @package        FastyBird:TriggersModule!
  * @subpackage     Models
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ActionsRepository implements IActionsRepository
+final class ActionsRepository
 {
 
 	use Nette\SmartObject;
 
-	/**
-	 * @var ORM\EntityRepository[]
-	 *
-	 * @phpstan-var ORM\EntityRepository<Entities\Actions\IAction>[]
-	 */
+	/** @var Array<ORM\EntityRepository<Entities\Actions\Action>> */
 	private array $repository = [];
 
-	/** @var Persistence\ManagerRegistry */
-	private Persistence\ManagerRegistry $managerRegistry;
-
-	public function __construct(Persistence\ManagerRegistry $managerRegistry)
+	public function __construct(
+		private readonly Utilities\Database $database,
+		private readonly Persistence\ManagerRegistry $managerRegistry,
+	)
 	{
-		$this->managerRegistry = $managerRegistry;
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * @phpstan-param class-string<Entities\Actions\Action> $type
+	 *
+	 * @throws Exceptions\InvalidState
 	 */
 	public function findOneBy(
-		Queries\FindActionsQuery $queryObject,
-		string $type = Entities\Actions\Action::class
-	): ?Entities\Actions\IAction {
-		/** @var Entities\Actions\IAction|null $action */
-		$action = $queryObject->fetchOne($this->getRepository($type));
-
-		return $action;
+		Queries\FindActions $queryObject,
+		string $type = Entities\Actions\Action::class,
+	): Entities\Actions\Action|null
+	{
+		return $this->database->query(
+			fn (): Entities\Actions\Action|null => $queryObject->fetchOne($this->getRepository($type)),
+		);
 	}
 
 	/**
-	 * @param string $type
+	 * @phpstan-param class-string<Entities\Actions\Action> $type
 	 *
-	 * @return ORM\EntityRepository
+	 * @phpstan-return Array<Entities\Actions\Action>
 	 *
-	 * @phpstan-param class-string $type
+	 * @throws Exceptions\InvalidState
+	 */
+	public function findAllBy(
+		Queries\FindActions $queryObject,
+		string $type = Entities\Actions\Action::class,
+	): array
+	{
+		return $this->database->query(
+			function () use ($queryObject, $type): array {
+				/** @var Array<Entities\Actions\Action>|DoctrineOrmQuery\ResultSet<Entities\Actions\Action> $result */
+				$result = $queryObject->fetch($this->getRepository($type));
+
+				if (is_array($result)) {
+					return $result;
+				}
+
+				/** @var Array<Entities\Actions\Action> $data */
+				$data = $result->toArray();
+
+				return $data;
+			},
+		);
+	}
+
+	/**
+	 * @phpstan-param class-string<Entities\Actions\Action> $type
 	 *
-	 * @phpstan-return ORM\EntityRepository<Entities\Actions\IAction>
+	 * @phpstan-return DoctrineOrmQuery\ResultSet<Entities\Actions\Action>
+	 *
+	 * @throws Exceptions\InvalidState
+	 */
+	public function getResultSet(
+		Queries\FindActions $queryObject,
+		string $type = Entities\Actions\Action::class,
+	): DoctrineOrmQuery\ResultSet
+	{
+		return $this->database->query(
+			function () use ($queryObject, $type): DoctrineOrmQuery\ResultSet {
+				/** @var DoctrineOrmQuery\ResultSet<Entities\Actions\Action> $result */
+				$result = $queryObject->fetch($this->getRepository($type));
+
+				return $result;
+			},
+		);
+	}
+
+	/**
+	 * @param class-string<Entities\Actions\Action> $type
+	 *
+	 * @return ORM\EntityRepository<Entities\Actions\Action>
 	 */
 	private function getRepository(string $type): ORM\EntityRepository
 	{
 		if (!isset($this->repository[$type])) {
-			$repository = $this->managerRegistry->getRepository($type);
-
-			if (!$repository instanceof ORM\EntityRepository) {
-				throw new Exceptions\InvalidStateException('Entity repository could not be loaded');
-			}
-
-			$this->repository[$type] = $repository;
+			$this->repository[$type] = $this->managerRegistry->getRepository($type);
 		}
 
 		return $this->repository[$type];
-	}
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @throws Throwable
-	 */
-	public function findAllBy(
-		Queries\FindActionsQuery $queryObject,
-		string $type = Entities\Actions\Action::class
-	): array {
-		$result = $queryObject->fetch($this->getRepository($type));
-
-		return is_array($result) ? $result : $result->toArray();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @throws Throwable
-	 */
-	public function getResultSet(
-		Queries\FindActionsQuery $queryObject,
-		string $type = Entities\Actions\Action::class
-	): DoctrineOrmQuery\ResultSet {
-		$result = $queryObject->fetch($this->getRepository($type));
-
-		if (!$result instanceof DoctrineOrmQuery\ResultSet) {
-			throw new Exceptions\InvalidStateException('Result set for given query could not be loaded.');
-		}
-
-		return $result;
 	}
 
 }

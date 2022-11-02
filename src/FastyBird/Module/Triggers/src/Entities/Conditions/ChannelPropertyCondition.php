@@ -13,14 +13,14 @@
  * @date           04.04.20
  */
 
-namespace FastyBird\TriggersModule\Entities\Conditions;
+namespace FastyBird\Module\Triggers\Entities\Conditions;
 
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\Metadata\Types as MetadataTypes;
-use FastyBird\TriggersModule\Entities;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Triggers\Entities;
 use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
 use Ramsey\Uuid;
-use Throwable;
+use function array_merge;
 
 /**
  * @ORM\Entity
@@ -38,57 +38,52 @@ use Throwable;
  *     }
  * )
  */
-class ChannelPropertyCondition extends PropertyCondition implements IChannelPropertyCondition
+class ChannelPropertyCondition extends PropertyCondition
 {
 
 	/**
-	 * @var Uuid\UuidInterface
-	 *
 	 * @IPubDoctrine\Crud(is="required")
 	 * @ORM\Column(type="uuid_binary", name="condition_channel", nullable=true)
 	 */
 	private Uuid\UuidInterface $channel;
 
 	/**
-	 * @var Uuid\UuidInterface
-	 *
 	 * @IPubDoctrine\Crud(is="required")
 	 * @ORM\Column(type="uuid_binary", name="condition_channel_property", nullable=true)
 	 */
 	private Uuid\UuidInterface $property;
 
-	/**
-	 * @param Uuid\UuidInterface $device
-	 * @param Uuid\UuidInterface $channel
-	 * @param Uuid\UuidInterface $property
-	 * @param MetadataTypes\TriggerConditionOperatorType $operator
-	 * @param string $operand
-	 * @param Entities\Triggers\IAutomaticTrigger $trigger
-	 * @param Uuid\UuidInterface|null $id
-	 *
-	 * @throws Throwable
-	 */
 	public function __construct(
 		Uuid\UuidInterface $device,
 		Uuid\UuidInterface $channel,
 		Uuid\UuidInterface $property,
-		MetadataTypes\TriggerConditionOperatorType $operator,
+		MetadataTypes\TriggerConditionOperator $operator,
 		string $operand,
-		Entities\Triggers\IAutomaticTrigger $trigger,
-		?Uuid\UuidInterface $id = null
-	) {
+		Entities\Triggers\AutomaticTrigger $trigger,
+		Uuid\UuidInterface|null $id = null,
+	)
+	{
 		parent::__construct($device, $operator, $operand, $trigger, $id);
 
 		$this->channel = $channel;
 		$this->property = $property;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getType(): MetadataTypes\TriggerConditionTypeType
+	public function getType(): MetadataTypes\TriggerConditionType
 	{
-		return MetadataTypes\TriggerConditionTypeType::get(MetadataTypes\TriggerConditionTypeType::TYPE_CHANNEL_PROPERTY);
+		return MetadataTypes\TriggerConditionType::get(
+			MetadataTypes\TriggerConditionType::TYPE_CHANNEL_PROPERTY,
+		);
+	}
+
+	public function getChannel(): Uuid\UuidInterface
+	{
+		return $this->channel;
+	}
+
+	public function getProperty(): Uuid\UuidInterface
+	{
+		return $this->property;
 	}
 
 	/**
@@ -97,25 +92,9 @@ class ChannelPropertyCondition extends PropertyCondition implements IChannelProp
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), [
-			'channel'  => $this->getChannel()->toString(),
+			'channel' => $this->getChannel()->toString(),
 			'property' => $this->getProperty()->toString(),
 		]);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getChannel(): Uuid\UuidInterface
-	{
-		return $this->channel;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getProperty(): Uuid\UuidInterface
-	{
-		return $this->property;
 	}
 
 }

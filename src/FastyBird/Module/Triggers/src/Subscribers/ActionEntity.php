@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ActionEntitySubscriber.php
+ * ActionEntity.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -20,6 +20,7 @@ use Doctrine\ORM;
 use FastyBird\Module\Triggers\Entities;
 use FastyBird\Module\Triggers\Exceptions;
 use Nette;
+use function array_merge;
 
 /**
  * Trigger action entity listener
@@ -29,7 +30,7 @@ use Nette;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ActionEntitySubscriber implements Common\EventSubscriber
+final class ActionEntity implements Common\EventSubscriber
 {
 
 	use Nette\SmartObject;
@@ -37,7 +38,7 @@ final class ActionEntitySubscriber implements Common\EventSubscriber
 	/**
 	 * Register events
 	 *
-	 * @return string[]
+	 * @return Array<string>
 	 */
 	public function getSubscribedEvents(): array
 	{
@@ -47,9 +48,7 @@ final class ActionEntitySubscriber implements Common\EventSubscriber
 	}
 
 	/**
-	 * @param ORM\Event\OnFlushEventArgs $eventArgs
-	 *
-	 * @return void
+	 * @throws Exceptions\UniqueActionConstraint
 	 */
 	public function onFlush(ORM\Event\OnFlushEventArgs $eventArgs): void
 	{
@@ -58,13 +57,13 @@ final class ActionEntitySubscriber implements Common\EventSubscriber
 
 		// Check all scheduled updates
 		foreach (array_merge($uow->getScheduledEntityInsertions(), $uow->getScheduledEntityUpdates()) as $object) {
-			if ($object instanceof Entities\Actions\IChannelPropertyAction) {
+			if ($object instanceof Entities\Actions\ChannelPropertyAction) {
 				$trigger = $object->getTrigger();
 
 				foreach ($trigger->getActions() as $action) {
 					if (!$action->getId()->equals($object->getId())) {
 						if (
-							$action instanceof Entities\Actions\IChannelPropertyAction
+							$action instanceof Entities\Actions\ChannelPropertyAction
 							&& $action->getDevice()->equals($object->getDevice())
 							&& $action->getChannel()->equals($object->getChannel())
 							&& $action->getProperty()->equals($object->getProperty())

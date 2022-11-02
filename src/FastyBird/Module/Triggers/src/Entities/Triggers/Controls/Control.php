@@ -13,14 +13,13 @@
  * @date           01.10.21
  */
 
-namespace FastyBird\TriggersModule\Entities\Triggers\Controls;
+namespace FastyBird\Module\Triggers\Entities\Triggers\Controls;
 
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\TriggersModule\Entities;
+use FastyBird\Module\Triggers\Entities;
 use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
 use IPub\DoctrineTimestampable;
 use Ramsey\Uuid;
-use Throwable;
 
 /**
  * @ORM\Entity
@@ -39,7 +38,8 @@ use Throwable;
  *     }
  * )
  */
-class Control implements IControl
+class Control implements Entities\Entity,
+	DoctrineTimestampable\Entities\IEntityCreated, DoctrineTimestampable\Entities\IEntityUpdated
 {
 
 	use Entities\TEntity;
@@ -47,8 +47,6 @@ class Control implements IControl
 	use DoctrineTimestampable\Entities\TEntityUpdated;
 
 	/**
-	 * @var Uuid\UuidInterface
-	 *
 	 * @ORM\Id
 	 * @ORM\Column(type="uuid_binary", name="control_id")
 	 * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
@@ -56,29 +54,19 @@ class Control implements IControl
 	protected Uuid\UuidInterface $id;
 
 	/**
-	 * @var string
-	 *
 	 * @IPubDoctrine\Crud(is="required")
 	 * @ORM\Column(type="string", name="control_name", length=100, nullable=false)
 	 */
 	private string $name;
 
 	/**
-	 * @var Entities\Triggers\ITrigger
-	 *
 	 * @IPubDoctrine\Crud(is="required")
-	 * @ORM\ManyToOne(targetEntity="FastyBird\TriggersModule\Entities\Triggers\Trigger", inversedBy="controls")
+	 * @ORM\ManyToOne(targetEntity="FastyBird\Module\Triggers\Entities\Triggers\Trigger", inversedBy="controls")
 	 * @ORM\JoinColumn(name="trigger_id", referencedColumnName="trigger_id", onDelete="CASCADE", nullable=false)
 	 */
-	private Entities\Triggers\ITrigger $trigger;
+	private Entities\Triggers\Trigger $trigger;
 
-	/**
-	 * @param string $name
-	 * @param Entities\Triggers\ITrigger $trigger
-	 *
-	 * @throws Throwable
-	 */
-	public function __construct(string $name, Entities\Triggers\ITrigger $trigger)
+	public function __construct(string $name, Entities\Triggers\Trigger $trigger)
 	{
 		$this->id = Uuid\Uuid::uuid4();
 
@@ -88,21 +76,11 @@ class Control implements IControl
 		$trigger->addControl($this);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function toArray(): array
+	public function getTrigger(): Entities\Triggers\Trigger
 	{
-		return [
-			'id'      => $this->getPlainId(),
-			'name'    => $this->getName(),
-			'trigger' => $this->getTrigger()->getPlainId(),
-		];
+		return $this->trigger;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function getName(): string
 	{
 		return $this->name;
@@ -111,9 +89,13 @@ class Control implements IControl
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getTrigger(): Entities\Triggers\ITrigger
+	public function toArray(): array
 	{
-		return $this->trigger;
+		return [
+			'id' => $this->getPlainId(),
+			'name' => $this->getName(),
+			'trigger' => $this->getTrigger()->getPlainId(),
+		];
 	}
 
 }

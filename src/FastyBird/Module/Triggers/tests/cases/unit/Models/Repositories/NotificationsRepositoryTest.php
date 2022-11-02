@@ -1,26 +1,28 @@
 <?php declare(strict_types = 1);
 
-namespace Tests\Cases;
+namespace FastyBird\Module\Triggers\Tests\Cases\Unit\Models\Repositories;
 
 use FastyBird\Module\Triggers\Entities;
+use FastyBird\Module\Triggers\Exceptions;
 use FastyBird\Module\Triggers\Models;
 use FastyBird\Module\Triggers\Queries;
-use IPub\DoctrineOrmQuery;
+use FastyBird\Module\Triggers\Tests\Cases\Unit\DbTestCase;
+use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
+use Nette;
 use Ramsey\Uuid;
-use Tester\Assert;
+use RuntimeException;
 
-require_once __DIR__ . '/../../../../bootstrap.php';
-require_once __DIR__ . '/../../DbTestCase.php';
-
-/**
- * @testCase
- */
 final class NotificationsRepositoryTest extends DbTestCase
 {
 
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws Nette\DI\MissingServiceException
+	 * @throws RuntimeException
+	 */
 	public function testReadOne(): void
 	{
-		/** @var Models\Notifications\NotificationsRepository $repository */
 		$repository = $this->getContainer()->getByType(Models\Notifications\NotificationsRepository::class);
 
 		$findQuery = new Queries\FindNotifications();
@@ -28,32 +30,34 @@ final class NotificationsRepositoryTest extends DbTestCase
 
 		$entity = $repository->findOneBy($findQuery);
 
-		Assert::true(is_object($entity));
-		Assert::type(Entities\Notifications\EmailNotification::class, $entity);
+		self::assertIsObject($entity);
+		self::assertTrue($entity instanceof Entities\Notifications\EmailNotification);
 
 		$findQuery = new Queries\FindNotifications();
 		$findQuery->byId(Uuid\Uuid::fromString('4fe1019c-f49e-4cbf-83e6-20b394e76317'));
 
 		$entity = $repository->findOneBy($findQuery);
 
-		Assert::true(is_object($entity));
-		Assert::type(Entities\Notifications\SmsNotification::class, $entity);
+		self::assertIsObject($entity);
+		self::assertTrue($entity instanceof Entities\Notifications\SmsNotification);
 	}
 
+	/**
+	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws Nette\DI\MissingServiceException
+	 * @throws RuntimeException
+	 */
 	public function testReadResultSet(): void
 	{
-		/** @var Models\Notifications\NotificationsRepository $repository */
 		$repository = $this->getContainer()->getByType(Models\Notifications\NotificationsRepository::class);
 
 		$findQuery = new Queries\FindNotifications();
 
 		$resultSet = $repository->getResultSet($findQuery);
 
-		Assert::type(DoctrineOrmQuery\ResultSet::class, $resultSet);
-		Assert::same(2, $resultSet->getTotalCount());
+		self::assertSame(2, $resultSet->getTotalCount());
 	}
 
 }
-
-$test_case = new NotificationsRepositoryTest();
-$test_case->run();

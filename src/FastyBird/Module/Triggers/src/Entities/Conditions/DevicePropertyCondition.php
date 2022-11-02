@@ -13,14 +13,14 @@
  * @date           04.04.20
  */
 
-namespace FastyBird\TriggersModule\Entities\Conditions;
+namespace FastyBird\Module\Triggers\Entities\Conditions;
 
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\Metadata\Types as MetadataTypes;
-use FastyBird\TriggersModule\Entities;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Triggers\Entities;
 use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
 use Ramsey\Uuid;
-use Throwable;
+use function array_merge;
 
 /**
  * @ORM\Entity
@@ -37,46 +37,39 @@ use Throwable;
  *     }
  * )
  */
-class DevicePropertyCondition extends PropertyCondition implements IDevicePropertyCondition
+class DevicePropertyCondition extends PropertyCondition
 {
 
 	/**
-	 * @var Uuid\UuidInterface
-	 *
 	 * @IPubDoctrine\Crud(is="required")
 	 * @ORM\Column(type="uuid_binary", name="condition_device_property", nullable=true)
 	 */
 	private Uuid\UuidInterface $property;
 
-	/**
-	 * @param Uuid\UuidInterface $device
-	 * @param Uuid\UuidInterface $property
-	 * @param MetadataTypes\TriggerConditionOperatorType $operator
-	 * @param string $operand
-	 * @param Entities\Triggers\IAutomaticTrigger $trigger
-	 * @param Uuid\UuidInterface|null $id
-	 *
-	 * @throws Throwable
-	 */
 	public function __construct(
 		Uuid\UuidInterface $device,
 		Uuid\UuidInterface $property,
-		MetadataTypes\TriggerConditionOperatorType $operator,
+		MetadataTypes\TriggerConditionOperator $operator,
 		string $operand,
-		Entities\Triggers\IAutomaticTrigger $trigger,
-		?Uuid\UuidInterface $id = null
-	) {
+		Entities\Triggers\AutomaticTrigger $trigger,
+		Uuid\UuidInterface|null $id = null,
+	)
+	{
 		parent::__construct($device, $operator, $operand, $trigger, $id);
 
 		$this->property = $property;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getType(): MetadataTypes\TriggerConditionTypeType
+	public function getType(): MetadataTypes\TriggerConditionType
 	{
-		return MetadataTypes\TriggerConditionTypeType::get(MetadataTypes\TriggerConditionTypeType::TYPE_DEVICE_PROPERTY);
+		return MetadataTypes\TriggerConditionType::get(
+			MetadataTypes\TriggerConditionType::TYPE_DEVICE_PROPERTY,
+		);
+	}
+
+	public function getProperty(): Uuid\UuidInterface
+	{
+		return $this->property;
 	}
 
 	/**
@@ -87,14 +80,6 @@ class DevicePropertyCondition extends PropertyCondition implements IDeviceProper
 		return array_merge(parent::toArray(), [
 			'property' => $this->getProperty()->toString(),
 		]);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getProperty(): Uuid\UuidInterface
-	{
-		return $this->property;
 	}
 
 }

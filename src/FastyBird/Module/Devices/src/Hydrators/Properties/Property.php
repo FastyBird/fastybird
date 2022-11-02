@@ -30,8 +30,8 @@ use function strval;
 /**
  * Property entity hydrator
  *
- * @template TEntityClass of Entities\Property
- * @extends  JsonApiHydrators\Hydrator<TEntityClass>
+ * @template T of Entities\Property
+ * @extends  JsonApiHydrators\Hydrator<T>
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Hydrators

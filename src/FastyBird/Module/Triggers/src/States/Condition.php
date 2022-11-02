@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ICondition.php
+ * Condition.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -25,24 +25,13 @@ use Ramsey\Uuid;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-interface ICondition
+interface Condition
 {
 
-	/**
-	 * @return Uuid\UuidInterface
-	 */
 	public function getId(): Uuid\UuidInterface;
 
-	/**
-	 * @param bool $result
-	 *
-	 * @return void
-	 */
 	public function setFulfilled(bool $result): void;
 
-	/**
-	 * @return bool
-	 */
 	public function isFulfilled(): bool;
 
 }

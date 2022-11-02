@@ -13,17 +13,21 @@
  * @date           08.02.22
  */
 
-namespace FastyBird\TriggersModule\Models\States;
+namespace FastyBird\Module\Triggers\Models\States;
 
-use FastyBird\Exchange\Entities as ExchangeEntities;
-use FastyBird\Exchange\Publisher as ExchangePublisher;
-use FastyBird\Metadata\Types as MetadataTypes;
-use FastyBird\TriggersModule\Entities;
-use FastyBird\TriggersModule\Exceptions;
-use FastyBird\TriggersModule\Models;
-use FastyBird\TriggersModule\States;
+use FastyBird\Library\Exchange\Entities as ExchangeEntities;
+use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
+use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Triggers\Entities;
+use FastyBird\Module\Triggers\Exceptions;
+use FastyBird\Module\Triggers\Models;
+use FastyBird\Module\Triggers\States;
+use IPub\Phone\Exceptions as PhoneExceptions;
 use Nette;
 use Nette\Utils;
+use function array_merge;
 
 /**
  * Action states manager
@@ -38,40 +42,36 @@ final class ActionsManager
 
 	use Nette\SmartObject;
 
-	/** @var ExchangeEntities\EntityFactory */
-	protected ExchangeEntities\EntityFactory $entityFactory;
-
-	/** @var ExchangePublisher\IPublisher|null */
-	protected ?ExchangePublisher\IPublisher $publisher;
-
-	/** @var IActionsManager|null */
-	protected ?IActionsManager $manager;
-
 	public function __construct(
-		?IActionsManager $manager,
-		ExchangeEntities\EntityFactory $entityFactory,
-		?ExchangePublisher\IPublisher $publisher
-	) {
-		$this->manager = $manager;
-		$this->entityFactory = $entityFactory;
-		$this->publisher = $publisher;
+		protected readonly IActionsManager|null $manager,
+		protected readonly ExchangeEntities\EntityFactory $entityFactory,
+		protected readonly ExchangePublisher\Publisher|null $publisher,
+	)
+	{
 	}
 
 	/**
-	 * @param Entities\Actions\IAction $action
-	 * @param Utils\ArrayHash $values
-	 *
-	 * @return States\IAction
+	 * @throws ExchangeExceptions\InvalidState
+	 * @throws Exceptions\NotImplemented
+	 * @throws MetadataExceptions\FileNotFound
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws PhoneExceptions\NoValidCountryException
+	 * @throws PhoneExceptions\NoValidPhoneException
+	 * @throws Utils\JsonException
 	 */
 	public function create(
-		Entities\Actions\IAction $action,
-		Utils\ArrayHash $values
-	): States\IAction {
+		Entities\Actions\Action $action,
+		Utils\ArrayHash $values,
+	): States\Action
+	{
 		if ($this->manager === null) {
-			throw new Exceptions\NotImplementedException('Action state manager is not registered');
+			throw new Exceptions\NotImplemented('Action state manager is not registered');
 		}
 
-		/** @var States\IAction $createdState */
 		$createdState = $this->manager->create($action, $values);
 
 		$this->publishEntity($action, $createdState);
@@ -80,22 +80,28 @@ final class ActionsManager
 	}
 
 	/**
-	 * @param Entities\Actions\IAction $action
-	 * @param States\IAction $state
-	 * @param Utils\ArrayHash $values
-	 *
-	 * @return States\IAction
+	 * @throws ExchangeExceptions\InvalidState
+	 * @throws Exceptions\NotImplemented
+	 * @throws MetadataExceptions\FileNotFound
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws PhoneExceptions\NoValidCountryException
+	 * @throws PhoneExceptions\NoValidPhoneException
+	 * @throws Utils\JsonException
 	 */
 	public function update(
-		Entities\Actions\IAction $action,
-		States\IAction $state,
-		Utils\ArrayHash $values
-	): States\IAction {
+		Entities\Actions\Action $action,
+		States\Action $state,
+		Utils\ArrayHash $values,
+	): States\Action
+	{
 		if ($this->manager === null) {
-			throw new Exceptions\NotImplementedException('Action state manager is not registered');
+			throw new Exceptions\NotImplemented('Action state manager is not registered');
 		}
 
-		/** @var States\IAction $updatedState */
 		$updatedState = $this->manager->update($state, $values);
 
 		$this->publishEntity($action, $updatedState);
@@ -104,17 +110,25 @@ final class ActionsManager
 	}
 
 	/**
-	 * @param Entities\Actions\IAction $action
-	 * @param States\IAction $state
-	 *
-	 * @return bool
+	 * @throws ExchangeExceptions\InvalidState
+	 * @throws Exceptions\NotImplemented
+	 * @throws MetadataExceptions\FileNotFound
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws PhoneExceptions\NoValidCountryException
+	 * @throws PhoneExceptions\NoValidPhoneException
+	 * @throws Utils\JsonException
 	 */
 	public function delete(
-		Entities\Actions\IAction $action,
-		States\IAction $state
-	): bool {
+		Entities\Actions\Action $action,
+		States\Action $state,
+	): bool
+	{
 		if ($this->manager === null) {
-			throw new Exceptions\NotImplementedException('Action state manager is not registered');
+			throw new Exceptions\NotImplemented('Action state manager is not registered');
 		}
 
 		$result = $this->manager->delete($state);
@@ -126,20 +140,33 @@ final class ActionsManager
 		return $result;
 	}
 
+	/**
+	 * @throws ExchangeExceptions\InvalidState
+	 * @throws MetadataExceptions\FileNotFound
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws PhoneExceptions\NoValidCountryException
+	 * @throws PhoneExceptions\NoValidPhoneException
+	 * @throws Utils\JsonException
+	 */
 	private function publishEntity(
-		Entities\Actions\IAction $action,
-		?States\IAction $state
-	): void {
+		Entities\Actions\Action $action,
+		States\Action|null $state,
+	): void
+	{
 		if ($this->publisher === null) {
 			return;
 		}
 
 		$this->publisher->publish(
 			$action->getSource(),
-			MetadataTypes\RoutingKeyType::get(MetadataTypes\RoutingKeyType::ROUTE_TRIGGER_ACTION_ENTITY_UPDATED),
+			MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::ROUTE_TRIGGER_ACTION_ENTITY_UPDATED),
 			$this->entityFactory->create(Utils\Json::encode(array_merge($action->toArray(), [
 				'is_triggered' => !($state === null) && $state->isTriggered(),
-			])), MetadataTypes\RoutingKeyType::get(MetadataTypes\RoutingKeyType::ROUTE_TRIGGER_ACTION_ENTITY_UPDATED))
+			])), MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::ROUTE_TRIGGER_ACTION_ENTITY_UPDATED)),
 		);
 	}
 

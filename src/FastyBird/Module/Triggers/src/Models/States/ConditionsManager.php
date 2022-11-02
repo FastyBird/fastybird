@@ -13,17 +13,21 @@
  * @date           08.02.22
  */
 
-namespace FastyBird\TriggersModule\Models\States;
+namespace FastyBird\Module\Triggers\Models\States;
 
-use FastyBird\Exchange\Entities as ExchangeEntities;
-use FastyBird\Exchange\Publisher as ExchangePublisher;
-use FastyBird\Metadata\Types as MetadataTypes;
-use FastyBird\TriggersModule\Entities;
-use FastyBird\TriggersModule\Exceptions;
-use FastyBird\TriggersModule\Models;
-use FastyBird\TriggersModule\States;
+use FastyBird\Library\Exchange\Entities as ExchangeEntities;
+use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
+use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Triggers\Entities;
+use FastyBird\Module\Triggers\Exceptions;
+use FastyBird\Module\Triggers\Models;
+use FastyBird\Module\Triggers\States;
+use IPub\Phone\Exceptions as PhoneExceptions;
 use Nette;
 use Nette\Utils;
+use function array_merge;
 
 /**
  * Condition states manager
@@ -38,40 +42,36 @@ final class ConditionsManager
 
 	use Nette\SmartObject;
 
-	/** @var ExchangeEntities\EntityFactory */
-	protected ExchangeEntities\EntityFactory $entityFactory;
-
-	/** @var ExchangePublisher\IPublisher|null */
-	protected ?ExchangePublisher\IPublisher $publisher;
-
-	/** @var IConditionsManager|null */
-	protected ?IConditionsManager $manager;
-
 	public function __construct(
-		?IConditionsManager $manager,
-		ExchangeEntities\EntityFactory $entityFactory,
-		?ExchangePublisher\IPublisher $publisher
-	) {
-		$this->manager = $manager;
-		$this->entityFactory = $entityFactory;
-		$this->publisher = $publisher;
+		protected readonly IConditionsManager|null $manager,
+		protected readonly ExchangeEntities\EntityFactory $entityFactory,
+		protected readonly ExchangePublisher\Publisher|null $publisher,
+	)
+	{
 	}
 
 	/**
-	 * @param Entities\Conditions\ICondition $condition
-	 * @param Utils\ArrayHash $values
-	 *
-	 * @return States\ICondition
+	 * @throws ExchangeExceptions\InvalidState
+	 * @throws Exceptions\NotImplemented
+	 * @throws MetadataExceptions\FileNotFound
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws PhoneExceptions\NoValidCountryException
+	 * @throws PhoneExceptions\NoValidPhoneException
+	 * @throws Utils\JsonException
 	 */
 	public function create(
-		Entities\Conditions\ICondition $condition,
-		Utils\ArrayHash $values
-	): States\ICondition {
+		Entities\Conditions\Condition $condition,
+		Utils\ArrayHash $values,
+	): States\Condition
+	{
 		if ($this->manager === null) {
-			throw new Exceptions\NotImplementedException('Condition state manager is not registered');
+			throw new Exceptions\NotImplemented('Condition state manager is not registered');
 		}
 
-		/** @var States\ICondition $createdState */
 		$createdState = $this->manager->create($condition, $values);
 
 		$this->publishEntity($condition, $createdState);
@@ -80,22 +80,28 @@ final class ConditionsManager
 	}
 
 	/**
-	 * @param Entities\Conditions\ICondition $condition
-	 * @param States\ICondition $state
-	 * @param Utils\ArrayHash $values
-	 *
-	 * @return States\ICondition
+	 * @throws ExchangeExceptions\InvalidState
+	 * @throws Exceptions\NotImplemented
+	 * @throws MetadataExceptions\FileNotFound
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws PhoneExceptions\NoValidCountryException
+	 * @throws PhoneExceptions\NoValidPhoneException
+	 * @throws Utils\JsonException
 	 */
 	public function update(
-		Entities\Conditions\ICondition $condition,
-		States\ICondition $state,
-		Utils\ArrayHash $values
-	): States\ICondition {
+		Entities\Conditions\Condition $condition,
+		States\Condition $state,
+		Utils\ArrayHash $values,
+	): States\Condition
+	{
 		if ($this->manager === null) {
-			throw new Exceptions\NotImplementedException('Condition state manager is not registered');
+			throw new Exceptions\NotImplemented('Condition state manager is not registered');
 		}
 
-		/** @var States\ICondition $updatedState */
 		$updatedState = $this->manager->update($state, $values);
 
 		$this->publishEntity($condition, $updatedState);
@@ -104,17 +110,25 @@ final class ConditionsManager
 	}
 
 	/**
-	 * @param Entities\Conditions\ICondition $condition
-	 * @param States\ICondition $state
-	 *
-	 * @return bool
+	 * @throws ExchangeExceptions\InvalidState
+	 * @throws Exceptions\NotImplemented
+	 * @throws MetadataExceptions\FileNotFound
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws PhoneExceptions\NoValidCountryException
+	 * @throws PhoneExceptions\NoValidPhoneException
+	 * @throws Utils\JsonException
 	 */
 	public function delete(
-		Entities\Conditions\ICondition $condition,
-		States\ICondition $state
-	): bool {
+		Entities\Conditions\Condition $condition,
+		States\Condition $state,
+	): bool
+	{
 		if ($this->manager === null) {
-			throw new Exceptions\NotImplementedException('Condition state manager is not registered');
+			throw new Exceptions\NotImplemented('Condition state manager is not registered');
 		}
 
 		$result = $this->manager->delete($state);
@@ -126,20 +140,35 @@ final class ConditionsManager
 		return $result;
 	}
 
+	/**
+	 * @throws ExchangeExceptions\InvalidState
+	 * @throws MetadataExceptions\FileNotFound
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws PhoneExceptions\NoValidCountryException
+	 * @throws PhoneExceptions\NoValidPhoneException
+	 * @throws Utils\JsonException
+	 */
 	private function publishEntity(
-		Entities\Conditions\ICondition $condition,
-		?States\ICondition $state
-	): void {
+		Entities\Conditions\Condition $condition,
+		States\Condition|null $state,
+	): void
+	{
 		if ($this->publisher === null) {
 			return;
 		}
 
 		$this->publisher->publish(
 			$condition->getSource(),
-			MetadataTypes\RoutingKeyType::get(MetadataTypes\RoutingKeyType::ROUTE_TRIGGER_CONDITION_ENTITY_UPDATED),
+			MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::ROUTE_TRIGGER_CONDITION_ENTITY_UPDATED),
 			$this->entityFactory->create(Utils\Json::encode(array_merge($condition->toArray(), [
 				'is_fulfilled' => !($state === null) && $state->isFulfilled(),
-			])), MetadataTypes\RoutingKeyType::get(MetadataTypes\RoutingKeyType::ROUTE_TRIGGER_CONDITION_ENTITY_UPDATED))
+			])), MetadataTypes\RoutingKey::get(
+				MetadataTypes\RoutingKey::ROUTE_TRIGGER_CONDITION_ENTITY_UPDATED,
+			)),
 		);
 	}
 

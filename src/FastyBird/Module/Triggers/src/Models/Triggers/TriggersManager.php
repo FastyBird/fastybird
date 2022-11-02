@@ -13,12 +13,15 @@
  * @date           04.04.20
  */
 
-namespace FastyBird\TriggersModule\Models\Triggers;
+namespace FastyBird\Module\Triggers\Models\Triggers;
 
-use FastyBird\TriggersModule\Entities;
-use IPub\DoctrineCrud\Crud;
+use FastyBird\Module\Triggers\Entities;
+use FastyBird\Module\Triggers\Models;
+use IPub\DoctrineCrud\Crud as DoctrineCrudCrud;
+use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
 use Nette;
 use Nette\Utils;
+use function assert;
 
 /**
  * Triggers entities manager
@@ -28,59 +31,46 @@ use Nette\Utils;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class TriggersManager implements ITriggersManager
+final class TriggersManager
 {
 
 	use Nette\SmartObject;
 
 	/**
-	 * @var Crud\IEntityCrud
-	 *
-	 * @phpstan-var Crud\IEntityCrud<Entities\Triggers\ITrigger>
+	 * @param DoctrineCrudCrud\IEntityCrud<Entities\Triggers\Trigger> $entityCrud
 	 */
-	private Crud\IEntityCrud $entityCrud;
-
-	/**
-	 * @phpstan-param Crud\IEntityCrud<Entities\Triggers\ITrigger> $entityCrud
-	 */
-	public function __construct(
-		Crud\IEntityCrud $entityCrud
-	) {
+	public function __construct(private readonly DoctrineCrudCrud\IEntityCrud $entityCrud)
+	{
 		// Entity CRUD for handling entities
-		$this->entityCrud = $entityCrud;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function create(
-		Utils\ArrayHash $values
-	): Entities\Triggers\ITrigger {
-		/** @var Entities\Triggers\ITrigger $entity */
+	public function create(Utils\ArrayHash $values): Entities\Triggers\Trigger
+	{
 		$entity = $this->entityCrud->getEntityCreator()->create($values);
+		assert($entity instanceof Entities\Triggers\Trigger);
 
 		return $entity;
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 */
 	public function update(
-		Entities\Triggers\ITrigger $entity,
-		Utils\ArrayHash $values
-	): Entities\Triggers\ITrigger {
-		/** @var Entities\Triggers\ITrigger $entity */
+		Entities\Triggers\Trigger $entity,
+		Utils\ArrayHash $values,
+	): Entities\Triggers\Trigger
+	{
 		$entity = $this->entityCrud->getEntityUpdater()->update($values, $entity);
+		assert($entity instanceof Entities\Triggers\Trigger);
 
 		return $entity;
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 */
-	public function delete(
-		Entities\Triggers\ITrigger $entity
-	): bool {
+	public function delete(Entities\Triggers\Trigger $entity): bool
+	{
 		// Delete entity from database
 		return $this->entityCrud->getEntityDeleter()->delete($entity);
 	}

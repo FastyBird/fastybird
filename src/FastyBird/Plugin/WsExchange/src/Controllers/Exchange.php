@@ -52,7 +52,7 @@ final class Exchange extends WebSockets\Application\Controller\Controller
 		private readonly MetadataLoaders\SchemaLoader $schemaLoader,
 		private readonly MetadataSchemas\Validator $jsonValidator,
 		private readonly ExchangeEntities\EntityFactory $entityFactory,
-		private readonly ExchangePublisher\Container $exchangePublisher,
+		private readonly ExchangePublisher\Publisher $exchangePublisher,
 		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 		Log\LoggerInterface|null $logger = null,
 	)

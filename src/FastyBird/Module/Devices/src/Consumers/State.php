@@ -51,7 +51,7 @@ final class State implements ExchangeConsumers\Consumer
 	];
 
 	public function __construct(
-		private readonly ExchangePublisher\Container $publisher,
+		private readonly ExchangePublisher\Publisher $publisher,
 		private readonly ExchangeEntities\EntityFactory $entityFactory,
 		private readonly Models\Connectors\Properties\PropertiesRepository $connectorPropertiesRepository,
 		private readonly Models\Devices\Properties\PropertiesRepository $devicePropertiesRepository,

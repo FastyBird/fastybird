@@ -1,25 +1,27 @@
 <?php declare(strict_types = 1);
 
-namespace Tests\Cases;
+namespace FastyBird\Module\Triggers\Tests\Cases\Unit\Queries;
 
 use FastyBird\Module\Triggers\Entities;
+use FastyBird\Module\Triggers\Exceptions;
 use FastyBird\Module\Triggers\Models;
 use FastyBird\Module\Triggers\Queries;
+use FastyBird\Module\Triggers\Tests\Cases\Unit\DbTestCase;
+use Nette;
 use Ramsey\Uuid;
-use Tester\Assert;
+use RuntimeException;
 
-require_once __DIR__ . '/../../../bootstrap.php';
-require_once __DIR__ . '/../DbTestCase.php';
-
-/**
- * @testCase
- */
-final class FindActionsQueryTest extends DbTestCase
+final class FindActionsTest extends DbTestCase
 {
 
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws Nette\DI\MissingServiceException
+	 * @throws RuntimeException
+	 */
 	public function testFindById(): void
 	{
-		/** @var Models\Actions\ActionsRepository $repository */
 		$repository = $this->getContainer()->getByType(Models\Actions\ActionsRepository::class);
 
 		$findQuery = new Queries\FindActions();
@@ -27,13 +29,18 @@ final class FindActionsQueryTest extends DbTestCase
 
 		$entity = $repository->findOneBy($findQuery);
 
-		Assert::true(is_object($entity));
-		Assert::type(Entities\Actions\ChannelPropertyAction::class, $entity);
+		self::assertIsObject($entity);
+		self::assertTrue($entity instanceof Entities\Actions\ChannelPropertyAction);
 	}
 
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws Nette\DI\MissingServiceException
+	 * @throws RuntimeException
+	 */
 	public function testFindForDevice(): void
 	{
-		/** @var Models\Actions\ActionsRepository $repository */
 		$repository = $this->getContainer()->getByType(Models\Actions\ActionsRepository::class);
 
 		$findQuery = new Queries\FindActions();
@@ -41,13 +48,18 @@ final class FindActionsQueryTest extends DbTestCase
 
 		$entity = $repository->findOneBy($findQuery, Entities\Actions\ChannelPropertyAction::class);
 
-		Assert::true(is_object($entity));
-		Assert::type(Entities\Actions\ChannelPropertyAction::class, $entity);
+		self::assertIsObject($entity);
+		self::assertTrue($entity instanceof Entities\Actions\ChannelPropertyAction);
 	}
 
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws Nette\DI\MissingServiceException
+	 * @throws RuntimeException
+	 */
 	public function testFindForChannel(): void
 	{
-		/** @var Models\Actions\ActionsRepository $repository */
 		$repository = $this->getContainer()->getByType(Models\Actions\ActionsRepository::class);
 
 		$findQuery = new Queries\FindActions();
@@ -55,13 +67,18 @@ final class FindActionsQueryTest extends DbTestCase
 
 		$entity = $repository->findOneBy($findQuery, Entities\Actions\ChannelPropertyAction::class);
 
-		Assert::true(is_object($entity));
-		Assert::type(Entities\Actions\ChannelPropertyAction::class, $entity);
+		self::assertIsObject($entity);
+		self::assertTrue($entity instanceof Entities\Actions\ChannelPropertyAction);
 	}
 
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws Nette\DI\MissingServiceException
+	 * @throws RuntimeException
+	 */
 	public function testFindForChannelProperty(): void
 	{
-		/** @var Models\Actions\ActionsRepository $repository */
 		$repository = $this->getContainer()->getByType(Models\Actions\ActionsRepository::class);
 
 		$findQuery = new Queries\FindActions();
@@ -69,13 +86,18 @@ final class FindActionsQueryTest extends DbTestCase
 
 		$entity = $repository->findOneBy($findQuery, Entities\Actions\ChannelPropertyAction::class);
 
-		Assert::true(is_object($entity));
-		Assert::type(Entities\Actions\ChannelPropertyAction::class, $entity);
+		self::assertIsObject($entity);
+		self::assertTrue($entity instanceof Entities\Actions\ChannelPropertyAction);
 	}
 
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws Nette\DI\MissingServiceException
+	 * @throws RuntimeException
+	 */
 	public function testFindForCombination(): void
 	{
-		/** @var Models\Actions\ActionsRepository $repository */
 		$repository = $this->getContainer()->getByType(Models\Actions\ActionsRepository::class);
 
 		$findQuery = new Queries\FindActions();
@@ -85,11 +107,8 @@ final class FindActionsQueryTest extends DbTestCase
 
 		$entity = $repository->findOneBy($findQuery, Entities\Actions\ChannelPropertyAction::class);
 
-		Assert::true(is_object($entity));
-		Assert::type(Entities\Actions\ChannelPropertyAction::class, $entity);
+		self::assertIsObject($entity);
+		self::assertTrue($entity instanceof Entities\Actions\ChannelPropertyAction);
 	}
 
 }
-
-$test_case = new FindActionsQueryTest();
-$test_case->run();

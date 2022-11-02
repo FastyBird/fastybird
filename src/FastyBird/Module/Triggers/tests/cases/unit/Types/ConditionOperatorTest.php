@@ -1,43 +1,40 @@
 <?php declare(strict_types = 1);
 
-namespace Tests\Cases;
+namespace FastyBird\Module\Triggers\Tests\Cases\Unit\Types;
 
+use Consistence\Enum\InvalidEnumValueException;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use Ninjify\Nunjuck\TestCase\BaseTestCase;
-use Tester\Assert;
+use PHPUnit\Framework\TestCase;
 
-require_once __DIR__ . '/../../../bootstrap.php';
-
-/**
- * @testCase
- */
-final class ConditionOperatorTypeTest extends BaseTestCase
+final class ConditionOperatorTest extends TestCase
 {
 
 	public function testCreateOperator(): void
 	{
-		$operatorType = MetadataTypes\TriggerConditionOperatorType::get(MetadataTypes\TriggerConditionOperatorType::OPERATOR_VALUE_EQUAL);
+		$operatorType = MetadataTypes\TriggerConditionOperator::get(
+			MetadataTypes\TriggerConditionOperator::OPERATOR_VALUE_EQUAL,
+		);
 
-		Assert::type(MetadataTypes\TriggerConditionOperatorType::class, $operatorType);
+		self::assertSame(MetadataTypes\TriggerConditionOperator::OPERATOR_VALUE_EQUAL, $operatorType->getValue());
 
-		$operatorType = MetadataTypes\TriggerConditionOperatorType::get(MetadataTypes\TriggerConditionOperatorType::OPERATOR_VALUE_ABOVE);
+		$operatorType = MetadataTypes\TriggerConditionOperator::get(
+			MetadataTypes\TriggerConditionOperator::OPERATOR_VALUE_ABOVE,
+		);
 
-		Assert::type(MetadataTypes\TriggerConditionOperatorType::class, $operatorType);
+		self::assertSame(MetadataTypes\TriggerConditionOperator::OPERATOR_VALUE_ABOVE, $operatorType->getValue());
 
-		$operatorType = MetadataTypes\TriggerConditionOperatorType::get(MetadataTypes\TriggerConditionOperatorType::OPERATOR_VALUE_BELOW);
+		$operatorType = MetadataTypes\TriggerConditionOperator::get(
+			MetadataTypes\TriggerConditionOperator::OPERATOR_VALUE_BELOW,
+		);
 
-		Assert::type(MetadataTypes\TriggerConditionOperatorType::class, $operatorType);
+		self::assertSame(MetadataTypes\TriggerConditionOperator::OPERATOR_VALUE_BELOW, $operatorType->getValue());
 	}
 
-	/**
-	 * @throws Consistence\Enum\InvalidEnumValueException
-	 */
 	public function testInvalidOperator(): void
 	{
-		MetadataTypes\TriggerConditionOperatorType::get('invalidtype');
+		$this->expectException(InvalidEnumValueException::class);
+
+		MetadataTypes\TriggerConditionOperator::get('invalidtype');
 	}
 
 }
-
-$test_case = new ConditionOperatorTypeTest();
-$test_case->run();

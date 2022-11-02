@@ -22,7 +22,7 @@ use FastyBird\Module\Devices\Schemas as DevicesSchemas;
 /**
  * FastyBird MQTT connector entity schema
  *
- * @phpstan-extends DevicesSchemas\Connectors\Connector<Entities\FbMqttConnector>
+ * @extends DevicesSchemas\Connectors\Connector<Entities\FbMqttConnector>
  *
  * @package        FastyBird:FbMqttConnector!
  * @subpackage     Schemas

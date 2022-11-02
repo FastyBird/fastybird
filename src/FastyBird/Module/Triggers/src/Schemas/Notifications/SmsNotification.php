@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * SmsNotificationSchema.php
+ * SmsNotification.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -15,56 +15,50 @@
 
 namespace FastyBird\Module\Triggers\Schemas\Notifications;
 
-use FastyBird\Library\Metadata\Types\ModuleSourceType;
+use FastyBird\Library\Metadata\Types\ModuleSource;
 use FastyBird\Module\Triggers\Entities;
 use Neomerx\JsonApi;
+use function array_merge;
 
 /**
  * SMS notification entity schema
  *
+ * @extends Notification<Entities\Notifications\SmsNotification>
+ *
  * @package         FastyBird:TriggersModule!
  * @subpackage      Schemas
- *
  * @author          Adam Kadlec <adam.kadlec@fastybird.com>
- *
- * @phpstan-extends NotificationSchema<Entities\Notifications\ISmsNotification>
  */
-final class SmsNotificationSchema extends NotificationSchema
+final class SmsNotification extends Notification
 {
 
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = ModuleSourceType::SOURCE_MODULE_TRIGGERS . '/notification/sms';
+	public const SCHEMA_TYPE = ModuleSource::SOURCE_MODULE_TRIGGERS . '/notification/sms';
 
-	/**
-	 * @return string
-	 */
 	public function getType(): string
 	{
 		return self::SCHEMA_TYPE;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function getEntityClass(): string
 	{
 		return Entities\Notifications\SmsNotification::class;
 	}
 
 	/**
-	 * @param Entities\Notifications\ISmsNotification $notification
-	 * @param JsonApi\Contracts\Schema\ContextInterface $context
-	 *
 	 * @return iterable<string, string|bool|null>
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
-	public function getAttributes($notification, JsonApi\Contracts\Schema\ContextInterface $context): iterable
+	public function getAttributes(
+		$resource,
+		JsonApi\Contracts\Schema\ContextInterface $context,
+	): iterable
 	{
-		return array_merge((array) parent::getAttributes($notification, $context), [
-			'phone' => $notification->getPhone()->getInternationalNumber(),
+		return array_merge((array) parent::getAttributes($resource, $context), [
+			'phone' => $resource->getPhone()->getInternationalNumber(),
 		]);
 	}
 

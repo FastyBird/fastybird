@@ -13,9 +13,9 @@
  * @date           25.05.20
  */
 
-namespace FastyBird\TriggersModule\Entities;
+namespace FastyBird\Module\Triggers\Entities;
 
-use FastyBird\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Ramsey\Uuid;
 
 /**
@@ -31,28 +31,19 @@ use Ramsey\Uuid;
 trait TEntity
 {
 
-	/**
-	 * @return Uuid\UuidInterface
-	 */
 	public function getId(): Uuid\UuidInterface
 	{
 		return $this->id;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getPlainId(): string
 	{
 		return $this->id->toString();
 	}
 
-	/**
-	 * @return MetadataTypes\ModuleSourceType|MetadataTypes\ConnectorSourceType|MetadataTypes\PluginSourceType
-	 */
-	public function getSource()
+	public function getSource(): MetadataTypes\ModuleSource|MetadataTypes\ConnectorSource|MetadataTypes\PluginSource
 	{
-		return MetadataTypes\ModuleSourceType::get(MetadataTypes\ModuleSourceType::SOURCE_MODULE_TRIGGERS);
+		return MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_TRIGGERS);
 	}
 
 }

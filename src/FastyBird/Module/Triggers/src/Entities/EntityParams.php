@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * IEntityParams.php
+ * EntityParams.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -25,11 +25,11 @@ use Nette\Utils;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-interface IEntityParams
+interface EntityParams
 {
 
 	/**
-	 * @param array<mixed> $params
+	 * @param Array<string, mixed> $params
 	 */
 	public function setParams(array $params): void;
 

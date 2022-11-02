@@ -1,25 +1,27 @@
 <?php declare(strict_types = 1);
 
-namespace Tests\Cases;
+namespace FastyBird\Module\Triggers\Tests\Cases\Unit\Entities\Actions;
 
 use FastyBird\Module\Triggers\Entities;
+use FastyBird\Module\Triggers\Exceptions;
 use FastyBird\Module\Triggers\Models;
 use FastyBird\Module\Triggers\Queries;
+use FastyBird\Module\Triggers\Tests\Cases\Unit\DbTestCase;
+use Nette;
 use Ramsey\Uuid;
-use Tester\Assert;
+use RuntimeException;
 
-require_once __DIR__ . '/../../../../bootstrap.php';
-require_once __DIR__ . '/../../DbTestCase.php';
-
-/**
- * @testCase
- */
-final class ActionEntityTest extends DbTestCase
+final class ActionTest extends DbTestCase
 {
 
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws Nette\DI\MissingServiceException
+	 * @throws RuntimeException
+	 */
 	public function testValidation(): void
 	{
-		/** @var Models\Actions\ActionsRepository $repository */
 		$repository = $this->getContainer()->getByType(Models\Actions\ActionsRepository::class);
 
 		$findQuery = new Queries\FindActions();
@@ -27,15 +29,11 @@ final class ActionEntityTest extends DbTestCase
 
 		$entity = $repository->findOneBy($findQuery);
 
-		Assert::true(is_object($entity));
-		Assert::type(Entities\Actions\ChannelPropertyAction::class, $entity);
+		self::assertIsObject($entity);
+		self::assertTrue($entity instanceof Entities\Actions\ChannelPropertyAction);
 
-		Assert::true($entity->validate('on'));
-
-		Assert::false($entity->validate('off'));
+		self::assertTrue($entity->validate('on'));
+		self::assertFalse($entity->validate('off'));
 	}
 
 }
-
-$test_case = new ActionEntityTest();
-$test_case->run();

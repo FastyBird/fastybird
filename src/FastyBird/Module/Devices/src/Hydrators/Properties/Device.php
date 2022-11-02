@@ -21,8 +21,8 @@ use FastyBird\Module\Devices\Schemas;
 /**
  * Device property entity hydrator
  *
- * @template TEntityClass of Entities\Devices\Properties\Property
- * @extends  Property<TEntityClass>
+ * @template T of Entities\Devices\Properties\Property
+ * @extends  Property<T>
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Hydrators

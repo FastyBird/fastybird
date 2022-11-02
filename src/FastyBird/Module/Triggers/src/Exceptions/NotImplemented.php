@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * NotImplementedException.php
+ * NotImplemented.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -17,7 +17,7 @@ namespace FastyBird\Module\Triggers\Exceptions;
 
 use RuntimeException;
 
-class NotImplementedException extends RuntimeException implements IException
+class NotImplemented extends RuntimeException implements Exception
 {
 
 }

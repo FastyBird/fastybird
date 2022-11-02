@@ -13,10 +13,10 @@
  * @date           09.01.22
  */
 
-namespace FastyBird\TriggersModule\Models\States;
+namespace FastyBird\Module\Triggers\Models\States;
 
-use FastyBird\TriggersModule\Entities;
-use FastyBird\TriggersModule\States;
+use FastyBird\Module\Triggers\Entities;
+use FastyBird\Module\Triggers\States;
 use Nette\Utils;
 
 /**
@@ -30,35 +30,16 @@ use Nette\Utils;
 interface IActionsManager
 {
 
-	/**
-	 * @param Entities\Actions\IAction $action
-	 * @param Utils\ArrayHash $values
-	 *
-	 * @return States\IAction
-	 */
 	public function create(
-		Entities\Actions\IAction $action,
-		Utils\ArrayHash $values
-	): States\IAction;
+		Entities\Actions\Action $action,
+		Utils\ArrayHash $values,
+	): States\Action;
 
-	/**
-	 * @param States\IAction $state
-	 * @param Utils\ArrayHash $values
-	 *
-	 * @return States\IAction
-	 */
 	public function update(
-		States\IAction $state,
-		Utils\ArrayHash $values
-	): States\IAction;
+		States\Action $state,
+		Utils\ArrayHash $values,
+	): States\Action;
 
-	/**
-	 * @param States\IAction $state
-	 *
-	 * @return bool
-	 */
-	public function delete(
-		States\IAction $state
-	): bool;
+	public function delete(States\Action $state): bool;
 
 }

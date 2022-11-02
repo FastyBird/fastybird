@@ -1,304 +1,337 @@
 <?php declare(strict_types = 1);
 
-namespace Tests\Cases;
+namespace FastyBird\Module\Triggers\Tests\Cases\Unit\Subscribers;
 
 use Doctrine\ORM;
-use FastyBird\Exchange\Entities as ExchangeEntities;
-use FastyBird\Exchange\Publisher as ExchangePublisher;
+use Exception;
+use FastyBird\Library\Exchange\Entities as ExchangeEntities;
+use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Module\Triggers\Entities;
 use FastyBird\Module\Triggers\Exceptions;
 use FastyBird\Module\Triggers\Models;
 use FastyBird\Module\Triggers\Subscribers;
-use Mockery;
-use Ninjify\Nunjuck\TestCase\BaseMockeryTestCase;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use stdClass;
-use Tester\Assert;
 
-require_once __DIR__ . '/../../../bootstrap.php';
-
-/**
- * @testCase
- */
-final class EntitiesSubscriberTest extends BaseMockeryTestCase
+final class ModuleEntitiesTest extends TestCase
 {
 
 	public function testSubscriberEvents(): void
 	{
-		$publisher = Mockery::mock(ExchangePublisher\Publisher::class);
-		$entityManager = Mockery::mock(ORM\EntityManagerInterface::class);
+		$publisher = $this->createMock(ExchangePublisher\Publisher::class);
 
-		$actionStateRepository = Mockery::mock(Models\States\ActionsRepository::class);
+		$entityManager = $this->createMock(ORM\EntityManagerInterface::class);
+
+		$actionStateRepository = $this->createMock(Models\States\ActionsRepository::class);
 		$actionStateRepository
-			->shouldReceive('findOne')
-			->andThrow(Exceptions\NotImplemented::class);
+			->method('findOne')
+			->willThrowException(new Exceptions\NotImplemented());
 
-		$conditionStateRepository = Mockery::mock(Models\States\ConditionsRepository::class);
+		$conditionStateRepository = $this->createMock(Models\States\ConditionsRepository::class);
 		$conditionStateRepository
-			->shouldReceive('findOne')
-			->andThrow(Exceptions\NotImplemented::class);
+			->method('findOne')
+			->willThrowException(new Exceptions\NotImplemented());
 
-		$entityFactory = Mockery::mock(ExchangeEntities\EntityFactory::class);
+		$entityFactory = $this->createMock(ExchangeEntities\EntityFactory::class);
 
 		$subscriber = new Subscribers\ModuleEntities(
 			$actionStateRepository,
 			$conditionStateRepository,
 			$entityFactory,
 			$entityManager,
-			$publisher
+			$publisher,
 		);
 
-		Assert::same(['onFlush', 'prePersist', 'postPersist', 'postUpdate'], $subscriber->getSubscribedEvents());
+		self::assertSame(['onFlush', 'prePersist', 'postPersist', 'postUpdate'], $subscriber->getSubscribedEvents());
 	}
 
+	/**
+	 * @throws Exception
+	 */
 	public function testPublishCreatedEntity(): void
 	{
-		$publisher = Mockery::mock(ExchangePublisher\Publisher::class);
+		$publisher = $this->createMock(ExchangePublisher\Publisher::class);
 		$publisher
-			->shouldReceive('publish')
-			->withArgs(function (string $source, string $key, MetadataEntities\IEntity $data): bool {
-				Assert::same(Metadata\Constants::MODULE_TRIGGERS_SOURCE, $source);
+			->expects(self::once())
+			->method('publish')
+			->with(
+				self::callback(static function ($source): bool {
+					self::assertTrue($source instanceof Metadata\Types\ModuleSource);
+					self::assertSame(Metadata\Constants::MODULE_TRIGGERS_SOURCE, $source->getValue());
 
-				$asArray = $data->toArray();
+					return true;
+				}),
+				self::callback(static function ($key): bool {
+					self::assertTrue($key instanceof Metadata\Types\RoutingKey);
+					self::assertSame(
+						Metadata\Constants::MESSAGE_BUS_TRIGGER_ENTITY_CREATED_ROUTING_KEY,
+						$key->getValue(),
+					);
 
-				unset($asArray['id']);
+					return true;
+				}),
+				self::callback(static function ($data): bool {
+					$asArray = $data->toArray();
 
-				Assert::same(Metadata\Constants::MESSAGE_BUS_TRIGGER_ENTITY_CREATED_ROUTING_KEY, $key);
-				Assert::equal([
-					'name'         => 'Trigger name',
-					'comment'      => null,
-					'enabled'      => true,
-					'owner'        => null,
-					'type'         => 'manual',
-					'is_triggered' => false,
-				], $asArray);
+					unset($asArray['id']);
 
-				return true;
-			})
-			->times(1);
+					self::assertEquals([
+						'name' => 'Trigger name',
+						'comment' => null,
+						'enabled' => true,
+						'owner' => null,
+						'type' => 'manual',
+						'is_triggered' => false,
+					], $asArray);
+
+					return true;
+				}),
+			);
 
 		$entityManager = $this->getEntityManager();
 
-		$actionStateRepository = Mockery::mock(Models\States\ActionsRepository::class);
+		$actionStateRepository = $this->createMock(Models\States\ActionsRepository::class);
 		$actionStateRepository
-			->shouldReceive('findOne')
-			->andThrow(Exceptions\NotImplemented::class);
+			->method('findOne')
+			->willThrowException(new Exceptions\NotImplemented());
 
-		$conditionStateRepository = Mockery::mock(Models\States\ConditionsRepository::class);
+		$conditionStateRepository = $this->createMock(Models\States\ConditionsRepository::class);
 		$conditionStateRepository
-			->shouldReceive('findOne')
-			->andThrow(Exceptions\NotImplemented::class);
+			->method('findOne')
+			->willThrowException(new Exceptions\NotImplemented());
 
-		$entity = Mockery::mock(MetadataEntities\Modules\TriggersModule\ManualTriggerEntity::class);
-		$entity
-			->shouldReceive('toArray')
-			->andReturn([
-				'name'         => 'Trigger name',
-				'comment'      => null,
-				'enabled'      => true,
-				'owner'        => null,
-				'type'         => 'manual',
+		$entityItem = $this->createMock(MetadataEntities\TriggersModule\ManualTrigger::class);
+		$entityItem
+			->method('toArray')
+			->willReturn([
+				'name' => 'Trigger name',
+				'comment' => null,
+				'enabled' => true,
+				'owner' => null,
+				'type' => 'manual',
 				'is_triggered' => false,
 			]);
 
-		$entityFactory = Mockery::mock(ExchangeEntities\EntityFactory::class);
+		$entityFactory = $this->createMock(ExchangeEntities\EntityFactory::class);
 		$entityFactory
-			->shouldReceive('create')
-			->andReturn($entity);
+			->method('create')
+			->willReturn($entityItem);
 
 		$subscriber = new Subscribers\ModuleEntities(
 			$actionStateRepository,
 			$conditionStateRepository,
 			$entityFactory,
 			$entityManager,
-			$publisher
+			$publisher,
 		);
 
-		$entity = new Entities\Triggers\ManualTrigger(
-			'Trigger name'
-		);
+		$entity = new Entities\Triggers\ManualTrigger('Trigger name');
 
-		$eventArgs = Mockery::mock(ORM\Event\LifecycleEventArgs::class);
+		$eventArgs = $this->createMock(ORM\Event\LifecycleEventArgs::class);
 		$eventArgs
-			->shouldReceive('getObject')
-			->withNoArgs()
-			->andReturn($entity)
-			->times(1);
+			->expects(self::once())
+			->method('getObject')
+			->willReturn($entity);
 
 		$subscriber->postPersist($eventArgs);
 	}
 
+	/**
+	 * @throws Exception
+	 */
 	public function testPublishUpdatedEntity(): void
 	{
-		$publisher = Mockery::mock(ExchangePublisher\Publisher::class);
+		$publisher = $this->createMock(ExchangePublisher\Publisher::class);
 		$publisher
-			->shouldReceive('publish')
-			->withArgs(function (string $source, string $key, MetadataEntities\IEntity $data): bool {
-				Assert::same(Metadata\Constants::MODULE_TRIGGERS_SOURCE, $source);
+			->expects(self::once())
+			->method('publish')
+			->with(
+				self::callback(static function ($source): bool {
+					self::assertTrue($source instanceof Metadata\Types\ModuleSource);
+					self::assertSame(Metadata\Constants::MODULE_TRIGGERS_SOURCE, $source->getValue());
 
-				$asArray = $data->toArray();
+					return true;
+				}),
+				self::callback(static function ($key): bool {
+					self::assertTrue($key instanceof Metadata\Types\RoutingKey);
+					self::assertSame(
+						Metadata\Constants::MESSAGE_BUS_TRIGGER_ENTITY_UPDATED_ROUTING_KEY,
+						$key->getValue(),
+					);
 
-				unset($asArray['id']);
+					return true;
+				}),
+				self::callback(static function ($data): bool {
+					$asArray = $data->toArray();
 
-				Assert::same(Metadata\Constants::MESSAGE_BUS_TRIGGER_ENTITY_UPDATED_ROUTING_KEY, $key);
-				Assert::equal([
-					'name'         => 'Trigger name',
-					'comment'      => null,
-					'enabled'      => true,
-					'owner'        => null,
-					'type'         => 'manual',
-					'is_triggered' => false,
-				], $asArray);
+					unset($asArray['id']);
 
-				return true;
-			})
-			->times(1);
+					self::assertEquals([
+						'name' => 'Trigger name',
+						'comment' => null,
+						'enabled' => true,
+						'owner' => null,
+						'type' => 'manual',
+						'is_triggered' => false,
+					], $asArray);
+
+					return true;
+				}),
+			);
 
 		$entityManager = $this->getEntityManager(true);
 
-		$actionStateRepository = Mockery::mock(Models\States\ActionsRepository::class);
+		$actionStateRepository = $this->createMock(Models\States\ActionsRepository::class);
 		$actionStateRepository
-			->shouldReceive('findOne')
-			->andThrow(Exceptions\NotImplemented::class);
+			->method('findOne')
+			->willThrowException(new Exceptions\NotImplemented());
 
-		$conditionStateRepository = Mockery::mock(Models\States\ConditionsRepository::class);
+		$conditionStateRepository = $this->createMock(Models\States\ConditionsRepository::class);
 		$conditionStateRepository
-			->shouldReceive('findOne')
-			->andThrow(Exceptions\NotImplemented::class);
+			->method('findOne')
+			->willThrowException(new Exceptions\NotImplemented());
 
-		$entity = Mockery::mock(MetadataEntities\Modules\TriggersModule\ManualTriggerEntity::class);
-		$entity
-			->shouldReceive('toArray')
-			->andReturn([
-				'name'         => 'Trigger name',
-				'comment'      => null,
-				'enabled'      => true,
-				'owner'        => null,
-				'type'         => 'manual',
+		$entityItem = $this->createMock(MetadataEntities\TriggersModule\ManualTrigger::class);
+		$entityItem
+			->method('toArray')
+			->willReturn([
+				'name' => 'Trigger name',
+				'comment' => null,
+				'enabled' => true,
+				'owner' => null,
+				'type' => 'manual',
 				'is_triggered' => false,
 			]);
 
-		$entityFactory = Mockery::mock(ExchangeEntities\EntityFactory::class);
+		$entityFactory = $this->createMock(ExchangeEntities\EntityFactory::class);
 		$entityFactory
-			->shouldReceive('create')
-			->andReturn($entity);
+			->method('create')
+			->willReturn($entityItem);
 
 		$subscriber = new Subscribers\ModuleEntities(
 			$actionStateRepository,
 			$conditionStateRepository,
 			$entityFactory,
 			$entityManager,
-			$publisher
+			$publisher,
 		);
 
-		$entity = new Entities\Triggers\ManualTrigger(
-			'Trigger name'
-		);
+		$entity = new Entities\Triggers\ManualTrigger('Trigger name');
 
-		$eventArgs = Mockery::mock(ORM\Event\LifecycleEventArgs::class);
+		$eventArgs = $this->createMock(ORM\Event\LifecycleEventArgs::class);
 		$eventArgs
-			->shouldReceive('getObject')
-			->andReturn($entity)
-			->times(1);
+			->expects(self::once())
+			->method('getObject')
+			->willReturn($entity);
 
 		$subscriber->postUpdate($eventArgs);
 	}
 
+	/**
+	 * @throws Exception
+	 */
 	public function testPublishDeletedEntity(): void
 	{
-		$publisher = Mockery::mock(ExchangePublisher\Publisher::class);
+		$publisher = $this->createMock(ExchangePublisher\Publisher::class);
 		$publisher
-			->shouldReceive('publish')
-			->withArgs(function (string $source, string $key, MetadataEntities\IEntity $data): bool {
-				Assert::same(Metadata\Constants::MODULE_TRIGGERS_SOURCE, $source);
+			->expects(self::once())
+			->method('publish')
+			->with(
+				self::callback(static function ($source): bool {
+					self::assertTrue($source instanceof Metadata\Types\ModuleSource);
+					self::assertSame(Metadata\Constants::MODULE_TRIGGERS_SOURCE, $source->getValue());
 
-				$asArray = $data->toArray();
+					return true;
+				}),
+				self::callback(static function ($key): bool {
+					self::assertTrue($key instanceof Metadata\Types\RoutingKey);
+					self::assertSame(
+						Metadata\Constants::MESSAGE_BUS_TRIGGER_ENTITY_DELETED_ROUTING_KEY,
+						$key->getValue(),
+					);
 
-				unset($asArray['id']);
+					return true;
+				}),
+				self::callback(static function ($data): bool {
+					$asArray = $data->toArray();
 
-				Assert::same(Metadata\Constants::MESSAGE_BUS_TRIGGER_ENTITY_DELETED_ROUTING_KEY, $key);
-				Assert::equal([
-					'name'         => 'Trigger name',
-					'comment'      => null,
-					'enabled'      => true,
-					'owner'        => null,
-					'type'         => 'manual',
-					'is_triggered' => false,
-				], $asArray);
+					unset($asArray['id']);
 
-				return true;
-			})
-			->times(1);
+					self::assertEquals([
+						'name' => 'Trigger name',
+						'comment' => null,
+						'enabled' => true,
+						'owner' => null,
+						'type' => 'manual',
+						'is_triggered' => false,
+					], $asArray);
 
-		$entity = new Entities\Triggers\ManualTrigger(
-			'Trigger name'
-		);
+					return true;
+				}),
+			);
 
-		$uow = Mockery::mock(ORM\UnitOfWork::class);
+		$entity = new Entities\Triggers\ManualTrigger('Trigger name');
+
+		$uow = $this->createMock(ORM\UnitOfWork::class);
 		$uow
-			->shouldReceive('getScheduledEntityDeletions')
-			->withNoArgs()
-			->andReturn([$entity])
-			->times(1)
-			->getMock()
-			->shouldReceive('getEntityIdentifier')
-			->andReturn([
+			->expects(self::once())
+			->method('getScheduledEntityDeletions')
+			->willReturn([$entity]);
+		$uow
+			->expects(self::once())
+			->method('getEntityIdentifier')
+			->willReturn([
 				123,
-			])
-			->times(1);
+			]);
 
 		$entityManager = $this->getEntityManager();
 		$entityManager
-			->shouldReceive('getUnitOfWork')
-			->withNoArgs()
-			->andReturn($uow)
-			->times(1);
+			->expects(self::once())
+			->method('getUnitOfWork')
+			->willReturn($uow);
 
-		$actionStateRepository = Mockery::mock(Models\States\ActionsRepository::class);
+		$actionStateRepository = $this->createMock(Models\States\ActionsRepository::class);
 		$actionStateRepository
-			->shouldReceive('findOne')
-			->andThrow(Exceptions\NotImplemented::class);
+			->method('findOne')
+			->willThrowException(new Exceptions\NotImplemented());
 
-		$conditionStateRepository = Mockery::mock(Models\States\ConditionsRepository::class);
+		$conditionStateRepository = $this->createMock(Models\States\ConditionsRepository::class);
 		$conditionStateRepository
-			->shouldReceive('findOne')
-			->andThrow(Exceptions\NotImplemented::class);
+			->method('findOne')
+			->willThrowException(new Exceptions\NotImplemented());
 
-		$entity = Mockery::mock(MetadataEntities\Modules\TriggersModule\ManualTriggerEntity::class);
-		$entity
-			->shouldReceive('toArray')
-			->andReturn([
-				'name'         => 'Trigger name',
-				'comment'      => null,
-				'enabled'      => true,
-				'owner'        => null,
-				'type'         => 'manual',
+		$entityItem = $this->createMock(MetadataEntities\TriggersModule\ManualTrigger::class);
+		$entityItem
+			->method('toArray')
+			->willReturn([
+				'name' => 'Trigger name',
+				'comment' => null,
+				'enabled' => true,
+				'owner' => null,
+				'type' => 'manual',
 				'is_triggered' => false,
 			]);
 
-		$entityFactory = Mockery::mock(ExchangeEntities\EntityFactory::class);
+		$entityFactory = $this->createMock(ExchangeEntities\EntityFactory::class);
 		$entityFactory
-			->shouldReceive('create')
-			->andReturn($entity);
+			->method('create')
+			->willReturn($entityItem);
 
 		$subscriber = new Subscribers\ModuleEntities(
 			$actionStateRepository,
 			$conditionStateRepository,
 			$entityFactory,
 			$entityManager,
-			$publisher
+			$publisher,
 		);
 
 		$subscriber->onFlush();
 	}
 
-	/**
-	 * @param bool $withUow
-	 *
-	 * @return ORM\EntityManagerInterface
-	 */
-	private function getEntityManager(bool $withUow = false): ORM\EntityManagerInterface
+	private function getEntityManager(bool $withUow = false): ORM\EntityManagerInterface&MockObject
 	{
 		$metadata = new stdClass();
 		$metadata->fieldMappings = [
@@ -313,34 +346,29 @@ final class EntitiesSubscriberTest extends BaseMockeryTestCase
 			],
 		];
 
-		$entityManager = Mockery::mock(ORM\EntityManagerInterface::class);
+		$entityManager = $this->createMock(ORM\EntityManagerInterface::class);
 		$entityManager
-			->shouldReceive('getClassMetadata')
-			->withArgs([Entities\Triggers\Trigger::class])
-			->andReturn($metadata);
+			->method('getClassMetadata')
+			->with([Entities\Triggers\Trigger::class])
+			->willReturn($metadata);
 
 		if ($withUow) {
-			$uow = Mockery::mock(ORM\UnitOfWork::class);
+			$uow = $this->createMock(ORM\UnitOfWork::class);
 			$uow
-				->shouldReceive('getEntityChangeSet')
-				->andReturn(['name'])
-				->times(1)
-				->getMock()
-				->shouldReceive('isScheduledForDelete')
-				->andReturn(false)
-				->getMock();
+				->expects(self::once())
+				->method('getEntityChangeSet')
+				->willReturn(['name']);
+			$uow
+				->method('isScheduledForDelete')
+				->willReturn(false);
 
 			$entityManager
-				->shouldReceive('getUnitOfWork')
-				->withNoArgs()
-				->andReturn($uow)
-				->times(1);
+				->expects(self::once())
+				->method('getUnitOfWork')
+				->willReturn($uow);
 		}
 
 		return $entityManager;
 	}
 
 }
-
-$test_case = new EntitiesSubscriberTest();
-$test_case->run();

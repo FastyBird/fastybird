@@ -13,14 +13,16 @@
  * @date           04.04.20
  */
 
-namespace FastyBird\TriggersModule\Entities\Notifications;
+namespace FastyBird\Module\Triggers\Entities\Notifications;
 
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\Metadata\Types as MetadataTypes;
-use FastyBird\TriggersModule\Entities;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Triggers\Entities;
 use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
 use Ramsey\Uuid;
-use Throwable;
+use function array_merge;
+use function assert;
+use function is_string;
 
 /**
  * @ORM\Entity
@@ -33,40 +35,41 @@ use Throwable;
  *     }
  * )
  */
-class EmailNotification extends Notification implements IEmailNotification
+class EmailNotification extends Notification
 {
 
 	/**
-	 * @var string
-	 *
 	 * @IPubDoctrine\Crud(is={"required", "writable"})
 	 * @ORM\Column(type="string", name="notification_email", nullable=true)
 	 */
-	private string $email;
+	private string|null $email;
 
-	/**
-	 * @param string $email
-	 * @param Entities\Triggers\ITrigger $trigger
-	 * @param Uuid\UuidInterface|null $id
-	 *
-	 * @throws Throwable
-	 */
 	public function __construct(
 		string $email,
-		Entities\Triggers\ITrigger $trigger,
-		?Uuid\UuidInterface $id = null
-	) {
+		Entities\Triggers\Trigger $trigger,
+		Uuid\UuidInterface|null $id = null,
+	)
+	{
 		parent::__construct($trigger, $id);
 
 		$this->email = $email;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getType(): MetadataTypes\TriggerNotificationTypeType
+	public function getType(): MetadataTypes\TriggerNotificationType
 	{
-		return MetadataTypes\TriggerNotificationTypeType::get(MetadataTypes\TriggerNotificationTypeType::TYPE_EMAIL);
+		return MetadataTypes\TriggerNotificationType::get(MetadataTypes\TriggerNotificationType::TYPE_EMAIL);
+	}
+
+	public function getEmail(): string
+	{
+		assert(is_string($this->email));
+
+		return $this->email;
+	}
+
+	public function setEmail(string $email): void
+	{
+		$this->email = $email;
 	}
 
 	/**
@@ -77,22 +80,6 @@ class EmailNotification extends Notification implements IEmailNotification
 		return array_merge(parent::toArray(), [
 			'email' => $this->getEmail(),
 		]);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getEmail(): string
-	{
-		return $this->email;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function setEmail(string $email): void
-	{
-		$this->email = $email;
 	}
 
 }

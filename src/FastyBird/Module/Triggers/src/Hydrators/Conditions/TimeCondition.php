@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * TimeConditionHydrator.php
+ * TimeCondition.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -21,67 +21,66 @@ use FastyBird\Module\Triggers\Entities;
 use Fig\Http\Message\StatusCodeInterface;
 use IPub\JsonAPIDocument;
 use Nette\Utils;
+use function in_array;
+use function is_array;
+use function is_scalar;
 
 /**
  * Time condition entity hydrator
  *
+ * @extends Condition<Entities\Conditions\TimeCondition>
+ *
  * @package         FastyBird:TriggersModule!
  * @subpackage      Hydrators
- *
  * @author          Adam Kadlec <adam.kadlec@fastybird.com>
- *
- * @phpstan-extends ConditionHydrator<Entities\Conditions\ITimeCondition>
  */
-final class TimeConditionHydrator extends ConditionHydrator
+final class TimeCondition extends Condition
 {
 
-	/** @var string[] */
+	/** @var Array<int|string, string> */
 	protected array $attributes = [
 		'time',
 		'days',
 		'enabled',
 	];
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function getEntityName(): string
 	{
 		return Entities\Conditions\TimeCondition::class;
 	}
 
 	/**
-	 * @param JsonAPIDocument\Objects\IStandardObject $attributes
-	 *
-	 * @return DateTimeInterface
-	 *
-	 * @throws JsonApiExceptions\IJsonApiException
+	 * @throws JsonApiExceptions\JsonApi
 	 */
 	protected function hydrateTimeAttribute(
-		JsonAPIDocument\Objects\IStandardObject $attributes
-	): DateTimeInterface {
+		JsonAPIDocument\Objects\IStandardObject $attributes,
+	): DateTimeInterface
+	{
 		// Condition time have to be set
 		if (!is_scalar($attributes->get('time')) || !$attributes->has('time')) {
-			throw new JsonApiExceptions\JsonApiErrorException(
+			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
 				$this->translator->translate('//triggers-module.base.messages.missingAttribute.heading'),
 				$this->translator->translate('//triggers-module.base.messages.missingAttribute.message'),
 				[
 					'pointer' => '/data/attributes/time',
-				]
+				],
 			);
 		}
 
 		$date = Utils\DateTime::createFromFormat(DateTimeInterface::ATOM, (string) $attributes->get('time'));
 
-		if (!$date instanceof DateTimeInterface || $date->format(DateTimeInterface::ATOM) !== $attributes->get('time')) {
-			throw new JsonApiExceptions\JsonApiErrorException(
+		if (
+			!$date instanceof DateTimeInterface
+			|| $date->format(DateTimeInterface::ATOM) !== $attributes->get('time')
+		) {
+			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
 				$this->translator->translate('//triggers-module.conditions.messages.invalidTime.heading'),
 				$this->translator->translate('//triggers-module.conditions.messages.invalidTime.message'),
 				[
 					'pointer' => '/data/attributes/time',
-				]
+				],
 			);
 		}
 
@@ -89,34 +88,32 @@ final class TimeConditionHydrator extends ConditionHydrator
 	}
 
 	/**
-	 * @param JsonAPIDocument\Objects\IStandardObject $attributes
+	 * @return Array<int>
 	 *
-	 * @return int[]
-	 *
-	 * @throws JsonApiExceptions\IJsonApiException
+	 * @throws JsonApiExceptions\JsonApi
 	 */
 	protected function hydrateDaysAttribute(
-		JsonAPIDocument\Objects\IStandardObject $attributes
-	): array {
+		JsonAPIDocument\Objects\IStandardObject $attributes,
+	): array
+	{
 		// Condition days have to be set
 		if (!$attributes->has('days')) {
-			throw new JsonApiExceptions\JsonApiErrorException(
+			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
 				$this->translator->translate('//triggers-module.base.messages.missingAttribute.heading'),
 				$this->translator->translate('//triggers-module.base.messages.missingAttribute.message'),
 				[
 					'pointer' => '/data/attributes/days',
-				]
+				],
 			);
-
 		} elseif (!is_array($attributes->get('days'))) {
-			throw new JsonApiExceptions\JsonApiErrorException(
+			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
 				$this->translator->translate('//triggers-module.conditions.messages.invalidDays.heading'),
 				$this->translator->translate('//triggers-module.conditions.messages.invalidDays.message'),
 				[
 					'pointer' => '/data/attributes/days',
-				]
+				],
 			);
 		}
 

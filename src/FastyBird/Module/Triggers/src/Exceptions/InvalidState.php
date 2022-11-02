@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * InvalidStateException.php
+ * InvalidState.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -17,7 +17,7 @@ namespace FastyBird\Module\Triggers\Exceptions;
 
 use RuntimeException;
 
-class InvalidStateException extends RuntimeException implements IException
+class InvalidState extends RuntimeException implements Exception
 {
 
 }

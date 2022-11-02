@@ -13,10 +13,10 @@
  * @date           09.01.22
  */
 
-namespace FastyBird\TriggersModule\Models\States;
+namespace FastyBird\Module\Triggers\Models\States;
 
-use FastyBird\TriggersModule\Entities;
-use FastyBird\TriggersModule\States;
+use FastyBird\Module\Triggers\Entities;
+use FastyBird\Module\Triggers\States;
 use Nette\Utils;
 
 /**
@@ -30,35 +30,16 @@ use Nette\Utils;
 interface IConditionsManager
 {
 
-	/**
-	 * @param Entities\Conditions\ICondition $action
-	 * @param Utils\ArrayHash $values
-	 *
-	 * @return States\ICondition
-	 */
 	public function create(
-		Entities\Conditions\ICondition $action,
-		Utils\ArrayHash $values
-	): States\ICondition;
+		Entities\Conditions\Condition $action,
+		Utils\ArrayHash $values,
+	): States\Condition;
 
-	/**
-	 * @param States\ICondition $state
-	 * @param Utils\ArrayHash $values
-	 *
-	 * @return States\ICondition
-	 */
 	public function update(
-		States\ICondition $state,
-		Utils\ArrayHash $values
-	): States\ICondition;
+		States\Condition $state,
+		Utils\ArrayHash $values,
+	): States\Condition;
 
-	/**
-	 * @param States\ICondition $state
-	 *
-	 * @return bool
-	 */
-	public function delete(
-		States\ICondition $state
-	): bool;
+	public function delete(States\Condition $state): bool;
 
 }

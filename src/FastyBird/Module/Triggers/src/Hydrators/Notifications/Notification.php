@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * NotificationHydrator.php
+ * Notification.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -19,31 +19,26 @@ use FastyBird\JsonApi\Hydrators as JsonApiHydrators;
 use FastyBird\Module\Triggers\Entities;
 use FastyBird\Module\Triggers\Schemas;
 use IPub\JsonAPIDocument;
+use function is_scalar;
 
 /**
  * Notification entity hydrator
  *
+ * @template T of Entities\Notifications\Notification
+ * @extends  JsonApiHydrators\Hydrator<T>
+ *
  * @package        FastyBird:TriggersModule!
  * @subpackage     Hydrators
- *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- *
- * @phpstan-template TEntityClass of Entities\Notifications\INotification
- * @phpstan-extends  JsonApiHydrators\Hydrator<TEntityClass>
  */
-abstract class NotificationHydrator extends JsonApiHydrators\Hydrator
+abstract class Notification extends JsonApiHydrators\Hydrator
 {
 
-	/** @var string[] */
+	/** @var Array<string> */
 	protected array $relationships = [
-		Schemas\Notifications\NotificationSchema::RELATIONSHIPS_TRIGGER,
+		Schemas\Notifications\Notification::RELATIONSHIPS_TRIGGER,
 	];
 
-	/**
-	 * @param JsonAPIDocument\Objects\IStandardObject $attributes
-	 *
-	 * @return bool
-	 */
 	protected function hydrateEnabledAttribute(JsonAPIDocument\Objects\IStandardObject $attributes): bool
 	{
 		return is_scalar($attributes->get('enabled')) && (bool) $attributes->get('enabled');

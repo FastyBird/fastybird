@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * TimeConditionSchema.php
+ * TimeCondition.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -16,57 +16,51 @@
 namespace FastyBird\Module\Triggers\Schemas\Conditions;
 
 use DateTimeInterface;
-use FastyBird\Library\Metadata\Types\ModuleSourceType;
+use FastyBird\Library\Metadata\Types\ModuleSource;
 use FastyBird\Module\Triggers\Entities;
 use Neomerx\JsonApi;
+use function array_merge;
 
 /**
  * Time condition entity schema
  *
+ * @extends Condition<Entities\Conditions\TimeCondition>
+ *
  * @package         FastyBird:TriggersModule!
  * @subpackage      Schemas
- *
  * @author          Adam Kadlec <adam.kadlec@fastybird.com>
- *
- * @phpstan-extends ConditionSchema<Entities\Conditions\ITimeCondition>
  */
-final class TimeConditionSchema extends ConditionSchema
+final class TimeCondition extends Condition
 {
 
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = ModuleSourceType::SOURCE_MODULE_TRIGGERS . '/condition/time';
+	public const SCHEMA_TYPE = ModuleSource::SOURCE_MODULE_TRIGGERS . '/condition/time';
 
-	/**
-	 * @return string
-	 */
 	public function getType(): string
 	{
 		return self::SCHEMA_TYPE;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function getEntityClass(): string
 	{
 		return Entities\Conditions\TimeCondition::class;
 	}
 
 	/**
-	 * @param Entities\Conditions\ITimeCondition $condition
-	 * @param JsonApi\Contracts\Schema\ContextInterface $context
-	 *
-	 * @return iterable<string, string|int[]|bool>
+	 * @return iterable<string, string|bool|Array<int>|null>
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
-	public function getAttributes($condition, JsonApi\Contracts\Schema\ContextInterface $context): iterable
+	public function getAttributes(
+		$resource,
+		JsonApi\Contracts\Schema\ContextInterface $context,
+	): iterable
 	{
-		return array_merge((array) parent::getAttributes($condition, $context), [
-			'time' => $condition->getTime()->format(DateTimeInterface::ATOM),
-			'days' => (array) $condition->getDays(),
+		return array_merge((array) parent::getAttributes($resource, $context), [
+			'time' => $resource->getTime()->format(DateTimeInterface::ATOM),
+			'days' => (array) $resource->getDays(),
 		]);
 	}
 

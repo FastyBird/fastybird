@@ -13,15 +13,15 @@
  * @date           04.04.20
  */
 
-namespace FastyBird\TriggersModule\Entities\Conditions;
+namespace FastyBird\Module\Triggers\Entities\Conditions;
 
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\Metadata\Types as MetadataTypes;
-use FastyBird\TriggersModule\Entities;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Triggers\Entities;
 use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
 use IPub\DoctrineTimestampable;
 use Ramsey\Uuid;
-use Throwable;
+use function assert;
 
 /**
  * @ORM\Entity
@@ -36,14 +36,15 @@ use Throwable;
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="condition_type", type="string", length=40)
  * @ORM\DiscriminatorMap({
- *    "device-property"   = "FastyBird\TriggersModule\Entities\Conditions\DevicePropertyCondition",
- *    "channel-property"  = "FastyBird\TriggersModule\Entities\Conditions\ChannelPropertyCondition",
- *    "date"              = "FastyBird\TriggersModule\Entities\Conditions\DateCondition",
- *    "time"              = "FastyBird\TriggersModule\Entities\Conditions\TimeCondition"
+ *    "device-property"   = "FastyBird\Module\Triggers\Entities\Conditions\DevicePropertyCondition",
+ *    "channel-property"  = "FastyBird\Module\Triggers\Entities\Conditions\ChannelPropertyCondition",
+ *    "date"              = "FastyBird\Module\Triggers\Entities\Conditions\DateCondition",
+ *    "time"              = "FastyBird\Module\Triggers\Entities\Conditions\TimeCondition"
  * })
  * @ORM\MappedSuperclass
  */
-abstract class Condition implements ICondition
+abstract class Condition implements Entities\Entity,
+	DoctrineTimestampable\Entities\IEntityCreated, DoctrineTimestampable\Entities\IEntityUpdated
 {
 
 	use Entities\TEntity;
@@ -51,8 +52,6 @@ abstract class Condition implements ICondition
 	use DoctrineTimestampable\Entities\TEntityUpdated;
 
 	/**
-	 * @var Uuid\UuidInterface
-	 *
 	 * @ORM\Id
 	 * @ORM\Column(type="uuid_binary", name="condition_id")
 	 * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
@@ -60,35 +59,45 @@ abstract class Condition implements ICondition
 	protected Uuid\UuidInterface $id;
 
 	/**
-	 * @var bool
-	 *
 	 * @IPubDoctrine\Crud(is="writable")
 	 * @ORM\Column(type="boolean", name="condition_enabled", length=1, nullable=false, options={"default": true})
 	 */
 	protected bool $enabled = true;
 
 	/**
-	 * @var Entities\Triggers\IAutomaticTrigger
-	 *
 	 * @IPubDoctrine\Crud(is="required")
-	 * @ORM\ManyToOne(targetEntity="FastyBird\TriggersModule\Entities\Triggers\AutomaticTrigger", inversedBy="conditions")
+	 * @ORM\ManyToOne(targetEntity="FastyBird\Module\Triggers\Entities\Triggers\AutomaticTrigger", inversedBy="conditions")
 	 * @ORM\JoinColumn(name="trigger_id", referencedColumnName="trigger_id", onDelete="CASCADE")
 	 */
-	protected Entities\Triggers\IAutomaticTrigger $trigger;
+	protected Entities\Triggers\AutomaticTrigger|null $trigger;
 
-	/**
-	 * @param Entities\Triggers\IAutomaticTrigger $trigger
-	 * @param Uuid\UuidInterface|null $id
-	 *
-	 * @throws Throwable
-	 */
 	public function __construct(
-		Entities\Triggers\IAutomaticTrigger $trigger,
-		?Uuid\UuidInterface $id = null
-	) {
+		Entities\Triggers\AutomaticTrigger $trigger,
+		Uuid\UuidInterface|null $id = null,
+	)
+	{
 		$this->id = $id ?? Uuid\Uuid::uuid4();
 
 		$this->trigger = $trigger;
+	}
+
+	abstract public function getType(): MetadataTypes\TriggerConditionType;
+
+	public function isEnabled(): bool
+	{
+		return $this->enabled;
+	}
+
+	public function setEnabled(bool $enabled): void
+	{
+		$this->enabled = $enabled;
+	}
+
+	public function getTrigger(): Entities\Triggers\AutomaticTrigger
+	{
+		assert($this->trigger instanceof Entities\Triggers\AutomaticTrigger);
+
+		return $this->trigger;
 	}
 
 	/**
@@ -97,43 +106,14 @@ abstract class Condition implements ICondition
 	public function toArray(): array
 	{
 		return [
-			'id'      => $this->getPlainId(),
-			'type'    => $this->getType()->getValue(),
+			'id' => $this->getPlainId(),
+			'type' => $this->getType()->getValue(),
 			'enabled' => $this->isEnabled(),
 
 			'trigger' => $this->getTrigger()->getPlainId(),
 
 			'owner' => $this->getTrigger()->getOwnerId(),
 		];
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	abstract public function getType(): MetadataTypes\TriggerConditionTypeType;
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function isEnabled(): bool
-	{
-		return $this->enabled;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function setEnabled(bool $enabled): void
-	{
-		$this->enabled = $enabled;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getTrigger(): Entities\Triggers\IAutomaticTrigger
-	{
-		return $this->trigger;
 	}
 
 }

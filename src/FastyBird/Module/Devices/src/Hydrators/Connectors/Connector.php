@@ -24,8 +24,8 @@ use function is_scalar;
 /**
  * Connector entity hydrator
  *
- * @template  TEntityClass of Entities\Connectors\Connector
- * @extends   JsonApiHydrators\Hydrator<TEntityClass>
+ * @template  T of Entities\Connectors\Connector
+ * @extends   JsonApiHydrators\Hydrator<T>
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Hydrators

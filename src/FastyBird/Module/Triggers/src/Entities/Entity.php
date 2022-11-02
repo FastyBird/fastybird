@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * IEntity.php
+ * Entity.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -27,7 +27,7 @@ use Ramsey\Uuid;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-interface IEntity extends DoctrineCrud\Entities\IEntity
+interface Entity extends DoctrineCrud\Entities\IEntity
 {
 
 	public function getId(): Uuid\UuidInterface;
@@ -35,7 +35,7 @@ interface IEntity extends DoctrineCrud\Entities\IEntity
 	public function getPlainId(): string;
 
 	/**
-	 * @return array<mixed>
+	 * @return Array<mixed>
 	 */
 	public function toArray(): array;
 

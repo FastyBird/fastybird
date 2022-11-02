@@ -13,13 +13,14 @@
  * @date           06.10.21
  */
 
-namespace FastyBird\TriggersModule\Entities\Actions;
+namespace FastyBird\Module\Triggers\Entities\Actions;
 
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\Metadata\Types as MetadataTypes;
-use FastyBird\TriggersModule\Entities;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Triggers\Entities;
 use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
 use Ramsey\Uuid;
+use function array_merge;
 
 /**
  * @ORM\Entity
@@ -36,42 +37,36 @@ use Ramsey\Uuid;
  *     }
  * )
  */
-class DevicePropertyAction extends PropertyAction implements IDevicePropertyAction
+class DevicePropertyAction extends PropertyAction
 {
 
 	/**
-	 * @var Uuid\UuidInterface
-	 *
 	 * @IPubDoctrine\Crud(is="required")
 	 * @ORM\Column(type="uuid_binary", name="action_device_property", nullable=true)
 	 */
 	private Uuid\UuidInterface $property;
 
-	/**
-	 * @param Uuid\UuidInterface $device
-	 * @param Uuid\UuidInterface $property
-	 * @param string $value
-	 * @param Entities\Triggers\ITrigger $trigger
-	 * @param Uuid\UuidInterface|null $id
-	 */
 	public function __construct(
 		Uuid\UuidInterface $device,
 		Uuid\UuidInterface $property,
 		string $value,
-		Entities\Triggers\ITrigger $trigger,
-		?Uuid\UuidInterface $id = null
-	) {
+		Entities\Triggers\Trigger $trigger,
+		Uuid\UuidInterface|null $id = null,
+	)
+	{
 		parent::__construct($device, $value, $trigger, $id);
 
 		$this->property = $property;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getType(): MetadataTypes\TriggerActionTypeType
+	public function getType(): MetadataTypes\TriggerActionType
 	{
-		return MetadataTypes\TriggerActionTypeType::get(MetadataTypes\TriggerActionTypeType::TYPE_DEVICE_PROPERTY);
+		return MetadataTypes\TriggerActionType::get(MetadataTypes\TriggerActionType::TYPE_DEVICE_PROPERTY);
+	}
+
+	public function getProperty(): Uuid\UuidInterface
+	{
+		return $this->property;
 	}
 
 	/**
@@ -82,14 +77,6 @@ class DevicePropertyAction extends PropertyAction implements IDevicePropertyActi
 		return array_merge(parent::toArray(), [
 			'property' => $this->getProperty()->toString(),
 		]);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getProperty(): Uuid\UuidInterface
-	{
-		return $this->property;
 	}
 
 }

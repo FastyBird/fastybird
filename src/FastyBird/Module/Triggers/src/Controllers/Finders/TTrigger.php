@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * TTriggerFinder.php
+ * TTrigger.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -17,6 +17,7 @@ namespace FastyBird\Module\Triggers\Controllers\Finders;
 
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
 use FastyBird\Module\Triggers\Entities;
+use FastyBird\Module\Triggers\Exceptions;
 use FastyBird\Module\Triggers\Models;
 use FastyBird\Module\Triggers\Queries;
 use Fig\Http\Message\StatusCodeInterface;
@@ -25,19 +26,16 @@ use Ramsey\Uuid;
 
 /**
  * @property-read Localization\ITranslator $translator
- * @property-read Models\Triggers\ITriggersRepository $triggersRepository
+ * @property-read Models\Triggers\TriggersRepository $triggersRepository
  */
-trait TTriggerFinder
+trait TTrigger
 {
 
 	/**
-	 * @param string $id
-	 *
-	 * @return Entities\Triggers\ITrigger
-	 *
-	 * @throws JsonApiExceptions\IJsonApiException
+	 * @throws Exceptions\InvalidState
+	 * @throws JsonApiExceptions\JsonApi
 	 */
-	protected function findTrigger(string $id): Entities\Triggers\ITrigger
+	protected function findTrigger(string $id): Entities\Triggers\Trigger
 	{
 		try {
 			$findQuery = new Queries\FindTriggers();
@@ -46,17 +44,17 @@ trait TTriggerFinder
 			$trigger = $this->triggersRepository->findOneBy($findQuery);
 
 			if ($trigger === null) {
-				throw new JsonApiExceptions\JsonApiErrorException(
+				throw new JsonApiExceptions\JsonApiError(
 					StatusCodeInterface::STATUS_NOT_FOUND,
 					$this->translator->translate('//triggers-module.base.messages.notFound.heading'),
-					$this->translator->translate('//triggers-module.base.messages.notFound.message')
+					$this->translator->translate('//triggers-module.base.messages.notFound.message'),
 				);
 			}
-		} catch (Uuid\Exception\InvalidUuidStringException $ex) {
-			throw new JsonApiExceptions\JsonApiErrorException(
+		} catch (Uuid\Exception\InvalidUuidStringException) {
+			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				$this->translator->translate('//triggers-module.base.messages.notFound.heading'),
-				$this->translator->translate('//triggers-module.base.messages.notFound.message')
+				$this->translator->translate('//triggers-module.base.messages.notFound.message'),
 			);
 		}
 

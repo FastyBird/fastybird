@@ -13,12 +13,15 @@
  * @date           04.04.20
  */
 
-namespace FastyBird\TriggersModule\Models\Conditions;
+namespace FastyBird\Module\Triggers\Models\Conditions;
 
-use FastyBird\TriggersModule\Entities;
-use IPub\DoctrineCrud\Crud;
+use FastyBird\Module\Triggers\Entities;
+use FastyBird\Module\Triggers\Models;
+use IPub\DoctrineCrud\Crud as DoctrineCrudCrud;
+use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
 use Nette;
 use Nette\Utils;
+use function assert;
 
 /**
  * Conditions entities manager
@@ -28,59 +31,46 @@ use Nette\Utils;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ConditionsManager implements IConditionsManager
+final class ConditionsManager
 {
 
 	use Nette\SmartObject;
 
 	/**
-	 * @var Crud\IEntityCrud
-	 *
-	 * @phpstan-var Crud\IEntityCrud<Entities\Conditions\ICondition>
+	 * @param DoctrineCrudCrud\IEntityCrud<Entities\Conditions\Condition> $entityCrud
 	 */
-	private Crud\IEntityCrud $entityCrud;
-
-	/**
-	 * @phpstan-param Crud\IEntityCrud<Entities\Conditions\ICondition> $entityCrud
-	 */
-	public function __construct(
-		Crud\IEntityCrud $entityCrud
-	) {
+	public function __construct(private readonly DoctrineCrudCrud\IEntityCrud $entityCrud)
+	{
 		// Entity CRUD for handling entities
-		$this->entityCrud = $entityCrud;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function create(
-		Utils\ArrayHash $values
-	): Entities\Conditions\ICondition {
-		/** @var Entities\Conditions\ICondition $entity */
+	public function create(Utils\ArrayHash $values): Entities\Conditions\Condition
+	{
 		$entity = $this->entityCrud->getEntityCreator()->create($values);
+		assert($entity instanceof Entities\Conditions\Condition);
 
 		return $entity;
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 */
 	public function update(
-		Entities\Conditions\ICondition $entity,
-		Utils\ArrayHash $values
-	): Entities\Conditions\ICondition {
-		/** @var Entities\Conditions\ICondition $entity */
+		Entities\Conditions\Condition $entity,
+		Utils\ArrayHash $values,
+	): Entities\Conditions\Condition
+	{
 		$entity = $this->entityCrud->getEntityUpdater()->update($values, $entity);
+		assert($entity instanceof Entities\Conditions\Condition);
 
 		return $entity;
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 */
-	public function delete(
-		Entities\Conditions\ICondition $entity
-	): bool {
+	public function delete(Entities\Conditions\Condition $entity): bool
+	{
 		// Delete entity from database
 		return $this->entityCrud->getEntityDeleter()->delete($entity);
 	}

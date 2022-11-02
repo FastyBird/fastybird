@@ -21,7 +21,7 @@ use FastyBird\Module\Devices\Hydrators as DevicesHydrators;
 /**
  * Shelly device entity hydrator
  *
- * @phpstan-extends DevicesHydrators\Devices\Device<Entities\ShellyDevice>
+ * @extends DevicesHydrators\Devices\Device<Entities\ShellyDevice>
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Hydrators

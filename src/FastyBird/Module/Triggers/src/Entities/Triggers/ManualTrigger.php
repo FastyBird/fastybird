@@ -13,10 +13,10 @@
  * @date           04.04.20
  */
 
-namespace FastyBird\TriggersModule\Entities\Triggers;
+namespace FastyBird\Module\Triggers\Entities\Triggers;
 
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 
 /**
  * @ORM\Entity
@@ -29,15 +29,12 @@ use FastyBird\Metadata\Types as MetadataTypes;
  *     }
  * )
  */
-class ManualTrigger extends Trigger implements IManualTrigger
+class ManualTrigger extends Trigger
 {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getType(): MetadataTypes\TriggerTypeType
+	public function getType(): MetadataTypes\TriggerType
 	{
-		return MetadataTypes\TriggerTypeType::get(MetadataTypes\TriggerTypeType::TYPE_MANUAL);
+		return MetadataTypes\TriggerType::get(MetadataTypes\TriggerType::TYPE_MANUAL);
 	}
 
 }

@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * FindConditionsQuery.php
+ * FindConditions.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -26,117 +26,83 @@ use Ramsey\Uuid;
 /**
  * Find conditions entities query
  *
+ * @extends DoctrineOrmQuery\QueryObject<Entities\Conditions\Condition>
+ *
  * @package          FastyBird:TriggersModule!
  * @subpackage       Queries
- *
  * @author           Adam Kadlec <adam.kadlec@fastybird.com>
- *
- * @phpstan-extends DoctrineOrmQuery\QueryObject<Entities\Conditions\ICondition>
  */
-class FindConditionsQuery extends DoctrineOrmQuery\QueryObject
+class FindConditions extends DoctrineOrmQuery\QueryObject
 {
 
-	/** @var Closure[] */
+	/** @var Array<Closure(ORM\QueryBuilder $qb): void> */
 	private array $filter = [];
 
-	/** @var Closure[] */
+	/** @var Array<Closure(ORM\QueryBuilder $qb): void> */
 	private array $select = [];
 
-	/**
-	 * @param Uuid\UuidInterface $id
-	 *
-	 * @return void
-	 */
 	public function byId(Uuid\UuidInterface $id): void
 	{
-		$this->filter[] = function (ORM\QueryBuilder $qb) use ($id): void {
+		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($id): void {
 			$qb->andWhere('c.id = :id')->setParameter('id', $id, Uuid\Doctrine\UuidBinaryType::NAME);
 		};
 	}
 
-	/**
-	 * @param Entities\Triggers\ITrigger $trigger
-	 *
-	 * @return void
-	 */
-	public function forTrigger(Entities\Triggers\ITrigger $trigger): void
+	public function forTrigger(Entities\Triggers\Trigger $trigger): void
 	{
-		$this->filter[] = function (ORM\QueryBuilder $qb) use ($trigger): void {
+		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($trigger): void {
 			$qb->andWhere('trigger.id = :trigger')
 				->setParameter('trigger', $trigger->getId(), Uuid\Doctrine\UuidBinaryType::NAME);
 		};
 	}
 
-	/**
-	 * @param Uuid\UuidInterface $device
-	 *
-	 * @return void
-	 */
 	public function forDevice(Uuid\UuidInterface $device): void
 	{
-		$this->filter[] = function (ORM\QueryBuilder $qb) use ($device): void {
+		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($device): void {
 			$qb->andWhere('cdc.device = :device')->setParameter('device', $device, Uuid\Doctrine\UuidBinaryType::NAME);
 		};
 	}
 
-	/**
-	 * @param Uuid\UuidInterface $channel
-	 *
-	 * @return void
-	 */
 	public function forChannel(Uuid\UuidInterface $channel): void
 	{
-		$this->filter[] = function (ORM\QueryBuilder $qb) use ($channel): void {
+		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($channel): void {
 			$qb->andWhere('cdc.channel = :channel')
 				->setParameter('channel', $channel, Uuid\Doctrine\UuidBinaryType::NAME);
 		};
 	}
 
-	/**
-	 * @param Uuid\UuidInterface $property
-	 *
-	 * @return void
-	 */
 	public function forProperty(Uuid\UuidInterface $property): void
 	{
-		$this->filter[] = function (ORM\QueryBuilder $qb) use ($property): void {
+		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($property): void {
 			$qb->andWhere('cdc.property = :property')
 				->setParameter('property', $property, Uuid\Doctrine\UuidBinaryType::NAME);
 		};
 	}
 
 	/**
-	 * @param string $value
-	 * @param string $operator
-	 *
-	 * @return void
+	 * @throws Exceptions\InvalidArgument
 	 */
 	public function withPropertyValue(
 		string $value,
-		string $operator = MetadataTypes\TriggerConditionOperatorType::OPERATOR_VALUE_EQUAL
-	): void {
-		if (!MetadataTypes\TriggerConditionOperatorType::isValidValue($operator)) {
-			throw new Exceptions\InvalidArgumentException('Invalid operator given');
+		string $operator = MetadataTypes\TriggerConditionOperator::OPERATOR_VALUE_EQUAL,
+	): void
+	{
+		if (!MetadataTypes\TriggerConditionOperator::isValidValue($operator)) {
+			throw new Exceptions\InvalidArgument('Invalid operator given');
 		}
 
-		$this->filter[] = function (ORM\QueryBuilder $qb) use ($operator): void {
+		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($operator): void {
 			$qb->andWhere('cdc.operator = :operator')->setParameter('operator', $operator);
 		};
 
-		$this->filter[] = function (ORM\QueryBuilder $qb) use ($value): void {
+		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($value): void {
 			$qb->andWhere('cdc.operand = :operand')->setParameter('operand', $value);
 		};
 	}
 
-	/**
-	 * @param float $value
-	 * @param float|null $previousValue
-	 *
-	 * @return void
-	 */
-	public function byValue(float $value, ?float $previousValue = null): void
+	public function byValue(float $value, float|null $previousValue = null): void
 	{
-		$this->filter[] = function (ORM\QueryBuilder $qb) use ($value, $previousValue): void {
+		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($value, $previousValue): void {
 			if ($previousValue !== null) {
 				$qb
 					->andWhere(
@@ -144,13 +110,13 @@ class FindConditionsQuery extends DoctrineOrmQuery\QueryObject
 						. ' OR '
 						. '(previousValue >= cdc.operand AND cdc.operand > :value AND cdc.operator = :operatorBelow)'
 						. ' OR '
-						. '(previousValue <> cdc.operand AND cdc.operand = :value AND cdc.operator = :operatorEqual)'
+						. '(previousValue <> cdc.operand AND cdc.operand = :value AND cdc.operator = :operatorEqual)',
 					)
 					->setParameter('value', $value)
 					->setParameter('previousValue', $previousValue)
-					->setParameter('operatorAbove', MetadataTypes\TriggerConditionOperatorType::OPERATOR_VALUE_ABOVE)
-					->setParameter('operatorBelow', MetadataTypes\TriggerConditionOperatorType::OPERATOR_VALUE_BELOW)
-					->setParameter('operatorEqual', MetadataTypes\TriggerConditionOperatorType::OPERATOR_VALUE_EQUAL);
+					->setParameter('operatorAbove', MetadataTypes\TriggerConditionOperator::OPERATOR_VALUE_ABOVE)
+					->setParameter('operatorBelow', MetadataTypes\TriggerConditionOperator::OPERATOR_VALUE_BELOW)
+					->setParameter('operatorEqual', MetadataTypes\TriggerConditionOperator::OPERATOR_VALUE_EQUAL);
 
 			} else {
 				$qb
@@ -159,66 +125,47 @@ class FindConditionsQuery extends DoctrineOrmQuery\QueryObject
 						. ' OR '
 						. '(cdc.operand > :value AND cdc.operator = :operatorBelow)'
 						. ' OR '
-						. '(cdc.operand = :value AND cdc.operator = :operatorEqual)'
+						. '(cdc.operand = :value AND cdc.operator = :operatorEqual)',
 					)
 					->setParameter('value', $value)
-					->setParameter('operatorAbove', MetadataTypes\TriggerConditionOperatorType::OPERATOR_VALUE_ABOVE)
-					->setParameter('operatorBelow', MetadataTypes\TriggerConditionOperatorType::OPERATOR_VALUE_BELOW)
-					->setParameter('operatorEqual', MetadataTypes\TriggerConditionOperatorType::OPERATOR_VALUE_EQUAL);
+					->setParameter('operatorAbove', MetadataTypes\TriggerConditionOperator::OPERATOR_VALUE_ABOVE)
+					->setParameter('operatorBelow', MetadataTypes\TriggerConditionOperator::OPERATOR_VALUE_BELOW)
+					->setParameter('operatorEqual', MetadataTypes\TriggerConditionOperator::OPERATOR_VALUE_EQUAL);
 			}
 		};
 	}
 
-	/**
-	 * @param float $value
-	 * @param float $previousValue
-	 *
-	 * @return void
-	 */
 	public function byValueAbove(float $value, float $previousValue): void
 	{
-		$this->filter[] = function (ORM\QueryBuilder $qb) use ($value, $previousValue): void {
+		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($value, $previousValue): void {
 			$qb
 				->andWhere('cdc.operand >= :previousValue AND cdc.operand < :value AND cdc.operator = :operator')
 				->setParameter('value', $value)
 				->setParameter('previousValue', $previousValue)
-				->setParameter('operator', MetadataTypes\TriggerConditionOperatorType::OPERATOR_VALUE_ABOVE);
+				->setParameter('operator', MetadataTypes\TriggerConditionOperator::OPERATOR_VALUE_ABOVE);
 		};
 	}
 
-	/**
-	 * @param float $value
-	 * @param float $previousValue
-	 *
-	 * @return void
-	 */
 	public function byValueBelow(float $value, float $previousValue): void
 	{
-		$this->filter[] = function (ORM\QueryBuilder $qb) use ($value, $previousValue): void {
+		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($value, $previousValue): void {
 			$qb
 				->andWhere('cdc.operand <= :previousValue AND cdc.operand > :value AND cdc.operator = :operator')
 				->setParameter('value', $value)
 				->setParameter('previousValue', $previousValue)
-				->setParameter('operator', MetadataTypes\TriggerConditionOperatorType::OPERATOR_VALUE_BELOW);
+				->setParameter('operator', MetadataTypes\TriggerConditionOperator::OPERATOR_VALUE_BELOW);
 		};
 	}
 
-	/**
-	 * @return void
-	 */
 	public function onlyEnabledTriggers(): void
 	{
-		$this->filter[] = function (ORM\QueryBuilder $qb): void {
+		$this->filter[] = static function (ORM\QueryBuilder $qb): void {
 			$qb->andWhere('trigger.enabled = :enabled')->setParameter('enabled', true);
 		};
 	}
 
 	/**
-	 * @param ORM\EntityRepository $repository
-	 *
-	 * @return ORM\QueryBuilder
-	 *
-	 * @phpstan-param ORM\EntityRepository<Entities\Conditions\ICondition> $repository
+	 * @phpstan-param ORM\EntityRepository<Entities\Conditions\Condition> $repository
 	 */
 	protected function doCreateQuery(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{
@@ -232,11 +179,7 @@ class FindConditionsQuery extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @param ORM\EntityRepository $repository
-	 *
-	 * @return ORM\QueryBuilder
-	 *
-	 * @phpstan-param ORM\EntityRepository<Entities\Conditions\ICondition> $repository
+	 * @phpstan-param ORM\EntityRepository<Entities\Conditions\Condition> $repository
 	 */
 	private function createBasicDql(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{
@@ -266,11 +209,7 @@ class FindConditionsQuery extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @param ORM\EntityRepository $repository
-	 *
-	 * @return ORM\QueryBuilder
-	 *
-	 * @phpstan-param ORM\EntityRepository<Entities\Conditions\ICondition> $repository
+	 * @phpstan-param ORM\EntityRepository<Entities\Conditions\Condition> $repository
 	 */
 	protected function doCreateCountQuery(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{

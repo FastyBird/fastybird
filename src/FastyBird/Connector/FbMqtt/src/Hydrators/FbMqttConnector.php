@@ -21,7 +21,7 @@ use FastyBird\Module\Devices\Hydrators as DevicesHydrators;
 /**
  * FastyBird MQTT Connector entity hydrator
  *
- * @phpstan-extends DevicesHydrators\Connectors\Connector<Entities\FbMqttConnector>
+ * @extends DevicesHydrators\Connectors\Connector<Entities\FbMqttConnector>
  *
  * @package        FastyBird:FbMqttConnector!
  * @subpackage     Hydrators

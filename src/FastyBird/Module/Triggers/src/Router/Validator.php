@@ -13,14 +13,16 @@
  * @date           11.01.22
  */
 
-namespace FastyBird\TriggersModule\Router;
+namespace FastyBird\Module\Triggers\Router;
 
+use Exception;
 use FastRoute;
 use FastRoute\RouteCollector as FastRouteCollector;
 use FastRoute\RouteParser\Std;
 use Fig\Http\Message\RequestMethodInterface;
 use IPub\SlimRouter\Routing as SlimRouterRouting;
 use Nette\DI;
+use function assert;
 
 /**
  * Route validator
@@ -33,32 +35,25 @@ use Nette\DI;
 class Validator
 {
 
-	/** @var DI\Container */
-	private DI\Container $container;
+	private SlimRouterRouting\FastRouteDispatcher|null $routerDispatcher = null;
 
-	/** @var SlimRouterRouting\FastRouteDispatcher|null */
-	private ?SlimRouterRouting\FastRouteDispatcher $routerDispatcher = null;
-
-	public function __construct(
-		DI\Container $container
-	) {
-		$this->container = $container;
+	public function __construct(private readonly DI\Container $container)
+	{
 	}
 
 	/**
-	 * @param string $link
-	 * @param string $method
-	 *
-	 * @return bool
+	 * @throws Exception
 	 */
 	public function validate(string $link, string $method = RequestMethodInterface::METHOD_GET): bool
 	{
-		$results = $this->getRouterDispatcher()
-			->dispatch($method, $link);
+		$results = $this->getRouterDispatcher()->dispatch($method, $link);
 
 		return $results[0] === SlimRouterRouting\RoutingResults::FOUND;
 	}
 
+	/**
+	 * @throws Exception
+	 */
 	private function getRouterDispatcher(): SlimRouterRouting\FastRouteDispatcher
 	{
 		if ($this->routerDispatcher !== null) {
@@ -67,20 +62,19 @@ class Validator
 
 		$router = $this->container->getByType(SlimRouterRouting\IRouter::class);
 
-		$routeDefinitionCallback = function (FastRouteCollector $r) use ($router): void {
+		$routeDefinitionCallback = static function (FastRouteCollector $r) use ($router): void {
 			$basePath = $router->getBasePath();
 
-			/** @var SlimRouterRouting\IRoute $route */
 			foreach ($router->getIterator() as $route) {
 				$r->addRoute($route->getMethods(), $basePath . $route->getPattern(), $route->getIdentifier());
 			}
 		};
 
-		/** @var SlimRouterRouting\FastRouteDispatcher $dispatcher */
 		$dispatcher = FastRoute\simpleDispatcher($routeDefinitionCallback, [
-			'dispatcher'  => SlimRouterRouting\FastRouteDispatcher::class,
+			'dispatcher' => SlimRouterRouting\FastRouteDispatcher::class,
 			'routeParser' => new Std(),
 		]);
+		assert($dispatcher instanceof SlimRouterRouting\FastRouteDispatcher);
 
 		$this->routerDispatcher = $dispatcher;
 

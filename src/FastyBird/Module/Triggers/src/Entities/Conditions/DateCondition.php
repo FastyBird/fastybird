@@ -13,15 +13,17 @@
  * @date           04.04.20
  */
 
-namespace FastyBird\TriggersModule\Entities\Conditions;
+namespace FastyBird\Module\Triggers\Entities\Conditions;
 
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\Metadata\Types as MetadataTypes;
-use FastyBird\TriggersModule\Entities;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Triggers\Entities;
 use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
 use Ramsey\Uuid;
-use Throwable;
+use function array_merge;
+use function assert;
+use const DATE_ATOM;
 
 /**
  * @ORM\Entity
@@ -34,47 +36,47 @@ use Throwable;
  *     }
  * )
  */
-class DateCondition extends Condition implements IDateCondition
+class DateCondition extends Condition
 {
 
 	/**
-	 * @var DateTimeInterface
-	 *
 	 * @IPubDoctrine\Crud(is={"required", "writable"})
 	 * @ORM\Column(type="datetime", name="condition_date", nullable=true)
 	 */
-	private DateTimeInterface $date;
+	private DateTimeInterface|null $date;
 
-	/**
-	 * @param DateTimeInterface $date
-	 * @param Entities\Triggers\IAutomaticTrigger $trigger
-	 * @param Uuid\UuidInterface|null $id
-	 *
-	 * @throws Throwable
-	 */
 	public function __construct(
 		DateTimeInterface $date,
-		Entities\Triggers\IAutomaticTrigger $trigger,
-		?Uuid\UuidInterface $id = null
-	) {
+		Entities\Triggers\AutomaticTrigger $trigger,
+		Uuid\UuidInterface|null $id = null,
+	)
+	{
 		parent::__construct($trigger, $id);
 
 		$this->date = $date;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getType(): MetadataTypes\TriggerConditionTypeType
+	public function getType(): MetadataTypes\TriggerConditionType
 	{
-		return MetadataTypes\TriggerConditionTypeType::get(MetadataTypes\TriggerConditionTypeType::TYPE_DATE);
+		return MetadataTypes\TriggerConditionType::get(MetadataTypes\TriggerConditionType::TYPE_DATE);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	public function getDate(): DateTimeInterface
+	{
+		assert($this->date instanceof DateTimeInterface);
+
+		return $this->date;
+	}
+
+	public function setDate(DateTimeInterface $date): void
+	{
+		$this->date = $date;
+	}
+
 	public function validate(DateTimeInterface $date): bool
 	{
+		assert($this->date instanceof DateTimeInterface);
+
 		return $date->getTimestamp() === $this->date->getTimestamp();
 	}
 
@@ -86,22 +88,6 @@ class DateCondition extends Condition implements IDateCondition
 		return array_merge(parent::toArray(), [
 			'date' => $this->getDate()->format(DATE_ATOM),
 		]);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getDate(): DateTimeInterface
-	{
-		return $this->date;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function setDate(DateTimeInterface $date): void
-	{
-		$this->date = $date;
 	}
 
 }

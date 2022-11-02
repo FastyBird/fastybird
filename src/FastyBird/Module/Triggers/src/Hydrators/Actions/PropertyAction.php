@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * PropertyActionHydrator.php
+ * PropertyAction.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -20,22 +20,24 @@ use FastyBird\Module\Triggers\Entities;
 use Fig\Http\Message\StatusCodeInterface;
 use IPub\JsonAPIDocument;
 use Ramsey\Uuid;
+use function is_bool;
+use function is_scalar;
+use function strtolower;
 
 /**
  * Property action entity hydrator
  *
+ * @template T of Entities\Actions\PropertyAction
+ * @extends  Action<T>
+ *
  * @package         FastyBird:TriggersModule!
  * @subpackage      Hydrators
- *
  * @author          Adam Kadlec <adam.kadlec@fastybird.com>
- *
- * @phpstan-template TEntityClass of Entities\Actions\IPropertyAction
- * @phpstan-extends  ActionHydrator<TEntityClass>
  */
-abstract class PropertyActionHydrator extends ActionHydrator
+abstract class PropertyAction extends Action
 {
 
-	/** @var string[] */
+	/** @var Array<int|string, string> */
 	protected array $attributes = [
 		'device',
 		'property',
@@ -44,28 +46,25 @@ abstract class PropertyActionHydrator extends ActionHydrator
 	];
 
 	/**
-	 * @param JsonAPIDocument\Objects\IStandardObject $attributes
-	 *
-	 * @return Uuid\UuidInterface
-	 *
-	 * @throws JsonApiExceptions\IJsonApiException
+	 * @throws JsonApiExceptions\JsonApi
 	 */
 	protected function hydrateDeviceAttribute(
-		JsonAPIDocument\Objects\IStandardObject $attributes
-	): Uuid\UuidInterface {
+		JsonAPIDocument\Objects\IStandardObject $attributes,
+	): Uuid\UuidInterface
+	{
 		if (
 			!is_scalar($attributes->get('device'))
 			|| !$attributes->has('device')
 			|| $attributes->get('device') === ''
 			|| !Uuid\Uuid::isValid((string) $attributes->get('device'))
 		) {
-			throw new JsonApiExceptions\JsonApiErrorException(
+			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
 				$this->translator->translate('//triggers-module.base.messages.missingAttribute.heading'),
 				$this->translator->translate('//triggers-module.base.messages.missingAttribute.message'),
 				[
 					'pointer' => '/data/attributes/device',
-				]
+				],
 			);
 		}
 
@@ -73,28 +72,25 @@ abstract class PropertyActionHydrator extends ActionHydrator
 	}
 
 	/**
-	 * @param JsonAPIDocument\Objects\IStandardObject $attributes
-	 *
-	 * @return Uuid\UuidInterface
-	 *
-	 * @throws JsonApiExceptions\IJsonApiException
+	 * @throws JsonApiExceptions\JsonApi
 	 */
 	protected function hydratePropertyAttribute(
-		JsonAPIDocument\Objects\IStandardObject $attributes
-	): Uuid\UuidInterface {
+		JsonAPIDocument\Objects\IStandardObject $attributes,
+	): Uuid\UuidInterface
+	{
 		if (
 			!is_scalar($attributes->get('property'))
 			|| !$attributes->has('property')
 			|| $attributes->get('property') === ''
 			|| !Uuid\Uuid::isValid((string) $attributes->get('property'))
 		) {
-			throw new JsonApiExceptions\JsonApiErrorException(
+			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
 				$this->translator->translate('//triggers-module.base.messages.missingAttribute.heading'),
 				$this->translator->translate('//triggers-module.base.messages.missingAttribute.message'),
 				[
 					'pointer' => '/data/attributes/property',
-				]
+				],
 			);
 		}
 
@@ -102,27 +98,24 @@ abstract class PropertyActionHydrator extends ActionHydrator
 	}
 
 	/**
-	 * @param JsonAPIDocument\Objects\IStandardObject $attributes
-	 *
-	 * @return string
-	 *
-	 * @throws JsonApiExceptions\IJsonApiException
+	 * @throws JsonApiExceptions\JsonApi
 	 */
 	protected function hydrateValueAttribute(
-		JsonAPIDocument\Objects\IStandardObject $attributes
-	): string {
+		JsonAPIDocument\Objects\IStandardObject $attributes,
+	): string
+	{
 		if (
 			!is_scalar($attributes->get('value'))
 			|| !$attributes->has('value')
 			|| $attributes->get('value') === ''
 		) {
-			throw new JsonApiExceptions\JsonApiErrorException(
+			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
 				$this->translator->translate('//triggers-module.base.messages.missingAttribute.heading'),
 				$this->translator->translate('//triggers-module.base.messages.missingAttribute.message'),
 				[
 					'pointer' => '/data/attributes/value',
-				]
+				],
 			);
 		}
 

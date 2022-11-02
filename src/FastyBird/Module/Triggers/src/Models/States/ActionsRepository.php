@@ -13,11 +13,11 @@
  * @date           09.01.22
  */
 
-namespace FastyBird\TriggersModule\Models\States;
+namespace FastyBird\Module\Triggers\Models\States;
 
-use FastyBird\TriggersModule\Entities;
-use FastyBird\TriggersModule\Exceptions;
-use FastyBird\TriggersModule\States;
+use FastyBird\Module\Triggers\Entities;
+use FastyBird\Module\Triggers\Exceptions;
+use FastyBird\Module\Triggers\States;
 use Nette;
 
 /**
@@ -33,25 +33,17 @@ final class ActionsRepository
 
 	use Nette\SmartObject;
 
-	/** @var IActionsRepository|null */
-	protected ?IActionsRepository $repository;
-
-	public function __construct(
-		?IActionsRepository $repository
-	) {
-		$this->repository = $repository;
+	public function __construct(protected readonly IActionsRepository|null $repository)
+	{
 	}
 
 	/**
-	 * @param Entities\Actions\IAction $action
-	 *
-	 * @return States\IAction|null
+	 * @throws Exceptions\NotImplemented
 	 */
-	public function findOne(
-		Entities\Actions\IAction $action
-	): ?States\IAction {
+	public function findOne(Entities\Actions\Action $action): States\Action|null
+	{
 		if ($this->repository === null) {
-			throw new Exceptions\NotImplementedException('Action state repository is not registered');
+			throw new Exceptions\NotImplemented('Action state repository is not registered');
 		}
 
 		return $this->repository->findOne($action);

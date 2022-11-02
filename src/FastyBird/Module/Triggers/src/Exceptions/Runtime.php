@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * RuntimeException.php
+ * Runtime.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -17,7 +17,7 @@ namespace FastyBird\Module\Triggers\Exceptions;
 
 use RuntimeException as PHPRuntimeException;
 
-class RuntimeException extends PHPRuntimeException implements IException
+class Runtime extends PHPRuntimeException implements Exception
 {
 
 }

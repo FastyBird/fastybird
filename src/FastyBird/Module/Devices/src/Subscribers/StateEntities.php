@@ -50,7 +50,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 		private readonly Models\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
 		private readonly Models\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
 		private readonly ExchangeEntities\EntityFactory $entityFactory,
-		private readonly ExchangePublisher\Container $publisher,
+		private readonly ExchangePublisher\Publisher $publisher,
 	)
 	{
 	}

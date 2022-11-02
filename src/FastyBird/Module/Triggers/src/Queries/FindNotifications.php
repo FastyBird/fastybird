@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * FindNotificationsQuery.php
+ * FindNotifications.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -24,53 +24,38 @@ use Ramsey\Uuid;
 /**
  * Find action entities query
  *
+ * @extends DoctrineOrmQuery\QueryObject<Entities\Notifications\Notification>
+ *
  * @package          FastyBird:TriggersModule!
  * @subpackage       Queries
- *
  * @author           Adam Kadlec <adam.kadlec@fastybird.com>
- *
- * @phpstan-extends DoctrineOrmQuery\QueryObject<Entities\Notifications\INotification>
  */
-class FindNotificationsQuery extends DoctrineOrmQuery\QueryObject
+class FindNotifications extends DoctrineOrmQuery\QueryObject
 {
 
-	/** @var Closure[] */
+	/** @var Array<Closure(ORM\QueryBuilder $qb): void> */
 	private array $filter = [];
 
-	/** @var Closure[] */
+	/** @var Array<Closure(ORM\QueryBuilder $qb): void> */
 	private array $select = [];
 
-	/**
-	 * @param Uuid\UuidInterface $id
-	 *
-	 * @return void
-	 */
 	public function byId(Uuid\UuidInterface $id): void
 	{
-		$this->filter[] = function (ORM\QueryBuilder $qb) use ($id): void {
+		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($id): void {
 			$qb->andWhere('n.id = :id')->setParameter('id', $id, Uuid\Doctrine\UuidBinaryType::NAME);
 		};
 	}
 
-	/**
-	 * @param Entities\Triggers\ITrigger $trigger
-	 *
-	 * @return void
-	 */
-	public function forTrigger(Entities\Triggers\ITrigger $trigger): void
+	public function forTrigger(Entities\Triggers\Trigger $trigger): void
 	{
-		$this->filter[] = function (ORM\QueryBuilder $qb) use ($trigger): void {
+		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($trigger): void {
 			$qb->andWhere('trigger.id = :trigger')
 				->setParameter('trigger', $trigger->getId(), Uuid\Doctrine\UuidBinaryType::NAME);
 		};
 	}
 
 	/**
-	 * @param ORM\EntityRepository $repository
-	 *
-	 * @return ORM\QueryBuilder
-	 *
-	 * @phpstan-param ORM\EntityRepository<Entities\Notifications\INotification> $repository
+	 * @phpstan-param ORM\EntityRepository<Entities\Notifications\Notification> $repository
 	 */
 	protected function doCreateQuery(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{
@@ -84,11 +69,7 @@ class FindNotificationsQuery extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @param ORM\EntityRepository $repository
-	 *
-	 * @return ORM\QueryBuilder
-	 *
-	 * @phpstan-param ORM\EntityRepository<Entities\Notifications\INotification> $repository
+	 * @phpstan-param ORM\EntityRepository<Entities\Notifications\Notification> $repository
 	 */
 	private function createBasicDql(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{
@@ -104,11 +85,7 @@ class FindNotificationsQuery extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @param ORM\EntityRepository $repository
-	 *
-	 * @return ORM\QueryBuilder
-	 *
-	 * @phpstan-param ORM\EntityRepository<Entities\Notifications\INotification> $repository
+	 * @phpstan-param ORM\EntityRepository<Entities\Notifications\Notification> $repository
 	 */
 	protected function doCreateCountQuery(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{

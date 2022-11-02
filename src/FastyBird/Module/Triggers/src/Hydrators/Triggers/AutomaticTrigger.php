@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * AutomaticTriggerHydrator.php
+ * AutomaticTrigger.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -21,26 +21,22 @@ use FastyBird\Module\Triggers\Schemas;
 /**
  * Automatic trigger entity hydrator
  *
+ * @extends Trigger<Entities\Triggers\AutomaticTrigger>
+ *
  * @package         FastyBird:TriggersModule!
  * @subpackage      Hydrators
- *
  * @author          Adam Kadlec <adam.kadlec@fastybird.com>
- *
- * @phpstan-extends TriggerHydrator<Entities\Triggers\IAutomaticTrigger>
  */
-final class AutomaticTriggerHydrator extends TriggerHydrator
+final class AutomaticTrigger extends Trigger
 {
 
-	/** @var string[] */
+	/** @var Array<string> */
 	protected array $relationships = [
-		Schemas\Triggers\AutomaticTriggerSchema::RELATIONSHIPS_CONDITIONS,
-		Schemas\Triggers\AutomaticTriggerSchema::RELATIONSHIPS_ACTIONS,
-		Schemas\Triggers\AutomaticTriggerSchema::RELATIONSHIPS_NOTIFICATIONS,
+		Schemas\Triggers\AutomaticTrigger::RELATIONSHIPS_CONDITIONS,
+		Schemas\Triggers\AutomaticTrigger::RELATIONSHIPS_ACTIONS,
+		Schemas\Triggers\AutomaticTrigger::RELATIONSHIPS_NOTIFICATIONS,
 	];
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function getEntityName(): string
 	{
 		return Entities\Triggers\AutomaticTrigger::class;

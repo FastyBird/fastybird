@@ -13,11 +13,11 @@
  * @date           09.01.22
  */
 
-namespace FastyBird\TriggersModule\Models\States;
+namespace FastyBird\Module\Triggers\Models\States;
 
-use FastyBird\TriggersModule\Entities;
-use FastyBird\TriggersModule\Exceptions;
-use FastyBird\TriggersModule\States;
+use FastyBird\Module\Triggers\Entities;
+use FastyBird\Module\Triggers\Exceptions;
+use FastyBird\Module\Triggers\States;
 use Nette;
 
 /**
@@ -33,25 +33,19 @@ final class ConditionsRepository
 
 	use Nette\SmartObject;
 
-	/** @var IConditionsRepository|null */
-	protected ?IConditionsRepository $repository;
-
-	public function __construct(
-		?IConditionsRepository $repository
-	) {
-		$this->repository = $repository;
+	public function __construct(protected readonly IConditionsRepository|null $repository)
+	{
 	}
 
 	/**
-	 * @param Entities\Conditions\ICondition $condition
-	 *
-	 * @return States\ICondition|null
+	 * @throws Exceptions\NotImplemented
 	 */
 	public function findOne(
-		Entities\Conditions\ICondition $condition
-	): ?States\ICondition {
+		Entities\Conditions\Condition $condition,
+	): States\Condition|null
+	{
 		if ($this->repository === null) {
-			throw new Exceptions\NotImplementedException('Condition state repository is not registered');
+			throw new Exceptions\NotImplemented('Condition state repository is not registered');
 		}
 
 		return $this->repository->findOne($condition);

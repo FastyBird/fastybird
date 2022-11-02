@@ -1,26 +1,28 @@
 <?php declare(strict_types = 1);
 
-namespace Tests\Cases;
+namespace FastyBird\Module\Triggers\Tests\Cases\Unit\Models\Repositories;
 
 use FastyBird\Module\Triggers\Entities;
+use FastyBird\Module\Triggers\Exceptions;
 use FastyBird\Module\Triggers\Models;
 use FastyBird\Module\Triggers\Queries;
-use IPub\DoctrineOrmQuery;
+use FastyBird\Module\Triggers\Tests\Cases\Unit\DbTestCase;
+use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
+use Nette;
 use Ramsey\Uuid;
-use Tester\Assert;
+use RuntimeException;
 
-require_once __DIR__ . '/../../../../bootstrap.php';
-require_once __DIR__ . '/../../DbTestCase.php';
-
-/**
- * @testCase
- */
 final class ConditionsRepositoryTest extends DbTestCase
 {
 
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws Nette\DI\MissingServiceException
+	 * @throws RuntimeException
+	 */
 	public function testReadOne(): void
 	{
-		/** @var Models\Conditions\ConditionsRepository $repository */
 		$repository = $this->getContainer()->getByType(Models\Conditions\ConditionsRepository::class);
 
 		$findQuery = new Queries\FindConditions();
@@ -28,24 +30,26 @@ final class ConditionsRepositoryTest extends DbTestCase
 
 		$entity = $repository->findOneBy($findQuery);
 
-		Assert::true(is_object($entity));
-		Assert::type(Entities\Conditions\TimeCondition::class, $entity);
+		self::assertIsObject($entity);
+		self::assertTrue($entity instanceof Entities\Conditions\TimeCondition);
 	}
 
+	/**
+	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws Nette\DI\MissingServiceException
+	 * @throws RuntimeException
+	 */
 	public function testReadResultSet(): void
 	{
-		/** @var Models\Conditions\ConditionsRepository $repository */
 		$repository = $this->getContainer()->getByType(Models\Conditions\ConditionsRepository::class);
 
 		$findQuery = new Queries\FindConditions();
 
 		$resultSet = $repository->getResultSet($findQuery);
 
-		Assert::type(DoctrineOrmQuery\ResultSet::class, $resultSet);
-		Assert::same(3, $resultSet->getTotalCount());
+		self::assertSame(3, $resultSet->getTotalCount());
 	}
 
 }
-
-$test_case = new ConditionsRepositoryTest();
-$test_case->run();

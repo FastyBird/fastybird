@@ -13,13 +13,14 @@
  * @date           04.04.20
  */
 
-namespace FastyBird\TriggersModule\Entities\Actions;
+namespace FastyBird\Module\Triggers\Entities\Actions;
 
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\Metadata\Types as MetadataTypes;
-use FastyBird\TriggersModule\Entities;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Triggers\Entities;
 use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
 use Ramsey\Uuid;
+use function array_merge;
 
 /**
  * @ORM\Entity
@@ -37,53 +38,49 @@ use Ramsey\Uuid;
  *     }
  * )
  */
-class ChannelPropertyAction extends PropertyAction implements IChannelPropertyAction
+class ChannelPropertyAction extends PropertyAction
 {
 
 	/**
-	 * @var Uuid\UuidInterface
-	 *
 	 * @IPubDoctrine\Crud(is="required")
 	 * @ORM\Column(type="uuid_binary", name="action_channel", nullable=true)
 	 */
 	private Uuid\UuidInterface $channel;
 
 	/**
-	 * @var Uuid\UuidInterface
-	 *
 	 * @IPubDoctrine\Crud(is="required")
 	 * @ORM\Column(type="uuid_binary", name="action_channel_property", nullable=true)
 	 */
 	private Uuid\UuidInterface $property;
 
-	/**
-	 * @param Uuid\UuidInterface $device
-	 * @param Uuid\UuidInterface $channel
-	 * @param Uuid\UuidInterface $property
-	 * @param string $value
-	 * @param Entities\Triggers\ITrigger $trigger
-	 * @param Uuid\UuidInterface|null $id
-	 */
 	public function __construct(
 		Uuid\UuidInterface $device,
 		Uuid\UuidInterface $channel,
 		Uuid\UuidInterface $property,
 		string $value,
-		Entities\Triggers\ITrigger $trigger,
-		?Uuid\UuidInterface $id = null
-	) {
+		Entities\Triggers\Trigger $trigger,
+		Uuid\UuidInterface|null $id = null,
+	)
+	{
 		parent::__construct($device, $value, $trigger, $id);
 
 		$this->channel = $channel;
 		$this->property = $property;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getType(): MetadataTypes\TriggerActionTypeType
+	public function getType(): MetadataTypes\TriggerActionType
 	{
-		return MetadataTypes\TriggerActionTypeType::get(MetadataTypes\TriggerActionTypeType::TYPE_CHANNEL_PROPERTY);
+		return MetadataTypes\TriggerActionType::get(MetadataTypes\TriggerActionType::TYPE_CHANNEL_PROPERTY);
+	}
+
+	public function getChannel(): Uuid\UuidInterface
+	{
+		return $this->channel;
+	}
+
+	public function getProperty(): Uuid\UuidInterface
+	{
+		return $this->property;
 	}
 
 	/**
@@ -92,25 +89,9 @@ class ChannelPropertyAction extends PropertyAction implements IChannelPropertyAc
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), [
-			'channel'  => $this->getChannel()->toString(),
+			'channel' => $this->getChannel()->toString(),
 			'property' => $this->getProperty()->toString(),
 		]);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getChannel(): Uuid\UuidInterface
-	{
-		return $this->channel;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getProperty(): Uuid\UuidInterface
-	{
-		return $this->property;
 	}
 
 }

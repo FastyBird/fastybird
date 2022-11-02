@@ -13,11 +13,19 @@
  * @date           25.05.20
  */
 
-namespace FastyBird\TriggersModule\Entities;
+namespace FastyBird\Module\Triggers\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
 use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
 use Nette\Utils;
+use function array_key_exists;
+use function array_merge;
+use function array_pop;
+use function count;
+use function explode;
+use function is_array;
+use function is_string;
+use function trim;
 
 /**
  * Entity params field trait
@@ -31,38 +39,34 @@ trait TEntityParams
 {
 
 	/**
-	 * @var mixed[]|null
+	 * @var Array<string, mixed>|null
 	 *
 	 * @IPubDoctrine\Crud(is="writable")
 	 * @ORM\Column(type="json", name="params", nullable=true)
 	 */
-	protected ?array $params = null;
+	protected array|null $params = null;
 
-	/**
-	 * @return Utils\ArrayHash
-	 */
 	public function getParams(): Utils\ArrayHash
 	{
 		return $this->params !== null ? Utils\ArrayHash::from($this->params) : Utils\ArrayHash::from([]);
 	}
 
 	/**
-	 * @param mixed[] $params
+	 * @param Array<string, mixed> $params
 	 *
-	 * @return void
+	 * @throws Utils\JsonException
 	 */
 	public function setParams(array $params): void
 	{
-		$this->params = $this->params !== null ? array_merge($this->params, $params) : $params;
+		$toUpdate = $this->params !== null ? array_merge($this->params, $params) : $params;
+		$toUpdate = Utils\Json::decode(Utils\Json::encode($toUpdate), Utils\Json::FORCE_ARRAY);
+
+		if (is_array($toUpdate)) {
+			$this->params = $toUpdate;
+		}
 	}
 
-	/**
-	 * @param string $key
-	 * @param mixed|null $value
-	 *
-	 * @return void
-	 */
-	public function setParam(string $key, $value = null): void
+	public function setParam(string $key, mixed $value = null): void
 	{
 		if ($this->params === null) {
 			$this->params = [];
@@ -97,13 +101,7 @@ trait TEntityParams
 		}
 	}
 
-	/**
-	 * @param string $key
-	 * @param mixed|null $default
-	 *
-	 * @return mixed|null
-	 */
-	public function getParam(string $key, $default = null)
+	public function getParam(string $key, mixed $default = null): mixed
 	{
 		if ($this->params === null) {
 			return $default;
@@ -117,11 +115,7 @@ trait TEntityParams
 
 				foreach ($parts as $part) {
 					if (isset($val)) {
-						if (isset($val[$part])) {
-							$val = $val[$part];
-						} else {
-							$val = null;
-						}
+						$val = is_array($val) && array_key_exists($part, $val) ? $val[$part] : null;
 					} else {
 						$val = $this->params[$part] ?? $default;
 					}

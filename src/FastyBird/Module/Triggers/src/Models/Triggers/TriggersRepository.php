@@ -13,16 +13,17 @@
  * @date           04.04.20
  */
 
-namespace FastyBird\TriggersModule\Models\Triggers;
+namespace FastyBird\Module\Triggers\Models\Triggers;
 
 use Doctrine\ORM;
 use Doctrine\Persistence;
-use FastyBird\TriggersModule\Entities;
-use FastyBird\TriggersModule\Exceptions;
-use FastyBird\TriggersModule\Queries;
+use FastyBird\Module\Triggers\Entities;
+use FastyBird\Module\Triggers\Exceptions;
+use FastyBird\Module\Triggers\Queries;
+use FastyBird\Module\Triggers\Utilities;
 use IPub\DoctrineOrmQuery;
 use Nette;
-use Throwable;
+use function is_array;
 
 /**
  * Trigger repository
@@ -32,93 +33,99 @@ use Throwable;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class TriggersRepository implements ITriggersRepository
+final class TriggersRepository
 {
 
 	use Nette\SmartObject;
 
-	/**
-	 * @var ORM\EntityRepository[]
-	 *
-	 * @phpstan-var ORM\EntityRepository<Entities\Triggers\ITrigger>[]
-	 */
+	/** @var Array<ORM\EntityRepository<Entities\Triggers\Trigger>> */
 	private array $repository = [];
 
-	/** @var Persistence\ManagerRegistry */
-	private Persistence\ManagerRegistry $managerRegistry;
-
-	public function __construct(Persistence\ManagerRegistry $managerRegistry)
+	public function __construct(
+		private readonly Utilities\Database $database,
+		private readonly Persistence\ManagerRegistry $managerRegistry,
+	)
 	{
-		$this->managerRegistry = $managerRegistry;
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * @phpstan-param class-string<Entities\Triggers\Trigger> $type
+	 *
+	 * @throws Exceptions\InvalidState
 	 */
 	public function findOneBy(
-		Queries\FindTriggersQuery $queryObject,
-		string $type = Entities\Triggers\Trigger::class
-	): ?Entities\Triggers\ITrigger {
-		/** @var Entities\Triggers\ITrigger|null $trigger */
-		$trigger = $queryObject->fetchOne($this->getRepository($type));
-
-		return $trigger;
+		Queries\FindTriggers $queryObject,
+		string $type = Entities\Triggers\Trigger::class,
+	): Entities\Triggers\Trigger|null
+	{
+		return $this->database->query(
+			fn (): Entities\Triggers\Trigger|null => $queryObject->fetchOne($this->getRepository($type)),
+		);
 	}
 
 	/**
-	 * @param string $type
+	 * @phpstan-param class-string<Entities\Triggers\Trigger> $type
 	 *
-	 * @return ORM\EntityRepository
+	 * @phpstan-return Array<Entities\Triggers\Trigger>
 	 *
-	 * @phpstan-param class-string $type
+	 * @throws Exceptions\InvalidState
+	 */
+	public function findAllBy(
+		Queries\FindTriggers $queryObject,
+		string $type = Entities\Triggers\Trigger::class,
+	): array
+	{
+		return $this->database->query(
+			function () use ($queryObject, $type): array {
+				/** @var Array<Entities\Triggers\Trigger>|DoctrineOrmQuery\ResultSet<Entities\Triggers\Trigger> $result */
+				$result = $queryObject->fetch($this->getRepository($type));
+
+				if (is_array($result)) {
+					return $result;
+				}
+
+				/** @var Array<Entities\Triggers\Trigger> $data */
+				$data = $result->toArray();
+
+				return $data;
+			},
+		);
+	}
+
+	/**
+	 * @phpstan-param class-string<Entities\Triggers\Trigger> $type
 	 *
-	 * @phpstan-return ORM\EntityRepository<Entities\Triggers\ITrigger>
+	 * @phpstan-return DoctrineOrmQuery\ResultSet<Entities\Triggers\Trigger>
+	 *
+	 * @throws Exceptions\InvalidState
+	 */
+	public function getResultSet(
+		Queries\FindTriggers $queryObject,
+		string $type = Entities\Triggers\Trigger::class,
+	): DoctrineOrmQuery\ResultSet
+	{
+		return $this->database->query(
+			function () use ($queryObject, $type): DoctrineOrmQuery\ResultSet {
+				/** @var DoctrineOrmQuery\ResultSet<Entities\Triggers\Trigger> $result */
+				$result = $queryObject->fetch($this->getRepository($type));
+
+				return $result;
+			},
+		);
+	}
+
+	/**
+	 * @param class-string<Entities\Triggers\Trigger> $type
+	 *
+	 * @return ORM\EntityRepository<Entities\Triggers\Trigger>
 	 */
 	private function getRepository(string $type): ORM\EntityRepository
 	{
 		if (!isset($this->repository[$type])) {
-			$repository = $this->managerRegistry->getRepository($type);
-
-			if (!$repository instanceof ORM\EntityRepository) {
-				throw new Exceptions\InvalidStateException('Entity repository could not be loaded');
-			}
-
-			$this->repository[$type] = $repository;
+			$this->repository[$type] = $this->managerRegistry->getRepository($type);
 		}
 
 		return $this->repository[$type];
-	}
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @throws Throwable
-	 */
-	public function findAllBy(
-		Queries\FindTriggersQuery $queryObject,
-		string $type = Entities\Triggers\Trigger::class
-	): array {
-		$result = $queryObject->fetch($this->getRepository($type));
-
-		return is_array($result) ? $result : $result->toArray();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @throws Throwable
-	 */
-	public function getResultSet(
-		Queries\FindTriggersQuery $queryObject,
-		string $type = Entities\Triggers\Trigger::class
-	): DoctrineOrmQuery\ResultSet {
-		$result = $queryObject->fetch($this->getRepository($type));
-
-		if (!$result instanceof DoctrineOrmQuery\ResultSet) {
-			throw new Exceptions\InvalidStateException('Result set for given query could not be loaded.');
-		}
-
-		return $result;
 	}
 
 }

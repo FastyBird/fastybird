@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ActionSchema.php
+ * Action.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -28,15 +28,14 @@ use Neomerx\JsonApi;
 /**
  * Action entity schema
  *
+ * @template T of Entities\Actions\Action
+ * @extends  JsonApiSchemas\JsonApi<T>
+ *
  * @package          FastyBird:TriggersModule!
  * @subpackage       Schemas
- *
  * @author           Adam Kadlec <adam.kadlec@fastybird.com>
- *
- * @phpstan-template T of Entities\Actions\IAction
- * @phpstan-extends  JsonApiSchemas\JsonApiSchema<T>
  */
-abstract class ActionSchema extends JsonApiSchemas\JsonApiSchema
+abstract class Action extends JsonApiSchemas\JsonApi
 {
 
 	/**
@@ -44,146 +43,131 @@ abstract class ActionSchema extends JsonApiSchemas\JsonApiSchema
 	 */
 	public const RELATIONSHIPS_TRIGGER = 'trigger';
 
-	/** @var Routing\IRouter */
-	protected Routing\IRouter $router;
-
-	/** @var Models\States\ActionsRepository */
-	private Models\States\ActionsRepository $stateRepository;
-
 	public function __construct(
-		Routing\IRouter $router,
-		Models\States\ActionsRepository $stateRepository
-	) {
-		$this->router = $router;
-		$this->stateRepository = $stateRepository;
+		protected readonly Routing\IRouter $router,
+		private readonly Models\States\ActionsRepository $stateRepository,
+	)
+	{
 	}
 
 	/**
-	 * @param Entities\Actions\IAction $action
-	 * @param JsonApi\Contracts\Schema\ContextInterface $context
+	 * @param T $resource
 	 *
-	 * @return iterable<string, bool>
-	 *
-	 * @phpstan-param T $action
+	 * @return iterable<string, string|bool>
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
-	public function getAttributes($action, JsonApi\Contracts\Schema\ContextInterface $context): iterable
+	public function getAttributes(
+		$resource,
+		JsonApi\Contracts\Schema\ContextInterface $context,
+	): iterable
 	{
 		try {
-			$state = $this->stateRepository->findOne($action);
+			$state = $this->stateRepository->findOne($resource);
 
-		} catch (Exceptions\NotImplementedException $ex) {
+		} catch (Exceptions\NotImplemented) {
 			$state = null;
 		}
 
 		return [
-			'enabled'      => $action->isEnabled(),
+			'enabled' => $resource->isEnabled(),
 			'is_triggered' => $state !== null && $state->isTriggered(),
 		];
 	}
 
 	/**
-	 * @param Entities\Actions\IAction $action
-	 *
-	 * @return JsonApi\Contracts\Schema\LinkInterface
-	 *
-	 * @phpstan-param T $action
+	 * @param T $resource
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
-	public function getSelfLink($action): JsonApi\Contracts\Schema\LinkInterface
+	public function getSelfLink($resource): JsonApi\Contracts\Schema\LinkInterface
 	{
 		return new JsonApi\Schema\Link(
 			false,
 			$this->router->urlFor(
-				TriggersModule\Constants::ROUTE_NAME_TRIGGER_ACTION,
+				Triggers\Constants::ROUTE_NAME_TRIGGER_ACTION,
 				[
-					Router\Routes::URL_TRIGGER_ID => $action->getTrigger()->getPlainId(),
-					Router\Routes::URL_ITEM_ID    => $action->getPlainId(),
-				]
+					Router\Routes::URL_TRIGGER_ID => $resource->getTrigger()->getPlainId(),
+					Router\Routes::URL_ITEM_ID => $resource->getPlainId(),
+				],
 			),
-			false
+			false,
 		);
 	}
 
 	/**
-	 * @param Entities\Actions\IAction $action
-	 * @param JsonApi\Contracts\Schema\ContextInterface $context
+	 * @param T $resource
 	 *
 	 * @return iterable<string, mixed>
 	 *
-	 * @phpstan-param T $action
-	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
-	public function getRelationships($action, JsonApi\Contracts\Schema\ContextInterface $context): iterable
+	public function getRelationships(
+		$resource,
+		JsonApi\Contracts\Schema\ContextInterface $context,
+	): iterable
 	{
 		return [
 			self::RELATIONSHIPS_TRIGGER => [
-				self::RELATIONSHIP_DATA          => $action->getTrigger(),
-				self::RELATIONSHIP_LINKS_SELF    => true,
+				self::RELATIONSHIP_DATA => $resource->getTrigger(),
+				self::RELATIONSHIP_LINKS_SELF => true,
 				self::RELATIONSHIP_LINKS_RELATED => true,
 			],
 		];
 	}
 
 	/**
-	 * @param Entities\Actions\IAction $action
-	 * @param string $name
-	 *
-	 * @return JsonApi\Contracts\Schema\LinkInterface
-	 *
-	 * @phpstan-param T $action
+	 * @param T $resource
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
-	public function getRelationshipRelatedLink($action, string $name): JsonApi\Contracts\Schema\LinkInterface
+	public function getRelationshipRelatedLink(
+		$resource,
+		string $name,
+	): JsonApi\Contracts\Schema\LinkInterface
 	{
 		if ($name === self::RELATIONSHIPS_TRIGGER) {
 			return new JsonApi\Schema\Link(
 				false,
 				$this->router->urlFor(
-					TriggersModule\Constants::ROUTE_NAME_TRIGGER,
+					Triggers\Constants::ROUTE_NAME_TRIGGER,
 					[
-						Router\Routes::URL_ITEM_ID => $action->getTrigger()->getPlainId(),
-					]
+						Router\Routes::URL_ITEM_ID => $resource->getTrigger()->getPlainId(),
+					],
 				),
-				false
+				false,
 			);
 		}
 
-		return parent::getRelationshipRelatedLink($action, $name);
+		return parent::getRelationshipRelatedLink($resource, $name);
 	}
 
 	/**
-	 * @param Entities\Actions\IAction $action
-	 * @param string $name
-	 *
-	 * @return JsonApi\Contracts\Schema\LinkInterface
-	 *
-	 * @phpstan-param T $action
+	 * @param T $resource
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
-	public function getRelationshipSelfLink($action, string $name): JsonApi\Contracts\Schema\LinkInterface
+	public function getRelationshipSelfLink(
+		$resource,
+		string $name,
+	): JsonApi\Contracts\Schema\LinkInterface
 	{
 		if ($name === self::RELATIONSHIPS_TRIGGER) {
 			return new JsonApi\Schema\Link(
 				false,
 				$this->router->urlFor(
-					TriggersModule\Constants::ROUTE_NAME_TRIGGER_ACTION_RELATIONSHIP,
+					Triggers\Constants::ROUTE_NAME_TRIGGER_ACTION_RELATIONSHIP,
 					[
-						Router\Routes::URL_TRIGGER_ID  => $action->getTrigger()->getPlainId(),
-						Router\Routes::URL_ITEM_ID     => $action->getPlainId(),
+						Router\Routes::URL_TRIGGER_ID => $resource->getTrigger()->getPlainId(),
+						Router\Routes::URL_ITEM_ID => $resource->getPlainId(),
 						Router\Routes::RELATION_ENTITY => $name,
-					]
+					],
 				),
-				false
+				false,
 			);
 		}
 
-		return parent::getRelationshipSelfLink($action, $name);
+		return parent::getRelationshipSelfLink($resource, $name);
 	}
 
 }

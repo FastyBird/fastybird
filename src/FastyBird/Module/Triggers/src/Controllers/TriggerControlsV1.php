@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * TriggerControlsV1Controller.php
+ * TriggerControlsV1.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -15,9 +15,11 @@
 
 namespace FastyBird\Module\Triggers\Controllers;
 
+use Exception;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
 use FastyBird\Module\Triggers\Controllers;
 use FastyBird\Module\Triggers\Entities;
+use FastyBird\Module\Triggers\Exceptions;
 use FastyBird\Module\Triggers\Models;
 use FastyBird\Module\Triggers\Queries;
 use FastyBird\Module\Triggers\Router;
@@ -25,6 +27,8 @@ use FastyBird\Module\Triggers\Schemas;
 use Fig\Http\Message\StatusCodeInterface;
 use Psr\Http\Message;
 use Ramsey\Uuid;
+use function strtolower;
+use function strval;
 
 /**
  * Trigger controls API controller
@@ -37,45 +41,35 @@ use Ramsey\Uuid;
  * @Secured
  * @Secured\User(loggedIn)
  */
-final class TriggerControlsV1Controller extends BaseV1Controller
+final class TriggerControlsV1 extends BaseV1
 {
 
-	use Controllers\Finders\TTriggerFinder;
-
-	/** @var Models\Triggers\ITriggersRepository */
-	protected Models\Triggers\ITriggersRepository $triggersRepository;
-
-	/** @var Models\Triggers\Controls\IControlsRepository */
-	private Models\Triggers\Controls\IControlsRepository $controlRepository;
+	use Controllers\Finders\TTrigger;
 
 	public function __construct(
-		Models\Triggers\ITriggersRepository $triggersRepository,
-		Models\Triggers\Controls\IControlsRepository $controlRepository
-	) {
-		$this->triggersRepository = $triggersRepository;
-		$this->controlRepository = $controlRepository;
+		private readonly Models\Triggers\TriggersRepository $triggersRepository,
+		private readonly Models\Triggers\Controls\ControlsRepository $controlRepository,
+	)
+	{
 	}
 
 	/**
-	 * @param Message\ServerRequestInterface $request
-	 * @param Message\ResponseInterface $response
-	 *
-	 * @return Message\ResponseInterface
-	 *
-	 * @throws JsonApiExceptions\IJsonApiException
+	 * @throws Exceptions\InvalidState
+	 * @throws JsonApiExceptions\JsonApi
 	 */
 	public function index(
 		Message\ServerRequestInterface $request,
-		Message\ResponseInterface $response
-	): Message\ResponseInterface {
+		Message\ResponseInterface $response,
+	): Message\ResponseInterface
+	{
 		// At first, try to load trigger
-		$trigger = $this->findTrigger($request->getAttribute(Router\Routes::URL_TRIGGER_ID));
+		$trigger = $this->findTrigger(strval($request->getAttribute(Router\Routes::URL_TRIGGER_ID)));
 
-		if (!$trigger instanceof Entities\Triggers\IManualTrigger) {
-			throw new JsonApiExceptions\JsonApiErrorException(
+		if (!$trigger instanceof Entities\Triggers\ManualTrigger) {
+			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				$this->translator->translate('//triggers-module.base.messages.notFound.heading'),
-				$this->translator->translate('//triggers-module.base.messages.notFound.message')
+				$this->translator->translate('//triggers-module.base.messages.notFound.message'),
 			);
 		}
 
@@ -89,32 +83,30 @@ final class TriggerControlsV1Controller extends BaseV1Controller
 	}
 
 	/**
-	 * @param Message\ServerRequestInterface $request
-	 * @param Message\ResponseInterface $response
-	 *
-	 * @return Message\ResponseInterface
-	 *
-	 * @throws JsonApiExceptions\IJsonApiException
+	 * @throws Exception
+	 * @throws Exceptions\InvalidState
+	 * @throws JsonApiExceptions\JsonApi
 	 */
 	public function read(
 		Message\ServerRequestInterface $request,
-		Message\ResponseInterface $response
-	): Message\ResponseInterface {
+		Message\ResponseInterface $response,
+	): Message\ResponseInterface
+	{
 		// At first, try to load trigger
-		$trigger = $this->findTrigger($request->getAttribute(Router\Routes::URL_TRIGGER_ID));
+		$trigger = $this->findTrigger(strval($request->getAttribute(Router\Routes::URL_TRIGGER_ID)));
 
-		if (!$trigger instanceof Entities\Triggers\IManualTrigger) {
-			throw new JsonApiExceptions\JsonApiErrorException(
+		if (!$trigger instanceof Entities\Triggers\ManualTrigger) {
+			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				$this->translator->translate('//triggers-module.base.messages.notFound.heading'),
-				$this->translator->translate('//triggers-module.base.messages.notFound.message')
+				$this->translator->translate('//triggers-module.base.messages.notFound.message'),
 			);
 		}
 
-		if (Uuid\Uuid::isValid($request->getAttribute(Router\Routes::URL_ITEM_ID))) {
+		if (Uuid\Uuid::isValid(strval($request->getAttribute(Router\Routes::URL_ITEM_ID)))) {
 			$findQuery = new Queries\FindTriggerControls();
 			$findQuery->forTrigger($trigger);
-			$findQuery->byId(Uuid\Uuid::fromString($request->getAttribute(Router\Routes::URL_ITEM_ID)));
+			$findQuery->byId(Uuid\Uuid::fromString(strval($request->getAttribute(Router\Routes::URL_ITEM_ID))));
 
 			// & control
 			$control = $this->controlRepository->findOneBy($findQuery);
@@ -124,43 +116,41 @@ final class TriggerControlsV1Controller extends BaseV1Controller
 			}
 		}
 
-		throw new JsonApiExceptions\JsonApiErrorException(
+		throw new JsonApiExceptions\JsonApiError(
 			StatusCodeInterface::STATUS_NOT_FOUND,
 			$this->translator->translate('//triggers-module.base.messages.notFound.heading'),
-			$this->translator->translate('//triggers-module.base.messages.notFound.message')
+			$this->translator->translate('//triggers-module.base.messages.notFound.message'),
 		);
 	}
 
 	/**
-	 * @param Message\ServerRequestInterface $request
-	 * @param Message\ResponseInterface $response
-	 *
-	 * @return Message\ResponseInterface
-	 *
-	 * @throws JsonApiExceptions\IJsonApiException
+	 * @throws Exception
+	 * @throws Exceptions\InvalidState
+	 * @throws JsonApiExceptions\JsonApi
 	 */
 	public function readRelationship(
 		Message\ServerRequestInterface $request,
-		Message\ResponseInterface $response
-	): Message\ResponseInterface {
+		Message\ResponseInterface $response,
+	): Message\ResponseInterface
+	{
 		// At first, try to load trigger
-		$trigger = $this->findTrigger($request->getAttribute(Router\Routes::URL_TRIGGER_ID));
+		$trigger = $this->findTrigger(strval($request->getAttribute(Router\Routes::URL_TRIGGER_ID)));
 
-		if (!$trigger instanceof Entities\Triggers\IManualTrigger) {
-			throw new JsonApiExceptions\JsonApiErrorException(
+		if (!$trigger instanceof Entities\Triggers\ManualTrigger) {
+			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				$this->translator->translate('//triggers-module.base.messages.notFound.heading'),
-				$this->translator->translate('//triggers-module.base.messages.notFound.message')
+				$this->translator->translate('//triggers-module.base.messages.notFound.message'),
 			);
 		}
 
 		// & relation entity name
-		$relationEntity = strtolower($request->getAttribute(Router\Routes::RELATION_ENTITY));
+		$relationEntity = strtolower(strval($request->getAttribute(Router\Routes::RELATION_ENTITY)));
 
-		if (Uuid\Uuid::isValid($request->getAttribute(Router\Routes::URL_ITEM_ID))) {
+		if (Uuid\Uuid::isValid(strval($request->getAttribute(Router\Routes::URL_ITEM_ID)))) {
 			$findQuery = new Queries\FindTriggerControls();
 			$findQuery->forTrigger($trigger);
-			$findQuery->byId(Uuid\Uuid::fromString($request->getAttribute(Router\Routes::URL_ITEM_ID)));
+			$findQuery->byId(Uuid\Uuid::fromString(strval($request->getAttribute(Router\Routes::URL_ITEM_ID))));
 
 			// & control
 			$control = $this->controlRepository->findOneBy($findQuery);
@@ -170,10 +160,10 @@ final class TriggerControlsV1Controller extends BaseV1Controller
 					return $this->buildResponse($request, $response, $control->getTrigger());
 				}
 			} else {
-				throw new JsonApiExceptions\JsonApiErrorException(
+				throw new JsonApiExceptions\JsonApiError(
 					StatusCodeInterface::STATUS_NOT_FOUND,
 					$this->translator->translate('//triggers-module.base.messages.notFound.heading'),
-					$this->translator->translate('//triggers-module.base.messages.notFound.message')
+					$this->translator->translate('//triggers-module.base.messages.notFound.message'),
 				);
 			}
 		}

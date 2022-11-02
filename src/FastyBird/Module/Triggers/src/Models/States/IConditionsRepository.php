@@ -13,10 +13,10 @@
  * @date           09.01.22
  */
 
-namespace FastyBird\TriggersModule\Models\States;
+namespace FastyBird\Module\Triggers\Models\States;
 
-use FastyBird\TriggersModule\Entities;
-use FastyBird\TriggersModule\States;
+use FastyBird\Module\Triggers\Entities;
+use FastyBird\Module\Triggers\States;
 
 /**
  * Condition state repository interface
@@ -29,13 +29,8 @@ use FastyBird\TriggersModule\States;
 interface IConditionsRepository
 {
 
-	/**
-	 * @param Entities\Conditions\ICondition $condition
-	 *
-	 * @return States\ICondition|null
-	 */
 	public function findOne(
-		Entities\Conditions\ICondition $condition
-	): ?States\ICondition;
+		Entities\Conditions\Condition $condition,
+	): States\Condition|null;
 
 }

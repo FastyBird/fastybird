@@ -13,9 +13,9 @@
  * @date           04.04.20
  */
 
-namespace FastyBird\TriggersModule\Exceptions;
+namespace FastyBird\Module\Triggers\Exceptions;
 
-class UniqueConditionConstraint extends InvalidStateException implements IException
+class UniqueConditionConstraint extends InvalidState implements Exception
 {
 
 }

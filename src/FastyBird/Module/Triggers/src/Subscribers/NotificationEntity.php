@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ActionEntitySubscriber.php
+ * ActionEntity.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -20,6 +20,7 @@ use Doctrine\ORM;
 use FastyBird\Module\Triggers\Entities;
 use FastyBird\Module\Triggers\Exceptions;
 use Nette;
+use function array_merge;
 
 /**
  * Trigger notification entity listener
@@ -29,7 +30,7 @@ use Nette;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class NotificationEntitySubscriber implements Common\EventSubscriber
+final class NotificationEntity implements Common\EventSubscriber
 {
 
 	use Nette\SmartObject;
@@ -37,7 +38,7 @@ final class NotificationEntitySubscriber implements Common\EventSubscriber
 	/**
 	 * Register events
 	 *
-	 * @return string[]
+	 * @return Array<string>
 	 */
 	public function getSubscribedEvents(): array
 	{
@@ -47,9 +48,8 @@ final class NotificationEntitySubscriber implements Common\EventSubscriber
 	}
 
 	/**
-	 * @param ORM\Event\OnFlushEventArgs $eventArgs
-	 *
-	 * @return void
+	 * @throws Exceptions\UniqueNotificationEmailConstraint
+	 * @throws Exceptions\UniqueNotificationNumberConstraint
 	 */
 	public function onFlush(ORM\Event\OnFlushEventArgs $eventArgs): void
 	{
@@ -58,26 +58,26 @@ final class NotificationEntitySubscriber implements Common\EventSubscriber
 
 		// Check all scheduled updates
 		foreach (array_merge($uow->getScheduledEntityInsertions(), $uow->getScheduledEntityUpdates()) as $object) {
-			if ($object instanceof Entities\Notifications\ISmsNotification) {
+			if ($object instanceof Entities\Notifications\SmsNotification) {
 				$trigger = $object->getTrigger();
 
 				foreach ($trigger->getNotifications() as $notification) {
 					if (
 						!$notification->getId()->equals($object->getId())
-						&& $notification instanceof Entities\Notifications\ISmsNotification
+						&& $notification instanceof Entities\Notifications\SmsNotification
 						&& $notification->getPhone()->getInternationalNumber() === $object->getPhone()
 							->getInternationalNumber()
 					) {
 						throw new Exceptions\UniqueNotificationNumberConstraint('Not same phone number in trigger');
 					}
 				}
-			} elseif ($object instanceof Entities\Notifications\IEmailNotification) {
+			} elseif ($object instanceof Entities\Notifications\EmailNotification) {
 				$trigger = $object->getTrigger();
 
 				foreach ($trigger->getNotifications() as $notification) {
 					if (
 						!$notification->getId()->equals($object->getId())
-						&& $notification instanceof Entities\Notifications\IEmailNotification
+						&& $notification instanceof Entities\Notifications\EmailNotification
 						&& $notification->getEmail() === $object->getEmail()
 					) {
 						throw new Exceptions\UniqueNotificationEmailConstraint('Not same email address in trigger');
