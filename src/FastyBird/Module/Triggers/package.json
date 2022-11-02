@@ -38,15 +38,17 @@
     "lint:ts": "tslint -c tslint.json 'public/**/*.ts'"
   },
   "dependencies": {
-    "@fastybird/metadata": "^0.44",
+    "@fastybird/metadata": "^0.47",
     "@fastybird/vue-wamp-v1": "^0.1",
     "@fastybird/vuex-orm-wamp": "^0.1",
+    "@fastybird/web-ui-theme": "^0.2.9",
     "@vuex-orm/core": "^0.36",
     "@vuex-orm/plugin-axios": "^0.9",
     "ajv": "^8.5",
-    "date-fns": "^2.22.1",
+    "date-fns": "^2.26",
     "jsona": "1.9.2",
     "lodash": "^4.17",
+    "natural-orderby": "^2.0.3",
     "uuid": "^8.3"
   },
   "devDependencies": {
@@ -54,10 +56,12 @@
     "@babel/plugin-proposal-class-properties": "^7.10",
     "@babel/preset-env": "^7.9",
     "@babel/preset-typescript": "^7.9",
+    "@nuxt/types": "^2.15.8",
+    "@nuxtjs/composition-api": "^0.31.0",
     "@rollup/plugin-alias": "^2.2",
     "@rollup/plugin-babel": "^5.3",
     "@rollup/plugin-commonjs": "^11.1",
-    "@rollup/plugin-eslint": "^8.0",
+    "@rollup/plugin-eslint" : "8.0.2",
     "@rollup/plugin-replace": "^2.3",
     "@types/lodash": "^4.14",
     "@types/node": "^15.12",
