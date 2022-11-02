@@ -1,0 +1,16 @@
+<?php declare(strict_types=1);
+
+namespace Neomerx\JsonApi\Contracts\Schema;
+
+interface PositionInterface
+{
+    const PATH_SEPARATOR = DocumentInterface::PATH_SEPARATOR;
+
+    public function getLevel(): int;
+
+    public function getPath(): string;
+
+    public function getParentType(): string|null;
+
+    public function getParentRelationship(): string|null;
+}

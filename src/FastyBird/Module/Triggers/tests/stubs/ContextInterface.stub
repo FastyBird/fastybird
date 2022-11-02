@@ -1,0 +1,18 @@
+<?php declare(strict_types=1);
+
+namespace Neomerx\JsonApi\Contracts\Schema;
+
+interface ContextInterface
+{
+    /**
+     * @return Array<mixed>
+     */
+    public function getFieldSets(): array;
+
+    /**
+     * @return Array<mixed>
+     */
+    public function getIncludePaths(): array;
+
+    public function getPosition(): PositionInterface;
+}
