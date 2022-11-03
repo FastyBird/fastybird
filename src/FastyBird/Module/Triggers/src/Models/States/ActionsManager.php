@@ -72,7 +72,7 @@ final class ActionsManager
 			throw new Exceptions\NotImplemented('Action state manager is not registered');
 		}
 
-		$createdState = $this->manager->create($action, $values);
+		$createdState = $this->manager->create($action->getId(), $values);
 
 		$this->publishEntity($action, $createdState);
 

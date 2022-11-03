@@ -21,6 +21,10 @@
                 <element key="src/FastyBird/Bridge/RedisDbDevicesModule/tests/cases/unit" value="FastyBird\Bridge\RedisDbDevicesModule\Tests\Cases\Unit"/>
                 <element key="src/FastyBird/Bridge/RedisDbDevicesModule/tests/tools" value="FastyBird\Bridge\RedisDbDevicesModule\Tests\Tools"/>
 
+                <element key="src/FastyBird/Bridge/RedisDbTriggersModule/src" value="FastyBird\Bridge\RedisDbTriggersModule"/>
+                <element key="src/FastyBird/Bridge/RedisDbTriggersModule/tests/cases/unit" value="FastyBird\Bridge\RedisDbTriggersModule\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Bridge/RedisDbTriggersModule/tests/tools" value="FastyBird\Bridge\RedisDbTriggersModule\Tests\Tools"/>
+
                 <element key="src/FastyBird/Bridge/RedisDbWsExchange/src" value="FastyBird\Bridge\RedisDbWsExchange"/>
                 <element key="src/FastyBird/Bridge/RedisDbWsExchange/tests/cases/unit" value="FastyBird\Bridge\RedisDbWsExchange\Tests\Cases\Unit"/>
 

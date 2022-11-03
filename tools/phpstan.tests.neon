@@ -2,6 +2,7 @@ includes:
     - phpstan.base.neon
 
     - ../src/FastyBird/Bridge/RedisDbDevicesModule/tools/phpstan.config.tests.neon
+    - ../src/FastyBird/Bridge/RedisDbTriggersModule/tools/phpstan.config.tests.neon
     - ../src/FastyBird/Bridge/RedisDbWsExchange/tools/phpstan.config.tests.neon
 
     - ../src/FastyBird/Connector/FbMqtt/tools/phpstan.config.tests.neon

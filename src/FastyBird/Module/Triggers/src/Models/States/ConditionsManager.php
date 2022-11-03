@@ -72,7 +72,7 @@ final class ConditionsManager
 			throw new Exceptions\NotImplemented('Condition state manager is not registered');
 		}
 
-		$createdState = $this->manager->create($condition, $values);
+		$createdState = $this->manager->create($condition->getId(), $values);
 
 		$this->publishEntity($condition, $createdState);
 

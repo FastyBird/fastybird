@@ -15,9 +15,9 @@
 
 namespace FastyBird\Module\Triggers\Models\States;
 
-use FastyBird\Module\Triggers\Entities;
 use FastyBird\Module\Triggers\States;
 use Nette\Utils;
+use Ramsey\Uuid;
 
 /**
  * Actions states manager interface
@@ -30,15 +30,9 @@ use Nette\Utils;
 interface IActionsManager
 {
 
-	public function create(
-		Entities\Actions\Action $action,
-		Utils\ArrayHash $values,
-	): States\Action;
+	public function create(Uuid\UuidInterface $id, Utils\ArrayHash $values): States\Action;
 
-	public function update(
-		States\Action $state,
-		Utils\ArrayHash $values,
-	): States\Action;
+	public function update(States\Action $state, Utils\ArrayHash $values): States\Action;
 
 	public function delete(States\Action $state): bool;
 
