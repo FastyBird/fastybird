@@ -17,7 +17,7 @@
 extensions:
     contributteConsole  : Contributte\Console\DI\ConsoleExtension(%consoleMode%)
     contributteMonolog  : Contributte\Monolog\DI\MonologExtension
-    fbBootstrap         : FastyBird\Bootstrap\DI\BootstrapExtension
+    fbBootstrapLibrary  : FastyBird\Library\Bootstrap\DI\BootstrapExtension
 
 ##################################
 # Nette extensions configuration #

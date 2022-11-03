@@ -17,10 +17,10 @@ This is a [Nette framework](https://nette.org) extension for application bootstr
 
 ## Installation
 
-The best way to install **fastybird/bootstrap** is using [Composer](http://getcomposer.org/):
+The best way to install **fastybird/bootstrap-library** is using [Composer](http://getcomposer.org/):
 
 ```sh
-composer require fastybird/bootstrap
+composer require fastybird/bootstrap-library
 ```
 
 ## Documentation

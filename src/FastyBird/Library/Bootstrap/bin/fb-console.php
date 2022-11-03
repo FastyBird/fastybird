@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 use Dotenv\Dotenv;
-use FastyBird\Bootstrap\Boot;
+use FastyBird\Library\Bootstrap\Boot;
 use Symfony\Component\Console;
 use const DIRECTORY_SEPARATOR as DS;
 

@@ -2,6 +2,7 @@
 
 namespace FastyBird\Module\Accounts\Tests\Cases\Unit\Router;
 
+use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
 use FastyBird\Library\Metadata;
 use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\Module\Accounts\Tests\Cases\Unit\DbTestCase;
@@ -24,6 +25,7 @@ final class RouterTest extends DbTestCase
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws InvalidArgumentException
 	 * @throws Nette\DI\MissingServiceException

@@ -2,7 +2,7 @@
 
 namespace FastyBird\Library\Bootstrap\Tests\Cases\Unit\DI;
 
-use FastyBird\Bootstrap\Boot;
+use FastyBird\Library\Bootstrap\Boot;
 use PHPUnit\Framework\TestCase;
 
 final class ExtensionTest extends TestCase

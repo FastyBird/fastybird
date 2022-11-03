@@ -32,7 +32,6 @@
         "contributte/monolog": "^0.5",
         "cweagans/composer-patches": "^1.7",
         "evenement/evenement": "^3.0",
-        "fastybird/bootstrap": "^0.9",
         "fastybird/datetime-factory": "^0.6",
         "fastybird/json-api": "^0.13",
         "fastybird/simple-auth": "^0.6",

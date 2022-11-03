@@ -6,10 +6,10 @@ The purpose of this extension is to prepare basic bootstrap for you application 
 
 ## Installation
 
-The best way to install **fastybird/bootstrap** is using [Composer](http://getcomposer.org/):
+The best way to install **fastybird/bootstrap-library** is using [Composer](http://getcomposer.org/):
 
 ```sh
-composer require fastybird/bootstrap
+composer require fastybird/bootstrap-library
 ```
 
 ## Configure bootstrap
@@ -95,13 +95,13 @@ You can copy & paste it to your project, for example to `<app_root>/www/index.ph
 
 require __DIR__ . '/../vendor/autoload.php';
 
-exit(FastyBird\Bootstrap\Boot\Bootstrap::boot()
+exit(FastyBird\Library\Bootstrap\Boot\Bootstrap::boot()
     ->createContainer()
     ->getByType(Nette\Application\Application::class)
     ->run());
 ```
 
-When a call `FastyBird\Bootstrap\Boot\Bootstrap::boot()` is made, bootstrap will try to configure application and
+When a call `FastyBird\Library\Bootstrap\Boot\Bootstrap::boot()` is made, bootstrap will try to configure application and
 prepare everything for building container.
 
 ## Default extensions

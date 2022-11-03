@@ -2,6 +2,7 @@
 
 namespace FastyBird\Module\Devices\Tests\Cases\Unit\DI;
 
+use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
 use FastyBird\Module\Devices\Commands;
 use FastyBird\Module\Devices\Controllers;
 use FastyBird\Module\Devices\Exceptions;
@@ -20,6 +21,7 @@ final class DevicesModuleExtensionTests extends DbTestCase
 {
 
 	/**
+	 * @throws BootstrapExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
