@@ -22,10 +22,10 @@
       "email": "adam.kadlec@fastybird.com"
     }
   ],
-  "support" : {
-    "email" : "code@fastybird.com",
-    "issues" : "https://github.com/FastyBird/fastybird/issues",
-    "source" : "https://github.com/FastyBird/tuya-connector"
+  "support": {
+    "email": "code@fastybird.com",
+    "issues": "https://github.com/FastyBird/fastybird/issues",
+    "source": "https://github.com/FastyBird/tuya-connector"
   },
   "require": {
     "php": ">=8.1.0",

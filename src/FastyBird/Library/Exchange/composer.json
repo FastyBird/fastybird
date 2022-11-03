@@ -24,10 +24,10 @@
       "email": "adam.kadlec@fastybird.com"
     }
   ],
-  "support" : {
-    "email" : "code@fastybird.com",
-    "issues" : "https://github.com/FastyBird/fastybird/issues",
-    "source" : "https://github.com/FastyBird/exchange-library"
+  "support": {
+    "email": "code@fastybird.com",
+    "issues": "https://github.com/FastyBird/fastybird/issues",
+    "source": "https://github.com/FastyBird/exchange-library"
   },
   "require": {
     "php": ">=8.1.0",

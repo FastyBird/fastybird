@@ -23,10 +23,10 @@
       "email": "adam.kadlec@fastybird.com"
     }
   ],
-  "support" : {
-    "email" : "code@fastybird.com",
-    "issues" : "https://github.com/FastyBird/fastybird/issues",
-    "source" : "https://github.com/FastyBird/redisdb-devices-module-bridge"
+  "support": {
+    "email": "code@fastybird.com",
+    "issues": "https://github.com/FastyBird/fastybird/issues",
+    "source": "https://github.com/FastyBird/redisdb-devices-module-bridge"
   },
   "require": {
     "php": ">=8.1.0",
