@@ -1,18 +1,4 @@
-<?php
-/**
- * console.php
- *
- * @license        More in LICENSE.md
- * @copyright      https://www.fastybird.com
- * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:Bootstrap!
- * @subpackage     bin
- * @since          0.1.0
- *
- * @date           08.03.20
- */
-
-declare(strict_types = 1);
+<?php declare(strict_types = 1);
 
 use Dotenv\Dotenv;
 use FastyBird\Bootstrap\Boot;
@@ -29,6 +15,7 @@ $autoloadFiles = [
 foreach ($autoloadFiles as $autoloadFile) {
 	if (file_exists($autoloadFile)) {
 		$autoload = realpath($autoloadFile);
+
 		break;
 	}
 }
@@ -41,20 +28,18 @@ if ($autoload === null) {
 
 require $autoload;
 
-if (isset($_ENV['FB_APP_DIR'])) {
-	$envDirs = [$_ENV['FB_APP_DIR'] . DS . 'env'];
-
-} else {
-	$envDirs = [
+$envDirs = isset($_ENV['FB_APP_DIR'])
+	? [$_ENV['FB_APP_DIR'] . DS . 'env']
+	: [
 		__DIR__ . DS . DS . 'env',
 		__DIR__ . DS . DS . 'env',
 	];
-}
 
 foreach ($envDirs as $envDir) {
 	if (is_dir($envDir) && realpath($envDir) !== false) {
 		$dotEnv = Dotenv::createImmutable(realpath($envDir));
 		$dotEnv->safeLoad();
+
 		break;
 	}
 }
@@ -67,17 +52,17 @@ if (defined('FB_TEMP_DIR') && is_dir(FB_TEMP_DIR)) {
 	$ri = new RecursiveIteratorIterator($di, RecursiveIteratorIterator::CHILD_FIRST);
 
 	foreach ($ri as $file) {
-		if (!$file->isDir() && basename((string) $file) === '.gitignore') {
+		assert($file instanceof SplFileInfo);
+		if (!$file->isDir() && basename(strval($file)) === '.gitignore') {
 			continue;
 		}
 
-		$file->isDir() ? rmdir((string) $file) : unlink((string) $file);
+		$file->isDir() ? rmdir(strval($file)) : unlink(strval($file));
 	}
 }
 
 $container = $boostrap->createContainer();
 
-/** @var Console\Application $console */
 $console = $container->getByType(Console\Application::class);
 
 // Clear cache

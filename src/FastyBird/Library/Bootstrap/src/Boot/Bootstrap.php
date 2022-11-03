@@ -36,6 +36,7 @@ use function sprintf;
 use function strlen;
 use function strpos;
 use function strtolower;
+use function strval;
 use function substr;
 use const DIRECTORY_SEPARATOR as DS;
 
@@ -50,6 +51,9 @@ use const DIRECTORY_SEPARATOR as DS;
 class Bootstrap
 {
 
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 */
 	public static function boot(string $envPrefix = 'FB_APP_PARAMETER_'): Configurator
 	{
 		self::initConstants();
@@ -128,8 +132,8 @@ class Bootstrap
 		}
 
 		// Check for temporary dir
-		if (!is_dir(FB_TEMP_DIR)) {
-			mkdir(FB_TEMP_DIR, 0777, true);
+		if (!is_dir(strval(FB_TEMP_DIR))) {
+			mkdir(strval(FB_TEMP_DIR), 0777, true);
 		}
 
 		// Configuring logs dir path
@@ -144,8 +148,8 @@ class Bootstrap
 		}
 
 		// Check for logs dir
-		if (!is_dir(FB_LOGS_DIR)) {
-			mkdir(FB_LOGS_DIR, 0777, true);
+		if (!is_dir(strval(FB_LOGS_DIR))) {
+			mkdir(strval(FB_LOGS_DIR), 0777, true);
 		}
 
 		// Configuring configuration dir path
@@ -160,13 +164,15 @@ class Bootstrap
 		}
 
 		// Check for temporary dir
-		if (!is_dir(FB_CONFIG_DIR)) {
-			mkdir(FB_CONFIG_DIR, 0777, true);
+		if (!is_dir(strval(FB_CONFIG_DIR))) {
+			mkdir(strval(FB_CONFIG_DIR), 0777, true);
 		}
 	}
 
 	/**
-	 * @phpstan-return Array<mixed>
+	 * @return Array<mixed>
+	 *
+	 * @throws Exceptions\InvalidArgument
 	 */
 	private static function loadEnvParameters(
 		string $prefix,

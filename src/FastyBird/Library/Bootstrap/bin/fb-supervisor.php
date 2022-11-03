@@ -1,33 +1,24 @@
-<?php
-/**
- * supervisor.php
- *
- * @license        More in LICENSE.md
- * @copyright      https://www.fastybird.com
- * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:Bootstrap!
- * @subpackage     bin
- * @since          0.1.0
- *
- * @date           08.03.20
- */
-
-declare(strict_types = 1);
+<?php declare(strict_types = 1);
 
 $stdIn = STDIN;
 $stdOut = STDOUT;
 
 fwrite($stdOut, "READY\n");
 
+// @phpstan-ignore-next-line
 while (true) {
-	if (($line = trim(strval(fgets($stdIn)))) === false) {
+	$line = fgets($stdIn);
+
+	if ($line === false) {
 		continue;
 	}
 
+	$line = trim($line);
+
 	$match = null;
 
-	if (preg_match('/eventname:(.*?) /', $line, $match)) {
-		if (in_array($match[1], ['PROCESS_STATE_EXITED', 'PROCESS_STATE_STOPPED', 'PROCESS_STATE_FATAL'])) {
+	if (preg_match('/eventname:(.*?) /', $line, $match) !== false) {
+		if (in_array($match[1], ['PROCESS_STATE_EXITED', 'PROCESS_STATE_STOPPED', 'PROCESS_STATE_FATAL'], true)) {
 			exec('kill -15 ' . file_get_contents('/run/supervisord.pid'));
 		}
 	}

@@ -20,7 +20,6 @@ use Doctrine\ORM;
 use Doctrine\Persistence;
 use FastyBird\Library\Bootstrap\Exceptions;
 use Nette;
-use Throwable;
 use function gc_collect_cycles;
 
 /**
@@ -43,7 +42,7 @@ class Database
 	}
 
 	/**
-	 * @throws Throwable
+	 * @throws Exceptions\InvalidState
 	 */
 	public function ping(): bool
 	{
@@ -64,6 +63,9 @@ class Database
 		throw new Exceptions\InvalidState('Database connection not found');
 	}
 
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
 	private function getConnection(): DBAL\Connection|null
 	{
 		$em = $this->getEntityManager();
@@ -75,6 +77,51 @@ class Database
 		return null;
 	}
 
+	/**
+	 * @throws DBAL\Exception
+	 * @throws Exceptions\InvalidState
+	 */
+	public function reconnect(): void
+	{
+		$connection = $this->getConnection();
+
+		if ($connection !== null) {
+			$connection->close();
+			$connection->connect();
+
+			return;
+		}
+
+		throw new Exceptions\InvalidState('Invalid database connection');
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
+	public function clear(): void
+	{
+		$em = $this->getEntityManager();
+
+		if ($em instanceof ORM\EntityManagerInterface) {
+			// Flushing and then clearing Doctrine's entity manager allows
+			// for more memory to be released by PHP
+			$em->flush();
+			$em->clear();
+
+			// Just in case PHP would choose not to run garbage collection,
+			// we run it manually at the end of each batch so that memory is
+			// regularly released
+			gc_collect_cycles();
+
+			return;
+		}
+
+		throw new Exceptions\InvalidState('Invalid entity manager');
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
 	private function getEntityManager(): ORM\EntityManagerInterface|null
 	{
 		if ($this->managerRegistry === null) {
@@ -96,44 +143,6 @@ class Database
 		}
 
 		return null;
-	}
-
-	/**
-	 * @throws Throwable
-	 */
-	public function reconnect(): void
-	{
-		$connection = $this->getConnection();
-
-		if ($connection !== null) {
-			$connection->close();
-			$connection->connect();
-
-			return;
-		}
-
-		throw new Exceptions\InvalidState('Invalid database connection');
-	}
-
-	public function clear(): void
-	{
-		$em = $this->getEntityManager();
-
-		if ($em instanceof ORM\EntityManagerInterface) {
-			// Flushing and then clearing Doctrine's entity manager allows
-			// for more memory to be released by PHP
-			$em->flush();
-			$em->clear();
-
-			// Just in case PHP would choose not to run garbage collection,
-			// we run it manually at the end of each batch so that memory is
-			// regularly released
-			gc_collect_cycles();
-
-			return;
-		}
-
-		throw new Exceptions\InvalidState('Invalid entity manager');
 	}
 
 }

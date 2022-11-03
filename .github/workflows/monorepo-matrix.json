@@ -1,6 +1,11 @@
 [
   {
     "organization": "FastyBird",
+    "name": "bootstrap-library",
+    "local-path": "src/FastyBird/Library/Bootstrap"
+  },
+  {
+    "organization": "FastyBird",
     "name": "exchange-library",
     "local-path": "src/FastyBird/Library/Exchange"
   },

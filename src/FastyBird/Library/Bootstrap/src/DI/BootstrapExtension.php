@@ -39,9 +39,11 @@ use const DIRECTORY_SEPARATOR;
 class BootstrapExtension extends DI\CompilerExtension
 {
 
+	public const NAME = 'fbBootstrap';
+
 	public static function register(
 		Nette\Configurator $config,
-		string $extensionName = 'fbBootstrap',
+		string $extensionName = self::NAME,
 	): void
 	{
 		$config->onCompile[] = static function (
@@ -147,6 +149,9 @@ class BootstrapExtension extends DI\CompilerExtension
 		}
 	}
 
+	/**
+	 * @throws Nette\DI\MissingServiceException
+	 */
 	public function beforeCompile(): void
 	{
 		parent::beforeCompile();
