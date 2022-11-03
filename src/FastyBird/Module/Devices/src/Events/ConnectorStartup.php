@@ -29,9 +29,7 @@ use Symfony\Contracts\EventDispatcher;
 class ConnectorStartup extends EventDispatcher\Event
 {
 
-	public function __construct(
-		private readonly Entities\Connectors\Connector $connector,
-	)
+	public function __construct(private readonly Entities\Connectors\Connector $connector)
 	{
 	}
 

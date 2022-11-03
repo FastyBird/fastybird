@@ -100,6 +100,7 @@
     "autoload": {
         "psr-4": {
             "FastyBird\\Bridge\\RedisDbDevicesModule\\": "src/FastyBird/Bridge/RedisDbDevicesModule/src/",
+            "FastyBird\\Bridge\\RedisDbTriggersModule\\": "src/FastyBird/Bridge/RedisDbTriggersModule/src/",
             "FastyBird\\Bridge\\RedisDbWsExchange\\": "src/FastyBird/Bridge/RedisDbWsExchange/src/",
             "FastyBird\\Connector\\FbMqtt\\": "src/FastyBird/Connector/FbMqtt/src/",
             "FastyBird\\Connector\\HomeKit\\": "src/FastyBird/Connector/HomeKit/src/",
@@ -121,6 +122,8 @@
         "psr-4": {
             "FastyBird\\Bridge\\RedisDbDevicesModule\\Tests\\Cases\\Unit\\": "src/FastyBird/Bridge/RedisDbDevicesModule/tests/cases/unit",
             "FastyBird\\Bridge\\RedisDbDevicesModule\\Tests\\Tools\\": "src/FastyBird/Bridge/RedisDbDevicesModule/tests/tools",
+            "FastyBird\\Bridge\\RedisDbTriggersModule\\Tests\\Cases\\Unit\\": "src/FastyBird/Bridge/RedisDbTriggersModule/tests/cases/unit",
+            "FastyBird\\Bridge\\RedisDbTriggersModule\\Tests\\Tools\\": "src/FastyBird/Bridge/RedisDbTriggersModule/tests/tools",
             "FastyBird\\Bridge\\RedisDbWsExchange\\Tests\\Cases\\Unit\\": "src/FastyBird/Bridge/RedisDbWsExchange/tests/cases/unit",
             "FastyBird\\Bridge\\RedisDbWsExchange\\Tests\\Tools\\": "src/FastyBird/Bridge/RedisDbWsExchange/tests/tools",
             "FastyBird\\Connector\\FbMqtt\\Tests\\Cases\\Unit\\": "src/FastyBird/Connector/FbMqtt/tests/cases/unit",
@@ -189,6 +192,7 @@
         "fastybird/modbus-connector": "self.version",
         "fastybird/redisdb-devices-module-bridge": "self.version",
         "fastybird/redisdb-plugin": "self.version",
+        "fastybird/redisdb-triggers-module-bridge": "self.version",
         "fastybird/redisdb-ws-exchange-bridge": "self.version",
         "fastybird/shelly-connector": "self.version",
         "fastybird/triggers-module": "self.version",

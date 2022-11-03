@@ -15,9 +15,9 @@
 
 namespace FastyBird\Module\Triggers\Models\States;
 
-use FastyBird\Module\Triggers\Entities;
 use FastyBird\Module\Triggers\States;
 use Nette\Utils;
+use Ramsey\Uuid;
 
 /**
  * Conditions states manager interface
@@ -30,15 +30,9 @@ use Nette\Utils;
 interface IConditionsManager
 {
 
-	public function create(
-		Entities\Conditions\Condition $action,
-		Utils\ArrayHash $values,
-	): States\Condition;
+	public function create(Uuid\UuidInterface $id, Utils\ArrayHash $values): States\Condition;
 
-	public function update(
-		States\Condition $state,
-		Utils\ArrayHash $values,
-	): States\Condition;
+	public function update(States\Condition $state, Utils\ArrayHash $values): States\Condition;
 
 	public function delete(States\Condition $state): bool;
 
