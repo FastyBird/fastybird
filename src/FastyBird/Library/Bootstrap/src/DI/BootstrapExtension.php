@@ -39,7 +39,7 @@ use const DIRECTORY_SEPARATOR;
 class BootstrapExtension extends DI\CompilerExtension
 {
 
-	public const NAME = 'fbBootstrap';
+	public const NAME = 'fbBootstrapLibrary';
 
 	public static function register(
 		Nette\Configurator $config,

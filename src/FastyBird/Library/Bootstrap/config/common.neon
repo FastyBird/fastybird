@@ -49,7 +49,7 @@ contributteMonolog:
 
 # Application bootstrap extension
 #################################
-fbBootstrap:
+fbBootstrapLibrary:
     logging:
         level:  %logger.level%
         rotatingFile:  %logger.rotatingFile%

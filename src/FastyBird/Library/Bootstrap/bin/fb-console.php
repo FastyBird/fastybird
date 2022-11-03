@@ -8,8 +8,8 @@ use const DIRECTORY_SEPARATOR as DS;
 $autoload = null;
 
 $autoloadFiles = [
-	__DIR__ . DS . DS . 'vendor' . DS . 'autoload.php',
-	__DIR__ . DS . DS . 'autoload.php',
+	__DIR__ . DS . '..' . DS . 'vendor' . DS . 'autoload.php',
+	__DIR__ . DS . '..' . DS . '..' . DS . '..' . DS . 'autoload.php',
 ];
 
 foreach ($autoloadFiles as $autoloadFile) {
@@ -31,8 +31,8 @@ require $autoload;
 $envDirs = isset($_ENV['FB_APP_DIR'])
 	? [$_ENV['FB_APP_DIR'] . DS . 'env']
 	: [
-		__DIR__ . DS . DS . 'env',
-		__DIR__ . DS . DS . 'env',
+		__DIR__ . DS . '..' . DS . '..' . DS . 'env',
+		__DIR__ . DS . '..' . DS . '..' . DS . '..' . DS . '..' . DS . 'env',
 	];
 
 foreach ($envDirs as $envDir) {

@@ -78,8 +78,8 @@ class Bootstrap
 		$configurator->setTimeZone('UTC');
 
 		// Default extension config
-		$configurator->addConfig(__DIR__ . DS);
-		$configurator->addConfig(__DIR__ . DS);
+		$configurator->addConfig(__DIR__ . DS . '..' . DS . '..' . DS . 'config' . DS . 'common.neon');
+		$configurator->addConfig(__DIR__ . DS . '..' . DS . '..' . DS . 'config' . DS . 'defaults.neon');
 
 		if (file_exists(FB_CONFIG_DIR . DS . 'common.neon')) {
 			$configurator->addConfig(FB_CONFIG_DIR . DS . 'common.neon');
@@ -106,7 +106,7 @@ class Bootstrap
 			define('FB_APP_DIR', getenv('FB_APP_DIR'));
 
 		} elseif (!defined('FB_APP_DIR')) {
-			define('FB_APP_DIR', __DIR__ . DS);
+			define('FB_APP_DIR', __DIR__ . DS . '..' . DS . '..' . DS . '..' . DS . '..' . DS . '..');
 		}
 
 		// Configuring resources dir path
