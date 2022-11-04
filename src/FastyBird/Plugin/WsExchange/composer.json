@@ -73,8 +73,8 @@
   "config": {
     "sort-packages": true,
     "allow-plugins": {
-      "dealerdirect/phpcodesniffer-composer-installer": true,
       "cweagans/composer-patches": true,
+      "dealerdirect/phpcodesniffer-composer-installer": true,
       "phpstan/extension-installer": true,
       "infection/extension-installer": true
     }
