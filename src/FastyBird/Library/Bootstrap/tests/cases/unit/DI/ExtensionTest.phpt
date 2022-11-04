@@ -3,7 +3,10 @@
 namespace FastyBird\Library\Bootstrap\Tests\Cases\Unit\DI;
 
 use FastyBird\Library\Bootstrap\Boot;
+use FastyBird\Library\Bootstrap\Helpers;
+use Monolog;
 use PHPUnit\Framework\TestCase;
+use Symfony\Bridge\Monolog as SymfonyMonolog;
 
 final class ExtensionTest extends TestCase
 {
@@ -12,9 +15,14 @@ final class ExtensionTest extends TestCase
 	{
 		$configurator = Boot\Bootstrap::boot();
 
-		$configurator->createContainer();
+		$container = $configurator->createContainer();
 
-		$this->expectNotToPerformAssertions();
+		self::assertNull($container->getByType(Monolog\Handler\RotatingFileHandler::class, false));
+		self::assertNull($container->getByType(Monolog\Handler\StreamHandler::class, false));
+
+		self::assertNull($container->getByType(SymfonyMonolog\Handler\ConsoleHandler::class, false));
+
+		self::assertNotNull($container->getByType(Helpers\Database::class, false));
 	}
 
 }
