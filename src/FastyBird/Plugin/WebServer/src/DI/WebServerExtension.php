@@ -21,6 +21,7 @@ use FastyBird\Plugin\WebServer\Exceptions;
 use FastyBird\Plugin\WebServer\Http;
 use FastyBird\Plugin\WebServer\Middleware;
 use FastyBird\Plugin\WebServer\Server;
+use FastyBird\Plugin\WebServer\Subscribers;
 use Fig\Http\Message\RequestMethodInterface;
 use IPub\SlimRouter;
 use Nette;
@@ -156,6 +157,9 @@ class WebServerExtension extends DI\CompilerExtension
 
 		$builder->addDefinition($this->prefix('server.factory'), new DI\Definitions\ServiceDefinition())
 			->setType(Server\Factory::class);
+
+		$builder->addDefinition($this->prefix('subscribers.server'), new DI\Definitions\ServiceDefinition())
+			->setType(Subscribers\Server::class);
 	}
 
 }
