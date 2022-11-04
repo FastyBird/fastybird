@@ -1,0 +1,62 @@
+#
+# App basic DI configuration
+#
+# @license      More in LICENSE.md
+# @copyright    https://www.fastybird.com
+# @author       Adam Kadlec <adam.kadlec@fastybird.com>
+# @package      FastyBird:Bootstrap!
+# @subpackage   config
+# @since        0.1.0
+#
+# @date         08.03.20
+
+#########################
+# Used Nette extensions #
+#########################
+
+extensions:
+    contributteConsole  : Contributte\Console\DI\ConsoleExtension(%consoleMode%)
+    contributteMonolog  : Contributte\Monolog\DI\MonologExtension
+    fbBootstrapLibrary  : FastyBird\Library\Bootstrap\DI\BootstrapExtension
+
+##################################
+# Nette extensions configuration #
+##################################
+
+# Symfony console support extension
+###################################
+contributteConsole:
+    name: "FastyBird:Application!"
+    version: "1.0"
+    catchExceptions: true
+    autoExit: true
+    url: https://www.fastybird.com
+    lazy: false
+
+# Error logs extension
+######################
+contributteMonolog:
+    hook:
+        fromTracy: true
+        toTracy: false
+    channel:
+        default:
+            handlers:
+                - Mangoweb\MonologTracyHandler\TracyHandler(%logsDir%)
+            processors:
+                - Monolog\Processor\MemoryPeakUsageProcessor
+                - Mangoweb\MonologTracyHandler\TracyProcessor
+
+# Application bootstrap extension
+#################################
+fbBootstrapLibrary:
+    logging:
+        level:  %logger.level%
+        rotatingFile:  %logger.rotatingFile%
+        stdOut:  %logger.stdOut%
+        console:
+            enabled: %logger.console.enabled%
+            level: %logger.console.level%
+
+    sentry:
+        dsn: %sentry.dsn%

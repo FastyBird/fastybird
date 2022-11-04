@@ -16,7 +16,7 @@
 namespace FastyBird\Module\Triggers\DI;
 
 use Doctrine\Persistence;
-use FastyBird\Bootstrap;
+use FastyBird\Library\Bootstrap;
 use FastyBird\Module\Triggers\Commands;
 use FastyBird\Module\Triggers\Controllers;
 use FastyBird\Module\Triggers\Entities;

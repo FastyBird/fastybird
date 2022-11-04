@@ -16,7 +16,7 @@
 namespace FastyBird\Module\Accounts\DI;
 
 use Doctrine\Persistence;
-use FastyBird\Bootstrap;
+use FastyBird\Library\Bootstrap;
 use FastyBird\Module\Accounts\Commands;
 use FastyBird\Module\Accounts\Controllers;
 use FastyBird\Module\Accounts\Entities;

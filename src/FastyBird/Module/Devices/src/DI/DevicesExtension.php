@@ -16,7 +16,7 @@
 namespace FastyBird\Module\Devices\DI;
 
 use Doctrine\Persistence;
-use FastyBird\Bootstrap;
+use FastyBird\Library\Bootstrap;
 use FastyBird\Library\Exchange\DI as ExchangeDI;
 use FastyBird\Module\Devices\Commands;
 use FastyBird\Module\Devices\Connectors;

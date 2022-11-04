@@ -18,7 +18,7 @@ namespace FastyBird\Module\Triggers\Utilities;
 use Doctrine\DBAL;
 use Doctrine\ORM;
 use Doctrine\Persistence;
-use FastyBird\Bootstrap;
+use FastyBird\Library\Bootstrap;
 use FastyBird\Module\Triggers\Exceptions;
 use Nette;
 use Throwable;

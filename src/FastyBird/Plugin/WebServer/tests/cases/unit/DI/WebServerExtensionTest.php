@@ -7,6 +7,7 @@ use FastyBird\Plugin\WebServer\Commands;
 use FastyBird\Plugin\WebServer\Http;
 use FastyBird\Plugin\WebServer\Middleware;
 use FastyBird\Plugin\WebServer\Server;
+use FastyBird\Plugin\WebServer\Subscribers;
 use FastyBird\Plugin\WebServer\Tests\Cases\Unit\BaseTestCase;
 use Nette;
 use React\EventLoop;
@@ -33,6 +34,8 @@ final class WebServerExtensionTest extends BaseTestCase
 		self::assertNotNull($this->container->getByType(Middleware\Router::class, false));
 
 		self::assertNotNull($this->container->getByType(Server\Factory::class, false));
+
+		self::assertNotNull($this->container->getByType(Subscribers\Server::class, false));
 	}
 
 }
