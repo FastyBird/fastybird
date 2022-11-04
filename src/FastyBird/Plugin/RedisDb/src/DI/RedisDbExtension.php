@@ -15,6 +15,7 @@
 
 namespace FastyBird\Plugin\RedisDb\DI;
 
+use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
 use FastyBird\Library\Metadata;
 use FastyBird\Plugin\RedisDb\Client;
 use FastyBird\Plugin\RedisDb\Commands;
@@ -44,12 +45,12 @@ class RedisDbExtension extends DI\CompilerExtension
 	public const NAME = 'fbRedisDbPlugin';
 
 	public static function register(
-		Nette\Configurator $config,
+		Nette\Configurator|BootstrapBoot\Configurator $config,
 		string $extensionName = self::NAME,
 	): void
 	{
 		$config->onCompile[] = static function (
-			Nette\Configurator $config,
+			Nette\Configurator|BootstrapBoot\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new RedisDbExtension());

@@ -14,4 +14,5 @@ php:
     date.timezone: Europe/Prague
 
 extensions:
-    ipubPhone   : IPub\Phone\DI\PhoneExtension
+    ipubPhone           : IPub\Phone\DI\PhoneExtension
+    fbBootstrapLibrary  : FastyBird\Library\Bootstrap\DI\BootstrapExtension

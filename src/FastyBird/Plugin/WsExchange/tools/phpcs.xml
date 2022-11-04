@@ -22,7 +22,4 @@
             </property>
         </properties>
     </rule>
-
-    <!--Exclude folders -->
-    <exclude-pattern>/tests/stubs/*</exclude-pattern>
 </ruleset>

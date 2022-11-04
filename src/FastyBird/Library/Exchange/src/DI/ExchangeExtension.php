@@ -15,6 +15,7 @@
 
 namespace FastyBird\Library\Exchange\DI;
 
+use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
 use FastyBird\Library\Exchange\Consumers;
 use FastyBird\Library\Exchange\Entities;
 use FastyBird\Library\Exchange\Publisher;
@@ -37,12 +38,12 @@ class ExchangeExtension extends DI\CompilerExtension
 	public const CONSUMER_STATUS = 'consumer_status';
 
 	public static function register(
-		Nette\Configurator $config,
+		Nette\Configurator|BootstrapBoot\Configurator $config,
 		string $extensionName = 'fbExchangeLibrary',
 	): void
 	{
 		$config->onCompile[] = static function (
-			Nette\Configurator $config,
+			Nette\Configurator|BootstrapBoot\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new ExchangeExtension());

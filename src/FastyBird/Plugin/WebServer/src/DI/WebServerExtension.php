@@ -15,6 +15,7 @@
 
 namespace FastyBird\Plugin\WebServer\DI;
 
+use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
 use FastyBird\Plugin\WebServer\Application;
 use FastyBird\Plugin\WebServer\Commands;
 use FastyBird\Plugin\WebServer\Exceptions;
@@ -56,13 +57,13 @@ class WebServerExtension extends DI\CompilerExtension
 	}
 
 	public static function register(
-		Nette\Configurator $config,
+		Nette\Configurator|BootstrapBoot\Configurator $config,
 		bool $cliMode = false,
 		string $extensionName = self::NAME,
 	): void
 	{
 		$config->onCompile[] = static function (
-			Nette\Configurator $config,
+			Nette\Configurator|BootstrapBoot\Configurator $config,
 			DI\Compiler $compiler,
 		) use (
 			$extensionName,

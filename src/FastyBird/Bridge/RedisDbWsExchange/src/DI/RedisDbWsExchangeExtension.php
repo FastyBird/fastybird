@@ -16,6 +16,7 @@
 namespace FastyBird\Bridge\RedisDbWsExchange\DI;
 
 use FastyBird\Bridge\RedisDbWsExchange\Subscribers;
+use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
 use Nette;
 use Nette\DI;
 
@@ -33,12 +34,12 @@ class RedisDbWsExchangeExtension extends DI\CompilerExtension
 	public const NAME = 'fbRedisDbWsExchangeBridge';
 
 	public static function register(
-		Nette\Configurator $config,
+		Nette\Configurator|BootstrapBoot\Configurator $config,
 		string $extensionName = self::NAME,
 	): void
 	{
 		$config->onCompile[] = static function (
-			Nette\Configurator $config,
+			Nette\Configurator|BootstrapBoot\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new RedisDbWsExchangeExtension());

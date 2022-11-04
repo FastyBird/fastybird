@@ -16,7 +16,7 @@
 namespace FastyBird\Module\Triggers\DI;
 
 use Doctrine\Persistence;
-use FastyBird\Library\Bootstrap;
+use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
 use FastyBird\Module\Triggers\Commands;
 use FastyBird\Module\Triggers\Controllers;
 use FastyBird\Module\Triggers\Entities;
@@ -54,12 +54,12 @@ class TriggersExtension extends DI\CompilerExtension
 	public const TRIGGER_TYPE_TAG = 'trigger_type';
 
 	public static function register(
-		Nette\Configurator|Bootstrap\Boot\Configurator $config,
+		Nette\Configurator|BootstrapBoot\Configurator $config,
 		string $extensionName = self::NAME,
 	): void
 	{
 		$config->onCompile[] = static function (
-			Nette\Configurator $config,
+			Nette\Configurator|BootstrapBoot\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new TriggersExtension());

@@ -17,6 +17,7 @@ extensions:
     ipubWebSocketsWAMP      : IPub\WebSocketsWAMP\DI\WebSocketsWAMPExtension
     ipubWebSockets          : IPub\WebSockets\DI\WebSocketsExtension
     ipubPhone               : IPub\Phone\DI\PhoneExtension
+    fbBootstrapLibrary      : FastyBird\Library\Bootstrap\DI\BootstrapExtension
     fbMetadataLibrary       : FastyBird\Library\Metadata\DI\MetadataExtension
     fbExchangeLibrary       : FastyBird\Library\Exchange\DI\ExchangeExtension
 

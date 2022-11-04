@@ -31,6 +31,7 @@
   "require": {
     "php": ">=8.1.0",
     "cweagans/composer-patches": "^1.7",
+    "fastybird/bootstrap-library": "dev-main",
     "fastybird/exchange-library": "dev-main",
     "fastybird/redisdb-plugin": "dev-main",
     "fastybird/triggers-module": "dev-main",
@@ -39,7 +40,7 @@
   },
   "require-dev": {
     "brianium/paratest": "^6.6",
-    "contributte/translation": "^0.9",
+    "contributte/translation": "^2.0",
     "dg/bypass-finals": "^1.4",
     "infection/infection": "^0.26",
     "orisai/coding-standard": "^3.2",
