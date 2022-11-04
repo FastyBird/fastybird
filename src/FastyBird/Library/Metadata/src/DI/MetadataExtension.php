@@ -15,6 +15,7 @@
 
 namespace FastyBird\Library\Metadata\DI;
 
+use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
 use FastyBird\Library\Metadata\Entities;
 use FastyBird\Library\Metadata\Loaders;
 use FastyBird\Library\Metadata\Schemas;
@@ -33,12 +34,12 @@ class MetadataExtension extends DI\CompilerExtension
 {
 
 	public static function register(
-		Nette\Configurator $config,
+		Nette\Configurator|BootstrapBoot\Configurator $config,
 		string $extensionName = 'fbMetadataLibrary',
 	): void
 	{
 		$config->onCompile[] = static function (
-			Nette\Configurator $config,
+			Nette\Configurator|BootstrapBoot\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new MetadataExtension());

@@ -6,7 +6,7 @@ use DateTimeImmutable;
 use Doctrine\DBAL;
 use Doctrine\ORM;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Bootstrap;
+use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
 use FastyBird\Module\Accounts\DI;
 use FastyBird\Module\Accounts\Exceptions;
@@ -140,7 +140,7 @@ abstract class DbTestCase extends TestCase
 		$rootDir = __DIR__ . '/../..';
 		$vendorDir = defined('FB_VENDOR_DIR') ? constant('FB_VENDOR_DIR') : $rootDir . '/../vendor';
 
-		$config = Bootstrap\Boot\Bootstrap::boot();
+		$config = BootstrapBoot\Bootstrap::boot();
 		$config->setForceReloadContainer();
 		$config->setTempDirectory(FB_TEMP_DIR);
 

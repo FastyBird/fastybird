@@ -17,6 +17,7 @@ namespace FastyBird\Bridge\RedisDbTriggersModule\DI;
 
 use FastyBird\Bridge\RedisDbTriggersModule\Models;
 use FastyBird\Bridge\RedisDbTriggersModule\Subscribers;
+use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
 use Nette;
 use Nette\DI;
 use Nette\Schema;
@@ -37,12 +38,12 @@ class RedisDbTriggersModuleExtension extends DI\CompilerExtension
 	public const NAME = 'fbRedisDbTriggersModuleBridge';
 
 	public static function register(
-		Nette\Configurator $config,
+		Nette\Configurator|BootstrapBoot\Configurator $config,
 		string $extensionName = self::NAME,
 	): void
 	{
 		$config->onCompile[] = static function (
-			Nette\Configurator $config,
+			Nette\Configurator|BootstrapBoot\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new RedisDbTriggersModuleExtension());

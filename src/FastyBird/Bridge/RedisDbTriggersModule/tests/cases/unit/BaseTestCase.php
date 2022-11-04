@@ -5,6 +5,7 @@ namespace FastyBird\Bridge\RedisDbTriggersModule\Tests\Cases\Unit;
 use DateTimeImmutable;
 use FastyBird\Bridge\RedisDbTriggersModule;
 use FastyBird\DateTimeFactory;
+use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
 use Nette;
 use Nette\DI;
 use PHPUnit\Framework\TestCase;
@@ -41,7 +42,7 @@ abstract class BaseTestCase extends TestCase
 		$rootDir = __DIR__ . '/../..';
 		$vendorDir = defined('FB_VENDOR_DIR') ? constant('FB_VENDOR_DIR') : $rootDir . '/../vendor';
 
-		$config = new Nette\Configurator();
+		$config = new BootstrapBoot\Configurator();
 		$config->setTempDirectory(FB_TEMP_DIR);
 
 		$config->addParameters(['container' => ['class' => 'SystemContainer_' . md5((string) time())]]);

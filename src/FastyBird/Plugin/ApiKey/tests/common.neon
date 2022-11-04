@@ -26,6 +26,7 @@ extensions:
     ipubDoctrineCrud                    : IPub\DoctrineCrud\DI\DoctrineCrudExtension
     ipubDoctrineTimestampable           : IPub\DoctrineTimestampable\DI\DoctrineTimestampableExtension
     fbJsonApi                           : FastyBird\JsonApi\DI\JsonApiExtension
+    fbBootstrapLibrary                  : FastyBird\Library\Bootstrap\DI\BootstrapExtension
 
 services:
     - {factory: Symfony\Component\Console\Application}

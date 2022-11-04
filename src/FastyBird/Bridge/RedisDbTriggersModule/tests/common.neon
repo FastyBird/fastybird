@@ -33,7 +33,7 @@ extensions:
     fbBootstrapLibrary                  : FastyBird\Library\Bootstrap\DI\BootstrapExtension
     fbMetadataLibrary                   : FastyBird\Library\Metadata\DI\MetadataExtension
     fbExchangeLibrary                   : FastyBird\Library\Exchange\DI\ExchangeExtension
-    fbTriggersModule                     : FastyBird\Module\Triggers\DI\TriggersExtension
+    fbTriggersModule                    : FastyBird\Module\Triggers\DI\TriggersExtension
     fbRedisDbPlugin                     : FastyBird\Plugin\RedisDb\DI\RedisDbExtension
 
 services:

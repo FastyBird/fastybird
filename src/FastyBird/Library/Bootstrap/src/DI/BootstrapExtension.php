@@ -15,6 +15,7 @@
 
 namespace FastyBird\Library\Bootstrap\DI;
 
+use FastyBird\Library\Bootstrap\Boot;
 use FastyBird\Library\Bootstrap\Helpers;
 use FastyBird\Library\Bootstrap\Subscribers;
 use Monolog;
@@ -44,12 +45,12 @@ class BootstrapExtension extends DI\CompilerExtension
 	public const NAME = 'fbBootstrapLibrary';
 
 	public static function register(
-		Nette\Configurator $config,
+		Nette\Configurator|Boot\Configurator $config,
 		string $extensionName = self::NAME,
 	): void
 	{
 		$config->onCompile[] = static function (
-			Nette\Configurator $config,
+			Nette\Configurator|Boot\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new BootstrapExtension());

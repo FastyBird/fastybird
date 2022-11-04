@@ -44,6 +44,7 @@ use function property_exists;
 use function React\Async\await;
 use function sprintf;
 use function strtolower;
+use function strval;
 use const DATE_ATOM;
 
 /**
@@ -212,7 +213,7 @@ class StatesManager
 						} elseif ($value instanceof Consistence\Enum\Enum) {
 							$value = $value->getValue();
 						} elseif (is_object($value)) {
-							$value = (string) $value;
+							$value = strval($value);
 						}
 					} else {
 						$value = null;
@@ -299,7 +300,7 @@ class StatesManager
 						$value = $value->getValue();
 
 					} elseif (is_object($value)) {
-						$value = (string) $value;
+						$value = strval($value);
 					}
 
 					if (

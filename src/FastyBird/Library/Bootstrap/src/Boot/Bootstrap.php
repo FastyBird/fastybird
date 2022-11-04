@@ -59,41 +59,41 @@ class Bootstrap
 		self::initConstants();
 
 		// Create app configurator
-		$configurator = new Configurator();
+		$config = new Configurator();
 
 		// Define variables
-		$configurator->addParameters([
+		$config->addParameters([
 			'tempDir' => FB_TEMP_DIR,
 			'logsDir' => FB_LOGS_DIR,
 			'appDir' => FB_APP_DIR,
 		]);
 
 		// Load parameters from environment
-		$configurator->addParameters(self::loadEnvParameters($envPrefix));
+		$config->addParameters(self::loadEnvParameters($envPrefix));
 
 		if (!class_exists('\Tester\Environment') || getenv(Tester\Environment::RUNNER) === false) {
-			$configurator->enableTracy(FB_LOGS_DIR);
+			$config->enableTracy(FB_LOGS_DIR);
 		}
 
-		$configurator->setTimeZone('UTC');
+		$config->setTimeZone('UTC');
 
 		// Default extension config
-		$configurator->addConfig(__DIR__ . DS . '..' . DS . '..' . DS . 'config' . DS . 'common.neon');
-		$configurator->addConfig(__DIR__ . DS . '..' . DS . '..' . DS . 'config' . DS . 'defaults.neon');
+		$config->addConfig(__DIR__ . DS . '..' . DS . '..' . DS . 'config' . DS . 'common.neon');
+		$config->addConfig(__DIR__ . DS . '..' . DS . '..' . DS . 'config' . DS . 'defaults.neon');
 
 		if (file_exists(FB_CONFIG_DIR . DS . 'common.neon')) {
-			$configurator->addConfig(FB_CONFIG_DIR . DS . 'common.neon');
+			$config->addConfig(FB_CONFIG_DIR . DS . 'common.neon');
 		}
 
 		if (file_exists(FB_CONFIG_DIR . DS . 'defaults.neon')) {
-			$configurator->addConfig(FB_CONFIG_DIR . DS . 'defaults.neon');
+			$config->addConfig(FB_CONFIG_DIR . DS . 'defaults.neon');
 		}
 
 		if (file_exists(FB_CONFIG_DIR . DS . 'local.neon')) {
-			$configurator->addConfig(FB_CONFIG_DIR . DS . 'local.neon');
+			$config->addConfig(FB_CONFIG_DIR . DS . 'local.neon');
 		}
 
-		return $configurator;
+		return $config;
 	}
 
 	private static function initConstants(): void

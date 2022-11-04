@@ -15,6 +15,9 @@
 
 namespace FastyBird\Plugin\WsExchange\Subscribers;
 
+use Doctrine\DBAL;
+use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\WsExchange;
 use FastyBird\Plugin\WsExchange\Events;
@@ -44,7 +47,8 @@ class Client implements EventDispatcher\EventSubscriberInterface
 	private array $allowedOrigins;
 
 	public function __construct(
-		Log\LoggerInterface|null $logger,
+		private readonly BootstrapHelpers\Database|null $database = null,
+		Log\LoggerInterface|null $logger = null,
 		string|null $wsKeys = null,
 		string|null $allowedOrigins = null,
 	)
@@ -72,10 +76,18 @@ class Client implements EventDispatcher\EventSubscriberInterface
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
+	 * @throws DBAL\Exception
 	 * @throws WebSockets\Exceptions\InvalidArgumentException
 	 */
 	public function incomingMessage(Events\IncomingMessage $event): void
 	{
+		if ($this->database !== null && !$this->database->ping()) {
+			$this->database->reconnect();
+		}
+
+		$this->database?->clear();
+
 		$this->checkSecurity($event->getClient(), $event->getHttpRequest(), $this->wsKeys, $this->allowedOrigins);
 	}
 

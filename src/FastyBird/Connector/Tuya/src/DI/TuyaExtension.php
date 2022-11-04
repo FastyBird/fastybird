@@ -27,6 +27,7 @@ use FastyBird\Connector\Tuya\Hydrators;
 use FastyBird\Connector\Tuya\Mappers;
 use FastyBird\Connector\Tuya\Schemas;
 use FastyBird\Connector\Tuya\Subscribers;
+use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
 use FastyBird\Module\Devices\DI as DevicesDI;
 use Nette;
 use Nette\DI;
@@ -46,12 +47,12 @@ class TuyaExtension extends DI\CompilerExtension
 	public const NAME = 'fbTuyaConnector';
 
 	public static function register(
-		Nette\Configurator $config,
+		Nette\Configurator|BootstrapBoot\Configurator $config,
 		string $extensionName = self::NAME,
 	): void
 	{
 		$config->onCompile[] = static function (
-			Nette\Configurator $config,
+			Nette\Configurator|BootstrapBoot\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new TuyaExtension());

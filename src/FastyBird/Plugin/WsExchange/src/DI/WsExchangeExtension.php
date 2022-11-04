@@ -15,6 +15,7 @@
 
 namespace FastyBird\Plugin\WsExchange\DI;
 
+use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
 use FastyBird\Library\Exchange\DI as ExchangeDI;
 use FastyBird\Plugin\WsExchange\Commands;
 use FastyBird\Plugin\WsExchange\Consumers;
@@ -49,12 +50,12 @@ class WsExchangeExtension extends DI\CompilerExtension
 	public const NAME = 'fbWsExchangePlugin';
 
 	public static function register(
-		Nette\Configurator $config,
+		Nette\Configurator|BootstrapBoot\Configurator $config,
 		string $extensionName = self::NAME,
 	): void
 	{
 		$config->onCompile[] = static function (
-			Nette\Configurator $config,
+			Nette\Configurator|BootstrapBoot\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new WsExchangeExtension());

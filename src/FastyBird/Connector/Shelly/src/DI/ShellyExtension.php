@@ -27,6 +27,7 @@ use FastyBird\Connector\Shelly\Hydrators;
 use FastyBird\Connector\Shelly\Mappers;
 use FastyBird\Connector\Shelly\Schemas;
 use FastyBird\Connector\Shelly\Subscribers;
+use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
 use FastyBird\Module\Devices\DI as DevicesDI;
 use Nette;
 use Nette\DI;
@@ -46,12 +47,12 @@ class ShellyExtension extends DI\CompilerExtension
 	public const NAME = 'fbShellyConnector';
 
 	public static function register(
-		Nette\Configurator $config,
+		Nette\Configurator|BootstrapBoot\Configurator $config,
 		string $extensionName = self::NAME,
 	): void
 	{
 		$config->onCompile[] = static function (
-			Nette\Configurator $config,
+			Nette\Configurator|BootstrapBoot\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new ShellyExtension());

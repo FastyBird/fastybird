@@ -16,7 +16,7 @@
 namespace FastyBird\Module\Accounts\DI;
 
 use Doctrine\Persistence;
-use FastyBird\Library\Bootstrap;
+use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
 use FastyBird\Module\Accounts\Commands;
 use FastyBird\Module\Accounts\Controllers;
 use FastyBird\Module\Accounts\Entities;
@@ -53,12 +53,12 @@ class AccountsExtension extends DI\CompilerExtension
 	public const NAME = 'fbAccountsModule';
 
 	public static function register(
-		Nette\Configurator|Bootstrap\Boot\Configurator $config,
+		Nette\Configurator|BootstrapBoot\Configurator $config,
 		string $extensionName = self::NAME,
 	): void
 	{
 		$config->onCompile[] = static function (
-			Nette\Configurator|Bootstrap\Boot\Configurator $config,
+			Nette\Configurator|BootstrapBoot\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new AccountsExtension());
