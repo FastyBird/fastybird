@@ -181,7 +181,7 @@ final class AccountEmailsV1 extends BaseV1
 				$this->translator->translate('//accounts-module.base.messages.missingAttribute.heading'),
 				$this->translator->translate('//accounts-module.base.messages.missingAttribute.message'),
 				[
-					'pointer' => 'data/attributes/' . Utilities\Api::fieldToJsonApi($ex->getField()),
+					'pointer' => '/data/attributes/' . Utilities\Api::fieldToJsonApi($ex->getField()),
 				],
 			);
 		} catch (JsonApiExceptions\JsonApi $ex) {
