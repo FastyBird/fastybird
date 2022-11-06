@@ -220,7 +220,7 @@ abstract class DbTestCase extends TestCase
 					try {
 						$db->executeQuery($sql);
 						$sql = '';
-					} catch (DBAL\Exception $ex) {
+					} catch (DBAL\Exception) {
 						// File could not be loaded
 					}
 				} else {
