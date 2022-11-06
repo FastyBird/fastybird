@@ -27,6 +27,7 @@ use FastyBird\Module\Accounts\Models;
 use FastyBird\Module\Accounts\Queries;
 use FastyBird\Module\Accounts\Router;
 use FastyBird\Module\Accounts\Schemas;
+use FastyBird\Module\Accounts\Utilities;
 use Fig\Http\Message\StatusCodeInterface;
 use InvalidArgumentException;
 use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
@@ -177,7 +178,7 @@ final class EmailsV1 extends BaseV1
 				$this->translator->translate('//accounts-module.base.messages.missingAttribute.heading'),
 				$this->translator->translate('//accounts-module.base.messages.missingAttribute.message'),
 				[
-					'pointer' => 'data/attributes/' . $ex->getField(),
+					'pointer' => '/data/attributes/' . $ex->getField(),
 				],
 			);
 		} catch (JsonApiExceptions\JsonApi $ex) {
@@ -202,7 +203,9 @@ final class EmailsV1 extends BaseV1
 						$this->translator->translate('//accounts-module.base.messages.uniqueAttribute.heading'),
 						$this->translator->translate('//accounts-module.base.messages.uniqueAttribute.message'),
 						[
-							'pointer' => '/data/attributes/' . Utils\Strings::substring($columnKey, 6),
+							'pointer' => '/data/attributes/' . Utilities\Api::fieldToJsonApi(
+								Utils\Strings::substring($columnKey, 6),
+							),
 						],
 					);
 				}
@@ -296,7 +299,7 @@ final class EmailsV1 extends BaseV1
 				$this->translator->translate('//accounts-module.base.messages.invalidAttribute.heading'),
 				$this->translator->translate('//accounts-module.base.messages.invalidAttribute.message'),
 				[
-					'pointer' => 'data/attributes/default',
+					'pointer' => '/data/attributes/default',
 				],
 			);
 		} catch (Throwable $ex) {

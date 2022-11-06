@@ -6,7 +6,7 @@
       "title" : "Missing required relation",
       "detail" : "Provided request is missing required relation",
       "source" : {
-        "pointer" : "data/relationships/account/data/id"
+        "pointer" : "/data/relationships/account/data/id"
       }
     }
   ],
