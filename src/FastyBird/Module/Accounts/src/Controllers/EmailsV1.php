@@ -178,7 +178,7 @@ final class EmailsV1 extends BaseV1
 				$this->translator->translate('//accounts-module.base.messages.missingAttribute.heading'),
 				$this->translator->translate('//accounts-module.base.messages.missingAttribute.message'),
 				[
-					'/pointer' => 'data/attributes/' . $ex->getField(),
+					'pointer' => '/data/attributes/' . $ex->getField(),
 				],
 			);
 		} catch (JsonApiExceptions\JsonApi $ex) {
@@ -299,7 +299,7 @@ final class EmailsV1 extends BaseV1
 				$this->translator->translate('//accounts-module.base.messages.invalidAttribute.heading'),
 				$this->translator->translate('//accounts-module.base.messages.invalidAttribute.message'),
 				[
-					'/pointer' => 'data/attributes/default',
+					'pointer' => '/data/attributes/default',
 				],
 			);
 		} catch (Throwable $ex) {

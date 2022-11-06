@@ -158,7 +158,7 @@ final class IdentitiesV1 extends BaseV1
 				$this->translator->translate('//accounts-module.base.messages.missingAttribute.heading'),
 				$this->translator->translate('//accounts-module.base.messages.missingAttribute.message'),
 				[
-					'/pointer' => 'data/attributes/' . $ex->getField(),
+					'pointer' => '/data/attributes/' . $ex->getField(),
 				],
 			);
 		} catch (JsonApiExceptions\JsonApi $ex) {
