@@ -23,9 +23,9 @@ use FastyBird\Module\Triggers\Schemas;
  *
  * @extends Trigger<Entities\Triggers\AutomaticTrigger>
  *
- * @package         FastyBird:TriggersModule!
- * @subpackage      Hydrators
- * @author          Adam Kadlec <adam.kadlec@fastybird.com>
+ * @package        FastyBird:TriggersModule!
+ * @subpackage     Hydrators
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 final class AutomaticTrigger extends Trigger
 {

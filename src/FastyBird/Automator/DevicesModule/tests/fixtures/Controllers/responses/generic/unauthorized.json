@@ -1,0 +1,13 @@
+{
+  "errors" : [
+    {
+      "status" : "401",
+      "code" : "401",
+      "title" : "Not authorized",
+      "detail" : "You are not authorized to perform this action"
+    }
+  ],
+  "jsonapi" : {
+    "version" : "1.1"
+  }
+}

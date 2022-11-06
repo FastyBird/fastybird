@@ -24,7 +24,8 @@ use Ramsey\Uuid;
 /**
  * Find action entities query
  *
- * @extends DoctrineOrmQuery\QueryObject<Entities\Actions\Action>
+ * @template T of Entities\Actions\Action
+ * @extends DoctrineOrmQuery\QueryObject<T>
  *
  * @package          FastyBird:TriggersModule!
  * @subpackage       Queries
@@ -34,10 +35,10 @@ class FindActions extends DoctrineOrmQuery\QueryObject
 {
 
 	/** @var Array<Closure(ORM\QueryBuilder $qb): void> */
-	private array $filter = [];
+	protected array $filter = [];
 
 	/** @var Array<Closure(ORM\QueryBuilder $qb): void> */
-	private array $select = [];
+	protected array $select = [];
 
 	public function byId(Uuid\UuidInterface $id): void
 	{
@@ -54,31 +55,8 @@ class FindActions extends DoctrineOrmQuery\QueryObject
 		};
 	}
 
-	public function forDevice(Uuid\UuidInterface $device): void
-	{
-		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($device): void {
-			$qb->andWhere('a.device = :device')->setParameter('device', $device, Uuid\Doctrine\UuidBinaryType::NAME);
-		};
-	}
-
-	public function forChannel(Uuid\UuidInterface $channel): void
-	{
-		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($channel): void {
-			$qb->andWhere('a.channel = :channel')
-				->setParameter('channel', $channel, Uuid\Doctrine\UuidBinaryType::NAME);
-		};
-	}
-
-	public function forProperty(Uuid\UuidInterface $property): void
-	{
-		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($property): void {
-			$qb->andWhere('a.property = :property')
-				->setParameter('property', $property, Uuid\Doctrine\UuidBinaryType::NAME);
-		};
-	}
-
 	/**
-	 * @phpstan-param ORM\EntityRepository<Entities\Actions\Action> $repository
+	 * @phpstan-param ORM\EntityRepository<T> $repository
 	 */
 	protected function doCreateQuery(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{
@@ -92,9 +70,9 @@ class FindActions extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @phpstan-param ORM\EntityRepository<Entities\Actions\Action> $repository
+	 * @phpstan-param ORM\EntityRepository<T> $repository
 	 */
-	private function createBasicDql(ORM\EntityRepository $repository): ORM\QueryBuilder
+	protected function createBasicDql(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{
 		$qb = $repository->createQueryBuilder('a');
 		$qb->addSelect('trigger');
@@ -108,7 +86,7 @@ class FindActions extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @phpstan-param ORM\EntityRepository<Entities\Actions\Action> $repository
+	 * @phpstan-param ORM\EntityRepository<T> $repository
 	 */
 	protected function doCreateCountQuery(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{

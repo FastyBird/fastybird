@@ -7,11 +7,7 @@
       "description" : "Entity unique uuid v4 identifier"
     },
     "type" : {
-      "type" : "string",
-      "enum" : [
-        "device_property",
-        "channel_property"
-      ]
+      "type" : "string"
     },
     "enabled" : {
       "type" : "boolean",

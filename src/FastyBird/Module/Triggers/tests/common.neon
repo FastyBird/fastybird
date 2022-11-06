@@ -42,6 +42,18 @@ services:
         setup:
             - addMiddleware(@fbJsonApi.middlewares.jsonapi)
     - {factory: React\EventLoop\Loop::get}
+    - {factory: FastyBird\Module\Triggers\Tests\Fixtures\Dummy\DummyActionHydrator}
+    - {factory: FastyBird\Module\Triggers\Tests\Fixtures\Dummy\DummyActionSchema}
+    - {factory: FastyBird\Module\Triggers\Tests\Fixtures\Dummy\DummyConditionSchema}
+    - {factory: FastyBird\Module\Triggers\Tests\Fixtures\Dummy\DummyConditionHydrator}
+
+decorator:
+    Doctrine\Persistence\Mapping\Driver\MappingDriverChain:
+        setup:
+            - addDriver(@nettrineOrmAnnotations.annotationDriver, 'FastyBird\Module\Triggers\Tests\Fixtures\Dummy')
+    Doctrine\ORM\Mapping\Driver\AnnotationDriver:
+        setup:
+            - addPaths([%appDir%/fixtures/dummy])
 
 contributteTranslation:
     locales:
@@ -92,7 +104,9 @@ nettrineOrm:
         proxyDir: %tempDir%/cache/doctrine.proxies
 
 nettrineOrmAnnotations:
-    mapping: []
+    mapping: [
+        FastyBird\Module\Triggers\Tests\Fixtures\Dummy: %appDir%/fixtures/dummy
+    ]
 
 fbSimpleAuth:
     token:

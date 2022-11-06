@@ -248,30 +248,14 @@ final class ConditionsV1Test extends DbTestCase
 		return [
 			// Valid responses
 			//////////////////
-			'createChannelProperty' => [
+			'create' => [
 				'/v1/triggers/1b17bcaa-a19e-45f0-98b4-56211cc648ae/conditions',
 				'Bearer ' . self::VALID_TOKEN,
 				file_get_contents(
-					__DIR__ . '/../../../fixtures/Controllers/requests/conditions.createChannelProperty.json',
+					__DIR__ . '/../../../fixtures/Controllers/requests/conditions.create.json',
 				),
 				StatusCodeInterface::STATUS_CREATED,
-				__DIR__ . '/../../../fixtures/Controllers/responses/conditions.createChannelProperty.json',
-			],
-			'createDeviceProperty' => [
-				'/v1/triggers/1b17bcaa-a19e-45f0-98b4-56211cc648ae/conditions',
-				'Bearer ' . self::VALID_TOKEN,
-				file_get_contents(
-					__DIR__ . '/../../../fixtures/Controllers/requests/conditions.createDeviceProperty.json',
-				),
-				StatusCodeInterface::STATUS_CREATED,
-				__DIR__ . '/../../../fixtures/Controllers/responses/conditions.createDeviceProperty.json',
-			],
-			'createTime' => [
-				'/v1/triggers/1b17bcaa-a19e-45f0-98b4-56211cc648ae/conditions',
-				'Bearer ' . self::VALID_TOKEN,
-				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/conditions.createTime.json'),
-				StatusCodeInterface::STATUS_CREATED,
-				__DIR__ . '/../../../fixtures/Controllers/responses/conditions.createTime.json',
+				__DIR__ . '/../../../fixtures/Controllers/responses/conditions.create.json',
 			],
 
 			// Invalid responses
@@ -280,7 +264,7 @@ final class ConditionsV1Test extends DbTestCase
 				'/v1/triggers/1b17bcaa-a19e-45f0-98b4-56211cc648ae/conditions',
 				'Bearer ' . self::VALID_TOKEN_USER,
 				file_get_contents(
-					__DIR__ . '/../../../fixtures/Controllers/requests/conditions.createChannelProperty.json',
+					__DIR__ . '/../../../fixtures/Controllers/requests/conditions.create.json',
 				),
 				StatusCodeInterface::STATUS_FORBIDDEN,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
@@ -298,7 +282,7 @@ final class ConditionsV1Test extends DbTestCase
 				'/v1/triggers/74e40f3e-84cb-4e0c-b3b3-fbf8246e0888/conditions',
 				'Bearer ' . self::VALID_TOKEN,
 				file_get_contents(
-					__DIR__ . '/../../../fixtures/Controllers/requests/conditions.createChannelProperty.json',
+					__DIR__ . '/../../../fixtures/Controllers/requests/conditions.create.json',
 				),
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/notFound.json',
@@ -316,7 +300,7 @@ final class ConditionsV1Test extends DbTestCase
 				'/v1/triggers/1b17bcaa-a19e-45f0-98b4-56211cc648ae/conditions',
 				null,
 				file_get_contents(
-					__DIR__ . '/../../../fixtures/Controllers/requests/conditions.createChannelProperty.json',
+					__DIR__ . '/../../../fixtures/Controllers/requests/conditions.create.json',
 				),
 				StatusCodeInterface::STATUS_FORBIDDEN,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
@@ -325,7 +309,7 @@ final class ConditionsV1Test extends DbTestCase
 				'/v1/triggers/1b17bcaa-a19e-45f0-98b4-56211cc648ae/conditions',
 				'',
 				file_get_contents(
-					__DIR__ . '/../../../fixtures/Controllers/requests/conditions.createChannelProperty.json',
+					__DIR__ . '/../../../fixtures/Controllers/requests/conditions.create.json',
 				),
 				StatusCodeInterface::STATUS_FORBIDDEN,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
@@ -334,7 +318,7 @@ final class ConditionsV1Test extends DbTestCase
 				'/v1/triggers/1b17bcaa-a19e-45f0-98b4-56211cc648ae/conditions',
 				'Bearer ' . self::INVALID_TOKEN,
 				file_get_contents(
-					__DIR__ . '/../../../fixtures/Controllers/requests/conditions.createChannelProperty.json',
+					__DIR__ . '/../../../fixtures/Controllers/requests/conditions.create.json',
 				),
 				StatusCodeInterface::STATUS_UNAUTHORIZED,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/unauthorized.json',
@@ -343,7 +327,7 @@ final class ConditionsV1Test extends DbTestCase
 				'/v1/triggers/1b17bcaa-a19e-45f0-98b4-56211cc648ae/conditions',
 				'Bearer ' . self::EXPIRED_TOKEN,
 				file_get_contents(
-					__DIR__ . '/../../../fixtures/Controllers/requests/conditions.createChannelProperty.json',
+					__DIR__ . '/../../../fixtures/Controllers/requests/conditions.create.json',
 				),
 				StatusCodeInterface::STATUS_UNAUTHORIZED,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/unauthorized.json',

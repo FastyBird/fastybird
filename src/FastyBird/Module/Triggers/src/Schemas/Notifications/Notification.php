@@ -29,9 +29,9 @@ use Neomerx\JsonApi;
  * @template T of Entities\Notifications\Notification
  * @extends  JsonApiSchemas\JsonApi<T>
  *
- * @package          FastyBird:TriggersModule!
- * @subpackage       Schemas
- * @author           Adam Kadlec <adam.kadlec@fastybird.com>
+ * @package        FastyBird:TriggersModule!
+ * @subpackage     Schemas
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 abstract class Notification extends JsonApiSchemas\JsonApi
 {

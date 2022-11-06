@@ -28,9 +28,9 @@ use function is_scalar;
  * @template T of Entities\Actions\Action
  * @extends  JsonApiHydrators\Hydrator<T>
  *
- * @package         FastyBird:TriggersModule!
- * @subpackage      Hydrators
- * @author          Adam Kadlec <adam.kadlec@fastybird.com>
+ * @package        FastyBird:TriggersModule!
+ * @subpackage     Hydrators
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 abstract class Action extends JsonApiHydrators\Hydrator
 {

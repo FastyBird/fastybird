@@ -61,31 +61,13 @@ final class TriggersModuleExtensionTests extends DbTestCase
 		self::assertNotNull($this->getContainer()->getByType(Schemas\Triggers\AutomaticTrigger::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Schemas\Triggers\ManualTrigger::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Schemas\Triggers\Controls\Control::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Schemas\Actions\DevicePropertyAction::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Schemas\Actions\ChannelPropertyAction::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Schemas\Notifications\EmailNotification::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Schemas\Notifications\SmsNotification::class, false));
-		self::assertNotNull(
-			$this->getContainer()->getByType(Schemas\Conditions\ChannelPropertyCondition::class, false),
-		);
-		self::assertNotNull($this->getContainer()->getByType(Schemas\Conditions\DevicePropertyCondition::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Schemas\Conditions\DateCondition::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Schemas\Conditions\TimeCondition::class, false));
 
 		self::assertNotNull($this->getContainer()->getByType(Hydrators\Triggers\AutomaticTrigger::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Hydrators\Triggers\ManualTrigger::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Hydrators\Actions\DevicePropertyAction::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Hydrators\Actions\ChannelPropertyAction::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Hydrators\Notifications\EmailNotification::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Hydrators\Notifications\SmsNotification::class, false));
-		self::assertNotNull(
-			$this->getContainer()->getByType(Hydrators\Conditions\ChannelPropertyCondition::class, false),
-		);
-		self::assertNotNull(
-			$this->getContainer()->getByType(Hydrators\Conditions\DevicePropertyCondition::class, false),
-		);
-		self::assertNotNull($this->getContainer()->getByType(Hydrators\Conditions\DataCondition::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Hydrators\Conditions\TimeCondition::class, false));
 
 		self::assertNotNull($this->getContainer()->getByType(Router\Validator::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Router\Routes::class, false));
@@ -93,8 +75,6 @@ final class TriggersModuleExtensionTests extends DbTestCase
 		self::assertNotNull($this->getContainer()->getByType(Middleware\Access::class, false));
 
 		self::assertNotNull($this->getContainer()->getByType(Subscribers\ModuleEntities::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Subscribers\ActionEntity::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Subscribers\ConditionEntity::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Subscribers\NotificationEntity::class, false));
 
 		self::assertNotNull($this->getContainer()->getByType(Utilities\Database::class, false));

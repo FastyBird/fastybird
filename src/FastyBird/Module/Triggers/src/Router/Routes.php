@@ -46,7 +46,7 @@ class Routes
 		private readonly Controllers\NotificationsV1 $notificationsV1Controller,
 		private readonly Controllers\ConditionsV1 $conditionsV1Controller,
 		private readonly Controllers\TriggerControlsV1 $controlsV1Controller,
-		private readonly Middleware\Access $devicesAccessControlMiddleware,
+		private readonly Middleware\Access $triggersAccessControlMiddleware,
 		private readonly SimpleAuthMiddleware\Access $accessControlMiddleware,
 		private readonly SimpleAuthMiddleware\User $userMiddleware,
 	)
@@ -68,7 +68,7 @@ class Routes
 
 		$routes->addMiddleware($this->accessControlMiddleware);
 		$routes->addMiddleware($this->userMiddleware);
-		$routes->addMiddleware($this->devicesAccessControlMiddleware);
+		$routes->addMiddleware($this->triggersAccessControlMiddleware);
 	}
 
 	private function buildRoutes(Routing\IRouter|Routing\IRouteCollector $group): Routing\IRouteGroup

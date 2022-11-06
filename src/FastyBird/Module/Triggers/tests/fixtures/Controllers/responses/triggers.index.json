@@ -33,7 +33,7 @@
           },
           "data" : [
             {
-              "type" : "com.fastybird.triggers-module/condition/time",
+              "type" : "com.fastybird.triggers-module/condition/dummy",
               "id" : "167900e9-19f3-4712-aa4d-00b160ff06d5"
             }
           ]
@@ -50,11 +50,11 @@
           },
           "data" : [
             {
-              "type" : "com.fastybird.triggers-module/action/channel-property",
+              "type" : "com.fastybird.triggers-module/action/dummy",
               "id" : "21d13f14-8be0-4625-8764-4d5b1f3b4d1e"
             },
             {
-              "type" : "com.fastybird.triggers-module/action/channel-property",
+              "type" : "com.fastybird.triggers-module/action/dummy",
               "id" : "cfca08ff-d199-48ed-9f00-8c6b840a567a"
             }
           ]
@@ -99,7 +99,7 @@
           },
           "data" : [
             {
-              "type" : "com.fastybird.triggers-module/condition/time",
+              "type" : "com.fastybird.triggers-module/condition/dummy",
               "id" : "09c453b3-c55f-4050-8f1c-b50f8d5728c2"
             }
           ]
@@ -116,11 +116,11 @@
           },
           "data" : [
             {
-              "type" : "com.fastybird.triggers-module/action/channel-property",
+              "type" : "com.fastybird.triggers-module/action/dummy",
               "id" : "c40e6e57-4fe0-43b0-88ed-4f0374e8623d"
             },
             {
-              "type" : "com.fastybird.triggers-module/action/channel-property",
+              "type" : "com.fastybird.triggers-module/action/dummy",
               "id" : "ea072fff-125e-43b0-9d76-4a65738f4b88"
             }
           ]
@@ -165,7 +165,7 @@
           },
           "data" : [
             {
-              "type" : "com.fastybird.triggers-module/condition/channel-property",
+              "type" : "com.fastybird.triggers-module/condition/dummy",
               "id" : "2726f19c-7759-440e-b6f5-8c3306692fa2"
             }
           ]
@@ -182,7 +182,7 @@
           },
           "data" : [
             {
-              "type" : "com.fastybird.triggers-module/action/channel-property",
+              "type" : "com.fastybird.triggers-module/action/dummy",
               "id" : "69ced64e-6e54-41e9-8052-ba25e6199b25"
             }
           ]
@@ -243,11 +243,11 @@
           },
           "data" : [
             {
-              "type" : "com.fastybird.triggers-module/action/channel-property",
+              "type" : "com.fastybird.triggers-module/action/dummy",
               "id" : "46c39a95-39eb-4216-9fa3-4d575a6295bd"
             },
             {
-              "type" : "com.fastybird.triggers-module/action/channel-property",
+              "type" : "com.fastybird.triggers-module/action/dummy",
               "id" : "e7496bd7-7bd6-4bd8-9abb-013261b88543"
             }
           ]
@@ -308,15 +308,15 @@
           },
           "data" : [
             {
-              "type" : "com.fastybird.triggers-module/action/channel-property",
+              "type" : "com.fastybird.triggers-module/action/dummy",
               "id" : "52aa8a35-1832-4317-be2c-8b8fffaae07f"
             },
             {
-              "type" : "com.fastybird.triggers-module/action/channel-property",
+              "type" : "com.fastybird.triggers-module/action/dummy",
               "id" : "7b6398e4-d26c-4cb1-ba0c-ed1b115a6cc0"
             },
             {
-              "type" : "com.fastybird.triggers-module/action/channel-property",
+              "type" : "com.fastybird.triggers-module/action/dummy",
               "id" : "7c14e872-e00a-432e-8b72-ad5679522cd4"
             }
           ]
@@ -377,15 +377,15 @@
           },
           "data" : [
             {
-              "type" : "com.fastybird.triggers-module/action/channel-property",
+              "type" : "com.fastybird.triggers-module/action/dummy",
               "id" : "4aa84028-d8b7-4128-95b2-295763634aa4"
             },
             {
-              "type" : "com.fastybird.triggers-module/action/channel-property",
+              "type" : "com.fastybird.triggers-module/action/dummy",
               "id" : "827d61f7-5dcf-4cab-9662-f386f6fb0bce"
             },
             {
-              "type" : "com.fastybird.triggers-module/action/channel-property",
+              "type" : "com.fastybird.triggers-module/action/dummy",
               "id" : "d062ce8b-9543-4b9b-b6ca-51907ec0246a"
             }
           ]

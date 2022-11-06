@@ -16,7 +16,6 @@
 namespace FastyBird\Library\Metadata\Entities\TriggersModule;
 
 use FastyBird\Library\Metadata\Entities;
-use FastyBird\Library\Metadata\Types;
 use Ramsey\Uuid;
 
 /**
@@ -27,7 +26,7 @@ use Ramsey\Uuid;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-abstract class Action implements Entities\Entity, Entities\Owner
+class Action implements Entities\Entity, Entities\Owner
 {
 
 	use Entities\TOwner;
@@ -36,14 +35,12 @@ abstract class Action implements Entities\Entity, Entities\Owner
 
 	private Uuid\UuidInterface $trigger;
 
-	private Types\TriggerActionType $type;
-
 	private bool|null $triggered;
 
 	public function __construct(
 		string $id,
 		string $trigger,
-		string $type,
+		private readonly string $type,
 		private readonly bool $enabled,
 		bool|null $isTriggered = null,
 		string|null $owner = null,
@@ -51,7 +48,6 @@ abstract class Action implements Entities\Entity, Entities\Owner
 	{
 		$this->id = Uuid\Uuid::fromString($id);
 		$this->trigger = Uuid\Uuid::fromString($trigger);
-		$this->type = Types\TriggerActionType::get($type);
 		$this->triggered = $isTriggered;
 		$this->owner = $owner !== null ? Uuid\Uuid::fromString($owner) : null;
 	}
@@ -66,7 +62,7 @@ abstract class Action implements Entities\Entity, Entities\Owner
 		return $this->trigger;
 	}
 
-	public function getType(): Types\TriggerActionType
+	public function getType(): string
 	{
 		return $this->type;
 	}
@@ -86,7 +82,7 @@ abstract class Action implements Entities\Entity, Entities\Owner
 		return [
 			'id' => $this->getId()->toString(),
 			'trigger' => $this->getTrigger()->toString(),
-			'type' => $this->getType()->getValue(),
+			'type' => $this->getType(),
 			'enabled' => $this->isEnabled(),
 			'is_triggered' => $this->isTriggered(),
 			'owner' => $this->getOwner()?->toString(),

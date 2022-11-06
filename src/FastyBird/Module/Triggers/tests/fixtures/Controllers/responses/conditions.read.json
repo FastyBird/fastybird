@@ -10,21 +10,14 @@
     "self" : "/v1/triggers/1b17bcaa-a19e-45f0-98b4-56211cc648ae/conditions/09c453b3-c55f-4050-8f1c-b50f8d5728c2"
   },
   "data" : {
-    "type" : "com.fastybird.triggers-module/condition/time",
+    "type" : "com.fastybird.triggers-module/condition/dummy",
     "id" : "09c453b3-c55f-4050-8f1c-b50f8d5728c2",
     "attributes" : {
       "enabled" : true,
       "is_fulfilled" : false,
-      "time" : "1970-01-01T07:30:00+01:00",
-      "days" : [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7
-      ]
+      "watch_item": "51d05010-c079-494c-ba73-9ea206f6bad1",
+      "operator": "above",
+      "operand": "3"
     },
     "relationships" : {
       "trigger" : {

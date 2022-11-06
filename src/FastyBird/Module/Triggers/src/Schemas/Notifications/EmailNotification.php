@@ -25,8 +25,8 @@ use function array_merge;
  *
  * @extends Notification<Entities\Notifications\EmailNotification>
  *
- * @package         FastyBird:TriggersModule!
- * @subpackage      Schemas
+ * @package        FastyBird:TriggersModule!
+ * @subpackage     Schemas
  */
 final class EmailNotification extends Notification
 {

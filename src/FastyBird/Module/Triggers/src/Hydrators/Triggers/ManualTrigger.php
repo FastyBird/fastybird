@@ -22,9 +22,9 @@ use FastyBird\Module\Triggers\Entities;
  *
  * @extends Trigger<Entities\Triggers\ManualTrigger>
  *
- * @package         FastyBird:TriggersModule!
- * @subpackage      Hydrators
- * @author          Adam Kadlec <adam.kadlec@fastybird.com>
+ * @package        FastyBird:TriggersModule!
+ * @subpackage     Hydrators
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 final class ManualTrigger extends Trigger
 {

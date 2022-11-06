@@ -16,9 +16,9 @@
 namespace FastyBird\Module\Triggers\Entities\Conditions;
 
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Triggers\Entities;
 use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
+use IPub\DoctrineDynamicDiscriminatorMap\Entities as DoctrineDynamicDiscriminatorMapEntities;
 use IPub\DoctrineTimestampable;
 use Ramsey\Uuid;
 use function assert;
@@ -36,15 +36,13 @@ use function assert;
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="condition_type", type="string", length=40)
  * @ORM\DiscriminatorMap({
- *    "device-property"   = "FastyBird\Module\Triggers\Entities\Conditions\DevicePropertyCondition",
- *    "channel-property"  = "FastyBird\Module\Triggers\Entities\Conditions\ChannelPropertyCondition",
- *    "date"              = "FastyBird\Module\Triggers\Entities\Conditions\DateCondition",
- *    "time"              = "FastyBird\Module\Triggers\Entities\Conditions\TimeCondition"
+ *    "condition" = "FastyBird\Module\Triggers\Entities\Conditions\Condition"
  * })
  * @ORM\MappedSuperclass
  */
 abstract class Condition implements Entities\Entity,
-	DoctrineTimestampable\Entities\IEntityCreated, DoctrineTimestampable\Entities\IEntityUpdated
+	DoctrineTimestampable\Entities\IEntityCreated, DoctrineTimestampable\Entities\IEntityUpdated,
+	DoctrineDynamicDiscriminatorMapEntities\IDiscriminatorProvider
 {
 
 	use Entities\TEntity;
@@ -81,7 +79,7 @@ abstract class Condition implements Entities\Entity,
 		$this->trigger = $trigger;
 	}
 
-	abstract public function getType(): MetadataTypes\TriggerConditionType;
+	abstract public function getType(): string;
 
 	public function isEnabled(): bool
 	{
@@ -107,7 +105,7 @@ abstract class Condition implements Entities\Entity,
 	{
 		return [
 			'id' => $this->getPlainId(),
-			'type' => $this->getType()->getValue(),
+			'type' => $this->getType(),
 			'enabled' => $this->isEnabled(),
 
 			'trigger' => $this->getTrigger()->getPlainId(),

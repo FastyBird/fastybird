@@ -29,9 +29,9 @@ use function is_scalar;
  *
  * @extends Notification<Entities\Notifications\SmsNotification>
  *
- * @package         FastyBird:TriggersModule!
- * @subpackage      Hydrators
- * @author          Adam Kadlec <adam.kadlec@fastybird.com>
+ * @package        FastyBird:TriggersModule!
+ * @subpackage     Hydrators
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 final class SmsNotification extends Notification
 {

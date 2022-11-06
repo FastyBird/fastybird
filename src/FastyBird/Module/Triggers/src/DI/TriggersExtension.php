@@ -127,12 +127,6 @@ class TriggersExtension extends DI\CompilerExtension
 			->setType(Models\Notifications\NotificationsManager::class)
 			->setArgument('entityCrud', '__placeholder__');
 
-		$builder->addDefinition($this->prefix('subscribers.actionEntity'), new DI\Definitions\ServiceDefinition())
-			->setType(Subscribers\ActionEntity::class);
-
-		$builder->addDefinition($this->prefix('subscribers.conditionEntity'), new DI\Definitions\ServiceDefinition())
-			->setType(Subscribers\ConditionEntity::class);
-
 		$builder->addDefinition($this->prefix('subscribers.notificationEntity'), new DI\Definitions\ServiceDefinition())
 			->setType(Subscribers\NotificationEntity::class);
 
@@ -168,33 +162,6 @@ class TriggersExtension extends DI\CompilerExtension
 		$builder->addDefinition($this->prefix('schemas.trigger.control'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\Triggers\Controls\Control::class);
 
-		$builder->addDefinition($this->prefix('schemas.actions.deviceProperty'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\Actions\DevicePropertyAction::class);
-
-		$builder->addDefinition(
-			$this->prefix('schemas.actions.channelProperty'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Schemas\Actions\ChannelPropertyAction::class);
-
-		$builder->addDefinition(
-			$this->prefix('schemas.conditions.channelProperty'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Schemas\Conditions\ChannelPropertyCondition::class);
-
-		$builder->addDefinition(
-			$this->prefix('schemas.conditions.deviceProperty'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Schemas\Conditions\DevicePropertyCondition::class);
-
-		$builder->addDefinition($this->prefix('schemas.conditions.date'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\Conditions\DateCondition::class);
-
-		$builder->addDefinition($this->prefix('schemas.conditions.time'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\Conditions\TimeCondition::class);
-
 		$builder->addDefinition($this->prefix('schemas.notifications.email'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\Notifications\EmailNotification::class);
 
@@ -206,36 +173,6 @@ class TriggersExtension extends DI\CompilerExtension
 
 		$builder->addDefinition($this->prefix('hydrators.triggers.manual'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\Triggers\ManualTrigger::class);
-
-		$builder->addDefinition(
-			$this->prefix('hydrators.actions.deviceProperty'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Hydrators\Actions\DevicePropertyAction::class);
-
-		$builder->addDefinition(
-			$this->prefix('hydrators.actions.channelProperty'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Hydrators\Actions\ChannelPropertyAction::class);
-
-		$builder->addDefinition(
-			$this->prefix('hydrators.conditions.channelProperty'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Hydrators\Conditions\ChannelPropertyCondition::class);
-
-		$builder->addDefinition(
-			$this->prefix('hydrators.conditions.deviceProperty'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Hydrators\Conditions\DevicePropertyCondition::class);
-
-		$builder->addDefinition($this->prefix('hydrators.conditions.date'), new DI\Definitions\ServiceDefinition())
-			->setType(Hydrators\Conditions\DataCondition::class);
-
-		$builder->addDefinition($this->prefix('hydrators.conditions.time'), new DI\Definitions\ServiceDefinition())
-			->setType(Hydrators\Conditions\TimeCondition::class);
 
 		$builder->addDefinition($this->prefix('hydrators.notifications.email'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\Notifications\EmailNotification::class);

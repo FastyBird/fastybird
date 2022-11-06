@@ -1,0 +1,46 @@
+{
+  "meta" : {
+    "author" : "FastyBird team",
+    "copyright" : "FastyBird s.r.o",
+    "totalCount" : 3
+  },
+  "jsonapi" : {
+    "version" : "1.1"
+  },
+  "links" : {
+    "self" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions?page%5Boffset%5D=1&page%5Blimit%5D=1",
+    "first" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions?page%5Boffset%5D=0&page%5Blimit%5D=1",
+    "prev" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions?page%5Boffset%5D=0&page%5Blimit%5D=1",
+    "next" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions?page%5Boffset%5D=2&page%5Blimit%5D=1",
+    "last" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions?page%5Boffset%5D=2&page%5Blimit%5D=1"
+  },
+  "data" : [
+    {
+      "type" : "com.fastybird.triggers-module/action/channel-property",
+      "id" : "827d61f7-5dcf-4cab-9662-f386f6fb0bce",
+      "attributes" : {
+        "enabled" : true,
+        "is_triggered" : false,
+        "device" : "547b6fef-c3a4-40b4-bc99-944f6340c907",
+        "channel" : "e1775023-30fb-4777-a14c-cb779c7fda63",
+        "property" : "ffe41105-5fd1-4e16-b9b3-ff51fa4d0c30",
+        "value" : "on"
+      },
+      "relationships" : {
+        "trigger" : {
+          "links" : {
+            "self" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions/827d61f7-5dcf-4cab-9662-f386f6fb0bce/relationships/trigger",
+            "related" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4"
+          },
+          "data" : {
+            "type" : "com.fastybird.triggers-module/trigger/manual",
+            "id" : "c64ba1c4-0eda-4cab-87a0-4d634f7b67f4"
+          }
+        }
+      },
+      "links" : {
+        "self" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions/827d61f7-5dcf-4cab-9662-f386f6fb0bce"
+      }
+    }
+  ]
+}

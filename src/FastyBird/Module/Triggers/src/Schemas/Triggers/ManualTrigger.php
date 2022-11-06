@@ -28,9 +28,9 @@ use function count;
  *
  * @extends Trigger<Entities\Triggers\ManualTrigger>
  *
- * @package         FastyBird:TriggersModule!
- * @subpackage      Schemas
- * @author          Adam Kadlec <adam.kadlec@fastybird.com>
+ * @package        FastyBird:TriggersModule!
+ * @subpackage     Schemas
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 final class ManualTrigger extends Trigger
 {

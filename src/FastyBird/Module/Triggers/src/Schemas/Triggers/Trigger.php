@@ -32,8 +32,8 @@ use function count;
  * @template T of Entities\Triggers\Trigger
  * @extends  JsonApiSchemas\JsonApi<T>
  *
- * @package          FastyBird:TriggersModule!
- * @subpackage       Schemas
+ * @package        FastyBird:TriggersModule!
+ * @subpackage     Schemas
  */
 abstract class Trigger extends JsonApiSchemas\JsonApi
 {

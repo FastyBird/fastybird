@@ -25,9 +25,9 @@ use function array_merge;
  *
  * @extends Notification<Entities\Notifications\SmsNotification>
  *
- * @package         FastyBird:TriggersModule!
- * @subpackage      Schemas
- * @author          Adam Kadlec <adam.kadlec@fastybird.com>
+ * @package        FastyBird:TriggersModule!
+ * @subpackage     Schemas
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 final class SmsNotification extends Notification
 {

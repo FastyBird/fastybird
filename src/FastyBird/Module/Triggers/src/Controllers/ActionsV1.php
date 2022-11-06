@@ -25,6 +25,7 @@ use FastyBird\Module\Triggers\Models;
 use FastyBird\Module\Triggers\Queries;
 use FastyBird\Module\Triggers\Router;
 use FastyBird\Module\Triggers\Schemas;
+use FastyBird\Module\Triggers\Utilities;
 use Fig\Http\Message\StatusCodeInterface;
 use InvalidArgumentException;
 use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
@@ -41,10 +42,10 @@ use function strval;
 /**
  * Triggers actions controller
  *
- * @package         FastyBird:TriggersModule!
- * @subpackage      Controllers
+ * @package        FastyBird:TriggersModule!
+ * @subpackage     Controllers
  *
- * @author          Adam Kadlec <adam.kadlec@fastybird.com>
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *
  * @Secured
  * @Secured\User(loggedIn)
@@ -143,7 +144,7 @@ final class ActionsV1 extends BaseV1
 					$this->translator->translate('//triggers-module.base.messages.missingAttribute.heading'),
 					$this->translator->translate('//triggers-module.base.messages.missingAttribute.message'),
 					[
-						'pointer' => 'data/attributes/' . $ex->getField(),
+						'pointer' => '/data/attributes/' . Utilities\Api::fieldToJsonApi($ex->getField()),
 					],
 				);
 			} catch (DoctrineCrudExceptions\EntityCreationException $ex) {
@@ -152,16 +153,7 @@ final class ActionsV1 extends BaseV1
 					$this->translator->translate('//triggers-module.base.messages.missingAttribute.heading'),
 					$this->translator->translate('//triggers-module.base.messages.missingAttribute.message'),
 					[
-						'pointer' => 'data/attributes/' . $ex->getField(),
-					],
-				);
-			} catch (Exceptions\UniqueActionConstraint) {
-				throw new JsonApiExceptions\JsonApiError(
-					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-					$this->translator->translate('//triggers-module.actions.messages.propertyNotUnique.heading'),
-					$this->translator->translate('//triggers-module.actions.messages.propertyNotUnique.message'),
-					[
-						'pointer' => '/data/relationships/property',
+						'pointer' => '/data/attributes/' . Utilities\Api::fieldToJsonApi($ex->getField()),
 					],
 				);
 			} catch (Doctrine\DBAL\Exception\UniqueConstraintViolationException $ex) {
@@ -184,7 +176,9 @@ final class ActionsV1 extends BaseV1
 							$this->translator->translate('//triggers-module.base.messages.uniqueAttribute.heading'),
 							$this->translator->translate('//triggers-module.base.messages.uniqueAttribute.message'),
 							[
-								'pointer' => '/data/attributes/' . Utils\Strings::substring($columnKey, 7),
+								'pointer' => '/data/attributes/' . Utilities\Api::fieldToJsonApi(
+									Utils\Strings::substring($columnKey, 7),
+								),
 							],
 						);
 					}

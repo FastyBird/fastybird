@@ -10,14 +10,12 @@
     "self" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions/4aa84028-d8b7-4128-95b2-295763634aa4?include=trigger"
   },
   "data" : {
-    "type" : "com.fastybird.triggers-module/action/channel-property",
+    "type" : "com.fastybird.triggers-module/action/dummy",
     "id" : "4aa84028-d8b7-4128-95b2-295763634aa4",
     "attributes" : {
       "enabled" : true,
       "is_triggered" : false,
-      "device" : "a830828c-6768-4274-b909-20ce0e222347",
-      "channel" : "4f692f94-5be6-4384-94a7-60c424a5f723",
-      "property" : "7bc1fc81-8ace-409d-b044-810140e2361a",
+      "do_item" : "a830828c-6768-4274-b909-20ce0e222347",
       "value" : "on"
     },
     "relationships" : {
@@ -76,15 +74,15 @@
           },
           "data" : [
             {
-              "type" : "com.fastybird.triggers-module/action/channel-property",
+              "type" : "com.fastybird.triggers-module/action/dummy",
               "id" : "4aa84028-d8b7-4128-95b2-295763634aa4"
             },
             {
-              "type" : "com.fastybird.triggers-module/action/channel-property",
+              "type" : "com.fastybird.triggers-module/action/dummy",
               "id" : "827d61f7-5dcf-4cab-9662-f386f6fb0bce"
             },
             {
-              "type" : "com.fastybird.triggers-module/action/channel-property",
+              "type" : "com.fastybird.triggers-module/action/dummy",
               "id" : "d062ce8b-9543-4b9b-b6ca-51907ec0246a"
             }
           ]

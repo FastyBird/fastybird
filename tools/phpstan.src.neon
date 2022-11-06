@@ -1,6 +1,9 @@
 includes:
     - phpstan.base.neon
 
+    - ../src/FastyBird/Automator/DateTime/tools/phpstan.config.src.neon
+    - ../src/FastyBird/Automator/DevicesModule/tools/phpstan.config.src.neon
+
     - ../src/FastyBird/Bridge/RedisDbDevicesModule/tools/phpstan.config.src.neon
     - ../src/FastyBird/Bridge/RedisDbTriggersModule/tools/phpstan.config.src.neon
     - ../src/FastyBird/Bridge/RedisDbWsExchange/tools/phpstan.config.src.neon

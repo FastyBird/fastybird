@@ -31,9 +31,9 @@ use function count;
  *
  * @extends Trigger<Entities\Triggers\AutomaticTrigger>
  *
- * @package         FastyBird:TriggersModule!
- * @subpackage      Schemas
- * @author          Adam Kadlec <adam.kadlec@fastybird.com>
+ * @package        FastyBird:TriggersModule!
+ * @subpackage     Schemas
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 final class AutomaticTrigger extends Trigger
 {

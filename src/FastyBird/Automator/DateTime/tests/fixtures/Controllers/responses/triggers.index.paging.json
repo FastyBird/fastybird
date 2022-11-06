@@ -1,0 +1,85 @@
+{
+  "meta" : {
+    "author" : "FastyBird team",
+    "copyright" : "FastyBird s.r.o",
+    "totalCount" : 6
+  },
+  "jsonapi" : {
+    "version" : "1.1"
+  },
+  "links" : {
+    "self" : "/v1/triggers?page%5Boffset%5D=1&page%5Blimit%5D=1",
+    "first" : "/v1/triggers?page%5Boffset%5D=0&page%5Blimit%5D=1",
+    "prev" : "/v1/triggers?page%5Boffset%5D=0&page%5Blimit%5D=1",
+    "next" : "/v1/triggers?page%5Boffset%5D=2&page%5Blimit%5D=1",
+    "last" : "/v1/triggers?page%5Boffset%5D=5&page%5Blimit%5D=1"
+  },
+  "data" : [
+    {
+      "type" : "com.fastybird.triggers-module/trigger/automatic",
+      "id" : "1b17bcaa-a19e-45f0-98b4-56211cc648ae",
+      "attributes" : {
+        "name" : "Rise n'Shine",
+        "comment" : null,
+        "enabled" : true,
+        "is_fulfilled" : null,
+        "is_triggered" : null
+      },
+      "relationships" : {
+        "conditions" : {
+          "links" : {
+            "self" : "/v1/triggers/1b17bcaa-a19e-45f0-98b4-56211cc648ae/relationships/conditions",
+            "related" : {
+              "href" : "/v1/triggers/1b17bcaa-a19e-45f0-98b4-56211cc648ae/conditions",
+              "meta" : {
+                "count" : 1
+              }
+            }
+          },
+          "data" : [
+            {
+              "type" : "com.fastybird.triggers-module/condition/time",
+              "id" : "09c453b3-c55f-4050-8f1c-b50f8d5728c2"
+            }
+          ]
+        },
+        "actions" : {
+          "links" : {
+            "self" : "/v1/triggers/1b17bcaa-a19e-45f0-98b4-56211cc648ae/relationships/actions",
+            "related" : {
+              "href" : "/v1/triggers/1b17bcaa-a19e-45f0-98b4-56211cc648ae/actions",
+              "meta" : {
+                "count" : 2
+              }
+            }
+          },
+          "data" : [
+            {
+              "type" : "com.fastybird.triggers-module/action/channel-property",
+              "id" : "c40e6e57-4fe0-43b0-88ed-4f0374e8623d"
+            },
+            {
+              "type" : "com.fastybird.triggers-module/action/channel-property",
+              "id" : "ea072fff-125e-43b0-9d76-4a65738f4b88"
+            }
+          ]
+        },
+        "notifications" : {
+          "links" : {
+            "self" : "/v1/triggers/1b17bcaa-a19e-45f0-98b4-56211cc648ae/relationships/notifications",
+            "related" : {
+              "href" : "/v1/triggers/1b17bcaa-a19e-45f0-98b4-56211cc648ae/notifications",
+              "meta" : {
+                "count" : 0
+              }
+            }
+          },
+          "data" : []
+        }
+      },
+      "links" : {
+        "self" : "/v1/triggers/1b17bcaa-a19e-45f0-98b4-56211cc648ae"
+      }
+    }
+  ]
+}

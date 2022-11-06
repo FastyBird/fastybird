@@ -62,22 +62,20 @@ final class ConditionEntityFactory extends Entities\EntityFactory
 			$data = Utils\ArrayHash::from($data);
 		}
 
-		$type = Types\TriggerConditionType::get($data->offsetGet('type'));
-
-		if ($type->equalsValue(Types\TriggerConditionType::TYPE_DEVICE_PROPERTY)) {
+		if ($data->offsetGet('type') === Types\TriggerConditionType::TYPE_DEVICE_PROPERTY) {
 			$entity = $this->build(DevicePropertyCondition::class, $data);
 
-		} elseif ($type->equalsValue(Types\TriggerConditionType::TYPE_CHANNEL_PROPERTY)) {
+		} elseif ($data->offsetGet('type') === Types\TriggerConditionType::TYPE_CHANNEL_PROPERTY) {
 			$entity = $this->build(ChannelPropertyCondition::class, $data);
 
-		} elseif ($type->equalsValue(Types\TriggerConditionType::TYPE_TIME)) {
+		} elseif ($data->offsetGet('type') === Types\TriggerConditionType::TYPE_TIME) {
 			$entity = $this->build(TimeCondition::class, $data);
 
-		} elseif ($type->equalsValue(Types\TriggerConditionType::TYPE_DATE)) {
+		} elseif ($data->offsetGet('type') === Types\TriggerConditionType::TYPE_DATE) {
 			$entity = $this->build(DateCondition::class, $data);
 
 		} else {
-			throw new Exceptions\InvalidArgument('Provided data and routing key is for unsupported condition type');
+			$entity = $this->build(Condition::class, $data);
 		}
 
 		if ($entity instanceof Condition) {
