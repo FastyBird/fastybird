@@ -1,0 +1,74 @@
+@import "../../../assets/components/ui/fb-loading-box";
+
+.fb-theme-ui-loading-box {
+  &__container {
+    font-family: $loading-font-family;
+    text-align: center;
+    padding: $loading-padding;
+
+    &[data-full-screen="true"] {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: #fff;
+      z-index: 1080;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
+
+    &[data-size="lg"] {
+      font-size: $loading-font-size-lg;
+    }
+
+    &[data-size="md"] {
+      font-size: $loading-font-size-md;
+    }
+
+    &[data-size="sm"] {
+      font-size: $loading-font-size-sm;
+    }
+  }
+
+  &__inner {
+    width: 100%;
+  }
+
+  &__icon {
+    margin-bottom: $loading-icon-margin;
+    align-items: center;
+    justify-content: center;
+
+    @include flex-icon;
+  }
+
+  &__content {
+    margin-top: $loading-content-margin;
+  }
+}
+
+.fb-theme-ui-loading-box-bounce-enter-active {
+  animation: fb-theme-ui-loading-box-bounce-in 0.25s;
+}
+
+.fb-theme-ui-loading-box-bounce-leave-active {
+  animation: fb-theme-ui-loading-box-bounce-in 0.25s reverse;
+}
+
+@keyframes fb-theme-ui-loading-box-bounce-in {
+  0% {
+    transform: scale(0);
+  }
+
+  50% {
+    transform: scale(1.2);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}

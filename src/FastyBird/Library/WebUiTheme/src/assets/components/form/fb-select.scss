@@ -1,0 +1,40 @@
+@use "sass:color";
+@import "../../mixins/utilities";
+@import "../../variables/colors";
+
+$input-background: $white;
+$input-background-readonly: #f2f2f2;
+$input-background-disabled: $gray-lighter;
+$input-color: $gray;
+$input-color-placeholder: $gray-lighter;
+$input-color-readonly: $gray-light;
+$input-border-color: $gray-lighter;
+$input-border-color-focus: #66afe9;
+$input-border-color-error: $color-danger;
+$input-size-font-size-sm: 1.3rem;
+$input-size-line-height-sm: 2.5rem;
+$input-size-height-sm: 2.5rem;
+$input-size-padding-sm: 0 1.5rem;
+$input-border-radius-sm: 2px;
+$input-size-font-size-md: 1.5rem;
+$input-size-line-height-md: 3.4rem;
+$input-size-height-md: 3.4rem;
+$input-size-padding-md: 0 1rem;
+$input-border-radius-md: 3px;
+$input-size-font-size-lg: 2.5rem;
+$input-size-line-height-lg: 4.5rem;
+$input-size-height-lg: 4.5rem;
+$input-size-padding-lg: 0 1.5rem;
+$input-border-radius-lg: 4px;
+
+@mixin select-border-radius($border-radius) {
+  @include border-radius($border-radius);
+}
+
+@mixin select-error-shadow {
+  @include box-shadow(inset 0 1px 1px rgba(0, 0, 0, 0.075));
+}
+
+@mixin select-error-focus-shadow {
+  @include box-shadow(inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px color.adjust($color-danger, $lightness: 20%));
+}

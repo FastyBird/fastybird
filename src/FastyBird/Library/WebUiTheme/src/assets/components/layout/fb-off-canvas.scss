@@ -1,0 +1,14 @@
+@import "../../variables/colors";
+@import "../../variables/screen";
+@import "../../variables/texts";
+@import "../../mixins/utilities";
+
+$off-canvas-overlay-color: rgb(0 0 0 / 50%);
+$off-canvas-overlay-zindex: $zindex-off-canvas-background;
+$off-canvas-body-color: $bg-color-body;
+$off-canvas-body-zindex: $zindex-off-canvas;
+$off-canvas-font-family: $font-family-base;
+
+@mixin off-canvas-body {
+  @include flex-column(nowrap);
+}

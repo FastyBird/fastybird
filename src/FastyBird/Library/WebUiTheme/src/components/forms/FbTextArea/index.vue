@@ -1,0 +1,211 @@
+<template>
+  <fb-form-field
+    :id="id"
+    :orientation="orientation"
+    :size="size"
+    :name="name"
+    :label="label"
+    :required="required"
+    :is-focused="isFocused"
+    :has-value="modelValue !== '' && modelValue !== null || placeholder !== null"
+    :error="error"
+  >
+    <template
+      v-if="'left-addon' in $slots"
+      #left-addon
+    >
+      <slot name="left-addon" />
+    </template>
+
+    <template
+      v-if="'right-addon' in $slots"
+      #right-addon
+    >
+      <slot name="right-addon" />
+    </template>
+
+    <template #field>
+      <textarea
+        :id="id ? id : name"
+        :ref="`field-${name}`"
+        :data-size="size"
+        :data-error="error !== null"
+        :name="name"
+        :tabindex="tabIndex"
+        :disabled="disabled"
+        :readonly="readonly"
+        :value="modelValue"
+        :placeholder="error !== null && !isFocused ? error : placeholder"
+        :rows="rows"
+        class="fb-theme-form-textarea__control"
+        @input="onUpdateValue($event.target.value)"
+        @focus="onSetFocus(true)"
+        @blur="onSetFocus(false)"
+        @keydown="onKeyDown"
+        @keyup="onKeyUp"
+      />
+    </template>
+
+    <template
+      v-if="'help-line' in $slots"
+      #help-line
+    >
+      <slot name="help-line" />
+    </template>
+  </fb-form-field>
+</template>
+
+<script lang="ts">
+import {
+  defineComponent,
+  PropType,
+  ref,
+  SetupContext,
+} from 'vue'
+
+import {
+  FbFormOrientationTypes,
+  FbSizeTypes,
+} from '../../../types'
+import FbFormField from '../FbField/index.vue'
+
+import { IFbFormTextAreaProps } from './types'
+
+export default defineComponent({
+
+  name: 'FbFormTextArea',
+
+  components: {
+    FbFormField,
+  },
+
+  props: {
+
+    orientation: {
+      type: String as PropType<FbFormOrientationTypes>,
+      default: FbFormOrientationTypes.VERTICAL,
+      validator: (value: FbFormOrientationTypes) => {
+        // The value must match one of these strings
+        return [
+          FbFormOrientationTypes.HORIZONTAL,
+          FbFormOrientationTypes.VERTICAL,
+          FbFormOrientationTypes.INLINE,
+        ].includes(value)
+      },
+    },
+
+    size: {
+      type: String as PropType<FbSizeTypes>,
+      default: FbSizeTypes.MEDIUM,
+      validator: (value: FbSizeTypes) => {
+        // The value must match one of these strings
+        return [
+          FbSizeTypes.LARGE,
+          FbSizeTypes.MEDIUM,
+          FbSizeTypes.SMALL,
+        ].includes(value)
+      },
+    },
+
+    name: {
+      type: String as PropType<string>,
+      required: true,
+    },
+
+    modelValue: {
+      type: [String, Number] as PropType<string | number | null>,
+      default: null,
+    },
+
+    id: {
+      type: String as PropType<string | null>,
+      default: null,
+    },
+
+    label: {
+      type: String as PropType<string | null>,
+      default: null,
+    },
+
+    rows: {
+      type: Number as PropType<number>,
+      default: 5,
+    },
+
+    required: {
+      type: Boolean as PropType<boolean>,
+      default: false,
+    },
+
+    tabIndex: {
+      type: Number as PropType<number | null>,
+      default: null,
+    },
+
+    error: {
+      type: String as PropType<string | null>,
+      default: null,
+    },
+
+    placeholder: {
+      type: String as PropType<string | null>,
+      default: null,
+    },
+
+    readonly: {
+      type: Boolean as PropType<boolean>,
+      default: false,
+    },
+
+    disabled: {
+      type: Boolean as PropType<boolean>,
+      default: false,
+    },
+
+  },
+
+  emits: ['update:modelValue', 'change', 'focus', 'blur', 'keydown', 'keyup'],
+
+  setup(_props: IFbFormTextAreaProps, context: SetupContext) {
+    const isFocused = ref<boolean>(false)
+
+    // Emit an input event up to the parent
+    const onUpdateValue = (value: string | number | null): void => {
+      context.emit('update:modelValue', value)
+      context.emit('change', value)
+    }
+
+    // Fire focus & blur events
+    const onSetFocus = (value: boolean): void => {
+      isFocused.value = value
+
+      if (value) {
+        context.emit('focus')
+      } else {
+        context.emit('blur')
+      }
+    }
+
+    const onKeyDown = (event: Event): void => {
+      context.emit('keydown', event)
+    }
+
+    const onKeyUp = (event: Event): void => {
+      context.emit('keyup', event)
+    }
+
+    return {
+      isFocused,
+      onUpdateValue,
+      onSetFocus,
+      onKeyDown,
+      onKeyUp,
+    }
+  },
+
+})
+</script>
+
+<style rel="stylesheet/scss" lang="scss" scoped>
+@import 'index';
+</style>

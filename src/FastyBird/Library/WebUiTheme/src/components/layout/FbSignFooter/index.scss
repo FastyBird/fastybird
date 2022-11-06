@@ -1,0 +1,14 @@
+@import "../../../assets/components/layout/fb-sign-footer";
+
+.fb-theme-layout-sign-footer {
+  &__container {
+    margin: $footer-margin;
+    text-align: center;
+
+    ul {
+      list-style: none;
+      padding: $footer-items-padding;
+      margin: $footer-items-margin;
+    }
+  }
+}

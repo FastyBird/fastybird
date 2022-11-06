@@ -1,0 +1,198 @@
+@import "variables/colors";
+@import "variables/texts";
+
+/*
+  Reset the box-sizing
+  Heads up! This reset may cause conflicts with some third-party widgets.
+  For recommendations on resolving such conflicts, see
+  http://getbootstrap.com/getting-started/#third-box-sizing
+ */
+* {
+  box-sizing: border-box;
+}
+
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/*
+  Avoid 300ms click delay on touch devices that support the `touch-action` CSS property.
+
+  In particular, unlike most other browsers, IE11+Edge on Windows 10 on touch devices and IE Mobile 10-11
+  DON'T remove the click delay when `<meta name="viewport" content="width=device-width">` is present.
+  However, they DO support removing the click delay via `touch-action: manipulation`.
+ */
+a,
+area,
+button,
+[role="button"],
+input,
+label,
+select,
+summary,
+textarea {
+  touch-action: manipulation;
+}
+
+/* Reset fonts for relevant elements */
+input,
+button,
+select,
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+textarea {
+  /* Textareas should really only resize vertically so they don't break their (horizontal) containers. */
+  resize: vertical;
+}
+
+/*
+ Links
+ */
+
+a {
+  color: $link-color;
+  text-decoration: none;
+
+  &:hover,
+  &:focus {
+    @media (hover: hover) and (pointer: fine) {
+      color: $link-hover-color;
+      text-decoration: $link-hover-decoration;
+    }
+  }
+
+  &:focus {
+    /*
+     WebKit-specific. Other browsers will keep their default outline style.
+     (Initially tried to also force default via `outline: initial`,
+     but that seems to erroneously remove the outline in Firefox altogether.)
+     */
+    outline: 5px auto -webkit-focus-ring-color;
+    outline-offset: -2px;
+  }
+}
+
+/*
+ Figures
+ We reset this here because previously Normalize had no `figure` margins. This
+ ensures we don't break anyone's use of the element.
+ */
+
+figure {
+  margin: 0;
+}
+
+/*
+ Images
+ */
+
+img {
+  vertical-align: middle;
+}
+
+/* Responsive images (ensure images don't scale beyond their parents) */
+.img-responsive {
+  /* Keep them at most 100% wide */
+  display: block;
+  max-width: 100%; /* Part 1: Set a maximum relative to the parent */
+  height: auto; /* Part 2: Scale the height according to the width, otherwise you get stretching */
+}
+
+/* Rounded corners */
+.img-rounded {
+  border-radius: 4px;
+}
+
+/*
+ Image thumbnails
+ Heads up! This is mixin-ed into thumbnails.less for `.thumbnail`.
+ */
+.img-thumbnail {
+  padding: 4px;
+  line-height: $line-height-base;
+  background-color: $bg-color-body;
+  border: 1px solid $gray-lighter;
+  border-radius: 3px;
+  transition: all 0.2s ease-in-out;
+
+  /* Keep them at most 100% wide */
+  display: inline-block;
+  max-width: 100%; /* Part 1: Set a maximum relative to the parent */
+  height: auto; /* Part 2: Scale the height according to the width, otherwise you get stretching */
+}
+
+/* Perfect circle */
+.img-circle {
+  border-radius: 50%; /* set radius in percents */
+}
+
+/*
+ Horizontal rules
+ */
+
+hr {
+  margin-top: $line-height-computed;
+  margin-bottom: $line-height-computed;
+  border: 0;
+  border-top: 1px solid $hr-border;
+  width: 100%;
+}
+
+/*
+ Only display content to screen readers
+ See: http://a11yproject.com/posts/how-to-hide-content
+ */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+/*
+ Use in conjunction with .sr-only to only display content when it's focused.
+ Useful for "Skip to main content" links; see http://www.w3.org/TR/2013/NOTE-WCAG20-TECHS-20130905/G1
+ Credit: HTML5 Boilerplate
+ */
+
+.sr-only-focusable {
+  &:active,
+  &:focus {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+  }
+}
+
+/*
+ iOS "clickable elements" fix for role="button"
+ Fixes "clickability" issue (and more generally, the firing of events such as focus as well)
+ for traditionally non-focusable elements with role="button"
+ see https://developer.mozilla.org/en-US/docs/Web/Events/click#Safari_Mobile
+ */
+
+[role="button"] {
+  cursor: pointer;
+}
+
+/*
+ Suppress the focus outline on elements that cannot be accessed via keyboard.
+ This prevents an unwanted focus outline from appearing around elements that
+ might still respond to pointer events.
+ */
+[tabindex="-1"]:focus {
+  outline: none !important;
+}

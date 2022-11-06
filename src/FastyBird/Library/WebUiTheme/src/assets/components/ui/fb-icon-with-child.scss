@@ -1,0 +1,27 @@
+@import "../../mixins/utilities";
+@import "../../variables/colors";
+@import "../../variables/sizes";
+
+$main-icon-size-sm: $icon-height-sm;
+$main-icon-size-md: $icon-height-md;
+$main-icon-size-lg: $icon-height-lg;
+$child-icon-size-sm: 1.2rem;
+$child-icon-size-md: 1.5rem;
+$child-icon-size-lg: 2rem;
+$main-icon-color: $text-color;
+$child-icon-default-color: $color-default-contrast;
+$child-icon-default-bg: $color-default;
+$child-icon-primary-color: $color-primary-contrast;
+$child-icon-primary-bg: $color-primary;
+$child-icon-success-color: $color-success-contrast;
+$child-icon-success-bg: $color-success;
+$child-icon-danger-color: $color-danger-contrast;
+$child-icon-danger-bg: $color-danger;
+$child-icon-warning-color: $color-warning-contrast;
+$child-icon-warning-bg: $color-warning;
+$child-icon-info-color: $color-info-contrast;
+$child-icon-info-bg: $color-info;
+
+@mixin child-shadow {
+  @include box-shadow(0 0 0 2px #fff);
+}

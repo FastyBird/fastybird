@@ -1,0 +1,27 @@
+@import "../../../../assets/components/layout/fb-tabs";
+
+.fb-theme-layout-tabs-item {
+  &__container {
+    flex-grow: 1;
+
+    a,
+    button {
+      height: 6rem;
+      position: relative;
+      padding: $item-padding !important;
+
+      .badge {
+        background-color: $item-color;
+        position: absolute;
+        top: 0.5rem;
+        left: 50%;
+        margin: $item-badge-margin;
+      }
+    }
+  }
+
+  &__label {
+    font-size: 1.2rem;
+    display: block;
+  }
+}

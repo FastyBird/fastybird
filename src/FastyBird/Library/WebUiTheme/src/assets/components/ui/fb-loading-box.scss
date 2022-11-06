@@ -1,0 +1,16 @@
+@import "../../variables/layout";
+@import "../../variables/screen";
+@import "../../variables/texts";
+@import "../../mixins/utilities";
+
+$loading-font-family: $font-family-base;
+$loading-padding: 3rem;
+$loading-icon-margin: $margin-sm;
+$loading-content-margin: $margin-sm;
+$loading-font-size-sm: $font-size-base;
+$loading-font-size-md: $font-size-base;
+$loading-font-size-lg: $font-size-base;
+
+@mixin flex-icon {
+  @include flex-row(nowrap);
+}

@@ -1,0 +1,10 @@
+@import "../../variables/colors";
+@import "../../variables/screen";
+@import "../../mixins/utilities";
+
+$result-bg-color: $bg-color-body;
+$result-z-index: $zindex-modal;
+
+@mixin form-flex {
+  @include flex-column(nowrap);
+}

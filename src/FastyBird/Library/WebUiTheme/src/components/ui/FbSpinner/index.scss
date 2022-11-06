@@ -1,0 +1,101 @@
+@use "sass:math";
+@import "../../../assets/components/ui/fb-spinner";
+
+.fb-theme-ui-spinner {
+  &__container {
+    position: relative;
+    display: inline-block;
+    box-sizing: border-box;
+
+    &::before,
+    &::after {
+      border-color: rgb(0 0 0 / 10%);
+      border-radius: 50%;
+      border-style: solid;
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+    }
+
+    &::after {
+      animation: fb-theme-ui-spinner-animation 0.6s linear;
+      animation-iteration-count: infinite;
+    }
+
+    /* Variants */
+    &[data-variant="default"]::after {
+      border-color: $spinner-variant-default transparent transparent;
+    }
+
+    &[data-variant="primary"]::after {
+      border-color: $spinner-variant-primary transparent transparent;
+    }
+
+    &[data-variant="success"]::after {
+      border-color: $spinner-variant-success transparent transparent;
+    }
+
+    &[data-variant="info"]::after {
+      border-color: $spinner-variant-info transparent transparent;
+    }
+
+    &[data-variant="warning"]::after {
+      border-color: $spinner-variant-warning transparent transparent;
+    }
+
+    &[data-variant="danger"]::after {
+      border-color: $spinner-variant-danger transparent transparent;
+    }
+
+    /* Sizes */
+    &[data-size="lg"] {
+      height: $spinner-size-lg;
+      width: $spinner-size-lg;
+    }
+
+    &[data-size="lg"]::before,
+    &[data-size="lg"]::after {
+      border-width: $spinner-size-lg-border;
+      height: ($spinner-size-lg - 2 * $spinner-size-md-border);
+      width: ($spinner-size-lg - 2 * $spinner-size-md-border);
+      margin: (math.div($spinner-size-lg, 2) * -1) 0 0 (math.div($spinner-size-lg, 2) * -1);
+    }
+
+    &[data-size="md"] {
+      height: $spinner-size-md;
+      width: $spinner-size-md;
+    }
+
+    &[data-size="md"]::before,
+    &[data-size="md"]::after {
+      border-width: $spinner-size-md-border;
+      height: ($spinner-size-md - 2 * $spinner-size-md-border);
+      width: ($spinner-size-md - 2 * $spinner-size-md-border);
+      margin: (math.div($spinner-size-md, 2) * -1) 0 0 (math.div($spinner-size-md, 2) * -1);
+    }
+
+    &[data-size="sm"] {
+      height: $spinner-size-sm;
+      width: $spinner-size-sm;
+    }
+
+    &[data-size="sm"]::before,
+    &[data-size="sm"]::after {
+      border-width: $spinner-size-sm-border;
+      height: ($spinner-size-sm - 2 * $spinner-size-md-border);
+      width: ($spinner-size-sm - 2 * $spinner-size-md-border);
+      margin: (math.div($spinner-size-sm, 2) * -1) 0 0 (math.div($spinner-size-sm, 2) * -1);
+    }
+  }
+}
+
+@keyframes fb-theme-ui-spinner-animation {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}

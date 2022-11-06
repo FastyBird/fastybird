@@ -1,0 +1,86 @@
+@import "../../../assets/components/ui/fb-component-loading-error";
+
+.fb-theme-ui-component-loading-error {
+  &__container {
+    font-family: $loader-font-family;
+
+    @include flex-container;
+
+    .fb-theme-ui-component-loading-error {
+      &__icon {
+        text-align: center;
+      }
+
+      &__text {
+        flex-grow: 1;
+        margin: 0;
+      }
+    }
+
+    &[data-size="lg"] {
+      padding: $loader-padding-lg;
+
+      .fb-theme-ui-component-loading-error {
+        &__icon {
+          @include flex-box-width($loader-icon-size-lg);
+
+          :deep(svg) {
+            margin: 0 auto;
+            height: $loader-icon-size-lg;
+            fill: $loader-error-color;
+          }
+        }
+
+        &__text {
+          line-height: $loader-icon-size-lg;
+          font-size: $loader-font-size-lg;
+          padding-left: $loader-text-padding-lg;
+        }
+      }
+    }
+
+    &[data-size="md"] {
+      padding: $loader-padding-md;
+
+      .fb-theme-ui-component-loading-error {
+        &__icon {
+          @include flex-box-width($loader-icon-size-md);
+
+          :deep(svg) {
+            margin: 0 auto;
+            height: $loader-icon-size-md;
+            fill: $loader-error-color;
+          }
+        }
+
+        &__text {
+          line-height: $loader-icon-size-md;
+          font-size: $loader-font-size-md;
+          padding-left: $loader-text-padding-md;
+        }
+      }
+    }
+
+    &[data-size="sm"] {
+      padding: $loader-padding-sm;
+
+      .fb-theme-ui-component-loading-error {
+        &__icon {
+          @include flex-box-width($loader-icon-size-sm);
+
+          :deep(svg) {
+            margin: 0 auto;
+            height: $loader-icon-size-sm;
+            fill: $loader-error-color;
+          }
+        }
+
+        &__text {
+          line-height: $loader-icon-size-sm;
+          font-size: $loader-font-size-sm;
+          padding-left: $loader-text-padding-sm;
+        }
+      }
+    }
+  }
+}

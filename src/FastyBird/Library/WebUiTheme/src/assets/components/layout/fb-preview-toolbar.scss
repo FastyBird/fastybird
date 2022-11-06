@@ -1,0 +1,17 @@
+@import "../../variables/colors";
+@import "../../variables/layout";
+@import "../../variables/texts";
+@import "../../mixins/utilities";
+
+$toolbar-font-family: $font-family-base;
+$toolbar-font-size: $font-size-base;
+$container-padding: $padding-xs $padding-sm;
+$container-border: 1px solid $gray-lighter;
+
+@mixin flex-content {
+  @include flex-row(nowrap);
+}
+
+@mixin flex-toolbar {
+  @include flex-row(nowrap);
+}

@@ -1,0 +1,10 @@
+@import "../../variables/screen";
+@import "../../mixins/utilities";
+
+$inner-box-border-color: #ddd;
+$inner-box-margin: 1rem 0;
+$screen-tablet-min: $screen-sm-min;
+
+@mixin shadow {
+  @include box-shadow(0 0 1px 1px rgba(0, 0, 0, 0.1));
+}

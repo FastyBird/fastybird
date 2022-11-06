@@ -1,0 +1,31 @@
+@use "sass:math";
+@import "../../variables/screen";
+@import "../../mixins/utilities";
+
+$z-index: 1000 !default;
+$menu-font-size: 1.5rem;
+$menu-color: #808080;
+$menu-background-color: #fff;
+$menu-border-radius: 3px;
+$menu-border-color: #ddd;
+$menu-margin: 0.5rem 1rem;
+$menu-padding: 0.5rem 0;
+$menu-item-line-height: math.div(2rem, $menu-font-size);
+$menu-item-color: #444;
+$menu-item-active-color: #fff;
+$menu-item-active-background-color: #d9230f;
+$menu-item-padding: 0.5rem 1rem;
+$menu-item-divider-margin: 0.5rem 0.5rem;
+$avatar-background-color: #fff;
+$avatar-color: #d9230f;
+$name-padding: 0 0 0 1rem;
+$screen-desktop-max: $screen-md-max;
+$screen-large: $screen-lg-min;
+
+@mixin flex-button {
+  @include flex-row(nowrap);
+}
+
+@mixin shadow {
+  @include box-shadow(0 6px 12px rgba(0, 0, 0, 0.175));
+}

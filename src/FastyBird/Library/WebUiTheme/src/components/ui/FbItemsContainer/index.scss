@@ -1,0 +1,53 @@
+@import "../../../assets/components/ui/fb-items-container";
+
+.fb-theme-ui-items-container {
+  &__container {
+    font-family: $container-font-family;
+    margin: $container-margin;
+
+    @include items-container-flex;
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  &__heading-container {
+    height: $heading-container-height;
+    border-bottom: 1px solid $heading-container-border-color;
+
+    @include flex-row(nowrap);
+  }
+
+  &__heading {
+    padding: $heading-padding;
+    flex-grow: 1;
+
+    @media (min-width: $screen-tablet-min) {
+      -webkit-box-flex: 0;
+      flex: 4 0 0;
+    }
+
+    h3 {
+      margin: 0;
+      line-height: $heading-line-height;
+      font-size: $heading-font-size;
+      height: auto;
+
+      small {
+        font-weight: normal;
+        line-height: 1;
+        color: $heading-small-color;
+        font-size: 65%;
+      }
+    }
+  }
+
+  &__buttons {
+    padding: $heading-buttons-padding;
+    align-items: center;
+    justify-content: flex-end;
+
+    @include flex-row(nowrap);
+  }
+}

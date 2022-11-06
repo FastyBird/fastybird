@@ -1,0 +1,23 @@
+@import "../../variables/colors";
+@import "../../variables/screen";
+@import "../../variables/texts";
+@import "../../mixins/utilities";
+
+$container-font-family: $font-family-base;
+$container-margin: 1.5rem 0 0 0;
+$heading-container-height: 3.8rem;
+$heading-container-border-color: #ddd;
+$heading-padding: 0;
+$heading-font-size: $font-size-h4;
+$heading-line-height: 3.8rem;
+$heading-small-color: $gray-light;
+$heading-buttons-padding: 0;
+$heading-buttons-button-min-width: 3.5rem;
+$heading-buttons-button-height: 3rem;
+$heading-buttons-button-padding: 0 1rem;
+$heading-buttons-button-font-size: 1.2rem;
+$screen-tablet-min: $screen-sm-min;
+
+@mixin items-container-flex {
+  @include flex-column(nowrap);
+}
