@@ -25,6 +25,7 @@ use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\Router;
 use FastyBird\Module\Devices\Schemas;
+use FastyBird\Module\Devices\Utilities;
 use Fig\Http\Message\StatusCodeInterface;
 use InvalidArgumentException;
 use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
@@ -148,7 +149,7 @@ final class ChannelPropertiesV1 extends BaseV1
 					$this->translator->translate('//devices-module.base.messages.missingAttribute.heading'),
 					$this->translator->translate('//devices-module.base.messages.missingAttribute.message'),
 					[
-						'pointer' => 'data/attributes/' . $ex->getField(),
+						'/pointer' => 'data/attributes/' . $ex->getField(),
 					],
 				);
 			} catch (DoctrineCrudExceptions\EntityCreationException $ex) {
@@ -157,7 +158,7 @@ final class ChannelPropertiesV1 extends BaseV1
 					$this->translator->translate('//devices-module.base.messages.missingAttribute.heading'),
 					$this->translator->translate('//devices-module.base.messages.missingAttribute.message'),
 					[
-						'pointer' => 'data/attributes/' . $ex->getField(),
+						'pointer' => '/data/attributes/' . Utilities\Api::fieldToJsonApi($ex->getField()),
 					],
 				);
 			} catch (Doctrine\DBAL\Exception\UniqueConstraintViolationException $ex) {
@@ -180,7 +181,9 @@ final class ChannelPropertiesV1 extends BaseV1
 							$this->translator->translate('//devices-module.base.messages.uniqueAttribute.heading'),
 							$this->translator->translate('//devices-module.base.messages.uniqueAttribute.message'),
 							[
-								'pointer' => '/data/attributes/' . Utils\Strings::substring($columnKey, 7),
+								'pointer' => '/data/attributes/' . Utilities\Api::fieldToJsonApi(
+									Utils\Strings::substring($columnKey, 7),
+								),
 							],
 						);
 					}
