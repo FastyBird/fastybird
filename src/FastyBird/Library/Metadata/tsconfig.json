@@ -14,14 +14,13 @@
     "esModuleInterop" : true,
     "allowSyntheticDefaultImports" : true,
     "sourceMap" : true,
-    "resolveJsonModule" : true,
-    "baseUrl" : ".",
+    "baseUrl" : "public",
     "types" : [
       "node"
     ],
     "paths" : {
       "@/*" : [
-        "public/*"
+        "*"
       ]
     },
     "lib" : [
@@ -31,6 +30,9 @@
       "scripthost"
     ]
   },
+  "include" : [
+    "./public/**/*.ts"
+  ],
   "exclude" : [
     "node_modules",
     "dist"

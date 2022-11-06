@@ -429,10 +429,7 @@ jobs:
         run: "yarn install"
 
       - name: "Check js linter"
-        run: "yarn lint:js"
-
-      - name: "Check ts linter"
-        run: "yarn lint:ts"
+        run: "yarn lint"
 
       - name: "Check php linter"
         run: "make lint"

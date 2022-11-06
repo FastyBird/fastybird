@@ -1,180 +1,165 @@
 // rollup.config.js
 import fs from 'fs';
-import path from 'path';
 import alias from '@rollup/plugin-alias';
 import commonjs from '@rollup/plugin-commonjs';
 import replace from '@rollup/plugin-replace';
 import babel from '@rollup/plugin-babel';
 import eslint from '@rollup/plugin-eslint';
-import dts from 'rollup-plugin-dts';
-import {terser} from 'rollup-plugin-terser';
+import terser from '@rollup/plugin-terser';
+import nodeResolve from '@rollup/plugin-node-resolve';
 import minimist from 'minimist';
+import typescript from 'rollup-plugin-typescript2';
+import flatDts from 'rollup-plugin-flat-dts';
 
 // Get browserslist config and remove ie from es build targets
 const esbrowserslist = fs.readFileSync('./.browserslistrc')
-  .toString()
-  .split('\n')
-  .filter((entry) => entry && entry.substring(0, 2) !== 'ie');
+    .toString()
+    .split('\n')
+    .filter((entry) => entry && entry.substring(0, 2) !== 'ie');
 
 const argv = minimist(process.argv.slice(2));
 
-const projectRoot = path.resolve(__dirname, '..');
-
 const baseConfig = {
-  input: 'public/entry.ts',
+    input: 'public/entry.ts',
 };
 
 const basePlugins = {
-  forAll: [
-    alias({
-      resolve: ['.js', '.ts'],
-      entries: {
-        '@': path.resolve(projectRoot, 'public'),
-      },
-    }),
-    eslint(),
-  ],
-  replace: {
-    preventAssignment: true,
-    'process.env.NODE_ENV': JSON.stringify('production'),
-    'process.env.ES_BUILD': JSON.stringify('false'),
-  },
+    forAll: [
+        typescript({
+            typescript: require('ttypescript'),
+            tsconfigDefaults: {
+                compilerOptions: {
+                    plugins: [
+                        { "transform": "typescript-transform-paths" },
+                        { "transform": "typescript-transform-paths", "afterDeclarations": true }
+                    ]
+                }
+            }
+        }),
+        nodeResolve(),
+        alias({
+            resolve: ['.js', '.ts'],
+        }),
+        eslint(),
+        flatDts({
+            file: 'metadata-library.d.ts'
+        }),
+    ],
+    replace: {
+        preventAssignment: true,
+        'process.env.NODE_ENV': JSON.stringify('production'),
+        'process.env.ES_BUILD': JSON.stringify('false'),
+    },
 };
 
 const babelConfig = {
-  babelHelpers: 'bundled',
-  exclude: 'node_modules/**',
-  extensions: ['.js', '.ts',],
+    babelHelpers: 'bundled',
+    exclude: 'node_modules/**',
+    extensions: ['.js', '.ts',],
 };
 
 // ESM/UMD/IIFE shared settings: externals
 // Refer to https://rollupjs.org/guide/en/#warning-treating-module-as-external-dependency
 const external = [
-  // list external dependencies, exactly the way it is written in the import statement.
-  // e.g. 'jquery'
-  'date-fns',
+    // list external dependencies, exactly the way it is written in the import statement.
+    // e.g. 'jquery'
+    'date-fns',
 ];
 
 // UMD/IIFE shared settings: output.globals
 // Refer to https://rollupjs.org/guide/en#output-globals for details
 const globals = {
-  // Provide global variable names to replace your external imports
-  // e.g. jquery: '$'
-  'date-fns': 'dateFns',
+    // Provide global variable names to replace your external imports
+    // e.g. jquery: '$'
+    'date-fns': 'dateFns',
 };
 
 // Customize configs for individual targets
 const buildFormats = [];
 
 if (!argv.format || argv.format === 'es') {
-  const esConfig = {
-    ...baseConfig,
-    external,
-    output: {
-      file: 'dist/metadata-library.esm.js',
-      format: 'esm',
-      exports: 'named',
-    },
-    plugins: [
-      replace({
-        ...basePlugins.replace,
-        'process.env.ES_BUILD': JSON.stringify('true'),
-      }),
-      ...basePlugins.forAll,
-      babel({
-        ...babelConfig,
-        presets: [
-          [
-            '@babel/preset-env',
-            {
-              targets: esbrowserslist,
-            },
-          ],
+    const esConfig = {
+        ...baseConfig,
+        external,
+        output: {
+            file: 'dist/metadata-library.esm.js',
+            format: 'esm',
+            exports: 'named',
+            sourcemap: true,
+        },
+        plugins: [
+            ...basePlugins.forAll,
+            replace({
+                ...basePlugins.replace,
+                'process.env.ES_BUILD': JSON.stringify('true'),
+            }),
+            babel({
+                ...babelConfig,
+                presets: [
+                    [
+                        '@babel/preset-env',
+                        {
+                            targets: esbrowserslist,
+                        },
+                    ],
+                ],
+            }),
+            commonjs(),
         ],
-      }),
-      commonjs(),
-    ],
-  };
-  buildFormats.push(esConfig);
+    };
+    buildFormats.push(esConfig);
 }
 
 if (!argv.format || argv.format === 'cjs') {
-  const umdConfig = {
-    ...baseConfig,
-    external,
-    output: {
-      compact: true,
-      file: 'dist/metadata-library.ssr.js',
-      format: 'cjs',
-      name: 'Metadata',
-      exports: 'named',
-      globals,
-    },
-    plugins: [
-      replace(basePlugins.replace),
-      ...basePlugins.forAll,
-      babel(babelConfig),
-      commonjs(),
-    ],
-  };
-  buildFormats.push(umdConfig);
+    const umdConfig = {
+        ...baseConfig,
+        external,
+        output: {
+            compact: true,
+            file: 'dist/metadata-library.ssr.js',
+            format: 'cjs',
+            name: 'Metadata',
+            exports: 'named',
+            sourcemap: true,
+            globals,
+        },
+        plugins: [
+            ...basePlugins.forAll,
+            replace(basePlugins.replace),
+            babel(babelConfig),
+            commonjs(),
+        ],
+    };
+    buildFormats.push(umdConfig);
 }
 
 if (!argv.format || argv.format === 'iife') {
-  const unpkgConfig = {
-    ...baseConfig,
-    external,
-    output: {
-      compact: true,
-      file: 'dist/metadata-library.min.js',
-      format: 'iife',
-      name: 'Metadata',
-      exports: 'named',
-      globals,
-    },
-    plugins: [
-      replace(basePlugins.replace),
-      ...basePlugins.forAll,
-      babel(babelConfig),
-      commonjs(),
-      terser({
+    const unpkgConfig = {
+        ...baseConfig,
+        external,
         output: {
-          ecma: 5,
+            compact: true,
+            file: 'dist/metadata-library.min.js',
+            format: 'iife',
+            name: 'Metadata',
+            exports: 'named',
+            sourcemap: true,
+            globals,
         },
-      }),
-    ],
-  };
-  buildFormats.push(unpkgConfig);
-}
-
-buildFormats.push({
-  ...baseConfig,
-  external,
-  output: {
-    file: 'dist/metadata-library.d.ts',
-    format: 'es',
-  },
-  plugins: [
-    replace({
-      ...basePlugins.replace,
-      'process.env.ES_BUILD': JSON.stringify('true'),
-    }),
-    ...basePlugins.forAll,
-    babel({
-      ...babelConfig,
-      presets: [
-        [
-          '@babel/preset-env',
-          {
-            targets: esbrowserslist,
-          },
+        plugins: [
+            ...basePlugins.forAll,
+            replace(basePlugins.replace),
+            babel(babelConfig),
+            commonjs(),
+            terser({
+                output: {
+                    ecma: 5,
+                },
+            }),
         ],
-      ],
-    }),
-    commonjs(),
-    dts(),
-  ],
-});
+    };
+    buildFormats.push(unpkgConfig);
+}
 
 // Export config
 export default buildFormats;

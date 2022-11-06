@@ -43,7 +43,7 @@ yarn add @fastybird/metadata-library
 
 ## Updating metadata
 
-If you want to place your module, plugin or connector here, feel free to create [pull request](https://github.com/FastyBird/fastybird/pulls) with your updates.
+If you want to place your module, plugin, connector etc. here, feel free to create [pull request](https://github.com/FastyBird/fastybird/pulls) with your updates.
 
 ***
 Homepage [https://www.fastybird.com](https://www.fastybird.com) and
