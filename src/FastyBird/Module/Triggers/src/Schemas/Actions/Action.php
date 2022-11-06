@@ -31,9 +31,9 @@ use Neomerx\JsonApi;
  * @template T of Entities\Actions\Action
  * @extends  JsonApiSchemas\JsonApi<T>
  *
- * @package          FastyBird:TriggersModule!
- * @subpackage       Schemas
- * @author           Adam Kadlec <adam.kadlec@fastybird.com>
+ * @package        FastyBird:TriggersModule!
+ * @subpackage     Schemas
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 abstract class Action extends JsonApiSchemas\JsonApi
 {

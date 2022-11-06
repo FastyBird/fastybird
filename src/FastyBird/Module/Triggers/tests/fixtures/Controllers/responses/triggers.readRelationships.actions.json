@@ -2,15 +2,15 @@
   "data" : [
     {
       "id" : "4aa84028-d8b7-4128-95b2-295763634aa4",
-      "type" : "com.fastybird.triggers-module/action/channel-property"
+      "type" : "com.fastybird.triggers-module/action/dummy"
     },
     {
       "id" : "827d61f7-5dcf-4cab-9662-f386f6fb0bce",
-      "type" : "com.fastybird.triggers-module/action/channel-property"
+      "type" : "com.fastybird.triggers-module/action/dummy"
     },
     {
       "id" : "d062ce8b-9543-4b9b-b6ca-51907ec0246a",
-      "type" : "com.fastybird.triggers-module/action/channel-property"
+      "type" : "com.fastybird.triggers-module/action/dummy"
     }
   ],
   "jsonapi" : {

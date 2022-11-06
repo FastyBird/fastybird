@@ -49,7 +49,8 @@ final class ConditionsRepository
 	}
 
 	/**
-	 * @param class-string<Entities\Conditions\Condition> $type
+	 * @phpstan-param Queries\FindConditions<Entities\Conditions\Condition> $queryObject
+	 * @phpstan-param class-string<Entities\Conditions\Condition> $type
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -64,6 +65,7 @@ final class ConditionsRepository
 	}
 
 	/**
+	 * @param Queries\FindConditions<Entities\Conditions\Condition> $queryObject
 	 * @param class-string<Entities\Conditions\Condition> $type
 	 *
 	 * @return Array<Entities\Conditions\Condition>
@@ -93,9 +95,10 @@ final class ConditionsRepository
 	}
 
 	/**
-	 * @phpstan-param class-string<Entities\Conditions\Condition> $type
+	 * @param Queries\FindConditions<Entities\Conditions\Condition> $queryObject
+	 * @param class-string<Entities\Conditions\Condition> $type
 	 *
-	 * @phpstan-return DoctrineOrmQuery\ResultSet<Entities\Conditions\Condition>
+	 * @return DoctrineOrmQuery\ResultSet<Entities\Conditions\Condition>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */

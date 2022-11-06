@@ -106,6 +106,8 @@
     },
     "autoload": {
         "psr-4": {
+            "FastyBird\\Automator\\DateTime\\": "src/FastyBird/Automator/DateTime/src/",
+            "FastyBird\\Automator\\DevicesModule\\": "src/FastyBird/Automator/DevicesModule/src/",
             "FastyBird\\Bridge\\RedisDbDevicesModule\\": "src/FastyBird/Bridge/RedisDbDevicesModule/src/",
             "FastyBird\\Bridge\\RedisDbTriggersModule\\": "src/FastyBird/Bridge/RedisDbTriggersModule/src/",
             "FastyBird\\Bridge\\RedisDbWsExchange\\": "src/FastyBird/Bridge/RedisDbWsExchange/src/",
@@ -129,6 +131,10 @@
     },
     "autoload-dev": {
         "psr-4": {
+            "FastyBird\\Automator\\DateTime\\Tests\\Cases\\Unit\\": "src/FastyBird/Automator/DateTime/tests/cases/unit",
+            "FastyBird\\Automator\\DateTime\\Tests\\Tools\\": "src/FastyBird/Automator/DateTime/tests/tools",
+            "FastyBird\\Automator\\DevicesModule\\Tests\\Cases\\Unit\\": "src/FastyBird/Automator/DevicesModule/tests/cases/unit",
+            "FastyBird\\Automator\\DevicesModule\\Tests\\Tools\\": "src/FastyBird/Automator/DevicesModule/tests/tools",
             "FastyBird\\Bridge\\RedisDbDevicesModule\\Tests\\Cases\\Unit\\": "src/FastyBird/Bridge/RedisDbDevicesModule/tests/cases/unit",
             "FastyBird\\Bridge\\RedisDbDevicesModule\\Tests\\Tools\\": "src/FastyBird/Bridge/RedisDbDevicesModule/tests/tools",
             "FastyBird\\Bridge\\RedisDbTriggersModule\\Tests\\Cases\\Unit\\": "src/FastyBird/Bridge/RedisDbTriggersModule/tests/cases/unit",
@@ -159,6 +165,7 @@
             "FastyBird\\Module\\Devices\\Tests\\Tools\\": "src/FastyBird/Module/Devices/tests/tools",
             "FastyBird\\Module\\Triggers\\Tests\\Cases\\Unit\\": "src/FastyBird/Module/Triggers/tests/cases/unit",
             "FastyBird\\Module\\Triggers\\Tests\\Fixtures\\": "src/FastyBird/Module/Triggers/tests/fixtures",
+            "FastyBird\\Module\\Triggers\\Tests\\Fixtures\\Dummy\\": "src/FastyBird/Module/Triggers/tests/fixtures/dummy",
             "FastyBird\\Module\\Triggers\\Tests\\Tools\\": "src/FastyBird/Module/Triggers/tests/tools",
             "FastyBird\\Plugin\\ApiKey\\Tests\\Cases\\Unit\\": "src/FastyBird/Plugin/ApiKey/tests/cases/unit",
             "FastyBird\\Plugin\\ApiKey\\Tests\\Tools\\": "src/FastyBird/Plugin/ApiKey/tests/tools",
@@ -196,7 +203,9 @@
         "fastybird/accounts-module": "self.version",
         "fastybird/apikey-plugin": "self.version",
         "fastybird/bootstrap-library": "self.version",
+        "fastybird/date-time-automator": "self.version",
         "fastybird/devices-module": "self.version",
+        "fastybird/devices-module-automator": "self.version",
         "fastybird/exchange-library": "self.version",
         "fastybird/fb-mqtt-connector": "self.version",
         "fastybird/homekit-connector": "self.version",

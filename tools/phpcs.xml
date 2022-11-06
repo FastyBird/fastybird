@@ -17,6 +17,14 @@
     <rule ref="SlevomatCodingStandard.Files.TypeNameMatchesFileName">
         <properties>
             <property name="rootNamespaces" type="array">
+                <element key="src/FastyBird/Automator/DateTime/src" value="FastyBird\Automator\DateTime"/>
+                <element key="src/FastyBird/Automator/DateTime/tests/cases/unit" value="FastyBird\Automator\DateTime\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Automator/DateTime/tests/tools" value="FastyBird\Automator\DateTime\Tests\Tools"/>
+
+                <element key="src/FastyBird/Automator/DevicesModule/src" value="FastyBird\Automator\DevicesModule"/>
+                <element key="src/FastyBird/Automator/DevicesModule/tests/cases/unit" value="FastyBird\Automator\DevicesModule\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Automator/DevicesModule/tests/tools" value="FastyBird\Automator\DevicesModule\Tests\Tools"/>
+
                 <element key="src/FastyBird/Bridge/RedisDbDevicesModule/src" value="FastyBird\Bridge\RedisDbDevicesModule"/>
                 <element key="src/FastyBird/Bridge/RedisDbDevicesModule/tests/cases/unit" value="FastyBird\Bridge\RedisDbDevicesModule\Tests\Cases\Unit"/>
                 <element key="src/FastyBird/Bridge/RedisDbDevicesModule/tests/tools" value="FastyBird\Bridge\RedisDbDevicesModule\Tests\Tools"/>
@@ -61,20 +69,21 @@
                 <element key="src/FastyBird/Library/Metadata/tests/cases/unit" value="FastyBird\Library\Metadata\Tests\Cases\Unit"/>
                 <element key="src/FastyBird/Library/Metadata/tests/fixtures" value="FastyBird\Library\Metadata\Tests\Fixtures"/>
 
+                <element key="src/FastyBird/Module/Accounts/src" value="FastyBird\Module\Accounts"/>
+                <element key="src/FastyBird/Module/Accounts/tests/cases/unit" value="FastyBird\Module\Accounts\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Module/Accounts/tests/fixtures" value="FastyBird\Module\Accounts\Tests\Fixtures"/>
+                <element key="src/FastyBird/Module/Accounts/tests/tools" value="FastyBird\Module\Accounts\Tests\Tools"/>
+
                 <element key="src/FastyBird/Module/Devices/src" value="FastyBird\Module\Devices"/>
                 <element key="src/FastyBird/Module/Devices/tests/cases/unit" value="FastyBird\Module\Devices\Tests\Cases\Unit"/>
                 <element key="src/FastyBird/Module/Devices/tests/fixtures" value="FastyBird\Module\Devices\Tests\Fixtures"/>
                 <element key="src/FastyBird/Module/Devices/tests/fixtures/dummy" value="FastyBird\Module\Devices\Tests\Fixtures\Dummy"/>
                 <element key="src/FastyBird/Module/Devices/tests/tools" value="FastyBird\Module\Devices\Tests\Tools"/>
 
-                <element key="src/FastyBird/Module/Accounts/src" value="FastyBird\Module\Accounts"/>
-                <element key="src/FastyBird/Module/Accounts/tests/cases/unit" value="FastyBird\Module\Accounts\Tests\Cases\Unit"/>
-                <element key="src/FastyBird/Module/Accounts/tests/fixtures" value="FastyBird\Module\Accounts\Tests\Fixtures"/>
-                <element key="src/FastyBird/Module/Accounts/tests/tools" value="FastyBird\Module\Accounts\Tests\Tools"/>
-
                 <element key="src/FastyBird/Module/Triggers/src" value="FastyBird\Module\Triggers"/>
                 <element key="src/FastyBird/Module/Triggers/tests/cases/unit" value="FastyBird\Module\Triggers\Tests\Cases\Unit"/>
                 <element key="src/FastyBird/Module/Triggers/tests/fixtures" value="FastyBird\Module\Triggers\Tests\Fixtures"/>
+                <element key="src/FastyBird/Module/Triggers/tests/fixtures/dummy" value="FastyBird\Module\Triggers\Tests\Fixtures\Dummy"/>
                 <element key="src/FastyBird/Module/Triggers/tests/tools" value="FastyBird\Module\Triggers\Tests\Tools"/>
 
                 <element key="src/FastyBird/Plugin/ApiKey/src" value="FastyBird\Plugin\ApiKey"/>

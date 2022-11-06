@@ -1,0 +1,121 @@
+<?php declare(strict_types = 1);
+
+namespace FastyBird\Module\Triggers\Tests\Fixtures\Dummy;
+
+use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Triggers\Hydrators;
+use Fig\Http\Message\StatusCodeInterface;
+use IPub\JsonAPIDocument;
+use Ramsey\Uuid;
+use function is_bool;
+use function is_scalar;
+use function strtolower;
+
+final class DummyConditionHydrator extends Hydrators\Conditions\Condition
+{
+
+	/** @var Array<int|string, string> */
+	protected array $attributes = [
+		0 => 'operator',
+		1 => 'operand',
+		2 => 'enabled',
+		'watch_item' => 'watchItem',
+	];
+
+	public function getEntityName(): string
+	{
+		return DummyConditionEntity::class;
+	}
+
+	/**
+	 * @throws JsonApiExceptions\JsonApi
+	 */
+	protected function hydrateWatchItemAttribute(
+		JsonAPIDocument\Objects\IStandardObject $attributes,
+	): Uuid\UuidInterface
+	{
+		if (
+			!is_scalar($attributes->get('watch_item'))
+			|| !$attributes->has('watch_item')
+			|| $attributes->get('watch_item') === ''
+			|| !Uuid\Uuid::isValid((string) $attributes->get('watch_item'))
+		) {
+			throw new JsonApiExceptions\JsonApiError(
+				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
+				$this->translator->translate('//triggers-module.base.messages.missingAttribute.heading'),
+				$this->translator->translate('//triggers-module.base.messages.missingAttribute.message'),
+				[
+					'pointer' => '/data/attributes/watch_item',
+				],
+			);
+		}
+
+		return Uuid\Uuid::fromString((string) $attributes->get('watch_item'));
+	}
+
+	/**
+	 * @throws JsonApiExceptions\JsonApi
+	 */
+	protected function hydrateOperatorAttribute(
+		JsonAPIDocument\Objects\IStandardObject $attributes,
+	): MetadataTypes\TriggerConditionOperator
+	{
+		// Condition operator have to be set
+		if (
+			!is_scalar($attributes->get('operator'))
+			|| !$attributes->has('operator')
+			|| $attributes->get('operator') === ''
+		) {
+			throw new JsonApiExceptions\JsonApiError(
+				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
+				$this->translator->translate('//triggers-module.base.messages.missingAttribute.heading'),
+				$this->translator->translate('//triggers-module.base.messages.missingAttribute.message'),
+				[
+					'pointer' => '/data/attributes/operator',
+				],
+			);
+
+			// ...and have to be valid value
+		} elseif (!MetadataTypes\TriggerConditionOperator::isValidValue($attributes->get('operator'))) {
+			throw new JsonApiExceptions\JsonApiError(
+				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
+				$this->translator->translate('//triggers-module.conditions.messages.invalidOperator.heading'),
+				$this->translator->translate('//triggers-module.conditions.messages.invalidOperator.message'),
+				[
+					'pointer' => '/data/attributes/operator',
+				],
+			);
+		}
+
+		return MetadataTypes\TriggerConditionOperator::get($attributes->get('operator'));
+	}
+
+	/**
+	 * @throws JsonApiExceptions\JsonApi
+	 */
+	protected function hydrateOperandAttribute(
+		JsonAPIDocument\Objects\IStandardObject $attributes,
+	): string
+	{
+		if (
+			!is_scalar($attributes->get('operand'))
+			|| !$attributes->has('operand')
+			|| $attributes->get('operand') === ''
+		) {
+			throw new JsonApiExceptions\JsonApiError(
+				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
+				$this->translator->translate('//triggers-module.base.messages.missingAttribute.heading'),
+				$this->translator->translate('//triggers-module.base.messages.missingAttribute.message'),
+				[
+					'pointer' => '/data/attributes/operand',
+				],
+			);
+		}
+
+		$operand = $attributes->get('operand');
+
+		return is_bool($operand) ? ($operand ? 'true' : 'false') : strtolower((string) $operand);
+	}
+
+}

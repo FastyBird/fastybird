@@ -27,9 +27,9 @@ use function is_scalar;
  *
  * @extends Notification<Entities\Notifications\EmailNotification>
  *
- * @package         FastyBird:TriggersModule!
- * @subpackage      Hydrators
- * @author          Adam Kadlec <adam.kadlec@fastybird.com>
+ * @package        FastyBird:TriggersModule!
+ * @subpackage     Hydrators
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 final class EmailNotification extends Notification
 {

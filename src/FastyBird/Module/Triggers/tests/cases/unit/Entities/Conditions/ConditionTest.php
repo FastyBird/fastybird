@@ -2,17 +2,20 @@
 
 namespace FastyBird\Module\Triggers\Tests\Cases\Unit\Entities\Conditions;
 
-use DateTime;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
-use FastyBird\Module\Triggers\Entities;
 use FastyBird\Module\Triggers\Exceptions;
 use FastyBird\Module\Triggers\Models;
 use FastyBird\Module\Triggers\Queries;
 use FastyBird\Module\Triggers\Tests\Cases\Unit\DbTestCase;
+use FastyBird\Module\Triggers\Tests\Fixtures\Dummy\DummyConditionEntity;
 use Nette;
 use Ramsey\Uuid;
 use RuntimeException;
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class ConditionTest extends DbTestCase
 {
 
@@ -23,35 +26,7 @@ final class ConditionTest extends DbTestCase
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
 	 */
-	public function testTimeConditionValidation(): void
-	{
-		$repository = $this->getContainer()->getByType(Models\Conditions\ConditionsRepository::class);
-
-		$findQuery = new Queries\FindConditions();
-		$findQuery->byId(Uuid\Uuid::fromString('09c453b3-c55f-4050-8f1c-b50f8d5728c2'));
-
-		$entity = $repository->findOneBy($findQuery);
-
-		self::assertIsObject($entity);
-		self::assertTrue($entity instanceof Entities\Conditions\TimeCondition);
-
-		self::assertTrue($entity->validate(new DateTime('1970-01-01T07:30:00+00:00')));
-		self::assertTrue($entity->validate(new DateTime('07:30:00+00:00')));
-		self::assertTrue($entity->validate(new DateTime('07:30:00')));
-
-		self::assertFalse($entity->validate(new DateTime('1970-01-01T07:31:00+00:00')));
-		self::assertFalse($entity->validate(new DateTime('07:31:00+00:00')));
-		self::assertFalse($entity->validate(new DateTime('07:31:00')));
-	}
-
-	/**
-	 * @throws BootstrapExceptions\InvalidArgument
-	 * @throws Exceptions\InvalidArgument
-	 * @throws Exceptions\InvalidState
-	 * @throws Nette\DI\MissingServiceException
-	 * @throws RuntimeException
-	 */
-	public function testPropertyConditionValidation(): void
+	public function testValidation(): void
 	{
 		$repository = $this->getContainer()->getByType(Models\Conditions\ConditionsRepository::class);
 
@@ -61,7 +36,7 @@ final class ConditionTest extends DbTestCase
 		$entity = $repository->findOneBy($findQuery);
 
 		self::assertIsObject($entity);
-		self::assertTrue($entity instanceof Entities\Conditions\ChannelPropertyCondition);
+		self::assertTrue($entity instanceof DummyConditionEntity);
 
 		self::assertTrue($entity->validate('3'));
 		self::assertFalse($entity->validate('1'));

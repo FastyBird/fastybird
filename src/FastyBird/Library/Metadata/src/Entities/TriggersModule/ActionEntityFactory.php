@@ -62,16 +62,14 @@ final class ActionEntityFactory extends Entities\EntityFactory
 			$data = Utils\ArrayHash::from($data);
 		}
 
-		$type = Types\TriggerActionType::get($data->offsetGet('type'));
-
-		if ($type->equalsValue(Types\TriggerActionType::TYPE_DEVICE_PROPERTY)) {
+		if ($data->offsetGet('type') === Types\TriggerActionType::TYPE_DEVICE_PROPERTY) {
 			$entity = $this->build(DevicePropertyAction::class, $data);
 
-		} elseif ($type->equalsValue(Types\TriggerActionType::TYPE_CHANNEL_PROPERTY)) {
+		} elseif ($data->offsetGet('type') === Types\TriggerActionType::TYPE_CHANNEL_PROPERTY) {
 			$entity = $this->build(ChannelPropertyAction::class, $data);
 
 		} else {
-			throw new Exceptions\InvalidArgument('Provided data and routing key is for unsupported action type');
+			$entity = $this->build(Action::class, $data);
 		}
 
 		if ($entity instanceof Action) {

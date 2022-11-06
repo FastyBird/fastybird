@@ -49,7 +49,8 @@ final class ActionsRepository
 	}
 
 	/**
-	 * @param class-string<Entities\Actions\Action> $type
+	 * @phpstan-param Queries\FindActions<Entities\Actions\Action> $queryObject
+	 * @phpstan-param class-string<Entities\Actions\Action> $type
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -64,6 +65,7 @@ final class ActionsRepository
 	}
 
 	/**
+	 * @param Queries\FindActions<Entities\Actions\Action> $queryObject
 	 * @param class-string<Entities\Actions\Action> $type
 	 *
 	 * @return Array<Entities\Actions\Action>
@@ -93,9 +95,10 @@ final class ActionsRepository
 	}
 
 	/**
-	 * @phpstan-param class-string<Entities\Actions\Action> $type
+	 * @param Queries\FindActions<Entities\Actions\Action> $queryObject
+	 * @param class-string<Entities\Actions\Action> $type
 	 *
-	 * @phpstan-return DoctrineOrmQuery\ResultSet<Entities\Actions\Action>
+	 * @return DoctrineOrmQuery\ResultSet<Entities\Actions\Action>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */

@@ -1,14 +1,14 @@
 #
 # Triggers module example configuration
 #
-# @license		More in LICENSE.md
-# @copyright	https://www.fastybird.com
-# @author		Adam Kadlec <adam.kadlec@fastybird.com>
-# @package		FastyBird:TriggersModule!
-# @subpackage	config
-# @since		0.1.0
+# @license      More in LICENSE.md
+# @copyright    https://www.fastybird.com
+# @author       Adam Kadlec <adam.kadlec@fastybird.com>
+# @package      FastyBird:TriggersModule!
+# @subpackage   config
+# @since        0.1.0
 #
-# @date			25.11.20
+# @date         25.11.20
 
 php:
 	date.timezone: Europe/Prague

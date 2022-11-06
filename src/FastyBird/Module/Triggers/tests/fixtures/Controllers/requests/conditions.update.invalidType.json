@@ -3,12 +3,7 @@
     "id" : "09c453b3-c55f-4050-8f1c-b50f8d5728c2",
     "type" : "com.fastybird.triggers-module/invalid",
     "attributes" : {
-      "days" : [
-        1,
-        2,
-        7
-      ],
-      "time" : "1970-01-01T17:30:00+00:00"
+      "do_item" : "51d05010-c079-494c-ba73-9ea206f6bad1"
     }
   }
 }

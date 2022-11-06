@@ -239,11 +239,9 @@ final class ActionsV1Test extends DbTestCase
 			'createChannelProperty' => [
 				'/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions',
 				'Bearer ' . self::VALID_TOKEN,
-				file_get_contents(
-					__DIR__ . '/../../../fixtures/Controllers/requests/actions.createChannelProperty.json',
-				),
+				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/actions.create.json'),
 				StatusCodeInterface::STATUS_CREATED,
-				__DIR__ . '/../../../fixtures/Controllers/responses/actions.createChannelProperty.json',
+				__DIR__ . '/../../../fixtures/Controllers/responses/actions.create.json',
 			],
 
 			// Invalid responses
@@ -251,20 +249,9 @@ final class ActionsV1Test extends DbTestCase
 			'notAllowed' => [
 				'/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions',
 				'Bearer ' . self::VALID_TOKEN_USER,
-				file_get_contents(
-					__DIR__ . '/../../../fixtures/Controllers/requests/actions.createChannelProperty.json',
-				),
+				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/actions.create.json'),
 				StatusCodeInterface::STATUS_FORBIDDEN,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
-			],
-			'createChannelPropertyNotUnique' => [
-				'/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions',
-				'Bearer ' . self::VALID_TOKEN,
-				file_get_contents(
-					__DIR__ . '/../../../fixtures/Controllers/requests/actions.createChannelProperty.unique.json',
-				),
-				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				__DIR__ . '/../../../fixtures/Controllers/responses/actions.createChannelProperty.unique.json',
 			],
 			'missingRequired' => [
 				'/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions',
@@ -279,7 +266,7 @@ final class ActionsV1Test extends DbTestCase
 				'/v1/triggers/74e40f3e-84cb-4e0c-b3b3-fbf8246e0888/actions',
 				'Bearer ' . self::VALID_TOKEN,
 				file_get_contents(
-					__DIR__ . '/../../../fixtures/Controllers/requests/actions.createChannelProperty.json',
+					__DIR__ . '/../../../fixtures/Controllers/requests/actions.create.json',
 				),
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/notFound.json',
@@ -294,36 +281,28 @@ final class ActionsV1Test extends DbTestCase
 			'missingToken' => [
 				'/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions',
 				null,
-				file_get_contents(
-					__DIR__ . '/../../../fixtures/Controllers/requests/actions.createChannelProperty.unique.json',
-				),
+				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/actions.create.json'),
 				StatusCodeInterface::STATUS_FORBIDDEN,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
 			],
 			'emptyToken' => [
 				'/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions',
 				'',
-				file_get_contents(
-					__DIR__ . '/../../../fixtures/Controllers/requests/actions.createChannelProperty.unique.json',
-				),
+				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/actions.create.json'),
 				StatusCodeInterface::STATUS_FORBIDDEN,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
 			],
 			'invalidToken' => [
 				'/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions',
 				'Bearer ' . self::INVALID_TOKEN,
-				file_get_contents(
-					__DIR__ . '/../../../fixtures/Controllers/requests/actions.createChannelProperty.unique.json',
-				),
+				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/actions.create.json'),
 				StatusCodeInterface::STATUS_UNAUTHORIZED,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/unauthorized.json',
 			],
 			'expiredToken' => [
 				'/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions',
 				'Bearer ' . self::EXPIRED_TOKEN,
-				file_get_contents(
-					__DIR__ . '/../../../fixtures/Controllers/requests/actions.createChannelProperty.unique.json',
-				),
+				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/actions.create.json'),
 				StatusCodeInterface::STATUS_UNAUTHORIZED,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/unauthorized.json',
 			],

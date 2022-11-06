@@ -19,6 +19,8 @@
             <property name="rootNamespaces" type="array">
                 <element key="src" value="FastyBird\Module\Triggers"/>
                 <element key="tests/cases/unit" value="FastyBird\Module\Triggers\Tests\Cases\Unit"/>
+                <element key="tests/fixtures" value="FastyBird\Module\Triggers\Tests\Fixtures"/>
+                <element key="tests/fixtures/dummy" value="FastyBird\Module\Triggers\Tests\Fixtures\Dummy"/>
                 <element key="tests/tools" value="FastyBird\Module\Triggers\Tests\Tools"/>
             </property>
         </properties>

@@ -2,7 +2,7 @@
   "data" : [
     {
       "id" : "167900e9-19f3-4712-aa4d-00b160ff06d5",
-      "type" : "com.fastybird.triggers-module/condition/time"
+      "type" : "com.fastybird.triggers-module/condition/dummy"
     }
   ],
   "jsonapi" : {
