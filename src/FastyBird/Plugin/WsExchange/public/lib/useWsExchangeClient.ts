@@ -1,19 +1,21 @@
-import { computed, inject } from 'vue'
+import {computed, inject, InjectionKey} from 'vue'
 
-import { IWebSocketResult, key, RpCallResponse } from '@/entry'
+import {IWampClient, IWebSocketResult, RpCallResponse} from '@/types/ws-exchange-plugin'
+
+export const key: InjectionKey<IWampClient> = Symbol('wampClient')
 
 export function useWsExchangeClient<T>(): IWebSocketResult<T> {
-  const wampClient = inject(key)
+    const wampClient = inject(key)
 
-  if (wampClient === undefined) {
-    throw new Error('WAMP client is not installed')
-  }
+    if (wampClient === undefined) {
+        throw new Error('WAMP client is not installed')
+    }
 
-  return {
-    status: computed<boolean>((): boolean => wampClient.isConnected.value),
-    open: (): void => wampClient.open(),
-    close: (): void => wampClient.close(),
-    call: (...args): Promise<RpCallResponse<T>> => wampClient.call(...args),
-    client: wampClient,
-  }
+    return {
+        status: computed<boolean>((): boolean => wampClient.isConnected.value),
+        open: (): void => wampClient.open(),
+        close: (): void => wampClient.close(),
+        call: (...args): Promise<RpCallResponse<T>> => wampClient.call(...args),
+        client: wampClient,
+    }
 }

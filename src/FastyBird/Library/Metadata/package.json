@@ -1,8 +1,8 @@
 {
-  "name": "@fastybird/metadata-library",
-  "version": "1.1.0",
-  "description": "FastyBird metadata reader & validator for modules, plugins & etc. used by FastyBird applications",
-  "keywords": [
+  "name" : "@fastybird/metadata-library",
+  "version" : "2.0.0",
+  "description" : "FastyBird metadata reader & validator for modules, plugins & etc. used by FastyBird applications",
+  "keywords" : [
     "fastybird",
     "fb",
     "libs",
@@ -12,64 +12,64 @@
     "plugins",
     "connectors"
   ],
-  "homepage": "https://www.fastybird.com",
-  "bugs": "https://github.com/FastyBird/fastybird/issues",
-  "license": "Apache-2.0",
-  "author": {
-    "name": "FastyBird s.r.o.",
-    "email": "code@fastybird.com",
-    "url": "https://www.fastybird.com/"
+  "homepage" : "https://www.fastybird.com",
+  "bugs" : "https://github.com/FastyBird/fastybird/issues",
+  "license" : "Apache-2.0",
+  "author" : {
+    "name" : "FastyBird s.r.o.",
+    "email" : "code@fastybird.com",
+    "url" : "https://www.fastybird.com/"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/FastyBird/metadata-library.git"
+  "repository" : {
+    "type" : "git",
+    "url" : "https://github.com/FastyBird/metadata-library.git"
   },
-  "main": "dist/metadata-library.ssr.js",
-  "browser": "dist/metadata-library.esm.js",
-  "module": "dist/metadata-library.esm.js",
-  "unpkg": "dist/metadata-library.min.js",
-  "types": "dist/metadata-library.d.ts",
-  "files": [
+  "main" : "dist/metadata-library.ssr.js",
+  "browser" : "dist/metadata-library.esm.js",
+  "module" : "dist/metadata-library.esm.js",
+  "unpkg" : "dist/metadata-library.min.js",
+  "types" : "dist/metadata-library.d.ts",
+  "files" : [
     "dist/*",
     "resources/*"
   ],
-  "scripts": {
-    "build": "cross-env NODE_ENV=production rollup --config build/rollup.config.js --bundleConfigAsCjs",
-    "build:ssr": "cross-env NODE_ENV=production rollup --config build/rollup.config.js --format cjs --bundleConfigAsCjs",
-    "build:es": "cross-env NODE_ENV=production rollup --config build/rollup.config.js --format es --bundleConfigAsCjs",
-    "build:unpkg": "cross-env NODE_ENV=production rollup --config build/rollup.config.js --format iife --bundleConfigAsCjs",
-    "lint": "eslint --ext \".js,.ts,.json,\" --ignore-path .gitignore public/"
+  "scripts" : {
+    "build" : "cross-env NODE_ENV=production rollup --config build/rollup.config.js --bundleConfigAsCjs",
+    "build:ssr" : "cross-env NODE_ENV=production rollup --config build/rollup.config.js --format cjs --bundleConfigAsCjs",
+    "build:es" : "cross-env NODE_ENV=production rollup --config build/rollup.config.js --format es --bundleConfigAsCjs",
+    "build:unpkg" : "cross-env NODE_ENV=production rollup --config build/rollup.config.js --format iife --bundleConfigAsCjs",
+    "lint" : "eslint --ext \".js,.ts,.json,\" --ignore-path .gitignore public/"
   },
-  "dependencies": {
-    "date-fns": "^2.26"
+  "dependencies" : {
+    "date-fns" : "^2.26"
   },
-  "devDependencies": {
-    "@babel/core": "^7.20",
-    "@babel/plugin-proposal-class-properties": "^7.18",
-    "@babel/preset-env": "^7.20",
-    "@babel/preset-typescript": "^7.18",
-    "@rollup/plugin-alias": "^4.0",
-    "@rollup/plugin-babel": "^6.0",
-    "@rollup/plugin-commonjs": "^23.0",
-    "@rollup/plugin-eslint": "9.0",
-    "@rollup/plugin-node-resolve": "^15.0.1",
-    "@rollup/plugin-replace": "^5.0",
-    "@rollup/plugin-terser": "^0.1",
-    "@types/node": "^18.11",
-    "@typescript-eslint/eslint-plugin": "^5.42",
-    "@typescript-eslint/parser": "^5.42",
-    "cross-env": "^7.0",
-    "eslint": "^8.27",
-    "eslint-plugin-json": "^3.1",
-    "minimist": "^1.2",
-    "rollup": "^3.2",
-    "rollup-plugin-flat-dts": "^1.8.1",
-    "rollup-plugin-typescript2": "^0.34",
-    "tslib": "^2.4",
-    "ttypescript": "^1.5",
-    "typescript": "^4.8"
+  "devDependencies" : {
+    "@babel/core" : "^7.20",
+    "@babel/plugin-proposal-class-properties" : "^7.18",
+    "@babel/preset-env" : "^7.20",
+    "@babel/preset-typescript" : "^7.18",
+    "@rollup/plugin-alias" : "^4.0",
+    "@rollup/plugin-babel" : "^6.0",
+    "@rollup/plugin-commonjs" : "^23.0",
+    "@rollup/plugin-eslint" : "9.0",
+    "@rollup/plugin-node-resolve" : "^15.0.1",
+    "@rollup/plugin-replace" : "^5.0",
+    "@rollup/plugin-terser" : "^0.1",
+    "@types/node" : "^18.11",
+    "@typescript-eslint/eslint-plugin" : "^5.42",
+    "@typescript-eslint/parser" : "^5.42",
+    "cross-env" : "^7.0",
+    "eslint" : "^8.27",
+    "eslint-plugin-json" : "^3.1",
+    "minimist" : "^1.2",
+    "rollup" : "^3.2",
+    "rollup-plugin-flat-dts" : "^1.8.1",
+    "rollup-plugin-typescript2" : "^0.34",
+    "tslib" : "^2.4",
+    "ttypescript" : "^1.5",
+    "typescript" : "^4.8"
   },
-  "engines": {
-    "node": ">=14"
+  "engines" : {
+    "node" : ">=14"
   }
 }

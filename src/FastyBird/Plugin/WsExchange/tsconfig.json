@@ -1,37 +1,40 @@
 {
-  "compilerOptions": {
-    "target": "esnext",
-    "module": "esnext",
-    "strict": true,
-    "declaration": true,
-    "declarationDir": "dist/dts",
-    "emitDeclarationOnly": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "importHelpers": true,
-    "moduleResolution": "node",
-    "experimentalDecorators": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "sourceMap": true,
-    "baseUrl": ".",
-    "types": [
+  "compilerOptions" : {
+    "target" : "esnext",
+    "module" : "esnext",
+    "strict" : true,
+    "declaration" : true,
+    "declarationDir" : "dist/dts",
+    "emitDeclarationOnly" : true,
+    "noUnusedLocals" : true,
+    "noUnusedParameters" : true,
+    "importHelpers" : true,
+    "moduleResolution" : "node",
+    "experimentalDecorators" : true,
+    "esModuleInterop" : true,
+    "allowSyntheticDefaultImports" : true,
+    "sourceMap" : true,
+    "baseUrl" : "public",
+    "types" : [
       "node",
       "vue"
     ],
-    "paths": {
-      "@/*": [
-        "public/*"
+    "paths" : {
+      "@/*" : [
+        "*"
       ]
     },
-    "lib": [
+    "lib" : [
       "esnext",
       "dom",
       "dom.iterable",
       "scripthost"
     ]
   },
-  "exclude": [
+  "include" : [
+    "./public/**/*.ts"
+  ],
+  "exclude" : [
     "node_modules",
     "dist"
   ]

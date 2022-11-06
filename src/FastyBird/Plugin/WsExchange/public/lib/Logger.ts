@@ -1,6 +1,6 @@
-import { IWampLogger } from '@/types/ws-exchange-plugin'
+import {IWampLogger} from '@/types/ws-exchange-plugin'
 
-export default class Logger implements IWampLogger {
+export class Logger implements IWampLogger {
   private debug = false
   private prefix = '%cVue-Wamp: '
 
