@@ -1,0 +1,10 @@
+@import "../@fastybird/web-ui-theme/src/assets/mixins/utilities";
+
+.fb-devices-module-connectors-preview-info {
+  &__container {
+    justify-content: center;
+    height: 100%;
+
+    @include flex-column(nowrap);
+  }
+}

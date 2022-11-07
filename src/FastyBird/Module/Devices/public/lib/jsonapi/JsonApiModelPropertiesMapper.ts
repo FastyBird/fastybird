@@ -1,171 +1,88 @@
-import { ModelPropertiesMapper } from 'jsona'
 import {
   IModelPropertiesMapper,
+  TAnyKeyValueObject,
   TJsonaModel,
   TJsonaRelationships,
 } from 'jsona/lib/JsonaTypes'
-
-import Device from '@/lib/models/devices/Device'
-import Channel from '@/lib/models/channels/Channel'
-import Connector from '@/lib/models/connectors/Connector'
-import { RelationInterface } from '@/lib/types'
 import {
-  CHANNEL_CONTROL_ENTITY_REG_EXP,
-  CHANNEL_ENTITY_REG_EXP,
-  CHANNEL_PROPERTY_ENTITY_REG_EXP,
-  CONNECTOR_CONTROL_ENTITY_REG_EXP,
-  CONNECTOR_ENTITY_REG_EXP,
-  CONNECTOR_PROPERTY_ENTITY_REG_EXP,
-  DEVICE_CONTROL_ENTITY_REG_EXP,
-  DEVICE_ENTITY_REG_EXP,
-  DEVICE_PROPERTY_ENTITY_REG_EXP,
-} from '@/lib/helpers'
-
-const RELATIONSHIP_NAMES_PROP = 'relationshipNames'
+  ModelPropertiesMapper,
+  RELATIONSHIP_NAMES_PROP,
+} from 'jsona/lib/simplePropertyMappers'
+import get from 'lodash/get'
 
 class JsonApiModelPropertiesMapper extends ModelPropertiesMapper implements IModelPropertiesMapper {
-  getAttributes(model: TJsonaModel): { [index: string]: any } {
-    const exceptProps = ['id', '$id', 'type', 'draft', RELATIONSHIP_NAMES_PROP]
+  exceptedAttributes: string[]
 
-    const connectorEntityRegex = new RegExp(CONNECTOR_ENTITY_REG_EXP)
-    const connectorPropertyEntityRegex = new RegExp(CONNECTOR_PROPERTY_ENTITY_REG_EXP)
-    const connectorControlEntityRegex = new RegExp(CONNECTOR_CONTROL_ENTITY_REG_EXP)
-    const deviceEntityRegex = new RegExp(DEVICE_ENTITY_REG_EXP)
-    const devicePropertyEntityRegex = new RegExp(DEVICE_PROPERTY_ENTITY_REG_EXP)
-    const deviceControlEntityRegex = new RegExp(DEVICE_CONTROL_ENTITY_REG_EXP)
-    const channelEntityRegex = new RegExp(CHANNEL_ENTITY_REG_EXP)
-    const channelPropertyEntityRegex = new RegExp(CHANNEL_PROPERTY_ENTITY_REG_EXP)
-    const channelControlEntityRegex = new RegExp(CHANNEL_CONTROL_ENTITY_REG_EXP)
+  constructor(exceptedAttributes: string[] = ['id', 'type', 'draft', RELATIONSHIP_NAMES_PROP]) {
+    super()
 
-    if (
-      channelEntityRegex.test(model.type)
-      || devicePropertyEntityRegex.test(model.type)
-      || deviceControlEntityRegex.test(model.type)
-    ) {
-      exceptProps.push('deviceId')
-      exceptProps.push('device')
-      exceptProps.push('deviceBackward')
-      exceptProps.push('property')
-    } else if (
-      channelPropertyEntityRegex.test(model.type)
-      || channelControlEntityRegex.test(model.type)
-    ) {
-      exceptProps.push('channelId')
-      exceptProps.push('channel')
-      exceptProps.push('channelBackward')
-      exceptProps.push('property')
-    } else if (
-      deviceEntityRegex.test(model.type)
-      || connectorPropertyEntityRegex.test(model.type)
-      || connectorControlEntityRegex.test(model.type)
-    ) {
-      exceptProps.push('connectorId')
-      exceptProps.push('connector')
-      exceptProps.push('connectorBackward')
-      exceptProps.push('device')
-      exceptProps.push('property')
-    } else if (connectorEntityRegex.test(model.type)) {
-      exceptProps.push('connector')
+    this.exceptedAttributes = exceptedAttributes
+  }
+
+  getType(model: TJsonaModel) {
+    const typeParts: string[] = []
+
+    typeParts.push(get(model, 'type.source'))
+    typeParts.push(get(model, 'type.entity'))
+
+    if (get(model, 'type.parent', null) !== null) {
+      typeParts.push(get(model, 'type.parent'))
     }
+
+    if (get(model, 'type.type', null) !== null) {
+      typeParts.push(get(model, 'type.type'))
+    }
+
+    return typeParts.join('/')
+  }
+
+  getAttributes(model: TJsonaModel): { [index: string]: any } {
+    const camelCasedAttributes = super.getAttributes(model)
 
     if (Array.isArray(model[RELATIONSHIP_NAMES_PROP])) {
-      exceptProps.push(...model[RELATIONSHIP_NAMES_PROP])
+      this.exceptedAttributes.push(...model[RELATIONSHIP_NAMES_PROP])
     }
 
-    const attributes: { [index: string]: any } = {}
-
-    Object.keys(model)
-      .forEach((attrName) => {
-        if (!exceptProps.includes(attrName)) {
-          const snakeName = attrName.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`)
-
-          let jsonAttributes = model[attrName]
-
-          if (typeof jsonAttributes === 'object' && jsonAttributes !== null) {
-            jsonAttributes = {}
-
-            Object.keys(model[attrName]).forEach((subAttrName) => {
-              const snakeSubName = subAttrName.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`)
-
-              Object.assign(jsonAttributes, { [snakeSubName]: model[attrName][subAttrName] })
-            })
-          }
-
-          attributes[snakeName] = jsonAttributes
-        }
-      })
-
-    return attributes
+    return Object.assign({}, this.snakelizeAttributes(camelCasedAttributes, this.exceptedAttributes))
   }
 
   getRelationships(model: TJsonaModel): TJsonaRelationships {
-    if (
-      !Object.prototype.hasOwnProperty.call(model, RELATIONSHIP_NAMES_PROP)
-      || !Array.isArray(model[RELATIONSHIP_NAMES_PROP])
-    ) {
-      return {}
+    const camelCasedRelationships: TJsonaRelationships = super.getRelationships(model)
+
+    if (typeof camelCasedRelationships === 'undefined') {
+      return camelCasedRelationships
     }
 
-    const relationshipNames = model[RELATIONSHIP_NAMES_PROP]
+    const snakeRelationships: TJsonaRelationships = {}
 
-    const relationships: { [index: string]: RelationInterface | RelationInterface[] } = {}
-
-    relationshipNames
-      .forEach((relationName: string) => {
+    Object.keys(camelCasedRelationships)
+      .forEach((relationName): void => {
         const snakeName = relationName.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`)
 
-        if (model[relationName] !== undefined) {
-          if (Array.isArray(model[relationName])) {
-            relationships[snakeName] = model[relationName]
-              .map((item: TJsonaModel) => {
-                return {
-                  id: item.id,
-                  type: item.type,
-                }
-              })
-          } else if (typeof model[relationName] === 'object' && model[relationName] !== null) {
-            relationships[snakeName] = {
-              id: model[relationName].id,
-              type: model[relationName].type,
-            }
-          }
+        if (camelCasedRelationships[relationName] !== null) {
+          snakeRelationships[snakeName] = camelCasedRelationships[relationName]
         }
       })
 
-    if (Object.prototype.hasOwnProperty.call(model, 'connectorId')) {
-      const connector = Connector.find(model.connectorId)
+    return snakeRelationships
+  }
 
-      if (connector !== null) {
-        relationships.connector = {
-          id: connector.id,
-          type: connector.type,
+  private snakelizeAttributes(attributes: TAnyKeyValueObject, excepted: string[]): TAnyKeyValueObject {
+    const data: TAnyKeyValueObject = {}
+
+    Object.keys(attributes)
+      .filter((attrName): boolean => !excepted.includes(attrName))
+      .forEach((attrName): void => {
+        const snakeName = attrName.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`)
+
+        if (typeof attributes[attrName] === 'object' && attributes[attrName] !== null && !Array.isArray(attributes[attrName])) {
+          Object.assign(data, { [snakeName]: this.snakelizeAttributes(attributes[attrName], excepted) })
+        } else {
+          Object.assign(data, { [snakeName]: attributes[attrName] })
         }
-      }
-    }
+      })
 
-    if (Object.prototype.hasOwnProperty.call(model, 'deviceId')) {
-      const device = Device.find(model.deviceId)
-
-      if (device !== null) {
-        relationships.device = {
-          id: device.id,
-          type: device.type,
-        }
-      }
-    }
-
-    if (Object.prototype.hasOwnProperty.call(model, 'channelId')) {
-      const channel = Channel.find(model.deviceId)
-
-      if (channel !== null) {
-        relationships.channel = {
-          id: channel.id,
-          type: channel.type,
-        }
-      }
-    }
-
-    return relationships
+    return data
   }
 }
 

@@ -1,0 +1,16 @@
+@import "../@fastybird/web-ui-theme/src/assets/variables/layout";
+
+.fb-devices-module-connectors-detail-default {
+  &__container {
+    flex-grow: 1;
+    overflow: hidden;
+    height: 100%;
+  }
+
+  &__no-results {
+    &.fb-theme-ui-no-results__container {
+      margin: $margin-md auto;
+      display: block;
+    }
+  }
+}

@@ -1,30 +1,70 @@
 import {
+  TJsonaModel,
   TJsonApiBody,
   TJsonApiData,
   TJsonApiRelation,
   TJsonApiRelationships,
-  TJsonApiRelationshipData,
 } from 'jsona/lib/JsonaTypes'
+import { _GettersTree } from 'pinia'
 
 import {
-  ChannelPropertyInterface,
-  ChannelPropertyDataResponseInterface,
-} from '@/lib/models/channel-properties/types'
-import {
-  ChannelControlDataResponseInterface,
-  ChannelControlInterface,
-} from '@/lib/models/channel-controls/types'
-import {
-  DeviceInterface,
-  DeviceDataResponseInterface,
-} from '@/lib/models/devices/types'
+  IChannelControlResponseData,
+  IChannelControlResponseModel,
+  IChannelPropertyResponseData,
+  IChannelPropertyResponseModel,
+  IDevice,
+  IDeviceResponseData,
+  IDeviceResponseModel,
+  IPlainRelation,
+} from '@/lib/models/types'
 
-// ENTITY INTERFACE
-// ================
+// STORE
+// =====
 
-export interface ChannelInterface {
+export interface IChannelsState {
+  semaphore: IChannelsStateSemaphore
+  firstLoad: string[]
+  data: { [key: string]: IChannel }
+}
+
+export interface IChannelsGetters extends _GettersTree<IChannelsState> {
+  firstLoadFinished: (state: IChannelsState) => ((deviceId: string) => boolean)
+  getting: (state: IChannelsState) => ((channelId: string) => boolean)
+  fetching: (state: IChannelsState) => ((deviceId: string | null) => boolean)
+  findById: (state: IChannelsState) => ((id: string) => IChannel | null)
+  findForDevice: (state: IChannelsState) => ((deviceId: string) => IChannel[])
+}
+
+export interface IChannelsActions {
+  set: (payload: IChannelsSetActionPayload) => Promise<IChannel>
+  unset: (payload: IChannelsUnsetActionPayload) => void
+  get: (payload: IChannelsGetActionPayload) => Promise<boolean>
+  fetch: (payload: IChannelsFetchActionPayload) => Promise<boolean>
+  add: (payload: IChannelsAddActionPayload) => Promise<IChannel>
+  edit: (payload: IChannelsEditActionPayload) => Promise<IChannel>
+  save: (payload: IChannelsSaveActionPayload) => Promise<IChannel>
+  remove: (payload: IChannelsRemoveActionPayload) => Promise<boolean>
+  socketData: (payload: IChannelsSocketDataActionPayload) => Promise<boolean>
+}
+
+// STORE STATE
+// ===========
+
+interface IChannelsStateSemaphore {
+  fetching: IChannelsStateSemaphoreFetching
+  creating: string[]
+  updating: string[]
+  deleting: string[]
+}
+
+interface IChannelsStateSemaphoreFetching {
+  items: string[]
+  item: string[]
+}
+
+export interface IChannel {
   id: string
-  type: string
+  type: { source: string, entity: string }
 
   draft: boolean
 
@@ -35,92 +75,142 @@ export interface ChannelInterface {
   // Relations
   relationshipNames: string[]
 
-  controls: ChannelControlInterface[]
-  properties: ChannelPropertyInterface[]
+  controls: IPlainRelation[]
+  properties: IPlainRelation[]
 
-  device: DeviceInterface | null
-  deviceBackward: DeviceInterface | null
-  deviceId: string
+  device: IPlainRelation
 
   // Entity transformers
-  title: string
   hasComment: boolean
 }
 
-// API RESPONSES
+// STORE DATA FACTORIES
+// ====================
+
+export interface IChannelRecordFactoryPayload {
+  id?: string
+  type: { source: string, entity?: string }
+
+  identifier: string
+  name?: string | null
+  comment?: string | null
+
+  // Relations
+  relationshipNames?: string[]
+
+  controls?: (IPlainRelation | IChannelControlResponseModel)[]
+  properties?: (IPlainRelation | IChannelPropertyResponseModel)[]
+
+  deviceId: string
+}
+
+// STORE ACTIONS
 // =============
 
-interface ChannelAttributesResponseInterface {
+export interface IChannelsSetActionPayload {
+  data: IChannelRecordFactoryPayload
+}
+
+export interface IChannelsUnsetActionPayload {
+  device?: IDevice
+  id?: string
+}
+
+export interface IChannelsGetActionPayload {
+  device: IDevice
+  id: string
+}
+
+export interface IChannelsFetchActionPayload {
+  device: IDevice
+}
+
+export interface IChannelsAddActionPayload {
+  id?: string
+  type: { source: string, entity?: string }
+
+  draft?: boolean
+
+  device: IDevice
+
+  data: {
+    identifier: string
+    name?: string | null
+    comment?: string | null
+  }
+}
+
+export interface IChannelsEditActionPayload {
+  id: string
+
+  data: {
+    identifier?: string
+    name?: string | null
+    comment?: string | null
+  }
+}
+
+export interface IChannelsSaveActionPayload {
+  id: string
+}
+
+export interface IChannelsRemoveActionPayload {
+  id: string
+}
+
+export interface IChannelsSocketDataActionPayload {
+  source: string
+  routingKey: string
+  data: string
+}
+
+// API RESPONSES JSONS
+// ===================
+
+export interface IChannelResponseJson extends TJsonApiBody {
+  data: IChannelResponseData
+  included?: (IChannelPropertyResponseData | IChannelControlResponseData | IDeviceResponseData)[]
+}
+
+export interface IChannelsResponseJson extends TJsonApiBody {
+  data: IChannelResponseData[]
+  included?: (IChannelPropertyResponseData | IChannelControlResponseData | IDeviceResponseData)[]
+}
+
+export interface IChannelResponseData extends TJsonApiData {
+  id: string
+  type: string
+  attributes: IChannelResponseDataAttributes
+  relationships: IChannelResponseDataRelationships
+}
+
+interface IChannelResponseDataAttributes {
   identifier: string
   name: string | null
   comment: string | null
 }
 
-interface ChannelDeviceRelationshipResponseInterface extends TJsonApiRelationshipData {
+interface IChannelResponseDataRelationships extends TJsonApiRelationships {
+  properties: TJsonApiRelation
+  controls: TJsonApiRelation
+  device: TJsonApiRelation
+}
+
+// API RESPONSE MODELS
+// ===================
+
+export interface IChannelResponseModel extends TJsonaModel {
   id: string
-  type: string
-}
-
-interface ChannelDeviceRelationshipsResponseInterface extends TJsonApiRelation {
-  data: ChannelDeviceRelationshipResponseInterface
-}
-
-interface ChannelPropertyRelationshipResponseInterface extends TJsonApiRelationshipData {
-  id: string
-  type: string
-}
-
-interface ChannelPropertiesRelationshipsResponseInterface extends TJsonApiRelation {
-  data: ChannelPropertyRelationshipResponseInterface[]
-}
-
-interface ChannelControlRelationshipResponseInterface extends TJsonApiRelationshipData {
-  id: string
-  type: string
-}
-
-interface ChannelControlsRelationshipsResponseInterface extends TJsonApiRelation {
-  data: ChannelControlRelationshipResponseInterface[]
-}
-
-interface ChannelRelationshipsResponseInterface extends TJsonApiRelationships {
-  device: ChannelDeviceRelationshipsResponseInterface
-  properties: ChannelPropertiesRelationshipsResponseInterface
-  controls: ChannelControlsRelationshipsResponseInterface
-}
-
-export interface ChannelDataResponseInterface extends TJsonApiData {
-  id: string
-  type: string
-  attributes: ChannelAttributesResponseInterface
-  relationships: ChannelRelationshipsResponseInterface
-}
-
-export interface ChannelResponseInterface extends TJsonApiBody {
-  data: ChannelDataResponseInterface
-  included?: (DeviceDataResponseInterface | ChannelPropertyDataResponseInterface | ChannelControlDataResponseInterface)[]
-}
-
-export interface ChannelsResponseInterface extends TJsonApiBody {
-  data: ChannelDataResponseInterface[]
-  included?: (DeviceDataResponseInterface | ChannelPropertyDataResponseInterface | ChannelControlDataResponseInterface)[]
-}
-
-// CREATE ENTITY INTERFACES
-// ========================
-
-export interface ChannelCreateInterface {
-  type: string
+  type: { source: string, entity: string }
 
   identifier: string
-  name?: string | null
-  comment?: string | null
-}
+  name: string | null
+  comment: string | null
 
-// UPDATE ENTITY INTERFACES
-// ========================
+  // Relations
+  relationshipNames: string[]
 
-export interface ChannelUpdateInterface {
-  name?: string | null
-  comment?: string | null
+  properties: (IPlainRelation | IChannelPropertyResponseModel)[]
+  controls: (IPlainRelation | IChannelControlResponseModel)[]
+  device: IPlainRelation | IDeviceResponseModel
 }

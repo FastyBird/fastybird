@@ -1,0 +1,205 @@
+{
+  "en": {
+    "meta": {
+      "devices": {
+        "list": {
+          "title": "Registered devices"
+        },
+        "detail": {
+          "title": "Device: {device}"
+        },
+        "connect": {
+          "title": "Connect new device"
+        }
+      },
+      "connectors": {
+        "list": {
+          "title": "Registered connectors"
+        },
+        "detail": {
+          "title": "Connector: {connector}"
+        }
+      }
+    },
+    "headings": {
+      "allDevices": "All devices",
+      "channel": "Channel: {channel}",
+      "channels": "Device channels",
+      "renameDevice": "Rename device",
+      "renameChannel": "Rename channel",
+      "resetChannel": "Reset channel",
+      "removeDevice": "Remove device",
+      "credentials": "Connection credentials",
+      "deviceSettings": "Device settings",
+      "channelSettings": "Channel settings",
+      "moduleSensorSettings": "Device sensor settings",
+      "moduleTimeSettings": "Device time settings",
+      "sensorsCalibration": "Device sensors calibration",
+      "generalSettings": "General settings",
+      "deviceParameterEdit": "Device parameter settings",
+      "channelParameterEdit": "Channel parameter settings",
+      "connectDevice": "Connect new device",
+      "syncDevices": "Sync devices",
+      "aboutDevice": "About device",
+      "connectorType": "Device connector type",
+      "deviceBasicInfo": "About device",
+      "connectorConfiguration": "Connector configuration",
+      "finished": "Registration finished"
+    },
+    "subHeadings": {
+      "allDevices": "No devices registered | One device registered | {count} devices registered",
+      "connectDevice": "Register new device to the system",
+      "syncDevices": "Sync all devices with server",
+      "connectorType": "Select device connector typ used to connect to the system",
+      "deviceBasicInfo": "Provide basic information about new device",
+      "connectorConfiguration": "Configure device communication connector",
+      "finished": "Your new device is now allowed to connect to the server"
+    },
+    "messages": {
+      "notOnline": "Device {device} is not connected to server.",
+      "commandNotAccepted": "Last command was not accepted by device {device}.",
+      "notSupported": "This function is not supported by {device}.",
+      "confirmResetChannel": "Clear measured values for device {device} and channel {channel} ?",
+      "deviceNotRenamed": "Device {device} couldn't be renamed.",
+      "channelNotRenamed": "Channel {channel} couldn't be renamed.",
+      "confirmRemoveDevice": "Are you sure to remove device {device} ?",
+      "deviceNotRemoved": "Device {device} couldn't be removed.",
+      "parameterNotUpdated": "Parameter {parameter} couldn't be updated.",
+      "moduleNotUpdated": "Module for device {device} couldn't be updated.",
+      "deviceNotAdded": "Something went wrong. Device could not be registered.",
+      "connectorNotUpdated": "Credentials for device {device} couldn't be updated."
+    },
+    "texts": {
+      "loadingDevices": "Loading devices...",
+      "loadingDevice": "Loading device...",
+      "noDevices": "You don't have assigned any device",
+      "noChannels": "This device is without channels",
+      "noProperties": "This channel is without properties",
+      "connectorType": "Select device connector type. Each connector use different type of connection to the system and you could choose one your device use",
+      "deviceBasicInfo": "Provide basic device information like name or description. This will help you identify your new device in system",
+      "connectorConfiguration": "Configure device connector. This configuration will be used to communicate between device and system",
+      "finished": "Device registration was successfully finished and device is now allowed to connect to system. Now you could connect your device with system",
+      "registeringDevice": "Registering device...",
+      "grantingAccess": "Granting access to the server...",
+      "registeringDeviceFinished": "Devices registration successfully finished",
+      "registeringDeviceError": "Something went wrong, device could not be registered",
+      "waitingForDevice": "Waiting for the device to connect to the server..."
+    },
+    "fields": {
+      "deviceName": {
+        "title": "Device name",
+        "placeholder": "Enter device name",
+        "validation": {
+          "required": "Please fill in device name"
+        }
+      },
+      "deviceComment": {
+        "title": "Device description",
+        "placeholder": "Enter device description"
+      },
+      "identifier": {
+        "title": "Device identifier"
+      },
+      "username": {
+        "title": "Username",
+        "validation": {
+          "required": "Please fill in device communication username"
+        }
+      },
+      "password": {
+        "title": "Password",
+        "validation": {
+          "required": "Please fill in device communication password"
+        }
+      },
+      "clientId": {
+        "title": "Client ID"
+      },
+      "mqtt": {
+        "server": {
+          "title": "MQTT address"
+        },
+        "port": {
+          "title": "MQTT port"
+        },
+        "securedServer": {
+          "title": "MQTT secured address"
+        },
+        "securedPort": {
+          "title": "MQTT secured port"
+        }
+      },
+      "search": {
+        "title": "Search devices",
+        "placeholder": "Search for device"
+      },
+      "channelName": {
+        "title": "Channel name",
+        "placeholder": "Enter channel name",
+        "validation": {
+          "required": "Please fill in channel name"
+        }
+      },
+      "channelComment": {
+        "title": "Channel description",
+        "placeholder": "Enter channel description"
+      }
+    },
+    "buttons": {
+      "close": {
+        "title": "Close"
+      },
+      "edit": {
+        "title": "Edit"
+      },
+      "done": {
+        "title": "Done"
+      },
+      "remove": {
+        "title": "Remove"
+      },
+      "rename": {
+        "title": "Rename"
+      },
+      "configure": {
+        "title": "Configure"
+      },
+      "addNew": {
+        "title": "Connect new device"
+      },
+      "addTypeMqtt": {
+        "title": "MQTT"
+      },
+      "addTypeUdp": {
+        "title": "UDP packets"
+      },
+      "addTypeSigfox": {
+        "title": "Sigfox"
+      },
+      "addTypeLora": {
+        "title": "LoRa"
+      },
+      "credentials": {
+        "title": "Connection credentials"
+      },
+      "sensorConfiguration": {
+        "title": "Sensor settings",
+        "description": "Configure device sensors etc."
+      },
+      "timeConfiguration": {
+        "title": "Time settings",
+        "description": "Configure device timezone etc."
+      },
+      "removeDevice": {
+        "title": "Remove device"
+      },
+      "sync": {
+        "title": "Synchronise"
+      }
+    },
+    "misc": {
+      "or": "or",
+      "paging": "{page} of {total}"
+    }
+  }
+}

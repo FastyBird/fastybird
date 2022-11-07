@@ -1,30 +1,35 @@
-import { Database, Model } from '@vuex-orm/core'
+import {
+    IChannel,
+    IChannelControl,
+    IChannelProperty,
+    IConnector,
+    IConnectorControl,
+    IConnectorProperty,
+    IDevice,
+    IDeviceControl,
+    IDeviceAttribute,
+    IDeviceProperty,
+} from '@/lib/models/types'
 
-export interface GlobalConfigInterface {
-  database: Database
-  sourceName?: string
+export * from '@/lib/models/types'
+
+export interface IChannelData {
+    channel: IChannel
+    properties: IChannelProperty[]
+    controls: IChannelControl[]
 }
 
-export interface ComponentsInterface {
-  Model: typeof Model
+export interface IDeviceData {
+    device: IDevice
+    properties: IDeviceProperty[]
+    controls: IDeviceControl[]
+    attributes: IDeviceAttribute[]
+    channels: IChannelData[]
 }
 
-declare module '@vuex-orm/core' {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace Model {
-    // Exchange source name
-    const $devicesModuleSource: string
-  }
+export interface IConnectorData {
+    connector: IConnector
+    properties: IConnectorProperty[]
+    controls: IConnectorControl[]
+    devices: IDeviceData[]
 }
-
-// Re-export models types
-export * from '@/lib/types'
-export * from '@/lib/models/channel-controls/types'
-export * from '@/lib/models/channel-properties/types'
-export * from '@/lib/models/channels/types'
-export * from '@/lib/models/connectors/types'
-export * from '@/lib/models/connector-controls/types'
-export * from '@/lib/models/device-controls/types'
-export * from '@/lib/models/device-properties/types'
-export * from '@/lib/models/devices/types'
-export * from '@/lib/models/properties/types'

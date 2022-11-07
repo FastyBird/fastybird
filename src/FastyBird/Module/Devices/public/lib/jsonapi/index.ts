@@ -1,7 +1,2 @@
-import JsonApiModelPropertiesMapper from '@/lib/jsonapi/JsonApiModelPropertiesMapper'
-import JsonApiJsonPropertiesMapper from '@/lib/jsonapi/JsonApiJsonPropertiesMapper'
-
-export {
-  JsonApiModelPropertiesMapper,
-  JsonApiJsonPropertiesMapper,
-}
+export { default as JsonApiModelPropertiesMapper } from './JsonApiModelPropertiesMapper'
+export { default as JsonApiJsonPropertiesMapper } from './JsonApiJsonPropertiesMapper'

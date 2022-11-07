@@ -1,0 +1,30 @@
+@import "../@fastybird/web-ui-theme/src/assets/variables/colors";
+
+.fb-devices-module-actors-property-actor-switch {
+  &__container {
+    .fb-ui-switch-element__container {
+      display: block;
+    }
+  }
+
+  &__result,
+  &__loading {
+    width: 4.4rem;
+    height: 2.4rem;
+    text-align: center;
+    font-size: 2rem;
+    line-height: 2.4rem;
+  }
+
+  &__result {
+    padding: 0.2rem 0;
+
+    &-ok {
+      color: $color-primary;
+    }
+
+    &-err {
+      color: $color-danger;
+    }
+  }
+}

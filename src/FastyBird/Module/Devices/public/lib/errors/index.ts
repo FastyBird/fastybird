@@ -1,7 +1,2 @@
-import ApiError from '@/lib/errors/ApiError'
-import OrmError from '@/lib/errors/OrmError'
-
-export {
-  ApiError,
-  OrmError,
-}
+export { default as ApiError } from './ApiError'
+export { default as ApplicationError } from './ApplicationError'
