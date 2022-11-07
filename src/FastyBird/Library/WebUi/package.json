@@ -1,0 +1,100 @@
+{
+  "name": "@fastybird/web-ui-library",
+  "version": "2.0.0",
+  "description": "FastyBird application theme & Vue components for web apps",
+  "keywords": [
+    "fastybird",
+    "fb",
+    "ui",
+    "components",
+    "vue"
+  ],
+  "homepage": "https://www.fastybird.com",
+  "bugs": "https://github.com/FastyBird/fastybird/issues",
+  "license": "Apache-2.0",
+  "author": {
+    "name": "FastyBird s.r.o.",
+    "email": "code@fastybird.com",
+    "url": "https://www.fastybird.com/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FastyBird/web-ui-library.git"
+  },
+  "main": "dist/web-ui-library.umd.js",
+  "module": "dist/web-ui-library.es.js",
+  "types": "dist/web-ui-library.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/web-ui-library.es.js",
+      "require": "./dist/web-ui-library.umd.js"
+    }
+  },
+  "files": [
+    "dist/*",
+    "src/components/**/*.scss",
+    "src/assets/*"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "serve": "vite preview",
+    "lint:js": "eslint --ext .js,.ts,.vue --ignore-path .gitignore src/",
+    "lint:js:fix": "eslint --ext .js,.ts,.vue --ignore-path .gitignore src/ --fix",
+    "lint:styles": "stylelint 'src/**/*.scss'",
+    "format": "prettier web-ui-library --write",
+    "storybook:serve": "start-storybook -p 6006",
+    "storybook:build": "build-storybook -s src/static",
+    "storybook:deploy": "storybook-to-ghpages"
+  },
+  "dependencies": {
+    "@vueuse/core": "^7.6",
+    "body-scroll-lock": "^4.0.0-beta.0",
+    "lerna": "^6.0.1",
+    "lodash.get": "^4.4"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20",
+    "@babel/plugin-proposal-class-properties": "^7.18",
+    "@babel/preset-env": "^7.20",
+    "@babel/preset-typescript": "^7.18",
+    "@commitlint/cli": "^17.2",
+    "@commitlint/config-conventional": "^17.2",
+    "@fortawesome/fontawesome-svg-core": "^6.2",
+    "@fortawesome/free-solid-svg-icons": "^6.2",
+    "@fortawesome/vue-fontawesome": "^3.0",
+    "@storybook/addon-a11y": "^6.5.9",
+    "@storybook/addon-actions": "^6.5.9",
+    "@storybook/addon-essentials": "^6.5.9",
+    "@storybook/addon-links": "^6.5.9",
+    "@storybook/builder-vite": "^0.2.2",
+    "@storybook/vue3": "^6.5.9",
+    "@types/body-scroll-lock": "^3.1",
+    "@types/lodash": "^4.14",
+    "@types/lodash.get": "^4.4",
+    "@types/node": "^18.11",
+    "@typescript-eslint/eslint-plugin": "^5.42",
+    "@typescript-eslint/parser": "^5.42",
+    "@vitejs/plugin-vue": "^3.2",
+    "@vue/eslint-config-prettier": "^7.0",
+    "@vue/eslint-config-typescript": "^11.0",
+    "babel-loader": "^8.2.3",
+    "eslint": "^8.27",
+    "eslint-config-prettier": "^8.5",
+    "eslint-plugin-markdown": "^3.0",
+    "eslint-plugin-prettier": "^4.2",
+    "eslint-plugin-storybook": "^0.6",
+    "eslint-plugin-vue": "^9.7",
+    "gh-pages": "^4.0",
+    "prettier": "^2.7",
+    "sass": "^1.56",
+    "sass-loader": "^13.1",
+    "typescript": "^4.8",
+    "vite": "^3.2",
+    "vite-plugin-eslint": "^1.8",
+    "vite-svg-loader": "^3.6",
+    "vue": "^3.2",
+    "vue-loader": "^17.0",
+    "vue-tsc": "^1.0"
+  }
+}

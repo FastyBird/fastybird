@@ -1,0 +1,51 @@
+{
+  "compilerOptions": {
+    "target" : "esnext",
+    "module" : "esnext",
+    "strict" : true,
+    "declaration" : true,
+    "declarationDir" : "dist/dts",
+    "emitDeclarationOnly" : true,
+    "noUnusedLocals" : true,
+    "noUnusedParameters" : true,
+    "importHelpers" : true,
+    "moduleResolution" : "node",
+    "experimentalDecorators" : true,
+    "resolveJsonModule": true,
+    "esModuleInterop" : true,
+    "allowSyntheticDefaultImports" : true,
+    "sourceMap" : true,
+    "baseUrl" : "src",
+    "types": [
+      "@vueuse/core",
+      "@types/body-scroll-lock",
+      "@types/lodash.get",
+      "node",
+      "vue",
+      "vite/client"
+    ],
+    "paths" : {
+      "@/*" : [
+        "*"
+      ]
+    },
+    "lib": [
+      "esnext",
+      "dom",
+      "dom.iterable",
+      "scripthost"
+    ],
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.vue"
+  ],
+  "exclude": [
+    "src/**/*.stories.ts",
+    "src/**/stories.ts",
+    "src/**/*.spec.ts",
+    "node_modules",
+    "dist"
+  ]
+}

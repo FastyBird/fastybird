@@ -1,91 +1,91 @@
 {
-  "name" : "@fastybird/devices-module",
-  "version" : "2.0.0",
-  "description" : "FastyBird IoT devices module for devices management & basic control logic",
-  "keywords" : [
+  "name": "@fastybird/devices-module",
+  "version": "2.0.0",
+  "description": "FastyBird IoT devices module for devices management & basic control logic",
+  "keywords": [
     "devices",
     "api"
   ],
-  "homepage" : "https://www.fastybird.com",
-  "bugs" : "https://github.com/FastyBird/fastybird/issues",
-  "license" : "Apache-2.0",
-  "author" : {
-    "name" : "FastyBird s.r.o.",
-    "email" : "code@fastybird.com",
-    "url" : "https://www.fastybird.com/"
+  "homepage": "https://www.fastybird.com",
+  "bugs": "https://github.com/FastyBird/fastybird/issues",
+  "license": "Apache-2.0",
+  "author": {
+    "name": "FastyBird s.r.o.",
+    "email": "code@fastybird.com",
+    "url": "https://www.fastybird.com/"
   },
-  "repository" : {
-    "type" : "git",
-    "url" : "https://github.com/FastyBird/devices-module.git"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FastyBird/devices-module.git"
   },
-  "main" : "dist/devices-module.ssr.js",
-  "browser" : "dist/devices-module.esm.js",
-  "module" : "dist/devices-module.esm.js",
-  "unpkg" : "dist/devices-module.min.js",
-  "types" : "dist/devices-module.d.ts",
-  "files" : [
+  "main": "dist/devices-module.ssr.js",
+  "browser": "dist/devices-module.esm.js",
+  "module": "dist/devices-module.esm.js",
+  "unpkg": "dist/devices-module.min.js",
+  "types": "dist/devices-module.d.ts",
+  "files": [
     "dist/*",
     "public/lib/locales/*"
   ],
-  "scripts" : {
-    "build" : "cross-env NODE_ENV=production rollup --config build/rollup.config.js --bundleConfigAsCjs",
-    "build:ssr" : "cross-env NODE_ENV=production rollup --config build/rollup.config.js --format cjs --bundleConfigAsCjs",
-    "build:es" : "cross-env NODE_ENV=production rollup --config build/rollup.config.js --format es --bundleConfigAsCjs",
-    "build:unpkg" : "cross-env NODE_ENV=production rollup --config build/rollup.config.js --format iife --bundleConfigAsCjs",
-    "lint" : "eslint --ext \".js,.ts,.json,\" --ignore-path .gitignore public/"
+  "scripts": {
+    "build": "cross-env NODE_ENV=production rollup --config build/rollup.config.js --bundleConfigAsCjs",
+    "build:ssr": "cross-env NODE_ENV=production rollup --config build/rollup.config.js --format cjs --bundleConfigAsCjs",
+    "build:es": "cross-env NODE_ENV=production rollup --config build/rollup.config.js --format es --bundleConfigAsCjs",
+    "build:unpkg": "cross-env NODE_ENV=production rollup --config build/rollup.config.js --format iife --bundleConfigAsCjs",
+    "lint": "eslint --ext \".js,.ts,.json,\" --ignore-path .gitignore public/"
   },
-  "dependencies" : {
-    "@fastybird/metadata-library" : "*",
-    "@fastybird/web-ui-theme" : "*",
-    "@fastybird/ws-exchange-plugin" : "*",
-    "ajv" : "^8.11",
-    "date-fns" : "^2.29",
-    "jsona" : "^1.10",
-    "lodash" : "^4.17",
-    "natural-orderby" : "^2.0",
-    "uuid" : "^9.0"
+  "dependencies": {
+    "@fastybird/metadata-library": "*",
+    "@fastybird/web-ui-theme": "*",
+    "@fastybird/ws-exchange-plugin": "*",
+    "ajv": "^8.11",
+    "date-fns": "^2.29",
+    "jsona": "^1.10",
+    "lodash": "^4.17",
+    "natural-orderby": "^2.0",
+    "uuid": "^9.0"
   },
-  "devDependencies" : {
-    "@babel/core" : "^7.20",
-    "@babel/plugin-proposal-class-properties" : "^7.18",
-    "@babel/preset-env" : "^7.20",
-    "@babel/preset-typescript" : "^7.18",
-    "@rollup/plugin-alias" : "^4.0",
-    "@rollup/plugin-babel" : "^6.0",
-    "@rollup/plugin-commonjs" : "^23.0",
-    "@rollup/plugin-eslint" : "9.0",
-    "@rollup/plugin-node-resolve" : "^15.0.1",
-    "@rollup/plugin-replace" : "^5.0",
-    "@rollup/plugin-terser" : "^0.1",
-    "@types/lodash" : "^4.14",
-    "@types/node" : "^18.11",
-    "@types/uuid" : "^8.3",
-    "@typescript-eslint/eslint-plugin" : "^5.42",
-    "@typescript-eslint/parser" : "^5.42",
-    "cross-env" : "^7.0",
-    "eslint" : "^8.27",
-    "eslint-plugin-json" : "^3.1",
-    "minimist" : "^1.2",
-    "pinia" : "^2.0",
-    "rollup" : "^3.2",
-    "rollup-plugin-flat-dts" : "^1.8.1",
-    "rollup-plugin-typescript2" : "^0.34",
-    "tslib" : "^2.4",
-    "ttypescript" : "^1.5",
-    "typescript" : "^4.8",
-    "vue" : "^3.2",
-    "vue-i18n" : "^9.2",
+  "devDependencies": {
+    "@babel/core": "^7.20",
+    "@babel/plugin-proposal-class-properties": "^7.18",
+    "@babel/preset-env": "^7.20",
+    "@babel/preset-typescript": "^7.18",
+    "@rollup/plugin-alias": "^4.0",
+    "@rollup/plugin-babel": "^6.0",
+    "@rollup/plugin-commonjs": "^23.0",
+    "@rollup/plugin-eslint": "9.0",
+    "@rollup/plugin-node-resolve": "^15.0.1",
+    "@rollup/plugin-replace": "^5.0",
+    "@rollup/plugin-terser": "^0.1",
+    "@types/lodash": "^4.14",
+    "@types/node": "^18.11",
+    "@types/uuid": "^8.3",
+    "@typescript-eslint/eslint-plugin": "^5.42",
+    "@typescript-eslint/parser": "^5.42",
+    "cross-env": "^7.0",
+    "eslint": "^8.27",
+    "eslint-plugin-json": "^3.1",
+    "minimist": "^1.2",
+    "pinia": "^2.0",
+    "rollup": "^3.2",
+    "rollup-plugin-flat-dts": "^1.8.1",
+    "rollup-plugin-typescript2": "^0.34",
+    "tslib": "^2.4",
+    "ttypescript": "^1.5",
+    "typescript": "^4.8",
+    "vue": "^3.2",
+    "vue-i18n": "^9.2",
     "vue-meta": "^3.0.0-alpha.9",
-    "vue-router" : "^4.1"
+    "vue-router": "^4.1"
   },
-  "peerDependencies" : {
-    "pinia" : "^2.0",
-    "vue" : "^3.2",
-    "vue-i18n" : "^9.2",
+  "peerDependencies": {
+    "pinia": "^2.0",
+    "vue": "^3.2",
+    "vue-i18n": "^9.2",
     "vue-meta": "^3.0.0-alpha.9",
-    "vue-router" : "^4.1"
+    "vue-router": "^4.1"
   },
-  "engines" : {
-    "node" : ">=14"
+  "engines": {
+    "node": ">=14"
   }
 }
