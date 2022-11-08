@@ -1,7 +1,7 @@
 import {
   FbSizeTypes,
   FbUiModalLayoutTypes,
-} from "../../../types";
+} from "@/types";
 
 export interface IFbUiModalInfoProps {
   size?: FbSizeTypes;

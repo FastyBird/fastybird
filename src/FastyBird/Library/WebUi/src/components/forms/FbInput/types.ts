@@ -2,7 +2,7 @@ import {
   FbFormInputTypeTypes,
   FbFormOrientationTypes,
   FbSizeTypes,
-} from '../../../types';
+} from '@/types';
 
 export interface IFbFormInputProps {
   orientation: FbFormOrientationTypes;
@@ -12,10 +12,10 @@ export interface IFbFormInputProps {
   label: string | null;
   type: FbFormInputTypeTypes;
   required: boolean;
-  modelValue: string | number | null;
-  tabIndex: number | null;
+  modelValue?: string | number;
+  tabIndex: number | undefined;
   error: string | null;
-  placeholder: string | null;
+  placeholder: string | undefined;
   disabled: boolean;
   readonly: boolean;
 }

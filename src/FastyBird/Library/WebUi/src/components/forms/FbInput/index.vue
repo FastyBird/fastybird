@@ -7,7 +7,7 @@
     :label="label"
     :required="required"
     :is-focused="isFocused"
-    :has-value="modelValue !== '' && modelValue !== null || placeholder !== null"
+    :has-value="modelValue !== '' && modelValue !== undefined || placeholder !== undefined"
     :error="error"
   >
     <template
@@ -38,7 +38,7 @@
         :value="modelValue"
         :placeholder="error !== null && !isFocused ? error : placeholder"
         class="fb-theme-form-input__control"
-        @input="onUpdateValue($event.target.value)"
+        @input="onUpdateValue"
         @focus="onSetFocus(true)"
         @blur="onSetFocus(false)"
         @keydown="onKeyDown"
@@ -62,12 +62,13 @@ import {
   ref,
   SetupContext,
 } from 'vue'
+import get from 'lodash.get'
 
 import {
   FbFormInputTypeTypes,
   FbFormOrientationTypes,
   FbSizeTypes,
-} from '../../../types'
+} from '@/types'
 import FbFormField from '../FbField/index.vue'
 
 import { IFbFormInputProps } from './types'
@@ -145,13 +146,13 @@ export default defineComponent({
     },
 
     modelValue: {
-      type: [String, Number] as PropType<string | number | null>,
-      default: null,
+      type: [String, Number] as PropType<string | number | undefined>,
+      default: undefined,
     },
 
     tabIndex: {
-      type: Number as PropType<number | null>,
-      default: null,
+      type: Number as PropType<number | undefined>,
+      default: undefined,
     },
 
     error: {
@@ -160,8 +161,8 @@ export default defineComponent({
     },
 
     placeholder: {
-      type: String as PropType<string | null>,
-      default: null,
+      type: String as PropType<string | undefined>,
+      default: undefined,
     },
 
     disabled: {
@@ -182,9 +183,9 @@ export default defineComponent({
     const isFocused = ref<boolean>(false)
 
     // Emit an input event up to the parent
-    const onUpdateValue = (value: string | number | null): void => {
-      context.emit('update:modelValue', value)
-      context.emit('change', value)
+    const onUpdateValue = (event: Event): void => {
+      context.emit('update:modelValue', get(event.target, 'value'))
+      context.emit('change', get(event.target, 'value'))
     }
 
     // Fire focus & blur events

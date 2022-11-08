@@ -36,7 +36,7 @@
         :disabled="disabled"
         :readonly="readonly"
         class="fb-theme-form-select__control"
-        @input="onUpdateValue($event.target.value)"
+        @input="onUpdateValue"
         @focus="onSetFocus(true)"
         @blur="onSetFocus(false)"
         @change="onChange"
@@ -64,7 +64,7 @@
           </optgroup>
 
           <option
-            v-else
+            v-else-if="'value' in item"
             :key="index"
             :value="item.value"
           >
@@ -91,11 +91,12 @@ import {
   SetupContext,
   watch,
 } from 'vue'
+import get from 'lodash.get'
 
 import {
   FbFormOrientationTypes,
   FbSizeTypes,
-} from '../../../types'
+} from '@/types'
 import FbFormField from '../FbField/index.vue'
 
 import {
@@ -151,8 +152,8 @@ export default defineComponent({
     },
 
     modelValue: {
-      type: [String, Number] as PropType<string | number | null>,
-      default: null,
+      type: [String, Number] as PropType<string | number | undefined>,
+      default: undefined,
     },
 
     id: {
@@ -171,8 +172,8 @@ export default defineComponent({
     },
 
     tabIndex: {
-      type: Number as PropType<number | null>,
-      default: null,
+      type: Number as PropType<number | undefined>,
+      default: undefined,
     },
 
     error: {
@@ -200,13 +201,13 @@ export default defineComponent({
   emits: ['update:modelValue', 'change', 'focus', 'blur', 'change'],
 
   setup(props: IFbFormSelectProps, context: SetupContext) {
-    const internalValue = ref<string | number | null>(props.modelValue)
+    const internalValue = ref<string | number | undefined>(props.modelValue)
     const isFocused = ref<boolean>(false)
 
     // Emit an input event up to the parent
-    const onUpdateValue = (value: string | number | null): void => {
-      context.emit('update:modelValue', value)
-      context.emit('change', value)
+    const onUpdateValue = (event: Event): void => {
+      context.emit('update:modelValue', get(event.target, 'value'))
+      context.emit('change', get(event.target, 'value'))
     }
 
     // Fire focus & blur events
@@ -225,7 +226,7 @@ export default defineComponent({
     }
 
     watch(
-      (): string | number | null => props.modelValue,
+      (): string | number | undefined => props.modelValue,
       (value) => {
         internalValue.value = value
       },

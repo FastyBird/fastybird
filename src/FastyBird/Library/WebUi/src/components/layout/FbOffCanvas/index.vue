@@ -1,7 +1,7 @@
 <template>
   <div
     ref="root"
-    @keyup.esc="close"
+    @keyup.esc="$emit('close')"
   >
     <transition name="fb-theme-layout-off-canvas-overlay">
       <div

@@ -3,7 +3,7 @@ import {
   FbUiButtonActionsTypes,
   FbUiButtonButtonTypes,
   FbUiButtonVariantTypes,
-} from "../../../types";
+} from "@/types";
 
 export interface IFbUiButtonProps {
   action?: string | { [key: string]: any } | null;

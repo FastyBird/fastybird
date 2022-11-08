@@ -20,8 +20,8 @@ export default defineComponent({
   props: {
 
     modelValue: {
-      type: [String, Number, Boolean] as PropType<string | number | boolean | null>,
-      default: null,
+      type: [String, Number, Boolean] as PropType<string | number | boolean | undefined>,
+      default: undefined,
     },
 
   },

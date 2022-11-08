@@ -20,7 +20,7 @@ import {
 import {
   FbFormOrientationTypes,
   FbSizeTypes,
-} from '../../../types'
+} from '@/types'
 
 export default defineComponent({
 

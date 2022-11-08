@@ -112,7 +112,7 @@ import {
   FbUiModalLayoutTypes,
   FbSizeTypes,
   FbUiButtonVariantTypes,
-} from '../../../types'
+} from '@/types'
 import FbUiButton from '../FbButton/index.vue'
 import FbUiModalWindow from '../FbModalWindow/index.vue'
 import FbUiResultErr from '../FbResultErr/index.vue'

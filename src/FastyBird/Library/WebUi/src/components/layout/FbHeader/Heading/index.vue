@@ -52,7 +52,7 @@ import {
   PropType,
 } from 'vue'
 
-import { FbLayoutHeaderHeadingAlign } from '../../../../types'
+import { FbLayoutHeaderHeadingAlign } from '@/types'
 
 export default defineComponent({
 

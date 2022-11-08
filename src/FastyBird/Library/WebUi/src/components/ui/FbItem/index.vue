@@ -1,7 +1,7 @@
 <template>
   <div
     :data-variant="variant"
-    :role="'button' in $slots ? 'button' : null"
+    :role="'button' in $slots ? 'button' : undefined"
     data-element="list-item"
     class="fb-theme-ui-item__container"
     @click="onClick"
@@ -45,8 +45,8 @@ import {
   SetupContext,
 } from 'vue'
 
-import { useEventElementPath } from '../../../composables'
-import { FbUiItemVariantTypes } from '../../../types'
+import { useEventElementPath } from '@/composables'
+import { FbUiItemVariantTypes } from '@/types'
 
 export default defineComponent({
 

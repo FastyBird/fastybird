@@ -1,4 +1,4 @@
-import { FbMenuItemTypes } from "../../../../types";
+import { FbMenuItemTypes } from "@/types";
 
 export interface IFbLayoutHeaderButtonProps {
   actionType: FbMenuItemTypes;

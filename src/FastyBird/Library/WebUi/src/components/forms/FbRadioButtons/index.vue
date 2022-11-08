@@ -26,7 +26,7 @@
             :option="option.value"
             :size="size"
             :label="option.name"
-            :tab-index="tabIndex ? tabIndex + index + 1 : null"
+            :tab-index="tabIndex ? tabIndex + index + 1 : undefined"
             :has-error="error !== null"
             :readonly="readonly"
             :disabled="disabled"
@@ -56,7 +56,7 @@ import {
 import {
   FbFormOrientationTypes,
   FbSizeTypes,
-} from '../../../types'
+} from '@/types'
 import FbFormField from '../FbField/index.vue'
 import FbFormRadioButton from '../FbRadioButton/index.vue'
 
@@ -113,8 +113,8 @@ export default defineComponent({
     },
 
     modelValue: {
-      type: [String, Number, Boolean] as PropType<string | number | boolean | null>,
-      default: null,
+      type: [String, Number, Boolean] as PropType<string | number | boolean | undefined>,
+      default: undefined,
     },
 
     id: {
@@ -133,8 +133,8 @@ export default defineComponent({
     },
 
     tabIndex: {
-      type: Number as PropType<number | null>,
-      default: null,
+      type: Number as PropType<number | undefined>,
+      default: undefined,
     },
 
     error: {
@@ -157,8 +157,8 @@ export default defineComponent({
   emits: ['update:modelValue', 'change'],
 
   setup(props: IFbFormRadioButtonsProps, context: SetupContext) {
-    const model = computed<string | number | boolean | null>({
-      get: (): string | number | boolean | null => {
+    const model = computed<string | number | boolean | undefined>({
+      get: (): string | number | boolean | undefined => {
         return props.modelValue
       },
       set: (val) => {

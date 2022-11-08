@@ -32,7 +32,7 @@ import {
   PropType,
 } from 'vue'
 
-import { FbSizeTypes } from '../../../types'
+import { FbSizeTypes } from '@/types'
 
 export default defineComponent({
 

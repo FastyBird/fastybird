@@ -57,7 +57,7 @@ export default {
     modelValue: {
       type: { name: 'string', required: true },
       control: { type: 'text' },
-      defaultValue: null,
+      defaultValue: undefined,
     },
     orientation: {
       type: { name: 'string', required: false },
@@ -125,7 +125,7 @@ export default {
     tabIndex: {
       type: { name: 'number', required: false },
       control: { type: 'text' },
-      defaultValue: null,
+      defaultValue: undefined,
     },
     error: {
       type: { name: 'string', required: false },
@@ -135,7 +135,7 @@ export default {
     placeholder: {
       type: { name: 'string', required: false },
       control: { type: 'text' },
-      defaultValue: null,
+      defaultValue: undefined,
     },
     readonly: {
       type: { name: 'boolean', required: false },

@@ -12,7 +12,7 @@ import {
 } from 'vue'
 import get from 'lodash/get'
 
-import { FbSizeTypes, FbUiTextAlignTypes } from '../../../types'
+import { FbSizeTypes, FbUiTextAlignTypes } from '@/types'
 
 import { IFbUiContentProps } from './types'
 

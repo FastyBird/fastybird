@@ -159,7 +159,7 @@ import {
   FbSizeTypes,
   FbUiModalLayoutTypes,
   FbUiButtonVariantTypes,
-} from '../../../types'
+} from '@/types'
 import FbUiButton from '../FbButton/index.vue'
 import FbUiModalHeader from '../FbModalHeader/index.vue'
 import FbUiLoadingBox from '../FbLoadingBox/index.vue'
@@ -278,9 +278,9 @@ export default defineComponent({
   setup(props: IFbUiModalWindowProps, context: SetupContext) {
     const element = ref<HTMLElement | null>(null)
 
-    const optionalWidth = computed<string | null>((): string | null => {
+    const optionalWidth = computed<string | undefined>((): string | undefined => {
       if (props.width === null) {
-        return null
+        return undefined
       } else if (typeof props.width === 'number') {
         return `${props.width}px`
       }
@@ -296,7 +296,7 @@ export default defineComponent({
       }
     }
 
-    const closeModal = (e: Error): void => {
+    const closeModal = (e: KeyboardEvent): void => {
       if (props.enableClosing) {
         context.emit('close', e)
       }

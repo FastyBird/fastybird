@@ -69,7 +69,7 @@ export default {
     tabIndex: {
       type: { name: 'number', required: false },
       control: { type: 'text' },
-      defaultValue: null,
+      defaultValue: undefined,
     },
     hasError: {
       type: { name: 'boolean', required: false },

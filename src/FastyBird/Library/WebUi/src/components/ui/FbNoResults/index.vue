@@ -37,7 +37,7 @@ import {
 import {
   FbSizeTypes,
   FbUiVariantTypes,
-} from '../../../types'
+} from '@/types'
 import FbUiIconWithChild from '../FbIconWithChild/index.vue'
 
 export default defineComponent({

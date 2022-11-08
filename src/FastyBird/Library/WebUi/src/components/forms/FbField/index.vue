@@ -107,7 +107,7 @@ import {
   PropType,
 } from 'vue'
 
-import { FbFormOrientationTypes, FbSizeTypes } from '../../../types'
+import { FbFormOrientationTypes, FbSizeTypes } from '@/types'
 import FbFormLabel from '../FbLabel/index.vue'
 
 export default defineComponent({

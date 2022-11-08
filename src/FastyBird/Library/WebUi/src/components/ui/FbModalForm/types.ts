@@ -2,7 +2,7 @@ import {
   FbFormResultTypes,
   FbSizeTypes,
   FbUiModalLayoutTypes,
-} from "../../../types";
+} from "@/types";
 
 export interface IFbUiModalFormProps {
   size?: FbSizeTypes;

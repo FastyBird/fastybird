@@ -40,10 +40,10 @@
         >
           <slot name="close-button">
             <fb-ui-button
+              :variant="buttonVariants.LINK"
+              :size="sizeTypes.LARGE"
+              :type="buttonTypes.BUTTON"
               block
-              variant="link"
-              size="lg"
-              type="button"
               @click.prevent="$emit('close', $event)"
             >
               {{ closeBtnText }}
@@ -64,6 +64,11 @@ import {
   watch,
 } from 'vue'
 
+import {
+  FbSizeTypes,
+  FbUiButtonButtonTypes,
+  FbUiButtonVariantTypes,
+} from '@/types'
 import FbUiButton from '../../ui/FbButton/index.vue'
 
 export default defineComponent({
@@ -100,8 +105,8 @@ export default defineComponent({
 
     const teleportHasContent = ref<boolean>(false)
 
-    const itemsTeleportChanged = (newContent: boolean): void => {
-      teleportHasContent.value = newContent
+    const itemsTeleportChanged = (payload: Event): void => {
+      teleportHasContent.value = payload.target !== null
     }
 
     watch(
@@ -119,6 +124,9 @@ export default defineComponent({
       element,
       teleportHasContent,
       itemsTeleportChanged,
+      sizeTypes: FbSizeTypes,
+      buttonTypes: FbUiButtonButtonTypes,
+      buttonVariants: FbUiButtonVariantTypes,
     }
   },
 

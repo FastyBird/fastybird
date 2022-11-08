@@ -1,7 +1,7 @@
 import {
   FbFormOrientationTypes,
   FbSizeTypes,
-} from "../../../types";
+} from "@/types";
 
 export interface IFbFormCheckboxesItem {
   name: string;
@@ -13,11 +13,11 @@ export interface IFbFormCheckboxesProps {
   size: FbSizeTypes;
   name: string;
   options: IFbFormCheckboxesItem[];
-  modelValue: string | number | boolean | null | Array<string | number | boolean>;
+  modelValue?: Array<string | number | boolean>;
   id: string | null;
   label: string | null;
   required: boolean;
-  tabIndex: number | null;
+  tabIndex: number | undefined;
   error: string | null;
   disabled: boolean;
   readonly: boolean;

@@ -37,7 +37,7 @@ import {
   SetupContext,
 } from 'vue'
 
-import { FbSizeTypes } from '../../../types'
+import { FbSizeTypes } from '@/types'
 import FbFormCheckboxesGroup from '../FbCheckboxesGroup/index.vue'
 
 import { IFbFormCheckboxProps } from './types'
@@ -72,8 +72,8 @@ export default defineComponent({
     },
 
     modelValue: {
-      type: [String, Number, Boolean] as PropType<string | number | boolean>,
-      default: null,
+      type: [String, Number, Boolean, Array] as PropType<string | number | boolean | (string | number | boolean)[] | undefined>,
+      default: undefined,
     },
 
     id: {
@@ -87,8 +87,8 @@ export default defineComponent({
     },
 
     tabIndex: {
-      type: Number as PropType<number | null>,
-      default: null,
+      type: Number as PropType<number | undefined>,
+      default: undefined,
     },
 
     hasError: {
@@ -116,9 +116,9 @@ export default defineComponent({
   emits: ['update:modelValue', 'change'],
 
   setup(props: IFbFormCheckboxProps, context: SetupContext) {
-    const model = computed<string | number | boolean | null | (string | number | boolean)[]>({
-      get: (): string | number | boolean | null | (string | number | boolean)[] => {
-        return props.group !== null ? props.group.modelValue : props.modelValue
+    const model = computed<(string | number | boolean)[] | undefined>({
+      get: (): (string | number | boolean)[] | undefined => {
+        return props.group !== null ? props.group.modelValue : (props.modelValue !== undefined ? (Array.isArray(props.modelValue) ? props.modelValue : [props.modelValue]) : props.modelValue)
       },
       set: (val) => {
         if (props.group !== null) {

@@ -37,7 +37,7 @@ import {
   SetupContext,
 } from 'vue'
 
-import { FbSizeTypes } from '../../../types'
+import { FbSizeTypes } from '@/types'
 import FbFormRadioButtonsGroup from '../FbRadioButtonsGroup/index.vue'
 
 import { IFbFormRadioButtonProps } from './types'
@@ -72,8 +72,8 @@ export default defineComponent({
     },
 
     modelValue: {
-      type: [String, Number, Boolean] as PropType<string | number | boolean | null>,
-      default: null,
+      type: [String, Number, Boolean] as PropType<string | number | boolean | undefined>,
+      default: undefined,
     },
 
     id: {
@@ -87,8 +87,8 @@ export default defineComponent({
     },
 
     tabIndex: {
-      type: Number as PropType<number | null>,
-      default: null,
+      type: Number as PropType<number | undefined>,
+      default: undefined,
     },
 
     hasError: {
@@ -116,8 +116,8 @@ export default defineComponent({
   emits: ['update:modelValue', 'change'],
 
   setup(props: IFbFormRadioButtonProps, context: SetupContext) {
-    const model = computed<string | number | boolean | null>({
-      get: (): string | number | boolean | null => {
+    const model = computed<string | number | boolean | undefined>({
+      get: (): string | number | boolean | undefined => {
         return props.group !== null ? props.group.modelValue : props.modelValue
       },
       set: (val) => {

@@ -3,7 +3,7 @@
     <teleport :to="`#${teleportTarget}`">
       <template v-if="actionType === menuItemTypes.LINK">
         <a
-          :href="action"
+          :href="`${action}`"
           :class="['fb-theme-layout-header-button__container', {'fb-theme-layout-header-button__container-small': small}, {'fb-theme-layout-header-button__container-textual': !('icon' in $slots)}, {'fb-theme-layout-header-button__container-left': left}, {'fb-theme-layout-header-button__container-right': right}]"
           @click.prevent="$emit('click', $event)"
         >
@@ -74,7 +74,7 @@
   <template v-else>
     <template v-if="actionType === menuItemTypes.LINK">
       <a
-        :href="action"
+        :href="`${action}`"
         :class="['fb-theme-layout-header-button__container', {'fb-theme-layout-header-button__container-small': small}, {'fb-theme-layout-header-button__container-textual': !('icon' in $slots)}, {'fb-theme-layout-header-button__container-left': left}, {'fb-theme-layout-header-button__container-right': right}]"
         @click.prevent="$emit('click', $event)"
       >
@@ -148,7 +148,7 @@ import {
   PropType,
 } from 'vue'
 
-import { FbMenuItemTypes } from '../../../../types'
+import { FbMenuItemTypes } from '@/types'
 
 import { IFbLayoutHeaderButtonProps } from './types'
 

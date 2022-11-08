@@ -4,9 +4,9 @@
       <fb-ui-button
         :href="link"
         :active="active"
+        :variant="buttonVariants.LINK"
+        :size="sizeTypes.LARGE"
         block
-        variant="link"
-        size="lg"
       >
         <span
           v-if="'icon' in $slots"
@@ -20,10 +20,10 @@
 
     <template v-else-if="type === menuItemTypes.BUTTON">
       <fb-ui-button
+        :variant="buttonVariants.LINK"
+        :type="buttonTypes.BUTTON"
+        :size="sizeTypes.LARGE"
         block
-        variant="link"
-        size="lg"
-        type="button"
         @click.prevent="$emit('click', $event)"
       >
         <span
@@ -44,7 +44,12 @@ import {
   PropType,
 } from 'vue'
 
-import { FbMenuItemTypes } from '../../../../types'
+import {
+  FbSizeTypes,
+  FbUiButtonVariantTypes,
+  FbUiButtonButtonTypes,
+  FbMenuItemTypes,
+} from '@/types'
 import FbUiButton from '../../../ui/FbButton/index.vue'
 
 export default defineComponent({
@@ -92,6 +97,9 @@ export default defineComponent({
   setup() {
     return {
       menuItemTypes: FbMenuItemTypes,
+      sizeTypes: FbSizeTypes,
+      buttonVariants: FbUiButtonVariantTypes,
+      buttonTypes: FbUiButtonButtonTypes,
     }
   },
 

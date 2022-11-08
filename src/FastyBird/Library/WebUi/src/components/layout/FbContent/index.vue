@@ -69,7 +69,7 @@ import {
   watch,
 } from 'vue'
 
-import { FbFormOrientationTypes } from '../../../types'
+import { FbFormOrientationTypes } from '@/types'
 
 import FbFormInput from '../../forms/FbInput/index.vue'
 import FbUiScrollShadow from '../../ui/FbScrollShadow/index.vue'

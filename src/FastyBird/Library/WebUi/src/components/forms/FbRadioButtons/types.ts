@@ -1,7 +1,7 @@
 import {
   FbFormOrientationTypes,
   FbSizeTypes,
-} from '../../../types';
+} from '@/types';
 
 export interface IFbFormRadioButtonsItem {
   name: string;
@@ -13,11 +13,11 @@ export interface IFbFormRadioButtonsProps {
   size: FbSizeTypes;
   name: string;
   options: IFbFormRadioButtonsItem[];
-  modelValue: string | number | boolean | null;
+  modelValue?: string | number | boolean;
   id: string | null;
   label: string | null;
   required: boolean;
-  tabIndex: number | null;
+  tabIndex: number | undefined;
   error: string | null;
   readonly: boolean;
   disabled: boolean;

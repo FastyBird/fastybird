@@ -39,7 +39,7 @@ import {
 import {
   FbSizeTypes,
   FbUiVariantTypes,
-} from '../../../types'
+} from '@/types'
 import FbUiSpinner from '../FbSpinner/index.vue'
 
 export default defineComponent({

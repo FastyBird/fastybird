@@ -1,7 +1,7 @@
 import {
   FbFormOrientationTypes,
   FbSizeTypes,
-} from '../../../types';
+} from '@/types';
 
 export interface IFbFormSelectItem {
   name: string;
@@ -18,11 +18,11 @@ export interface IFbFormSelectProps {
   size: FbSizeTypes;
   name: string;
   items: Array<IFbFormSelectItem | IFbFormSelectItemGroup>;
-  modelValue: string | number | null;
+  modelValue?: string | number;
   id: string | null;
   label: string | null;
   required: boolean;
-  tabIndex: number | null;
+  tabIndex: number | undefined;
   error: string | null;
   blankSelect: string | null;
   readonly: boolean;

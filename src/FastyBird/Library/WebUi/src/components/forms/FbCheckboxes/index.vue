@@ -26,7 +26,7 @@
             :name="options.length > 1 ? `${name}[]` : name"
             :label="option.name"
             :option="option.value"
-            :tab-index="tabIndex ? tabIndex + index + 1 : null"
+            :tab-index="tabIndex ? tabIndex + index + 1 : undefined"
             :has-error="error !== null"
             :readonly="readonly"
             :disabled="disabled"
@@ -53,7 +53,7 @@ import {
   SetupContext,
 } from 'vue'
 
-import { FbFormOrientationTypes, FbSizeTypes } from '../../../types'
+import { FbFormOrientationTypes, FbSizeTypes } from '@/types'
 import FbFormField from '../FbField/index.vue'
 import FbFormCheckbox from '../FbCheckbox/index.vue'
 
@@ -110,8 +110,8 @@ export default defineComponent({
     },
 
     modelValue: {
-      type: [String, Number, Boolean, Array] as PropType<string | number | boolean | null | (string | number | boolean)[]>,
-      default: null,
+      type: Array as PropType<(string | number | boolean)[] | undefined>,
+      default: undefined,
     },
 
     id: {
@@ -130,8 +130,8 @@ export default defineComponent({
     },
 
     tabIndex: {
-      type: Number as PropType<number | null>,
-      default: null,
+      type: Number as PropType<number | undefined>,
+      default: undefined,
     },
 
     error: {
@@ -154,8 +154,8 @@ export default defineComponent({
   emits: ['update:modelValue', 'change'],
 
   setup(props: IFbFormCheckboxesProps, context: SetupContext) {
-    const model = computed<string | number | boolean | null | (string | number | boolean)[]>({
-      get: (): string | number | boolean | null | (string | number | boolean)[] => {
+    const model = computed<(string | number | boolean)[] | undefined>({
+      get: (): (string | number | boolean)[] | undefined => {
         return props.modelValue
       },
       set: (val) => {

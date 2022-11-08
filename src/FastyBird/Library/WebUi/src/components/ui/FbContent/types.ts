@@ -1,4 +1,4 @@
-import { FbSizeTypes, FbUiTextAlignTypes } from '../../../types'
+import { FbSizeTypes, FbUiTextAlignTypes } from '@/types'
 
 export interface IFbUiContentProps {
   mt?: FbSizeTypes;

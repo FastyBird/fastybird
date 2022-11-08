@@ -72,7 +72,7 @@ import {
 } from 'vue'
 
 import { TouchHorizontalPan } from '../../../../directives'
-import { ITouchHorizontalChanges } from '../../../../directives/types'
+import { ITouchHorizontalChanges } from '@/directives/types'
 import {
   IFbUiSwipeActionsOutProps,
   TFbUiSwipeActionsOutDir,

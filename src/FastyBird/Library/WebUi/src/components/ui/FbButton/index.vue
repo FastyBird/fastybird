@@ -50,7 +50,7 @@
   <template v-else-if="actionType === actionTypes.LINK">
     <a
       ref="element"
-      :href="action"
+      :href="`${action}`"
       :data-variant="variant"
       :data-size="size"
       :class="classNames"

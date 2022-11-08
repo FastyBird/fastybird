@@ -272,7 +272,7 @@ export default {
     }
 
     if ('__qtouchpan' in el) {
-      Object.assign(el, { __qtouchpan_old: get(el, '__qtouchpan', null) as ITouchHorizontalDirectiveContext })
+      Object.assign(el, { __qtouchpan_old: get(el, '__qtouchpan', null) as ITouchHorizontalDirectiveContext | null })
     }
 
     Object.assign(el, { __qtouchpan: ctx })
@@ -307,7 +307,7 @@ export default {
   },
 
   unmounted(el: HTMLElement, binding: ITouchHorizontalDirectiveBinding): void {
-    const ctx = get(el, '__qtouchpan_old') || get(el, '__qtouchpan')
+    const ctx = (get(el, '__qtouchpan_old') as ITouchHorizontalDirectiveContext | undefined) || (get(el, '__qtouchpan') as ITouchHorizontalDirectiveContext | undefined)
 
     if (ctx !== undefined) {
       removeObserver(ctx)

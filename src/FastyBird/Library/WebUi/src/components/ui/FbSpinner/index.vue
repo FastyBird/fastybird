@@ -15,7 +15,7 @@ import {
 import {
   FbSizeTypes,
   FbUiVariantTypes,
-} from '../../../types'
+} from '@/types'
 
 export default defineComponent({
 

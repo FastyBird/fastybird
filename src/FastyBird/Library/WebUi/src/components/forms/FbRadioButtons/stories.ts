@@ -90,7 +90,7 @@ export default {
     tabIndex: {
       type: { name: 'number', required: false },
       control: { type: 'text' },
-      defaultValue: null,
+      defaultValue: undefined,
     },
     error: {
       type: { name: 'string', required: false },

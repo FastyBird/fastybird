@@ -1,4 +1,4 @@
-import { FbUiModalLayoutTypes } from "../../../types";
+import { FbUiModalLayoutTypes } from "@/types";
 
 export interface IFbUiModalHeaderProps {
   layout?: FbUiModalLayoutTypes;

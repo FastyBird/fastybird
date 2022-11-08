@@ -11,7 +11,7 @@ import {
   FbLayoutHeaderContent,
   FbLayoutHeaderHeading,
 } from "./index";
-import { FbMenuItemTypes } from "@/types";
+import { FbMenuItemTypes } from "../../../types";
 
 export default {
   component: FbLayoutHeader,

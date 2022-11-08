@@ -29,7 +29,7 @@ import {
   PropType,
 } from 'vue'
 
-import { FbUiVariantTypes } from '../../../types'
+import { FbUiVariantTypes } from '@/types'
 
 export default defineComponent({
 

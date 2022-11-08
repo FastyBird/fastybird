@@ -1,7 +1,7 @@
 import {
   FbFormOrientationTypes,
   FbSizeTypes,
-} from '../../../types';
+} from '@/types';
 
 export interface IFbFormLabelProps {
   id: string;

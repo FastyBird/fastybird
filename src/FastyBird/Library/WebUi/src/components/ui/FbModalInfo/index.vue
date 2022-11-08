@@ -48,7 +48,7 @@ import {
 import {
   FbUiModalLayoutTypes,
   FbSizeTypes,
-} from '../../../types'
+} from '@/types'
 import FbUiModalWindow from '../FbModalWindow/index.vue'
 
 export default defineComponent({
