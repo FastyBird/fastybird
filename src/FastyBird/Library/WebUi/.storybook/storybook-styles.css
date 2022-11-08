@@ -1,11 +1,11 @@
 .brand-color {
-    fill: #d9230f;
+	fill: #d9230f;
 }
 
 .default-color {
-    fill: #474949;
+	fill: #474949;
 }
 
 .dark-mode .default-color {
-    fill: #ddd;
+	fill: #ddd;
 }
