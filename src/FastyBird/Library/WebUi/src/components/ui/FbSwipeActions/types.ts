@@ -1,2 +1,2 @@
-export * from './SwipeList/types'
-export * from './SwipeOut/types'
+export * from './SwipeList/types';
+export * from './SwipeOut/types';

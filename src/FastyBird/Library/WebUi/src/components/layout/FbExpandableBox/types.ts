@@ -1,3 +1,3 @@
 export interface IFbLayoutExpandableBoxProps {
-    show: boolean
+	show: boolean;
 }

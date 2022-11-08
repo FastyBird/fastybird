@@ -1,7 +1,7 @@
-@import "../../variables/colors";
-@import "../../variables/layout";
-@import "../../variables/texts";
-@import "../../mixins/utilities";
+@import '../../variables/colors';
+@import '../../variables/layout';
+@import '../../variables/texts';
+@import '../../mixins/utilities';
 
 $radio-font-family: $font-family-base;
 $radio-indicator-size: 1.5rem !default;
@@ -17,5 +17,5 @@ $radio-label-padding: 0 $padding-sm 0 sum($radio-indicator-size, 1rem);
 $radio-error-color: $color-danger;
 
 @mixin radio-indicator-radius {
-  @include border-radius(50%);
+	@include border-radius(50%);
 }

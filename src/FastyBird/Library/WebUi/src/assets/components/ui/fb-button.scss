@@ -1,9 +1,9 @@
-@use "sass:math";
-@use "sass:color";
-@import "../../mixins/utilities";
-@import "../../variables/colors";
-@import "../../variables/sizes";
-@import "../../variables/texts";
+@use 'sass:math';
+@use 'sass:color';
+@import '../../mixins/utilities';
+@import '../../variables/colors';
+@import '../../variables/sizes';
+@import '../../variables/texts';
 
 $btn-font-family: $font-family-base;
 $btn-font-weight: normal;
@@ -89,246 +89,243 @@ $btn-icon-md-height: $icon-height-md;
 $btn-icon-lg-height: $icon-height-lg;
 
 @mixin button-size($padding-vertical, $padding-horizontal, $font-size, $line-height, $border-radius) {
-  padding: $padding-vertical $padding-horizontal;
-  font-size: $font-size;
-  line-height: $line-height;
-  border-radius: $border-radius;
+	padding: $padding-vertical $padding-horizontal;
+	font-size: $font-size;
+	line-height: $line-height;
+	border-radius: $border-radius;
 }
 
 @mixin button-variant($color, $background, $border) {
-  color: $color;
-  background-color: $background;
-  border-color: $border;
+	color: $color;
+	background-color: $background;
+	border-color: $border;
 
-  svg {
-    fill: $color;
-    color: $color;
-  }
+	svg {
+		fill: $color;
+		color: $color;
+	}
 
-  .badge {
-    color: $background;
-    background-color: $color;
-  }
+	.badge {
+		color: $background;
+		background-color: $color;
+	}
 
-  &:focus,
-  &.focus,
-  &:hover {
-    @media (hover: hover) and (pointer: fine) {
-      svg {
-        fill: $color;
-        color: $color;
-      }
-    }
-  }
+	&:focus,
+	&.focus,
+	&:hover {
+		@media (hover: hover) and (pointer: fine) {
+			svg {
+				fill: $color;
+				color: $color;
+			}
+		}
+	}
 
-  &:focus,
-  &.focus {
-    @media (hover: hover) and (pointer: fine) {
-      color: $color;
-      background-color: color.adjust($background, $lightness: -10%);
-      border-color: color.adjust($border, $lightness: -25%);
-    }
-  }
+	&:focus,
+	&.focus {
+		@media (hover: hover) and (pointer: fine) {
+			color: $color;
+			background-color: color.adjust($background, $lightness: -10%);
+			border-color: color.adjust($border, $lightness: -25%);
+		}
+	}
 
-  &:hover {
-    @media (hover: hover) and (pointer: fine) {
-      color: $color;
-      background-color: color.adjust($background, $lightness: -10%);
-      border-color: color.adjust($border, $lightness: -12%);
-    }
-  }
+	&:hover {
+		@media (hover: hover) and (pointer: fine) {
+			color: $color;
+			background-color: color.adjust($background, $lightness: -10%);
+			border-color: color.adjust($border, $lightness: -12%);
+		}
+	}
 
-  &:active,
-  &.active {
-    color: $color;
-    background-color: color.adjust($background, $lightness: -10%);
-    border-color: color.adjust($border, $lightness: -12%);
-    background-image: none;
+	&:active,
+	&.active {
+		color: $color;
+		background-color: color.adjust($background, $lightness: -10%);
+		border-color: color.adjust($border, $lightness: -12%);
+		background-image: none;
 
-    &:hover,
-    &:focus,
-    &.focus {
-      @media (hover: hover) and (pointer: fine) {
-        color: $color;
-        background-color: color.adjust($background, $lightness: -17%);
-        border-color: color.adjust($border, $lightness: -25%);
+		&:hover,
+		&:focus,
+		&.focus {
+			@media (hover: hover) and (pointer: fine) {
+				color: $color;
+				background-color: color.adjust($background, $lightness: -17%);
+				border-color: color.adjust($border, $lightness: -25%);
 
-        svg {
-          fill: $color;
-          color: $color;
-        }
-      }
-    }
+				svg {
+					fill: $color;
+					color: $color;
+				}
+			}
+		}
 
-    svg {
-      fill: $color;
-      color: $color;
-    }
-  }
+		svg {
+			fill: $color;
+			color: $color;
+		}
+	}
 
-  &.disabled,
-  &[disabled] {
-    &:hover,
-    &:focus,
-    &.focus {
-      @media (hover: hover) and (pointer: fine) {
-        background-color: $background;
-        border-color: $border;
-      }
-    }
-  }
+	&.disabled,
+	&[disabled] {
+		&:hover,
+		&:focus,
+		&.focus {
+			@media (hover: hover) and (pointer: fine) {
+				background-color: $background;
+				border-color: $border;
+			}
+		}
+	}
 }
 
 @mixin button-outline-variant($border, $color) {
-  background-color: #fff;
-  border-color: $border;
-  color: $border;
+	background-color: #fff;
+	border-color: $border;
+	color: $border;
 
-  svg {
-    fill: $border;
-    color: $border;
-  }
+	svg {
+		fill: $border;
+		color: $border;
+	}
 
-  .badge {
-    background-color: $border;
-    border-color: transparent;
-    color: $color;
+	.badge {
+		background-color: $border;
+		border-color: transparent;
+		color: $color;
 
-    svg {
-      fill: $color;
-      color: $color;
-    }
-  }
+		svg {
+			fill: $color;
+			color: $color;
+		}
+	}
 
-  &:hover,
-  &:focus,
-  &.focus {
-    @media (hover: hover) and (pointer: fine) {
-      svg {
-        fill: $color;
-        color: $color;
-      }
-    }
-  }
+	&:hover,
+	&:focus,
+	&.focus {
+		@media (hover: hover) and (pointer: fine) {
+			svg {
+				fill: $color;
+				color: $color;
+			}
+		}
+	}
 
-  &:active,
-  &.active {
-    svg {
-      fill: $color;
-      color: $color;
-    }
-  }
+	&:hover {
+		@media (hover: hover) and (pointer: fine) {
+			background-color: $border;
+			border-color: $border;
+			color: $color;
+		}
+	}
 
-  &:hover {
-    @media (hover: hover) and (pointer: fine) {
-      background-color: $border;
-      border-color: $border;
-      color: $color;
-    }
-  }
+	&:focus,
+	&.focus {
+		@media (hover: hover) and (pointer: fine) {
+			background-color: transparent;
+			border-color: $border;
+			color: $border;
+		}
+	}
 
-  &:focus,
-  &.focus {
-    @media (hover: hover) and (pointer: fine) {
-      background-color: transparent;
-      border-color: $border;
-      color: $border;
-    }
-  }
+	&:active,
+	&.active {
+		background-color: $border;
+		border-color: $border;
+		color: $color;
 
-  &:active,
-  &.active, {
-    background-color: $border;
-    border-color: $border;
-    color: $color;
+		svg {
+			fill: $color;
+			color: $color;
+		}
 
-    &:hover,
-    &:focus,
-    &.focus {
-      @media (hover: hover) and (pointer: fine) {
-        background-color: color.adjust($border, $lightness: -15%);
-        border-color: color.adjust($border, $lightness: -15%);
-        color: $color;
-      }
-    }
-  }
+		&:hover,
+		&:focus,
+		&.focus {
+			@media (hover: hover) and (pointer: fine) {
+				background-color: color.adjust($border, $lightness: -15%);
+				border-color: color.adjust($border, $lightness: -15%);
+				color: $color;
+			}
+		}
+	}
 
-  &.disabled,
-  &[disabled] {
-    &:hover,
-    &:focus,
-    &.focus {
-      @media (hover: hover) and (pointer: fine) {
-        background-color: transparent;
-        border-color: $border;
-        color: $border;
+	&.disabled,
+	&[disabled] {
+		&:hover,
+		&:focus,
+		&.focus {
+			@media (hover: hover) and (pointer: fine) {
+				background-color: transparent;
+				border-color: $border;
+				color: $border;
 
-        svg {
-          fill: $border;
-          color: $border;
-        }
-      }
-    }
-  }
+				svg {
+					fill: $border;
+					color: $border;
+				}
+			}
+		}
+	}
 }
 
 @mixin button-link-variant($color, $disabledColor, $hoverColor, $hoveDecoration) {
-  color: $color;
-  font-weight: normal;
-  border-radius: 0;
-  background-color: transparent;
-  background-image: none;
-  background-size: auto;
-  border-color: transparent;
+	color: $color;
+	font-weight: normal;
+	border-radius: 0;
+	background-color: transparent;
+	background-image: none;
+	background-size: auto;
+	border-color: transparent;
 
-  svg {
-    fill: $color;
-    color: $color;
-  }
+	svg {
+		fill: $color;
+		color: $color;
+	}
 
-  &:active,
-  &.active,
-  &.disabled,
-  &[disabled] {
-    text-decoration: none;
+	&:active,
+	&.active,
+	&.disabled,
+	&[disabled] {
+		text-decoration: none;
 
-    @include button-disabled-shadow;
-  }
+		@include button-disabled-shadow;
+	}
 
-  &:hover,
-  &:focus {
-    @media (hover: hover) and (pointer: fine) {
-      color: $hoverColor;
-      text-decoration: $hoveDecoration;
+	&:hover,
+	&:focus {
+		@media (hover: hover) and (pointer: fine) {
+			color: $hoverColor;
+			text-decoration: $hoveDecoration;
 
-      svg {
-        fill: $hoverColor;
-        color: $hoverColor;
-      }
-    }
-  }
+			svg {
+				fill: $hoverColor;
+				color: $hoverColor;
+			}
+		}
+	}
 
-  &.disabled,
-  &[disabled] {
-    &:hover,
-    &:focus {
-      @media (hover: hover) and (pointer: fine) {
-        color: $disabledColor;
-        text-decoration: none;
+	&.disabled,
+	&[disabled] {
+		&:hover,
+		&:focus {
+			@media (hover: hover) and (pointer: fine) {
+				color: $disabledColor;
+				text-decoration: none;
 
-        svg {
-          fill: $disabledColor;
-          color: $disabledColor;
-        }
-      }
-    }
-  }
+				svg {
+					fill: $disabledColor;
+					color: $disabledColor;
+				}
+			}
+		}
+	}
 }
 
 @mixin button-active-shadow {
-  @include box-shadow(inset 0 3px 5px rgba(0, 0, 0, 0.125));
+	@include box-shadow(inset 0 3px 5px rgba(0, 0, 0, 0.125));
 }
 
 @mixin button-disabled-shadow {
-  @include box-shadow(none);
+	@include box-shadow(none);
 }

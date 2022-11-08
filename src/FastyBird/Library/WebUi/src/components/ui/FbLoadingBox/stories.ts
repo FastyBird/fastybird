@@ -1,103 +1,92 @@
-import {
-    Args,
-    Meta,
-    Story,
-} from '@storybook/vue3'
+import { Args, Meta, Story } from '@storybook/vue3';
 
-import {
-    FbUiVariantTypes,
-    FbSizeTypes,
-} from '../../../types'
+import { FbUiVariantTypes, FbSizeTypes } from '../../../types';
 
-import {IFbUiLoadingBoxProps} from './types'
-import FbUiLoadingBox from './index.vue'
+import { IFbUiLoadingBoxProps } from './types';
+import FbUiLoadingBox from './index.vue';
 
 export default {
-    component: FbUiLoadingBox,
-    title: 'Components/Ui/FB Loading box',
-    argTypes: {
-        default: {
-            type: {name: 'string', required: false},
-            control: {type: 'text'},
-            defaultValue: 'Loading & preparing content...',
-            description: 'Loading info text slot',
-            table: {
-                type: {summary: 'string'},
-                defaultValue: {summary: '-'},
-            },
-        },
-        icon: {
-            type: {name: 'string', required: false},
-            control: {type: 'text'},
-            defaultValue: null,
-            description: 'Optional loading icon slot',
-            table: {
-                type: {summary: 'string'},
-                defaultValue: {summary: '-'},
-            },
-        },
-        variant: {
-            type: {name: 'string', required: false},
-            control: {type: 'select'},
-            defaultValue: FbUiVariantTypes.PRIMARY,
-            options: [
-                FbUiVariantTypes.DEFAULT,
-                FbUiVariantTypes.PRIMARY,
-                FbUiVariantTypes.SUCCESS,
-                FbUiVariantTypes.DANGER,
-                FbUiVariantTypes.WARNING,
-                FbUiVariantTypes.INFO,
-            ],
-            description: 'Spinner color variant',
-            table: {
-                type: {summary: 'string'},
-                defaultValue: {summary: FbUiVariantTypes.PRIMARY},
-            },
-        },
-        size: {
-            type: {name: 'string', required: false},
-            control: {type: 'select'},
-            defaultValue: FbSizeTypes.MEDIUM,
-            options: [
-                FbSizeTypes.SMALL,
-                FbSizeTypes.MEDIUM,
-                FbSizeTypes.LARGE,
-            ],
-            description: 'Spinner size',
-            table: {
-                type: {summary: 'string'},
-                defaultValue: {summary: FbSizeTypes.MEDIUM},
-            },
-        },
-        fullScreen: {
-            type: {name: 'boolean', required: false},
-            control: {type: 'boolean'},
-            defaultValue: false,
-        },
-        animation: {
-            type: {name: 'boolean', required: false},
-            control: {type: 'boolean'},
-            defaultValue: false,
-        },
-    },
-    parameters: {
-        controls: {disabled: true},
-        actions: {disabled: true},
-    },
-} as Meta
+	component: FbUiLoadingBox,
+	title: 'Components/Ui/FB Loading box',
+	argTypes: {
+		default: {
+			type: { name: 'string', required: false },
+			control: { type: 'text' },
+			defaultValue: 'Loading & preparing content...',
+			description: 'Loading info text slot',
+			table: {
+				type: { summary: 'string' },
+				defaultValue: { summary: '-' },
+			},
+		},
+		icon: {
+			type: { name: 'string', required: false },
+			control: { type: 'text' },
+			defaultValue: null,
+			description: 'Optional loading icon slot',
+			table: {
+				type: { summary: 'string' },
+				defaultValue: { summary: '-' },
+			},
+		},
+		variant: {
+			type: { name: 'string', required: false },
+			control: { type: 'select' },
+			defaultValue: FbUiVariantTypes.PRIMARY,
+			options: [
+				FbUiVariantTypes.DEFAULT,
+				FbUiVariantTypes.PRIMARY,
+				FbUiVariantTypes.SUCCESS,
+				FbUiVariantTypes.DANGER,
+				FbUiVariantTypes.WARNING,
+				FbUiVariantTypes.INFO,
+			],
+			description: 'Spinner color variant',
+			table: {
+				type: { summary: 'string' },
+				defaultValue: { summary: FbUiVariantTypes.PRIMARY },
+			},
+		},
+		size: {
+			type: { name: 'string', required: false },
+			control: { type: 'select' },
+			defaultValue: FbSizeTypes.MEDIUM,
+			options: [FbSizeTypes.SMALL, FbSizeTypes.MEDIUM, FbSizeTypes.LARGE],
+			description: 'Spinner size',
+			table: {
+				type: { summary: 'string' },
+				defaultValue: { summary: FbSizeTypes.MEDIUM },
+			},
+		},
+		fullScreen: {
+			type: { name: 'boolean', required: false },
+			control: { type: 'boolean' },
+			defaultValue: false,
+		},
+		animation: {
+			type: { name: 'boolean', required: false },
+			control: { type: 'boolean' },
+			defaultValue: false,
+		},
+	},
+	parameters: {
+		controls: { disabled: true },
+		actions: { disabled: true },
+	},
+} as Meta;
 
 interface TemplateArgs extends IFbUiLoadingBoxProps, Args {
-    default?: string
-    icon?: string
+	default?: string;
+	icon?: string;
 }
 
 const Template: Story<TemplateArgs> = (args) => {
-    return {
-        components: {FbUiLoadingBox},
-        setup(): any {
-            return {args}
-        },
-        template: `
+	return {
+		components: { FbUiLoadingBox },
+		setup(): any {
+			return { args };
+		},
+		template: `
       <fb-ui-loading-box
         :variant="args.variant"
         :size="args.size"
@@ -108,21 +97,21 @@ const Template: Story<TemplateArgs> = (args) => {
         <template v-if="${args.icon !== null && typeof args.icon !== 'undefined'}" #icon>${args.icon}</template>
       </fb-ui-loading-box>
     `,
-    }
-}
+	};
+};
 
-export const Default = Template.bind({})
+export const Default = Template.bind({});
 
-export const WithIcon = Template.bind({})
+export const WithIcon = Template.bind({});
 
 WithIcon.args = {
-    icon: `<font-awesome-icon icon="chart-bar" size="6x" />`,
-}
+	icon: `<font-awesome-icon icon="chart-bar" size="6x" />`,
+};
 
 export const WithCustomLogo: Story<TemplateArgs> = () => {
-    return {
-        components: {FbUiLoadingBox},
-        template: `
+	return {
+		components: { FbUiLoadingBox },
+		template: `
       <fb-ui-loading-box
         variant="${FbUiVariantTypes.PRIMARY}"
         size="${FbSizeTypes.LARGE}"
@@ -159,5 +148,5 @@ export const WithCustomLogo: Story<TemplateArgs> = () => {
         </template>
       </fb-ui-loading-box>
     `,
-    }
-}
+	};
+};

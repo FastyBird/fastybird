@@ -1,19 +1,19 @@
-@import "../../../assets/components/ui/fb-no-results";
+@import '../../../assets/components/ui/fb-no-results';
 
 .fb-theme-ui-no-results {
-  &__container {
-    font-family: $no-results-font-family;
-    font-size: $no-results-font-size;
-    display: inline-block;
-    position: relative;
-    text-align: center;
+	&__container {
+		font-family: $no-results-font-family;
+		font-size: $no-results-font-size;
+		display: inline-block;
+		position: relative;
+		text-align: center;
 
-    &[data-size="sm"] {
-      font-size: $no-results-font-size-sm;
-    }
+		&[data-size='sm'] {
+			font-size: $no-results-font-size-sm;
+		}
 
-    p {
-      margin: $no-results-text-margin;
-    }
-  }
+		p {
+			margin: $no-results-text-margin;
+		}
+	}
 }

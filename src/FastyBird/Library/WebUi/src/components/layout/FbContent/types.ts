@@ -1,4 +1,4 @@
 export interface IFbLayoutContentProps {
-    withSearch: boolean
-    searchPlaceholder: string
+	withSearch: boolean;
+	searchPlaceholder: string;
 }

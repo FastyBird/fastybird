@@ -1,8 +1,8 @@
-@import "../../variables/colors";
-@import "../../variables/layout";
-@import "../../variables/screen";
-@import "../../variables/texts";
-@import "../../mixins/utilities";
+@import '../../variables/colors';
+@import '../../variables/layout';
+@import '../../variables/screen';
+@import '../../variables/texts';
+@import '../../mixins/utilities';
 
 $modal-font-family: $font-family-base;
 $modal-font-size: $font-size-base;
@@ -26,13 +26,13 @@ $modal-loader-bg-color: $bg-color-body;
 $screen-tablet-min: $screen-sm-min;
 
 @mixin modal-body-flex {
-  @include flex-column(nowrap);
+	@include flex-column(nowrap);
 }
 
 @mixin modal-content-shadow {
-  @include box-shadow(0 3px 9px rgba(0, 0, 0, 0.5));
+	@include box-shadow(0 3px 9px rgba(0, 0, 0, 0.5));
 
-  @media (min-width: $screen-tablet-min) {
-    @include box-shadow(0 5px 15px rgba(0, 0, 0, 0.5));
-  }
+	@media (min-width: $screen-tablet-min) {
+		@include box-shadow(0 5px 15px rgba(0, 0, 0, 0.5));
+	}
 }

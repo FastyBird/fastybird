@@ -1,144 +1,144 @@
-@import "../../../assets/components/ui/fb-icon-with-child";
+@import '../../../assets/components/ui/fb-icon-with-child';
 
 .fb-theme-ui-icon-with-child {
-  &__container {
-    display: inline-block;
-    position: relative;
+	&__container {
+		display: inline-block;
+		position: relative;
 
-    .fb-theme-ui-icon-with-child {
-      &__icon {
-        display: block;
-        color: $main-icon-color;
-      }
+		.fb-theme-ui-icon-with-child {
+			&__icon {
+				display: block;
+				color: $main-icon-color;
+			}
 
-      &__child-icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        z-index: 2;
-        border-radius: 50%;
-        text-align: center;
-      }
-    }
+			&__child-icon {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				position: absolute;
+				bottom: 0;
+				right: 0;
+				z-index: 2;
+				border-radius: 50%;
+				text-align: center;
+			}
+		}
 
-    &[data-size="lg"] {
-      padding-right: 5px;
-      padding-bottom: 2px;
-      line-height: $main-icon-size-lg;
+		&[data-size='lg'] {
+			padding-right: 5px;
+			padding-bottom: 2px;
+			line-height: $main-icon-size-lg;
 
-      .fb-theme-ui-icon-with-child {
-        &__icon {
-          font-size: $main-icon-size-lg;
-          height: $main-icon-size-lg;
-        }
+			.fb-theme-ui-icon-with-child {
+				&__icon {
+					font-size: $main-icon-size-lg;
+					height: $main-icon-size-lg;
+				}
 
-        &__child-icon {
-          font-size: $child-icon-size-lg - (0.1rem * 6);
-          height: $child-icon-size-lg;
-          width: $child-icon-size-lg;
-        }
-      }
-    }
+				&__child-icon {
+					font-size: $child-icon-size-lg - (0.1rem * 6);
+					height: $child-icon-size-lg;
+					width: $child-icon-size-lg;
+				}
+			}
+		}
 
-    &[data-size="md"] {
-      padding-right: 4px;
-      padding-bottom: 2px;
-      line-height: $main-icon-size-md;
+		&[data-size='md'] {
+			padding-right: 4px;
+			padding-bottom: 2px;
+			line-height: $main-icon-size-md;
 
-      .fb-theme-ui-icon-with-child {
-        &__icon {
-          font-size: $main-icon-size-md;
-          height: $main-icon-size-md;
-        }
+			.fb-theme-ui-icon-with-child {
+				&__icon {
+					font-size: $main-icon-size-md;
+					height: $main-icon-size-md;
+				}
 
-        &__child-icon {
-          font-size: $child-icon-size-md - (0.1rem * 6);
-          height: $child-icon-size-md;
-          width: $child-icon-size-md;
-        }
-      }
-    }
+				&__child-icon {
+					font-size: $child-icon-size-md - (0.1rem * 6);
+					height: $child-icon-size-md;
+					width: $child-icon-size-md;
+				}
+			}
+		}
 
-    &[data-size="sm"] {
-      padding-right: 3px;
-      padding-bottom: 2px;
-      line-height: $main-icon-size-sm;
+		&[data-size='sm'] {
+			padding-right: 3px;
+			padding-bottom: 2px;
+			line-height: $main-icon-size-sm;
 
-      .fb-theme-ui-icon-with-child {
-        &__icon {
-          font-size: $main-icon-size-sm;
-          height: $main-icon-size-sm;
-        }
+			.fb-theme-ui-icon-with-child {
+				&__icon {
+					font-size: $main-icon-size-sm;
+					height: $main-icon-size-sm;
+				}
 
-        &__child-icon {
-          font-size: $child-icon-size-sm - (0.1rem * 6);
-          height: $child-icon-size-sm;
-          width: $child-icon-size-sm;
-        }
-      }
-    }
+				&__child-icon {
+					font-size: $child-icon-size-sm - (0.1rem * 6);
+					height: $child-icon-size-sm;
+					width: $child-icon-size-sm;
+				}
+			}
+		}
 
-    &[data-variant="default"] {
-      .fb-theme-ui-icon-with-child {
-        &__child-icon {
-          color: $child-icon-default-color;
-          background-color: $child-icon-default-bg;
-          border: 0.1rem solid $child-icon-default-color;
-        }
-      }
-    }
+		&[data-variant='default'] {
+			.fb-theme-ui-icon-with-child {
+				&__child-icon {
+					color: $child-icon-default-color;
+					background-color: $child-icon-default-bg;
+					border: 0.1rem solid $child-icon-default-color;
+				}
+			}
+		}
 
-    &[data-variant="primary"] {
-      .fb-theme-ui-icon-with-child {
-        &__child-icon {
-          color: $child-icon-primary-color;
-          background-color: $child-icon-primary-bg;
-          border: 0.1rem solid $child-icon-primary-color;
-        }
-      }
-    }
+		&[data-variant='primary'] {
+			.fb-theme-ui-icon-with-child {
+				&__child-icon {
+					color: $child-icon-primary-color;
+					background-color: $child-icon-primary-bg;
+					border: 0.1rem solid $child-icon-primary-color;
+				}
+			}
+		}
 
-    &[data-variant="success"] {
-      .fb-theme-ui-icon-with-child {
-        &__child-icon {
-          color: $child-icon-success-color;
-          background-color: $child-icon-success-bg;
-          border: 0.1rem solid $child-icon-success-color;
-        }
-      }
-    }
+		&[data-variant='success'] {
+			.fb-theme-ui-icon-with-child {
+				&__child-icon {
+					color: $child-icon-success-color;
+					background-color: $child-icon-success-bg;
+					border: 0.1rem solid $child-icon-success-color;
+				}
+			}
+		}
 
-    &[data-variant="danger"] {
-      .fb-theme-ui-icon-with-child {
-        &__child-icon {
-          color: $child-icon-danger-color;
-          background-color: $child-icon-danger-bg;
-          border: 0.1rem solid $child-icon-danger-color;
-        }
-      }
-    }
+		&[data-variant='danger'] {
+			.fb-theme-ui-icon-with-child {
+				&__child-icon {
+					color: $child-icon-danger-color;
+					background-color: $child-icon-danger-bg;
+					border: 0.1rem solid $child-icon-danger-color;
+				}
+			}
+		}
 
-    &[data-variant="warning"] {
-      .fb-theme-ui-icon-with-child {
-        &__child-icon {
-          color: $child-icon-warning-color;
-          background-color: $child-icon-warning-bg;
-          border: 0.1rem solid $child-icon-warning-color;
-        }
-      }
-    }
+		&[data-variant='warning'] {
+			.fb-theme-ui-icon-with-child {
+				&__child-icon {
+					color: $child-icon-warning-color;
+					background-color: $child-icon-warning-bg;
+					border: 0.1rem solid $child-icon-warning-color;
+				}
+			}
+		}
 
-    &[data-variant="info"] {
-      .fb-theme-ui-icon-with-child {
-        &__child-icon {
-          color: $child-icon-info-color;
-          background-color: $child-icon-info-bg;
-          border: 0.1rem solid $child-icon-info-color;
-        }
-      }
-    }
-  }
+		&[data-variant='info'] {
+			.fb-theme-ui-icon-with-child {
+				&__child-icon {
+					color: $child-icon-info-color;
+					background-color: $child-icon-info-bg;
+					border: 0.1rem solid $child-icon-info-color;
+				}
+			}
+		}
+	}
 }

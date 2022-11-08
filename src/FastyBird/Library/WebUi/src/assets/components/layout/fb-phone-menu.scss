@@ -1,5 +1,5 @@
-@import "../../variables/texts";
-@import "../../mixins/utilities";
+@import '../../variables/texts';
+@import '../../mixins/utilities';
 
 $z-index: 9998 !default;
 $backdrop-background-color: rgb(0 0 0 / 50%);
@@ -15,9 +15,9 @@ $items-background-color: #fff;
 $button-background-color: #fff;
 
 @mixin items-border-radius {
-  @include border-radius(1.5rem);
+	@include border-radius(1.5rem);
 }
 
 @mixin button-border-radius {
-  @include border-radius(1.5rem);
+	@include border-radius(1.5rem);
 }

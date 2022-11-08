@@ -1,3 +1,3 @@
 export interface IFbFormRadioButtonsGroupProps {
-    modelValue: string | number | boolean | undefined;
+	modelValue: string | number | boolean | undefined;
 }

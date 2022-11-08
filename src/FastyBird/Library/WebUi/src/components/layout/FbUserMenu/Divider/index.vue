@@ -1,15 +1,13 @@
 <template>
-  <li class="fb-theme-layout-user-menu-divider__container" />
+	<li class="fb-theme-layout-user-menu-divider__container" />
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue'
+import { defineComponent } from 'vue';
 
 export default defineComponent({
-
-  name: 'FbLayoutUserMenuDivider',
-
-})
+	name: 'FbLayoutUserMenuDivider',
+});
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>

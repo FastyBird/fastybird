@@ -1,131 +1,131 @@
-@import "../../../assets/components/layout/fb-header";
+@import '../../../assets/components/layout/fb-header';
 
 .fb-theme-layout-header {
-  &__container {
-    background-color: $header-background-color;
-    color: $header-color;
-    z-index: $z-index;
+	&__container {
+		background-color: $header-background-color;
+		color: $header-color;
+		z-index: $z-index;
 
-    @include shadow;
-  }
+		@include shadow;
+	}
 
-  &__heading {
-    position: relative;
-    height: 6rem;
+	&__heading {
+		position: relative;
+		height: 6rem;
 
-    @include flex-heading;
+		@include flex-heading;
 
-    &-heading {
-      flex-grow: 1;
-    }
+		&-heading {
+			flex-grow: 1;
+		}
 
-    &-button {
-      &-left,
-      &-right {
-        -webkit-box-flex: 0;
-        flex: 0 0 5rem;
-        max-width: 5rem;
-        display: flex;
-        justify-content: center;
-      }
-    }
-  }
+		&-button {
+			&-left,
+			&-right {
+				-webkit-box-flex: 0;
+				flex: 0 0 5rem;
+				max-width: 5rem;
+				display: flex;
+				justify-content: center;
+			}
+		}
+	}
 
-  &__content {
-    height: 0;
-    line-height: 3rem;
-    padding-left: 1rem;
-    transition: height 0.3s ease-in-out;
+	&__content {
+		height: 0;
+		line-height: 3rem;
+		padding-left: 1rem;
+		transition: height 0.3s ease-in-out;
 
-    @include flex-heading;
+		@include flex-heading;
 
-    &-expanded {
-      height: 3rem;
-      transition: height 0.3s ease-in-out;
-    }
-  }
+		&-expanded {
+			height: 3rem;
+			transition: height 0.3s ease-in-out;
+		}
+	}
 
-  &__buttons-small {
-    height: 0;
-    transition: height 0.3s ease-in-out;
-    overflow: hidden;
+	&__buttons-small {
+		height: 0;
+		transition: height 0.3s ease-in-out;
+		overflow: hidden;
 
-    @include flex-buttons;
+		@include flex-buttons;
 
-    &-expanded {
-      height: 3rem;
-      transition: height 0.3s ease-in-out;
-    }
-  }
+		&-expanded {
+			height: 3rem;
+			transition: height 0.3s ease-in-out;
+		}
+	}
 
-  &__button {
-    &-hamburger {
-      display: flex;
-      flex-direction: column;
-      background-color: transparent;
-      border: none;
-      position: relative;
-      outline: none;
-      width: 5rem;
-      cursor: pointer;
-      justify-content: center;
+	&__button {
+		&-hamburger {
+			display: flex;
+			flex-direction: column;
+			background-color: transparent;
+			border: none;
+			position: relative;
+			outline: none;
+			width: 5rem;
+			cursor: pointer;
+			justify-content: center;
 
-      &-label {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        margin: -1px;
-        padding: 0;
-        overflow: hidden;
-        clip: rect(0, 0, 0, 0);
-        border: 0;
-      }
+			&-label {
+				position: absolute;
+				width: 1px;
+				height: 1px;
+				margin: -1px;
+				padding: 0;
+				overflow: hidden;
+				clip: rect(0, 0, 0, 0);
+				border: 0;
+			}
 
-      &-bars {
-        background: #fff;
-        border-radius: 10px;
-        height: 4px;
-        margin: 3px 0;
-        transition: 0.4s cubic-bezier(0.68, -0.6, 0.32, 1.6);
+			&-bars {
+				background: #fff;
+				border-radius: 10px;
+				height: 4px;
+				margin: 3px 0;
+				transition: 0.4s cubic-bezier(0.68, -0.6, 0.32, 1.6);
 
-        &:nth-of-type(1) {
-          width: 50%;
-        }
+				&:nth-of-type(1) {
+					width: 50%;
+				}
 
-        &:nth-of-type(2) {
-          width: 100%;
-        }
+				&:nth-of-type(2) {
+					width: 100%;
+				}
 
-        &:nth-of-type(3) {
-          width: 75%;
-        }
-      }
+				&:nth-of-type(3) {
+					width: 75%;
+				}
+			}
 
-      &-opened {
-        .fb-theme-layout-header {
-          &__button {
-            &-hamburger {
-              &-bars {
-                &:nth-of-type(1) {
-                  transform-origin: bottom;
-                  transform: rotateZ(45deg) translate(4px, 0);
-                }
+			&-opened {
+				.fb-theme-layout-header {
+					&__button {
+						&-hamburger {
+							&-bars {
+								&:nth-of-type(1) {
+									transform-origin: bottom;
+									transform: rotateZ(45deg) translate(4px, 0);
+								}
 
-                &:nth-of-type(2) {
-                  transform-origin: top;
-                  transform: rotateZ(-45deg);
-                }
+								&:nth-of-type(2) {
+									transform-origin: top;
+									transform: rotateZ(-45deg);
+								}
 
-                &:nth-of-type(3) {
-                  transform-origin: bottom;
-                  width: 50%;
-                  transform: translate(16px, -4px) rotateZ(45deg);
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
+								&:nth-of-type(3) {
+									transform-origin: bottom;
+									width: 50%;
+									transform: translate(16px, -4px) rotateZ(45deg);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 }

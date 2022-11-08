@@ -1,5 +1,5 @@
-@import "variables/colors";
-@import "variables/texts";
+@import 'variables/colors';
+@import 'variables/texts';
 
 /*
   Reset the box-sizing
@@ -8,12 +8,12 @@
   http://getbootstrap.com/getting-started/#third-box-sizing
  */
 * {
-  box-sizing: border-box;
+	box-sizing: border-box;
 }
 
 *::before,
 *::after {
-  box-sizing: border-box;
+	box-sizing: border-box;
 }
 
 /*
@@ -26,13 +26,13 @@
 a,
 area,
 button,
-[role="button"],
+[role='button'],
 input,
 label,
 select,
 summary,
 textarea {
-  touch-action: manipulation;
+	touch-action: manipulation;
 }
 
 /* Reset fonts for relevant elements */
@@ -40,14 +40,14 @@ input,
 button,
 select,
 textarea {
-  font-family: inherit;
-  font-size: inherit;
-  line-height: inherit;
+	font-family: inherit;
+	font-size: inherit;
+	line-height: inherit;
 }
 
 textarea {
-  /* Textareas should really only resize vertically so they don't break their (horizontal) containers. */
-  resize: vertical;
+	/* Textareas should really only resize vertically so they don't break their (horizontal) containers. */
+	resize: vertical;
 }
 
 /*
@@ -55,26 +55,26 @@ textarea {
  */
 
 a {
-  color: $link-color;
-  text-decoration: none;
+	color: $link-color;
+	text-decoration: none;
 
-  &:hover,
-  &:focus {
-    @media (hover: hover) and (pointer: fine) {
-      color: $link-hover-color;
-      text-decoration: $link-hover-decoration;
-    }
-  }
+	&:hover,
+	&:focus {
+		@media (hover: hover) and (pointer: fine) {
+			color: $link-hover-color;
+			text-decoration: $link-hover-decoration;
+		}
+	}
 
-  &:focus {
-    /*
+	&:focus {
+		/*
      WebKit-specific. Other browsers will keep their default outline style.
      (Initially tried to also force default via `outline: initial`,
      but that seems to erroneously remove the outline in Firefox altogether.)
      */
-    outline: 5px auto -webkit-focus-ring-color;
-    outline-offset: -2px;
-  }
+		outline: 5px auto -webkit-focus-ring-color;
+		outline-offset: -2px;
+	}
 }
 
 /*
@@ -84,7 +84,7 @@ a {
  */
 
 figure {
-  margin: 0;
+	margin: 0;
 }
 
 /*
@@ -92,20 +92,20 @@ figure {
  */
 
 img {
-  vertical-align: middle;
+	vertical-align: middle;
 }
 
 /* Responsive images (ensure images don't scale beyond their parents) */
 .img-responsive {
-  /* Keep them at most 100% wide */
-  display: block;
-  max-width: 100%; /* Part 1: Set a maximum relative to the parent */
-  height: auto; /* Part 2: Scale the height according to the width, otherwise you get stretching */
+	/* Keep them at most 100% wide */
+	display: block;
+	max-width: 100%; /* Part 1: Set a maximum relative to the parent */
+	height: auto; /* Part 2: Scale the height according to the width, otherwise you get stretching */
 }
 
 /* Rounded corners */
 .img-rounded {
-  border-radius: 4px;
+	border-radius: 4px;
 }
 
 /*
@@ -113,22 +113,22 @@ img {
  Heads up! This is mixin-ed into thumbnails.less for `.thumbnail`.
  */
 .img-thumbnail {
-  padding: 4px;
-  line-height: $line-height-base;
-  background-color: $bg-color-body;
-  border: 1px solid $gray-lighter;
-  border-radius: 3px;
-  transition: all 0.2s ease-in-out;
+	padding: 4px;
+	line-height: $line-height-base;
+	background-color: $bg-color-body;
+	border: 1px solid $gray-lighter;
+	border-radius: 3px;
+	transition: all 0.2s ease-in-out;
 
-  /* Keep them at most 100% wide */
-  display: inline-block;
-  max-width: 100%; /* Part 1: Set a maximum relative to the parent */
-  height: auto; /* Part 2: Scale the height according to the width, otherwise you get stretching */
+	/* Keep them at most 100% wide */
+	display: inline-block;
+	max-width: 100%; /* Part 1: Set a maximum relative to the parent */
+	height: auto; /* Part 2: Scale the height according to the width, otherwise you get stretching */
 }
 
 /* Perfect circle */
 .img-circle {
-  border-radius: 50%; /* set radius in percents */
+	border-radius: 50%; /* set radius in percents */
 }
 
 /*
@@ -136,11 +136,11 @@ img {
  */
 
 hr {
-  margin-top: $line-height-computed;
-  margin-bottom: $line-height-computed;
-  border: 0;
-  border-top: 1px solid $hr-border;
-  width: 100%;
+	margin-top: $line-height-computed;
+	margin-bottom: $line-height-computed;
+	border: 0;
+	border-top: 1px solid $hr-border;
+	width: 100%;
 }
 
 /*
@@ -149,14 +149,14 @@ hr {
  */
 
 .sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  border: 0;
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	border: 0;
 }
 
 /*
@@ -166,15 +166,15 @@ hr {
  */
 
 .sr-only-focusable {
-  &:active,
-  &:focus {
-    position: static;
-    width: auto;
-    height: auto;
-    margin: 0;
-    overflow: visible;
-    clip: auto;
-  }
+	&:active,
+	&:focus {
+		position: static;
+		width: auto;
+		height: auto;
+		margin: 0;
+		overflow: visible;
+		clip: auto;
+	}
 }
 
 /*
@@ -184,8 +184,8 @@ hr {
  see https://developer.mozilla.org/en-US/docs/Web/Events/click#Safari_Mobile
  */
 
-[role="button"] {
-  cursor: pointer;
+[role='button'] {
+	cursor: pointer;
 }
 
 /*
@@ -193,6 +193,6 @@ hr {
  This prevents an unwanted focus outline from appearing around elements that
  might still respond to pointer events.
  */
-[tabindex="-1"]:focus {
-  outline: none !important;
+[tabindex='-1']:focus {
+	outline: none !important;
 }

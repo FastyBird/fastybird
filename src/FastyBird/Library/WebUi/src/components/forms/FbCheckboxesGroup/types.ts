@@ -1,3 +1,3 @@
 export interface IFbFormCheckboxesGroupProps {
-    modelValue: Array<string | number | boolean>;
+	modelValue: Array<string | number | boolean>;
 }

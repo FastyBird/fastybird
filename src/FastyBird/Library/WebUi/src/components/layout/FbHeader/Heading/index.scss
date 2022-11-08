@@ -1,63 +1,63 @@
-@import "../../../../assets/components/layout/fb-header";
+@import '../../../../assets/components/layout/fb-header';
 
 .fb-theme-layout-phone-header-heading {
-  &__container {
-    flex-grow: 2;
-    height: 6rem;
-    font-family: $header-font-family;
+	&__container {
+		flex-grow: 2;
+		height: 6rem;
+		font-family: $header-font-family;
 
-    @include flex-heading;
-  }
+		@include flex-heading;
+	}
 
-  &__heading {
-    padding-left: 1rem;
-    overflow: hidden;
+	&__heading {
+		padding-left: 1rem;
+		overflow: hidden;
 
-    &-center {
-      text-align: center;
-    }
+		&-center {
+			text-align: center;
+		}
 
-    &-left {
-      text-align: left;
-    }
+		&-left {
+			text-align: left;
+		}
 
-    &-right {
-      text-align: right;
-    }
+		&-right {
+			text-align: right;
+		}
 
-    h1 {
-      line-height: 6rem;
-      font-size: 2.2rem;
-      font-weight: $header-font-weight;
-      color: $header-color;
-      margin: 0;
+		h1 {
+			line-height: 6rem;
+			font-size: 2.2rem;
+			font-weight: $header-font-weight;
+			color: $header-color;
+			margin: 0;
 
-      span,
-      small {
-        color: $header-color;
-      }
+			span,
+			small {
+				color: $header-color;
+			}
 
-      span {
-        margin-top: 1rem;
-        line-height: 2.5rem;
-        font-size: 2rem;
-        display: block;
-      }
+			span {
+				margin-top: 1rem;
+				line-height: 2.5rem;
+				font-size: 2rem;
+				display: block;
+			}
 
-      small {
-        line-height: 2.5rem;
-        font-size: 1.2rem;
-        display: block;
-      }
-    }
-  }
+			small {
+				line-height: 2.5rem;
+				font-size: 1.2rem;
+				display: block;
+			}
+		}
+	}
 
-  &__icon {
-    -webkit-box-flex: 0;
-    flex: 0 0 5rem;
-    max-width: 5rem;
-    line-height: 6rem;
-    font-size: 3rem;
-    text-align: center;
-  }
+	&__icon {
+		-webkit-box-flex: 0;
+		flex: 0 0 5rem;
+		max-width: 5rem;
+		line-height: 6rem;
+		font-size: 3rem;
+		text-align: center;
+	}
 }

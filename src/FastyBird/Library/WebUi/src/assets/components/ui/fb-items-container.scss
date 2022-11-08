@@ -1,7 +1,7 @@
-@import "../../variables/colors";
-@import "../../variables/screen";
-@import "../../variables/texts";
-@import "../../mixins/utilities";
+@import '../../variables/colors';
+@import '../../variables/screen';
+@import '../../variables/texts';
+@import '../../mixins/utilities';
 
 $container-font-family: $font-family-base;
 $container-margin: 1.5rem 0 0 0;
@@ -19,5 +19,5 @@ $heading-buttons-button-font-size: 1.2rem;
 $screen-tablet-min: $screen-sm-min;
 
 @mixin items-container-flex {
-  @include flex-column(nowrap);
+	@include flex-column(nowrap);
 }

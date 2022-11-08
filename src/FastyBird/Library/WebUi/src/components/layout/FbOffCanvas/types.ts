@@ -1,3 +1,3 @@
 export interface IFbLayoutOffCanvasProps {
-    show: boolean
+	show: boolean;
 }

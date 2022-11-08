@@ -1,7 +1,7 @@
-@use "sass:math";
-@import "../../variables/colors";
-@import "../../variables/screen";
-@import "../../variables/texts";
+@use 'sass:math';
+@import '../../variables/colors';
+@import '../../variables/screen';
+@import '../../variables/texts';
 
 $divider-font-family: $font-family-base;
 $divider-font-size: $font-size-base;

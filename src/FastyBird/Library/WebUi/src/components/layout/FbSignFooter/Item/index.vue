@@ -1,17 +1,15 @@
 <template>
-  <li class="fb-theme-layout-sign-footer-item__container">
-    <slot />
-  </li>
+	<li class="fb-theme-layout-sign-footer-item__container">
+		<slot />
+	</li>
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue'
+import { defineComponent } from 'vue';
 
 export default defineComponent({
-
-  name: 'FbLayoutSignFooterItem',
-
-})
+	name: 'FbLayoutSignFooterItem',
+});
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>

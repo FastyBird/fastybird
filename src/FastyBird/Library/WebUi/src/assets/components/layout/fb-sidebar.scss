@@ -1,5 +1,5 @@
-@import "../../variables/screen";
-@import "../../mixins/utilities";
+@import '../../variables/screen';
+@import '../../mixins/utilities';
 
 $z-index: 1050 !default;
 $z-index-overlay: 9998 !default;
@@ -13,5 +13,5 @@ $screen-tablet-min: $screen-sm-min;
 $screen-desktop-max: $screen-md-max;
 
 @mixin flex-inner {
-  @include flex-column(nowrap);
+	@include flex-column(nowrap);
 }

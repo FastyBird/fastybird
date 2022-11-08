@@ -1,35 +1,28 @@
 <template>
-  <teleport
-    to="#fb-layout-phone-menu-button"
-    :disabled="!teleport"
-  >
-    <slot />
-  </teleport>
+	<teleport
+		to="#fb-layout-phone-menu-button"
+		:disabled="!teleport"
+	>
+		<slot />
+	</teleport>
 </template>
 
 <script lang="ts">
-import {
-  defineComponent,
-  PropType,
-} from 'vue'
+import { defineComponent, PropType } from 'vue';
 
 export default defineComponent({
+	name: 'FbLayoutPhoneMenuButton',
 
-  name: 'FbLayoutPhoneMenuButton',
+	props: {
+		closeBtnText: {
+			type: String as PropType<string>,
+			default: 'Close',
+		},
 
-  props: {
-
-    closeBtnText: {
-      type: String as PropType<string>,
-      default: 'Close',
-    },
-
-    teleport: {
-      type: Boolean as PropType<boolean>,
-      default: true,
-    },
-
-  },
-
-})
+		teleport: {
+			type: Boolean as PropType<boolean>,
+			default: true,
+		},
+	},
+});
 </script>

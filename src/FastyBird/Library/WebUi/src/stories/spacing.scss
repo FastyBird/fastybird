@@ -1,36 +1,36 @@
-@import "../assets/variables/colors";
-@import "../assets/variables/layout";
-@import "../assets/variables/texts";
+@import '../assets/variables/colors';
+@import '../assets/variables/layout';
+@import '../assets/variables/texts';
 
 .fb-story-spacing {
-  &__container {
-    font-family: $font-family-base;
-    font-size: $font-size-base;
-  }
+	&__container {
+		font-family: $font-family-base;
+		font-size: $font-size-base;
+	}
 
-  &__box {
-    &-extra-small,
-    &-small,
-    &-medium,
-    &-large {
-      background-color: $gray-lighter;
-      margin-bottom: $margin-lg;
-    }
+	&__box {
+		&-extra-small,
+		&-small,
+		&-medium,
+		&-large {
+			background-color: $gray-lighter;
+			margin-bottom: $margin-lg;
+		}
 
-    &-extra-small {
-      height: $margin-xs;
-    }
+		&-extra-small {
+			height: $margin-xs;
+		}
 
-    &-small {
-      height: $margin-sm;
-    }
+		&-small {
+			height: $margin-sm;
+		}
 
-    &-medium {
-      height: $margin-md;
-    }
+		&-medium {
+			height: $margin-md;
+		}
 
-    &-large {
-      height: $margin-lg;
-    }
-  }
+		&-large {
+			height: $margin-lg;
+		}
+	}
 }

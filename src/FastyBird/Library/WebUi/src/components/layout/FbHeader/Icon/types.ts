@@ -1,5 +1,5 @@
 export interface IFbLayoutHeaderIconProps {
-    left: boolean;
-    right: boolean;
-    teleport: boolean;
+	left: boolean;
+	right: boolean;
+	teleport: boolean;
 }

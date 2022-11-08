@@ -1,7 +1,7 @@
-@import "../../../assets/components/form/fb-checkboxes";
+@import '../../../assets/components/form/fb-checkboxes';
 
 .fb-theme-form-checkboxes {
-  &__control {
-    padding: $checkboxes-margin;
-  }
+	&__control {
+		padding: $checkboxes-margin;
+	}
 }

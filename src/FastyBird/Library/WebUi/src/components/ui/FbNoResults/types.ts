@@ -1,9 +1,6 @@
-import {
-    FbSizeTypes,
-    FbUiVariantTypes,
-} from '@/types'
+import { FbSizeTypes, FbUiVariantTypes } from '@/types';
 
 export interface IFbUiNoResultsProps {
-    variant?: FbUiVariantTypes;
-    size?: FbSizeTypes;
+	variant?: FbUiVariantTypes;
+	size?: FbSizeTypes;
 }

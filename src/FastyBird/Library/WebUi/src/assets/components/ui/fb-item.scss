@@ -1,8 +1,8 @@
-@import "../../variables/colors";
-@import "../../variables/screen";
-@import "../../variables/layout";
-@import "../../variables/texts";
-@import "../../mixins/utilities";
+@import '../../variables/colors';
+@import '../../variables/screen';
+@import '../../variables/layout';
+@import '../../variables/texts';
+@import '../../mixins/utilities';
 
 $container-height: 5.5rem;
 $container-padding: 0 $padding-sm;
@@ -12,17 +12,17 @@ $container-background: $bg-color-content;
 $content-color: $gray-light;
 
 @mixin item-container-flex {
-  @include flex-row(nowrap);
+	@include flex-row(nowrap);
 }
 
 @mixin item-icon {
-  @include flex-box-width(3.5rem);
+	@include flex-box-width(3.5rem);
 }
 
 @mixin item-content {
-  @include flex-column(nowrap);
+	@include flex-column(nowrap);
 }
 
 @mixin item-button {
-  @include flex-box-width(2.75rem);
+	@include flex-box-width(2.75rem);
 }

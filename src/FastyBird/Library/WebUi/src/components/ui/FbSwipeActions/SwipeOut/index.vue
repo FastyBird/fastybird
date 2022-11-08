@@ -1,404 +1,387 @@
 <template>
-  <div
-    ref="element"
-    :data-disabled="disabled"
-    class="fb-theme-ui-swipe-actions-out__container"
-  >
-    <template v-if="'left' in $slots">
-      <div
-        ref="left"
-        class="fb-theme-ui-swipe-actions-out__left"
-      >
-        <slot
-          :close="onClose"
-          name="left"
-        />
-      </div>
-    </template>
+	<div
+		ref="element"
+		:data-disabled="disabled"
+		class="fb-theme-ui-swipe-actions-out__container"
+	>
+		<template v-if="'left' in $slots">
+			<div
+				ref="left"
+				class="fb-theme-ui-swipe-actions-out__left"
+			>
+				<slot
+					:close="onClose"
+					name="left"
+				/>
+			</div>
+		</template>
 
-    <div
-      v-if="disabled"
-      ref="content"
-      class="fb-theme-ui-swipe-actions-out__content"
-    >
-      <slot
-        :revealed="innerRevealed"
-        :disabled="disabled"
-        :reveal-left="onRevealLeft"
-        :reveal-right="onRevealRight"
-        :close="onClose"
-        name="content"
-      />
-    </div>
+		<div
+			v-if="disabled"
+			ref="content"
+			class="fb-theme-ui-swipe-actions-out__content"
+		>
+			<slot
+				:revealed="innerRevealed"
+				:disabled="disabled"
+				:reveal-left="onRevealLeft"
+				:reveal-right="onRevealRight"
+				:close="onClose"
+				name="content"
+			/>
+		</div>
 
-    <div
-      v-else
-      ref="content"
-      v-touch-pan.horizontal.mouse.prevent.mousePrevent="onPan"
-      class="fb-theme-ui-swipe-actions-out__content"
-    >
-      <slot
-        :revealed="innerRevealed"
-        :disabled="disabled"
-        :reveal-left="onRevealLeft"
-        :reveal-right="onRevealRight"
-        :close="onClose"
-        name="content"
-      />
-    </div>
+		<div
+			v-else
+			ref="content"
+			v-touch-pan.horizontal.mouse.prevent.mousePrevent="onPan"
+			class="fb-theme-ui-swipe-actions-out__content"
+		>
+			<slot
+				:revealed="innerRevealed"
+				:disabled="disabled"
+				:reveal-left="onRevealLeft"
+				:reveal-right="onRevealRight"
+				:close="onClose"
+				name="content"
+			/>
+		</div>
 
-    <template v-if="'right' in $slots">
-      <div
-        ref="right"
-        class="fb-theme-ui-swipe-actions-out__right"
-      >
-        <slot
-          :close="onClose"
-          name="right"
-        />
-      </div>
-    </template>
-  </div>
+		<template v-if="'right' in $slots">
+			<div
+				ref="right"
+				class="fb-theme-ui-swipe-actions-out__right"
+			>
+				<slot
+					:close="onClose"
+					name="right"
+				/>
+			</div>
+		</template>
+	</div>
 </template>
 
 <script lang="ts">
-import {
-  defineComponent,
-  onBeforeUnmount,
-  PropType,
-  ref,
-  SetupContext,
-  watch,
-} from 'vue'
+import { defineComponent, onBeforeUnmount, PropType, ref, SetupContext, watch } from 'vue';
 
-import {TouchHorizontalPan} from '@/directives'
-import {ITouchHorizontalChanges} from '@/directives/types'
-import {
-  IFbUiSwipeActionsOutProps,
-  TFbUiSwipeActionsOutDir,
-} from '../types'
+import { TouchHorizontalPan } from '@/directives';
+import { ITouchHorizontalChanges } from '@/directives/types';
+import { IFbUiSwipeActionsOutProps, TFbUiSwipeActionsOutDir } from '../types';
 
 const translateX = (x: number): string => {
-  if (x === 0) {
-    return ''
-  }
+	if (x === 0) {
+		return '';
+	}
 
-  return `translate3d(${x}px, 0, 0)`
-}
+	return `translate3d(${x}px, 0, 0)`;
+};
 
 const areEqual = (a: any, b: any): boolean => {
-  if (!a && !b) {
-    return true
-  }
+	if (!a && !b) {
+		return true;
+	}
 
-  return a === b
-}
+	return a === b;
+};
 
 export default defineComponent({
+	name: 'FbUiSwipeActionsOut',
 
-  name: 'FbUiSwipeActionsOut',
+	directives: {
+		touchPan: TouchHorizontalPan,
+	},
 
-  directives: {
-    'touchPan': TouchHorizontalPan,
-  },
+	props: {
+		threshold: {
+			type: Number as PropType<number>,
+			default: 45,
+		},
 
-  props: {
+		revealed: {
+			type: [String, Boolean] as PropType<TFbUiSwipeActionsOutDir | boolean>,
+			default: false,
+		},
 
-    threshold: {
-      type: Number as PropType<number>,
-      default: 45,
-    },
+		disabled: {
+			type: Boolean as PropType<boolean>,
+			default: false,
+		},
+	},
 
-    revealed: {
-      type: [String, Boolean] as PropType<TFbUiSwipeActionsOutDir | boolean>,
-      default: false,
-    },
+	emits: ['update:revealed', 'active', 'closed', 'revealed', 'leftRevealed', 'rightRevealed'],
 
-    disabled: {
-      type: Boolean as PropType<boolean>,
-      default: false,
-    },
+	setup(props: IFbUiSwipeActionsOutProps, context: SetupContext) {
+		const element = ref<HTMLElement | null>(null);
+		const content = ref<HTMLElement | null>(null);
+		const left = ref<HTMLElement | null>(null);
+		const right = ref<HTMLElement | null>(null);
 
-  },
+		const innerRevealed = ref<boolean | TFbUiSwipeActionsOutDir>(props.revealed || false);
+		const animationFrame = ref<number | null>(null);
 
-  emits: ['update:revealed', 'active', 'closed', 'revealed', 'leftRevealed', 'rightRevealed'],
+		const leftActionsWidth = ref<number>(0);
+		const rightActionsWidth = ref<number>(0);
+		const startLeft = ref<number>(0);
 
-  setup(props: IFbUiSwipeActionsOutProps, context: SetupContext) {
-    const element = ref<HTMLElement | null>(null)
-    const content = ref<HTMLElement | null>(null)
-    const left = ref<HTMLElement | null>(null)
-    const right = ref<HTMLElement | null>(null)
+		const isActive = ref<boolean>(false);
 
-    const innerRevealed = ref<boolean | TFbUiSwipeActionsOutDir>(props.revealed || false)
-    const animationFrame = ref<number | null>(null)
+		const distanceSwiped = (): number => {
+			const contentRect = content.value?.getBoundingClientRect();
+			const elementRect = element.value?.getBoundingClientRect();
 
-    const leftActionsWidth = ref<number>(0)
-    const rightActionsWidth = ref<number>(0)
-    const startLeft = ref<number>(0)
+			return (contentRect ? contentRect.left : 0) - (elementRect ? elementRect.left : 0) - (element.value ? element.value?.clientLeft : 0);
+		};
 
-    const isActive = ref<boolean>(false)
+		const onPan = (pan: ITouchHorizontalChanges): void => {
+			if (props.disabled) {
+				return;
+			}
 
-    const distanceSwiped = (): number => {
-      const contentRect = content.value?.getBoundingClientRect()
-      const elementRect = element.value?.getBoundingClientRect()
+			if (pan.isFirst) {
+				startListener(pan);
 
-      return (contentRect ? contentRect.left : 0) - (elementRect ? elementRect.left : 0) - (element.value ? element.value?.clientLeft : 0)
-    }
+				return;
+			}
 
-    const onPan = (pan: ITouchHorizontalChanges): void => {
-      if (props.disabled) {
-        return
-      }
+			if (!isActive.value) {
+				return;
+			}
 
-      if (pan.isFirst) {
-        startListener(pan)
+			if (pan.isFinal) {
+				stopListener(pan);
 
-        return
-      }
+				return;
+			}
 
-      if (!isActive.value) {
-        return
-      }
+			swipeListener(pan);
+		};
 
-      if (pan.isFinal) {
-        stopListener(pan)
+		const startListener = ({ distance }: { distance: { x: number; y: number } }): void => {
+			element.value?.classList.add('fb-theme-ui-swipe-actions-out__no-transition');
 
-        return
-      }
+			if (distance.y <= 5) {
+				leftActionsWidth.value = left.value ? left.value.clientWidth : 0;
+				rightActionsWidth.value = right.value ? right.value.clientWidth : 0;
 
-      swipeListener(pan)
-    }
+				startLeft.value = distanceSwiped();
+				isActive.value = true;
 
-    const startListener = ({distance}: { distance: { x: number, y: number } }): void => {
-      element.value?.classList.add('fb-theme-ui-swipe-actions-out__no-transition')
+				context.emit('active', true);
+			}
+		};
 
-      if (distance.y <= 5) {
-        leftActionsWidth.value = left.value ? left.value.clientWidth : 0
-        rightActionsWidth.value = right.value ? right.value.clientWidth : 0
+		const swipeListener = ({ offset }: { offset: { x: number; y: number } }): void => {
+			const newX = offset.x + startLeft.value;
 
-        startLeft.value = distanceSwiped()
-        isActive.value = true
+			if (!('left' in context.slots) && newX > 0) {
+				return animateSlide(0);
+			}
 
-        context.emit('active', true)
-      }
-    }
+			if (!('right' in context.slots) && newX < 0) {
+				return animateSlide(0);
+			}
 
-    const swipeListener = ({offset}: { offset: { x: number, y: number } }): void => {
-      const newX = offset.x + startLeft.value
+			return animateSlide(offset.x + startLeft.value);
+		};
 
-      if (!('left' in context.slots) && newX > 0) {
-        return animateSlide(0)
-      }
+		const stopListener = ({ offset, distance }: { distance: { x: number; y: number }; offset: { x: number; y: number } }): void => {
+			element.value?.classList.remove('fb-theme-ui-swipe-actions-out__no-transition');
 
-      if (!('right' in context.slots) && newX < 0) {
-        return animateSlide(0)
-      }
+			isActive.value = false;
 
-      return animateSlide(offset.x + startLeft.value)
-    }
+			context.emit('active', false);
 
-    const stopListener = ({
-                            offset,
-                            distance,
-                          }: { distance: { x: number, y: number }, offset: { x: number, y: number } }): void => {
-      element.value?.classList.remove('fb-theme-ui-swipe-actions-out__no-transition')
+			const newX = startLeft.value + offset.x;
 
-      isActive.value = false
+			if (
+				(startLeft.value === 0 && Math.abs(newX) <= (props.threshold as number)) ||
+				(distance.x >= (props.threshold as number) &&
+					((startLeft.value > 0 && distance.x < leftActionsWidth.value) || (startLeft.value < 0 && distance.x < rightActionsWidth.value)))
+			) {
+				reveal(false, false);
 
-      context.emit('active', false)
+				return;
+			}
 
-      const newX = startLeft.value + offset.x
+			reveal(newX > 0 ? 'left' : 'right', false);
+		};
 
-      if ((startLeft.value === 0 && Math.abs(newX) <= (props.threshold as number)) || (distance.x >= (props.threshold as number) && ((startLeft.value > 0 && distance.x < leftActionsWidth.value) || (startLeft.value < 0 && distance.x < rightActionsWidth.value)))) {
-        reveal(false, false)
+		const shiftLeftActions = (newX: number): void => {
+			if (!('left' in context.slots)) {
+				return;
+			}
 
-        return
-      }
+			if (newX < 0) {
+				newX = 0;
+			}
 
-      reveal(newX > 0 ? 'left' : 'right', false)
-    }
+			const actions = left.value;
 
-    const shiftLeftActions = (newX: number): void => {
-      if (!('left' in context.slots)) {
-        return
-      }
+			if (actions === null) {
+				return;
+			}
 
-      if (newX < 0) {
-        newX = 0
-      }
+			const actionsWidth = leftActionsWidth.value;
 
-      const actions = left.value
+			const progress = 1 - Math.min(newX / actionsWidth, 1);
+			const deltaX = Math.min(newX, actionsWidth);
 
-      if (actions === null) {
-        return
-      }
+			const { children } = actions;
+			const { length } = children;
 
-      const actionsWidth = leftActionsWidth.value
+			for (let i = 0; i < length; i++) {
+				const child = children[i] as HTMLElement;
+				const offsetLeft = actionsWidth - child.offsetLeft - child.offsetWidth;
 
-      const progress = 1 - Math.min(newX / actionsWidth, 1)
-      const deltaX = Math.min(newX, actionsWidth)
+				child.style.transform = translateX(deltaX + offsetLeft * progress);
 
-      const {children} = actions
-      const {length} = children
+				if (length > 1) {
+					child.style.zIndex = `${length - i}`;
+				}
+			}
+		};
 
-      for (let i = 0; i < length; i++) {
-        const child = children[i] as HTMLElement
-        const offsetLeft = actionsWidth - child.offsetLeft - child.offsetWidth
+		const shiftRightActions = (newX: number): void => {
+			if (!('right' in context.slots)) {
+				return;
+			}
 
-        child.style.transform = translateX(deltaX + (offsetLeft * progress))
+			if (newX > 0) {
+				newX = 0;
+			}
 
-        if (length > 1) {
-          child.style.zIndex = `${length - i}`
-        }
-      }
-    }
+			const actions = right.value;
 
-    const shiftRightActions = (newX: number): void => {
-      if (!('right' in context.slots)) {
-        return
-      }
+			if (actions === null) {
+				return;
+			}
 
-      if (newX > 0) {
-        newX = 0
-      }
+			const actionsWidth = rightActionsWidth.value;
 
-      const actions = right.value
+			const progress = 1 + Math.max(newX / actionsWidth, -1);
+			const deltaX = Math.max(newX, -actionsWidth);
+			const { children } = actions;
 
-      if (actions === null) {
-        return
-      }
+			for (let i = 0; i < children.length; i++) {
+				const child = children[i] as HTMLElement;
 
-      const actionsWidth = rightActionsWidth.value
+				child.style.transform = translateX(deltaX - child.offsetLeft * progress);
+			}
+		};
 
-      const progress = 1 + Math.max(newX / actionsWidth, -1)
-      const deltaX = Math.max(newX, -actionsWidth)
-      const {children} = actions
+		const reveal = (dir: TFbUiSwipeActionsOutDir | boolean, recalculateWidth: boolean): void => {
+			if (isActive.value && areEqual(innerRevealed.value, dir)) {
+				return;
+			}
 
-      for (let i = 0; i < children.length; i++) {
-        const child = children[i] as HTMLElement
+			if ((dir === 'left' && left.value === null) || (dir === 'right' && right.value === null)) {
+				dir = false;
+			}
 
-        child.style.transform = translateX(deltaX - (child.offsetLeft * progress))
-      }
-    }
+			innerRevealed.value = dir;
 
-    const reveal = (dir: TFbUiSwipeActionsOutDir | boolean, recalculateWidth: boolean): void => {
-      if (isActive.value && areEqual(innerRevealed.value, dir)) {
-        return
-      }
+			context.emit('update:revealed', dir);
 
-      if (
-          (dir === 'left' && left.value === null)
-          || (dir === 'right' && right.value === null)
-      ) {
-        dir = false
-      }
+			// Close
+			if (!dir) {
+				animateSlide(0);
 
-      innerRevealed.value = dir
+				context.emit('closed');
 
-      context.emit('update:revealed', dir)
+				return;
+			}
 
-      // Close
-      if (!dir) {
-        animateSlide(0)
+			// Left
+			if (dir === 'left' && left.value) {
+				leftActionsWidth.value = recalculateWidth ? left.value.clientWidth : leftActionsWidth.value;
+				animateSlide(leftActionsWidth.value);
 
-        context.emit('closed')
+				context.emit('revealed', { side: 'left', close: onClose });
+				context.emit('leftRevealed', { close: onClose });
 
-        return
-      }
+				return;
+			}
 
-      // Left
-      if (dir === 'left' && left.value) {
-        leftActionsWidth.value = recalculateWidth ? left.value.clientWidth : leftActionsWidth.value
-        animateSlide(leftActionsWidth.value)
+			// Right
+			if (dir === 'right' && right.value) {
+				rightActionsWidth.value = recalculateWidth ? right.value.clientWidth : rightActionsWidth.value;
+				animateSlide(-rightActionsWidth.value);
 
-        context.emit('revealed', {side: 'left', close: onClose})
-        context.emit('leftRevealed', {close: onClose})
+				context.emit('revealed', { side: 'right', close: onClose });
+				context.emit('rightRevealed', { close: onClose });
+			}
+		};
 
-        return
-      }
+		const animateSlide = (to: number): void => {
+			if (animationFrame.value !== null) {
+				cancelAnimationFrame(animationFrame.value);
+			}
 
-      // Right
-      if (dir === 'right' && right.value) {
-        rightActionsWidth.value = recalculateWidth ? right.value.clientWidth : rightActionsWidth.value
-        animateSlide(-rightActionsWidth.value)
+			animationFrame.value = requestAnimationFrame(() => {
+				if (content.value !== null) {
+					content.value.style.transform = translateX(to);
+				}
 
-        context.emit('revealed', {side: 'right', close: onClose})
-        context.emit('rightRevealed', {close: onClose})
-      }
-    }
+				shiftLeftActions(to);
+				shiftRightActions(to);
+			});
+		};
 
-    const animateSlide = (to: number): void => {
-      if (animationFrame.value !== null) {
-        cancelAnimationFrame(animationFrame.value)
-      }
+		const onClose = (): void => {
+			if (isActive.value) return;
 
-      animationFrame.value = requestAnimationFrame(() => {
-        if (content.value !== null) {
-          content.value.style.transform = translateX(to)
-        }
+			reveal(false, true);
+		};
 
-        shiftLeftActions(to)
-        shiftRightActions(to)
-      })
-    }
+		const onRevealLeft = (): void => {
+			if (isActive.value || !left.value) {
+				return;
+			}
 
-    const onClose = (): void => {
-      if (isActive.value)
-        return
+			reveal('left', true);
+		};
 
-      reveal(false, true)
-    }
+		const onRevealRight = (): void => {
+			if (isActive.value || !right.value) {
+				return;
+			}
 
-    const onRevealLeft = (): void => {
-      if (isActive.value || !left.value) {
-        return
-      }
+			reveal('right', true);
+		};
 
-      reveal('left', true)
-    }
+		onBeforeUnmount((): void => {
+			if (animationFrame.value !== null) {
+				cancelAnimationFrame(animationFrame.value);
+			}
+		});
 
-    const onRevealRight = (): void => {
-      if (isActive.value || !right.value) {
-        return
-      }
+		watch(
+			() => props.revealed,
+			(val) => {
+				if (innerRevealed.value === val) {
+					return;
+				}
 
-      reveal('right', true)
-    }
+				reveal(val as boolean | TFbUiSwipeActionsOutDir, true);
+			}
+		);
 
-    onBeforeUnmount((): void => {
-      if (animationFrame.value !== null) {
-        cancelAnimationFrame(animationFrame.value)
-      }
-    })
+		return {
+			innerRevealed,
 
-    watch(
-        () => props.revealed,
-        (val) => {
-          if (innerRevealed.value === val) {
-            return
-          }
+			element,
+			content,
+			left,
+			right,
 
-          reveal((val as boolean | TFbUiSwipeActionsOutDir), true)
-        },
-    )
+			onPan,
 
-    return {
-      innerRevealed,
-
-      element,
-      content,
-      left,
-      right,
-
-      onPan,
-
-      onClose,
-      onRevealLeft,
-      onRevealRight,
-    }
-  },
-
-})
+			onClose,
+			onRevealLeft,
+			onRevealRight,
+		};
+	},
+});
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
@@ -407,10 +390,10 @@ export default defineComponent({
 
 <style rel="stylesheet/scss" lang="scss" scoped>
 .swipeout-non-selectable {
-  user-select: none !important;
+	user-select: none !important;
 }
 
 .swipeout-no-pointer-events {
-  pointer-events: none !important;
+	pointer-events: none !important;
 }
 </style>

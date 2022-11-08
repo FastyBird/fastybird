@@ -1,146 +1,136 @@
 <template>
-  <div class="fb-theme-layout-header__container">
-    <div
-      id="fb-layout-header-button-small"
-      ref="buttonSmall"
-      :class="['fb-theme-layout-header__buttons-small', {'fb-theme-layout-header__buttons-small-expanded': hasSmallButtons}]"
-    >
-      <slot name="button-small" />
-    </div>
+	<div class="fb-theme-layout-header__container">
+		<div
+			id="fb-layout-header-button-small"
+			ref="buttonSmall"
+			:class="['fb-theme-layout-header__buttons-small', { 'fb-theme-layout-header__buttons-small-expanded': hasSmallButtons }]"
+		>
+			<slot name="button-small" />
+		</div>
 
-    <div class="fb-theme-layout-header__heading">
-      <div
-        id="fb-layout-header-heading"
-        class="fb-theme-layout-header__heading-heading"
-      >
-        <slot name="heading">
-          <slot name="logo" />
-        </slot>
-      </div>
+		<div class="fb-theme-layout-header__heading">
+			<div
+				id="fb-layout-header-heading"
+				class="fb-theme-layout-header__heading-heading"
+			>
+				<slot name="heading">
+					<slot name="logo" />
+				</slot>
+			</div>
 
-      <div
-        id="fb-layout-header-button-left"
-        class="fb-theme-layout-header__heading-button-left"
-      >
-        <slot name="button-left" />
-      </div>
+			<div
+				id="fb-layout-header-button-left"
+				class="fb-theme-layout-header__heading-button-left"
+			>
+				<slot name="button-left" />
+			</div>
 
-      <div
-        id="fb-layout-header-button-right"
-        class="fb-theme-layout-header__heading-button-right"
-      >
-        <slot name="button-right">
-          <button
-            v-if="!menuButtonHidden"
-            :class="['fb-theme-layout-header__button-hamburger', { 'fb-theme-layout-header__button-hamburger-opened': !menuCollapsed }]"
-            type="button"
-            @click.prevent="$emit('toggleMenu', $event)"
-          >
-            <span class="fb-theme-layout-header__button-hamburger-bars" />
-            <span class="fb-theme-layout-header__button-hamburger-bars" />
-            <span class="fb-theme-layout-header__button-hamburger-bars" />
-            <span class="fb-theme-layout-header__button-hamburger-label">Toggle navigation</span>
-          </button>
-        </slot>
-      </div>
-    </div>
+			<div
+				id="fb-layout-header-button-right"
+				class="fb-theme-layout-header__heading-button-right"
+			>
+				<slot name="button-right">
+					<button
+						v-if="!menuButtonHidden"
+						:class="['fb-theme-layout-header__button-hamburger', { 'fb-theme-layout-header__button-hamburger-opened': !menuCollapsed }]"
+						type="button"
+						@click.prevent="$emit('toggleMenu', $event)"
+					>
+						<span class="fb-theme-layout-header__button-hamburger-bars" />
+						<span class="fb-theme-layout-header__button-hamburger-bars" />
+						<span class="fb-theme-layout-header__button-hamburger-bars" />
+						<span class="fb-theme-layout-header__button-hamburger-label">Toggle navigation</span>
+					</button>
+				</slot>
+			</div>
+		</div>
 
-    <div
-      id="fb-layout-header-sub-content"
-      ref="subContent"
-      :class="['fb-theme-layout-header__content', {'fb-theme-layout-header__content-expanded': hasSubContent}]"
-    >
-      <slot name="sub-content" />
-    </div>
-  </div>
+		<div
+			id="fb-layout-header-sub-content"
+			ref="subContent"
+			:class="['fb-theme-layout-header__content', { 'fb-theme-layout-header__content-expanded': hasSubContent }]"
+		>
+			<slot name="sub-content" />
+		</div>
+	</div>
 </template>
 
 <script lang="ts">
-import {
-  defineComponent,
-  onMounted,
-  onUnmounted,
-  PropType,
-  ref,
-} from 'vue'
+import { defineComponent, onMounted, onUnmounted, PropType, ref } from 'vue';
 
 const newMutationObserver = (callback: () => void): MutationObserver | null => {
-  // Skip this feature for browsers which
-  // do not support ResizeObserver
-  // https://caniuse.com/#search=mutationobserver
-  if (typeof MutationObserver === 'undefined') {
-    return null
-  }
+	// Skip this feature for browsers which
+	// do not support ResizeObserver
+	// https://caniuse.com/#search=mutationobserver
+	if (typeof MutationObserver === 'undefined') {
+		return null;
+	}
 
-  // @ts-ignore
-  return new MutationObserver(callback)
-}
+	// @ts-ignore
+	return new MutationObserver(callback);
+};
 
 export default defineComponent({
+	name: 'FbLayoutHeader',
 
-  name: 'FbLayoutHeader',
+	props: {
+		menuButtonHidden: {
+			type: Boolean as PropType<boolean>,
+			default: false,
+		},
 
-  props: {
+		menuCollapsed: {
+			type: Boolean as PropType<boolean>,
+			default: true,
+		},
+	},
 
-    menuButtonHidden: {
-      type: Boolean as PropType<boolean>,
-      default: false,
-    },
+	emits: ['toggleMenu'],
 
-    menuCollapsed: {
-      type: Boolean as PropType<boolean>,
-      default: true,
-    },
+	setup() {
+		const buttonSmall = ref<HTMLElement | null>(null);
+		const subContent = ref<HTMLElement | null>(null);
 
-  },
+		const hasSmallButtons = ref<boolean>(false);
+		const hasSubContent = ref<boolean>(false);
 
-  emits: ['toggleMenu'],
+		let mutationObserver: MutationObserver | null = null;
 
-  setup() {
-    const buttonSmall = ref<HTMLElement | null>(null)
-    const subContent = ref<HTMLElement | null>(null)
+		const mutationObserverCallback = (): void => {
+			hasSmallButtons.value = buttonSmall.value !== null && buttonSmall.value?.children.length > 0;
+			hasSubContent.value = subContent.value !== null && subContent.value?.children.length > 0;
+		};
 
-    const hasSmallButtons = ref<boolean>(false)
-    const hasSubContent = ref<boolean>(false)
+		onMounted((): void => {
+			hasSmallButtons.value = buttonSmall.value !== null && buttonSmall.value?.children.length > 0;
+			hasSubContent.value = subContent.value !== null && subContent.value?.children.length > 0;
 
-    let mutationObserver: MutationObserver | null = null
+			mutationObserver = newMutationObserver(mutationObserverCallback);
 
-    const mutationObserverCallback = (): void => {
-      hasSmallButtons.value = buttonSmall.value !== null && buttonSmall.value?.children.length > 0
-      hasSubContent.value = subContent.value !== null && subContent.value?.children.length > 0
-    }
+			if (mutationObserver !== null && buttonSmall.value !== null) {
+				mutationObserver.observe(buttonSmall.value, { childList: true });
+			}
 
-    onMounted((): void => {
-      hasSmallButtons.value = buttonSmall.value !== null && buttonSmall.value?.children.length > 0
-      hasSubContent.value = subContent.value !== null && subContent.value?.children.length > 0
+			if (mutationObserver !== null && subContent.value !== null) {
+				mutationObserver.observe(subContent.value, { childList: true });
+			}
+		});
 
-      mutationObserver = newMutationObserver(mutationObserverCallback)
+		onUnmounted((): void => {
+			if (mutationObserver !== null) {
+				mutationObserver.disconnect();
+			}
+		});
 
-      if (mutationObserver !== null && buttonSmall.value !== null) {
-        mutationObserver.observe(buttonSmall.value, {childList: true})
-      }
+		return {
+			buttonSmall,
+			subContent,
 
-      if (mutationObserver !== null && subContent.value !== null) {
-        mutationObserver.observe(subContent.value, {childList: true})
-      }
-    })
-
-    onUnmounted((): void => {
-      if (mutationObserver !== null) {
-        mutationObserver.disconnect()
-      }
-    })
-
-    return {
-      buttonSmall,
-      subContent,
-
-      hasSmallButtons,
-      hasSubContent,
-    }
-  },
-
-})
+			hasSmallButtons,
+			hasSubContent,
+		};
+	},
+});
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>

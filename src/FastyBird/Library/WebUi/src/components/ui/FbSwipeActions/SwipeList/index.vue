@@ -1,224 +1,211 @@
 <template>
-  <div
-    ref="container"
-    :data-disabled="disabled"
-    class="fb-theme-ui-swipe-actions-out__container"
-  >
-    <template
-      v-for="(item, index) in items"
-      :key="index"
-    >
-      <fb-ui-swipe-actions-out
-        ref="elements"
-        v-model:revealed="innerRevealed[index]"
-        :threshold="threshold"
-        :disabled="itemDisabled(item) || disabled"
-        class="fb-theme-ui-swipe-actions-out__item"
-        @closed="onClosed(item, index)"
-        @revealed="onRevealed(item, index, $event)"
-        @left-revealed="$emit('leftRevealed', { index, item, close: $event.close })"
-        @right-revealed="$emit('rightRevealed', { index, item, close: $event.close })"
-        @active="$emit('active', $event)"
-      >
-        <template #content="{ revealed: rowRevealed, disabled: rowDisabled, revealLeft, revealRight, close }">
-          <slot
-            :item="item"
-            :index="index"
-            :revealed="rowRevealed"
-            :disabled="rowDisabled"
-            :reveal-left="revealLeft"
-            :reveal-right="revealRight"
-            :close="close"
-          />
-        </template>
+	<div
+		ref="container"
+		:data-disabled="disabled"
+		class="fb-theme-ui-swipe-actions-out__container"
+	>
+		<template
+			v-for="(item, index) in items"
+			:key="index"
+		>
+			<fb-ui-swipe-actions-out
+				ref="elements"
+				v-model:revealed="innerRevealed[index]"
+				:threshold="threshold"
+				:disabled="itemDisabled(item) || disabled"
+				class="fb-theme-ui-swipe-actions-out__item"
+				@closed="onClosed(item, index)"
+				@revealed="onRevealed(item, index, $event)"
+				@left-revealed="$emit('leftRevealed', { index, item, close: $event.close })"
+				@right-revealed="$emit('rightRevealed', { index, item, close: $event.close })"
+				@active="$emit('active', $event)"
+			>
+				<template #content="{ revealed: rowRevealed, disabled: rowDisabled, revealLeft, revealRight, close }">
+					<slot
+						:item="item"
+						:index="index"
+						:revealed="rowRevealed"
+						:disabled="rowDisabled"
+						:reveal-left="revealLeft"
+						:reveal-right="revealRight"
+						:close="close"
+					/>
+				</template>
 
-        <template
-          v-if="'left' in $slots"
-          #left="{ close }"
-        >
-          <slot
-            :item="item"
-            :index="index"
-            :close="close"
-            name="left"
-          />
-        </template>
+				<template
+					v-if="'left' in $slots"
+					#left="{ close }"
+				>
+					<slot
+						:item="item"
+						:index="index"
+						:close="close"
+						name="left"
+					/>
+				</template>
 
-        <template
-          v-if="'right' in $slots"
-          #right="{ close }"
-        >
-          <slot
-            :item="item"
-            :index="index"
-            :close="close"
-            name="right"
-          />
-        </template>
-      </fb-ui-swipe-actions-out>
-    </template>
-  </div>
+				<template
+					v-if="'right' in $slots"
+					#right="{ close }"
+				>
+					<slot
+						:item="item"
+						:index="index"
+						:close="close"
+						name="right"
+					/>
+				</template>
+			</fb-ui-swipe-actions-out>
+		</template>
+	</div>
 </template>
 
 <script lang="ts">
-import {
-  defineComponent,
-  PropType,
-  ref,
-  SetupContext,
-  watch,
-} from 'vue'
-import isEmpty from 'lodash/isEmpty'
+import { defineComponent, PropType, ref, SetupContext, watch } from 'vue';
+import isEmpty from 'lodash/isEmpty';
 
-import FbUiSwipeActionsOut from '../SwipeOut/index.vue'
-import {
-  IFbUiSwipeActionsListProps,
-  TFbUiSwipeActionsOutDir,
-} from '../types'
+import FbUiSwipeActionsOut from '../SwipeOut/index.vue';
+import { IFbUiSwipeActionsListProps, TFbUiSwipeActionsOutDir } from '../types';
 
 export default defineComponent({
+	name: 'FbUiSwipeActionsList',
 
-  name: 'FbUiSwipeActionsList',
+	components: {
+		FbUiSwipeActionsOut,
+	},
 
-  components: {
-    FbUiSwipeActionsOut,
-  },
+	props: {
+		items: {
+			type: Array as PropType<any[]>,
+			required: true,
+		},
 
-  props: {
+		threshold: {
+			type: Number as PropType<number>,
+			default: 45,
+		},
 
-    items: {
-      type: Array as PropType<any[]>,
-      required: true,
-    },
+		revealed: {
+			type: Object as PropType<{ [key: number]: TFbUiSwipeActionsOutDir }>,
+			default: () => {
+				return {};
+			},
+		},
 
-    threshold: {
-      type: Number as PropType<number>,
-      default: 45,
-    },
+		disabled: {
+			type: Boolean as PropType<boolean>,
+			default: false,
+		},
 
-    revealed: {
-      type: Object as PropType<{ [key: number]: TFbUiSwipeActionsOutDir }>,
-      default: () => {
-        return {}
-      },
-    },
+		itemDisabled: {
+			type: Function as PropType<(item: any) => boolean>,
+			default: () => false,
+		},
+	},
 
-    disabled: {
-      type: Boolean as PropType<boolean>,
-      default: false,
-    },
+	emits: ['update:revealed', 'active', 'closed', 'revealed', 'leftRevealed', 'rightRevealed'],
 
-    itemDisabled: {
-      type: Function as PropType<(item: any) => boolean>,
-      default: () => false,
-    },
+	setup(props: IFbUiSwipeActionsListProps<any>, context: SetupContext) {
+		const container = ref<HTMLElement | null>(null);
+		const elements = ref<InstanceType<typeof FbUiSwipeActionsOut>[]>([]);
+		const innerRevealed = ref<{ [key: number]: TFbUiSwipeActionsOutDir }>(props.revealed || {});
 
-  },
+		const onRevealLeft = (index: number): void => {
+			if (!(index in elements.value)) {
+				return;
+			}
 
-  emits: ['update:revealed', 'active', 'closed', 'revealed', 'leftRevealed', 'rightRevealed'],
+			elements.value[index].onRevealLeft();
+		};
 
-  setup(props: IFbUiSwipeActionsListProps<any>, context: SetupContext) {
-    const container = ref<HTMLElement | null>(null)
-    const elements = ref<InstanceType<typeof FbUiSwipeActionsOut>[]>([])
-    const innerRevealed = ref<{ [key: (number)]: TFbUiSwipeActionsOutDir }>(props.revealed || {})
+		const onRevealRight = (index: number): void => {
+			if (!(index in elements.value)) {
+				return;
+			}
 
-    const onRevealLeft = (index: number): void => {
-      if (!(index in elements.value)) {
-        return
-      }
+			elements.value[index].onRevealRight();
+		};
 
-      elements.value[index].onRevealLeft()
-    }
+		const onClose = (index?: number): void => {
+			if (isEmpty(elements.value)) {
+				return;
+			}
 
-    const onRevealRight = (index: number): void => {
-      if (!(index in elements.value)) {
-        return
-      }
+			if (index === undefined) {
+				return Object.values(elements.value).forEach((element) => element.onClose());
+			}
 
-      elements.value[index].onRevealRight()
-    }
+			if (!(index in elements.value)) {
+				return;
+			}
 
-    const onClose = (index?: number): void => {
-      if (isEmpty(elements.value)) {
-        return
-      }
+			elements.value[index].onClose();
+		};
 
-      if (index === undefined) {
-        return Object.values(elements.value).forEach(element => element.onClose())
-      }
+		const isRevealed = (index: number): boolean => {
+			return index in innerRevealed.value || false;
+		};
 
-      if (!(index in elements.value)) {
-        return
-      }
+		const onRevealed = (item: any, index: number, event: { side: TFbUiSwipeActionsOutDir; close: () => void }): void => {
+			context.emit('revealed', {
+				index,
+				item,
+				side: event.side,
+				close: event.close,
+			});
 
-      elements.value[index].onClose()
-    }
+			emitRevealed({
+				...innerRevealed.value,
+				[index]: event.side,
+			});
+		};
 
-    const isRevealed = (index: number): boolean => {
-      return index in innerRevealed.value || false
-    }
+		const onClosed = (item: any, index: number): void => {
+			context.emit('closed', {
+				index,
+				item,
+			});
 
-    const onRevealed = (item: any, index: number, event: { side: TFbUiSwipeActionsOutDir, close: () => void }): void => {
-      context.emit('revealed', {
-        index,
-        item,
-        side: event.side,
-        close: event.close,
-      })
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			const { [index]: omit, ...newRevealed } = innerRevealed.value;
 
-      emitRevealed({
-        ...innerRevealed.value,
-        [index]: event.side,
-      })
-    }
+			emitRevealed(newRevealed);
+		};
 
-    const onClosed = (item: any, index: number): void => {
-      context.emit('closed', {
-        index,
-        item,
-      })
+		const emitRevealed = (val: { [key: number]: TFbUiSwipeActionsOutDir }): void => {
+			context.emit('update:revealed', val);
+		};
 
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const {[index]: omit, ...newRevealed} = innerRevealed.value
+		watch(
+			() => props.revealed,
+			(val): void => {
+				innerRevealed.value = val as { [key: number]: TFbUiSwipeActionsOutDir };
+			}
+		);
 
-      emitRevealed(newRevealed)
-    }
+		watch(
+			() => props.items,
+			(): void => {
+				emitRevealed({});
+			}
+		);
 
-    const emitRevealed = (val: { [key: number]: TFbUiSwipeActionsOutDir }): void => {
-      context.emit('update:revealed', val)
-    }
+		return {
+			container,
+			elements,
 
-    watch(
-        () => props.revealed,
-        (val): void => {
-          innerRevealed.value = val as { [key: (number)]: TFbUiSwipeActionsOutDir }
-        },
-    )
+			innerRevealed,
 
-    watch(
-        () => props.items,
-        (): void => {
-          emitRevealed({})
-        },
-    )
+			onRevealLeft,
+			onRevealRight,
+			onClose,
 
-    return {
-      container,
-      elements,
-
-      innerRevealed,
-
-      onRevealLeft,
-      onRevealRight,
-      onClose,
-
-      isRevealed,
-      onRevealed,
-      onClosed,
-    }
-  },
-
-})
+			isRevealed,
+			onRevealed,
+			onClosed,
+		};
+	},
+});
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>

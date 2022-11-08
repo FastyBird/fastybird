@@ -1,6 +1,6 @@
-@use "sass:math";
-@import "../../variables/colors";
-@import "../../variables/texts";
+@use 'sass:math';
+@import '../../variables/colors';
+@import '../../variables/texts';
 
 $confirmation-heading-font-size: $font-size-h3;
 $confirmation-heading-font-weight: $headings-font-weight;

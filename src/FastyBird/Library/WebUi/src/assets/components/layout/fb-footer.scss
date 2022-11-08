@@ -1,8 +1,8 @@
-@use "sass:color";
-@import "../../variables/colors";
-@import "../../variables/layout";
-@import "../../variables/texts";
-@import "../../variables/screen";
+@use 'sass:color';
+@import '../../variables/colors';
+@import '../../variables/layout';
+@import '../../variables/texts';
+@import '../../variables/screen';
 
 $z-index: $zindex-layout-footer;
 $footer-font-family: $font-family-base;

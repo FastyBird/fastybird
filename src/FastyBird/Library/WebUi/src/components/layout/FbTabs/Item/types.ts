@@ -1,8 +1,8 @@
-import {FbMenuItemTypes} from '@/types'
+import { FbMenuItemTypes } from '@/types';
 
 export interface IFbLayoutTabsItemProps {
-    type: FbMenuItemTypes;
-    label: string | null;
-    link: string | null;
-    active: boolean;
+	type: FbMenuItemTypes;
+	label: string | null;
+	link: string | null;
+	active: boolean;
 }

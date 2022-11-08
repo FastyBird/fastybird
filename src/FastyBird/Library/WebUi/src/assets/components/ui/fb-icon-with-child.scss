@@ -1,6 +1,6 @@
-@import "../../mixins/utilities";
-@import "../../variables/colors";
-@import "../../variables/sizes";
+@import '../../mixins/utilities';
+@import '../../variables/colors';
+@import '../../variables/sizes';
 
 $main-icon-size-sm: $icon-height-sm;
 $main-icon-size-md: $icon-height-md;
@@ -23,5 +23,5 @@ $child-icon-info-color: $color-info-contrast;
 $child-icon-info-bg: $color-info;
 
 @mixin child-shadow {
-  @include box-shadow(0 0 0 2px #fff);
+	@include box-shadow(0 0 0 2px #fff);
 }

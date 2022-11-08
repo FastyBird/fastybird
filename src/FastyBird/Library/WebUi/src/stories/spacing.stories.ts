@@ -1,13 +1,13 @@
-import "./spacing.scss";
-import {Story} from "@storybook/vue3";
+import './spacing.scss';
+import { Story } from '@storybook/vue3';
 
 export default {
-    title: "About/Spacing",
+	title: 'About/Spacing',
 };
 
 export const Spacing: Story = () => {
-    return {
-        template: `
+	return {
+		template: `
       <div class="fb-story-spacing__container">
         <p>Extra small (5px):</p>
         <div class="fb-story-spacing__box-extra-small" />
@@ -19,5 +19,5 @@ export const Spacing: Story = () => {
         <div class="fb-story-spacing__box-large" />
       </div>
     `,
-    };
+	};
 };

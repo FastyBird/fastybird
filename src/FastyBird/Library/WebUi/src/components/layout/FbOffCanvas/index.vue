@@ -1,68 +1,62 @@
 <template>
-  <div
-    ref="root"
-    @keyup.esc="$emit('close')"
-  >
-    <transition name="fb-theme-layout-off-canvas-overlay">
-      <div
-        v-if="show"
-        class="fb-theme-layout-off-canvas__overlay"
-        @click.prevent="$emit('close')"
-      />
-    </transition>
+	<div
+		ref="root"
+		@keyup.esc="$emit('close')"
+	>
+		<transition name="fb-theme-layout-off-canvas-overlay">
+			<div
+				v-if="show"
+				class="fb-theme-layout-off-canvas__overlay"
+				@click.prevent="$emit('close')"
+			/>
+		</transition>
 
-    <transition name="fb-theme-layout-off-canvas-body">
-      <div
-        v-if="show"
-        class="fb-theme-layout-off-canvas__body"
-      >
-        <slot />
-      </div>
-    </transition>
-  </div>
+		<transition name="fb-theme-layout-off-canvas-body">
+			<div
+				v-if="show"
+				class="fb-theme-layout-off-canvas__body"
+			>
+				<slot />
+			</div>
+		</transition>
+	</div>
 </template>
 
 <script lang="ts">
-import {
-  defineComponent,
-  PropType,
-  ref,
-  watch,
-} from 'vue'
+import { defineComponent, PropType, ref, watch } from 'vue';
 
-import {IFbLayoutOffCanvasProps} from './types'
+import { IFbLayoutOffCanvasProps } from './types';
 
 export default defineComponent({
+	name: 'FbLayoutOffCanvas',
 
-  name: 'FbLayoutOffCanvas',
+	props: {
+		show: {
+			type: Boolean as PropType<boolean>,
+			default: false,
+		},
+	},
 
-  props: {
+	emits: ['close'],
 
-    show: {
-      type: Boolean as PropType<boolean>,
-      default: false,
-    },
+	setup(props: IFbLayoutOffCanvasProps) {
+		const root = ref(null);
 
-  },
+		watch(
+			() => props.show,
+			(val: boolean): void => {
+				if (val && root.value) {
+					// @ts-ignore: Object is possibly 'null'
+					root.value.tabIndex = 1;
+				}
+			}
+		);
 
-  emits: ['close'],
-
-  setup(props: IFbLayoutOffCanvasProps) {
-    const root = ref(null)
-
-    watch(() => props.show, (val: boolean): void => {
-      if (val && root.value) {
-        // @ts-ignore: Object is possibly 'null'
-        root.value.tabIndex = 1
-      }
-    })
-
-    return {
-      root,
-    }
-  },
-
-})
+		return {
+			root,
+		};
+	},
+});
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>

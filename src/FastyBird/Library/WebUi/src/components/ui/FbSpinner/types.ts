@@ -1,9 +1,6 @@
-import {
-    FbSizeTypes,
-    FbUiVariantTypes,
-} from '@/types'
+import { FbSizeTypes, FbUiVariantTypes } from '@/types';
 
 export interface IFbUiSpinnerProps {
-    variant?: FbUiVariantTypes;
-    size?: FbSizeTypes;
+	variant?: FbUiVariantTypes;
+	size?: FbSizeTypes;
 }

@@ -1,8 +1,8 @@
-@import "../../mixins/utilities";
-@import "../../variables/layout";
-@import "../../variables/screen";
-@import "../../variables/sizes";
-@import "../../variables/texts";
+@import '../../mixins/utilities';
+@import '../../variables/layout';
+@import '../../variables/screen';
+@import '../../variables/sizes';
+@import '../../variables/texts';
 
 $loader-font-family: $font-family-base;
 $loader-padding-sm: $padding-sm;
@@ -19,5 +19,5 @@ $loader-icon-size-md: $icon-height-md;
 $loader-icon-size-lg: $icon-height-lg;
 
 @mixin flex-container {
-  @include flex-row(nowrap);
+	@include flex-row(nowrap);
 }

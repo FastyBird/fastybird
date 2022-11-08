@@ -1,5 +1,5 @@
-import {FbUiVariantTypes} from '@/types'
+import { FbUiVariantTypes } from '@/types';
 
 export interface IFbUiAlertProps {
-    variant?: FbUiVariantTypes;
+	variant?: FbUiVariantTypes;
 }

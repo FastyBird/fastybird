@@ -1,5 +1,5 @@
-@import "../../variables/screen";
-@import "../../mixins/utilities";
+@import '../../variables/screen';
+@import '../../mixins/utilities';
 
 $navigation-margin: 1.5rem 0;
 $navigation-padding: 0 0 0.5rem 0;
@@ -19,5 +19,5 @@ $screen-tablet-min: $screen-sm-min;
 $screen-desktop-max: $screen-md-max;
 
 @mixin flex-item {
-  @include flex-row(nowrap);
+	@include flex-row(nowrap);
 }

@@ -1,42 +1,38 @@
-import {
-    Args,
-    Meta,
-    Story,
-} from '@storybook/vue3'
+import { Args, Meta, Story } from '@storybook/vue3';
 
-import {IFbUiSwipeActionsListProps} from './types'
-import {FbUiSwipeActionsList} from './index'
+import { IFbUiSwipeActionsListProps } from './types';
+import { FbUiSwipeActionsList } from './index';
 
 export default {
-    component: FbUiSwipeActionsList,
-    title: 'Components/UI/FB Swipe actions',
-    argTypes: {
-        default: {
-            type: {name: 'string', required: false},
-            control: {type: 'text'},
-            description: 'Footer custom content slot',
-            table: {
-                type: {summary: 'string'},
-                defaultValue: {summary: '-'},
-            },
-        },
-    },
-    parameters: {
-        controls: {disabled: true},
-    },
-} as Meta
+	component: FbUiSwipeActionsList,
+	title: 'Components/UI/FB Swipe actions',
+	argTypes: {
+		default: {
+			type: { name: 'string', required: false },
+			control: { type: 'text' },
+			description: 'Footer custom content slot',
+			table: {
+				type: { summary: 'string' },
+				defaultValue: { summary: '-' },
+			},
+		},
+	},
+	parameters: {
+		controls: { disabled: true },
+	},
+} as Meta;
 
 interface TemplateArgs extends IFbUiSwipeActionsListProps<any>, Args {
-    default?: string
+	default?: string;
 }
 
 const Template: Story<TemplateArgs> = (args) => {
-    return {
-        components: {FbUiSwipeActionsList},
-        setup(): any {
-            return {args}
-        },
-        template: `
+	return {
+		components: { FbUiSwipeActionsList },
+		setup(): any {
+			return { args };
+		},
+		template: `
           <fb-ui-swipe-actions-list
               :items="args.items"
               itemKey="id"
@@ -81,30 +77,30 @@ const Template: Story<TemplateArgs> = (args) => {
           </template>
           </fb-ui-swipe-actions-list>
         `,
-    }
-}
+	};
+};
 
-export const Default = Template.bind({})
+export const Default = Template.bind({});
 
 Default.args = {
-    items: [
-        {
-            id: 'a',
-            title: 'Some title',
-            description: 'some description',
-            disabled: false,
-        },
-        {
-            id: 'b',
-            title: 'Some title',
-            description: 'some description',
-            disabled: false,
-        },
-        {
-            id: 'c',
-            title: 'Some title',
-            description: 'some description',
-            disabled: false,
-        },
-    ],
-}
+	items: [
+		{
+			id: 'a',
+			title: 'Some title',
+			description: 'some description',
+			disabled: false,
+		},
+		{
+			id: 'b',
+			title: 'Some title',
+			description: 'some description',
+			disabled: false,
+		},
+		{
+			id: 'c',
+			title: 'Some title',
+			description: 'some description',
+			disabled: false,
+		},
+	],
+};

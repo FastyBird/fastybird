@@ -1,7 +1,7 @@
-@import "../../variables/colors";
-@import "../../variables/screen";
-@import "../../variables/layout";
-@import "../../mixins/utilities";
+@import '../../variables/colors';
+@import '../../variables/screen';
+@import '../../variables/layout';
+@import '../../mixins/utilities';
 
 $z-index: 1030 !default;
 $items-border: 1px solid $gray-lighter;
@@ -12,13 +12,13 @@ $screen-tablet-min: $screen-sm-min;
 $screen-tablet-max: $screen-sm-max;
 
 @mixin flex-container {
-  @include flex-column(nowrap);
+	@include flex-column(nowrap);
 }
 
 @mixin flex-content {
-  @include flex-row(nowrap);
+	@include flex-row(nowrap);
 }
 
 @mixin flex-inner {
-  @include flex-column(nowrap);
+	@include flex-column(nowrap);
 }

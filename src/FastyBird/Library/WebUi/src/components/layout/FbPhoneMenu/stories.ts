@@ -1,81 +1,72 @@
-import {
-    Args,
-    Meta,
-    Story,
-} from "@storybook/vue3";
-import {ref} from "vue";
+import { Args, Meta, Story } from '@storybook/vue3';
+import { ref } from 'vue';
 
-import {FbUiButtonVariantTypes} from '../../../types'
-import FbUiButton from '../../ui/FbButton/index.vue'
+import { FbUiButtonVariantTypes } from '../../../types';
+import FbUiButton from '../../ui/FbButton/index.vue';
 
-import {IFbLayoutPhoneMenuProps} from './types'
-import {
-    FbLayoutPhoneMenu,
-    FbLayoutPhoneMenuButton,
-    FbLayoutPhoneMenuContent,
-    FbLayoutPhoneMenuHeading,
-} from "./index";
-import {action} from '@storybook/addon-actions'
+import { IFbLayoutPhoneMenuProps } from './types';
+import { FbLayoutPhoneMenu, FbLayoutPhoneMenuButton, FbLayoutPhoneMenuContent, FbLayoutPhoneMenuHeading } from './index';
+import { action } from '@storybook/addon-actions';
 
 export default {
-    component: FbLayoutPhoneMenu,
-    title: "Components/Layout/FB Phone menu",
-    argTypes: {
-        default: {
-            type: {name: "string", required: true},
-            control: {type: "text"},
-            description: "Content body slot",
-            table: {
-                type: {summary: "string"},
-                defaultValue: {summary: "-"},
-            },
-        },
-        header: {
-            type: {name: "string", required: false},
-            control: {type: "text"},
-            description: "Content header slot",
-            table: {
-                type: {summary: "string"},
-                defaultValue: {summary: "-"},
-            },
-        },
-        footer: {
-            type: {name: "string", required: false},
-            control: {type: "text"},
-            description: "Content footer slot",
-            table: {
-                type: {summary: "string"},
-                defaultValue: {summary: "-"},
-            },
-        },
-    },
-    parameters: {
-        controls: {disabled: true},
-    },
+	component: FbLayoutPhoneMenu,
+	title: 'Components/Layout/FB Phone menu',
+	argTypes: {
+		default: {
+			type: { name: 'string', required: true },
+			control: { type: 'text' },
+			description: 'Content body slot',
+			table: {
+				type: { summary: 'string' },
+				defaultValue: { summary: '-' },
+			},
+		},
+		header: {
+			type: { name: 'string', required: false },
+			control: { type: 'text' },
+			description: 'Content header slot',
+			table: {
+				type: { summary: 'string' },
+				defaultValue: { summary: '-' },
+			},
+		},
+		footer: {
+			type: { name: 'string', required: false },
+			control: { type: 'text' },
+			description: 'Content footer slot',
+			table: {
+				type: { summary: 'string' },
+				defaultValue: { summary: '-' },
+			},
+		},
+	},
+	parameters: {
+		controls: { disabled: true },
+	},
 } as Meta;
 
 interface ITemplateArgs extends IFbLayoutPhoneMenuProps, Args {
-    default?: string
-    header?: string
-    footer?: string
+	default?: string;
+	header?: string;
+	footer?: string;
 }
 
 const Template: Story<ITemplateArgs> = (args) => {
-    return {
-        components: {
-            FbLayoutPhoneMenu,
-            FbLayoutPhoneMenuButton,
-            FbLayoutPhoneMenuContent,
-            FbLayoutPhoneMenuHeading,
+	return {
+		components: {
+			FbLayoutPhoneMenu,
+			FbLayoutPhoneMenuButton,
+			FbLayoutPhoneMenuContent,
+			FbLayoutPhoneMenuHeading,
 
-            FbUiButton,
-        },
-        setup(): any {
-            const show = ref<boolean>(false);
+			FbUiButton,
+		},
+		setup(): any {
+			const show = ref<boolean>(false);
 
-            return {args, show};
-        },
-        template: `
+			return { args, show };
+		},
+		template: `
       <div>
         <fb-ui-button @click="show = true">Open menu</fb-ui-button>
 
@@ -128,10 +119,10 @@ const Template: Story<ITemplateArgs> = (args) => {
         </fb-layout-phone-menu>
       </div>
     `,
-        methods: {
-            onClick: action('button-clicked'),
-        },
-    };
+		methods: {
+			onClick: action('button-clicked'),
+		},
+	};
 };
 
 export const Default = Template.bind({});

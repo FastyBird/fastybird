@@ -1,7 +1,7 @@
-@use "sass:color";
-@import "../../variables/colors";
-@import "../../variables/sizes";
-@import "../../mixins/utilities";
+@use 'sass:color';
+@import '../../variables/colors';
+@import '../../variables/sizes';
+@import '../../mixins/utilities';
 
 $switch-height-sm: $icon-height-sm;
 $switch-width-sm: 2.5rem !default;
@@ -20,25 +20,25 @@ $thumb-border-color: #777;
 $thumb-background-color: #fff;
 
 @mixin switch-variant($color) {
-  input {
-    &:checked {
-      ~ .fb-theme-ui-switch-element__track {
-        background-color: $color;
-      }
+	input {
+		&:checked {
+			~ .fb-theme-ui-switch-element__track {
+				background-color: $color;
+			}
 
-      ~ .fb-theme-ui-switch-element__thumb {
-        border-color: $color;
-      }
+			~ .fb-theme-ui-switch-element__thumb {
+				border-color: $color;
+			}
 
-      &:disabled {
-        ~ .fb-theme-ui-switch-element__track {
-          background-color: color.adjust($color, $lightness: 30%);
-        }
+			&:disabled {
+				~ .fb-theme-ui-switch-element__track {
+					background-color: color.adjust($color, $lightness: 30%);
+				}
 
-        ~ .fb-theme-ui-switch-element__thumb {
-          border-color: color.adjust($color, $lightness: 30%);
-        }
-      }
-    }
-  }
+				~ .fb-theme-ui-switch-element__thumb {
+					border-color: color.adjust($color, $lightness: 30%);
+				}
+			}
+		}
+	}
 }

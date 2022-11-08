@@ -1,9 +1,9 @@
-@use "sass:color";
-@import "../../mixins/utilities";
-@import "../../variables/colors";
-@import "../../variables/layout";
-@import "../../variables/screen";
-@import "../../variables/texts";
+@use 'sass:color';
+@import '../../mixins/utilities';
+@import '../../variables/colors';
+@import '../../variables/layout';
+@import '../../variables/screen';
+@import '../../variables/texts';
 
 $alert-font-family: $font-family-base;
 $alert-padding: 0.5rem 1rem;
@@ -29,28 +29,28 @@ $alert-danger-border: $alert-danger-bg;
 $alert-icon-padding: $padding-xs;
 
 @mixin alert-variant($background, $border, $color) {
-  color: $color;
-  background-color: $background;
-  background-image: var(--bs-gradient);
-  border-color: $border;
+	color: $color;
+	background-color: $background;
+	background-image: var(--bs-gradient);
+	border-color: $border;
 
-  a {
-    color: color.adjust($color, $lightness: -10%);
-  }
+	a {
+		color: color.adjust($color, $lightness: -10%);
+	}
 
-  hr {
-    border-top-color: $color;
-  }
+	hr {
+		border-top-color: $color;
+	}
 
-  svg {
-    fill: $color;
-  }
+	svg {
+		fill: $color;
+	}
 }
 
 @mixin alert-radius {
-  @include border-radius($alert-border-radius);
+	@include border-radius($alert-border-radius);
 }
 
 @mixin flex-alert {
-  @include flex-row(nowrap);
+	@include flex-row(nowrap);
 }

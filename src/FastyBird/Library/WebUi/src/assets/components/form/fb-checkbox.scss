@@ -1,7 +1,7 @@
-@import "../../variables/colors";
-@import "../../variables/layout";
-@import "../../variables/texts";
-@import "../../mixins/utilities";
+@import '../../variables/colors';
+@import '../../variables/layout';
+@import '../../variables/texts';
+@import '../../mixins/utilities';
 
 $checkbox-font-family: $font-family-base;
 $checkbox-indicator-size: 1.5rem !default;
@@ -17,5 +17,5 @@ $checkbox-label-padding: 0 $padding-sm 0 sum($checkbox-indicator-size, 1rem);
 $checkbox-error-color: $color-danger;
 
 @mixin checkbox-indicator-radius {
-  @include border-radius(2px);
+	@include border-radius(2px);
 }
