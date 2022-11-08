@@ -226,10 +226,10 @@ export default defineComponent({
     }
 
     watch(
-      (): string | number | undefined => props.modelValue,
-      (value) => {
-        internalValue.value = value
-      },
+        (): string | number | undefined => props.modelValue,
+        (value) => {
+          internalValue.value = value
+        },
     )
 
     return {

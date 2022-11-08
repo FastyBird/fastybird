@@ -119,7 +119,7 @@ import FbUiResultErr from '../FbResultErr/index.vue'
 import FbUiResultOk from '../FbResultOk/index.vue'
 import FbUiLoadingBox from '../FbLoadingBox/index.vue'
 
-import { IFbUiModalFormProps } from './types'
+import {IFbUiModalFormProps} from './types'
 
 export default defineComponent({
 

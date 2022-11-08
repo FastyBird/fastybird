@@ -1,30 +1,30 @@
 import './storybook-styles.css';
-import { app } from '@storybook/vue3';
+import {app} from '@storybook/vue3';
 
-import { library } from '@fortawesome/fontawesome-svg-core'
+import {library} from '@fortawesome/fontawesome-svg-core'
 import {
-  faAngleLeft,
-  faAngleRight,
-  faBell,
-  faChartBar,
-  faClose,
-  faCog,
-  faEnvelope,
-  faExclamation,
-  faHeart,
-  faInfo,
-  faInfoCircle,
-  faMagic,
-  faMugHot,
-  faNewspaper,
-  faPaperPlane,
-  faPencilAlt,
-  faTimes,
-  faTrash,
-  faUser,
-  faUserSecret,
+    faAngleLeft,
+    faAngleRight,
+    faBell,
+    faChartBar,
+    faClose,
+    faCog,
+    faEnvelope,
+    faExclamation,
+    faHeart,
+    faInfo,
+    faInfoCircle,
+    faMagic,
+    faMugHot,
+    faNewspaper,
+    faPaperPlane,
+    faPencilAlt,
+    faTimes,
+    faTrash,
+    faUser,
+    faUserSecret,
 } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
 
 library.add(faAngleLeft)
 library.add(faAngleRight)
@@ -50,12 +50,12 @@ library.add(faUserSecret)
 app.component('FontAwesomeIcon', FontAwesomeIcon)
 
 export const parameters = {
-  viewMode: 'docs',
-  actions: { argTypesRegex: "^on[A-Z].*" },
-  controls: {
-    matchers: {
-      color: /(background|color)$/i,
-      date: /Date$/,
+    viewMode: 'docs',
+    actions: {argTypesRegex: "^on[A-Z].*"},
+    controls: {
+        matchers: {
+            color: /(background|color)$/i,
+            date: /Date$/,
+        },
     },
-  },
 }

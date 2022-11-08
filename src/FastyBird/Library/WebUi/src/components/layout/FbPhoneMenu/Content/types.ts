@@ -1,3 +1,3 @@
 export interface IFbLayoutPhoneMenuContentProps {
-  teleport: boolean;
+    teleport: boolean;
 }

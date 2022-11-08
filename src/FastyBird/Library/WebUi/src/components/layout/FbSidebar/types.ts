@@ -1,3 +1,3 @@
 export interface IFbLayoutSidebarProps {
-  collapsed: boolean;
+    collapsed: boolean;
 }

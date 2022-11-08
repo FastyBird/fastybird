@@ -1,108 +1,108 @@
 import {
-  Args,
-  Meta,
-  Story,
+    Args,
+    Meta,
+    Story,
 } from '@storybook/vue3'
-import { action } from '@storybook/addon-actions'
-import { ref } from 'vue'
+import {action} from '@storybook/addon-actions'
+import {ref} from 'vue'
 
-import { FbSizeTypes } from '../../../types'
+import {FbSizeTypes} from '../../../types'
 import FbFormCheckboxesGroup from '../FbCheckboxesGroup/index.vue'
 
-import { IFbFormCheckboxProps } from './types'
+import {IFbFormCheckboxProps} from './types'
 import FbFormCheckbox from './index.vue'
 
 export default {
-  component: FbFormCheckbox,
-  title: 'Components/Form/FB Checkbox',
-  argTypes: {
-    default: {
-      type: { name: 'string', required: false },
-      control: { type: 'text' },
-      defaultValue: undefined,
-      description: 'Checkbox custom label slot',
-      table: {
-        type: { summary: 'string' },
-        defaultValue: { summary: '-' },
-      },
+    component: FbFormCheckbox,
+    title: 'Components/Form/FB Checkbox',
+    argTypes: {
+        default: {
+            type: {name: 'string', required: false},
+            control: {type: 'text'},
+            defaultValue: undefined,
+            description: 'Checkbox custom label slot',
+            table: {
+                type: {summary: 'string'},
+                defaultValue: {summary: '-'},
+            },
+        },
+        name: {
+            type: {name: 'string', required: true},
+            control: {type: 'text'},
+            defaultValue: 'field-name',
+        },
+        option: {
+            type: {name: 'string', required: true},
+            control: {type: 'text'},
+            defaultValue: null,
+        },
+        modelValue: {
+            type: {name: 'string', required: true},
+            control: {type: 'text'},
+            defaultValue: undefined,
+        },
+        size: {
+            type: {name: 'string', required: false},
+            control: {type: 'select'},
+            defaultValue: FbSizeTypes.MEDIUM,
+            options: [
+                FbSizeTypes.SMALL,
+                FbSizeTypes.MEDIUM,
+                FbSizeTypes.LARGE,
+            ],
+            description: 'Field size',
+            table: {
+                type: {summary: 'string'},
+                defaultValue: {summary: FbSizeTypes.MEDIUM},
+            },
+        },
+        id: {
+            type: {name: 'string', required: false},
+            control: {type: 'text'},
+            defaultValue: null,
+        },
+        label: {
+            type: {name: 'string', required: false},
+            control: {type: 'text'},
+            defaultValue: 'Checkbox field label',
+        },
+        tabIndex: {
+            type: {name: 'number', required: false},
+            control: {type: 'text'},
+            defaultValue: undefined,
+        },
+        hasError: {
+            type: {name: 'boolean', required: false},
+            control: {type: 'boolean'},
+            defaultValue: false,
+        },
+        readonly: {
+            type: {name: 'boolean', required: false},
+            control: {type: 'boolean'},
+            defaultValue: false,
+        },
+        disabled: {
+            type: {name: 'boolean', required: false},
+            control: {type: 'boolean'},
+            defaultValue: false,
+        },
     },
-    name: {
-      type: { name: 'string', required: true },
-      control: { type: 'text' },
-      defaultValue: 'field-name',
+    parameters: {
+        controls: {disabled: true},
     },
-    option: {
-      type: { name: 'string', required: true },
-      control: { type: 'text' },
-      defaultValue: null,
-    },
-    modelValue: {
-      type: { name: 'string', required: true },
-      control: { type: 'text' },
-      defaultValue: undefined,
-    },
-    size: {
-      type: { name: 'string', required: false },
-      control: { type: 'select' },
-      defaultValue: FbSizeTypes.MEDIUM,
-      options: [
-        FbSizeTypes.SMALL,
-        FbSizeTypes.MEDIUM,
-        FbSizeTypes.LARGE,
-      ],
-      description: 'Field size',
-      table: {
-        type: { summary: 'string' },
-        defaultValue: { summary: FbSizeTypes.MEDIUM },
-      },
-    },
-    id: {
-      type: { name: 'string', required: false },
-      control: { type: 'text' },
-      defaultValue: null,
-    },
-    label: {
-      type: { name: 'string', required: false },
-      control: { type: 'text' },
-      defaultValue: 'Checkbox field label',
-    },
-    tabIndex: {
-      type: { name: 'number', required: false },
-      control: { type: 'text' },
-      defaultValue: undefined,
-    },
-    hasError: {
-      type: { name: 'boolean', required: false },
-      control: { type: 'boolean' },
-      defaultValue: false,
-    },
-    readonly: {
-      type: { name: 'boolean', required: false },
-      control: { type: 'boolean' },
-      defaultValue: false,
-    },
-    disabled: {
-      type: { name: 'boolean', required: false },
-      control: { type: 'boolean' },
-      defaultValue: false,
-    },
-  },
-  parameters: {
-    controls: { disabled: true },
-  },
 } as Meta
 
 interface TemplateArgs extends IFbFormCheckboxProps, Args {
-  default?: string
+    default?: string
 }
 
 const Template: Story<TemplateArgs> = (args) => {
-  return {
-    components: { FbFormCheckbox },
-    setup(): any {
-      return { args }
-    },
-    template: `
+    return {
+        components: {FbFormCheckbox},
+        setup(): any {
+            return {args}
+        },
+        template: `
       <fb-form-checkbox
         v-model="args.value"
         :size="args.size"
@@ -119,10 +119,10 @@ const Template: Story<TemplateArgs> = (args) => {
         <template v-if="${args.default !== null && typeof args.default !== 'undefined'}" #default>${args.default}</template>
       </fb-form-checkbox>
     `,
-    methods: {
-      onChange: action('field-changed'),
-    },
-  }
+        methods: {
+            onChange: action('field-changed'),
+        },
+    }
 }
 
 export const Default = Template.bind({})
@@ -130,19 +130,19 @@ export const Default = Template.bind({})
 export const WithCustomLabel = Template.bind({})
 
 WithCustomLabel.args = {
-  default: 'Some custom <strong>html</strong> label <font-awesome-icon icon="info-circle" />',
+    default: 'Some custom <strong>html</strong> label <font-awesome-icon icon="info-circle" />',
 }
 
 export const InGroup: Story<TemplateArgs> = (args) => {
-  return {
-    components: { FbFormCheckbox, FbFormCheckboxesGroup },
-    setup(): any {
-      const checkboxGroup = ref<HTMLElement | null>(null)
-      const values = ref<string[]>([])
+    return {
+        components: {FbFormCheckbox, FbFormCheckboxesGroup},
+        setup(): any {
+            const checkboxGroup = ref<HTMLElement | null>(null)
+            const values = ref<string[]>([])
 
-      return { args, checkboxGroup, values }
-    },
-    template: `
+            return {args, checkboxGroup, values}
+        },
+        template: `
       <fb-form-checkboxes-group
         v-model="values"
         ref="checkboxGroup"
@@ -175,8 +175,8 @@ export const InGroup: Story<TemplateArgs> = (args) => {
         </div>
       </fb-form-checkboxes-group>
     `,
-    methods: {
-      onChange: action('field-changed'),
-    },
-  }
+        methods: {
+            onChange: action('field-changed'),
+        },
+    }
 }

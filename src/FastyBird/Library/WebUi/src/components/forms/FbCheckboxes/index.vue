@@ -53,7 +53,7 @@ import {
   SetupContext,
 } from 'vue'
 
-import { FbFormOrientationTypes, FbSizeTypes } from '@/types'
+import {FbFormOrientationTypes, FbSizeTypes} from '@/types'
 import FbFormField from '../FbField/index.vue'
 import FbFormCheckbox from '../FbCheckbox/index.vue'
 

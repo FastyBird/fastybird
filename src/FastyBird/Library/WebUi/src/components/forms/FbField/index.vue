@@ -27,7 +27,9 @@
           <slot name="left-addon" />
         </span>
 
-        <span :class="['fb-theme-form-field__grouped-input-field', {'fb-theme-form-field__grouped-input-field-left-addon': 'left-addon' in $slots}, {'fb-theme-form-field__grouped-input-field-right-addon': 'right-addon' in $slots}]">
+        <span
+          :class="['fb-theme-form-field__grouped-input-field', {'fb-theme-form-field__grouped-input-field-left-addon': 'left-addon' in $slots}, {'fb-theme-form-field__grouped-input-field-right-addon': 'right-addon' in $slots}]"
+        >
           <slot name="field" />
 
           <span
@@ -107,7 +109,7 @@ import {
   PropType,
 } from 'vue'
 
-import { FbFormOrientationTypes, FbSizeTypes } from '@/types'
+import {FbFormOrientationTypes, FbSizeTypes} from '@/types'
 import FbFormLabel from '../FbLabel/index.vue'
 
 export default defineComponent({

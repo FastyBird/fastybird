@@ -117,11 +117,11 @@ export default defineComponent({
       mutationObserver = newMutationObserver(mutationObserverCallback)
 
       if (mutationObserver !== null && buttonSmall.value !== null) {
-        mutationObserver.observe(buttonSmall.value, { childList: true })
+        mutationObserver.observe(buttonSmall.value, {childList: true})
       }
 
       if (mutationObserver !== null && subContent.value !== null) {
-        mutationObserver.observe(subContent.value, { childList: true })
+        mutationObserver.observe(subContent.value, {childList: true})
       }
     })
 

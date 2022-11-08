@@ -69,7 +69,7 @@ import {
   watch,
 } from 'vue'
 
-import { FbFormOrientationTypes } from '@/types'
+import {FbFormOrientationTypes} from '@/types'
 
 import FbFormInput from '../../forms/FbInput/index.vue'
 import FbUiScrollShadow from '../../ui/FbScrollShadow/index.vue'
@@ -103,10 +103,10 @@ export default defineComponent({
     const search = ref<string>('')
 
     watch(
-      (): string => search.value,
-      (val): void => {
-        context.emit('search', val)
-      },
+        (): string => search.value,
+        (val): void => {
+          context.emit('search', val)
+        },
     )
 
     return {

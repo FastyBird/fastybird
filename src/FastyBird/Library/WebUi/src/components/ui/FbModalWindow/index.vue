@@ -164,9 +164,9 @@ import FbUiButton from '../FbButton/index.vue'
 import FbUiModalHeader from '../FbModalHeader/index.vue'
 import FbUiLoadingBox from '../FbLoadingBox/index.vue'
 import FbUiTransitionExpand from '../FbTransitionExpand/index.vue'
-import { BodyScrollLock as BodyScrollLockDirective } from '../../../directives'
+import {BodyScrollLock as BodyScrollLockDirective} from '../../../directives'
 
-import { IFbUiModalWindowProps } from './types'
+import {IFbUiModalWindowProps} from './types'
 
 export default defineComponent({
 

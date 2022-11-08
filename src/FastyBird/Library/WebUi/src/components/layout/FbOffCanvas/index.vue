@@ -30,7 +30,7 @@ import {
   watch,
 } from 'vue'
 
-import { IFbLayoutOffCanvasProps } from './types'
+import {IFbLayoutOffCanvasProps} from './types'
 
 export default defineComponent({
 

@@ -71,8 +71,8 @@ import {
   watch,
 } from 'vue'
 
-import { TouchHorizontalPan } from '../../../../directives'
-import { ITouchHorizontalChanges } from '@/directives/types'
+import {TouchHorizontalPan} from '../../../../directives'
+import {ITouchHorizontalChanges} from '@/directives/types'
 import {
   IFbUiSwipeActionsOutProps,
   TFbUiSwipeActionsOutDir,
@@ -169,7 +169,7 @@ export default defineComponent({
       swipeListener(pan)
     }
 
-    const startListener = ({ distance }: { distance: { x: number, y: number } }): void => {
+    const startListener = ({distance}: { distance: { x: number, y: number } }): void => {
       element.value?.classList.add('fb-theme-ui-swipe-actions-out__no-transition')
 
       if (distance.y <= 5) {
@@ -183,7 +183,7 @@ export default defineComponent({
       }
     }
 
-    const swipeListener = ({ offset }: { offset: { x: number, y: number } }): void => {
+    const swipeListener = ({offset}: { offset: { x: number, y: number } }): void => {
       const newX = offset.x + startLeft.value
 
       if (!('left' in context.slots) && newX > 0) {
@@ -197,7 +197,10 @@ export default defineComponent({
       return animateSlide(offset.x + startLeft.value)
     }
 
-    const stopListener = ({ offset, distance }: { distance: { x: number, y: number }, offset: { x: number, y: number } }): void => {
+    const stopListener = ({
+                            offset,
+                            distance,
+                          }: { distance: { x: number, y: number }, offset: { x: number, y: number } }): void => {
       element.value?.classList.remove('fb-theme-ui-swipe-actions-out__no-transition')
 
       isActive.value = false
@@ -235,8 +238,8 @@ export default defineComponent({
       const progress = 1 - Math.min(newX / actionsWidth, 1)
       const deltaX = Math.min(newX, actionsWidth)
 
-      const { children } = actions
-      const { length } = children
+      const {children} = actions
+      const {length} = children
 
       for (let i = 0; i < length; i++) {
         const child = children[i] as HTMLElement
@@ -269,7 +272,7 @@ export default defineComponent({
 
       const progress = 1 + Math.max(newX / actionsWidth, -1)
       const deltaX = Math.max(newX, -actionsWidth)
-      const { children } = actions
+      const {children} = actions
 
       for (let i = 0; i < children.length; i++) {
         const child = children[i] as HTMLElement
@@ -284,8 +287,8 @@ export default defineComponent({
       }
 
       if (
-        (dir === 'left' && left.value === null)
-        || (dir === 'right' && right.value === null)
+          (dir === 'left' && left.value === null)
+          || (dir === 'right' && right.value === null)
       ) {
         dir = false
       }
@@ -308,8 +311,8 @@ export default defineComponent({
         leftActionsWidth.value = recalculateWidth ? left.value.clientWidth : leftActionsWidth.value
         animateSlide(leftActionsWidth.value)
 
-        context.emit('revealed', { side: 'left', close: onClose })
-        context.emit('leftRevealed', { close: onClose })
+        context.emit('revealed', {side: 'left', close: onClose})
+        context.emit('leftRevealed', {close: onClose})
 
         return
       }
@@ -319,8 +322,8 @@ export default defineComponent({
         rightActionsWidth.value = recalculateWidth ? right.value.clientWidth : rightActionsWidth.value
         animateSlide(-rightActionsWidth.value)
 
-        context.emit('revealed', { side: 'right', close: onClose })
-        context.emit('rightRevealed', { close: onClose })
+        context.emit('revealed', {side: 'right', close: onClose})
+        context.emit('rightRevealed', {close: onClose})
       }
     }
 
@@ -369,14 +372,14 @@ export default defineComponent({
     })
 
     watch(
-      () => props.revealed,
-      (val) => {
-        if (innerRevealed.value === val) {
-          return
-        }
+        () => props.revealed,
+        (val) => {
+          if (innerRevealed.value === val) {
+            return
+          }
 
-        reveal((val as boolean | TFbUiSwipeActionsOutDir), true)
-      },
+          reveal((val as boolean | TFbUiSwipeActionsOutDir), true)
+        },
     )
 
     return {

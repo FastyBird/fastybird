@@ -17,7 +17,7 @@ import {
   watch,
 } from 'vue'
 
-import { IFbLayoutExpandableBoxProps } from './types'
+import {IFbLayoutExpandableBoxProps} from './types'
 
 export default defineComponent({
 
@@ -53,10 +53,10 @@ export default defineComponent({
     })
 
     watch(
-      (): boolean => props.show,
-      (): void => {
-        setBoxHeight()
-      },
+        (): boolean => props.show,
+        (): void => {
+          setBoxHeight()
+        },
     )
 
     return {

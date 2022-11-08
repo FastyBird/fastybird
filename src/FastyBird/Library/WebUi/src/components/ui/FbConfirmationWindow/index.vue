@@ -95,7 +95,7 @@ import {
 import FbUiButton from '../FbButton/index.vue'
 import FbUiModalWindow from '../FbModalWindow/index.vue'
 
-import { IFbUiConfirmationWindowProps } from './types'
+import {IFbUiConfirmationWindowProps} from './types'
 
 export default defineComponent({
 

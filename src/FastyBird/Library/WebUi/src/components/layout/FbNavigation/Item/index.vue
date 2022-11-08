@@ -2,7 +2,7 @@
   <li class="fb-theme-layout-navigation-item__container">
     <template v-if="actionType === menuItemTypes.LINK">
       <a
-          :href="`${action}`"
+        :href="`${action}`"
         @click.prevent="$emit('click', $event)"
       >
         <span
@@ -51,7 +51,7 @@ import {
   PropType,
 } from 'vue'
 
-import { FbMenuItemTypes } from '@/types'
+import {FbMenuItemTypes} from '@/types'
 
 export default defineComponent({
 

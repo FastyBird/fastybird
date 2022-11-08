@@ -4,7 +4,9 @@
       <div class="fb-theme-ui-items-container__heading">
         <h3>
           <slot name="heading" />
-          <small v-if="'subheading' in $slots"><slot name="subheading" /></small>
+          <small v-if="'subheading' in $slots">
+            <slot name="subheading" />
+          </small>
         </h3>
       </div>
 
@@ -21,7 +23,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import {defineComponent} from 'vue'
 
 export default defineComponent({
 

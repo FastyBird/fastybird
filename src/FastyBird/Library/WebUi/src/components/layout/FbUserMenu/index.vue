@@ -53,7 +53,7 @@ import {
   watch,
 } from 'vue'
 
-import { onClickOutside } from '@vueuse/core'
+import {onClickOutside} from '@vueuse/core'
 
 export default defineComponent({
 
@@ -84,16 +84,16 @@ export default defineComponent({
     onClickOutside(container, () => blur())
 
     watch(
-      (): boolean => collapsed.value,
-      (val): void => {
-        if (!val) {
-          nextTick(() => {
-            if (userNavigation.value !== null) {
-              userNavigation.value.focus()
-            }
-          })
-        }
-      },
+        (): boolean => collapsed.value,
+        (val): void => {
+          if (!val) {
+            nextTick(() => {
+              if (userNavigation.value !== null) {
+                userNavigation.value.focus()
+              }
+            })
+          }
+        },
     )
 
     return {

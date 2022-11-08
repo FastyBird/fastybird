@@ -24,7 +24,7 @@ import {
   PropType,
 } from 'vue'
 
-import { FbUiDividerTypeTypes, FbUiDividerVariantTypes } from '@/types'
+import {FbUiDividerTypeTypes, FbUiDividerVariantTypes} from '@/types'
 
 export default defineComponent({
 

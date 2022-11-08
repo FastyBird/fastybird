@@ -45,8 +45,8 @@ import {
   SetupContext,
 } from 'vue'
 
-import { useEventElementPath } from '@/composables'
-import { FbUiItemVariantTypes } from '@/types'
+import {useEventElementPath} from '@/composables'
+import {FbUiItemVariantTypes} from '@/types'
 
 export default defineComponent({
 
@@ -71,7 +71,7 @@ export default defineComponent({
   emits: ['click'],
 
   setup(_props, context: SetupContext) {
-    const { getPath } = useEventElementPath()
+    const {getPath} = useEventElementPath()
 
     const onClick = (event: UIEvent): void => {
       const path = getPath(event)
@@ -81,9 +81,9 @@ export default defineComponent({
 
         for (const pathItem of path) {
           if (
-            'getAttribute' in pathItem &&
-            typeof pathItem.getAttribute === 'function' &&
-            pathItem.getAttribute('data-element') === 'list-item'
+              'getAttribute' in pathItem &&
+              typeof pathItem.getAttribute === 'function' &&
+              pathItem.getAttribute('data-element') === 'list-item'
           ) {
             break
           }

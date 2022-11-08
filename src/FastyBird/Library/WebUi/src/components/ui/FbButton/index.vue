@@ -163,7 +163,7 @@ import {
 } from '../../../types'
 import FbUiSpinner from '../FbSpinner/index.vue'
 
-import { IFbUiButtonProps } from './types'
+import {IFbUiButtonProps} from './types'
 
 export default defineComponent({
 
@@ -320,35 +320,35 @@ export default defineComponent({
 
     const spinnerVariant = computed<FbUiVariantTypes>((): FbUiVariantTypes => {
       if (
-        props.variant === FbUiButtonVariantTypes.PRIMARY ||
-        props.variant === FbUiButtonVariantTypes.OUTLINE_PRIMARY ||
-        props.variant === FbUiButtonVariantTypes.LINK
+          props.variant === FbUiButtonVariantTypes.PRIMARY ||
+          props.variant === FbUiButtonVariantTypes.OUTLINE_PRIMARY ||
+          props.variant === FbUiButtonVariantTypes.LINK
       ) {
         return FbUiVariantTypes.PRIMARY
       } else if (
-        props.variant === FbUiButtonVariantTypes.WARNING ||
-        props.variant === FbUiButtonVariantTypes.OUTLINE_WARNING
+          props.variant === FbUiButtonVariantTypes.WARNING ||
+          props.variant === FbUiButtonVariantTypes.OUTLINE_WARNING
       ) {
         return FbUiVariantTypes.WARNING
       } else if (
-        props.variant === FbUiButtonVariantTypes.SUCCESS ||
-        props.variant === FbUiButtonVariantTypes.OUTLINE_SUCCESS
+          props.variant === FbUiButtonVariantTypes.SUCCESS ||
+          props.variant === FbUiButtonVariantTypes.OUTLINE_SUCCESS
       ) {
         return FbUiVariantTypes.SUCCESS
       } else if (
-        props.variant === FbUiButtonVariantTypes.INFO ||
-        props.variant === FbUiButtonVariantTypes.OUTLINE_INFO
+          props.variant === FbUiButtonVariantTypes.INFO ||
+          props.variant === FbUiButtonVariantTypes.OUTLINE_INFO
       ) {
         return FbUiVariantTypes.INFO
       } else if (
-        props.variant === FbUiButtonVariantTypes.DANGER ||
-        props.variant === FbUiButtonVariantTypes.OUTLINE_DANGER
+          props.variant === FbUiButtonVariantTypes.DANGER ||
+          props.variant === FbUiButtonVariantTypes.OUTLINE_DANGER
       ) {
         return FbUiVariantTypes.DANGER
       } else if (
-        props.variant === FbUiButtonVariantTypes.DEFAULT ||
-        props.variant === FbUiButtonVariantTypes.OUTLINE_DEFAULT ||
-        props.variant === FbUiButtonVariantTypes.LINK_DEFAULT
+          props.variant === FbUiButtonVariantTypes.DEFAULT ||
+          props.variant === FbUiButtonVariantTypes.OUTLINE_DEFAULT ||
+          props.variant === FbUiButtonVariantTypes.LINK_DEFAULT
       ) {
         return FbUiVariantTypes.DEFAULT
       }

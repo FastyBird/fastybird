@@ -1,19 +1,19 @@
 {
   "compilerOptions": {
-    "target" : "esnext",
-    "module" : "esnext",
-    "strict" : true,
-    "declaration" : true,
-    "noUnusedLocals" : true,
-    "noUnusedParameters" : true,
-    "importHelpers" : true,
-    "moduleResolution" : "node",
-    "experimentalDecorators" : true,
+    "target": "esnext",
+    "module": "esnext",
+    "strict": true,
+    "declaration": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "importHelpers": true,
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
     "resolveJsonModule": true,
-    "esModuleInterop" : true,
-    "allowSyntheticDefaultImports" : true,
-    "sourceMap" : true,
-    "baseUrl" : "src",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
+    "baseUrl": "src",
     "types": [
       "@vueuse/core",
       "@types/body-scroll-lock",
@@ -22,8 +22,8 @@
       "vue",
       "vite/client"
     ],
-    "paths" : {
-      "@/*" : [
+    "paths": {
+      "@/*": [
         "*"
       ]
     },
@@ -32,7 +32,7 @@
       "dom",
       "dom.iterable",
       "scripthost"
-    ],
+    ]
   },
   "include": [
     "src/**/*.ts",

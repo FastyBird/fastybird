@@ -1,9 +1,9 @@
 import {
-  FbSizeTypes,
-  FbUiVariantTypes,
+    FbSizeTypes,
+    FbUiVariantTypes,
 } from "@/types";
 
 export interface IFbUiIconWithChildProps {
-  variant?: FbUiVariantTypes;
-  size?: FbSizeTypes;
+    variant?: FbUiVariantTypes;
+    size?: FbSizeTypes;
 }

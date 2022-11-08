@@ -71,7 +71,7 @@ import {
 } from '@/types'
 import FbFormField from '../FbField/index.vue'
 
-import { IFbFormInputProps } from './types'
+import {IFbFormInputProps} from './types'
 
 export default defineComponent({
 
@@ -220,5 +220,5 @@ export default defineComponent({
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-  @import 'index';
+@import 'index';
 </style>

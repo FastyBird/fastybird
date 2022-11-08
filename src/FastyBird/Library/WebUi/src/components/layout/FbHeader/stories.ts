@@ -1,75 +1,75 @@
 import {
-  Args,
-  Meta,
-  Story,
+    Args,
+    Meta,
+    Story,
 } from "@storybook/vue3";
-import { ref } from "vue";
+import {ref} from "vue";
 
 import {
-  FbLayoutHeader,
-  FbLayoutHeaderButton,
-  FbLayoutHeaderContent,
-  FbLayoutHeaderHeading,
+    FbLayoutHeader,
+    FbLayoutHeaderButton,
+    FbLayoutHeaderContent,
+    FbLayoutHeaderHeading,
 } from "./index";
-import { FbMenuItemTypes } from "../../../types";
+import {FbMenuItemTypes} from "../../../types";
 
 export default {
-  component: FbLayoutHeader,
-  title: "Components/Layout/FB Header",
-  argTypes: {
-    default: {
-      type: { name: "string", required: true },
-      control: { type: "text" },
-      description: "Content body slot",
-      table: {
-        type: { summary: "string" },
-        defaultValue: { summary: "-" },
-      },
+    component: FbLayoutHeader,
+    title: "Components/Layout/FB Header",
+    argTypes: {
+        default: {
+            type: {name: "string", required: true},
+            control: {type: "text"},
+            description: "Content body slot",
+            table: {
+                type: {summary: "string"},
+                defaultValue: {summary: "-"},
+            },
+        },
+        header: {
+            type: {name: "string", required: false},
+            control: {type: "text"},
+            description: "Content header slot",
+            table: {
+                type: {summary: "string"},
+                defaultValue: {summary: "-"},
+            },
+        },
+        footer: {
+            type: {name: "string", required: false},
+            control: {type: "text"},
+            description: "Content footer slot",
+            table: {
+                type: {summary: "string"},
+                defaultValue: {summary: "-"},
+            },
+        },
     },
-    header: {
-      type: { name: "string", required: false },
-      control: { type: "text" },
-      description: "Content header slot",
-      table: {
-        type: { summary: "string" },
-        defaultValue: { summary: "-" },
-      },
+    parameters: {
+        controls: {disabled: true},
     },
-    footer: {
-      type: { name: "string", required: false },
-      control: { type: "text" },
-      description: "Content footer slot",
-      table: {
-        type: { summary: "string" },
-        defaultValue: { summary: "-" },
-      },
-    },
-  },
-  parameters: {
-    controls: { disabled: true },
-  },
 } as Meta;
 
 interface ITemplateArgs extends Args {
-  default?: string
-  header?: string
-  footer?: string
+    default?: string
+    header?: string
+    footer?: string
 }
 
 const Template: Story<ITemplateArgs> = (args) => {
-  return {
-    components: {
-      FbLayoutHeader,
-      FbLayoutHeaderHeading,
-      FbLayoutHeaderButton,
-      FbLayoutHeaderContent,
-    },
-    setup(): any {
-      const menuCollapsed = ref<boolean>(true);
+    return {
+        components: {
+            FbLayoutHeader,
+            FbLayoutHeaderHeading,
+            FbLayoutHeaderButton,
+            FbLayoutHeaderContent,
+        },
+        setup(): any {
+            const menuCollapsed = ref<boolean>(true);
 
-      return { args, menuCollapsed };
-    },
-    template: `
+            return {args, menuCollapsed};
+        },
+        template: `
       <div style="height: 150px">
         <fb-layout-header
           style="display: block !important;"
@@ -100,10 +100,9 @@ const Template: Story<ITemplateArgs> = (args) => {
         </fb-layout-header>
       </div>
     `,
-  };
+    };
 };
 
 export const Default = Template.bind({});
 
-Default.args = {
-};
+Default.args = {};

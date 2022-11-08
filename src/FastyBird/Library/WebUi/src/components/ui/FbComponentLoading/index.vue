@@ -19,7 +19,7 @@ import {
   PropType,
 } from 'vue'
 
-import { FbSizeTypes } from '@/types'
+import {FbSizeTypes} from '@/types'
 import FbUiSpinner from '../FbSpinner/index.vue'
 
 export default defineComponent({

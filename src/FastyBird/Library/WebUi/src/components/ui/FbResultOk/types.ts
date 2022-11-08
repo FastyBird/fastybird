@@ -1,5 +1,5 @@
-import { FbSizeTypes } from "@/types";
+import {FbSizeTypes} from "@/types";
 
 export interface IFbUiResultOkProps {
-  size?: FbSizeTypes;
+    size?: FbSizeTypes;
 }

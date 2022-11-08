@@ -1,4 +1,5 @@
-w<template>
+w
+<template>
   <span
     :data-variant="variant"
     :data-size="size"

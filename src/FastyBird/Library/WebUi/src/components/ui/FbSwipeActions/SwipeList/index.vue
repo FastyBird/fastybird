@@ -98,7 +98,9 @@ export default defineComponent({
 
     revealed: {
       type: Object as PropType<{ [key: number]: TFbUiSwipeActionsOutDir }>,
-      default: () => { return {} },
+      default: () => {
+        return {}
+      },
     },
 
     disabled: {
@@ -128,7 +130,7 @@ export default defineComponent({
       elements.value[index].onRevealLeft()
     }
 
-    const onRevealRight = (index: number): void  => {
+    const onRevealRight = (index: number): void => {
       if (!(index in elements.value)) {
         return
       }
@@ -177,7 +179,7 @@ export default defineComponent({
       })
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { [index]: omit, ...newRevealed } = innerRevealed.value
+      const {[index]: omit, ...newRevealed} = innerRevealed.value
 
       emitRevealed(newRevealed)
     }
@@ -187,17 +189,17 @@ export default defineComponent({
     }
 
     watch(
-      () => props.revealed,
-      (val): void => {
-        innerRevealed.value = val as { [key: (number)]: TFbUiSwipeActionsOutDir }
-      },
+        () => props.revealed,
+        (val): void => {
+          innerRevealed.value = val as { [key: (number)]: TFbUiSwipeActionsOutDir }
+        },
     )
 
     watch(
-      () => props.items,
-      (): void => {
-        emitRevealed({})
-      },
+        () => props.items,
+        (): void => {
+          emitRevealed({})
+        },
     )
 
     return {

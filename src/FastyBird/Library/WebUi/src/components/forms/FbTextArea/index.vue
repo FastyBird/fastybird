@@ -70,7 +70,7 @@ import {
 } from '@/types'
 import FbFormField from '../FbField/index.vue'
 
-import { IFbFormTextAreaProps } from './types'
+import {IFbFormTextAreaProps} from './types'
 
 export default defineComponent({
 

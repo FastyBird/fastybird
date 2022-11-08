@@ -37,7 +37,7 @@ import {
   PropType,
 } from 'vue'
 
-import { FbMenuItemTypes } from '@/types'
+import {FbMenuItemTypes} from '@/types'
 
 export default defineComponent({
 

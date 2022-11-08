@@ -11,10 +11,18 @@
     >
       <slot />
 
-      <span :class="['fb-theme-ui-scroll-shadow__shadow-top', {'fb-theme-ui-scroll-shadow__shadow-active': shadow.top}]" />
-      <span :class="['fb-theme-ui-scroll-shadow__shadow-right', {'fb-theme-ui-scroll-shadow__shadow-active': shadow.right}]" />
-      <span :class="['fb-theme-ui-scroll-shadow__shadow-bottom', {'fb-theme-ui-scroll-shadow__shadow-active': shadow.bottom}]" />
-      <span :class="['fb-theme-ui-scroll-shadow__shadow-left', {'fb-theme-ui-scroll-shadow__shadow-active': shadow.left}]" />
+      <span
+        :class="['fb-theme-ui-scroll-shadow__shadow-top', {'fb-theme-ui-scroll-shadow__shadow-active': shadow.top}]"
+      />
+      <span
+        :class="['fb-theme-ui-scroll-shadow__shadow-right', {'fb-theme-ui-scroll-shadow__shadow-active': shadow.right}]"
+      />
+      <span
+        :class="['fb-theme-ui-scroll-shadow__shadow-bottom', {'fb-theme-ui-scroll-shadow__shadow-active': shadow.bottom}]"
+      />
+      <span
+        :class="['fb-theme-ui-scroll-shadow__shadow-left', {'fb-theme-ui-scroll-shadow__shadow-active': shadow.left}]"
+      />
     </div>
   </div>
 </template>

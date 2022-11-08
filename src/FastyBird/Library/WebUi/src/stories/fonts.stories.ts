@@ -1,13 +1,13 @@
 import "./fonts.scss";
-import { Story } from "@storybook/vue3";
+import {Story} from "@storybook/vue3";
 
 export default {
-  title: "About/Fonts",
+    title: "About/Fonts",
 };
 
 export const Fonts: Story = () => {
-  return {
-    template: `
+    return {
+        template: `
       <div class="fb-story-fonts__container">
         <h1>H1 Headline No. 1</h1>
         <h2>H2 Headline No. 2</h2>
@@ -32,5 +32,5 @@ export const Fonts: Story = () => {
         </p>
       </div>
     `,
-  };
+    };
 };

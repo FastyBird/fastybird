@@ -37,10 +37,10 @@ import {
   SetupContext,
 } from 'vue'
 
-import { FbSizeTypes } from '@/types'
+import {FbSizeTypes} from '@/types'
 import FbFormCheckboxesGroup from '../FbCheckboxesGroup/index.vue'
 
-import { IFbFormCheckboxProps } from './types'
+import {IFbFormCheckboxProps} from './types'
 
 export default defineComponent({
 

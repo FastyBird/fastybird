@@ -12,9 +12,9 @@ import {
 } from 'vue'
 import get from 'lodash/get'
 
-import { FbSizeTypes, FbUiTextAlignTypes } from '@/types'
+import {FbSizeTypes, FbUiTextAlignTypes} from '@/types'
 
-import { IFbUiContentProps } from './types'
+import {IFbUiContentProps} from './types'
 
 const sizeValidator = (value: FbSizeTypes): boolean => {
   // The value must match one of these strings
@@ -130,15 +130,15 @@ export default defineComponent({
       const paddings = ['pt', 'pb', 'pl', 'pr', 'pv', 'ph']
 
       Object.keys(props)
-        .forEach((key: string): void => {
-          if (margins.includes(key) && get(props, key) !== FbSizeTypes.NONE) {
-            values.push(`fb-theme-ui-content-${key}-${get(props, key)}`)
-          }
+          .forEach((key: string): void => {
+            if (margins.includes(key) && get(props, key) !== FbSizeTypes.NONE) {
+              values.push(`fb-theme-ui-content-${key}-${get(props, key)}`)
+            }
 
-          if (paddings.includes(key) && get(props, key) !== FbSizeTypes.NONE) {
-            values.push(`fb-theme-ui-content-${key}-${get(props, key)}`)
-          }
-        })
+            if (paddings.includes(key) && get(props, key) !== FbSizeTypes.NONE) {
+              values.push(`fb-theme-ui-content-${key}-${get(props, key)}`)
+            }
+          })
 
       if (props.textAlign !== FbUiTextAlignTypes.NONE) {
         values.push(`fb-theme-ui-content-text-align-${props.textAlign}`)

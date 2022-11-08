@@ -1,4 +1,4 @@
 export interface IFbLayoutPhoneMenuButtonProps {
-  closeBtnText: string;
-  teleport: boolean;
+    closeBtnText: string;
+    teleport: boolean;
 }

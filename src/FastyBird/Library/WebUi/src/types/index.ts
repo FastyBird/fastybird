@@ -1,4 +1,4 @@
-import { Plugin } from "vue";
+import {Plugin} from "vue";
 
 export interface IPluginOptions {
     directives?: boolean;
@@ -50,12 +50,12 @@ export enum FbFormResultTypes {
 }
 
 export enum FbUiVariantTypes {
-  DEFAULT = "default",
-  PRIMARY = "primary",
-  SUCCESS = "success",
-  DANGER = "danger",
-  WARNING = "warning",
-  INFO = "info",
+    DEFAULT = "default",
+    PRIMARY = "primary",
+    SUCCESS = "success",
+    DANGER = "danger",
+    WARNING = "warning",
+    INFO = "info",
 }
 
 export enum FbUiModalLayoutTypes {
@@ -65,9 +65,9 @@ export enum FbUiModalLayoutTypes {
 }
 
 export enum FbUiButtonActionsTypes {
-  LINK = "link",
-  VUE_LINK = "vue_link",
-  BUTTON = "button",
+    LINK = "link",
+    VUE_LINK = "vue_link",
+    BUTTON = "button",
 }
 
 export enum FbUiButtonButtonTypes {

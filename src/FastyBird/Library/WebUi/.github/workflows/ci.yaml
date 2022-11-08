@@ -26,7 +26,7 @@ jobs:
 
     strategy:
       matrix:
-        operating-system: ["ubuntu-latest"]
+        operating-system: [ "ubuntu-latest" ]
       fail-fast: false
 
     steps:
@@ -62,7 +62,7 @@ jobs:
 
     strategy:
       matrix:
-        operating-system: ["ubuntu-latest"]
+        operating-system: [ "ubuntu-latest" ]
       fail-fast: false
 
     steps:
@@ -98,7 +98,7 @@ jobs:
 
     strategy:
       matrix:
-        operating-system: ["ubuntu-latest"]
+        operating-system: [ "ubuntu-latest" ]
       fail-fast: false
 
     steps:
@@ -131,11 +131,11 @@ jobs:
   publish-npmjs:
     name: "Build library and publish it to NPM"
     runs-on: "${{ matrix.operating-system }}"
-    needs: ["jslint", "stylelint", "build-storybook"]
+    needs: [ "jslint", "stylelint", "build-storybook" ]
 
     strategy:
       matrix:
-        operating-system: ["ubuntu-latest"]
+        operating-system: [ "ubuntu-latest" ]
 
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
 
@@ -175,11 +175,11 @@ jobs:
   publish-github:
     name: "Build library and publish it to Github packages"
     runs-on: "${{ matrix.operating-system }}"
-    needs: ["publish-npmjs"]
+    needs: [ "publish-npmjs" ]
 
     strategy:
       matrix:
-        operating-system: ["ubuntu-latest"]
+        operating-system: [ "ubuntu-latest" ]
 
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
 
@@ -221,11 +221,11 @@ jobs:
   publish-storybook:
     name: "Build Storybook and publish it to Github pages"
     runs-on: "${{ matrix.operating-system }}"
-    needs: ["jslint", "stylelint", "build-storybook"]
+    needs: [ "jslint", "stylelint", "build-storybook" ]
 
     strategy:
       matrix:
-        operating-system: ["ubuntu-latest"]
+        operating-system: [ "ubuntu-latest" ]
 
     if: github.event_name == 'push' && contains(github.ref, 'refs/heads/master')
 

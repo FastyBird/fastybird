@@ -110,14 +110,14 @@ export default defineComponent({
     }
 
     watch(
-      () => teleportHasContent.value,
-      (val: boolean): void => {
-        nextTick(() => {
-          if (val && element.value !== null) {
-            element.value.focus()
-          }
-        })
-      },
+        () => teleportHasContent.value,
+        (val: boolean): void => {
+          nextTick(() => {
+            if (val && element.value !== null) {
+              element.value.focus()
+            }
+          })
+        },
     )
 
     return {

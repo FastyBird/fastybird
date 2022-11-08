@@ -148,9 +148,9 @@ import {
   PropType,
 } from 'vue'
 
-import { FbMenuItemTypes } from '@/types'
+import {FbMenuItemTypes} from '@/types'
 
-import { IFbLayoutHeaderButtonProps } from './types'
+import {IFbLayoutHeaderButtonProps} from './types'
 
 export default defineComponent({
 

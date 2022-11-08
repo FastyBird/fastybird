@@ -2,7 +2,9 @@
   <template v-if="teleport">
     <teleport to="#fb-layout-header-heading">
       <div class="fb-theme-layout-phone-header-heading__container">
-        <div :class="['fb-theme-layout-phone-header-heading__heading', `fb-theme-layout-phone-header-heading__heading-${align}`]">
+        <div
+          :class="['fb-theme-layout-phone-header-heading__heading', `fb-theme-layout-phone-header-heading__heading-${align}`]"
+        >
           <h1 v-if="subHeading === null">
             {{ heading }}
           </h1>
@@ -25,7 +27,9 @@
 
   <template v-else>
     <div class="fb-theme-layout-phone-header-heading__container">
-      <div :class="['fb-theme-layout-phone-header-heading__heading', `fb-theme-layout-phone-header-heading__heading-${align}`]">
+      <div
+        :class="['fb-theme-layout-phone-header-heading__heading', `fb-theme-layout-phone-header-heading__heading-${align}`]"
+      >
         <h1 v-if="subHeading === null">
           {{ heading }}
         </h1>
@@ -52,7 +56,7 @@ import {
   PropType,
 } from 'vue'
 
-import { FbLayoutHeaderHeadingAlign } from '@/types'
+import {FbLayoutHeaderHeadingAlign} from '@/types'
 
 export default defineComponent({
 
