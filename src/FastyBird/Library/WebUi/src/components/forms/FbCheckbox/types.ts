@@ -1,6 +1,6 @@
-import {FbSizeTypes} from "@/types";
+import {FbSizeTypes} from '@/types'
 
-import FbFormCheckboxesGroup from "../FbCheckboxesGroup/index.vue";
+import FbFormCheckboxesGroup from '@/components/forms/FbCheckboxesGroup/index.vue'
 
 export interface IFbFormCheckboxProps {
     size: FbSizeTypes;

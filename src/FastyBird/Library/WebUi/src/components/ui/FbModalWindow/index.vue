@@ -160,11 +160,11 @@ import {
   FbUiModalLayoutTypes,
   FbUiButtonVariantTypes,
 } from '@/types'
-import FbUiButton from '../FbButton/index.vue'
-import FbUiModalHeader from '../FbModalHeader/index.vue'
-import FbUiLoadingBox from '../FbLoadingBox/index.vue'
-import FbUiTransitionExpand from '../FbTransitionExpand/index.vue'
-import {BodyScrollLock as BodyScrollLockDirective} from '../../../directives'
+import FbUiButton from '@/components/ui/FbButton/index.vue'
+import FbUiModalHeader from '@/components/ui/FbModalHeader/index.vue'
+import FbUiLoadingBox from '@/components/ui/FbLoadingBox/index.vue'
+import FbUiTransitionExpand from '@/components/ui/FbTransitionExpand/index.vue'
+import {BodyScrollLock as BodyScrollLockDirective} from '@/directives'
 
 import {IFbUiModalWindowProps} from './types'
 

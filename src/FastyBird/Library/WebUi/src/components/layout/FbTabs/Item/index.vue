@@ -50,7 +50,7 @@ import {
   FbUiButtonButtonTypes,
   FbMenuItemTypes,
 } from '@/types'
-import FbUiButton from '../../../ui/FbButton/index.vue'
+import FbUiButton from '@/components/ui/FbButton/index.vue'
 
 export default defineComponent({
 

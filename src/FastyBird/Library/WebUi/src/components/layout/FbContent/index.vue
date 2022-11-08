@@ -71,8 +71,8 @@ import {
 
 import {FbFormOrientationTypes} from '@/types'
 
-import FbFormInput from '../../forms/FbInput/index.vue'
-import FbUiScrollShadow from '../../ui/FbScrollShadow/index.vue'
+import FbFormInput from '@/components/forms/FbInput/index.vue'
+import FbUiScrollShadow from '@/components/ui/FbScrollShadow/index.vue'
 
 export default defineComponent({
 

@@ -38,7 +38,7 @@ import {
   FbSizeTypes,
   FbUiVariantTypes,
 } from '@/types'
-import FbUiIconWithChild from '../FbIconWithChild/index.vue'
+import FbUiIconWithChild from '@/components/ui/FbIconWithChild/index.vue'
 
 export default defineComponent({
 

@@ -2,7 +2,7 @@ import {
     FbFormInputTypeTypes,
     FbFormOrientationTypes,
     FbSizeTypes,
-} from '@/types';
+} from '@/types'
 
 export interface IFbFormInputProps {
     orientation: FbFormOrientationTypes;

@@ -38,7 +38,7 @@ import {
 } from 'vue'
 
 import {FbSizeTypes} from '@/types'
-import FbFormRadioButtonsGroup from '../FbRadioButtonsGroup/index.vue'
+import FbFormRadioButtonsGroup from '@/components/forms/FbRadioButtonsGroup/index.vue'
 
 import {IFbFormRadioButtonProps} from './types'
 

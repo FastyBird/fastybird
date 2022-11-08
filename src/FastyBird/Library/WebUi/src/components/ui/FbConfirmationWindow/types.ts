@@ -2,7 +2,7 @@ import {
     FbSizeTypes,
     FbUiConfirmationWindowPrimaryButtonTypes,
     FbUiVariantTypes,
-} from "@/types";
+} from '@/types'
 
 export interface IFbUiConfirmationWindowProps {
     size?: FbSizeTypes;

@@ -160,8 +160,8 @@ import {
   FbUiButtonButtonTypes,
   FbUiButtonVariantTypes,
   FbUiButtonActionsTypes,
-} from '../../../types'
-import FbUiSpinner from '../FbSpinner/index.vue'
+} from '@/types'
+import FbUiSpinner from '@/components/ui/FbSpinner/index.vue'
 
 import {IFbUiButtonProps} from './types'
 

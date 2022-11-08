@@ -38,7 +38,7 @@ import {
 } from 'vue'
 
 import {FbSizeTypes} from '@/types'
-import FbFormCheckboxesGroup from '../FbCheckboxesGroup/index.vue'
+import FbFormCheckboxesGroup from '@/components/forms/FbCheckboxesGroup/index.vue'
 
 import {IFbFormCheckboxProps} from './types'
 

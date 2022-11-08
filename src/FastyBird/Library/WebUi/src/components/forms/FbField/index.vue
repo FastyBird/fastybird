@@ -110,7 +110,7 @@ import {
 } from 'vue'
 
 import {FbFormOrientationTypes, FbSizeTypes} from '@/types'
-import FbFormLabel from '../FbLabel/index.vue'
+import FbFormLabel from '@/components/forms/FbLabel/index.vue'
 
 export default defineComponent({
 

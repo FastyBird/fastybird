@@ -68,7 +68,7 @@ import {
   FbFormOrientationTypes,
   FbSizeTypes,
 } from '@/types'
-import FbFormField from '../FbField/index.vue'
+import FbFormField from '@/components/forms/FbField/index.vue'
 
 import {IFbFormTextAreaProps} from './types'
 

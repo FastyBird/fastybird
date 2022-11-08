@@ -143,7 +143,7 @@ import {
   FbUiButtonVariantTypes,
   FbSizeTypes,
 } from '@/types'
-import FbUiButton from '../FbButton/index.vue'
+import FbUiButton from '@/components/ui/FbButton/index.vue'
 
 export default defineComponent({
 

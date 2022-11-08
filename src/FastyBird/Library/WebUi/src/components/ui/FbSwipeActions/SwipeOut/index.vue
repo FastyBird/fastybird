@@ -71,7 +71,7 @@ import {
   watch,
 } from 'vue'
 
-import {TouchHorizontalPan} from '../../../../directives'
+import {TouchHorizontalPan} from '@/directives'
 import {ITouchHorizontalChanges} from '@/directives/types'
 import {
   IFbUiSwipeActionsOutProps,

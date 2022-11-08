@@ -1,9 +1,9 @@
-import {App, Component} from "vue";
+import {App, Component} from 'vue';
 
 // Import types
 // Import components
-import * as components from "./components";
-import {InstallFunction} from "./types";
+import * as components from '@/components';
+import {InstallFunction} from '@/types';
 
 // Import theme styles
 import './assets/theme.scss'
@@ -25,7 +25,7 @@ export function createWebUiTheme(): InstallFunction {
     return plugin;
 }
 
-export * from "./components";
-export * from "./composables";
-export * from "./directives";
-export * from "./types";
+export * from '@/components';
+export * from '@/composables';
+export * from '@/directives';
+export * from '@/types';

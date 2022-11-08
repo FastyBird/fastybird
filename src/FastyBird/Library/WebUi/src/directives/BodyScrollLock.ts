@@ -1,13 +1,13 @@
 import {
     disableBodyScroll,
     enableBodyScroll,
-} from "body-scroll-lock";
+} from 'body-scroll-lock';
 
 export default {
 
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     mounted(el: HTMLElement, binding: any): void {
-        if (binding.arg && binding.arg === "reserve-scroll-bar-gap" && binding.value) {
+        if (binding.arg && binding.arg === 'reserve-scroll-bar-gap' && binding.value) {
             disableBodyScroll(el, {
                 reserveScrollBarGap: true,
             });
@@ -22,7 +22,7 @@ export default {
             return;
         }
 
-        if (binding.arg && binding.arg === "reserve-scroll-bar-gap" && binding.value) {
+        if (binding.arg && binding.arg === 'reserve-scroll-bar-gap' && binding.value) {
             disableBodyScroll(el, {
                 reserveScrollBarGap: true,
             });

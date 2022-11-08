@@ -1,4 +1,4 @@
-import {FbLayoutHeaderHeadingAlign} from "@/types";
+import {FbLayoutHeaderHeadingAlign} from '@/types'
 
 export interface IFbLayoutHeaderHeadingProps {
     heading: string;

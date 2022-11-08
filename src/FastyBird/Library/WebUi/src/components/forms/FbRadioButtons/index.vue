@@ -57,8 +57,8 @@ import {
   FbFormOrientationTypes,
   FbSizeTypes,
 } from '@/types'
-import FbFormField from '../FbField/index.vue'
-import FbFormRadioButton from '../FbRadioButton/index.vue'
+import FbFormField from '@/components/forms/FbField/index.vue'
+import FbFormRadioButton from '@/components/forms/FbRadioButton/index.vue'
 
 import {
   IFbFormRadioButtonsItem,

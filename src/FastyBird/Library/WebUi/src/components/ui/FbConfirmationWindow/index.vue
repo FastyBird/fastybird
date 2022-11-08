@@ -91,9 +91,9 @@ import {
   FbUiButtonVariantTypes,
   FbUiConfirmationWindowPrimaryButtonTypes,
   FbUiVariantTypes,
-} from '../../../types'
-import FbUiButton from '../FbButton/index.vue'
-import FbUiModalWindow from '../FbModalWindow/index.vue'
+} from '@/types'
+import FbUiButton from '@/components/ui/FbButton/index.vue'
+import FbUiModalWindow from '@/components/ui/FbModalWindow/index.vue'
 
 import {IFbUiConfirmationWindowProps} from './types'
 
