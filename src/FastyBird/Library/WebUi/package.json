@@ -42,7 +42,7 @@
     "lint:js": "eslint --ext .js,.ts,.vue --ignore-path .gitignore src",
     "lint:js:fix": "eslint --ext .js,.ts,.vue --ignore-path .gitignore src --fix",
     "lint:styles": "stylelint 'src/**/*.scss'",
-    "format": "prettier web-ui-library --write",
+    "format": "prettier src --write",
     "storybook:serve": "start-storybook -p 6006",
     "storybook:build": "build-storybook -s src/static",
     "storybook:deploy": "storybook-to-ghpages"
