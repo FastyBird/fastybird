@@ -1,6 +1,8 @@
 import { v4 as uuid, validate as uuidValidate, version as uuidVersion } from 'uuid';
 
-export function useUuid() {
+import { UseUuid } from '@/lib/composables/types';
+
+export function useUuid(): UseUuid {
 	const generate = (): string => {
 		return uuid();
 	};

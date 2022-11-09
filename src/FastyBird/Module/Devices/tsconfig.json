@@ -22,6 +22,7 @@
       "@types/uuid",
       "node",
       "vue",
+      "vue-toastification",
       "vite/client"
     ],
     "paths" : {

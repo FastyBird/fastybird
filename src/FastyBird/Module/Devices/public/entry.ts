@@ -21,7 +21,7 @@ export const metaKey: InjectionKey<IDeviceModuleMeta> = Symbol('devices-module_m
 export const configurationKey: InjectionKey<IDeviceModuleConfiguration> = Symbol('devices-module_configuration');
 
 export default {
-	install: (app: App, options: IDevicesModuleOptions) => {
+	install: (app: App, options: IDevicesModuleOptions): void => {
 		if (typeof options.router === 'undefined') {
 			throw new Error('Router instance is missing in module configuration');
 		}

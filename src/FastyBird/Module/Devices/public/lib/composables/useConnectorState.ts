@@ -3,8 +3,9 @@ import { computed } from 'vue';
 import { ConnectionState, PropertyType } from '@fastybird/metadata-library';
 
 import { IConnector } from '@/lib/models/types';
+import { UseConnectorState } from '@/lib/composables/types';
 
-export function useConnectorState(connector: IConnector) {
+export function useConnectorState(connector: IConnector): UseConnectorState {
 	const state = computed<ConnectionState>((): ConnectionState => {
 		const stateProperty = connector.stateProperty;
 

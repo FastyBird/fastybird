@@ -11,7 +11,7 @@ class JsonApiModelPropertiesMapper extends ModelPropertiesMapper implements IMod
 		this.exceptedAttributes = exceptedAttributes;
 	}
 
-	getType(model: TJsonaModel) {
+	getType(model: TJsonaModel): string {
 		const typeParts: string[] = [];
 
 		typeParts.push(get(model, 'type.source'));

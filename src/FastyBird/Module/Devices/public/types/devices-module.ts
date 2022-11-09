@@ -11,6 +11,7 @@ import {
 	IDeviceProperty,
 } from '@/lib/models/types';
 
+export * from '@/lib/composables/types';
 export * from '@/lib/models/types';
 
 export interface IChannelData {
