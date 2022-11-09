@@ -1,100 +1,99 @@
 <template>
-  <fb-ui-content
-    :ml="FbSizeTypes.MEDIUM"
-    class="fb-devices-module-connectors-preview-info__container"
-  >
-    <fb-ui-media-item>
-      <template #left>
-        <font-awesome-icon
-          icon="plug"
-          size="2x"
-        />
-      </template>
+	<fb-ui-content
+		:ml="FbSizeTypes.MEDIUM"
+		class="fb-devices-module-connectors-preview-info__container"
+	>
+		<fb-ui-media-item>
+			<template #left>
+				<font-awesome-icon
+					icon="plug"
+					size="2x"
+				/>
+			</template>
 
-      <template #heading>
-        {{ t('headings.allConnectors') }}
-      </template>
+			<template #heading>
+				{{ t('headings.allConnectors') }}
+			</template>
 
-      <template #description>
-        {{ t('subHeadings.allConnectors', { count: total }, total) }}
-      </template>
-    </fb-ui-media-item>
+			<template #description>
+				{{ t('subHeadings.allConnectors', { count: props.total }, props.total) }}
+			</template>
+		</fb-ui-media-item>
 
-    <fb-ui-media-item>
-      <template #left>
-        <font-awesome-icon
-          icon="plus"
-          size="2x"
-        />
-      </template>
+		<fb-ui-media-item>
+			<template #left>
+				<font-awesome-icon
+					icon="plus"
+					size="2x"
+				/>
+			</template>
 
-      <template #heading>
-        {{ t('headings.registerConnector') }}
-      </template>
+			<template #heading>
+				{{ t('headings.registerConnector') }}
+			</template>
 
-      <template #description>
-        {{ t('subHeadings.registerConnector') }}
-      </template>
+			<template #description>
+				{{ t('subHeadings.registerConnector') }}
+			</template>
 
-      <template #action>
-        <fb-ui-button
-          :variant="FbUiButtonVariantTypes.OUTLINE_PRIMARY"
-          :size="FbSizeTypes.MEDIUM"
-          @click="$emit('register', $emit)"
-        >
-          {{ t('buttons.add.title') }}
-        </fb-ui-button>
-      </template>
-    </fb-ui-media-item>
+			<template #action>
+				<fb-ui-button
+					:variant="FbUiButtonVariantTypes.OUTLINE_PRIMARY"
+					:size="FbSizeTypes.MEDIUM"
+					@click="emit('register')"
+				>
+					{{ t('buttons.add.title') }}
+				</fb-ui-button>
+			</template>
+		</fb-ui-media-item>
 
-    <fb-ui-media-item>
-      <template #left>
-        <font-awesome-icon
-          icon="sync-alt"
-          size="2x"
-        />
-      </template>
+		<fb-ui-media-item>
+			<template #left>
+				<font-awesome-icon
+					icon="sync-alt"
+					size="2x"
+				/>
+			</template>
 
-      <template #heading>
-        {{ t('headings.syncConnectors') }}
-      </template>
+			<template #heading>
+				{{ t('headings.syncConnectors') }}
+			</template>
 
-      <template #description>
-        {{ t('subHeadings.syncConnectors') }}
-      </template>
+			<template #description>
+				{{ t('subHeadings.syncConnectors') }}
+			</template>
 
-      <template #action>
-        <fb-ui-button
-          :variant="FbUiButtonVariantTypes.OUTLINE_DEFAULT"
-          :size="FbSizeTypes.MEDIUM"
-          @click="$emit('synchronise', $emit)"
-        >
-          {{ t('buttons.sync.title') }}
-        </fb-ui-button>
-      </template>
-    </fb-ui-media-item>
-  </fb-ui-content>
+			<template #action>
+				<fb-ui-button
+					:variant="FbUiButtonVariantTypes.OUTLINE_DEFAULT"
+					:size="FbSizeTypes.MEDIUM"
+					@click="emit('synchronise')"
+				>
+					{{ t('buttons.sync.title') }}
+				</fb-ui-button>
+			</template>
+		</fb-ui-media-item>
+	</fb-ui-content>
 </template>
 
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n'
+import { useI18n } from 'vue-i18n';
 
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import {
-  FbUiButton,
-  FbUiMediaItem,
-  FbUiContent,
-  FbSizeTypes,
-  FbUiButtonVariantTypes,
-} from '@fastybird/web-ui-library'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { FbUiButton, FbUiMediaItem, FbUiContent, FbSizeTypes, FbUiButtonVariantTypes } from '@fastybird/web-ui-library';
 
 interface IConnectorsDesktopInfoProps {
-  total: number
+	total: number;
 }
 
-const { total } = defineProps<IConnectorsDesktopInfoProps>()
+const props = defineProps<IConnectorsDesktopInfoProps>();
 
-const { t } = useI18n()
+const emit = defineEmits<{
+	(e: 'connect'): void;
+	(e: 'synchronise'): void;
+}>();
+
+const { t } = useI18n();
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>

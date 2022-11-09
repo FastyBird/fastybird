@@ -1,732 +1,689 @@
 <template>
-  <fb-ui-modal-form
-    :transparent-bg="true"
-    :lock-submit-button="remoteFormResult !== FbFormResultTypes.NONE"
-    :state="remoteFormResult"
-    :submit-btn-label="isDraft ? t('buttons.add.title') : t('buttons.save.title')"
-    :layout="isExtraSmallDevice ? FbUiModalLayoutTypes.PHONE : (isSmallDevice ? FbUiModalLayoutTypes.TABLET : FbUiModalLayoutTypes.DEFAULT)"
-    @submit="onSubmitForm"
-    @cancel="onClose"
-    @close="onClose"
-  >
-    <template #title>
-      {{ t('headings.add') }}
-    </template>
+	<fb-ui-modal-form
+		:transparent-bg="true"
+		:lock-submit-button="remoteFormResult !== FbFormResultTypes.NONE"
+		:state="remoteFormResult"
+		:submit-btn-label="isDraft ? t('buttons.add.title') : t('buttons.save.title')"
+		:layout="isExtraSmallDevice ? FbUiModalLayoutTypes.PHONE : isSmallDevice ? FbUiModalLayoutTypes.TABLET : FbUiModalLayoutTypes.DEFAULT"
+		@submit="onSubmitForm"
+		@cancel="onClose"
+		@close="onClose"
+	>
+		<template #title>
+			{{ t('headings.add') }}
+		</template>
 
-    <template #icon>
-      <font-awesome-icon icon="plus" />
-    </template>
+		<template #icon>
+			<font-awesome-icon icon="plus" />
+		</template>
 
-    <template #form>
-      <template v-if="isConnectorProperty || props.property.type.type === PropertyType.STATIC">
-        <property-settings-property-form
-          :connector="props.connector"
-          :device="props.device"
-          :channel="props.channel"
-          :property="props.property"
-          v-model:remote-form-submit="remoteFormSubmit"
-          v-model:remote-form-result="remoteFormResult"
-          @added="onAdded"
-        />
-      </template>
+		<template #form>
+			<template v-if="isConnectorProperty || props.property.type.type === PropertyType.STATIC">
+				<property-settings-property-form
+					v-model:remote-form-submit="remoteFormSubmit"
+					v-model:remote-form-result="remoteFormResult"
+					:connector="props.connector"
+					:device="props.device"
+					:channel="props.channel"
+					:property="props.property"
+					@added="onAdded"
+				/>
+			</template>
 
-      <template v-else>
-        <template v-if="activeView === ViewTypes.SELECT_TYPE">
-          <div class="fb-devices-module-property-settings-property-add-modal__row">
-            <div class="fb-devices-module-property-settings-property-add-modal__row-item">
-              <fb-ui-button
-                :variant="FbUiButtonVariantTypes.OUTLINE_PRIMARY"
-                :size="FbSizeTypes.LARGE"
-                block
-                class="fb-devices-module-property-settings-property-add-modal__button"
-                @click.prevent="onOpenView(ViewTypes.NEW_PROPERTY)"
-              >
-                <font-awesome-icon
-                  icon="file"
-                  size="2x"
-                  class="fb-devices-module-property-settings-property-add-modal__button-icon"
-                />
+			<template v-else>
+				<template v-if="activeView === ViewTypes.SELECT_TYPE">
+					<div class="fb-devices-module-property-settings-property-add-modal__row">
+						<div class="fb-devices-module-property-settings-property-add-modal__row-item">
+							<fb-ui-button
+								:variant="FbUiButtonVariantTypes.OUTLINE_PRIMARY"
+								:size="FbSizeTypes.LARGE"
+								block
+								class="fb-devices-module-property-settings-property-add-modal__button"
+								@click.prevent="onOpenView(ViewTypes.NEW_PROPERTY)"
+							>
+								<font-awesome-icon
+									icon="file"
+									size="2x"
+									class="fb-devices-module-property-settings-property-add-modal__button-icon"
+								/>
 
-                {{ t('buttons.addTypeNew.title') }}
-              </fb-ui-button>
-            </div>
+								{{ t('buttons.addTypeNew.title') }}
+							</fb-ui-button>
+						</div>
 
-            <div class="fb-devices-module-property-settings-property-add-modal__row-item">
-              <fb-ui-button
-                :variant="FbUiButtonVariantTypes.OUTLINE_PRIMARY"
-                :size="FbSizeTypes.LARGE"
-                block
-                class="fb-devices-module-property-settings-property-add-modal__button"
-                @click.prevent="onOpenView(ViewTypes.SELECT_CONNECTOR)"
-              >
-                <font-awesome-icon
-                  icon="clone"
-                  size="2x"
-                  class="fb-devices-module-property-settings-property-add-modal__button-icon"
-                />
+						<div class="fb-devices-module-property-settings-property-add-modal__row-item">
+							<fb-ui-button
+								:variant="FbUiButtonVariantTypes.OUTLINE_PRIMARY"
+								:size="FbSizeTypes.LARGE"
+								block
+								class="fb-devices-module-property-settings-property-add-modal__button"
+								@click.prevent="onOpenView(ViewTypes.SELECT_CONNECTOR)"
+							>
+								<font-awesome-icon
+									icon="clone"
+									size="2x"
+									class="fb-devices-module-property-settings-property-add-modal__button-icon"
+								/>
 
-                {{ t('buttons.addTypeCloned.title') }}
-              </fb-ui-button>
-            </div>
-          </div>
+								{{ t('buttons.addTypeCloned.title') }}
+							</fb-ui-button>
+						</div>
+					</div>
 
-          <fb-ui-alert :variant="FbUiVariantTypes.INFO">
-            <h3>New parameter</h3>
-            <p>
-              This option will create new independent item parameter to receive or set data. This type of parameter could be fully customized.
-            </p>
+					<fb-ui-alert :variant="FbUiVariantTypes.INFO">
+						<h3>New parameter</h3>
+						<p>This option will create new independent item parameter to receive or set data. This type of parameter could be fully customized.</p>
 
-            <hr />
+						<hr />
 
-            <h3>Mapped parameter</h3>
-            <p>
-              This option will create parameter mapped to existing parameter. This type of parameter could not be configured, every settings is used from mapped parent one.
-            </p>
-          </fb-ui-alert>
-        </template>
+						<h3>Mapped parameter</h3>
+						<p>
+							This option will create parameter mapped to existing parameter. This type of parameter could not be configured, every settings is used
+							from mapped parent one.
+						</p>
+					</fb-ui-alert>
+				</template>
 
-        <property-settings-property-form
-          v-if="activeView === ViewTypes.NEW_PROPERTY || activeView === ViewTypes.MAPPED_PROPERTY"
-          :connector="props.connector"
-          :device="props.device"
-          :channel="props.channel"
-          :property="props.property"
-          v-model:remote-form-submit="remoteFormSubmit"
-          v-model:remote-form-result="remoteFormResult"
-          @added="onAdded"
-        />
+				<property-settings-property-form
+					v-if="activeView === ViewTypes.NEW_PROPERTY || activeView === ViewTypes.MAPPED_PROPERTY"
+					v-model:remote-form-submit="remoteFormSubmit"
+					v-model:remote-form-result="remoteFormResult"
+					:connector="props.connector"
+					:device="props.device"
+					:channel="props.channel"
+					:property="props.property"
+					@added="onAdded"
+				/>
 
-        <template v-if="activeView === ViewTypes.SELECT_CONNECTOR">
-          <fb-ui-items-container>
-            <template #heading>
-              {{ t('headings.connectorSelect') }}
-            </template>
+				<template v-if="activeView === ViewTypes.SELECT_CONNECTOR">
+					<fb-ui-items-container>
+						<template #heading>
+							{{ t('headings.connectorSelect') }}
+						</template>
 
-            <fb-ui-content :pv="FbSizeTypes.SMALL">
-              <fb-ui-item
-                v-for="connector in connectors"
-                :key="connector.id"
-                :disabled="connector.disabled"
-                :variant="FbUiItemVariantTypes.DEFAULT"
-                class="fb-devices-module-property-settings-property-add-modal__item"
-                @click="onSelectConnector(connector)"
-              >
-                <template #icon>
-                  <connectors-connector-icon :connector="connector" />
-                </template>
+						<fb-ui-content :pv="FbSizeTypes.SMALL">
+							<fb-ui-item
+								v-for="connectorItem in connectors"
+								:key="connectorItem.id"
+								:disabled="connectorItem.disabled"
+								:variant="FbUiItemVariantTypes.DEFAULT"
+								class="fb-devices-module-property-settings-property-add-modal__item"
+								@click="onSelectConnector(connectorItem)"
+							>
+								<template #icon>
+									<connectors-connector-icon :connector="connectorItem" />
+								</template>
 
-                <template #heading>
-                  {{ useEntityTitle(connector).value }}
-                </template>
+								<template #heading>
+									{{ useEntityTitle(connectorItem).value }}
+								</template>
 
-                <template
-                  v-if="connector.hasComment"
-                  #subheading
-                >
-                  {{ connector.comment }}
-                </template>
+								<template
+									v-if="connectorItem.hasComment"
+									#subheading
+								>
+									{{ connectorItem.comment }}
+								</template>
 
-                <template #button>
-                  <font-awesome-icon icon="chevron-right" />
-                </template>
-              </fb-ui-item>
-            </fb-ui-content>
+								<template #button>
+									<font-awesome-icon icon="chevron-right" />
+								</template>
+							</fb-ui-item>
+						</fb-ui-content>
 
-            <fb-ui-no-results
-              v-if="!connectors.length"
-              :size="FbSizeTypes.LARGE"
-              :variant="FbUiVariantTypes.PRIMARY"
-              class="fb-devices-module-property-settings-property-add-modal__no-results"
-            >
-              <template #icon>
-                <font-awesome-icon icon="ethernet" />
-              </template>
+						<fb-ui-no-results
+							v-if="!connectors.length"
+							:size="FbSizeTypes.LARGE"
+							:variant="FbUiVariantTypes.PRIMARY"
+							class="fb-devices-module-property-settings-property-add-modal__no-results"
+						>
+							<template #icon>
+								<font-awesome-icon icon="ethernet" />
+							</template>
 
-              <template #second-icon>
-                <font-awesome-icon icon="exclamation" />
-              </template>
+							<template #second-icon>
+								<font-awesome-icon icon="exclamation" />
+							</template>
 
-              {{ t('texts.noConnectors') }}
-            </fb-ui-no-results>
-          </fb-ui-items-container>
-        </template>
+							{{ t('texts.noConnectors') }}
+						</fb-ui-no-results>
+					</fb-ui-items-container>
+				</template>
 
-        <template v-if="activeView === ViewTypes.SELECT_DEVICE">
-          <fb-ui-items-container>
-            <template #heading>
-              {{ t('headings.deviceSelect') }}
-            </template>
+				<template v-if="activeView === ViewTypes.SELECT_DEVICE">
+					<fb-ui-items-container>
+						<template #heading>
+							{{ t('headings.deviceSelect') }}
+						</template>
 
-            <fb-ui-content :pv="FbSizeTypes.SMALL">
-              <fb-ui-item
-                v-for="device in devices"
-                :key="device.id"
-                :disabled="device.disabled"
-                :variant="FbUiItemVariantTypes.DEFAULT"
-                class="fb-devices-module-property-settings-property-add-modal__item"
-                @click="onSelectDevice(device)"
-              >
-                <template #icon>
-                  <devices-device-icon :device="device" />
-                </template>
+						<fb-ui-content :pv="FbSizeTypes.SMALL">
+							<fb-ui-item
+								v-for="deviceItem in devices"
+								:key="deviceItem.id"
+								:disabled="deviceItem.disabled"
+								:variant="FbUiItemVariantTypes.DEFAULT"
+								class="fb-devices-module-property-settings-property-add-modal__item"
+								@click="onSelectDevice(deviceItem)"
+							>
+								<template #icon>
+									<devices-device-icon :device="deviceItem" />
+								</template>
 
-                <template #heading>
-                  {{ useEntityTitle(device).value }}
-                </template>
+								<template #heading>
+									{{ useEntityTitle(deviceItem).value }}
+								</template>
 
-                <template
-                  v-if="device.hasComment"
-                  #subheading
-                >
-                  {{ device.comment }}
-                </template>
+								<template
+									v-if="deviceItem.hasComment"
+									#subheading
+								>
+									{{ deviceItem.comment }}
+								</template>
 
-                <template #button>
-                  <font-awesome-icon icon="chevron-right" />
-                </template>
-              </fb-ui-item>
-            </fb-ui-content>
+								<template #button>
+									<font-awesome-icon icon="chevron-right" />
+								</template>
+							</fb-ui-item>
+						</fb-ui-content>
 
-            <fb-ui-no-results
-              v-if="!devices.length"
-              :size="FbSizeTypes.LARGE"
-              :variant="FbUiVariantTypes.PRIMARY"
-              class="fb-devices-module-property-settings-property-add-modal__no-results"
-            >
-              <template #icon>
-                <font-awesome-icon icon="plug" />
-              </template>
+						<fb-ui-no-results
+							v-if="!devices.length"
+							:size="FbSizeTypes.LARGE"
+							:variant="FbUiVariantTypes.PRIMARY"
+							class="fb-devices-module-property-settings-property-add-modal__no-results"
+						>
+							<template #icon>
+								<font-awesome-icon icon="plug" />
+							</template>
 
-              <template #second-icon>
-                <font-awesome-icon icon="exclamation" />
-              </template>
+							<template #second-icon>
+								<font-awesome-icon icon="exclamation" />
+							</template>
 
-              {{ t('texts.noDevices') }}
-            </fb-ui-no-results>
-          </fb-ui-items-container>
-        </template>
+							{{ t('texts.noDevices') }}
+						</fb-ui-no-results>
+					</fb-ui-items-container>
+				</template>
 
-        <template v-if="activeView === ViewTypes.SELECT_CHANNEL">
-          <fb-ui-items-container>
-            <template #heading>
-              {{ t('headings.channelSelect') }}
-            </template>
+				<template v-if="activeView === ViewTypes.SELECT_CHANNEL">
+					<fb-ui-items-container>
+						<template #heading>
+							{{ t('headings.channelSelect') }}
+						</template>
 
-            <fb-ui-content :pv="FbSizeTypes.SMALL">
-              <fb-ui-item
-                v-for="channel in channels"
-                :key="channel.id"
-                :disabled="channel.disabled"
-                :variant="FbUiItemVariantTypes.DEFAULT"
-                class="fb-devices-module-property-settings-property-add-modal__item"
-                @click="onSelectChannel(channel)"
-              >
-                <template #icon>
-                  <font-awesome-icon icon="cube" />
-                </template>
+						<fb-ui-content :pv="FbSizeTypes.SMALL">
+							<fb-ui-item
+								v-for="channelItem in channels"
+								:key="channelItem.id"
+								:disabled="channelItem.disabled"
+								:variant="FbUiItemVariantTypes.DEFAULT"
+								class="fb-devices-module-property-settings-property-add-modal__item"
+								@click="onSelectChannel(channelItem)"
+							>
+								<template #icon>
+									<font-awesome-icon icon="cube" />
+								</template>
 
-                <template #heading>
-                  {{ useEntityTitle(channel).value }}
-                </template>
+								<template #heading>
+									{{ useEntityTitle(channelItem).value }}
+								</template>
 
-                <template
-                  v-if="channel.hasComment"
-                  #subheading
-                >
-                  {{ channel.comment }}
-                </template>
+								<template
+									v-if="channelItem.hasComment"
+									#subheading
+								>
+									{{ channelItem.comment }}
+								</template>
 
-                <template #button>
-                  <font-awesome-icon icon="chevron-right" />
-                </template>
-              </fb-ui-item>
-            </fb-ui-content>
+								<template #button>
+									<font-awesome-icon icon="chevron-right" />
+								</template>
+							</fb-ui-item>
+						</fb-ui-content>
 
-            <fb-ui-no-results
-              v-if="!channels.length"
-              :size="FbSizeTypes.LARGE"
-              :variant="FbUiVariantTypes.PRIMARY"
-              class="fb-devices-module-property-settings-property-add-modal__no-results"
-            >
-              <template #icon>
-                <font-awesome-icon icon="cube" />
-              </template>
+						<fb-ui-no-results
+							v-if="!channels.length"
+							:size="FbSizeTypes.LARGE"
+							:variant="FbUiVariantTypes.PRIMARY"
+							class="fb-devices-module-property-settings-property-add-modal__no-results"
+						>
+							<template #icon>
+								<font-awesome-icon icon="cube" />
+							</template>
 
-              <template #second-icon>
-                <font-awesome-icon icon="exclamation" />
-              </template>
+							<template #second-icon>
+								<font-awesome-icon icon="exclamation" />
+							</template>
 
-              {{ t('texts.noChannels') }}
-            </fb-ui-no-results>
-          </fb-ui-items-container>
-        </template>
+							{{ t('texts.noChannels') }}
+						</fb-ui-no-results>
+					</fb-ui-items-container>
+				</template>
 
-        <template v-if="activeView === ViewTypes.SELECT_PARENT">
-          <fb-ui-items-container>
-            <template #heading>
-              {{ t('headings.parentSelect') }}
-            </template>
+				<template v-if="activeView === ViewTypes.SELECT_PARENT">
+					<fb-ui-items-container>
+						<template #heading>
+							{{ t('headings.parentSelect') }}
+						</template>
 
-            <fb-ui-content :pv="FbSizeTypes.SMALL">
-              <fb-ui-item
-                v-for="property in properties"
-                :key="property.id"
-                :variant="FbUiItemVariantTypes.DEFAULT"
-                @click="onSelectParent(property)"
-              >
-                <template #icon>
-                  <properties-property-icon :property="property" />
-                </template>
+						<fb-ui-content :pv="FbSizeTypes.SMALL">
+							<fb-ui-item
+								v-for="propertyItem in properties"
+								:key="propertyItem.id"
+								:variant="FbUiItemVariantTypes.DEFAULT"
+								@click="onSelectParent(propertyItem)"
+							>
+								<template #icon>
+									<properties-property-icon :property="propertyItem" />
+								</template>
 
-                <template #heading>
-                  {{ useEntityTitle(property).value }}
-                </template>
+								<template #heading>
+									{{ useEntityTitle(propertyItem).value }}
+								</template>
 
-                <template #button>
-                  <font-awesome-icon icon="chevron-right" />
-                </template>
-              </fb-ui-item>
-            </fb-ui-content>
+								<template #button>
+									<font-awesome-icon icon="chevron-right" />
+								</template>
+							</fb-ui-item>
+						</fb-ui-content>
 
-            <fb-ui-no-results
-              v-if="!properties.length"
-              :size="FbSizeTypes.LARGE"
-              :variant="FbUiVariantTypes.PRIMARY"
-              class="fb-devices-module-property-settings-property-add-modal__no-results"
-            >
-              <template #icon>
-                <font-awesome-icon icon="cube" />
-              </template>
+						<fb-ui-no-results
+							v-if="!properties.length"
+							:size="FbSizeTypes.LARGE"
+							:variant="FbUiVariantTypes.PRIMARY"
+							class="fb-devices-module-property-settings-property-add-modal__no-results"
+						>
+							<template #icon>
+								<font-awesome-icon icon="cube" />
+							</template>
 
-              <template #second-icon>
-                <font-awesome-icon icon="exclamation" />
-              </template>
+							<template #second-icon>
+								<font-awesome-icon icon="exclamation" />
+							</template>
 
-              <template v-if="isDeviceProperty">
-                {{ t('texts.noDeviceProperties') }}
-              </template>
+							<template v-if="isDeviceProperty">
+								{{ t('texts.noDeviceProperties') }}
+							</template>
 
-              <template v-if="isChannelProperty">
-                {{ t('texts.noChannelProperties') }}
-              </template>
-            </fb-ui-no-results>
-          </fb-ui-items-container>
-        </template>
-      </template>
-    </template>
+							<template v-if="isChannelProperty">
+								{{ t('texts.noChannelProperties') }}
+							</template>
+						</fb-ui-no-results>
+					</fb-ui-items-container>
+				</template>
+			</template>
+		</template>
 
-    <template
-      v-if="!isConnectorProperty && props.property.type.type !== PropertyType.STATIC"
-      #footer
-    >
-      <template v-if="activeView === ViewTypes.SELECT_TYPE">
-        <fb-ui-button
-          :size="FbSizeTypes.LARGE"
-          :variant="FbUiButtonVariantTypes.LINK_DEFAULT"
-          uppercase
-          name="close"
-          @click="onClose"
-        >
-          {{ t('buttons.close.title') }}
-        </fb-ui-button>
-      </template>
+		<template
+			v-if="!isConnectorProperty && props.property.type.type !== PropertyType.STATIC"
+			#footer
+		>
+			<template v-if="activeView === ViewTypes.SELECT_TYPE">
+				<fb-ui-button
+					:size="FbSizeTypes.LARGE"
+					:variant="FbUiButtonVariantTypes.LINK_DEFAULT"
+					uppercase
+					name="close"
+					@click="onClose"
+				>
+					{{ t('buttons.close.title') }}
+				</fb-ui-button>
+			</template>
 
-      <template v-if="activeView === ViewTypes.NEW_PROPERTY || activeView === ViewTypes.MAPPED_PROPERTY">
-        <fb-ui-button
-          :size="FbSizeTypes.LARGE"
-          :variant="FbUiButtonVariantTypes.LINK_DEFAULT"
-          uppercase
-          name="cancel"
-          @click="onClose"
-        >
-          {{ t('buttons.cancel.title') }}
-        </fb-ui-button>
+			<template v-if="activeView === ViewTypes.NEW_PROPERTY || activeView === ViewTypes.MAPPED_PROPERTY">
+				<fb-ui-button
+					:size="FbSizeTypes.LARGE"
+					:variant="FbUiButtonVariantTypes.LINK_DEFAULT"
+					uppercase
+					name="cancel"
+					@click="onClose"
+				>
+					{{ t('buttons.cancel.title') }}
+				</fb-ui-button>
 
-        <fb-ui-button
-          :size="FbSizeTypes.LARGE"
-          :variant="FbUiButtonVariantTypes.OUTLINE_PRIMARY"
-          :loading="remoteFormResult === FbFormResultTypes.WORKING"
-          uppercase
-          name="submit"
-          @click="onSubmitForm"
-        >
-          {{ isDraft ? t('buttons.add.title') : t('buttons.save.title') }}
-        </fb-ui-button>
-      </template>
+				<fb-ui-button
+					:size="FbSizeTypes.LARGE"
+					:variant="FbUiButtonVariantTypes.OUTLINE_PRIMARY"
+					:loading="remoteFormResult === FbFormResultTypes.WORKING"
+					uppercase
+					name="submit"
+					@click="onSubmitForm"
+				>
+					{{ isDraft ? t('buttons.add.title') : t('buttons.save.title') }}
+				</fb-ui-button>
+			</template>
 
-      <template
-        v-if="activeView === ViewTypes.SELECT_CONNECTOR || activeView === ViewTypes.SELECT_DEVICE || activeView === ViewTypes.SELECT_CHANNEL || activeView === ViewTypes.SELECT_PARENT"
-      >
-        <fb-ui-button
-          :size="FbSizeTypes.LARGE"
-          :variant="FbUiButtonVariantTypes.LINK_DEFAULT"
-          uppercase
-          name="close"
-          @click="onClose"
-        >
-          {{ t('buttons.close.title') }}
-        </fb-ui-button>
+			<template
+				v-if="
+					activeView === ViewTypes.SELECT_CONNECTOR ||
+					activeView === ViewTypes.SELECT_DEVICE ||
+					activeView === ViewTypes.SELECT_CHANNEL ||
+					activeView === ViewTypes.SELECT_PARENT
+				"
+			>
+				<fb-ui-button
+					:size="FbSizeTypes.LARGE"
+					:variant="FbUiButtonVariantTypes.LINK_DEFAULT"
+					uppercase
+					name="close"
+					@click="onClose"
+				>
+					{{ t('buttons.close.title') }}
+				</fb-ui-button>
 
-        <fb-ui-button
-          :size="FbSizeTypes.LARGE"
-          :variant="FbUiButtonVariantTypes.OUTLINE_PRIMARY"
-          :loading="remoteFormResult === FbFormResultTypes.WORKING"
-          uppercase
-          name="back"
-          @click="onBack"
-        >
-          {{ t('buttons.back.title') }}
-        </fb-ui-button>
-      </template>
-    </template>
-  </fb-ui-modal-form>
+				<fb-ui-button
+					:size="FbSizeTypes.LARGE"
+					:variant="FbUiButtonVariantTypes.OUTLINE_PRIMARY"
+					:loading="remoteFormResult === FbFormResultTypes.WORKING"
+					uppercase
+					name="back"
+					@click="onBack"
+				>
+					{{ t('buttons.back.title') }}
+				</fb-ui-button>
+			</template>
+		</template>
+	</fb-ui-modal-form>
 </template>
 
 <script setup lang="ts">
-import {
-  computed,
-  ref,
-  watch,
-} from 'vue'
-import { useI18n } from 'vue-i18n'
-import { orderBy } from 'natural-orderby'
+import { computed, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { orderBy } from 'natural-orderby';
 
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import {
-  FbUiAlert,
-  FbUiButton,
-  FbUiContent,
-  FbUiItem,
-  FbUiItemsContainer,
-  FbUiModalForm,
-  FbUiNoResults,
-  FbFormResultTypes,
-  FbSizeTypes,
-  FbUiButtonVariantTypes,
-  FbUiItemVariantTypes,
-  FbUiModalLayoutTypes,
-  FbUiVariantTypes,
-} from '@fastybird/web-ui-library'
-import { PropertyType } from '@fastybird/metadata-library'
+	FbUiAlert,
+	FbUiButton,
+	FbUiContent,
+	FbUiItem,
+	FbUiItemsContainer,
+	FbUiModalForm,
+	FbUiNoResults,
+	FbFormResultTypes,
+	FbSizeTypes,
+	FbUiButtonVariantTypes,
+	FbUiItemVariantTypes,
+	FbUiModalLayoutTypes,
+	FbUiVariantTypes,
+} from '@fastybird/web-ui-library';
+import { PropertyType } from '@fastybird/metadata-library';
 
-import {
-  useBreakpoints,
-  useEntityTitle,
-} from '@/lib/composables'
-import {
-  useChannelProperties,
-  useChannels,
-  useConnectorProperties,
-  useConnectors,
-  useDeviceProperties,
-  useDevices,
-} from '@/lib/models'
-import {
-  IChannel,
-  IChannelProperty,
-  IConnector,
-  IConnectorProperty,
-  IDevice,
-  IDeviceProperty,
-} from '@/lib/models/types'
-import {
-  ConnectorsConnectorIcon,
-  DevicesDeviceIcon,
-  PropertiesPropertyIcon,
-  PropertySettingsPropertyForm,
-} from '@/lib/components'
+import { useBreakpoints, useEntityTitle } from '@/lib/composables';
+import { useChannelProperties, useChannels, useConnectorProperties, useConnectors, useDeviceProperties, useDevices } from '@/lib/models';
+import { IChannel, IChannelProperty, IConnector, IConnectorProperty, IDevice, IDeviceProperty } from '@/lib/models/types';
+import { ConnectorsConnectorIcon, DevicesDeviceIcon, PropertiesPropertyIcon, PropertySettingsPropertyForm } from '@/lib/components';
 
 enum ViewTypes {
-  SELECT_TYPE = 'selectType',
-  NEW_PROPERTY = 'newProperty',
-  MAPPED_PROPERTY = 'mappedProperty',
-  SELECT_CONNECTOR = 'selectConnector',
-  SELECT_DEVICE = 'selectDevice',
-  SELECT_CHANNEL = 'selectChannel',
-  SELECT_PARENT = 'selectParent',
+	SELECT_TYPE = 'selectType',
+	NEW_PROPERTY = 'newProperty',
+	MAPPED_PROPERTY = 'mappedProperty',
+	SELECT_CONNECTOR = 'selectConnector',
+	SELECT_DEVICE = 'selectDevice',
+	SELECT_CHANNEL = 'selectChannel',
+	SELECT_PARENT = 'selectParent',
 }
 
 interface IPropertySettingsPropertyModalProps {
-  connector?: IConnector
-  device?: IDevice
-  channel?: IChannel
-  property: IChannelProperty | IDeviceProperty | IConnectorProperty
+	connector?: IConnector;
+	device?: IDevice;
+	channel?: IChannel;
+	property: IChannelProperty | IDeviceProperty | IConnectorProperty;
 }
 
 interface IConnectorListItem extends IConnector {
-  disabled: boolean
+	disabled: boolean;
 }
 
 interface IDeviceListItem extends IDevice {
-  disabled: boolean
+	disabled: boolean;
 }
 
 interface IChannelListItem extends IChannel {
-  disabled: boolean
+	disabled: boolean;
 }
 
-const props = defineProps<IPropertySettingsPropertyModalProps>()
+const props = defineProps<IPropertySettingsPropertyModalProps>();
 
 const emit = defineEmits<{
-  (e: 'close', saved: boolean): void
-}>()
+	(e: 'close', saved: boolean): void;
+}>();
 
-const { t } = useI18n()
-const { isExtraSmallDevice, isSmallDevice } = useBreakpoints()
+const { t } = useI18n();
+const { isExtraSmallDevice, isSmallDevice } = useBreakpoints();
 
-const connectorsStore = useConnectors()
-const connectorPropertiesStore = useConnectorProperties()
-const devicesStore = useDevices()
-const devicePropertiesStore = useDeviceProperties()
-const channelsStore = useChannels()
-const channelPropertiesStore = useChannelProperties()
+const connectorsStore = useConnectors();
+const connectorPropertiesStore = useConnectorProperties();
+const devicesStore = useDevices();
+const devicePropertiesStore = useDeviceProperties();
+const channelsStore = useChannels();
+const channelPropertiesStore = useChannelProperties();
 
-const remoteFormSubmit = ref<boolean>(false)
-const remoteFormResult = ref<FbFormResultTypes>(FbFormResultTypes.NONE)
+const remoteFormSubmit = ref<boolean>(false);
+const remoteFormResult = ref<FbFormResultTypes>(FbFormResultTypes.NONE);
 
-const activeView = ref<ViewTypes>(ViewTypes.SELECT_TYPE)
+const activeView = ref<ViewTypes>(ViewTypes.SELECT_TYPE);
 
 const isDraft = computed<boolean>((): boolean => {
-  if (isChannelProperty.value) {
-    return props.channel ? props.channel.draft : false
-  }
+	if (isChannelProperty.value) {
+		return props.channel ? props.channel.draft : false;
+	}
 
-  if (isDeviceProperty.value) {
-    return props.device ? props.device.draft : false
-  }
+	if (isDeviceProperty.value) {
+		return props.device ? props.device.draft : false;
+	}
 
-  if (isConnectorProperty.value) {
-    return props.connector ? props.connector.draft : false
-  }
+	if (isConnectorProperty.value) {
+		return props.connector ? props.connector.draft : false;
+	}
 
-  return false
-})
+	return false;
+});
 
-const isConnectorProperty = computed<boolean>((): boolean => props.connector !== undefined)
-const isDeviceProperty = computed<boolean>((): boolean => props.device !== undefined && props.channel === undefined)
-const isChannelProperty = computed<boolean>((): boolean => props.device !== undefined && props.channel !== undefined)
+const isConnectorProperty = computed<boolean>((): boolean => props.connector !== undefined);
+const isDeviceProperty = computed<boolean>((): boolean => props.device !== undefined && props.channel === undefined);
+const isChannelProperty = computed<boolean>((): boolean => props.device !== undefined && props.channel !== undefined);
 
-const selectedConnector = ref<IConnector | null>(null)
-const selectedDevice = ref<IDevice | null>(null)
-const selectedChannel = ref<IChannel | null>(null)
+const selectedConnector = ref<IConnector | null>(null);
+const selectedDevice = ref<IDevice | null>(null);
+const selectedChannel = ref<IChannel | null>(null);
 
 const connectors = computed<IConnectorListItem[]>((): IConnectorListItem[] => {
-  return orderBy<IConnectorListItem>(
-    Object.values(connectorsStore.data)
-      .filter(connector => !connector.draft)
-      .map(connector => {
-        if (!isConnectorProperty.value) {
-          return { ...connector, ...{ disabled: false } }
-        }
+	return orderBy<IConnectorListItem>(
+		Object.values(connectorsStore.data)
+			.filter((connector) => !connector.draft)
+			.map((connector) => {
+				if (!isConnectorProperty.value) {
+					return { ...connector, ...{ disabled: false } };
+				}
 
-        return { ...connector, ...{ disabled: !('connector' in props.property && connector.id !== props.property.connector.id) } }
-      }),
-    [
-      (v): string => v.name ?? v.identifier,
-      (v): string => v.identifier,
-    ],
-    ['asc'],
-  )
-})
+				return { ...connector, ...{ disabled: !('connector' in props.property && connector.id !== props.property.connector.id) } };
+			}),
+		[(v): string => v.name ?? v.identifier, (v): string => v.identifier],
+		['asc']
+	);
+});
 
 const devices = computed<IDeviceListItem[]>((): IDeviceListItem[] => {
-  if (selectedConnector.value === null) {
-    return []
-  }
+	if (selectedConnector.value === null) {
+		return [];
+	}
 
-  return orderBy<IDeviceListItem>(
-    Object.values(devicesStore.findForConnector(selectedConnector.value.id))
-      .filter(device => !device.draft)
-      .map(device => {
-        if (!isDeviceProperty.value) {
-          return { ...device, ...{ disabled: false } }
-        }
+	return orderBy<IDeviceListItem>(
+		Object.values(devicesStore.findForConnector(selectedConnector.value.id))
+			.filter((device) => !device.draft)
+			.map((device) => {
+				if (!isDeviceProperty.value) {
+					return { ...device, ...{ disabled: false } };
+				}
 
-        return { ...device, ...{ disabled: !('device' in props.property && device.id !== props.property.device.id) } }
-      }),
-    [
-      (v): string => v.name ?? v.identifier,
-      (v): string => v.identifier,
-    ],
-    ['asc'],
-  )
-})
+				return { ...device, ...{ disabled: !('device' in props.property && device.id !== props.property.device.id) } };
+			}),
+		[(v): string => v.name ?? v.identifier, (v): string => v.identifier],
+		['asc']
+	);
+});
 
 const channels = computed<IChannelListItem[]>((): IChannelListItem[] => {
-  if (selectedDevice.value === null) {
-    return []
-  }
+	if (selectedDevice.value === null) {
+		return [];
+	}
 
-  return orderBy<IChannelListItem>(
-    Object.values(channelsStore.findForDevice(selectedDevice.value.id))
-      .filter(channel => !channel.draft)
-      .map(channel => {
-        if (!isChannelProperty.value) {
-          return { ...channel, ...{ disabled: false } }
-        }
+	return orderBy<IChannelListItem>(
+		Object.values(channelsStore.findForDevice(selectedDevice.value.id))
+			.filter((channel) => !channel.draft)
+			.map((channel) => {
+				if (!isChannelProperty.value) {
+					return { ...channel, ...{ disabled: false } };
+				}
 
-        return { ...channel, ...{ disabled: !('channel' in props.property && channel.id !== props.property.channel.id) } }
-      }),
-    [
-      (v): string => v.name ?? v.identifier,
-      (v): string => v.identifier,
-    ],
-    ['asc'],
-  )
-})
+				return { ...channel, ...{ disabled: !('channel' in props.property && channel.id !== props.property.channel.id) } };
+			}),
+		[(v): string => v.name ?? v.identifier, (v): string => v.identifier],
+		['asc']
+	);
+});
 
-const properties = computed<(IChannelProperty | IConnectorProperty | IDeviceProperty)[]>((): (IChannelProperty | IConnectorProperty | IDeviceProperty)[] => {
-  if (isChannelProperty.value) {
-    if (selectedChannel.value === null) {
-      return []
-    }
+const properties = computed<(IChannelProperty | IConnectorProperty | IDeviceProperty)[]>(
+	(): (IChannelProperty | IConnectorProperty | IDeviceProperty)[] => {
+		if (isChannelProperty.value) {
+			if (selectedChannel.value === null) {
+				return [];
+			}
 
-    return orderBy<IChannelProperty>(
-      Object.values(channelPropertiesStore.findForChannel(selectedChannel.value.id))
-        .filter(property => !property.draft && property.type.type === props.property.type.type && property.parent === null),
-      [
-        (v): string => v.name ?? v.identifier,
-        (v): string => v.identifier,
-      ],
-      ['asc'],
-    )
-  }
+			return orderBy<IChannelProperty>(
+				Object.values(channelPropertiesStore.findForChannel(selectedChannel.value.id)).filter(
+					(property) => !property.draft && property.type.type === props.property.type.type && property.parent === null
+				),
+				[(v): string => v.name ?? v.identifier, (v): string => v.identifier],
+				['asc']
+			);
+		}
 
-  if (isDeviceProperty.value) {
-    if (selectedDevice.value === null) {
-      return []
-    }
+		if (isDeviceProperty.value) {
+			if (selectedDevice.value === null) {
+				return [];
+			}
 
-    return orderBy<IDeviceProperty>(
-      Object.values(devicePropertiesStore.findForDevice(selectedDevice.value.id))
-        .filter(property => !property.draft)
-        .filter(property => property.type.type === props.property.type.type),
-      [
-        (v): string => v.name ?? v.identifier,
-        (v): string => v.identifier,
-      ],
-      ['asc'],
-    )
-  }
+			return orderBy<IDeviceProperty>(
+				Object.values(devicePropertiesStore.findForDevice(selectedDevice.value.id))
+					.filter((property) => !property.draft)
+					.filter((property) => property.type.type === props.property.type.type),
+				[(v): string => v.name ?? v.identifier, (v): string => v.identifier],
+				['asc']
+			);
+		}
 
-  if (isConnectorProperty.value) {
-    if (selectedConnector.value === null) {
-      return []
-    }
+		if (isConnectorProperty.value) {
+			if (selectedConnector.value === null) {
+				return [];
+			}
 
-    return orderBy<IConnectorProperty>(
-      Object.values(connectorPropertiesStore.findForConnector(selectedConnector.value.id))
-        .filter(property => !property.draft)
-        .filter(property => property.type.type === props.property.type.type),
-      [
-        (v): string => v.name ?? v.identifier,
-        (v): string => v.identifier,
-      ],
-      ['asc'],
-    )
-  }
+			return orderBy<IConnectorProperty>(
+				Object.values(connectorPropertiesStore.findForConnector(selectedConnector.value.id))
+					.filter((property) => !property.draft)
+					.filter((property) => property.type.type === props.property.type.type),
+				[(v): string => v.name ?? v.identifier, (v): string => v.identifier],
+				['asc']
+			);
+		}
 
-  return []
-})
+		return [];
+	}
+);
 
 const onSelectConnector = (connector: IConnectorListItem): void => {
-  if (connector.disabled) {
-    return
-  }
+	if (connector.disabled) {
+		return;
+	}
 
-  selectedConnector.value = connector
+	selectedConnector.value = connector;
 
-  activeView.value = isConnectorProperty.value ? ViewTypes.SELECT_PARENT : ViewTypes.SELECT_DEVICE
-}
+	activeView.value = isConnectorProperty.value ? ViewTypes.SELECT_PARENT : ViewTypes.SELECT_DEVICE;
+};
 
 const onSelectDevice = (device: IDeviceListItem): void => {
-  if (device.disabled) {
-    return
-  }
+	if (device.disabled) {
+		return;
+	}
 
-  selectedDevice.value = device
+	selectedDevice.value = device;
 
-  activeView.value = isDeviceProperty.value ? ViewTypes.SELECT_PARENT : ViewTypes.SELECT_CHANNEL
-}
+	activeView.value = isDeviceProperty.value ? ViewTypes.SELECT_PARENT : ViewTypes.SELECT_CHANNEL;
+};
 
 const onSelectChannel = (channel: IChannelListItem): void => {
-  if (channel.disabled) {
-    return
-  }
+	if (channel.disabled) {
+		return;
+	}
 
-  selectedChannel.value = channel
+	selectedChannel.value = channel;
 
-  activeView.value = ViewTypes.SELECT_PARENT
-}
+	activeView.value = ViewTypes.SELECT_PARENT;
+};
 
 const onSelectParent = (property: IChannelProperty | IConnectorProperty | IDeviceProperty): void => {
-  if (isDeviceProperty.value) {
-    devicePropertiesStore.edit({
-      id: props.property.id,
-      parent: property as IDeviceProperty,
-      data: {}
-    })
+	if (isDeviceProperty.value) {
+		devicePropertiesStore.edit({
+			id: props.property.id,
+			parent: property as IDeviceProperty,
+			data: {},
+		});
 
-    activeView.value = ViewTypes.MAPPED_PROPERTY
+		activeView.value = ViewTypes.MAPPED_PROPERTY;
+	} else if (isChannelProperty.value) {
+		channelPropertiesStore.edit({
+			id: props.property.id,
+			parent: property as IChannelProperty,
+			data: {},
+		});
 
-  } else if (isChannelProperty.value) {
-    channelPropertiesStore.edit({
-      id: props.property.id,
-      parent: property as IChannelProperty,
-      data: {}
-    })
-
-    activeView.value = ViewTypes.MAPPED_PROPERTY
-  }
-}
+		activeView.value = ViewTypes.MAPPED_PROPERTY;
+	}
+};
 
 const onSubmitForm = (): void => {
-  remoteFormSubmit.value = true
-}
+	remoteFormSubmit.value = true;
+};
 
 const onClose = (): void => {
-  emit('close', false)
-}
+	emit('close', false);
+};
 
 const onBack = (): void => {
-  if (activeView.value === ViewTypes.SELECT_CONNECTOR) {
-    activeView.value = ViewTypes.SELECT_TYPE
-
-  } else if (activeView.value === ViewTypes.SELECT_DEVICE) {
-    activeView.value = ViewTypes.SELECT_CONNECTOR
-
-  } else if (activeView.value === ViewTypes.SELECT_CHANNEL) {
-    activeView.value = ViewTypes.SELECT_DEVICE
-
-  } else if (activeView.value === ViewTypes.SELECT_PARENT) {
-    if (isChannelProperty.value) {
-      activeView.value = ViewTypes.SELECT_CHANNEL
-
-    } else if (isDeviceProperty.value) {
-      activeView.value = ViewTypes.SELECT_DEVICE
-
-    } else if (isConnectorProperty.value) {
-      activeView.value = ViewTypes.SELECT_CONNECTOR
-    }
-  }
-}
+	if (activeView.value === ViewTypes.SELECT_CONNECTOR) {
+		activeView.value = ViewTypes.SELECT_TYPE;
+	} else if (activeView.value === ViewTypes.SELECT_DEVICE) {
+		activeView.value = ViewTypes.SELECT_CONNECTOR;
+	} else if (activeView.value === ViewTypes.SELECT_CHANNEL) {
+		activeView.value = ViewTypes.SELECT_DEVICE;
+	} else if (activeView.value === ViewTypes.SELECT_PARENT) {
+		if (isChannelProperty.value) {
+			activeView.value = ViewTypes.SELECT_CHANNEL;
+		} else if (isDeviceProperty.value) {
+			activeView.value = ViewTypes.SELECT_DEVICE;
+		} else if (isConnectorProperty.value) {
+			activeView.value = ViewTypes.SELECT_CONNECTOR;
+		}
+	}
+};
 
 const onOpenView = (view: ViewTypes): void => {
-  activeView.value = view
-}
+	activeView.value = view;
+};
 
 const onAdded = (): void => {
-  emit('close', true)
-}
+	emit('close', true);
+};
 
 watch(
-  (): FbFormResultTypes => remoteFormResult.value,
-  (actual, previous): void => {
-    if (actual === FbFormResultTypes.NONE && previous === FbFormResultTypes.OK) {
-      emit('close', true)
-    }
-  },
-)
+	(): FbFormResultTypes => remoteFormResult.value,
+	(actual, previous): void => {
+		if (actual === FbFormResultTypes.NONE && previous === FbFormResultTypes.OK) {
+			emit('close', true);
+		}
+	}
+);
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>

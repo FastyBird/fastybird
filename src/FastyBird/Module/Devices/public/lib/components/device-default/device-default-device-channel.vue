@@ -1,179 +1,159 @@
 <template>
-  <fb-ui-items-container class="fb-devices-module-device-default-device-channel__container">
-    <template #heading>
-      {{ useEntityTitle(props.channelData.channel).value }}
-    </template>
+	<fb-ui-items-container class="fb-devices-module-device-default-device-channel__container">
+		<template #heading>
+			{{ useEntityTitle(props.channelData.channel).value }}
+		</template>
 
-    <fb-ui-content
-      :mh="isExtraSmallDevice ? FbSizeTypes.NONE : FbSizeTypes.SMALL"
-      :mv="isExtraSmallDevice ? FbSizeTypes.NONE : FbSizeTypes.MEDIUM"
-    >
-      <property-default-property
-        v-for="property in channelDynamicProperties"
-        :key="property.id"
-        :device="props.device"
-        :channel="props.channelData.channel"
-        :property="property"
-      />
-    </fb-ui-content>
+		<fb-ui-content
+			:mh="isExtraSmallDevice ? FbSizeTypes.NONE : FbSizeTypes.SMALL"
+			:mv="isExtraSmallDevice ? FbSizeTypes.NONE : FbSizeTypes.MEDIUM"
+		>
+			<property-default-property
+				v-for="property in channelDynamicProperties"
+				:key="property.id"
+				:device="props.device"
+				:channel="props.channelData.channel"
+				:property="property"
+			/>
+		</fb-ui-content>
 
-    <fb-ui-no-results
-      v-if="!channelDynamicProperties.length"
-      :size="FbSizeTypes.LARGE"
-      :variant="FbUiVariantTypes.PRIMARY"
-    >
-      <template #icon>
-        <font-awesome-icon icon="cube" />
-      </template>
+		<fb-ui-no-results
+			v-if="!channelDynamicProperties.length"
+			:size="FbSizeTypes.LARGE"
+			:variant="FbUiVariantTypes.PRIMARY"
+		>
+			<template #icon>
+				<font-awesome-icon icon="cube" />
+			</template>
 
-      <template #second-icon>
-        <font-awesome-icon icon="exclamation" />
-      </template>
+			<template #second-icon>
+				<font-awesome-icon icon="exclamation" />
+			</template>
 
-      {{ t('texts.noProperties') }}
-    </fb-ui-no-results>
+			{{ t('texts.noProperties') }}
+		</fb-ui-no-results>
 
-    <template #buttons>
-      <fb-ui-content :mr="FbSizeTypes.SMALL">
-        <fb-ui-button
-          v-if="props.editMode"
-          :variant="FbUiButtonVariantTypes.OUTLINE_PRIMARY"
-          :size="FbSizeTypes.EXTRA_SMALL"
-          @click="onOpenView(ViewTypes.ADD_PARAMETER)"
-        >
-          <template #icon>
-            <font-awesome-icon icon="plus" />
-          </template>
-          {{ t('buttons.addProperty.title') }}
-        </fb-ui-button>
-      </fb-ui-content>
-    </template>
-  </fb-ui-items-container>
+		<template #buttons>
+			<fb-ui-content :mr="FbSizeTypes.SMALL">
+				<fb-ui-button
+					v-if="props.editMode"
+					:variant="FbUiButtonVariantTypes.OUTLINE_PRIMARY"
+					:size="FbSizeTypes.EXTRA_SMALL"
+					@click="onOpenView(ViewTypes.ADD_PARAMETER)"
+				>
+					<template #icon>
+						<font-awesome-icon icon="plus" />
+					</template>
+					{{ t('buttons.addProperty.title') }}
+				</fb-ui-button>
+			</fb-ui-content>
+		</template>
+	</fb-ui-items-container>
 
-  <property-settings-property-add-modal
-    v-if="activeView === ViewTypes.ADD_PARAMETER && newProperty !== null"
-    :property="newProperty"
-    :channel="props.channelData.channel"
-    :device="props.device"
-    @close="onCloseAddProperty"
-  />
+	<property-settings-property-add-modal
+		v-if="activeView === ViewTypes.ADD_PARAMETER && newProperty !== null"
+		:property="newProperty"
+		:channel="props.channelData.channel"
+		:device="props.device"
+		@close="onCloseAddProperty"
+	/>
 </template>
 
 <script setup lang="ts">
-import {
-  computed,
-  ref,
-} from 'vue'
-import { useI18n } from 'vue-i18n'
-import { orderBy } from 'natural-orderby'
+import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { orderBy } from 'natural-orderby';
 
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import {
-  FbUiContent,
-  FbUiItemsContainer,
-  FbUiNoResults,
-  FbUiButton,
-  FbSizeTypes,
-  FbUiVariantTypes,
-  FbUiButtonVariantTypes,
-} from '@fastybird/web-ui-library'
-import {
-  DataType,
-  PropertyType,
-} from '@fastybird/metadata-library'
+	FbUiContent,
+	FbUiItemsContainer,
+	FbUiNoResults,
+	FbUiButton,
+	FbSizeTypes,
+	FbUiVariantTypes,
+	FbUiButtonVariantTypes,
+} from '@fastybird/web-ui-library';
+import { DataType, PropertyType } from '@fastybird/metadata-library';
 
-import {
-  useBreakpoints,
-  useEntityTitle,
-  useUuid,
-} from '@/lib/composables'
-import { useChannelProperties } from '@/lib/models'
-import {
-  IChannelProperty,
-  IDevice,
-  IDeviceControl,
-  IDeviceProperty,
-} from '@/lib/models/types'
-import {
-  PropertyDefaultProperty,
-  PropertySettingsPropertyAddModal,
-} from '@/lib/components'
-import { IChannelData } from '@/types/devices-module'
+import { useBreakpoints, useEntityTitle, useUuid } from '@/lib/composables';
+import { useChannelProperties } from '@/lib/models';
+import { IChannelProperty, IDevice, IDeviceControl, IDeviceProperty } from '@/lib/models/types';
+import { PropertyDefaultProperty, PropertySettingsPropertyAddModal } from '@/lib/components';
+import { IChannelData } from '@/types/devices-module';
 
 enum ViewTypes {
-  NONE = 'none',
-  ADD_PARAMETER = 'addParameter',
+	NONE = 'none',
+	ADD_PARAMETER = 'addParameter',
 }
 
 interface IDeviceDefaultDeviceChannelProps {
-  device: IDevice
-  deviceControls: IDeviceControl[]
-  deviceProperties: IDeviceProperty[]
-  channelData: IChannelData
-  editMode?: boolean
+	device: IDevice;
+	deviceControls: IDeviceControl[];
+	deviceProperties: IDeviceProperty[];
+	channelData: IChannelData;
+	editMode?: boolean;
 }
 
 const props = withDefaults(defineProps<IDeviceDefaultDeviceChannelProps>(), {
-  editMode: false,
-})
+	editMode: false,
+});
 
-const { t } = useI18n()
-const { generate: generateUuid } = useUuid()
-const { isExtraSmallDevice } = useBreakpoints()
+const { t } = useI18n();
+const { generate: generateUuid } = useUuid();
+const { isExtraSmallDevice } = useBreakpoints();
 
-const propertiesStore = useChannelProperties()
+const propertiesStore = useChannelProperties();
 
-const activeView = ref<ViewTypes>(ViewTypes.NONE)
+const activeView = ref<ViewTypes>(ViewTypes.NONE);
 
 const channelDynamicProperties = computed<IChannelProperty[]>((): IChannelProperty[] => {
-  return orderBy<IChannelProperty>(
-    props.channelData.properties.filter(property => property.type.type === PropertyType.DYNAMIC),
-    [
-      (v): string => v.name ?? v.identifier,
-      (v): string => v.identifier,
-    ],
-    ['asc'],
-  )
-})
+	return orderBy<IChannelProperty>(
+		props.channelData.properties.filter((property) => property.type.type === PropertyType.DYNAMIC),
+		[(v): string => v.name ?? v.identifier, (v): string => v.identifier],
+		['asc']
+	);
+});
 
-const newPropertyId = ref<string | null>(null)
-const newProperty = computed<IChannelProperty | null>((): IChannelProperty | null => newPropertyId.value ? propertiesStore.findById(newPropertyId.value) : null)
+const newPropertyId = ref<string | null>(null);
+const newProperty = computed<IChannelProperty | null>((): IChannelProperty | null =>
+	newPropertyId.value ? propertiesStore.findById(newPropertyId.value) : null
+);
 
 const onOpenView = async (view: ViewTypes): Promise<void> => {
-  if (view === ViewTypes.ADD_PARAMETER) {
-    const { id } = await propertiesStore.add({
-      channel: props.channelData.channel,
-      type: { source: props.channelData.channel.type.source, type: PropertyType.DYNAMIC, parent: 'channel' },
-      draft: true,
-      data: {
-        identifier: generateUuid(),
-        dataType: DataType.UNKNOWN,
-      },
-    })
+	if (view === ViewTypes.ADD_PARAMETER) {
+		const { id } = await propertiesStore.add({
+			channel: props.channelData.channel,
+			type: { source: props.channelData.channel.type.source, type: PropertyType.DYNAMIC, parent: 'channel' },
+			draft: true,
+			data: {
+				identifier: generateUuid(),
+				dataType: DataType.UNKNOWN,
+			},
+		});
 
-    newPropertyId.value = id
-  }
+		newPropertyId.value = id;
+	}
 
-  activeView.value = view
-}
+	activeView.value = view;
+};
 
 const onCloseView = async (): Promise<void> => {
-  if (activeView.value === ViewTypes.ADD_PARAMETER && newProperty.value?.draft) {
-    await propertiesStore.remove({ id: newProperty.value.id })
-    newPropertyId.value = null
-  }
+	if (activeView.value === ViewTypes.ADD_PARAMETER && newProperty.value?.draft) {
+		await propertiesStore.remove({ id: newProperty.value.id });
+		newPropertyId.value = null;
+	}
 
-  activeView.value = ViewTypes.NONE
-}
+	activeView.value = ViewTypes.NONE;
+};
 
 const onCloseAddProperty = (saved: boolean): void => {
-  if (saved) {
-    activeView.value = ViewTypes.NONE
-
-  } else {
-    onCloseView()
-  }
-}
+	if (saved) {
+		activeView.value = ViewTypes.NONE;
+	} else {
+		onCloseView();
+	}
+};
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>

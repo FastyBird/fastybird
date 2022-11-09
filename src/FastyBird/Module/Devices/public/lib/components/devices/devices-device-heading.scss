@@ -1,9 +1,9 @@
-@import "../@fastybird/web-ui-library/src/assets/variables/layout";
+@import '../@fastybird/web-ui-library/src/assets/variables/layout';
 
 .fb-devices-module-devices-device-heading {
-  &__button {
-    &.fb-theme-ui-button {
-      margin-right: $margin-sm;
-    }
-  }
+	&__button {
+		&.fb-theme-ui-button {
+			margin-right: $margin-sm;
+		}
+	}
 }

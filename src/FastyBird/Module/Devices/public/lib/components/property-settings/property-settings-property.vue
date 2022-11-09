@@ -1,116 +1,91 @@
 <template>
-  <fb-ui-item :variant="FbUiItemVariantTypes.LIST">
-    <template #heading>
-      {{ useEntityTitle(props.property).value }}
-    </template>
+	<fb-ui-item :variant="FbUiItemVariantTypes.LIST">
+		<template #heading>
+			{{ useEntityTitle(props.property).value }}
+		</template>
 
-    <template #detail>
-      <div class="fb-devices-module-property-settings-dynamic-property__buttons">
-        <fb-ui-button
-          :variant="FbUiButtonVariantTypes.OUTLINE_DEFAULT"
-          :size="FbSizeTypes.EXTRA_SMALL"
-          @click="onOpenView(ViewTypes.EDIT)"
-        >
-          <font-awesome-icon icon="pencil-alt" />
-          {{ t('buttons.edit.title') }}
-        </fb-ui-button>
+		<template #detail>
+			<div class="fb-devices-module-property-settings-dynamic-property__buttons">
+				<fb-ui-button
+					:variant="FbUiButtonVariantTypes.OUTLINE_DEFAULT"
+					:size="FbSizeTypes.EXTRA_SMALL"
+					@click="onOpenView(ViewTypes.EDIT)"
+				>
+					<font-awesome-icon icon="pencil-alt" />
+					{{ t('buttons.edit.title') }}
+				</fb-ui-button>
 
-        <fb-ui-button
-          :variant="FbUiButtonVariantTypes.OUTLINE_DANGER"
-          :size="FbSizeTypes.EXTRA_SMALL"
-          @click="onOpenView(ViewTypes.REMOVE)"
-        >
-          <font-awesome-icon icon="trash" />
-          {{ t('buttons.remove.title') }}
-        </fb-ui-button>
-      </div>
-    </template>
-  </fb-ui-item>
+				<fb-ui-button
+					:variant="FbUiButtonVariantTypes.OUTLINE_DANGER"
+					:size="FbSizeTypes.EXTRA_SMALL"
+					@click="onOpenView(ViewTypes.REMOVE)"
+				>
+					<font-awesome-icon icon="trash" />
+					{{ t('buttons.remove.title') }}
+				</fb-ui-button>
+			</div>
+		</template>
+	</fb-ui-item>
 
-  <property-settings-property-edit-modal
-    v-if="activeView === ViewTypes.EDIT"
-    :connector="props.connector"
-    :device="props.device"
-    :channel="props.channel"
-    :property="props.property"
-    :transparent-bg="true"
-    @close="onCloseView"
-  />
+	<property-settings-property-edit-modal
+		v-if="activeView === ViewTypes.EDIT"
+		:connector="props.connector"
+		:device="props.device"
+		:channel="props.channel"
+		:property="props.property"
+		:transparent-bg="true"
+		@close="onCloseView"
+	/>
 
-  <property-settings-property-remove
-    v-if="activeView === ViewTypes.REMOVE"
-    :connector="props.connector"
-    :device="props.device"
-    :channel="props.channel"
-    :property="props.property"
-    :transparent-bg="true"
-    @removed="onCloseView"
-    @close="onCloseView"
-  />
+	<property-settings-property-remove
+		v-if="activeView === ViewTypes.REMOVE"
+		:connector="props.connector"
+		:device="props.device"
+		:channel="props.channel"
+		:property="props.property"
+		:transparent-bg="true"
+		@removed="onCloseView"
+		@close="onCloseView"
+	/>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import {
-  FbUiButton,
-  FbUiItem,
-  FbSizeTypes,
-  FbUiItemVariantTypes,
-  FbUiButtonVariantTypes,
-} from '@fastybird/web-ui-library'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { FbUiButton, FbUiItem, FbSizeTypes, FbUiItemVariantTypes, FbUiButtonVariantTypes } from '@fastybird/web-ui-library';
 
-import {
-  useEntityTitle,
-  useRoutesNames,
-} from '@/lib/composables'
-import {
-  IChannel,
-  IChannelProperty,
-  IConnector,
-  IConnectorProperty,
-  IDevice,
-  IDeviceProperty,
-} from '@/lib/models/types'
-import {
-  PropertySettingsPropertyEditModal,
-  PropertySettingsPropertyRemove,
-} from '@/lib/components'
+import { useEntityTitle } from '@/lib/composables';
+import { IChannel, IChannelProperty, IConnector, IConnectorProperty, IDevice, IDeviceProperty } from '@/lib/models/types';
+import { PropertySettingsPropertyEditModal, PropertySettingsPropertyRemove } from '@/lib/components';
 
 enum ViewTypes {
-  NONE = 'none',
-  EDIT = 'edit',
-  REMOVE = 'remove',
+	NONE = 'none',
+	EDIT = 'edit',
+	REMOVE = 'remove',
 }
 
 interface IDeviceSettingsDevicePropertyProps {
-  connector?: IConnector
-  device?: IDevice
-  channel?: IChannel
-  property: IChannelProperty | IConnectorProperty | IDeviceProperty
+	connector?: IConnector;
+	device?: IDevice;
+	channel?: IChannel;
+	property: IChannelProperty | IConnectorProperty | IDeviceProperty;
 }
 
-const props = defineProps<IDeviceSettingsDevicePropertyProps>()
+const props = defineProps<IDeviceSettingsDevicePropertyProps>();
 
-const emit = defineEmits<{
-  (e: 'edit', id: string): void
-}>()
+const { t } = useI18n();
 
-const { routeNames } = useRoutesNames()
-
-const { t } = useI18n()
-
-const activeView = ref<ViewTypes>(ViewTypes.NONE)
+const activeView = ref<ViewTypes>(ViewTypes.NONE);
 
 const onOpenView = (view: ViewTypes): void => {
-  activeView.value = view
-}
+	activeView.value = view;
+};
 
 const onCloseView = (): void => {
-  activeView.value = ViewTypes.NONE
-}
+	activeView.value = ViewTypes.NONE;
+};
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>

@@ -1,1 +1,1 @@
-export { default as PropertiesPropertyIcon } from './properties-property-icon.vue'
+export { default as PropertiesPropertyIcon } from './properties-property-icon.vue';

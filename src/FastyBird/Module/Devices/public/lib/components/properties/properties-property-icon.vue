@@ -1,19 +1,15 @@
 <template>
-  <font-awesome-icon icon="lightbulb" />
+	<font-awesome-icon icon="lightbulb" />
 </template>
 
 <script setup lang="ts">
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
-import {
-  IChannelProperty,
-  IConnectorProperty,
-  IDeviceProperty,
-} from '@/lib/models/types'
+import { IChannelProperty, IConnectorProperty, IDeviceProperty } from '@/lib/models/types';
 
 interface IDevicesIconProps {
-  property: IDeviceProperty | IChannelProperty | IConnectorProperty
+	property: IDeviceProperty | IChannelProperty | IConnectorProperty;
 }
 
-const props = defineProps<IDevicesIconProps>()
+defineProps<IDevicesIconProps>();
 </script>

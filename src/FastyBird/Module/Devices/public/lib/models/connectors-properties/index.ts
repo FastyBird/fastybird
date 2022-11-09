@@ -1,3 +1,3 @@
-import { useConnectorProperties } from './store'
+import { useConnectorProperties } from './store';
 
-export default useConnectorProperties
+export default useConnectorProperties;

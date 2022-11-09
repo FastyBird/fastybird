@@ -1,3 +1,3 @@
-import { useDeviceAttributes } from './store'
+import { useDeviceAttributes } from './store';
 
-export default useDeviceAttributes
+export default useDeviceAttributes;

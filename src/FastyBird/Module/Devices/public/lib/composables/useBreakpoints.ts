@@ -1,18 +1,15 @@
-import { computed } from 'vue'
+import { computed } from 'vue';
 
-import {
-  breakpointsBootstrapV5,
-  useBreakpoints as vueUseBreakpoints,
-} from '@vueuse/core'
+import { breakpointsBootstrapV5, useBreakpoints as vueUseBreakpoints } from '@vueuse/core';
 
-const breakpoints = vueUseBreakpoints(breakpointsBootstrapV5)
+const breakpoints = vueUseBreakpoints(breakpointsBootstrapV5);
 
 export function useBreakpoints() {
-  const isExtraSmallDevice = computed<boolean>((): boolean => !breakpoints.md.value)
-  const isSmallDevice = computed<boolean>((): boolean => !breakpoints.lg.value)
+	const isExtraSmallDevice = computed<boolean>((): boolean => !breakpoints.md.value);
+	const isSmallDevice = computed<boolean>((): boolean => !breakpoints.lg.value);
 
-  return {
-    isExtraSmallDevice,
-    isSmallDevice,
-  }
+	return {
+		isExtraSmallDevice,
+		isSmallDevice,
+	};
 }

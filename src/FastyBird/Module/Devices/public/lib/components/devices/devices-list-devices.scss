@@ -1,47 +1,46 @@
-@import "../@fastybird/web-ui-library/src/assets/variables/colors";
-@import "../@fastybird/web-ui-library/src/assets/variables/layout";
-@import "../@fastybird/web-ui-library/src/assets/variables/texts";
-@import "../@fastybird/web-ui-library/src/assets/mixins/utilities";
+@import '../@fastybird/web-ui-library/src/assets/variables/colors';
+@import '../@fastybird/web-ui-library/src/assets/variables/layout';
+@import '../@fastybird/web-ui-library/src/assets/variables/texts';
+@import '../@fastybird/web-ui-library/src/assets/mixins/utilities';
 
 .fb-devices-module-devices-list-devices {
-  &__items {
+	&__items {
+		&-empty {
+			justify-content: center;
+			align-items: center;
+			min-height: 100%;
 
-    &-empty {
-      justify-content: center;
-      align-items: center;
-      min-height: 100%;
+			@include flex-row(nowrap);
+		}
+	}
 
-      @include flex-row(nowrap);
-    }
-  }
+	&__item {
+		border-right: 1px solid $gray-lighter;
+		margin-right: -1px;
+		cursor: pointer;
 
-  &__item {
-    border-right: 1px solid $gray-lighter;
-    margin-right: -1px;
-    cursor: pointer;
+		&-edit,
+		&-remove {
+			@include flex-row(nowrap);
 
-    &-edit,
-    &-remove {
-      @include flex-row(nowrap);
+			align-items: center;
+			cursor: pointer;
+			left: 0;
+			padding: 0 $padding-md;
+		}
 
-      align-items: center;
-      cursor: pointer;
-      left: 0;
-      padding: 0 $padding-md;
-    }
+		&-remove {
+			border-radius: 5px;
+			margin: 2px 5px;
+			background-color: $color-danger;
+			color: $color-danger-contrast;
+			font-size: $font-size-large;
+		}
 
-    &-remove {
-      border-radius: 5px;
-      margin: 2px 5px;
-      background-color: $color-danger;
-      color: $color-danger-contrast;
-      font-size: $font-size-large;
-    }
-
-    &-edit {
-      background-color: $color-primary;
-      color: $color-primary-contrast;
-      font-size: $font-size-large;
-    }
-  }
+		&-edit {
+			background-color: $color-primary;
+			color: $color-primary-contrast;
+			font-size: $font-size-large;
+		}
+	}
 }

@@ -1,3 +1,3 @@
-import { useDevices } from './store'
+import { useDevices } from './store';
 
-export default useDevices
+export default useDevices;

@@ -1,3 +1,3 @@
-import { useDeviceProperties } from './store'
+import { useDeviceProperties } from './store';
 
-export default useDeviceProperties
+export default useDeviceProperties;

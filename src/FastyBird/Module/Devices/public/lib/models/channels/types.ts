@@ -1,216 +1,210 @@
-import {
-  TJsonaModel,
-  TJsonApiBody,
-  TJsonApiData,
-  TJsonApiRelation,
-  TJsonApiRelationships,
-} from 'jsona/lib/JsonaTypes'
-import { _GettersTree } from 'pinia'
+import { TJsonaModel, TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships } from 'jsona/lib/JsonaTypes';
+import { _GettersTree } from 'pinia';
 
 import {
-  IChannelControlResponseData,
-  IChannelControlResponseModel,
-  IChannelPropertyResponseData,
-  IChannelPropertyResponseModel,
-  IDevice,
-  IDeviceResponseData,
-  IDeviceResponseModel,
-  IPlainRelation,
-} from '@/lib/models/types'
+	IChannelControlResponseData,
+	IChannelControlResponseModel,
+	IChannelPropertyResponseData,
+	IChannelPropertyResponseModel,
+	IDevice,
+	IDeviceResponseData,
+	IDeviceResponseModel,
+	IPlainRelation,
+} from '@/lib/models/types';
 
 // STORE
 // =====
 
 export interface IChannelsState {
-  semaphore: IChannelsStateSemaphore
-  firstLoad: string[]
-  data: { [key: string]: IChannel }
+	semaphore: IChannelsStateSemaphore;
+	firstLoad: string[];
+	data: { [key: string]: IChannel };
 }
 
 export interface IChannelsGetters extends _GettersTree<IChannelsState> {
-  firstLoadFinished: (state: IChannelsState) => ((deviceId: string) => boolean)
-  getting: (state: IChannelsState) => ((channelId: string) => boolean)
-  fetching: (state: IChannelsState) => ((deviceId: string | null) => boolean)
-  findById: (state: IChannelsState) => ((id: string) => IChannel | null)
-  findForDevice: (state: IChannelsState) => ((deviceId: string) => IChannel[])
+	firstLoadFinished: (state: IChannelsState) => (deviceId: string) => boolean;
+	getting: (state: IChannelsState) => (channelId: string) => boolean;
+	fetching: (state: IChannelsState) => (deviceId: string | null) => boolean;
+	findById: (state: IChannelsState) => (id: string) => IChannel | null;
+	findForDevice: (state: IChannelsState) => (deviceId: string) => IChannel[];
 }
 
 export interface IChannelsActions {
-  set: (payload: IChannelsSetActionPayload) => Promise<IChannel>
-  unset: (payload: IChannelsUnsetActionPayload) => void
-  get: (payload: IChannelsGetActionPayload) => Promise<boolean>
-  fetch: (payload: IChannelsFetchActionPayload) => Promise<boolean>
-  add: (payload: IChannelsAddActionPayload) => Promise<IChannel>
-  edit: (payload: IChannelsEditActionPayload) => Promise<IChannel>
-  save: (payload: IChannelsSaveActionPayload) => Promise<IChannel>
-  remove: (payload: IChannelsRemoveActionPayload) => Promise<boolean>
-  socketData: (payload: IChannelsSocketDataActionPayload) => Promise<boolean>
+	set: (payload: IChannelsSetActionPayload) => Promise<IChannel>;
+	unset: (payload: IChannelsUnsetActionPayload) => void;
+	get: (payload: IChannelsGetActionPayload) => Promise<boolean>;
+	fetch: (payload: IChannelsFetchActionPayload) => Promise<boolean>;
+	add: (payload: IChannelsAddActionPayload) => Promise<IChannel>;
+	edit: (payload: IChannelsEditActionPayload) => Promise<IChannel>;
+	save: (payload: IChannelsSaveActionPayload) => Promise<IChannel>;
+	remove: (payload: IChannelsRemoveActionPayload) => Promise<boolean>;
+	socketData: (payload: IChannelsSocketDataActionPayload) => Promise<boolean>;
 }
 
 // STORE STATE
 // ===========
 
 interface IChannelsStateSemaphore {
-  fetching: IChannelsStateSemaphoreFetching
-  creating: string[]
-  updating: string[]
-  deleting: string[]
+	fetching: IChannelsStateSemaphoreFetching;
+	creating: string[];
+	updating: string[];
+	deleting: string[];
 }
 
 interface IChannelsStateSemaphoreFetching {
-  items: string[]
-  item: string[]
+	items: string[];
+	item: string[];
 }
 
 export interface IChannel {
-  id: string
-  type: { source: string, entity: string }
+	id: string;
+	type: { source: string; entity: string };
 
-  draft: boolean
+	draft: boolean;
 
-  identifier: string
-  name: string | null
-  comment: string | null
+	identifier: string;
+	name: string | null;
+	comment: string | null;
 
-  // Relations
-  relationshipNames: string[]
+	// Relations
+	relationshipNames: string[];
 
-  controls: IPlainRelation[]
-  properties: IPlainRelation[]
+	controls: IPlainRelation[];
+	properties: IPlainRelation[];
 
-  device: IPlainRelation
+	device: IPlainRelation;
 
-  // Entity transformers
-  hasComment: boolean
+	// Entity transformers
+	hasComment: boolean;
 }
 
 // STORE DATA FACTORIES
 // ====================
 
 export interface IChannelRecordFactoryPayload {
-  id?: string
-  type: { source: string, entity?: string }
+	id?: string;
+	type: { source: string; entity?: string };
 
-  identifier: string
-  name?: string | null
-  comment?: string | null
+	identifier: string;
+	name?: string | null;
+	comment?: string | null;
 
-  // Relations
-  relationshipNames?: string[]
+	// Relations
+	relationshipNames?: string[];
 
-  controls?: (IPlainRelation | IChannelControlResponseModel)[]
-  properties?: (IPlainRelation | IChannelPropertyResponseModel)[]
+	controls?: (IPlainRelation | IChannelControlResponseModel)[];
+	properties?: (IPlainRelation | IChannelPropertyResponseModel)[];
 
-  deviceId: string
+	deviceId: string;
 }
 
 // STORE ACTIONS
 // =============
 
 export interface IChannelsSetActionPayload {
-  data: IChannelRecordFactoryPayload
+	data: IChannelRecordFactoryPayload;
 }
 
 export interface IChannelsUnsetActionPayload {
-  device?: IDevice
-  id?: string
+	device?: IDevice;
+	id?: string;
 }
 
 export interface IChannelsGetActionPayload {
-  device: IDevice
-  id: string
+	device: IDevice;
+	id: string;
 }
 
 export interface IChannelsFetchActionPayload {
-  device: IDevice
+	device: IDevice;
 }
 
 export interface IChannelsAddActionPayload {
-  id?: string
-  type: { source: string, entity?: string }
+	id?: string;
+	type: { source: string; entity?: string };
 
-  draft?: boolean
+	draft?: boolean;
 
-  device: IDevice
+	device: IDevice;
 
-  data: {
-    identifier: string
-    name?: string | null
-    comment?: string | null
-  }
+	data: {
+		identifier: string;
+		name?: string | null;
+		comment?: string | null;
+	};
 }
 
 export interface IChannelsEditActionPayload {
-  id: string
+	id: string;
 
-  data: {
-    identifier?: string
-    name?: string | null
-    comment?: string | null
-  }
+	data: {
+		identifier?: string;
+		name?: string | null;
+		comment?: string | null;
+	};
 }
 
 export interface IChannelsSaveActionPayload {
-  id: string
+	id: string;
 }
 
 export interface IChannelsRemoveActionPayload {
-  id: string
+	id: string;
 }
 
 export interface IChannelsSocketDataActionPayload {
-  source: string
-  routingKey: string
-  data: string
+	source: string;
+	routingKey: string;
+	data: string;
 }
 
 // API RESPONSES JSONS
 // ===================
 
 export interface IChannelResponseJson extends TJsonApiBody {
-  data: IChannelResponseData
-  included?: (IChannelPropertyResponseData | IChannelControlResponseData | IDeviceResponseData)[]
+	data: IChannelResponseData;
+	included?: (IChannelPropertyResponseData | IChannelControlResponseData | IDeviceResponseData)[];
 }
 
 export interface IChannelsResponseJson extends TJsonApiBody {
-  data: IChannelResponseData[]
-  included?: (IChannelPropertyResponseData | IChannelControlResponseData | IDeviceResponseData)[]
+	data: IChannelResponseData[];
+	included?: (IChannelPropertyResponseData | IChannelControlResponseData | IDeviceResponseData)[];
 }
 
 export interface IChannelResponseData extends TJsonApiData {
-  id: string
-  type: string
-  attributes: IChannelResponseDataAttributes
-  relationships: IChannelResponseDataRelationships
+	id: string;
+	type: string;
+	attributes: IChannelResponseDataAttributes;
+	relationships: IChannelResponseDataRelationships;
 }
 
 interface IChannelResponseDataAttributes {
-  identifier: string
-  name: string | null
-  comment: string | null
+	identifier: string;
+	name: string | null;
+	comment: string | null;
 }
 
 interface IChannelResponseDataRelationships extends TJsonApiRelationships {
-  properties: TJsonApiRelation
-  controls: TJsonApiRelation
-  device: TJsonApiRelation
+	properties: TJsonApiRelation;
+	controls: TJsonApiRelation;
+	device: TJsonApiRelation;
 }
 
 // API RESPONSE MODELS
 // ===================
 
 export interface IChannelResponseModel extends TJsonaModel {
-  id: string
-  type: { source: string, entity: string }
+	id: string;
+	type: { source: string; entity: string };
 
-  identifier: string
-  name: string | null
-  comment: string | null
+	identifier: string;
+	name: string | null;
+	comment: string | null;
 
-  // Relations
-  relationshipNames: string[]
+	// Relations
+	relationshipNames: string[];
 
-  properties: (IPlainRelation | IChannelPropertyResponseModel)[]
-  controls: (IPlainRelation | IChannelControlResponseModel)[]
-  device: IPlainRelation | IDeviceResponseModel
+	properties: (IPlainRelation | IChannelPropertyResponseModel)[];
+	controls: (IPlainRelation | IChannelControlResponseModel)[];
+	device: IPlainRelation | IDeviceResponseModel;
 }

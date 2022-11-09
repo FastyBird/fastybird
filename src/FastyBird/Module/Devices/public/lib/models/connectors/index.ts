@@ -1,3 +1,3 @@
-import { useConnectors } from './store'
+import { useConnectors } from './store';
 
-export default useConnectors
+export default useConnectors;

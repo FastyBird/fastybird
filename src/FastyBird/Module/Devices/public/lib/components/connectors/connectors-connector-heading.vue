@@ -1,80 +1,75 @@
 <template>
-  <fb-layout-preview-heading>
-    <template #heading>
-      {{ useEntityTitle(props.connector).value }}
-    </template>
+	<fb-layout-preview-heading>
+		<template #heading>
+			{{ useEntityTitle(props.connector).value }}
+		</template>
 
-    <template
-      v-if="props.connector.hasComment"
-      #subheading
-    >
-      {{ props.connector.comment }}
-    </template>
+		<template
+			v-if="props.connector.hasComment"
+			#subheading
+		>
+			{{ props.connector.comment }}
+		</template>
 
-    <template #icon>
-      <connectors-connector-icon :connector="props.connector" />
-    </template>
+		<template #icon>
+			<connectors-connector-icon :connector="props.connector" />
+		</template>
 
-    <template #buttons>
-      <fb-ui-button
-        v-if="props.editMode"
-        :variant="FbUiButtonVariantTypes.OUTLINE_DANGER"
-        :size="FbSizeTypes.EXTRA_SMALL"
-        class="fb-devices-module-connectors-connector-heading__button"
-        @click="$emit('remove')"
-      >
-        <template #icon>
-          <font-awesome-icon icon="trash-alt" />
-        </template>
-        {{ t('buttons.remove.title') }}
-      </fb-ui-button>
+		<template #buttons>
+			<fb-ui-button
+				v-if="props.editMode"
+				:variant="FbUiButtonVariantTypes.OUTLINE_DANGER"
+				:size="FbSizeTypes.EXTRA_SMALL"
+				class="fb-devices-module-connectors-connector-heading__button"
+				@click="emit('remove')"
+			>
+				<template #icon>
+					<font-awesome-icon icon="trash-alt" />
+				</template>
+				{{ t('buttons.remove.title') }}
+			</fb-ui-button>
 
-      <fb-ui-button
-        v-if="props.editMode"
-        :variant="FbUiButtonVariantTypes.OUTLINE_PRIMARY"
-        :size="FbSizeTypes.EXTRA_SMALL"
-        class="fb-devices-module-connectors-connector-heading__button"
-        @click="$emit('configure')"
-      >
-        <template #icon>
-          <font-awesome-icon icon="cogs" />
-        </template>
-        {{ t('buttons.configure.title') }}
-      </fb-ui-button>
-    </template>
-  </fb-layout-preview-heading>
+			<fb-ui-button
+				v-if="props.editMode"
+				:variant="FbUiButtonVariantTypes.OUTLINE_PRIMARY"
+				:size="FbSizeTypes.EXTRA_SMALL"
+				class="fb-devices-module-connectors-connector-heading__button"
+				@click="emit('configure')"
+			>
+				<template #icon>
+					<font-awesome-icon icon="cogs" />
+				</template>
+				{{ t('buttons.configure.title') }}
+			</fb-ui-button>
+		</template>
+	</fb-layout-preview-heading>
 </template>
 
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n'
+import { useI18n } from 'vue-i18n';
 
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import {
-  FbLayoutPreviewHeading,
-  FbUiButton,
-  FbSizeTypes,
-  FbUiButtonVariantTypes,
-} from '@fastybird/web-ui-library'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { FbLayoutPreviewHeading, FbUiButton, FbSizeTypes, FbUiButtonVariantTypes } from '@fastybird/web-ui-library';
 
-import { useEntityTitle } from '@/lib/composables'
-import { IConnector } from '@/lib/models/types'
-import { ConnectorsConnectorIcon } from '@/lib/components'
+import { useEntityTitle } from '@/lib/composables';
+import { IConnector } from '@/lib/models/types';
+import { ConnectorsConnectorIcon } from '@/lib/components';
 
 interface IConnectorsPreviewHeadingProps {
-  connector: IConnector
-  editMode?: boolean
+	connector: IConnector;
+	editMode?: boolean;
 }
 
 const props = withDefaults(defineProps<IConnectorsPreviewHeadingProps>(), {
-  editMode: false
-})
+	editMode: false,
+});
 
 const emit = defineEmits<{
-  (e: 'remove'): void
-  (e: 'configure'): void
-}>()
+	(e: 'remove'): void;
+	(e: 'configure'): void;
+}>();
 
-const { t } = useI18n()
+const { t } = useI18n();
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>

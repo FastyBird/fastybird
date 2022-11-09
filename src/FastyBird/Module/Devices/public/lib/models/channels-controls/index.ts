@@ -1,3 +1,3 @@
-import { useChannelControls } from './store'
+import { useChannelControls } from './store';
 
-export default useChannelControls
+export default useChannelControls;

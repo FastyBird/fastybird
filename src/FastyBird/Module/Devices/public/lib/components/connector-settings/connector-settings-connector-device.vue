@@ -1,98 +1,87 @@
 <template>
-  <fb-ui-item :variant="FbUiItemVariantTypes.LIST">
-    <template #heading>
-      {{ useEntityTitle(props.deviceData.device).value }}
-    </template>
+	<fb-ui-item :variant="FbUiItemVariantTypes.LIST">
+		<template #heading>
+			{{ useEntityTitle(props.deviceData.device).value }}
+		</template>
 
-    <template
-      v-if="props.deviceData.device.hasComment"
-      #subheading
-    >
-      {{ props.deviceData.device.comment }}
-    </template>
+		<template
+			v-if="props.deviceData.device.hasComment"
+			#subheading
+		>
+			{{ props.deviceData.device.comment }}
+		</template>
 
-    <template #detail>
-      <div class="fb-devices-module-connector-settings-connector-device__buttons">
-        <fb-ui-button
-          :variant="FbUiButtonVariantTypes.OUTLINE_DEFAULT"
-          :size="FbSizeTypes.EXTRA_SMALL"
-          @click="$emit('edit', props.deviceData.device.id)"
-        >
-          <font-awesome-icon icon="pencil-alt" />
-          {{ t('buttons.edit.title') }}
-        </fb-ui-button>
+		<template #detail>
+			<div class="fb-devices-module-connector-settings-connector-device__buttons">
+				<fb-ui-button
+					:variant="FbUiButtonVariantTypes.OUTLINE_DEFAULT"
+					:size="FbSizeTypes.EXTRA_SMALL"
+					@click="emit('edit', props.deviceData.device.id)"
+				>
+					<font-awesome-icon icon="pencil-alt" />
+					{{ t('buttons.edit.title') }}
+				</fb-ui-button>
 
-        <fb-ui-button
-          :variant="FbUiButtonVariantTypes.OUTLINE_DANGER"
-          :size="FbSizeTypes.EXTRA_SMALL"
-          @click="onOpenView(ViewTypes.REMOVE)"
-        >
-          <font-awesome-icon icon="trash" />
-          {{ t('buttons.remove.title') }}
-        </fb-ui-button>
-      </div>
-    </template>
-  </fb-ui-item>
+				<fb-ui-button
+					:variant="FbUiButtonVariantTypes.OUTLINE_DANGER"
+					:size="FbSizeTypes.EXTRA_SMALL"
+					@click="onOpenView(ViewTypes.REMOVE)"
+				>
+					<font-awesome-icon icon="trash" />
+					{{ t('buttons.remove.title') }}
+				</fb-ui-button>
+			</div>
+		</template>
+	</fb-ui-item>
 
-  <device-settings-device-remove
-    v-if="activeView === ViewTypes.REMOVE"
-    :device="props.deviceData.device"
-    :transparent-bg="true"
-    @removed="onCloseView"
-    @close="onCloseView"
-  />
+	<device-settings-device-remove
+		v-if="activeView === ViewTypes.REMOVE"
+		:device="props.deviceData.device"
+		:transparent-bg="true"
+		@removed="onCloseView"
+		@close="onCloseView"
+	/>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import {
-  FbUiButton,
-  FbUiItem,
-  FbSizeTypes,
-  FbUiItemVariantTypes,
-  FbUiButtonVariantTypes,
-} from '@fastybird/web-ui-library'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { FbUiButton, FbUiItem, FbSizeTypes, FbUiItemVariantTypes, FbUiButtonVariantTypes } from '@fastybird/web-ui-library';
 
-import {
-  useEntityTitle,
-  useRoutesNames,
-} from '@/lib/composables'
-import { IConnector } from '@/lib/models/types'
-import { DeviceSettingsDeviceRemove } from '@/lib/components'
-import { IDeviceData } from '@/types/devices-module'
+import { useEntityTitle } from '@/lib/composables';
+import { IConnector } from '@/lib/models/types';
+import { DeviceSettingsDeviceRemove } from '@/lib/components';
+import { IDeviceData } from '@/types/devices-module';
 
 enum ViewTypes {
-  NONE = 'none',
-  REMOVE = 'remove',
+	NONE = 'none',
+	REMOVE = 'remove',
 }
 
 interface IConnectorSettingsConnectorPropertyProps {
-  connector: IConnector
-  deviceData: IDeviceData
+	connector: IConnector;
+	deviceData: IDeviceData;
 }
 
-const props = defineProps<IConnectorSettingsConnectorPropertyProps>()
+const props = defineProps<IConnectorSettingsConnectorPropertyProps>();
 
 const emit = defineEmits<{
-  (e: 'edit', id: string): void
-}>()
+	(e: 'edit', id: string): void;
+}>();
 
-const { routeNames } = useRoutesNames()
+const { t } = useI18n();
 
-const { t } = useI18n()
-
-const activeView = ref<ViewTypes>(ViewTypes.NONE)
+const activeView = ref<ViewTypes>(ViewTypes.NONE);
 
 const onOpenView = (view: ViewTypes): void => {
-  activeView.value = view
-}
+	activeView.value = view;
+};
 
 const onCloseView = (): void => {
-  activeView.value = ViewTypes.NONE
-}
+	activeView.value = ViewTypes.NONE;
+};
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>

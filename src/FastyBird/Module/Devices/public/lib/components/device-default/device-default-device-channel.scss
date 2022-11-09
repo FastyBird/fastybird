@@ -1,13 +1,13 @@
-@import "../@fastybird/web-ui-library/src/assets/variables/layout";
+@import '../@fastybird/web-ui-library/src/assets/variables/layout';
 
 .fb-devices-module-device-default-device-channel {
-  &__container {
-    :deep(.fb-theme-ui-items-container__heading) {
-      padding-left: $padding-sm;
+	&__container {
+		:deep(.fb-theme-ui-items-container__heading) {
+			padding-left: $padding-sm;
 
-      h3 {
-        font-size: 1.7rem;
-      }
-    }
-  }
+			h3 {
+				font-size: 1.7rem;
+			}
+		}
+	}
 }

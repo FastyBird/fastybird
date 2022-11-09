@@ -1,6 +1,5 @@
-import ExceptionError from '@/lib/errors/ExceptionError'
+import ExceptionError from '@/lib/errors/ExceptionError';
 
-class ApiError extends ExceptionError {
-}
+class ApiError extends ExceptionError {}
 
-export default ApiError
+export default ApiError;

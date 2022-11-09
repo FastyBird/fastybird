@@ -1,3 +1,3 @@
-import { useConnectorControls } from './store'
+import { useConnectorControls } from './store';
 
-export default useConnectorControls
+export default useConnectorControls;

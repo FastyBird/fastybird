@@ -1,3 +1,3 @@
-import { useDeviceControls } from './store'
+import { useDeviceControls } from './store';
 
-export default useDeviceControls
+export default useDeviceControls;

@@ -1,10 +1,10 @@
-@import "../@fastybird/web-ui-library/src/assets/mixins/utilities";
+@import '../@fastybird/web-ui-library/src/assets/mixins/utilities';
 
 .fb-devices-module-devices-preview-info {
-  &__container {
-    justify-content: center;
-    height: 100%;
+	&__container {
+		justify-content: center;
+		height: 100%;
 
-    @include flex-column(nowrap);
-  }
+		@include flex-column(nowrap);
+	}
 }

@@ -1,3 +1,3 @@
-import { useChannelProperties } from './store'
+import { useChannelProperties } from './store';
 
-export default useChannelProperties
+export default useChannelProperties;
