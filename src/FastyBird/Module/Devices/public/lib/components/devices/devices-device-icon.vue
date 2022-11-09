@@ -24,7 +24,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import {
   FbUiIconWithChild,
   FbUiVariantTypes,
-} from '@fastybird/web-ui-theme'
+} from '@fastybird/web-ui-library'
 import { ConnectionState } from '@fastybird/metadata-library'
 import { useWampV1Client } from '@fastybird/ws-exchange-plugin'
 

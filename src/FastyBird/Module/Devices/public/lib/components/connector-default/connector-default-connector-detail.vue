@@ -46,7 +46,7 @@ import {
   FbUiScrollShadow,
   FbSizeTypes,
   FbUiVariantTypes,
-} from '@fastybird/web-ui-theme'
+} from '@fastybird/web-ui-library'
 
 import { useBreakpoints } from '@/lib/composables'
 import {

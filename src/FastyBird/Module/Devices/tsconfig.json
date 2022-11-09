@@ -1,29 +1,28 @@
 {
   "compilerOptions" : {
-    "target" : "esnext",
-    "module" : "esnext",
-    "strict" : true,
-    "declaration" : true,
-    "declarationDir" : "dist/dts",
-    "emitDeclarationOnly" : true,
-    "noUnusedLocals" : true,
-    "noUnusedParameters" : true,
-    "importHelpers" : true,
-    "moduleResolution" : "node",
-    "experimentalDecorators" : true,
+    "target": "esnext",
+    "module": "esnext",
+    "strict": true,
+    "declaration": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "importHelpers": true,
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
     "resolveJsonModule": true,
-    "esModuleInterop" : true,
-    "allowSyntheticDefaultImports" : true,
-    "sourceMap" : true,
-    "baseUrl" : "public",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
+    "baseUrl": "public",
     "types" : [
       "@fastybird/metadata-library",
+      "@fastybird/web-ui-library",
       "@fastybird/ws-exchange-plugin",
-      "@fastybird/web-ui-theme",
       "@types/lodash",
       "@types/uuid",
       "node",
-      "vue"
+      "vue",
+      "vite/client"
     ],
     "paths" : {
       "@/*" : [
@@ -38,9 +37,14 @@
     ]
   },
   "include" : [
-    "./public/**/*.ts"
+    "public/**/*.ts",
+    "public/**/*.d.ts",
+    "public/**/*.vue"
   ],
   "exclude" : [
+    "public/**/*.stories.ts",
+    "public/**/stories.ts",
+    "public/**/*.spec.ts",
     "node_modules",
     "dist"
   ]

@@ -46,7 +46,7 @@ import {
   FbFormInput,
   FbFormTextArea,
   FbSizeTypes,
-} from '@fastybird/web-ui-theme'
+} from '@fastybird/web-ui-library'
 
 import { IDevice } from '@/lib/models/types'
 

@@ -92,7 +92,7 @@ import {
   FbMenuItemTypes,
   FbUiButtonVariantTypes,
   FbFormResultTypes,
-} from '@fastybird/web-ui-theme'
+} from '@fastybird/web-ui-library'
 
 import {
   useBreakpoints,

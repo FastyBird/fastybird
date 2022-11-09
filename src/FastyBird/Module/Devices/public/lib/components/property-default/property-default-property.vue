@@ -58,7 +58,7 @@ import { useI18n } from 'vue-i18n'
 import {
   FbUiItem,
   FbUiItemVariantTypes,
-} from '@fastybird/web-ui-theme'
+} from '@fastybird/web-ui-library'
 import {
   DataType,
   PropertyType,

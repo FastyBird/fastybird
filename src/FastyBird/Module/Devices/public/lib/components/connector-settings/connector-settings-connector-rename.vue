@@ -33,7 +33,7 @@ import {
   FbFormInput,
   FbFormTextArea,
   FbSizeTypes,
-} from '@fastybird/web-ui-theme'
+} from '@fastybird/web-ui-library'
 
 interface IConnectorSettingsConnectorRenameModel {
   identifier: string

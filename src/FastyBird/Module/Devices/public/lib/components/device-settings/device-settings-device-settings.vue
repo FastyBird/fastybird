@@ -222,7 +222,7 @@ import {
   FbSizeTypes,
   FbUiButtonVariantTypes,
   FbUiDividerVariantTypes,
-} from '@fastybird/web-ui-theme'
+} from '@fastybird/web-ui-library'
 import {
   DataType,
   ModuleSource,

@@ -17,7 +17,7 @@
 import {
   FbUiItem,
   FbUiItemVariantTypes,
-} from '@fastybird/web-ui-theme'
+} from '@fastybird/web-ui-library'
 
 import {
   useBreakpoints,

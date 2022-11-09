@@ -112,7 +112,7 @@ import {
   FbSizeTypes,
   FbFormResultTypes,
   IFbFormSelectItem,
-} from '@fastybird/web-ui-theme'
+} from '@fastybird/web-ui-library'
 import {
   DataType,
   PropertyType,

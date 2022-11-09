@@ -83,7 +83,7 @@ import {
   FbSizeTypes,
   FbUiItemVariantTypes,
   FbUiVariantTypes,
-} from '@fastybird/web-ui-theme'
+} from '@fastybird/web-ui-library'
 
 import { useEntityTitle } from '@/lib/composables'
 import { IDevice } from '@/lib/models/types'

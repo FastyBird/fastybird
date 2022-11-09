@@ -82,7 +82,7 @@ import {
   FbUiButton,
   FbSizeTypes,
   FbUiButtonVariantTypes,
-} from '@fastybird/web-ui-theme'
+} from '@fastybird/web-ui-library'
 
 interface IDevicesPreviewToolbarProps {
   page: number

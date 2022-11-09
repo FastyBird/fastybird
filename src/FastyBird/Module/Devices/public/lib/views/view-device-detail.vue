@@ -139,7 +139,7 @@ import {
   FbLayoutOffCanvas,
   FbUiComponentLoading,
   FbMenuItemTypes,
-} from '@fastybird/web-ui-theme'
+} from '@fastybird/web-ui-library'
 
 import {
   useBreakpoints,

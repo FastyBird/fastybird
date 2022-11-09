@@ -86,7 +86,7 @@ import {
   FbUiContent,
   FbSizeTypes,
   FbUiButtonVariantTypes,
-} from '@fastybird/web-ui-theme'
+} from '@fastybird/web-ui-library'
 
 interface IConnectorsDesktopInfoProps {
   total: number

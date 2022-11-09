@@ -34,8 +34,7 @@
     "bootstrap": "lerna bootstrap"
   },
   "devDependencies": {
-    "lerna": "^6.0.1"
+    "lerna": "^6.0"
   },
-  "dependencies": {
-  }
+  "dependencies": {}
 }

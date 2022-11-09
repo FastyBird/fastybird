@@ -54,7 +54,7 @@ import {
   FbUiButton,
   FbSizeTypes,
   FbUiButtonVariantTypes,
-} from '@fastybird/web-ui-theme'
+} from '@fastybird/web-ui-library'
 
 import { useEntityTitle } from '@/lib/composables'
 import { IConnector } from '@/lib/models/types'

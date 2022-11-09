@@ -76,7 +76,7 @@ import {
   FbSizeTypes,
   FbUiVariantTypes,
   FbUiButtonVariantTypes,
-} from '@fastybird/web-ui-theme'
+} from '@fastybird/web-ui-library'
 import {
   DataType,
   PropertyType,

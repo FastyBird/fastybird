@@ -54,7 +54,7 @@ import {
   FbUiSpinner,
   FbSizeTypes,
   FbUiVariantTypes,
-} from '@fastybird/web-ui-theme'
+} from '@fastybird/web-ui-library'
 import {
   ActionRoutes,
   DataType,

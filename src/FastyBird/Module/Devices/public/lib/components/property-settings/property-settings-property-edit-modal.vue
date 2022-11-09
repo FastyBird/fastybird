@@ -44,7 +44,7 @@ import {
   FbUiModalForm,
   FbFormResultTypes,
   FbUiModalLayoutTypes,
-} from '@fastybird/web-ui-theme'
+} from '@fastybird/web-ui-library'
 
 import { useBreakpoints } from '@/lib/composables'
 import {

@@ -60,7 +60,7 @@ import {
   FbSizeTypes,
   FbUiItemVariantTypes,
   FbUiButtonVariantTypes,
-} from '@fastybird/web-ui-theme'
+} from '@fastybird/web-ui-library'
 
 import {
   useEntityTitle,

@@ -406,7 +406,7 @@ import {
   FbUiItemVariantTypes,
   FbUiModalLayoutTypes,
   FbUiVariantTypes,
-} from '@fastybird/web-ui-theme'
+} from '@fastybird/web-ui-library'
 import { PropertyType } from '@fastybird/metadata-library'
 
 import {

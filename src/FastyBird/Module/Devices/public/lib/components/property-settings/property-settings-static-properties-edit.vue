@@ -32,7 +32,7 @@ import {
   FbFormInput,
   FbUiContent,
   FbSizeTypes,
-} from '@fastybird/web-ui-theme'
+} from '@fastybird/web-ui-library'
 import { DataType } from '@fastybird/metadata-library'
 
 import { useEntityTitle } from '@/lib/composables'
