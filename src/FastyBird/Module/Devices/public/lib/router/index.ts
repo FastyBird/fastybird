@@ -19,6 +19,15 @@ const moduleRoutes: RouteRecordRaw[] = [
 				},
 				children: [
 					{
+						path: 'connect',
+						name: routeNames.deviceConnect,
+						component: () => import('@/lib/views/view-device-connect.vue'),
+						props: true,
+						meta: {
+							guards: ['authenticated'],
+						},
+					},
+					{
 						path: ':id',
 						name: routeNames.deviceDetail,
 						component: () => import('@/lib/views/view-device-detail.vue'),
@@ -66,6 +75,15 @@ const moduleRoutes: RouteRecordRaw[] = [
 					guards: ['authenticated'],
 				},
 				children: [
+					{
+						path: 'register',
+						name: routeNames.connectorRegister,
+						component: () => import('@/lib/views/view-connector-register.vue'),
+						props: true,
+						meta: {
+							guards: ['authenticated'],
+						},
+					},
 					{
 						path: ':id',
 						name: routeNames.connectorDetail,

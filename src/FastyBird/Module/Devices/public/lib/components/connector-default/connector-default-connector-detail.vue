@@ -43,21 +43,16 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { FbUiContent, FbUiNoResults, FbUiScrollShadow, FbSizeTypes, FbUiVariantTypes } from '@fastybird/web-ui-library';
 
 import { useBreakpoints } from '@/lib/composables';
-import { IDevice, IDeviceControl, IDeviceProperty, IConnector, IConnectorControl, IConnectorProperty } from '@/lib/models/types';
+import { IConnector, IConnectorControl, IConnectorProperty } from '@/lib/models/types';
 import { ConnectorDefaultConnectorDevice } from '@/lib/components';
-
-interface IDevicesData {
-	device: IDevice;
-	properties: IDeviceProperty[];
-	controls: IDeviceControl[];
-}
+import { IDeviceData } from '@/types/devices-module';
 
 interface IConnectorsConnectorDetailDefaultProps {
 	connectorData: {
 		connector: IConnector;
 		properties: IConnectorProperty[];
 		controls: IConnectorControl[];
-		devices: IDevicesData[];
+		devices: IDeviceData[];
 	};
 }
 
@@ -66,8 +61,8 @@ const props = defineProps<IConnectorsConnectorDetailDefaultProps>();
 const { t } = useI18n();
 const { isExtraSmallDevice } = useBreakpoints();
 
-const devicesData = computed<IDevicesData[]>((): IDevicesData[] => {
-	return orderBy<IDevicesData>(
+const devicesData = computed<IDeviceData[]>((): IDeviceData[] => {
+	return orderBy<IDeviceData>(
 		props.connectorData.devices,
 		[(v): string => v.device.name ?? v.device.identifier, (v): string => v.device.identifier],
 		['asc']

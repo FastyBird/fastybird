@@ -96,10 +96,13 @@ const recordFactory = async (data: IChannelPropertyRecordFactoryPayload): Promis
 				}
 			});
 		} else if (relationName === 'parent') {
-			if (get(data, `${relationName}.id`, null) !== null && get(data, `${relationName}.type`, null) !== null) {
+			const parentId = get(data, `${relationName}.id`, null);
+			const parentType = get(data, `${relationName}.type`, null);
+
+			if (parentId !== null && parentType !== null) {
 				(record[relationName] as IPlainRelation) = {
-					id: get(data, `${relationName}.id`, null),
-					type: get(data, `${relationName}.type`, null),
+					id: parentId,
+					type: parentType,
 				};
 			}
 		}

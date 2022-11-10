@@ -11,7 +11,7 @@ export function useConnectorState(connector: IConnector): UseConnectorState {
 
 		if (stateProperty !== null) {
 			if (
-				stateProperty.type.type === PropertyType.STATIC &&
+				stateProperty.type.type === PropertyType.VARIABLE &&
 				typeof stateProperty.value === 'string' &&
 				Object.values(ConnectionState).includes(stateProperty.value as ConnectionState)
 			) {

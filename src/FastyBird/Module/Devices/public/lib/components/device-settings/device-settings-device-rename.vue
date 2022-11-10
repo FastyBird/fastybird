@@ -6,7 +6,7 @@
 			:label="t('fields.identifier.title')"
 			:placeholder="t('fields.identifier.placeholder')"
 			:required="true"
-			:readonly="!props.device.draft"
+			:readonly="!props.device?.draft"
 			:tab-index="2"
 			name="identifier"
 		/>
@@ -44,8 +44,8 @@ import { IDevice } from '@/lib/models/types';
 
 interface IDeviceSettingsDeviceRenameModel {
 	identifier: string;
-	name: string | null;
-	comment: string | null;
+	name?: string;
+	comment?: string;
 }
 
 interface IDeviceSettingsDeviceRenameProps {

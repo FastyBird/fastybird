@@ -57,7 +57,7 @@ import { useI18n } from 'vue-i18n';
 
 import { FbUiItem, FbUiItemVariantTypes } from '@fastybird/web-ui-library';
 import { DataType, PropertyType } from '@fastybird/metadata-library';
-import { useWampV1Client } from '@fastybird/ws-exchange-plugin';
+import { useWsExchangeClient } from '@fastybird/ws-exchange-plugin';
 
 import { useBreakpoints, useConnectorState, useEntityTitle, useDeviceState } from '@/lib/composables';
 import { IChannel, IChannelProperty, IConnector, IConnectorProperty, IDeviceProperty, IDevice } from '@/types/devices-module';
@@ -91,14 +91,14 @@ const isReady = computed<boolean>((): boolean => {
 });
 
 const value = computed<any>((): any => {
-	if (props.property.type.type === PropertyType.STATIC) {
+	if (props.property.type.type === PropertyType.VARIABLE) {
 		return props.property.value;
 	}
 
 	return props.property.actualValue;
 });
 
-const { status: wsStatus } = useWampV1Client();
+const { status: wsStatus } = useWsExchangeClient();
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>

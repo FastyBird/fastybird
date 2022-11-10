@@ -13,9 +13,9 @@
 				:errors="{ identifier: identifierError, name: nameError, comment: commentError }"
 			/>
 
-			<property-settings-static-properties-edit
-				v-model="staticPropertiesFields"
-				:properties="staticProperties"
+			<property-settings-variable-properties-edit
+				v-model="variablePropertiesFields"
+				:properties="variableProperties"
 			/>
 		</fb-ui-content>
 
@@ -72,13 +72,13 @@
 
 		<fb-ui-items-container>
 			<template #heading>
-				{{ t('headings.staticProperties') }}
+				{{ t('headings.variableProperties') }}
 			</template>
 
 			<template #buttons>
 				<fb-ui-content :mr="FbSizeTypes.SMALL">
 					<fb-ui-button
-						v-if="staticProperties.length > 0"
+						v-if="variableProperties.length > 0"
 						:variant="FbUiButtonVariantTypes.OUTLINE_PRIMARY"
 						:size="FbSizeTypes.EXTRA_SMALL"
 						@click="onOpenView(ViewTypes.ADD_STATIC_PARAMETER)"
@@ -92,7 +92,7 @@
 			</template>
 
 			<div
-				v-if="staticProperties.length === 0"
+				v-if="variableProperties.length === 0"
 				class="fb-devices-module-connector-settings-connector-settings__add-item-row"
 			>
 				<fb-ui-button
@@ -109,7 +109,7 @@
 			</div>
 
 			<property-settings-property
-				v-for="property in staticProperties"
+				v-for="property in variableProperties"
 				:key="property.identifier"
 				:connector="props.connectorData.connector"
 				:property="property"
@@ -220,7 +220,7 @@ import {
 	ConnectorSettingsConnectorRename,
 	PropertySettingsProperty,
 	PropertySettingsPropertyAddModal,
-	PropertySettingsStaticPropertiesEdit,
+	PropertySettingsVariablePropertiesEdit,
 } from '@/lib/components';
 import { IConnectorData, IDeviceData } from '@/types/devices-module';
 
@@ -272,8 +272,8 @@ const propertiesStore = useConnectorProperties();
 
 const activeView = ref<ViewTypes>(ViewTypes.NONE);
 
-const staticProperties = computed<IConnectorProperty[]>((): IConnectorProperty[] => {
-	return props.connectorData.properties.filter((property) => property.type.type === PropertyType.STATIC);
+const variableProperties = computed<IConnectorProperty[]>((): IConnectorProperty[] => {
+	return props.connectorData.properties.filter((property) => property.type.type === PropertyType.VARIABLE);
 });
 
 const dynamicProperties = computed<IConnectorProperty[]>((): IConnectorProperty[] => {
@@ -303,15 +303,15 @@ const { validate } = useForm<IConnectorSettingsConnectorSettingsForm>({
 			comment: props.connectorData.connector.comment,
 		},
 		properties: {
-			static: staticProperties.value.map((property) => {
+			static: variableProperties.value.map((property) => {
 				return { id: property.id, value: property.value as string };
 			}),
 		},
 	},
 });
 
-const { value: aboutField } = useField<{ identifier: string; name: string | null; comment: string | null }>('about');
-const { value: staticPropertiesFields } = useField<{ id: string; value: string | null }[]>('properties.static');
+const { value: aboutField } = useField<{ identifier: string; name: string | undefined; comment: string | undefined }>('about');
+const { value: variablePropertiesFields } = useField<{ id: string; value: string | undefined }[]>('properties.static');
 
 const identifierError = useFieldError('about.identifier');
 const nameError = useFieldError('about.name');
@@ -331,7 +331,7 @@ const onOpenView = async (view: ViewTypes): Promise<void> => {
 	if (view === ViewTypes.ADD_STATIC_PARAMETER) {
 		const { id } = await propertiesStore.add({
 			connector: props.connectorData.connector,
-			type: { source: ModuleSource.MODULE_DEVICES, type: PropertyType.STATIC, parent: 'connector' },
+			type: { source: ModuleSource.MODULE_DEVICES, type: PropertyType.VARIABLE, parent: 'connector' },
 			draft: true,
 			data: {
 				identifier: generateUuid(),
@@ -418,12 +418,12 @@ watch(
 
 				let success = true;
 
-				for (const staticPropertyField of staticPropertiesFields.value) {
+				for (const variablePropertyField of variablePropertiesFields.value) {
 					try {
 						await propertiesStore.edit({
-							id: staticPropertyField.id,
+							id: variablePropertyField.id,
 							data: {
-								value: staticPropertyField.value,
+								value: variablePropertyField.value,
 							},
 						});
 					} catch (e: any) {
@@ -463,7 +463,7 @@ watch(
   "en": {
     "headings": {
       "aboutConnector": "About connector",
-      "staticProperties": "Connector config parameters",
+      "variableProperties": "Connector config parameters",
       "dynamicProperties": "Connector data parameters",
       "devices": "Devices"
     },

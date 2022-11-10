@@ -1,70 +1,72 @@
 <template>
-	<template v-if="isExtraSmallDevice || isMounted">
-		<fb-layout-header-heading
-			:heading="isConnectorSettingsRoute ? (deviceData.device.draft ? t('headings.add') : t('headings.edit')) : t('headings.configure')"
-			:sub-heading="isConnectorSettingsRoute ? useEntityTitle(connector).value : useEntityTitle(deviceData.device).value"
+	<template v-if="deviceData !== null">
+		<template v-if="isExtraSmallDevice || isMounted">
+			<fb-layout-header-heading
+				:heading="isConnectorSettingsRoute ? (deviceData.device.draft ? t('headings.add') : t('headings.edit')) : t('headings.configure')"
+				:sub-heading="isConnectorSettingsRoute ? useEntityTitle(connector).value : useEntityTitle(deviceData.device).value"
+			/>
+
+			<template v-if="isExtraSmallDevice">
+				<fb-layout-header-button
+					:action-type="FbMenuItemTypes.BUTTON"
+					small
+					left
+					@click="onClose"
+				>
+					{{ t('buttons.close.title') }}
+				</fb-layout-header-button>
+
+				<fb-layout-header-button
+					:action-type="FbMenuItemTypes.BUTTON"
+					small
+					right
+					@click="onSubmit"
+				>
+					{{ t('buttons.save.title') }}
+				</fb-layout-header-button>
+			</template>
+		</template>
+
+		<device-settings-device-settings
+			v-model:remote-form-submit="remoteFormSubmit"
+			v-model:remote-form-result="remoteFormResult"
+			:connector="connector"
+			:device-data="deviceData"
+			@add-channel="onAddChannel"
+			@edit-channel="onEditChannel"
+			@created="onDeviceCreated"
 		/>
 
-		<template v-if="isExtraSmallDevice">
-			<fb-layout-header-button
-				:action-type="FbMenuItemTypes.BUTTON"
-				small
-				left
-				@click="onClose"
-			>
-				{{ t('buttons.close.title') }}
-			</fb-layout-header-button>
-
-			<fb-layout-header-button
-				:action-type="FbMenuItemTypes.BUTTON"
-				small
-				right
+		<fb-ui-content
+			v-if="!isExtraSmallDevice"
+			:pv="FbSizeTypes.MEDIUM"
+			:ph="FbSizeTypes.MEDIUM"
+			class="fb-devices-module-view-device-settings__buttons"
+		>
+			<fb-ui-button
+				:variant="FbUiButtonVariantTypes.OUTLINE_PRIMARY"
+				:size="FbSizeTypes.MEDIUM"
+				:loading="remoteFormResult === FbFormResultTypes.WORKING"
+				:disabled="remoteFormResult !== FbFormResultTypes.NONE"
+				uppercase
+				class="fb-devices-module-view-device-settings__buttons-save"
 				@click="onSubmit"
 			>
 				{{ t('buttons.save.title') }}
-			</fb-layout-header-button>
-		</template>
+			</fb-ui-button>
+
+			<fb-ui-button
+				:variant="FbUiButtonVariantTypes.LINK_DEFAULT"
+				:size="FbSizeTypes.MEDIUM"
+				:disabled="remoteFormResult !== FbFormResultTypes.NONE"
+				uppercase
+				class="fb-devices-module-view-device-settings__buttons-close"
+				@click="onClose"
+			>
+				{{ t('buttons.close.title') }}
+			</fb-ui-button>
+		</fb-ui-content>
 	</template>
-
-	<device-settings-device-settings
-		v-model:remote-form-submit="remoteFormSubmit"
-		v-model:remote-form-result="remoteFormResult"
-		:connector="connector"
-		:device-data="deviceData"
-		@add-channel="onAddChannel"
-		@edit-channel="onEditChannel"
-		@created="onDeviceCreated"
-	/>
-
-	<fb-ui-content
-		v-if="!isExtraSmallDevice"
-		:pv="FbSizeTypes.MEDIUM"
-		:ph="FbSizeTypes.MEDIUM"
-		class="fb-devices-module-view-device-settings__buttons"
-	>
-		<fb-ui-button
-			:variant="FbUiButtonVariantTypes.OUTLINE_PRIMARY"
-			:size="FbSizeTypes.MEDIUM"
-			:loading="remoteFormResult === FbFormResultTypes.WORKING"
-			:disabled="remoteFormResult !== FbFormResultTypes.NONE"
-			uppercase
-			class="fb-devices-module-view-device-settings__buttons-save"
-			@click="onSubmit"
-		>
-			{{ t('buttons.save.title') }}
-		</fb-ui-button>
-
-		<fb-ui-button
-			:variant="FbUiButtonVariantTypes.LINK_DEFAULT"
-			:size="FbSizeTypes.MEDIUM"
-			:disabled="remoteFormResult !== FbFormResultTypes.NONE"
-			uppercase
-			class="fb-devices-module-view-device-settings__buttons-close"
-			@click="onClose"
-		>
-			{{ t('buttons.close.title') }}
-		</fb-ui-button>
-	</fb-ui-content>
 </template>
 
 <script setup lang="ts">
@@ -95,9 +97,10 @@ import {
 	useDeviceProperties,
 	useDevices,
 } from '@/lib/models';
-import { IConnector, IChannelControl, IChannelProperty, IDevice, IDeviceControl, IDeviceProperty } from '@/lib/models/types';
+import { IConnector, IChannelControl, IChannelProperty, IDevice, IDeviceControl, IDeviceProperty, IDeviceAttribute } from '@/lib/models/types';
 import { DeviceSettingsDeviceSettings } from '@/lib/components';
 import { IChannelData, IDeviceData } from '@/types/devices-module';
+import useDeviceAttributes from '@/lib/models/devices-attributes';
 
 interface IViewDeviceSettingsProps {
 	id: string | null;
@@ -118,6 +121,7 @@ const connectorsStore = useConnectors();
 const devicesStore = useDevices();
 const deviceControlsStore = useDeviceControls();
 const devicePropertiesStore = useDeviceProperties();
+const deviceAttributesStore = useDeviceAttributes();
 const channelsStore = useChannels();
 const channelControlsStore = useChannelControls();
 const channelPropertiesStore = useChannelProperties();
@@ -188,6 +192,11 @@ const deviceData = computed<IDeviceData>((): IDeviceData => {
 		),
 		properties: orderBy<IDeviceProperty>(
 			devicePropertiesStore.findForDevice(device.value.id).filter((property) => (device.value?.draft ? true : !property.draft)),
+			[(v): string => v.name ?? v.identifier, (v): string => v.identifier],
+			['asc']
+		),
+		attributes: orderBy<IDeviceAttribute>(
+			deviceAttributesStore.findForDevice(device.value.id).filter((attribute) => !attribute.draft),
 			[(v): string => v.name ?? v.identifier, (v): string => v.identifier],
 			['asc']
 		),

@@ -3,4 +3,4 @@ export { default as PropertySettingsPropertyAddModal } from './property-settings
 export { default as PropertySettingsPropertyEditModal } from './property-settings-property-edit-modal.vue';
 export { default as PropertySettingsPropertyForm } from './property-settings-property-form.vue';
 export { default as PropertySettingsPropertyRemove } from './property-settings-property-remove.vue';
-export { default as PropertySettingsStaticPropertiesEdit } from './property-settings-static-properties-edit.vue';
+export { default as PropertySettingsVariablePropertiesEdit } from './property-settings-variable-properties-edit.vue';

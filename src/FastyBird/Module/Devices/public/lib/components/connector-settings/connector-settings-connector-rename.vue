@@ -29,8 +29,8 @@ import { FbUiContent, FbFormInput, FbFormTextArea, FbSizeTypes } from '@fastybir
 
 interface IConnectorSettingsConnectorRenameModel {
 	identifier: string;
-	name: string | null;
-	comment: string | null;
+	name?: string;
+	comment?: string;
 }
 
 interface IConnectorSettingsConnectorRenameProps {

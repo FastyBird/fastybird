@@ -1,68 +1,70 @@
 <template>
-	<template v-if="isExtraSmallDevice || isMounted">
-		<fb-layout-header-heading
-			:heading="t('headings.configure')"
-			:sub-heading="useEntityTitle(connectorData.connector).value"
+	<template v-if="connectorData !== null">
+		<template v-if="isExtraSmallDevice || isMounted">
+			<fb-layout-header-heading
+				:heading="t('headings.configure')"
+				:sub-heading="useEntityTitle(connectorData.connector).value"
+			/>
+
+			<template v-if="isExtraSmallDevice">
+				<fb-layout-header-button
+					:action-type="FbMenuItemTypes.VUE_LINK"
+					:action="{ name: routeNames.connectorDetail, params: { id: props.id } }"
+					small
+					left
+				>
+					{{ t('buttons.close.title') }}
+				</fb-layout-header-button>
+
+				<fb-layout-header-button
+					:action-type="FbMenuItemTypes.VUE_LINK"
+					:action="{ name: routeNames.connectorDetail, params: { id: props.id } }"
+					small
+					right
+				>
+					{{ t('buttons.save.title') }}
+				</fb-layout-header-button>
+			</template>
+		</template>
+
+		<connector-settings-connector-settings
+			v-model:remote-form-submit="remoteFormSubmit"
+			v-model:remote-form-result="remoteFormResult"
+			:connector-data="connectorData"
+			@add-device="onAddDevice"
+			@edit-device="onEditDevice"
 		/>
 
-		<template v-if="isExtraSmallDevice">
-			<fb-layout-header-button
-				:action-type="FbMenuItemTypes.VUE_LINK"
-				:action="{ name: routeNames.connectorDetail, params: { id: props.id } }"
-				small
-				left
-			>
-				{{ t('buttons.close.title') }}
-			</fb-layout-header-button>
-
-			<fb-layout-header-button
-				:action-type="FbMenuItemTypes.VUE_LINK"
-				:action="{ name: routeNames.connectorDetail, params: { id: props.id } }"
-				small
-				right
+		<fb-ui-content
+			v-if="!isExtraSmallDevice"
+			:pv="FbSizeTypes.MEDIUM"
+			:ph="FbSizeTypes.MEDIUM"
+			class="fb-devices-module-view-connector-settings__buttons"
+		>
+			<fb-ui-button
+				:variant="FbUiButtonVariantTypes.OUTLINE_PRIMARY"
+				:size="FbSizeTypes.MEDIUM"
+				:loading="remoteFormResult === FbFormResultTypes.WORKING"
+				:disabled="remoteFormResult !== FbFormResultTypes.NONE"
+				uppercase
+				class="fb-devices-module-view-connector-settings__buttons-save"
+				@click="onSubmit"
 			>
 				{{ t('buttons.save.title') }}
-			</fb-layout-header-button>
-		</template>
+			</fb-ui-button>
+
+			<fb-ui-button
+				:variant="FbUiButtonVariantTypes.LINK_DEFAULT"
+				:size="FbSizeTypes.MEDIUM"
+				:disabled="remoteFormResult !== FbFormResultTypes.NONE"
+				uppercase
+				class="fb-devices-module-view-connector-settings__buttons-close"
+				@click="onClose"
+			>
+				{{ t('buttons.close.title') }}
+			</fb-ui-button>
+		</fb-ui-content>
 	</template>
-
-	<connector-settings-connector-settings
-		v-model:remote-form-submit="remoteFormSubmit"
-		v-model:remote-form-result="remoteFormResult"
-		:connector-data="connectorData"
-		@add-device="onAddDevice"
-		@edit-device="onEditDevice"
-	/>
-
-	<fb-ui-content
-		v-if="!isExtraSmallDevice"
-		:pv="FbSizeTypes.MEDIUM"
-		:ph="FbSizeTypes.MEDIUM"
-		class="fb-devices-module-view-connector-settings__buttons"
-	>
-		<fb-ui-button
-			:variant="FbUiButtonVariantTypes.OUTLINE_PRIMARY"
-			:size="FbSizeTypes.MEDIUM"
-			:loading="remoteFormResult === FbFormResultTypes.WORKING"
-			:disabled="remoteFormResult !== FbFormResultTypes.NONE"
-			uppercase
-			class="fb-devices-module-view-connector-settings__buttons-save"
-			@click="onSubmit"
-		>
-			{{ t('buttons.save.title') }}
-		</fb-ui-button>
-
-		<fb-ui-button
-			:variant="FbUiButtonVariantTypes.LINK_DEFAULT"
-			:size="FbSizeTypes.MEDIUM"
-			:disabled="remoteFormResult !== FbFormResultTypes.NONE"
-			uppercase
-			class="fb-devices-module-view-connector-settings__buttons-close"
-			@click="onClose"
-		>
-			{{ t('buttons.close.title') }}
-		</fb-ui-button>
-	</fb-ui-content>
 </template>
 
 <script setup lang="ts">
@@ -95,9 +97,18 @@ import {
 	useDeviceProperties,
 	useDevices,
 } from '@/lib/models';
-import { IChannelControl, IChannelProperty, IConnectorControl, IConnectorProperty, IDeviceControl, IDeviceProperty } from '@/lib/models/types';
+import {
+	IChannelControl,
+	IChannelProperty,
+	IConnectorControl,
+	IConnectorProperty,
+	IDeviceAttribute,
+	IDeviceControl,
+	IDeviceProperty,
+} from '@/lib/models/types';
 import { ConnectorSettingsConnectorSettings } from '@/lib/components';
 import { IChannelData, IConnectorData, IDeviceData } from '@/types/devices-module';
+import useDeviceAttributes from '@/lib/models/devices-attributes';
 
 interface IViewConnectorSettingsProps {
 	id: string;
@@ -118,6 +129,7 @@ const connectorPropertiesStore = useConnectorProperties();
 const devicesStore = useDevices();
 const deviceControlsStore = useDeviceControls();
 const devicePropertiesStore = useDeviceProperties();
+const deviceAttributesStore = useDeviceAttributes();
 const channelsStore = useChannels();
 const channelControlsStore = useChannelControls();
 const channelPropertiesStore = useChannelProperties();
@@ -157,7 +169,12 @@ const connectorData = computed<IConnectorData | null>((): IConnectorData | null 
 							['asc']
 						),
 						properties: orderBy<IDeviceProperty>(
-							devicePropertiesStore.findForDevice(device.id).filter((control) => !control.draft),
+							devicePropertiesStore.findForDevice(device.id).filter((property) => !property.draft),
+							[(v): string => v.name ?? v.identifier, (v): string => v.identifier],
+							['asc']
+						),
+						attributes: orderBy<IDeviceAttribute>(
+							deviceAttributesStore.findForDevice(device.id).filter((attribute) => !attribute.draft),
 							[(v): string => v.name ?? v.identifier, (v): string => v.identifier],
 							['asc']
 						),
@@ -171,7 +188,7 @@ const connectorData = computed<IConnectorData | null>((): IConnectorData | null 
 										['asc']
 									),
 									properties: orderBy<IChannelProperty>(
-										channelPropertiesStore.findForChannel(channel.id).filter((control) => !control.draft),
+										channelPropertiesStore.findForChannel(channel.id).filter((property) => !property.draft),
 										[(v): string => v.name ?? v.identifier, (v): string => v.identifier],
 										['asc']
 									),

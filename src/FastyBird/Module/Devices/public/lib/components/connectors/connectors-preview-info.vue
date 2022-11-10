@@ -89,7 +89,7 @@ interface IConnectorsDesktopInfoProps {
 const props = defineProps<IConnectorsDesktopInfoProps>();
 
 const emit = defineEmits<{
-	(e: 'connect'): void;
+	(e: 'register'): void;
 	(e: 'synchronise'): void;
 }>();
 

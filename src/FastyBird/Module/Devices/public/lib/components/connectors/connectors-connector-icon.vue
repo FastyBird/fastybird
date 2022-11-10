@@ -23,7 +23,7 @@ import { computed } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { FbUiIconWithChild, FbUiVariantTypes } from '@fastybird/web-ui-library';
 import { ConnectionState } from '@fastybird/metadata-library';
-import { useWampV1Client } from '@fastybird/ws-exchange-plugin';
+import { useWsExchangeClient } from '@fastybird/ws-exchange-plugin';
 
 import { useConnectorState } from '@/lib/composables';
 import { IConnector } from '@/lib/models/types';
@@ -37,7 +37,7 @@ const props = withDefaults(defineProps<IConnectorsIconProps>(), {
 	withState: false,
 });
 
-const { status: wsStatus } = useWampV1Client();
+const { status: wsStatus } = useWsExchangeClient();
 
 const { state: connectorState } = useConnectorState(props.connector);
 

@@ -14,9 +14,9 @@
 				:channel="props.channelData.channel"
 			/>
 
-			<property-settings-static-properties-edit
-				v-model="staticPropertiesFields"
-				:properties="staticProperties"
+			<property-settings-variable-properties-edit
+				v-model="variablePropertiesFields"
+				:properties="variableProperties"
 			/>
 		</fb-ui-content>
 
@@ -24,13 +24,13 @@
 
 		<fb-ui-items-container>
 			<template #heading>
-				{{ t('headings.staticProperties') }}
+				{{ t('headings.variableProperties') }}
 			</template>
 
 			<template #buttons>
 				<fb-ui-content :mr="FbSizeTypes.SMALL">
 					<fb-ui-button
-						v-if="staticProperties.length > 0"
+						v-if="variableProperties.length > 0"
 						:variant="FbUiButtonVariantTypes.OUTLINE_PRIMARY"
 						:size="FbSizeTypes.EXTRA_SMALL"
 						@click="onOpenView(ViewTypes.ADD_STATIC_PARAMETER)"
@@ -44,7 +44,7 @@
 			</template>
 
 			<div
-				v-if="staticProperties.length === 0"
+				v-if="variableProperties.length === 0"
 				class="fb-devices-module-channel-settings-channel-settings__add-item-row"
 			>
 				<fb-ui-button
@@ -61,7 +61,7 @@
 			</div>
 
 			<property-settings-property
-				v-for="property in staticProperties"
+				v-for="property in variableProperties"
 				:key="property.identifier"
 				:device="props.device"
 				:channel="props.channelData.channel"
@@ -173,7 +173,7 @@ import {
 	ChannelSettingsChannelRename,
 	PropertySettingsProperty,
 	PropertySettingsPropertyAddModal,
-	PropertySettingsStaticPropertiesEdit,
+	PropertySettingsVariablePropertiesEdit,
 } from '@/lib/components';
 import { IChannelData } from '@/types/devices-module';
 
@@ -214,8 +214,8 @@ const propertiesStore = useChannelProperties();
 
 const activeView = ref<ViewTypes>(ViewTypes.NONE);
 
-const staticProperties = computed<IChannelProperty[]>((): IChannelProperty[] => {
-	return props.channelData.properties.filter((property) => property.type.type === PropertyType.STATIC);
+const variableProperties = computed<IChannelProperty[]>((): IChannelProperty[] => {
+	return props.channelData.properties.filter((property) => property.type.type === PropertyType.VARIABLE);
 });
 
 const dynamicProperties = computed<IChannelProperty[]>((): IChannelProperty[] => {
@@ -256,15 +256,15 @@ const { validate } = useForm<IChannelSettingsChannelSettingsForm>({
 			comment: props.channelData.channel.comment,
 		},
 		properties: {
-			static: staticProperties.value.map((property) => {
+			static: variableProperties.value.map((property) => {
 				return { id: property.id, value: property.value as string };
 			}),
 		},
 	},
 });
 
-const { value: aboutField } = useField<{ identifier: string; name: string | null; comment: string | null }>('about');
-const { value: staticPropertiesFields } = useField<{ id: string; value: string | null }[]>('properties.static');
+const { value: aboutField } = useField<{ identifier: string; name: string | undefined; comment: string | undefined }>('about');
+const { value: variablePropertiesFields } = useField<{ id: string; value: string | undefined }[]>('properties.static');
 
 const identifierError = useFieldError('about.identifier');
 const nameError = useFieldError('about.name');
@@ -276,7 +276,7 @@ const onOpenView = async (view: ViewTypes): Promise<void> => {
 	if (view === ViewTypes.ADD_STATIC_PARAMETER) {
 		const { id } = await propertiesStore.add({
 			channel: props.channelData.channel,
-			type: { source: props.channelData.channel.type.source, type: PropertyType.STATIC, parent: 'channel' },
+			type: { source: props.channelData.channel.type.source, type: PropertyType.VARIABLE, parent: 'channel' },
 			draft: true,
 			data: {
 				identifier: generateUuid(),
@@ -349,7 +349,7 @@ watch(
 						channel: useEntityTitle(props.channelData.channel).value,
 					});
 
-					const staticPropertiesToCreate = staticProperties.value;
+					const variablePropertiesToCreate = variableProperties.value;
 					const dynamicPropertiesToCreate = dynamicProperties.value;
 
 					try {
@@ -379,9 +379,9 @@ watch(
 
 					let success = true;
 
-					for (const staticProperty of staticPropertiesToCreate) {
+					for (const variableProperty of variablePropertiesToCreate) {
 						try {
-							await propertiesStore.save({ id: staticProperty.id });
+							await propertiesStore.save({ id: variableProperty.id });
 						} catch (e: any) {
 							if (get(e, 'exception', null) !== null) {
 								flashMessage.exception(get(e, 'exception', null), errorMessage);
@@ -415,12 +415,12 @@ watch(
 						}
 					}
 
-					for (const staticPropertyField of staticPropertiesFields.value) {
+					for (const variablePropertyField of variablePropertiesFields.value) {
 						try {
 							await propertiesStore.edit({
-								id: staticPropertyField.id,
+								id: variablePropertyField.id,
 								data: {
-									value: staticPropertyField.value,
+									value: variablePropertyField.value,
 								},
 							});
 						} catch (e: any) {
@@ -479,12 +479,12 @@ watch(
 
 					let success = true;
 
-					for (const staticPropertyField of staticPropertiesFields.value) {
+					for (const variablePropertyField of variablePropertiesFields.value) {
 						try {
 							await propertiesStore.edit({
-								id: staticPropertyField.id,
+								id: variablePropertyField.id,
 								data: {
-									value: staticPropertyField.value,
+									value: variablePropertyField.value,
 								},
 							});
 						} catch (e: any) {
@@ -525,7 +525,7 @@ watch(
   "en": {
     "headings": {
       "aboutChannel": "About channel",
-      "staticProperties": "Channel config parameters",
+      "variableProperties": "Channel config parameters",
       "dynamicProperties": "Channel data parameters"
     },
     "buttons": {

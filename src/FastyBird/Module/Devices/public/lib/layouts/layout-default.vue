@@ -6,7 +6,7 @@
 import { computed, onBeforeMount, onMounted, onUnmounted } from 'vue';
 import get from 'lodash/get';
 
-import { useWampV1Client } from '@fastybird/ws-exchange-plugin';
+import { useWsExchangeClient } from '@fastybird/ws-exchange-plugin';
 
 import {
 	useChannelControls,
@@ -25,7 +25,7 @@ const emit = defineEmits<{
 	(e: 'toggleMenu', event: Event): void;
 }>();
 
-const wampV1Client = useWampV1Client();
+const wampV1Client = useWsExchangeClient();
 
 const connectorsStore = useConnectors();
 

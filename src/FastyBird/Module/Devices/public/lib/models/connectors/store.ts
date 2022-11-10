@@ -6,7 +6,12 @@ import { v4 as uuid } from 'uuid';
 import get from 'lodash/get';
 
 import exchangeEntitySchema from '@fastybird/metadata-library/resources/schemas/modules/devices-module/entity.connector.json';
-import { ConnectorEntity as ExchangeEntity, DevicePropertyName, DevicesModuleRoutes as RoutingKeys, ModulePrefix } from '@fastybird/metadata-library';
+import {
+	ConnectorEntity as ExchangeEntity,
+	DevicePropertyIdentifier,
+	DevicesModuleRoutes as RoutingKeys,
+	ModulePrefix,
+} from '@fastybird/metadata-library';
 
 import { ApiError } from '@/lib/errors';
 import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '@/lib/jsonapi';
@@ -66,7 +71,9 @@ const recordFactory = (data: IConnectorRecordFactoryPayload): IConnector => {
 		get stateProperty(): IConnectorProperty | null {
 			const connectorPropertiesStore = useConnectorProperties();
 
-			const stateProperty = connectorPropertiesStore.findForConnector(this.id).find((property) => property.identifier === DevicePropertyName.STATE);
+			const stateProperty = connectorPropertiesStore
+				.findForConnector(this.id)
+				.find((property) => property.identifier === DevicePropertyIdentifier.STATE);
 
 			return stateProperty ?? null;
 		},

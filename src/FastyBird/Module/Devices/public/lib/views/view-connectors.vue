@@ -51,7 +51,7 @@
 						:action-type="FbMenuItemTypes.BUTTON"
 						small
 						right
-						@click="onOpenView(ViewTypes.CONNECT)"
+						@click="onOpenRegister"
 					>
 						{{ t('buttons.new.title') }}
 					</fb-layout-header-button>
@@ -98,6 +98,7 @@
 			<connectors-preview-info
 				v-else
 				:total="itemsCount"
+				@register="onOpenRegister"
 			/>
 		</template>
 
@@ -176,6 +177,12 @@ const onOpenDetail = (id: string): void => {
 		params: {
 			id,
 		},
+	});
+};
+
+const onOpenRegister = (): void => {
+	router.push({
+		name: routeNames.connectorRegister,
 	});
 };
 

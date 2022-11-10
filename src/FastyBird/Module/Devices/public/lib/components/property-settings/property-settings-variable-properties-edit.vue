@@ -8,6 +8,7 @@
 			v-if="property.dataType === DataType.BOOLEAN"
 			v-model="model[property.id]"
 			:name="property.identifier"
+			:option="true"
 		>
 			{{ useEntityTitle(property).value }}
 		</fb-form-checkbox>
@@ -29,32 +30,32 @@ import { FbFormCheckbox, FbFormInput, FbUiContent, FbSizeTypes } from '@fastybir
 import { DataType } from '@fastybird/metadata-library';
 
 import { useEntityTitle } from '@/lib/composables';
-import { IConnectorProperty } from '@/lib/models/types';
+import { IChannelProperty, IConnectorProperty, IDeviceProperty } from '@/lib/models/types';
 
-interface IPropertySettingsStaticPropertiesEditModel {
+interface IPropertySettingsVariablePropertiesEditModel {
 	id: string;
-	value: string | null;
+	value: string | undefined;
 }
 
-interface IPropertySettingsStaticPropertiesEditProps {
-	modelValue: IPropertySettingsStaticPropertiesEditModel[];
-	properties: IConnectorProperty[];
+interface IPropertySettingsVariablePropertiesEditProps {
+	modelValue: IPropertySettingsVariablePropertiesEditModel[];
+	properties: IConnectorProperty[] | IDeviceProperty[] | IChannelProperty[];
 }
 
-const props = defineProps<IPropertySettingsStaticPropertiesEditProps>();
+const props = defineProps<IPropertySettingsVariablePropertiesEditProps>();
 
 const emit = defineEmits<{
-	(e: 'update:modelValue', model: IPropertySettingsStaticPropertiesEditModel[]): void;
+	(e: 'update:modelValue', model: IPropertySettingsVariablePropertiesEditModel[]): void;
 }>();
 
-const model = ref<{ [key: string]: string | null }>({});
+const model = ref<{ [key: string]: string | undefined }>({});
 
 props.modelValue.forEach((modelItem) => {
 	Object.assign(model.value, { [modelItem.id]: modelItem.value });
 });
 
 watch(
-	(): { [key: string]: string | null } => model.value,
+	(): { [key: string]: string | undefined } => model.value,
 	(val): void => {
 		emit(
 			'update:modelValue',

@@ -6,7 +6,12 @@ import { v4 as uuid } from 'uuid';
 import get from 'lodash/get';
 
 import exchangeEntitySchema from '@fastybird/metadata-library/resources/schemas/modules/devices-module/entity.device.json';
-import { DeviceEntity as ExchangeEntity, DevicePropertyName, DevicesModuleRoutes as RoutingKeys, ModulePrefix } from '@fastybird/metadata-library';
+import {
+	DeviceEntity as ExchangeEntity,
+	DevicePropertyIdentifier,
+	DevicesModuleRoutes as RoutingKeys,
+	ModulePrefix,
+} from '@fastybird/metadata-library';
 
 import { ApiError } from '@/lib/errors';
 import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '@/lib/jsonapi';
@@ -94,11 +99,11 @@ const recordFactory = async (data: IDeviceRecordFactoryPayload): Promise<IDevice
 		get stateProperty(): IDeviceProperty | null {
 			const devicePropertiesStore = useDeviceProperties();
 
-			const stateRegex = new RegExp(`^${DevicePropertyName.STATE}_([0-9]+)$`);
+			const stateRegex = new RegExp(`^${DevicePropertyIdentifier.STATE}_([0-9]+)$`);
 
 			const stateProperty = devicePropertiesStore
 				.findForDevice(this.id)
-				.find((property) => property.identifier === DevicePropertyName.STATE || stateRegex.test(property.identifier));
+				.find((property) => property.identifier === DevicePropertyIdentifier.STATE || stateRegex.test(property.identifier));
 
 			return stateProperty ?? null;
 		},

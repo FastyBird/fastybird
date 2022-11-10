@@ -2,12 +2,14 @@ interface IRoutes {
 	root: string;
 
 	devices: string;
+	deviceConnect: string;
 	deviceDetail: string;
 	deviceSettings: string;
 	deviceSettingsAddChannel: string;
 	deviceSettingsEditChannel: string;
 
 	connectors: string;
+	connectorRegister: string;
 	connectorDetail: string;
 	connectorSettings: string;
 	connectorSettingsAddDevice: string;
@@ -21,12 +23,14 @@ export function useRoutesNames(): { routeNames: IRoutes } {
 		root: 'devices_module-root',
 
 		devices: 'devices_module-devices',
+		deviceConnect: 'devices_module-device_connect',
 		deviceDetail: 'devices_module-device_detail',
 		deviceSettings: 'devices_module-device_settings',
 		deviceSettingsAddChannel: 'devices_module-device_settings_add_channel',
 		deviceSettingsEditChannel: 'devices_module-device_settings_edit_channel',
 
 		connectors: 'devices_module-connectors',
+		connectorRegister: 'devices_module-connector_register',
 		connectorDetail: 'devices_module-connector_detail',
 		connectorSettings: 'devices_module-connector_settings',
 		connectorSettingsAddDevice: 'devices_module-connector_settings_add_device',

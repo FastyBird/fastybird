@@ -38,7 +38,7 @@ import {
 	IChannelControlsSetActionPayload,
 	IChannelControlsTransmitCommandActionPayload,
 } from './types';
-import { useWampV1Client } from '@fastybird/ws-exchange-plugin';
+import { useWsExchangeClient } from '@fastybird/ws-exchange-plugin';
 
 const jsonSchemaValidator = new Ajv();
 
@@ -457,11 +457,11 @@ export const useChannelControls = defineStore<string, IChannelControlsState, ICh
 					throw new Error('devices-module.channel-controls.transmit.failed');
 				}
 
-				const { call } = useWampV1Client<{ data: string }>();
+				const { call } = useWsExchangeClient<{ data: string }>();
 
 				try {
 					const response = await call('', {
-						routing_key: ActionRoutes.CHANNEL,
+						routing_key: ActionRoutes.CHANNEL_CONTROL,
 						source: control.type.source,
 						data: {
 							action: ControlAction.SET,

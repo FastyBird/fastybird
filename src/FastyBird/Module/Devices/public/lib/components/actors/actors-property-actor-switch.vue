@@ -48,13 +48,13 @@ import get from 'lodash/get';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { FbUiSwitchElement, FbUiSpinner, FbSizeTypes, FbUiVariantTypes } from '@fastybird/web-ui-library';
 import { ActionRoutes, DataType, PropertyAction, SwitchPayload } from '@fastybird/metadata-library';
-import { useWampV1Client } from '@fastybird/ws-exchange-plugin';
+import { useWsExchangeClient } from '@fastybird/ws-exchange-plugin';
 
 import { useDeviceState, useEntityTitle, useFlashMessage, useNormalizeValue } from '@/lib/composables';
 import { IChannel, IChannelProperty, IConnectorProperty, IDevice, IDeviceProperty } from '@/lib/models/types';
 
 interface IPropertyActorProps {
-	device: IDevice;
+	device?: IDevice;
 	channel?: IChannel;
 	property: IChannelProperty | IDeviceProperty | IConnectorProperty;
 }
@@ -68,9 +68,9 @@ const emit = defineEmits<{
 const { t } = useI18n();
 const flashMessage = useFlashMessage();
 
-const wampV1Client = useWampV1Client();
+const wampV1Client = useWsExchangeClient();
 
-const { isReady: isDeviceReady } = useDeviceState(props.device);
+const { isReady: isDeviceReady } = props.device ? useDeviceState(props.device) : { isReady: computed<boolean>((): boolean => false) };
 
 const command = ref<boolean | string | null>(null);
 
@@ -86,7 +86,7 @@ const value = computed<boolean>((): boolean => {
 	return false;
 });
 
-const { status: wsStatus } = useWampV1Client();
+const { status: wsStatus } = useWsExchangeClient();
 
 let timer: number;
 
@@ -143,8 +143,8 @@ const onToggleState = async (): Promise<void> => {
 			source: props.property.type.source,
 			data: {
 				action: PropertyAction.SET,
-				device: props.device.id,
-				channel: props.channel.id,
+				device: props.device?.id,
+				channel: props.channel?.id,
 				property: props.property.id,
 				expected_value: props.property.actualValue,
 			},

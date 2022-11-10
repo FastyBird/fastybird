@@ -44,8 +44,8 @@ import { IChannel } from '@/lib/models/types';
 
 interface IChannelSettingsChannelRenameModel {
 	identifier: string;
-	name: string | null;
-	comment: string | null;
+	name?: string;
+	comment?: string;
 }
 
 interface IChannelSettingsChannelRenameProps {

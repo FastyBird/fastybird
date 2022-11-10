@@ -1,5 +1,5 @@
 {
-  "compilerOptions" : {
+  "compilerOptions": {
     "target": "esnext",
     "module": "esnext",
     "strict": true,
@@ -14,7 +14,7 @@
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "baseUrl": "public",
-    "types" : [
+    "types": [
       "@fastybird/metadata-library",
       "@fastybird/web-ui-library",
       "@fastybird/ws-exchange-plugin",
@@ -22,27 +22,28 @@
       "@types/uuid",
       "node",
       "vue",
+      "vue-meta",
       "vue-toastification",
       "vite/client"
     ],
-    "paths" : {
-      "@/*" : [
+    "paths": {
+      "@/*": [
         "*"
       ]
     },
-    "lib" : [
+    "lib": [
       "esnext",
       "dom",
       "dom.iterable",
       "scripthost"
     ]
   },
-  "include" : [
+  "include": [
     "public/**/*.ts",
     "public/**/*.d.ts",
     "public/**/*.vue"
   ],
-  "exclude" : [
+  "exclude": [
     "public/**/*.stories.ts",
     "public/**/stories.ts",
     "public/**/*.spec.ts",

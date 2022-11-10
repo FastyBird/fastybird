@@ -1,120 +1,122 @@
 <template>
-	<template v-if="!isExtraSmallDevice">
-		<devices-device-toolbar
-			:page="page"
-			:total="props.devices.length"
-			:edit-mode="editMode"
-			@toggle-edit="onToggleEditMode"
-			@previous="onPrevious"
-			@next="onNext"
-			@close="onClose"
-		/>
+	<template v-if="deviceData !== null">
+		<template v-if="!isExtraSmallDevice">
+			<devices-device-toolbar
+				:page="page"
+				:total="props.devices.length"
+				:edit-mode="editMode"
+				@toggle-edit="onToggleEditMode"
+				@previous="onPrevious"
+				@next="onNext"
+				@close="onClose"
+			/>
 
-		<devices-device-heading
-			:device="deviceData.device"
-			:edit-mode="editMode"
-			@remove="onOpenView(ViewTypes.REMOVE)"
-			@configure="onConfigure"
-		/>
-	</template>
+			<devices-device-heading
+				:device="deviceData.device"
+				:edit-mode="editMode"
+				@remove="onOpenView(ViewTypes.REMOVE)"
+				@configure="onConfigure"
+			/>
+		</template>
 
-	<template v-if="!isExtraSmallDevice">
-		<device-default-device-detail
-			:device-data="deviceData"
-			:edit-mode="editMode"
-		/>
-	</template>
-	<template v-else>
-		<fb-layout-expandable-box :show="isDetailRoute">
+		<template v-if="!isExtraSmallDevice">
 			<device-default-device-detail
 				:device-data="deviceData"
 				:edit-mode="editMode"
 			/>
-		</fb-layout-expandable-box>
+		</template>
+		<template v-else>
+			<fb-layout-expandable-box :show="isDetailRoute">
+				<device-default-device-detail
+					:device-data="deviceData"
+					:edit-mode="editMode"
+				/>
+			</fb-layout-expandable-box>
 
-		<fb-layout-expandable-box :show="!isDetailRoute">
-			<suspense>
-				<router-view :connector-id="deviceData?.device.connector.id" />
-
-				<template #fallback>
-					<fb-ui-component-loading />
-				</template>
-			</suspense>
-		</fb-layout-expandable-box>
-	</template>
-
-	<router-view v-slot="{ Component }">
-		<fb-layout-off-canvas
-			v-if="!isExtraSmallDevice"
-			:show="isPartialSettingsRoute"
-			@close="onCloseSettings"
-		>
-			<div class="fb-devices-module-view-device-detail__setting">
-				<fb-layout-header menu-button-hidden>
-					<template #button-right>
-						<fb-layout-header-icon
-							:teleport="false"
-							right
-						>
-							<font-awesome-icon icon="cogs" />
-						</fb-layout-header-icon>
-					</template>
-				</fb-layout-header>
-
+			<fb-layout-expandable-box :show="!isDetailRoute">
 				<suspense>
-					<component
-						:is="Component"
-						:connector-id="deviceData?.device.connector.id"
-					/>
+					<router-view :connector-id="deviceData?.device.connector.id" />
 
 					<template #fallback>
 						<fb-ui-component-loading />
 					</template>
 				</suspense>
-			</div>
-		</fb-layout-off-canvas>
-	</router-view>
-
-	<template v-if="isExtraSmallDevice">
-		<fb-layout-header-icon right>
-			<devices-device-icon :device="deviceData.device" />
-		</fb-layout-header-icon>
-
-		<template v-if="isDetailRoute">
-			<fb-layout-header-heading
-				:heading="useEntityTitle(deviceData.device).value"
-				:sub-heading="deviceData.device.comment"
-			/>
-
-			<fb-layout-header-button
-				:action-type="FbMenuItemTypes.VUE_LINK"
-				:action="{ name: routeNames.devices }"
-				small
-				left
-			>
-				<template #icon>
-					<font-awesome-icon icon="angle-left" />
-				</template>
-			</fb-layout-header-button>
-
-			<fb-layout-header-button
-				:action-type="FbMenuItemTypes.VUE_LINK"
-				:action="{ name: routeNames.deviceSettings, params: { id: props.id } }"
-				small
-				right
-			>
-				{{ t('buttons.edit.title') }}
-			</fb-layout-header-button>
+			</fb-layout-expandable-box>
 		</template>
-	</template>
 
-	<device-settings-device-remove
-		v-if="activeView === ViewTypes.REMOVE"
-		:device="deviceData.device"
-		:call-remove="false"
-		@close="onCloseView"
-		@confirmed="onRemoveConfirmed"
-	/>
+		<router-view v-slot="{ Component }">
+			<fb-layout-off-canvas
+				v-if="!isExtraSmallDevice"
+				:show="isPartialSettingsRoute"
+				@close="onCloseSettings"
+			>
+				<div class="fb-devices-module-view-device-detail__setting">
+					<fb-layout-header menu-button-hidden>
+						<template #button-right>
+							<fb-layout-header-icon
+								:teleport="false"
+								right
+							>
+								<font-awesome-icon icon="cogs" />
+							</fb-layout-header-icon>
+						</template>
+					</fb-layout-header>
+
+					<suspense>
+						<component
+							:is="Component"
+							:connector-id="deviceData?.device.connector.id"
+						/>
+
+						<template #fallback>
+							<fb-ui-component-loading />
+						</template>
+					</suspense>
+				</div>
+			</fb-layout-off-canvas>
+		</router-view>
+
+		<template v-if="isExtraSmallDevice">
+			<fb-layout-header-icon right>
+				<devices-device-icon :device="deviceData.device" />
+			</fb-layout-header-icon>
+
+			<template v-if="isDetailRoute">
+				<fb-layout-header-heading
+					:heading="useEntityTitle(deviceData.device).value"
+					:sub-heading="deviceData.device.comment"
+				/>
+
+				<fb-layout-header-button
+					:action-type="FbMenuItemTypes.VUE_LINK"
+					:action="{ name: routeNames.devices }"
+					small
+					left
+				>
+					<template #icon>
+						<font-awesome-icon icon="angle-left" />
+					</template>
+				</fb-layout-header-button>
+
+				<fb-layout-header-button
+					:action-type="FbMenuItemTypes.VUE_LINK"
+					:action="{ name: routeNames.deviceSettings, params: { id: props.id } }"
+					small
+					right
+				>
+					{{ t('buttons.edit.title') }}
+				</fb-layout-header-button>
+			</template>
+		</template>
+
+		<device-settings-device-remove
+			v-if="activeView === ViewTypes.REMOVE"
+			:device="deviceData.device"
+			:call-remove="false"
+			@close="onCloseView"
+			@confirmed="onRemoveConfirmed"
+		/>
+	</template>
 </template>
 
 <script setup lang="ts">
@@ -139,7 +141,7 @@ import {
 
 import { useBreakpoints, useEntityTitle, useFlashMessage, useRoutesNames, useUuid } from '@/lib/composables';
 import { useChannelControls, useChannelProperties, useChannels, useDeviceControls, useDeviceProperties, useDevices } from '@/lib/models';
-import { IChannelControl, IChannelProperty, IDevice, IDeviceControl, IDeviceProperty } from '@/lib/models/types';
+import { IChannelControl, IChannelProperty, IDevice, IDeviceAttribute, IDeviceControl, IDeviceProperty } from '@/lib/models/types';
 import {
 	DeviceDefaultDeviceDetail,
 	DevicesDeviceHeading,
@@ -149,6 +151,7 @@ import {
 } from '@/lib/components';
 import { ApplicationError } from '@/lib/errors';
 import { IChannelData, IDeviceData } from '@/types/devices-module';
+import useDeviceAttributes from '@/lib/models/devices-attributes';
 
 enum ViewTypes {
 	NONE = 'none',
@@ -175,6 +178,7 @@ const flashMessage = useFlashMessage();
 const devicesStore = useDevices();
 const deviceControlsStore = useDeviceControls();
 const devicePropertiesStore = useDeviceProperties();
+const deviceAttributesStore = useDeviceAttributes();
 const channelsStore = useChannels();
 const channelControlsStore = useChannelControls();
 const channelPropertiesStore = useChannelProperties();
@@ -213,7 +217,12 @@ const deviceData = computed<IDeviceData | null>((): IDeviceData | null => {
 				['asc']
 			),
 			properties: orderBy<IDeviceProperty>(
-				devicePropertiesStore.findForDevice(device.id).filter((control) => !control.draft),
+				devicePropertiesStore.findForDevice(device.id).filter((property) => !property.draft),
+				[(v): string => v.name ?? v.identifier, (v): string => v.identifier],
+				['asc']
+			),
+			attributes: orderBy<IDeviceAttribute>(
+				deviceAttributesStore.findForDevice(device.id).filter((attribute) => !attribute.draft),
 				[(v): string => v.name ?? v.identifier, (v): string => v.identifier],
 				['asc']
 			),
@@ -230,7 +239,7 @@ const deviceData = computed<IDeviceData | null>((): IDeviceData | null => {
 								['asc']
 							),
 							properties: orderBy<IChannelProperty>(
-								channelPropertiesStore.findForChannel(channel.id).filter((control) => !control.draft),
+								channelPropertiesStore.findForChannel(channel.id).filter((property) => !property.draft),
 								[(v): string => v.name ?? v.identifier, (v): string => v.identifier],
 								['asc']
 							),

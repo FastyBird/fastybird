@@ -1,111 +1,113 @@
 <template>
-	<template v-if="!isExtraSmallDevice">
-		<connectors-connector-toolbar
-			:page="page"
-			:total="props.connectors.length"
-			:edit-mode="editMode"
-			@toggle-edit="onToggleEditMode"
-			@previous="onPrevious"
-			@next="onNext"
-			@close="onClose"
-		/>
+	<template v-if="connectorData !== null">
+		<template v-if="!isExtraSmallDevice">
+			<connectors-connector-toolbar
+				:page="page"
+				:total="props.connectors.length"
+				:edit-mode="editMode"
+				@toggle-edit="onToggleEditMode"
+				@previous="onPrevious"
+				@next="onNext"
+				@close="onClose"
+			/>
 
-		<connectors-connector-heading
-			:connector="connectorData.connector"
-			:edit-mode="editMode"
-			@remove="onOpenView(ViewTypes.REMOVE)"
-			@configure="onConfigure"
-		/>
-	</template>
+			<connectors-connector-heading
+				:connector="connectorData.connector"
+				:edit-mode="editMode"
+				@remove="onOpenView(ViewTypes.REMOVE)"
+				@configure="onConfigure"
+			/>
+		</template>
 
-	<template v-if="!isExtraSmallDevice">
-		<connector-default-connector-detail :connector-data="connectorData" />
-	</template>
-	<template v-else>
-		<fb-layout-expandable-box :show="isDetailRoute">
+		<template v-if="!isExtraSmallDevice">
 			<connector-default-connector-detail :connector-data="connectorData" />
-		</fb-layout-expandable-box>
+		</template>
+		<template v-else>
+			<fb-layout-expandable-box :show="isDetailRoute">
+				<connector-default-connector-detail :connector-data="connectorData" />
+			</fb-layout-expandable-box>
 
-		<fb-layout-expandable-box :show="!isDetailRoute">
-			<suspense>
-				<router-view />
-
-				<template #fallback>
-					<fb-ui-component-loading />
-				</template>
-			</suspense>
-		</fb-layout-expandable-box>
-	</template>
-
-	<router-view v-slot="{ Component }">
-		<fb-layout-off-canvas
-			v-if="!isExtraSmallDevice"
-			:show="isPartialSettingsRoute"
-			@close="onCloseSettings"
-		>
-			<div class="fb-devices-module-view-connector-detail__setting">
-				<fb-layout-header menu-button-hidden>
-					<template #button-right>
-						<fb-layout-header-icon
-							:teleport="false"
-							right
-						>
-							<font-awesome-icon icon="cogs" />
-						</fb-layout-header-icon>
-					</template>
-				</fb-layout-header>
-
+			<fb-layout-expandable-box :show="!isDetailRoute">
 				<suspense>
-					<component :is="Component" />
+					<router-view />
 
 					<template #fallback>
 						<fb-ui-component-loading />
 					</template>
 				</suspense>
-			</div>
-		</fb-layout-off-canvas>
-	</router-view>
-
-	<template v-if="isExtraSmallDevice">
-		<fb-layout-header-icon right>
-			<connectors-connector-icon :connector="connectorData.connector" />
-		</fb-layout-header-icon>
-
-		<template v-if="isDetailRoute">
-			<fb-layout-header-heading
-				:heading="useEntityTitle(connectorData.connector).value"
-				:sub-heading="connectorData.connector.comment"
-			/>
-
-			<fb-layout-header-button
-				:action-type="FbMenuItemTypes.VUE_LINK"
-				:action="{ name: routeNames.connectors }"
-				small
-				left
-			>
-				<template #icon>
-					<font-awesome-icon icon="angle-left" />
-				</template>
-			</fb-layout-header-button>
-
-			<fb-layout-header-button
-				:action-type="FbMenuItemTypes.VUE_LINK"
-				:action="{ name: routeNames.connectorSettings, params: { id: props.id } }"
-				small
-				right
-			>
-				{{ t('buttons.edit.title') }}
-			</fb-layout-header-button>
+			</fb-layout-expandable-box>
 		</template>
-	</template>
 
-	<connector-settings-connector-remove
-		v-if="activeView === ViewTypes.REMOVE"
-		:connector="connectorData.connector"
-		:call-remove="false"
-		@close="onCloseView"
-		@confirmed="onRemoveConfirmed"
-	/>
+		<router-view v-slot="{ Component }">
+			<fb-layout-off-canvas
+				v-if="!isExtraSmallDevice"
+				:show="isPartialSettingsRoute"
+				@close="onCloseSettings"
+			>
+				<div class="fb-devices-module-view-connector-detail__setting">
+					<fb-layout-header menu-button-hidden>
+						<template #button-right>
+							<fb-layout-header-icon
+								:teleport="false"
+								right
+							>
+								<font-awesome-icon icon="cogs" />
+							</fb-layout-header-icon>
+						</template>
+					</fb-layout-header>
+
+					<suspense>
+						<component :is="Component" />
+
+						<template #fallback>
+							<fb-ui-component-loading />
+						</template>
+					</suspense>
+				</div>
+			</fb-layout-off-canvas>
+		</router-view>
+
+		<template v-if="isExtraSmallDevice">
+			<fb-layout-header-icon right>
+				<connectors-connector-icon :connector="connectorData.connector" />
+			</fb-layout-header-icon>
+
+			<template v-if="isDetailRoute">
+				<fb-layout-header-heading
+					:heading="useEntityTitle(connectorData.connector).value"
+					:sub-heading="connectorData.connector.comment"
+				/>
+
+				<fb-layout-header-button
+					:action-type="FbMenuItemTypes.VUE_LINK"
+					:action="{ name: routeNames.connectors }"
+					small
+					left
+				>
+					<template #icon>
+						<font-awesome-icon icon="angle-left" />
+					</template>
+				</fb-layout-header-button>
+
+				<fb-layout-header-button
+					:action-type="FbMenuItemTypes.VUE_LINK"
+					:action="{ name: routeNames.connectorSettings, params: { id: props.id } }"
+					small
+					right
+				>
+					{{ t('buttons.edit.title') }}
+				</fb-layout-header-button>
+			</template>
+		</template>
+
+		<connector-settings-connector-remove
+			v-if="activeView === ViewTypes.REMOVE"
+			:connector="connectorData.connector"
+			:call-remove="false"
+			@close="onCloseView"
+			@confirmed="onRemoveConfirmed"
+		/>
+	</template>
 </template>
 
 <script setup lang="ts">
@@ -146,6 +148,7 @@ import {
 	IConnector,
 	IConnectorControl,
 	IConnectorProperty,
+	IDeviceAttribute,
 	IDeviceControl,
 	IDeviceProperty,
 } from '@/lib/models/types';
@@ -158,6 +161,7 @@ import {
 } from '@/lib/components';
 import { ApplicationError } from '@/lib/errors';
 import { IChannelData, IConnectorData, IDeviceData } from '@/types/devices-module';
+import useDeviceAttributes from '@/lib/models/devices-attributes';
 
 enum ViewTypes {
 	NONE = 'none',
@@ -188,6 +192,7 @@ const connectorPropertiesStore = useConnectorProperties();
 const devicesStore = useDevices();
 const deviceControlsStore = useDeviceControls();
 const devicePropertiesStore = useDeviceProperties();
+const deviceAttributesStore = useDeviceAttributes();
 const channelsStore = useChannels();
 const channelControlsStore = useChannelControls();
 const channelPropertiesStore = useChannelProperties();
@@ -246,7 +251,12 @@ const connectorData = computed<IConnectorData | null>((): IConnectorData | null 
 								['asc']
 							),
 							properties: orderBy<IDeviceProperty>(
-								devicePropertiesStore.findForDevice(device.id).filter((control) => !control.draft),
+								devicePropertiesStore.findForDevice(device.id).filter((property) => !property.draft),
+								[(v): string => v.name ?? v.identifier, (v): string => v.identifier],
+								['asc']
+							),
+							attributes: orderBy<IDeviceAttribute>(
+								deviceAttributesStore.findForDevice(device.id).filter((attribute) => !attribute.draft),
 								[(v): string => v.name ?? v.identifier, (v): string => v.identifier],
 								['asc']
 							),
@@ -260,7 +270,7 @@ const connectorData = computed<IConnectorData | null>((): IConnectorData | null 
 											['asc']
 										),
 										properties: orderBy<IChannelProperty>(
-											channelPropertiesStore.findForChannel(channel.id).filter((control) => !control.draft),
+											channelPropertiesStore.findForChannel(channel.id).filter((property) => !property.draft),
 											[(v): string => v.name ?? v.identifier, (v): string => v.identifier],
 											['asc']
 										),

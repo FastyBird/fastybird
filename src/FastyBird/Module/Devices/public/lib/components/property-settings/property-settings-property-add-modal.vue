@@ -18,7 +18,7 @@
 		</template>
 
 		<template #form>
-			<template v-if="isConnectorProperty || props.property.type.type === PropertyType.STATIC">
+			<template v-if="isConnectorProperty || props.property.type.type === PropertyType.VARIABLE">
 				<property-settings-property-form
 					v-model:remote-form-submit="remoteFormSubmit"
 					v-model:remote-form-result="remoteFormResult"
@@ -315,7 +315,7 @@
 		</template>
 
 		<template
-			v-if="!isConnectorProperty && props.property.type.type !== PropertyType.STATIC"
+			v-if="!isConnectorProperty && props.property.type.type !== PropertyType.VARIABLE"
 			#footer
 		>
 			<template v-if="activeView === ViewTypes.SELECT_TYPE">

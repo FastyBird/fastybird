@@ -11,7 +11,7 @@ import {
 	CONNECTOR_ENTITY_REG_EXP,
 	DEVICE_ENTITY_REG_EXP,
 } from '@/lib/jsonapi/utilities';
-import { useNormalizeValue } from '@/lib';
+import { useNormalizeValue } from '@/lib/composables';
 
 const CASE_REG_EXP = '_([a-z0-9])';
 
@@ -133,7 +133,7 @@ class JsonApiJsonPropertiesMapper extends JsonPropertiesMapper implements IJsonP
 			attributes.expectedValue = useNormalizeValue(attributes.dataType, String(attributes.expectedValue), attributes.format);
 		}
 
-		if (get(attributes, 'type.type') === PropertyType.STATIC) {
+		if (get(attributes, 'type.type') === PropertyType.VARIABLE) {
 			attributes.value = useNormalizeValue(attributes.dataType, String(attributes.value), attributes.format);
 		}
 

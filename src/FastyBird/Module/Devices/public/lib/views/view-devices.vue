@@ -51,7 +51,7 @@
 						:action-type="FbMenuItemTypes.BUTTON"
 						small
 						right
-						@click="onOpenView(ViewTypes.CONNECT)"
+						@click="onOpenConnect"
 					>
 						{{ t('buttons.new.title') }}
 					</fb-layout-header-button>
@@ -98,6 +98,7 @@
 			<devices-preview-info
 				v-else
 				:total="itemsCount"
+				@connect="onOpenConnect"
 			/>
 		</template>
 
@@ -176,6 +177,12 @@ const onOpenDetail = (id: string): void => {
 		params: {
 			id,
 		},
+	});
+};
+
+const onOpenConnect = (): void => {
+	router.push({
+		name: routeNames.deviceConnect,
 	});
 };
 

@@ -21,7 +21,7 @@
 		/>
 	</fb-ui-content>
 
-	<template v-if="props.property.parent === null">
+	<template v-if="'parent' in props.property && props.property.parent === null">
 		<fb-ui-content :mb="FbSizeTypes.LARGE">
 			<fb-form-select
 				v-model="dataTypeField"
@@ -186,18 +186,18 @@ const { validate } = useForm<IPropertySettingsPropertyEditForm>({
 });
 
 const { value: identifierField, errorMessage: identifierError, setValue: setIdentifier } = useField<string>('identifier');
-const { value: nameField, errorMessage: nameError, setValue: setName } = useField<string | null>('name');
+const { value: nameField, errorMessage: nameError, setValue: setName } = useField<string | undefined>('name');
 const { value: settableField, setValue: setSettable } = useField<boolean>('settable');
 const { value: queryableField, setValue: setQueryable } = useField<boolean>('queryable');
 const { value: dataTypeField, errorMessage: dataTypeError, setValue: setDataType } = useField<DataType>('dataType');
-const { value: unitField, errorMessage: unitError, setValue: setUnit } = useField<string | null>('unit');
-const { value: invalidField, errorMessage: invalidError, setValue: setInvalid } = useField<string | null>('invalid');
+const { value: unitField, errorMessage: unitError, setValue: setUnit } = useField<string | undefined>('unit');
+const { value: invalidField, errorMessage: invalidError, setValue: setInvalid } = useField<string | undefined>('invalid');
 const {
 	value: numberOfDecimalsField,
 	errorMessage: numberOfDecimalsError,
 	setValue: setNumberOfDecimals,
-} = useField<number | null>('numberOfDecimals');
-const { value: formatField, errorMessage: formatError, setValue: setFormat } = useField<string | null>('format');
+} = useField<number | undefined>('numberOfDecimals');
+const { value: formatField, errorMessage: formatError, setValue: setFormat } = useField<string | undefined>('format');
 
 const dataTypeOptions: IFbFormSelectItem[] = [
 	{
@@ -407,14 +407,14 @@ watch(
 
 		if (val) {
 			setIdentifier(props.property.identifier);
-			setName(props.property.name);
+			setName(props.property.name ?? undefined);
 			setSettable(props.property.settable);
 			setQueryable(props.property.queryable);
 			setDataType(props.property.dataType);
-			setUnit(props.property.unit);
+			setUnit(props.property.unit ?? undefined);
 			setInvalid(props.property.invalid as string);
-			setNumberOfDecimals(props.property.numberOfDecimals);
-			setFormat(props.property.format ? JSON.stringify(props.property.format) : null);
+			setNumberOfDecimals(props.property.numberOfDecimals ?? undefined);
+			setFormat(props.property.format ? JSON.stringify(props.property.format) : undefined);
 		}
 	}
 );

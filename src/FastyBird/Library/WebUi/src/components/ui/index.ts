@@ -20,6 +20,6 @@ export { default as FbUiResultErr } from '@/components/ui/FbResultErr/index.vue'
 export { default as FbUiResultOk } from '@/components/ui/FbResultOk/index.vue';
 export { default as FbUiScrollShadow } from '@/components/ui/FbScrollShadow/index.vue';
 export { default as FbUiSpinner } from '@/components/ui/FbSpinner/index.vue';
-export * from '@/components/ui/FbSwipeActions';
+export * from '@/components/ui/FbSwipeActions/index';
 export { default as FbUiSwitchElement } from '@/components/ui/FbSwitchElement/index.vue';
 export { default as FbUiTransitionExpand } from '@/components/ui/FbTransitionExpand/index.vue';
