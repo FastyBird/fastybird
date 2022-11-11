@@ -1,7 +1,7 @@
 import { App, InjectionKey } from 'vue';
 import { Router } from 'vue-router';
 
-import moduleRouter from '@/lib/router';
+import moduleRouter from '@/router';
 
 export interface IDevicesModuleOptions {
 	router?: Router;
@@ -33,8 +33,8 @@ export default {
 	},
 };
 
-export * from '@/lib/components';
-export * from '@/lib/composables';
-export * from '@/lib/models';
+export * from '@/components';
+export * from '@/composables';
+export * from '@/models';
 
 export * from '@/types/devices-module';

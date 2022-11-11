@@ -3,16 +3,14 @@ import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import eslintPlugin from 'vite-plugin-eslint';
 import dts from 'vite-plugin-dts';
+import vueI18n from '@intlify/vite-plugin-vue-i18n';
 
 // https://vitejs.dev/config/
 export default defineConfig({
 	plugins: [
 		vue(),
-		eslintPlugin(),
-		dts({
-			outputDir: 'dist',
-			staticImport: true,
-			insertTypesEntry: true,
+		vueI18n({
+			include: resolve(__dirname, './locales/**.json'),
 		}),
 	],
 	resolve: {

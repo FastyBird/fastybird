@@ -31,10 +31,12 @@
     "src/FastyBird/Plugin/*"
   ],
   "scripts": {
-    "bootstrap": "lerna bootstrap"
+    "bootstrap": "lerna bootstrap",
+    "build": "lerna run build --stream",
+    "lint": "lerna run lint --stream --parallel",
+    "test": "yarn jest --coverage"
   },
   "devDependencies": {
-    "lerna": "^6.0"
-  },
-  "dependencies": {}
+    "lerna": "^6.0.3"
+  }
 }

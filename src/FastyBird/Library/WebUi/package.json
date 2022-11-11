@@ -1,6 +1,6 @@
 {
   "name": "@fastybird/web-ui-library",
-  "version": "2.0.0",
+  "version": "1.0.0",
   "description": "FastyBird application theme & Vue components for web apps",
   "keywords": [
     "fastybird",
@@ -50,7 +50,6 @@
   "dependencies": {
     "@vueuse/core": "^7.6",
     "body-scroll-lock": "^4.0.0-beta.0",
-    "lerna": "^6.0.1",
     "lodash.get": "^4.4"
   },
   "devDependencies": {

@@ -1,25 +1,28 @@
 {
   "compilerOptions": {
-    "target": "esnext",
-    "module": "esnext",
+    "composite": true,
+    "target": "es6",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "jsx": "react",
     "strict": true,
     "declaration": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "importHelpers": true,
-    "moduleResolution": "node",
-    "experimentalDecorators": true,
-    "resolveJsonModule": true,
-    "esModuleInterop": true,
+    "declarationMap": true,
     "allowSyntheticDefaultImports": true,
-    "sourceMap": true,
-    "baseUrl": "public",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "./dist",
+    "rootDir": "./public",
     "types": [
       "@fastybird/metadata-library",
       "@fastybird/web-ui-library",
       "@fastybird/ws-exchange-plugin",
       "@types/lodash",
       "@types/uuid",
+      "jsona",
       "node",
       "vue",
       "vue-meta",
@@ -28,7 +31,7 @@
     ],
     "paths": {
       "@/*": [
-        "*"
+        "public/*"
       ]
     },
     "lib": [
@@ -43,11 +46,25 @@
     "public/**/*.d.ts",
     "public/**/*.vue"
   ],
+  "references": [
+    {
+      "path": "../../Library/Metadata"
+    },
+    {
+      "path": "../../Library/WebUi"
+    },
+    {
+      "path": "../../Plugin/WsExchange"
+    }
+  ],
   "exclude": [
-    "public/**/*.stories.ts",
-    "public/**/stories.ts",
-    "public/**/*.spec.ts",
+    "dist",
     "node_modules",
-    "dist"
+    "**/__mocks__/*",
+    "**/__tests__/*",
+    "**/*.spec.ts",
+    "**/*.test.ts",
+    "**/*.stories.ts",
+    "**/stories.ts"
   ]
 }

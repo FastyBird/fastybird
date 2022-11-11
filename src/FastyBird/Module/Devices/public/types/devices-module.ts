@@ -9,10 +9,10 @@ import {
 	IDeviceControl,
 	IDeviceAttribute,
 	IDeviceProperty,
-} from '@/lib/models/types';
+} from '@/models/types';
 
-export * from '@/lib/composables/types';
-export * from '@/lib/models/types';
+export * from '@/composables/types';
+export * from '@/models/types';
 
 export interface IChannelData {
 	channel: IChannel;
