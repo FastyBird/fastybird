@@ -60,7 +60,7 @@ import { DataType, PropertyType } from '@fastybird/metadata-library';
 import { useWsExchangeClient } from '@fastybird/ws-exchange-plugin';
 
 import { useBreakpoints, useConnectorState, useEntityTitle, useDeviceState } from '@/composables';
-import { IChannel, IChannelProperty, IConnector, IConnectorProperty, IDeviceProperty, IDevice } from '@/types/devices-module';
+import { IChannel, IChannelProperty, IConnector, IConnectorProperty, IDeviceProperty, IDevice } from '@/types';
 import { ActorsPropertyActorSwitch, PropertiesPropertyIcon } from '@/components';
 
 interface IDeviceDefaultChannelPropertyProps {

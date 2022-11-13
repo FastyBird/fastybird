@@ -1,22 +1,7 @@
 import { App, InjectionKey } from 'vue';
-import { Router } from 'vue-router';
 
 import moduleRouter from '@/router';
-import { InstallFunction } from '@/types/devices-module';
-
-export interface IDevicesModuleOptions {
-	router?: Router;
-	meta: IDeviceModuleMeta;
-	configuration: IDeviceModuleConfiguration;
-}
-
-export interface IDeviceModuleMeta {
-	[key: string]: any;
-}
-
-export interface IDeviceModuleConfiguration {
-	[key: string]: any;
-}
+import { IDeviceModuleConfiguration, IDeviceModuleMeta, IDevicesModuleOptions, InstallFunction } from '@/types';
 
 export const metaKey: InjectionKey<IDeviceModuleMeta> = Symbol('devices-module_meta');
 export const configurationKey: InjectionKey<IDeviceModuleConfiguration> = Symbol('devices-module_configuration');
@@ -49,4 +34,4 @@ export * from '@/layouts';
 export * from '@/models';
 export * from '@/router';
 
-export * from '@/types/devices-module';
+export * from '@/types';

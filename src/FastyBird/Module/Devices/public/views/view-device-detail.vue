@@ -144,7 +144,7 @@ import { useChannelControls, useChannelProperties, useChannels, useDeviceControl
 import { IChannelControl, IChannelProperty, IDevice, IDeviceAttribute, IDeviceControl, IDeviceProperty } from '@/models/types';
 import { DeviceDefaultDeviceDetail, DevicesDeviceHeading, DevicesDeviceToolbar, DevicesDeviceIcon, DeviceSettingsDeviceRemove } from '@/components';
 import { ApplicationError } from '@/errors';
-import { IChannelData, IDeviceData } from '@/types/devices-module';
+import { IChannelData, IDeviceData } from '@/types';
 import useDeviceAttributes from '@/models/devices-attributes';
 
 enum ViewTypes {

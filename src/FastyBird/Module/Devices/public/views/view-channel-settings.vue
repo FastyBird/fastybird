@@ -89,7 +89,7 @@ import { useBreakpoints, useEntityTitle, useRoutesNames, useUuid } from '@/compo
 import { useChannelControls, useChannelProperties, useChannels, useDevices } from '@/models';
 import { IChannel, IChannelControl, IChannelProperty, IDevice } from '@/models/types';
 import { ChannelSettingsChannelSettings } from '@/components';
-import { IChannelData } from '@/types/devices-module';
+import { IChannelData } from '@/types';
 import { orderBy } from 'natural-orderby';
 
 interface IViewDeviceChanelSettingsProps {

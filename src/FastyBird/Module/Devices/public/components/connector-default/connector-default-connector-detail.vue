@@ -45,7 +45,7 @@ import { FbUiContent, FbUiNoResults, FbUiScrollShadow, FbSizeTypes, FbUiVariantT
 import { useBreakpoints } from '@/composables';
 import { IConnector, IConnectorControl, IConnectorProperty } from '@/models/types';
 import { ConnectorDefaultConnectorDevice } from '@/components';
-import { IDeviceData } from '@/types/devices-module';
+import { IDeviceData } from '@/types';
 
 interface IConnectorsConnectorDetailDefaultProps {
 	connectorData: {

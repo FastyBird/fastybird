@@ -175,7 +175,7 @@ import {
 	PropertySettingsPropertyAddModal,
 	PropertySettingsVariablePropertiesEdit,
 } from '@/components';
-import { IChannelData } from '@/types/devices-module';
+import { IChannelData } from '@/types';
 
 enum ViewTypes {
 	NONE = 'none',

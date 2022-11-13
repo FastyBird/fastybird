@@ -16,7 +16,7 @@
 import { FbUiItem, FbUiItemVariantTypes } from '@fastybird/web-ui-library';
 
 import { useBreakpoints, useEntityTitle } from '@/composables';
-import { IConnector, IDeviceData } from '@/types/devices-module';
+import { IConnector, IDeviceData } from '@/types';
 import { DevicesDeviceIcon } from '@/components';
 
 interface IDeviceDefaultChannelPropertyProps {

@@ -80,7 +80,7 @@ import { useBreakpoints, useEntityTitle, useUuid } from '@/composables';
 import { useChannelProperties } from '@/models';
 import { IChannelProperty, IDevice, IDeviceControl, IDeviceProperty } from '@/models/types';
 import { PropertyDefaultProperty, PropertySettingsPropertyAddModal } from '@/components';
-import { IChannelData } from '@/types/devices-module';
+import { IChannelData } from '@/types';
 
 enum ViewTypes {
 	NONE = 'none',

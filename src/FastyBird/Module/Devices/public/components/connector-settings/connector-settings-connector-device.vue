@@ -53,7 +53,7 @@ import { FbUiButton, FbUiItem, FbSizeTypes, FbUiItemVariantTypes, FbUiButtonVari
 import { useEntityTitle } from '@/composables';
 import { IConnector } from '@/models/types';
 import { DeviceSettingsDeviceRemove } from '@/components';
-import { IDeviceData } from '@/types/devices-module';
+import { IDeviceData } from '@/types';
 
 enum ViewTypes {
 	NONE = 'none',

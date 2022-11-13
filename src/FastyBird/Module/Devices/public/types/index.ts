@@ -1,4 +1,5 @@
 import { Plugin } from 'vue';
+import { Router } from 'vue-router';
 
 import {
 	IChannel,
@@ -17,6 +18,20 @@ export * from '@/composables/types';
 export * from '@/models/types';
 
 export type InstallFunction = Plugin & { installed?: boolean };
+
+export interface IDevicesModuleOptions {
+	router?: Router;
+	meta: IDeviceModuleMeta;
+	configuration: IDeviceModuleConfiguration;
+}
+
+export interface IDeviceModuleMeta {
+	[key: string]: any;
+}
+
+export interface IDeviceModuleConfiguration {
+	[key: string]: any;
+}
 
 export interface IChannelData {
 	channel: IChannel;

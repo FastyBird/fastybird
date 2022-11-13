@@ -91,7 +91,7 @@ import { useBreakpoints, useEntityTitle, useRoutesNames, useUuid } from '@/compo
 import { useChannelControls, useChannelProperties, useChannels, useConnectors, useDeviceControls, useDeviceProperties, useDevices } from '@/models';
 import { IConnector, IChannelControl, IChannelProperty, IDevice, IDeviceControl, IDeviceProperty, IDeviceAttribute } from '@/models/types';
 import { DeviceSettingsDeviceSettings } from '@/components';
-import { IChannelData, IDeviceData } from '@/types/devices-module';
+import { IChannelData, IDeviceData } from '@/types';
 import useDeviceAttributes from '@/models/devices-attributes';
 
 interface IViewDeviceSettingsProps {

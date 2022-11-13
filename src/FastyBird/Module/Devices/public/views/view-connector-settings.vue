@@ -107,7 +107,7 @@ import {
 	IDeviceProperty,
 } from '@/models/types';
 import { ConnectorSettingsConnectorSettings } from '@/components';
-import { IChannelData, IConnectorData, IDeviceData } from '@/types/devices-module';
+import { IChannelData, IConnectorData, IDeviceData } from '@/types';
 import useDeviceAttributes from '@/models/devices-attributes';
 
 interface IViewConnectorSettingsProps {

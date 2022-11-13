@@ -222,7 +222,7 @@ import {
 	PropertySettingsPropertyAddModal,
 	PropertySettingsVariablePropertiesEdit,
 } from '@/components';
-import { IConnectorData, IDeviceData } from '@/types/devices-module';
+import { IConnectorData, IDeviceData } from '@/types';
 
 enum ViewTypes {
 	NONE = 'none',

@@ -76,7 +76,7 @@ import { ControlName } from '@fastybird/metadata-library';
 import { useDeviceState, useEntityTitle } from '@/composables';
 import { IChannelControl, IDevice } from '@/models/types';
 import { ChannelSettingsChannelRemove, ChannelSettingsChannelReset } from '@/components';
-import { IChannelData } from '@/types/devices-module';
+import { IChannelData } from '@/types';
 
 enum ViewTypes {
 	NONE = 'none',
