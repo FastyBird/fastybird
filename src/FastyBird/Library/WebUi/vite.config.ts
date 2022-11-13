@@ -8,9 +8,7 @@ import dts from 'vite-plugin-dts';
 export default defineConfig({
 	plugins: [
 		vue(),
-		eslintPlugin({
-			include: ['public/**/*'],
-		}),
+		eslintPlugin(),
 		dts({
 			outputDir: 'dist',
 			staticImport: true,

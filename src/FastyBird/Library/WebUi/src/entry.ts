@@ -10,7 +10,7 @@ import './assets/theme.scss';
 
 export function createWebUiTheme(): InstallFunction {
 	const plugin: InstallFunction = {
-		install(app: App) {
+		install(app: App): void {
 			if (this.installed) {
 				return;
 			}

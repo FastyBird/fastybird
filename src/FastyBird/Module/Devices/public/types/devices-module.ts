@@ -1,3 +1,5 @@
+import { Plugin } from 'vue';
+
 import {
 	IChannel,
 	IChannelControl,
@@ -13,6 +15,8 @@ import {
 
 export * from '@/composables/types';
 export * from '@/models/types';
+
+export type InstallFunction = Plugin & { installed?: boolean };
 
 export interface IChannelData {
 	channel: IChannel;
