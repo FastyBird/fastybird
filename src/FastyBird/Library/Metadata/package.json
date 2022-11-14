@@ -46,8 +46,8 @@
     "lint:js": "eslint --ext .js,.ts,.vue --ignore-path .gitignore public",
     "lint:js:fix": "eslint --ext .js,.ts,.vue --ignore-path .gitignore public --fix",
     "pretty": "yarn pretty:write && yarn pretty:check",
-    "pretty:check": "yarn prettier --check public",
-    "pretty:write": "yarn prettier --write public"
+    "pretty:check": "prettier public --check",
+    "pretty:write": "prettier public --write"
   },
   "dependencies": {
   },
