@@ -92,6 +92,8 @@
     "postcss": "^8.4.18",
     "postcss-scss": "^4.0.5",
     "prettier": "^2.7",
+    "rimraf": "^3.0",
+    "rollup-plugin-delete": "^2.0",
     "sass": "^1.56",
     "sass-loader": "^13.1",
     "stylelint": "^14.14",

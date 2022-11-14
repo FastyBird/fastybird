@@ -4,7 +4,7 @@ import { App } from 'vue';
 import { Client } from '@/Client';
 import { Logger } from '@/Logger';
 import { key, useWsExchangeClient } from '@/useWsExchangeClient';
-import { InstallFunction, PluginOptions } from '@/types/ws-exchange-plugin';
+import { InstallFunction, PluginOptions } from '@/types';
 
 export const WampClientDefaultOptions = {
 	autoReestablish: true,
@@ -33,4 +33,4 @@ export function createWsExchangeClient(): InstallFunction {
 
 export { Client, useWsExchangeClient };
 
-export * from '@/types/ws-exchange-plugin';
+export * from '@/types';

@@ -1,6 +1,6 @@
 import { Logger } from '@/Logger';
 import { RpcCallError } from '@/RpcCallError';
-import { MessageCode } from '@/types/ws-exchange-plugin';
+import { MessageCode } from '@/types';
 import {
 	OnCloseCallback,
 	OnConnectCallback,
@@ -12,7 +12,7 @@ import {
 	IWampLogger,
 	IWampRpCall,
 	IWampSubscription,
-} from '@/types/ws-exchange-plugin';
+} from '@/types';
 import { Ref, ref } from 'vue';
 
 export class Client implements IWampClient {

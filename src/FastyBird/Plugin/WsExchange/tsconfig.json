@@ -15,7 +15,8 @@
     "sourceMap": true,
     "baseUrl": "public",
     "types": [
-      "node"
+      "node",
+      "vue"
     ],
     "paths": {
       "@/*": [
