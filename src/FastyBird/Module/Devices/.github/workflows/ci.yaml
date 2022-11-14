@@ -133,8 +133,32 @@ jobs:
       - name: "Install dependencies"
         run: "${{ env.composer-install }}"
 
+      - name: "Setup node"
+        uses: "actions/setup-node@v3"
+        with:
+          node-version: "16"
+
+      - name: "Get yarn cache directory path"
+        id: "yarn-cache-dir-path"
+        run: 'echo "::set-output name=dir::$(yarn cache dir)"'
+
+      - uses: "actions/cache@v3"
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-node-modules-
+            ${{ runner.os }}-
+
+      - name: "Install dependencies"
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
+        run: "yarn install"
+
       - name: "PHPStan"
         run: "make phpstan"
+
+      - name: "Check typescript"
+        run: "yarn types"
 
   tests:
     name: "Code tests"
@@ -452,8 +476,8 @@ jobs:
       - name: "Check js linter"
         run: "yarn lint:js"
 
-      - name: "Check ts linter"
-        run: "yarn lint:ts"
+      - name: "Check styles linter"
+        run: "yarn lint:styles"
 
       - name: "Check php linter"
         run: "make lint"

@@ -37,6 +37,7 @@
     "serve": "vite preview",
     "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
     "build": "yarn clean && vue-tsc --noEmit && vite build",
+    "types": "vue-tsc --noEmit",
     "lint:js": "eslint --ext .js,.ts,.vue --ignore-path .gitignore public",
     "lint:js:fix": "eslint --ext .js,.ts,.vue --ignore-path .gitignore public --fix",
     "lint:styles": "stylelint 'public/**/*.scss'",
