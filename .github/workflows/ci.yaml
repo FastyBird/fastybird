@@ -155,8 +155,11 @@ jobs:
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: "yarn bootstrap"
 
-      - name: "Build JS dependencies"
+      - name: "Link JS dependencies"
         run: "yarn link"
+
+      - name: "Build JS dependencies"
+        run: "yarn build"
 
       - name: "PHPStan"
         run: "make phpstan"
@@ -478,8 +481,11 @@ jobs:
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: "yarn bootstrap"
 
-      - name: "Build JS dependencies"
+      - name: "Link JS dependencies"
         run: "yarn link"
+
+      - name: "Build JS dependencies"
+        run: "yarn build"
 
       - name: "Check js linter"
         run: "yarn lint:js"
