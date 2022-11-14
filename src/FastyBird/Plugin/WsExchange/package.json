@@ -43,7 +43,6 @@
     "types": "vue-tsc --noEmit",
     "lint:js": "eslint --ext .js,.ts,.vue --ignore-path .gitignore public",
     "lint:js:fix": "eslint --ext .js,.ts,.vue --ignore-path .gitignore public --fix",
-    "lint:styles": "stylelint 'public/**/*.scss'",
     "pretty": "yarn pretty:write && yarn pretty:check",
     "pretty:check": "yarn prettier --check public",
     "pretty:write": "yarn prettier --write public"
