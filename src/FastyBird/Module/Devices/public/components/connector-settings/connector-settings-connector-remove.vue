@@ -35,13 +35,7 @@ import { FbUiConfirmationWindow } from '@fastybird/web-ui-library';
 
 import { useEntityTitle, useFlashMessage } from '@/composables';
 import { useConnectors } from '@/models';
-import { IConnector } from '@/models/types';
-
-interface IConnectorSettingsConnectorRemoveProps {
-	connector: IConnector;
-	callRemove?: boolean;
-	transparentBg?: boolean;
-}
+import { IConnectorSettingsConnectorRemoveProps } from '@/components/connector-settings/connector-settings-connector-remove.types';
 
 const props = withDefaults(defineProps<IConnectorSettingsConnectorRemoveProps>(), {
 	callRemove: true,

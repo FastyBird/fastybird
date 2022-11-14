@@ -42,24 +42,9 @@ import { orderBy } from 'natural-orderby';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { FbUiNoResults, FbUiScrollShadow, FbSizeTypes, FbUiVariantTypes } from '@fastybird/web-ui-library';
 
-import { IChannel, IChannelControl, IChannelProperty, IDevice, IDeviceControl, IDeviceProperty } from '@/models/types';
 import { DeviceDefaultDeviceChannel } from '@/components';
-
-interface IChannelsData {
-	channel: IChannel;
-	properties: IChannelProperty[];
-	controls: IChannelControl[];
-}
-
-interface IDevicesDeviceDetailDefaultProps {
-	deviceData: {
-		device: IDevice;
-		properties: IDeviceProperty[];
-		controls: IDeviceControl[];
-		channels: IChannelsData[];
-	};
-	editMode?: boolean;
-}
+import { IDevicesDeviceDetailDefaultProps } from '@/components/device-default/device-default-device-detail.types';
+import { IChannelData } from '@/types';
 
 const props = withDefaults(defineProps<IDevicesDeviceDetailDefaultProps>(), {
 	editMode: false,
@@ -67,8 +52,8 @@ const props = withDefaults(defineProps<IDevicesDeviceDetailDefaultProps>(), {
 
 const { t } = useI18n();
 
-const channelsData = computed<IChannelsData[]>((): IChannelsData[] => {
-	return orderBy<IChannelsData>(
+const channelsData = computed<IChannelData[]>((): IChannelData[] => {
+	return orderBy<IChannelData>(
 		props.deviceData.channels,
 		[(v): string => v.channel.name ?? v.channel.identifier, (v): string => v.channel.identifier],
 		['asc']

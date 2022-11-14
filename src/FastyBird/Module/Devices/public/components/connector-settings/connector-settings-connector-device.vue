@@ -25,7 +25,7 @@
 				<fb-ui-button
 					:variant="FbUiButtonVariantTypes.OUTLINE_DANGER"
 					:size="FbSizeTypes.EXTRA_SMALL"
-					@click="onOpenView(ViewTypes.REMOVE)"
+					@click="onOpenView(ConnectorSettingsConnectorDeviceViewTypes.REMOVE)"
 				>
 					<font-awesome-icon icon="trash" />
 					{{ t('buttons.remove.title') }}
@@ -35,7 +35,7 @@
 	</fb-ui-item>
 
 	<device-settings-device-remove
-		v-if="activeView === ViewTypes.REMOVE"
+		v-if="activeView === ConnectorSettingsConnectorDeviceViewTypes.REMOVE"
 		:device="props.deviceData.device"
 		:transparent-bg="true"
 		@removed="onCloseView"
@@ -51,19 +51,11 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { FbUiButton, FbUiItem, FbSizeTypes, FbUiItemVariantTypes, FbUiButtonVariantTypes } from '@fastybird/web-ui-library';
 
 import { useEntityTitle } from '@/composables';
-import { IConnector } from '@/models/types';
 import { DeviceSettingsDeviceRemove } from '@/components';
-import { IDeviceData } from '@/types';
-
-enum ViewTypes {
-	NONE = 'none',
-	REMOVE = 'remove',
-}
-
-interface IConnectorSettingsConnectorPropertyProps {
-	connector: IConnector;
-	deviceData: IDeviceData;
-}
+import {
+	IConnectorSettingsConnectorPropertyProps,
+	ConnectorSettingsConnectorDeviceViewTypes,
+} from '@/components/connector-settings/connector-settings-connector-device.types';
 
 const props = defineProps<IConnectorSettingsConnectorPropertyProps>();
 
@@ -73,14 +65,14 @@ const emit = defineEmits<{
 
 const { t } = useI18n();
 
-const activeView = ref<ViewTypes>(ViewTypes.NONE);
+const activeView = ref<ConnectorSettingsConnectorDeviceViewTypes>(ConnectorSettingsConnectorDeviceViewTypes.NONE);
 
-const onOpenView = (view: ViewTypes): void => {
+const onOpenView = (view: ConnectorSettingsConnectorDeviceViewTypes): void => {
 	activeView.value = view;
 };
 
 const onCloseView = (): void => {
-	activeView.value = ViewTypes.NONE;
+	activeView.value = ConnectorSettingsConnectorDeviceViewTypes.NONE;
 };
 </script>
 

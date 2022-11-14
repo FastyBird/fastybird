@@ -40,23 +40,10 @@ import { useI18n } from 'vue-i18n';
 
 import { FbUiContent, FbFormInput, FbFormTextArea, FbSizeTypes } from '@fastybird/web-ui-library';
 
-import { IChannel } from '@/models/types';
-
-interface IChannelSettingsChannelRenameModel {
-	identifier: string;
-	name?: string;
-	comment?: string;
-}
-
-interface IChannelSettingsChannelRenameProps {
-	channel: IChannel;
-	modelValue: IChannelSettingsChannelRenameModel;
-	errors: {
-		identifier?: string;
-		name?: string;
-		comment?: string;
-	};
-}
+import {
+	IChannelSettingsChannelRenameModel,
+	IChannelSettingsChannelRenameProps,
+} from '@/components/channel-settings/channel-settings-channel-rename.types';
 
 const props = defineProps<IChannelSettingsChannelRenameProps>();
 

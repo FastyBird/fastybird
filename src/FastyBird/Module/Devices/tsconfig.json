@@ -1,21 +1,21 @@
 {
   "compilerOptions": {
     "composite": true,
-    "target": "es6",
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "jsx": "react",
+    "target": "esnext",
+    "module": "esnext",
     "strict": true,
     "declaration": true,
-    "declarationMap": true,
-    "allowSyntheticDefaultImports": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "importHelpers": true,
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
+    "baseUrl": "public",
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "baseUrl": ".",
-    "forceConsistentCasingInFileNames": true,
-    "outDir": "./dist",
-    "rootDir": "./public",
     "types": [
       "@fastybird/metadata-library",
       "@fastybird/web-ui-library",
@@ -39,7 +39,7 @@
     ],
     "paths": {
       "@/*": [
-        "public/*"
+        "*"
       ]
     },
     "lib": [
@@ -66,13 +66,10 @@
     }
   ],
   "exclude": [
-    "dist",
+    "src/**/*.stories.ts",
+    "src/**/stories.ts",
+    "src/**/*.spec.ts",
     "node_modules",
-    "**/__mocks__/*",
-    "**/__tests__/*",
-    "**/*.spec.ts",
-    "**/*.test.ts",
-    "**/*.stories.ts",
-    "**/stories.ts"
+    "dist"
   ]
 }

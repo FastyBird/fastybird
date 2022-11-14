@@ -60,7 +60,7 @@
 		</fb-ui-swipe-actions-list>
 
 		<device-settings-device-remove
-			v-if="activeView === ViewTypes.REMOVE && selectedDevice !== null"
+			v-if="activeView === DevicesListDevicesViewTypes.REMOVE && selectedDevice !== null"
 			:device="selectedDevice"
 			:call-remove="false"
 			@close="onCloseView"
@@ -79,15 +79,7 @@ import { FbUiItem, FbUiSwipeActionsList, FbUiNoResults, FbSizeTypes, FbUiItemVar
 import { useEntityTitle } from '@/composables';
 import { IDevice } from '@/models/types';
 import { DeviceSettingsDeviceRemove, DevicesDeviceIcon } from '@/components';
-
-enum ViewTypes {
-	NONE = 'none',
-	REMOVE = 'remove',
-}
-
-interface IDevicesListDevicesProps {
-	items: IDevice[];
-}
+import { IDevicesListDevicesProps, DevicesListDevicesViewTypes } from '@/components/devices/devices-list-devices.types';
 
 const props = defineProps<IDevicesListDevicesProps>();
 
@@ -98,7 +90,7 @@ const emit = defineEmits<{
 
 const { t } = useI18n();
 
-const activeView = ref<ViewTypes>(ViewTypes.NONE);
+const activeView = ref<DevicesListDevicesViewTypes>(DevicesListDevicesViewTypes.NONE);
 
 const selectedDevice = ref<IDevice | null>(null);
 const noResults = computed<boolean>((): boolean => props.items.length === 0);
@@ -106,11 +98,11 @@ const noResults = computed<boolean>((): boolean => props.items.length === 0);
 const onOpenRemove = (device: IDevice): void => {
 	selectedDevice.value = device;
 
-	activeView.value = ViewTypes.REMOVE;
+	activeView.value = DevicesListDevicesViewTypes.REMOVE;
 };
 
 const onCloseView = (): void => {
-	activeView.value = ViewTypes.NONE;
+	activeView.value = DevicesListDevicesViewTypes.NONE;
 };
 
 const onRemoveConfirmed = (): void => {

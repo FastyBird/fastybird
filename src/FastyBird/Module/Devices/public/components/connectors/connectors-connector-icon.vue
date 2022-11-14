@@ -26,12 +26,7 @@ import { ConnectionState } from '@fastybird/metadata-library';
 import { useWsExchangeClient } from '@fastybird/ws-exchange-plugin';
 
 import { useConnectorState } from '@/composables';
-import { IConnector } from '@/models/types';
-
-interface IConnectorsIconProps {
-	connector: IConnector;
-	withState?: boolean;
-}
+import { IConnectorsIconProps } from '@/components/connectors/connectors-connector-icon.types';
 
 const props = withDefaults(defineProps<IConnectorsIconProps>(), {
 	withState: false,

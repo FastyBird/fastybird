@@ -34,11 +34,13 @@
     "resources/*"
   ],
   "scripts": {
-    "build": "cross-env NODE_ENV=production rollup --config build/rollup.config.js --bundleConfigAsCjs",
-    "build:ssr": "cross-env NODE_ENV=production rollup --config build/rollup.config.js --format cjs --bundleConfigAsCjs",
-    "build:es": "cross-env NODE_ENV=production rollup --config build/rollup.config.js --format es --bundleConfigAsCjs",
-    "build:unpkg": "cross-env NODE_ENV=production rollup --config build/rollup.config.js --format iife --bundleConfigAsCjs",
-    "lint": "eslint --ext \".js,.ts,.json,\" --ignore-path .gitignore public/"
+    "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
+    "build": "yarn clean && cross-env NODE_ENV=production rollup --config build/rollup.config.js --bundleConfigAsCjs",
+    "lint:js": "eslint --ext \".js,.ts,.json,\" --ignore-path .gitignore public/",
+    "lint:js:fix": "eslint --ext \".js,.ts,.json,\" --ignore-path .gitignore public/ --fix",
+    "pretty": "yarn pretty:write && yarn pretty:check",
+    "pretty:check": "yarn prettier --check public",
+    "pretty:write": "yarn prettier --write public"
   },
   "dependencies": {
     "date-fns": "^2.26"

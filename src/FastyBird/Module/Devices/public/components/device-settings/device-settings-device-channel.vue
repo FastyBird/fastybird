@@ -27,7 +27,7 @@
 					:variant="FbUiButtonVariantTypes.OUTLINE_PRIMARY"
 					:size="FbSizeTypes.EXTRA_SMALL"
 					:disabled="!isDeviceReady"
-					@click="onOpenView(ViewTypes.RESET)"
+					@click="onOpenView(DeviceSettingsDeviceChannelViewTypes.RESET)"
 				>
 					<font-awesome-icon icon="sync-alt" />
 					{{ t('buttons.reset.title') }}
@@ -36,7 +36,7 @@
 				<fb-ui-button
 					:variant="FbUiButtonVariantTypes.OUTLINE_DANGER"
 					:size="FbSizeTypes.EXTRA_SMALL"
-					@click="onOpenView(ViewTypes.REMOVE)"
+					@click="onOpenView(DeviceSettingsDeviceChannelViewTypes.REMOVE)"
 				>
 					<font-awesome-icon icon="trash" />
 					{{ t('buttons.remove.title') }}
@@ -46,7 +46,7 @@
 	</fb-ui-item>
 
 	<channel-settings-channel-reset
-		v-if="activeView === ViewTypes.RESET && resetControl !== null"
+		v-if="activeView === DeviceSettingsDeviceChannelViewTypes.RESET && resetControl !== null"
 		:device="props.device"
 		:channel="props.channelData.channel"
 		:control="resetControl"
@@ -56,7 +56,7 @@
 	/>
 
 	<channel-settings-channel-remove
-		v-if="activeView === ViewTypes.REMOVE"
+		v-if="activeView === DeviceSettingsDeviceChannelViewTypes.REMOVE"
 		:device="props.device"
 		:channel="props.channelData.channel"
 		:transparent-bg="true"
@@ -74,20 +74,12 @@ import { FbUiButton, FbUiItem, FbSizeTypes, FbUiItemVariantTypes, FbUiButtonVari
 import { ControlName } from '@fastybird/metadata-library';
 
 import { useDeviceState, useEntityTitle } from '@/composables';
-import { IChannelControl, IDevice } from '@/models/types';
+import { IChannelControl } from '@/models/types';
 import { ChannelSettingsChannelRemove, ChannelSettingsChannelReset } from '@/components';
-import { IChannelData } from '@/types';
-
-enum ViewTypes {
-	NONE = 'none',
-	RESET = 'reset',
-	REMOVE = 'remove',
-}
-
-interface IDeviceSettingsDevicePropertyProps {
-	device: IDevice;
-	channelData: IChannelData;
-}
+import {
+	IDeviceSettingsDevicePropertyProps,
+	DeviceSettingsDeviceChannelViewTypes,
+} from '@/components/device-settings/device-settings-device-channel.types';
 
 const props = defineProps<IDeviceSettingsDevicePropertyProps>();
 
@@ -97,7 +89,7 @@ const emit = defineEmits<{
 
 const { t } = useI18n();
 
-const activeView = ref<ViewTypes>(ViewTypes.NONE);
+const activeView = ref<DeviceSettingsDeviceChannelViewTypes>(DeviceSettingsDeviceChannelViewTypes.NONE);
 
 const { isReady: isDeviceReady } = useDeviceState(props.device);
 
@@ -107,12 +99,12 @@ const resetControl = computed<IChannelControl | null>((): IChannelControl | null
 	return control ?? null;
 });
 
-const onOpenView = (view: ViewTypes): void => {
+const onOpenView = (view: DeviceSettingsDeviceChannelViewTypes): void => {
 	activeView.value = view;
 };
 
 const onCloseView = (): void => {
-	activeView.value = ViewTypes.NONE;
+	activeView.value = DeviceSettingsDeviceChannelViewTypes.NONE;
 };
 </script>
 

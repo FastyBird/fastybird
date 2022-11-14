@@ -9,7 +9,7 @@
 				<fb-ui-button
 					:variant="FbUiButtonVariantTypes.OUTLINE_DEFAULT"
 					:size="FbSizeTypes.EXTRA_SMALL"
-					@click="onOpenView(ViewTypes.EDIT)"
+					@click="onOpenView(PropertySettingsPropertyViewTypes.EDIT)"
 				>
 					<font-awesome-icon icon="pencil-alt" />
 					{{ t('buttons.edit.title') }}
@@ -18,7 +18,7 @@
 				<fb-ui-button
 					:variant="FbUiButtonVariantTypes.OUTLINE_DANGER"
 					:size="FbSizeTypes.EXTRA_SMALL"
-					@click="onOpenView(ViewTypes.REMOVE)"
+					@click="onOpenView(PropertySettingsPropertyViewTypes.REMOVE)"
 				>
 					<font-awesome-icon icon="trash" />
 					{{ t('buttons.remove.title') }}
@@ -28,7 +28,7 @@
 	</fb-ui-item>
 
 	<property-settings-property-edit-modal
-		v-if="activeView === ViewTypes.EDIT"
+		v-if="activeView === PropertySettingsPropertyViewTypes.EDIT"
 		:connector="props.connector"
 		:device="props.device"
 		:channel="props.channel"
@@ -38,7 +38,7 @@
 	/>
 
 	<property-settings-property-remove
-		v-if="activeView === ViewTypes.REMOVE"
+		v-if="activeView === PropertySettingsPropertyViewTypes.REMOVE"
 		:connector="props.connector"
 		:device="props.device"
 		:channel="props.channel"
@@ -57,34 +57,21 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { FbUiButton, FbUiItem, FbSizeTypes, FbUiItemVariantTypes, FbUiButtonVariantTypes } from '@fastybird/web-ui-library';
 
 import { useEntityTitle } from '@/composables';
-import { IChannel, IChannelProperty, IConnector, IConnectorProperty, IDevice, IDeviceProperty } from '@/models/types';
 import { PropertySettingsPropertyEditModal, PropertySettingsPropertyRemove } from '@/components';
+import { IPropertySettingsPropertyProps, PropertySettingsPropertyViewTypes } from '@/components/property-settings/property-settings-property.types';
 
-enum ViewTypes {
-	NONE = 'none',
-	EDIT = 'edit',
-	REMOVE = 'remove',
-}
-
-interface IDeviceSettingsDevicePropertyProps {
-	connector?: IConnector;
-	device?: IDevice;
-	channel?: IChannel;
-	property: IChannelProperty | IConnectorProperty | IDeviceProperty;
-}
-
-const props = defineProps<IDeviceSettingsDevicePropertyProps>();
+const props = defineProps<IPropertySettingsPropertyProps>();
 
 const { t } = useI18n();
 
-const activeView = ref<ViewTypes>(ViewTypes.NONE);
+const activeView = ref<PropertySettingsPropertyViewTypes>(PropertySettingsPropertyViewTypes.NONE);
 
-const onOpenView = (view: ViewTypes): void => {
+const onOpenView = (view: PropertySettingsPropertyViewTypes): void => {
 	activeView.value = view;
 };
 
 const onCloseView = (): void => {
-	activeView.value = ViewTypes.NONE;
+	activeView.value = PropertySettingsPropertyViewTypes.NONE;
 };
 </script>
 

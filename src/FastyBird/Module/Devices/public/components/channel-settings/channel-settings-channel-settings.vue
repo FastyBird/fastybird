@@ -33,7 +33,7 @@
 						v-if="variableProperties.length > 0"
 						:variant="FbUiButtonVariantTypes.OUTLINE_PRIMARY"
 						:size="FbSizeTypes.EXTRA_SMALL"
-						@click="onOpenView(ViewTypes.ADD_STATIC_PARAMETER)"
+						@click="onOpenView(ChannelSettingsChannelSettingsViewTypes.ADD_STATIC_PARAMETER)"
 					>
 						<template #icon>
 							<font-awesome-icon icon="plus" />
@@ -51,7 +51,7 @@
 					:variant="FbUiButtonVariantTypes.OUTLINE_DEFAULT"
 					:size="FbSizeTypes.LARGE"
 					block
-					@click="onOpenView(ViewTypes.ADD_STATIC_PARAMETER)"
+					@click="onOpenView(ChannelSettingsChannelSettingsViewTypes.ADD_STATIC_PARAMETER)"
 				>
 					<template #icon>
 						<font-awesome-icon icon="plus-circle" />
@@ -82,7 +82,7 @@
 						v-if="dynamicProperties.length > 0"
 						:variant="FbUiButtonVariantTypes.OUTLINE_PRIMARY"
 						:size="FbSizeTypes.EXTRA_SMALL"
-						@click="onOpenView(ViewTypes.ADD_DYNAMIC_PARAMETER)"
+						@click="onOpenView(ChannelSettingsChannelSettingsViewTypes.ADD_DYNAMIC_PARAMETER)"
 					>
 						<template #icon>
 							<font-awesome-icon icon="plus" />
@@ -100,7 +100,7 @@
 					:variant="FbUiButtonVariantTypes.OUTLINE_DEFAULT"
 					:size="FbSizeTypes.LARGE"
 					block
-					@click="onOpenView(ViewTypes.ADD_DYNAMIC_PARAMETER)"
+					@click="onOpenView(ChannelSettingsChannelSettingsViewTypes.ADD_DYNAMIC_PARAMETER)"
 				>
 					<template #icon>
 						<font-awesome-icon icon="plus-circle" />
@@ -120,7 +120,11 @@
 	</div>
 
 	<property-settings-property-add-modal
-		v-if="(activeView === ViewTypes.ADD_STATIC_PARAMETER || activeView === ViewTypes.ADD_DYNAMIC_PARAMETER) && newProperty !== null"
+		v-if="
+			(activeView === ChannelSettingsChannelSettingsViewTypes.ADD_STATIC_PARAMETER ||
+				activeView === ChannelSettingsChannelSettingsViewTypes.ADD_DYNAMIC_PARAMETER) &&
+			newProperty !== null
+		"
 		:property="newProperty"
 		:channel="props.channelData.channel"
 		:device="props.device"
@@ -168,30 +172,20 @@ import { DataType, PropertyType } from '@fastybird/metadata-library';
 
 import { useEntityTitle, useFlashMessage, useUuid } from '@/composables';
 import { useChannels, useChannelProperties } from '@/models';
-import { IChannel, IChannelProperty, IDevice } from '@/models/types';
+import { IChannel, IChannelProperty } from '@/models/types';
 import {
 	ChannelSettingsChannelRename,
 	PropertySettingsProperty,
 	PropertySettingsPropertyAddModal,
 	PropertySettingsVariablePropertiesEdit,
 } from '@/components';
-import { IChannelData } from '@/types';
+import {
+	IChannelSettingsChannelSettingsForm,
+	IChannelSettingsChannelSettingsProps,
+	ChannelSettingsChannelSettingsViewTypes,
+} from '@/components/channel-settings/channel-settings-channel-settings.types';
 
-enum ViewTypes {
-	NONE = 'none',
-	ADD_STATIC_PARAMETER = 'addStaticParameter',
-	ADD_DYNAMIC_PARAMETER = 'addDynamicParameter',
-}
-
-interface IDeviceSettingsChannelRenameProps {
-	device: IDevice;
-	channelData: IChannelData;
-	remoteFormSubmit?: boolean;
-	remoteFormResult?: FbFormResultTypes;
-	remoteFormReset?: boolean;
-}
-
-const props = withDefaults(defineProps<IDeviceSettingsChannelRenameProps>(), {
+const props = withDefaults(defineProps<IChannelSettingsChannelSettingsProps>(), {
 	remoteFormSubmit: false,
 	remoteFormResult: FbFormResultTypes.NONE,
 	remoteFormReset: false,
@@ -212,7 +206,7 @@ const flashMessage = useFlashMessage();
 const channelsStore = useChannels();
 const propertiesStore = useChannelProperties();
 
-const activeView = ref<ViewTypes>(ViewTypes.NONE);
+const activeView = ref<ChannelSettingsChannelSettingsViewTypes>(ChannelSettingsChannelSettingsViewTypes.NONE);
 
 const variableProperties = computed<IChannelProperty[]>((): IChannelProperty[] => {
 	return props.channelData.properties.filter((property) => property.type.type === PropertyType.VARIABLE);
@@ -226,17 +220,6 @@ const newPropertyId = ref<string | null>(null);
 const newProperty = computed<IChannelProperty | null>((): IChannelProperty | null =>
 	newPropertyId.value ? propertiesStore.findById(newPropertyId.value) : null
 );
-
-interface IChannelSettingsChannelSettingsForm {
-	about: {
-		identifier: string;
-		name: string | null;
-		comment: string | null;
-	};
-	properties: {
-		static: { id: string; value: string | null }[];
-	};
-}
 
 const { validate } = useForm<IChannelSettingsChannelSettingsForm>({
 	validationSchema: yup.object({
@@ -272,8 +255,8 @@ const commentError = useFieldError('about.comment');
 
 let timer: number;
 
-const onOpenView = async (view: ViewTypes): Promise<void> => {
-	if (view === ViewTypes.ADD_STATIC_PARAMETER) {
+const onOpenView = async (view: ChannelSettingsChannelSettingsViewTypes): Promise<void> => {
+	if (view === ChannelSettingsChannelSettingsViewTypes.ADD_STATIC_PARAMETER) {
 		const { id } = await propertiesStore.add({
 			channel: props.channelData.channel,
 			type: { source: props.channelData.channel.type.source, type: PropertyType.VARIABLE, parent: 'channel' },
@@ -285,7 +268,7 @@ const onOpenView = async (view: ViewTypes): Promise<void> => {
 		});
 
 		newPropertyId.value = id;
-	} else if (view === ViewTypes.ADD_DYNAMIC_PARAMETER) {
+	} else if (view === ChannelSettingsChannelSettingsViewTypes.ADD_DYNAMIC_PARAMETER) {
 		const { id } = await propertiesStore.add({
 			channel: props.channelData.channel,
 			type: { source: props.channelData.channel.type.source, type: PropertyType.DYNAMIC, parent: 'channel' },
@@ -303,17 +286,21 @@ const onOpenView = async (view: ViewTypes): Promise<void> => {
 };
 
 const onCloseView = async (): Promise<void> => {
-	if ((activeView.value === ViewTypes.ADD_STATIC_PARAMETER || activeView.value === ViewTypes.ADD_DYNAMIC_PARAMETER) && newProperty.value?.draft) {
+	if (
+		(activeView.value === ChannelSettingsChannelSettingsViewTypes.ADD_STATIC_PARAMETER ||
+			activeView.value === ChannelSettingsChannelSettingsViewTypes.ADD_DYNAMIC_PARAMETER) &&
+		newProperty.value?.draft
+	) {
 		await propertiesStore.remove({ id: newProperty.value.id });
 		newPropertyId.value = null;
 	}
 
-	activeView.value = ViewTypes.NONE;
+	activeView.value = ChannelSettingsChannelSettingsViewTypes.NONE;
 };
 
 const onCloseAddProperty = (saved: boolean): void => {
 	if (saved) {
-		activeView.value = ViewTypes.NONE;
+		activeView.value = ChannelSettingsChannelSettingsViewTypes.NONE;
 	} else {
 		onCloseView();
 	}

@@ -31,7 +31,7 @@
 			</template>
 
 			<template v-else>
-				<template v-if="activeView === ViewTypes.SELECT_TYPE">
+				<template v-if="activeView === PropertySettingsPropertyAddModalViewTypes.SELECT_TYPE">
 					<div class="fb-devices-module-property-settings-property-add-modal__row">
 						<div class="fb-devices-module-property-settings-property-add-modal__row-item">
 							<fb-ui-button
@@ -39,7 +39,7 @@
 								:size="FbSizeTypes.LARGE"
 								block
 								class="fb-devices-module-property-settings-property-add-modal__button"
-								@click.prevent="onOpenView(ViewTypes.NEW_PROPERTY)"
+								@click.prevent="onOpenView(PropertySettingsPropertyAddModalViewTypes.NEW_PROPERTY)"
 							>
 								<font-awesome-icon
 									icon="file"
@@ -57,7 +57,7 @@
 								:size="FbSizeTypes.LARGE"
 								block
 								class="fb-devices-module-property-settings-property-add-modal__button"
-								@click.prevent="onOpenView(ViewTypes.SELECT_CONNECTOR)"
+								@click.prevent="onOpenView(PropertySettingsPropertyAddModalViewTypes.SELECT_CONNECTOR)"
 							>
 								<font-awesome-icon
 									icon="clone"
@@ -85,7 +85,10 @@
 				</template>
 
 				<property-settings-property-form
-					v-if="activeView === ViewTypes.NEW_PROPERTY || activeView === ViewTypes.MAPPED_PROPERTY"
+					v-if="
+						activeView === PropertySettingsPropertyAddModalViewTypes.NEW_PROPERTY ||
+						activeView === PropertySettingsPropertyAddModalViewTypes.MAPPED_PROPERTY
+					"
 					v-model:remote-form-submit="remoteFormSubmit"
 					v-model:remote-form-result="remoteFormResult"
 					:connector="props.connector"
@@ -95,7 +98,7 @@
 					@added="onAdded"
 				/>
 
-				<template v-if="activeView === ViewTypes.SELECT_CONNECTOR">
+				<template v-if="activeView === PropertySettingsPropertyAddModalViewTypes.SELECT_CONNECTOR">
 					<fb-ui-items-container>
 						<template #heading>
 							{{ t('headings.connectorSelect') }}
@@ -150,7 +153,7 @@
 					</fb-ui-items-container>
 				</template>
 
-				<template v-if="activeView === ViewTypes.SELECT_DEVICE">
+				<template v-if="activeView === PropertySettingsPropertyAddModalViewTypes.SELECT_DEVICE">
 					<fb-ui-items-container>
 						<template #heading>
 							{{ t('headings.deviceSelect') }}
@@ -205,7 +208,7 @@
 					</fb-ui-items-container>
 				</template>
 
-				<template v-if="activeView === ViewTypes.SELECT_CHANNEL">
+				<template v-if="activeView === PropertySettingsPropertyAddModalViewTypes.SELECT_CHANNEL">
 					<fb-ui-items-container>
 						<template #heading>
 							{{ t('headings.channelSelect') }}
@@ -260,7 +263,7 @@
 					</fb-ui-items-container>
 				</template>
 
-				<template v-if="activeView === ViewTypes.SELECT_PARENT">
+				<template v-if="activeView === PropertySettingsPropertyAddModalViewTypes.SELECT_PARENT">
 					<fb-ui-items-container>
 						<template #heading>
 							{{ t('headings.parentSelect') }}
@@ -318,7 +321,7 @@
 			v-if="!isConnectorProperty && props.property.type.type !== PropertyType.VARIABLE"
 			#footer
 		>
-			<template v-if="activeView === ViewTypes.SELECT_TYPE">
+			<template v-if="activeView === PropertySettingsPropertyAddModalViewTypes.SELECT_TYPE">
 				<fb-ui-button
 					:size="FbSizeTypes.LARGE"
 					:variant="FbUiButtonVariantTypes.LINK_DEFAULT"
@@ -330,7 +333,12 @@
 				</fb-ui-button>
 			</template>
 
-			<template v-if="activeView === ViewTypes.NEW_PROPERTY || activeView === ViewTypes.MAPPED_PROPERTY">
+			<template
+				v-if="
+					activeView === PropertySettingsPropertyAddModalViewTypes.NEW_PROPERTY ||
+					activeView === PropertySettingsPropertyAddModalViewTypes.MAPPED_PROPERTY
+				"
+			>
 				<fb-ui-button
 					:size="FbSizeTypes.LARGE"
 					:variant="FbUiButtonVariantTypes.LINK_DEFAULT"
@@ -355,10 +363,10 @@
 
 			<template
 				v-if="
-					activeView === ViewTypes.SELECT_CONNECTOR ||
-					activeView === ViewTypes.SELECT_DEVICE ||
-					activeView === ViewTypes.SELECT_CHANNEL ||
-					activeView === ViewTypes.SELECT_PARENT
+					activeView === PropertySettingsPropertyAddModalViewTypes.SELECT_CONNECTOR ||
+					activeView === PropertySettingsPropertyAddModalViewTypes.SELECT_DEVICE ||
+					activeView === PropertySettingsPropertyAddModalViewTypes.SELECT_CHANNEL ||
+					activeView === PropertySettingsPropertyAddModalViewTypes.SELECT_PARENT
 				"
 			>
 				<fb-ui-button
@@ -413,37 +421,15 @@ import { useBreakpoints, useEntityTitle } from '@/composables';
 import { useChannelProperties, useChannels, useConnectorProperties, useConnectors, useDeviceProperties, useDevices } from '@/models';
 import { IChannel, IChannelProperty, IConnector, IConnectorProperty, IDevice, IDeviceProperty } from '@/models/types';
 import { ConnectorsConnectorIcon, DevicesDeviceIcon, PropertiesPropertyIcon, PropertySettingsPropertyForm } from '@/components';
+import {
+	IChannelListItem,
+	IConnectorListItem,
+	IDeviceListItem,
+	IPropertySettingsPropertyAddModalProps,
+	PropertySettingsPropertyAddModalViewTypes,
+} from '@/components/property-settings/property-settings-property-add-modal.types';
 
-enum ViewTypes {
-	SELECT_TYPE = 'selectType',
-	NEW_PROPERTY = 'newProperty',
-	MAPPED_PROPERTY = 'mappedProperty',
-	SELECT_CONNECTOR = 'selectConnector',
-	SELECT_DEVICE = 'selectDevice',
-	SELECT_CHANNEL = 'selectChannel',
-	SELECT_PARENT = 'selectParent',
-}
-
-interface IPropertySettingsPropertyModalProps {
-	connector?: IConnector;
-	device?: IDevice;
-	channel?: IChannel;
-	property: IChannelProperty | IDeviceProperty | IConnectorProperty;
-}
-
-interface IConnectorListItem extends IConnector {
-	disabled: boolean;
-}
-
-interface IDeviceListItem extends IDevice {
-	disabled: boolean;
-}
-
-interface IChannelListItem extends IChannel {
-	disabled: boolean;
-}
-
-const props = defineProps<IPropertySettingsPropertyModalProps>();
+const props = defineProps<IPropertySettingsPropertyAddModalProps>();
 
 const emit = defineEmits<{
 	(e: 'close', saved: boolean): void;
@@ -462,7 +448,7 @@ const channelPropertiesStore = useChannelProperties();
 const remoteFormSubmit = ref<boolean>(false);
 const remoteFormResult = ref<FbFormResultTypes>(FbFormResultTypes.NONE);
 
-const activeView = ref<ViewTypes>(ViewTypes.SELECT_TYPE);
+const activeView = ref<PropertySettingsPropertyAddModalViewTypes>(PropertySettingsPropertyAddModalViewTypes.SELECT_TYPE);
 
 const isDraft = computed<boolean>((): boolean => {
 	if (isChannelProperty.value) {
@@ -599,7 +585,9 @@ const onSelectConnector = (connector: IConnectorListItem): void => {
 
 	selectedConnector.value = connector;
 
-	activeView.value = isConnectorProperty.value ? ViewTypes.SELECT_PARENT : ViewTypes.SELECT_DEVICE;
+	activeView.value = isConnectorProperty.value
+		? PropertySettingsPropertyAddModalViewTypes.SELECT_PARENT
+		: PropertySettingsPropertyAddModalViewTypes.SELECT_DEVICE;
 };
 
 const onSelectDevice = (device: IDeviceListItem): void => {
@@ -609,7 +597,9 @@ const onSelectDevice = (device: IDeviceListItem): void => {
 
 	selectedDevice.value = device;
 
-	activeView.value = isDeviceProperty.value ? ViewTypes.SELECT_PARENT : ViewTypes.SELECT_CHANNEL;
+	activeView.value = isDeviceProperty.value
+		? PropertySettingsPropertyAddModalViewTypes.SELECT_PARENT
+		: PropertySettingsPropertyAddModalViewTypes.SELECT_CHANNEL;
 };
 
 const onSelectChannel = (channel: IChannelListItem): void => {
@@ -619,7 +609,7 @@ const onSelectChannel = (channel: IChannelListItem): void => {
 
 	selectedChannel.value = channel;
 
-	activeView.value = ViewTypes.SELECT_PARENT;
+	activeView.value = PropertySettingsPropertyAddModalViewTypes.SELECT_PARENT;
 };
 
 const onSelectParent = (property: IChannelProperty | IConnectorProperty | IDeviceProperty): void => {
@@ -630,7 +620,7 @@ const onSelectParent = (property: IChannelProperty | IConnectorProperty | IDevic
 			data: {},
 		});
 
-		activeView.value = ViewTypes.MAPPED_PROPERTY;
+		activeView.value = PropertySettingsPropertyAddModalViewTypes.MAPPED_PROPERTY;
 	} else if (isChannelProperty.value) {
 		channelPropertiesStore.edit({
 			id: props.property.id,
@@ -638,7 +628,7 @@ const onSelectParent = (property: IChannelProperty | IConnectorProperty | IDevic
 			data: {},
 		});
 
-		activeView.value = ViewTypes.MAPPED_PROPERTY;
+		activeView.value = PropertySettingsPropertyAddModalViewTypes.MAPPED_PROPERTY;
 	}
 };
 
@@ -651,24 +641,24 @@ const onClose = (): void => {
 };
 
 const onBack = (): void => {
-	if (activeView.value === ViewTypes.SELECT_CONNECTOR) {
-		activeView.value = ViewTypes.SELECT_TYPE;
-	} else if (activeView.value === ViewTypes.SELECT_DEVICE) {
-		activeView.value = ViewTypes.SELECT_CONNECTOR;
-	} else if (activeView.value === ViewTypes.SELECT_CHANNEL) {
-		activeView.value = ViewTypes.SELECT_DEVICE;
-	} else if (activeView.value === ViewTypes.SELECT_PARENT) {
+	if (activeView.value === PropertySettingsPropertyAddModalViewTypes.SELECT_CONNECTOR) {
+		activeView.value = PropertySettingsPropertyAddModalViewTypes.SELECT_TYPE;
+	} else if (activeView.value === PropertySettingsPropertyAddModalViewTypes.SELECT_DEVICE) {
+		activeView.value = PropertySettingsPropertyAddModalViewTypes.SELECT_CONNECTOR;
+	} else if (activeView.value === PropertySettingsPropertyAddModalViewTypes.SELECT_CHANNEL) {
+		activeView.value = PropertySettingsPropertyAddModalViewTypes.SELECT_DEVICE;
+	} else if (activeView.value === PropertySettingsPropertyAddModalViewTypes.SELECT_PARENT) {
 		if (isChannelProperty.value) {
-			activeView.value = ViewTypes.SELECT_CHANNEL;
+			activeView.value = PropertySettingsPropertyAddModalViewTypes.SELECT_CHANNEL;
 		} else if (isDeviceProperty.value) {
-			activeView.value = ViewTypes.SELECT_DEVICE;
+			activeView.value = PropertySettingsPropertyAddModalViewTypes.SELECT_DEVICE;
 		} else if (isConnectorProperty.value) {
-			activeView.value = ViewTypes.SELECT_CONNECTOR;
+			activeView.value = PropertySettingsPropertyAddModalViewTypes.SELECT_CONNECTOR;
 		}
 	}
 };
 
-const onOpenView = (view: ViewTypes): void => {
+const onOpenView = (view: PropertySettingsPropertyAddModalViewTypes): void => {
 	activeView.value = view;
 };
 

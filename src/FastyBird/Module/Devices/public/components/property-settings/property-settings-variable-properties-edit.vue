@@ -30,17 +30,10 @@ import { FbFormCheckbox, FbFormInput, FbUiContent, FbSizeTypes } from '@fastybir
 import { DataType } from '@fastybird/metadata-library';
 
 import { useEntityTitle } from '@/composables';
-import { IChannelProperty, IConnectorProperty, IDeviceProperty } from '@/models/types';
-
-interface IPropertySettingsVariablePropertiesEditModel {
-	id: string;
-	value: string | undefined;
-}
-
-interface IPropertySettingsVariablePropertiesEditProps {
-	modelValue: IPropertySettingsVariablePropertiesEditModel[];
-	properties: IConnectorProperty[] | IDeviceProperty[] | IChannelProperty[];
-}
+import {
+	IPropertySettingsVariablePropertiesEditModel,
+	IPropertySettingsVariablePropertiesEditProps,
+} from '@/components/property-settings/property-settings-variable-properties-edit.types';
 
 const props = defineProps<IPropertySettingsVariablePropertiesEditProps>();
 

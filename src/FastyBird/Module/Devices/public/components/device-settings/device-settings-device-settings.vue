@@ -84,7 +84,7 @@
 						v-if="variableProperties.length > 0"
 						:variant="FbUiButtonVariantTypes.OUTLINE_PRIMARY"
 						:size="FbSizeTypes.EXTRA_SMALL"
-						@click="onOpenView(ViewTypes.ADD_STATIC_PARAMETER)"
+						@click="onOpenView(DeviceSettingsDeviceSettingsViewTypes.ADD_STATIC_PARAMETER)"
 					>
 						<template #icon>
 							<font-awesome-icon icon="plus" />
@@ -102,7 +102,7 @@
 					:variant="FbUiButtonVariantTypes.OUTLINE_DEFAULT"
 					:size="FbSizeTypes.LARGE"
 					block
-					@click="onOpenView(ViewTypes.ADD_STATIC_PARAMETER)"
+					@click="onOpenView(DeviceSettingsDeviceSettingsViewTypes.ADD_STATIC_PARAMETER)"
 				>
 					<template #icon>
 						<font-awesome-icon icon="plus-circle" />
@@ -132,7 +132,7 @@
 						v-if="dynamicProperties.length > 0"
 						:variant="FbUiButtonVariantTypes.OUTLINE_PRIMARY"
 						:size="FbSizeTypes.EXTRA_SMALL"
-						@click="onOpenView(ViewTypes.ADD_DYNAMIC_PARAMETER)"
+						@click="onOpenView(DeviceSettingsDeviceSettingsViewTypes.ADD_DYNAMIC_PARAMETER)"
 					>
 						<template #icon>
 							<font-awesome-icon icon="plus" />
@@ -150,7 +150,7 @@
 					:variant="FbUiButtonVariantTypes.OUTLINE_DEFAULT"
 					:size="FbSizeTypes.LARGE"
 					block
-					@click="onOpenView(ViewTypes.ADD_DYNAMIC_PARAMETER)"
+					@click="onOpenView(DeviceSettingsDeviceSettingsViewTypes.ADD_DYNAMIC_PARAMETER)"
 				>
 					<template #icon>
 						<font-awesome-icon icon="plus-circle" />
@@ -169,7 +169,11 @@
 	</div>
 
 	<property-settings-property-add-modal
-		v-if="(activeView === ViewTypes.ADD_STATIC_PARAMETER || activeView === ViewTypes.ADD_DYNAMIC_PARAMETER) && newProperty !== null"
+		v-if="
+			(activeView === DeviceSettingsDeviceSettingsViewTypes.ADD_STATIC_PARAMETER ||
+				activeView === DeviceSettingsDeviceSettingsViewTypes.ADD_DYNAMIC_PARAMETER) &&
+			newProperty !== null
+		"
 		:property="newProperty"
 		:device="props.deviceData.device"
 		@close="onCloseAddProperty"
@@ -217,7 +221,7 @@ import { DataType, ModuleSource, PropertyType } from '@fastybird/metadata-librar
 
 import { useEntityTitle, useFlashMessage, useUuid } from '@/composables';
 import { useDevices, useDeviceProperties } from '@/models';
-import { IConnector, IDevice, IDeviceProperty } from '@/models/types';
+import { IDevice, IDeviceProperty } from '@/models/types';
 import {
 	DeviceSettingsDeviceChannel,
 	DeviceSettingsDeviceRename,
@@ -225,34 +229,14 @@ import {
 	PropertySettingsPropertyAddModal,
 	PropertySettingsVariablePropertiesEdit,
 } from '@/components';
-import { IChannelData, IDeviceData } from '@/types';
+import { IChannelData } from '@/types';
+import {
+	IDeviceSettingsDeviceSettingsForm,
+	IDeviceSettingsDeviceSettingsProps,
+	DeviceSettingsDeviceSettingsViewTypes,
+} from '@/components/device-settings/device-settings-device-settings.types';
 
-enum ViewTypes {
-	NONE = 'none',
-	ADD_STATIC_PARAMETER = 'addStaticParameter',
-	ADD_DYNAMIC_PARAMETER = 'addDynamicParameter',
-}
-
-interface IDeviceSettingsDeviceRenameProps {
-	connector: IConnector;
-	deviceData: IDeviceData;
-	remoteFormSubmit?: boolean;
-	remoteFormResult?: FbFormResultTypes;
-	remoteFormReset?: boolean;
-}
-
-interface IDeviceSettingsDeviceSettingsForm {
-	about: {
-		identifier: string;
-		name: string | null;
-		comment: string | null;
-	};
-	properties: {
-		static: { id: string; value: string | null }[];
-	};
-}
-
-const props = withDefaults(defineProps<IDeviceSettingsDeviceRenameProps>(), {
+const props = withDefaults(defineProps<IDeviceSettingsDeviceSettingsProps>(), {
 	remoteFormSubmit: false,
 	remoteFormResult: FbFormResultTypes.NONE,
 	remoteFormReset: false,
@@ -275,7 +259,7 @@ const flashMessage = useFlashMessage();
 const devicesStore = useDevices();
 const propertiesStore = useDeviceProperties();
 
-const activeView = ref<ViewTypes>(ViewTypes.NONE);
+const activeView = ref<DeviceSettingsDeviceSettingsViewTypes>(DeviceSettingsDeviceSettingsViewTypes.NONE);
 
 const variableProperties = computed<IDeviceProperty[]>((): IDeviceProperty[] => {
 	return props.deviceData.properties.filter((property) => property.type.type === PropertyType.VARIABLE);
@@ -332,8 +316,8 @@ const channelsData = computed<IChannelData[]>((): IChannelData[] => {
 	);
 });
 
-const onOpenView = async (view: ViewTypes): Promise<void> => {
-	if (view === ViewTypes.ADD_STATIC_PARAMETER) {
+const onOpenView = async (view: DeviceSettingsDeviceSettingsViewTypes): Promise<void> => {
+	if (view === DeviceSettingsDeviceSettingsViewTypes.ADD_STATIC_PARAMETER) {
 		const { id } = await propertiesStore.add({
 			device: props.deviceData.device,
 			type: { source: ModuleSource.MODULE_DEVICES, type: PropertyType.VARIABLE, parent: 'device' },
@@ -345,7 +329,7 @@ const onOpenView = async (view: ViewTypes): Promise<void> => {
 		});
 
 		newPropertyId.value = id;
-	} else if (view === ViewTypes.ADD_DYNAMIC_PARAMETER) {
+	} else if (view === DeviceSettingsDeviceSettingsViewTypes.ADD_DYNAMIC_PARAMETER) {
 		const { id } = await propertiesStore.add({
 			device: props.deviceData.device,
 			type: { source: ModuleSource.MODULE_DEVICES, type: PropertyType.DYNAMIC, parent: 'device' },
@@ -363,17 +347,21 @@ const onOpenView = async (view: ViewTypes): Promise<void> => {
 };
 
 const onCloseView = async (): Promise<void> => {
-	if ((activeView.value === ViewTypes.ADD_STATIC_PARAMETER || activeView.value === ViewTypes.ADD_DYNAMIC_PARAMETER) && newProperty.value?.draft) {
+	if (
+		(activeView.value === DeviceSettingsDeviceSettingsViewTypes.ADD_STATIC_PARAMETER ||
+			activeView.value === DeviceSettingsDeviceSettingsViewTypes.ADD_DYNAMIC_PARAMETER) &&
+		newProperty.value?.draft
+	) {
 		await propertiesStore.remove({ id: newProperty.value.id });
 		newPropertyId.value = null;
 	}
 
-	activeView.value = ViewTypes.NONE;
+	activeView.value = DeviceSettingsDeviceSettingsViewTypes.NONE;
 };
 
 const onCloseAddProperty = (saved: boolean): void => {
 	if (saved) {
-		activeView.value = ViewTypes.NONE;
+		activeView.value = DeviceSettingsDeviceSettingsViewTypes.NONE;
 	} else {
 		onCloseView();
 	}

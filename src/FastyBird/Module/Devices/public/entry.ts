@@ -1,6 +1,6 @@
 import { App, InjectionKey } from 'vue';
 
-import moduleRouter from '@/router';
+import { module as moduleRouter } from '@/router';
 import { IDeviceModuleConfiguration, IDeviceModuleMeta, IDevicesModuleOptions, InstallFunction } from '@/types';
 
 export const metaKey: InjectionKey<IDeviceModuleMeta> = Symbol('devices-module_meta');

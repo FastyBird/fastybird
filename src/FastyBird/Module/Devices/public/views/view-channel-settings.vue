@@ -89,16 +89,10 @@ import { useBreakpoints, useEntityTitle, useRoutesNames, useUuid } from '@/compo
 import { useChannelControls, useChannelProperties, useChannels, useDevices } from '@/models';
 import { IChannel, IChannelControl, IChannelProperty, IDevice } from '@/models/types';
 import { ChannelSettingsChannelSettings } from '@/components';
-import { IChannelData } from '@/types';
+import { IChannelData, IViewChanelSettingsProps } from '@/types';
 import { orderBy } from 'natural-orderby';
 
-interface IViewDeviceChanelSettingsProps {
-	id: string;
-	channelId?: string | null;
-	connectorId: string;
-}
-
-const props = withDefaults(defineProps<IViewDeviceChanelSettingsProps>(), {
+const props = withDefaults(defineProps<IViewChanelSettingsProps>(), {
 	channelId: null,
 });
 

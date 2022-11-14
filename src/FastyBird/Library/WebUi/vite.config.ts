@@ -13,16 +13,18 @@ export default defineConfig({
 			outputDir: 'dist',
 			staticImport: true,
 			insertTypesEntry: true,
+			noEmitOnError: true,
+			skipDiagnostics: true,
 		}),
 	],
 	resolve: {
 		alias: {
-			'@': resolve(__dirname, 'src'),
+			'@': resolve(__dirname, './src'),
 		},
 	},
 	build: {
 		lib: {
-			entry: resolve(__dirname, 'src/entry.ts'),
+			entry: resolve(__dirname, './src/entry.ts'),
 			name: 'web-ui-library',
 			fileName: (format) => `web-ui-library.${format}.js`,
 		},

@@ -43,18 +43,9 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { FbUiContent, FbUiNoResults, FbUiScrollShadow, FbSizeTypes, FbUiVariantTypes } from '@fastybird/web-ui-library';
 
 import { useBreakpoints } from '@/composables';
-import { IConnector, IConnectorControl, IConnectorProperty } from '@/models/types';
 import { ConnectorDefaultConnectorDevice } from '@/components';
 import { IDeviceData } from '@/types';
-
-interface IConnectorsConnectorDetailDefaultProps {
-	connectorData: {
-		connector: IConnector;
-		properties: IConnectorProperty[];
-		controls: IConnectorControl[];
-		devices: IDeviceData[];
-	};
-}
+import { IConnectorsConnectorDetailDefaultProps } from '@/components/connector-default/connector-default-connector-detail.types';
 
 const props = defineProps<IConnectorsConnectorDetailDefaultProps>();
 

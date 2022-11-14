@@ -39,16 +39,9 @@ import { FbUiConfirmationWindow } from '@fastybird/web-ui-library';
 
 import { useEntityTitle, useFlashMessage } from '@/composables';
 import { useChannels } from '@/models';
-import { IChannel, IDevice } from '@/models/types';
+import { IChannelSettingsChannelRemoveProps } from '@/components/channel-settings/channel-settings-channel-remove.types';
 
-interface IDeviceSettingsDeviceRemoveProps {
-	device: IDevice;
-	channel: IChannel;
-	callRemove?: boolean;
-	transparentBg?: boolean;
-}
-
-const props = withDefaults(defineProps<IDeviceSettingsDeviceRemoveProps>(), {
+const props = withDefaults(defineProps<IChannelSettingsChannelRemoveProps>(), {
 	callRemove: true,
 	transparentBg: false,
 });

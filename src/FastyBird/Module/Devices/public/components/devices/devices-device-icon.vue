@@ -26,12 +26,7 @@ import { ConnectionState } from '@fastybird/metadata-library';
 import { useWsExchangeClient } from '@fastybird/ws-exchange-plugin';
 
 import { useDeviceState } from '@/composables';
-import { IDevice } from '@/models/types';
-
-interface IDevicesIconProps {
-	device: IDevice;
-	withState?: boolean;
-}
+import { IDevicesIconProps } from '@/components/devices/devices-device-icon.types';
 
 const props = withDefaults(defineProps<IDevicesIconProps>(), {
 	withState: false,

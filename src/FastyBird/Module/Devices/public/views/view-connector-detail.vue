@@ -14,7 +14,7 @@
 			<connectors-connector-heading
 				:connector="connectorData.connector"
 				:edit-mode="editMode"
-				@remove="onOpenView(ViewTypes.REMOVE)"
+				@remove="onOpenView(ViewConnectorDetailViewTypes.REMOVE)"
 				@configure="onConfigure"
 			/>
 		</template>
@@ -101,7 +101,7 @@
 		</template>
 
 		<connector-settings-connector-remove
-			v-if="activeView === ViewTypes.REMOVE"
+			v-if="activeView === ViewConnectorDetailViewTypes.REMOVE"
 			:connector="connectorData.connector"
 			:call-remove="false"
 			@close="onCloseView"
@@ -145,7 +145,6 @@ import {
 import {
 	IChannelControl,
 	IChannelProperty,
-	IConnector,
 	IConnectorControl,
 	IConnectorProperty,
 	IDeviceAttribute,
@@ -160,22 +159,11 @@ import {
 	ConnectorSettingsConnectorRemove,
 } from '@/components';
 import { ApplicationError } from '@/errors';
-import { IChannelData, IConnectorData, IDeviceData } from '@/types';
+import { IChannelData, IConnectorData, IDeviceData, IViewConnectorDetailProps } from '@/types';
 import useDeviceAttributes from '@/models/devices-attributes';
+import { ViewConnectorDetailViewTypes } from '@/views/view-connector-detail.types';
 
-enum ViewTypes {
-	NONE = 'none',
-	REMOVE = 'remove',
-}
-
-interface IViewConnectorProps {
-	id: string;
-	deviceId?: string;
-	channelId?: string;
-	connectors: IConnector[];
-}
-
-const props = defineProps<IViewConnectorProps>();
+const props = defineProps<IViewConnectorDetailProps>();
 
 const { t } = useI18n();
 const route = useRoute();
@@ -216,7 +204,7 @@ const isPartialSettingsRoute = computed<boolean>((): boolean => {
 	);
 });
 
-const activeView = ref<ViewTypes>(ViewTypes.NONE);
+const activeView = ref<ViewConnectorDetailViewTypes>(ViewConnectorDetailViewTypes.NONE);
 
 const connectorData = computed<IConnectorData | null>((): IConnectorData | null => {
 	if (validateUuid(props.id)) {
@@ -334,12 +322,12 @@ const onToggleEditMode = (): void => {
 	editMode.value = !editMode.value;
 };
 
-const onOpenView = (viewType: ViewTypes): void => {
+const onOpenView = (viewType: ViewConnectorDetailViewTypes): void => {
 	activeView.value = viewType;
 };
 
 const onCloseView = (): void => {
-	activeView.value = ViewTypes.NONE;
+	activeView.value = ViewConnectorDetailViewTypes.NONE;
 };
 
 const onRemoveConfirmed = (): void => {

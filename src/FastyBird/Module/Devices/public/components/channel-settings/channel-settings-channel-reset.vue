@@ -38,16 +38,9 @@ import { FbUiConfirmationWindow } from '@fastybird/web-ui-library';
 
 import { useDeviceState, useEntityTitle, useFlashMessage } from '@/composables';
 import { useChannelControls } from '@/models';
-import { IChannel, IChannelControl, IDevice } from '@/models/types';
+import { IChannelSettingsChannelResetProps } from '@/components/channel-settings/channel-settings-channel-reset.types';
 
-interface IDeviceSettingsDeviceResetProps {
-	device: IDevice;
-	channel: IChannel;
-	control: IChannelControl;
-	transparentBg?: boolean;
-}
-
-const props = withDefaults(defineProps<IDeviceSettingsDeviceResetProps>(), {
+const props = withDefaults(defineProps<IChannelSettingsChannelResetProps>(), {
 	transparentBg: false,
 });
 

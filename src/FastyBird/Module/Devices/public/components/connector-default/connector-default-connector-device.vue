@@ -16,13 +16,8 @@
 import { FbUiItem, FbUiItemVariantTypes } from '@fastybird/web-ui-library';
 
 import { useBreakpoints, useEntityTitle } from '@/composables';
-import { IConnector, IDeviceData } from '@/types';
 import { DevicesDeviceIcon } from '@/components';
-
-interface IDeviceDefaultChannelPropertyProps {
-	connector: IConnector;
-	deviceData: IDeviceData;
-}
+import { IDeviceDefaultChannelPropertyProps } from '@/components/connector-default/connector-default-connector-device.types';
 
 const props = defineProps<IDeviceDefaultChannelPropertyProps>();
 

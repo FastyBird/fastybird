@@ -35,13 +35,7 @@ import { FbUiConfirmationWindow } from '@fastybird/web-ui-library';
 
 import { useEntityTitle, useFlashMessage } from '@/composables';
 import { useDevices } from '@/models';
-import { IDevice } from '@/models/types';
-
-interface IDeviceSettingsDeviceRemoveProps {
-	device: IDevice;
-	callRemove?: boolean;
-	transparentBg?: boolean;
-}
+import { IDeviceSettingsDeviceRemoveProps } from '@/components/device-settings/device-settings-device-remove.types';
 
 const props = withDefaults(defineProps<IDeviceSettingsDeviceRemoveProps>(), {
 	callRemove: true,

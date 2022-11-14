@@ -14,8 +14,10 @@ import {
 	IDeviceProperty,
 } from '@/models/types';
 
+export * from '@/components/types';
 export * from '@/composables/types';
 export * from '@/models/types';
+export * from '@/views/types';
 
 export type InstallFunction = Plugin & { installed?: boolean };
 
@@ -52,4 +54,24 @@ export interface IConnectorData {
 	properties: IConnectorProperty[];
 	controls: IConnectorControl[];
 	devices: IDeviceData[];
+}
+
+export interface IRoutes {
+	root: string;
+
+	devices: string;
+	deviceConnect: string;
+	deviceDetail: string;
+	deviceSettings: string;
+	deviceSettingsAddChannel: string;
+	deviceSettingsEditChannel: string;
+
+	connectors: string;
+	connectorRegister: string;
+	connectorDetail: string;
+	connectorSettings: string;
+	connectorSettingsAddDevice: string;
+	connectorSettingsEditDevice: string;
+	connectorSettingsEditDeviceAddChannel: string;
+	connectorSettingsEditDeviceEditChannel: string;
 }

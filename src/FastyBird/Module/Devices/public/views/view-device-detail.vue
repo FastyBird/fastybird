@@ -14,7 +14,7 @@
 			<devices-device-heading
 				:device="deviceData.device"
 				:edit-mode="editMode"
-				@remove="onOpenView(ViewTypes.REMOVE)"
+				@remove="onOpenView(ViewDeviceDetailViewTypes.REMOVE)"
 				@configure="onConfigure"
 			/>
 		</template>
@@ -110,7 +110,7 @@
 		</template>
 
 		<device-settings-device-remove
-			v-if="activeView === ViewTypes.REMOVE"
+			v-if="activeView === ViewDeviceDetailViewTypes.REMOVE"
 			:device="deviceData.device"
 			:call-remove="false"
 			@close="onCloseView"
@@ -141,24 +141,14 @@ import {
 
 import { useBreakpoints, useEntityTitle, useFlashMessage, useRoutesNames, useUuid } from '@/composables';
 import { useChannelControls, useChannelProperties, useChannels, useDeviceControls, useDeviceProperties, useDevices } from '@/models';
-import { IChannelControl, IChannelProperty, IDevice, IDeviceAttribute, IDeviceControl, IDeviceProperty } from '@/models/types';
+import { IChannelControl, IChannelProperty, IDeviceAttribute, IDeviceControl, IDeviceProperty } from '@/models/types';
 import { DeviceDefaultDeviceDetail, DevicesDeviceHeading, DevicesDeviceToolbar, DevicesDeviceIcon, DeviceSettingsDeviceRemove } from '@/components';
 import { ApplicationError } from '@/errors';
-import { IChannelData, IDeviceData } from '@/types';
+import { IChannelData, IDeviceData, IViewDeviceDetailProps } from '@/types';
 import useDeviceAttributes from '@/models/devices-attributes';
+import { ViewDeviceDetailViewTypes } from '@/views/view-device-detail.types';
 
-enum ViewTypes {
-	NONE = 'none',
-	REMOVE = 'remove',
-}
-
-interface IViewDeviceProps {
-	id: string;
-	channelId?: string;
-	devices: IDevice[];
-}
-
-const props = defineProps<IViewDeviceProps>();
+const props = defineProps<IViewDeviceDetailProps>();
 
 const { t } = useI18n();
 const route = useRoute();
@@ -193,7 +183,7 @@ const isPartialSettingsRoute = computed<boolean>((): boolean => {
 	);
 });
 
-const activeView = ref<ViewTypes>(ViewTypes.NONE);
+const activeView = ref<ViewDeviceDetailViewTypes>(ViewDeviceDetailViewTypes.NONE);
 
 const deviceData = computed<IDeviceData | null>((): IDeviceData | null => {
 	if (validateUuid(props.id)) {
@@ -292,12 +282,12 @@ const onToggleEditMode = (): void => {
 	editMode.value = !editMode.value;
 };
 
-const onOpenView = (viewType: ViewTypes): void => {
+const onOpenView = (viewType: ViewDeviceDetailViewTypes): void => {
 	activeView.value = viewType;
 };
 
 const onCloseView = (): void => {
-	activeView.value = ViewTypes.NONE;
+	activeView.value = ViewDeviceDetailViewTypes.NONE;
 };
 
 const onRemoveConfirmed = (): void => {

@@ -60,17 +60,10 @@ import { DataType, PropertyType } from '@fastybird/metadata-library';
 import { useWsExchangeClient } from '@fastybird/ws-exchange-plugin';
 
 import { useBreakpoints, useConnectorState, useEntityTitle, useDeviceState } from '@/composables';
-import { IChannel, IChannelProperty, IConnector, IConnectorProperty, IDeviceProperty, IDevice } from '@/types';
 import { ActorsPropertyActorSwitch, PropertiesPropertyIcon } from '@/components';
+import { IPropertyDefaultPropertyProps } from '@/components/property-default/property-default-property.types';
 
-interface IDeviceDefaultChannelPropertyProps {
-	connector?: IConnector;
-	device?: IDevice;
-	channel?: IChannel;
-	property: IChannelProperty | IConnectorProperty | IDeviceProperty;
-}
-
-const props = defineProps<IDeviceDefaultChannelPropertyProps>();
+const props = defineProps<IPropertyDefaultPropertyProps>();
 
 const { t } = useI18n();
 const { isExtraSmallDevice } = useBreakpoints();

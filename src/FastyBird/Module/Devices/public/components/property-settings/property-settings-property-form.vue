@@ -106,33 +106,14 @@ import { DataType, PropertyType } from '@fastybird/metadata-library';
 
 import { useFlashMessage } from '@/composables';
 import { useChannelProperties, useConnectorProperties, useDeviceProperties } from '@/models';
-import { IChannel, IChannelProperty, IConnector, IConnectorProperty, IDevice, IDeviceProperty } from '@/models/types';
 import { computed, watch } from 'vue';
 import get from 'lodash/get';
+import {
+	IPropertySettingsPropertyFormForm,
+	IPropertySettingsPropertyFormProps,
+} from '@/components/property-settings/property-settings-property-form.types';
 
-interface IPropertySettingsPropertyEditForm {
-	identifier: string;
-	name: string | null;
-	settable: boolean;
-	queryable: boolean;
-	dataType: DataType;
-	unit: string | null;
-	invalid: string | null;
-	numberOfDecimals: number | null;
-	format: string | null;
-}
-
-interface IPropertySettingsPropertyEditProps {
-	connector?: IConnector;
-	device?: IDevice;
-	channel?: IChannel;
-	property: IChannelProperty | IDeviceProperty | IConnectorProperty;
-	remoteFormSubmit?: boolean;
-	remoteFormReset?: boolean;
-	remoteFormResult?: FbFormResultTypes;
-}
-
-const props = withDefaults(defineProps<IPropertySettingsPropertyEditProps>(), {
+const props = withDefaults(defineProps<IPropertySettingsPropertyFormProps>(), {
 	connector: undefined,
 	device: undefined,
 	channel: undefined,
@@ -160,7 +141,7 @@ const isConnectorProperty = computed<boolean>((): boolean => props.connector !==
 const isDeviceProperty = computed<boolean>((): boolean => props.device !== undefined && props.channel === undefined);
 const isChannelProperty = computed<boolean>((): boolean => props.device !== undefined && props.channel !== undefined);
 
-const { validate } = useForm<IPropertySettingsPropertyEditForm>({
+const { validate } = useForm<IPropertySettingsPropertyFormForm>({
 	validationSchema: yup.object({
 		identifier: yup.string().required(t('fields.identifier.validation.required')),
 		name: yup.string().nullable().default(null),

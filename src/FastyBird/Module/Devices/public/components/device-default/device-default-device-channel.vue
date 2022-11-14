@@ -39,7 +39,7 @@
 					v-if="props.editMode"
 					:variant="FbUiButtonVariantTypes.OUTLINE_PRIMARY"
 					:size="FbSizeTypes.EXTRA_SMALL"
-					@click="onOpenView(ViewTypes.ADD_PARAMETER)"
+					@click="onOpenView(DeviceDefaultDeviceChannelViewTypes.ADD_PARAMETER)"
 				>
 					<template #icon>
 						<font-awesome-icon icon="plus" />
@@ -51,7 +51,7 @@
 	</fb-ui-items-container>
 
 	<property-settings-property-add-modal
-		v-if="activeView === ViewTypes.ADD_PARAMETER && newProperty !== null"
+		v-if="activeView === DeviceDefaultDeviceChannelViewTypes.ADD_PARAMETER && newProperty !== null"
 		:property="newProperty"
 		:channel="props.channelData.channel"
 		:device="props.device"
@@ -78,22 +78,12 @@ import { DataType, PropertyType } from '@fastybird/metadata-library';
 
 import { useBreakpoints, useEntityTitle, useUuid } from '@/composables';
 import { useChannelProperties } from '@/models';
-import { IChannelProperty, IDevice, IDeviceControl, IDeviceProperty } from '@/models/types';
+import { IChannelProperty } from '@/models/types';
 import { PropertyDefaultProperty, PropertySettingsPropertyAddModal } from '@/components';
-import { IChannelData } from '@/types';
-
-enum ViewTypes {
-	NONE = 'none',
-	ADD_PARAMETER = 'addParameter',
-}
-
-interface IDeviceDefaultDeviceChannelProps {
-	device: IDevice;
-	deviceControls: IDeviceControl[];
-	deviceProperties: IDeviceProperty[];
-	channelData: IChannelData;
-	editMode?: boolean;
-}
+import {
+	IDeviceDefaultDeviceChannelProps,
+	DeviceDefaultDeviceChannelViewTypes,
+} from '@/components/device-default/device-default-device-channel.types';
 
 const props = withDefaults(defineProps<IDeviceDefaultDeviceChannelProps>(), {
 	editMode: false,
@@ -105,7 +95,7 @@ const { isExtraSmallDevice } = useBreakpoints();
 
 const propertiesStore = useChannelProperties();
 
-const activeView = ref<ViewTypes>(ViewTypes.NONE);
+const activeView = ref<DeviceDefaultDeviceChannelViewTypes>(DeviceDefaultDeviceChannelViewTypes.NONE);
 
 const channelDynamicProperties = computed<IChannelProperty[]>((): IChannelProperty[] => {
 	return orderBy<IChannelProperty>(
@@ -120,8 +110,8 @@ const newProperty = computed<IChannelProperty | null>((): IChannelProperty | nul
 	newPropertyId.value ? propertiesStore.findById(newPropertyId.value) : null
 );
 
-const onOpenView = async (view: ViewTypes): Promise<void> => {
-	if (view === ViewTypes.ADD_PARAMETER) {
+const onOpenView = async (view: DeviceDefaultDeviceChannelViewTypes): Promise<void> => {
+	if (view === DeviceDefaultDeviceChannelViewTypes.ADD_PARAMETER) {
 		const { id } = await propertiesStore.add({
 			channel: props.channelData.channel,
 			type: { source: props.channelData.channel.type.source, type: PropertyType.DYNAMIC, parent: 'channel' },
@@ -139,17 +129,17 @@ const onOpenView = async (view: ViewTypes): Promise<void> => {
 };
 
 const onCloseView = async (): Promise<void> => {
-	if (activeView.value === ViewTypes.ADD_PARAMETER && newProperty.value?.draft) {
+	if (activeView.value === DeviceDefaultDeviceChannelViewTypes.ADD_PARAMETER && newProperty.value?.draft) {
 		await propertiesStore.remove({ id: newProperty.value.id });
 		newPropertyId.value = null;
 	}
 
-	activeView.value = ViewTypes.NONE;
+	activeView.value = DeviceDefaultDeviceChannelViewTypes.NONE;
 };
 
 const onCloseAddProperty = (saved: boolean): void => {
 	if (saved) {
-		activeView.value = ViewTypes.NONE;
+		activeView.value = DeviceDefaultDeviceChannelViewTypes.NONE;
 	} else {
 		onCloseView();
 	}

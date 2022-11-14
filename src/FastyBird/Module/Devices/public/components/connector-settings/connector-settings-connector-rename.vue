@@ -26,21 +26,10 @@ import { ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { FbUiContent, FbFormInput, FbFormTextArea, FbSizeTypes } from '@fastybird/web-ui-library';
-
-interface IConnectorSettingsConnectorRenameModel {
-	identifier: string;
-	name?: string;
-	comment?: string;
-}
-
-interface IConnectorSettingsConnectorRenameProps {
-	modelValue: IConnectorSettingsConnectorRenameModel;
-	errors: {
-		identifier?: string;
-		name?: string;
-		comment?: string;
-	};
-}
+import {
+	IConnectorSettingsConnectorRenameModel,
+	IConnectorSettingsConnectorRenameProps,
+} from '@/components/connector-settings/connector-settings-connector-rename.types';
 
 const props = defineProps<IConnectorSettingsConnectorRenameProps>();
 

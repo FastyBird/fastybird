@@ -1,22 +1,4 @@
-interface IRoutes {
-	root: string;
-
-	devices: string;
-	deviceConnect: string;
-	deviceDetail: string;
-	deviceSettings: string;
-	deviceSettingsAddChannel: string;
-	deviceSettingsEditChannel: string;
-
-	connectors: string;
-	connectorRegister: string;
-	connectorDetail: string;
-	connectorSettings: string;
-	connectorSettingsAddDevice: string;
-	connectorSettingsEditDevice: string;
-	connectorSettingsEditDeviceAddChannel: string;
-	connectorSettingsEditDeviceEditChannel: string;
-}
+import { IRoutes } from '@/types';
 
 export function useRoutesNames(): { routeNames: IRoutes } {
 	const routeNames: IRoutes = {

@@ -5,11 +5,7 @@
 <script setup lang="ts">
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
-import { IChannelProperty, IConnectorProperty, IDeviceProperty } from '@/models/types';
+import { IPropertiesPropertyIconProps } from '@/components/properties/properties-property-icon.types';
 
-interface IDevicesIconProps {
-	property: IDeviceProperty | IChannelProperty | IConnectorProperty;
-}
-
-defineProps<IDevicesIconProps>();
+defineProps<IPropertiesPropertyIconProps>();
 </script>

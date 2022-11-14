@@ -51,13 +51,7 @@ import { ActionRoutes, DataType, PropertyAction, SwitchPayload } from '@fastybir
 import { useWsExchangeClient } from '@fastybird/ws-exchange-plugin';
 
 import { useDeviceState, useEntityTitle, useFlashMessage, useNormalizeValue } from '@/composables';
-import { IChannel, IChannelProperty, IConnectorProperty, IDevice, IDeviceProperty } from '@/models/types';
-
-interface IPropertyActorProps {
-	device?: IDevice;
-	channel?: IChannel;
-	property: IChannelProperty | IDeviceProperty | IConnectorProperty;
-}
+import { IPropertyActorProps } from '@/components/actors/actors-property-actor-switch.types';
 
 const props = defineProps<IPropertyActorProps>();
 

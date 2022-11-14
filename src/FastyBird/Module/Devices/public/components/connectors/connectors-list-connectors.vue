@@ -60,7 +60,7 @@
 		</fb-ui-swipe-actions-list>
 
 		<connector-settings-connector-remove
-			v-if="activeView === ViewTypes.REMOVE && selectedConnector !== null"
+			v-if="activeView === ConnectorsListConnectorsViewTypes.REMOVE && selectedConnector !== null"
 			:connector="selectedConnector"
 			:call-remove="false"
 			@close="onCloseView"
@@ -79,15 +79,7 @@ import { FbUiItem, FbUiSwipeActionsList, FbUiNoResults, FbSizeTypes, FbUiItemVar
 import { useEntityTitle } from '@/composables';
 import { IConnector } from '@/models/types';
 import { ConnectorSettingsConnectorRemove, ConnectorsConnectorIcon } from '@/components';
-
-enum ViewTypes {
-	NONE = 'none',
-	REMOVE = 'remove',
-}
-
-interface IConnectorsListConnectorsProps {
-	items: IConnector[];
-}
+import { IConnectorsListConnectorsProps, ConnectorsListConnectorsViewTypes } from '@/components/connectors/connectors-list-connectors.types';
 
 const props = defineProps<IConnectorsListConnectorsProps>();
 
@@ -98,7 +90,7 @@ const emit = defineEmits<{
 
 const { t } = useI18n();
 
-const activeView = ref<ViewTypes>(ViewTypes.NONE);
+const activeView = ref<ConnectorsListConnectorsViewTypes>(ConnectorsListConnectorsViewTypes.NONE);
 
 const selectedConnector = ref<IConnector | null>(null);
 const noResults = computed<boolean>((): boolean => props.items.length === 0);
@@ -106,11 +98,11 @@ const noResults = computed<boolean>((): boolean => props.items.length === 0);
 const onOpenRemove = (connector: IConnector): void => {
 	selectedConnector.value = connector;
 
-	activeView.value = ViewTypes.REMOVE;
+	activeView.value = ConnectorsListConnectorsViewTypes.REMOVE;
 };
 
 const onCloseView = (): void => {
-	activeView.value = ViewTypes.NONE;
+	activeView.value = ConnectorsListConnectorsViewTypes.NONE;
 };
 
 const onRemoveConfirmed = (): void => {

@@ -81,7 +81,7 @@
 						v-if="variableProperties.length > 0"
 						:variant="FbUiButtonVariantTypes.OUTLINE_PRIMARY"
 						:size="FbSizeTypes.EXTRA_SMALL"
-						@click="onOpenView(ViewTypes.ADD_STATIC_PARAMETER)"
+						@click="onOpenView(ConnectorSettingsConnectorSettingsViewTypes.ADD_STATIC_PARAMETER)"
 					>
 						<template #icon>
 							<font-awesome-icon icon="plus" />
@@ -99,7 +99,7 @@
 					:variant="FbUiButtonVariantTypes.OUTLINE_DEFAULT"
 					:size="FbSizeTypes.LARGE"
 					block
-					@click="onOpenView(ViewTypes.ADD_STATIC_PARAMETER)"
+					@click="onOpenView(ConnectorSettingsConnectorSettingsViewTypes.ADD_STATIC_PARAMETER)"
 				>
 					<template #icon>
 						<font-awesome-icon icon="plus-circle" />
@@ -129,7 +129,7 @@
 						v-if="dynamicProperties.length > 0"
 						:variant="FbUiButtonVariantTypes.OUTLINE_PRIMARY"
 						:size="FbSizeTypes.EXTRA_SMALL"
-						@click="onOpenView(ViewTypes.ADD_DYNAMIC_PARAMETER)"
+						@click="onOpenView(ConnectorSettingsConnectorSettingsViewTypes.ADD_DYNAMIC_PARAMETER)"
 					>
 						<template #icon>
 							<font-awesome-icon icon="plus" />
@@ -147,7 +147,7 @@
 					:variant="FbUiButtonVariantTypes.OUTLINE_DEFAULT"
 					:size="FbSizeTypes.LARGE"
 					block
-					@click="onOpenView(ViewTypes.ADD_DYNAMIC_PARAMETER)"
+					@click="onOpenView(ConnectorSettingsConnectorSettingsViewTypes.ADD_DYNAMIC_PARAMETER)"
 				>
 					<template #icon>
 						<font-awesome-icon icon="plus-circle" />
@@ -166,7 +166,11 @@
 	</div>
 
 	<property-settings-property-add-modal
-		v-if="(activeView === ViewTypes.ADD_STATIC_PARAMETER || activeView === ViewTypes.ADD_DYNAMIC_PARAMETER) && newProperty !== null"
+		v-if="
+			(activeView === ConnectorSettingsConnectorSettingsViewTypes.ADD_STATIC_PARAMETER ||
+				activeView === ConnectorSettingsConnectorSettingsViewTypes.ADD_DYNAMIC_PARAMETER) &&
+			newProperty !== null
+		"
 		:property="newProperty"
 		:connector="props.connectorData.connector"
 		@close="onCloseView"
@@ -222,33 +226,14 @@ import {
 	PropertySettingsPropertyAddModal,
 	PropertySettingsVariablePropertiesEdit,
 } from '@/components';
-import { IConnectorData, IDeviceData } from '@/types';
+import { IDeviceData } from '@/types';
+import {
+	IConnectorSettingsConnectorSettingsProps,
+	IConnectorSettingsConnectorSettingsForm,
+	ConnectorSettingsConnectorSettingsViewTypes,
+} from '@/components/connector-settings/connector-settings-connector-settings.types';
 
-enum ViewTypes {
-	NONE = 'none',
-	ADD_STATIC_PARAMETER = 'addStaticParameter',
-	ADD_DYNAMIC_PARAMETER = 'addDynamicParameter',
-}
-
-interface IConnectorSettingsConnectorRenameProps {
-	connectorData: IConnectorData;
-	remoteFormSubmit?: boolean;
-	remoteFormResult?: FbFormResultTypes;
-	remoteFormReset?: boolean;
-}
-
-interface IConnectorSettingsConnectorSettingsForm {
-	about: {
-		identifier: string;
-		name: string | null;
-		comment: string | null;
-	};
-	properties: {
-		static: { id: string; value: string | null }[];
-	};
-}
-
-const props = withDefaults(defineProps<IConnectorSettingsConnectorRenameProps>(), {
+const props = withDefaults(defineProps<IConnectorSettingsConnectorSettingsProps>(), {
 	remoteFormSubmit: false,
 	remoteFormResult: FbFormResultTypes.NONE,
 	remoteFormReset: false,
@@ -270,7 +255,7 @@ const flashMessage = useFlashMessage();
 const connectorsStore = useConnectors();
 const propertiesStore = useConnectorProperties();
 
-const activeView = ref<ViewTypes>(ViewTypes.NONE);
+const activeView = ref<ConnectorSettingsConnectorSettingsViewTypes>(ConnectorSettingsConnectorSettingsViewTypes.NONE);
 
 const variableProperties = computed<IConnectorProperty[]>((): IConnectorProperty[] => {
 	return props.connectorData.properties.filter((property) => property.type.type === PropertyType.VARIABLE);
@@ -327,8 +312,8 @@ const devicesData = computed<IDeviceData[]>((): IDeviceData[] => {
 	);
 });
 
-const onOpenView = async (view: ViewTypes): Promise<void> => {
-	if (view === ViewTypes.ADD_STATIC_PARAMETER) {
+const onOpenView = async (view: ConnectorSettingsConnectorSettingsViewTypes): Promise<void> => {
+	if (view === ConnectorSettingsConnectorSettingsViewTypes.ADD_STATIC_PARAMETER) {
 		const { id } = await propertiesStore.add({
 			connector: props.connectorData.connector,
 			type: { source: ModuleSource.MODULE_DEVICES, type: PropertyType.VARIABLE, parent: 'connector' },
@@ -340,7 +325,7 @@ const onOpenView = async (view: ViewTypes): Promise<void> => {
 		});
 
 		newPropertyId.value = id;
-	} else if (view === ViewTypes.ADD_DYNAMIC_PARAMETER) {
+	} else if (view === ConnectorSettingsConnectorSettingsViewTypes.ADD_DYNAMIC_PARAMETER) {
 		const { id } = await propertiesStore.add({
 			connector: props.connectorData.connector,
 			type: { source: ModuleSource.MODULE_DEVICES, type: PropertyType.DYNAMIC, parent: 'connector' },
@@ -358,12 +343,16 @@ const onOpenView = async (view: ViewTypes): Promise<void> => {
 };
 
 const onCloseView = async (): Promise<void> => {
-	if ((activeView.value === ViewTypes.ADD_STATIC_PARAMETER || activeView.value === ViewTypes.ADD_DYNAMIC_PARAMETER) && newProperty.value?.draft) {
+	if (
+		(activeView.value === ConnectorSettingsConnectorSettingsViewTypes.ADD_STATIC_PARAMETER ||
+			activeView.value === ConnectorSettingsConnectorSettingsViewTypes.ADD_DYNAMIC_PARAMETER) &&
+		newProperty.value?.draft
+	) {
 		await propertiesStore.remove({ id: newProperty.value.id });
 		newPropertyId.value = null;
 	}
 
-	activeView.value = ViewTypes.NONE;
+	activeView.value = ConnectorSettingsConnectorSettingsViewTypes.NONE;
 };
 
 const clearResult = (): void => {

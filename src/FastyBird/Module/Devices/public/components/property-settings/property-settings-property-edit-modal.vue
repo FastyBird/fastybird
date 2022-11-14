@@ -39,17 +39,10 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { FbUiModalForm, FbFormResultTypes, FbUiModalLayoutTypes } from '@fastybird/web-ui-library';
 
 import { useBreakpoints } from '@/composables';
-import { IChannel, IChannelProperty, IConnector, IConnectorProperty, IDevice, IDeviceProperty } from '@/models/types';
 import { PropertySettingsPropertyForm } from '@/components';
+import { IPropertySettingsPropertyEditModalProps } from '@/components/property-settings/property-settings-property-edit-modal.types';
 
-interface IPropertySettingsPropertyModalProps {
-	connector?: IConnector;
-	device?: IDevice;
-	channel?: IChannel;
-	property: IChannelProperty | IDeviceProperty | IConnectorProperty;
-}
-
-const props = defineProps<IPropertySettingsPropertyModalProps>();
+const props = defineProps<IPropertySettingsPropertyEditModalProps>();
 
 const emit = defineEmits<{
 	(e: 'close'): void;
