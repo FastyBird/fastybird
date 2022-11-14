@@ -18,6 +18,7 @@
       "@vueuse/core",
       "@types/body-scroll-lock",
       "@types/lodash.get",
+      "@types/lodash.isempty",
       "node",
       "vue",
       "vite/client"
