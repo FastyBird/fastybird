@@ -27,6 +27,7 @@ jobs:
       fail-fast: false
       matrix:
         php-version: [ "8.1" ]
+        node-version: [ "16" ]
         operating-system: [ "ubuntu-latest" ]
 
     steps:
@@ -75,6 +76,30 @@ jobs:
 
       - name: "Install dependencies"
         run: "${{ env.composer-install }}"
+
+      - name: "Setup node"
+        uses: "actions/setup-node@v3"
+        with:
+          node-version: "${{ matrix.node-version }}"
+
+      - name: "Get yarn cache directory path"
+        id: "yarn-cache-dir-path"
+        run: 'echo "::set-output name=dir::$(yarn cache dir)"'
+
+      - uses: "actions/cache@v3"
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-node-modules-
+            ${{ runner.os }}-
+
+      - name: "Install dependencies"
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
+        run: "yarn install"
+
+      - name: "Check Prettier with eslint"
+        run: "yarn pretty:check"
 
       - name: "Coding Standard"
         run: "make cs"
