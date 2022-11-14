@@ -153,7 +153,16 @@ jobs:
 
       - name: "Install dependencies"
         if: steps.yarn-cache.outputs.cache-hit != 'true'
+        run: "yarn install"
+
+      - name: "Initialize lerna"
         run: "yarn bootstrap"
+
+      - name: "Link JS dependencies"
+        run: "yarn lerna link"
+
+      - name: "Build JS dependencies"
+        run: "yarn build"
 
       - name: "Link JS dependencies"
         run: "yarn link"
@@ -479,10 +488,13 @@ jobs:
 
       - name: "Install dependencies"
         if: steps.yarn-cache.outputs.cache-hit != 'true'
+        run: "yarn install"
+
+      - name: "Initialize lerna"
         run: "yarn bootstrap"
 
       - name: "Link JS dependencies"
-        run: "yarn link"
+        run: "yarn lerna link"
 
       - name: "Build JS dependencies"
         run: "yarn build"
