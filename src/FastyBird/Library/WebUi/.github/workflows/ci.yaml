@@ -20,77 +20,122 @@ env:
   coverage: "none"
 
 jobs:
-  jslint:
+  qa:
+    name: "Code quality assurance"
+    runs-on: "${{ matrix.operating-system }}"
+
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [ "16" ]
+        operating-system: [ "ubuntu-latest" ]
+
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v3"
+
+      - name: "Setup node"
+        uses: "actions/setup-node@v3"
+        with:
+          node-version: "${{ matrix.node-version }}"
+
+      - name: "Get yarn cache directory path"
+        id: "yarn-cache-dir-path"
+        run: 'echo "::set-output name=dir::$(yarn cache dir)"'
+
+      - uses: "actions/cache@v3"
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-node-modules-
+            ${{ runner.os }}-
+
+      - name: "Install dependencies"
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
+        run: "yarn install"
+
+      - name: "Check Prettier with eslint"
+        run: "yarn pretty:check"
+
+  static-analysis:
+    name: "Code static analysis"
+    runs-on: "${{ matrix.operating-system }}"
+
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [ "16" ]
+        operating-system: [ "ubuntu-latest" ]
+
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v3"
+
+      - name: "Setup node"
+        uses: "actions/setup-node@v3"
+        with:
+          node-version: "${{ matrix.node-version }}"
+
+      - name: "Get yarn cache directory path"
+        id: "yarn-cache-dir-path"
+        run: 'echo "::set-output name=dir::$(yarn cache dir)"'
+
+      - uses: "actions/cache@v3"
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-node-modules-
+            ${{ runner.os }}-
+
+      - name: "Install dependencies"
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
+        run: "yarn install"
+
+      - name: "Check typescript"
+        run: "yarn types"
+
+  lint:
     name: "Code linting"
     runs-on: "${{ matrix.operating-system }}"
 
     strategy:
       matrix:
+        node-version: [ "16" ]
         operating-system: [ "ubuntu-latest" ]
       fail-fast: false
 
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v2"
+        uses: "actions/checkout@v3"
 
       - name: "Setup node"
-        uses: "actions/setup-node@v1"
+        uses: "actions/setup-node@v3"
         with:
-          node-version: "14"
+          node-version: "${{ matrix.node-version }}"
 
       - name: "Get yarn cache directory path"
         id: "yarn-cache-dir-path"
         run: 'echo "::set-output name=dir::$(yarn cache dir)"'
 
-      - uses: "actions/cache@v1"
+      - uses: "actions/cache@v3"
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
           key: ${{ runner.os }}-node-modules-${{ hashFiles('yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-node-modules-
             ${{ runner.os }}-
+
       - name: "Install dependencies"
         if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: 'yarn install'
+        run: "yarn install"
 
-      - name: "Check linter"
-        run: 'yarn lint:js'
+      - name: "Check js linter"
+        run: "yarn lint:js"
 
-  stylelint:
-    name: "Styles linting"
-    runs-on: "${{ matrix.operating-system }}"
-
-    strategy:
-      matrix:
-        operating-system: [ "ubuntu-latest" ]
-      fail-fast: false
-
-    steps:
-      - name: "Checkout"
-        uses: "actions/checkout@v2"
-
-      - name: "Setup node"
-        uses: "actions/setup-node@v1"
-        with:
-          node-version: "14"
-
-      - name: "Get yarn cache directory path"
-        id: "yarn-cache-dir-path"
-        run: 'echo "::set-output name=dir::$(yarn cache dir)"'
-
-      - uses: "actions/cache@v1"
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-node-modules-
-            ${{ runner.os }}-
-      - name: "Install dependencies"
-        if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: 'yarn install'
-
-      - name: "Check linter"
-        run: 'yarn lint:styles'
+      - name: "Check styles linter"
+        run: "yarn lint:styles"
 
   build-storybook:
     name: "Test build Storybook"
@@ -98,6 +143,7 @@ jobs:
 
     strategy:
       matrix:
+        node-version: [ "16" ]
         operating-system: [ "ubuntu-latest" ]
       fail-fast: false
 
@@ -108,7 +154,7 @@ jobs:
       - name: "Setup node"
         uses: "actions/setup-node@v1"
         with:
-          node-version: "14"
+          node-version: "${{ matrix.node-version }}"
 
       - name: "Get yarn cache directory path"
         id: "yarn-cache-dir-path"
@@ -131,10 +177,11 @@ jobs:
   publish-npmjs:
     name: "Build library and publish it to NPM"
     runs-on: "${{ matrix.operating-system }}"
-    needs: [ "jslint", "stylelint", "build-storybook" ]
+    needs: [ "qa", "static-analysis", "lint", "build-storybook" ]
 
     strategy:
       matrix:
+        node-version: [ "16" ]
         operating-system: [ "ubuntu-latest" ]
 
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
@@ -146,7 +193,7 @@ jobs:
       - name: "Install node"
         uses: "actions/setup-node@v1"
         with:
-          node-version: "14"
+          node-version: "${{ matrix.node-version }}"
           registry-url: "https://registry.npmjs.org"
 
       - name: "Extract version"
@@ -179,6 +226,7 @@ jobs:
 
     strategy:
       matrix:
+        node-version: [ "16" ]
         operating-system: [ "ubuntu-latest" ]
 
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
@@ -190,7 +238,7 @@ jobs:
       - name: "Install node"
         uses: "actions/setup-node@v1"
         with:
-          node-version: "14"
+          node-version: "${{ matrix.node-version }}"
           registry-url: "https://npm.pkg.github.com"
 
       - name: "Extract version"
@@ -221,10 +269,11 @@ jobs:
   publish-storybook:
     name: "Build Storybook and publish it to Github pages"
     runs-on: "${{ matrix.operating-system }}"
-    needs: [ "jslint", "stylelint", "build-storybook" ]
+    needs: [ "qa", "static-analysis", "lint", "build-storybook" ]
 
     strategy:
       matrix:
+        node-version: [ "16" ]
         operating-system: [ "ubuntu-latest" ]
 
     if: github.event_name == 'push' && contains(github.ref, 'refs/heads/master')
