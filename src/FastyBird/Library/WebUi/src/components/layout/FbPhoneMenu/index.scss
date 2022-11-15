@@ -1,0 +1,72 @@
+@import '../../../assets/components/layout/fb-phone-menu';
+
+.fb-theme-layout-phone-menu {
+	&__container {
+		position: relative;
+	}
+
+	&__inner {
+		padding: $inner-padding;
+		position: fixed;
+		left: 0;
+		bottom: 0;
+		z-index: ($z-index + 1);
+		width: 100%;
+		transition: all 0.25s ease-in-out;
+	}
+
+	&__content {
+		background: $items-background-color;
+		box-sizing: border-box;
+		padding: $content-padding;
+
+		@include items-border-radius;
+	}
+
+	&__heading {
+		font-family: $heading-font-family;
+		font-size: $heading-font-size;
+		font-weight: normal;
+		border-bottom: 1px solid $heading-border-color;
+		line-height: $heading-line-height;
+		padding: $heading-padding;
+		margin: $heading-margin;
+		text-align: center;
+	}
+
+	&__footer {
+		margin-top: $inner-padding;
+
+		:deep(.fb-theme-ui-button) {
+			text-align: center;
+			background: $button-background-color;
+
+			@include button-border-radius;
+		}
+	}
+
+	&__backdrop {
+		z-index: $z-index;
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background-color: $backdrop-background-color;
+	}
+}
+
+.fb-theme-layout-phone-menu-backdrop-enter-active,
+.fb-theme-layout-phone-menu-backdrop-leave-active {
+	transition: all 0.25s;
+}
+
+.fb-theme-layout-phone-menu-backdrop-enter-from,
+.fb-theme-layout-phone-menu-backdrop-leave-to {
+	opacity: 0;
+}
+
+.fb-theme-layout-phone-menu-content-enter-from,
+.fb-theme-layout-phone-menu-content-leave-active {
+	bottom: -100%;
+}

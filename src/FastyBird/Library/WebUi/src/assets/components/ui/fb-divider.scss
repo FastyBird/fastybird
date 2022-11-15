@@ -1,0 +1,14 @@
+@use 'sass:math';
+@import '../../variables/colors';
+@import '../../variables/screen';
+@import '../../variables/texts';
+
+$divider-font-family: $font-family-base;
+$divider-font-size: $font-size-base;
+$divider-size: 1px !default;
+$divider-size-half: math.ceil(math.div($divider-size, 2)) !default;
+$divider-margin: 2rem 0;
+$divider-color: #ddd;
+$screen-tablet-min: $screen-sm-min;
+$screen-gradient-color: $gray-light;
+$screen-gradient-bgcolor: transparent;

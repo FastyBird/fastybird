@@ -1,0 +1,52 @@
+@import '../../mixins/utilities';
+@import '../../variables/colors';
+@import '../../variables/layout';
+@import '../../variables/screen';
+@import '../../variables/texts';
+
+$header-font-family: $font-family-base;
+$header-font-size: $font-size-base;
+$header-line-height: 5rem;
+$header-height: 5rem;
+$header-padding: 0 $padding-md;
+$header-color: $color-primary-contrast;
+$header-bg-color: $color-primary;
+$header-heading-font-size: $font-size-h4;
+$header-heading-font-weight: $headings-font-weight;
+$header-heading-line-height: $headings-line-height;
+$header-heading-margin: 0;
+$header-heading-icon-background-color: $color-primary-contrast;
+$header-heading-icon-color: $color-primary;
+$header-heading-icon-margin: $margin-sm;
+$header-heading-icon-size: 2.7rem;
+$header-heading-icon-font-size: $font-size-h4;
+$header-button-font-size: 1.4rem;
+$header-close-color: $gray-base;
+$header-close-shadow: 0 1px 0 $white;
+
+@mixin header-flex-container {
+	@include flex-row(nowrap);
+}
+
+@mixin header-flex-heading {
+	@include flex-row(nowrap);
+}
+
+@mixin header-flex-title {
+	@include flex-column(nowrap);
+}
+
+@mixin header-close {
+	opacity: 0.2;
+	filter: alpha(opacity=20);
+
+	&:hover,
+	&:focus {
+		opacity: 0.5;
+		filter: alpha(opacity=50);
+	}
+}
+
+@mixin header-shadow {
+	@include box-shadow(0 3px 9px rgba(0, 0, 0, 0.5));
+}

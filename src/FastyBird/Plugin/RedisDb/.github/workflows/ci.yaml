@@ -60,13 +60,13 @@ jobs:
         run: 'echo "::add-matcher::${{ runner.tool_cache }}/php.json"'
 
       - name: "Get Composer cache directory"
-        id: "composercache"
+        id: "composer-cache"
         run: 'echo "::set-output name=dir::$(composer config cache-files-dir)"'
 
       - name: "Cache PHP dependencies"
         uses: "actions/cache@v3"
         with:
-          path: "${{ steps.composercache.outputs.dir }}"
+          path: "${{ steps.composer-cache.outputs.dir }}"
           key: "${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}"
           restore-keys: "${{ runner.os }}-composer-"
 
@@ -120,13 +120,13 @@ jobs:
         run: 'echo "::add-matcher::${{ runner.tool_cache }}/php.json"'
 
       - name: "Get Composer cache directory"
-        id: "composercache"
+        id: "composer-cache"
         run: 'echo "::set-output name=dir::$(composer config cache-files-dir)"'
 
       - name: "Cache PHP dependencies"
         uses: "actions/cache@v3"
         with:
-          path: "${{ steps.composercache.outputs.dir }}"
+          path: "${{ steps.composer-cache.outputs.dir }}"
           key: "${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}"
           restore-keys: "${{ runner.os }}-composer-"
 
@@ -182,13 +182,13 @@ jobs:
         run: 'echo "::add-matcher::${{ runner.tool_cache }}/php.json"'
 
       - name: "Get Composer cache directory"
-        id: "composercache"
+        id: "composer-cache"
         run: 'echo "::set-output name=dir::$(composer config cache-files-dir)"'
 
       - name: "Cache PHP dependencies"
         uses: "actions/cache@v3"
         with:
-          path: "${{ steps.composercache.outputs.dir }}"
+          path: "${{ steps.composer-cache.outputs.dir }}"
           key: "${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}"
           restore-keys: "${{ runner.os }}-composer-"
 
@@ -249,13 +249,13 @@ jobs:
         run: 'echo "::add-matcher::${{ runner.tool_cache }}/php.json"'
 
       - name: "Get Composer cache directory"
-        id: "composercache"
+        id: "composer-cache"
         run: 'echo "::set-output name=dir::$(composer config cache-files-dir)"'
 
       - name: "Cache PHP dependencies"
         uses: "actions/cache@v3"
         with:
-          path: "${{ steps.composercache.outputs.dir }}"
+          path: "${{ steps.composer-cache.outputs.dir }}"
           key: "${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}"
           restore-keys: "${{ runner.os }}-composer-"
 
@@ -317,13 +317,13 @@ jobs:
         run: 'echo "::add-matcher::${{ runner.tool_cache }}/php.json"'
 
       - name: "Get Composer cache directory"
-        id: "composercache"
+        id: "composer-cache"
         run: 'echo "::set-output name=dir::$(composer config cache-files-dir)"'
 
       - name: "Cache PHP dependencies"
         uses: "actions/cache@v3"
         with:
-          path: "${{ steps.composercache.outputs.dir }}"
+          path: "${{ steps.composer-cache.outputs.dir }}"
           key: "${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}"
           restore-keys: "${{ runner.os }}-composer-"
 
@@ -394,13 +394,13 @@ jobs:
         run: 'echo "::add-matcher::${{ runner.tool_cache }}/php.json"'
 
       - name: "Get Composer cache directory"
-        id: "composercache"
+        id: "composer-cache"
         run: 'echo "::set-output name=dir::$(composer config cache-files-dir)"'
 
       - name: "Cache PHP dependencies"
         uses: "actions/cache@v3"
         with:
-          path: "${{ steps.composercache.outputs.dir }}"
+          path: "${{ steps.composer-cache.outputs.dir }}"
           key: "${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}"
           restore-keys: "${{ runner.os }}-composer-"
 

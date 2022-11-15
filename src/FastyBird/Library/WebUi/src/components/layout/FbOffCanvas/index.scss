@@ -1,0 +1,60 @@
+@import '../../../assets/components/layout/fb-off-canvas';
+
+.fb-theme-layout-off-canvas {
+	&__overlay {
+		background-color: $off-canvas-overlay-color;
+		overflow: hidden;
+		position: fixed;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		z-index: $off-canvas-overlay-zindex;
+		-webkit-overflow-scrolling: touch;
+		outline: 0;
+	}
+
+	&__body {
+		position: fixed;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		width: 450px;
+		background-color: $off-canvas-body-color;
+		font-family: $off-canvas-font-family;
+		z-index: $off-canvas-body-zindex;
+
+		@include off-canvas-body;
+	}
+}
+
+.fb-theme-layout-off-canvas-overlay-enter-active,
+.fb-theme-layout-off-canvas-overlay-leave-active {
+	transition: opacity 0.25s ease-in-out;
+}
+
+.fb-theme-layout-off-canvas-overlay-enter-from,
+.fb-theme-layout-off-canvas-overlay-leave-to {
+	opacity: 0;
+}
+
+.fb-theme-layout-off-canvas-overlay-enter-to {
+	opacity: 1;
+}
+
+.fb-theme-layout-off-canvas-body-enter-active,
+.fb-theme-layout-off-canvas-body-leave-active {
+	transition: all 0.3s ease-in-out;
+}
+
+.fb-theme-layout-off-canvas-body-enter-from {
+	right: -450px;
+}
+
+.fb-theme-layout-off-canvas-body-enter-to {
+	transform: translate(0);
+}
+
+.fb-theme-layout-off-canvas-body-leave-to {
+	transform: translate(450px);
+}

@@ -1,0 +1,13 @@
+@import '../../variables/colors';
+@import '../../variables/texts';
+
+$card-font-family: $font-family-base;
+$card-border-color: #ddd;
+$card-border-radius: 3px !default;
+$card-box-shadow: null !default;
+$card-margin: 0 0 2rem 0 !default;
+$card-padding-horizontal: 1rem !default;
+$card-padding-vertical: 1rem !default;
+$card-padding: $card-padding-vertical $card-padding-horizontal;
+$card-header-background-color: $color-primary;
+$card-header-color: $color-primary-contrast;

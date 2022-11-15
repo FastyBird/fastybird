@@ -1,0 +1,15 @@
+@use 'sass:math';
+@import '../../variables/colors';
+@import '../../variables/texts';
+
+$confirmation-heading-font-size: $font-size-h3;
+$confirmation-heading-font-weight: $headings-font-weight;
+$confirmation-heading-line-height: $headings-line-height;
+$confirmation-heading-margin-top: $line-height-computed;
+$confirmation-heading-margin-bottom: math.div($line-height-computed, 2);
+$confirmation-variant-default: $color-default;
+$confirmation-variant-primary: $color-primary;
+$confirmation-variant-success: $color-success;
+$confirmation-variant-info: $color-info;
+$confirmation-variant-warning: $color-warning;
+$confirmation-variant-danger: $color-danger;

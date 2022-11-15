@@ -1,0 +1,133 @@
+@import '../../../assets/components/layout/fb-user-menu';
+
+.fb-theme-layout-user-menu {
+	&__container {
+		position: relative;
+
+		ul {
+			z-index: $z-index;
+			position: absolute;
+			top: auto;
+			bottom: 6rem;
+			left: 0;
+			display: block;
+			margin: $menu-margin;
+			padding: $menu-padding;
+			list-style: none;
+			font-size: $menu-font-size;
+			background-color: $menu-background-color;
+			border: 1px solid $menu-border-color;
+			border-radius: $menu-border-radius;
+			background-clip: padding-box;
+
+			&[data-collapsed='true'] {
+				display: none;
+			}
+
+			@include shadow;
+
+			&:focus {
+				outline: none;
+			}
+
+			&::before,
+			&::after {
+				border-color: transparent;
+				border-style: solid;
+				border-width: 8px;
+				content: ' ';
+				height: 0;
+				left: 1rem;
+				pointer-events: none;
+				position: absolute;
+				width: 0;
+				bottom: 100%;
+			}
+
+			&::before {
+				border-top-color: $menu-border-color;
+				top: 100%;
+			}
+
+			&::after {
+				border-top-color: $menu-background-color;
+				margin-top: -1px;
+				top: 100%;
+			}
+		}
+	}
+
+	&__button {
+		height: 100%;
+		cursor: pointer;
+
+		@include flex-button;
+
+		&-avatar {
+			text-align: center;
+			vertical-align: middle;
+			padding: 0.5rem 0;
+			flex-grow: 1;
+
+			@media (min-width: $screen-large) {
+				-webkit-box-flex: 0;
+				flex: 0 0 6rem;
+				max-width: 6rem;
+			}
+
+			&-inner {
+				text-align: center;
+				display: inline-block;
+				width: 4rem;
+				height: 4rem;
+				background-color: $avatar-background-color;
+				border-radius: 50%;
+				padding: 0.2rem;
+
+				/* stylelint-disable */
+				:deep(img) {
+					border-radius: 50%;
+				}
+
+				:deep(svg) {
+					width: 3.6rem;
+					height: 3.6rem;
+					fill: $avatar-color;
+					border-radius: 50%;
+				}
+
+				/* stylelint-enable */
+			}
+		}
+
+		&-name {
+			line-height: 5rem;
+			padding: $name-padding;
+			-webkit-box-flex: 0;
+			flex: 1 0 0;
+
+			@media (max-width: $screen-desktop-max) {
+				display: none;
+			}
+		}
+
+		&-caret {
+			display: inline-block;
+			width: 0;
+			height: 0;
+			margin-left: 2px;
+			vertical-align: middle;
+			border-top: 0;
+			border-top: 4px solid \9;
+
+			/* IE8 */
+			border-right: 4px solid transparent;
+			border-left: 4px solid transparent;
+			border-bottom: 4px dashed;
+			border-bottom: 4px solid \9;
+
+			/* IE8 */
+			content: '';
+		}
+	}
+}

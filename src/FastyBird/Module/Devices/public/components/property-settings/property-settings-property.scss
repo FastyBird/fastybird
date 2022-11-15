@@ -1,0 +1,10 @@
+@import '@fastybird/web-ui-library/src/assets/variables/layout';
+@import '@fastybird/web-ui-library/src/assets/mixins/utilities';
+
+.fb-devices-module-property-settings-dynamic-property {
+	&__buttons {
+		gap: $padding-xs;
+
+		@include flex-row(nowrap);
+	}
+}

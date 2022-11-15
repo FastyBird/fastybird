@@ -1,0 +1,18 @@
+@use 'sass:color';
+@import '../../variables/colors';
+@import '../../variables/layout';
+@import '../../variables/texts';
+@import '../../variables/screen';
+
+$z-index: $zindex-layout-footer;
+$footer-font-family: $font-family-base;
+$footer-font-size: $font-size-base;
+$footer-padding: 0 $padding-md;
+$footer-color: $gray;
+$footer-background-color: color.adjust($bg-color-body, $lightness: -5%);
+$footer-border-color: color.adjust($bg-color-body, $lightness: -10%);
+$footer-height: 3rem;
+$footer-line-height: $footer-height;
+$footer-link-color: $color-default;
+$footer-link-hover-decoration: underline;
+$screen-phone-max: $screen-xs-max;

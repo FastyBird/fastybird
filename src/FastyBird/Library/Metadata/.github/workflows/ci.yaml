@@ -27,6 +27,7 @@ jobs:
       fail-fast: false
       matrix:
         php-version: [ "8.1" ]
+        node-version: [ "16" ]
         operating-system: [ "ubuntu-latest" ]
 
     steps:
@@ -60,13 +61,13 @@ jobs:
         run: 'echo "::add-matcher::${{ runner.tool_cache }}/php.json"'
 
       - name: "Get Composer cache directory"
-        id: "composercache"
+        id: "composer-cache"
         run: 'echo "::set-output name=dir::$(composer config cache-files-dir)"'
 
       - name: "Cache PHP dependencies"
         uses: "actions/cache@v3"
         with:
-          path: "${{ steps.composercache.outputs.dir }}"
+          path: "${{ steps.composer-cache.outputs.dir }}"
           key: "${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}"
           restore-keys: "${{ runner.os }}-composer-"
 
@@ -75,6 +76,29 @@ jobs:
 
       - name: "Install dependencies"
         run: "${{ env.composer-install }}"
+
+      - name: "Setup node"
+        uses: "actions/setup-node@v3"
+        with:
+          node-version: "${{ matrix.node-version }}"
+
+      - name: "Get Yarn cache directory"
+        id: "yarn-cache-dir-path"
+        run: 'echo "::set-output name=dir::$(yarn cache dir)"'
+
+      - name: "Cache JS dependencies"
+        uses: "actions/cache@v3"
+        with:
+          path: "${{ steps.yarn-cache-dir-path.outputs.dir }}"
+          key: "${{ runner.os }}-node-modules-${{ hashFiles('yarn.lock') }}"
+          restore-keys: "${{ runner.os }}-node-modules-"
+
+      - name: "Install dependencies"
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
+        run: "yarn install"
+
+      - name: "Check Prettier with eslint"
+        run: "yarn pretty:check"
 
       - name: "Coding Standard"
         run: "make cs"
@@ -87,6 +111,7 @@ jobs:
       fail-fast: false
       matrix:
         php-version: [ "8.1" ]
+        node-version: [ "16" ]
         operating-system: [ "ubuntu-latest" ]
 
     steps:
@@ -120,21 +145,44 @@ jobs:
         run: 'echo "::add-matcher::${{ runner.tool_cache }}/php.json"'
 
       - name: "Get Composer cache directory"
-        id: "composercache"
+        id: "composer-cache"
         run: 'echo "::set-output name=dir::$(composer config cache-files-dir)"'
 
       - name: "Cache PHP dependencies"
         uses: "actions/cache@v3"
         with:
-          path: "${{ steps.composercache.outputs.dir }}"
+          path: "${{ steps.composer-cache.outputs.dir }}"
           key: "${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}"
           restore-keys: "${{ runner.os }}-composer-"
 
       - name: "Install dependencies"
         run: "${{ env.composer-install }}"
 
+      - name: "Setup node"
+        uses: "actions/setup-node@v3"
+        with:
+          node-version: "${{ matrix.node-version }}"
+
+      - name: "Get Yarn cache directory"
+        id: "yarn-cache-dir-path"
+        run: 'echo "::set-output name=dir::$(yarn cache dir)"'
+
+      - name: "Cache JS dependencies"
+        uses: "actions/cache@v3"
+        with:
+          path: "${{ steps.yarn-cache-dir-path.outputs.dir }}"
+          key: "${{ runner.os }}-node-modules-${{ hashFiles('yarn.lock') }}"
+          restore-keys: "${{ runner.os }}-node-modules-"
+
+      - name: "Install dependencies"
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
+        run: "yarn install"
+
       - name: "PHPStan"
         run: "make phpstan"
+
+      - name: "Check typescript"
+        run: "yarn types"
 
   tests:
     name: "Code tests"
@@ -182,13 +230,13 @@ jobs:
         run: 'echo "::add-matcher::${{ runner.tool_cache }}/php.json"'
 
       - name: "Get Composer cache directory"
-        id: "composercache"
+        id: "composer-cache"
         run: 'echo "::set-output name=dir::$(composer config cache-files-dir)"'
 
       - name: "Cache PHP dependencies"
         uses: "actions/cache@v3"
         with:
-          path: "${{ steps.composercache.outputs.dir }}"
+          path: "${{ steps.composer-cache.outputs.dir }}"
           key: "${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}"
           restore-keys: "${{ runner.os }}-composer-"
 
@@ -249,13 +297,13 @@ jobs:
         run: 'echo "::add-matcher::${{ runner.tool_cache }}/php.json"'
 
       - name: "Get Composer cache directory"
-        id: "composercache"
+        id: "composer-cache"
         run: 'echo "::set-output name=dir::$(composer config cache-files-dir)"'
 
       - name: "Cache PHP dependencies"
         uses: "actions/cache@v3"
         with:
-          path: "${{ steps.composercache.outputs.dir }}"
+          path: "${{ steps.composer-cache.outputs.dir }}"
           key: "${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}"
           restore-keys: "${{ runner.os }}-composer-"
 
@@ -317,13 +365,13 @@ jobs:
         run: 'echo "::add-matcher::${{ runner.tool_cache }}/php.json"'
 
       - name: "Get Composer cache directory"
-        id: "composercache"
+        id: "composer-cache"
         run: 'echo "::set-output name=dir::$(composer config cache-files-dir)"'
 
       - name: "Cache PHP dependencies"
         uses: "actions/cache@v3"
         with:
-          path: "${{ steps.composercache.outputs.dir }}"
+          path: "${{ steps.composer-cache.outputs.dir }}"
           key: "${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}"
           restore-keys: "${{ runner.os }}-composer-"
 
@@ -360,6 +408,7 @@ jobs:
     strategy:
       matrix:
         php-version: [ "8.1" ]
+        node-version: [ "16" ]
         operating-system: [ "ubuntu-latest" ]
       fail-fast: false
 
@@ -394,13 +443,13 @@ jobs:
         run: 'echo "::add-matcher::${{ runner.tool_cache }}/php.json"'
 
       - name: "Get Composer cache directory"
-        id: "composercache"
+        id: "composer-cache"
         run: 'echo "::set-output name=dir::$(composer config cache-files-dir)"'
 
       - name: "Cache PHP dependencies"
         uses: "actions/cache@v3"
         with:
-          path: "${{ steps.composercache.outputs.dir }}"
+          path: "${{ steps.composer-cache.outputs.dir }}"
           key: "${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}"
           restore-keys: "${{ runner.os }}-composer-"
 
@@ -410,19 +459,18 @@ jobs:
       - name: "Setup node"
         uses: "actions/setup-node@v3"
         with:
-          node-version: "16"
+          node-version: "${{ matrix.node-version }}"
 
-      - name: "Get yarn cache directory path"
+      - name: "Get Yarn cache directory"
         id: "yarn-cache-dir-path"
         run: 'echo "::set-output name=dir::$(yarn cache dir)"'
 
-      - uses: "actions/cache@v3"
+      - name: "Cache JS dependencies"
+        uses: "actions/cache@v3"
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-node-modules-
-            ${{ runner.os }}-
+          path: "${{ steps.yarn-cache-dir-path.outputs.dir }}"
+          key: "${{ runner.os }}-node-modules-${{ hashFiles('yarn.lock') }}"
+          restore-keys: "${{ runner.os }}-node-modules-"
 
       - name: "Install dependencies"
         if: steps.yarn-cache.outputs.cache-hit != 'true'
@@ -430,9 +478,6 @@ jobs:
 
       - name: "Check js linter"
         run: "yarn lint:js"
-
-      - name: "Check ts linter"
-        run: "yarn lint:ts"
 
       - name: "Check php linter"
         run: "make lint"

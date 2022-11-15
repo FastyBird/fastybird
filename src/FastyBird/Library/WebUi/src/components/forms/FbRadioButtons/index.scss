@@ -1,0 +1,7 @@
+@import '../../../assets/components/form/fb-radio-buttons';
+
+.fb-theme-form-radio-buttons {
+	&__control {
+		padding: $radio-group-margin;
+	}
+}

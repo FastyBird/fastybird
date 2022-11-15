@@ -1,0 +1,60 @@
+@import '../../../assets/components/ui/fb-result-ok';
+
+.fb-theme-ui-result-ok {
+	&__container {
+		width: $result-icon-width;
+		display: block;
+		margin: 0 auto;
+		text-align: center;
+
+		:deep(svg) {
+			width: 100%;
+			display: block;
+			margin: 0;
+
+			circle,
+			polyline {
+				fill: none;
+				stroke-dasharray: 1000;
+				stroke-dashoffset: 0;
+				stroke: $result-color;
+				stroke-width: 6;
+				stroke-miterlimit: 10;
+			}
+
+			circle {
+				animation: fb-theme-ui-result-ok-dash 0.9s ease-in-out;
+			}
+
+			polyline {
+				stroke-dashoffset: -100;
+				stroke-linecap: round;
+				animation: fb-theme-ui-result-ok-dash-check 0.9s 0.35s ease-in-out forwards;
+			}
+		}
+	}
+
+	&__content {
+		margin-top: $result-content-margin;
+	}
+}
+
+@keyframes fb-theme-ui-result-ok-dash {
+	0% {
+		stroke-dashoffset: 1000;
+	}
+
+	100% {
+		stroke-dashoffset: 0;
+	}
+}
+
+@keyframes fb-theme-ui-result-ok-dash-check {
+	0% {
+		stroke-dashoffset: -100;
+	}
+
+	100% {
+		stroke-dashoffset: 900;
+	}
+}

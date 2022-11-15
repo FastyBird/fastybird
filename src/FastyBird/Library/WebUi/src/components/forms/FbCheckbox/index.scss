@@ -1,0 +1,78 @@
+@use 'sass:math';
+@use 'sass:color';
+@import '../../../assets/components/form/fb-checkbox';
+
+.fb-theme-form-checkbox {
+	&__container {
+		display: inline-block;
+		position: relative;
+		line-height: $checkbox-indicator-line-height;
+		font-family: $checkbox-font-family;
+		font-size: $checkbox-indicator-font-size;
+		font-weight: 400;
+		height: $checkbox-indicator-size;
+		min-width: $checkbox-indicator-size;
+		cursor: pointer;
+		vertical-align: middle;
+		user-select: text;
+
+		.fb-theme-form-checkbox {
+			&__indicator {
+				background-color: $checkbox-indicator-bg-color;
+				background-position: center center;
+				background-repeat: no-repeat;
+				border-color: $checkbox-indicator-border-color;
+				border-style: solid;
+				border-width: 1px;
+				display: inline-block;
+				position: absolute;
+				left: 0;
+				top: math.div(($checkbox-indicator-size - $checkbox-indicator-font-size), 2) * -1;
+				width: $checkbox-indicator-size;
+				height: $checkbox-indicator-size;
+				background-size: 75% 75%;
+
+				@include checkbox-indicator-radius;
+			}
+		}
+
+		&[data-error='true'] {
+			.fb-theme-form-checkbox {
+				&__indicator {
+					border-color: $checkbox-error-color;
+				}
+
+				&__indicator-label {
+					color: $checkbox-error-color;
+				}
+			}
+		}
+	}
+
+	&__input {
+		display: none;
+
+		&:checked ~ .fb-theme-form-checkbox__indicator {
+			border-color: $checkbox-indicator-checked-border-color;
+			background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28' fill='%23fff'%3E%3Cpath d='M26.109 8.844q0 .625-.438 1.062L12.233 23.344q-.438.438-1.062.438t-1.062-.438l-7.781-7.781q-.438-.438-.438-1.062t.438-1.062l2.125-2.125q.438-.438 1.062-.438t1.062.438l4.594 4.609 10.25-10.266q.438-.438 1.062-.438t1.062.438l2.125 2.125q.438.437.438 1.062z'/%3E%3C/svg%3E");
+			background-color: $checkbox-indicator-checked-bg-color;
+		}
+
+		&:active ~ .fb-theme-form-checkbox__indicator {
+			border-color: $checkbox-indicator-checked-border-color;
+			background-color: color.adjust($checkbox-indicator-checked-bg-color, $lightness: 25%);
+		}
+
+		&:disabled ~ .fb-theme-form-checkbox__indicator {
+			background-color: $checkbox-indicator-disabled-bg-color;
+		}
+
+		&:disabled:checked ~ .fb-theme-form-checkbox__indicator {
+			background-color: $checkbox-indicator-disabled-bg-color;
+		}
+	}
+
+	&__label {
+		padding: $checkbox-label-padding;
+	}
+}

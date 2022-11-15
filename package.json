@@ -1,0 +1,52 @@
+{
+  "name": "@fastybird/fastybird",
+  "private": true,
+  "version": "2.0.0",
+  "description": "Repository for FastyBird packages development",
+  "keywords": [
+    "fastybird",
+    "fb",
+    "ui",
+    "components",
+    "vue"
+  ],
+  "homepage": "https://www.fastybird.com",
+  "bugs": "https://github.com/FastyBird/fastybird/issues",
+  "license": "Apache-2.0",
+  "author": {
+    "name": "FastyBird s.r.o.",
+    "email": "code@fastybird.com",
+    "url": "https://www.fastybird.com/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FastyBird/fastybird.git"
+  },
+  "workspaces": [
+    "src/FastyBird/Automator/*",
+    "src/FastyBird/Bridge/*",
+    "src/FastyBird/Connector/*",
+    "src/FastyBird/Library/*",
+    "src/FastyBird/Module/*",
+    "src/FastyBird/Plugin/*"
+  ],
+  "scripts": {
+    "bootstrap": "lerna bootstrap",
+    "link": "lerna link",
+    "build": "lerna run build --stream",
+    "clean": "lerna clean && rm -rf node_modules",
+    "fix": "lerna run fix",
+    "graph": "nx graph",
+    "types": "lerna run types --stream --parallel",
+    "lint:js": "lerna run lint:js --stream --parallel",
+    "lint:styles": "lerna run lint:styles --stream --parallel",
+    "playground": "lerna run playground --scope=@starter/storybook",
+    "pretty": "yarn pretty:write && yarn pretty:check",
+    "pretty:check": "lerna run pretty:check",
+    "pretty:write": "lerna run pretty:write",
+    "test": "yarn jest --coverage"
+  },
+  "devDependencies": {
+    "lerna": "^6.0.3"
+  }
+}

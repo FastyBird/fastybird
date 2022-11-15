@@ -1,0 +1,14 @@
+{
+  "$schema": "node_modules/lerna/schemas/lerna-schema.json",
+  "npmClient": "yarn",
+  "useNx": true,
+  "useWorkspaces": true,
+  "version": "1.0.0",
+  "command": {
+    "version": {
+      "allowBranch": "main",
+      "conventionalCommits": true,
+      "message": "chore(release): publish"
+    }
+  }
+}

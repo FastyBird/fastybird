@@ -1,0 +1,25 @@
+@import '../../mixins/utilities';
+@import '../../variables/colors';
+@import '../../variables/layout';
+@import '../../variables/screen';
+@import '../../variables/sizes';
+@import '../../variables/texts';
+
+$loader-font-family: $font-family-base;
+$loader-error-color: $color-danger;
+$loader-padding-sm: $padding-sm;
+$loader-padding-md: $padding-md;
+$loader-padding-lg: $padding-lg;
+$loader-text-padding-sm: $padding-sm;
+$loader-text-padding-md: $padding-md;
+$loader-text-padding-lg: $padding-lg;
+$loader-font-size-sm: $font-size-small;
+$loader-font-size-md: $font-size-base;
+$loader-font-size-lg: $font-size-large;
+$loader-icon-size-sm: $icon-height-sm;
+$loader-icon-size-md: $icon-height-md;
+$loader-icon-size-lg: $icon-height-lg;
+
+@mixin flex-container {
+	@include flex-row(nowrap);
+}

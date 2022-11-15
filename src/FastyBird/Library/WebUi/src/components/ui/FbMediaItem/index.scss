@@ -1,0 +1,30 @@
+@import '../../../assets/components/ui/fb-media-item';
+
+.fb-theme-ui-media-item {
+	&__container {
+		font-family: $media-font-family;
+		font-size: $media-font-size;
+		zoom: 1;
+
+		@include flex-media;
+	}
+
+	&__left,
+	&__right {
+		text-align: center;
+
+		@include flex-box-width(5.5rem);
+	}
+
+	&__body {
+		-webkit-box-flex: 0;
+		flex: 4 0 0;
+
+		> h3 {
+			font-weight: 300;
+			font-size: $media-heading-font-size;
+			line-height: $media-heading-line-height;
+			margin: $media-heading-margin;
+		}
+	}
+}

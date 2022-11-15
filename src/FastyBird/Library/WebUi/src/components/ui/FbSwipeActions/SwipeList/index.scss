@@ -1,0 +1,10 @@
+.fb-theme-ui-swipe-actions-out {
+	&__container {
+		display: flex;
+		flex-direction: column;
+	}
+
+	&__item {
+		flex: 1;
+	}
+}

@@ -1,0 +1,105 @@
+@import '../../../assets/components/ui/fb-divider';
+
+.fb-theme-ui-divider {
+	&__container {
+		font-family: $divider-font-family;
+		font-size: $divider-font-size;
+		display: block;
+		margin: $divider-margin;
+		overflow: hidden;
+		text-align: center;
+
+		&[data-type='vertical'] {
+			@media (min-width: $screen-tablet-min) {
+				height: 100%;
+				left: 50%;
+				margin: 0;
+				position: absolute;
+				top: 0;
+				transform: translateX(-50%);
+				z-index: 2;
+
+				.fb-theme-ui-divider__content {
+					padding: 0.5rem 0;
+					top: 50%;
+					transform: translateY(-50%);
+
+					&::before,
+					&::after {
+						height: 60rem;
+						left: 50%;
+						margin-left: -$divider-size-half;
+						margin-top: 0;
+						right: auto;
+						width: $divider-size;
+					}
+
+					&::before {
+						bottom: 100%;
+						top: auto;
+					}
+
+					&::after {
+						bottom: auto;
+						top: 100%;
+					}
+				}
+			}
+		}
+
+		&[data-variant='gradient'] {
+			height: 1px;
+			border: 0;
+			background: $screen-gradient-color;
+			background: -webkit-gradient(
+				linear,
+				0 0,
+				100% 0,
+				from($screen-gradient-bgcolor),
+				to($screen-gradient-bgcolor),
+				color-stop(50%, $screen-gradient-color)
+			);
+
+			&[data-type='vertical'] {
+				@media (min-width: $screen-tablet-min) {
+					height: 100%;
+					width: 1px;
+					background: -webkit-gradient(
+						linear,
+						0 100%,
+						0 0,
+						from($screen-gradient-bgcolor),
+						to($screen-gradient-bgcolor),
+						color-stop(50%, $screen-gradient-color)
+					);
+				}
+			}
+		}
+	}
+
+	&__content {
+		display: inline-block;
+		padding: 0 1.5rem;
+		position: relative;
+
+		&::before,
+		&::after {
+			background-color: $divider-color;
+			content: '';
+			display: block;
+			height: $divider-size;
+			margin-top: -$divider-size-half;
+			position: absolute;
+			top: 50%;
+			width: 60rem;
+		}
+
+		&::before {
+			right: 100%;
+		}
+
+		&::after {
+			left: 100%;
+		}
+	}
+}

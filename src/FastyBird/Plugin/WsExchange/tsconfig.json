@@ -1,11 +1,10 @@
 {
   "compilerOptions": {
+    "composite": true,
     "target": "esnext",
     "module": "esnext",
     "strict": true,
     "declaration": true,
-    "declarationDir": "dist/dts",
-    "emitDeclarationOnly": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "importHelpers": true,
@@ -14,14 +13,14 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
-    "baseUrl": ".",
+    "baseUrl": "public",
     "types": [
       "node",
       "vue"
     ],
     "paths": {
       "@/*": [
-        "public/*"
+        "*"
       ]
     },
     "lib": [
@@ -31,6 +30,10 @@
       "scripthost"
     ]
   },
+  "include": [
+    "public/**/*.ts",
+    "public/**/*.d.ts"
+  ],
   "exclude": [
     "node_modules",
     "dist"

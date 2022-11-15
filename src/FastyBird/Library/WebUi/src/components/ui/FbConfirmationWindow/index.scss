@@ -1,0 +1,92 @@
+@import '../../../assets/components/ui/fb-confirmation-window';
+
+.fb-theme-ui-confirmation-window {
+	&__container {
+		text-align: center;
+
+		h3 {
+			font-size: $confirmation-heading-font-size;
+			font-weight: $confirmation-heading-font-weight;
+			line-height: $confirmation-heading-line-height;
+			margin-top: $confirmation-heading-margin-top;
+			margin-bottom: $confirmation-heading-margin-bottom;
+		}
+
+		&[data-variant='default'] {
+			h3 {
+				color: $confirmation-variant-default;
+			}
+
+			.fb-theme-ui-confirmation-window {
+				&__icon {
+					color: $confirmation-variant-default;
+				}
+			}
+		}
+
+		&[data-variant='primary'] {
+			h3 {
+				color: $confirmation-variant-primary;
+			}
+
+			.fb-theme-ui-confirmation-window {
+				&__icon {
+					color: $confirmation-variant-primary;
+				}
+			}
+		}
+
+		&[data-variant='success'] {
+			h3 {
+				color: $confirmation-variant-success;
+			}
+
+			.fb-theme-ui-confirmation-window {
+				&__icon {
+					color: $confirmation-variant-success;
+				}
+			}
+		}
+
+		&[data-variant='danger'] {
+			h3 {
+				color: $confirmation-variant-danger;
+			}
+
+			.fb-theme-ui-confirmation-window {
+				&__icon {
+					color: $confirmation-variant-danger;
+				}
+			}
+		}
+
+		&[data-variant='warning'] {
+			h3 {
+				color: $confirmation-variant-warning;
+			}
+
+			.fb-theme-ui-confirmation-window {
+				&__icon {
+					color: $confirmation-variant-warning;
+				}
+			}
+		}
+
+		&[data-variant='info'] {
+			h3 {
+				color: $confirmation-variant-info;
+			}
+
+			.fb-theme-ui-confirmation-window {
+				&__icon {
+					color: $confirmation-variant-info;
+				}
+			}
+		}
+	}
+
+	&__buttons {
+		margin-top: 30px;
+		text-align: right;
+	}
+}

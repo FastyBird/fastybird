@@ -1,0 +1,9 @@
+@import '../../mixins/utilities';
+@import '../../variables/layout';
+@import '../../variables/texts';
+@import '../../variables/screen';
+
+$no-results-font-family: $font-family-base;
+$no-results-font-size: $font-size-base;
+$no-results-font-size-sm: $font-size-small;
+$no-results-text-margin: $margin-md 0;

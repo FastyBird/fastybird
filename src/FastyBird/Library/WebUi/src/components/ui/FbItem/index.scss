@@ -1,0 +1,77 @@
+@import '../../../assets/components/ui/fb-item';
+
+.fb-theme-ui-item {
+	&__container {
+		height: $container-height;
+		align-items: center;
+		padding: $container-padding;
+		background-color: $container-background;
+
+		@include item-container-flex;
+
+		&[data-variant='default'] {
+			margin: $container-margin;
+			border: $container-border;
+
+			@include border-radius(0.5rem);
+
+			&:last-child {
+				margin-bottom: 0;
+			}
+		}
+
+		&[data-variant='list'] {
+			border-bottom: $container-border;
+		}
+
+		&[role='button'] {
+			cursor: pointer;
+		}
+	}
+
+	&__icon {
+		font-size: 2.75rem;
+		line-height: 2.75rem;
+
+		@include item-icon;
+	}
+
+	&__heading {
+		overflow: hidden;
+		-webkit-box-flex: 0;
+		flex: 4 0 0;
+
+		> h2 {
+			margin: 0;
+			line-height: 1.7rem;
+			font-size: 1.6rem;
+			font-weight: 500;
+
+			> small {
+				font-size: 75%;
+				display: block;
+				text-overflow: ellipsis;
+				overflow: hidden;
+				width: 95%;
+				white-space: nowrap;
+			}
+		}
+	}
+
+	&__content {
+		font-size: 1.75rem;
+		color: $content-color;
+		align-items: center;
+		height: 100%;
+		justify-content: center;
+
+		@include item-content;
+	}
+
+	&__button {
+		text-align: right;
+		color: $content-color;
+
+		@include item-button;
+	}
+}

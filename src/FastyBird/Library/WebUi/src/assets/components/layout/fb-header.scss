@@ -1,0 +1,26 @@
+@import '../../variables/screen';
+@import '../../variables/texts';
+@import '../../mixins/utilities';
+
+$z-index: 1030 !default;
+$header-background-color: #d9230f;
+$header-color: #fff;
+$header-font-family: $font-family-base;
+$header-font-weight: normal;
+$hamburger-bar-line-height: 2px !default;
+$hamburger-bar-line-width: 22px !default;
+$hamburger-bar-line-distance: 5px !default;
+
+@mixin shadow {
+	@include box-shadow(0 3px 9px rgba(0, 0, 0, 0.5));
+}
+
+@mixin flex-buttons {
+	justify-content: space-between;
+
+	@include flex-row(nowrap);
+}
+
+@mixin flex-heading {
+	@include flex-row(nowrap);
+}

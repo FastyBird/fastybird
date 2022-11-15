@@ -1,14 +1,23 @@
 {
   "root": true,
-  "parser": "@typescript-eslint/parser",
+  "parser": "vue-eslint-parser",
+  "parserOptions": {
+    "parser": "@typescript-eslint/parser"
+  },
   "plugins": [
-    "@typescript-eslint"
+    "vue",
+    "@typescript-eslint",
+    "prettier"
   ],
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
-    "plugin:json/recommended"
+    "plugin:vue/vue3-essential",
+    "plugin:vue/vue3-strongly-recommended",
+    "plugin:vue/vue3-recommended",
+    "plugin:json/recommended",
+    "prettier"
   ],
   "rules": {
     "lines-between-class-members": [
@@ -18,23 +27,10 @@
         "exceptAfterSingleLine": true
       }
     ],
-    "comma-dangle": [
-      "error",
-      {
-        "arrays": "always-multiline",
-        "objects": "always-multiline",
-        "imports": "always-multiline",
-        "exports": "always-multiline",
-        "functions": "always-multiline"
-      }
-    ],
-    "space-before-function-paren": [
-      "error",
-      "never"
-    ],
     "no-useless-computed-key": "off",
-    "camelcase": "off",
+    "@typescript-eslint/explicit-function-return-type": ["error"],
     "@typescript-eslint/ban-ts-comment": "off",
-    "@typescript-eslint/no-explicit-any": "off"
+    "@typescript-eslint/no-explicit-any": "off",
+    "prettier/prettier": ["error"]
   }
 }

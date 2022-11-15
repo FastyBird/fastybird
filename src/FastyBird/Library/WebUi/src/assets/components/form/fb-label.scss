@@ -1,0 +1,16 @@
+@import '../../variables/colors';
+@import '../../variables/layout';
+@import '../../variables/screen';
+@import '../../variables/texts';
+@import '../../mixins/utilities';
+
+$label-font-family: $font-family-base;
+$label-font-weight: $font-weight-bold;
+$label-margin: 0 0 $margin-xs 0;
+$label-required-color: $color-primary;
+$label-font-size: $font-size-base;
+$label-large-font-size: $font-size-large;
+$label-small-font-size: $font-size-small;
+$label-horizontal-padding: $padding-sm $padding-md 0 0;
+$screen-tablet-min: $screen-sm-min;
+$screen-desktop-min: $screen-md-min;

@@ -1,0 +1,21 @@
+@import '../../variables/colors';
+@import '../../variables/layout';
+@import '../../variables/texts';
+@import '../../mixins/utilities';
+
+$radio-font-family: $font-family-base;
+$radio-indicator-size: 1.5rem !default;
+$radio-indicator-bg-color: $white;
+$radio-indicator-border-color: $gray-lighter;
+$radio-indicator-checked-bg-color: $color-primary-contrast;
+$radio-indicator-checked-border-color: $color-primary;
+$radio-indicator-disabled-bg-color: $gray-lighter;
+$radio-indicator-margin: $margin-sm;
+$radio-indicator-font-size: $font-size-base;
+$radio-indicator-line-height: $radio-indicator-size;
+$radio-label-padding: 0 $padding-sm 0 sum($radio-indicator-size, 1rem);
+$radio-error-color: $color-danger;
+
+@mixin radio-indicator-radius {
+	@include border-radius(50%);
+}

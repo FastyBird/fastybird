@@ -1,6 +1,6 @@
 {
     "name": "fastybird/fastybird",
-    "description": "Repository for FastyBird packages development.",
+    "description": "Repository for FastyBird packages development",
     "type": "application",
     "homepage": "https://www.fastybird.com",
     "license": "Apache-2.0",

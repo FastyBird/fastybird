@@ -1,0 +1,18 @@
+@import '../../../assets/components/layout/fb-sign-box';
+
+.fb-theme-layout-sign-box {
+	&__container {
+		animation-duration: 1s;
+		animation-fill-mode: both;
+		animation-name: fadeinup;
+
+		&-inner {
+			@media (min-width: $screen-tablet-min) {
+				border: 1px solid $inner-box-border-color;
+				margin: $inner-box-margin;
+
+				@include shadow;
+			}
+		}
+	}
+}

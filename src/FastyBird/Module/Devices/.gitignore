@@ -6,3 +6,4 @@
 /composer.lock
 /yarn.lock
 .DS_Store
+tsconfig.tsbuildinfo

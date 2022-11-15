@@ -1,0 +1,42 @@
+@import '../../../assets/components/form/fb-label';
+
+.fb-label {
+	&__container {
+		font-family: $label-font-family;
+		font-size: $label-font-size;
+		display: inline-block;
+		max-width: 100%;
+		margin: $label-margin;
+		font-weight: $label-font-weight;
+
+		&-required {
+			&::after {
+				content: '*';
+				display: inline-block;
+				color: $label-required-color;
+			}
+		}
+
+		&[data-orientation='horizontal'] {
+			text-align: right;
+			margin-bottom: 0;
+			padding: $label-horizontal-padding;
+
+			@media (min-width: $screen-tablet-min) {
+				@include flex-box-width(25%);
+			}
+
+			@media (min-width: $screen-desktop-min) {
+				@include flex-box-width(33%);
+			}
+		}
+
+		&[data-size='lg'] {
+			font-size: $label-large-font-size;
+		}
+
+		&[data-size='sm'] {
+			font-size: $label-small-font-size;
+		}
+	}
+}
