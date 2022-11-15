@@ -1,6 +1,6 @@
 {
   "name": "@fastybird/ws-exchange-plugin",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "FastyBird IoT WS WAMP client & server plugin for handling UI communication",
   "keywords": [
     "fastybird",
@@ -47,7 +47,6 @@
     "pretty:check": "prettier public --check",
     "pretty:write": "prettier public --write"
   },
-  "dependencies": {},
   "devDependencies": {
     "@babel/core": "^7.20",
     "@babel/plugin-proposal-class-properties": "^7.18",

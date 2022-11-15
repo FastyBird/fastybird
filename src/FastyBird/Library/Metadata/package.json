@@ -1,6 +1,6 @@
 {
   "name": "@fastybird/metadata-library",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "FastyBird metadata reader & validator for modules, plugins & etc. used by FastyBird applications",
   "keywords": [
     "fastybird",
@@ -48,8 +48,6 @@
     "pretty": "yarn pretty:write && yarn pretty:check",
     "pretty:check": "prettier public --check",
     "pretty:write": "prettier public --write"
-  },
-  "dependencies": {
   },
   "devDependencies": {
     "@babel/core": "^7.20",
