@@ -1,5 +1,5 @@
 import { TJsonaModel, TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships } from 'jsona/lib/JsonaTypes';
-import { IPlainRelation } from '@/types';
+import { IPlainRelation } from '@/models/types';
 
 // STORE STATE
 // ===========

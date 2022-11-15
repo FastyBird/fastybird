@@ -42,7 +42,7 @@ import { FbUiContent, FbFormInput, FbFormCheckbox, FbFormInputTypeTypes, FbSizeT
 
 import { useSession } from '@/models';
 import { useFlashMessage } from '@/composables';
-import { ISignInForm, ISignInProps } from '@/types';
+import { ISignInForm, ISignInProps } from '@/components/sign/sign-in-form.types';
 
 const props = withDefaults(defineProps<ISignInProps>(), {
 	remoteFormSubmit: false,

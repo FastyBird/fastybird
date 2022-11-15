@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { ILayoutSignHeaderProps } from '@/types';
+import { ILayoutSignHeaderProps } from '@/components/layout/sign-header.types';
 
 const props = defineProps<ILayoutSignHeaderProps>();
 </script>

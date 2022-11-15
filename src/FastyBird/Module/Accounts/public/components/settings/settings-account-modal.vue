@@ -36,7 +36,7 @@ import { FbUiModalForm, FbFormResultTypes, FbUiModalLayoutTypes } from '@fastybi
 
 import { useBreakpoints } from '@/composables';
 import { useSession } from '@/models';
-import { SettingsAccountForm } from '@/components';
+import SettingsAccountForm from './settings-account-form.vue';
 
 const emit = defineEmits<{
 	(e: 'close'): void;

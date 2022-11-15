@@ -1,6 +1,5 @@
 import { FbFormResultTypes } from '@fastybird/web-ui-library';
-
-import { IAccount } from '@/types';
+import { IAccount } from '@/models/accounts/types';
 
 export interface ISettingsAccountProps {
 	account: IAccount;

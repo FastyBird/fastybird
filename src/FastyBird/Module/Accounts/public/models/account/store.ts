@@ -15,7 +15,7 @@ import {
 	IEmailResponseJson,
 	IEmailResponseModel,
 	IIdentityResponseJson,
-} from '@/types';
+} from '@/models/types';
 
 import {
 	IAccountState,

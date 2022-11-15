@@ -68,7 +68,7 @@ import get from 'lodash/get';
 import { FbUiContent, FbFormInput, FbFormInputTypeTypes, FbSizeTypes, FbFormResultTypes } from '@fastybird/web-ui-library';
 
 import { useFlashMessage } from '@/composables';
-import { ISignUpForm, ISignUpProps } from '@/types';
+import { ISignUpForm, ISignUpProps } from '@/components/sign/sign-up-form.types';
 
 const props = withDefaults(defineProps<ISignUpProps>(), {
 	remoteFormSubmit: false,

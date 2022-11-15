@@ -53,7 +53,7 @@ import { FbFormInput, FbFormInputTypeTypes, FbFormResultTypes } from '@fastybird
 
 import { useAccount } from '@/models';
 import { useFlashMessage } from '@/composables';
-import { ISettingsPasswordProps } from '@/types';
+import { ISettingsPasswordProps } from '@/components/settings/settings-password-form.types';
 
 const props = withDefaults(defineProps<ISettingsPasswordProps>(), {
 	remoteFormSubmit: false,

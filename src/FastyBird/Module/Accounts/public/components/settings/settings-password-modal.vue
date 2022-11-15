@@ -35,9 +35,8 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { FbUiModalForm, FbFormResultTypes, FbUiModalLayoutTypes } from '@fastybird/web-ui-library';
 
 import { useBreakpoints } from '@/composables';
-import { IIdentity } from '@/types';
 import { useIdentities, useSession } from '@/models';
-import { SettingsPasswordForm } from '@/components';
+import { IIdentity } from '@/models/identities/types';
 
 const emit = defineEmits<{
 	(e: 'close'): void;

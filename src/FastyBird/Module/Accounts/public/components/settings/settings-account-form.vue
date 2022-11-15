@@ -143,7 +143,7 @@ import {
 
 import { useAccount } from '@/models';
 import { useFlashMessage, useTimezones } from '@/composables';
-import { ISettingsAccountProps } from '@/types';
+import { ISettingsAccountProps } from '@/components/settings/settings-account-form.types';
 
 const props = withDefaults(defineProps<ISettingsAccountProps>(), {
 	remoteFormSubmit: false,

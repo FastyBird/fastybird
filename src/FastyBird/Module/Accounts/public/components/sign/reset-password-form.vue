@@ -21,7 +21,7 @@ import { FbFormInput, FbFormResultTypes, FbSizeTypes, FbUiContent } from '@fasty
 
 import { useAccount } from '@/models';
 import { useFlashMessage } from '@/composables';
-import { IResetPasswordForm, IResetPasswordProps } from '@/types';
+import { IResetPasswordForm, IResetPasswordProps } from '@/components/sign/reset-password-form.types';
 
 const props = withDefaults(defineProps<IResetPasswordProps>(), {
 	remoteFormSubmit: false,

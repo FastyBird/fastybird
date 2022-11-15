@@ -25,7 +25,7 @@ import {
 	IRolesRemoveActionPayload,
 	IRolesSocketDataActionPayload,
 } from './types';
-import { IPlainRelation } from '@/types';
+import { IPlainRelation } from '@/models/types';
 
 const jsonSchemaValidator = new Ajv();
 

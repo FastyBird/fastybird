@@ -10,7 +10,7 @@ import { ModulePrefix } from '@fastybird/metadata-library';
 import { ApiError } from '@/errors';
 import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '@/jsonapi';
 import { useAccounts } from '@/models';
-import { IAccount } from '@/types';
+import { IAccount } from '@/models/types';
 
 import {
 	ISessionCreateActionPayload,

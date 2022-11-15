@@ -18,7 +18,7 @@ import {
 import { ApiError } from '@/errors';
 import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '@/jsonapi';
 import { useEmails, useIdentities } from '@/models';
-import { IEmail, IEmailResponseModel, IIdentityResponseModel, IPlainRelation } from '@/types';
+import { IEmail, IEmailResponseModel, IIdentityResponseModel, IPlainRelation } from '@/models/types';
 
 import {
 	IAccount,
