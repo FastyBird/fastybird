@@ -500,9 +500,6 @@ jobs:
       - name: "Check js linter"
         run: "yarn lint:js"
 
-      - name: "Check styles linter"
-        run: "yarn lint:styles"
-
       - name: "Check php linter"
         run: "make lint"
 
