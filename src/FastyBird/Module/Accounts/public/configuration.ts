@@ -1,5 +1,5 @@
 import { InjectionKey } from 'vue';
-import { IAccountModuleConfiguration, IAccountModuleMeta } from '@/types';
+import { IAccountsModuleConfiguration, IAccountsModuleMeta } from '@/types';
 
-export const metaKey: InjectionKey<IAccountModuleMeta> = Symbol('accounts-module_meta');
-export const configurationKey: InjectionKey<IAccountModuleConfiguration> = Symbol('accounts-module_configuration');
+export const metaKey: InjectionKey<IAccountsModuleMeta> = Symbol('accounts-module_meta');
+export const configurationKey: InjectionKey<IAccountsModuleConfiguration> = Symbol('accounts-module_configuration');

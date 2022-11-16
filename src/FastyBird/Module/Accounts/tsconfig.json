@@ -58,9 +58,6 @@
     },
     {
       "path": "../../Library/WebUi"
-    },
-    {
-      "path": "../../Plugin/WsExchange"
     }
   ],
   "exclude": [

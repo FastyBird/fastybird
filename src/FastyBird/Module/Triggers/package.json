@@ -1,18 +1,16 @@
 {
-  "name": "@fastybird/accounts-module",
+  "name": "@fastybird/triggers-module",
   "version": "2.0.0",
   "type": "module",
-  "description": "FastyBird IoT accounts module for accounts management",
+  "description": "FastyBird IoT module for triggers management & basic automation logic",
   "keywords": [
     "fastybird",
     "fb",
     "iot",
-    "users",
-    "accounts",
-    "profiles",
-    "service",
-    "authentication",
-    "authorization"
+    "triggers",
+    "automation",
+    "controlling",
+    "service"
   ],
   "homepage": "https://www.fastybird.com",
   "bugs": "https://github.com/FastyBird/fastybird/issues",
@@ -24,15 +22,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/FastyBird/accounts-module.git"
+    "url": "https://github.com/FastyBird/triggers-module.git"
   },
-  "main": "dist/accounts-module.umd.js",
-  "module": "dist/accounts-module.es.js",
-  "types": "dist/accounts-module.d.ts",
+  "main": "dist/triggers-module.umd.js",
+  "module": "dist/triggers-module.es.js",
+  "types": "dist/triggers-module.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/accounts-module.es.js",
-      "require": "./dist/accounts-module.umd.js"
+      "import": "./dist/triggers-module.es.js",
+      "require": "./dist/triggers-module.umd.js"
     }
   },
   "files": [
@@ -55,15 +53,13 @@
   "dependencies": {
     "@fastybird/metadata-library": "^2.0.0",
     "@fastybird/web-ui-library": "^2.0.0",
-    "@sentry/vue": "^7.19",
     "ajv": "^8.11",
     "date-fns": "^2.29",
     "jsona": "^1.10",
-    "jwt-decode": "^3.1",
+    "lodash.capitalize": "^4.2",
     "lodash.get": "^4.4",
-    "mitt": "^3.0.0",
+    "natural-orderby": "^2.0",
     "uuid": "^9.0",
-    "vue3-cookies": "^1.0.6",
     "yup": "^0.32"
   },
   "devDependencies": {
@@ -74,6 +70,7 @@
     "@commitlint/cli": "^17.2",
     "@commitlint/config-conventional": "^17.2",
     "@intlify/vite-plugin-vue-i18n": "^6.0",
+    "@types/lodash.capitalize": "^4.2",
     "@types/lodash.get": "^4.4",
     "@types/node": "^18.11",
     "@types/uuid": "^8.3",

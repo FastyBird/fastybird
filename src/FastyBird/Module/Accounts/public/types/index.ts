@@ -10,17 +10,17 @@ export type InstallFunction = Plugin & { installed?: boolean };
 
 export interface IAccountsModuleOptions {
 	router?: Router;
-	meta: IAccountModuleMeta;
-	configuration: IAccountModuleConfiguration;
+	meta: IAccountsModuleMeta;
+	configuration: IAccountsModuleConfiguration;
 }
 
-export interface IAccountModuleMeta {
+export interface IAccountsModuleMeta {
 	author: string;
 	website: string;
 	version: string;
 }
 
-export interface IAccountModuleConfiguration {
+export interface IAccountsModuleConfiguration {
 	injectionKeys: {
 		eventBusInjectionKey?: symbol | string;
 	};

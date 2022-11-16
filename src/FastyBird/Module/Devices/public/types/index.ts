@@ -23,15 +23,15 @@ export type InstallFunction = Plugin & { installed?: boolean };
 
 export interface IDevicesModuleOptions {
 	router?: Router;
-	meta: IDeviceModuleMeta;
-	configuration: IDeviceModuleConfiguration;
+	meta: IDevicesModuleMeta;
+	configuration: IDevicesModuleConfiguration;
 }
 
-export interface IDeviceModuleMeta {
+export interface IDevicesModuleMeta {
 	[key: string]: any;
 }
 
-export interface IDeviceModuleConfiguration {
+export interface IDevicesModuleConfiguration {
 	[key: string]: any;
 }
 
