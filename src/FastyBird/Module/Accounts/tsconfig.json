@@ -19,9 +19,7 @@
     "types": [
       "@fastybird/metadata-library",
       "@fastybird/web-ui-library",
-      "@fastybird/ws-exchange-plugin",
       "@types/lodash.get",
-      "@types/lodash.capitalize",
       "@types/uuid",
       "ajv",
       "date-fns",
