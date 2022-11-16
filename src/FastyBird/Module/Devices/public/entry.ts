@@ -1,10 +1,8 @@
-import { App, InjectionKey } from 'vue';
+import { App } from 'vue';
 
-import { module as moduleRouter } from '@/router';
-import { IDeviceModuleConfiguration, IDeviceModuleMeta, IDevicesModuleOptions, InstallFunction } from '@/types';
-
-export const metaKey: InjectionKey<IDeviceModuleMeta> = Symbol('devices-module_meta');
-export const configurationKey: InjectionKey<IDeviceModuleConfiguration> = Symbol('devices-module_configuration');
+import moduleRouter from '@/router';
+import { IDevicesModuleOptions, InstallFunction } from '@/types';
+import { configurationKey, metaKey } from '@/configuration';
 
 export function createDevicesModule(): InstallFunction {
 	const plugin: InstallFunction = {
@@ -28,6 +26,7 @@ export function createDevicesModule(): InstallFunction {
 	return plugin;
 }
 
+export * from '@/configuration';
 export * from '@/components';
 export * from '@/composables';
 export * from '@/layouts';

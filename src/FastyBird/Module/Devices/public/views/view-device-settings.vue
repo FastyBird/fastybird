@@ -88,11 +88,19 @@ import {
 } from '@fastybird/web-ui-library';
 
 import { useBreakpoints, useEntityTitle, useRoutesNames, useUuid } from '@/composables';
-import { useChannelControls, useChannelProperties, useChannels, useConnectors, useDeviceControls, useDeviceProperties, useDevices } from '@/models';
+import {
+	useChannelControls,
+	useChannelProperties,
+	useChannels,
+	useConnectors,
+	useDeviceControls,
+	useDeviceProperties,
+	useDevices,
+	useDeviceAttributes,
+} from '@/models';
 import { IConnector, IChannelControl, IChannelProperty, IDevice, IDeviceControl, IDeviceProperty, IDeviceAttribute } from '@/models/types';
 import { DeviceSettingsDeviceSettings } from '@/components';
 import { IChannelData, IDeviceData, IViewDeviceSettingsProps } from '@/types';
-import useDeviceAttributes from '@/models/devices-attributes';
 
 const props = defineProps<IViewDeviceSettingsProps>();
 

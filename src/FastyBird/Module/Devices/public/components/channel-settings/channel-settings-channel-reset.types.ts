@@ -1,6 +1,4 @@
-import { IDevice } from '@/models/devices/types';
-import { IChannel } from '@/models/channels/types';
-import { IChannelControl } from '@/models/channels-controls/types';
+import { IChannel, IChannelControl, IDevice } from '@/models/types';
 
 export interface IChannelSettingsChannelResetProps {
 	device: IDevice;

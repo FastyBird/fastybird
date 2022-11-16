@@ -1,2 +1,2 @@
-export * from '@/components/device-default/device-default-device-channel.types';
-export * from '@/components/device-default/device-default-device-detail.types';
+export * from './device-default-device-channel.types';
+export * from './device-default-device-detail.types';

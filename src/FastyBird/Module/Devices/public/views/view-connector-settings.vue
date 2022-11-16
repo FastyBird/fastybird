@@ -96,6 +96,7 @@ import {
 	useDeviceControls,
 	useDeviceProperties,
 	useDevices,
+	useDeviceAttributes,
 } from '@/models';
 import {
 	IChannelControl,
@@ -108,7 +109,6 @@ import {
 } from '@/models/types';
 import { ConnectorSettingsConnectorSettings } from '@/components';
 import { IChannelData, IConnectorData, IDeviceData, IViewConnectorSettingsProps } from '@/types';
-import useDeviceAttributes from '@/models/devices-attributes';
 
 const props = defineProps<IViewConnectorSettingsProps>();
 

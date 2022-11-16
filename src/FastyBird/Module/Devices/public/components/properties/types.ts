@@ -1,1 +1,1 @@
-export * from '@/components/properties/properties-property-icon.types';
+export * from './properties-property-icon.types';
