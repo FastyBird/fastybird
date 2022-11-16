@@ -1,1 +1,1 @@
-export * from '@/components/actors/actors-property-actor-switch.types';
+export * from './actors-property-actor-switch.types';

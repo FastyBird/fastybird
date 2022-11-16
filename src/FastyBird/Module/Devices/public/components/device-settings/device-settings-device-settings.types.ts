@@ -1,6 +1,7 @@
-import { IConnector } from '@/models/connectors/types';
-import { IDeviceData } from '@/types';
 import { FbFormResultTypes } from '@fastybird/web-ui-library';
+
+import { IConnector } from '@/models/types';
+import { IDeviceData } from '@/types';
 
 export interface IDeviceSettingsDeviceSettingsProps {
 	connector: IConnector;

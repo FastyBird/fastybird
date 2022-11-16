@@ -72,6 +72,7 @@ import { computed, ComputedRef, onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMeta } from 'vue-meta';
 import { useRoute, useRouter } from 'vue-router';
+import { orderBy } from 'natural-orderby';
 
 import {
 	FbLayoutHeaderButton,
@@ -90,7 +91,6 @@ import { useChannelControls, useChannelProperties, useChannels, useDevices } fro
 import { IChannel, IChannelControl, IChannelProperty, IDevice } from '@/models/types';
 import { ChannelSettingsChannelSettings } from '@/components';
 import { IChannelData, IViewChanelSettingsProps } from '@/types';
-import { orderBy } from 'natural-orderby';
 
 const props = withDefaults(defineProps<IViewChanelSettingsProps>(), {
 	channelId: null,

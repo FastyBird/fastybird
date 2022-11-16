@@ -1,0 +1,128 @@
+{
+	"en": {
+		"headings": {
+			"signIn": "Sign in",
+			"signUp": "Sign up",
+			"passwordReset": "Request password reset",
+			"instructionEmailed": "We emailed you a instructions...",
+			"accountSettings": "Account settings",
+			"passwordChange": "Password change"
+		},
+		"messages": {
+			"requestError": "Something went wrong, please try again later",
+			"passwordRequestFail": "Password reset instruction couldn't be send",
+			"accountNotEdited": "Your account couldn't be edited",
+			"emailNotEdited": "Your email address couldn't be changed",
+			"passwordNotEdited": "Your password couldn't be changed"
+		},
+		"texts": {
+			"resetPasswordInfo": "Provide your primary email address or your username and we will send you details with special link to reset your password.",
+			"resetPasswordInstructionsEmailed": "It should be there momentarily. Please check your email and click the link in the message. After one hour, the link to update your password will expire.",
+			"processing": "Processing request..."
+		},
+		"fields": {
+			"identity": {
+				"uid": {
+					"title": "Primary email or username",
+					"validation": {
+						"required": "Please fill in your primary email or username"
+					}
+				},
+				"password": {
+					"title": "Password",
+					"validation": {
+						"required": "Please fill in your password"
+					}
+				}
+			},
+			"persistent": {
+				"title": "Keep me signed in"
+			},
+			"emailAddress": {
+				"title": "Email",
+				"help": "Email address, eg. john{'@'}doe.com",
+				"validation": {
+					"required": "Please fill in your email address",
+					"email": "Please provide valid email address"
+				}
+			},
+			"firstName": {
+				"title": "First name",
+				"help": "First name, eg. John",
+				"validation": {
+					"required": "Please fill in first name"
+				}
+			},
+			"lastName": {
+				"title": "Last name",
+				"help": "Last name, eg. Doe",
+				"validation": {
+					"required": "Please fill in last name"
+				}
+			},
+			"middleName": {
+				"title": "Middle name"
+			},
+			"language": {
+				"title": "Language"
+			},
+			"datetime": {
+				"timezone": {
+					"title": "Time zone"
+				},
+				"dateFormat": {
+					"title": "Date format"
+				},
+				"timeFormat": {
+					"title": "Time format"
+				},
+				"weekStartOn": {
+					"title": "Week start on",
+					"values": {
+						"monday": "Monday",
+						"saturday": "Saturday",
+						"sunday": "Sunday"
+					}
+				}
+			},
+			"password": {
+				"current": {
+					"title": "Current password",
+					"help": "Your actual password",
+					"validation": {
+						"required": "Please fill in your current password"
+					}
+				},
+				"new": {
+					"title": "New password",
+					"help": "Your new password",
+					"validation": {
+						"required": "Please fill in your new password"
+					}
+				},
+				"repeat": {
+					"title": "Repeat new password",
+					"help": "Confirm your new password",
+					"validation": {
+						"required": "Please repeat your new password"
+					}
+				}
+			}
+		},
+		"buttons": {
+			"signIn": {
+				"title": "Sign in"
+			},
+			"signUp": {
+				"title": "Sign up"
+			},
+			"forgotPassword": {
+				"title": "Forgot password?",
+				"tooltip": "If you forget your password, just recover it."
+			},
+			"resetPassword": {
+				"title": "Request password reset"
+			}
+		}
+	}
+}

@@ -1,0 +1,10 @@
+@import '@fastybird/web-ui-library/src/assets/variables/layout';
+@import '@fastybird/web-ui-library/src/assets/mixins/utilities';
+
+.fb-accounts-module-sign-up-form {
+	&__name {
+		gap: $padding-sm;
+
+		@include flex-row(nowrap);
+	}
+}

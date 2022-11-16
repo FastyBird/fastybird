@@ -1,1 +1,1 @@
-export * from '@/components/property-default/property-default-property.types';
+export * from './property-default-property.types';

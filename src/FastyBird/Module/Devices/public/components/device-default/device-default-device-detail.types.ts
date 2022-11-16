@@ -1,6 +1,4 @@
-import { IDevice } from '@/models/devices/types';
-import { IDeviceProperty } from '@/models/devices-properties/types';
-import { IDeviceControl } from '@/models/devices-controls/types';
+import { IDevice, IDeviceControl, IDeviceProperty } from '@/models/types';
 import { IChannelData } from '@/types';
 
 export interface IDevicesDeviceDetailDefaultProps {

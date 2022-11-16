@@ -1,0 +1,1 @@
+export { useRoutesNames } from './useRoutesNames';

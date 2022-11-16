@@ -5,5 +5,6 @@ export { default as useConnectors } from './connectors';
 export { default as useConnectorControls } from './connectors-controls';
 export { default as useConnectorProperties } from './connectors-properties';
 export { default as useDevices } from './devices';
+export { default as useDeviceAttributes } from './devices-attributes';
 export { default as useDeviceControls } from './devices-controls';
 export { default as useDeviceProperties } from './devices-properties';

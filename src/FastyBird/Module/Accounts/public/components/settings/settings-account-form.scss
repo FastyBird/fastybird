@@ -1,0 +1,42 @@
+@import '@fastybird/web-ui-library/src/assets/variables/screen';
+@import '@fastybird/web-ui-library/src/assets/variables/layout';
+@import '@fastybird/web-ui-library/src/assets/mixins/utilities';
+
+.fb-accounts-module-settings-account-form {
+	&__columns {
+		@include flex-row(nowrap);
+	}
+
+	&__column {
+		-webkit-box-flex: 0;
+		flex: 0 0 50%;
+		max-width: 50%;
+
+		&:first-child {
+			padding-right: $padding-sm;
+		}
+
+		&:last-child {
+			padding-left: $padding-sm;
+		}
+	}
+
+	&__name-column {
+		-webkit-box-flex: 0;
+		flex: 0 0 33.3333%;
+		width: 20%;
+		max-width: 33.3333%;
+		padding-left: $padding-sm;
+		padding-right: $padding-sm;
+
+		&:first-child {
+			padding-left: 0;
+			padding-right: $padding-sm;
+		}
+
+		&:last-child {
+			padding-left: $padding-sm;
+			padding-right: 0;
+		}
+	}
+}

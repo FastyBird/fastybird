@@ -4,8 +4,12 @@
   "type": "module",
   "description": "FastyBird IoT devices module for devices management & basic control logic",
   "keywords": [
+    "fastybird",
+    "fb",
+    "iot",
     "devices",
-    "api"
+    "channels",
+    "service"
   ],
   "homepage": "https://www.fastybird.com",
   "bugs": "https://github.com/FastyBird/fastybird/issues",

@@ -1,11 +1,10 @@
 {
   "compilerOptions": {
+    "composite": true,
     "target": "esnext",
     "module": "esnext",
     "strict": true,
     "declaration": true,
-    "declarationDir": "dist/dts",
-    "emitDeclarationOnly": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "importHelpers": true,
@@ -14,21 +13,32 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
-    "baseUrl": ".",
+    "baseUrl": "public",
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
     "types": [
-      "node",
-      "@fastybird/metadata",
-      "@fastybird/vue-wamp-v1",
-      "@fastybird/vuex-orm-wamp",
-      "@fastybird/web-ui-theme",
-      "@types/lodash",
+      "@fastybird/metadata-library",
+      "@fastybird/web-ui-library",
+      "@types/lodash.get",
+      "@types/lodash.capitalize",
       "@types/uuid",
-      "@vuex-orm/core",
-      "@vuex-orm/plugin-axios"
+      "ajv",
+      "date-fns",
+      "jsona",
+      "node",
+      "natural-orderby",
+      "pinia",
+      "vee-validate",
+      "vue",
+      "vue-i18n",
+      "vue-meta",
+      "vue-router",
+      "vue-toastification",
+      "vite/client"
     ],
     "paths": {
       "@/*": [
-        "public/*"
+        "*"
       ]
     },
     "lib": [
@@ -38,7 +48,23 @@
       "scripthost"
     ]
   },
+  "include": [
+    "public/**/*.ts",
+    "public/**/*.d.ts",
+    "public/**/*.vue"
+  ],
+  "references": [
+    {
+      "path": "../../Library/Metadata"
+    },
+    {
+      "path": "../../Library/WebUi"
+    }
+  ],
   "exclude": [
+    "src/**/*.stories.ts",
+    "src/**/stories.ts",
+    "src/**/*.spec.ts",
     "node_modules",
     "dist"
   ]

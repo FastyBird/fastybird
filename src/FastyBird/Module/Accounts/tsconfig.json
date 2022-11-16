@@ -1,44 +1,69 @@
 {
-  "compilerOptions" : {
-    "target" : "esnext",
-    "module" : "esnext",
-    "strict" : true,
-    "declaration" : true,
-    "declarationDir" : "dist/dts",
-    "emitDeclarationOnly" : true,
-    "noUnusedLocals" : true,
-    "noUnusedParameters" : true,
-    "importHelpers" : true,
-    "moduleResolution" : "node",
-    "experimentalDecorators" : true,
-    "esModuleInterop" : true,
-    "allowSyntheticDefaultImports" : true,
-    "sourceMap" : true,
-    "resolveJsonModule" : true,
-    "baseUrl" : ".",
-    "types" : [
-      "node",
-      "@fastybird/metadata",
-      "@fastybird/vue-wamp-v1",
-      "@fastybird/vuex-orm-wamp",
-      "@types/lodash",
+  "compilerOptions": {
+    "composite": true,
+    "target": "esnext",
+    "module": "esnext",
+    "strict": true,
+    "declaration": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "importHelpers": true,
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
+    "baseUrl": "public",
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "types": [
+      "@fastybird/metadata-library",
+      "@fastybird/web-ui-library",
+      "@types/lodash.get",
       "@types/uuid",
-      "@vuex-orm/core",
-      "@vuex-orm/plugin-axios"
+      "ajv",
+      "date-fns",
+      "jsona",
+      "node",
+      "natural-orderby",
+      "pinia",
+      "vee-validate",
+      "vue",
+      "vue-i18n",
+      "vue-meta",
+      "vue-router",
+      "vue-toastification",
+      "vite/client"
     ],
-    "paths" : {
-      "@/*" : [
-        "public/*"
+    "paths": {
+      "@/*": [
+        "*"
       ]
     },
-    "lib" : [
+    "lib": [
       "esnext",
       "dom",
       "dom.iterable",
       "scripthost"
     ]
   },
-  "exclude" : [
+  "include": [
+    "public/**/*.ts",
+    "public/**/*.d.ts",
+    "public/**/*.vue"
+  ],
+  "references": [
+    {
+      "path": "../../Library/Metadata"
+    },
+    {
+      "path": "../../Library/WebUi"
+    }
+  ],
+  "exclude": [
+    "src/**/*.stories.ts",
+    "src/**/stories.ts",
+    "src/**/*.spec.ts",
     "node_modules",
     "dist"
   ]

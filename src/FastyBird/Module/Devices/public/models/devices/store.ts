@@ -15,7 +15,7 @@ import {
 
 import { ApiError } from '@/errors';
 import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '@/jsonapi';
-import { useConnectors, useChannels, useDeviceControls, useDeviceProperties } from '@/models';
+import { useConnectors, useChannels, useDeviceControls, useDeviceProperties, useDeviceAttributes } from '@/models';
 import {
 	IChannelResponseModel,
 	IDeviceAttributeResponseModel,
@@ -43,7 +43,6 @@ import {
 	IDevicesResponseJson,
 	IDevicesEditActionPayload,
 } from './types';
-import useDeviceAttributes from '@/models/devices-attributes';
 
 const jsonSchemaValidator = new Ajv();
 

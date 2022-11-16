@@ -1,4 +1,4 @@
-import { IDevice } from '@/models/devices/types';
+import { IDevice } from '@/models/types';
 
 export interface IDevicesPreviewHeadingProps {
 	device: IDevice;

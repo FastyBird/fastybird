@@ -1,4 +1,4 @@
-import { IConnector } from '@/models/connectors/types';
+import { IConnector } from '@/models/types';
 
 export interface IConnectorsPreviewHeadingProps {
 	connector: IConnector;

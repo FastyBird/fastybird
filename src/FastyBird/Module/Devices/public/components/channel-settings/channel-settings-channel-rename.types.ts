@@ -1,4 +1,4 @@
-import { IChannel } from '@/models/channels/types';
+import { IChannel } from '@/models/types';
 
 export interface IChannelSettingsChannelRenameModel {
 	identifier: string;

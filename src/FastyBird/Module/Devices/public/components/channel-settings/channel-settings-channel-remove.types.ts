@@ -1,5 +1,4 @@
-import { IDevice } from '@/models/devices/types';
-import { IChannel } from '@/models/channels/types';
+import { IChannel, IDevice } from '@/models/types';
 
 export interface IChannelSettingsChannelRemoveProps {
 	device: IDevice;

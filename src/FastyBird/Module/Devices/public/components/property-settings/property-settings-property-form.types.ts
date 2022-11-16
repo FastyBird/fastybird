@@ -1,11 +1,7 @@
 import { DataType } from '@fastybird/metadata-library';
-import { IConnector } from '@/models/connectors/types';
-import { IDevice } from '@/models/devices/types';
-import { IChannel } from '@/models/channels/types';
-import { IChannelProperty } from '@/models/channels-properties/types';
-import { IDeviceProperty } from '@/models/devices-properties/types';
-import { IConnectorProperty } from '@/models/connectors-properties/types';
 import { FbFormResultTypes } from '@fastybird/web-ui-library';
+
+import { IChannel, IChannelProperty, IConnector, IConnectorProperty, IDevice, IDeviceProperty } from '@/models/types';
 
 export interface IPropertySettingsPropertyFormForm {
 	identifier: string;

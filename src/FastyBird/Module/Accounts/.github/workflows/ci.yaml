@@ -27,6 +27,7 @@ jobs:
       fail-fast: false
       matrix:
         php-version: [ "8.1" ]
+        node-version: [ "16" ]
         operating-system: [ "ubuntu-latest" ]
 
     steps:
@@ -76,6 +77,29 @@ jobs:
       - name: "Install dependencies"
         run: "${{ env.composer-install }}"
 
+      - name: "Setup node"
+        uses: "actions/setup-node@v3"
+        with:
+          node-version: "${{ matrix.node-version }}"
+
+      - name: "Get Yarn cache directory"
+        id: "yarn-cache-dir-path"
+        run: 'echo "::set-output name=dir::$(yarn cache dir)"'
+
+      - name: "Cache JS dependencies"
+        uses: "actions/cache@v3"
+        with:
+          path: "${{ steps.yarn-cache-dir-path.outputs.dir }}"
+          key: "${{ runner.os }}-node-modules-${{ hashFiles('yarn.lock') }}"
+          restore-keys: "${{ runner.os }}-node-modules-"
+
+      - name: "Install dependencies"
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
+        run: "yarn install"
+
+      - name: "Check Prettier with eslint"
+        run: "yarn pretty:check"
+
       - name: "Coding Standard"
         run: "make cs"
 
@@ -87,6 +111,7 @@ jobs:
       fail-fast: false
       matrix:
         php-version: [ "8.1" ]
+        node-version: [ "16" ]
         operating-system: [ "ubuntu-latest" ]
 
     steps:
@@ -133,8 +158,31 @@ jobs:
       - name: "Install dependencies"
         run: "${{ env.composer-install }}"
 
+      - name: "Setup node"
+        uses: "actions/setup-node@v3"
+        with:
+          node-version: "${{ matrix.node-version }}"
+
+      - name: "Get Yarn cache directory"
+        id: "yarn-cache-dir-path"
+        run: 'echo "::set-output name=dir::$(yarn cache dir)"'
+
+      - name: "Cache JS dependencies"
+        uses: "actions/cache@v3"
+        with:
+          path: "${{ steps.yarn-cache-dir-path.outputs.dir }}"
+          key: "${{ runner.os }}-node-modules-${{ hashFiles('yarn.lock') }}"
+          restore-keys: "${{ runner.os }}-node-modules-"
+
+      - name: "Install dependencies"
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
+        run: "yarn install"
+
       - name: "PHPStan"
         run: "make phpstan"
+
+      - name: "Check typescript"
+        run: "yarn types"
 
   tests:
     name: "Code tests"
@@ -381,6 +429,7 @@ jobs:
     strategy:
       matrix:
         php-version: [ "8.1" ]
+        node-version: [ "16" ]
         operating-system: [ "ubuntu-latest" ]
       fail-fast: false
 
@@ -431,7 +480,7 @@ jobs:
       - name: "Setup node"
         uses: "actions/setup-node@v3"
         with:
-          node-version: "16"
+          node-version: "${{ matrix.node-version }}"
 
       - name: "Get Yarn cache directory"
         id: "yarn-cache-dir-path"
@@ -451,8 +500,8 @@ jobs:
       - name: "Check js linter"
         run: "yarn lint:js"
 
-      - name: "Check ts linter"
-        run: "yarn lint:ts"
+      - name: "Check styles linter"
+        run: "yarn lint:styles"
 
       - name: "Check php linter"
         run: "make lint"
@@ -464,6 +513,7 @@ jobs:
 
     strategy:
       matrix:
+        node-version: [ "16" ]
         operating-system: [ "ubuntu-latest" ]
 
     steps:
@@ -473,7 +523,7 @@ jobs:
       - name: "Install node"
         uses: "actions/setup-node@v3"
         with:
-          node-version: "16"
+          node-version: "${{ matrix.node-version }}"
           registry-url: "https://registry.npmjs.org"
 
       - name: "Install package dependencies"
@@ -495,6 +545,7 @@ jobs:
 
     strategy:
       matrix:
+        node-version: [ "16" ]
         operating-system: [ "ubuntu-latest" ]
 
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
@@ -506,7 +557,7 @@ jobs:
       - name: "Install node"
         uses: "actions/setup-node@v3"
         with:
-          node-version: "16"
+          node-version: "${{ matrix.node-version }}"
           registry-url: "https://registry.npmjs.org"
 
       - name: "Extract version"
@@ -539,6 +590,7 @@ jobs:
 
     strategy:
       matrix:
+        node-version: [ "16" ]
         operating-system: [ "ubuntu-latest" ]
 
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
@@ -550,7 +602,7 @@ jobs:
       - name: "Install node"
         uses: "actions/setup-node@v3"
         with:
-          node-version: "16"
+          node-version: "${{ matrix.node-version }}"
           registry-url: "https://npm.pkg.github.com"
 
       - name: "Extract version"

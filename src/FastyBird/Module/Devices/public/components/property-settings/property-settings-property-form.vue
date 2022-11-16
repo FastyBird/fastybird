@@ -97,17 +97,17 @@
 </template>
 
 <script setup lang="ts">
+import { computed, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useField, useForm } from 'vee-validate';
 import * as yup from 'yup';
+import get from 'lodash/get';
 
 import { FbFormInput, FbUiContent, FbFormSelect, FbFormCheckbox, FbSizeTypes, FbFormResultTypes, IFbFormSelectItem } from '@fastybird/web-ui-library';
 import { DataType, PropertyType } from '@fastybird/metadata-library';
 
 import { useFlashMessage } from '@/composables';
 import { useChannelProperties, useConnectorProperties, useDeviceProperties } from '@/models';
-import { computed, watch } from 'vue';
-import get from 'lodash/get';
 import {
 	IPropertySettingsPropertyFormForm,
 	IPropertySettingsPropertyFormProps,

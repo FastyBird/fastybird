@@ -1,0 +1,58 @@
+@import '@fastybird/web-ui-library/src/assets/variables/colors';
+@import '@fastybird/web-ui-library/src/assets/variables/layout';
+@import '@fastybird/web-ui-library/src/assets/variables/screen';
+
+.fb-accounts-module-sign-box {
+	&__container {
+		height: 100%;
+		width: 100%;
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+
+		&-inner {
+			margin-left: auto;
+			margin-right: auto;
+			width: 37.5rem;
+		}
+	}
+
+	&__box {
+		padding: $padding-lg;
+	}
+
+	&__logo {
+		display: block;
+		margin: 0 auto;
+		width: 15rem;
+
+		&:deep(svg) {
+			shape-rendering: geometricprecision;
+			text-rendering: geometricprecision;
+			image-rendering: optimizequality;
+			fill-rule: evenodd;
+			clip-rule: evenodd;
+
+			path {
+				fill: $color-primary;
+			}
+		}
+	}
+
+	&__owner {
+		display: block;
+		text-align: center;
+		margin-top: 15px;
+		border-left: none !important;
+
+		a {
+			color: $link-color !important;
+
+			&:hover,
+			&:focus {
+				color: $link-color !important;
+				text-decoration: none;
+			}
+		}
+	}
+}

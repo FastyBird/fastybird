@@ -1,5 +1,6 @@
-import { IConnectorData } from '@/types';
 import { FbFormResultTypes } from '@fastybird/web-ui-library';
+
+import { IConnectorData } from '@/types';
 
 export interface IConnectorSettingsConnectorSettingsProps {
 	connectorData: IConnectorData;
