@@ -16,13 +16,12 @@
 
 ## What is FastyBird IoT accounts module?
 
-Accounts module is a combined [Nette framework](https://nette.org) extension and [Vex ORM](https://vuex-orm.org) plugin
-for managing application accounts and sessions.
+Accounts module is a [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things)
+extension for managing application accounts, sessions and access management.
 
 [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) accounts module is
 an [Apache2 licensed](http://www.apache.org/licenses/LICENSE-2.0) distributed extension, developed
-in [PHP](https://www.php.net) with [Nette framework](https://nette.org) and
-in [Typescript](https://www.typescriptlang.org).
+in [PHP](https://www.php.net) on top of the [Nette framework](https://nette.org) and [Symfony framework](https://symfony.com) and in [Typescript](https://www.typescriptlang.org) on top of the [Vue framework](https://vuejs.org).
 
 ### Features:
 
@@ -31,20 +30,16 @@ in [Typescript](https://www.typescriptlang.org).
 - [{JSON:API}](https://jsonapi.org/) schemas for full api access
 - User access check & validation
 - Multilingual
-- JS integration via [Vuex ORM](https://vuex-orm.org) plugin
+- User interface integration via [Vue 3](https://vuejs.org) components
 
 ## Requirements
 
-PHP part of [FastyBird](https://www.fastybird.com) accounts module is tested against PHP 7.4
-and [ReactPHP http](https://github.com/reactphp/http) 0.8 event-driven, streaming plaintext HTTP server
-and [Nette framework](https://nette.org/en/) 3.0 PHP framework for real programmers
+PHP part of [FastyBird](https://www.fastybird.com) accounts module is tested against PHP 8.1.
 
 JavaScript part of [FastyBird](https://www.fastybird.com) accounts module is tested
 against [ECMAScript 6](https://www.w3schools.com/JS/js_es6.asp)
 
 ## Installation
-
-#### Application backend in PHP
 
 The best way to install **fastybird/accounts-module** is using [Composer](http://getcomposer.org/):
 
@@ -52,9 +47,7 @@ The best way to install **fastybird/accounts-module** is using [Composer](http:/
 composer require fastybird/accounts-module
 ```
 
-#### Application frontend in JS
-
-The best way to install **@fastybird/accounts-module** is using [Yarn](https://yarnpkg.com/):
+And for user interface is the best way to install **@fastybird/accounts-module** with [Yarn](https://yarnpkg.com/):
 
 ```sh
 yarn add @fastybird/accounts-module
@@ -68,12 +61,12 @@ npm install @fastybird/accounts-module
 
 ## Documentation
 
-Learn how to use accounts module and manage your accounts
+Learn how to manage application accounts and manage access
 in [documentation](https://github.com/FastyBird/accounts-module/blob/main/.docs/en/index.md).
 
 ## Feedback
 
-Use the [issue tracker](https://github.com/FastyBird/accounts-module/issues) for bugs
+Use the [issue tracker](https://github.com/FastyBird/fastybird/issues) for bugs
 or [mail](mailto:code@fastybird.com) or [Tweet](https://twitter.com/fastybird) us for any idea that can improve the
 project.
 
@@ -81,7 +74,11 @@ Thank you for testing, reporting and contributing.
 
 ## Changelog
 
-For release info check [release page](https://github.com/FastyBird/accounts-module/releases)
+For release info check [release page](https://github.com/FastyBird/fastybird/releases).
+
+## Contribute
+
+The sources of this package are contained in the [FastyBird monorepo](https://github.com/FastyBird/fastybird). We welcome contributions for this package on [FastyBird/fastybird](https://github.com/FastyBird/).
 
 ## Maintainers
 

@@ -37,10 +37,10 @@ export enum ConnectorSource {
 	TERMINAL_CONNECTOR = 'com.fastybird.terminal-connector',
 }
 
-export enum TriggerSource {
+export enum AutomatorSource {
 	NOT_SPECIFIED = '*',
-	TRIGGER_DEVICE_MODULE = 'com.fastybird.device-module-trigger',
-	TRIGGER_DATE_TIME = 'com.fastybird.date-time-trigger',
+	AUTOMATOR_DEVICE_MODULE = 'com.fastybird.device-module-automator',
+	AUTOMATOR_DATE_TIME = 'com.fastybird.date-time-automator',
 }
 
 export enum DataType {

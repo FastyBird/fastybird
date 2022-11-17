@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ConnectorSource.php
+ * AutomatorSource.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -20,14 +20,14 @@ use FastyBird\Library\Metadata;
 use function strval;
 
 /**
- * Triggers sources types
+ * Triggers automators sources types
  *
  * @package        FastyBird:MetadataLibrary!
  * @subpackage     Types
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class TriggerSource extends Consistence\Enum\Enum
+class AutomatorSource extends Consistence\Enum\Enum
 {
 
 	/**
@@ -35,9 +35,9 @@ class TriggerSource extends Consistence\Enum\Enum
 	 */
 	public const SOURCE_NOT_SPECIFIED = Metadata\Constants::NOT_SPECIFIED_SOURCE;
 
-	public const SOURCE_TRIGGER_DEVICE_MODULE = Metadata\Constants::TRIGGER_DEVICE_MODULE;
+	public const SOURCE_AUTOMATOR_DEVICE_MODULE = Metadata\Constants::AUTOMATOR_DEVICE_MODULE;
 
-	public const SOURCE_TRIGGER_DATE_TIME = Metadata\Constants::TRIGGER_DATE_TIME;
+	public const SOURCE_AUTOMATOR_DATE_TIME = Metadata\Constants::AUTOMATOR_DATE_TIME;
 
 	public function __toString(): string
 	{

@@ -80,13 +80,17 @@ final class Constants
 
 	public const CONNECTOR_TERMINAL_SOURCE = 'com.fastybird.terminal-connector';
 
-	public const TRIGGER_DEVICE_MODULE = 'com.fastybird.device-module-trigger';
+	public const AUTOMATOR_DEVICE_MODULE = 'com.fastybird.device-module-automator';
 
-	public const TRIGGER_DATE_TIME = 'com.fastybird.date-time-trigger';
+	public const AUTOMATOR_DATE_TIME = 'com.fastybird.date-time-automator';
 
-	public const BRIDGE_REDISDB_DEVICES_STATES = 'com.fastybird.redisdb-devices-module-bridge';
+	public const BRIDGE_REDISDB_DEVICES_MODULE = 'com.fastybird.redisdb-devices-module-bridge';
+
+	public const BRIDGE_REDISDB_TRIGGERS_MODULE = 'com.fastybird.redisdb-triggers-module-bridge';
 
 	public const BRIDGE_REDISDB_WS_EXCHANGE = 'com.fastybird.redisdb-ws-exchange-bridge';
+
+	public const BRIDGE_WS_EXCHANGE_DEVICES_MODULE = 'com.fastybird.ws-exchange-devices-module-bridge';
 
 	/**
 	 * Modules prefixes

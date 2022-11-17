@@ -14,13 +14,17 @@
 
 ## What is WS exchange plugin?
 
-This is a plugin for [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem which is implementing websockets [WAMPv1](https://wamp-proto.org) server based on [iPbulikuj WAMP server](https://github.com/ipublikuj/websockets-wamp)
-and websockets [WAMPv1](https://wamp-proto.org) client for [Vue 3](https://vuejs.org) based user interface
+WS exchange plugin is extension for [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem
+which is implementing websockets [WAMPv1](https://wamp-proto.org) server based on [iPbulikuj WAMP server](https://github.com/ipublikuj/websockets-wamp)
+and websockets [WAMPv1](https://wamp-proto.org) client for [Vue 3](https://vuejs.org) based user interface.
+
+WS exchange plugin is an [Apache2 licensed](http://www.apache.org/licenses/LICENSE-2.0) distributed extension, developed
+in [PHP](https://www.php.net) on top of the [Nette framework](https://nette.org) and [Symfony framework](https://symfony.com).
 
 ### Features
 
 - Built-in server command for running standalone server
-- Built-in Vue 3 client interface
+- Built-in Vue 3 client plugin
 - WAMP v1 pub/sub and RPC implemented via event system
 - Simple broadcast publisher
 
@@ -58,13 +62,11 @@ Thank you for testing, reporting and contributing.
 
 ## Changelog
 
-For release info check [release page](https://github.com/FastyBird/fastybird/releases)
+For release info check [release page](https://github.com/FastyBird/fastybird/releases).
 
 ## Contribute
 
 The sources of this package are contained in the [FastyBird monorepo](https://github.com/FastyBird/fastybird). We welcome contributions for this package on [FastyBird/fastybird](https://github.com/FastyBird/).
-
-For release info check [release page](https://github.com/FastyBird/web-server-plugin/releases)
 
 ## Maintainers
 

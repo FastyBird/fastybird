@@ -77,9 +77,9 @@ final class State implements ExchangeConsumers\Consumer
 	 * @throws Utils\JsonException
 	 */
 	public function consume(
-		MetadataTypes\TriggerSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource $source,
-		MetadataTypes\RoutingKey $routingKey,
-		MetadataEntities\Entity|null $entity,
+		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource $source,
+		MetadataTypes\RoutingKey                                                                                          $routingKey,
+		MetadataEntities\Entity|null                                                                                      $entity,
 	): void
 	{
 		if ($entity === null) {

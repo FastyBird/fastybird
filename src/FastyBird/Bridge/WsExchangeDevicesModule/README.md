@@ -1,4 +1,4 @@
-# FastyBird IoT WS exchange and Devices module bridge
+# FastyBird IoT WS exchange & Devices module bridge
 
 [![Build Status](https://badgen.net/github/checks/FastyBird/ws-exchange-devices-module-birdge/master?cache=300&style=flast-square)](https://github.com/FastyBird/ws-exchange-devices-module-birdge/actions)
 [![Licence](https://badgen.net/github/license/FastyBird/ws-exchange-devices-module?cache=300&style=flast-square)](https://github.com/FastyBird/ws-exchange-devices-module-birdge/blob/master/LICENSE.md)
@@ -12,22 +12,22 @@
 
 ***
 
-## What is WS exchange and Devices module bridge?
+## What is WS exchange & Devices module bridge?
 
-WS exchange and Devices module bridge is extension for [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem
+WS exchange & Devices module bridge is extension for [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem
 which is creating bridge between [WS exchange plugin](https://github.com/FastyBird/ws-exchange-plugin) and [Devices module](https://github.com/FastyBird/devices-module).
 
-WS exchange and Devices module bridge is an [Apache2 licensed](http://www.apache.org/licenses/LICENSE-2.0) distributed extension, developed
+WS exchange & Devices module bridge is an [Apache2 licensed](http://www.apache.org/licenses/LICENSE-2.0) distributed extension, developed
 in [PHP](https://www.php.net) on top of the [Nette framework](https://nette.org) and [Symfony framework](https://symfony.com).
 
 ### Features:
 
-- Devices module into WS exchange integration
+- Devices module integration into WS exchange
 - Automatic WS exchange client welcome message
 
 ## Requirements
 
-WS exchange and Devices module bridge is tested against PHP 8.1.
+WS exchange & Devices module bridge is tested against PHP 8.1.
 
 ## Installation
 
@@ -39,7 +39,7 @@ composer require fastybird/ws-exchange-devices-module-bridge
 
 ## Documentation
 
-Learn how to connect devices module with ws exchange plugin
+Learn how to build bridge between Devices module and WS exchange plugin
 in [documentation](https://github.com/FastyBird/ws-exchange-devices-module-birdge/blob/master/.docs/en/index.md).
 
 ## Feedback
@@ -52,7 +52,7 @@ Thank you for testing, reporting and contributing.
 
 ## Changelog
 
-For release info check [release page](https://github.com/FastyBird/fastybird/releases)
+For release info check [release page](https://github.com/FastyBird/fastybird/releases).
 
 ## Contribute
 

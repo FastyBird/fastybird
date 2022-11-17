@@ -1,4 +1,4 @@
-# FastyBird IoT Redis DB and devices module bridge
+# FastyBird IoT Redis DB & Devices module bridge
 
 [![Build Status](https://badgen.net/github/checks/FastyBird/redisdb-devices-module-bridge/master?cache=300&style=flast-square)](https://github.com/FastyBird/redisdb-devices-module-bridge/actions)
 [![Licence](https://badgen.net/github/license/FastyBird/redisdb-devices-module-bridge?cache=300&style=flast-square)](https://github.com/FastyBird/redisdb-devices-module-bridge/blob/master/LICENSE.md)
@@ -12,22 +12,23 @@
 
 ***
 
-## What is Redis DB and devices module bridge?
+## What is Redis DB & Devices module bridge?
 
-Redis DB and devices module bridge is extension for [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem
-which is creating bridge between [devices-module](https://github.com/FastyBird/devices-module) and [Redis DB plugin](https://github.com/FastyBird/redisdb-plugin).
+Redis DB & Devices module bridge is extension for [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem
+which is creating bridge between [Devices module](https://github.com/FastyBird/devices-module) and [Redis DB plugin](https://github.com/FastyBird/redisdb-plugin).
 
-Redis DB devices states bridge is an [Apache2 licensed](http://www.apache.org/licenses/LICENSE-2.0) distributed extension, developed
+Redis DB & Devices module bridge is an [Apache2 licensed](http://www.apache.org/licenses/LICENSE-2.0) distributed extension, developed
 in [PHP](https://www.php.net) on top of the [Nette framework](https://nette.org) and [Symfony framework](https://symfony.com).
 
 ### Features:
 
 - Redis DB database number configuration
 - All necessary models for devices states management
+- Automatic services registration
 
 ## Requirements
 
-Redis DB devices states bridge is tested against PHP 8.1.
+Redis DB & Devices module bridge is tested against PHP 8.1.
 
 ## Installation
 
@@ -39,7 +40,7 @@ composer require fastybird/redisdb-devices-module-bridge
 
 ## Documentation
 
-Learn how to initialize connection between Redis DB and Devices module
+Learn how to build bridge between Redis DB and Devices module
 in [documentation](https://github.com/FastyBird/redisdb-devices-module-bridge/blob/master/.docs/en/index.md).
 
 ## Feedback
@@ -52,7 +53,7 @@ Thank you for testing, reporting and contributing.
 
 ## Changelog
 
-For release info check [release page](https://github.com/FastyBird/fastybird/releases)
+For release info check [release page](https://github.com/FastyBird/fastybird/releases).
 
 ## Contribute
 

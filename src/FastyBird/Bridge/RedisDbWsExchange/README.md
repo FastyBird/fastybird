@@ -1,4 +1,4 @@
-# FastyBird IoT Redis DB and WS exchange bridge
+# FastyBird IoT Redis DB & WS exchange bridge
 
 [![Build Status](https://badgen.net/github/checks/FastyBird/redisdb-ws-exchange-bridge/master?cache=300&style=flast-square)](https://github.com/FastyBird/redisdb-ws-exchange-bridge/actions)
 [![Licence](https://badgen.net/github/license/FastyBird/redisdb-ws-exchange-bridge?cache=300&style=flast-square)](https://github.com/FastyBird/redisdb-ws-exchange-bridge/blob/master/LICENSE.md)
@@ -12,12 +12,12 @@
 
 ***
 
-## What is Redis DB and WS exchange bridge?
+## What is Redis DB & WS exchange bridge?
 
-Redis DB and WS exchange bridge is extension for [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem
+Redis DB & WS exchange bridge is extension for [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem
 which is creating bridge between [Redis DB plugin](https://github.com/FastyBird/redisdb-plugin) and [WS exchange plugin](https://github.com/FastyBird/ws-exchange-plugin).
 
-Redis DB and WS exchange bridge is an [Apache2 licensed](http://www.apache.org/licenses/LICENSE-2.0) distributed extension, developed
+Redis DB & WS exchange bridge is an [Apache2 licensed](http://www.apache.org/licenses/LICENSE-2.0) distributed extension, developed
 in [PHP](https://www.php.net) on top of the [Nette framework](https://nette.org) and [Symfony framework](https://symfony.com).
 
 ### Features:
@@ -28,7 +28,7 @@ in [PHP](https://www.php.net) on top of the [Nette framework](https://nette.org)
 
 ## Requirements
 
-Redis DB and WS exchange bridge is tested against PHP 8.1.
+Redis DB & WS exchange bridge is tested against PHP 8.1.
 
 ## Installation
 
@@ -40,7 +40,7 @@ composer require fastybird/redisdb-ws-exchange-bridge
 
 ## Documentation
 
-Learn how to initialize connection between Redis DB and WS exchange
+Learn how to build bridge between Redis DB and WS exchange
 in [documentation](https://github.com/FastyBird/redisdb-ws-exchange-bridge/blob/master/.docs/en/index.md).
 
 ## Feedback
@@ -53,7 +53,7 @@ Thank you for testing, reporting and contributing.
 
 ## Changelog
 
-For release info check [release page](https://github.com/FastyBird/fastybird/releases)
+For release info check [release page](https://github.com/FastyBird/fastybird/releases).
 
 ## Contribute
 
@@ -61,7 +61,7 @@ The sources of this package are contained in the [FastyBird monorepo](https://gi
 
 ## Maintainers
 
-<table>
+<table>&
 	<tbody>
 		<tr>
 			<td align="center">

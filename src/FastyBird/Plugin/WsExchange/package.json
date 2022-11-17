@@ -1,15 +1,15 @@
 {
   "name": "@fastybird/ws-exchange-plugin",
-  "version": "2.0.0",
+  "version": "1.0.0",
   "description": "FastyBird IoT WS WAMP client & server plugin for handling UI communication",
   "keywords": [
     "fastybird",
     "fb",
-    "vue",
+    "libs",
+    "library",
+    "ws",
     "wamp",
-    "wampv1",
-    "websockets",
-    "ws"
+    "realtime"
   ],
   "homepage": "https://www.fastybird.com",
   "bugs": "https://github.com/FastyBird/fastybird/issues",

@@ -1,18 +1,16 @@
 # Getting started
 
-This module adds support for managing [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) devices.
+This module adds support for managing [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) connectors and devices.
 
 ***
 
 ## Installation
 
-### Application backend in PHP
-
 The best way to install **fastybird/devices-module** is using [Composer](https://getcomposer.org/).
 
 > If you don't have Composer yet, [download it](https://getcomposer.org/download/) following the instructions.
 
-##### Create new project
+### Create new project
 
 If you don't have a project created yet you could start with Nette base project.
 
@@ -28,7 +26,7 @@ Everything required will be then installed in the provided folder.
 cd path/to/install
 ```
 
-##### Install module
+### Install module
 
 Module could be added to your project with composer command:
 
@@ -36,7 +34,7 @@ Module could be added to your project with composer command:
 composer require fastybird/devices-module
 ```
 
-### Application frontend in JS
+### Module user interface
 
 The best way to install **@fastybird/devices-module** is using [Yarn](https://yarnpkg.com/):
 
@@ -60,12 +58,6 @@ Example configuration could be found [here](https://github.com/FastyBird/devices
 ## Initialization
 
 This module is using database, and need some initial data to be inserted into it.
-
-Execution of command is dependend on you current implementation. This module is dependend
-on [contribute/console](https://github.com/contributte/console) extension, so check it out to get know how to configure
-your console entrypoint.
-
-After creating console entrypoint you could call module console command:
 
 ```sh
 your-console-entrypoint fb:devices-module:initialize

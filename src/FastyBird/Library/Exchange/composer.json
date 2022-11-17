@@ -1,15 +1,15 @@
 {
   "name": "fastybird/exchange-library",
   "type": "library",
-  "description": "FastyBird application exchange services",
+  "description": "FastyBird IoT application exchange services",
   "keywords": [
     "fastybird",
     "fb",
     "libs",
+    "library",
     "exchange",
     "bus",
-    "messages",
-    "library"
+    "messages"
   ],
   "homepage": "https://www.fastybird.com",
   "license": "Apache-2.0",
@@ -78,7 +78,7 @@
   },
   "extra": {
     "branch-alias": {
-      "dev-main": "2.0-dev"
+      "dev-main": "1.0-dev"
     }
   },
   "minimum-stability": "dev",

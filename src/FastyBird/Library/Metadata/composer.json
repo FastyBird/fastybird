@@ -1,7 +1,7 @@
 {
   "name": "fastybird/metadata-library",
   "type": "library",
-  "description": "FastyBird metadata reader & validator for modules, plugins & etc. used by FastyBird applications",
+  "description": "FastyBird IoT metadata reader & validator",
   "keywords": [
     "fastybird",
     "fb",

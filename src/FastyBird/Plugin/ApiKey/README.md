@@ -14,12 +14,15 @@
 
 ## What is api key plugin?
 
-This is a plugin for [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem which is
-implementing api access key management and middleware.
+Api key plugin is extension for [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem
+which is implementing api access key management and middleware.
+
+Api key plugin is an [Apache2 licensed](http://www.apache.org/licenses/LICENSE-2.0) distributed extension, developed
+in [PHP](https://www.php.net) on top of the [Nette framework](https://nette.org) and [Symfony framework](https://symfony.com).
 
 ### Features
 
-- Build-in [PSR-7](http://www.php-fig.org/psr/psr-7/) middleware for checking api keys
+- Build-in [PSR-7](http://www.php-fig.org/psr/psr-7/) middleware for validating api keys
 - Build-in console command for managing keys
 - Support for extending keys
 
@@ -46,7 +49,7 @@ Thank you for testing, reporting and contributing.
 
 ## Changelog
 
-For release info check [release page](https://github.com/FastyBird/fastybird/releases)
+For release info check [release page](https://github.com/FastyBird/fastybird/releases).
 
 ## Contribute
 

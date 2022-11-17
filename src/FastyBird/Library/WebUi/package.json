@@ -1,8 +1,8 @@
 {
   "name": "@fastybird/web-ui-library",
-  "version": "2.0.0",
+  "version": "1.0.0",
   "type": "module",
-  "description": "FastyBird application theme & Vue components for web apps",
+  "description": "FastyBird IoT application theme & Vue components",
   "keywords": [
     "fastybird",
     "fb",

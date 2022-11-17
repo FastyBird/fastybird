@@ -1,12 +1,13 @@
 {
   "name": "@fastybird/devices-module",
-  "version": "2.0.0",
+  "version": "1.0.0",
   "type": "module",
-  "description": "FastyBird IoT devices module for devices management & basic control logic",
+  "description": "FastyBird IoT devices module for connectors & devices management & basic control logic",
   "keywords": [
     "fastybird",
     "fb",
     "iot",
+    "connectors",
     "devices",
     "channels",
     "service"

@@ -1,4 +1,4 @@
-# FastyBird IoT Devices module automator
+# FastyBird IoT devices module automator
 
 [![Build Status](https://badgen.net/github/checks/FastyBird/devices-module-automator/master?cache=300&style=flast-square)](https://github.com/FastyBird/devices-module-automator/actions)
 [![Licence](https://badgen.net/github/license/FastyBird/devices-module-automator?cache=300&style=flast-square)](https://github.com/FastyBird/devices-module-automator/blob/master/LICENSE.md)
@@ -12,7 +12,7 @@
 
 ***
 
-## What is FastyBird IoT Devices module automator?
+## What is FastyBird IoT devices module automator?
 
 FastyBird Devices module automator is extension for [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem
 which is integrating automation for [Devices module](https://github.com/FastyBird/devices-module).
@@ -23,6 +23,7 @@ in [PHP](https://www.php.net) on top of the [Nette framework](https://nette.org)
 ### Features:
 
 - FastyBird Devices module automator management for [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) [devices module](https://github.com/FastyBird/devices-module)
+- Automator services for watching and triggering actions and conditions
 - [{JSON:API}](https://jsonapi.org/) schemas for full api access
 
 ## Requirements
@@ -43,11 +44,11 @@ composer require fastybird/devices-module-automator
 ### Marketplace installation [WIP]
 
 You could install this automator in your [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things)
-application under marketplace section
+application under marketplace section.
 
 ## Documentation
 
-Learn how to manage automation for connected devices with [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) system
+Learn how to manage automation for devices connected with [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) system
 in [documentation](https://github.com/FastyBird/devices-module-automator/blob/master/.docs/en/index.md).
 
 ## Feedback
@@ -60,7 +61,7 @@ Thank you for testing, reporting and contributing.
 
 ## Changelog
 
-For release info check [release page](https://github.com/FastyBird/fastybird/releases)
+For release info check [release page](https://github.com/FastyBird/fastybird/releases).
 
 ## Contribute
 

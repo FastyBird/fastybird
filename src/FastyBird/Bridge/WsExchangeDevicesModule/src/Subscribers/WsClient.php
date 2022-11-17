@@ -161,7 +161,7 @@ class WsClient implements EventDispatcher\EventSubscriberInterface
 			}
 		} catch (Throwable $ex) {
 			$this->logger->error('State could not be sent to subscriber', [
-				'source' => 'ws-server-plugin-controller',
+				'source' => MetadataTypes\BridgeSource::SOURCE_BRIDGE_WS_EXCHANGE_DEVICES_MODULE,
 				'type' => 'subscribe',
 				'exception' => [
 					'message' => $ex->getMessage(),

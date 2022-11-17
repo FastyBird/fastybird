@@ -6,7 +6,7 @@ on:
       - ".docs/**"
   push:
     branches:
-      - "master"
+      - "main"
     tags:
       - v*
   schedule:
@@ -273,7 +273,7 @@ jobs:
         node-version: [ "16" ]
         operating-system: [ "ubuntu-latest" ]
 
-    if: github.event_name == 'push' && contains(github.ref, 'refs/heads/master')
+    if: github.event_name == 'push' && contains(github.ref, 'refs/heads/main')
 
     steps:
       - name: "Checkout"
@@ -284,7 +284,7 @@ jobs:
       - name: "Setup node"
         uses: "actions/setup-node@v1"
         with:
-          node-version: "12"
+          node-version: "${{ matrix.node-version }}"
 
       - name: "Get Yarn cache directory"
         id: "yarn-cache-dir-path"
@@ -308,7 +308,7 @@ jobs:
         uses: "JamesIves/github-pages-deploy-action@3.6.2"
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: master
+          BRANCH: main
           FOLDER: storybook-static
           CLEAN: true
           TARGET_FOLDER: docs

@@ -1,16 +1,16 @@
 # Getting started
 
-This module adds support for managing [FastyBird](https://www.fastybird.com) IoT accounts.
+This module adds support for managing [FastyBird](https://www.fastybird.com) IoT accounts, roles and access management.
+
+***
 
 ## Installation
-
-### Application backend in PHP
 
 The best way to install **fastybird/accounts-module** is using [Composer](https://getcomposer.org/).
 
 > If you don't have Composer yet, [download it](https://getcomposer.org/download/) following the instructions.
 
-#### Create new project
+### Create new project
 
 If you don't have a project created yet you could start with Nette base project.
 
@@ -26,7 +26,7 @@ Everything required will be then installed in the provided folder.
 cd path/to/install
 ```
 
-#### Install module
+### Install module
 
 Module could be added to your project with composer command:
 
@@ -34,7 +34,7 @@ Module could be added to your project with composer command:
 composer require fastybird/accounts-module
 ```
 
-### Application frontend in JS
+### Module user interface
 
 The best way to install **@fastybird/accounts-module** is using [Yarn](https://yarnpkg.com/):
 
@@ -60,12 +60,6 @@ found [here](https://github.com/FastyBird/accounts-module/blob/main/config/examp
 
 This module is using database, and need some initial data to be inserted into it.
 
-Execution of command is dependend on you current implementation. This module is dependend
-on [contribute/console](https://github.com/contributte/console) extension, so check it out to get know how to configure
-your console entrypoint.
-
-After creating console entrypoint you could call module console command:
-
 ```sh
 your-console-entrypoint fb:accounts-module:initialize
 ```
@@ -83,23 +77,3 @@ your-console-entrypoint fb:web-server:start
 ```
 
 After successful start, server is listening for incoming http api request messages from clients.
-
-## Register Vuex ORM models
-
-This module could be registered in your Vuex ORM instance
-
-```js
-import VuexORM, { Database } from '@vuex-orm/core'
-import AccountsModule from '@fastybird/accounts-module'
-
-// Create new instance of Database
-const database = new Database()
-
-VuexORM.use(AccountsModule, { database })
-
-export default {
-  plugins: [
-    VuexORM.install(database),
-  ],
-}
-```

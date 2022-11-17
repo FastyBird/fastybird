@@ -6,7 +6,7 @@ Add it as a plugin to your app:
 
 ```js
 import { createApp } from 'vue'
-import VueWamp from '@fastybird/ws-exchange-plugin'
+import WsExchangeClient from '@fastybird/ws-exchange-plugin'
 
 const app = createApp(...)
 
@@ -14,14 +14,14 @@ const options = {
     wsuri: 'ws://your.socker.server.com:1234'
 }
 
-app.use(VueWamp, options)
+app.use(WsExchangeClient, options)
 ```
 
 Or, if you are using Typescript:
 
 ```js
 import { createApp } from 'vue'
-import VueWamp, { PluginOptions } from '@fastybird/ws-exchange-plugin'
+import WsExchangeClient, { PluginOptions } from '@fastybird/ws-exchange-plugin'
 
 const app = createApp(...)
 
@@ -29,12 +29,12 @@ const options: PluginOptions = {
     wsuri: 'ws://your.socker.server.com:1234'
 }
 
-app.use(VueWamp, options)
+app.use(WsExchangeClient, options)
 ```
 
 #### Options:
 
-- `wsuri` - is required option and with this field is representing your wamp server address
+- `wsuri` - is required option and this field is representing your wamp server address
 - `debug` - default is `false` and this option is to enable or disable console log of wamp events
 
 ## Usage

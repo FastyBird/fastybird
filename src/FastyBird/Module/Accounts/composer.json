@@ -1,7 +1,7 @@
 {
   "name": "fastybird/accounts-module",
   "type": "module",
-  "description": "FastyBird IoT accounts module for accounts management",
+  "description": "FastyBird IoT accounts module for application accounts & access management",
   "keywords": [
     "fastybird",
     "fb",
@@ -89,7 +89,7 @@
   },
   "extra": {
     "branch-alias": {
-      "dev-main": "2.0-dev"
+      "dev-main": "1.0-dev"
     },
     "patches": {
       "doctrine/orm": {

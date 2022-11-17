@@ -1,8 +1,8 @@
 # Quick start
 
-The purpose of this library is to provide unified interface for data exchange.
+The purpose of this library is to provide unified interface for data exchange bus.
 
-Create consumers and publishers proxies, collect registered application consumers and publishers and control them.
+Create consumers and publishers proxies, collect registered application consumers and publishers and rule them.
 
 ***
 
@@ -14,7 +14,7 @@ The best way to install **fastybird/exchange-library** is using [Composer](http:
 composer require fastybird/exchange-library
 ```
 
-After that, you have to register extension in *config.neon*.
+After that, you have to register extension in *services.neon*.
 
 ```neon
 extensions:
@@ -23,7 +23,7 @@ extensions:
 
 ## Creating custom publisher
 
-If some service of your module have to publish messages to data exchange for other modules, you could just
+If some service of your extension have to publish messages to data exchange bus for other extensions, you could just
 implement `FastyBird\Library\Exchange\Publisher\Publisher` interface and register your publisher as service
 
 ```php
@@ -88,10 +88,10 @@ And that is it, global publisher will call all your publishers and publish messa
 
 ## Creating custom consumer
 
-One part is done, message is published. Now have to be consumed. Message consuming process is in your hand, but this
-extension has prepared an interface for your consumers.
+One part is done, message is published. Now have to be consumed.
 
-Your consumer could look like this:
+If some service of your extension have is waiting for messages from data exchange bus from other extensions, you could just
+implement `FastyBird\Library\Exchange\Consumer\Consumer` interface and register your consumer as service
 
 ```php
 namespace Your\CoolApp\Publishers;
@@ -104,15 +104,17 @@ class DataConsumer implements Consumer
 {
 
     public function consume(
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource $source,
-		MetadataTypes\RoutingKey $routingKey,
-		MetadataEntities\Entity|null $entity,
+        MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource $source,
+        MetadataTypes\RoutingKey $routingKey,
+        MetadataEntities\Entity|null $entity,
     ) : void {
         // Do your data processing logic here 
     }
 
 }
 ```
+
+You could create as many consumers as you need. Consumer proxy then will collect all of them.
 
 ***
 Homepage [https://www.fastybird.com](https://www.fastybird.com) and

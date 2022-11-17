@@ -1,6 +1,6 @@
 # Quick start
 
-The purpose of this extension is to prepare basic bootstrap for you application with some default useful extensions.
+The purpose of this extension is to prepare basic bootstrap for [FastyBird](https://www.fastybird.com) application with some default useful extensions.
 
 ***
 
@@ -14,11 +14,12 @@ composer require fastybird/bootstrap-library
 
 ## Configure bootstrap
 
-This extension is configured via **env** variables. Env variables are used to define all necessary folders for you
-application:
+This extension is configured via **env** variables or via Neon **parameters** or their combination.
+
+Environment variables are used to define all necessary folders for application to run:
 
 ```
-FB_APP_DIR - is application root dir. Default value is folder where is your composer.json
+FB_APP_DIR - is application root dir. Default value is folder where is composer.json located
 
 FB_RESOURCES_DIR - is dir for additional resources. Default value is FB_APP_DIR . '/resources'
 
@@ -29,15 +30,15 @@ FB_LOGS_DIR - is dir for application logs or exceptions. Default value is FB_APP
 FB_CONFIG_DIR - is dir where you sould place your custom configuration. Default value is FB_APP_DIR . '/config' 
 ```
 
-From this env variables are created PHP constants sou you could use them in you app.
+From this env variables are created PHP constants sou you could use them in app.
 
 Values of **FB_APP_DIR**, **FB_TEMP_DIR** and **FB_LOGS_DIR** are also injected into nenon configuration parser, so
-could be used to configure your services
+could be used to configure services
 
 ```neon
 services: 
     -
-        type: Your\CoolApp\Service
+        type: Your\Cool\Service
         arguments: [
             temp: %tempDir%/cache
             logs: %logsDir%/service.result.log
@@ -47,7 +48,7 @@ services:
 
 ### Overriding parameters
 
-Your app could be configured via `parameters` section in your configuration neon file, but in case you don't want to
+FastyBird application could be configured via `parameters` section in configuration neon file, but in case you don't want to
 store you sensitive data in file you could use configuration via env variables.
 
 Bootstrap will search for all env variables prefixed with `FB_APP_PARAMETER_` and create parameters array from them.
@@ -85,7 +86,7 @@ custom local file not be stored in repository.
 
 ## Create application container
 
-Now when you have your application configured you could move to next step, creating application entrypoint which will
+Now when you have application configured you could move to next step, creating application entrypoint which will
 loads DI and fire `Nette\Application\Application::run`
 
 You can copy & paste it to your project, for example to `<app_root>/www/index.php`.
@@ -141,7 +142,7 @@ parameters:
 
 ### Sentry bug tracking
 
-If you would like to track your bug in [Sentry](https://sentry.io/), all what you have to do, is to configure you Sentry
+If you would like to track bugs in [Sentry](https://sentry.io/), all what you have to do, is to configure you Sentry
 DSN
 
 ```neon

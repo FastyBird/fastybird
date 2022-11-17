@@ -35,9 +35,13 @@ class BridgeSource extends Consistence\Enum\Enum
 	 */
 	public const SOURCE_NOT_SPECIFIED = Metadata\Constants::NOT_SPECIFIED_SOURCE;
 
-	public const SOURCE_BRIDGE_REDISDB_DEVICES_STATES = Metadata\Constants::BRIDGE_REDISDB_DEVICES_STATES;
+	public const SOURCE_BRIDGE_REDISDB_DEVICES_MODULE = Metadata\Constants::BRIDGE_REDISDB_DEVICES_MODULE;
+
+	public const SOURCE_BRIDGE_REDISDB_TRIGGERS_MODULE = Metadata\Constants::BRIDGE_REDISDB_TRIGGERS_MODULE;
 
 	public const SOURCE_BRIDGE_REDISDB_WS_EXCHANGE = Metadata\Constants::BRIDGE_REDISDB_WS_EXCHANGE;
+
+	public const SOURCE_BRIDGE_WS_EXCHANGE_DEVICES_MODULE = Metadata\Constants::BRIDGE_WS_EXCHANGE_DEVICES_MODULE;
 
 	public function __toString(): string
 	{

@@ -8,5 +8,4 @@ Makefile export-ignore
 phpcs.xml export-ignore
 phpstan.neon export-ignore
 tsconfig.json
-tslint.json
 yarn.lock
