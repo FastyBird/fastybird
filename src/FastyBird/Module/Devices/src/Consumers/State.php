@@ -78,8 +78,8 @@ final class State implements ExchangeConsumers\Consumer
 	 */
 	public function consume(
 		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource $source,
-		MetadataTypes\RoutingKey                                                                                          $routingKey,
-		MetadataEntities\Entity|null                                                                                      $entity,
+		MetadataTypes\RoutingKey $routingKey,
+		MetadataEntities\Entity|null $entity,
 	): void
 	{
 		if ($entity === null) {

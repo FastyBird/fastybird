@@ -44,8 +44,8 @@ final class Consumer implements ExchangeConsumer\Consumer
 
 	public function consume(
 		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource $source,
-		MetadataTypes\RoutingKey                                                                                          $routingKey,
-		MetadataEntities\Entity|null                                                                                      $entity,
+		MetadataTypes\RoutingKey $routingKey,
+		MetadataEntities\Entity|null $entity,
 	): void
 	{
 		$this->publisher->publish($source, $routingKey, $entity);

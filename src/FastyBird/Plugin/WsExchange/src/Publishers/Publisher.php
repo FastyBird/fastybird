@@ -52,8 +52,8 @@ final class Publisher
 
 	public function publish(
 		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|MetadataTypes\AutomatorSource $source,
-		MetadataTypes\RoutingKey                                                                                          $routingKey,
-		MetadataEntities\Entity|null                                                                                      $entity,
+		MetadataTypes\RoutingKey $routingKey,
+		MetadataEntities\Entity|null $entity,
 	): void
 	{
 		$result = $this->sendMessage(

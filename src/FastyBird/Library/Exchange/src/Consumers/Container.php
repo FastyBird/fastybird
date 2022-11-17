@@ -44,8 +44,8 @@ class Container implements Consumer
 
 	public function consume(
 		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|MetadataTypes\AutomatorSource $source,
-		MetadataTypes\RoutingKey                                                                                          $routingKey,
-		MetadataEntities\Entity|null                                                                                      $entity,
+		MetadataTypes\RoutingKey $routingKey,
+		MetadataEntities\Entity|null $entity,
 	): void
 	{
 		$this->dispatcher?->dispatch(new Events\BeforeMessageConsumed($source, $routingKey, $entity));
