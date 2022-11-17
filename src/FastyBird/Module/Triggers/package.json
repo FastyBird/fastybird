@@ -50,8 +50,8 @@
     "pretty:write": "prettier public --write"
   },
   "dependencies": {
-    "@fastybird/metadata-library": "^2.0.0",
-    "@fastybird/web-ui-library": "^2.0.0",
+    "@fastybird/metadata-library": "^1.0.0",
+    "@fastybird/web-ui-library": "^1.0.0",
     "ajv": "^8.11",
     "date-fns": "^2.29",
     "jsona": "^1.10",
