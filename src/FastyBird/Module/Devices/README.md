@@ -38,7 +38,6 @@ in [PHP](https://www.php.net) on top of the [Nette framework](https://nette.org)
 
 ## Requirements
 
-
 PHP part of [FastyBird](https://www.fastybird.com) devices module is tested against PHP 8.1 and require installed [BCMath Arbitrary Precision Mathematics](https://www.php.net/manual/en/book.bc.php) and [Process Control](https://www.php.net/manual/en/book.pcntl.php)
 PHP extensions.
 
@@ -80,7 +79,7 @@ Thank you for testing, reporting and contributing.
 
 ## Changelog
 
-For release info check [release page](https://github.com/FastyBird/fastybird/releases)
+For release info check [release page](https://github.com/FastyBird/fastybird/releases).
 
 ## Contribute
 

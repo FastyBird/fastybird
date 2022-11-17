@@ -14,13 +14,17 @@
 
 ## What is web server plugin?
 
-This is a plugin for [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem which is implementing http server based
-on [ReactPHP](https://github.com/reactphp/http).
+Web server plugin is extension for [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem
+which is implementing http server based on [ReactPHP](https://github.com/reactphp/http).
+
+Web server plugin is an [Apache2 licensed](http://www.apache.org/licenses/LICENSE-2.0) distributed extension, developed
+in [PHP](https://www.php.net) on top of the [Nette framework](https://nette.org) and [Symfony framework](https://symfony.com).
 
 ### Features:
 
 - Build-in [PSR-7](http://www.php-fig.org/psr/psr-7/) extendable router
 - Build-in http server with SSL support
+- Build-in static files server
 - Extendable via [PSR-7](http://www.php-fig.org/psr/psr-7/) middleware
 
 ## Installation
@@ -33,7 +37,7 @@ composer require fastybird/web-server-plugin
 
 ## Documentation
 
-Learn how to build handle http api requests
+Learn how to build and handle http api requests
 in [documentation](https://github.com/FastyBird/web-server-plugin/blob/main/.docs/en/index.md).
 
 ## Feedback
@@ -46,13 +50,11 @@ Thank you for testing, reporting and contributing.
 
 ## Changelog
 
-For release info check [release page](https://github.com/FastyBird/fastybird/releases)
+For release info check [release page](https://github.com/FastyBird/fastybird/releases).
 
 ## Contribute
 
 The sources of this package are contained in the [FastyBird monorepo](https://github.com/FastyBird/fastybird). We welcome contributions for this package on [FastyBird/fastybird](https://github.com/FastyBird/).
-
-For release info check [release page](https://github.com/FastyBird/web-server-plugin/releases)
 
 ## Maintainers
 

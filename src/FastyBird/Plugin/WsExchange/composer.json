@@ -8,6 +8,7 @@
     "libs",
     "library",
     "ws",
+    "wamp",
     "realtime"
   ],
   "homepage": "https://www.fastybird.com",
@@ -81,7 +82,7 @@
   },
   "extra": {
     "branch-alias": {
-      "dev-main": "2.0-dev"
+      "dev-main": "1.0-dev"
     }
   },
   "minimum-stability": "dev",

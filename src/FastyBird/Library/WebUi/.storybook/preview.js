@@ -1,4 +1,3 @@
-import './storybook-styles.css';
 import { app } from '@storybook/vue3';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -25,6 +24,8 @@ import {
 	faUserSecret,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+
+import './storybook-styles.css';
 
 library.add(faAngleLeft);
 library.add(faAngleRight);

@@ -15,7 +15,7 @@
 ## What is FastyBird IoT date & time automator?
 
 FastyBird date & time automator is extension for [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem
-which is integrating automation for [date & time](https://github.com/FastyBird/date-time).
+which is integrating automation for date & time.
 
 FastyBird date & time automator is an [Apache2 licensed](http://www.apache.org/licenses/LICENSE-2.0) distributed extension, developed
 in [PHP](https://www.php.net) on top of the [Nette framework](https://nette.org) and [Symfony framework](https://symfony.com).
@@ -23,6 +23,7 @@ in [PHP](https://www.php.net) on top of the [Nette framework](https://nette.org)
 ### Features:
 
 - FastyBird date & time automator management for [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) [devices module](https://github.com/FastyBird/date-time)
+- Automator services for watching and triggering actions and conditions
 - [{JSON:API}](https://jsonapi.org/) schemas for full api access
 
 ## Requirements
@@ -43,11 +44,11 @@ composer require fastybird/date-time-automator
 ### Marketplace installation [WIP]
 
 You could install this automator in your [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things)
-application under marketplace section
+application under marketplace section.
 
 ## Documentation
 
-Learn how to manage automation for connected devices with [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) system
+Learn how to manage date & time based automation for devices connected with [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) system
 in [documentation](https://github.com/FastyBird/date-time-automator/blob/master/.docs/en/index.md).
 
 ## Feedback
@@ -60,7 +61,7 @@ Thank you for testing, reporting and contributing.
 
 ## Changelog
 
-For release info check [release page](https://github.com/FastyBird/fastybird/releases)
+For release info check [release page](https://github.com/FastyBird/fastybird/releases).
 
 ## Contribute
 

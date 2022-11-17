@@ -61,7 +61,7 @@ class RedisClient implements EventDispatcher\EventSubscriberInterface
 					$this->logger->debug(
 						'Redis client was successfully started with devices service',
 						[
-							'source' => MetadataTypes\BridgeSource::SOURCE_BRIDGE_REDISDB_DEVICES_STATES,
+							'source' => MetadataTypes\BridgeSource::SOURCE_BRIDGE_REDISDB_TRIGGERS_MODULE,
 							'type' => 'subscriber',
 						],
 					);
@@ -70,7 +70,7 @@ class RedisClient implements EventDispatcher\EventSubscriberInterface
 					$this->logger->error(
 						'Redis client could not be created',
 						[
-							'source' => MetadataTypes\BridgeSource::SOURCE_BRIDGE_REDISDB_DEVICES_STATES,
+							'source' => MetadataTypes\BridgeSource::SOURCE_BRIDGE_REDISDB_TRIGGERS_MODULE,
 							'type' => 'subscriber',
 							'exception' => [
 								'message' => $ex->getMessage(),

@@ -9,4 +9,3 @@
 .npmignore export-ignore
 babel.config.js export-ignore
 Makefile export-ignore
-tslint.json export-ignore

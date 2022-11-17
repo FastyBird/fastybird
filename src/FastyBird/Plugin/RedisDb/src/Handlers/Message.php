@@ -162,7 +162,7 @@ final class Message extends Evenement\EventEmitter
 
 	private function validateSource(
 		string $source,
-	): MetadataTypes\ModuleSource|MetadataTypes\ConnectorSource|MetadataTypes\PluginSource|MetadataTypes\TriggerSource|null
+	): MetadataTypes\ModuleSource|MetadataTypes\ConnectorSource|MetadataTypes\PluginSource|MetadataTypes\AutomatorSource|null
 	{
 		if (MetadataTypes\ModuleSource::isValidValue($source)) {
 			return MetadataTypes\ModuleSource::get($source);
@@ -176,8 +176,8 @@ final class Message extends Evenement\EventEmitter
 			return MetadataTypes\ConnectorSource::get($source);
 		}
 
-		if (MetadataTypes\TriggerSource::isValidValue($source)) {
-			return MetadataTypes\TriggerSource::get($source);
+		if (MetadataTypes\AutomatorSource::isValidValue($source)) {
+			return MetadataTypes\AutomatorSource::get($source);
 		}
 
 		return null;

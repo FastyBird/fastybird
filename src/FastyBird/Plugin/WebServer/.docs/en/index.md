@@ -49,6 +49,8 @@ Where:
 
 - `static -> webroot` is path to public static files and this files could be served by this webserver
 - `static -> enabled` enable or disable serving static files support
+
+
 - `server -> address` is address where is server listening for incoming requests
 - `server -> port` is address port where is server listening for incoming requests
 - `server -> certificate` is path to your private certificate to enable SSL communication
@@ -120,7 +122,7 @@ visit: [ipub/slim-router](https://github.com/iPublikuj/slim-router/blob/main/doc
 
 ## Custom middleware
 
-With middleware, you could modify incoming request and also outgoing response.
+With middleware, you could modify incoming requests and also outgoing responses.
 
 ```php
 namespace Your\CoolApp\Routing;
@@ -207,33 +209,10 @@ visit: [ipub/slim-router](https://github.com/iPublikuj/slim-router/blob/main/doc
 
 ## Running server
 
-To be able to start server, you have to create an entrypoint for console. It is a simple script that loads the DI
-container and fires `FastyBird\Plugin\WebServer\Application\Console::run`.
-
-You can copy & paste it to your project, for example to `<app_root>/bin/console`.
-
-Make sure to set it as executable:
+This plugin has implemented command interface for running server. All you have to do is just run one command:
 
 ```sh
-chmod +x <app_root>/bin/console
-```
-
-```php
-#!/usr/bin/env php
-<?php declare(strict_types = 1);
-
-require __DIR__ . '/../vendor/autoload.php';
-
-exit(Your\CoolApp\Bootstrap::boot()
-    ->createContainer()
-    ->getByType(FastyBird\Plugin\WebServer\Application\Console::class)
-    ->run());
-```
-
-To start serving content and handling request just start server with command:
-
-```sh
-<app_root>/console
+<app_root>/vendor/bin/fb-webserver
 ```
 
 ## What about Apache or Nginx?

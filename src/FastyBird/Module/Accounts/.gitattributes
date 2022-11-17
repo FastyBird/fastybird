@@ -10,4 +10,3 @@
 .gitignore export-ignore
 .npmignore export-ignore
 Makefile export-ignore
-tslint.json export-ignore

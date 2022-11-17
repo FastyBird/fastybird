@@ -1,15 +1,15 @@
-# FastyBird web-ui theme library
+# FastyBird Web UI library
 
-[![Latest stable](https://badgen.net/npm/v/@fastybird/web-ui-theme?cache=300&style=flast-square)](https://www.npmjs.com/package/@fastybird/web-ui-theme)
-[![Downloads total](https://badgen.net/npm/dt/@fastybird/web-ui-theme?cache=300&style=flast-square)](https://www.npmjs.com/package/@fastybird/web-ui-theme)
-[![Licence](https://badgen.net/npm/license/@fastybird/web-ui-theme?cache=300&style=flast-square)](https://github.com/FastyBird/web-ui-theme/blob/master/LICENSE.md)
-![Types](https://badgen.net/npm/types/@fastybird/web-ui-theme?cache=300&style=flast-square)
+[![Latest stable](https://badgen.net/npm/v/@fastybird/web-ui-library?cache=300&style=flast-square)](https://www.npmjs.com/package/@fastybird/web-ui-library)
+[![Downloads total](https://badgen.net/npm/dt/@fastybird/web-ui-library?cache=300&style=flast-square)](https://www.npmjs.com/package/@fastybird/web-ui-library)
+[![Licence](https://badgen.net/npm/license/@fastybird/web-ui-library?cache=300&style=flast-square)](https://github.com/FastyBird/web-ui-library/blob/master/LICENSE.md)
+![Types](https://badgen.net/npm/types/@fastybird/web-ui-library?cache=300&style=flast-square)
 
-## What is FastyBird web-ui theme library?
+## What is FastyBird Web UI library?
 
-This library is a collection of [Vue](https://vuejs.org) framework components used for [FastyBird](https://www.fastybird.com) web application user interfaces.
+This library is a collection of [Vue 3](https://vuejs.org) framework components used for [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) web applications user interfaces.
 
-[FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) web-ui theme library is an [Apache2 licensed](http://www.apache.org/licenses/LICENSE-2.0) distributed library, developed in [Typescript](https://www.typescriptlang.org) with [Vue](https://vuejs.org) and [Nuxt](https://nuxtjs.org).
+[FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) Web UI library is an [Apache2 licensed](http://www.apache.org/licenses/LICENSE-2.0) distributed library, developed in [Typescript](https://www.typescriptlang.org) on top of the [Vue](https://vuejs.org) framework.
 
 ### Features:
 
@@ -24,16 +24,16 @@ Library is tested against [ECMAScript 6](https://www.w3schools.com/JS/js_es6.asp
 
 ## Installation
 
-The best way to install **@fastybird/web-ui-theme** is using [Yarn](https://yarnpkg.com/):
+The best way to install **@fastybird/web-ui-library** is using [Yarn](https://yarnpkg.com/):
 
 ```sh
-yarn add @fastybird/web-ui-theme
+yarn add @fastybird/web-ui-library
 ```
 
 or if you prefer npm:
 
 ```sh
-npm install @fastybird/web-ui-theme
+npm install @fastybird/web-ui-library
 ```
 
 ## Setup in your application
@@ -42,7 +42,7 @@ Register Vue plugin:
 
 ```js
 import Vue from 'vue'
-import FastyBirdWebUI from '@fastybird/web-ui-theme'
+import FastyBirdWebUI from '@fastybird/web-ui-library'
 
 Vue.use(FastyBirdWebUI)
 ```
@@ -75,7 +75,7 @@ Add the types to your `"types"` array in **tsconfig.json**.
 {
   "compilerOptions": {
     "types": [
-      "@fastybird/web-ui-theme"
+      "@fastybird/web-ui-library"
     ]
   }
 }
@@ -87,13 +87,19 @@ Learn how to use ui components in [documentation](https://storybook.fastybird.co
 
 ## Feedback
 
-Use the [issue tracker](https://github.com/FastyBird/web-ui-theme/issues) for bugs or [mail](mailto:code@fastybird.com) or [Tweet](https://twitter.com/fastybird) us for any idea that can improve the project.
+Use the [issue tracker](https://github.com/FastyBird/fastybird/issues) for bugs
+or [mail](mailto:code@fastybird.com) or [Tweet](https://twitter.com/fastybird) us for any idea that can improve the
+project.
 
 Thank you for testing, reporting and contributing.
 
 ## Changelog
 
-For release info check [release page](https://github.com/FastyBird/web-ui-theme/releases)
+For release info check [release page](https://github.com/FastyBird/fastybird/releases).
+
+## Contribute
+
+The sources of this package are contained in the [FastyBird monorepo](https://github.com/FastyBird/fastybird). We welcome contributions for this package on [FastyBird/fastybird](https://github.com/FastyBird/).
 
 ## Maintainers
 
@@ -102,7 +108,7 @@ For release info check [release page](https://github.com/FastyBird/web-ui-theme/
 		<tr>
 			<td align="center">
 				<a href="https://github.com/akadlec">
-					<img width="80" height="80" src="https://avatars3.githubusercontent.com/u/1866672?s=460&amp;v=4">
+					<img alt="akadlec" width="80" height="80" src="https://avatars3.githubusercontent.com/u/1866672?s=460&amp;v=4" />
 				</a>
 				<br>
 				<a href="https://github.com/akadlec">Adam Kadlec</a>
@@ -112,4 +118,4 @@ For release info check [release page](https://github.com/FastyBird/web-ui-theme/
 </table>
 
 ***
-Homepage [https://www.fastybird.com](https://www.fastybird.com) and repository [https://github.com/FastyBird/web-ui-theme](https://github.com/FastyBird/web-ui-theme).
+Homepage [https://www.fastybird.com](https://www.fastybird.com) and repository [https://github.com/FastyBird/web-ui-library](https://github.com/FastyBird/web-ui-library).

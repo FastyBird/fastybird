@@ -1,14 +1,13 @@
 {
   "name": "fastybird/bootstrap-library",
   "type": "library",
-  "description": "Extended application bootstrap with implemented console & logger support & basic commands",
+  "description": "FastyBird IoT application bootstrap",
   "keywords": [
     "fastybird",
     "fb",
     "libs",
     "library",
-    "bootstrap",
-    "nette"
+    "bootstrap"
   ],
   "homepage": "https://www.fastybird.com",
   "license": "Apache-2.0",
@@ -88,7 +87,7 @@
   ],
   "extra": {
     "branch-alias": {
-      "dev-main": "2.0-dev"
+      "dev-main": "1.0-dev"
     }
   },
   "prefer-stable": true,

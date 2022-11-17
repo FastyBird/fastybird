@@ -14,15 +14,19 @@
 
 ## What is Redis DB plugin?
 
-This is a plugin for [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem which is
-implementing [Redis](https://redis.io) PubSub exchange and states manager for reading
+Redis DB plugin is extension for [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem
+which is implementing [Redis](https://redis.io) PubSub exchange and states manager for reading
 and setting application state.
+
+Redis DB plugin is an [Apache2 licensed](http://www.apache.org/licenses/LICENSE-2.0) distributed extension, developed
+in [PHP](https://www.php.net) on top of the [Nette framework](https://nette.org) and [Symfony framework](https://symfony.com).
 
 ### Features
 
 - Built-in server command for running standalone exchange client
-- Application state management for reading and storing states
+- Application state management for reading and storing states in Redis database
 - Implemented sync and async Redis client
+- Redis DB pub/sub exchange client
 
 ## Installation
 
@@ -34,7 +38,7 @@ composer require fastybird/redisdb-plugin
 
 ## Documentation
 
-Learn how to consume & publish messages
+Learn how to read & write states and consume & publish messages
 in [documentation](https://github.com/FastyBird/redisdb-plugin/blob/main/.docs/en/index.md).
 
 ## Feedback
@@ -47,7 +51,7 @@ Thank you for testing, reporting and contributing.
 
 ## Changelog
 
-For release info check [release page](https://github.com/FastyBird/fastybird/releases)
+For release info check [release page](https://github.com/FastyBird/fastybird/releases).
 
 ## Contribute
 

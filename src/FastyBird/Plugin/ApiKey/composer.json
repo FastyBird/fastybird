@@ -1,7 +1,7 @@
 {
   "name": "fastybird/apikey-plugin",
   "type": "plugin",
-  "description": "FastyBird IoT api keys middleware plugin",
+  "description": "FastyBird IoT api keys management plugin",
   "keywords": [
     "fastybird",
     "fb",
@@ -87,7 +87,7 @@
   },
   "extra": {
     "branch-alias": {
-      "dev-main": "2.0-dev"
+      "dev-main": "1.0-dev"
     }
   },
   "minimum-stability": "dev",

@@ -1,7 +1,7 @@
 {
   "name": "fastybird/redisdb-devices-module-bridge",
   "type": "bridge",
-  "description": "Redis DB bridge for devices module",
+  "description": "FastyBird IoT Redis DB bridge for Devices module",
   "keywords": [
     "fastybird",
     "fb",
@@ -79,7 +79,7 @@
   },
   "extra": {
     "branch-alias": {
-      "dev-main": "2.0-dev"
+      "dev-main": "1.0-dev"
     },
     "patches": {
       "nettrine/orm": {

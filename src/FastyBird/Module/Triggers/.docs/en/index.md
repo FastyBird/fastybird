@@ -2,15 +2,15 @@
 
 This module adds support for managing [FastyBird](https://www.fastybird.com) IoT triggers.
 
-## Installation
+***
 
-### Application backend in PHP
+## Installation
 
 The best way to install **fastybird/triggers-module** is using [Composer](https://getcomposer.org/).
 
 > If you don't have Composer yet, [download it](https://getcomposer.org/download/) following the instructions.
 
-#### Create new project
+### Create new project
 
 If you don't have a project created yet you could start with Nette base project.
 
@@ -26,7 +26,7 @@ Everything required will be then installed in the provided folder.
 cd path/to/install
 ```
 
-#### Install module
+### Install module
 
 Module could be added to your project with composer command:
 
@@ -34,7 +34,7 @@ Module could be added to your project with composer command:
 composer require fastybird/triggers-module
 ```
 
-### Application frontend in JS
+### Module user interface
 
 The best way to install **@fastybird/triggers-module** is using [Yarn](https://yarnpkg.com/):
 
@@ -48,14 +48,6 @@ or if you prefer npm:
 npm install @fastybird/triggers-module
 ```
 
-### Application workers in Python
-
-The best way to install **fastybird-triggers-module** is using [pip](https://pip.pypa.io/):
-
-```sh
-pip install fastybird-triggers-module
-```
-
 ## Configuration
 
 This module is dependent on other Nette extensions. All this extensions have to enabled and configured in NEON
@@ -67,12 +59,6 @@ found [here](https://github.com/FastyBird/triggers-module/blob/main/config/examp
 ## Initialization
 
 This module is using database, and need some initial data to be inserted into it.
-
-Execution of command is dependend on you current implementation. This module is dependend
-on [contribute/console](https://github.com/contributte/console) extension, so check it out to get know how to configure
-your console entrypoint.
-
-After creating console entrypoint you could call module console command:
 
 ```sh
 your-console-entrypoint fb:triggers-module:initialize
@@ -91,47 +77,3 @@ your-console-entrypoint fb:web-server:start
 ```
 
 After successful start, server is listening for incoming http api request messages from clients.
-
-## Register Vuex ORM models
-
-This module could be registered in your Vuex ORM instance
-
-```js
-import VuexORM, { Database } from '@vuex-orm/core'
-import TriggersModule from '@fastybird/triggers-module'
-
-// Create new instance of Database
-const database = new Database()
-
-VuexORM.use(TriggersModule, { database })
-
-export default {
-  plugins: [
-    VuexORM.install(database),
-  ],
-}
-```
-
-## Registering Python services
-
-This module is using [dependency injection module](https://github.com/kodemore/kink) and has created services registration factory.
-All what you have to do i create SQLAlchemy session instance and register it to DI:
-
-```python
-from kink import di
-
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
-
-from fastybird_triggers_module.bootstrap import register_services
-
-db_engine = create_engine(f"mysql+pymysql://username:password@127.0.0.1/database_name")
-db_session = Session(db_engine)
-
-# Inject database session into DI
-# Module will autowire session in its own services
-di[Session] = db_session
-
-# Register module services into DI container
-register_services()
-```
