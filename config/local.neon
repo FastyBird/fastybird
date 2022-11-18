@@ -1,5 +1,0 @@
-parameters:
-    logger:
-        level: 100
-        rotatingFile: app.log
-        stdOut: true

@@ -21,6 +21,7 @@ use FastyBird\Plugin\WebServer\Commands;
 use FastyBird\Plugin\WebServer\Exceptions;
 use FastyBird\Plugin\WebServer\Http;
 use FastyBird\Plugin\WebServer\Middleware;
+use FastyBird\Plugin\WebServer\Router;
 use FastyBird\Plugin\WebServer\Server;
 use FastyBird\Plugin\WebServer\Subscribers;
 use Fig\Http\Message\RequestMethodInterface;
@@ -120,7 +121,7 @@ class WebServerExtension extends DI\CompilerExtension
 			->setType(Http\ResponseFactory::class);
 
 		$builder->addDefinition($this->prefix('routing.router'), new DI\Definitions\ServiceDefinition())
-			->setType(SlimRouter\Routing\Router::class);
+			->setType(Router\Router::class);
 
 		$builder->addDefinition($this->prefix('commands.server'), new DI\Definitions\ServiceDefinition())
 			->setType(Commands\HttpServer::class)

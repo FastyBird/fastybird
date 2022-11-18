@@ -40,7 +40,6 @@ use function explode;
 use function preg_match;
 use function strtolower;
 use function strval;
-use function var_dump;
 
 /**
  * Accounts controller
@@ -194,7 +193,6 @@ final class AccountsV1 extends BaseV1
 				$this->translator->translate('//accounts-module.base.messages.uniqueAttribute.message'),
 			);
 		} catch (Throwable $ex) {
-			var_dump($ex->getMessage());
 			// Log caught exception
 			$this->logger->error('An unhandled error occurred', [
 				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_ACCOUNTS,

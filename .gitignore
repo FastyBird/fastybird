@@ -1,5 +1,6 @@
 .idea
 /dist
+/config/local.neon
 /node_modules
 /var
 /vendor
