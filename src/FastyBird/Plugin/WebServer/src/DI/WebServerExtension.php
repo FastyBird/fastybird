@@ -25,7 +25,6 @@ use FastyBird\Plugin\WebServer\Router;
 use FastyBird\Plugin\WebServer\Server;
 use FastyBird\Plugin\WebServer\Subscribers;
 use Fig\Http\Message\RequestMethodInterface;
-use IPub\SlimRouter;
 use Nette;
 use Nette\DI;
 use Nette\Schema;

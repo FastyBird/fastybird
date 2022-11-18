@@ -28,5 +28,4 @@ use IPub\SlimRouter\Routing;
 class Router extends Routing\Router
 {
 
-
 }

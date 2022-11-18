@@ -1,4 +1,4 @@
-name: "build"
+name: "application"
 
 on:
   pull_request:
@@ -83,7 +83,6 @@ jobs:
   build-debian-package:
     name : "Build debian package"
     runs-on: "${{ matrix.operating-system }}"
-    needs: ["php-qa", "php-static-analysis", "php-tests"]
 
     strategy:
       matrix:

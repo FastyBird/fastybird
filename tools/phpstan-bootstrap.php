@@ -6,6 +6,9 @@ if (!defined('FB_APP_DIR')) {
 if (!defined('FB_RESOURCES_DIR')) {
 	define('FB_RESOURCES_DIR', 'val');
 }
+if (!defined('FB_WWW_DIR')) {
+	define('FB_WWW_DIR', 'val');
+}
 if (!defined('FB_TEMP_DIR')) {
 	define('FB_TEMP_DIR', 'val');
 }
