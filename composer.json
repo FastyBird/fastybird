@@ -28,8 +28,10 @@
         "clue/multicast-react": "^1.1",
         "clue/redis-react": "^2.6",
         "contributte/console": "^0.9",
+        "contributte/event-dispatcher": "^0.8",
         "contributte/flysystem": "^0.3",
         "contributte/monolog": "^0.5",
+        "contributte/translation": "^2.0",
         "cweagans/composer-patches": "^1.7",
         "evenement/evenement": "^3.0",
         "fastybird/datetime-factory": "^0.6",
@@ -82,7 +84,6 @@
     },
     "require-dev": {
         "brianium/paratest": "^6.6",
-        "contributte/translation": "^2.0",
         "dg/bypass-finals": "^1.4",
         "doctrine/orm": "^2.8",
         "infection/infection": "^0.26",
