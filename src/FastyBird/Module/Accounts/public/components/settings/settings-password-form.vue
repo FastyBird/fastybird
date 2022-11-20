@@ -45,7 +45,7 @@
 <script setup lang="ts">
 import { watch } from 'vue';
 import { useForm, useField } from 'vee-validate';
-import * as yup from 'yup';
+import { object as yObject, string as yString } from 'yup';
 import { useI18n } from 'vue-i18n';
 import get from 'lodash/get';
 
@@ -78,10 +78,10 @@ interface ISettingsPasswordForm {
 }
 
 const { validate } = useForm<ISettingsPasswordForm>({
-	validationSchema: yup.object({
-		currentPassword: yup.string().required(t('fields.password.current.validation.required')),
-		newPassword: yup.string().required(t('fields.password.new.validation.required')),
-		repeatPassword: yup.string().required(t('fields.password.repeat.validation.required')),
+	validationSchema: yObject({
+		currentPassword: yString().required(t('fields.password.current.validation.required')),
+		newPassword: yString().required(t('fields.password.new.validation.required')),
+		repeatPassword: yString().required(t('fields.password.repeat.validation.required')),
 	}),
 });
 

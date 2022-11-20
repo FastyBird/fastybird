@@ -62,7 +62,7 @@
 import { watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useForm, useField } from 'vee-validate';
-import * as yup from 'yup';
+import { object as yObject, string as yString } from 'yup';
 import get from 'lodash/get';
 
 import { FbUiContent, FbFormInput, FbFormInputTypeTypes, FbSizeTypes, FbFormResultTypes } from '@fastybird/web-ui-library';
@@ -86,11 +86,11 @@ const { t } = useI18n();
 const flashMessage = useFlashMessage();
 
 const { validate } = useForm<ISignUpForm>({
-	validationSchema: yup.object({
-		emailAddress: yup.string().required(t('fields.emailAddress.validation.required')).email(t('fields.emailAddress.validation.email')),
-		firstName: yup.string().required(t('fields.firstName.validation.required')),
-		lastName: yup.string().required(t('fields.lastName.validation.required')),
-		password: yup.string().required(t('fields.password.new.validation.required')),
+	validationSchema: yObject({
+		emailAddress: yString().required(t('fields.emailAddress.validation.required')).email(t('fields.emailAddress.validation.email')),
+		firstName: yString().required(t('fields.firstName.validation.required')),
+		lastName: yString().required(t('fields.lastName.validation.required')),
+		password: yString().required(t('fields.password.new.validation.required')),
 	}),
 });
 

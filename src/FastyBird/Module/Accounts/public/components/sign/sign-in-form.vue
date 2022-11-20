@@ -35,7 +35,7 @@
 import { watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useForm, useField } from 'vee-validate';
-import * as yup from 'yup';
+import { object as yObject, string as yString, boolean as yBoolean } from 'yup';
 import get from 'lodash/get';
 
 import { FbUiContent, FbFormInput, FbFormCheckbox, FbFormInputTypeTypes, FbSizeTypes, FbFormResultTypes } from '@fastybird/web-ui-library';
@@ -62,10 +62,10 @@ const flashMessage = useFlashMessage();
 const sessionStore = useSession();
 
 const { validate } = useForm<ISignInForm>({
-	validationSchema: yup.object({
-		uid: yup.string().required(t('fields.identity.uid.validation.required')),
-		password: yup.string().required(t('fields.identity.password.validation.required')),
-		persistent: yup.boolean().default(false),
+	validationSchema: yObject({
+		uid: yString().required(t('fields.identity.uid.validation.required')),
+		password: yString().required(t('fields.identity.password.validation.required')),
+		persistent: yBoolean().default(false),
 	}),
 });
 

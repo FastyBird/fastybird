@@ -113,6 +113,7 @@
     "vite-plugin-dts": "^1.7",
     "vite-plugin-eslint": "^1.8",
     "vite-plugin-vue-type-imports": "^0.2.4",
+    "vite-svg-loader": "^3.6",
     "vue": "^3.2",
     "vue-i18n": "^9.2",
     "vue-loader": "^17.0",

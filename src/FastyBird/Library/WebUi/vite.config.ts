@@ -13,7 +13,6 @@ export default defineConfig({
 			outputDir: 'dist',
 			staticImport: true,
 			insertTypesEntry: true,
-			noEmitOnError: true,
 			skipDiagnostics: true,
 		}),
 	],

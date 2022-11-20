@@ -14,7 +14,7 @@
 import { watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useField, useForm } from 'vee-validate';
-import * as yup from 'yup';
+import { object as yObject, string as yString } from 'yup';
 import get from 'lodash/get';
 
 import { FbFormInput, FbFormResultTypes, FbSizeTypes, FbUiContent } from '@fastybird/web-ui-library';
@@ -41,8 +41,8 @@ const flashMessage = useFlashMessage();
 const accountStore = useAccount();
 
 const { validate } = useForm<IResetPasswordForm>({
-	validationSchema: yup.object({
-		uid: yup.string().required(t('fields.identity.uid.validation.required')),
+	validationSchema: yObject({
+		uid: yString().required(t('fields.identity.uid.validation.required')),
 	}),
 });
 

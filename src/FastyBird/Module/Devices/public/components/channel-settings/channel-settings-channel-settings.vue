@@ -151,7 +151,7 @@
 import { computed, onBeforeUnmount, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useField, useFieldError, useForm } from 'vee-validate';
-import * as yup from 'yup';
+import { object as yObject, string as yString, array as yArray } from 'yup';
 import get from 'lodash/get';
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -222,14 +222,14 @@ const newProperty = computed<IChannelProperty | null>((): IChannelProperty | nul
 );
 
 const { validate } = useForm<IChannelSettingsChannelSettingsForm>({
-	validationSchema: yup.object({
-		about: yup.object({
-			identifier: yup.string().required(t('fields.identifier.validation.required')),
-			name: yup.string().nullable().default(null),
-			comment: yup.string().nullable().default(null),
+	validationSchema: yObject({
+		about: yObject({
+			identifier: yString().required(t('fields.identifier.validation.required')),
+			name: yString().nullable().default(null),
+			comment: yString().nullable().default(null),
 		}),
-		properties: yup.object({
-			static: yup.array(yup.object({ id: yup.string().required(), value: yup.string().nullable().default(null) })),
+		properties: yObject({
+			static: yArray(yObject({ id: yString().required(), value: yString().nullable().default(null) })),
 		}),
 	}),
 	initialValues: {

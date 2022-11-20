@@ -126,7 +126,7 @@
 <script setup lang="ts">
 import { watch } from 'vue';
 import { useForm, useField } from 'vee-validate';
-import * as yup from 'yup';
+import { object as yObject, string as yString, number as yNumber } from 'yup';
 import { useI18n } from 'vue-i18n';
 import get from 'lodash/get';
 
@@ -261,16 +261,16 @@ interface ISettingsAccountForm {
 }
 
 const { validate } = useForm<ISettingsAccountForm>({
-	validationSchema: yup.object({
-		emailAddress: yup.string().required(t('fields.emailAddress.validation.required')).email(t('fields.emailAddress.validation.email')),
-		firstName: yup.string().required(t('fields.firstName.validation.required')),
-		lastName: yup.string().required(t('fields.lastName.validation.required')),
-		middleName: yup.string().notRequired(),
-		language: yup.string().required(),
-		weekStart: yup.number().required(),
-		timezone: yup.string().required(),
-		dateFormat: yup.string().required(),
-		timeFormat: yup.string().required(),
+	validationSchema: yObject({
+		emailAddress: yString().required(t('fields.emailAddress.validation.required')).email(t('fields.emailAddress.validation.email')),
+		firstName: yString().required(t('fields.firstName.validation.required')),
+		lastName: yString().required(t('fields.lastName.validation.required')),
+		middleName: yString().notRequired(),
+		language: yString().required(),
+		weekStart: yNumber().required(),
+		timezone: yString().required(),
+		dateFormat: yString().required(),
+		timeFormat: yString().required(),
 	}),
 	initialValues: {
 		emailAddress: props.account.email?.address ?? '@',

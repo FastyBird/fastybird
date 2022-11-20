@@ -100,7 +100,7 @@
 import { computed, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useField, useForm } from 'vee-validate';
-import * as yup from 'yup';
+import { object as yObject, string as yString, number as yNumber, boolean as yBoolean, mixed as yMixed } from 'yup';
 import get from 'lodash/get';
 
 import { FbFormInput, FbUiContent, FbFormSelect, FbFormCheckbox, FbSizeTypes, FbFormResultTypes, IFbFormSelectItem } from '@fastybird/web-ui-library';
@@ -142,16 +142,16 @@ const isDeviceProperty = computed<boolean>((): boolean => props.device !== undef
 const isChannelProperty = computed<boolean>((): boolean => props.device !== undefined && props.channel !== undefined);
 
 const { validate } = useForm<IPropertySettingsPropertyFormForm>({
-	validationSchema: yup.object({
-		identifier: yup.string().required(t('fields.identifier.validation.required')),
-		name: yup.string().nullable().default(null),
-		settable: yup.boolean().default(false),
-		queryable: yup.boolean().default(false),
-		dataType: yup.mixed().oneOf(Object.values(DataType)).default(DataType.UNKNOWN),
-		unit: yup.string().nullable().default(null),
-		invalid: yup.string().nullable().default(null),
-		numberOfDecimals: yup.number().nullable().default(null),
-		format: yup.string().nullable().default(null),
+	validationSchema: yObject({
+		identifier: yString().required(t('fields.identifier.validation.required')),
+		name: yString().nullable().default(null),
+		settable: yBoolean().default(false),
+		queryable: yBoolean().default(false),
+		dataType: yMixed().oneOf(Object.values(DataType)).default(DataType.UNKNOWN),
+		unit: yString().nullable().default(null),
+		invalid: yString().nullable().default(null),
+		numberOfDecimals: yNumber().nullable().default(null),
+		format: yString().nullable().default(null),
 	}),
 	initialValues: {
 		identifier: props.property.identifier,

@@ -5,6 +5,7 @@ import eslintPlugin from 'vite-plugin-eslint';
 import dts from 'vite-plugin-dts';
 import vueI18n from '@intlify/vite-plugin-vue-i18n';
 import vueTypeImports from 'vite-plugin-vue-type-imports';
+import svgLoader from 'vite-svg-loader';
 import del from 'rollup-plugin-delete';
 
 // https://vitejs.dev/config/
@@ -20,18 +21,14 @@ export default defineConfig({
 			outputDir: 'dist',
 			staticImport: true,
 			insertTypesEntry: true,
-			noEmitOnError: true,
 			skipDiagnostics: true,
 			aliasesExclude: [
 				'@fastybird/metadata-library',
 				'@fastybird/web-ui-library',
-				'@fastybird/ws-exchange-plugin',
 				'ajv',
 				'date-fns',
 				'jsona',
-				'lodash.capitalize',
 				'lodash.get',
-				'natural-orderby',
 				'uuid',
 				'yup',
 				'pinia',
@@ -43,6 +40,7 @@ export default defineConfig({
 				'vue-toastification',
 			],
 		}),
+		svgLoader(),
 	],
 	resolve: {
 		alias: {
@@ -71,6 +69,7 @@ export default defineConfig({
 						'dist/types',
 						'dist/views',
 						'dist/entry.ts',
+						'dist/configuration.ts',
 					],
 					hook: 'generateBundle',
 				}),
@@ -78,13 +77,10 @@ export default defineConfig({
 			external: [
 				'@fastybird/metadata-library',
 				'@fastybird/web-ui-library',
-				'@fastybird/ws-exchange-plugin',
 				'ajv',
 				'date-fns',
 				'jsona',
-				'lodash.capitalize',
 				'lodash.get',
-				'natural-orderby',
 				'uuid',
 				'yup',
 				'pinia',
@@ -100,24 +96,17 @@ export default defineConfig({
 				// Provide global variables to use in the UMD build
 				// for externalized deps
 				globals: {
-					'@fastybird/metadata-library': 'FastyBirdMetadataLibrary',
-					'@fastybird/web-ui-library': 'FastyBirdWebUiLibrary',
-					'@fastybird/ws-exchange-plugin': 'FastyBirdWsExchangePlugin',
+					'@fastybird/metadata-library': 'fastyBirdMetadataLibrary',
+					'@fastybird/web-ui-library': 'fastyBirdWebUiLibrary',
 					ajv: 'Ajv',
-					'date-fns': 'DateFns',
-					jsona: 'Jsona',
-					'lodash.capitalize': 'LodashCapitalize',
-					'lodash.get': 'LodashGet',
-					'natural-orderby': 'NaturalOrderby',
-					uuid: 'Uuid',
-					yup: 'Yup',
-					pinia: 'Pinia',
-					'vee-validate': 'VeeValidate',
-					vue: 'Vue',
-					'vue-i18n': 'VueI18n',
-					'vue-meta': 'VueMeta',
-					'vue-router': 'VueRouter',
-					'vue-toastification': 'VueToastification',
+					'date-fns': 'dateFns',
+					jsona: 'JsonaService',
+					pinia: 'pinia',
+					uuid: 'uuid',
+					'vee-validate': 'veeValidate',
+					vue: 'vue',
+					'vue-i18n': 'vueI18n',
+					'vue-toastification': 'vueToastification',
 				},
 				assetFileNames: (chunkInfo) => {
 					if (chunkInfo.name == 'style.css') return 'accounts-module.css';

@@ -20,7 +20,6 @@ export default defineConfig({
 			outputDir: 'dist',
 			staticImport: true,
 			insertTypesEntry: true,
-			noEmitOnError: true,
 			skipDiagnostics: true,
 			aliasesExclude: [
 				'@fastybird/metadata-library',
@@ -71,6 +70,7 @@ export default defineConfig({
 						'dist/types',
 						'dist/views',
 						'dist/entry.ts',
+						'dist/configuration.ts',
 					],
 					hook: 'generateBundle',
 				}),
