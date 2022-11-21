@@ -3,7 +3,7 @@ ARG TARGET_PHP_VERSION=8.1
 ARG TARGET_NODE_VERSION=16
 
 # Define NodeJS docker image
-FROM node:${TARGET_NODE_VERSION} AS builder
+FROM node:${TARGET_NODE_VERSION} AS ui-builder
 
 MAINTAINER Adam Kadlec <adam.kadlec@fastybird.com>
 
@@ -23,17 +23,16 @@ RUN apt-get update -yqq \
  wget \
 ;
 
-RUN git clone https://github.com/FastyBird/miniserver.git ${APP_CODE_PATH}
+RUN mkdir ${APP_CODE_PATH}
 
+ADD . ${APP_CODE_PATH}/
+
+# Build user interface
 RUN cd ${APP_CODE_PATH} \
- && git submodule init \
- && git submodule update
-
-# Install web app
-RUN cd ${APP_CODE_PATH}/web-ui \
  && yarn cache clean \
  && yarn install --network-timeout 1000000 \
- && yarn generate \
+ && yarn lerna link \
+ && yarn build \
 ;
 
 # Define PHP docker image
@@ -71,6 +70,7 @@ RUN apt-get update -yqq \
  bzip2 \
  zlib1g-dev \
  libicu-dev \
+ libgmp-dev \
  g++ \
 ;
 
@@ -79,9 +79,10 @@ RUN docker-php-ext-install \
  pdo \
  pdo_mysql \
  intl \
- ctype \
- json \
+ sockets \
+ pcntl \
  bcmath \
+ gmp \
 ;
 
 ###########################
@@ -99,13 +100,9 @@ COPY ./resources/supervisor/supervisor.conf /etc/supervisor/conf.d/supervisor.co
 
 RUN mkdir ${APP_CODE_PATH}
 
-ADD ./config ${APP_CODE_PATH}/config
-ADD ./resources ${APP_CODE_PATH}/resources
-ADD ./src ${APP_CODE_PATH}/src
-ADD ./var ${APP_CODE_PATH}/var
-COPY ./composer.json ${APP_CODE_PATH}/
+ADD . ${APP_CODE_PATH}/
 
-COPY --from=builder ${APP_CODE_PATH}/web-ui/dist ${APP_CODE_PATH}/public
+COPY --from=ui-builder ${APP_CODE_PATH}/src/FastyBird/Application/Interface/dist ${APP_CODE_PATH}/public
 
 # Install composer installer
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
@@ -113,7 +110,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 # Checkout & install server app
 RUN cd ${APP_CODE_PATH} \
  && composer clearcache \
- && composer install --no-dev \
+ && composer install \
 ;
 
 #####################################
