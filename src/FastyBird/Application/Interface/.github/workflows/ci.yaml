@@ -127,47 +127,10 @@ jobs:
       - name: "Check styles linter"
         run: "yarn lint:styles"
 
-  build-storybook:
-    name: "Test build Storybook"
-    runs-on: "${{ matrix.operating-system }}"
-
-    strategy:
-      matrix:
-        node-version: [ "16" ]
-        operating-system: [ "ubuntu-latest" ]
-      fail-fast: false
-
-    steps:
-      - name: "Checkout"
-        uses: "actions/checkout@v2"
-
-      - name: "Setup node"
-        uses: "actions/setup-node@v1"
-        with:
-          node-version: "${{ matrix.node-version }}"
-
-      - name: "Get Yarn cache directory"
-        id: "yarn-cache-dir-path"
-        run: 'echo "::set-output name=dir::$(yarn cache dir)"'
-
-      - name: "Cache JS dependencies"
-        uses: "actions/cache@v3"
-        with:
-          path: "${{ steps.yarn-cache-dir-path.outputs.dir }}"
-          key: "${{ runner.os }}-node-modules-${{ hashFiles('yarn.lock') }}"
-          restore-keys: "${{ runner.os }}-node-modules-"
-
-      - name: "Install dependencies"
-        if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: 'yarn install'
-
-      - name: "Test build"
-        run: 'yarn storybook:build'
-
   publish-npmjs:
     name: "Build library and publish it to NPM"
     runs-on: "${{ matrix.operating-system }}"
-    needs: [ "qa", "static-analysis", "lint", "build-storybook" ]
+    needs: [ "qa", "static-analysis", "lint" ]
 
     strategy:
       matrix:
@@ -255,53 +218,3 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm publish --access public
-
-  publish-storybook:
-    name: "Build Storybook and publish it to Github pages"
-    runs-on: "${{ matrix.operating-system }}"
-    needs: [ "qa", "static-analysis", "lint", "build-storybook" ]
-
-    strategy:
-      matrix:
-        node-version: [ "16" ]
-        operating-system: [ "ubuntu-latest" ]
-
-    if: github.event_name == 'push' && contains(github.ref, 'refs/heads/main')
-
-    steps:
-      - name: "Checkout"
-        uses: "actions/checkout@v2"
-        with:
-          persist-credentials: false
-
-      - name: "Setup node"
-        uses: "actions/setup-node@v1"
-        with:
-          node-version: "${{ matrix.node-version }}"
-
-      - name: "Get Yarn cache directory"
-        id: "yarn-cache-dir-path"
-        run: 'echo "::set-output name=dir::$(yarn cache dir)"'
-
-      - name: "Cache JS dependencies"
-        uses: "actions/cache@v3"
-        with:
-          path: "${{ steps.yarn-cache-dir-path.outputs.dir }}"
-          key: "${{ runner.os }}-node-modules-${{ hashFiles('yarn.lock') }}"
-          restore-keys: "${{ runner.os }}-node-modules-"
-
-      - name: "Install dependencies"
-        if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: 'yarn install'
-
-      - name: "Build"
-        run: yarn storybook:build
-
-      - name: "Deploy"
-        uses: "JamesIves/github-pages-deploy-action@3.6.2"
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: main
-          FOLDER: storybook-static
-          CLEAN: true
-          TARGET_FOLDER: docs
