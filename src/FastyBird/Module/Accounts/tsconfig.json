@@ -25,7 +25,6 @@
       "date-fns",
       "jsona",
       "node",
-      "natural-orderby",
       "pinia",
       "vee-validate",
       "vue",
