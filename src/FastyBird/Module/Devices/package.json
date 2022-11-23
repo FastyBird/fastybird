@@ -51,9 +51,9 @@
     "pretty:write": "prettier assets --write"
   },
   "dependencies": {
-    "@fastybird/metadata-library": "^1.0.0",
-    "@fastybird/web-ui-library": "^1.0.0",
-    "@fastybird/ws-exchange-plugin": "^1.0.0",
+    "@fastybird/metadata-library": "git@github.com:FastyBird/metadata-library.git",
+    "@fastybird/web-ui-library": "git@github.com:FastyBird/web-ui-library.git",
+    "@fastybird/ws-exchange-plugin": "git@github.com:FastyBird/ws-exchange-plugin.git",
     "ajv": "^8.11",
     "date-fns": "^2.29",
     "jsona": "^1.10",
