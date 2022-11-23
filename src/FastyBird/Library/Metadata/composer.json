@@ -1,16 +1,16 @@
 {
   "name": "fastybird/metadata-library",
-  "type": "library",
+  "type": "fastybird-library",
   "description": "FastyBird IoT metadata reader & validator",
   "keywords": [
     "fastybird",
     "fb",
-    "libs",
-    "library",
     "metadata",
-    "modules",
-    "plugins",
-    "connectors"
+    "typescript",
+    "json-schema",
+    "enums",
+    "constants",
+    "php"
   ],
   "homepage": "https://www.fastybird.com",
   "license": "Apache-2.0",

@@ -1,18 +1,23 @@
 {
   "name": "@fastybird/accounts-module",
-  "version": "1.0.0-dev.5",
+  "version": "1.0.0-dev.6",
   "type": "module",
   "description": "FastyBird IoT accounts module for application accounts & access management",
   "keywords": [
     "fastybird",
     "fb",
+    "api",
+    "php",
     "iot",
-    "users",
+    "security",
+    "vuejs",
+    "vue",
+    "nette",
     "accounts",
-    "profiles",
-    "service",
-    "authentication",
-    "authorization"
+    "roles",
+    "access",
+    "vue3",
+    "pinia"
   ],
   "homepage": "https://www.fastybird.com",
   "bugs": "https://github.com/FastyBird/fastybird/issues",
@@ -53,8 +58,8 @@
     "pretty:write": "prettier assets --write"
   },
   "dependencies": {
-    "@fastybird/metadata-library": "^1.0.0-dev.5",
-    "@fastybird/web-ui-library": "^1.0.0-dev.5",
+    "@fastybird/metadata-library": "^1.0.0-dev.6",
+    "@fastybird/web-ui-library": "^1.0.0-dev.6",
     "@fortawesome/vue-fontawesome": "^2.0",
     "@sentry/vue": "^7.19",
     "ajv": "^8.11",

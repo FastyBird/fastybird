@@ -1,18 +1,20 @@
 {
   "name": "fastybird/redisdb-plugin",
-  "type": "plugin",
+  "type": "fastybird-plugin",
   "description": "FastyBird IoT data storage & exchange plugin for Redis database",
   "keywords": [
     "fastybird",
     "fb",
-    "libs",
-    "library",
-    "storage",
+    "plugin",
+    "redis",
+    "php",
+    "iot",
     "state-management",
+    "nette",
+    "state",
+    "pubsub",
     "exchange",
-    "messages",
-    "queue",
-    "redis"
+    "redis-client"
   ],
   "homepage": "https://www.fastybird.com",
   "license": "Apache-2.0",

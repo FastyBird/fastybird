@@ -108,10 +108,7 @@ class Bootstrap
 			define('FB_APP_DIR', getenv('FB_APP_DIR'));
 
 		} elseif (!defined('FB_APP_DIR')) {
-			define(
-				'FB_APP_DIR',
-				realpath(__DIR__ . DS . '..' . DS . '..' . DS . '..' . DS . '..' . DS . '..' . DS . '..'),
-			);
+			define('FB_APP_DIR', realpath(__DIR__ . DS . '..' . DS . '..' . DS . '..' . DS . '..' . DS . '..'));
 		}
 
 		// Configuring resources dir path

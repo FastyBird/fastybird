@@ -1,15 +1,16 @@
 {
   "name": "fastybird/exchange-library",
-  "type": "library",
+  "type": "fastybird-library",
   "description": "FastyBird IoT application exchange services",
   "keywords": [
-    "fastybird",
+    "php",
+    "iot",
+    "events",
+    "interface",
+    "nette",
     "fb",
-    "libs",
-    "library",
     "exchange",
-    "bus",
-    "messages"
+    "fastybird"
   ],
   "homepage": "https://www.fastybird.com",
   "license": "Apache-2.0",

@@ -1,17 +1,22 @@
 {
   "name": "fastybird/accounts-module",
-  "type": "module",
+  "type": "fastybird-module",
   "description": "FastyBird IoT accounts module for application accounts & access management",
   "keywords": [
     "fastybird",
     "fb",
+    "api",
+    "php",
     "iot",
-    "users",
+    "security",
+    "vuejs",
+    "vue",
+    "nette",
     "accounts",
-    "profiles",
-    "service",
-    "authentication",
-    "authorization"
+    "roles",
+    "access",
+    "vue3",
+    "pinia"
   ],
   "homepage": "https://www.fastybird.com",
   "license": "Apache-2.0",

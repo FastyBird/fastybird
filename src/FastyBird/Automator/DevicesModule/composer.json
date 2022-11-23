@@ -1,6 +1,6 @@
 {
   "name": "fastybird/devices-module-automator",
-  "type": "automator",
+  "type": "fastybird-automator",
   "description": "FastyBird IoT automator for Devices module",
   "keywords": [
     "fastybird",

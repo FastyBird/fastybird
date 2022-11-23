@@ -1,15 +1,21 @@
 {
   "name": "fastybird/ws-exchange-plugin",
-  "type": "plugin",
+  "type": "fastybird-plugin",
   "description": "FastyBird IoT WS WAMP client & server plugin for handling UI communication",
   "keywords": [
     "fastybird",
     "fb",
-    "libs",
-    "library",
+    "plugin",
     "ws",
     "wamp",
-    "realtime"
+    "wamp-server",
+    "ipublikuj",
+    "wamp-client",
+    "nette",
+    "vue",
+    "vue3",
+    "vuejs",
+    "php"
   ],
   "homepage": "https://www.fastybird.com",
   "license": "Apache-2.0",

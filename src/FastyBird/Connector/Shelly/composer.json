@@ -1,13 +1,18 @@
 {
   "name": "fastybird/shelly-connector",
-  "type": "connector",
+  "type": "fastybird-connector",
   "description": "FastyBird IoT connector for Shelly devices",
   "keywords": [
-    "fastybird",
-    "fb",
+    "php",
+    "http",
     "iot",
+    "coap",
+    "connector",
+    "nette",
+    "fb",
+    "mdns",
     "shelly",
-    "connector"
+    "fastybird"
   ],
   "homepage": "https://www.fastybird.com",
   "license": "Apache-2.0",

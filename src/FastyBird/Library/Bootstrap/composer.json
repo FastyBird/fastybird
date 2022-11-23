@@ -1,13 +1,14 @@
 {
   "name": "fastybird/bootstrap-library",
-  "type": "library",
+  "type": "fastybird-library",
   "description": "FastyBird IoT application bootstrap",
   "keywords": [
-    "fastybird",
+    "bootstrap",
+    "php",
+    "nette",
+    "configuration",
     "fb",
-    "libs",
-    "library",
-    "bootstrap"
+    "fastybird"
   ],
   "homepage": "https://www.fastybird.com",
   "license": "Apache-2.0",
@@ -40,7 +41,6 @@
     "symfony/monolog-bridge": "^6.1",
     "vlucas/phpdotenv": "^5.4"
   },
-
   "require-dev": {
     "brianium/paratest": "^6.6",
     "dg/bypass-finals": "^1.4",

@@ -1,6 +1,6 @@
 {
   "name": "fastybird/date-time-automator",
-  "type": "automator",
+  "type": "fastybird-automator",
   "description": "FastyBird IoT automator for date&time",
   "keywords": [
     "fastybird",

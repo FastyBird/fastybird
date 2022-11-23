@@ -1,6 +1,6 @@
 {
   "name": "fastybird/redisdb-devices-module-bridge",
-  "type": "bridge",
+  "type": "fastybird-bridge",
   "description": "FastyBird IoT Redis DB bridge for Devices module",
   "keywords": [
     "fastybird",
