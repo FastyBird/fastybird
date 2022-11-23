@@ -1,6 +1,6 @@
 {
   "name": "@fastybird/accounts-module",
-  "version": "1.0.0-dev.3",
+  "version": "1.0.0-dev.4",
   "type": "module",
   "description": "FastyBird IoT accounts module for application accounts & access management",
   "keywords": [
@@ -53,8 +53,8 @@
     "pretty:write": "prettier assets --write"
   },
   "dependencies": {
-    "@fastybird/metadata-library": "^1.0.0-dev.3",
-    "@fastybird/web-ui-library": "^1.0.0-dev.3",
+    "@fastybird/metadata-library": "^1.0.0-dev.4",
+    "@fastybird/web-ui-library": "^1.0.0-dev.4",
     "@fortawesome/vue-fontawesome": "^2.0",
     "@sentry/vue": "^7.19",
     "ajv": "^8.11",

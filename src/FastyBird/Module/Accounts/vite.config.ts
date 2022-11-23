@@ -77,6 +77,7 @@ export default defineConfig({
 			external: [
 				'@fastybird/metadata-library',
 				'@fastybird/web-ui-library',
+				'@fortawesome/vue-fontawesome',
 				'ajv',
 				'date-fns',
 				'jsona',
