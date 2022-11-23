@@ -5,11 +5,17 @@
   "keywords": [
     "fastybird",
     "fb",
-    "libs",
-    "library",
+    "plugin",
     "ws",
     "wamp",
-    "realtime"
+    "wamp-server",
+    "ipublikuj",
+    "wamp-client",
+    "nette",
+    "vue",
+    "vue3",
+    "vuejs",
+    "php"
   ],
   "homepage": "https://www.fastybird.com",
   "license": "Apache-2.0",

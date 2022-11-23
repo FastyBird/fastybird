@@ -3,11 +3,15 @@
   "type": "connector",
   "description": "FastyBird IoT connector for Tuya devices",
   "keywords": [
-    "fastybird",
-    "fb",
+    "php",
     "iot",
+    "connector",
+    "nette",
+    "fb",
     "tuya",
-    "connector"
+    "tuya-cloud",
+    "fastybird",
+    "tuya-local"
   ],
   "homepage": "https://www.fastybird.com",
   "license": "Apache-2.0",

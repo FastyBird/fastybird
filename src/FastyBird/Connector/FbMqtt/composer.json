@@ -3,11 +3,14 @@
   "type": "connector",
   "description": "FastyBird IoT connector for FB MQTT devices",
   "keywords": [
-    "fastybird",
-    "fb",
-    "iot",
+    "php",
     "mqtt",
-    "connector"
+    "iot",
+    "connector",
+    "nette",
+    "fb",
+    "mqtt-client",
+    "fastybird"
   ],
   "homepage": "https://www.fastybird.com",
   "license": "Apache-2.0",

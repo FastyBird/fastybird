@@ -5,11 +5,17 @@
   "keywords": [
     "fastybird",
     "fb",
+    "api",
+    "php",
     "iot",
-    "triggers",
     "automation",
-    "controlling",
-    "service"
+    "vuejs",
+    "typescript",
+    "vue",
+    "nette",
+    "scenes triggers",
+    "vue3",
+    "pinia"
   ],
   "homepage": "https://www.fastybird.com",
   "license": "Apache-2.0",
