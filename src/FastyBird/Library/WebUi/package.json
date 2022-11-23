@@ -1,6 +1,6 @@
 {
   "name": "@fastybird/web-ui-library",
-  "version": "1.0.0-dev.1",
+  "version": "1.0.0-dev.2",
   "type": "module",
   "description": "FastyBird IoT application theme & Vue components",
   "keywords": [
