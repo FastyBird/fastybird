@@ -545,7 +545,7 @@ jobs:
         node-version: [ "16" ]
         operating-system: [ "ubuntu-latest" ]
 
-    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+    if: github.event_name == 'push'
 
     steps:
       - name: "Checkout"
