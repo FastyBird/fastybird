@@ -516,7 +516,7 @@ jobs:
   publish-npmjs:
     name: "Publish code distribution to NPM"
     runs-on: "${{ matrix.operating-system }}"
-    needs: "build"
+    needs: [ "build" ]
 
     strategy:
       matrix:
@@ -544,6 +544,7 @@ jobs:
           git config --global user.email "code@fastybird.com"
 
       - name: "Upgrade npm version in package.json to the tag used in the release"
+        if: contains(github.ref, 'refs/tags/')
         run: npm version ${{ steps.get_version.outputs.version-without-v }} --allow-same-version
 
       - name: "Download build result"
@@ -567,7 +568,7 @@ jobs:
   publish-github:
     name: "Publish code distribution to Github packages"
     runs-on: "${{ matrix.operating-system }}"
-    needs: [ "publish-npmjs" ]
+    needs: [ "build" ]
 
     strategy:
       matrix:
@@ -595,6 +596,7 @@ jobs:
           git config --global user.email "code@fastybird.com"
 
       - name: "Upgrade npm version in package.json to the tag used in the release"
+        if: contains(github.ref, 'refs/tags/')
         run: npm version ${{ steps.get_version.outputs.version-without-v }} --allow-same-version
 
       - name: "Download build result"
