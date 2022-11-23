@@ -32,6 +32,7 @@ use function is_array;
 use function is_dir;
 use function is_numeric;
 use function mkdir;
+use function realpath;
 use function sprintf;
 use function strlen;
 use function strpos;
@@ -66,6 +67,7 @@ class Bootstrap
 			'tempDir' => FB_TEMP_DIR,
 			'logsDir' => FB_LOGS_DIR,
 			'appDir' => FB_APP_DIR,
+			'wwwDir' => FB_WWW_DIR,
 		]);
 
 		// Load parameters from environment
@@ -106,7 +108,21 @@ class Bootstrap
 			define('FB_APP_DIR', getenv('FB_APP_DIR'));
 
 		} elseif (!defined('FB_APP_DIR')) {
-			define('FB_APP_DIR', __DIR__ . DS . '..' . DS . '..' . DS . '..' . DS . '..' . DS . '..');
+			define(
+				'FB_APP_DIR',
+				realpath(__DIR__ . DS . '..' . DS . '..' . DS . '..' . DS . '..' . DS . '..' . DS . '..'),
+			);
+		}
+
+		// Configuring resources dir path
+		if (isset($_ENV['FB_WWW_DIR']) && !defined('FB_WWW_DIR')) {
+			define('FB_WWW_DIR', $_ENV['FB_WWW_DIR']);
+
+		} elseif (getenv('FB_WWW_DIR') !== false && !defined('FB_WWW_DIR')) {
+			define('FB_WWW_DIR', getenv('FB_WWW_DIR'));
+
+		} elseif (!defined('FB_WWW_DIR')) {
+			define('FB_WWW_DIR', FB_APP_DIR . DS . 'www');
 		}
 
 		// Configuring resources dir path

@@ -41,7 +41,7 @@ composer require fastybird/redisdb-ws-exchange-bridge
 ## Documentation
 
 Learn how to build bridge between Redis DB and WS exchange
-in [documentation](https://github.com/FastyBird/redisdb-ws-exchange-bridge/blob/master/.docs/en/index.md).
+in [documentation](https://github.com/FastyBird/redisdb-ws-exchange-bridge/blob/master/docs/index.md).
 
 ## Feedback
 

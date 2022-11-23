@@ -10,6 +10,7 @@ $autoload = null;
 $autoloadFiles = [
 	__DIR__ . DS . '..' . DS . 'vendor' . DS . 'autoload.php',
 	__DIR__ . DS . '..' . DS . '..' . DS . '..' . DS . 'autoload.php',
+	__DIR__ . DS . '..' . DS . '..' . DS . '..' . DS . '..' . DS . '..' . DS . 'vendor' . DS . 'autoload.php',
 ];
 
 foreach ($autoloadFiles as $autoloadFile) {

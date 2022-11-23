@@ -62,7 +62,7 @@ npm install @fastybird/accounts-module
 ## Documentation
 
 Learn how to manage application accounts and manage access
-in [documentation](https://github.com/FastyBird/accounts-module/blob/main/.docs/en/index.md).
+in [documentation](https://github.com/FastyBird/accounts-module/blob/main/docs/index.md).
 
 ## Feedback
 

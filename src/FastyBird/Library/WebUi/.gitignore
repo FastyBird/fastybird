@@ -1,12 +1,10 @@
+/dist
+/node_modules
+/storybook-static
 .DS_Store
-node_modules
-dist
-storybook-static
+composer.lock
 yarn.lock
-
-# local env files
-.env.local
-.env.*.local
+tsconfig.tsbuildinfo
 
 # Log files
 npm-debug.log*
@@ -23,9 +21,3 @@ pnpm-error.log*
 *.njsproj
 *.sln
 *.sw?
-
-.rts2_cache_cjs
-.rts2_cache_es
-.rts2_cache_umd
-
-tsconfig.tsbuildinfo

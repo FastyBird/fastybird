@@ -37,7 +37,7 @@
   },
   "files": [
     "dist/*",
-    "public/components/**/*.scss"
+    "assets/components/**/*.scss"
   ],
   "scripts": {
     "dev": "vite",
@@ -45,12 +45,12 @@
     "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
     "build": "yarn clean && vue-tsc --noEmit && vite build",
     "types": "vue-tsc --noEmit",
-    "lint:js": "eslint --ext .js,.ts,.vue --ignore-path .gitignore public",
-    "lint:js:fix": "eslint --ext .js,.ts,.vue --ignore-path .gitignore public --fix",
-    "lint:styles": "stylelint 'public/**/*.scss'",
+    "lint:js": "eslint --ext .js,.ts,.vue --ignore-path .gitignore assets",
+    "lint:js:fix": "eslint --ext .js,.ts,.vue --ignore-path .gitignore assets --fix",
+    "lint:styles": "stylelint 'assets/**/*.scss'",
     "pretty": "yarn pretty:write && yarn pretty:check",
-    "pretty:check": "prettier public --check",
-    "pretty:write": "prettier public --write"
+    "pretty:check": "prettier assets --check",
+    "pretty:write": "prettier assets --write"
   },
   "dependencies": {
     "@fastybird/metadata-library": "^1.0.0",
@@ -113,6 +113,7 @@
     "vite-plugin-dts": "^1.7",
     "vite-plugin-eslint": "^1.8",
     "vite-plugin-vue-type-imports": "^0.2.4",
+    "vite-svg-loader": "^3.6",
     "vue": "^3.2",
     "vue-i18n": "^9.2",
     "vue-loader": "^17.0",

@@ -67,7 +67,7 @@ npm install @fastybird/devices-module
 ## Documentation
 
 Learn how to configure and use devices module and manage your connectors & devices
-in [documentation](https://github.com/FastyBird/devices-module/blob/main/.docs/en/index.md).
+in [documentation](https://github.com/FastyBird/devices-module/blob/main/docs/index.md).
 
 ## Feedback
 

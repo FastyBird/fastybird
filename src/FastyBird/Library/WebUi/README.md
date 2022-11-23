@@ -1,9 +1,12 @@
 # FastyBird Web UI library
 
-[![Latest stable](https://badgen.net/npm/v/@fastybird/web-ui-library?cache=300&style=flast-square)](https://www.npmjs.com/package/@fastybird/web-ui-library)
-[![Downloads total](https://badgen.net/npm/dt/@fastybird/web-ui-library?cache=300&style=flast-square)](https://www.npmjs.com/package/@fastybird/web-ui-library)
-[![Licence](https://badgen.net/npm/license/@fastybird/web-ui-library?cache=300&style=flast-square)](https://github.com/FastyBird/web-ui-library/blob/master/LICENSE.md)
-![Types](https://badgen.net/npm/types/@fastybird/web-ui-library?cache=300&style=flast-square)
+[![Build Status](https://badgen.net/github/checks/FastyBird/web-ui-library/main?cache=300&style=flat-square)](https://github.com/FastyBird/web-ui-library/actions)
+[![Licence](https://badgen.net/github/license/FastyBird/web-ui-library?cache=300&style=flat-square)](https://github.com/FastyBird/web-ui-library/blob/main/LICENSE.md)
+
+![JS](https://img.shields.io/badge/js-es6-blue.svg?style=flat-square)
+[![JS latest stable](https://badgen.net/npm/v/@fastybird/web-ui-library?cache=300&style=flat-square)](https://www.npmjs.com/package/@fastybird/web-ui-library)
+[![JS downloads total](https://badgen.net/npm/dt/@fastybird/web-ui-library?cache=300&style=flat-square)](https://www.npmjs.com/package/@fastybird/web-ui-library)
+![Types](https://badgen.net/npm/types/@fastybird/web-ui-library?cache=300&style=flat-square)
 
 ## What is FastyBird Web UI library?
 
@@ -41,10 +44,14 @@ npm install @fastybird/web-ui-library
 Register Vue plugin:
 
 ```js
-import Vue from 'vue'
-import FastyBirdWebUI from '@fastybird/web-ui-library'
+import { createApp } from 'vue';
+import { createWebUiTheme } from '@fastybird/web-ui-library'
 
-Vue.use(FastyBirdWebUI)
+import App from '@/App.vue';
+
+const app = createApp(App);
+
+app.use(createWebUiTheme());
 ```
 
 ## Usage

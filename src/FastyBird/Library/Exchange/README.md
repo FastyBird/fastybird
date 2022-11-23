@@ -34,7 +34,7 @@ composer require fastybird/exchange-library
 ## Documentation
 
 Learn how to consume & publish messages
-in [documentation](https://github.com/FastyBird/exchange-library/blob/main/.docs/en/index.md).
+in [documentation](https://github.com/FastyBird/exchange-library/blob/main/docs/index.md).
 
 ## Feedback
 

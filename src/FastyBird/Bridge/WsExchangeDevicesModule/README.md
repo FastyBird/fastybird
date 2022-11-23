@@ -40,7 +40,7 @@ composer require fastybird/ws-exchange-devices-module-bridge
 ## Documentation
 
 Learn how to build bridge between Devices module and WS exchange plugin
-in [documentation](https://github.com/FastyBird/ws-exchange-devices-module-birdge/blob/master/.docs/en/index.md).
+in [documentation](https://github.com/FastyBird/ws-exchange-devices-module-birdge/blob/master/docs/index.md).
 
 ## Feedback
 

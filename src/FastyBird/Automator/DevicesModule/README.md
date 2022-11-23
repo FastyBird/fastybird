@@ -49,7 +49,7 @@ application under marketplace section.
 ## Documentation
 
 Learn how to manage automation for devices connected with [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) system
-in [documentation](https://github.com/FastyBird/devices-module-automator/blob/master/.docs/en/index.md).
+in [documentation](https://github.com/FastyBird/devices-module-automator/blob/master/docs/index.md).
 
 ## Feedback
 

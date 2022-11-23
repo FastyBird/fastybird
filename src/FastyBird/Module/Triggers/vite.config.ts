@@ -20,7 +20,6 @@ export default defineConfig({
 			outputDir: 'dist',
 			staticImport: true,
 			insertTypesEntry: true,
-			noEmitOnError: true,
 			skipDiagnostics: true,
 			aliasesExclude: [
 				'@fastybird/metadata-library',
@@ -47,12 +46,12 @@ export default defineConfig({
 	resolve: {
 		alias: {
 			'@fastybird': resolve(__dirname, './node_modules/@fastybird'),
-			'@': resolve(__dirname, './public'),
+			'@': resolve(__dirname, './assets'),
 		},
 	},
 	build: {
 		lib: {
-			entry: resolve(__dirname, './public/entry.ts'),
+			entry: resolve(__dirname, './assets/entry.ts'),
 			name: 'devices-module',
 			fileName: (format) => `devices-module.${format}.js`,
 		},
@@ -71,6 +70,7 @@ export default defineConfig({
 						'dist/types',
 						'dist/views',
 						'dist/entry.ts',
+						'dist/configuration.ts',
 					],
 					hook: 'generateBundle',
 				}),

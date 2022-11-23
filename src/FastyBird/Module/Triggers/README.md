@@ -63,7 +63,7 @@ npm install @fastybird/triggers-module
 ## Documentation
 
 Learn how to configure and use triggers module and manage your automation & notifications
-in [documentation](https://github.com/FastyBird/triggers-module/blob/main/.docs/en/index.md).
+in [documentation](https://github.com/FastyBird/triggers-module/blob/main/docs/index.md).
 
 ## Feedback
 

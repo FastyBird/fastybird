@@ -41,7 +41,7 @@ composer require fastybird/redisdb-devices-module-bridge
 ## Documentation
 
 Learn how to build bridge between Redis DB and Devices module
-in [documentation](https://github.com/FastyBird/redisdb-devices-module-bridge/blob/master/.docs/en/index.md).
+in [documentation](https://github.com/FastyBird/redisdb-devices-module-bridge/blob/master/docs/index.md).
 
 ## Feedback
 

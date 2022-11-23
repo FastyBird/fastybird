@@ -1,3 +1,4 @@
-current node
-last 2 versions and > 2%
-ie > 10
+chrome >= 84
+edge >= 84
+firefox >= 78
+safari >= 13.1

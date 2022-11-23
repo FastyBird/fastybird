@@ -104,6 +104,8 @@
     </rule>
 
     <!--Exclude folders -->
+    <exclude-pattern>/node_modules/*</exclude-pattern>
+    <exclude-pattern>/vendor/*</exclude-pattern>
     <exclude-pattern>/tools</exclude-pattern>
     <exclude-pattern>/tests/stubs/*</exclude-pattern>
 

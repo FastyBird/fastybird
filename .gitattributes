@@ -3,9 +3,7 @@
 /.github export-ignore
 /tools export-ignore
 .editorconfig export-ignore
-.eslintrc export-ignore
 .gitattributes export-ignore
 .gitignore export-ignore
-.npmignore export-ignore
-babel.config.js export-ignore
 Makefile export-ignore
+monorepo-builder export-ignore
