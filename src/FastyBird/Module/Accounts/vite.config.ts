@@ -25,6 +25,7 @@ export default defineConfig({
 			aliasesExclude: [
 				'@fastybird/metadata-library',
 				'@fastybird/web-ui-library',
+				'@fortawesome/vue-fontawesome',
 				'ajv',
 				'date-fns',
 				'jsona',
