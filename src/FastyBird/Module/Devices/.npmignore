@@ -5,7 +5,3 @@ src
 .gitignore
 .npmignore export-ignore
 Makefile export-ignore
-phpcs.xml export-ignore
-phpstan.neon export-ignore
-tsconfig.json
-yarn.lock

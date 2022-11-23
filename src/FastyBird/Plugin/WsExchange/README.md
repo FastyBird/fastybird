@@ -50,7 +50,7 @@ npm install @fastybird/ws-exchange-plugin
 
 ## Documentation
 
-Learn how to connect, consume & call RPC messages in [documentation](https://github.com/FastyBird/ws-exchange-plugin/blob/main/.docs/en/index.md).
+Learn how to connect, consume & call RPC messages in [documentation](https://github.com/FastyBird/ws-exchange-plugin/blob/main/docs/index.md).
 
 ## Feedback
 

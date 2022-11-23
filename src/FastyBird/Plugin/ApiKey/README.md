@@ -37,7 +37,7 @@ composer require fastybird/apikey-plugin
 ## Documentation
 
 Learn how to create, manage and use api keys
-in [documentation](https://github.com/FastyBird/apikey-plugin/blob/main/.docs/en/index.md).
+in [documentation](https://github.com/FastyBird/apikey-plugin/blob/main/docs/index.md).
 
 ## Feedback
 

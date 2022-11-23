@@ -38,7 +38,7 @@ composer require fastybird/web-server-plugin
 ## Documentation
 
 Learn how to build and handle http api requests
-in [documentation](https://github.com/FastyBird/web-server-plugin/blob/main/.docs/en/index.md).
+in [documentation](https://github.com/FastyBird/web-server-plugin/blob/main/docs/index.md).
 
 ## Feedback
 

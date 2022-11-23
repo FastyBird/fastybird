@@ -30,7 +30,7 @@ composer require fastybird/bootstrap-library
 ## Documentation
 
 Learn how to bootstrap FastyBird application
-in [documentation](https://github.com/FastyBird/bootstrap-library/blob/main/.docs/en/index.md).
+in [documentation](https://github.com/FastyBird/bootstrap-library/blob/main/docs/index.md).
 
 ## Feedback
 

@@ -41,7 +41,7 @@ composer require fastybird/redisdb-triggers-module-bridge
 ## Documentation
 
 Learn how to build bridge between Redis DB and Triggers module
-in [documentation](https://github.com/FastyBird/redisdb-triggers-module-bridge/blob/master/.docs/en/index.md).
+in [documentation](https://github.com/FastyBird/redisdb-triggers-module-bridge/blob/master/docs/index.md).
 
 ## Feedback
 

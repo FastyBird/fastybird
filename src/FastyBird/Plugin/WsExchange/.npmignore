@@ -5,4 +5,3 @@ src
 .gitignore
 .npmignore export-ignore
 Makefile export-ignore
-tsconfig.json

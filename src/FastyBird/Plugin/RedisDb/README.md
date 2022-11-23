@@ -39,7 +39,7 @@ composer require fastybird/redisdb-plugin
 ## Documentation
 
 Learn how to read & write states and consume & publish messages
-in [documentation](https://github.com/FastyBird/redisdb-plugin/blob/main/.docs/en/index.md).
+in [documentation](https://github.com/FastyBird/redisdb-plugin/blob/main/docs/index.md).
 
 ## Feedback
 

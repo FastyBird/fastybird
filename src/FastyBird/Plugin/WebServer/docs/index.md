@@ -118,7 +118,7 @@ decorator:
 ```
 
 For more info how to write routes and controllers please
-visit: [ipub/slim-router](https://github.com/iPublikuj/slim-router/blob/main/docs/en/index.md) package documentation
+visit: [ipub/slim-router](https://github.com/iPublikuj/slim-router/blob/main/docs/index.md) package documentation
 
 ## Custom middleware
 
@@ -205,7 +205,7 @@ class Routes
 ```
 
 For more info how to write middleware please
-visit: [ipub/slim-router](https://github.com/iPublikuj/slim-router/blob/main/docs/en/index.md) package documentation
+visit: [ipub/slim-router](https://github.com/iPublikuj/slim-router/blob/main/docs/index.md) package documentation
 
 ## Running server
 
