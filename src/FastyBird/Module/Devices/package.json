@@ -1,6 +1,6 @@
 {
   "name": "@fastybird/devices-module",
-  "version": "1.0.0-dev.4",
+  "version": "1.0.0-dev.5",
   "type": "module",
   "description": "FastyBird IoT devices module for connectors & devices management & basic control logic",
   "keywords": [
@@ -51,9 +51,9 @@
     "pretty:write": "prettier assets --write"
   },
   "dependencies": {
-    "@fastybird/metadata-library": "^1.0.0-dev.4",
-    "@fastybird/web-ui-library": "^1.0.0-dev.4",
-    "@fastybird/ws-exchange-plugin": "^1.0.0-dev.4",
+    "@fastybird/metadata-library": "^1.0.0-dev.5",
+    "@fastybird/web-ui-library": "^1.0.0-dev.5",
+    "@fastybird/ws-exchange-plugin": "^1.0.0-dev.5",
     "@fortawesome/vue-fontawesome": "^3.0",
     "ajv": "^8.11",
     "axios": "^1.2",

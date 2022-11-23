@@ -82,6 +82,7 @@ export default defineConfig({
 				'@fastybird/metadata-library',
 				'@fastybird/web-ui-library',
 				'@fastybird/ws-exchange-plugin',
+				'@fortawesome/vue-fontawesome',
 				'ajv',
 				'date-fns',
 				'jsona',
