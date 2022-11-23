@@ -52,14 +52,6 @@
     "assets/**/*.d.ts",
     "assets/**/*.vue"
   ],
-  "references": [
-    {
-      "path": "../../Library/Metadata"
-    },
-    {
-      "path": "../../Library/WebUi"
-    }
-  ],
   "exclude": [
     "src/**/*.stories.ts",
     "src/**/stories.ts",
