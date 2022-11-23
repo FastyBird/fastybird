@@ -220,7 +220,7 @@ jobs:
   publish-github:
     name: "Build library and publish it to Github packages"
     runs-on: "${{ matrix.operating-system }}"
-    needs: [ "publish-npmjs" ]
+    needs: [ "qa", "static-analysis", "lint", "build-storybook" ]
 
     strategy:
       matrix:
