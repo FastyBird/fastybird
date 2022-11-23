@@ -559,7 +559,7 @@ jobs:
         run: "npm publish --access public"
 
       - name: "Publish to NPM"
-        if: !contains(github.ref, 'refs/tags/')
+        if: contains(github.ref, 'refs/tags/') === false
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPMJS_TOKEN }}
         run: "npm publish --access public --tag dev"
@@ -610,7 +610,7 @@ jobs:
         run: "npm publish --access public"
 
       - name: "Publish to NPM"
-        if: !contains(github.ref, 'refs/tags/')
+        if: contains(github.ref, 'refs/tags/') === false
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: "npm publish --access public --tag dev"
