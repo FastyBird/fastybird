@@ -522,7 +522,7 @@ jobs:
       matrix:
         operating-system: [ "ubuntu-latest" ]
 
-    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+    if: github.event_name == 'push'
 
     steps:
       - name: "Checkout"
@@ -553,9 +553,16 @@ jobs:
           path: dist
 
       - name: "Publish to NPM"
+        if: contains(github.ref, 'refs/tags/')
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPMJS_TOKEN }}
         run: "npm publish --access public"
+
+      - name: "Publish to NPM"
+        if: !contains(github.ref, 'refs/tags/')
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPMJS_TOKEN }}
+        run: "npm publish --access public --tag dev"
 
   publish-github:
     name: "Publish code distribution to Github packages"
@@ -566,7 +573,7 @@ jobs:
       matrix:
         operating-system: [ "ubuntu-latest" ]
 
-    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+    if: github.event_name == 'push'
 
     steps:
       - name: "Checkout"
@@ -597,6 +604,13 @@ jobs:
           path: dist
 
       - name: "Publish to NPM"
+        if: contains(github.ref, 'refs/tags/')
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: "npm publish --access public"
+
+      - name: "Publish to NPM"
+        if: !contains(github.ref, 'refs/tags/')
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: "npm publish --access public --tag dev"

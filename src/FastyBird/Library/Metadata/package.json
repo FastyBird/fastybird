@@ -1,6 +1,6 @@
 {
   "name": "@fastybird/metadata-library",
-  "version": "1.0.0",
+  "version": "1.0.0-dev.0",
   "description": "FastyBird IoT metadata reader & validator",
   "keywords": [
     "fastybird",
