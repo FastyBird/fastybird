@@ -1,6 +1,6 @@
 {
   "name": "fastybird/fb-mqtt-connector",
-  "type": "connector",
+  "type": "fastybird-connector",
   "description": "FastyBird IoT connector for FB MQTT devices",
   "keywords": [
     "php",

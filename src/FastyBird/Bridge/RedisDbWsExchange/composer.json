@@ -1,6 +1,6 @@
 {
   "name": "fastybird/redisdb-ws-exchange-bridge",
-  "type": "bridge",
+  "type": "fastybird-bridge",
   "description": "FastyBird IoT Redis DB bridge for WS exchange plugin",
   "keywords": [
     "fastybird",

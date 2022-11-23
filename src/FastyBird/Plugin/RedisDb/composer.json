@@ -1,6 +1,6 @@
 {
   "name": "fastybird/redisdb-plugin",
-  "type": "plugin",
+  "type": "fastybird-plugin",
   "description": "FastyBird IoT data storage & exchange plugin for Redis database",
   "keywords": [
     "fastybird",

@@ -1,6 +1,6 @@
 {
   "name": "fastybird/apikey-plugin",
-  "type": "plugin",
+  "type": "fastybird-plugin",
   "description": "FastyBird IoT api keys management plugin",
   "keywords": [
     "fastybird",

@@ -1,6 +1,6 @@
 {
   "name": "fastybird/exchange-library",
-  "type": "library",
+  "type": "fastybird-library",
   "description": "FastyBird IoT application exchange services",
   "keywords": [
     "php",

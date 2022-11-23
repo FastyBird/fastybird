@@ -1,6 +1,6 @@
 {
   "name": "fastybird/ws-exchange-devices-module-bridge",
-  "type": "bridge",
+  "type": "fastybird-bridge",
   "description": "FastyBird IoT WS exchange bridge for Devices module",
   "keywords": [
     "fastybird",

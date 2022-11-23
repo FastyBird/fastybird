@@ -1,6 +1,6 @@
 {
   "name": "fastybird/bootstrap-library",
-  "type": "library",
+  "type": "fastybird-library",
   "description": "FastyBird IoT application bootstrap",
   "keywords": [
     "bootstrap",

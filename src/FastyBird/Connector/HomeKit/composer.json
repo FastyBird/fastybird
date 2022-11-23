@@ -1,6 +1,6 @@
 {
   "name": "fastybird/homekit-connector",
-  "type": "connector",
+  "type": "fastybird-connector",
   "description": "FastyBird IoT connector for HomeKit Accessory Protocol",
   "keywords": [
     "php",

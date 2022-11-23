@@ -1,6 +1,6 @@
 {
   "name": "fastybird/shelly-connector",
-  "type": "connector",
+  "type": "fastybird-connector",
   "description": "FastyBird IoT connector for Shelly devices",
   "keywords": [
     "php",

@@ -1,6 +1,6 @@
 {
   "name": "fastybird/triggers-module",
-  "type": "module",
+  "type": "fastybird-module",
   "description": "FastyBird IoT module for triggers management & basic automation logic",
   "keywords": [
     "fastybird",

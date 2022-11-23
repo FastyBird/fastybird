@@ -1,6 +1,6 @@
 {
   "name": "fastybird/tuya-connector",
-  "type": "connector",
+  "type": "fastybird-connector",
   "description": "FastyBird IoT connector for Tuya devices",
   "keywords": [
     "php",
