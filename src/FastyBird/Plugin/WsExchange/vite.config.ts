@@ -19,12 +19,12 @@ export default defineConfig({
 	],
 	resolve: {
 		alias: {
-			'@': resolve(__dirname, './public'),
+			'@': resolve(__dirname, './assets'),
 		},
 	},
 	build: {
 		lib: {
-			entry: resolve(__dirname, './public/entry.ts'),
+			entry: resolve(__dirname, './assets/entry.ts'),
 			name: 'ws-exchange-plugin',
 			fileName: (format) => `ws-exchange-plugin.${format}.js`,
 		},

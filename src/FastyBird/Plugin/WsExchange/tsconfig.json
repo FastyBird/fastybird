@@ -13,7 +13,7 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
-    "baseUrl": "public",
+    "baseUrl": "assets",
     "types": [
       "node",
       "vue"
@@ -31,8 +31,8 @@
     ]
   },
   "include": [
-    "public/**/*.ts",
-    "public/**/*.d.ts"
+    "assets/**/*.ts",
+    "assets/**/*.d.ts"
   ],
   "exclude": [
     "node_modules",

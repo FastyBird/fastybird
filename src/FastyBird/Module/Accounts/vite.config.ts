@@ -45,12 +45,12 @@ export default defineConfig({
 	resolve: {
 		alias: {
 			'@fastybird': resolve(__dirname, './node_modules/@fastybird'),
-			'@': resolve(__dirname, './public'),
+			'@': resolve(__dirname, './assets'),
 		},
 	},
 	build: {
 		lib: {
-			entry: resolve(__dirname, './public/entry.ts'),
+			entry: resolve(__dirname, './assets/entry.ts'),
 			name: 'accounts-module',
 			fileName: (format) => `accounts-module.${format}.js`,
 		},
