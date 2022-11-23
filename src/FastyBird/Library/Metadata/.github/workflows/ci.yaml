@@ -490,6 +490,7 @@ jobs:
     strategy:
       matrix:
         operating-system: [ "ubuntu-latest" ]
+        node-version: [ "16" ]
 
     steps:
       - name: "Checkout"
@@ -498,7 +499,7 @@ jobs:
       - name: "Install node"
         uses: "actions/setup-node@v3"
         with:
-          node-version: "16"
+          node-version: "${{ matrix.node-version }}"
           registry-url: "https://registry.npmjs.org"
 
       - name: "Install package dependencies"
@@ -516,13 +517,14 @@ jobs:
   publish-npmjs:
     name: "Publish code distribution to NPM"
     runs-on: "${{ matrix.operating-system }}"
-    needs: "build"
+    needs: [ "build" ]
 
     strategy:
       matrix:
         operating-system: [ "ubuntu-latest" ]
+        node-version: [ "16" ]
 
-    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+    if: github.event_name == 'push'
 
     steps:
       - name: "Checkout"
@@ -531,7 +533,7 @@ jobs:
       - name: "Install node"
         uses: "actions/setup-node@v3"
         with:
-          node-version: "16"
+          node-version: "${{ matrix.node-version }}"
           registry-url: "https://registry.npmjs.org"
 
       - name: "Extract version"
@@ -553,20 +555,28 @@ jobs:
           path: dist
 
       - name: "Publish to NPM"
+        if: contains(github.ref, 'refs/tags/')
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPMJS_TOKEN }}
         run: "npm publish --access public"
 
+      - name: "Publish to NPM"
+        if: !contains(github.ref, 'refs/tags/')
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPMJS_TOKEN }}
+        run: "npm publish --access public --tag dev"
+
   publish-github:
     name: "Publish code distribution to Github packages"
     runs-on: "${{ matrix.operating-system }}"
-    needs: [ "publish-npmjs" ]
+    needs: [ "build" ]
 
     strategy:
       matrix:
         operating-system: [ "ubuntu-latest" ]
+        node-version: [ "16" ]
 
-    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+    if: github.event_name == 'push'
 
     steps:
       - name: "Checkout"
@@ -575,7 +585,7 @@ jobs:
       - name: "Install node"
         uses: "actions/setup-node@v3"
         with:
-          node-version: "16"
+          node-version: "${{ matrix.node-version }}"
           registry-url: "https://npm.pkg.github.com"
 
       - name: "Extract version"
@@ -597,6 +607,13 @@ jobs:
           path: dist
 
       - name: "Publish to NPM"
+        if: contains(github.ref, 'refs/tags/')
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: "npm publish --access public"
+
+      - name: "Publish to NPM"
+        if: !contains(github.ref, 'refs/tags/')
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: "npm publish --access public --tag dev"
