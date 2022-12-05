@@ -24,7 +24,7 @@ export default defineConfig({
 			aliasesExclude: [
 				'@fastybird/metadata-library',
 				'@fastybird/web-ui-library',
-				'@fastybird/ws-exchange-plugin',
+				'@fortawesome/vue-fontawesome',
 				'ajv',
 				'axios',
 				'date-fns',
@@ -79,7 +79,7 @@ export default defineConfig({
 			external: [
 				'@fastybird/metadata-library',
 				'@fastybird/web-ui-library',
-				'@fastybird/ws-exchange-plugin',
+				'@fortawesome/vue-fontawesome',
 				'ajv',
 				'axios',
 				'date-fns',
@@ -104,7 +104,7 @@ export default defineConfig({
 				globals: {
 					'@fastybird/metadata-library': 'FastyBirdMetadataLibrary',
 					'@fastybird/web-ui-library': 'FastyBirdWebUiLibrary',
-					'@fastybird/ws-exchange-plugin': 'FastyBirdWsExchangePlugin',
+					'@fortawesome/vue-fontawesome': 'VueFontawesome',
 					ajv: 'Ajv',
 					axios: 'Axios',
 					'date-fns': 'DateFns',
