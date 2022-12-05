@@ -38,8 +38,7 @@
     "nette/di": "^3.0",
     "nette/utils": "^3.2",
     "sentry/sdk": "^3.1",
-    "symfony/monolog-bridge": "^6.1",
-    "vlucas/phpdotenv": "^5.4"
+    "symfony/monolog-bridge": "^6.1"
   },
   "require-dev": {
     "brianium/paratest": "^6.6",
