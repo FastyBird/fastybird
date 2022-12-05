@@ -20,6 +20,7 @@ use Tester;
 use function array_key_exists;
 use function array_merge;
 use function array_shift;
+use function boolval;
 use function class_exists;
 use function count;
 use function define;
@@ -28,6 +29,7 @@ use function explode;
 use function file_exists;
 use function getenv;
 use function implode;
+use function in_array;
 use function is_array;
 use function is_dir;
 use function is_numeric;
@@ -68,6 +70,8 @@ class Bootstrap
 			'logsDir' => FB_LOGS_DIR,
 			'appDir' => FB_APP_DIR,
 			'wwwDir' => FB_WWW_DIR,
+
+			'debugMode' => isset($_ENV['APP_ENV']) && strtolower(strval($_ENV['APP_ENV'])) === 'dev',
 		]);
 
 		// Load parameters from environment
@@ -108,7 +112,19 @@ class Bootstrap
 			define('FB_APP_DIR', getenv('FB_APP_DIR'));
 
 		} elseif (!defined('FB_APP_DIR')) {
-			define('FB_APP_DIR', realpath(__DIR__ . DS . '..' . DS . '..' . DS . '..' . DS . '..' . DS . '..'));
+			$path = __DIR__;
+
+			for ($i = 0;$i < 10;$i++) {
+				$path .= DS . '..';
+
+				$vendorPath = realpath($path . DS . 'vendor');
+
+				if ($vendorPath !== false) {
+					define('FB_APP_DIR', realpath($path));
+
+					break;
+				}
+			}
 		}
 
 		// Configuring resources dir path
@@ -200,7 +216,13 @@ class Bootstrap
 
 		$map = static function (&$array, array $keys, $value) use (&$map) {
 			if (count($keys) <= 0) {
-				return is_numeric($value) ? (int) $value : $value;
+				return is_numeric($value) ? (int) $value : (in_array(
+					strtolower(strval($value)),
+					['true', 'false'],
+					true,
+				) ? boolval(
+					strtolower(strval($value)),
+				) : $value);
 			}
 
 			$key = array_shift($keys);

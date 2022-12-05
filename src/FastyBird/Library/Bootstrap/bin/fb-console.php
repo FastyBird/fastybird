@@ -1,6 +1,5 @@
 <?php declare(strict_types = 1);
 
-use Dotenv\Dotenv;
 use FastyBird\Library\Bootstrap\Boot;
 use Symfony\Component\Console;
 use const DIRECTORY_SEPARATOR as DS;
@@ -28,22 +27,6 @@ if ($autoload === null) {
 }
 
 require $autoload;
-
-$envDirs = isset($_ENV['FB_APP_DIR'])
-	? [$_ENV['FB_APP_DIR'] . DS . 'env']
-	: [
-		__DIR__ . DS . '..' . DS . '..' . DS . 'env',
-		__DIR__ . DS . '..' . DS . '..' . DS . '..' . DS . '..' . DS . 'env',
-	];
-
-foreach ($envDirs as $envDir) {
-	if (is_dir($envDir) && realpath($envDir) !== false) {
-		$dotEnv = Dotenv::createImmutable(realpath($envDir));
-		$dotEnv->safeLoad();
-
-		break;
-	}
-}
 
 $boostrap = Boot\Bootstrap::boot();
 

@@ -42,7 +42,7 @@ abstract class BaseTestCase extends TestCase
 			$config->addConfig($additionalConfig);
 		}
 
-		WebServer\DI\WebServerExtension::register($config, true);
+		WebServer\DI\WebServerExtension::register($config);
 
 		return $config->createContainer();
 	}

@@ -20,7 +20,6 @@ final class WebServerExtensionTest extends BaseTestCase
 	 */
 	public function testCompilersServices(): void
 	{
-		self::assertNotNull($this->container->getByType(Application\Console::class, false));
 		self::assertNotNull($this->container->getByType(Application\Application::class, false));
 
 		self::assertNotNull($this->container->getByType(Commands\HttpServer::class, false));

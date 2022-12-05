@@ -18,7 +18,6 @@ namespace FastyBird\Plugin\WebServer\DI;
 use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
 use FastyBird\Plugin\WebServer\Application;
 use FastyBird\Plugin\WebServer\Commands;
-use FastyBird\Plugin\WebServer\Exceptions;
 use FastyBird\Plugin\WebServer\Http;
 use FastyBird\Plugin\WebServer\Middleware;
 use FastyBird\Plugin\WebServer\Router;
@@ -30,8 +29,6 @@ use Nette\DI;
 use Nette\Schema;
 use stdClass;
 use function assert;
-use function func_num_args;
-use function sprintf;
 
 /**
  * Simple web server extension container
@@ -46,19 +43,8 @@ class WebServerExtension extends DI\CompilerExtension
 
 	public const NAME = 'fbWebServerPlugin';
 
-	/**
-	 * @throws Exceptions\InvalidArgument
-	 */
-	public function __construct(private readonly bool $cliMode = false)
-	{
-		if (func_num_args() <= 0) {
-			throw new Exceptions\InvalidArgument(sprintf('Provide CLI mode, e.q. %s(%%consoleMode%%).', self::class));
-		}
-	}
-
 	public static function register(
 		Nette\Configurator|BootstrapBoot\Configurator $config,
-		bool $cliMode = false,
 		string $extensionName = self::NAME,
 	): void
 	{
@@ -67,9 +53,8 @@ class WebServerExtension extends DI\CompilerExtension
 			DI\Compiler $compiler,
 		) use (
 			$extensionName,
-			$cliMode,
 		): void {
-			$compiler->addExtension($extensionName, new WebServerExtension($cliMode));
+			$compiler->addExtension($extensionName, new WebServerExtension());
 		};
 	}
 
@@ -77,7 +62,7 @@ class WebServerExtension extends DI\CompilerExtension
 	{
 		return Schema\Expect::structure([
 			'static' => Schema\Expect::structure([
-				'webroot' => Schema\Expect::string(null)->nullable(),
+				'publicRoot' => Schema\Expect::string(null)->nullable(),
 				'enabled' => Schema\Expect::bool(false),
 			]),
 			'server' => Schema\Expect::structure([
@@ -142,16 +127,11 @@ class WebServerExtension extends DI\CompilerExtension
 
 		$builder->addDefinition($this->prefix('middlewares.staticFiles'), new DI\Definitions\ServiceDefinition())
 			->setType(Middleware\StaticFiles::class)
-			->setArgument('publicRoot', $configuration->static->webroot)
+			->setArgument('publicRoot', $configuration->static->publicRoot)
 			->setArgument('enabled', $configuration->static->enabled);
 
 		$builder->addDefinition($this->prefix('middlewares.router'), new DI\Definitions\ServiceDefinition())
 			->setType(Middleware\Router::class);
-
-		if ($this->cliMode === true) {
-			$builder->addDefinition($this->prefix('application.console'), new DI\Definitions\ServiceDefinition())
-				->setType(Application\Console::class);
-		}
 
 		$builder->addDefinition($this->prefix('application.classic'), new DI\Definitions\ServiceDefinition())
 			->setType(Application\Application::class);

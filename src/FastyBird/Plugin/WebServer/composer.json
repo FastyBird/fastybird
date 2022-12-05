@@ -95,10 +95,6 @@
       "infection/extension-installer": true
     }
   },
-  "bin": [
-    "bin/fb-webserver",
-    "bin/fb-webserver.php"
-  ],
   "extra": {
     "branch-alias": {
       "dev-main": "1.0-dev"

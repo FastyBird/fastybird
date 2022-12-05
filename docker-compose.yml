@@ -1,0 +1,60 @@
+services:
+  # APPLICATION
+  app:
+    container_name: fastybird-app
+    build:
+      context: .docker/dev
+    environment:
+      APP_ENV: "dev"
+      DATABASE_URL: "mysql://fastybird:fastybird@mysql/fastybird_dev?charset=utf8mb4"
+      PHP_DATE_TIMEZONE: "Europe/Prague"
+      PHP_XDEBUG_IDEKEY: "PHPSTORM"
+    volumes:
+      - ./:/app:delegated
+      - ./.docker/dev/php.ini:/etc/php/8.1/fpm/php.ini:delegated
+      - ./.docker/dev/php.ini:/etc/php/8.1/cli/php.ini:delegated
+    ports:
+      - 80:80
+    depends_on:
+      - mysql
+    networks:
+      - fastybird
+
+  # MYSQL DATABASE STORAGE
+  mysql:
+    container_name: fastybird-database
+    image: mariadb
+    platform: linux/amd64
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: fastybird
+      MYSQL_PASSWORD: fastybird
+      MYSQL_DATABASE: fastybird_dev
+    ports:
+      - 3307:3306
+    networks:
+      - fastybird
+
+  # REDIS STORAGE
+  redis:
+    container_name: fastybird-redis
+    image: redis
+    ports:
+      - 5432:6379
+    networks:
+      - fastybird
+
+  redis-commander:
+    container_name: fastybird-redis-client
+    image: rediscommander/redis-commander
+    restart: always
+    environment:
+      REDIS_HOSTS: local:redis:6379
+    ports:
+      - 8081:8081
+    networks:
+      - fastybird
+
+networks:
+  fastybird:
+    driver: bridge

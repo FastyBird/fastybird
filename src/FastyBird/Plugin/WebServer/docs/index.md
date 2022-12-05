@@ -37,7 +37,7 @@ This plugin has some configuration options:
 ```neon
 fbWebServerPlugin:
     static:
-        webroot: /path/to/public/folder
+        publicRoot: /path/to/public/folder
         enabled: false
     server:
         address: 127.0.0.1
@@ -47,7 +47,7 @@ fbWebServerPlugin:
 
 Where:
 
-- `static -> webroot` is path to public static files and this files could be served by this webserver
+- `static -> publicRoot` is path to public static files and this files could be served by this webserver
 - `static -> enabled` enable or disable serving static files support
 
 
@@ -212,7 +212,7 @@ visit: [ipub/slim-router](https://github.com/iPublikuj/slim-router/blob/main/doc
 This plugin has implemented command interface for running server. All you have to do is just run one command:
 
 ```sh
-<app_root>/vendor/bin/fb-webserver
+<app_root>/vendor/bin/fb-console fb:web-server:start
 ```
 
 ## What about Apache or Nginx?
