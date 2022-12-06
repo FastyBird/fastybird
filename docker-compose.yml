@@ -1,9 +1,10 @@
 services:
   # APPLICATION
   application:
-    container_name: fastybird-app
+    container_name: fastybird-application
     build:
-      context: .docker/dev
+      context: .
+      dockerfile: .docker/dev/Dockerfile
     depends_on:
       - database
     environment:
@@ -21,9 +22,7 @@ services:
       FB_APP_PARAMETER__REDIS_HOST: redis
       FB_APP_PARAMETER__REDIS_PORT: 6379
       FB_APP_PARAMETER__SECURITY_SIGNATURE: ${SECURITY_SIGNATURE}
-      FB_APP_PARAMETER__API_PREFIX: ${API_PREFIX:-/api}
       FB_APP_PARAMETER__API_PREFIXED_MODULES: ${API_PREFIXED_MODULES:-true}
-      FB_APP_PARAMETER__API_KEY: ${API_KEY:-}
     volumes:
       - ./:/app:delegated
       - ./.docker/dev/php.ini:/etc/php/8.1/fpm/php.ini:delegated
@@ -36,7 +35,7 @@ services:
 
   # MYSQL DATABASE STORAGE
   database:
-    container_name: miniserver-database
+    container_name: fastybird-database
     image: mariadb
     platform: linux/amd64
     environment:
@@ -55,7 +54,7 @@ services:
 
   # REDIS STORAGE
   redis:
-    container_name: miniserver-redis
+    container_name: fastybird-redis
     image: redis
     volumes:
       - redis-other:/var/lib/redis:rw
@@ -67,7 +66,7 @@ services:
       - fastybird
 
   redis-commander:
-    container_name: miniserver-redis-client
+    container_name: fastybird-redis-client
     image: rediscommander/redis-commander
     restart: always
     environment:
@@ -80,7 +79,7 @@ services:
 
   # MQTT
   mqtt:
-    container_name: miniserver-mqtt
+    container_name: fastybird-mqtt
     image: eclipse-mosquitto
     volumes:
       - mqtt-data:/mosquitto/data:rw

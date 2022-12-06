@@ -27,7 +27,6 @@ extensions:
     nettrineOrmAnnotations              : Nettrine\ORM\DI\OrmAnnotationsExtension
     nettrineOrmConsole                  : Nettrine\ORM\DI\OrmConsoleExtension
     nettrineOrmCache                    : Nettrine\ORM\DI\OrmCacheExtension
-    nettrineMigrations                  : Nettrine\Migrations\DI\MigrationsExtension
     nettrineFixtures                    : Nettrine\Fixtures\DI\FixturesExtension
     ipubPhone                           : IPub\Phone\DI\PhoneExtension
     ipubDoctrinePhone                   : IPub\DoctrinePhone\DI\DoctrinePhoneExtension
@@ -59,8 +58,6 @@ extensions:
     fbModbusConnector                   : FastyBird\Connector\Modbus\DI\ModbusExtension
     fbHomeKitConnector                  : FastyBird\Connector\HomeKit\DI\HomeKitExtension
     fbTuyaConnector                     : FastyBird\Connector\Tuya\DI\TuyaExtension
-    # FastyBird MiniServer
-    fbMiniServer                        : FastyBird\MiniServer\DI\MiniServerExtension
 
 decorator:
     FastyBird\Plugin\WebServer\Router\Router:
@@ -160,9 +157,9 @@ contributteTranslation:
         fallback: [en_US, en]
     localeResolvers: []
     dirs:
-        - %appDir%/vendor/fastybird/fastybird/src/FastyBird/Module/Accounts/src/Translations
-        - %appDir%/vendor/fastybird/fastybird/src/FastyBird/Module/Devices/src/Translations
-        - %appDir%/vendor/fastybird/fastybird/src/FastyBird/Module/Triggers/src/Translations
+        - %appDir%/src/FastyBird/Module/Accounts/src/Translations
+        - %appDir%/src/FastyBird/Module/Devices/src/Translations
+        - %appDir%/src/FastyBird/Module/Triggers/src/Translations
         - %appDir%/vendor/fastybird/json-api/src/Translations
 
 # Doctrine
@@ -208,9 +205,6 @@ nettrineOrm:
 
 nettrineOrmAnnotations:
     mapping: []
-
-nettrineMigrations:
-    directory: %appDir%/migrations
 
 nettrineFixtures:
     paths:
