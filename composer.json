@@ -204,9 +204,7 @@
         "src/FastyBird/Library/Bootstrap/bin/fb-console",
         "src/FastyBird/Library/Bootstrap/bin/fb-console.php",
         "src/FastyBird/Library/Bootstrap/bin/fb-supervisor",
-        "src/FastyBird/Library/Bootstrap/bin/fb-supervisor.php",
-        "src/FastyBird/Plugin/WebServer/bin/fb-webserver",
-        "src/FastyBird/Plugin/WebServer/bin/fb-webserver.php"
+        "src/FastyBird/Library/Bootstrap/bin/fb-supervisor.php"
     ],
     "replace": {
         "fastybird/accounts-module": "self.version",

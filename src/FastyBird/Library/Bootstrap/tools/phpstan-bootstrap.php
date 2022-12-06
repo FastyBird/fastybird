@@ -3,8 +3,8 @@
 if (!defined('FB_APP_DIR')) {
 	define('FB_APP_DIR', 'val');
 }
-if (!defined('FB_WWW_DIR')) {
-	define('FB_WWW_DIR', 'val');
+if (!defined('FB_PUBLIC_DIR')) {
+	define('FB_PUBLIC_DIR', 'val');
 }
 if (!defined('FB_RESOURCES_DIR')) {
 	define('FB_RESOURCES_DIR', 'val');
