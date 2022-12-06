@@ -1,37 +1,54 @@
 services:
   # APPLICATION
-  app:
-    container_name: fastybird-app
+  application:
+    container_name: fastybird-application
     build:
-      context: .docker/dev
+      context: .
+      dockerfile: .docker/dev/Dockerfile
+    depends_on:
+      - database
     environment:
-      APP_ENV: "dev"
-      DATABASE_URL: "mysql://fastybird:fastybird@mysql/fastybird_dev?charset=utf8mb4"
-      PHP_DATE_TIMEZONE: "Europe/Prague"
+      # Container specific environment variables
+      TZ: ${APP_TZ:-UTC}
+      PHP_DATE_TIMEZONE: ${APP_TZ:-UTC}
       PHP_XDEBUG_IDEKEY: "PHPSTORM"
+      # Application specific environment variables
+      APP_ENV: "dev"
+      FB_APP_PARAMETER__DATABASE_HOST: database
+      FB_APP_PARAMETER__DATABASE_PORT: 3306
+      FB_APP_PARAMETER__DATABASE_USERNAME: ${DATABASE_USERNAME:-fastybird}
+      FB_APP_PARAMETER__DATABASE_PASSWORD: ${DATABASE_PASSWORD:-fastybird}
+      FB_APP_PARAMETER__DATABASE_DBNAME: ${DATABASE_DBNAME:-fastybird_dev}
+      FB_APP_PARAMETER__REDIS_HOST: redis
+      FB_APP_PARAMETER__REDIS_PORT: 6379
+      FB_APP_PARAMETER__SECURITY_SIGNATURE: ${SECURITY_SIGNATURE}
+      FB_APP_PARAMETER__API_PREFIXED_MODULES: ${API_PREFIXED_MODULES:-true}
     volumes:
       - ./:/app:delegated
       - ./.docker/dev/php.ini:/etc/php/8.1/fpm/php.ini:delegated
       - ./.docker/dev/php.ini:/etc/php/8.1/cli/php.ini:delegated
     ports:
-      - 80:80
-    depends_on:
-      - mysql
+      - "${HTTP_PORT:-80}:80"
+      - "${WORKER_STATUS_PORT:-9001}:9001"
     networks:
       - fastybird
 
   # MYSQL DATABASE STORAGE
-  mysql:
+  database:
     container_name: fastybird-database
     image: mariadb
     platform: linux/amd64
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_USER: fastybird
-      MYSQL_PASSWORD: fastybird
-      MYSQL_DATABASE: fastybird_dev
-    ports:
-      - 3307:3306
+      # Container specific environment variables
+      TZ: ${APP_TZ:-UTC}
+      MYSQL_ROOT_PASSWORD: ${ROOT_PASSWORD:-root}
+      MYSQL_USER: ${DATABASE_USERNAME:-fastybird}
+      MYSQL_PASSWORD: ${DATABASE_PASSWORD:-fastybird}
+      MYSQL_DATABASE: ${DATABASE_DBNAME:-fastybird_dev}
+    volumes:
+      - mysql-data:/var/lib/mysql:rw
+      # you may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
+      # - ./docker/mysql/data:/var/lib/mysql:rw,delegated
     networks:
       - fastybird
 
@@ -39,8 +56,12 @@ services:
   redis:
     container_name: fastybird-redis
     image: redis
-    ports:
-      - 5432:6379
+    volumes:
+      - redis-other:/var/lib/redis:rw
+      - redis-data:/data:rw
+      # you may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
+      # - ./docker/redis/other:/var/lib/redis:rw,delegated
+      # - ./docker/redis/data:/data:rw,delegated
     networks:
       - fastybird
 
@@ -49,12 +70,34 @@ services:
     image: rediscommander/redis-commander
     restart: always
     environment:
+      # Container specific environment variables
       REDIS_HOSTS: local:redis:6379
     ports:
-      - 8081:8081
+      - "${REDIS_ADMIN_PORT:-8081}:8081"
+    networks:
+      - fastybird
+
+  # MQTT
+  mqtt:
+    container_name: fastybird-mqtt
+    image: eclipse-mosquitto
+    volumes:
+      - mqtt-data:/mosquitto/data:rw
+      - mqtt-log:/mosquitto/log:rw
+      # you may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
+      # - ./docker/mqtt/data:/mosquitto/data:rw,delegated
+    ports:
+      - "${MQTT_PORT:-1883}:1883"
     networks:
       - fastybird
 
 networks:
   fastybird:
     driver: bridge
+
+volumes:
+  mysql-data:
+  redis-other:
+  redis-data:
+  mqtt-data:
+  mqtt-log:

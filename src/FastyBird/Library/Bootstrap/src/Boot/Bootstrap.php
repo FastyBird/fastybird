@@ -183,18 +183,13 @@ class Bootstrap
 
 		// Configuring configuration dir path
 		if (isset($_ENV['FB_CONFIG_DIR']) && !defined('FB_CONFIG_DIR')) {
-			define('FB_CONFIG_DIR', $_ENV['FB_CONFIG_DIR']);
+			define('FB_CONFIG_DIR', realpath(strval($_ENV['FB_CONFIG_DIR'])));
 
 		} elseif (getenv('FB_CONFIG_DIR') !== false && !defined('FB_CONFIG_DIR')) {
-			define('FB_CONFIG_DIR', getenv('FB_CONFIG_DIR'));
+			define('FB_CONFIG_DIR', realpath(getenv('FB_CONFIG_DIR')));
 
 		} elseif (!defined('FB_CONFIG_DIR')) {
-			define('FB_CONFIG_DIR', FB_APP_DIR . DS . 'config');
-		}
-
-		// Check for temporary dir
-		if (!is_dir(strval(FB_CONFIG_DIR))) {
-			mkdir(strval(FB_CONFIG_DIR), 0777, true);
+			define('FB_CONFIG_DIR', realpath(FB_APP_DIR . DS . 'config'));
 		}
 	}
 
