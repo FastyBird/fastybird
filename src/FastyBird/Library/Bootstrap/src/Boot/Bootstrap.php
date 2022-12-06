@@ -69,7 +69,7 @@ class Bootstrap
 			'tempDir' => FB_TEMP_DIR,
 			'logsDir' => FB_LOGS_DIR,
 			'appDir' => FB_APP_DIR,
-			'wwwDir' => FB_WWW_DIR,
+			'wwwDir' => FB_PUBLIC_DIR,
 
 			'debugMode' => isset($_ENV['APP_ENV']) && strtolower(strval($_ENV['APP_ENV'])) === 'dev',
 		]);
@@ -128,14 +128,14 @@ class Bootstrap
 		}
 
 		// Configuring resources dir path
-		if (isset($_ENV['FB_WWW_DIR']) && !defined('FB_WWW_DIR')) {
-			define('FB_WWW_DIR', $_ENV['FB_WWW_DIR']);
+		if (isset($_ENV['FB_PUBLIC_DIR']) && !defined('FB_PUBLIC_DIR')) {
+			define('FB_PUBLIC_DIR', $_ENV['FB_PUBLIC_DIR']);
 
-		} elseif (getenv('FB_WWW_DIR') !== false && !defined('FB_WWW_DIR')) {
-			define('FB_WWW_DIR', getenv('FB_WWW_DIR'));
+		} elseif (getenv('FB_PUBLIC_DIR') !== false && !defined('FB_PUBLIC_DIR')) {
+			define('FB_PUBLIC_DIR', getenv('FB_PUBLIC_DIR'));
 
-		} elseif (!defined('FB_WWW_DIR')) {
-			define('FB_WWW_DIR', FB_APP_DIR . DS . 'www');
+		} elseif (!defined('FB_PUBLIC_DIR')) {
+			define('FB_PUBLIC_DIR', FB_APP_DIR . DS . 'www');
 		}
 
 		// Configuring resources dir path
