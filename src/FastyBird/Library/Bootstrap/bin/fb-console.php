@@ -4,29 +4,29 @@ use FastyBird\Library\Bootstrap\Boot;
 use Symfony\Component\Console;
 use const DIRECTORY_SEPARATOR as DS;
 
-$autoload = null;
+$autoloadFile = false;
 
-$autoloadFiles = [
-	__DIR__ . DS . '..' . DS . 'vendor' . DS . 'autoload.php',
-	__DIR__ . DS . '..' . DS . '..' . DS . '..' . DS . 'autoload.php',
-	__DIR__ . DS . '..' . DS . '..' . DS . '..' . DS . '..' . DS . '..' . DS . 'vendor' . DS . 'autoload.php',
-];
+$path = __DIR__;
 
-foreach ($autoloadFiles as $autoloadFile) {
-	if (file_exists($autoloadFile)) {
-		$autoload = realpath($autoloadFile);
+for ($i = 0;$i < 10;$i++) {
+	$path .= DS . '..';
+
+	$vendorPath = realpath($path . DS . 'vendor');
+
+	if ($vendorPath !== false) {
+		$autoloadFile = realpath($path) . DS . 'autoload.php';
 
 		break;
 	}
 }
 
-if ($autoload === null) {
+if ($autoloadFile === false || !file_exists($autoloadFile)) {
 	echo "Autoload file not found; try 'composer dump-autoload' first." . PHP_EOL;
 
 	exit(1);
 }
 
-require $autoload;
+require $autoloadFile;
 
 $boostrap = Boot\Bootstrap::boot();
 
@@ -37,6 +37,7 @@ if (defined('FB_TEMP_DIR') && is_dir(FB_TEMP_DIR)) {
 
 	foreach ($ri as $file) {
 		assert($file instanceof SplFileInfo);
+
 		if (!$file->isDir() && basename(strval($file)) === '.gitignore') {
 			continue;
 		}
