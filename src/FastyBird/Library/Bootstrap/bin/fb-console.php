@@ -14,7 +14,7 @@ for ($i = 0;$i < 10;$i++) {
 	$vendorPath = realpath($path . DS . 'vendor');
 
 	if ($vendorPath !== false) {
-		$autoloadFile = realpath($path) . DS . 'autoload.php';
+		$autoloadFile = realpath($path) . DS . 'vendor' . DS . 'autoload.php';
 
 		break;
 	}
