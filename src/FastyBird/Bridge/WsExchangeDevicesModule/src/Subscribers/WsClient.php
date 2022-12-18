@@ -58,7 +58,6 @@ class WsClient implements EventDispatcher\EventSubscriberInterface
 	{
 		return [
 			WsExchangeEvents\ClientSubscribed::class => 'clientSubscribed',
-			WsExchangeEvents\IncomingMessage::class => 'incomingMessage',
 		];
 	}
 

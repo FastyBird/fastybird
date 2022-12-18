@@ -38,11 +38,11 @@ class LocalDeviceCommand extends Consistence\Enum\Enum
 
 	public const CMD_ACTIVE = 2;
 
-	public const CMD_BIND = 3;
+	public const CMD_SESS_KEY_NEG_START = 3;
 
-	public const CMD_RENAME_GW = 4;
+	public const CMD_SESS_KEY_NEG_RESP = 4;
 
-	public const CMD_RENAME_DEVICE = 5;
+	public const CMD_SESS_KEY_NEG_FINISH = 5;
 
 	public const CMD_UNBIND = 6;
 
@@ -65,6 +65,8 @@ class LocalDeviceCommand extends Consistence\Enum\Enum
 	public const CMD_DP_QUERY_NEW = 16;
 
 	public const CMD_SCENE_EXECUTE = 17;
+
+	public const CMD_UPDATE_DPS = 18;
 
 	public const CMD_UDP_NEW = 19;
 

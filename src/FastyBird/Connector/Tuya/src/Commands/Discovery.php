@@ -324,13 +324,13 @@ class Discovery extends Console\Command\Command
 
 					$this->executedTime = $this->dateTimeFactory->getNow();
 
-					$this->client?->discover();
-
 					$this->client?->on('finished', function (): void {
 						$this->client?->disconnect();
 
 						$this->checkAndTerminate();
 					});
+
+					$this->client?->discover();
 				}),
 			);
 

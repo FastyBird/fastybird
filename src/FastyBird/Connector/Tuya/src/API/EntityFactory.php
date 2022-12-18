@@ -35,7 +35,6 @@ use function call_user_func_array;
 use function class_exists;
 use function get_object_vars;
 use function in_array;
-use function is_array;
 use function is_callable;
 use function method_exists;
 use function preg_replace_callback;
@@ -63,7 +62,6 @@ final class EntityFactory
 	 *
 	 * @phpstan-return T
 	 *
-	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 */
 	public function build(
@@ -75,20 +73,8 @@ final class EntityFactory
 			throw new Exceptions\InvalidState('Entity could not be created');
 		}
 
-		try {
-			$decoded = $this->convertKeys($data);
-			$decoded = Utils\Json::decode(Utils\Json::encode($decoded), Utils\Json::FORCE_ARRAY);
-
-			if (is_array($decoded)) {
-				$decoded = $this->convertToObject($decoded);
-			}
-		} catch (Utils\JsonException) {
-			throw new Exceptions\InvalidArgument('Provided entity content is not valid JSON.');
-		}
-
-		if (!$decoded instanceof stdClass) {
-			throw new Exceptions\InvalidState('Data for entity could not be prepared');
-		}
+		$decoded = $this->convertKeys($data);
+		$decoded = $this->convertToObject($decoded);
 
 		try {
 			$rc = new ReflectionClass($entityClass);

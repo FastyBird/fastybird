@@ -65,7 +65,7 @@ final class UserDeviceDetail implements Entity
 
 	public function getName(): string|null
 	{
-		return $this->name;
+		return $this->name !== '' ? $this->name : null;
 	}
 
 	public function getUid(): string
@@ -80,17 +80,17 @@ final class UserDeviceDetail implements Entity
 
 	public function getCategory(): string|null
 	{
-		return $this->category;
+		return $this->category !== '' ? $this->category : null;
 	}
 
 	public function getProductId(): string|null
 	{
-		return $this->productId;
+		return $this->productId !== '' ? $this->productId : null;
 	}
 
 	public function getProductName(): string|null
 	{
-		return $this->productName;
+		return $this->productName !== '' ? $this->productName : null;
 	}
 
 	public function getSub(): bool
@@ -105,7 +105,7 @@ final class UserDeviceDetail implements Entity
 
 	public function getOwnerId(): string|null
 	{
-		return $this->ownerId;
+		return $this->ownerId !== '' ? $this->ownerId : null;
 	}
 
 	public function isOnline(): bool
@@ -143,17 +143,17 @@ final class UserDeviceDetail implements Entity
 
 	public function getIcon(): string|null
 	{
-		return $this->icon;
+		return $this->icon !== '' ? $this->icon : null;
 	}
 
 	public function getIp(): string|null
 	{
-		return $this->ip;
+		return $this->ip !== '' ? $this->ip : null;
 	}
 
 	public function getTimeZone(): string|null
 	{
-		return $this->timeZone;
+		return $this->timeZone !== '' ? $this->timeZone : null;
 	}
 
 	/**

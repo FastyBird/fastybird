@@ -54,7 +54,7 @@ interface Property
 
 	public function setPending(bool|string|null $pending): void;
 
-	public function getPending(): bool|string|null;
+	public function getPending(): bool|DateTimeInterface|null;
 
 	public function isPending(): bool;
 

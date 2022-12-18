@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * UserDeviceDataPointStatus.php
+ * Sign.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,47 +10,42 @@
  * @subpackage     Entities
  * @since          0.13.0
  *
- * @date           26.04.22
+ * @date           10.12.22
  */
 
 namespace FastyBird\Connector\Tuya\Entities\API;
 
+use FastyBird\Connector\Tuya\Types;
 use Nette;
 
 /**
- * OpenAPI device detail status entity
+ * Local API device message entity
  *
  * @package        FastyBird:TuyaConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class UserDeviceDataPointStatus implements Entity
+final class LocalMessagePayload implements Entity
 {
 
 	use Nette\SmartObject;
 
 	public function __construct(
-		private readonly string $code,
-		private readonly string|int|float|bool $value,
-		private readonly string|null $type,
+		private readonly Types\LocalDeviceCommand $command,
+		private readonly string|null $payload,
 	)
 	{
 	}
 
-	public function getCode(): string
+	public function getCommand(): Types\LocalDeviceCommand
 	{
-		return $this->code;
+		return $this->command;
 	}
 
-	public function getValue(): float|bool|int|string
+	public function getPayload(): string|null
 	{
-		return $this->value;
-	}
-
-	public function getType(): string|null
-	{
-		return $this->type !== '' ? $this->type : null;
+		return $this->payload;
 	}
 
 	/**
@@ -59,9 +54,8 @@ final class UserDeviceDataPointStatus implements Entity
 	public function toArray(): array
 	{
 		return [
-			'code' => $this->getCode(),
-			'value' => $this->getValue(),
-			'type' => $this->getType(),
+			'command' => $this->getCommand()->getValue(),
+			'payload' => $this->getPayload(),
 		];
 	}
 

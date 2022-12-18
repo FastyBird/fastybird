@@ -29,11 +29,11 @@ use Symfony\Contracts\EventDispatcher;
 class ConnectionClosed extends EventDispatcher\Event
 {
 
-	public function __construct(private readonly Redis\Client $client)
+	public function __construct(private readonly Redis\RedisClient $client)
 	{
 	}
 
-	public function getClient(): Redis\Client
+	public function getClient(): Redis\RedisClient
 	{
 		return $this->client;
 	}

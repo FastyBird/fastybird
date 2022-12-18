@@ -24,6 +24,7 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Psr\Log;
+use React\EventLoop;
 use function strval;
 
 /**
@@ -44,6 +45,7 @@ final class OpenApiFactory
 		private readonly Helpers\Connector $connectorHelper,
 		private readonly MetadataSchemas\Validator $schemaValidator,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
+		private readonly EventLoop\LoopInterface $eventLoop,
 		Log\LoggerInterface|null $logger = null,
 	)
 	{
@@ -85,6 +87,7 @@ final class OpenApiFactory
 			$this->entityFactory,
 			$this->schemaValidator,
 			$this->dateTimeFactory,
+			$this->eventLoop,
 			$this->logger,
 		);
 	}

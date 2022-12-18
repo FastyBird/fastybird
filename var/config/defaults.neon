@@ -2,6 +2,7 @@ parameters:
     logger:
         level: 300
         rotatingFile: app.log
+        stdOut: true
 
     database:
         version: 5.7

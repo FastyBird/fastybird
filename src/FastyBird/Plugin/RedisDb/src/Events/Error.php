@@ -30,7 +30,7 @@ use Throwable;
 class Error extends EventDispatcher\Event
 {
 
-	public function __construct(private readonly Throwable $ex, private readonly Redis\Client $client)
+	public function __construct(private readonly Throwable $ex, private readonly Redis\RedisClient $client)
 	{
 	}
 
@@ -39,7 +39,7 @@ class Error extends EventDispatcher\Event
 		return $this->ex;
 	}
 
-	public function getClient(): Redis\Client
+	public function getClient(): Redis\RedisClient
 	{
 		return $this->client;
 	}

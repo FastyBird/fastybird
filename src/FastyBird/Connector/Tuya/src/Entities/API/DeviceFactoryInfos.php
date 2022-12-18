@@ -46,17 +46,17 @@ final class DeviceFactoryInfos implements Entity
 
 	public function getUuid(): string|null
 	{
-		return $this->uuid;
+		return $this->uuid !== '' ? $this->uuid : null;
 	}
 
 	public function getMac(): string|null
 	{
-		return $this->mac;
+		return $this->mac !== '' ? $this->mac : null;
 	}
 
 	public function getSn(): string|null
 	{
-		return $this->sn;
+		return $this->sn !== '' ? $this->sn : null;
 	}
 
 	/**

@@ -24,10 +24,13 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use GuzzleHttp;
+use InvalidArgumentException;
 use Nette;
 use Nette\Utils;
 use Psr\Http\Message;
 use Psr\Log;
+use React\EventLoop;
+use React\Http;
 use React\Promise;
 use RuntimeException;
 use Throwable;
@@ -76,7 +79,9 @@ final class OpenApi
 
 	private const USER_DEVICE_STATUS_API_ENDPOINT = '/v1.0/devices/%s/status';
 
-	private const DEVICES_API_ENDPOINT = '/v1.2/iot-03/devices';
+	private const USER_DEVICE_CHILDREN_DEVICES_API_ENDPOINT = '/v1.0/devices/%s/sub-devices';
+
+	private const DEVICES_API_ENDPOINT = '/v1.3/iot-03/devices';
 
 	private const DEVICES_FACTORY_INFOS_API_ENDPOINT = '/v1.0/iot-03/devices/factory-infos';
 
@@ -102,6 +107,8 @@ final class OpenApi
 
 	public const USER_DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME = 'openapi_user_device_status.json';
 
+	public const USER_DEVICE_CHILDREN_DEVICES_MESSAGE_SCHEMA_FILENAME = 'openapi_user_device_children.json';
+
 	public const DEVICES_MESSAGE_SCHEMA_FILENAME = 'openapi_devices.json';
 
 	public const DEVICES_FACTORY_INFOS_MESSAGE_SCHEMA_FILENAME = 'openapi_devices_factory_infos.json';
@@ -120,6 +127,8 @@ final class OpenApi
 
 	private GuzzleHttp\Client|null $client = null;
 
+	private Http\Browser|null $asyncClient = null;
+
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
@@ -130,6 +139,7 @@ final class OpenApi
 		private readonly EntityFactory $entityFactory,
 		private readonly MetadataSchemas\Validator $schemaValidator,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
+		private readonly EventLoop\LoopInterface $eventLoop,
 		Log\LoggerInterface|null $logger = null,
 	)
 	{
@@ -137,7 +147,6 @@ final class OpenApi
 	}
 
 	/**
-	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\OpenApiCall
 	 * @throws MetadataExceptions\InvalidData
@@ -199,7 +208,6 @@ final class OpenApi
 	}
 
 	/**
-	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\OpenApiCall
 	 * @throws MetadataExceptions\Logic
 	 * @throws RuntimeException
@@ -219,7 +227,6 @@ final class OpenApi
 
 	/**
 	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\Logic
 	 * @throws RuntimeException
 	 */
@@ -281,7 +288,6 @@ final class OpenApi
 	 * @param Array<string> $deviceIds
 	 *
 	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\Logic
 	 * @throws RuntimeException
 	 */
@@ -344,7 +350,6 @@ final class OpenApi
 
 	/**
 	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\Logic
 	 * @throws RuntimeException
 	 */
@@ -415,7 +420,6 @@ final class OpenApi
 
 	/**
 	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\Logic
 	 * @throws RuntimeException
 	 */
@@ -507,7 +511,6 @@ final class OpenApi
 
 	/**
 	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\Logic
 	 * @throws RuntimeException
 	 */
@@ -566,10 +569,68 @@ final class OpenApi
 	}
 
 	/**
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws RuntimeException
+	 */
+	public function getUserDeviceChildren(
+		string $deviceId,
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface
+	{
+		if (!$this->isConnected()) {
+			$this->connect();
+		}
+
+		$promise = new Promise\Deferred();
+
+		$result = $this->callRequest(
+			'GET',
+			sprintf(self::USER_DEVICE_CHILDREN_DEVICES_API_ENDPOINT, $deviceId),
+		);
+
+		if ($result instanceof Promise\PromiseInterface) {
+			$result
+				->then(function (Message\ResponseInterface $response) use ($promise): void {
+					$parsedMessage = $this->schemaValidator->validate(
+						$response->getBody()->getContents(),
+						$this->getSchemaFilePath(self::USER_DEVICE_CHILDREN_DEVICES_MESSAGE_SCHEMA_FILENAME),
+					);
+
+					$result = $parsedMessage->offsetGet('result');
+
+					if (!$result instanceof Utils\ArrayHash) {
+						throw new Exceptions\OpenApiCall('Received response is not valid');
+					}
+
+					$children = [];
+
+					foreach ($result as $childrenData) {
+						if (!$childrenData instanceof Utils\ArrayHash) {
+							continue;
+						}
+
+						$children[] = $this->entityFactory->build(
+							Entities\API\UserDeviceChild::class,
+							$childrenData,
+						);
+					}
+
+					$promise->resolve($children);
+				})
+				->otherwise(static function (Throwable $ex) use ($promise): void {
+					$promise->reject($ex);
+				});
+		} else {
+			throw new Exceptions\InvalidState('Request promise could not be created');
+		}
+
+		return $promise->promise();
+	}
+
+	/**
 	 * @param Array<string, mixed> $params
 	 *
 	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\Logic
 	 * @throws RuntimeException
 	 */
@@ -638,7 +699,6 @@ final class OpenApi
 	 * @param Array<string> $deviceIds
 	 *
 	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\Logic
 	 * @throws RuntimeException
 	 */
@@ -701,7 +761,6 @@ final class OpenApi
 
 	/**
 	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\Logic
 	 * @throws RuntimeException
 	 */
@@ -751,7 +810,6 @@ final class OpenApi
 
 	/**
 	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\Logic
 	 * @throws RuntimeException
 	 */
@@ -843,7 +901,6 @@ final class OpenApi
 
 	/**
 	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\Logic
 	 * @throws RuntimeException
 	 */
@@ -903,7 +960,6 @@ final class OpenApi
 
 	/**
 	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\Logic
 	 * @throws RuntimeException
 	 */
@@ -966,7 +1022,6 @@ final class OpenApi
 	/**
 	 * @param Array<string, mixed> $params
 	 *
-	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\Logic
 	 * @throws RuntimeException
 	 */
@@ -1005,21 +1060,47 @@ final class OpenApi
 		}
 
 		if ($async) {
-			$this->getClient()->requestAsync(
-				$method,
-				$requestPath,
-				[
-					'headers' => $this->buildRequestHeaders($method, $path, $params, $body),
-					'body' => $body ?? '',
-				],
-			)
-				->then(
-					function (Message\ResponseInterface $response) use ($deferred, $method, $path, $params, $body): void {
-						try {
-							$response = $this->checkResponse($path, $response);
+			try {
+				$request = $this->getClient()->request(
+					$method,
+					$requestPath,
+					$this->buildRequestHeaders($method, $path, $params, $body),
+					$body ?? '',
+				);
 
-						} catch (Exceptions\OpenApiCall $ex) {
-							$this->logger->error('Received payload is not valid', [
+				assert($request instanceof Promise\PromiseInterface);
+
+				$request
+					->then(
+						function (Message\ResponseInterface $response) use ($deferred, $method, $path, $params, $body): void {
+							try {
+								$response = $this->checkResponse($path, $response);
+
+							} catch (Exceptions\OpenApiCall $ex) {
+								$this->logger->error('Received payload is not valid', [
+									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+									'type' => 'openapi-api',
+									'exception' => [
+										'message' => $ex->getMessage(),
+										'code' => $ex->getCode(),
+									],
+									'request' => [
+										'method' => $method,
+										'url' => $this->endpoint->getValue() . $path,
+										'params' => $params,
+										'body' => $body,
+									],
+								]);
+
+								$deferred->reject($ex);
+
+								return;
+							}
+
+							$deferred->resolve($response);
+						},
+						function (Throwable $ex) use ($deferred, $method, $path, $params, $body): void {
+							$this->logger->error('Calling api endpoint failed', [
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 								'type' => 'openapi-api',
 								'exception' => [
@@ -1035,36 +1116,16 @@ final class OpenApi
 							]);
 
 							$deferred->reject($ex);
-
-							return;
-						}
-
-						$deferred->resolve($response);
-					},
-				)
-				->otherwise(function (Throwable $ex) use ($deferred, $method, $path, $params, $body): void {
-					$this->logger->error('Calling api endpoint failed', [
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-						'type' => 'openapi-api',
-						'exception' => [
-							'message' => $ex->getMessage(),
-							'code' => $ex->getCode(),
-						],
-						'request' => [
-							'method' => $method,
-							'url' => $this->endpoint->getValue() . $path,
-							'params' => $params,
-							'body' => $body,
-						],
-					]);
-
-					$deferred->reject($ex);
-				});
+						},
+					);
+			} catch (Throwable $ex) {
+				$deferred->reject($ex);
+			}
 
 			return $deferred->promise();
 		} else {
 			try {
-				$response = $this->getClient()->request(
+				$response = $this->getClient(false)->request(
 					$method,
 					$requestPath,
 					[
@@ -1073,9 +1134,11 @@ final class OpenApi
 					],
 				);
 
+				assert($response instanceof Message\ResponseInterface);
+
 				$response = $this->checkResponse($path, $response);
 
-			} catch (GuzzleHttp\Exception\GuzzleException $ex) {
+			} catch (GuzzleHttp\Exception\GuzzleException | InvalidArgumentException $ex) {
 				$this->logger->error('Calling api endpoint failed', [
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'openapi-api',
@@ -1116,7 +1179,6 @@ final class OpenApi
 	}
 
 	/**
-	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\OpenApiCall
 	 * @throws MetadataExceptions\Logic
 	 * @throws RuntimeException
@@ -1169,7 +1231,6 @@ final class OpenApi
 	}
 
 	/**
-	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\OpenApiCall
 	 * @throws RuntimeException
 	 * @throws MetadataExceptions\Logic
@@ -1191,13 +1252,15 @@ final class OpenApi
 		}
 
 		try {
-			$response = $this->getClient()->get(
+			$response = $this->getClient(false)->get(
 				$this->endpoint->getValue() . sprintf(
 					self::REFRESH_TOKEN_API_ENDPOINT,
 					$this->tokenInfo->getRefreshToken(),
 				),
 				$this->buildRequestHeaders('get', self::REFRESH_TOKEN_API_ENDPOINT),
 			);
+
+			assert($response instanceof Message\ResponseInterface);
 
 			$parsedMessage = $this->schemaValidator->validate(
 				$response->getBody()->getContents(),
@@ -1223,7 +1286,7 @@ final class OpenApi
 				Entities\API\TuyaTokenInfo::class,
 				$result,
 			);
-		} catch (GuzzleHttp\Exception\GuzzleException $ex) {
+		} catch (GuzzleHttp\Exception\GuzzleException | InvalidArgumentException $ex) {
 			$this->logger->error(
 				'Could not refresh access token',
 				[
@@ -1313,13 +1376,24 @@ final class OpenApi
 		return new Entities\API\Sign($sign, $timestamp);
 	}
 
-	private function getClient(): GuzzleHttp\Client
+	/**
+	 * @throws InvalidArgumentException
+	 */
+	private function getClient(bool $async = true): GuzzleHttp\Client|Http\Browser
 	{
-		if ($this->client === null) {
-			$this->client = new GuzzleHttp\Client();
-		}
+		if ($async) {
+			if ($this->asyncClient === null) {
+				$this->asyncClient = new Http\Browser(null, $this->eventLoop);
+			}
 
-		return $this->client;
+			return $this->asyncClient;
+		} else {
+			if ($this->client === null) {
+				$this->client = new GuzzleHttp\Client();
+			}
+
+			return $this->client;
+		}
 	}
 
 	/**

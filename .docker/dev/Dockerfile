@@ -14,4 +14,14 @@ RUN version=$(php -r "echo PHP_MAJOR_VERSION.PHP_MINOR_VERSION;") \
 # Configure server
 COPY ${SERVICE_DIR}/supervisor/supervisord.conf     /etc/supervisor/supervisord.conf
 
+# Supervisor user interface
 EXPOSE 9001
+# Tuya local devices
+EXPOSE 6666
+EXPOSE 6667
+EXPOSE 6668
+# Shelly local
+EXPOSE 5353
+EXPOSE 5683
+# Homekit
+EXPOSE 51827

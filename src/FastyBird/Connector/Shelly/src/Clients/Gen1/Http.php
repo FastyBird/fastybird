@@ -322,12 +322,6 @@ final class Http
 					&& $state->getExpectedValue() !== null
 					&& $state->isPending() === true
 				) {
-					$pending = is_string($state->getPending())
-						? Utils\DateTime::createFromFormat(
-							DateTimeInterface::ATOM,
-							$state->getPending(),
-						)
-						: true;
 					$debounce = array_key_exists(
 						$property->getPlainId(),
 						$this->processedProperties,
@@ -344,10 +338,12 @@ final class Http
 
 					unset($this->processedProperties[$property->getPlainId()]);
 
+					$pending = $state->getPending();
+
 					if (
 						$pending === true
 						|| (
-							$pending !== false
+							$pending instanceof DateTimeInterface
 							&& (float) $now->format('Uv') - (float) $pending->format('Uv') > 2_000
 						)
 					) {

@@ -49,7 +49,7 @@ class StatesRepository
 	 * @param class-string<T> $entity
 	 */
 	public function __construct(
-		private readonly Client\Client|Redis\Client $client,
+		private readonly Client\Client|Redis\RedisClient $client,
 		private readonly string $entity = States\State::class,
 		Log\LoggerInterface|null $logger = null,
 	)

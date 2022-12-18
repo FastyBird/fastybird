@@ -5,9 +5,121 @@
     "result" : {
       "type" : "object",
       "properties" : {
+        "active_time" : {
+          "oneOf" : [
+            {
+              "type" : "null"
+            },
+            {
+              "type" : "number"
+            }
+          ],
+          "description" : "The time when a specified device is activated, which is accurate to seconds",
+          "default" : null
+        },
+        "biz_type" : {
+          "oneOf" : [
+            {
+              "type" : "null"
+            },
+            {
+              "type" : "number"
+            }
+          ],
+          "description" : "The biztype of a specified application",
+          "default" : null
+        },
+        "category" : {
+          "oneOf" : [
+            {
+              "type" : "null"
+            },
+            {
+              "type" : "string"
+            }
+          ],
+          "description" : "Product category",
+          "default" : null
+        },
+        "create_time" : {
+          "oneOf" : [
+            {
+              "type" : "null"
+            },
+            {
+              "type" : "number"
+            }
+          ],
+          "description" : "The time when the device is first paired",
+          "default" : null
+        },
+        "icon" : {
+          "oneOf" : [
+            {
+              "type" : "null"
+            },
+            {
+              "type" : "string"
+            }
+          ],
+          "description" : "The device icon. The prefix of China Data Center is https://images.tuyacn.com. If the relative path you get is smart/product_icon/cz.png, the actual icon URL is https://images.tuyacn.com/smart/product_icon/cz.png",
+          "default" : null
+        },
+        "ip" : {
+          "oneOf" : [
+            {
+              "type" : "null"
+            },
+            {
+              "type" : "string"
+            }
+          ],
+          "description" : "The IP address of a specified device",
+          "default" : null
+        },
         "id" : {
           "type" : "string",
           "description" : "Device ID"
+        },
+        "lat" : {
+          "oneOf" : [
+            {
+              "type" : "null"
+            },
+            {
+              "type" : "string"
+            }
+          ],
+          "description" : "The latitude of a specified device",
+          "default" : null
+        },
+        "local_key" : {
+          "type" : "string",
+          "description" : "Secret key"
+        },
+        "lon" : {
+          "oneOf" : [
+            {
+              "type" : "null"
+            },
+            {
+              "type" : "string"
+            }
+          ],
+          "description" : "The longitude of a specified device",
+          "default" : null
+        },
+        "model" : {
+          "oneOf" : [
+            {
+              "type" : "null"
+            },
+            {
+              "type" : "string"
+            }
+          ],
+          "description" : "The product model",
+          "default" : null
         },
         "name" : {
           "oneOf" : [
@@ -21,15 +133,7 @@
           "description" : "Device name",
           "default" : null
         },
-        "uid" : {
-          "type" : "string",
-          "description" : "Device user ID"
-        },
-        "local_key" : {
-          "type" : "string",
-          "description" : "Secret key"
-        },
-        "category" : {
+        "node_id" : {
           "oneOf" : [
             {
               "type" : "null"
@@ -38,7 +142,24 @@
               "type" : "string"
             }
           ],
-          "description" : "Product category",
+          "description" : "The node ID. The value is empty for non-gateway sub-devices",
+          "default" : null
+        },
+        "online" : {
+          "type" : "boolean",
+          "description" : "The online status of a specified device",
+          "default" : false
+        },
+        "owner_id" : {
+          "oneOf" : [
+            {
+              "type" : "null"
+            },
+            {
+              "type" : "string"
+            }
+          ],
+          "description" : "The ID of a specified home",
           "default" : null
         },
         "product_id" : {
@@ -64,31 +185,6 @@
           ],
           "description" : "Product name",
           "default" : null
-        },
-        "sub" : {
-          "type" : "boolean",
-          "description" : "Determines whether it is a sub-device. Valid values: true = yes, false = no"
-        },
-        "uuid" : {
-          "type" : "string",
-          "description" : "The universally unique identifier (UUID) of a specified device"
-        },
-        "owner_id" : {
-          "oneOf" : [
-            {
-              "type" : "null"
-            },
-            {
-              "type" : "string"
-            }
-          ],
-          "description" : "The ID of a specified home",
-          "default" : null
-        },
-        "online" : {
-          "type" : "boolean",
-          "description" : "The online status of a specified device",
-          "default" : false
         },
         "status" : {
           "type" : "array",
@@ -136,29 +232,25 @@
           },
           "default" : []
         },
-        "active_time" : {
+        "sub" : {
+          "type" : "boolean",
+          "description" : "Determines whether it is a sub-device. Valid values: true = yes, false = no"
+        },
+        "time_zone" : {
           "oneOf" : [
             {
               "type" : "null"
             },
             {
-              "type" : "number"
+              "type" : "string"
             }
           ],
-          "description" : "The time when a specified device is activated, which is accurate to seconds",
+          "description" : "The time zone",
           "default" : null
         },
-        "create_time" : {
-          "oneOf" : [
-            {
-              "type" : "null"
-            },
-            {
-              "type" : "number"
-            }
-          ],
-          "description" : "The time when the device is first paired",
-          "default" : null
+        "uid" : {
+          "type" : "string",
+          "description" : "Device user ID"
         },
         "update_time" : {
           "oneOf" : [
@@ -172,53 +264,9 @@
           "description" : "The time when the device is last updated",
           "default" : null
         },
-        "biz_type" : {
-          "oneOf" : [
-            {
-              "type" : "null"
-            },
-            {
-              "type" : "number"
-            }
-          ],
-          "description" : "The biztype of a specified application",
-          "default" : null
-        },
-        "icon" : {
-          "oneOf" : [
-            {
-              "type" : "null"
-            },
-            {
-              "type" : "string"
-            }
-          ],
-          "description" : "The device icon. The prefix of China Data Center is https://images.tuyacn.com. If the relative path you get is smart/product_icon/cz.png, the actual icon URL is https://images.tuyacn.com/smart/product_icon/cz.png",
-          "default" : null
-        },
-        "ip" : {
-          "oneOf" : [
-            {
-              "type" : "null"
-            },
-            {
-              "type" : "string"
-            }
-          ],
-          "description" : "The IP address of a specified device",
-          "default" : null
-        },
-        "time_zone" : {
-          "oneOf" : [
-            {
-              "type" : "null"
-            },
-            {
-              "type" : "string"
-            }
-          ],
-          "description" : "The time zone",
-          "default" : null
+        "uuid" : {
+          "type" : "string",
+          "description" : "The universally unique identifier (UUID) of a specified device"
         }
       },
       "required" : [

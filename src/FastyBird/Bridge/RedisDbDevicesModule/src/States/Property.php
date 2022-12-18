@@ -22,8 +22,10 @@ use Exception;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Plugin\RedisDb\States as RedisDbStates;
+use Nette\Utils;
 use function array_merge;
 use function is_bool;
+use function is_string;
 
 /**
  * Property state
@@ -101,11 +103,15 @@ class Property extends RedisDbStates\State implements DevicesStates\Property
 
 	public function isPending(): bool
 	{
-		return $this->valid !== null ? is_bool($this->valid) ? $this->valid : true : false;
+		return $this->pending !== null ? is_bool($this->pending) ? $this->pending : true : false;
 	}
 
-	public function getPending(): bool|string|null
+	public function getPending(): bool|DateTimeInterface|null
 	{
+		if (is_string($this->pending)) {
+			return Utils\DateTime::createFromFormat(DateTimeInterface::ATOM, $this->pending);
+		}
+
 		return $this->pending;
 	}
 
@@ -156,7 +162,9 @@ class Property extends RedisDbStates\State implements DevicesStates\Property
 		return array_merge([
 			'actual_value' => $this->getActualValue(),
 			'expected_value' => $this->getExpectedValue(),
-			'pending' => $this->getPending(),
+			'pending' => $this->getPending() instanceof DateTimeInterface ? $this->getPending()->format(
+				DateTimeInterface::ATOM,
+			) : $this->getPending(),
 			'valid' => $this->isValid(),
 			'created_at' => $this->getCreatedAt()?->format(DateTimeInterface::ATOM),
 			'updated_at' => $this->getUpdatedAt()?->format(DateTimeInterface::ATOM),
