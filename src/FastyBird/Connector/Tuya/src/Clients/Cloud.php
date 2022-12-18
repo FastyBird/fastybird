@@ -799,7 +799,7 @@ final class Cloud implements Client
 				],
 			],
 		);
-var_dump($decryptedData);
+
 		try {
 			$decryptedData = $this->schemaValidator->validate(
 				$decryptedData,
