@@ -70,10 +70,10 @@ final class FbMqttV1 extends Client
 	// When new client is connected, broker send specific payload
 	private const NEW_CLIENT_MESSAGE_PAYLOAD = 'New client connected from';
 
-	/** @var Array<string> */
+	/** @var array<string> */
 	private array $processedDevices = [];
 
-	/** @var Array<string, DateTimeInterface> */
+	/** @var array<string, DateTimeInterface> */
 	private array $processedProperties = [];
 
 	public function __construct(

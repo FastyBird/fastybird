@@ -30,7 +30,7 @@ use FastyBird\Module\Triggers\Schemas;
 final class AutomaticTrigger extends Trigger
 {
 
-	/** @var Array<string> */
+	/** @var array<string> */
 	protected array $relationships = [
 		Schemas\Triggers\AutomaticTrigger::RELATIONSHIPS_CONDITIONS,
 		Schemas\Triggers\AutomaticTrigger::RELATIONSHIPS_ACTIONS,

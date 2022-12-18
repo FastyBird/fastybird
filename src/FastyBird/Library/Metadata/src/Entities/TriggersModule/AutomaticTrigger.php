@@ -59,7 +59,7 @@ final class AutomaticTrigger extends Trigger
 	}
 
 	/**
-	 * @return Array<string, mixed>
+	 * @return array<string, mixed>
 	 */
 	public function __serialize(): array
 	{

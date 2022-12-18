@@ -38,7 +38,7 @@ use function is_scalar;
 final class TimeCondition extends TriggersHydrators\Conditions\Condition
 {
 
-	/** @var Array<int|string, string> */
+	/** @var array<int|string, string> */
 	protected array $attributes = [
 		'time',
 		'days',
@@ -89,7 +89,7 @@ final class TimeCondition extends TriggersHydrators\Conditions\Condition
 	}
 
 	/**
-	 * @return Array<int>
+	 * @return array<int>
 	 *
 	 * @throws JsonApiExceptions\JsonApi
 	 */

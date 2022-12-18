@@ -37,15 +37,15 @@ final class Device implements Entities\Entity, Entities\Owner
 
 	private Uuid\UuidInterface $connector;
 
-	/** @var Array<Uuid\UuidInterface> */
+	/** @var array<Uuid\UuidInterface> */
 	private array $parents;
 
-	/** @var Array<Uuid\UuidInterface> */
+	/** @var array<Uuid\UuidInterface> */
 	private array $children;
 
 	/**
-	 * @param Array<string>|Utils\ArrayHash<string> $parents
-	 * @param Array<string>|Utils\ArrayHash<string> $children
+	 * @param array<string>|Utils\ArrayHash<string> $parents
+	 * @param array<string>|Utils\ArrayHash<string> $children
 	 */
 	public function __construct(
 		string $id,
@@ -103,7 +103,7 @@ final class Device implements Entities\Entity, Entities\Owner
 	}
 
 	/**
-	 * @return Array<Uuid\UuidInterface>
+	 * @return array<Uuid\UuidInterface>
 	 */
 	public function getParents(): array
 	{
@@ -111,7 +111,7 @@ final class Device implements Entities\Entity, Entities\Owner
 	}
 
 	/**
-	 * @return Array<Uuid\UuidInterface>
+	 * @return array<Uuid\UuidInterface>
 	 */
 	public function getChildren(): array
 	{
@@ -140,7 +140,7 @@ final class Device implements Entities\Entity, Entities\Owner
 	}
 
 	/**
-	 * @return Array<string, mixed>
+	 * @return array<string, mixed>
 	 */
 	public function __serialize(): array
 	{

@@ -212,7 +212,7 @@ abstract class Device implements Entities\Entity,
 	}
 
 	/**
-	 * @return Array<Device>
+	 * @return array<Device>
 	 */
 	public function getParents(): array
 	{
@@ -220,7 +220,7 @@ abstract class Device implements Entities\Entity,
 	}
 
 	/**
-	 * @param Array<Device> $parents
+	 * @param array<Device> $parents
 	 */
 	public function setParents(array $parents): void
 	{
@@ -248,7 +248,7 @@ abstract class Device implements Entities\Entity,
 	}
 
 	/**
-	 * @return Array<Device>
+	 * @return array<Device>
 	 */
 	public function getChildren(): array
 	{
@@ -256,7 +256,7 @@ abstract class Device implements Entities\Entity,
 	}
 
 	/**
-	 * @param Array<Device> $children
+	 * @param array<Device> $children
 	 */
 	public function setChildren(array $children): void
 	{
@@ -288,7 +288,7 @@ abstract class Device implements Entities\Entity,
 	}
 
 	/**
-	 * @return Array<Entities\Channels\Channel>
+	 * @return array<Entities\Channels\Channel>
 	 */
 	public function getChannels(): array
 	{
@@ -296,7 +296,7 @@ abstract class Device implements Entities\Entity,
 	}
 
 	/**
-	 * @param Array<Entities\Channels\Channel> $channels
+	 * @param array<Entities\Channels\Channel> $channels
 	 */
 	public function setChannels(array $channels = []): void
 	{
@@ -344,7 +344,7 @@ abstract class Device implements Entities\Entity,
 	}
 
 	/**
-	 * @return Array<Entities\Devices\Controls\Control>
+	 * @return array<Entities\Devices\Controls\Control>
 	 */
 	public function getControls(): array
 	{
@@ -352,7 +352,7 @@ abstract class Device implements Entities\Entity,
 	}
 
 	/**
-	 * @param Array<Entities\Devices\Controls\Control> $controls
+	 * @param array<Entities\Devices\Controls\Control> $controls
 	 */
 	public function setControls(array $controls = []): void
 	{
@@ -400,7 +400,7 @@ abstract class Device implements Entities\Entity,
 	}
 
 	/**
-	 * @return Array<Entities\Devices\Properties\Property>
+	 * @return array<Entities\Devices\Properties\Property>
 	 */
 	public function getProperties(): array
 	{
@@ -408,7 +408,7 @@ abstract class Device implements Entities\Entity,
 	}
 
 	/**
-	 * @param Array<Entities\Devices\Properties\Property> $properties
+	 * @param array<Entities\Devices\Properties\Property> $properties
 	 */
 	public function setProperties(array $properties = []): void
 	{
@@ -458,7 +458,7 @@ abstract class Device implements Entities\Entity,
 	}
 
 	/**
-	 * @return Array<Entities\Devices\Attributes\Attribute>
+	 * @return array<Entities\Devices\Attributes\Attribute>
 	 */
 	public function getAttributes(): array
 	{
@@ -466,7 +466,7 @@ abstract class Device implements Entities\Entity,
 	}
 
 	/**
-	 * @param Array<Entities\Devices\Attributes\Attribute> $attributes
+	 * @param array<Entities\Devices\Attributes\Attribute> $attributes
 	 */
 	public function setAttributes(array $attributes = []): void
 	{

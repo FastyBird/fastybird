@@ -33,7 +33,7 @@ final class SensorRange implements Entity
 	use Nette\SmartObject;
 
 	/**
-	 * @param Array<string>|Array<int>|Array<float>|Array<int, Array<int, (string|null)>>|Array<int, (int|null)>|Array<int, (float|null)>|Array<int, (MetadataTypes\SwitchPayload|string|Types\RelayPayload|null)>|null $format
+	 * @param array<string>|array<int>|array<float>|array<int, array<int, (string|null)>>|array<int, (int|null)>|array<int, (float|null)>|array<int, (MetadataTypes\SwitchPayload|string|Types\RelayPayload|null)>|null $format
 	 */
 	public function __construct(
 		private readonly Types\MessageSource $source,
@@ -55,7 +55,7 @@ final class SensorRange implements Entity
 	}
 
 	/**
-	 * @return Array<string>|Array<int>|Array<float>|Array<int, Array<int, (string|null)>>|Array<int, (int|null)>|Array<int, (float|null)>|Array<int, (MetadataTypes\SwitchPayload|string|Types\RelayPayload|null)>|null
+	 * @return array<string>|array<int>|array<float>|array<int, array<int, (string|null)>>|array<int, (int|null)>|array<int, (float|null)>|array<int, (MetadataTypes\SwitchPayload|string|Types\RelayPayload|null)>|null
 	 */
 	public function getFormat(): array|null
 	{

@@ -37,7 +37,7 @@ final class Validator
 
 	use Nette\SmartObject;
 
-	/** @var Array<string, JsonSchema\Schema>  */
+	/** @var array<string, JsonSchema\Schema>  */
 	private array $schemas = [];
 
 	/**

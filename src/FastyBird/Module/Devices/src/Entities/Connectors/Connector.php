@@ -170,7 +170,7 @@ abstract class Connector implements Entities\Entity,
 	}
 
 	/**
-	 * @return Array<Entities\Devices\Device>
+	 * @return array<Entities\Devices\Device>
 	 */
 	public function getDevices(): array
 	{
@@ -178,7 +178,7 @@ abstract class Connector implements Entities\Entity,
 	}
 
 	/**
-	 * @return Array<Entities\Connectors\Properties\Property>
+	 * @return array<Entities\Connectors\Properties\Property>
 	 */
 	public function getProperties(): array
 	{
@@ -186,7 +186,7 @@ abstract class Connector implements Entities\Entity,
 	}
 
 	/**
-	 * @param Array<Entities\Connectors\Properties\Property> $properties
+	 * @param array<Entities\Connectors\Properties\Property> $properties
 	 */
 	public function setProperties(array $properties = []): void
 	{
@@ -241,7 +241,7 @@ abstract class Connector implements Entities\Entity,
 	}
 
 	/**
-	 * @return Array<Entities\Connectors\Controls\Control>
+	 * @return array<Entities\Connectors\Controls\Control>
 	 */
 	public function getControls(): array
 	{
@@ -249,7 +249,7 @@ abstract class Connector implements Entities\Entity,
 	}
 
 	/**
-	 * @param Array<Entities\Connectors\Controls\Control> $controls
+	 * @param array<Entities\Connectors\Controls\Control> $controls
 	 */
 	public function setControls(array $controls = []): void
 	{

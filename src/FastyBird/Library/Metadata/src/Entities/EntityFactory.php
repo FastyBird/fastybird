@@ -144,7 +144,7 @@ abstract class EntityFactory
 	}
 
 	/**
-	 * @return Array<string, mixed>
+	 * @return array<string, mixed>
 	 */
 	protected function convertKeys(Utils\ArrayHash $data): array
 	{
@@ -164,7 +164,7 @@ abstract class EntityFactory
 	/**
 	 * This method was inspired by same method in Nette framework
 	 *
-	 * @return Array<mixed>
+	 * @return array<mixed>
 	 *
 	 * @throws ReflectionException
 	 */
@@ -227,7 +227,7 @@ abstract class EntityFactory
 	}
 
 	/**
-	 * @return Array<ReflectionProperty>
+	 * @return array<ReflectionProperty>
 	 */
 	private function getProperties(Reflector $rc): array
 	{
@@ -270,7 +270,7 @@ abstract class EntityFactory
 	}
 
 	/**
-	 * @param Array<string, mixed> $array
+	 * @param array<string, mixed> $array
 	 */
 	private function convertToObject(array $array): stdClass
 	{

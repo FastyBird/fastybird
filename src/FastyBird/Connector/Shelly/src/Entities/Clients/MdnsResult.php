@@ -31,7 +31,7 @@ final class MdnsResult
 	use Nette\SmartObject;
 
 	/**
-	 * @param Array<string, string|int|float> $data
+	 * @param array<string, string|int|float> $data
 	 */
 	public function __construct(
 		private readonly string $address,
@@ -52,7 +52,7 @@ final class MdnsResult
 	}
 
 	/**
-	 * @return Array<string, string|int|float>
+	 * @return array<string, string|int|float>
 	 */
 	public function getData(): array
 	{
@@ -60,7 +60,7 @@ final class MdnsResult
 	}
 
 	/**
-	 * @return Array<string, string|Array<string, string|int|float>>
+	 * @return array<string, string|array<string, string|int|float>>
 	 */
 	public function __serialize(): array
 	{

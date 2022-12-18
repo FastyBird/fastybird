@@ -52,7 +52,7 @@ final class Connector implements DevicesConnectors\Connector
 	private EventLoop\TimerInterface|null $consumerTimer;
 
 	/**
-	 * @param Array<Clients\ClientFactory> $clientsFactories
+	 * @param array<Clients\ClientFactory> $clientsFactories
 	 */
 	public function __construct(
 		private readonly DevicesEntities\Connectors\Connector $connector,

@@ -101,7 +101,7 @@ final class Identity extends JsonApis\JsonApi
 	/**
 	 * @phpstan-param Entities\Identities\Identity $resource
 	 *
-	 * @phpstan-return iterable<string, Array<int, (Entities\Accounts\Account|bool)>>
+	 * @phpstan-return iterable<string, array<int, (Entities\Accounts\Account|bool)>>
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */

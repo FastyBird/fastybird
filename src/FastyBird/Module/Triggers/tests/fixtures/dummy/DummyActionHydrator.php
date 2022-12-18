@@ -12,7 +12,7 @@ use function is_scalar;
 final class DummyActionHydrator extends Hydrators\Actions\Action
 {
 
-	/** @var Array<int|string, string> */
+	/** @var array<int|string, string> */
 	protected array $attributes = [
 		0 => 'value',
 		1 => 'enabled',

@@ -109,7 +109,7 @@ abstract class Property extends Entities\Property
 	}
 
 	/**
-	 * @return Array<Property>
+	 * @return array<Property>
 	 */
 	public function getChildren(): array
 	{
@@ -117,7 +117,7 @@ abstract class Property extends Entities\Property
 	}
 
 	/**
-	 * @param Array<Property> $children
+	 * @param array<Property> $children
 	 */
 	public function setChildren(array $children): void
 	{

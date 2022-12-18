@@ -90,7 +90,7 @@ final class Publisher
 	}
 
 	/**
-	 * @param Array<string, mixed> $data
+	 * @param array<string, mixed> $data
 	 */
 	private function sendMessage(string $destination, array $data): bool
 	{

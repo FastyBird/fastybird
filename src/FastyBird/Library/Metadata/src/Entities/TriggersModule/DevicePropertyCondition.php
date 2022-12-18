@@ -87,7 +87,7 @@ final class DevicePropertyCondition extends Condition
 	}
 
 	/**
-	 * @return Array<string, mixed>
+	 * @return array<string, mixed>
 	 */
 	public function __serialize(): array
 	{

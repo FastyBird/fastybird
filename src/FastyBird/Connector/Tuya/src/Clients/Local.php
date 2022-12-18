@@ -66,16 +66,16 @@ final class Local implements Client
 
 	private const CMD_STATUS = 'status';
 
-	/** @var Array<string, API\LocalApi> */
+	/** @var array<string, API\LocalApi> */
 	private array $devicesClients = [];
 
-	/** @var Array<string> */
+	/** @var array<string> */
 	private array $processedDevices = [];
 
-	/** @var Array<string, Array<string, DateTimeInterface|false>> */
+	/** @var array<string, array<string, DateTimeInterface|false>> */
 	private array $processedDevicesCommands = [];
 
-	/** @var Array<string, DateTimeInterface> */
+	/** @var array<string, DateTimeInterface> */
 	private array $devicesLastMessage = [];
 
 	private EventLoop\TimerInterface|null $handlerTimer = null;

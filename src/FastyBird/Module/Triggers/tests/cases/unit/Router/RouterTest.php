@@ -57,7 +57,7 @@ final class RouterTest extends DbTestCase
 	}
 
 	/**
-	 * @return Array<string, Array<string|int>>
+	 * @return array<string, array<string|int>>
 	 */
 	public function prefixedRoutes(): array
 	{

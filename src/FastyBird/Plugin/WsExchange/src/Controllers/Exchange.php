@@ -84,7 +84,7 @@ final class Exchange extends WebSockets\Application\Controller\Controller
 	}
 
 	/**
-	 * @phpstan-param Array<string, mixed> $args
+	 * @phpstan-param array<string, mixed> $args
 	 * @phpstan-param WebSocketsWAMP\Entities\Topics\ITopic<mixed> $topic
 	 *
 	 * @throws Exceptions\InvalidArgument
@@ -158,7 +158,7 @@ final class Exchange extends WebSockets\Application\Controller\Controller
 	}
 
 	/**
-	 * @param Array<string, mixed> $data
+	 * @param array<string, mixed> $data
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 */

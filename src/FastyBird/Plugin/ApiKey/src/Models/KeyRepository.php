@@ -33,7 +33,7 @@ final class KeyRepository
 
 	use Nette\SmartObject;
 
-	/** @var Array<ORM\EntityRepository<Entities\Key>> */
+	/** @var array<ORM\EntityRepository<Entities\Key>> */
 	private array $repository = [];
 
 	public function __construct(private readonly Persistence\ManagerRegistry $managerRegistry)

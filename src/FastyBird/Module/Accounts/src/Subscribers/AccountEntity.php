@@ -43,13 +43,13 @@ final class AccountEntity implements Common\EventSubscriber
 
 	use Nette\SmartObject;
 
-	/** @var Array<string> */
+	/** @var array<string> */
 	private array $singleRoles = [
 		SimpleAuth\Constants::ROLE_ADMINISTRATOR,
 		SimpleAuth\Constants::ROLE_USER,
 	];
 
-	/** @var Array<string> */
+	/** @var array<string> */
 	private array $notAssignableRoles = [
 		SimpleAuth\Constants::ROLE_VISITOR,
 		SimpleAuth\Constants::ROLE_ANONYMOUS,
@@ -148,9 +148,9 @@ final class AccountEntity implements Common\EventSubscriber
 	}
 
 	/**
-	 * @param Array<string> $roleNames
+	 * @param array<string> $roleNames
 	 *
-	 * @return Array<Entities\Roles\Role>
+	 * @return array<Entities\Roles\Role>
 	 *
 	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
 	 * @throws DoctrineOrmQueryExceptions\QueryException

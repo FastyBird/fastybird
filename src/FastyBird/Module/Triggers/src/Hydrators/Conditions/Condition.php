@@ -35,7 +35,7 @@ use function is_scalar;
 abstract class Condition extends JsonApiHydrators\Hydrator
 {
 
-	/** @var Array<string> */
+	/** @var array<string> */
 	protected array $relationships = [
 		Schemas\Conditions\Condition::RELATIONSHIPS_TRIGGER,
 	];

@@ -34,7 +34,7 @@ final class DiscoveredLocalDevice implements Entity
 	use Nette\SmartObject;
 
 	/**
-	 * @param Array<DiscoveredLocalDataPoint> $dataPoints
+	 * @param array<DiscoveredLocalDataPoint> $dataPoints
 	 */
 	public function __construct(
 		private readonly Uuid\UuidInterface $connector,
@@ -157,7 +157,7 @@ final class DiscoveredLocalDevice implements Entity
 	}
 
 	/**
-	 * @return Array<DiscoveredLocalDataPoint>
+	 * @return array<DiscoveredLocalDataPoint>
 	 */
 	public function getDataPoints(): array
 	{

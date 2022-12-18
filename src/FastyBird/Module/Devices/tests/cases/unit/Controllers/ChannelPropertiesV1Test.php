@@ -59,7 +59,7 @@ final class ChannelPropertiesV1Test extends DbTestCase
 	}
 
 	/**
-	 * @return Array<string, Array<string|int|null>>
+	 * @return array<string, array<string|int|null>>
 	 */
 	public function channelPropertiesRead(): array
 	{
@@ -223,7 +223,7 @@ final class ChannelPropertiesV1Test extends DbTestCase
 	}
 
 	/**
-	 * @return Array<string, Array<bool|string|int|null>>
+	 * @return array<string, array<bool|string|int|null>>
 	 */
 	public function channelPropertiesCreate(): array
 	{
@@ -351,7 +351,7 @@ final class ChannelPropertiesV1Test extends DbTestCase
 	}
 
 	/**
-	 * @return Array<string, Array<bool|string|int|null>>
+	 * @return array<string, array<bool|string|int|null>>
 	 */
 	public function channelPropertiesUpdate(): array
 	{
@@ -468,7 +468,7 @@ final class ChannelPropertiesV1Test extends DbTestCase
 	}
 
 	/**
-	 * @return Array<string, Array<string|int|null>>
+	 * @return array<string, array<string|int|null>>
 	 */
 	public function channelPropertiesDelete(): array
 	{

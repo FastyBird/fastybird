@@ -194,7 +194,7 @@ class Bootstrap
 	}
 
 	/**
-	 * @return Array<mixed>
+	 * @return array<mixed>
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 */

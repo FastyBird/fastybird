@@ -53,7 +53,7 @@ final class Authenticator implements SimpleAuthSecurity\IAuthenticator
 	/**
 	 * Performs a system authentication
 	 *
-	 * @param Array<mixed> $credentials
+	 * @param array<mixed> $credentials
 	 *
 	 * @return Entities\Identities\Identity
 	 *

@@ -48,7 +48,7 @@ final class CombinedEnumFormatItem
 	private string|int|float|bool $value;
 
 	/**
-	 * @param string|Array<int, string|int|float|bool> $item
+	 * @param string|array<int, string|int|float|bool> $item
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 */
@@ -138,7 +138,7 @@ final class CombinedEnumFormatItem
 	}
 
 	/**
-	 * @return Array<int, string|int|float|bool>
+	 * @return array<int, string|int|float|bool>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */

@@ -38,7 +38,7 @@ final class PropertiesRepository
 
 	use Nette\SmartObject;
 
-	/** @var Array<ORM\EntityRepository<Entities\Devices\Properties\Property>> */
+	/** @var array<ORM\EntityRepository<Entities\Devices\Properties\Property>> */
 	private array $repository = [];
 
 	public function __construct(
@@ -66,7 +66,7 @@ final class PropertiesRepository
 	/**
 	 * @phpstan-param class-string<Entities\Devices\Properties\Property> $type
 	 *
-	 * @phpstan-return  Array<Entities\Devices\Properties\Property>
+	 * @phpstan-return  array<Entities\Devices\Properties\Property>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -77,14 +77,14 @@ final class PropertiesRepository
 	{
 		return $this->database->query(
 			function () use ($queryObject, $type): array {
-				/** @var Array<Entities\Devices\Properties\Property>|DoctrineOrmQuery\ResultSet<Entities\Devices\Properties\Property> $result */
+				/** @var array<Entities\Devices\Properties\Property>|DoctrineOrmQuery\ResultSet<Entities\Devices\Properties\Property> $result */
 				$result = $queryObject->fetch($this->getRepository($type));
 
 				if (is_array($result)) {
 					return $result;
 				}
 
-				/** @var Array<Entities\Devices\Properties\Property> $data */
+				/** @var array<Entities\Devices\Properties\Property> $data */
 				$data = $result->toArray();
 
 				return $data;

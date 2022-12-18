@@ -70,7 +70,7 @@ final class PropertyAttribute
 		'hsv',
 	];
 
-	/** @var string|Array<string>|Array<float>|Array<null>|bool|MetadataTypes\DataType|null */
+	/** @var string|array<string>|array<float>|array<null>|bool|MetadataTypes\DataType|null */
 	private MetadataTypes\DataType|string|array|bool|null $value = null;
 
 	/**
@@ -94,7 +94,7 @@ final class PropertyAttribute
 	}
 
 	/**
-	 * @return string|Array<string>|Array<float>|Array<null>|bool|MetadataTypes\DataType|null
+	 * @return string|array<string>|array<float>|array<null>|bool|MetadataTypes\DataType|null
 	 */
 	public function getValue(): string|array|bool|MetadataTypes\DataType|null
 	{
@@ -113,7 +113,7 @@ final class PropertyAttribute
 	}
 
 	/**
-	 * @return Array<mixed>
+	 * @return array<mixed>
 	 */
 	public function toArray(): array
 	{

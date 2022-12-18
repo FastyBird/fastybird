@@ -37,11 +37,11 @@ final class CombinedEnumFormat
 
 	use Nette\SmartObject;
 
-	/** @var Array<int, Array<int, CombinedEnumFormatItem|null>> */
+	/** @var array<int, array<int, CombinedEnumFormatItem|null>> */
 	private array $items;
 
 	/**
-	 * @param string|Array<int, Array<int, string|Array<int, string|int|float|bool>|null>> $items
+	 * @param string|array<int, array<int, string|array<int, string|int|float|bool>|null>> $items
 	 */
 	public function __construct(string|array $items)
 	{
@@ -79,7 +79,7 @@ final class CombinedEnumFormat
 	}
 
 	/**
-	 * @return Array<int, Array<int, CombinedEnumFormatItem|null>>
+	 * @return array<int, array<int, CombinedEnumFormatItem|null>>
 	 */
 	public function getItems(): array
 	{
@@ -87,7 +87,7 @@ final class CombinedEnumFormat
 	}
 
 	/**
-	 * @return Array<int, Array<int, string|Array<int, string|int|float|bool>|null>>
+	 * @return array<int, array<int, string|array<int, string|int|float|bool>|null>>
 	 */
 	public function toArray(): array
 	{

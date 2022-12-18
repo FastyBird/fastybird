@@ -34,7 +34,7 @@ use function is_scalar;
 abstract class Connector extends JsonApiHydrators\Hydrator
 {
 
-	/** @var Array<int|string, string> */
+	/** @var array<int|string, string> */
 	protected array $attributes
 		= [
 			'identifier',

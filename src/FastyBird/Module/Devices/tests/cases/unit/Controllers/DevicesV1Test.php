@@ -59,7 +59,7 @@ final class DevicesV1Test extends DbTestCase
 	}
 
 	/**
-	 * @return Array<string, Array<string|int|null>>
+	 * @return array<string, array<string|int|null>>
 	 */
 	public function devicesRead(): array
 	{
@@ -244,7 +244,7 @@ final class DevicesV1Test extends DbTestCase
 	}
 
 	/**
-	 * @return Array<string, Array<bool|string|int|null>>
+	 * @return array<string, array<bool|string|int|null>>
 	 */
 	public function devicesCreate(): array
 	{
@@ -370,7 +370,7 @@ final class DevicesV1Test extends DbTestCase
 	}
 
 	/**
-	 * @return Array<string, Array<bool|string|int|null>>
+	 * @return array<string, array<bool|string|int|null>>
 	 */
 	public function devicesUpdate(): array
 	{
@@ -475,7 +475,7 @@ final class DevicesV1Test extends DbTestCase
 	}
 
 	/**
-	 * @return Array<string, Array<string|int|null>>
+	 * @return array<string, array<string|int|null>>
 	 */
 	public function devicesDelete(): array
 	{

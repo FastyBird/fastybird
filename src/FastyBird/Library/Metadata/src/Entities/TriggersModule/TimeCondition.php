@@ -34,7 +34,7 @@ final class TimeCondition extends Condition
 	private DateTimeInterface $time;
 
 	/**
-	 * @param Array<int> $days
+	 * @param array<int> $days
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 */
@@ -67,7 +67,7 @@ final class TimeCondition extends Condition
 	}
 
 	/**
-	 * @return Array<int>
+	 * @return array<int>
 	 */
 	public function getDays(): array
 	{
@@ -83,7 +83,7 @@ final class TimeCondition extends Condition
 	}
 
 	/**
-	 * @return Array<string, mixed>
+	 * @return array<string, mixed>
 	 */
 	public function __serialize(): array
 	{

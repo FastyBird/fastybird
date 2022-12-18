@@ -89,21 +89,21 @@ final class IdentitiesRepository
 	}
 
 	/**
-	 * @phpstan-return Array<Entities\Identities\Identity>
+	 * @phpstan-return array<Entities\Identities\Identity>
 	 *
 	 * @throws Exception
 	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 */
 	public function findAllBy(Queries\FindIdentities $queryObject): array
 	{
-		/** @var Array<Entities\Identities\Identity>|DoctrineOrmQuery\ResultSet<Entities\Identities\Identity> $result */
+		/** @var array<Entities\Identities\Identity>|DoctrineOrmQuery\ResultSet<Entities\Identities\Identity> $result */
 		$result = $queryObject->fetch($this->getRepository());
 
 		if (is_array($result)) {
 			return $result;
 		}
 
-		/** @var Array<Entities\Identities\Identity> $data */
+		/** @var array<Entities\Identities\Identity> $data */
 		$data = $result->toArray();
 
 		return $data;

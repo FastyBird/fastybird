@@ -41,17 +41,17 @@ final class Account implements Entities\Entity
 
 	private DateTimeInterface|null $lastVisit = null;
 
-	/** @var Array<string> */
+	/** @var array<string> */
 	private array $roles;
 
 	protected Uuid\UuidInterface|null $parent;
 
-	/** @var Array<Uuid\UuidInterface> */
+	/** @var array<Uuid\UuidInterface> */
 	protected array $children;
 
 	/**
-	 * @param Array<int, string>|Utils\ArrayHash<string> $roles
-	 * @param Array<int, string>|Utils\ArrayHash<string> $children
+	 * @param array<int, string>|Utils\ArrayHash<string> $roles
+	 * @param array<int, string>|Utils\ArrayHash<string> $children
 	 */
 	public function __construct(
 		string $id,
@@ -141,7 +141,7 @@ final class Account implements Entities\Entity
 	}
 
 	/**
-	 * @return Array<string>
+	 * @return array<string>
 	 */
 	public function getRoles(): array
 	{
@@ -165,7 +165,7 @@ final class Account implements Entities\Entity
 	}
 
 	/**
-	 * @return Array<string, mixed>
+	 * @return array<string, mixed>
 	 */
 	public function __serialize(): array
 	{

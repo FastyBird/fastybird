@@ -17,7 +17,7 @@ final class FactoryTest extends TestCase
 
 	/**
 	 * @phpstan-param class-string<Fixtures\CustomState> $class
-	 * @phpstan-param Array<string, Array<string|Array<string, mixed>>> $data
+	 * @phpstan-param array<string, array<string|array<string, mixed>>> $data
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
@@ -46,7 +46,7 @@ final class FactoryTest extends TestCase
 
 	/**
 	 * @phpstan-param class-string<Fixtures\CustomState> $class
-	 * @phpstan-param Array<string, Array<string|Array<string, mixed>>> $data
+	 * @phpstan-param array<string, array<string|array<string, mixed>>> $data
 	 * @phpstan-param class-string<Throwable> $exception
 	 *
 	 * @throws Exceptions\InvalidArgument
@@ -69,7 +69,7 @@ final class FactoryTest extends TestCase
 	}
 
 	/**
-	 * @return Array<string, Array<string|Array<string, mixed>>>
+	 * @return array<string, array<string|array<string, mixed>>>
 	 */
 	public function createStateValidDocumentData(): array
 	{
@@ -90,7 +90,7 @@ final class FactoryTest extends TestCase
 	}
 
 	/**
-	 * @return Array<string, Array<string|Array<string, mixed>>>
+	 * @return array<string, array<string|array<string, mixed>>>
 	 */
 	public function createStateInvalidDocumentData(): array
 	{

@@ -98,7 +98,7 @@ final class Session extends JsonApis\JsonApi
 	/**
 	 * @phpstan-param Entities\Tokens\AccessToken $resource
 	 *
-	 * @phpstan-return iterable<string, Array<int, (Entities\Accounts\Account|bool)>>
+	 * @phpstan-return iterable<string, array<int, (Entities\Accounts\Account|bool)>>
 	 *
 	 * @throws Exceptions\InvalidState
 	 *

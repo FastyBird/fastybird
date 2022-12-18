@@ -86,7 +86,7 @@ final class Validator implements MiddlewareInterface
 	}
 
 	/**
-	 * @return Array<string, mixed>
+	 * @return array<string, mixed>
 	 */
 	private function readHeaders(ServerRequestInterface $request): array
 	{

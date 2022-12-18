@@ -34,7 +34,7 @@ final class DeviceRawMessage implements Entity
 	use Nette\SmartObject;
 
 	/**
-	 * @param string|Entity|Array<Entity>|null $data
+	 * @param string|Entity|array<Entity>|null $data
 	 */
 	public function __construct(
 		private readonly string $identifier,
@@ -68,7 +68,7 @@ final class DeviceRawMessage implements Entity
 	}
 
 	/**
-	 * @return string|Entity|Array<Entity>|null
+	 * @return string|Entity|array<Entity>|null
 	 */
 	public function getData(): string|Entity|array|null
 	{

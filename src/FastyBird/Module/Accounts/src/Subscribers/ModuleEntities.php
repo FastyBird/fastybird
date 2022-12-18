@@ -272,7 +272,7 @@ final class ModuleEntities implements Common\EventSubscriber
 	}
 
 	/**
-	 * @param Array<mixed> $identifier
+	 * @param array<mixed> $identifier
 	 */
 	private function getHash(Entities\Entity $entity, array $identifier): string
 	{

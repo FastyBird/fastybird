@@ -69,21 +69,21 @@ final class EmailsRepository
 	}
 
 	/**
-	 * @phpstan-return Array<Entities\Emails\Email>
+	 * @phpstan-return array<Entities\Emails\Email>
 	 *
 	 * @throws Exception
 	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 */
 	public function findAllBy(Queries\FindEmails $queryObject): array
 	{
-		/** @var Array<Entities\Emails\Email>|DoctrineOrmQuery\ResultSet<Entities\Emails\Email> $result */
+		/** @var array<Entities\Emails\Email>|DoctrineOrmQuery\ResultSet<Entities\Emails\Email> $result */
 		$result = $queryObject->fetch($this->getRepository());
 
 		if (is_array($result)) {
 			return $result;
 		}
 
-		/** @var Array<Entities\Emails\Email> $data */
+		/** @var array<Entities\Emails\Email> $data */
 		$data = $result->toArray();
 
 		return $data;

@@ -32,11 +32,11 @@ use function sprintf;
 class Response extends SlimRouter\Http\Response
 {
 
-	/** @var Array<mixed> */
+	/** @var array<mixed> */
 	protected array $attributes = [];
 
 	/**
-	 * @return Array<mixed>
+	 * @return array<mixed>
 	 */
 	public function getAttributes(): array
 	{

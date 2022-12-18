@@ -90,10 +90,10 @@ final class Cloud implements Client
 
 	private const CMD_HEARTBEAT = 'hearbeat';
 
-	/** @var Array<string> */
+	/** @var array<string> */
 	private array $processedDevices = [];
 
-	/** @var Array<string, Array<string, DateTimeInterface|bool>> */
+	/** @var array<string, array<string, DateTimeInterface|bool>> */
 	private array $processedDevicesCommands = [];
 
 	private EventLoop\TimerInterface|null $pingTimer = null;

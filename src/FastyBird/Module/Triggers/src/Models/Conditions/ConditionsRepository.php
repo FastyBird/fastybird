@@ -38,7 +38,7 @@ final class ConditionsRepository
 
 	use Nette\SmartObject;
 
-	/** @var Array<ORM\EntityRepository<Entities\Conditions\Condition>> */
+	/** @var array<ORM\EntityRepository<Entities\Conditions\Condition>> */
 	private array $repository = [];
 
 	public function __construct(
@@ -68,7 +68,7 @@ final class ConditionsRepository
 	 * @param Queries\FindConditions<Entities\Conditions\Condition> $queryObject
 	 * @param class-string<Entities\Conditions\Condition> $type
 	 *
-	 * @return Array<Entities\Conditions\Condition>
+	 * @return array<Entities\Conditions\Condition>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -79,14 +79,14 @@ final class ConditionsRepository
 	{
 		return $this->database->query(
 			function () use ($queryObject, $type): array {
-				/** @var Array<Entities\Conditions\Condition>|DoctrineOrmQuery\ResultSet<Entities\Conditions\Condition> $result */
+				/** @var array<Entities\Conditions\Condition>|DoctrineOrmQuery\ResultSet<Entities\Conditions\Condition> $result */
 				$result = $queryObject->fetch($this->getRepository($type));
 
 				if (is_array($result)) {
 					return $result;
 				}
 
-				/** @var Array<Entities\Conditions\Condition> $data */
+				/** @var array<Entities\Conditions\Condition> $data */
 				$data = $result->toArray();
 
 				return $data;

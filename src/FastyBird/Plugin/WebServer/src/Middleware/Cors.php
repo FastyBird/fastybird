@@ -33,8 +33,8 @@ final class Cors
 {
 
 	/**
-	 * @param Array<string> $allowMethods
-	 * @param Array<string> $allowHeaders
+	 * @param array<string> $allowMethods
+	 * @param array<string> $allowHeaders
 	 */
 	public function __construct(
 		private readonly bool $enabled,

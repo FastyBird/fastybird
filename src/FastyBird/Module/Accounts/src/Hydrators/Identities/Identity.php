@@ -37,13 +37,13 @@ use function is_scalar;
 class Identity extends JsonApiHydrators\Hydrator
 {
 
-	/** @var Array<int|string, string> */
+	/** @var array<int|string, string> */
 	protected array $attributes = [
 		'uid',
 		'password',
 	];
 
-	/** @var Array<string> */
+	/** @var array<string> */
 	protected array $relationships = [
 		Schemas\Identities\Identity::RELATIONSHIPS_ACCOUNT,
 	];

@@ -38,7 +38,7 @@ final class ActionsRepository
 
 	use Nette\SmartObject;
 
-	/** @var Array<ORM\EntityRepository<Entities\Actions\Action>> */
+	/** @var array<ORM\EntityRepository<Entities\Actions\Action>> */
 	private array $repository = [];
 
 	public function __construct(
@@ -68,7 +68,7 @@ final class ActionsRepository
 	 * @param Queries\FindActions<Entities\Actions\Action> $queryObject
 	 * @param class-string<Entities\Actions\Action> $type
 	 *
-	 * @return Array<Entities\Actions\Action>
+	 * @return array<Entities\Actions\Action>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -79,14 +79,14 @@ final class ActionsRepository
 	{
 		return $this->database->query(
 			function () use ($queryObject, $type): array {
-				/** @var Array<Entities\Actions\Action>|DoctrineOrmQuery\ResultSet<Entities\Actions\Action> $result */
+				/** @var array<Entities\Actions\Action>|DoctrineOrmQuery\ResultSet<Entities\Actions\Action> $result */
 				$result = $queryObject->fetch($this->getRepository($type));
 
 				if (is_array($result)) {
 					return $result;
 				}
 
-				/** @var Array<Entities\Actions\Action> $data */
+				/** @var array<Entities\Actions\Action> $data */
 				$data = $result->toArray();
 
 				return $data;

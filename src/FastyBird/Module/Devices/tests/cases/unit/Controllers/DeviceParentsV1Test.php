@@ -58,7 +58,7 @@ final class DeviceParentsV1Test extends DbTestCase
 	}
 
 	/**
-	 * @return Array<string, Array<string|int|null>>
+	 * @return array<string, array<string|int|null>>
 	 */
 	public function deviceParentsRead(): array
 	{

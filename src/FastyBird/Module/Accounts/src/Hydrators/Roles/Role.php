@@ -33,12 +33,12 @@ use function is_scalar;
 final class Role extends JsonApiHydrators\Hydrator
 {
 
-	/** @var Array<int|string, string> */
+	/** @var array<int|string, string> */
 	protected array $attributes = [
 		'comment',
 	];
 
-	/** @var Array<string> */
+	/** @var array<string> */
 	protected array $relationships = [
 		Schemas\Roles\Role::RELATIONSHIPS_PARENT,
 	];

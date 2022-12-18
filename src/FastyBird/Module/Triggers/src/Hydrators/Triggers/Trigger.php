@@ -34,14 +34,14 @@ use function is_scalar;
 abstract class Trigger extends JsonApiHydrators\Hydrator
 {
 
-	/** @var Array<int|string, string> */
+	/** @var array<int|string, string> */
 	protected array $attributes = [
 		'name',
 		'comment',
 		'enabled',
 	];
 
-	/** @var Array<string> */
+	/** @var array<string> */
 	protected array $relationships = [
 		Schemas\Triggers\Trigger::RELATIONSHIPS_ACTIONS,
 		Schemas\Triggers\Trigger::RELATIONSHIPS_NOTIFICATIONS,

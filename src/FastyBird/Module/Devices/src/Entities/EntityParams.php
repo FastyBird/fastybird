@@ -29,7 +29,7 @@ interface EntityParams
 {
 
 	/**
-	 * @param Array<string, mixed> $params
+	 * @param array<string, mixed> $params
 	 */
 	public function setParams(array $params): void;
 

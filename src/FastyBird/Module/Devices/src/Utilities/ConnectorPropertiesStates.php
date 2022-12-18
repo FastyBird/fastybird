@@ -204,7 +204,7 @@ final class ConnectorPropertiesStates
 	}
 
 	/**
-	 * @param MetadataEntities\DevicesModule\ConnectorDynamicProperty|Array<MetadataEntities\DevicesModule\ConnectorDynamicProperty>|Entities\Connectors\Properties\Dynamic|Array<Entities\Connectors\Properties\Dynamic> $property
+	 * @param MetadataEntities\DevicesModule\ConnectorDynamicProperty|array<MetadataEntities\DevicesModule\ConnectorDynamicProperty>|Entities\Connectors\Properties\Dynamic|array<Entities\Connectors\Properties\Dynamic> $property
 	 *
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState

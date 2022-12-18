@@ -33,7 +33,7 @@ final class ConnectorDynamicProperty extends DynamicProperty
 	use TConnectorProperty;
 
 	/**
-	 * @param Array<int, string>|Array<int, string|int|float|Array<int, string|int|float>|null>|Array<int, Array<int, string|Array<int, string|int|float|bool>|null>>|null $format
+	 * @param array<int, string>|array<int, string|int|float|array<int, string|int|float>|null>|array<int, array<int, string|array<int, string|int|float|bool>|null>>|null $format
 	 * @param bool|null $pending
 	 */
 	public function __construct(
@@ -91,7 +91,7 @@ final class ConnectorDynamicProperty extends DynamicProperty
 	}
 
 	/**
-	 * @return Array<string, mixed>
+	 * @return array<string, mixed>
 	 *
 	 * @throws Exception
 	 */

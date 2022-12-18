@@ -15,7 +15,7 @@ use function strtolower;
 final class DummyConditionHydrator extends Hydrators\Conditions\Condition
 {
 
-	/** @var Array<int|string, string> */
+	/** @var array<int|string, string> */
 	protected array $attributes = [
 		0 => 'operator',
 		1 => 'operand',

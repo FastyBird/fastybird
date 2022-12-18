@@ -38,7 +38,7 @@ final class NotificationsRepository
 
 	use Nette\SmartObject;
 
-	/** @var Array<ORM\EntityRepository<Entities\Notifications\Notification>> */
+	/** @var array<ORM\EntityRepository<Entities\Notifications\Notification>> */
 	private array $repository = [];
 
 	public function __construct(
@@ -66,7 +66,7 @@ final class NotificationsRepository
 	/**
 	 * @param class-string<Entities\Notifications\Notification> $type
 	 *
-	 * @return Array<Entities\Notifications\Notification>
+	 * @return array<Entities\Notifications\Notification>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -77,14 +77,14 @@ final class NotificationsRepository
 	{
 		return $this->database->query(
 			function () use ($queryObject, $type): array {
-				/** @var Array<Entities\Notifications\Notification>|DoctrineOrmQuery\ResultSet<Entities\Notifications\Notification> $result */
+				/** @var array<Entities\Notifications\Notification>|DoctrineOrmQuery\ResultSet<Entities\Notifications\Notification> $result */
 				$result = $queryObject->fetch($this->getRepository($type));
 
 				if (is_array($result)) {
 					return $result;
 				}
 
-				/** @var Array<Entities\Notifications\Notification> $data */
+				/** @var array<Entities\Notifications\Notification> $data */
 				$data = $result->toArray();
 
 				return $data;

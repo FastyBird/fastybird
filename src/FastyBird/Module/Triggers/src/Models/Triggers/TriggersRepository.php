@@ -38,7 +38,7 @@ final class TriggersRepository
 
 	use Nette\SmartObject;
 
-	/** @var Array<ORM\EntityRepository<Entities\Triggers\Trigger>> */
+	/** @var array<ORM\EntityRepository<Entities\Triggers\Trigger>> */
 	private array $repository = [];
 
 	public function __construct(
@@ -66,7 +66,7 @@ final class TriggersRepository
 	/**
 	 * @param class-string<Entities\Triggers\Trigger> $type
 	 *
-	 * @return Array<Entities\Triggers\Trigger>
+	 * @return array<Entities\Triggers\Trigger>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -77,14 +77,14 @@ final class TriggersRepository
 	{
 		return $this->database->query(
 			function () use ($queryObject, $type): array {
-				/** @var Array<Entities\Triggers\Trigger>|DoctrineOrmQuery\ResultSet<Entities\Triggers\Trigger> $result */
+				/** @var array<Entities\Triggers\Trigger>|DoctrineOrmQuery\ResultSet<Entities\Triggers\Trigger> $result */
 				$result = $queryObject->fetch($this->getRepository($type));
 
 				if (is_array($result)) {
 					return $result;
 				}
 
-				/** @var Array<Entities\Triggers\Trigger> $data */
+				/** @var array<Entities\Triggers\Trigger> $data */
 				$data = $result->toArray();
 
 				return $data;

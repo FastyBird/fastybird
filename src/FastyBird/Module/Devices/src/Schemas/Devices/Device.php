@@ -310,7 +310,7 @@ abstract class Device extends JsonApiSchemas\JsonApi
 	}
 
 	/**
-	 * @phpstan-return Array<Entities\Channels\Channel>
+	 * @phpstan-return array<Entities\Channels\Channel>
 	 *
 	 * @throws Exception
 	 * @throws DoctrineOrmQueryExceptions\QueryException
@@ -324,7 +324,7 @@ abstract class Device extends JsonApiSchemas\JsonApi
 	}
 
 	/**
-	 * @phpstan-return Array<Entities\Devices\Device>
+	 * @phpstan-return array<Entities\Devices\Device>
 	 *
 	 * @throws Exception
 	 * @throws DoctrineOrmQueryExceptions\QueryException
@@ -338,7 +338,7 @@ abstract class Device extends JsonApiSchemas\JsonApi
 	}
 
 	/**
-	 * @phpstan-return Array<Entities\Devices\Device>
+	 * @phpstan-return array<Entities\Devices\Device>
 	 *
 	 * @throws Exception
 	 * @throws DoctrineOrmQueryExceptions\QueryException

@@ -284,7 +284,7 @@ final class Gen1Parser
 	}
 
 	/**
-	 * @return Array<Entities\Messages\BlockDescription>
+	 * @return array<Entities\Messages\BlockDescription>
 	 */
 	private function extractBlocksDescription(
 		Types\MessageSource $source,
@@ -376,7 +376,7 @@ final class Gen1Parser
 	}
 
 	/**
-	 * @param string|Array<string>|null $rawRange
+	 * @param string|array<string>|null $rawRange
 	 */
 	private function parseSensorRange(
 		Types\MessageSource $source,
@@ -593,9 +593,9 @@ final class Gen1Parser
 	}
 
 	/**
-	 * @param Array<string>|Array<int>|Array<float>|null $format
+	 * @param array<string>|array<int>|array<float>|null $format
 	 *
-	 * @return Array<string>|Array<int>|Array<float>|Array<int, Array<int, (string|null)>>|Array<int, (int|null)>|Array<int, (float|null)>|Array<int, (MetadataTypes\SwitchPayload|string|Types\RelayPayload|null)>|null
+	 * @return array<string>|array<int>|array<float>|array<int, array<int, (string|null)>>|array<int, (int|null)>|array<int, (float|null)>|array<int, (MetadataTypes\SwitchPayload|string|Types\RelayPayload|null)>|null
 	 */
 	private function adjustSensorFormat(
 		string $block,

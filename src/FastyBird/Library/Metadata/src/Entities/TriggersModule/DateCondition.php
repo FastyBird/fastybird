@@ -71,7 +71,7 @@ final class DateCondition extends Condition
 	}
 
 	/**
-	 * @return Array<string, mixed>
+	 * @return array<string, mixed>
 	 */
 	public function __serialize(): array
 	{

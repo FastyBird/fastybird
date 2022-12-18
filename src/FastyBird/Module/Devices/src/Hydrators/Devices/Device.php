@@ -34,7 +34,7 @@ use function is_scalar;
 abstract class Device extends JsonApiHydrators\Hydrator
 {
 
-	/** @var Array<int|string, string> */
+	/** @var array<int|string, string> */
 	protected array $attributes
 		= [
 			'identifier',
@@ -43,7 +43,7 @@ abstract class Device extends JsonApiHydrators\Hydrator
 			'params',
 		];
 
-	/** @var Array<string> */
+	/** @var array<string> */
 	protected array $relationships
 		= [
 			Schemas\Devices\Device::RELATIONSHIPS_CONNECTOR,

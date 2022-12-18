@@ -53,7 +53,7 @@ final class NumberRangeFormat
 	private Types\DataTypeShort|null $maxDataType = null;
 
 	/**
-	 * @param string|Array<int, string|int|float|Array<int, string|int|float>|null> $format
+	 * @param string|array<int, string|int|float|array<int, string|int|float>|null> $format
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 */
@@ -199,7 +199,7 @@ final class NumberRangeFormat
 	}
 
 	/**
-	 * @return Array<int, int|float|Array<int, string|int|float|null>|null>
+	 * @return array<int, int|float|array<int, string|int|float|null>|null>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -216,7 +216,7 @@ final class NumberRangeFormat
 	}
 
 	/**
-	 * @param int|float|Array<int, string|int|float>|null $item
+	 * @param int|float|array<int, string|int|float>|null $item
 	 */
 	private function checkItem(string|int|float|array|null $item): bool
 	{

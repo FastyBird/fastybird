@@ -29,7 +29,7 @@ use FastyBird\Automator\DevicesModule\Entities;
 final class DevicePropertyCondition extends PropertyCondition
 {
 
-	/** @var Array<int|string, string> */
+	/** @var array<int|string, string> */
 	protected array $attributes = [
 		'device',
 		'property',

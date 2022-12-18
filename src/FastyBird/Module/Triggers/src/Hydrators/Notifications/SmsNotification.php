@@ -36,7 +36,7 @@ use function is_scalar;
 final class SmsNotification extends Notification
 {
 
-	/** @var Array<int|string, string> */
+	/** @var array<int|string, string> */
 	protected array $attributes = [
 		'phone',
 		'enabled',

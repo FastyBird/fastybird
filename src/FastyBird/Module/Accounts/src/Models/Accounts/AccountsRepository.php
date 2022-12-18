@@ -57,21 +57,21 @@ final class AccountsRepository
 	}
 
 	/**
-	 * @phpstan-return Array<Entities\Accounts\Account>
+	 * @phpstan-return array<Entities\Accounts\Account>
 	 *
 	 * @throws Exception
 	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 */
 	public function findAllBy(Queries\FindAccounts $queryObject): array
 	{
-		/** @var Array<Entities\Accounts\Account>|DoctrineOrmQuery\ResultSet<Entities\Accounts\Account> $result */
+		/** @var array<Entities\Accounts\Account>|DoctrineOrmQuery\ResultSet<Entities\Accounts\Account> $result */
 		$result = $queryObject->fetch($this->getRepository());
 
 		if (is_array($result)) {
 			return $result;
 		}
 
-		/** @var Array<Entities\Accounts\Account> $data */
+		/** @var array<Entities\Accounts\Account> $data */
 		$data = $result->toArray();
 
 		return $data;

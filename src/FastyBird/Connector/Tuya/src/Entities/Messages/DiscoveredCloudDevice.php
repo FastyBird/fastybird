@@ -34,7 +34,7 @@ final class DiscoveredCloudDevice implements Entity
 	use Nette\SmartObject;
 
 	/**
-	 * @param Array<DiscoveredCloudDataPoint> $dataPoints
+	 * @param array<DiscoveredCloudDataPoint> $dataPoints
 	 */
 	public function __construct(
 		private readonly Uuid\UuidInterface $connector,
@@ -128,7 +128,7 @@ final class DiscoveredCloudDevice implements Entity
 	}
 
 	/**
-	 * @return Array<DiscoveredCloudDataPoint>
+	 * @return array<DiscoveredCloudDataPoint>
 	 */
 	public function getDataPoints(): array
 	{

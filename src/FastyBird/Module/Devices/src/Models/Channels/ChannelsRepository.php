@@ -59,7 +59,7 @@ final class ChannelsRepository
 	}
 
 	/**
-	 * @phpstan-return Array<Entities\Channels\Channel>
+	 * @phpstan-return array<Entities\Channels\Channel>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -67,14 +67,14 @@ final class ChannelsRepository
 	{
 		return $this->database->query(
 			function () use ($queryObject): array {
-				/** @var Array<Entities\Channels\Channel>|DoctrineOrmQuery\ResultSet<Entities\Channels\Channel> $result */
+				/** @var array<Entities\Channels\Channel>|DoctrineOrmQuery\ResultSet<Entities\Channels\Channel> $result */
 				$result = $queryObject->fetch($this->getRepository());
 
 				if (is_array($result)) {
 					return $result;
 				}
 
-				/** @var Array<Entities\Channels\Channel> $data */
+				/** @var array<Entities\Channels\Channel> $data */
 				$data = $result->toArray();
 
 				return $data;

@@ -51,7 +51,7 @@ abstract class Attribute extends Entity
 
 	public const CONTROLS = 'controls';
 
-	/** @var string|Array<string> */
+	/** @var string|array<string> */
 	private string|array $value;
 
 	/**
@@ -81,7 +81,7 @@ abstract class Attribute extends Entity
 	}
 
 	/**
-	 * @return string|Array<string>
+	 * @return string|array<string>
 	 */
 	public function getValue(): array|string
 	{
@@ -99,7 +99,7 @@ abstract class Attribute extends Entity
 	}
 
 	/**
-	 * @return Array<string>
+	 * @return array<string>
 	 */
 	protected function getAllowedAttributes(): array
 	{

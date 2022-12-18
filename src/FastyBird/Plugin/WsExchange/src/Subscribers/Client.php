@@ -40,10 +40,10 @@ class Client implements EventDispatcher\EventSubscriberInterface
 
 	protected Log\LoggerInterface $logger;
 
-	/** @var Array<string> */
+	/** @var array<string> */
 	private array $wsKeys;
 
-	/** @var Array<string> */
+	/** @var array<string> */
 	private array $allowedOrigins;
 
 	public function __construct(
@@ -92,8 +92,8 @@ class Client implements EventDispatcher\EventSubscriberInterface
 	}
 
 	/**
-	 * @param Array<string> $allowedWsKeys
-	 * @param Array<string> $allowedOrigins
+	 * @param array<string> $allowedWsKeys
+	 * @param array<string> $allowedOrigins
 	 *
 	 * @throws WebSockets\Exceptions\InvalidArgumentException
 	 */

@@ -152,7 +152,7 @@ class Channel implements Entities\Entity,
 	}
 
 	/**
-	 * @return Array<Entities\Channels\Properties\Property>
+	 * @return array<Entities\Channels\Properties\Property>
 	 */
 	public function getProperties(): array
 	{
@@ -160,7 +160,7 @@ class Channel implements Entities\Entity,
 	}
 
 	/**
-	 * @param Array<Entities\Channels\Properties\Property> $properties
+	 * @param array<Entities\Channels\Properties\Property> $properties
 	 */
 	public function setProperties(array $properties = []): void
 	{
@@ -210,7 +210,7 @@ class Channel implements Entities\Entity,
 	}
 
 	/**
-	 * @return Array<Entities\Channels\Controls\Control>
+	 * @return array<Entities\Channels\Controls\Control>
 	 */
 	public function getControls(): array
 	{
@@ -218,7 +218,7 @@ class Channel implements Entities\Entity,
 	}
 
 	/**
-	 * @param Array<Entities\Channels\Controls\Control> $controls
+	 * @param array<Entities\Channels\Controls\Control> $controls
 	 */
 	public function setControls(array $controls = []): void
 	{

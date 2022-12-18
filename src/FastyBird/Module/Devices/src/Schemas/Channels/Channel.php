@@ -68,7 +68,7 @@ final class Channel extends JsonApiSchemas\JsonApi
 	/**
 	 * @phpstan-param Entities\Channels\Channel $resource
 	 *
-	 * @phpstan-return iterable<string, (string|Array<string>|null)>
+	 * @phpstan-return iterable<string, (string|array<string>|null)>
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */

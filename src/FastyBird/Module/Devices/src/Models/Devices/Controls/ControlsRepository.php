@@ -59,7 +59,7 @@ final class ControlsRepository
 	}
 
 	/**
-	 * @phpstan-return Array<Entities\Devices\Controls\Control>
+	 * @phpstan-return array<Entities\Devices\Controls\Control>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -67,14 +67,14 @@ final class ControlsRepository
 	{
 		return $this->database->query(
 			function () use ($queryObject): array {
-				/** @var Array<Entities\Devices\Controls\Control>|DoctrineOrmQuery\ResultSet<Entities\Devices\Controls\Control> $result */
+				/** @var array<Entities\Devices\Controls\Control>|DoctrineOrmQuery\ResultSet<Entities\Devices\Controls\Control> $result */
 				$result = $queryObject->fetch($this->getRepository());
 
 				if (is_array($result)) {
 					return $result;
 				}
 
-				/** @var Array<Entities\Devices\Controls\Control> $data */
+				/** @var array<Entities\Devices\Controls\Control> $data */
 				$data = $result->toArray();
 
 				return $data;

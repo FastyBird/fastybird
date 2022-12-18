@@ -34,10 +34,10 @@ use Ramsey\Uuid;
 class FindActions extends DoctrineOrmQuery\QueryObject
 {
 
-	/** @var Array<Closure(ORM\QueryBuilder $qb): void> */
+	/** @var array<Closure(ORM\QueryBuilder $qb): void> */
 	protected array $filter = [];
 
-	/** @var Array<Closure(ORM\QueryBuilder $qb): void> */
+	/** @var array<Closure(ORM\QueryBuilder $qb): void> */
 	protected array $select = [];
 
 	public function byId(Uuid\UuidInterface $id): void

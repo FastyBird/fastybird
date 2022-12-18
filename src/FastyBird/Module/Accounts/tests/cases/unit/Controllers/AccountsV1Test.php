@@ -73,7 +73,7 @@ final class AccountsV1Test extends DbTestCase
 	}
 
 	/**
-	 * @return Array<string, Array<string|int|null>>
+	 * @return array<string, array<string|int|null>>
 	 */
 	public function accountsRead(): array
 	{
@@ -231,7 +231,7 @@ final class AccountsV1Test extends DbTestCase
 	}
 
 	/**
-	 * @return Array<string, Array<(bool|string|int|null)>>
+	 * @return array<string, array<(bool|string|int|null)>>
 	 */
 	public function accountsCreate(): array
 	{
@@ -382,7 +382,7 @@ final class AccountsV1Test extends DbTestCase
 	}
 
 	/**
-	 * @return Array<string, Array<(bool|string|int|null)>>
+	 * @return array<string, array<(bool|string|int|null)>>
 	 */
 	public function accountsUpdate(): array
 	{
@@ -531,7 +531,7 @@ final class AccountsV1Test extends DbTestCase
 	}
 
 	/**
-	 * @return Array<string, Array<string|int|null>>
+	 * @return array<string, array<string|int|null>>
 	 */
 	public function accountsDelete(): array
 	{

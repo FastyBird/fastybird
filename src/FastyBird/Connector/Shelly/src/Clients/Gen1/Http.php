@@ -85,13 +85,13 @@ final class Http
 
 	private const HANDLER_PROCESSING_INTERVAL = 0.01;
 
-	/** @var Array<string> */
+	/** @var array<string> */
 	private array $processedDevices = [];
 
-	/** @var Array<string, Array<string, DateTimeInterface|bool>> */
+	/** @var array<string, array<string, DateTimeInterface|bool>> */
 	private array $processedDevicesCommands = [];
 
-	/** @var Array<string, DateTimeInterface> */
+	/** @var array<string, DateTimeInterface> */
 	private array $processedProperties = [];
 
 	private EventLoop\TimerInterface|null $handlerTimer;

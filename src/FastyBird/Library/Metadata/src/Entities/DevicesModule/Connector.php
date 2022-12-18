@@ -91,7 +91,7 @@ final class Connector implements Entities\Entity, Entities\Owner
 	}
 
 	/**
-	 * @return Array<string, mixed>
+	 * @return array<string, mixed>
 	 */
 	public function __serialize(): array
 	{

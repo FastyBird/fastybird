@@ -40,7 +40,7 @@ final class Sensor
 
 	use Nette\SmartObject;
 
-	/** @var Array<string, Uuid\UuidInterface> */
+	/** @var array<string, Uuid\UuidInterface> */
 	private array $sensorsToProperties = [];
 
 	public function __construct(

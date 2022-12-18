@@ -52,7 +52,7 @@ final class ActionChannelPropertyEntityTest extends BaseTestCase
 	}
 
 	/**
-	 * @return Array<string, Array<string|bool>>
+	 * @return array<string, array<string|bool>>
 	 */
 	public function channelProperty(): array
 	{
@@ -69,7 +69,7 @@ final class ActionChannelPropertyEntityTest extends BaseTestCase
 	}
 
 	/**
-	 * @return Array<string, Array<string|bool>>
+	 * @return array<string, array<string|bool>>
 	 */
 	public function channelPropertyInvalid(): array
 	{

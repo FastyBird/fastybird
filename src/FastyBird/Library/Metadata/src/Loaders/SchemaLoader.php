@@ -37,10 +37,10 @@ use const DIRECTORY_SEPARATOR;
 final class SchemaLoader
 {
 
-	/** @var Array<string, string>  */
+	/** @var array<string, string>  */
 	private array $byRoutingKey = [];
 
-	/** @var Array<string, string>  */
+	/** @var array<string, string>  */
 	private array $byNamespace = [];
 
 	/**

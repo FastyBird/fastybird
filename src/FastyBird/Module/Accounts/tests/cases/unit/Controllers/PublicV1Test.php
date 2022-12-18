@@ -56,7 +56,7 @@ final class PublicV1Test extends DbTestCase
 	}
 
 	/**
-	 * @return Array<string, Array<bool|string|int|null>>
+	 * @return array<string, array<bool|string|int|null>>
 	 */
 	public function resetIdentity(): array
 	{

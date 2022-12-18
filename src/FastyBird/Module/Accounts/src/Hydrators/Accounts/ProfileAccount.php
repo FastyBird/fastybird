@@ -33,7 +33,7 @@ final class ProfileAccount extends JsonApiHydrators\Hydrator
 
 	use TAccount;
 
-	/** @var Array<int|string, string> */
+	/** @var array<int|string, string> */
 	protected array $attributes = [
 		0 => 'details',
 
@@ -42,12 +42,12 @@ final class ProfileAccount extends JsonApiHydrators\Hydrator
 		'middle_name' => 'middleName',
 	];
 
-	/** @var Array<int|string, string> */
+	/** @var array<int|string, string> */
 	protected array $compositedAttributes = [
 		'params',
 	];
 
-	/** @var Array<string> */
+	/** @var array<string> */
 	protected array $relationships = [
 		Schemas\Accounts\Account::RELATIONSHIPS_ROLES,
 	];

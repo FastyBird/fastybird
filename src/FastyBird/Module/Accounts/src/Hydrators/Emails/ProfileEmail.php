@@ -32,7 +32,7 @@ final class ProfileEmail extends JsonApiHydrators\Hydrator
 
 	use TEmail;
 
-	/** @var Array<int|string, string> */
+	/** @var array<int|string, string> */
 	protected array $attributes = [
 		0 => 'address',
 

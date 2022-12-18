@@ -37,7 +37,7 @@ final class DataPoint
 
 	use Nette\SmartObject;
 
-	/** @var Array<string, Uuid\UuidInterface> */
+	/** @var array<string, Uuid\UuidInterface> */
 	private array $dataPointsToProperties = [];
 
 	public function __construct(

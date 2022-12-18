@@ -38,7 +38,7 @@ final class DevicesRepository
 
 	use Nette\SmartObject;
 
-	/** @var Array<ORM\EntityRepository<Entities\Devices\Device>> */
+	/** @var array<ORM\EntityRepository<Entities\Devices\Device>> */
 	private array $repository = [];
 
 	public function __construct(
@@ -72,7 +72,7 @@ final class DevicesRepository
 	 * @phpstan-param Queries\FindDevices<T> $queryObject
 	 * @phpstan-param class-string<T> $type
 	 *
-	 * @phpstan-return Array<T>
+	 * @phpstan-return array<T>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -81,17 +81,17 @@ final class DevicesRepository
 		string $type = Entities\Devices\Device::class,
 	): array
 	{
-		/** @var Array<T> $result */
+		/** @var array<T> $result */
 		$result = $this->database->query(
 			function () use ($queryObject, $type): array {
-				/** @var Array<T>|DoctrineOrmQuery\ResultSet<T> $result */
+				/** @var array<T>|DoctrineOrmQuery\ResultSet<T> $result */
 				$result = $queryObject->fetch($this->getRepository($type));
 
 				if (is_array($result)) {
 					return $result;
 				}
 
-				/** @var Array<T> $data */
+				/** @var array<T> $data */
 				$data = $result->toArray();
 
 				return $data;

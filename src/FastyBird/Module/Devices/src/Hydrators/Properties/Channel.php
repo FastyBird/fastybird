@@ -31,7 +31,7 @@ use FastyBird\Module\Devices\Schemas;
 abstract class Channel extends Property
 {
 
-	/** @var Array<string> */
+	/** @var array<string> */
 	protected array $relationships
 		= [
 			Schemas\Channels\Properties\Property::RELATIONSHIPS_CHANNEL,

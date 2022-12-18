@@ -504,7 +504,7 @@ final class SessionV1 extends BaseV1
 	}
 
 	/**
-	 * @phpstan-param Array<string> $roles
+	 * @phpstan-param array<string> $roles
 	 */
 	private function createToken(
 		Uuid\UuidInterface $userId,

@@ -285,7 +285,7 @@ final class OpenApi
 	}
 
 	/**
-	 * @param Array<string> $deviceIds
+	 * @param array<string> $deviceIds
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\Logic
@@ -628,7 +628,7 @@ final class OpenApi
 	}
 
 	/**
-	 * @param Array<string, mixed> $params
+	 * @param array<string, mixed> $params
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\Logic
@@ -696,7 +696,7 @@ final class OpenApi
 	}
 
 	/**
-	 * @param Array<string> $deviceIds
+	 * @param array<string> $deviceIds
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\Logic
@@ -1020,7 +1020,7 @@ final class OpenApi
 	}
 
 	/**
-	 * @param Array<string, mixed> $params
+	 * @param array<string, mixed> $params
 	 *
 	 * @throws MetadataExceptions\Logic
 	 * @throws RuntimeException
@@ -1302,9 +1302,9 @@ final class OpenApi
 	}
 
 	/**
-	 * @param Array<string, mixed> $params
+	 * @param array<string, mixed> $params
 	 *
-	 * @return Array<string, string|int>
+	 * @return array<string, string|int>
 	 */
 	private function buildRequestHeaders(
 		string $method,
@@ -1331,7 +1331,7 @@ final class OpenApi
 	}
 
 	/**
-	 * @param Array<string, mixed> $params
+	 * @param array<string, mixed> $params
 	 */
 	private function calculateSign(
 		string $method,

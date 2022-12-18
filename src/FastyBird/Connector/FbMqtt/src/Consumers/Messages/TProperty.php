@@ -33,7 +33,7 @@ trait TProperty
 {
 
 	/**
-	 * @return Array<string, (string|Array<string>|Array<float>|Array<null>|bool|MetadataTypes\DataType|null)>
+	 * @return array<string, (string|array<string>|array<float>|array<null>|bool|MetadataTypes\DataType|null)>
 	 */
 	protected function handlePropertyConfiguration(
 		Entities\Messages\Property $entity,

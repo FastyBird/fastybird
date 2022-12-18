@@ -52,7 +52,7 @@ abstract class Property implements Entities\Entity, Entities\Owner
 	private string|int|float|null $invalid;
 
 	/**
-	 * @param Array<int, string>|Array<int, string|int|float|Array<int, string|int|float>|null>|Array<int, Array<int, string|Array<int, string|int|float|bool>|null>>|null $format
+	 * @param array<int, string>|array<int, string|int|float|array<int, string|int|float>|null>|array<int, array<int, string|array<int, string|int|float|bool>|null>>|null $format
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 */
@@ -157,7 +157,7 @@ abstract class Property implements Entities\Entity, Entities\Owner
 	}
 
 	/**
-	 * @param Array<int, string>|Array<int, string|int|float|Array<int, string|int|float>|null>|Array<int, Array<int, string|Array<int, string|int|float|bool>|null>>|null $format
+	 * @param array<int, string>|array<int, string|int|float|array<int, string|int|float>|null>|array<int, array<int, string|array<int, string|int|float|bool>|null>>|null $format
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 */
@@ -228,7 +228,7 @@ abstract class Property implements Entities\Entity, Entities\Owner
 	}
 
 	/**
-	 * @return Array<string, mixed>
+	 * @return array<string, mixed>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */

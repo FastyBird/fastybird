@@ -27,7 +27,7 @@ interface Entity
 {
 
 	/**
-	 * @return Array<string, mixed>
+	 * @return array<string, mixed>
 	 */
 	public function toArray(): array;
 

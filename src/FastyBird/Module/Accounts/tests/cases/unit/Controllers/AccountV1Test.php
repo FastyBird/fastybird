@@ -62,7 +62,7 @@ final class AccountV1Test extends DbTestCase
 	}
 
 	/**
-	 * @return Array<string, Array<string|int|null>>
+	 * @return array<string, array<string|int|null>>
 	 */
 	public function accountRead(): array
 	{
@@ -203,7 +203,7 @@ final class AccountV1Test extends DbTestCase
 	}
 
 	/**
-	 * @return Array<string, Array<(bool|string|int|null)>>
+	 * @return array<string, array<(bool|string|int|null)>>
 	 */
 	public function accountUpdate(): array
 	{

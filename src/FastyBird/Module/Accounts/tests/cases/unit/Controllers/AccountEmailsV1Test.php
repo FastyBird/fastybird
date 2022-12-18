@@ -70,7 +70,7 @@ final class AccountEmailsV1Test extends DbTestCase
 	}
 
 	/**
-	 * @return Array<string, Array<string|int|null>>
+	 * @return array<string, array<string|int|null>>
 	 */
 	public function emailsRead(): array
 	{
@@ -247,7 +247,7 @@ final class AccountEmailsV1Test extends DbTestCase
 	}
 
 	/**
-	 * @return Array<string, Array<(bool|string|int|null)>>
+	 * @return array<string, array<(bool|string|int|null)>>
 	 */
 	public function emailsCreate(): array
 	{
@@ -388,7 +388,7 @@ final class AccountEmailsV1Test extends DbTestCase
 	}
 
 	/**
-	 * @return Array<string, Array<(bool|string|int|null)>>
+	 * @return array<string, array<(bool|string|int|null)>>
 	 */
 	public function emailsUpdate(): array
 	{
@@ -519,7 +519,7 @@ final class AccountEmailsV1Test extends DbTestCase
 	}
 
 	/**
-	 * @return Array<string, Array<string|int|null>>
+	 * @return array<string, array<string|int|null>>
 	 */
 	public function emailsDelete(): array
 	{

@@ -86,7 +86,7 @@ final class Identity implements Entities\Entity
 	}
 
 	/**
-	 * @return Array<string, mixed>
+	 * @return array<string, mixed>
 	 */
 	public function __serialize(): array
 	{

@@ -60,7 +60,7 @@ final class SmsNotification extends Notification
 	}
 
 	/**
-	 * @return Array<string, mixed>
+	 * @return array<string, mixed>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */

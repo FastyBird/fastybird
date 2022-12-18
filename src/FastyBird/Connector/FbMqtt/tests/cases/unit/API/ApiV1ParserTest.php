@@ -14,7 +14,7 @@ final class ApiV1ParserTest extends BaseTestCase
 {
 
 	/**
-	 * @phpstan-param Array<string, bool|float|int|string|Array<string>> $expected
+	 * @phpstan-param array<string, bool|float|int|string|array<string>> $expected
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\ParseMessage
@@ -41,7 +41,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	}
 
 	/**
-	 * @return Array<string, Array<string|Array<string, bool|float|int|string|Array<string>>>>
+	 * @return array<string, array<string|array<string, bool|float|int|string|array<string>>>>
 	 */
 	public function parseDeviceAttributesProvider(): array
 	{
@@ -86,7 +86,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	}
 
 	/**
-	 * @phpstan-param Array<string, bool|float|int|string|Array<string>> $expected
+	 * @phpstan-param array<string, bool|float|int|string|array<string>> $expected
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\ParseMessage
@@ -113,7 +113,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	}
 
 	/**
-	 * @return Array<string, Array<string|Array<string, bool|float|int|string|Array<string>>>>
+	 * @return array<string, array<string|array<string, bool|float|int|string|array<string>>>>
 	 */
 	public function parseDeviceHardwareInfoProvider(): array
 	{
@@ -158,7 +158,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	}
 
 	/**
-	 * @phpstan-param Array<string, bool|float|int|string|Array<string>> $expected
+	 * @phpstan-param array<string, bool|float|int|string|array<string>> $expected
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\ParseMessage
@@ -185,7 +185,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	}
 
 	/**
-	 * @return Array<string, Array<string|Array<string, bool|float|int|string|Array<string>>>>
+	 * @return array<string, array<string|array<string, bool|float|int|string|array<string>>>>
 	 */
 	public function parseDeviceFirmwareInfoProvider(): array
 	{
@@ -212,7 +212,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	}
 
 	/**
-	 * @phpstan-param Array<string, bool|float|int|string|Array<string>> $expected
+	 * @phpstan-param array<string, bool|float|int|string|array<string>> $expected
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\ParseMessage
@@ -239,7 +239,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	}
 
 	/**
-	 * @return Array<string, Array<string|Array<string, bool|float|int|string|Array<string>>>>
+	 * @return array<string, array<string|array<string, bool|float|int|string|array<string>>>>
 	 */
 	public function parseDevicePropertiesProvider(): array
 	{
@@ -258,7 +258,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	}
 
 	/**
-	 * @phpstan-param Array<string, bool|float|int|string|Array<string>> $expected
+	 * @phpstan-param array<string, bool|float|int|string|array<string>> $expected
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\ParseMessage
@@ -285,7 +285,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	}
 
 	/**
-	 * @return Array<string, Array<string|Array<string, bool|float|int|string|Array<string>>>>
+	 * @return array<string, array<string|array<string, bool|float|int|string|array<string>>>>
 	 */
 	public function parseDevicePropertiesAttributesProvider(): array
 	{
@@ -351,7 +351,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	}
 
 	/**
-	 * @return Array<string, Array<string>>
+	 * @return array<string, array<string>>
 	 */
 	public function parseDeviceAttributesInvalidProvider(): array
 	{
@@ -392,7 +392,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	}
 
 	/**
-	 * @return Array<string, Array<string>>
+	 * @return array<string, array<string>>
 	 */
 	public function parseDeviceHardwareInfoInvalidProvider(): array
 	{
@@ -433,7 +433,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	}
 
 	/**
-	 * @return Array<string, Array<string>>
+	 * @return array<string, array<string>>
 	 */
 	public function parseDeviceFirmwareInfoInvalidProvider(): array
 	{
@@ -447,7 +447,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	}
 
 	/**
-	 * @phpstan-param Array<string, bool|float|int|string|Array<string>> $expected
+	 * @phpstan-param array<string, bool|float|int|string|array<string>> $expected
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\ParseMessage
@@ -474,7 +474,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	}
 
 	/**
-	 * @return Array<string, Array<string|Array<string, bool|float|int|string|Array<string>>>>
+	 * @return array<string, array<string|array<string, bool|float|int|string|array<string>>>>
 	 */
 	public function parseChannelAttributesProvider(): array
 	{
@@ -513,7 +513,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	}
 
 	/**
-	 * @phpstan-param Array<string, bool|float|int|string|Array<string>> $expected
+	 * @phpstan-param array<string, bool|float|int|string|array<string>> $expected
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\ParseMessage
@@ -540,7 +540,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	}
 
 	/**
-	 * @return Array<string, Array<string|Array<string, bool|float|int|string|Array<string>>>>
+	 * @return array<string, array<string|array<string, bool|float|int|string|array<string>>>>
 	 */
 	public function parseChannelPropertiesProvider(): array
 	{
@@ -560,7 +560,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	}
 
 	/**
-	 * @phpstan-param Array<string, bool|float|int|string|Array<string>> $expected
+	 * @phpstan-param array<string, bool|float|int|string|array<string>> $expected
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\ParseMessage
@@ -587,7 +587,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	}
 
 	/**
-	 * @return Array<string, Array<string|Array<string, bool|float|int|string|Array<string>>>>
+	 * @return array<string, array<string|array<string, bool|float|int|string|array<string>>>>
 	 */
 	public function parseChannelPropertiesAttributesProvider(): array
 	{
@@ -656,7 +656,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	}
 
 	/**
-	 * @return Array<string, Array<string>>
+	 * @return array<string, array<string>>
 	 */
 	public function parseChannelAttributesInvalidProvider(): array
 	{
