@@ -112,7 +112,7 @@ final class Role extends JsonApis\JsonApi
 	/**
 	 * @phpstan-param Entities\Roles\Role $resource
 	 *
-	 * @phpstan-return iterable<string, Array<int, (Entities\Roles\Role|array<Entities\Roles\Role>|bool)>>
+	 * @phpstan-return iterable<string, array<int, (Entities\Roles\Role|array<Entities\Roles\Role>|bool)>>
 	 *
 	 * @throws Exception
 	 *
@@ -214,7 +214,7 @@ final class Role extends JsonApis\JsonApi
 	}
 
 	/**
-	 * @phpstan-return Array<Entities\Roles\Role>
+	 * @phpstan-return array<Entities\Roles\Role>
 	 *
 	 * @throws Exception
 	 */

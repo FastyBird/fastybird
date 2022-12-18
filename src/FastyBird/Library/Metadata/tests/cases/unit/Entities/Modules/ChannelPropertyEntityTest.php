@@ -15,7 +15,7 @@ final class ChannelPropertyEntityTest extends BaseTestCase
 {
 
 	/**
-	 * @param Array<string, mixed> $fixture
+	 * @param array<string, mixed> $fixture
 	 *
 	 * @throws Exceptions\FileNotFound
 	 * @throws Exceptions\InvalidArgument
@@ -63,7 +63,7 @@ final class ChannelPropertyEntityTest extends BaseTestCase
 	}
 
 	/**
-	 * @return Array<string, Array<string|bool|Array<string, mixed>>>
+	 * @return array<string, array<string|bool|array<string, mixed>>>
 	 */
 	public function channelProperty(): array
 	{
@@ -243,7 +243,7 @@ final class ChannelPropertyEntityTest extends BaseTestCase
 	}
 
 	/**
-	 * @return Array<string, Array<string|bool>>
+	 * @return array<string, array<string|bool>>
 	 */
 	public function channelPropertyInvalid(): array
 	{

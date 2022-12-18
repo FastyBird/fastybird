@@ -36,7 +36,7 @@ use function is_scalar;
 final class DataCondition extends TriggersHydrators\Conditions\Condition
 {
 
-	/** @var Array<int|string, string> */
+	/** @var array<int|string, string> */
 	protected array $attributes = [
 		'date',
 		'enabled',

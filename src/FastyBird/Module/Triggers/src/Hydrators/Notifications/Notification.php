@@ -34,7 +34,7 @@ use function is_scalar;
 abstract class Notification extends JsonApiHydrators\Hydrator
 {
 
-	/** @var Array<string> */
+	/** @var array<string> */
 	protected array $relationships = [
 		Schemas\Notifications\Notification::RELATIONSHIPS_TRIGGER,
 	];

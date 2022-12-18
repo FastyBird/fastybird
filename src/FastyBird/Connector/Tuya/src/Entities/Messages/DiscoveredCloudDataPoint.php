@@ -33,7 +33,7 @@ final class DiscoveredCloudDataPoint implements Entity
 	use Nette\SmartObject;
 
 	/**
-	 * @param Array<string> $range
+	 * @param array<string> $range
 	 */
 	public function __construct(
 		private readonly string $device,
@@ -79,7 +79,7 @@ final class DiscoveredCloudDataPoint implements Entity
 	}
 
 	/**
-	 * @return Array<string>
+	 * @return array<string>
 	 */
 	public function getRange(): array
 	{
@@ -117,7 +117,7 @@ final class DiscoveredCloudDataPoint implements Entity
 	}
 
 	/**
-	 * @return Array<int, Array<int, (string|int|float|null)>>|Array<string>|null
+	 * @return array<int, array<int, (string|int|float|null)>>|array<string>|null
 	 */
 	public function getFormat(): array|null
 	{

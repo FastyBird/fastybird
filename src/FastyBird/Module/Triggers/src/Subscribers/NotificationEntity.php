@@ -38,7 +38,7 @@ final class NotificationEntity implements Common\EventSubscriber
 	/**
 	 * Register events
 	 *
-	 * @return Array<string>
+	 * @return array<string>
 	 */
 	public function getSubscribedEvents(): array
 	{

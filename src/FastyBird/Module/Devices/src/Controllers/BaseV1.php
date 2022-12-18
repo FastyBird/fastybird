@@ -203,7 +203,7 @@ abstract class BaseV1
 	}
 
 	/**
-	 * @param DoctrineCrud\Entities\IEntity|ResultSet<DoctrineCrud\Entities\IEntity>|Array<DoctrineCrud\Entities\IEntity> $data
+	 * @param DoctrineCrud\Entities\IEntity|ResultSet<DoctrineCrud\Entities\IEntity>|array<DoctrineCrud\Entities\IEntity> $data
 	 *
 	 * @throws Exception
 	 */
@@ -229,11 +229,11 @@ abstract class BaseV1
 				}
 			}
 
-			/** @var Array<DoctrineCrud\Entities\IEntity> $entity */
+			/** @var array<DoctrineCrud\Entities\IEntity> $entity */
 			$entity = $data->toArray();
 
 		} elseif (is_array($data)) {
-			/** @var Array<DoctrineCrud\Entities\IEntity> $entity */
+			/** @var array<DoctrineCrud\Entities\IEntity> $entity */
 			$entity = $data;
 
 		} else {

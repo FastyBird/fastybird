@@ -32,7 +32,7 @@ final class UserDeviceDetail implements Entity
 	use Nette\SmartObject;
 
 	/**
-	 * @param Array<UserDeviceDataPointStatus> $status
+	 * @param array<UserDeviceDataPointStatus> $status
 	 */
 	public function __construct(
 		private readonly string $id,
@@ -114,7 +114,7 @@ final class UserDeviceDetail implements Entity
 	}
 
 	/**
-	 * @return Array<UserDeviceDataPointStatus>
+	 * @return array<UserDeviceDataPointStatus>
 	 */
 	public function getStatus(): array
 	{

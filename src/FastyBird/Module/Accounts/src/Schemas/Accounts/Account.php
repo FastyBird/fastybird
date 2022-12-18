@@ -70,7 +70,7 @@ final class Account extends JsonApis\JsonApi
 	/**
 	 * @phpstan-param Entities\Accounts\Account $resource
 	 *
-	 * @phpstan-return iterable<string, (int|string|Array<string, string|null>|null)>
+	 * @phpstan-return iterable<string, (int|string|array<string, string|null>|null)>
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -126,7 +126,7 @@ final class Account extends JsonApis\JsonApi
 	/**
 	 * @phpstan-param Entities\Accounts\Account $resource
 	 *
-	 * @phpstan-return iterable<string, Array<int, (array<Entities\Identities\Identity>|array<Entities\Roles\Role>|array<Entities\Emails\Email>|bool)>>
+	 * @phpstan-return iterable<string, array<int, (array<Entities\Identities\Identity>|array<Entities\Roles\Role>|array<Entities\Emails\Email>|bool)>>
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */

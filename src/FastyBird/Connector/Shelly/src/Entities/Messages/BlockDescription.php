@@ -34,11 +34,11 @@ final class BlockDescription implements Entity
 
 	use Nette\SmartObject;
 
-	/** @var Array<SensorDescription> */
+	/** @var array<SensorDescription> */
 	private array $sensors;
 
 	/**
-	 * @param Array<SensorDescription> $sensors
+	 * @param array<SensorDescription> $sensors
 	 */
 	public function __construct(
 		private readonly Types\MessageSource $source,
@@ -66,7 +66,7 @@ final class BlockDescription implements Entity
 	}
 
 	/**
-	 * @return Array<SensorDescription>
+	 * @return array<SensorDescription>
 	 */
 	public function getSensors(): array
 	{

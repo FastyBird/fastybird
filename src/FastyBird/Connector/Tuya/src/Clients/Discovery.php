@@ -87,7 +87,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 		'gywg',
 	];
 
-	/** @var Array<string> */
+	/** @var array<string> */
 	private array $processedProtocols = [];
 
 	/** @var SplObjectStorage<Entities\API\DiscoveredLocalDevice, null> */
@@ -272,7 +272,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 		);
 
 		try {
-			/** @var Array<Entities\API\DeviceInformation> $devices */
+			/** @var array<Entities\API\DeviceInformation> $devices */
 			$devices = await($this->openApiApi->getDevices([
 				'source_id' => $this->connectorHelper->getConfiguration(
 					$this->connector,
@@ -298,7 +298,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 		}
 
 		try {
-			/** @var Array<Entities\API\DeviceFactoryInfos> $devicesFactoryInfos */
+			/** @var array<Entities\API\DeviceFactoryInfos> $devicesFactoryInfos */
 			$devicesFactoryInfos = await($this->openApiApi->getDevicesFactoryInfos(
 				array_map(
 					static fn (Entities\API\DeviceInformation $userDevice): string => $userDevice->getId(),
@@ -409,9 +409,9 @@ final class Discovery implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @param Array<Entities\API\DiscoveredLocalDevice> $devices
+	 * @param array<Entities\API\DiscoveredLocalDevice> $devices
 	 *
-	 * @return Array<Entities\Messages\DiscoveredLocalDevice>
+	 * @return array<Entities\Messages\DiscoveredLocalDevice>
 	 *
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
@@ -433,7 +433,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 		$devicesFactoryInfos = [];
 
 		try {
-			/** @var Array<Entities\API\DeviceFactoryInfos> $devicesFactoryInfos */
+			/** @var array<Entities\API\DeviceFactoryInfos> $devicesFactoryInfos */
 			$devicesFactoryInfos = await($this->openApiApi->getDevicesFactoryInfos(
 				array_map(
 					static fn (Entities\API\DiscoveredLocalDevice $userDevice): string => $userDevice->getId(),
@@ -487,7 +487,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			);
 
 			try {
-				/** @var Array<Entities\API\DeviceFactoryInfos> $deviceFactoryInfosFiltered */
+				/** @var array<Entities\API\DeviceFactoryInfos> $deviceFactoryInfosFiltered */
 				$deviceFactoryInfosFiltered = array_values(array_filter(
 					$devicesFactoryInfos,
 					static fn (Entities\API\DeviceFactoryInfos $item): bool => $device->getId() === $item->getId(),
@@ -539,7 +539,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 			if (in_array($deviceInformation->getCategory(), self::GATEWAY_CATEGORIES, true)) {
 				try {
-					/** @var Array<Entities\API\UserDeviceChild> $children */
+					/** @var array<Entities\API\UserDeviceChild> $children */
 					$children = await($this->openApiApi->getUserDeviceChildren($device->getId()));
 				} catch (Throwable $ex) {
 					$this->logger->error(
@@ -595,7 +595,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					);
 
 					try {
-						/** @var Array<Entities\API\DeviceFactoryInfos> $childDeviceFactoryInfosFiltered */
+						/** @var array<Entities\API\DeviceFactoryInfos> $childDeviceFactoryInfosFiltered */
 						$childDeviceFactoryInfosFiltered = array_values(array_filter(
 							$devicesFactoryInfos,
 							static fn (Entities\API\DeviceFactoryInfos $item): bool => $device->getId() === $item->getId(),
@@ -656,10 +656,10 @@ final class Discovery implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @param Array<Entities\API\DeviceInformation> $devices
-	 * @param Array<Entities\API\DeviceFactoryInfos> $devicesFactoryInfos
+	 * @param array<Entities\API\DeviceInformation> $devices
+	 * @param array<Entities\API\DeviceFactoryInfos> $devicesFactoryInfos
 	 *
-	 * @return Array<Entities\Messages\DiscoveredCloudDevice>
+	 * @return array<Entities\Messages\DiscoveredCloudDevice>
 	 *
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
@@ -683,7 +683,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 		$processedDevices = [];
 
 		foreach ($devices as $device) {
-			/** @var Array<Entities\API\DeviceFactoryInfos> $deviceFactoryInfosFiltered */
+			/** @var array<Entities\API\DeviceFactoryInfos> $deviceFactoryInfosFiltered */
 			$deviceFactoryInfosFiltered = array_values(array_filter(
 				$devicesFactoryInfos,
 				static fn (Entities\API\DeviceFactoryInfos $item): bool => $device->getId() === $item->getId(),
@@ -886,7 +886,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 		try {
 			if ($localApi->isConnected()) {
-				/** @var Array<Entities\API\DeviceDataPointStatus>|Types\LocalDeviceError $deviceStatuses */
+				/** @var array<Entities\API\DeviceDataPointStatus>|Types\LocalDeviceError $deviceStatuses */
 				$deviceStatuses = await($localApi->readStates());
 
 				$localApi->disconnect();

@@ -59,7 +59,7 @@ final class ControlsRepository
 	}
 
 	/**
-	 * @return Array<Entities\Triggers\Controls\Control>
+	 * @return array<Entities\Triggers\Controls\Control>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -67,14 +67,14 @@ final class ControlsRepository
 	{
 		return $this->database->query(
 			function () use ($queryObject): array {
-				/** @var Array<Entities\Triggers\Controls\Control>|DoctrineOrmQuery\ResultSet<Entities\Triggers\Controls\Control> $result */
+				/** @var array<Entities\Triggers\Controls\Control>|DoctrineOrmQuery\ResultSet<Entities\Triggers\Controls\Control> $result */
 				$result = $queryObject->fetch($this->getRepository());
 
 				if (is_array($result)) {
 					return $result;
 				}
 
-				/** @var Array<Entities\Triggers\Controls\Control> $data */
+				/** @var array<Entities\Triggers\Controls\Control> $data */
 				$data = $result->toArray();
 
 				return $data;

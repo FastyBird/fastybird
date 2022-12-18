@@ -60,7 +60,7 @@ abstract class Property extends Entity
 	}
 
 	/**
-	 * @return Array<PropertyAttribute>
+	 * @return array<PropertyAttribute>
 	 */
 	public function getAttributes(): array
 	{

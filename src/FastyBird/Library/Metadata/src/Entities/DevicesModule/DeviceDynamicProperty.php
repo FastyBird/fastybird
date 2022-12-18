@@ -35,9 +35,9 @@ final class DeviceDynamicProperty extends DynamicProperty
 	use TDeviceProperty;
 
 	/**
-	 * @param Array<int, string>|Array<int, string|int|float|Array<int, string|int|float>|null>|Array<int, Array<int, string|Array<int, string|int|float|bool>|null>>|null $format
+	 * @param array<int, string>|array<int, string|int|float|array<int, string|int|float>|null>|array<int, array<int, string|array<int, string|int|float|bool>|null>>|null $format
 	 * @param bool|null $pending
-	 * @param Array<int, string>|Utils\ArrayHash<string> $children
+	 * @param array<int, string>|Utils\ArrayHash<string> $children
 	 */
 	public function __construct(
 		string $id,
@@ -106,7 +106,7 @@ final class DeviceDynamicProperty extends DynamicProperty
 	}
 
 	/**
-	 * @return Array<string, mixed>
+	 * @return array<string, mixed>
 	 *
 	 * @throws Exception
 	 */

@@ -38,7 +38,7 @@ class Client
 	/** @var Predis\Client<mixed>|null */
 	private Predis\Client|null $redis = null;
 
-	/** @var Array<string, int|string|null> */
+	/** @var array<string, int|string|null> */
 	private array $options;
 
 	public function __construct(Connections\Connection $connection)

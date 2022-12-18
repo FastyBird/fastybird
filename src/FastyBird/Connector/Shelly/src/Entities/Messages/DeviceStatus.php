@@ -32,7 +32,7 @@ final class DeviceStatus extends Device
 {
 
 	/**
-	 * @param Array<ChannelStatus> $channels
+	 * @param array<ChannelStatus> $channels
 	 */
 	public function __construct(
 		Types\MessageSource $source,
@@ -47,7 +47,7 @@ final class DeviceStatus extends Device
 	}
 
 	/**
-	 * @return Array<ChannelStatus>
+	 * @return array<ChannelStatus>
 	 */
 	public function getChannels(): array
 	{

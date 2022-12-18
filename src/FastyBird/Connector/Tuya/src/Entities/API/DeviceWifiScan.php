@@ -31,7 +31,7 @@ final class DeviceWifiScan implements Entity
 	use Nette\SmartObject;
 
 	/**
-	 * @param Array<string> $ssids
+	 * @param array<string> $ssids
 	 */
 	public function __construct(private readonly string $identifier, private readonly array $ssids)
 	{
@@ -43,7 +43,7 @@ final class DeviceWifiScan implements Entity
 	}
 
 	/**
-	 * @return Array<string>
+	 * @return array<string>
 	 */
 	public function getSsids(): array
 	{

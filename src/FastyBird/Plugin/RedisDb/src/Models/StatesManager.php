@@ -172,7 +172,7 @@ class StatesManager
 	}
 
 	/**
-	 * @phpstan-param Array<string>|Array<string, int|string|bool|null> $fields
+	 * @phpstan-param array<string>|array<string, int|string|bool|null> $fields
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -267,7 +267,7 @@ class StatesManager
 
 	/**
 	 * @phpstan-param T $state
-	 * @phpstan-param Array<string> $fields
+	 * @phpstan-param array<string> $fields
 	 *
 	 * @throws Exceptions\InvalidState
 	 */

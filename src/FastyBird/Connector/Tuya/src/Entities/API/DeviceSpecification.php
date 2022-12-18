@@ -32,8 +32,8 @@ final class DeviceSpecification implements Entity
 	use Nette\SmartObject;
 
 	/**
-	 * @param Array<DeviceSpecificationFunction> $functions
-	 * @param Array<DeviceSpecificationStatus> $status
+	 * @param array<DeviceSpecificationFunction> $functions
+	 * @param array<DeviceSpecificationStatus> $status
 	 */
 	public function __construct(
 		private readonly string $category,
@@ -49,7 +49,7 @@ final class DeviceSpecification implements Entity
 	}
 
 	/**
-	 * @return Array<DeviceSpecificationFunction>
+	 * @return array<DeviceSpecificationFunction>
 	 */
 	public function getFunctions(): array
 	{
@@ -57,7 +57,7 @@ final class DeviceSpecification implements Entity
 	}
 
 	/**
-	 * @return Array<DeviceSpecificationStatus>
+	 * @return array<DeviceSpecificationStatus>
 	 */
 	public function getStatus(): array
 	{

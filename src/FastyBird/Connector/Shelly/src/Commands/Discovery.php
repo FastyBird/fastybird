@@ -76,7 +76,7 @@ class Discovery extends Console\Command\Command
 	private Log\LoggerInterface $logger;
 
 	/**
-	 * @param Array<Clients\ClientFactory> $clientsFactories
+	 * @param array<Clients\ClientFactory> $clientsFactories
 	 */
 	public function __construct(
 		private readonly array $clientsFactories,

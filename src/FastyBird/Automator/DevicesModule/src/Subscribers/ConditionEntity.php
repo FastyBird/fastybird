@@ -38,7 +38,7 @@ final class ConditionEntity implements Common\EventSubscriber
 	/**
 	 * Register events
 	 *
-	 * @return Array<string>
+	 * @return array<string>
 	 */
 	public function getSubscribedEvents(): array
 	{

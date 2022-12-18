@@ -57,7 +57,7 @@ final class ActionConnectorProperty extends ActionProperty
 	}
 
 	/**
-	 * @return Array<string, mixed>
+	 * @return array<string, mixed>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */

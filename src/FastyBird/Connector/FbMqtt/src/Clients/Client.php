@@ -81,13 +81,13 @@ abstract class Client
 	/** @var Closure(Mqtt\Connection $connection): void|null */
 	protected Closure|null $onCloseCallback = null;
 
-	/** @var Array<EventLoop\TimerInterface> */
+	/** @var array<EventLoop\TimerInterface> */
 	protected array $timer = [];
 
-	/** @var Array<Flow> */
+	/** @var array<Flow> */
 	protected array $receivingFlows = [];
 
-	/** @var Array<Flow> */
+	/** @var array<Flow> */
 	protected array $sendingFlows = [];
 
 	protected Flow|null $writtenFlow = null;
@@ -525,7 +525,7 @@ abstract class Client
 	}
 
 	/**
-	 * @param Array<Mqtt\Subscription> $subscriptions
+	 * @param array<Mqtt\Subscription> $subscriptions
 	 */
 	protected function onUnsubscribe(array $subscriptions): void
 	{
@@ -931,7 +931,7 @@ abstract class Client
 
 						break;
 					case 'unsubscribe':
-						/** @var Array<Mqtt\Subscription> $result */
+						/** @var array<Mqtt\Subscription> $result */
 						$result = $flow->getResult();
 
 						$this->onUnsubscribe($result);

@@ -50,7 +50,7 @@ final class ChannelPropertyCondition extends TriggersSchemas\Conditions\Conditio
 	}
 
 	/**
-	 * @return iterable<string, string|bool|Array<int>|null>
+	 * @return iterable<string, string|bool|array<int>|null>
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */

@@ -152,9 +152,9 @@ final class StateFactory
 	}
 
 	/**
-	 * @param Array<mixed> $xs
+	 * @param array<mixed> $xs
 	 *
-	 * @return Array<mixed>
+	 * @return array<mixed>
 	 */
 	private static function convertKeys(array $xs): array
 	{
@@ -172,7 +172,7 @@ final class StateFactory
 	/**
 	 * This method was inspired by same method in Nette framework
 	 *
-	 * @return Array<mixed>
+	 * @return array<mixed>
 	 *
 	 * @throws ReflectionException
 	 */
@@ -239,7 +239,7 @@ final class StateFactory
 	}
 
 	/**
-	 * @return Array<ReflectionProperty>
+	 * @return array<ReflectionProperty>
 	 */
 	private static function getProperties(Reflector $rc): array
 	{

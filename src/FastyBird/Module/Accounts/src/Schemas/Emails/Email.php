@@ -102,7 +102,7 @@ final class Email extends JsonApis\JsonApi
 	/**
 	 * @phpstan-param Entities\Emails\Email $resource
 	 *
-	 * @phpstan-return iterable<string, Array<int, (Entities\Accounts\Account|bool)>>
+	 * @phpstan-return iterable<string, array<int, (Entities\Accounts\Account|bool)>>
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */

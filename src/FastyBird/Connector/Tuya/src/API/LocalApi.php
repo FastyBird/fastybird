@@ -122,7 +122,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 
 	private bool $waitingForReading = false;
 
-	/** @var Array<string|int, int|float|string|null> */
+	/** @var array<string|int, int|float|string|null> */
 	private array $dpsToRequest = [];
 
 	private DateTimeInterface|null $lastConnectAttempt = null;
@@ -133,10 +133,10 @@ final class LocalApi implements Evenement\EventEmitterInterface
 
 	private DateTimeInterface|null $lost = null;
 
-	/** @var Array<int, Promise\Deferred> */
+	/** @var array<int, Promise\Deferred> */
 	private array $messagesListeners = [];
 
-	/** @var Array<int, EventLoop\TimerInterface> */
+	/** @var array<int, EventLoop\TimerInterface> */
 	private array $messagesListenersTimers = [];
 
 	private EventLoop\TimerInterface|null $heartBeatTimer = null;
@@ -514,7 +514,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @param Array<string, int|float|string|bool> $states
+	 * @param array<string, int|float|string|bool> $states
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
@@ -582,7 +582,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 	 * experience shows that the dps available are usually in the ranges [1-25] and [100-110]
 	 * and need to split the bruteforcing in different steps due to request payload limitation (max. length = 255)
 	 *
-	 * @return Array<string, int|float|string|null>
+	 * @return array<string, int|float|string|null>
 	 *
 	 * @throws Throwable
 	 */
@@ -596,7 +596,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 			$this->addDpsToRequest(range($dpsRange[0], $dpsRange[1]));
 
 			try {
-				/** @var Array<Entities\API\DeviceDataPointStatus>|Types\LocalDeviceError $deviceStatuses */
+				/** @var array<Entities\API\DeviceDataPointStatus>|Types\LocalDeviceError $deviceStatuses */
 				$deviceStatuses = await($this->readStates());
 			} catch (Throwable $ex) {
 				$this->logger->error(
@@ -648,7 +648,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @param int|Array<int, int> $dpIndicies
+	 * @param int|array<int, int> $dpIndicies
 	 */
 	private function addDpsToRequest(int|array $dpIndicies): void
 	{
@@ -672,7 +672,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @param Array<string, int|float|string|bool>|null $data
+	 * @param array<string, int|float|string|bool>|null $data
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -716,9 +716,9 @@ final class LocalApi implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @param Array<string, string|int|float|bool>|null $data
+	 * @param array<string, string|int|float|bool>|null $data
 	 *
-	 * @return Array<int>
+	 * @return array<int>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -1411,7 +1411,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 	/**
 	 * Fill the data structure for the command with the given values
 	 *
-	 * @param Array<string, string|int|float|bool>|null $data
+	 * @param array<string, string|int|float|bool>|null $data
 	 */
 	private function generateData(
 		Types\LocalDeviceCommand $command,
@@ -1624,9 +1624,9 @@ final class LocalApi implements Evenement\EventEmitterInterface
 	/**
 	 * Join the payload request parts together
 	 *
-	 * @param Array<int> $payload
+	 * @param array<int> $payload
 	 *
-	 * @return Array<int>
+	 * @return array<int>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */

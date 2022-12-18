@@ -33,11 +33,11 @@ use const SORT_REGULAR;
 final class DeviceDescription extends Device
 {
 
-	/** @var Array<BlockDescription> */
+	/** @var array<BlockDescription> */
 	private array $blocks;
 
 	/**
-	 * @param Array<BlockDescription> $blocks
+	 * @param array<BlockDescription> $blocks
 	 */
 	public function __construct(
 		Types\MessageSource $source,
@@ -54,7 +54,7 @@ final class DeviceDescription extends Device
 	}
 
 	/**
-	 * @return Array<BlockDescription>
+	 * @return array<BlockDescription>
 	 */
 	public function getBlocks(): array
 	{

@@ -38,7 +38,7 @@ final class StateRepositoryTest extends TestCase
 	}
 
 	/**
-	 * @phpstan-param Array<mixed> $data
+	 * @phpstan-param array<mixed> $data
 	 *
 	 * @phpstan-return Client\Client&MockObject\MockObject
 	 *

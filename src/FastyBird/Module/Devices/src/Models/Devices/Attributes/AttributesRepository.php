@@ -59,7 +59,7 @@ final class AttributesRepository
 	}
 
 	/**
-	 * @phpstan-return Array<Entities\Devices\Attributes\Attribute>
+	 * @phpstan-return array<Entities\Devices\Attributes\Attribute>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -67,14 +67,14 @@ final class AttributesRepository
 	{
 		return $this->database->query(
 			function () use ($queryObject): array {
-				/** @var Array<Entities\Devices\Attributes\Attribute>|DoctrineOrmQuery\ResultSet<Entities\Devices\Attributes\Attribute> $result */
+				/** @var array<Entities\Devices\Attributes\Attribute>|DoctrineOrmQuery\ResultSet<Entities\Devices\Attributes\Attribute> $result */
 				$result = $queryObject->fetch($this->getRepository());
 
 				if (is_array($result)) {
 					return $result;
 				}
 
-				/** @var Array<Entities\Devices\Attributes\Attribute> $data */
+				/** @var array<Entities\Devices\Attributes\Attribute> $data */
 				$data = $result->toArray();
 
 				return $data;

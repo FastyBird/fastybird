@@ -34,11 +34,11 @@ final class ChannelStatus implements Entity
 
 	use Nette\SmartObject;
 
-	/** @var Array<SensorStatus> */
+	/** @var array<SensorStatus> */
 	private array $sensors;
 
 	/**
-	 * @param Array<SensorStatus> $sensors
+	 * @param array<SensorStatus> $sensors
 	 */
 	public function __construct(
 		private readonly Types\MessageSource $source,
@@ -60,7 +60,7 @@ final class ChannelStatus implements Entity
 	}
 
 	/**
-	 * @return Array<SensorStatus>
+	 * @return array<SensorStatus>
 	 */
 	public function getSensors(): array
 	{

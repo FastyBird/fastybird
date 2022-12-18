@@ -39,7 +39,7 @@ use function strtolower;
 abstract class PropertyCondition extends TriggersHydrators\Conditions\Condition
 {
 
-	/** @var Array<int|string, string> */
+	/** @var array<int|string, string> */
 	protected array $attributes = [
 		'device',
 		'property',

@@ -69,21 +69,21 @@ final class RolesRepository
 	}
 
 	/**
-	 * @phpstan-return Array<Entities\Roles\Role>
+	 * @phpstan-return array<Entities\Roles\Role>
 	 *
 	 * @throws Exception
 	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 */
 	public function findAllBy(Queries\FindRoles $queryObject): array
 	{
-		/** @var Array<Entities\Roles\Role>|DoctrineOrmQuery\ResultSet<Entities\Roles\Role> $result */
+		/** @var array<Entities\Roles\Role>|DoctrineOrmQuery\ResultSet<Entities\Roles\Role> $result */
 		$result = $queryObject->fetch($this->getRepository());
 
 		if (is_array($result)) {
 			return $result;
 		}
 
-		/** @var Array<Entities\Roles\Role> $data */
+		/** @var array<Entities\Roles\Role> $data */
 		$data = $result->toArray();
 
 		return $data;

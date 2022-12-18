@@ -34,7 +34,7 @@ use function is_scalar;
 final class EmailNotification extends Notification
 {
 
-	/** @var Array<int|string, string> */
+	/** @var array<int|string, string> */
 	protected array $attributes = [
 		'email',
 		'enabled',

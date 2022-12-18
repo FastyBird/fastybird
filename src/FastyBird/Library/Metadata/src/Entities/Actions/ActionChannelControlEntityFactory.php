@@ -41,7 +41,7 @@ final class ActionChannelControlEntityFactory extends Entities\EntityFactory
 	}
 
 	/**
-	 * @param string|Array<string, mixed>|Utils\ArrayHash<string> $data
+	 * @param string|array<string, mixed>|Utils\ArrayHash<string> $data
 	 *
 	 * @throws Exceptions\FileNotFound
 	 * @throws Exceptions\InvalidArgument

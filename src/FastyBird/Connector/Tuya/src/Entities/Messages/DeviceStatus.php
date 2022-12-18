@@ -32,7 +32,7 @@ final class DeviceStatus extends Device
 {
 
 	/**
-	 * @param Array<DataPointStatus> $dataPoints
+	 * @param array<DataPointStatus> $dataPoints
 	 */
 	public function __construct(
 		Types\MessageSource $source,
@@ -45,7 +45,7 @@ final class DeviceStatus extends Device
 	}
 
 	/**
-	 * @return Array<DataPointStatus>
+	 * @return array<DataPointStatus>
 	 */
 	public function getDataPoints(): array
 	{

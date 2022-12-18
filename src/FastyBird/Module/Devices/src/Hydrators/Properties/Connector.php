@@ -31,7 +31,7 @@ use FastyBird\Module\Devices\Schemas;
 abstract class Connector extends Property
 {
 
-	/** @var Array<string> */
+	/** @var array<string> */
 	protected array $relationships
 		= [
 			Schemas\Connectors\Properties\Property::RELATIONSHIPS_CONNECTOR,

@@ -34,7 +34,7 @@ use function is_scalar;
 final class ChannelPropertyAction extends PropertyAction
 {
 
-	/** @var Array<int|string, string> */
+	/** @var array<int|string, string> */
 	protected array $attributes = [
 		'device',
 		'channel',

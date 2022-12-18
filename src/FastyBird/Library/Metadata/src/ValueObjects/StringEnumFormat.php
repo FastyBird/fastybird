@@ -38,11 +38,11 @@ final class StringEnumFormat
 
 	use Nette\SmartObject;
 
-	/** @var Array<int, string> */
+	/** @var array<int, string> */
 	private array $items;
 
 	/**
-	 * @param string|Array<int, string> $items
+	 * @param string|array<int, string> $items
 	 */
 	public function __construct(string|array $items)
 	{
@@ -57,7 +57,7 @@ final class StringEnumFormat
 	}
 
 	/**
-	 * @return Array<string>
+	 * @return array<string>
 	 */
 	public function getItems(): array
 	{
@@ -65,7 +65,7 @@ final class StringEnumFormat
 	}
 
 	/**
-	 * @return Array<string>
+	 * @return array<string>
 	 */
 	public function toArray(): array
 	{

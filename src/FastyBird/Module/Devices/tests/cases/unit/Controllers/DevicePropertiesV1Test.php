@@ -59,7 +59,7 @@ final class DevicePropertiesV1Test extends DbTestCase
 	}
 
 	/**
-	 * @return Array<string, Array<string|int|null>>
+	 * @return array<string, array<string|int|null>>
 	 */
 	public function devicePropertiesRead(): array
 	{
@@ -205,7 +205,7 @@ final class DevicePropertiesV1Test extends DbTestCase
 	}
 
 	/**
-	 * @return Array<string, Array<bool|string|int|null>>
+	 * @return array<string, array<bool|string|int|null>>
 	 */
 	public function devicePropertiesCreate(): array
 	{
@@ -324,7 +324,7 @@ final class DevicePropertiesV1Test extends DbTestCase
 	}
 
 	/**
-	 * @return Array<string, Array<bool|string|int|null>>
+	 * @return array<string, array<bool|string|int|null>>
 	 */
 	public function devicePropertiesUpdate(): array
 	{
@@ -433,7 +433,7 @@ final class DevicePropertiesV1Test extends DbTestCase
 	}
 
 	/**
-	 * @return Array<string, Array<string|int|null>>
+	 * @return array<string, array<string|int|null>>
 	 */
 	public function devicePropertiesDelete(): array
 	{

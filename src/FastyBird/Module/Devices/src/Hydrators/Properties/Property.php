@@ -40,7 +40,7 @@ use function strval;
 abstract class Property extends JsonApiHydrators\Hydrator
 {
 
-	/** @var Array<int|string, string> */
+	/** @var array<int|string, string> */
 	protected array $attributes
 		= [
 			0 => 'identifier',

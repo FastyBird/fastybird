@@ -46,7 +46,7 @@ final class Messages
 	private Log\LoggerInterface $logger;
 
 	/**
-	 * @param Array<Consumer> $consumers
+	 * @param array<Consumer> $consumers
 	 */
 	public function __construct(
 		array $consumers,

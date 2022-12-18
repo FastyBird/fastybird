@@ -56,7 +56,7 @@ final class ActionDeviceControl extends Action
 	}
 
 	/**
-	 * @return Array<string, mixed>
+	 * @return array<string, mixed>
 	 */
 	public function __serialize(): array
 	{

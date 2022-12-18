@@ -59,10 +59,10 @@ abstract class DbTestCase extends TestCase
 
 	private bool $isDatabaseSetUp = false;
 
-	/** @var Array<string> */
+	/** @var array<string> */
 	private array $sqlFiles = [];
 
-	/** @var Array<string> */
+	/** @var array<string> */
 	private array $neonFiles = [];
 
 	/**

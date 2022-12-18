@@ -52,10 +52,10 @@ class Periodic implements Writer
 
 	private const HANDLER_PENDING_DELAY = 2_000;
 
-	/** @var Array<string> */
+	/** @var array<string> */
 	private array $processedDevices = [];
 
-	/** @var Array<string, DateTimeInterface> */
+	/** @var array<string, DateTimeInterface> */
 	private array $processedProperties = [];
 
 	private Entities\TuyaConnector|null $connector = null;

@@ -39,7 +39,7 @@ trait TEntityParams
 {
 
 	/**
-	 * @var Array<string, mixed>|null
+	 * @var array<string, mixed>|null
 	 *
 	 * @IPubDoctrine\Crud(is="writable")
 	 * @ORM\Column(type="json", name="params", nullable=true)
@@ -52,7 +52,7 @@ trait TEntityParams
 	}
 
 	/**
-	 * @param Array<string, mixed> $params
+	 * @param array<string, mixed> $params
 	 *
 	 * @throws Utils\JsonException
 	 */

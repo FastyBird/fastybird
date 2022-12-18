@@ -18,9 +18,9 @@ final class StatesManagerTest extends TestCase
 {
 
 	/**
-	 * @phpstan-param Array<Uuid\UuidInterface|Array<string, mixed>> $data
-	 * @phpstan-param Array<Uuid\UuidInterface|Array<string, mixed>> $dbData
-	 * @phpstan-param Array<Uuid\UuidInterface|Array<string, mixed>> $expected
+	 * @phpstan-param array<Uuid\UuidInterface|array<string, mixed>> $data
+	 * @phpstan-param array<Uuid\UuidInterface|array<string, mixed>> $dbData
+	 * @phpstan-param array<Uuid\UuidInterface|array<string, mixed>> $expected
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws Utils\JsonException
@@ -56,10 +56,10 @@ final class StatesManagerTest extends TestCase
 	}
 
 	/**
-	 * @phpstan-param Array<Uuid\UuidInterface|Array<string, mixed>> $originalData
-	 * @phpstan-param Array<Uuid\UuidInterface|Array<string, mixed>> $data
-	 * @phpstan-param Array<Uuid\UuidInterface|Array<string, mixed>> $dbData
-	 * @phpstan-param Array<Uuid\UuidInterface|Array<string, mixed>> $expected
+	 * @phpstan-param array<Uuid\UuidInterface|array<string, mixed>> $originalData
+	 * @phpstan-param array<Uuid\UuidInterface|array<string, mixed>> $data
+	 * @phpstan-param array<Uuid\UuidInterface|array<string, mixed>> $dbData
+	 * @phpstan-param array<Uuid\UuidInterface|array<string, mixed>> $expected
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
@@ -138,7 +138,7 @@ final class StatesManagerTest extends TestCase
 	}
 
 	/**
-	 * @return Array<string, Array<Uuid\UuidInterface|Array<string, mixed>>>
+	 * @return array<string, array<Uuid\UuidInterface|array<string, mixed>>>
 	 */
 	public function createStateValue(): array
 	{
@@ -188,7 +188,7 @@ final class StatesManagerTest extends TestCase
 	}
 
 	/**
-	 * @return Array<string, Array<Uuid\UuidInterface|Array<string, mixed>>>
+	 * @return array<string, array<Uuid\UuidInterface|array<string, mixed>>>
 	 */
 	public function updateStateValue(): array
 	{

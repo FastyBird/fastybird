@@ -51,7 +51,7 @@ class State
 	}
 
 	/**
-	 * @return Array<string>|Array<int, int|string|bool|null>
+	 * @return array<string>|array<int, int|string|bool|null>
 	 */
 	public static function getCreateFields(): array
 	{
@@ -61,7 +61,7 @@ class State
 	}
 
 	/**
-	 * @return Array<string>
+	 * @return array<string>
 	 */
 	public static function getUpdateFields(): array
 	{
@@ -74,7 +74,7 @@ class State
 	}
 
 	/**
-	 * @return Array<string, mixed|null>
+	 * @return array<string, mixed|null>
 	 */
 	public function toArray(): array
 	{

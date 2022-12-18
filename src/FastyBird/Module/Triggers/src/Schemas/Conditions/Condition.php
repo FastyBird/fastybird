@@ -53,7 +53,7 @@ abstract class Condition extends JsonApiSchemas\JsonApi
 	/**
 	 * @param T $resource
 	 *
-	 * @return iterable<string, string|bool|Array<int>|null>
+	 * @return iterable<string, string|bool|array<int>|null>
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */

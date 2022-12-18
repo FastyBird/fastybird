@@ -33,7 +33,7 @@ final class Email extends JsonApiHydrators\Hydrator
 
 	use TEmail;
 
-	/** @var Array<int|string, string> */
+	/** @var array<int|string, string> */
 	protected array $attributes = [
 		0 => 'address',
 		1 => 'default',
@@ -42,7 +42,7 @@ final class Email extends JsonApiHydrators\Hydrator
 		'private' => 'visibility',
 	];
 
-	/** @var Array<string> */
+	/** @var array<string> */
 	protected array $relationships = [
 		Schemas\Emails\Email::RELATIONSHIPS_ACCOUNT,
 	];

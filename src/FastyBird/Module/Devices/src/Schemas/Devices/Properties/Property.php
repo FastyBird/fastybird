@@ -62,7 +62,7 @@ abstract class Property extends JsonApiSchemas\JsonApi
 	/**
 	 * @phpstan-param T $resource
 	 *
-	 * @phpstan-return iterable<string, (string|bool|int|float|Array<string>|Array<int, (int|float|Array<int, (string|int|float|null)>|null)>|Array<int, Array<int, (string|Array<int, (string|int|float|bool)>|null)>>|null)>
+	 * @phpstan-return iterable<string, (string|bool|int|float|array<string>|array<int, (int|float|array<int, (string|int|float|null)>|null)>|array<int, array<int, (string|array<int, (string|int|float|bool)>|null)>>|null)>
 	 *
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -227,7 +227,7 @@ abstract class Property extends JsonApiSchemas\JsonApi
 	}
 
 	/**
-	 * @phpstan-return Array<Entities\Devices\Properties\Property>
+	 * @phpstan-return array<Entities\Devices\Properties\Property>
 	 *
 	 * @throws Exception
 	 * @throws DoctrineOrmQueryExceptions\QueryException

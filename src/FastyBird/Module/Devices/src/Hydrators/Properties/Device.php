@@ -31,7 +31,7 @@ use FastyBird\Module\Devices\Schemas;
 abstract class Device extends Property
 {
 
-	/** @var Array<string> */
+	/** @var array<string> */
 	protected array $relationships
 		= [
 			Schemas\Devices\Properties\Property::RELATIONSHIPS_DEVICE,

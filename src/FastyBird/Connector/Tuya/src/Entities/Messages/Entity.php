@@ -31,7 +31,7 @@ interface Entity
 	public function getSource(): Types\MessageSource;
 
 	/**
-	 * @return Array<string, mixed>
+	 * @return array<string, mixed>
 	 */
 	public function toArray(): array;
 

@@ -34,7 +34,7 @@ abstract class VariableProperty extends Property
 	private string|int|bool|float|null $default;
 
 	/**
-	 * @param Array<int, string>|Array<int, string|int|float|Array<int, string|int|float>|null>|Array<int, Array<int, string|Array<int, string|int|float|bool>|null>>|null $format
+	 * @param array<int, string>|array<int, string|int|float|array<int, string|int|float>|null>|array<int, array<int, string|array<int, string|int|float|bool>|null>>|null $format
 	 */
 	public function __construct(
 		string $id,
@@ -91,7 +91,7 @@ abstract class VariableProperty extends Property
 	}
 
 	/**
-	 * @return Array<string, mixed>
+	 * @return array<string, mixed>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */

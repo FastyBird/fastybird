@@ -58,7 +58,7 @@ abstract class Entity
 	}
 
 	/**
-	 * @return Array<mixed>
+	 * @return array<mixed>
 	 */
 	public function toArray(): array
 	{

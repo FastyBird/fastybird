@@ -80,8 +80,8 @@ class Configurator extends Bootstrap\Configurator
 	}
 
 	/**
-	 * @param Array<int|string, string> $configFiles
-	 * @return Array<int|string, mixed>
+	 * @param array<int|string, string> $configFiles
+	 * @return array<int|string, mixed>
 	 */
 	private function getContainerKey(array $configFiles): array
 	{
@@ -100,7 +100,7 @@ class Configurator extends Bootstrap\Configurator
 	}
 
 	/**
-	 * @param Array<int|string, mixed> $containerKey
+	 * @param array<int|string, mixed> $containerKey
 	 */
 	private function reloadContainerOnDemand(ContainerLoader $loader, array $containerKey, string $buildDir): void
 	{

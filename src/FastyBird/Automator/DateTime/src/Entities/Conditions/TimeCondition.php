@@ -44,7 +44,7 @@ class TimeCondition extends TriggersEntities\Conditions\Condition
 	private DateTimeInterface|null $time;
 
 	/**
-	 * @var Array<int>|null
+	 * @var array<int>|null
 	 *
 	 * @IPubDoctrine\Crud(is={"required", "writable"})
 	 * @ORM\Column(type="simple_array", name="condition_days", nullable=true)
@@ -86,7 +86,7 @@ class TimeCondition extends TriggersEntities\Conditions\Condition
 	}
 
 	/**
-	 * @param Array<int> $days
+	 * @param array<int> $days
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 */

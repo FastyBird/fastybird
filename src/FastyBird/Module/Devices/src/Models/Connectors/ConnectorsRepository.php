@@ -38,7 +38,7 @@ final class ConnectorsRepository
 
 	use Nette\SmartObject;
 
-	/** @var Array<ORM\EntityRepository<Entities\Connectors\Connector>> */
+	/** @var array<ORM\EntityRepository<Entities\Connectors\Connector>> */
 	private array $repository = [];
 
 	public function __construct(
@@ -66,7 +66,7 @@ final class ConnectorsRepository
 	/**
 	 * @phpstan-param class-string<Entities\Connectors\Connector> $type
 	 *
-	 * @phpstan-return Array<Entities\Connectors\Connector>
+	 * @phpstan-return array<Entities\Connectors\Connector>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -77,14 +77,14 @@ final class ConnectorsRepository
 	{
 		return $this->database->query(
 			function () use ($queryObject, $type): array {
-				/** @var Array<Entities\Connectors\Connector>|DoctrineOrmQuery\ResultSet<Entities\Connectors\Connector> $result */
+				/** @var array<Entities\Connectors\Connector>|DoctrineOrmQuery\ResultSet<Entities\Connectors\Connector> $result */
 				$result = $queryObject->fetch($this->getRepository($type));
 
 				if (is_array($result)) {
 					return $result;
 				}
 
-				/** @var Array<Entities\Connectors\Connector> $data */
+				/** @var array<Entities\Connectors\Connector> $data */
 				$data = $result->toArray();
 
 				return $data;

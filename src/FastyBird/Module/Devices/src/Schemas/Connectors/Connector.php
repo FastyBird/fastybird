@@ -53,7 +53,7 @@ abstract class Connector extends JsonApiSchemas\JsonApi
 	/**
 	 * @phpstan-param T $resource
 	 *
-	 * @phpstan-return iterable<string, (string|Array<string>|bool|null)>
+	 * @phpstan-return iterable<string, (string|array<string>|bool|null)>
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
