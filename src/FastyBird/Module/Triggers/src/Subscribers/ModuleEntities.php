@@ -127,7 +127,10 @@ final class ModuleEntities implements Common\EventSubscriber
 		}
 	}
 
-	public function prePersist(ORM\Event\LifecycleEventArgs $eventArgs): void
+	/**
+	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
+	 */
+	public function prePersist(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
 		$entity = $eventArgs->getObject();
 
@@ -145,6 +148,8 @@ final class ModuleEntities implements Common\EventSubscriber
 	}
 
 	/**
+	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
+	 *
 	 * @throws Exception
 	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
@@ -156,7 +161,7 @@ final class ModuleEntities implements Common\EventSubscriber
 	 * @throws PhoneExceptions\NoValidCountryException
 	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
-	public function postPersist(ORM\Event\LifecycleEventArgs $eventArgs): void
+	public function postPersist(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
 		// onFlush was executed before, everything already initialized
 		$entity = $eventArgs->getObject();
@@ -170,6 +175,8 @@ final class ModuleEntities implements Common\EventSubscriber
 	}
 
 	/**
+	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
+	 *
 	 * @throws Exception
 	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
@@ -181,7 +188,7 @@ final class ModuleEntities implements Common\EventSubscriber
 	 * @throws PhoneExceptions\NoValidCountryException
 	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
-	public function postUpdate(ORM\Event\LifecycleEventArgs $eventArgs): void
+	public function postUpdate(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
 		$uow = $this->entityManager->getUnitOfWork();
 

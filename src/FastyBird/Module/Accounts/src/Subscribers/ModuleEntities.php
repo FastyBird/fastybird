@@ -78,6 +78,8 @@ final class ModuleEntities implements Common\EventSubscriber
 	}
 
 	/**
+	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
+	 *
 	 * @throws ExchangeExceptions\InvalidState
 	 * @throws PhoneExceptions\NoValidCountryException
 	 * @throws PhoneExceptions\NoValidPhoneException
@@ -89,7 +91,7 @@ final class ModuleEntities implements Common\EventSubscriber
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws Utils\JsonException
 	 */
-	public function postPersist(ORM\Event\LifecycleEventArgs $eventArgs): void
+	public function postPersist(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
 		// onFlush was executed before, everything already initialized
 		$entity = $eventArgs->getObject();
@@ -103,6 +105,8 @@ final class ModuleEntities implements Common\EventSubscriber
 	}
 
 	/**
+	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
+	 *
 	 * @throws ExchangeExceptions\InvalidState
 	 * @throws PhoneExceptions\NoValidCountryException
 	 * @throws PhoneExceptions\NoValidPhoneException
@@ -114,7 +118,7 @@ final class ModuleEntities implements Common\EventSubscriber
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws Utils\JsonException
 	 */
-	public function postUpdate(ORM\Event\LifecycleEventArgs $eventArgs): void
+	public function postUpdate(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
 		$uow = $this->entityManager->getUnitOfWork();
 

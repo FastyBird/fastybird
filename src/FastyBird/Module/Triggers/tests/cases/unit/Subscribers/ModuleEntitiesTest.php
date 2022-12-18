@@ -3,6 +3,7 @@
 namespace FastyBird\Module\Triggers\Tests\Cases\Unit\Subscribers;
 
 use Doctrine\ORM;
+use Doctrine\Persistence;
 use Exception;
 use FastyBird\Library\Exchange\Entities as ExchangeEntities;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
@@ -130,7 +131,7 @@ final class ModuleEntitiesTest extends TestCase
 
 		$entity = new Entities\Triggers\ManualTrigger('Trigger name');
 
-		$eventArgs = $this->createMock(ORM\Event\LifecycleEventArgs::class);
+		$eventArgs = $this->createMock(Persistence\Event\LifecycleEventArgs::class);
 		$eventArgs
 			->expects(self::once())
 			->method('getObject')
@@ -221,7 +222,7 @@ final class ModuleEntitiesTest extends TestCase
 
 		$entity = new Entities\Triggers\ManualTrigger('Trigger name');
 
-		$eventArgs = $this->createMock(ORM\Event\LifecycleEventArgs::class);
+		$eventArgs = $this->createMock(Persistence\Event\LifecycleEventArgs::class);
 		$eventArgs
 			->expects(self::once())
 			->method('getObject')

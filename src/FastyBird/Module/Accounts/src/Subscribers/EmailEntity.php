@@ -17,6 +17,7 @@ namespace FastyBird\Module\Accounts\Subscribers;
 
 use Doctrine\Common;
 use Doctrine\ORM;
+use Doctrine\Persistence;
 use FastyBird\Module\Accounts\Entities;
 use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\Module\Accounts\Models;
@@ -55,11 +56,13 @@ final class EmailEntity implements Common\EventSubscriber
 	}
 
 	/**
+	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
+	 *
 	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
 	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws Exceptions\EmailAlreadyTaken
 	 */
-	public function prePersist(ORM\Event\LifecycleEventArgs $eventArgs): void
+	public function prePersist(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
 		$manager = $eventArgs->getObjectManager();
 		$uow = $manager->getUnitOfWork();

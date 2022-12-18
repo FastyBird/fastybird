@@ -17,6 +17,7 @@ namespace FastyBird\Module\Devices\Subscribers;
 
 use Doctrine\Common;
 use Doctrine\ORM;
+use Doctrine\Persistence;
 use Exception;
 use FastyBird\Library\Exchange\Entities as ExchangeEntities;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
@@ -81,6 +82,8 @@ final class ModuleEntities implements Common\EventSubscriber
 	}
 
 	/**
+	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
+	 *
 	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws Exception
 	 * @throws Exceptions\InvalidState
@@ -95,7 +98,7 @@ final class ModuleEntities implements Common\EventSubscriber
 	 * @throws PhoneExceptions\NoValidCountryException
 	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
-	public function postPersist(ORM\Event\LifecycleEventArgs $eventArgs): void
+	public function postPersist(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
 		// onFlush was executed before, everything already initialized
 		$entity = $eventArgs->getObject();
@@ -109,6 +112,8 @@ final class ModuleEntities implements Common\EventSubscriber
 	}
 
 	/**
+	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
+	 *
 	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws Exception
 	 * @throws ExchangeExceptions\InvalidState
@@ -123,7 +128,7 @@ final class ModuleEntities implements Common\EventSubscriber
 	 * @throws PhoneExceptions\NoValidCountryException
 	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
-	public function postUpdate(ORM\Event\LifecycleEventArgs $eventArgs): void
+	public function postUpdate(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
 		$uow = $this->entityManager->getUnitOfWork();
 
@@ -151,6 +156,8 @@ final class ModuleEntities implements Common\EventSubscriber
 	}
 
 	/**
+	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
+	 *
 	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws Exception
 	 * @throws ExchangeExceptions\InvalidState
@@ -165,7 +172,7 @@ final class ModuleEntities implements Common\EventSubscriber
 	 * @throws PhoneExceptions\NoValidCountryException
 	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
-	public function postRemove(ORM\Event\LifecycleEventArgs $eventArgs): void
+	public function postRemove(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
 		// onFlush was executed before, everything already initialized
 		$entity = $eventArgs->getObject();

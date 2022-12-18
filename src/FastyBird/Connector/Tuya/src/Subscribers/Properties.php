@@ -17,6 +17,7 @@ namespace FastyBird\Connector\Tuya\Subscribers;
 
 use Doctrine\Common;
 use Doctrine\ORM;
+use Doctrine\Persistence;
 use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -51,7 +52,10 @@ final class Properties implements Common\EventSubscriber
 		];
 	}
 
-	public function postPersist(ORM\Event\LifecycleEventArgs $eventArgs): void
+	/**
+	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
+	 */
+	public function postPersist(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
 		// onFlush was executed before, everything already initialized
 		$entity = $eventArgs->getObject();
