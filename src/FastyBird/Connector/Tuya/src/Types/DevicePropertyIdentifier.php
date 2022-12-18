@@ -41,9 +41,27 @@ class DevicePropertyIdentifier extends Consistence\Enum\Enum
 
 	public const IDENTIFIER_LOCAL_KEY = 'local_key';
 
-	public const IDENTIFIER_USER_IDENTIFIER = 'user_identifier';
+	public const IDENTIFIER_NODE_ID = 'node_id';
+
+	public const IDENTIFIER_GATEWAY_ID = 'gateway_id';
+
+	public const IDENTIFIER_CATEGORY = 'category';
+
+	public const IDENTIFIER_ICON = 'icon';
+
+	public const IDENTIFIER_LATITUDE = 'lat';
+
+	public const IDENTIFIER_LONGITUDE = 'lon';
+
+	public const IDENTIFIER_PRODUCT_ID = 'product_id';
+
+	public const IDENTIFIER_PRODUCT_NAME = 'product_name';
 
 	public const IDENTIFIER_ENCRYPTED = 'encrypted';
+
+	public const IDENTIFIER_STATUS_READING_DELAY = 'status_reading_delay';
+
+	public const IDENTIFIER_READ_STATE_EXCLUDE_DPS = 'read_state_exclude_dps';
 
 	public function __toString(): string
 	{

@@ -27,10 +27,14 @@ use FastyBird\Connector\Tuya\Hydrators;
 use FastyBird\Connector\Tuya\Mappers;
 use FastyBird\Connector\Tuya\Schemas;
 use FastyBird\Connector\Tuya\Subscribers;
+use FastyBird\Connector\Tuya\Writers;
 use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
 use FastyBird\Module\Devices\DI as DevicesDI;
 use Nette;
 use Nette\DI;
+use Nette\Schema;
+use stdClass;
+use function assert;
 use const DIRECTORY_SEPARATOR;
 
 /**
@@ -59,9 +63,24 @@ class TuyaExtension extends DI\CompilerExtension
 		};
 	}
 
+	public function getConfigSchema(): Schema\Schema
+	{
+		return Schema\Expect::structure([
+			'writer' => Schema\Expect::anyOf(
+				Writers\Event::NAME,
+				Writers\Exchange::NAME,
+				Writers\Periodic::NAME,
+			)->default(
+				Writers\Periodic::NAME,
+			),
+		]);
+	}
+
 	public function loadConfiguration(): void
 	{
 		$builder = $this->getContainerBuilder();
+		$configuration = $this->getConfig();
+		assert($configuration instanceof stdClass);
 
 		$builder->addDefinition(
 			$this->prefix('consumers.discovery.cloudDevice'),
@@ -86,6 +105,17 @@ class TuyaExtension extends DI\CompilerExtension
 			->setArguments([
 				'consumers' => $builder->findByType(Consumers\Consumer::class),
 			]);
+
+		if ($configuration->writer === Writers\Event::NAME) {
+			$builder->addDefinition($this->prefix('writers.event'), new DI\Definitions\ServiceDefinition())
+				->setType(Writers\Event::class);
+		} elseif ($configuration->writer === Writers\Exchange::NAME) {
+			$builder->addDefinition($this->prefix('writers.exchange'), new DI\Definitions\ServiceDefinition())
+				->setType(Writers\Exchange::class);
+		} elseif ($configuration->writer === Writers\Periodic::NAME) {
+			$builder->addDefinition($this->prefix('writers.periodic'), new DI\Definitions\ServiceDefinition())
+				->setType(Writers\Periodic::class);
+		}
 
 		$builder->addDefinition($this->prefix('api.openApi.api'))
 			->setType(API\OpenApiFactory::class);

@@ -50,13 +50,13 @@ final class Factory
 		Socket\ConnectorInterface|null $connector = null,
 	): Promise\PromiseInterface
 	{
-		$factory = new Redis\Factory($eventLoop, $connector);
+		$factory = new Redis\Io\Factory($eventLoop, $connector);
 
 		$deferred = new Promise\Deferred();
 
 		$factory->createClient($this->connection->getHost() . ':' . $this->connection->getPort())
 			->then(
-				function (Redis\Client $redis) use ($deferred): void {
+				function (Redis\RedisClient $redis) use ($deferred): void {
 					$this->dispatcher?->dispatch(new Events\ClientCreated($redis));
 
 					$redis->subscribe($this->channel);

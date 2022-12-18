@@ -40,7 +40,7 @@ class StatesManagerFactory
 
 	use Nette\SmartObject;
 
-	private Redis\Client|null $asyncClient = null;
+	private Redis\RedisClient|null $asyncClient = null;
 
 	public function __construct(
 		private readonly Client\Client $client,
@@ -70,12 +70,12 @@ class StatesManagerFactory
 	/**
 	 * @internal
 	 */
-	public function setAsyncClient(Redis\Client $client): void
+	public function setAsyncClient(Redis\RedisClient $client): void
 	{
 		$this->asyncClient = $client;
 	}
 
-	private function getClient(): Client\Client|Redis\Client
+	private function getClient(): Client\Client|Redis\RedisClient
 	{
 		if ($this->asyncClient !== null) {
 			return $this->asyncClient;

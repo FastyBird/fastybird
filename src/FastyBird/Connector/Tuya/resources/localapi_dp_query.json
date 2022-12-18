@@ -5,6 +5,9 @@
     "devId" : {
       "type" : "string"
     },
+    "cid" : {
+      "type" : "string"
+    },
     "dps" : {
       "type" : "object",
       "patternProperties" : {
@@ -22,10 +25,29 @@
           ]
         }
       }
+    },
+    "data": {
+      "type" : "object",
+      "properties" : {
+        "dps" : {
+          "type" : "object",
+          "patternProperties" : {
+            "^[A-Za-z0-9]$": {
+              "oneOf" : [
+                {
+                  "type" : "string"
+                },
+                {
+                  "type" : "number"
+                },
+                {
+                  "type" : "boolean"
+                }
+              ]
+            }
+          }
+        }
+      }
     }
-  },
-  "required" : [
-    "devId",
-    "dps"
-  ]
+  }
 }

@@ -30,6 +30,7 @@ use Nette;
 use Nette\Utils;
 use Psr\Log;
 use function assert;
+use function count;
 
 /**
  * Local device discovery message consumer
@@ -105,6 +106,7 @@ final class LocalDiscovery implements Consumer
 						'entity' => Entities\TuyaDevice::class,
 						'connector' => $connector,
 						'identifier' => $entity->getId(),
+						'name' => $entity->getName(),
 					]));
 					assert($device instanceof Entities\TuyaDevice);
 
@@ -123,6 +125,76 @@ final class LocalDiscovery implements Consumer
 						'address' => $entity->getIpAddress(),
 					],
 				],
+			);
+		} else {
+			$device = $this->databaseHelper->transaction(
+				function () use ($entity, $device): Entities\TuyaDevice {
+					$device = $this->devicesManager->update($device, Utils\ArrayHash::from([
+						'name' => $entity->getName(),
+					]));
+					assert($device instanceof Entities\TuyaDevice);
+
+					return $device;
+				},
+			);
+
+			$this->logger->debug(
+				'Device was updated',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'type' => 'local-discovery-message-consumer',
+					'device' => [
+						'id' => $device->getPlainId(),
+					],
+				],
+			);
+		}
+
+		$findDeviceQuery = new DevicesQueries\FindDevices();
+		$findDeviceQuery->byConnectorId($entity->getConnector());
+		$findDeviceQuery->byIdentifier($entity->getId());
+
+		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\TuyaDevice::class);
+
+		if ($device === null) {
+			$this->logger->error(
+				'Newly created device could not be loaded',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'type' => 'cloud-discovery-message-consumer',
+					'device' => [
+						'identifier' => $entity->getId(),
+						'address' => $entity->getIpAddress(),
+					],
+				],
+			);
+
+			return true;
+		}
+
+		if ($entity->getGateway() !== null) {
+			$findParentDeviceQuery = new DevicesQueries\FindDevices();
+			$findParentDeviceQuery->byConnectorId($entity->getConnector());
+			$findParentDeviceQuery->byIdentifier($entity->getGateway());
+
+			$parent = $this->devicesRepository->findOneBy($findParentDeviceQuery, Entities\TuyaDevice::class);
+
+			if ($parent === null) {
+				$this->databaseHelper->transaction(
+					function () use ($device): void {
+						$this->devicesManager->delete($device);
+					},
+				);
+
+				return true;
+			}
+
+			$this->databaseHelper->transaction(
+				function () use ($device, $parent): void {
+					$this->devicesManager->update($device, Utils\ArrayHash::from([
+						'parents' => [$parent],
+					]));
+				},
 			);
 		}
 
@@ -143,68 +215,126 @@ final class LocalDiscovery implements Consumer
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
+			$entity->getNodeId(),
+			Types\DevicePropertyIdentifier::IDENTIFIER_NODE_ID,
+		);
+		$this->setDeviceProperty(
+			$device->getId(),
+			$entity->getGateway(),
+			Types\DevicePropertyIdentifier::IDENTIFIER_GATEWAY_ID,
+		);
+		$this->setDeviceProperty(
+			$device->getId(),
+			$entity->getCategory(),
+			Types\DevicePropertyIdentifier::IDENTIFIER_CATEGORY,
+		);
+		$this->setDeviceProperty(
+			$device->getId(),
+			$entity->getIcon(),
+			Types\DevicePropertyIdentifier::IDENTIFIER_ICON,
+		);
+		$this->setDeviceProperty(
+			$device->getId(),
+			$entity->getLatitude(),
+			Types\DevicePropertyIdentifier::IDENTIFIER_LATITUDE,
+		);
+		$this->setDeviceProperty(
+			$device->getId(),
+			$entity->getLongitude(),
+			Types\DevicePropertyIdentifier::IDENTIFIER_LONGITUDE,
+		);
+		$this->setDeviceProperty(
+			$device->getId(),
+			$entity->getProductId(),
+			Types\DevicePropertyIdentifier::IDENTIFIER_PRODUCT_ID,
+		);
+		$this->setDeviceProperty(
+			$device->getId(),
+			$entity->getProductName(),
+			Types\DevicePropertyIdentifier::IDENTIFIER_PRODUCT_NAME,
+		);
+		$this->setDeviceProperty(
+			$device->getId(),
 			$entity->isEncrypted(),
 			Types\DevicePropertyIdentifier::IDENTIFIER_ENCRYPTED,
 		);
 
-		$this->databaseHelper->transaction(function () use ($entity, $device): bool {
-			$findChannelQuery = new DevicesQueries\FindChannels();
-			$findChannelQuery->byIdentifier(Types\DataPoint::DATA_POINT_LOCAL);
-			$findChannelQuery->forDevice($device);
+		$this->setDeviceAttribute(
+			$device->getId(),
+			$entity->getModel(),
+			Types\DeviceAttributeIdentifier::IDENTIFIER_HARDWARE_MODEL,
+		);
+		$this->setDeviceAttribute(
+			$device->getId(),
+			$entity->getMac(),
+			Types\DeviceAttributeIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS,
+		);
+		$this->setDeviceAttribute(
+			$device->getId(),
+			$entity->getSn(),
+			Types\DeviceAttributeIdentifier::IDENTIFIER_SERIAL_NUMBER,
+		);
 
-			$channel = $this->channelsRepository->findOneBy($findChannelQuery);
+		if (count($entity->getDataPoints()) > 0) {
+			$this->databaseHelper->transaction(function () use ($entity, $device): bool {
+				$findChannelQuery = new DevicesQueries\FindChannels();
+				$findChannelQuery->byIdentifier(Types\DataPoint::DATA_POINT_LOCAL);
+				$findChannelQuery->forDevice($device);
 
-			if ($channel === null) {
-				$channel = $this->channelsManager->create(Utils\ArrayHash::from([
-					'device' => $device,
-					'identifier' => Types\DataPoint::DATA_POINT_LOCAL,
-				]));
+				$channel = $this->channelsRepository->findOneBy($findChannelQuery);
 
-				$this->logger->debug(
-					'Creating new device channel',
-					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-						'type' => 'local-discovery-message-consumer',
-						'device' => [
-							'id' => $device->getPlainId(),
-						],
-						'channel' => [
-							'id' => $channel->getPlainId(),
-						],
-					],
-				);
-			}
-
-			foreach ($entity->getDataPoints() as $dataPoint) {
-				$property = $channel->findProperty($dataPoint->getCode());
-
-				if ($property === null) {
-					$this->channelsPropertiesManager->create(Utils\ArrayHash::from([
-						'channel' => $channel,
-						'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
-						'identifier' => $dataPoint->getCode(),
-						'name' => $dataPoint->getCode(),
-						'dataType' => $dataPoint->getDataType(),
-						'unit' => $dataPoint->getUnit(),
-						'format' => $dataPoint->getFormat(),
-						'queryable' => $dataPoint->isQueryable(),
-						'settable' => $dataPoint->isSettable(),
+				if ($channel === null) {
+					$channel = $this->channelsManager->create(Utils\ArrayHash::from([
+						'device' => $device,
+						'identifier' => Types\DataPoint::DATA_POINT_LOCAL,
 					]));
 
-				} else {
-					$this->channelsPropertiesManager->update($property, Utils\ArrayHash::from([
-						'name' => $property->getName() ?? $dataPoint->getCode(),
-						'dataType' => $dataPoint->getDataType(),
-						'unit' => $dataPoint->getUnit(),
-						'format' => $dataPoint->getFormat(),
-						'queryable' => $dataPoint->isQueryable(),
-						'settable' => $dataPoint->isSettable(),
-					]));
+					$this->logger->debug(
+						'Creating new device channel',
+						[
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+							'type' => 'local-discovery-message-consumer',
+							'device' => [
+								'id' => $device->getPlainId(),
+							],
+							'channel' => [
+								'id' => $channel->getPlainId(),
+							],
+						],
+					);
 				}
-			}
 
-			return true;
-		});
+				foreach ($entity->getDataPoints() as $dataPoint) {
+					$property = $channel->findProperty($dataPoint->getCode());
+
+					if ($property === null) {
+						$this->channelsPropertiesManager->create(Utils\ArrayHash::from([
+							'channel' => $channel,
+							'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
+							'identifier' => $dataPoint->getCode(),
+							'name' => $dataPoint->getCode(),
+							'dataType' => $dataPoint->getDataType(),
+							'unit' => $dataPoint->getUnit(),
+							'format' => $dataPoint->getFormat(),
+							'queryable' => $dataPoint->isQueryable(),
+							'settable' => $dataPoint->isSettable(),
+						]));
+
+					} else {
+						$this->channelsPropertiesManager->update($property, Utils\ArrayHash::from([
+							'name' => $property->getName() ?? $dataPoint->getCode(),
+							'dataType' => $dataPoint->getDataType(),
+							'unit' => $dataPoint->getUnit(),
+							'format' => $dataPoint->getFormat(),
+							'queryable' => $dataPoint->isQueryable(),
+							'settable' => $dataPoint->isSettable(),
+						]));
+					}
+				}
+
+				return true;
+			});
+		}
 
 		$this->logger->debug(
 			'Consumed device found message',

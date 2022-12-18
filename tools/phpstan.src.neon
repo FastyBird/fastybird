@@ -43,5 +43,5 @@ parameters:
         - ../tests/stubs/LinkInterface.stub
         - ../tests/stubs/PositionInterface.stub
         - ../tests/stubs/SchemaInterface.stub
-        - ../tests/stubs/Client.stub
+        - ../tests/stubs/RedisClient.stub
         - ../tests/stubs/EventEmitterInterface.stub

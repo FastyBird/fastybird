@@ -39,10 +39,22 @@ final class DiscoveredLocalDevice implements Entity
 	public function __construct(
 		private readonly Uuid\UuidInterface $connector,
 		private readonly string $id,
-		private readonly string $ipAddress,
+		private readonly string|null $ipAddress,
 		private readonly string $localKey,
 		private readonly bool $encrypted,
 		private readonly string $version,
+		private readonly string|null $gateway,
+		private readonly string|null $nodeId,
+		private readonly string|null $name,
+		private readonly string|null $model,
+		private readonly string|null $icon,
+		private readonly string|null $category,
+		private readonly string|null $productId,
+		private readonly string|null $productName,
+		private readonly string|null $latitude,
+		private readonly string|null $longitude,
+		private readonly string|null $sn,
+		private readonly string|null $mac,
 		private readonly array $dataPoints,
 		private readonly Types\MessageSource $source,
 	)
@@ -59,7 +71,7 @@ final class DiscoveredLocalDevice implements Entity
 		return $this->id;
 	}
 
-	public function getIpAddress(): string
+	public function getIpAddress(): string|null
 	{
 		return $this->ipAddress;
 	}
@@ -77,6 +89,66 @@ final class DiscoveredLocalDevice implements Entity
 	public function getVersion(): string
 	{
 		return $this->version;
+	}
+
+	public function getGateway(): string|null
+	{
+		return $this->gateway;
+	}
+
+	public function getNodeId(): string|null
+	{
+		return $this->nodeId;
+	}
+
+	public function getName(): string|null
+	{
+		return $this->name;
+	}
+
+	public function getModel(): string|null
+	{
+		return $this->model;
+	}
+
+	public function getIcon(): string|null
+	{
+		return $this->icon;
+	}
+
+	public function getCategory(): string|null
+	{
+		return $this->category;
+	}
+
+	public function getLatitude(): string|null
+	{
+		return $this->latitude;
+	}
+
+	public function getLongitude(): string|null
+	{
+		return $this->longitude;
+	}
+
+	public function getProductId(): string|null
+	{
+		return $this->productId;
+	}
+
+	public function getProductName(): string|null
+	{
+		return $this->productName;
+	}
+
+	public function getSn(): string|null
+	{
+		return $this->sn;
+	}
+
+	public function getMac(): string|null
+	{
+		return $this->mac;
 	}
 
 	public function getSource(): Types\MessageSource
@@ -104,6 +176,18 @@ final class DiscoveredLocalDevice implements Entity
 			'local_key' => $this->localKey,
 			'encrypted' => $this->encrypted,
 			'version' => $this->version,
+			'gateway' => $this->getGateway(),
+			'node_id' => $this->getNodeId(),
+			'name' => $this->getName(),
+			'model' => $this->getModel(),
+			'icon' => $this->getIcon(),
+			'category' => $this->getCategory(),
+			'lat' => $this->getLatitude(),
+			'lon' => $this->getLongitude(),
+			'product_id' => $this->getProductId(),
+			'product_name' => $this->getProductName(),
+			'sn' => $this->getSn(),
+			'mac' => $this->getMac(),
 			'data_points' => array_map(
 				static fn (DiscoveredLocalDataPoint $item): array => $item->toArray(),
 				$this->getDataPoints(),

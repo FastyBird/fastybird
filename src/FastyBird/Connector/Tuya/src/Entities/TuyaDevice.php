@@ -18,6 +18,7 @@ namespace FastyBird\Connector\Tuya\Entities;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
+use function assert;
 
 /**
  * @ORM\Entity
@@ -26,6 +27,8 @@ class TuyaDevice extends DevicesEntities\Devices\Device
 {
 
 	public const DEVICE_TYPE = 'tuya';
+
+	private TuyaDevice|false|null $gateway = null;
 
 	public function getType(): string
 	{
@@ -40,6 +43,21 @@ class TuyaDevice extends DevicesEntities\Devices\Device
 	public function getSource(): MetadataTypes\ConnectorSource
 	{
 		return MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA);
+	}
+
+	public function getGateway(): TuyaDevice|false
+	{
+		if ($this->gateway === null) {
+			$gateway = $this->parents
+				->filter(static fn (DevicesEntities\Devices\Device $row): bool => $row instanceof TuyaDevice)
+				->first();
+
+			assert($gateway instanceof TuyaDevice || $gateway === false);
+
+			$this->gateway = $gateway;
+		}
+
+		return $this->gateway;
 	}
 
 }

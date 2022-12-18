@@ -40,7 +40,6 @@ use function array_key_exists;
 use function assert;
 use function explode;
 use function in_array;
-use function is_string;
 use function sprintf;
 use function str_contains;
 use function strval;
@@ -475,12 +474,6 @@ final class FbMqttV1 extends Client
 				&& $state->getExpectedValue() !== null
 				&& $state->isPending() === true
 			) {
-				$pending = is_string($state->getPending())
-					? Utils\DateTime::createFromFormat(
-						DateTimeInterface::ATOM,
-						$state->getPending(),
-					)
-					: true;
 				$debounce = array_key_exists($property->getId()
 					->toString(), $this->processedProperties) ? $this->processedProperties[$property->getId()
 						->toString()] : false;
@@ -494,10 +487,12 @@ final class FbMqttV1 extends Client
 
 				unset($this->processedProperties[$property->getPlainId()]);
 
+				$pending = $state->getPending();
+
 				if (
 					$pending === true
 					|| (
-						$pending !== false
+						$pending instanceof DateTimeInterface
 						&& (float) $now->format('Uv') - (float) $pending->format('Uv') > 2_000
 					)
 				) {
@@ -554,12 +549,6 @@ final class FbMqttV1 extends Client
 					&& $state->getExpectedValue() !== null
 					&& $state->isPending() === true
 				) {
-					$pending = is_string($state->getPending())
-						? Utils\DateTime::createFromFormat(
-							DateTimeInterface::ATOM,
-							$state->getPending(),
-						)
-						: true;
 					$debounce = array_key_exists($property->getId()
 						->toString(), $this->processedProperties) ? $this->processedProperties[$property->getId()
 							->toString()] : false;
@@ -573,10 +562,12 @@ final class FbMqttV1 extends Client
 
 					unset($this->processedProperties[$property->getPlainId()]);
 
+					$pending = $state->getPending();
+
 					if (
 						$pending === true
 						|| (
-							$pending !== false
+							$pending instanceof DateTimeInterface
 							&& (float) $now->format('Uv') - (float) $pending->format('Uv') > 2_000
 						)
 					) {

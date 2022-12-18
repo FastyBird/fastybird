@@ -1,0 +1,70 @@
+{
+  "$schema" : "http://json-schema.org/draft-07/schema#",
+  "type" : "object",
+  "properties" : {
+    "result" : {
+      "type" : "array",
+      "description" : "Devices children",
+      "uniqueItems" : true,
+      "items" : {
+        "type" : "object",
+        "properties" : {
+          "active_time" : {
+            "type" : "number"
+          },
+          "category" : {
+            "type" : "string"
+          },
+          "icon" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "node_id" : {
+            "type" : "string"
+          },
+          "online" : {
+            "type" : "boolean"
+          },
+          "owner_id" : {
+            "type" : "string"
+          },
+          "product_id" : {
+            "type" : "string"
+          },
+          "update_time" : {
+            "type" : "number"
+          }
+        },
+        "required" : [
+          "id",
+          "name",
+          "node_id"
+        ]
+      },
+      "default" : []
+    },
+    "success" : {
+      "type" : "boolean"
+    },
+    "code" : {
+      "type" : "number"
+    },
+    "t" : {
+      "type" : "number"
+    },
+    "tid" : {
+      "type" : "string"
+    },
+    "msg" : {
+      "type" : "string"
+    }
+  },
+  "required" : [
+    "result"
+  ]
+}

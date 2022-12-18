@@ -67,7 +67,7 @@ class StatesManager
 	 * @phpstan-param class-string<T> $entity
 	 */
 	public function __construct(
-		private readonly Client\Client|Redis\Client $client,
+		private readonly Client\Client|Redis\RedisClient $client,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly string $entity = States\State::class,
 		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,

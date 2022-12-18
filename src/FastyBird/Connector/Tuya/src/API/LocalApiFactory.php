@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\Tuya\API;
 
+use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
@@ -44,20 +45,27 @@ final class LocalApiFactory
 		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
+	/**
+	 * @param array<Entities\Clients\LocalChild> $children
+	 */
 	public function create(
 		string $identifier,
 		string|null $gateway,
+		string|null $nodeId,
 		string $localKey,
 		string $ipAddress,
 		Types\DeviceProtocolVersion $protocolVersion,
+		array $children = [],
 	): LocalApi
 	{
 		return new LocalApi(
 			$identifier,
 			$gateway,
+			$nodeId,
 			$localKey,
 			$ipAddress,
 			$protocolVersion,
+			$children,
 			$this->schemaValidator,
 			$this->dateTimeFactory,
 			$this->eventLoop,

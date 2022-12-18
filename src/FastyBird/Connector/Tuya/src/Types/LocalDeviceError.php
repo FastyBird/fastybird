@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * DeviceProtocolVersion.php
+ * LocalDeviceError.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,7 +10,7 @@
  * @subpackage     Types
  * @since          0.13.0
  *
- * @date           25.08.22
+ * @date           11.12.22
  */
 
 namespace FastyBird\Connector\Tuya\Types;
@@ -19,28 +19,22 @@ use Consistence;
 use function strval;
 
 /**
- * Device protocol version types
+ * Local device communication error types
  *
  * @package        FastyBird:TuyaConnector!
  * @subpackage     Types
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class DeviceProtocolVersion extends Consistence\Enum\Enum
+class LocalDeviceError extends Consistence\Enum\Enum
 {
 
 	/**
-	 * Define versions
+	 * Define codes
 	 */
-	public const VERSION_V31 = '3.1';
+	public const ERR_PAYLOAD = 'payload';
 
-	public const VERSION_V32 = '3.2';
-
-	public const VERSION_V32_PLUS = '3.2+';
-
-	public const VERSION_V33 = '3.3';
-
-	public const VERSION_V34 = '3.4';
+	public const ERR_DEVICE_TYPE = 'device_type';
 
 	public function __toString(): string
 	{

@@ -41,7 +41,8 @@ final class DeviceRawMessage implements Entity
 		private readonly Types\LocalDeviceCommand $command,
 		private readonly int $sequence,
 		private readonly int|null $returnCode,
-		private readonly string|Entity|array|null $data,
+		private readonly string|Entity|array|null $data = null,
+		private readonly Types\LocalDeviceError|null $error = null,
 	)
 	{
 	}
@@ -74,6 +75,11 @@ final class DeviceRawMessage implements Entity
 		return $this->data;
 	}
 
+	public function getError(): Types\LocalDeviceError|null
+	{
+		return $this->error;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -92,6 +98,7 @@ final class DeviceRawMessage implements Entity
 				): array => $entity->toArray(),
 				$this->getData(),
 			) : $this->getData()),
+			'error' => $this->getError()?->getValue(),
 		];
 	}
 

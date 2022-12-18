@@ -13,7 +13,7 @@ use React\Promise;
  * @method Promise\PromiseInterface publish(string $channel, string $payload)
  * @method Promise\PromiseInterface subscribe(string $channel)
  */
-interface Client extends EventEmitterInterface
+interface RedisClient extends EventEmitterInterface
 {
 
 }

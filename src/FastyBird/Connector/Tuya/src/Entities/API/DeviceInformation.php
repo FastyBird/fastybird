@@ -65,42 +65,42 @@ final class DeviceInformation implements Entity
 
 	public function getGatewayId(): string|null
 	{
-		return $this->gatewayId;
+		return $this->gatewayId !== '' ? $this->gatewayId : null;
 	}
 
 	public function getNodeId(): string|null
 	{
-		return $this->nodeId;
+		return $this->nodeId !== '' ? $this->nodeId : null;
 	}
 
 	public function getUuid(): string|null
 	{
-		return $this->uuid;
+		return $this->uuid !== '' ? $this->uuid : null;
 	}
 
 	public function getCategory(): string|null
 	{
-		return $this->category;
+		return $this->category !== '' ? $this->category : null;
 	}
 
 	public function getCategoryName(): string|null
 	{
-		return $this->categoryName;
+		return $this->categoryName !== '' ? $this->categoryName : null;
 	}
 
 	public function getName(): string|null
 	{
-		return $this->name;
+		return $this->name !== '' ? $this->name : null;
 	}
 
 	public function getProductId(): string|null
 	{
-		return $this->productId;
+		return $this->productId !== '' ? $this->productId : null;
 	}
 
 	public function getProductName(): string|null
 	{
-		return $this->productName;
+		return $this->productName !== '' ? $this->productName : null;
 	}
 
 	public function getLocalKey(): string
@@ -115,37 +115,37 @@ final class DeviceInformation implements Entity
 
 	public function getAssetId(): string|null
 	{
-		return $this->assetId;
+		return $this->assetId !== '' ? $this->assetId : null;
 	}
 
 	public function getOwnerId(): string|null
 	{
-		return $this->ownerId;
+		return $this->ownerId !== '' ? $this->ownerId : null;
 	}
 
 	public function getIp(): string|null
 	{
-		return $this->ip;
+		return $this->ip !== '' ? $this->ip : null;
 	}
 
 	public function getLon(): string|null
 	{
-		return $this->lon;
+		return $this->lon !== '' ? $this->lon : null;
 	}
 
 	public function getLat(): string|null
 	{
-		return $this->lat;
+		return $this->lat !== '' ? $this->lat : null;
 	}
 
 	public function getModel(): string|null
 	{
-		return $this->model;
+		return $this->model !== '' ? $this->model : null;
 	}
 
 	public function getTimeZone(): string|null
 	{
-		return $this->timeZone;
+		return $this->timeZone !== '' ? $this->timeZone : null;
 	}
 
 	public function getActiveTime(): int|null
@@ -170,7 +170,7 @@ final class DeviceInformation implements Entity
 
 	public function getIcon(): string|null
 	{
-		return $this->icon;
+		return $this->icon !== '' ? $this->icon : null;
 	}
 
 	/**

@@ -182,6 +182,37 @@ final class CloudDiscovery implements Consumer
 			$entity->getIpAddress(),
 			Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS,
 		);
+		$this->setDeviceProperty(
+			$device->getId(),
+			$entity->getCategory(),
+			Types\DevicePropertyIdentifier::IDENTIFIER_CATEGORY,
+		);
+		$this->setDeviceProperty(
+			$device->getId(),
+			$entity->getIcon(),
+			Types\DevicePropertyIdentifier::IDENTIFIER_ICON,
+		);
+		$this->setDeviceProperty(
+			$device->getId(),
+			$entity->getLatitude(),
+			Types\DevicePropertyIdentifier::IDENTIFIER_LATITUDE,
+		);
+		$this->setDeviceProperty(
+			$device->getId(),
+			$entity->getLongitude(),
+			Types\DevicePropertyIdentifier::IDENTIFIER_LONGITUDE,
+		);
+		$this->setDeviceProperty(
+			$device->getId(),
+			$entity->getProductId(),
+			Types\DevicePropertyIdentifier::IDENTIFIER_PRODUCT_ID,
+		);
+		$this->setDeviceProperty(
+			$device->getId(),
+			$entity->getProductName(),
+			Types\DevicePropertyIdentifier::IDENTIFIER_PRODUCT_NAME,
+		);
+
 		$this->setDeviceAttribute(
 			$device->getId(),
 			$entity->getModel(),

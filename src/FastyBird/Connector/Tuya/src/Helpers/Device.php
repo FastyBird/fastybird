@@ -23,7 +23,9 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Nette;
+use function explode;
 use function is_bool;
+use function is_int;
 use function is_string;
 use function strval;
 
@@ -40,7 +42,11 @@ final class Device
 
 	use Nette\SmartObject;
 
+	private const STATUS_READING_DELAY = 120.0;
+
 	/**
+	 * @return float|bool|int|string|array<int, string>|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|DateTimeInterface|null
+	 *
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -48,7 +54,7 @@ final class Device
 	public function getConfiguration(
 		Entities\TuyaDevice $device,
 		Types\DevicePropertyIdentifier $type,
-	): float|bool|int|string|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|DateTimeInterface|null
+	): float|bool|int|string|array|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|DateTimeInterface|null
 	{
 		$configuration = $device->findProperty(strval($type->getValue()));
 
@@ -62,10 +68,12 @@ final class Device
 				return Types\DeviceProtocolVersion::VERSION_V33;
 			} elseif ($type->getValue() === Types\DevicePropertyIdentifier::IDENTIFIER_LOCAL_KEY) {
 				return is_string($configuration->getValue()) ? $configuration->getValue() : null;
-			} elseif ($type->getValue() === Types\DevicePropertyIdentifier::IDENTIFIER_USER_IDENTIFIER) {
-				return is_string($configuration->getValue()) ? $configuration->getValue() : null;
 			} elseif ($type->getValue() === Types\DevicePropertyIdentifier::IDENTIFIER_ENCRYPTED) {
 				return is_bool($configuration->getValue()) ? $configuration->getValue() : false;
+			} elseif ($type->getValue() === Types\DevicePropertyIdentifier::IDENTIFIER_STATUS_READING_DELAY) {
+				return is_int($configuration->getValue()) ? $configuration->getValue() : self::STATUS_READING_DELAY;
+			} elseif ($type->getValue() === Types\DevicePropertyIdentifier::IDENTIFIER_READ_STATE_EXCLUDE_DPS) {
+				return is_string($configuration->getValue()) ? explode(',', $configuration->getValue()) : [];
 			}
 
 			return $configuration->getValue();
@@ -73,6 +81,14 @@ final class Device
 
 		if ($type->getValue() === Types\DevicePropertyIdentifier::IDENTIFIER_PROTOCOL_VERSION) {
 			return Types\DeviceProtocolVersion::VERSION_V33;
+		}
+
+		if ($type->getValue() === Types\DevicePropertyIdentifier::IDENTIFIER_STATUS_READING_DELAY) {
+			return self::STATUS_READING_DELAY;
+		}
+
+		if ($type->getValue() === Types\DevicePropertyIdentifier::IDENTIFIER_READ_STATE_EXCLUDE_DPS) {
+			return [];
 		}
 
 		return null;
