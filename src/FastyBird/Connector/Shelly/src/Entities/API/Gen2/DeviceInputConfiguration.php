@@ -15,7 +15,8 @@
 
 namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
-use FastyBird\Connector\Shelly\Entities\API\Entity;
+use FastyBird\Connector\Shelly\Entities;
+use FastyBird\Connector\Shelly\Types;
 use Nette;
 
 /**
@@ -26,7 +27,7 @@ use Nette;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceInputConfiguration implements Entity
+final class DeviceInputConfiguration implements Entities\API\Entity
 {
 
 	use Nette\SmartObject;
@@ -47,14 +48,23 @@ final class DeviceInputConfiguration implements Entity
 		return $this->id;
 	}
 
+	public function getType(): Types\ComponentType
+	{
+		return Types\ComponentType::get(Types\ComponentType::TYPE_INPUT);
+	}
+
 	public function getName(): string|null
 	{
 		return $this->name;
 	}
 
-	public function getType(): string
+	public function getInputType(): Types\InputType
 	{
-		return $this->type;
+		if (Types\InputType::isValidValue($this->type)) {
+			return Types\InputType::get($this->type);
+		}
+
+		return Types\InputType::get(Types\InputType::TYPE_SWITCH);
 	}
 
 	public function isInverted(): bool
@@ -79,11 +89,12 @@ final class DeviceInputConfiguration implements Entity
 	{
 		return [
 			'id' => $this->getId(),
+			'type' => $this->getType()->getValue(),
 			'name' => $this->getName(),
-			'type' => $this->getType(),
+			'input_type' => $this->getInputType()->getValue(),
 			'inverted' => $this->isInverted(),
 			'factory_reset' => $this->hasFactoryReset(),
-			'report_thereshold' => $this->getReportThreshold(),
+			'report_threshold' => $this->getReportThreshold(),
 		];
 	}
 

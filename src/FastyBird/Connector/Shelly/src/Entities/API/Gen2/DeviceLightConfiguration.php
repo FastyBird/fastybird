@@ -15,7 +15,8 @@
 
 namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
-use FastyBird\Connector\Shelly\Entities\API\Entity;
+use FastyBird\Connector\Shelly\Entities;
+use FastyBird\Connector\Shelly\Types;
 use Nette;
 
 /**
@@ -26,7 +27,7 @@ use Nette;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceLightConfiguration implements Entity
+final class DeviceLightConfiguration implements Entities\API\Entity
 {
 
 	use Nette\SmartObject;
@@ -48,6 +49,11 @@ final class DeviceLightConfiguration implements Entity
 	public function getId(): int
 	{
 		return $this->id;
+	}
+
+	public function getType(): Types\ComponentType
+	{
+		return Types\ComponentType::get(Types\ComponentType::TYPE_LIGHT);
 	}
 
 	public function getName(): string|null
@@ -97,6 +103,7 @@ final class DeviceLightConfiguration implements Entity
 	{
 		return [
 			'id' => $this->getId(),
+			'type' => $this->getType()->getValue(),
 			'name' => $this->getName(),
 			'initial_state' => $this->getInitialState(),
 			'auto_on' => $this->hasAutoOn(),

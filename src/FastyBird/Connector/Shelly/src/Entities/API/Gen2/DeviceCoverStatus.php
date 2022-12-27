@@ -17,7 +17,7 @@ namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
 use DateTimeInterface;
 use Exception;
-use FastyBird\Connector\Shelly\Entities\API\Entity;
+use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Types;
 use Nette;
 use Nette\Utils;
@@ -30,7 +30,7 @@ use Nette\Utils;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceCoverStatus implements Entity
+final class DeviceCoverStatus implements Entities\API\Entity
 {
 
 	use Nette\SmartObject;

@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
-use FastyBird\Connector\Shelly\Entities\API\Entity;
+use FastyBird\Connector\Shelly\Entities;
 use Nette;
 use function array_map;
 
@@ -27,7 +27,7 @@ use function array_map;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceStatus implements Entity
+final class DeviceStatus implements Entities\API\Entity
 {
 
 	use Nette\SmartObject;

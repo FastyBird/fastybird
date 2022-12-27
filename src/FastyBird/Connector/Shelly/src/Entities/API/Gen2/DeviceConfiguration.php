@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
-use FastyBird\Connector\Shelly\Entities\API\Entity;
+use FastyBird\Connector\Shelly\Entities;
 use function array_map;
 
 /**
@@ -26,7 +26,7 @@ use function array_map;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceConfiguration implements Entity
+final class DeviceConfiguration implements Entities\API\Entity
 {
 
 	/**

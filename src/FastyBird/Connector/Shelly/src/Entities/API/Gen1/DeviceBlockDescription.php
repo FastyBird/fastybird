@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\Shelly\Entities\API\Gen1;
 
-use FastyBird\Connector\Shelly\Entities\API\Entity;
+use FastyBird\Connector\Shelly\Entities;
 use Nette;
 use function array_map;
 use function array_unique;
@@ -29,7 +29,7 @@ use const SORT_REGULAR;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceBlockDescription implements Entity
+final class DeviceBlockDescription implements Entities\API\Entity
 {
 
 	use Nette\SmartObject;

@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\Shelly\Entities\API\Gen1;
 
-use FastyBird\Connector\Shelly\Entities\API\Entity;
+use FastyBird\Connector\Shelly\Entities;
 use Nette;
 
 /**
@@ -26,7 +26,7 @@ use Nette;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceInformation implements Entity
+final class DeviceInformation implements Entities\API\Entity
 {
 
 	use Nette\SmartObject;

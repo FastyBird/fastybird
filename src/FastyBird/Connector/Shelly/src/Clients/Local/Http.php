@@ -63,11 +63,11 @@ final class Http implements Clients\Client
 
 	private const CMD_STATUS = 'status';
 
-	private const CHANNEL_BLOCK = '/^(?P<identifier>[0-9]+)_(?P<description>[a-zA-Z0-9_]+)$/';
+	private const GEN1_CHANNEL_BLOCK = '/^(?P<identifier>[0-9]+)_(?P<description>[a-zA-Z]+)(_(?P<channel>[0-9]+))?$/';
 
-	private const BLOCK_PARTS = '/^(?P<channelName>[a-zA-Z]+)_(?P<channelIndex>[0-9_]+)$/';
+	private const GEN1_PROPERTY_SENSOR = '/^(?P<identifier>[0-9]+)_(?P<type>[a-zA-Z]{1,3})_(?P<description>[a-zA-Z0-9]+)$/';
 
-	private const PROPERTY_SENSOR = '/^(?P<identifier>[0-9]+)_(?P<type>[a-zA-Z]{1,3})_(?P<description>[a-zA-Z0-9]+)$/';
+	private const GEN2_PROPERTY_COMPONENT = '/^(?P<component>[a-zA-Z]+)_(?P<identifier>[0-9]+)(_(?P<attribute>[a-zA-Z0-9]+))?$/';
 
 	/** @var array<string> */
 	private array $processedDevices = [];
@@ -299,7 +299,7 @@ final class Http implements Clients\Client
 
 		if ($address === null) {
 			// Promise\reject(new Exceptions\InvalidState('Device address could not be determined'));
-			return true;
+			return false;
 		}
 
 		$cmdResult = null;
@@ -331,11 +331,35 @@ final class Http implements Clients\Client
 			return false;
 		}
 
+		$generation = $this->deviceHelper->getConfiguration(
+			$device,
+			Types\DevicePropertyIdentifier::get(Types\DevicePropertyIdentifier::IDENTIFIER_GENERATION),
+		);
+
+		if (!$generation instanceof Types\DeviceGeneration) {
+			// Promise\reject(new Exceptions\InvalidState('Device generation could not be determined'));
+			return false;
+		}
+
 		$this->processedDevicesCommands[$device->getIdentifier()][$cmd] = $this->dateTimeFactory->getNow();
 
 		if ($cmd === self::CMD_STATUS) {
-			$this->gen1httpApi?->getDeviceStatus($address)
-				->then(function (Entities\API\Gen1\DeviceStatus $status) use ($cmd, $device): void {
+			if ($generation->equalsValue(Types\DeviceGeneration::GENERATION_1)) {
+				$result = $this->gen1httpApi?->getDeviceStatus($address);
+
+			} else if ($generation->equalsValue(Types\DeviceGeneration::GENERATION_2)) {
+				$result = $this->gen2httpApi?->getDeviceStatus($address);
+
+			} else {
+				return false;
+			}
+
+			if ($result === null) {
+				return false;
+			}
+
+			$result
+				->then(function (Entities\API\Gen1\DeviceStatus|Entities\API\Gen2\DeviceStatus $status) use ($cmd, $device): void {
 					$this->processedDevicesCommands[$device->getIdentifier()][$cmd] = $this->dateTimeFactory->getNow();
 				})
 				->otherwise(function (Throwable $ex) use ($device): void {
@@ -404,21 +428,12 @@ final class Http implements Clients\Client
 
 		if ($generation->equalsValue(Types\DeviceGeneration::GENERATION_1)) {
 			if (
-				preg_match(self::CHANNEL_BLOCK, $channel->getIdentifier(), $channelMatches) !== 1
+				preg_match(self::GEN1_CHANNEL_BLOCK, $channel->getIdentifier(), $channelMatches) !== 1
 				|| !array_key_exists('identifier', $channelMatches)
 				|| !array_key_exists('description', $channelMatches)
+				|| !array_key_exists('channel', $channelMatches)
 			) {
 				return Promise\reject(new Exceptions\InvalidState('Channel identifier is not in expected format'));
-			}
-
-			if (
-				preg_match(self::BLOCK_PARTS, $channelMatches['description'], $blockMatches) !== 1
-				|| !array_key_exists('channelName', $blockMatches)
-				|| !array_key_exists('channelIndex', $blockMatches)
-			) {
-				return Promise\reject(
-					new Exceptions\InvalidState('Channel - block description is not in expected format'),
-				);
 			}
 
 			try {
@@ -430,19 +445,35 @@ final class Http implements Clients\Client
 
 			$result = $this->gen1httpApi?->setDeviceStatus(
 				$address,
-				$blockMatches['channelName'],
-				intval($blockMatches['channelIndex']),
+				$channelMatches['description'],
+				intval($channelMatches['channel']),
 				$sensorAction,
 				$valueToWrite,
 			);
 
 		} elseif ($generation->equalsValue(Types\DeviceGeneration::GENERATION_2)) {
+			if (
+				preg_match(self::GEN2_PROPERTY_COMPONENT, $property->getIdentifier(), $propertyMatches) !== 1
+				|| !array_key_exists('component', $propertyMatches)
+				|| !array_key_exists('identifier', $propertyMatches)
+				|| !array_key_exists('attribute', $propertyMatches)
+			) {
+				return Promise\reject(new Exceptions\InvalidState('Property identifier is not in expected format'));
+			}
+
+			try {
+				$componentMethod = $this->buildGen2ComponentMethod($property->getIdentifier());
+
+			} catch (Exceptions\InvalidState) {
+				return Promise\reject(new Exceptions\InvalidState('Sensor action could not be created'));
+			}
+
 			$result = $this->gen2httpApi?->setDeviceStatus(
 				$address,
-				'method_name',
+				$componentMethod,
 				[
-					'id' => 0,
-					'value' => $valueToWrite,
+					'id' => intval($propertyMatches['identifier']),
+					$propertyMatches['attribute'] => $valueToWrite,
 				],
 			);
 
@@ -565,7 +596,7 @@ final class Http implements Clients\Client
 	 */
 	private function buildGen1SensorAction(string $property): string
 	{
-		if (preg_match(self::PROPERTY_SENSOR, $property, $propertyMatches) !== 1) {
+		if (preg_match(self::GEN1_PROPERTY_SENSOR, $property, $propertyMatches) !== 1) {
 			throw new Exceptions\InvalidState('Property identifier is not valid');
 		}
 
@@ -577,15 +608,67 @@ final class Http implements Clients\Client
 			throw new Exceptions\InvalidState('Property identifier is not valid');
 		}
 
-		if ($propertyMatches['description'] === Types\WritableSensorType::TYPE_OUTPUT) {
+		if ($propertyMatches['description'] === Types\SensorDescription::TYPE_OUTPUT) {
 			return 'turn';
 		}
 
-		if ($propertyMatches['description'] === Types\WritableSensorType::TYPE_COLOR_TEMP) {
+		if ($propertyMatches['description'] === Types\SensorDescription::TYPE_ROLLER) {
+			return 'go';
+		}
+
+		if ($propertyMatches['description'] === Types\SensorDescription::TYPE_COLOR_TEMP) {
 			return 'temp';
 		}
 
+		if ($propertyMatches['description'] === Types\SensorDescription::TYPE_WHITE_LEVEL) {
+			return 'white';
+		}
+
 		return $propertyMatches['description'];
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
+	private function buildGen2ComponentMethod(string $property): string
+	{
+		if (preg_match(self::GEN2_PROPERTY_COMPONENT, $property, $propertyMatches) !== 1) {
+			throw new Exceptions\InvalidState('Property identifier is not valid');
+		}
+
+		if (
+			!array_key_exists('component', $propertyMatches)
+			|| !array_key_exists('identifier', $propertyMatches)
+			|| !array_key_exists('attribute', $propertyMatches)
+		) {
+			throw new Exceptions\InvalidState('Property identifier is not valid');
+		}
+
+		if (
+			$propertyMatches['component'] === Types\ComponentType::TYPE_SWITCH
+			&& $propertyMatches['description'] === Types\ComponentAttributeType::ATTRIBUTE_ON
+		) {
+			return 'Switch.Set';
+		}
+
+		if (
+			$propertyMatches['component'] === Types\ComponentType::TYPE_COVER
+			&& $propertyMatches['description'] === Types\ComponentAttributeType::ATTRIBUTE_POSITION
+		) {
+			return 'Cover.GoToPosition';
+		}
+
+		if (
+			$propertyMatches['component'] === Types\ComponentType::TYPE_LIGHT
+			&& (
+				$propertyMatches['description'] === Types\ComponentAttributeType::ATTRIBUTE_ON
+				|| $propertyMatches['description'] === Types\ComponentAttributeType::ATTRIBUTE_BRIGHTNESS
+			)
+		) {
+			return 'Light.Set';
+		}
+
+		throw new Exceptions\InvalidState('Property method could not be build');
 	}
 
 }

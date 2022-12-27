@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\Shelly\Entities\API\Gen1;
 
-use FastyBird\Connector\Shelly\Entities\API\Entity;
+use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette;
@@ -28,7 +28,7 @@ use Nette;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class BlockSensorDescription implements Entity
+final class BlockSensorDescription implements Entities\API\Entity
 {
 
 	use Nette\SmartObject;
@@ -41,7 +41,7 @@ final class BlockSensorDescription implements Entity
 		private readonly Types\SensorType $type,
 		private readonly string $description,
 		private readonly MetadataTypes\DataType $dataType,
-		private readonly Types\SensorUnit|null $unit = null,
+		private readonly string|null $unit = null,
 		private readonly array|null $format = null,
 		private readonly float|int|string|null $invalid = null,
 		private readonly bool $queryable = false,
@@ -70,7 +70,7 @@ final class BlockSensorDescription implements Entity
 		return $this->dataType;
 	}
 
-	public function getUnit(): Types\SensorUnit|null
+	public function getUnit(): string|null
 	{
 		return $this->unit;
 	}
@@ -108,7 +108,7 @@ final class BlockSensorDescription implements Entity
 			'type' => $this->getType()->getValue(),
 			'description' => $this->getDescription(),
 			'data_type' => $this->getDataType()->getValue(),
-			'unit' => $this->getUnit()?->getValue(),
+			'unit' => $this->getUnit(),
 			'format' => $this->getFormat(),
 			'invalid' => $this->getInvalid(),
 			'queryable' => $this->isQueryable(),

@@ -15,7 +15,8 @@
 
 namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
-use FastyBird\Connector\Shelly\Entities\API\Entity;
+use FastyBird\Connector\Shelly\Entities;
+use FastyBird\Connector\Shelly\Types;
 use Nette;
 
 /**
@@ -26,7 +27,7 @@ use Nette;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceTemperatureConfiguration implements Entity
+final class DeviceTemperatureConfiguration implements Entities\API\Entity
 {
 
 	use Nette\SmartObject;
@@ -43,6 +44,11 @@ final class DeviceTemperatureConfiguration implements Entity
 	public function getId(): int
 	{
 		return $this->id;
+	}
+
+	public function getType(): Types\ComponentType
+	{
+		return Types\ComponentType::get(Types\ComponentType::TYPE_TEMPERATURE);
 	}
 
 	public function getName(): string|null
@@ -67,6 +73,7 @@ final class DeviceTemperatureConfiguration implements Entity
 	{
 		return [
 			'id' => $this->getId(),
+			'type' => $this->getType()->getValue(),
 			'name' => $this->getName(),
 			'report_threshold' => $this->getReportThreshold(),
 			'offset' => $this->getOffset(),

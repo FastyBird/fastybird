@@ -42,8 +42,7 @@ final class ChannelDescription implements Entity
 	 */
 	public function __construct(
 		private readonly Types\MessageSource $source,
-		private readonly int $identifier,
-		private readonly string $description,
+		private readonly string $identifier,
 		array $properties = [],
 	)
 	{
@@ -55,14 +54,9 @@ final class ChannelDescription implements Entity
 		return $this->source;
 	}
 
-	public function getIdentifier(): int
+	public function getIdentifier(): string
 	{
 		return $this->identifier;
-	}
-
-	public function getDescription(): string
-	{
-		return $this->description;
 	}
 
 	/**
@@ -88,7 +82,6 @@ final class ChannelDescription implements Entity
 		return [
 			'source' => $this->getSource()->getValue(),
 			'identifier' => $this->getIdentifier(),
-			'description' => $this->getDescription(),
 			'properties' => array_map(
 				static fn (PropertyDescription $property): array => $property->toArray(),
 				$this->getProperties(),

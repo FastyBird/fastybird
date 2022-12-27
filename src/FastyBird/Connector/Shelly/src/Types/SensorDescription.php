@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * SensorUnit.php
+ * WritableSensorType.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -19,44 +19,40 @@ use Consistence;
 use function strval;
 
 /**
- * Sensor units
+ * Sensor descriptions
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Types
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class SensorUnit extends Consistence\Enum\Enum
+class SensorDescription extends Consistence\Enum\Enum
 {
 
 	/**
 	 * Define device states
 	 */
-	public const UNIT_WATTS = 'W';
+	public const TYPE_MODE = 'mode';
 
-	public const UNIT_WATT_MINUTES = 'Wmin';
+	public const TYPE_OUTPUT = 'output';
 
-	public const UNIT_WATT_HOURS = 'Wh';
+	public const TYPE_ROLLER = 'roller';
 
-	public const UNIT_VOLTS = 'V';
+	public const TYPE_RED = 'red';
 
-	public const UNIT_AMPERES = 'A';
+	public const TYPE_GREEN = 'green';
 
-	public const UNIT_CELSIUS = 'C';
+	public const TYPE_BLUE = 'blue';
 
-	public const UNIT_FAHRENHEIT = 'F';
+	public const TYPE_WHITE = 'white';
 
-	public const UNIT_KELVIN = 'K';
+	public const TYPE_GAIN = 'gain';
 
-	public const UNIT_DEGREES = 'deg';
+	public const TYPE_COLOR_TEMP = 'colorTemp';
 
-	public const UNIT_LUX = 'lux';
+	public const TYPE_WHITE_LEVEL = 'whiteLevel';
 
-	public const UNIT_PARTS_PER_MILLION = 'ppm';
-
-	public const UNIT_SECONDS = 's';
-
-	public const UNIT_PERCENT = 'pct';
+	public const TYPE_BRIGHTNESS = 'brightness';
 
 	public function __toString(): string
 	{

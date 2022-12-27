@@ -37,11 +37,9 @@ final class PropertyDescription implements Entity
 	 */
 	public function __construct(
 		private readonly Types\MessageSource $source,
-		private readonly int $identifier,
-		private readonly Types\SensorType $type,
-		private readonly string $description,
+		private readonly string $identifier,
 		private readonly MetadataTypes\DataType $dataType,
-		private readonly Types\SensorUnit|null $unit = null,
+		private readonly string|null $unit = null,
 		private readonly array|null $format = null,
 		private readonly float|int|string|null $invalid = null,
 		private readonly bool $queryable = false,
@@ -55,19 +53,9 @@ final class PropertyDescription implements Entity
 		return $this->source;
 	}
 
-	public function getIdentifier(): int
+	public function getIdentifier(): string
 	{
 		return $this->identifier;
-	}
-
-	public function getType(): Types\SensorType
-	{
-		return $this->type;
-	}
-
-	public function getDescription(): string
-	{
-		return $this->description;
 	}
 
 	public function getDataType(): MetadataTypes\DataType
@@ -75,7 +63,7 @@ final class PropertyDescription implements Entity
 		return $this->dataType;
 	}
 
-	public function getUnit(): Types\SensorUnit|null
+	public function getUnit(): string|null
 	{
 		return $this->unit;
 	}
@@ -111,10 +99,8 @@ final class PropertyDescription implements Entity
 		return [
 			'source' => $this->getSource()->getValue(),
 			'identifier' => $this->getIdentifier(),
-			'type' => $this->getType()->getValue(),
-			'description' => $this->getDescription(),
 			'data_type' => $this->getDataType()->getValue(),
-			'unit' => $this->getUnit()?->getValue(),
+			'unit' => $this->getUnit(),
 			'format' => $this->getFormat(),
 			'invalid' => $this->getInvalid(),
 			'queryable' => $this->isQueryable(),

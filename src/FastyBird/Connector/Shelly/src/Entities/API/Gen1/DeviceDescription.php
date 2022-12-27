@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\Shelly\Entities\API\Gen1;
 
-use FastyBird\Connector\Shelly\Entities\API\Entity;
+use FastyBird\Connector\Shelly\Entities;
 use function array_map;
 use function array_unique;
 use const SORT_REGULAR;
@@ -28,7 +28,7 @@ use const SORT_REGULAR;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceDescription implements Entity
+final class DeviceDescription implements Entities\API\Entity
 {
 
 	/** @var array<DeviceBlockDescription> */

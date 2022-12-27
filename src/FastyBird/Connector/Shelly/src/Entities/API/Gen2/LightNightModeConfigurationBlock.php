@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
-use FastyBird\Connector\Shelly\Entities\API\Entity;
+use FastyBird\Connector\Shelly\Entities;
 
 /**
  * Generation 2 device light component night mode configuration entity
@@ -25,7 +25,7 @@ use FastyBird\Connector\Shelly\Entities\API\Entity;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class LightNightModeConfigurationBlock implements Entity
+final class LightNightModeConfigurationBlock implements Entities\API\Entity
 {
 
 	/**

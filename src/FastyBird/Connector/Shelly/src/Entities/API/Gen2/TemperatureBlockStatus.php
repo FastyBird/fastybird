@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
-use FastyBird\Connector\Shelly\Entities\API\Entity;
+use FastyBird\Connector\Shelly\Entities;
 
 /**
  * Generation 2 device switch or cover component temperature status entity
@@ -25,7 +25,7 @@ use FastyBird\Connector\Shelly\Entities\API\Entity;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class TemperatureBlockStatus implements Entity
+final class TemperatureBlockStatus implements Entities\API\Entity
 {
 
 	public function __construct(

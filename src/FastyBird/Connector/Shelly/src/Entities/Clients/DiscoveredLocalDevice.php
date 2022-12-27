@@ -15,7 +15,6 @@
 
 namespace FastyBird\Connector\Shelly\Entities\Clients;
 
-use FastyBird\Connector\Shelly\Entities\API\Entity;
 use FastyBird\Connector\Shelly\Types;
 use Nette;
 

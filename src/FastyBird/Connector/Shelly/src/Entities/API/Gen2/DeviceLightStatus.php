@@ -17,9 +17,10 @@ namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
 use DateTimeInterface;
 use Exception;
-use FastyBird\Connector\Shelly\Entities\API\Entity;
+use FastyBird\Connector\Shelly\Entities;
 use Nette;
 use Nette\Utils;
+use function intval;
 
 /**
  * Generation 2 device light status entity
@@ -29,7 +30,7 @@ use Nette\Utils;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceLightStatus implements Entity
+final class DeviceLightStatus implements Entities\API\Entity
 {
 
 	use Nette\SmartObject;
@@ -39,7 +40,7 @@ final class DeviceLightStatus implements Entity
 		private readonly string $source,
 		private readonly bool $output,
 		private readonly int $brightness,
-		private readonly int|null $timerStartedAt,
+		private readonly float|null $timerStartedAt,
 		private readonly int|null $timerDuration,
 	)
 	{
@@ -71,7 +72,7 @@ final class DeviceLightStatus implements Entity
 	public function getTimerStartedAt(): DateTimeInterface|null
 	{
 		if ($this->timerStartedAt !== null) {
-			return Utils\DateTime::from($this->timerStartedAt);
+			return Utils\DateTime::from(intval($this->timerStartedAt));
 		}
 
 		return null;

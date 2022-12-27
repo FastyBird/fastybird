@@ -401,28 +401,35 @@ final class Discovery implements Evenement\EventEmitterInterface
 						$deviceInformation->hasAuthentication(),
 						$deviceInformation->getFirmware(),
 						array_map(
-							static fn (Entities\API\Gen1\DeviceBlockDescription $block) => new Entities\Messages\ChannelDescription(
-								Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
-								$block->getIdentifier(),
-								$block->getDescription(),
-								array_map(
-									static fn (
-										Entities\API\Gen1\BlockSensorDescription $sensor,
-									): Entities\Messages\PropertyDescription => new Entities\Messages\PropertyDescription(
+							static function (Entities\API\Gen1\DeviceBlockDescription $block): Entities\Messages\ChannelDescription {
+								$channel = new Entities\Messages\ChannelDescription(
+									Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
+									$block->getIdentifier() . '_' . $block->getDescription(),
+								);
+
+								foreach ($block->getSensors() as $sensor) {
+									$property = new Entities\Messages\PropertyDescription(
 										Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
-										$sensor->getIdentifier(),
-										$sensor->getType(),
-										$sensor->getDescription(),
+										(
+											$sensor->getIdentifier()
+											. '_'
+											. $sensor->getType()->getValue()
+											. '_'
+											. $sensor->getDescription()
+										),
 										$sensor->getDataType(),
 										$sensor->getUnit(),
 										$sensor->getFormat(),
 										$sensor->getInvalid(),
 										$sensor->isQueryable(),
 										$sensor->isSettable(),
-									),
-									$block->getSensors(),
-								),
-							),
+									);
+
+									$channel->addProperty($property);
+								}
+
+								return $channel;
+							},
 							$deviceDescription->getBlocks(),
 						),
 					);
@@ -442,8 +449,208 @@ final class Discovery implements Evenement\EventEmitterInterface
 						$deviceInformation->hasAuthentication(),
 						$deviceInformation->getFirmware(),
 						array_map(
-							static fn ($component): Entities\Messages\ChannelDescription => new Entities\Messages\ChannelDescription(
-							),
+							static function ($component): Entities\Messages\ChannelDescription {
+								$channel = new Entities\Messages\ChannelDescription(
+									Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
+									$component->getType()->getValue() . '_' . $component->getId(),
+								);
+
+								if ($component instanceof Entities\API\Gen2\DeviceSwitchConfiguration) {
+									$channel->addProperty(new Entities\Messages\PropertyDescription(
+										Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
+										(
+											$component->getType()->getValue()
+											. '_'
+											. $component->getId()
+											. '_'
+											. Types\ComponentAttributeType::ATTRIBUTE_ON
+										),
+										MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN),
+										null,
+										null,
+										null,
+										true,
+										true,
+									));
+								} elseif ($component instanceof Entities\API\Gen2\DeviceCoverConfiguration) {
+									$channel->addProperty(new Entities\Messages\PropertyDescription(
+										Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
+										(
+											$component->getType()->getValue()
+											. '_'
+											. $component->getId()
+										),
+										MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
+										null,
+										[
+											Types\CoverPayload::PAYLOAD_OPEN,
+											Types\CoverPayload::PAYLOAD_CLOSED,
+											Types\CoverPayload::PAYLOAD_OPENING,
+											Types\CoverPayload::PAYLOAD_CLOSING,
+											Types\CoverPayload::PAYLOAD_STOPPED,
+											Types\CoverPayload::PAYLOAD_CALIBRATING,
+										],
+										null,
+										true,
+										false,
+									));
+
+									$channel->addProperty(new Entities\Messages\PropertyDescription(
+										Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
+										(
+											$component->getType()->getValue()
+											. '_'
+											. $component->getId()
+											. '_'
+											. Types\ComponentAttributeType::ATTRIBUTE_POSITION
+										),
+										MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
+										null,
+										[0, 100],
+										null,
+										true,
+										true,
+									));
+								} elseif ($component instanceof Entities\API\Gen2\DeviceLightConfiguration) {
+									$channel->addProperty(new Entities\Messages\PropertyDescription(
+										Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
+										(
+											$component->getType()->getValue()
+											. '_'
+											. $component->getId()
+											. '_'
+											. Types\ComponentAttributeType::ATTRIBUTE_ON
+										),
+										MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN),
+										null,
+										null,
+										null,
+										true,
+										true,
+									));
+
+									$channel->addProperty(new Entities\Messages\PropertyDescription(
+										Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
+										(
+											$component->getType()->getValue()
+											. '_'
+											. $component->getId()
+											. '_'
+											. Types\ComponentAttributeType::ATTRIBUTE_BRIGHTNESS
+										),
+										MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
+										null,
+										[0, 100],
+										null,
+										true,
+										true,
+									));
+								} elseif ($component instanceof Entities\API\Gen2\DeviceInputConfiguration) {
+									if ($component->getInputType()->equalsValue(Types\InputType::TYPE_SWITCH)) {
+										$channel->addProperty(new Entities\Messages\PropertyDescription(
+											Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
+											(
+												$component->getType()->getValue()
+												. '_'
+												. $component->getId()
+											),
+											MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN),
+											null,
+											null,
+											null,
+											true,
+											false,
+										));
+									} elseif ($component->getInputType()->equalsValue(Types\InputType::TYPE_BUTTON)) {
+										$channel->addProperty(new Entities\Messages\PropertyDescription(
+											Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
+											(
+												$component->getType()->getValue()
+												. '_'
+												. $component->getId()
+											),
+											MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
+											null,
+											[
+												Types\InputPayload::PAYLOAD_PRESS,
+												Types\InputPayload::PAYLOAD_RELEASE,
+												Types\InputPayload::PAYLOAD_SINGLE_PUSH,
+												Types\InputPayload::PAYLOAD_DOUBLE_PUSH,
+												Types\InputPayload::PAYLOAD_LONG_PUSH,
+											],
+											null,
+											true,
+											false,
+										));
+									} elseif ($component->getInputType()->equalsValue(Types\InputType::TYPE_ANALOG)) {
+										$channel->addProperty(new Entities\Messages\PropertyDescription(
+											Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
+											(
+												$component->getType()->getValue()
+												. '_'
+												. $component->getId()
+											),
+											MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
+											null,
+											[0, 100],
+											null,
+											true,
+											false,
+										));
+									}
+								} elseif ($component instanceof Entities\API\Gen2\DeviceTemperatureConfiguration) {
+									$channel->addProperty(new Entities\Messages\PropertyDescription(
+										Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
+										(
+											$component->getType()->getValue()
+											. '_'
+											. $component->getId()
+											. '_'
+											. Types\ComponentAttributeType::ATTRIBUTE_CELSIUS
+										),
+										MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+										'°C',
+										null,
+										null,
+										true,
+										false,
+									));
+
+									$channel->addProperty(new Entities\Messages\PropertyDescription(
+										Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
+										(
+											$component->getType()->getValue()
+											. '_'
+											. $component->getId()
+											. '_'
+											. Types\ComponentAttributeType::ATTRIBUTE_FAHRENHEIT
+										),
+										MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+										'°F',
+										null,
+										null,
+										true,
+										false,
+									));
+								} else {
+									$channel->addProperty(new Entities\Messages\PropertyDescription(
+										Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
+										(
+											$component->getType()->getValue()
+											. '_'
+											. $component->getId()
+										),
+										MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+										'%',
+										null,
+										null,
+										true,
+										false,
+									));
+								}
+
+								return $channel;
+							},
 							array_merge(
 								$deviceConfiguration->getSwitches(),
 								$deviceConfiguration->getCovers(),

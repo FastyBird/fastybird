@@ -118,28 +118,6 @@ final class Discovery implements Consumer
 			);
 		}
 
-		$findDeviceQuery = new DevicesQueries\FindDevices();
-		$findDeviceQuery->byConnectorId($entity->getConnector());
-		$findDeviceQuery->byIdentifier($entity->getIdentifier());
-
-		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\ShellyDevice::class);
-
-		if ($device === null) {
-			$this->logger->error(
-				'Newly created device could not be loaded',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-					'type' => 'discovery-message-consumer',
-					'device' => [
-						'identifier' => $entity->getIdentifier(),
-						'address' => $entity->getIpAddress(),
-					],
-				],
-			);
-
-			return true;
-		}
-
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getIpAddress(),

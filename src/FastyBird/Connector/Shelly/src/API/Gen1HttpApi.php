@@ -27,6 +27,7 @@ use Psr\Log;
 use React\EventLoop;
 use React\Promise;
 use Throwable;
+use function array_key_exists;
 use function array_map;
 use function assert;
 use function count;
@@ -65,6 +66,36 @@ final class Gen1HttpApi extends HttpApi
 	public const DEVICE_DESCRIPTION_MESSAGE_SCHEMA_FILENAME = 'gen1_http_description.json';
 
 	public const DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME = 'gen1_http_status.json';
+
+	private const SENSORS_UNIT = [
+		'W' => 'W',
+		'Wmin' => 'Wmin',
+		'Wh' => 'Wh',
+		'V' => 'V',
+		'A' => 'A',
+		'C' => '°C',
+		'F' => '°F',
+		'K' => 'K',
+		'deg' => 'deg',
+		'lux' => 'lx',
+		'ppm' => 'ppm',
+		's' => 's',
+		'pct' => '%',
+	];
+
+	private const WRITABLE_SENSORS = [
+		Types\SensorDescription::TYPE_MODE,
+		Types\SensorDescription::TYPE_OUTPUT,
+		Types\SensorDescription::TYPE_ROLLER,
+		Types\SensorDescription::TYPE_RED,
+		Types\SensorDescription::TYPE_GREEN,
+		Types\SensorDescription::TYPE_BLUE,
+		Types\SensorDescription::TYPE_WHITE,
+		Types\SensorDescription::TYPE_GAIN,
+		Types\SensorDescription::TYPE_BRIGHTNESS,
+		Types\SensorDescription::TYPE_COLOR_TEMP,
+		Types\SensorDescription::TYPE_WHITE_LEVEL,
+	];
 
 	public function __construct(
 		private readonly EntityFactory $entityFactory,
@@ -175,7 +206,14 @@ final class Gen1HttpApi extends HttpApi
 								if (
 									(
 										$sensor->offsetGet('L') instanceof Utils\ArrayHash
-										&& in_array($block->offsetGet('I'), (array) $sensor->offsetGet('L'), true)
+										&& in_array(
+											$block->offsetGet('I'),
+											array_map(
+												static fn ($item): int => intval($item),
+												(array) $sensor->offsetGet('L'),
+											),
+											true,
+										)
 									)
 									|| intval($block->offsetGet('I')) === intval($sensor->offsetGet('L'))
 								) {
@@ -198,15 +236,16 @@ final class Gen1HttpApi extends HttpApi
 										Types\SensorType::get($sensor->offsetGet('T')),
 										strval($sensor->offsetGet('D')),
 										$sensorRange->getDataType(),
-										$sensor->offsetExists('U') && $sensor->offsetGet(
+										array_key_exists(
+											strval($sensor->offsetExists('U')),
+											self::SENSORS_UNIT,
+										) ? self::SENSORS_UNIT[strval($sensor->offsetExists(
 											'U',
-										) !== null ? Types\SensorUnit::get(
-											$sensor->offsetGet('U'),
-										) : null,
+										))] : null,
 										$sensorRange->getFormat(),
 										$sensorRange->getInvalid(),
-										false,
-										Types\WritableSensorType::isValidValue($sensor->offsetGet('D')),
+										true,
+										in_array($sensor->offsetGet('D'), self::WRITABLE_SENSORS, true),
 									);
 
 									$blockDescription->addSensor($sensorDescription);
@@ -406,7 +445,7 @@ final class Gen1HttpApi extends HttpApi
 			);
 		}
 
-		if ($normalValue === '0/1') {
+		if ($normalValue === '0/1' || $normalValue === '1/0') {
 			return new Entities\API\Gen1\SensorRange(
 				$this->adjustSensorDataType(
 					$block,
@@ -592,6 +631,16 @@ final class Gen1HttpApi extends HttpApi
 				[MetadataTypes\SwitchPayload::PAYLOAD_ON, '1', Types\RelayPayload::PAYLOAD_ON],
 				[MetadataTypes\SwitchPayload::PAYLOAD_OFF, '0', Types\RelayPayload::PAYLOAD_OFF],
 				[MetadataTypes\SwitchPayload::PAYLOAD_TOGGLE, null, Types\RelayPayload::PAYLOAD_TOGGLE],
+			];
+		}
+
+		if (Utils\Strings::startsWith($block, 'roller') && Utils\Strings::lower($description) === 'roller') {
+			return [
+				[MetadataTypes\CoverPayload::PAYLOAD_OPEN, Types\RollerPayload::PAYLOAD_OPEN, null],
+				[MetadataTypes\CoverPayload::PAYLOAD_OPENED, null, Types\RollerPayload::PAYLOAD_OPEN],
+				[MetadataTypes\CoverPayload::PAYLOAD_CLOSE, Types\RollerPayload::PAYLOAD_CLOSE, null],
+				[MetadataTypes\CoverPayload::PAYLOAD_CLOSED, null, Types\RollerPayload::PAYLOAD_CLOSE],
+				[MetadataTypes\CoverPayload::PAYLOAD_STOP, Types\RollerPayload::PAYLOAD_STOP, null],
 			];
 		}
 

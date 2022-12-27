@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * WritableSensorType.php
+ * ComponentAttributeType.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,7 +10,7 @@
  * @subpackage     Types
  * @since          1.0.0
  *
- * @date           17.07.22
+ * @date           25.12.22
  */
 
 namespace FastyBird\Connector\Shelly\Types;
@@ -19,38 +19,28 @@ use Consistence;
 use function strval;
 
 /**
- * Writable sensor types
+ * Generation 2 devices component attribute types
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Types
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class WritableSensorType extends Consistence\Enum\Enum
+class ComponentAttributeType extends Consistence\Enum\Enum
 {
 
 	/**
 	 * Define device states
 	 */
-	public const TYPE_MODE = 'mode';
+	public const ATTRIBUTE_ON = 'on';
 
-	public const TYPE_OUTPUT = 'output';
+	public const ATTRIBUTE_POSITION = 'pos';
 
-	public const TYPE_ROLLER = 'roller';
+	public const ATTRIBUTE_BRIGHTNESS = 'brightness';
 
-	public const TYPE_RED = 'red';
+	public const ATTRIBUTE_CELSIUS = 'celsius';
 
-	public const TYPE_GREEN = 'green';
-
-	public const TYPE_BLUE = 'blue';
-
-	public const TYPE_WHITE = 'white';
-
-	public const TYPE_GAIN = 'gain';
-
-	public const TYPE_COLOR_TEMP = 'colorTemp';
-
-	public const TYPE_BRIGHTNESS = 'brightness';
+	public const ATTRIBUTE_FAHRENHEIT = 'fahrenheit';
 
 	public function __toString(): string
 	{
