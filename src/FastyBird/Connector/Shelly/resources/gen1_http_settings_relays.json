@@ -1,0 +1,461 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "device": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Device model identifier",
+          "enum": [
+            "SHSW-1",
+            "SHSW-PM",
+            "SHSW-L",
+            "SHSW-21",
+            "SHSW-25",
+            "SHSW-44",
+            "SHPLG-1",
+            "SHPLG2-1",
+            "SHPLG-S",
+            "SHPLG-U1",
+            "SHUNI-1",
+            "SHEM",
+            "SHEM-3"
+          ]
+        }
+      },
+      "required": [
+        "type"
+      ]
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "relay",
+        "roller"
+      ],
+      "default": "relay"
+    }
+  },
+  "required": [
+    "device"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "mode": {
+            "enum": [
+              "relay"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "relays": {
+            "type": "array",
+            "description": "Current relay settings",
+            "uniqueItems": true,
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Relay name"
+                },
+                "appliance_type": {
+                  "type": "string",
+                  "description": "Custom configurable appliance type"
+                },
+                "ison": {
+                  "type": "boolean",
+                  "description": "Relay state"
+                },
+                "has_timer": {
+                  "type": "boolean",
+                  "description": "Whether there is an active timer"
+                },
+                "auto_on": {
+                  "type": "number",
+                  "description": "Automatic flip back timer, seconds"
+                },
+                "auto_off": {
+                  "type": "number",
+                  "description": "Automatic flip back timer, seconds"
+                },
+                "schedule": {
+                  "type": "boolean",
+                  "description": "Whether scheduling is enabled"
+                },
+                "schedule_rules": {
+                  "type": "array",
+                  "description": "Whether scheduling is enabled",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "name",
+                "ison",
+                "has_timer",
+                "default_state",
+                "auto_on",
+                "auto_off",
+                "schedule",
+                "schedule_rules"
+              ]
+            }
+          }
+        },
+        "required": ["relays"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "device": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "SHSW-1",
+                  "SHSW-PM"
+                ]
+              }
+            }
+          },
+          "mode": {
+            "enum": [
+              "relay"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "relays": {
+            "type": "array",
+            "description": "Current relay settings",
+            "uniqueItems": true,
+            "items": {
+              "type": "object",
+              "properties": {
+                "default_state": {
+                  "type": "string",
+                  "description": "State on power-on, one of off, on, last, switch",
+                  "enum": [
+                    "off",
+                    "on",
+                    "last",
+                    "switch"
+                  ]
+                },
+                "btn_type": {
+                  "type": "string",
+                  "description": "Button type, one of momentary, toggle, edge, detached, action, momentary_on_release",
+                  "enum": [
+                    "momentary",
+                    "toggle",
+                    "edge",
+                    "detached",
+                    "action",
+                    "momentary_on_release"
+                  ]
+                },
+                "btn_reverse": {
+                  "type": "number",
+                  "description": "Whether logical state of the input is inverted"
+                }
+              },
+              "required": [
+                "btn_type",
+                "btn_reverse"
+              ]
+            }
+          }
+        },
+        "required": [
+          "relays"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "device": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "SHSW-PM"
+                ]
+              }
+            }
+          },
+          "mode": {
+            "enum": [
+              "relay"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "relays": {
+            "type": "array",
+            "description": "Current relay settings",
+            "uniqueItems": true,
+            "items": {
+              "type": "object",
+              "properties": {
+                "max_power": {
+                  "type": "number",
+                  "description": "Power threshold above which an overpower condition will be triggered"
+                }
+              },
+              "required": [
+                "max_power"
+              ]
+            }
+          }
+        },
+        "required": [
+          "relays"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "device": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "SHSW-L"
+                ]
+              }
+            }
+          },
+          "mode": {
+            "enum": [
+              "relay"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "relays": {
+            "type": "array",
+            "description": "Current relay settings",
+            "uniqueItems": true,
+            "items": {
+              "type": "object",
+              "properties": {
+                "default_state": {
+                  "type": "string",
+                  "description": "State on power-on, one of off, on, last, switch1, switch2",
+                  "enum": [
+                    "off",
+                    "on",
+                    "last",
+                    "switch1",
+                    "switch2"
+                  ]
+                },
+                "btn1_type": {
+                  "type": "string",
+                  "description": "Button type, one of momentary, toggle, edge, detached, action, momentary_on_release, dual_momentary, dual_toggle, dual_edge, dual_detached, dual_action, dual_momentary_on_release",
+                  "enum": [
+                    "momentary",
+                    "toggle",
+                    "edge",
+                    "detached",
+                    "action",
+                    "momentary_on_release",
+                    "dual_momentary",
+                    "dual_toggle",
+                    "dual_edge",
+                    "dual_detached",
+                    "dual_action",
+                    "dual_momentary_on_release"
+                  ]
+                },
+                "btn1_reverse": {
+                  "type": "number",
+                  "description": "Whether logical state of the input is inverted"
+                },
+                "btn2_type": {
+                  "type": "string",
+                  "description": "Button type, one of momentary, toggle, edge, detached, action, momentary_on_release, dual_momentary, dual_toggle, dual_edge, dual_detached, dual_action, dual_momentary_on_release",
+                  "enum": [
+                    "momentary",
+                    "toggle",
+                    "edge",
+                    "detached",
+                    "action",
+                    "momentary_on_release",
+                    "dual_momentary",
+                    "dual_toggle",
+                    "dual_edge",
+                    "dual_detached",
+                    "dual_action",
+                    "dual_momentary_on_release"
+                  ]
+                },
+                "btn2_reverse": {
+                  "type": "number",
+                  "description": "Whether logical state of the input is inverted"
+                },
+                "swap_inputs": {
+                  "type": "boolean",
+                  "description": "Whether inputs are swapped"
+                }
+              },
+              "required": [
+                "btn1_type",
+                "btn1_reverse",
+                "btn2_type",
+                "btn2_reverse",
+                "swap_inputs"
+              ]
+            }
+          }
+        },
+        "required": [
+          "relays"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "device": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "SHSW-21",
+                  "SHSW-25",
+                  "SHSW-44",
+                  "SHPLG-1",
+                  "SHPLG2-1",
+                  "SHPLG-S",
+                  "SHPLG-U1",
+                  "SHUNI-1",
+                  "SHEM",
+                  "SHEM-3"
+                ]
+              }
+            }
+          },
+          "mode": {
+            "enum": [
+              "relay"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "relays": {
+            "type": "array",
+            "description": "Current relay settings",
+            "uniqueItems": true,
+            "items": {
+              "type": "object",
+              "properties": {
+                "overpower": {
+                  "type": "boolean",
+                  "description": "Whether an overpower condition has occurred"
+                },
+                "default_state": {
+                  "type": "string",
+                  "description": "State on power-on, one of off, on, last, switch1, switch2",
+                  "enum": [
+                    "off",
+                    "on",
+                    "last",
+                    "switch"
+                  ]
+                },
+                "btn_type": {
+                  "type": "string",
+                  "description": "Button type, one of momentary, toggle, edge, detached, action, momentary_on_release",
+                  "enum": [
+                    "momentary",
+                    "toggle",
+                    "edge",
+                    "detached",
+                    "action",
+                    "momentary_on_release"
+                  ]
+                },
+                "btn_reverse": {
+                  "type": "number",
+                  "description": "Whether logical state of the input is inverted"
+                }
+              },
+              "required": [
+                "overpower",
+                "default_state"
+              ]
+            }
+          }
+        },
+        "required": [
+          "relays"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "device": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "SHSW-25",
+                  "SHSW-44",
+                  "SHPLG-1",
+                  "SHPLG2-1",
+                  "SHPLG-S",
+                  "SHPLG-U1"
+                ]
+              }
+            }
+          },
+          "mode": {
+            "enum": [
+              "relay"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "relays": {
+            "type": "array",
+            "description": "Current relay settings",
+            "uniqueItems": true,
+            "items": {
+              "type": "object",
+              "properties": {
+                "max_power": {
+                  "type": "number",
+                  "description": "Per-channel overpower threshold (used in relay mode)"
+                }
+              },
+              "required": [
+                "max_power"
+              ]
+            }
+          }
+        },
+        "required": [
+          "relays"
+        ]
+      }
+    }
+  ]
+}

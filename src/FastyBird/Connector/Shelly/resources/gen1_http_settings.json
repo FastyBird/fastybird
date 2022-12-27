@@ -340,19 +340,19 @@
     },
     "pin_code": {
       "type": "string",
-      "description" : "Current generated PIN code"
+      "description": "Current generated PIN code"
     },
     "name": {
       "type": "string",
-      "description" : "Unique name of the device"
+      "description": "Unique name of the device"
     },
     "fw": {
       "type": "string",
-      "description" : "Current FW version"
+      "description": "Current FW version"
     },
     "discoverable": {
       "type": "boolean",
-      "description" : "Device discoverable (i.e. visible) flag"
+      "description": "Device discoverable (i.e. visible) flag"
     },
     "build_info": {
       "type": "object",
@@ -392,55 +392,55 @@
     },
     "timezone": {
       "type": "string",
-      "description" : "Timezone identifier"
+      "description": "Timezone identifier"
     },
     "lat": {
       "type": "number",
-      "description" : "Degrees latitude in decimal format, South is negative"
+      "description": "Degrees latitude in decimal format, South is negative"
     },
     "lng": {
       "type": "number",
-      "description" : "Degrees longitude in decimal fomrat, between -180° and 180°"
+      "description": "Degrees longitude in decimal fomrat, between -180° and 180°"
     },
     "tzautodetect": {
       "type": "boolean",
-      "description" : "Timezone auto-detect enabled"
+      "description": "Timezone auto-detect enabled"
     },
     "tz_utc_offset": {
       "type": "number",
-      "description" : "UTC offset"
+      "description": "UTC offset"
     },
     "tz_dst": {
       "type": "boolean",
-      "description" : "Daylight saving time"
+      "description": "Daylight saving time"
     },
     "tz_dst_auto": {
       "type": "boolean",
-      "description" : "Auto update daylight saving time"
+      "description": "Auto update daylight saving time"
     },
     "time": {
       "type": "string",
-      "description" : "Current time in HH:MM format if synced"
+      "description": "Current time in HH:MM format if synced"
     },
     "unixtime": {
       "type": "number",
-      "description" : "Unix timestamp if synced; 0 otherwise"
+      "description": "Unix timestamp if synced; 0 otherwise"
     },
     "led_status_disable": {
       "type": "boolean",
-      "description" : "For Dimmer 1/2, DW2, i3, RGBW2, Plug, Plug S, EM, 3EM, 1L, 1PM, 2.5 and Button1 Whether LED indication for network status is enabled"
+      "description": "For Dimmer 1/2, DW2, i3, RGBW2, Plug, Plug S, EM, 3EM, 1L, 1PM, 2.5 and Button1 Whether LED indication for network status is enabled"
     },
     "debug_enable": {
       "type": "boolean",
-      "description" : "Debug file logger enabled flag"
+      "description": "Debug file logger enabled flag"
     },
     "allow_cross_origin": {
       "type": "boolean",
-      "description" : "HTTP Cross-Origin Resource Sharing allowed flag"
+      "description": "HTTP Cross-Origin Resource Sharing allowed flag"
     },
     "wifirecovery_reboot_enabled": {
       "type": "boolean",
-      "description" : "Whether WiFi-Recovery reboot is enabled. Only applicable for Shelly 1/1PM, Shelly 2, Shelly 2.5, Shelly Plug/PlugS, Shelly EM, Shelly 3EM"
+      "description": "Whether WiFi-Recovery reboot is enabled. Only applicable for Shelly 1/1PM, Shelly 2, Shelly 2.5, Shelly Plug/PlugS, Shelly EM, Shelly 3EM"
     }
   },
   "required": [
@@ -470,5 +470,427 @@
     "unixtime",
     "debug_enable",
     "allow_cross_origin"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "device": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "SHSW-1",
+                  "SHSW-PM",
+                  "SHSW-L",
+                  "SHSW-21",
+                  "SHSW-25"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "factory_reset_from_switch": {
+            "type": "boolean",
+            "description": "Whether factory reset via 5-time flip of the input switch is enabled"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "relay",
+              "roller"
+            ],
+            "default": "relay"
+          },
+          "longpush_time": {
+            "type": "number",
+            "description": "Duration to detect long push, ms"
+          },
+          "actions": {
+            "type": "object",
+            "properties": {
+              "active": {
+                "type": "boolean"
+              },
+              "names": {
+                "type": "array",
+                "items" : {
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "factory_reset_from_switch",
+          "longpush_time",
+          "actions"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "device": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "SHSW-PM",
+                  "SHSW-L",
+                  "SHSW-21",
+                  "SHSW-25",
+                  "SHPLG-1",
+                  "SHPLG2-1",
+                  "SHPLG-S",
+                  "SHPLG-U1"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "max_power": {
+            "type": "number",
+            "description": "Power threshold above which an overpower condition will be triggered"
+          }
+        },
+        "required": [
+          "max_power"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "device": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "SHSW-PM",
+                  "SHSW-L"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "supply_voltage": {
+            "type": "number",
+            "enum": [
+              0,
+              1
+            ],
+            "description": "Supply voltage of the device, 0 for 110V, 1 for 220V"
+          }
+        },
+        "required": [
+          "supply_voltage"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "device": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "SHSW-PM"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "power_correction": {
+            "type": "number",
+            "description": "Power correction coefficient"
+          }
+        },
+        "required": [
+          "power_correction"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "device": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "SHMOS-01",
+                  "SHMOS-02"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "sleep_time": {
+            "type": "number",
+            "description": "If set, the device stays in inactive state for the remaining time"
+          },
+          "motion": {
+            "type": "object",
+            "properties": {
+              "sensitivity": {
+                "type": "number",
+                "description": "Motion detection threshold. Lower value means higher sensitivity. 1..256",
+                "minimum": 1,
+                "maximum": 256
+              },
+              "blind_time_minutes": {
+                "type": "number",
+                "description": "Time in minutes after the last motion to enable reporting a new motion event. 1..1440",
+                "minimum": 1,
+                "maximum": 1440
+              },
+              "pulse_count": {
+                "type": "number",
+                "description": "Number of consecutive motions in a short period to report motion event. 1..4",
+                "minimum": 1,
+                "maximum": 4
+              },
+              "operating_mode": {
+                "type": "number",
+                "description": "Sets the operating mode for the sensor depending on light conditions. One of (Any/Dark/Twilight/Bright). 0..3",
+                "minimum": 1,
+                "maximum": 3
+              },
+              "enabled": {
+                "type": "boolean",
+                "description": "Motion detection is enabled. true or false"
+              }
+            },
+            "required": [
+              "sensitivity",
+              "blind_time_minutes",
+              "pulse_count",
+              "operating_mode",
+              "enabled"
+            ]
+          },
+          "tamper_sensitivity": {
+            "type": "number",
+            "description": "Tamper (vibration) detection threshold. Lower value sets higher sensitivity. 1..127, 0 - for disabled",
+            "minimum": 0,
+            "maximum": 127
+          },
+          "dark_threshold": {
+            "type": "number",
+            "description": "Illumination level threshold for dark condition"
+          },
+          "twilight_threshold": {
+            "type": "number",
+            "description": "Illumination level threshold for twilight condition"
+          },
+          "schedule": {
+            "type": "boolean",
+            "description": "Whether scheduling is enabled"
+          },
+          "schedule_rules": {
+            "type": "array",
+            "description": "Rules for schedule activation",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "sleep_time",
+          "motion",
+          "tamper_sensitivity",
+          "dark_threshold",
+          "twilight_threshold",
+          "schedule",
+          "schedule_rules"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "device": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "SHTRV-01"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "child_lock": {
+            "type": "number",
+            "description": "If set, the device stays in inactive state for the remaining time"
+          },
+          "display": {
+            "type": "object",
+            "properties": {
+              "brightness": {
+                "type": "number",
+                "description": "Display brightness 1..7",
+                "minimum": 1,
+                "maximum": 7
+              },
+              "flipped": {
+                "type": "boolean",
+                "description": "If the display is flipped"
+              }
+            },
+            "required": [
+              "brightness",
+              "flipped"
+            ]
+          },
+          "thermostats": {
+            "type": "object",
+            "properties": {
+              "target_t": {
+                "type": "object",
+                "properties": {
+                  "value": {
+                    "type": "number",
+                    "description": "Target temperature 4..31",
+                    "minimum": 4,
+                    "maximum": 31
+                  },
+                  "enabled": {
+                    "type": "boolean",
+                    "description": "If the automatic valve control is enabled"
+                  },
+                  "units": {
+                    "type": "string",
+                    "description": "Units of the target temperature. Only C is supported"
+                  }
+                },
+                "required": [
+                  "value",
+                  "enabled",
+                  "units"
+                ]
+              },
+              "schedule": {
+                "type": "boolean",
+                "description": "If schedule is enabled/disabled"
+              },
+              "schedule_profile": {
+                "type": "number",
+                "description": "Choosen active schedule profile with the provided id, 1..5",
+                "minimum": 1,
+                "maximum": 5
+              },
+              "schedule_profile_names": {
+                "type": "array",
+                "description": "List of schedule profiles names",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "schedule_rules": {
+                "type": "array",
+                "description": "Rules for schedule activation",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "temperature_offset": {
+                "type": "number",
+                "description": "Temperature offset (in °C)"
+              },
+              "ext_t": {
+                "type": "object",
+                "properties": {
+                  "enabled": {
+                    "type": "boolean",
+                    "description": "If temperature correction from external temp sensor is enabled"
+                  },
+                  "floor_heating": {
+                    "type": "boolean",
+                    "description": "If enabled, only external temperature sensor data is used"
+                  }
+                },
+                "required": [
+                  "enabled",
+                  "floor_heating"
+                ]
+              },
+              "t_auto": {
+                "type": "object",
+                "properties": {
+                  "enabled": {
+                    "type": "boolean",
+                    "description": "Enables automatic temperature control"
+                  }
+                },
+                "required": [
+                  "enabled"
+                ]
+              },
+              "boost_minutes": {
+                "type": "number",
+                "description": "Default boost time setting (100% open valve for the given time)"
+              },
+              "min_percent": {
+                "type": "number",
+                "description": "Set the valve closed position percent, 0..10",
+                "minimum": 0,
+                "maximum": 10
+              },
+              "force_close": {
+                "type": "boolean",
+                "description": "Use extra pressure when fully closing the valve if enabled"
+              },
+              "calibration_correction": {
+                "type": "boolean",
+                "description": "Use dynamic calibration correction if enabled"
+              },
+              "extra_pressure": {
+                "type": "boolean",
+                "description": "Use more force when moving the valve if enabled. The TRV can be more noisy in this mode"
+              },
+              "open_window_report": {
+                "type": "boolean",
+                "description": "Enable the open window mode of operation"
+              }
+            },
+            "required": [
+              "brightness",
+              "flipped"
+            ]
+          }
+        },
+        "required": [
+          "target_t",
+          "schedule",
+          "schedule_profile",
+          "schedule_profile_names",
+          "schedule_rules",
+          "temperature_offset",
+          "ext_t",
+          "t_auto",
+          "boost_minutes",
+          "valve_min_percent",
+          "force_close",
+          "calibration_correction",
+          "extra_pressure",
+          "open_window_report"
+        ]
+      }
+    }
   ]
 }

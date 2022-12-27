@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Types
- * @since          0.37.0
+ * @since          1.0.0
  *
  * @date           19.07.22
  */
@@ -20,7 +20,7 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use function strval;
 
 /**
- * Device property identifier types
+ * Device property identifiers
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Types
@@ -42,6 +42,10 @@ class DevicePropertyIdentifier extends Consistence\Enum\Enum
 	public const IDENTIFIER_PASSWORD = 'password';
 
 	public const IDENTIFIER_AUTH_ENABLED = 'auth_enabled';
+
+	public const IDENTIFIER_GENERATION = 'generation';
+
+	public const IDENTIFIER_STATUS_READING_DELAY = 'status_reading_delay';
 
 	public function __toString(): string
 	{

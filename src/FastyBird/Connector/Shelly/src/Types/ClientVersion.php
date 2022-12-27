@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Types
- * @since          0.37.0
+ * @since          1.0.0
  *
  * @date           19.07.22
  */
@@ -19,7 +19,7 @@ use Consistence;
 use function strval;
 
 /**
- * Connector client versions types
+ * Connector client versions
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Types

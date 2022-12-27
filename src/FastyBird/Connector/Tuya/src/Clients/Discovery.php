@@ -19,6 +19,7 @@ use Evenement;
 use FastyBird\Connector\Tuya\API;
 use FastyBird\Connector\Tuya\Consumers;
 use FastyBird\Connector\Tuya\Entities;
+use FastyBird\Connector\Tuya\Entities\Clients\DiscoveredLocalDevice;
 use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Types;
@@ -90,7 +91,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 	/** @var array<string> */
 	private array $processedProtocols = [];
 
-	/** @var SplObjectStorage<Entities\API\DiscoveredLocalDevice, null> */
+	/** @var SplObjectStorage<DiscoveredLocalDevice, null> */
 	private SplObjectStorage $discoveredLocalDevices;
 
 	private EventLoop\TimerInterface|null $handlerTimer = null;
@@ -383,7 +384,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				return;
 			}
 
-			$this->discoveredLocalDevices->attach(new Entities\API\DiscoveredLocalDevice(
+			$this->discoveredLocalDevices->attach(new Entities\Clients\DiscoveredLocalDevice(
 				strval($deviceInfo->offsetGet('gwId')),
 				strval($deviceInfo->offsetGet('ip')),
 				strval($deviceInfo->offsetGet('productKey')),
@@ -409,7 +410,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @param array<Entities\API\DiscoveredLocalDevice> $devices
+	 * @param array<DiscoveredLocalDevice> $devices
 	 *
 	 * @return array<Entities\Messages\DiscoveredLocalDevice>
 	 *
@@ -436,7 +437,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			/** @var array<Entities\API\DeviceFactoryInfos> $devicesFactoryInfos */
 			$devicesFactoryInfos = await($this->openApiApi->getDevicesFactoryInfos(
 				array_map(
-					static fn (Entities\API\DiscoveredLocalDevice $userDevice): string => $userDevice->getId(),
+					static fn (Entities\Clients\DiscoveredLocalDevice $userDevice): string => $userDevice->getId(),
 					$devices,
 				),
 			));

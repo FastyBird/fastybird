@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Types
- * @since          0.37.0
+ * @since          1.0.0
  *
  * @date           04.08.22
  */
@@ -19,7 +19,7 @@ use Consistence;
 use function strval;
 
 /**
- * Connector client modes types
+ * Connector client modes
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Types
@@ -32,9 +32,11 @@ class ClientMode extends Consistence\Enum\Enum
 	/**
 	 * Define versions
 	 */
-	public const TYPE_GEN_1_CLASSIC = 'gen1_classic';
+	public const MODE_LOCAL = 'local';
 
-	public const TYPE_GEN_1_MQTT = 'gen1_mqtt';
+	public const MODE_CLOUD = 'cloud';
+
+	public const MODE_MQTT = 'mqtt';
 
 	public function __toString(): string
 	{

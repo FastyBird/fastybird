@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Types
- * @since          0.37.0
+ * @since          1.0.0
  *
  * @date           20.07.22
  */
@@ -36,9 +36,11 @@ class MessageSource extends Consistence\Enum\Enum
 
 	public const SOURCE_GEN_1_HTTP = 'gen_1_http';
 
-	public const SOURCE_GEN_1_MDNS = 'gen_1_mdns';
+	public const SOURCE_GEN_2_HTTP = 'gen_2_http';
 
-	public const SOURCE_GEN_1_MQTT = 'gen_1_mqtt';
+	public const SOURCE_LOCAL_DISCOVERY = 'local_discovery';
+
+	public const SOURCE_CLOUD_DISCOVERY = 'cloud_discovery';
 
 	public function __toString(): string
 	{

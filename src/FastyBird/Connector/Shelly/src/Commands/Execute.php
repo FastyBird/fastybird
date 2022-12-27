@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Commands
- * @since          0.37.0
+ * @since          1.0.0
  *
  * @date           30.07.22
  */

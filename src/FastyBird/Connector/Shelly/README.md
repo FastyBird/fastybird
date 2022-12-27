@@ -23,6 +23,7 @@ in [PHP](https://www.php.net) on top of the [Nette framework](https://nette.org)
 ### Features:
 
 - Shelly gen1 devices support
+- Shelly gen2 devices support
 - Shelly connector management for [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) [devices module](https://github.com/FastyBird/devices-module)
 - Shelly device management for [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) [devices module](https://github.com/FastyBird/devices-module)
 - [{JSON:API}](https://jsonapi.org/) schemas for full api access

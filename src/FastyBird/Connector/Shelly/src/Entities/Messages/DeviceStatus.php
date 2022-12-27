@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Properties
- * @since          0.37.0
+ * @since          1.0.0
  *
  * @date           18.07.22
  */
@@ -38,12 +38,10 @@ final class DeviceStatus extends Device
 		Types\MessageSource $source,
 		Uuid\UuidInterface $connector,
 		string $identifier,
-		string $type,
-		string $ipAddress,
-		private array $channels,
+		private readonly array $channels,
 	)
 	{
-		parent::__construct($source, $connector, $identifier, $type, $ipAddress);
+		parent::__construct($source, $connector, $identifier);
 	}
 
 	/**

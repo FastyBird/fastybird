@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ShellyConnector!
  * @subpackage     DI
- * @since          0.1.0
+ * @since          1.0.0
  *
  * @date           22.01.22
  */
@@ -27,10 +27,14 @@ use FastyBird\Connector\Shelly\Hydrators;
 use FastyBird\Connector\Shelly\Mappers;
 use FastyBird\Connector\Shelly\Schemas;
 use FastyBird\Connector\Shelly\Subscribers;
+use FastyBird\Connector\Shelly\Writers;
 use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
 use FastyBird\Module\Devices\DI as DevicesDI;
 use Nette;
 use Nette\DI;
+use Nette\Schema;
+use stdClass;
+use function assert;
 use const DIRECTORY_SEPARATOR;
 
 /**
@@ -59,40 +63,60 @@ class ShellyExtension extends DI\CompilerExtension
 		};
 	}
 
+	public function getConfigSchema(): Schema\Schema
+	{
+		return Schema\Expect::structure([
+			'writer' => Schema\Expect::anyOf(
+				Writers\Event::NAME,
+				Writers\Exchange::NAME,
+				Writers\Periodic::NAME,
+			)->default(
+				Writers\Periodic::NAME,
+			),
+		]);
+	}
+
 	public function loadConfiguration(): void
 	{
 		$builder = $this->getContainerBuilder();
+		$configuration = $this->getConfig();
+		assert($configuration instanceof stdClass);
 
-		$builder->addFactoryDefinition($this->prefix('clients.gen1'))
-			->setImplement(Clients\Gen1Factory::class)
+		if ($configuration->writer === Writers\Event::NAME) {
+			$builder->addDefinition($this->prefix('writers.event'), new DI\Definitions\ServiceDefinition())
+				->setType(Writers\Event::class);
+		} elseif ($configuration->writer === Writers\Exchange::NAME) {
+			$builder->addDefinition($this->prefix('writers.exchange'), new DI\Definitions\ServiceDefinition())
+				->setType(Writers\Exchange::class);
+		} elseif ($configuration->writer === Writers\Periodic::NAME) {
+			$builder->addDefinition($this->prefix('writers.periodic'), new DI\Definitions\ServiceDefinition())
+				->setType(Writers\Periodic::class);
+		}
+
+		$builder->addFactoryDefinition($this->prefix('clients.local'))
+			->setImplement(Clients\LocalFactory::class)
 			->getResultDefinition()
-			->setType(Clients\Gen1::class);
+			->setType(Clients\Local::class);
 
-		$builder->addFactoryDefinition($this->prefix('clients.gen1.coap'))
-			->setImplement(Clients\Gen1\CoapFactory::class)
+		$builder->addFactoryDefinition($this->prefix('clients.local.coap'))
+			->setImplement(Clients\Local\CoapFactory::class)
 			->getResultDefinition()
-			->setType(Clients\Gen1\Coap::class);
+			->setType(Clients\Local\Coap::class);
 
-		$builder->addFactoryDefinition($this->prefix('clients.gen1.mdns'))
-			->setImplement(Clients\Gen1\MdnsFactory::class)
+		$builder->addFactoryDefinition($this->prefix('clients.local.http'))
+			->setImplement(Clients\Local\HttpFactory::class)
 			->getResultDefinition()
-			->setType(Clients\Gen1\Mdns::class);
+			->setType(Clients\Local\Http::class);
 
-		$builder->addFactoryDefinition($this->prefix('clients.gen1.http'))
-			->setImplement(Clients\Gen1\HttpFactory::class)
+		$builder->addFactoryDefinition($this->prefix('clients.local.mqtt'))
+			->setImplement(Clients\Local\MqttFactory::class)
 			->getResultDefinition()
-			->setType(Clients\Gen1\Http::class);
+			->setType(Clients\Local\Mqtt::class);
 
-		$builder->addFactoryDefinition($this->prefix('clients.gen1.mqtt'))
-			->setImplement(Clients\Gen1\MqttFactory::class)
+		$builder->addFactoryDefinition($this->prefix('clients.discover'))
+			->setImplement(Clients\DiscoveryFactory::class)
 			->getResultDefinition()
-			->setType(Clients\Gen1\Mqtt::class);
-
-		$builder->addDefinition($this->prefix('api.gen1parser'), new DI\Definitions\ServiceDefinition())
-			->setType(API\Gen1Parser::class);
-
-		$builder->addDefinition($this->prefix('api.gen1validator'), new DI\Definitions\ServiceDefinition())
-			->setType(API\Gen1Validator::class);
+			->setType(Clients\Discovery::class);
 
 		$builder->addDefinition($this->prefix('api.gen1transformer'), new DI\Definitions\ServiceDefinition())
 			->setType(API\Gen1Transformer::class);
@@ -167,10 +191,7 @@ class ShellyExtension extends DI\CompilerExtension
 			->setType(Commands\Initialize::class);
 
 		$builder->addDefinition($this->prefix('commands.discovery'), new DI\Definitions\ServiceDefinition())
-			->setType(Commands\Discovery::class)
-			->setArguments([
-				'clientsFactories' => $builder->findByType(Clients\ClientFactory::class),
-			]);
+			->setType(Commands\Discovery::class);
 
 		$builder->addDefinition($this->prefix('commands.execute'), new DI\Definitions\ServiceDefinition())
 			->setType(Commands\Execute::class);

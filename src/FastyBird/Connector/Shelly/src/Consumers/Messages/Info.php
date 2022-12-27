@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Consumers
- * @since          0.37.0
+ * @since          1.0.0
  *
  * @date           20.07.22
  */
@@ -85,7 +85,7 @@ final class Info implements Consumer
 			return true;
 		}
 
-		if ($device->getName() === null && $device->getName() !== $entity->getType()) {
+		if ($device->getName() !== $entity->getType()) {
 			$this->databaseHelper->transaction(function () use ($entity, $device): void {
 				$this->devicesManager->update($device, Utils\ArrayHash::from([
 					'name' => $entity->getType(),
@@ -95,18 +95,13 @@ final class Info implements Consumer
 
 		$this->setDeviceProperty(
 			$device->getId(),
-			$entity->getIpAddress(),
-			Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS,
-		);
-		$this->setDeviceProperty(
-			$device->getId(),
 			$entity->isAuthEnabled(),
 			Types\DevicePropertyIdentifier::IDENTIFIER_AUTH_ENABLED,
 		);
 		$this->setDeviceAttribute(
 			$device->getId(),
 			$entity->getType(),
-			Types\DeviceAttributeIdentifier::IDENTIFIER_MODEL,
+			Types\DeviceAttributeIdentifier::IDENTIFIER_HARDWARE_MODEL,
 		);
 		$this->setDeviceAttribute(
 			$device->getId(),

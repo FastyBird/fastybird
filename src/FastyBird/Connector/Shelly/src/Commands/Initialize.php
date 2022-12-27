@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Commands
- * @since          0.37.0
+ * @since          1.0.0
  *
  * @date           30.07.22
  */
@@ -241,11 +241,11 @@ class Initialize extends Console\Command\Command
 			$clientModeAnswer = $io->askQuestion($question);
 
 			if ($clientModeAnswer === self::CHOICE_QUESTION_GEN_1_MODE_CLASSIC) {
-				$clientMode = Types\ClientMode::get(Types\ClientMode::TYPE_GEN_1_CLASSIC);
+				$clientMode = Types\ClientMode::get(Types\ClientMode::MODE_LOCAL);
 			}
 
 			if ($clientModeAnswer === self::CHOICE_QUESTION_GEN_1_MODE_MQTT) {
-				$clientMode = Types\ClientMode::get(Types\ClientMode::TYPE_GEN_1_MQTT);
+				$clientMode = Types\ClientMode::get(Types\ClientMode::MODE_CLOUD);
 			}
 		} elseif ($generation->getValue() === Types\ClientVersion::TYPE_CLOUD) {
 			$question = new Console\Question\Question('Provide cloud authentication key');
@@ -488,11 +488,11 @@ class Initialize extends Console\Command\Command
 				$clientModeAnswer = $io->askQuestion($question);
 
 				if ($clientModeAnswer === self::CHOICE_QUESTION_GEN_1_MODE_CLASSIC) {
-					$clientMode = Types\ClientMode::get(Types\ClientMode::TYPE_GEN_1_CLASSIC);
+					$clientMode = Types\ClientMode::get(Types\ClientMode::MODE_LOCAL);
 				}
 
 				if ($clientModeAnswer === self::CHOICE_QUESTION_GEN_1_MODE_MQTT) {
-					$clientMode = Types\ClientMode::get(Types\ClientMode::TYPE_GEN_1_MQTT);
+					$clientMode = Types\ClientMode::get(Types\ClientMode::MODE_CLOUD);
 				}
 			}
 		} elseif (

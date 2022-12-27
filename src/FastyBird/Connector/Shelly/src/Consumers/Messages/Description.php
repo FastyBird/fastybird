@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Consumers
- * @since          0.37.0
+ * @since          1.0.0
  *
  * @date           20.07.22
  */
@@ -122,7 +122,7 @@ final class Description implements Consumer
 		$this->setDeviceAttribute(
 			$device->getId(),
 			$entity->getType(),
-			Types\DeviceAttributeIdentifier::IDENTIFIER_MODEL,
+			Types\DeviceAttributeIdentifier::IDENTIFIER_HARDWARE_MODEL,
 		);
 
 		foreach ($entity->getBlocks() as $block) {

@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Properties
- * @since          0.37.0
+ * @since          1.0.0
  *
  * @date           14.07.22
  */
@@ -31,7 +31,7 @@ final class MdnsResult
 	use Nette\SmartObject;
 
 	/**
-	 * @param array<string, string|int|float> $data
+	 * @param array<string, string|int|float|null> $data
 	 */
 	public function __construct(
 		private readonly string $address,
@@ -52,7 +52,7 @@ final class MdnsResult
 	}
 
 	/**
-	 * @return array<string, string|int|float>
+	 * @return array<string, string|int|float|null>
 	 */
 	public function getData(): array
 	{
@@ -60,7 +60,7 @@ final class MdnsResult
 	}
 
 	/**
-	 * @return array<string, string|array<string, string|int|float>>
+	 * @return array<string, string|array<string, string|int|float|null>>
 	 */
 	public function __serialize(): array
 	{

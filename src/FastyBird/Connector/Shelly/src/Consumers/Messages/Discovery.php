@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Consumers
- * @since          0.37.0
+ * @since          1.0.0
  *
  * @date           20.07.22
  */
@@ -71,7 +71,7 @@ final class Discovery implements Consumer
 	 */
 	public function consume(Entities\Messages\Entity $entity): bool
 	{
-		if (!$entity instanceof Entities\Messages\DeviceFound) {
+		if (!$entity instanceof Entities\Messages\DiscoveredLocalDevice) {
 			return false;
 		}
 
@@ -148,7 +148,7 @@ final class Discovery implements Consumer
 		$this->setDeviceAttribute(
 			$device->getId(),
 			$entity->getType(),
-			Types\DeviceAttributeIdentifier::IDENTIFIER_MODEL,
+			Types\DeviceAttributeIdentifier::IDENTIFIER_HARDWARE_MODEL,
 		);
 
 		$this->logger->debug(

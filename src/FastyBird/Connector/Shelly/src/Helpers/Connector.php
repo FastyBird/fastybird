@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Helpers
- * @since          0.37.0
+ * @since          1.0.0
  *
  * @date           04.08.22
  */
@@ -51,12 +51,6 @@ final class Connector
 		$configuration = $connector->findProperty(strval($type->getValue()));
 
 		if ($configuration instanceof DevicesEntities\Connectors\Properties\Variable) {
-			if ($type->getValue() === Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_VERSION) {
-				return Types\ClientVersion::isValidValue(
-					$configuration->getValue(),
-				) ? $configuration->getValue() : null;
-			}
-
 			if ($type->getValue() === Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE) {
 				return Types\ClientMode::isValidValue($configuration->getValue()) ? $configuration->getValue() : null;
 			}
