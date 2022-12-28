@@ -24,7 +24,6 @@ use FastyBird\Connector\Shelly\Consumers;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Hydrators;
-use FastyBird\Connector\Shelly\Mappers;
 use FastyBird\Connector\Shelly\Schemas;
 use FastyBird\Connector\Shelly\Subscribers;
 use FastyBird\Connector\Shelly\Writers;
@@ -118,6 +117,15 @@ class ShellyExtension extends DI\CompilerExtension
 			->getResultDefinition()
 			->setType(Clients\Discovery::class);
 
+		$builder->addDefinition($this->prefix('api.entityFactory'), new DI\Definitions\ServiceDefinition())
+			->setType(API\EntityFactory::class);
+
+		$builder->addDefinition($this->prefix('api.gen1HttpApi'), new DI\Definitions\ServiceDefinition())
+			->setType(API\Gen1HttpApiFactory::class);
+
+		$builder->addDefinition($this->prefix('api.gen2HttpApi'), new DI\Definitions\ServiceDefinition())
+			->setType(API\Gen2HttpApiFactory::class);
+
 		$builder->addDefinition($this->prefix('api.gen1transformer'), new DI\Definitions\ServiceDefinition())
 			->setType(API\Gen1Transformer::class);
 
@@ -162,9 +170,6 @@ class ShellyExtension extends DI\CompilerExtension
 
 		$builder->addDefinition($this->prefix('helpers.property'), new DI\Definitions\ServiceDefinition())
 			->setType(Helpers\Property::class);
-
-		$builder->addDefinition($this->prefix('mappers.sensor'), new DI\Definitions\ServiceDefinition())
-			->setType(Mappers\Sensor::class);
 
 		$builder->addFactoryDefinition($this->prefix('executor.factory'))
 			->setImplement(Connector\ConnectorFactory::class)

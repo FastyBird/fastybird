@@ -32,24 +32,24 @@ final class DeviceStatus extends Device
 {
 
 	/**
-	 * @param array<ChannelStatus> $channels
+	 * @param array<PropertyStatus> $properties
 	 */
 	public function __construct(
 		Types\MessageSource $source,
 		Uuid\UuidInterface $connector,
 		string $identifier,
-		private readonly array $channels,
+		private readonly array $properties,
 	)
 	{
 		parent::__construct($source, $connector, $identifier);
 	}
 
 	/**
-	 * @return array<ChannelStatus>
+	 * @return array<PropertyStatus>
 	 */
-	public function getChannels(): array
+	public function getProperties(): array
 	{
-		return $this->channels;
+		return $this->properties;
 	}
 
 	/**
@@ -58,9 +58,9 @@ final class DeviceStatus extends Device
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), [
-			'channels' => array_map(
-				static fn (ChannelStatus $channel): array => $channel->toArray(),
-				$this->getChannels(),
+			'properties' => array_map(
+				static fn (PropertyStatus $property): array => $property->toArray(),
+				$this->getProperties(),
 			),
 		]);
 	}

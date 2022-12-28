@@ -18,9 +18,9 @@ namespace FastyBird\Connector\Shelly\Consumers\Messages;
 use FastyBird\Connector\Shelly\Consumers\Consumer;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Helpers;
-use FastyBird\Connector\Shelly\Mappers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -48,7 +48,6 @@ final class Status implements Consumer
 	public function __construct(
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
-		private readonly Mappers\Sensor $sensorMapper,
 		private readonly Helpers\Property $propertyStateHelper,
 		Log\LoggerInterface|null $logger,
 	)
@@ -89,29 +88,38 @@ final class Status implements Consumer
 			);
 		}
 
-		foreach ($entity->getChannels() as $shellyChannel) {
-			foreach ($shellyChannel->getSensors() as $sensor) {
-				$property = $this->sensorMapper->findProperty(
-					$entity->getConnector(),
-					$entity->getIdentifier(),
-					$sensor->getIdentifier(),
+		foreach ($entity->getProperties() as $propertyStatus) {
+			$property = null;
+
+			$property = $device->findProperty($propertyStatus->getIdentifier());
+
+			if ($property === null) {
+				foreach ($device->getChannels() as $channel) {
+					$property = $channel->findProperty($propertyStatus->getIdentifier());
+
+					if ($property !== null) {
+						break;
+					}
+				}
+			}
+
+			if (
+				$property instanceof DevicesEntities\Devices\Properties\Dynamic
+				|| $property instanceof DevicesEntities\Channels\Properties\Dynamic
+			) {
+				$actualValue = DevicesUtilities\ValueHelper::flattenValue(
+					DevicesUtilities\ValueHelper::normalizeValue(
+						$property->getDataType(),
+						$propertyStatus->getValue(),
+						$property->getFormat(),
+						$property->getInvalid(),
+					),
 				);
 
-				if ($property !== null) {
-					$actualValue = DevicesUtilities\ValueHelper::flattenValue(
-						DevicesUtilities\ValueHelper::normalizeValue(
-							$property->getDataType(),
-							$sensor->getValue(),
-							$property->getFormat(),
-							$property->getInvalid(),
-						),
-					);
-
-					$this->propertyStateHelper->setValue($property, Utils\ArrayHash::from([
-						DevicesStates\Property::ACTUAL_VALUE_KEY => $actualValue,
-						DevicesStates\Property::VALID_KEY => true,
-					]));
-				}
+				$this->propertyStateHelper->setValue($property, Utils\ArrayHash::from([
+					DevicesStates\Property::ACTUAL_VALUE_KEY => $actualValue,
+					DevicesStates\Property::VALID_KEY => true,
+				]));
 			}
 		}
 

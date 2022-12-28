@@ -23,13 +23,14 @@ use FastyBird\Connector\Shelly\Clients;
 use FastyBird\Connector\Shelly\Consumers;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
-use FastyBird\Connector\Shelly\Mappers;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
 use Nette\Utils;
 use Psr\Log;
@@ -38,8 +39,6 @@ use React\EventLoop;
 use React\Promise;
 use RuntimeException;
 use Throwable;
-use function array_key_exists;
-use function array_values;
 use function count;
 use function explode;
 use function intval;
@@ -81,7 +80,7 @@ final class Coap implements Clients\Client
 		private readonly Entities\ShellyConnector $connector,
 		private readonly API\Gen1Transformer $transformer,
 		private readonly Consumers\Messages $consumer,
-		private readonly Mappers\Sensor $sensorMapper,
+		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly MetadataSchemas\Validator $schemaValidator,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		Log\LoggerInterface|null $logger = null,
@@ -101,7 +100,7 @@ final class Coap implements Clients\Client
 		$this->server = $factory->createReceiver(self::COAP_ADDRESS . ':' . self::COAP_PORT);
 
 		$this->server->on('message', function ($message, $remote): void {
-			$this->handlePacket($message, $remote);
+			$this->handlePacket($message);
 		});
 
 		$this->server->on('error', function (Throwable $ex): void {
@@ -163,7 +162,7 @@ final class Coap implements Clients\Client
 	 * @throws MetadataExceptions\Logic
 	 * @throws MetadataExceptions\MalformedInput
 	 */
-	private function handlePacket(string $packet, string $address): void
+	private function handlePacket(string $packet): void
 	{
 		$buffer = unpack('C*', $packet);
 
@@ -266,12 +265,7 @@ final class Coap implements Clients\Client
 				&& $deviceIdentifier !== null
 			) {
 				try {
-					$this->handleStatusMessage(
-						$address,
-						$deviceType,
-						$deviceIdentifier,
-						$message,
-					);
+					$this->handleStatusMessage($deviceIdentifier, $message);
 				} catch (Exceptions\ParseMessage $ex) {
 					$this->logger->warning(
 						'Received message could not be handled',
@@ -322,9 +316,7 @@ final class Coap implements Clients\Client
 	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function handleStatusMessage(
-		string $address,
-		string $type,
-		string $identifier,
+		string $deviceIdentifier,
 		string $message,
 	): void
 	{
@@ -346,35 +338,25 @@ final class Coap implements Clients\Client
 			throw new Exceptions\ParseMessage('Provided message is not valid');
 		}
 
-		$channels = [];
+		$statuses = [];
 
-		foreach ($parsedMessage['G'] as $sensorState) {
-			if ((is_array($sensorState) || $sensorState instanceof Utils\ArrayHash) && count($sensorState) === 3) {
-				[$channel, $sensorIdentifier, $sensorValue] = (array) $sensorState;
+		foreach ($parsedMessage['G'] as $status) {
+			if ((is_array($status) || $status instanceof Utils\ArrayHash) && count($status) === 3) {
+				[, $sensorIdentifier, $sensorValue] = (array) $status;
 
-				if (!array_key_exists($channel, $channels)) {
-					$channels[$channel] = new Entities\Messages\ChannelStatus(
-						Types\MessageSource::get(Types\MessageSource::SOURCE_GEN_1_COAP),
-						$channel,
-					);
-				}
-
-				$property = $this->sensorMapper->findProperty(
-					$this->connector->getId(),
-					$identifier,
+				$property = $this->findProperty(
+					$deviceIdentifier,
 					intval($sensorIdentifier),
 				);
 
 				if ($property !== null) {
-					$channels[$channel]->addSensor(
-						new Entities\Messages\PropertyStatus(
-							Types\MessageSource::get(Types\MessageSource::SOURCE_GEN_1_COAP),
-							intval($sensorIdentifier),
-							$this->transformer->transformValueFromDevice(
-								$property->getDataType(),
-								$property->getFormat(),
-								strval($sensorValue),
-							),
+					$statuses[] = new Entities\Messages\PropertyStatus(
+						Types\MessageSource::get(Types\MessageSource::SOURCE_GEN_1_COAP),
+						$property->getIdentifier(),
+						$this->transformer->transformValueFromDevice(
+							$property->getDataType(),
+							$property->getFormat(),
+							strval($sensorValue),
 						),
 					);
 				}
@@ -385,10 +367,51 @@ final class Coap implements Clients\Client
 			new Entities\Messages\DeviceStatus(
 				Types\MessageSource::get(Types\MessageSource::SOURCE_GEN_1_COAP),
 				$this->connector->getId(),
-				$identifier,
-				array_values($channels),
+				$deviceIdentifier,
+				$statuses,
 			),
 		);
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 */
+	public function findProperty(
+		string $deviceIdentifier,
+		int $sensorIdentifier,
+	): DevicesEntities\Devices\Properties\Dynamic|DevicesEntities\Channels\Properties\Dynamic|null
+	{
+		$findDeviceQuery = new DevicesQueries\FindDevices();
+		$findDeviceQuery->forConnector($this->connector);
+		$findDeviceQuery->byIdentifier($deviceIdentifier);
+
+		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\ShellyDevice::class);
+
+		if ($device === null) {
+			return null;
+		}
+
+		foreach ($device->getProperties() as $property) {
+			if (
+				$property instanceof DevicesEntities\Devices\Properties\Dynamic
+				&& Utils\Strings::startsWith($property->getIdentifier(), strval($sensorIdentifier))
+			) {
+				return $property;
+			}
+		}
+
+		foreach ($device->getChannels() as $channel) {
+			foreach ($channel->getProperties() as $property) {
+				if (
+					$property instanceof DevicesEntities\Channels\Properties\Dynamic
+					&& Utils\Strings::startsWith($property->getIdentifier(), strval($sensorIdentifier))
+				) {
+					return $property;
+				}
+			}
+		}
+
+		return null;
 	}
 
 }

@@ -36,7 +36,7 @@ final class PropertyStatus implements Entity
 
 	public function __construct(
 		private readonly Types\MessageSource $source,
-		private readonly int $identifier,
+		private readonly string $identifier,
 		private readonly float|int|string|bool|MetadataTypes\SwitchPayload|null $value,
 	)
 	{
@@ -47,7 +47,7 @@ final class PropertyStatus implements Entity
 		return $this->source;
 	}
 
-	public function getIdentifier(): int
+	public function getIdentifier(): string
 	{
 		return $this->identifier;
 	}
