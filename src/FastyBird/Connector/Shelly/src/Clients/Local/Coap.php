@@ -367,7 +367,7 @@ final class Coap implements Clients\Client
 
 				if ($property !== null) {
 					$channels[$channel]->addSensor(
-						new Entities\Messages\SensorStatus(
+						new Entities\Messages\PropertyStatus(
 							Types\MessageSource::get(Types\MessageSource::SOURCE_GEN_1_COAP),
 							intval($sensorIdentifier),
 							$this->transformer->transformValueFromDevice(

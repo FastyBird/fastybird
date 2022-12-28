@@ -34,11 +34,11 @@ final class ChannelStatus implements Entity
 
 	use Nette\SmartObject;
 
-	/** @var array<SensorStatus> */
+	/** @var array<PropertyStatus> */
 	private array $sensors;
 
 	/**
-	 * @param array<SensorStatus> $sensors
+	 * @param array<PropertyStatus> $sensors
 	 */
 	public function __construct(
 		private readonly Types\MessageSource $source,
@@ -60,14 +60,14 @@ final class ChannelStatus implements Entity
 	}
 
 	/**
-	 * @return array<SensorStatus>
+	 * @return array<PropertyStatus>
 	 */
 	public function getSensors(): array
 	{
 		return $this->sensors;
 	}
 
-	public function addSensor(SensorStatus $sensor): void
+	public function addSensor(PropertyStatus $sensor): void
 	{
 		$this->sensors[] = $sensor;
 
@@ -82,7 +82,10 @@ final class ChannelStatus implements Entity
 		return [
 			'source' => $this->getSource()->getValue(),
 			'channel' => $this->getChannel(),
-			'sensors' => array_map(static fn (SensorStatus $sensor): array => $sensor->toArray(), $this->getSensors()),
+			'sensors' => array_map(
+				static fn (PropertyStatus $sensor): array => $sensor->toArray(),
+				$this->getSensors(),
+			),
 		];
 	}
 

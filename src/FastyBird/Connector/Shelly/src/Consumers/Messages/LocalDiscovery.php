@@ -148,6 +148,11 @@ final class LocalDiscovery implements Consumer
 			strval($entity->getGeneration()->getValue()),
 			Types\DevicePropertyIdentifier::IDENTIFIER_GENERATION,
 		);
+		$this->setDeviceProperty(
+			$device->getId(),
+			$entity->isAuthEnabled(),
+			Types\DevicePropertyIdentifier::IDENTIFIER_AUTH_ENABLED,
+		);
 		$this->setDeviceAttribute(
 			$device->getId(),
 			$entity->getModel(),

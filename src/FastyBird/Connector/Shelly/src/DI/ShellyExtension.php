@@ -127,9 +127,6 @@ class ShellyExtension extends DI\CompilerExtension
 		)
 			->setType(Consumers\Messages\Status::class);
 
-		$builder->addDefinition($this->prefix('consumers.messages.device.info'), new DI\Definitions\ServiceDefinition())
-			->setType(Consumers\Messages\Info::class);
-
 		$builder->addDefinition(
 			$this->prefix('consumers.messages.device.discovery'),
 			new DI\Definitions\ServiceDefinition(),

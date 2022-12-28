@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * SensorStatus.php
+ * PropertyStatus.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -29,7 +29,7 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class SensorStatus implements Entity
+final class PropertyStatus implements Entity
 {
 
 	use Nette\SmartObject;
