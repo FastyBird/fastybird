@@ -36,6 +36,8 @@ class ClientMode extends Consistence\Enum\Enum
 
 	public const MODE_CLOUD = 'cloud';
 
+	public const MODE_INTEGRATOR = 'integrator';
+
 	public const MODE_MQTT = 'mqtt';
 
 	public function __toString(): string

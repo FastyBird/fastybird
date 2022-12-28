@@ -73,12 +73,12 @@ final class Connector implements DevicesConnectors\Connector
 	{
 		assert($this->connector instanceof Entities\ShellyConnector);
 
-		$version = $this->connectorHelper->getConfiguration(
+		$mode = $this->connectorHelper->getConfiguration(
 			$this->connector,
-			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_VERSION),
+			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE),
 		);
 
-		if ($version === null) {
+		if ($mode === null) {
 			throw new DevicesExceptions\Terminate('Connector client version is not configured');
 		}
 
@@ -88,8 +88,8 @@ final class Connector implements DevicesConnectors\Connector
 			$constants = $rc->getConstants();
 
 			if (
-				array_key_exists(Clients\ClientFactory::VERSION_CONSTANT_NAME, $constants)
-				&& $constants[Clients\ClientFactory::VERSION_CONSTANT_NAME] === $version
+				array_key_exists(Clients\ClientFactory::MODE_CONSTANT_NAME, $constants)
+				&& $constants[Clients\ClientFactory::MODE_CONSTANT_NAME] === $mode
 			) {
 				$this->client = $clientFactory->create($this->connector);
 			}

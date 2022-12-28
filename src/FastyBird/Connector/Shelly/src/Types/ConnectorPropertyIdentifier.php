@@ -32,8 +32,6 @@ class ConnectorPropertyIdentifier extends Consistence\Enum\Enum
 	/**
 	 * Define device states
 	 */
-	public const IDENTIFIER_CLIENT_VERSION = 'version';
-
 	public const IDENTIFIER_CLIENT_MODE = 'mode';
 
 	public const IDENTIFIER_CLOUD_AUTH_KEY = 'cloud_auth_key';

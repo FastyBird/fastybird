@@ -347,7 +347,7 @@ final class Http implements Clients\Client
 			if ($generation->equalsValue(Types\DeviceGeneration::GENERATION_1)) {
 				$result = $this->gen1httpApi?->getDeviceStatus($address);
 
-			} else if ($generation->equalsValue(Types\DeviceGeneration::GENERATION_2)) {
+			} elseif ($generation->equalsValue(Types\DeviceGeneration::GENERATION_2)) {
 				$result = $this->gen2httpApi?->getDeviceStatus($address);
 
 			} else {
@@ -359,9 +359,11 @@ final class Http implements Clients\Client
 			}
 
 			$result
-				->then(function (Entities\API\Gen1\DeviceStatus|Entities\API\Gen2\DeviceStatus $status) use ($cmd, $device): void {
-					$this->processedDevicesCommands[$device->getIdentifier()][$cmd] = $this->dateTimeFactory->getNow();
-				})
+				->then(
+					function (Entities\API\Gen1\DeviceStatus|Entities\API\Gen2\DeviceStatus $status) use ($cmd, $device): void {
+						$this->processedDevicesCommands[$device->getIdentifier()][$cmd] = $this->dateTimeFactory->getNow();
+					},
+				)
 				->otherwise(function (Throwable $ex) use ($device): void {
 					if ($ex instanceof ReactHttp\Message\ResponseException) {
 						if ($ex->getCode() >= 400 && $ex->getCode() < 499) {

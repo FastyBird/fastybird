@@ -28,7 +28,7 @@ use FastyBird\Connector\Shelly\Entities;
 interface ClientFactory
 {
 
-	public const VERSION_CONSTANT_NAME = 'VERSION';
+	public const MODE_CONSTANT_NAME = 'MODE';
 
 	public function create(Entities\ShellyConnector $connector): Client;
 

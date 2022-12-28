@@ -58,17 +58,13 @@ class Initialize extends Console\Command\Command
 
 	private const CHOICE_QUESTION_DELETE_CONNECTOR = 'Delete existing connector configuration';
 
-	private const CHOICE_QUESTION_GEN_1_CONNECTOR = 'Original generation 1 devices (based on ESP8266)';
+	private const CHOICE_QUESTION_LOCAL_CONNECTOR = 'Via local network services';
 
-	private const CHOICE_QUESTION_GEN_2_CONNECTOR = 'New generation 2 devices (based on ESP32)';
+	private const CHOICE_QUESTION_CLOUD_CONNECTOR = 'Via cloud servers';
 
-	private const CHOICE_QUESTION_CLOUD_CONTROL_API_CONNECTOR = 'Cloud control API';
+	private const CHOICE_QUESTION_MQTT_CONNECTOR = 'Via MQTT broker';
 
-	private const CHOICE_QUESTION_INTEGRATOR_API_CONNECTOR = 'Integrator API';
-
-	private const CHOICE_QUESTION_GEN_1_MODE_CLASSIC = 'Classic client HTTP/CoAP mode';
-
-	private const CHOICE_QUESTION_GEN_1_MODE_MQTT = 'MQTT client mode';
+	private const CHOICE_QUESTION_INTEGRATOR_CONNECTOR = 'Via Shelly integrator API';
 
 	private Log\LoggerInterface $logger;
 
@@ -171,7 +167,7 @@ class Initialize extends Console\Command\Command
 	 */
 	private function createNewConfiguration(Style\SymfonyStyle $io): void
 	{
-		$generation = $this->askGeneration($io);
+		$mode = $this->askMode($io);
 
 		$question = new Console\Question\Question('Provide connector identifier');
 
@@ -221,33 +217,10 @@ class Initialize extends Console\Command\Command
 
 		$name = $io->askQuestion($question);
 
-		$clientMode = null;
-
 		$cloudAuthKey = null;
 		$cloudServer = null;
 
-		if ($generation->getValue() === Types\ClientVersion::TYPE_GEN_1) {
-			$question = new Console\Question\ChoiceQuestion(
-				'In what communication mode should this connector communicate?',
-				[
-					self::CHOICE_QUESTION_GEN_1_MODE_CLASSIC,
-					self::CHOICE_QUESTION_GEN_1_MODE_MQTT,
-				],
-				0,
-			);
-
-			$question->setErrorMessage('Selected answer: "%s" is not valid.');
-
-			$clientModeAnswer = $io->askQuestion($question);
-
-			if ($clientModeAnswer === self::CHOICE_QUESTION_GEN_1_MODE_CLASSIC) {
-				$clientMode = Types\ClientMode::get(Types\ClientMode::MODE_LOCAL);
-			}
-
-			if ($clientModeAnswer === self::CHOICE_QUESTION_GEN_1_MODE_MQTT) {
-				$clientMode = Types\ClientMode::get(Types\ClientMode::MODE_CLOUD);
-			}
-		} elseif ($generation->getValue() === Types\ClientVersion::TYPE_CLOUD) {
+		if ($mode->getValue() === Types\ClientMode::MODE_CLOUD) {
 			$question = new Console\Question\Question('Provide cloud authentication key');
 
 			$cloudAuthKey = $io->askQuestion($question);
@@ -269,21 +242,13 @@ class Initialize extends Console\Command\Command
 
 			$this->propertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-				'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_VERSION,
+				'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE,
 				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-				'value' => $generation->getValue(),
+				'value' => $mode->getValue(),
 				'connector' => $connector,
 			]));
 
-			if ($generation->getValue() === Types\ClientVersion::TYPE_GEN_1) {
-				$this->propertiesManager->create(Utils\ArrayHash::from([
-					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-					'value' => $clientMode?->getValue(),
-					'connector' => $connector,
-				]));
-			} elseif ($generation->getValue() === Types\ClientVersion::TYPE_CLOUD) {
+			if ($mode->getValue() === Types\ClientMode::MODE_CLOUD) {
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_CLOUD_AUTH_KEY,
@@ -426,32 +391,29 @@ class Initialize extends Console\Command\Command
 			return;
 		}
 
-		$versionProperty = $connector->findProperty(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_VERSION);
+		$modeProperty = $connector->findProperty(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE);
 
-		if ($versionProperty === null) {
-			$changeGeneration = true;
+		$mode = null;
+
+		if ($modeProperty === null) {
+			$changeMode = true;
 
 		} else {
 			$question = new Console\Question\ConfirmationQuestion(
-				'Do you want to change connector devices support?',
+				'Do you want to change connector communication mode?',
 				false,
 			);
 
-			$changeGeneration = (bool) $io->askQuestion($question);
+			$changeMode = (bool) $io->askQuestion($question);
 		}
 
-		$generation = null;
-
-		if ($changeGeneration) {
-			$generation = $this->askGeneration($io);
+		if ($changeMode) {
+			$mode = $this->askMode($io);
 		}
 
 		$question = new Console\Question\Question('Provide connector name', $connector->getName());
 
 		$name = $io->askQuestion($question);
-
-		$clientMode = null;
-		$clientModeProperty = null;
 
 		$cloudAuthKey = null;
 		$cloudAuthKeyProperty = null;
@@ -459,45 +421,8 @@ class Initialize extends Console\Command\Command
 		$cloudServerProperty = null;
 
 		if (
-			$versionProperty?->getValue() === Types\ClientVersion::TYPE_GEN_1
-			|| $generation?->getValue() === Types\ClientVersion::TYPE_GEN_1
-		) {
-			$clientModeProperty = $connector->findProperty(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE);
-
-			if ($clientModeProperty !== null) {
-				$question = new Console\Question\ConfirmationQuestion(
-					'Do you want to change connector client mode?',
-					false,
-				);
-
-				$changeClientMode = (bool) $io->askQuestion($question);
-			}
-
-			if ($clientModeProperty === null || $changeClientMode) {
-				$question = new Console\Question\ChoiceQuestion(
-					'In what communication mode should this connector communicate?',
-					[
-						self::CHOICE_QUESTION_GEN_1_MODE_CLASSIC,
-						self::CHOICE_QUESTION_GEN_1_MODE_MQTT,
-					],
-					0,
-				);
-
-				$question->setErrorMessage('Selected answer: "%s" is not valid.');
-
-				$clientModeAnswer = $io->askQuestion($question);
-
-				if ($clientModeAnswer === self::CHOICE_QUESTION_GEN_1_MODE_CLASSIC) {
-					$clientMode = Types\ClientMode::get(Types\ClientMode::MODE_LOCAL);
-				}
-
-				if ($clientModeAnswer === self::CHOICE_QUESTION_GEN_1_MODE_MQTT) {
-					$clientMode = Types\ClientMode::get(Types\ClientMode::MODE_CLOUD);
-				}
-			}
-		} elseif (
-			$versionProperty?->getValue() === Types\ClientVersion::TYPE_CLOUD
-			|| $generation->getValue() === Types\ClientVersion::TYPE_CLOUD
+			$modeProperty?->getValue() === Types\ClientMode::MODE_CLOUD
+			|| $mode?->getValue() === Types\ClientMode::MODE_CLOUD
 		) {
 			$cloudAuthKeyProperty = $connector->findProperty(
 				Types\ConnectorPropertyIdentifier::IDENTIFIER_CLOUD_AUTH_KEY,
@@ -571,46 +496,27 @@ class Initialize extends Console\Command\Command
 				'enabled' => $enabled,
 			]));
 
-			if ($versionProperty === null) {
-				if ($generation === null) {
-					$generation = $this->askGeneration($io);
+			if ($modeProperty === null) {
+				if ($mode === null) {
+					$mode = $this->askMode($io);
 				}
 
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_VERSION,
+					'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE,
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-					'value' => $generation->getValue(),
+					'value' => $mode->getValue(),
 					'connector' => $connector,
 				]));
-			} elseif ($generation !== null) {
-				$this->propertiesManager->update($versionProperty, Utils\ArrayHash::from([
-					'value' => $generation->getValue(),
+			} elseif ($mode !== null) {
+				$this->propertiesManager->update($modeProperty, Utils\ArrayHash::from([
+					'value' => $mode->getValue(),
 				]));
 			}
 
 			if (
-				$versionProperty?->getValue() === Types\ClientVersion::TYPE_GEN_1
-				|| $generation?->getValue() === Types\ClientVersion::TYPE_GEN_1
-			) {
-				if ($clientMode !== null) {
-					if ($clientModeProperty !== null) {
-						$this->propertiesManager->update($clientModeProperty, Utils\ArrayHash::from([
-							'value' => $clientMode->getValue(),
-						]));
-					} else {
-						$this->propertiesManager->create(Utils\ArrayHash::from([
-							'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-							'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE,
-							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-							'value' => $clientMode->getValue(),
-							'connector' => $connector,
-						]));
-					}
-				}
-			} elseif (
-				$versionProperty?->getValue() === Types\ClientVersion::TYPE_CLOUD
-				|| $generation->getValue() === Types\ClientVersion::TYPE_CLOUD
+				$modeProperty?->getValue() === Types\ClientMode::MODE_CLOUD
+				|| $mode?->getValue() === Types\ClientMode::MODE_CLOUD
 			) {
 				if ($cloudAuthKeyProperty !== null) {
 					$this->propertiesManager->update($cloudAuthKeyProperty, Utils\ArrayHash::from([
@@ -638,14 +544,6 @@ class Initialize extends Console\Command\Command
 						'value' => $cloudServer,
 						'connector' => $connector,
 					]));
-				}
-
-				if ($clientModeProperty !== null) {
-					$this->propertiesManager->delete($clientModeProperty);
-				}
-			} else {
-				if ($clientModeProperty !== null) {
-					$this->propertiesManager->delete($clientModeProperty);
 				}
 			}
 
@@ -800,40 +698,40 @@ class Initialize extends Console\Command\Command
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	private function askGeneration(Style\SymfonyStyle $io): Types\ClientVersion
+	private function askMode(Style\SymfonyStyle $io): Types\ClientMode
 	{
 		$question = new Console\Question\ChoiceQuestion(
-			'What generation of Shelly devices should this connector handle?',
+			'What in what mode should this connector communicate with devices?',
 			[
-				self::CHOICE_QUESTION_GEN_1_CONNECTOR,
-				self::CHOICE_QUESTION_GEN_2_CONNECTOR,
-				self::CHOICE_QUESTION_CLOUD_CONTROL_API_CONNECTOR,
-				self::CHOICE_QUESTION_INTEGRATOR_API_CONNECTOR,
+				self::CHOICE_QUESTION_LOCAL_CONNECTOR,
+				self::CHOICE_QUESTION_CLOUD_CONNECTOR,
+				self::CHOICE_QUESTION_MQTT_CONNECTOR,
+				self::CHOICE_QUESTION_INTEGRATOR_CONNECTOR,
 			],
 			0,
 		);
 
 		$question->setErrorMessage('Selected answer: "%s" is not valid.');
 
-		$generation = $io->askQuestion($question);
+		$mode = $io->askQuestion($question);
 
-		if ($generation === self::CHOICE_QUESTION_GEN_1_CONNECTOR) {
-			return Types\ClientVersion::get(Types\ClientVersion::TYPE_GEN_1);
+		if ($mode === self::CHOICE_QUESTION_LOCAL_CONNECTOR) {
+			return Types\ClientMode::get(Types\ClientMode::MODE_LOCAL);
 		}
 
-		if ($generation === self::CHOICE_QUESTION_GEN_2_CONNECTOR) {
-			return Types\ClientVersion::get(Types\ClientVersion::TYPE_GEN_2);
+		if ($mode === self::CHOICE_QUESTION_CLOUD_CONNECTOR) {
+			return Types\ClientMode::get(Types\ClientMode::MODE_CLOUD);
 		}
 
-		if ($generation === self::CHOICE_QUESTION_CLOUD_CONTROL_API_CONNECTOR) {
-			return Types\ClientVersion::get(Types\ClientVersion::TYPE_CLOUD);
+		if ($mode === self::CHOICE_QUESTION_MQTT_CONNECTOR) {
+			return Types\ClientMode::get(Types\ClientMode::MODE_MQTT);
 		}
 
-		if ($generation === self::CHOICE_QUESTION_INTEGRATOR_API_CONNECTOR) {
-			return Types\ClientVersion::get(Types\ClientVersion::TYPE_INTEGRATOR);
+		if ($mode === self::CHOICE_QUESTION_INTEGRATOR_CONNECTOR) {
+			return Types\ClientMode::get(Types\ClientMode::MODE_INTEGRATOR);
 		}
 
-		throw new Exceptions\InvalidState('Unknown connector version selected');
+		throw new Exceptions\InvalidState('Unknown connector mode selected');
 	}
 
 	/**
