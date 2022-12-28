@@ -7,7 +7,7 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ShellyConnector!
- * @subpackage     Properties
+ * @subpackage     Entities
  * @since          1.0.0
  *
  * @date           17.07.22
@@ -23,7 +23,7 @@ use Nette;
  * Device or channel property description entity
  *
  * @package        FastyBird:ShellyConnector!
- * @subpackage     Properties
+ * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */

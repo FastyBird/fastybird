@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Gen1HttpApi.php
+ * HttpApi.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -35,7 +35,7 @@ use function sprintf;
 use const DIRECTORY_SEPARATOR;
 
 /**
- * Generation 1 device http api interface
+ * Device http api interface
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     API

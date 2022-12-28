@@ -7,7 +7,7 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ShellyConnector!
- * @subpackage     Properties
+ * @subpackage     Entities
  * @since          1.0.0
  *
  * @date           17.07.22
@@ -26,7 +26,7 @@ use const SORT_REGULAR;
  * Device was found via mDNS discovery entity
  *
  * @package        FastyBird:ShellyConnector!
- * @subpackage     Properties
+ * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
@@ -46,7 +46,7 @@ final class DiscoveredLocalDevice extends Device
 		private readonly Types\DeviceGeneration $generation,
 		private readonly string $ipAddress,
 		private readonly string|null $domain,
-		private readonly string $type,
+		private readonly string $model,
 		private readonly string $macAddress,
 		private readonly bool $authEnabled,
 		private readonly string $firmwareVersion,
@@ -73,9 +73,9 @@ final class DiscoveredLocalDevice extends Device
 		return $this->domain;
 	}
 
-	public function getType(): string
+	public function getModel(): string
 	{
-		return $this->type;
+		return $this->model;
 	}
 
 	public function getMacAddress(): string
@@ -110,7 +110,7 @@ final class DiscoveredLocalDevice extends Device
 			'generation' => $this->getGeneration()->getValue(),
 			'ip_address' => $this->getIpAddress(),
 			'domain' => $this->getDomain(),
-			'type' => $this->getType(),
+			'model' => $this->getModel(),
 			'mac_address' => $this->getMacAddress(),
 			'auth_enabled' => $this->isAuthEnabled(),
 			'firmware_version' => $this->getFirmwareVersion(),

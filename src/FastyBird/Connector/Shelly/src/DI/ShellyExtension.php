@@ -122,12 +122,6 @@ class ShellyExtension extends DI\CompilerExtension
 			->setType(API\Gen1Transformer::class);
 
 		$builder->addDefinition(
-			$this->prefix('consumers.messages.device.description'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Consumers\Messages\Description::class);
-
-		$builder->addDefinition(
 			$this->prefix('consumers.messages.device.status'),
 			new DI\Definitions\ServiceDefinition(),
 		)
@@ -140,7 +134,7 @@ class ShellyExtension extends DI\CompilerExtension
 			$this->prefix('consumers.messages.device.discovery'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Consumers\Messages\Discovery::class);
+			->setType(Consumers\Messages\LocalDiscovery::class);
 
 		$builder->addDefinition($this->prefix('consumers.messages'), new DI\Definitions\ServiceDefinition())
 			->setType(Consumers\Messages::class)

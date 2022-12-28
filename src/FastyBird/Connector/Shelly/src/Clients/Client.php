@@ -20,7 +20,7 @@ use FastyBird\Module\Devices\Entities as DevicesEntities;
 use React\Promise;
 
 /**
- * Shelly device client interface
+ * Base device client interface
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Clients

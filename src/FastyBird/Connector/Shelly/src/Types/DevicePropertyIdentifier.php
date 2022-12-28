@@ -37,6 +37,8 @@ class DevicePropertyIdentifier extends Consistence\Enum\Enum
 
 	public const IDENTIFIER_STATE = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_STATE;
 
+	public const IDENTIFIER_DOMAIN = 'domain';
+
 	public const IDENTIFIER_USERNAME = 'username';
 
 	public const IDENTIFIER_PASSWORD = 'password';

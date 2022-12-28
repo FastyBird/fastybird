@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Description.php
+ * LocalDiscovery.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -18,7 +18,6 @@ namespace FastyBird\Connector\Shelly\Consumers\Messages;
 use Doctrine\DBAL;
 use FastyBird\Connector\Shelly\Consumers\Consumer;
 use FastyBird\Connector\Shelly\Entities;
-use FastyBird\Connector\Shelly\Mappers;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -31,18 +30,17 @@ use Nette;
 use Nette\Utils;
 use Psr\Log;
 use function assert;
-use function sprintf;
 use function strval;
 
 /**
- * Device description message consumer
+ * Device local discovery message consumer
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Consumers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Description implements Consumer
+final class LocalDiscovery implements Consumer
 {
 
 	use Nette\SmartObject;
@@ -52,6 +50,7 @@ final class Description implements Consumer
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
+		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Devices\DevicesManager $devicesManager,
 		private readonly DevicesModels\Devices\Properties\PropertiesRepository $propertiesRepository,
@@ -60,7 +59,6 @@ final class Description implements Consumer
 		private readonly DevicesModels\Devices\Attributes\AttributesManager $attributesManager,
 		private readonly DevicesModels\Channels\ChannelsManager $channelsManager,
 		private readonly DevicesModels\Channels\Properties\PropertiesManager $channelsPropertiesManager,
-		private readonly Mappers\Sensor $sensorMapper,
 		private readonly DevicesUtilities\Database $databaseHelper,
 		Log\LoggerInterface|null $logger = null,
 	)
@@ -77,7 +75,7 @@ final class Description implements Consumer
 	 */
 	public function consume(Entities\Messages\Entity $entity): bool
 	{
-		if (!$entity instanceof Entities\Messages\DeviceDescription) {
+		if (!$entity instanceof Entities\Messages\DiscoveredLocalDevice) {
 			return false;
 		}
 
@@ -88,29 +86,50 @@ final class Description implements Consumer
 		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\ShellyDevice::class);
 
 		if ($device === null) {
-			return true;
-		}
+			$findConnectorQuery = new DevicesQueries\FindConnectors();
+			$findConnectorQuery->byId($entity->getConnector());
 
-		if ($device->getName() === null && $device->getName() !== $entity->getType()) {
-			$findDeviceQuery = new DevicesQueries\FindDevices();
-			$findDeviceQuery->byId($device->getId());
+			$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\ShellyConnector::class);
 
-			$device = $this->devicesRepository->findOneBy(
-				$findDeviceQuery,
-				Entities\ShellyDevice::class,
-			);
-			assert($device instanceof Entities\ShellyDevice || $device === null);
+			if ($connector === null) {
+				$this->logger->error(
+					'Error during loading connector',
+					[
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+						'type' => 'discovery-message-consumer',
+						'connector' => [
+							'id' => $entity->getConnector()->toString(),
+						],
+					],
+				);
 
-			if ($device === null) {
 				return true;
 			}
 
-			$this->databaseHelper->transaction(
-				function () use ($entity, $device): void {
-					$this->devicesManager->update($device, Utils\ArrayHash::from([
-						'name' => $entity->getType(),
+			$device = $this->databaseHelper->transaction(
+				function () use ($entity, $connector): Entities\ShellyDevice {
+					$device = $this->devicesManager->create(Utils\ArrayHash::from([
+						'entity' => Entities\ShellyDevice::class,
+						'connector' => $connector,
+						'identifier' => $entity->getIdentifier(),
 					]));
+					assert($device instanceof Entities\ShellyDevice);
+
+					return $device;
 				},
+			);
+
+			$this->logger->info(
+				'New device was created',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+					'type' => 'discovery-message-consumer',
+					'device' => [
+						'id' => $device->getPlainId(),
+						'identifier' => $entity->getIdentifier(),
+						'address' => $entity->getIpAddress(),
+					],
+				],
 			);
 		}
 
@@ -119,31 +138,46 @@ final class Description implements Consumer
 			$entity->getIpAddress(),
 			Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS,
 		);
+		$this->setDeviceProperty(
+			$device->getId(),
+			$entity->getDomain(),
+			Types\DevicePropertyIdentifier::IDENTIFIER_DOMAIN,
+		);
+		$this->setDeviceProperty(
+			$device->getId(),
+			strval($entity->getGeneration()->getValue()),
+			Types\DevicePropertyIdentifier::IDENTIFIER_GENERATION,
+		);
 		$this->setDeviceAttribute(
 			$device->getId(),
-			$entity->getType(),
+			$entity->getModel(),
 			Types\DeviceAttributeIdentifier::IDENTIFIER_HARDWARE_MODEL,
 		);
+		$this->setDeviceAttribute(
+			$device->getId(),
+			$entity->getMacAddress(),
+			Types\DeviceAttributeIdentifier::IDENTIFIER_MAC_ADDRESS,
+		);
+		$this->setDeviceAttribute(
+			$device->getId(),
+			$entity->getFirmwareVersion(),
+			Types\DeviceAttributeIdentifier::IDENTIFIER_FIRMWARE_VERSION,
+		);
 
-		foreach ($entity->getBlocks() as $block) {
-			$channel = $device->findChannel($block->getIdentifier() . '_' . $block->getDescription());
+		foreach ($entity->getChannels() as $block) {
+			$channel = $device->findChannel($block->getIdentifier());
 
 			if ($channel === null) {
-				$this->databaseHelper->transaction(function () use ($block, $device): void {
-					$this->channelsManager->create(Utils\ArrayHash::from([
+				$channel = $this->databaseHelper->transaction(
+					fn (): DevicesEntities\Channels\Channel => $this->channelsManager->create(Utils\ArrayHash::from([
 						'device' => $device,
-						'identifier' => sprintf('%d_%s', $block->getIdentifier(), $block->getDescription()),
-						'name' => $block->getDescription(),
-					]));
-				});
+						'identifier' => $block->getIdentifier(),
+					])),
+				);
 			}
 
-			foreach ($block->getSensors() as $sensor) {
-				$channelProperty = $this->sensorMapper->findProperty(
-					$entity->getConnector(),
-					$entity->getIdentifier(),
-					$sensor->getIdentifier(),
-				);
+			foreach ($block->getProperties() as $sensor) {
+				$channelProperty = $channel->findProperty($sensor->getIdentifier());
 
 				if ($channelProperty === null) {
 					$channelProperty = $this->databaseHelper->transaction(
@@ -151,14 +185,8 @@ final class Description implements Consumer
 							Utils\ArrayHash::from([
 								'channel' => $channel,
 								'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
-								'identifier' => sprintf(
-									'%d_%s_%s',
-									$sensor->getIdentifier(),
-									strval($sensor->getType()->getValue()),
-									$sensor->getDescription(),
-								),
-								'name' => $sensor->getDescription(),
-								'unit' => $sensor->getUnit()?->getValue(),
+								'identifier' => $sensor->getIdentifier(),
+								'unit' => $sensor->getUnit(),
 								'dataType' => $sensor->getDataType(),
 								'format' => $sensor->getFormat(),
 								'invalid' => $sensor->getInvalid(),
@@ -190,14 +218,7 @@ final class Description implements Consumer
 						fn (): DevicesEntities\Channels\Properties\Property => $this->channelsPropertiesManager->update(
 							$channelProperty,
 							Utils\ArrayHash::from([
-								'identifier' => sprintf(
-									'%d_%s_%s',
-									$sensor->getIdentifier(),
-									strval($sensor->getType()->getValue()),
-									$sensor->getDescription(),
-								),
-								'name' => $sensor->getDescription(),
-								'unit' => $sensor->getUnit()?->getValue(),
+								'unit' => $sensor->getUnit(),
 								'dataType' => $sensor->getDataType(),
 								'format' => $sensor->getFormat(),
 								'invalid' => $sensor->getInvalid(),
@@ -228,10 +249,10 @@ final class Description implements Consumer
 		}
 
 		$this->logger->debug(
-			'Consumed device description message',
+			'Consumed device found message',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-				'type' => 'description-message-consumer',
+				'type' => 'discovery-message-consumer',
 				'device' => [
 					'id' => $device->getPlainId(),
 				],
