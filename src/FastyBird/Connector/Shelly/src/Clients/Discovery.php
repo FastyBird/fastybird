@@ -20,8 +20,7 @@ use Evenement;
 use FastyBird\Connector\Shelly\API;
 use FastyBird\Connector\Shelly\Consumers;
 use FastyBird\Connector\Shelly\Entities;
-use FastyBird\Connector\Shelly\Entities\Clients\DiscoveredLocalDevice;
-use FastyBird\Connector\Shelly\Helpers;
+use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Storages;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -70,7 +69,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 	private const MATCH_NAME = '/^(?P<type>shelly.+)-(?P<id>[0-9A-Fa-f]+)._(http|shelly)._tcp.local$/';
 
-	/** @var SplObjectStorage<DiscoveredLocalDevice, null> */
+	/** @var SplObjectStorage<Entities\Clients\DiscoveredLocalDevice, null> */
 	private SplObjectStorage $discoveredLocalDevices;
 
 	private Storages\MdnsResultStorage $searchResult;
@@ -85,7 +84,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 	public function __construct(
 		private readonly Entities\ShellyConnector $connector,
-		private readonly Helpers\Connector $connectorHelper,
 		private readonly API\Gen1HttpApiFactory $gen1HttpApiFactory,
 		private readonly API\Gen2HttpApiFactory $gen2HttpApiFactory,
 		private readonly Consumers\Messages $consumer,
@@ -103,6 +101,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -110,15 +109,12 @@ final class Discovery implements Evenement\EventEmitterInterface
 	{
 		$this->discoveredLocalDevices = new SplObjectStorage();
 
-		$mode = $this->connectorHelper->getConfiguration(
-			$this->connector,
-			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE),
-		);
+		$mode = $this->connector->getClientMode();
 
-		if ($mode === Types\ClientMode::MODE_CLOUD) {
+		if ($mode->equalsValue(Types\ClientMode::MODE_CLOUD)) {
 			$this->discoverCloudDevices();
 
-		} elseif ($mode === Types\ClientMode::MODE_LOCAL) {
+		} elseif ($mode->equalsValue(Types\ClientMode::MODE_LOCAL)) {
 			$this->discoverLocalDevices();
 		}
 	}
@@ -309,7 +305,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @param array<DiscoveredLocalDevice> $devices
+	 * @param array<Entities\Clients\DiscoveredLocalDevice> $devices
 	 *
 	 * @return array<Entities\Messages\DiscoveredLocalDevice>
 	 */

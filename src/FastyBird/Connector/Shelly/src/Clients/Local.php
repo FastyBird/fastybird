@@ -18,7 +18,6 @@ namespace FastyBird\Connector\Shelly\Clients;
 use FastyBird\Connector\Shelly\Clients;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
-use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -55,7 +54,6 @@ final class Local implements Client
 		private readonly Clients\Local\CoapFactory $coapClientFactory,
 		private readonly Clients\Local\HttpFactory $httpClientFactory,
 		private readonly Clients\Local\MqttFactory $mqttClientFactory,
-		private readonly Helpers\Connector $connectorHelper,
 		Log\LoggerInterface|null $logger = null,
 	)
 	{
@@ -65,21 +63,15 @@ final class Local implements Client
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Terminate
+	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function connect(): void
 	{
-		$mode = $this->connectorHelper->getConfiguration(
-			$this->connector,
-			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE),
-		);
+		$mode = $this->connector->getClientMode();
 
-		if ($mode === null) {
-			throw new DevicesExceptions\Terminate('Connector client mode is not configured');
-		}
-
-		if ($mode === Types\ClientMode::MODE_LOCAL) {
+		if ($mode->equalsValue(Types\ClientMode::MODE_LOCAL)) {
 			$this->coapClient = $this->coapClientFactory->create($this->connector);
 			$this->httpClient = $this->httpClientFactory->create($this->connector);
 
@@ -132,7 +124,7 @@ final class Local implements Client
 					$ex,
 				);
 			}
-		} elseif ($mode === Types\ClientMode::MODE_MQTT) {
+		} elseif ($mode->equalsValue(Types\ClientMode::MODE_MQTT)) {
 			$this->mqttClient = $this->mqttClientFactory->create($this->connector);
 
 			try {

@@ -22,7 +22,6 @@ use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -77,7 +76,6 @@ class Discovery extends Console\Command\Command
 
 	public function __construct(
 		private readonly Clients\DiscoveryFactory $clientFactory,
-		private readonly Helpers\Connector $connectorHelper,
 		private readonly Helpers\Device $deviceHelper,
 		private readonly Consumers\Messages $consumer,
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
@@ -122,8 +120,6 @@ class Discovery extends Console\Command\Command
 	/**
 	 * @throws Console\Exception\InvalidArgumentException
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 */
 	protected function execute(Input\InputInterface $input, Output\OutputInterface $output): int
 	{
@@ -275,17 +271,6 @@ class Discovery extends Console\Command\Command
 			$io->warning('Connector is disabled. Disabled connector could not be executed');
 
 			return Console\Command\Command::SUCCESS;
-		}
-
-		$mode = $this->connectorHelper->getConfiguration(
-			$connector,
-			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE),
-		);
-
-		if ($mode === null) {
-			$io->error('Connector client mode is not configured');
-
-			return Console\Command\Command::FAILURE;
 		}
 
 		$this->client = $this->clientFactory->create($connector);
