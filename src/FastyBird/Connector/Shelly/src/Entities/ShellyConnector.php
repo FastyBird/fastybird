@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Shelly.php
+ * ShellyConnector.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -22,6 +22,7 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use function is_string;
 
 /**
  * @ORM\Entity
@@ -69,6 +70,54 @@ class ShellyConnector extends DevicesEntities\Connectors\Connector
 		}
 
 		throw new Exceptions\InvalidState('Connector mode is not configured');
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function getCloudServerAddress(): string|null
+	{
+		$property = $this->properties
+			->filter(
+			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::IDENTIFIER_CLOUD_SERVER
+			)
+			->first();
+
+		if (
+			$property instanceof DevicesEntities\Connectors\Properties\Variable
+			&& is_string($property->getValue())
+		) {
+			return $property->getValue();
+		}
+
+		return null;
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function getCloudAuthKey(): string|null
+	{
+		$property = $this->properties
+			->filter(
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::IDENTIFIER_CLOUD_AUTH_KEY
+			)
+			->first();
+
+		if (
+			$property instanceof DevicesEntities\Connectors\Properties\Variable
+			&& is_string($property->getValue())
+		) {
+			return $property->getValue();
+		}
+
+		return null;
 	}
 
 }

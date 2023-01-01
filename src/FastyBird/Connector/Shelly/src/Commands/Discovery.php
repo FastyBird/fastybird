@@ -19,7 +19,6 @@ use DateTimeInterface;
 use FastyBird\Connector\Shelly\Clients;
 use FastyBird\Connector\Shelly\Consumers;
 use FastyBird\Connector\Shelly\Entities;
-use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -76,7 +75,6 @@ class Discovery extends Console\Command\Command
 
 	public function __construct(
 		private readonly Clients\DiscoveryFactory $clientFactory,
-		private readonly Helpers\Device $deviceHelper,
 		private readonly Consumers\Messages $consumer,
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
@@ -382,10 +380,7 @@ class Discovery extends Console\Command\Command
 				) {
 					$foundDevices++;
 
-					$ipAddress = $this->deviceHelper->getConfiguration(
-						$device,
-						Types\DevicePropertyIdentifier::get(Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS),
-					);
+					$ipAddress = $device->getIpAddress();
 
 					$hardwareModelAttribute = $device->findAttribute(
 						Types\DeviceAttributeIdentifier::IDENTIFIER_HARDWARE_MODEL,
@@ -396,7 +391,7 @@ class Discovery extends Console\Command\Command
 						$device->getPlainId(),
 						$device->getName() ?? $device->getIdentifier(),
 						$hardwareModelAttribute?->getContent(true) ?? 'N/A',
-						is_string($ipAddress) ? $ipAddress : 'N/A',
+						$ipAddress ?? 'N/A',
 					]);
 				}
 			}

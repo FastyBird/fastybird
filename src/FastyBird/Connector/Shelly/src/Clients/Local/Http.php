@@ -88,7 +88,6 @@ final class Http implements Clients\Client
 		private readonly API\Gen1Transformer $transformer,
 		private readonly API\Gen1HttpApiFactory $gen1HttpApiFactory,
 		private readonly API\Gen2HttpApiFactory $gen2HttpApiFactory,
-		private readonly Helpers\Device $deviceHelper,
 		private readonly Helpers\Property $propertyStateHelper,
 		private readonly Consumers\Messages $consumer,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
@@ -315,10 +314,7 @@ final class Http implements Clients\Client
 		$delay = null;
 
 		if ($cmd === self::CMD_STATUS) {
-			$delay = intval($this->deviceHelper->getConfiguration(
-				$device,
-				Types\DevicePropertyIdentifier::get(Types\DevicePropertyIdentifier::IDENTIFIER_STATUS_READING_DELAY),
-			));
+			$delay = $device->getStatusReadingDelay();
 		}
 
 		if (
@@ -331,15 +327,7 @@ final class Http implements Clients\Client
 			return false;
 		}
 
-		$generation = $this->deviceHelper->getConfiguration(
-			$device,
-			Types\DevicePropertyIdentifier::get(Types\DevicePropertyIdentifier::IDENTIFIER_GENERATION),
-		);
-
-		if (!$generation instanceof Types\DeviceGeneration) {
-			// Promise\reject(new Exceptions\InvalidState('Device generation could not be determined'));
-			return false;
-		}
+		$generation = $device->getGeneration();
 
 		$this->processedDevicesCommands[$device->getIdentifier()][$cmd] = $this->dateTimeFactory->getNow();
 
@@ -419,14 +407,7 @@ final class Http implements Clients\Client
 			return Promise\reject(new Exceptions\InvalidState('Device address could not be determined'));
 		}
 
-		$generation = $this->deviceHelper->getConfiguration(
-			$device,
-			Types\DevicePropertyIdentifier::get(Types\DevicePropertyIdentifier::IDENTIFIER_GENERATION),
-		);
-
-		if (!$generation instanceof Types\DeviceGeneration) {
-			return Promise\reject(new Exceptions\InvalidState('Device generation could not be determined'));
-		}
+		$generation = $device->getGeneration();
 
 		if ($generation->equalsValue(Types\DeviceGeneration::GENERATION_1)) {
 			if (
@@ -543,10 +524,7 @@ final class Http implements Clients\Client
 	 */
 	private function buildDeviceAddress(Entities\ShellyDevice $device): string|null
 	{
-		$ipAddress = $this->deviceHelper->getConfiguration(
-			$device,
-			Types\DevicePropertyIdentifier::get(Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS),
-		);
+		$ipAddress = $device->getIpAddress();
 
 		if (!is_string($ipAddress)) {
 			$this->logger->error(
@@ -566,15 +544,9 @@ final class Http implements Clients\Client
 			return null;
 		}
 
-		$username = $this->deviceHelper->getConfiguration(
-			$device,
-			Types\DevicePropertyIdentifier::get(Types\DevicePropertyIdentifier::IDENTIFIER_USERNAME),
-		);
+		$username = $device->getUsername();
 
-		$password = $this->deviceHelper->getConfiguration(
-			$device,
-			Types\DevicePropertyIdentifier::get(Types\DevicePropertyIdentifier::IDENTIFIER_PASSWORD),
-		);
+		$password = $device->getPassword();
 
 		if (is_string($username) && is_string($password)) {
 			return $username . ':' . $password . '@' . $ipAddress;
