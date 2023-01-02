@@ -50,6 +50,11 @@ final class DeviceInputStatus implements Entities\API\Entity
 		return $this->id;
 	}
 
+	public function getType(): Types\ComponentType
+	{
+		return Types\ComponentType::get(Types\ComponentType::TYPE_TEMPERATURE);
+	}
+
 	public function getState(): bool|Types\InputPayload|null
 	{
 		if (is_string($this->state)) {
@@ -83,6 +88,7 @@ final class DeviceInputStatus implements Entities\API\Entity
 	{
 		return [
 			'id' => $this->getId(),
+			'type' => $this->getType()->getValue(),
 			'state' => $this->getState() instanceof Types\InputPayload ? $this->getState()->getValue() : $this->getState(),
 			'percent' => $this->getPercent(),
 			'errors' => $this->getErrors(),

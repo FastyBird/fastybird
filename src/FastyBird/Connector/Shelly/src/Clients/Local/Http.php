@@ -36,13 +36,18 @@ use Psr\Log;
 use React\EventLoop;
 use React\Http as ReactHttp;
 use React\Promise;
+use RuntimeException;
 use Throwable;
+use function array_filter;
 use function array_key_exists;
+use function array_map;
+use function array_merge;
 use function assert;
 use function in_array;
 use function intval;
 use function is_string;
 use function preg_match;
+use function strval;
 
 /**
  * HTTP api client
@@ -248,6 +253,8 @@ final class Http implements Clients\Client
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws RuntimeException
 	 */
 	private function handleCommunication(): void
 	{
@@ -280,6 +287,8 @@ final class Http implements Clients\Client
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws RuntimeException
 	 */
 	private function processDevice(Entities\ShellyDevice $device): bool
 	{
@@ -291,6 +300,8 @@ final class Http implements Clients\Client
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws RuntimeException
 	 */
 	private function readDeviceData(string $cmd, Entities\ShellyDevice $device): bool
 	{
@@ -346,9 +357,304 @@ final class Http implements Clients\Client
 				return false;
 			}
 
+			assert($result instanceof Promise\PromiseInterface);
+
 			$result
 				->then(
 					function (Entities\API\Gen1\DeviceStatus|Entities\API\Gen2\DeviceStatus $status) use ($cmd, $device): void {
+						if ($status instanceof Entities\API\Gen1\DeviceStatus) {
+							$source = Types\MessageSource::get(Types\MessageSource::SOURCE_GEN_1_HTTP);
+
+							$statuses = [];
+
+							foreach ($status->getInputs() as $index => $input) {
+								foreach ($device->getChannels() as $channel) {
+									if (Utils\Strings::endsWith($channel->getIdentifier(), 'input_' . $index)) {
+										$statuses[] = new Entities\Messages\ChannelStatus(
+											Types\MessageSource::get(Types\MessageSource::SOURCE_GEN_1_HTTP),
+											$channel->getId(),
+										);
+									}
+								}
+							}
+
+							foreach ($status->getRelays() as $index => $relay) {
+								foreach ($device->getChannels() as $channel) {
+									if (Utils\Strings::endsWith($channel->getIdentifier(), 'relay_' . $index)) {
+										$statuses[] = new Entities\Messages\ChannelStatus(
+											Types\MessageSource::get(Types\MessageSource::SOURCE_GEN_1_HTTP),
+											$channel->getId(),
+										);
+									}
+								}
+							}
+
+							foreach ($status->getRollers() as $index => $roller) {
+								foreach ($device->getChannels() as $channel) {
+									if (Utils\Strings::endsWith($channel->getIdentifier(), 'roller_' . $index)) {
+										$statuses[] = new Entities\Messages\ChannelStatus(
+											Types\MessageSource::get(Types\MessageSource::SOURCE_GEN_1_HTTP),
+											$channel->getId(),
+										);
+									}
+								}
+							}
+
+							foreach ($status->getLights() as $index => $light) {
+								foreach ($device->getChannels() as $channel) {
+									if (Utils\Strings::endsWith($channel->getIdentifier(), 'light_' . $index)) {
+										$statuses[] = new Entities\Messages\ChannelStatus(
+											Types\MessageSource::get(Types\MessageSource::SOURCE_GEN_1_HTTP),
+											$channel->getId(),
+										);
+									}
+								}
+							}
+						} else {
+							$source = Types\MessageSource::get(Types\MessageSource::SOURCE_GEN_2_HTTP);
+
+							$statuses = array_map(
+								function ($component) use ($device): array {
+									$result = [];
+
+									if ($component instanceof Entities\API\Gen2\DeviceSwitchStatus) {
+										$property = $this->findProperty(
+											$device,
+											(
+												$component->getType()->getValue()
+												. '_'
+												. $component->getId()
+												. '_'
+												. Types\ComponentAttributeType::ATTRIBUTE_ON
+											),
+										);
+
+										if ($property !== null) {
+											$result[] = new Entities\Messages\PropertyStatus(
+												Types\MessageSource::get(Types\MessageSource::SOURCE_GEN_2_HTTP),
+												$property->getIdentifier(),
+												$this->transformer->transformValueFromDevice(
+													$property->getDataType(),
+													$property->getFormat(),
+													$component->getOutput(),
+												),
+											);
+										}
+									} elseif ($component instanceof Entities\API\Gen2\DeviceCoverStatus) {
+										$property = $this->findProperty(
+											$device,
+											(
+												$component->getType()->getValue()
+												. '_'
+												. $component->getId()
+											),
+										);
+
+										if ($property !== null) {
+											$result[] = new Entities\Messages\PropertyStatus(
+												Types\MessageSource::get(Types\MessageSource::SOURCE_GEN_2_HTTP),
+												$property->getIdentifier(),
+												$this->transformer->transformValueFromDevice(
+													$property->getDataType(),
+													$property->getFormat(),
+													$component->getState() !== null ? strval(
+														$component->getState()->getValue(),
+													) : null,
+												),
+											);
+										}
+
+										$property = $this->findProperty(
+											$device,
+											(
+												$component->getType()->getValue()
+												. '_'
+												. $component->getId()
+												. '_'
+												. Types\ComponentAttributeType::ATTRIBUTE_POSITION
+											),
+										);
+
+										if ($property !== null) {
+											$result[] = new Entities\Messages\PropertyStatus(
+												Types\MessageSource::get(Types\MessageSource::SOURCE_GEN_2_HTTP),
+												$property->getIdentifier(),
+												$this->transformer->transformValueFromDevice(
+													$property->getDataType(),
+													$property->getFormat(),
+													$component->getCurrentPosition(),
+												),
+											);
+										}
+									} elseif ($component instanceof Entities\API\Gen2\DeviceLightStatus) {
+										$property = $this->findProperty(
+											$device,
+											(
+												$component->getType()->getValue()
+												. '_'
+												. $component->getId()
+												. '_'
+												. Types\ComponentAttributeType::ATTRIBUTE_ON
+											),
+										);
+
+										if ($property !== null) {
+											$result[] = new Entities\Messages\PropertyStatus(
+												Types\MessageSource::get(Types\MessageSource::SOURCE_GEN_2_HTTP),
+												$property->getIdentifier(),
+												$this->transformer->transformValueFromDevice(
+													$property->getDataType(),
+													$property->getFormat(),
+													$component->getOutput(),
+												),
+											);
+										}
+
+										$property = $this->findProperty(
+											$device,
+											(
+												$component->getType()->getValue()
+												. '_'
+												. $component->getId()
+												. '_'
+												. Types\ComponentAttributeType::ATTRIBUTE_BRIGHTNESS
+											),
+										);
+
+										if ($property !== null) {
+											$result[] = new Entities\Messages\PropertyStatus(
+												Types\MessageSource::get(Types\MessageSource::SOURCE_GEN_2_HTTP),
+												$property->getIdentifier(),
+												$this->transformer->transformValueFromDevice(
+													$property->getDataType(),
+													$property->getFormat(),
+													$component->getBrightness(),
+												),
+											);
+										}
+									} elseif ($component instanceof Entities\API\Gen2\DeviceInputStatus) {
+										$property = $this->findProperty(
+											$device,
+											(
+												$component->getType()->getValue()
+												. '_'
+												. $component->getId()
+											),
+										);
+
+										if ($property !== null) {
+											if ($component->getState() instanceof Types\InputPayload) {
+												$value = strval($component->getState()->getValue());
+											} elseif ($component->getState() !== null) {
+												$value = $component->getState();
+											} else {
+												$value = $component->getPercent();
+											}
+
+											$result[] = new Entities\Messages\PropertyStatus(
+												Types\MessageSource::get(Types\MessageSource::SOURCE_GEN_2_HTTP),
+												$property->getIdentifier(),
+												$this->transformer->transformValueFromDevice(
+													$property->getDataType(),
+													$property->getFormat(),
+													$value,
+												),
+											);
+										}
+									} elseif ($component instanceof Entities\API\Gen2\DeviceTemperatureStatus) {
+										$property = $this->findProperty(
+											$device,
+											(
+												$component->getType()->getValue()
+												. '_'
+												. $component->getId()
+												. '_'
+												. Types\ComponentAttributeType::ATTRIBUTE_CELSIUS
+											),
+										);
+
+										if ($property !== null) {
+											$result[] = new Entities\Messages\PropertyStatus(
+												Types\MessageSource::get(Types\MessageSource::SOURCE_GEN_2_HTTP),
+												$property->getIdentifier(),
+												$this->transformer->transformValueFromDevice(
+													$property->getDataType(),
+													$property->getFormat(),
+													$component->getTemperatureCelsius(),
+												),
+											);
+										}
+
+										$property = $this->findProperty(
+											$device,
+											(
+												$component->getType()->getValue()
+												. '_'
+												. $component->getId()
+												. '_'
+												. Types\ComponentAttributeType::ATTRIBUTE_FAHRENHEIT
+											),
+										);
+
+										if ($property !== null) {
+											$result[] = new Entities\Messages\PropertyStatus(
+												Types\MessageSource::get(Types\MessageSource::SOURCE_GEN_2_HTTP),
+												$property->getIdentifier(),
+												$this->transformer->transformValueFromDevice(
+													$property->getDataType(),
+													$property->getFormat(),
+													$component->getTemperatureFahrenheit(),
+												),
+											);
+										}
+									} else {
+										$property = $this->findProperty(
+											$device,
+											(
+												$component->getType()->getValue()
+												. '_'
+												. $component->getId()
+											),
+										);
+
+										if ($property !== null) {
+											$result[] = new Entities\Messages\PropertyStatus(
+												Types\MessageSource::get(Types\MessageSource::SOURCE_GEN_2_HTTP),
+												$property->getIdentifier(),
+												$this->transformer->transformValueFromDevice(
+													$property->getDataType(),
+													$property->getFormat(),
+													$component->getRelativeHumidity(),
+												),
+											);
+										}
+									}
+
+									return $result;
+								},
+								array_merge(
+									$status->getSwitches(),
+									$status->getCovers(),
+									$status->getInputs(),
+									$status->getLights(),
+									$status->getTemperature() !== null ? [$status->getTemperature()] : [],
+									$status->getHumidity() !== null ? [$status->getHumidity()] : [],
+								),
+							);
+
+							$statuses = array_filter($statuses, static fn (array $item): bool => $item !== []);
+							$statuses = array_merge([], ...$statuses);
+						}
+
+						$this->consumer->append(
+							new Entities\Messages\DeviceStatus(
+								$source,
+								$this->connector->getId(),
+								$device->getIdentifier(),
+								$statuses,
+							),
+						);
+
 						$this->processedDevicesCommands[$device->getIdentifier()][$cmd] = $this->dateTimeFactory->getNow();
 					},
 				)
@@ -467,6 +773,8 @@ final class Http implements Clients\Client
 		if ($result === null) {
 			return Promise\reject(new Exceptions\InvalidState('Device is in unsupported generation'));
 		}
+
+		assert($result instanceof Promise\PromiseInterface);
 
 		$result
 			->then(
@@ -643,6 +951,28 @@ final class Http implements Clients\Client
 		}
 
 		throw new Exceptions\InvalidState('Property method could not be build');
+	}
+
+	public function findProperty(
+		Entities\ShellyDevice $device,
+		string $propertyIdentifier,
+	): DevicesEntities\Devices\Properties\Dynamic|DevicesEntities\Channels\Properties\Dynamic|null
+	{
+		$property = $device->findProperty($propertyIdentifier);
+
+		if ($property instanceof DevicesEntities\Devices\Properties\Dynamic) {
+			return $property;
+		}
+
+		foreach ($device->getChannels() as $channel) {
+			$property = $channel->findProperty($propertyIdentifier);
+
+			if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
+				return $property;
+			}
+		}
+
+		return null;
 	}
 
 }

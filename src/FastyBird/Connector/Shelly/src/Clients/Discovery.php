@@ -44,7 +44,6 @@ use function explode;
 use function is_array;
 use function is_string;
 use function preg_match;
-use function React\Async\await;
 use function strval;
 
 /**
@@ -65,9 +64,11 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 	private const MDNS_PORT = 5_353;
 
-	private const MDNS_SEARCH_TIMEOUT = 5;
+	private const MDNS_SEARCH_TIMEOUT = 30;
 
 	private const MATCH_NAME = '/^(?P<type>shelly.+)-(?P<id>[0-9A-Fa-f]+)._(http|shelly)._tcp.local$/';
+	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+	private const MATCH_IP_ADDRESS = '/^((?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])[.]){3}(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$/';
 
 	/** @var SplObjectStorage<Entities\Clients\DiscoveredLocalDevice, null> */
 	private SplObjectStorage $discoveredLocalDevices;
@@ -186,13 +187,13 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$serviceIpAddress = null;
 			$serviceDomain = null;
 			$serviceName = null;
-			$serviceData = null;
+			$serviceData = [];
 
 			foreach ($response->answers as $answer) {
 				if (
 					$answer->type === Dns\Model\Message::TYPE_A
 					&& is_string($answer->data)
-					&& preg_match(self::MATCH_NAME, $answer->data) === 1
+					&& preg_match(self::MATCH_IP_ADDRESS, $answer->data) === 1
 					&& $serviceIpAddress === null
 				) {
 					$serviceIpAddress = $answer->data;
@@ -221,10 +222,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					$answer->type === Dns\Model\Message::TYPE_TXT
 					&& preg_match(self::MATCH_NAME, $answer->name) === 1
 					&& is_array($answer->data)
-					&& $serviceData === null
 				) {
-					$serviceData = [];
-
 					foreach ($answer->data as $dataRow) {
 						[$key, $value] = explode('=', $dataRow) + [null, null];
 
@@ -233,17 +231,13 @@ final class Discovery implements Evenement\EventEmitterInterface
 				}
 			}
 
-			if ($serviceIpAddress !== null && $serviceName !== null && is_array($serviceData)) {
-				preg_match('/^(\d[\d.]+):(\d+)\b/', $remote, $results);
+			if ($serviceIpAddress !== null && $serviceName !== null) {
+				$serviceResult = new Entities\Clients\MdnsResult($serviceIpAddress, $serviceName, $serviceData);
 
-				if (count($results) === 3) {
-					$serviceResult = new Entities\Clients\MdnsResult($results[1], $serviceName, $serviceData);
+				if (!$this->searchResult->contains($serviceResult)) {
+					$this->searchResult->attach($serviceResult);
 
-					if (!$this->searchResult->contains($serviceResult)) {
-						$this->searchResult->attach($serviceResult);
-
-						preg_match(self::MATCH_NAME, $serviceName, $matches);
-
+					if (preg_match(self::MATCH_NAME, $serviceName, $matches) === 1) {
 						$generation = array_key_exists('gen', $serviceData) && strval($serviceData['gen']) === '2'
 							? Types\DeviceGeneration::get(Types\DeviceGeneration::GENERATION_2)
 							: Types\DeviceGeneration::get(
@@ -320,10 +314,10 @@ final class Discovery implements Evenement\EventEmitterInterface
 		foreach ($devices as $device) {
 			try {
 				if ($device->getGeneration()->equalsValue(Types\DeviceGeneration::GENERATION_1)) {
-					$deviceInformation = await($gen1HttpApi->getDeviceInformation($device->getIpAddress()));
+					$deviceInformation = $gen1HttpApi->getDeviceInformation($device->getIpAddress(), false);
 					assert($deviceInformation instanceof Entities\API\Gen1\DeviceInformation);
 				} elseif ($device->getGeneration()->equalsValue(Types\DeviceGeneration::GENERATION_2)) {
-					$deviceInformation = await($gen2HttpApi->getDeviceInformation($device->getIpAddress()));
+					$deviceInformation = $gen2HttpApi->getDeviceInformation($device->getIpAddress(), false);
 					assert($deviceInformation instanceof Entities\API\Gen2\DeviceInformation);
 				} else {
 					continue;
@@ -352,10 +346,10 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 			try {
 				if ($device->getGeneration()->equalsValue(Types\DeviceGeneration::GENERATION_1)) {
-					$deviceDescription = await($gen1HttpApi->getDeviceDescription($device->getIpAddress()));
+					$deviceDescription = $gen1HttpApi->getDeviceDescription($device->getIpAddress(), false);
 					assert($deviceDescription instanceof Entities\API\Gen1\DeviceDescription);
 				} elseif ($device->getGeneration()->equalsValue(Types\DeviceGeneration::GENERATION_2)) {
-					$deviceConfiguration = await($gen2HttpApi->getDeviceConfiguration($device->getIpAddress()));
+					$deviceConfiguration = $gen2HttpApi->getDeviceConfiguration($device->getIpAddress(), false);
 					assert($deviceConfiguration instanceof Entities\API\Gen2\DeviceConfiguration);
 				} else {
 					continue;

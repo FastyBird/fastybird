@@ -88,38 +88,40 @@ final class Status implements Consumer
 			);
 		}
 
-		foreach ($entity->getProperties() as $propertyStatus) {
-			$property = null;
+		foreach ($entity->getStatuses() as $status) {
+			if ($status instanceof Entities\Messages\PropertyStatus) {
+				$property = null;
 
-			$property = $device->findProperty($propertyStatus->getIdentifier());
+				$property = $device->findProperty($status->getIdentifier());
 
-			if ($property === null) {
-				foreach ($device->getChannels() as $channel) {
-					$property = $channel->findProperty($propertyStatus->getIdentifier());
+				if ($property === null) {
+					foreach ($device->getChannels() as $channel) {
+						$property = $channel->findProperty($status->getIdentifier());
 
-					if ($property !== null) {
-						break;
+						if ($property !== null) {
+							break;
+						}
 					}
 				}
-			}
 
-			if (
-				$property instanceof DevicesEntities\Devices\Properties\Dynamic
-				|| $property instanceof DevicesEntities\Channels\Properties\Dynamic
-			) {
-				$actualValue = DevicesUtilities\ValueHelper::flattenValue(
-					DevicesUtilities\ValueHelper::normalizeValue(
-						$property->getDataType(),
-						$propertyStatus->getValue(),
-						$property->getFormat(),
-						$property->getInvalid(),
-					),
-				);
+				if (
+					$property instanceof DevicesEntities\Devices\Properties\Dynamic
+					|| $property instanceof DevicesEntities\Channels\Properties\Dynamic
+				) {
+					$actualValue = DevicesUtilities\ValueHelper::flattenValue(
+						DevicesUtilities\ValueHelper::normalizeValue(
+							$property->getDataType(),
+							$status->getValue(),
+							$property->getFormat(),
+							$property->getInvalid(),
+						),
+					);
 
-				$this->propertyStateHelper->setValue($property, Utils\ArrayHash::from([
-					DevicesStates\Property::ACTUAL_VALUE_KEY => $actualValue,
-					DevicesStates\Property::VALID_KEY => true,
-				]));
+					$this->propertyStateHelper->setValue($property, Utils\ArrayHash::from([
+						DevicesStates\Property::ACTUAL_VALUE_KEY => $actualValue,
+						DevicesStates\Property::VALID_KEY => true,
+					]));
+				}
 			}
 		}
 

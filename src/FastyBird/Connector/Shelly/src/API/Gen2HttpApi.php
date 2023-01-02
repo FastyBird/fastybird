@@ -18,17 +18,21 @@ namespace FastyBird\Connector\Shelly\API;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Types;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
+use Fig\Http\Message\StatusCodeInterface;
 use Nette;
 use Nette\Utils;
 use Psr\Http\Message;
 use Psr\Log;
 use React\EventLoop;
 use React\Promise;
+use RuntimeException;
 use Throwable;
 use function array_key_exists;
 use function preg_match;
 use function sprintf;
+use function uniqid;
 
 /**
  * Generation 2 device http api interface
@@ -62,220 +66,158 @@ final class Gen2HttpApi extends HttpApi
 	public function __construct(
 		private readonly EntityFactory $entityFactory,
 		private readonly MetadataSchemas\Validator $schemaValidator,
-		private readonly EventLoop\LoopInterface $eventLoop,
+		EventLoop\LoopInterface $eventLoop,
 		Log\LoggerInterface|null $logger = null,
 	)
 	{
-		parent::__construct($this->eventLoop, $logger);
+		parent::__construct($eventLoop, $logger);
 	}
 
 	/**
 	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws RuntimeException
 	 */
 	public function getDeviceInformation(
 		string $address,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface
+		bool $async = true,
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\Gen2\DeviceInformation
 	{
-		$promise = new Promise\Deferred();
+		$deferred = new Promise\Deferred();
 
 		$result = $this->callRequest(
 			'GET',
 			sprintf(self::DEVICE_INFORMATION_ENDPOINT, $address),
+			[],
+			null,
+			$async,
 		);
 
 		if ($result instanceof Promise\PromiseInterface) {
 			$result
-				->then(function (Message\ResponseInterface $response) use ($promise): void {
-					$parsedMessage = $this->schemaValidator->validate(
-						$response->getBody()->getContents(),
-						$this->getSchemaFilePath(self::DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME),
-					);
-
-					$information = $this->entityFactory->build(
-						Entities\API\Gen2\DeviceInformation::class,
-						$parsedMessage,
-					);
-
-					$promise->resolve($information);
+				->then(function (Message\ResponseInterface $response) use ($deferred): void {
+					try {
+						$deferred->resolve($this->parseDeviceInformationResponse($response));
+					} catch (Throwable $ex) {
+						$deferred->reject($ex);
+					}
 				})
-				->otherwise(static function (Throwable $ex) use ($promise): void {
-					$promise->reject($ex);
+				->otherwise(static function (Throwable $ex) use ($deferred): void {
+					$deferred->reject($ex);
 				});
+		} elseif ($result instanceof Message\ResponseInterface) {
+			return $this->parseDeviceInformationResponse($result);
 		} else {
-			throw new Exceptions\InvalidState('Request promise could not be created');
+			$ex = new Exceptions\InvalidState('Request promise could not be created');
+
+			if ($async) {
+				Promise\reject($ex);
+			} else {
+				throw $ex;
+			}
 		}
 
-		return $promise->promise();
+		return $deferred->promise();
 	}
 
 	/**
 	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws RuntimeException
 	 */
 	public function getDeviceConfiguration(
 		string $address,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface
+		bool $async = true,
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\Gen2\DeviceConfiguration
 	{
-		$promise = new Promise\Deferred();
+		$deferred = new Promise\Deferred();
 
 		$result = $this->callRequest(
 			'GET',
 			sprintf(self::DEVICE_CONFIGURATION_ENDPOINT, $address),
+			[],
+			null,
+			$async,
 		);
 
 		if ($result instanceof Promise\PromiseInterface) {
 			$result
-				->then(function (Message\ResponseInterface $response) use ($promise): void {
-					$parsedMessage = $this->schemaValidator->validate(
-						$response->getBody()->getContents(),
-						$this->getSchemaFilePath(self::DEVICE_CONFIG_MESSAGE_SCHEMA_FILENAME),
-					);
-
-					$switches = $covers = $lights = $inputs = [];
-					$temperature = $humidity = null;
-
-					foreach ($parsedMessage as $key => $configuration) {
-						if (
-							$configuration instanceof Utils\ArrayHash
-							&& preg_match(self::COMPONENT_KEY, $key, $componentMatches) === 1
-							&& array_key_exists('component', $componentMatches)
-							&& Types\ComponentType::isValidValue($componentMatches['component'])
-						) {
-							if ($componentMatches['component'] === Types\ComponentType::TYPE_SWITCH) {
-								$switches[] = $this->entityFactory->build(
-									Entities\API\Gen2\DeviceSwitchConfiguration::class,
-									$configuration,
-								);
-							} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_COVER) {
-								$covers[] = $this->entityFactory->build(
-									Entities\API\Gen2\DeviceCoverConfiguration::class,
-									$configuration,
-								);
-							} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_LIGHT) {
-								$lights[] = $this->entityFactory->build(
-									Entities\API\Gen2\DeviceLightConfiguration::class,
-									$configuration,
-								);
-							} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_INPUT) {
-								$inputs[] = $this->entityFactory->build(
-									Entities\API\Gen2\DeviceInputConfiguration::class,
-									$configuration,
-								);
-							} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_TEMPERATURE) {
-								$temperature = $this->entityFactory->build(
-									Entities\API\Gen2\DeviceTemperatureConfiguration::class,
-									$configuration,
-								);
-							} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_HUMIDITY) {
-								$humidity = $this->entityFactory->build(
-									Entities\API\Gen2\DeviceHumidityConfiguration::class,
-									$configuration,
-								);
-							}
-						}
+				->then(function (Message\ResponseInterface $response) use ($deferred): void {
+					try {
+						$deferred->resolve($this->parseDeviceConfigurationResponse($response));
+					} catch (Throwable $ex) {
+						$deferred->reject($ex);
 					}
-
-					$promise->resolve(new Entities\API\Gen2\DeviceConfiguration(
-						$switches,
-						$covers,
-						$inputs,
-						$lights,
-						$temperature,
-						$humidity,
-					));
 				})
-				->otherwise(static function (Throwable $ex) use ($promise): void {
-					$promise->reject($ex);
+				->otherwise(static function (Throwable $ex) use ($deferred): void {
+					$deferred->reject($ex);
 				});
+		} elseif ($result instanceof Message\ResponseInterface) {
+			return $this->parseDeviceConfigurationResponse($result);
 		} else {
-			throw new Exceptions\InvalidState('Request promise could not be created');
+			$ex = new Exceptions\InvalidState('Request promise could not be created');
+
+			if ($async) {
+				Promise\reject($ex);
+			} else {
+				throw $ex;
+			}
 		}
 
-		return $promise->promise();
+		return $deferred->promise();
 	}
 
 	/**
 	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws RuntimeException
 	 */
 	public function getDeviceStatus(
 		string $address,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface
+		bool $async = true,
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\Gen2\DeviceStatus
 	{
-		$promise = new Promise\Deferred();
+		$deferred = new Promise\Deferred();
 
 		$result = $this->callRequest(
 			'GET',
 			sprintf(self::DEVICE_STATUS_ENDPOINT, $address),
+			[],
+			null,
+			$async,
 		);
 
 		if ($result instanceof Promise\PromiseInterface) {
 			$result
-				->then(function (Message\ResponseInterface $response) use ($promise): void {
-					$parsedMessage = $this->schemaValidator->validate(
-						$response->getBody()->getContents(),
-						$this->getSchemaFilePath(self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME),
-					);
-
-					$switches = $covers = $lights = $inputs = [];
-					$temperature = $humidity = null;
-
-					foreach ($parsedMessage as $key => $status) {
-						if (
-							$status instanceof Utils\ArrayHash
-							&& preg_match(self::COMPONENT_KEY, $key, $componentMatches) === 1
-							&& array_key_exists('component', $componentMatches)
-							&& Types\ComponentType::isValidValue($componentMatches['component'])
-						) {
-							if ($componentMatches['component'] === Types\ComponentType::TYPE_SWITCH) {
-								$switches[] = $this->entityFactory->build(
-									Entities\API\Gen2\DeviceSwitchStatus::class,
-									$status,
-								);
-							} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_COVER) {
-								$covers[] = $this->entityFactory->build(
-									Entities\API\Gen2\DeviceCoverStatus::class,
-									$status,
-								);
-							} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_LIGHT) {
-								$lights[] = $this->entityFactory->build(
-									Entities\API\Gen2\DeviceLightStatus::class,
-									$status,
-								);
-							} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_INPUT) {
-								$inputs[] = $this->entityFactory->build(
-									Entities\API\Gen2\DeviceInputStatus::class,
-									$status,
-								);
-							} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_TEMPERATURE) {
-								$temperature = $this->entityFactory->build(
-									Entities\API\Gen2\DeviceTemperatureStatus::class,
-									$status,
-								);
-							} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_HUMIDITY) {
-								$humidity = $this->entityFactory->build(
-									Entities\API\Gen2\DeviceHumidityStatus::class,
-									$status,
-								);
-							}
-						}
+				->then(function (Message\ResponseInterface $response) use ($deferred): void {
+					try {
+						$deferred->resolve($this->parseDeviceStatusResponse($response));
+					} catch (Throwable $ex) {
+						$deferred->reject($ex);
 					}
-
-					$promise->resolve(new Entities\API\Gen2\DeviceStatus(
-						$switches,
-						$covers,
-						$inputs,
-						$lights,
-						$temperature,
-						$humidity,
-					));
 				})
-				->otherwise(static function (Throwable $ex) use ($promise): void {
-					$promise->reject($ex);
+				->otherwise(static function (Throwable $ex) use ($deferred): void {
+					$deferred->reject($ex);
 				});
+		} elseif ($result instanceof Message\ResponseInterface) {
+			return $this->parseDeviceStatusResponse($result);
 		} else {
-			throw new Exceptions\InvalidState('Request promise could not be created');
+			$ex = new Exceptions\InvalidState('Request promise could not be created');
+
+			if ($async) {
+				Promise\reject($ex);
+			} else {
+				throw $ex;
+			}
 		}
 
-		return $promise->promise();
+		return $deferred->promise();
 	}
 
 	/**
@@ -287,13 +229,14 @@ final class Gen2HttpApi extends HttpApi
 		string $address,
 		string $method,
 		array $params,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface
+		bool $async = true,
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|bool
 	{
-		$promise = new Promise\Deferred();
+		$deferred = new Promise\Deferred();
 
 		try {
 			$body = Utils\Json::encode([
-				'id' => 1,
+				'id' => uniqid(),
 				'method' => $method,
 				'params' => $params,
 			]);
@@ -313,21 +256,189 @@ final class Gen2HttpApi extends HttpApi
 			),
 			[],
 			$body,
+			$async,
 		);
 
 		if ($result instanceof Promise\PromiseInterface) {
 			$result
-				->then(static function () use ($promise): void {
-					$promise->resolve();
+				->then(static function () use ($deferred): void {
+					$deferred->resolve();
 				})
-				->otherwise(static function (Throwable $ex) use ($promise): void {
-					$promise->reject($ex);
+				->otherwise(static function (Throwable $ex) use ($deferred): void {
+					$deferred->reject($ex);
 				});
+		} elseif ($result instanceof Message\ResponseInterface) {
+			return $result->getStatusCode() === StatusCodeInterface::STATUS_OK;
 		} else {
-			throw new Exceptions\InvalidState('Request promise could not be created');
+			$ex = new Exceptions\InvalidState('Request promise could not be created');
+
+			if ($async) {
+				Promise\reject($ex);
+			} else {
+				throw $ex;
+			}
 		}
 
-		return $promise->promise();
+		return $deferred->promise();
+	}
+
+	/**
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws RuntimeException
+	 */
+	private function parseDeviceInformationResponse(
+		Message\ResponseInterface $response,
+	): Entities\API\Gen2\DeviceInformation
+	{
+		$parsedMessage = $this->schemaValidator->validate(
+			$response->getBody()->getContents(),
+			$this->getSchemaFilePath(self::DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME),
+		);
+
+		return $this->entityFactory->build(
+			Entities\API\Gen2\DeviceInformation::class,
+			$parsedMessage,
+		);
+	}
+
+	/**
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws RuntimeException
+	 */
+	private function parseDeviceConfigurationResponse(
+		Message\ResponseInterface $response,
+	): Entities\API\Gen2\DeviceConfiguration
+	{
+		$parsedMessage = $this->schemaValidator->validate(
+			$response->getBody()->getContents(),
+			$this->getSchemaFilePath(self::DEVICE_CONFIG_MESSAGE_SCHEMA_FILENAME),
+		);
+
+		$switches = $covers = $lights = $inputs = [];
+		$temperature = $humidity = null;
+
+		foreach ($parsedMessage as $key => $configuration) {
+			if (
+				$configuration instanceof Utils\ArrayHash
+				&& preg_match(self::COMPONENT_KEY, $key, $componentMatches) === 1
+				&& array_key_exists('component', $componentMatches)
+				&& Types\ComponentType::isValidValue($componentMatches['component'])
+			) {
+				if ($componentMatches['component'] === Types\ComponentType::TYPE_SWITCH) {
+					$switches[] = $this->entityFactory->build(
+						Entities\API\Gen2\DeviceSwitchConfiguration::class,
+						$configuration,
+					);
+				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_COVER) {
+					$covers[] = $this->entityFactory->build(
+						Entities\API\Gen2\DeviceCoverConfiguration::class,
+						$configuration,
+					);
+				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_LIGHT) {
+					$lights[] = $this->entityFactory->build(
+						Entities\API\Gen2\DeviceLightConfiguration::class,
+						$configuration,
+					);
+				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_INPUT) {
+					$inputs[] = $this->entityFactory->build(
+						Entities\API\Gen2\DeviceInputConfiguration::class,
+						$configuration,
+					);
+				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_TEMPERATURE) {
+					$temperature = $this->entityFactory->build(
+						Entities\API\Gen2\DeviceTemperatureConfiguration::class,
+						$configuration,
+					);
+				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_HUMIDITY) {
+					$humidity = $this->entityFactory->build(
+						Entities\API\Gen2\DeviceHumidityConfiguration::class,
+						$configuration,
+					);
+				}
+			}
+		}
+
+		return new Entities\API\Gen2\DeviceConfiguration(
+			$switches,
+			$covers,
+			$inputs,
+			$lights,
+			$temperature,
+			$humidity,
+		);
+	}
+
+	/**
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws RuntimeException
+	 */
+	private function parseDeviceStatusResponse(
+		Message\ResponseInterface $response,
+	): Entities\API\Gen2\DeviceStatus
+	{
+		$parsedMessage = $this->schemaValidator->validate(
+			$response->getBody()->getContents(),
+			$this->getSchemaFilePath(self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME),
+		);
+
+		$switches = $covers = $lights = $inputs = [];
+		$temperature = $humidity = null;
+
+		foreach ($parsedMessage as $key => $status) {
+			if (
+				$status instanceof Utils\ArrayHash
+				&& preg_match(self::COMPONENT_KEY, $key, $componentMatches) === 1
+				&& array_key_exists('component', $componentMatches)
+				&& Types\ComponentType::isValidValue($componentMatches['component'])
+			) {
+				if ($componentMatches['component'] === Types\ComponentType::TYPE_SWITCH) {
+					$switches[] = $this->entityFactory->build(
+						Entities\API\Gen2\DeviceSwitchStatus::class,
+						$status,
+					);
+				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_COVER) {
+					$covers[] = $this->entityFactory->build(
+						Entities\API\Gen2\DeviceCoverStatus::class,
+						$status,
+					);
+				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_LIGHT) {
+					$lights[] = $this->entityFactory->build(
+						Entities\API\Gen2\DeviceLightStatus::class,
+						$status,
+					);
+				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_INPUT) {
+					$inputs[] = $this->entityFactory->build(
+						Entities\API\Gen2\DeviceInputStatus::class,
+						$status,
+					);
+				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_TEMPERATURE) {
+					$temperature = $this->entityFactory->build(
+						Entities\API\Gen2\DeviceTemperatureStatus::class,
+						$status,
+					);
+				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_HUMIDITY) {
+					$humidity = $this->entityFactory->build(
+						Entities\API\Gen2\DeviceHumidityStatus::class,
+						$status,
+					);
+				}
+			}
+		}
+
+		return new Entities\API\Gen2\DeviceStatus(
+			$switches,
+			$covers,
+			$inputs,
+			$lights,
+			$temperature,
+			$humidity,
+		);
 	}
 
 }

@@ -391,15 +391,6 @@ final class Coap implements Clients\Client
 			return null;
 		}
 
-		foreach ($device->getProperties() as $property) {
-			if (
-				$property instanceof DevicesEntities\Devices\Properties\Dynamic
-				&& Utils\Strings::startsWith($property->getIdentifier(), strval($sensorIdentifier))
-			) {
-				return $property;
-			}
-		}
-
 		foreach ($device->getChannels() as $channel) {
 			foreach ($channel->getProperties() as $property) {
 				if (
@@ -408,6 +399,15 @@ final class Coap implements Clients\Client
 				) {
 					return $property;
 				}
+			}
+		}
+
+		foreach ($device->getProperties() as $property) {
+			if (
+				$property instanceof DevicesEntities\Devices\Properties\Dynamic
+				&& Utils\Strings::startsWith($property->getIdentifier(), strval($sensorIdentifier))
+			) {
+				return $property;
 			}
 		}
 

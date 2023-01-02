@@ -38,7 +38,7 @@ final class DeviceInputConfiguration implements Entities\API\Entity
 		private readonly string $type,
 		private readonly bool $invert,
 		private readonly bool $factoryReset,
-		private readonly int $reportThr,
+		private readonly int|null $reportThr,
 	)
 	{
 	}
@@ -77,7 +77,7 @@ final class DeviceInputConfiguration implements Entities\API\Entity
 		return $this->factoryReset;
 	}
 
-	public function getReportThreshold(): int
+	public function getReportThreshold(): int|null
 	{
 		return $this->reportThr;
 	}

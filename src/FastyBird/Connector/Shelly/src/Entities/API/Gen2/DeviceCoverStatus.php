@@ -63,6 +63,11 @@ final class DeviceCoverStatus implements Entities\API\Entity
 		return $this->id;
 	}
 
+	public function getType(): Types\ComponentType
+	{
+		return Types\ComponentType::get(Types\ComponentType::TYPE_TEMPERATURE);
+	}
+
 	public function getSource(): string
 	{
 		return $this->source;
@@ -156,6 +161,7 @@ final class DeviceCoverStatus implements Entities\API\Entity
 	{
 		return [
 			'id' => $this->getId(),
+			'type' => $this->getType()->getValue(),
 			'source' => $this->getSource(),
 			'state' => $this->getState()?->getValue(),
 			'active_power' => $this->getActivePower(),

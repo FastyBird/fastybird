@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
 use FastyBird\Connector\Shelly\Entities;
+use FastyBird\Connector\Shelly\Types;
 use Nette;
 
 /**
@@ -48,6 +49,11 @@ final class DeviceTemperatureStatus implements Entities\API\Entity
 		return $this->id;
 	}
 
+	public function getType(): Types\ComponentType
+	{
+		return Types\ComponentType::get(Types\ComponentType::TYPE_TEMPERATURE);
+	}
+
 	public function getTemperatureCelsius(): float|null
 	{
 		return $this->tC;
@@ -73,6 +79,7 @@ final class DeviceTemperatureStatus implements Entities\API\Entity
 	{
 		return [
 			'id' => $this->getId(),
+			'type' => $this->getType()->getValue(),
 			'temperature_celsius' => $this->getTemperatureCelsius(),
 			'temperature_fahrenheit' => $this->getTemperatureFahrenheit(),
 			'errors' => $this->getErrors(),

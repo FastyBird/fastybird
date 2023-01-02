@@ -18,6 +18,7 @@ namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 use DateTimeInterface;
 use Exception;
 use FastyBird\Connector\Shelly\Entities;
+use FastyBird\Connector\Shelly\Types;
 use Nette;
 use Nette\Utils;
 
@@ -57,6 +58,11 @@ final class DeviceSwitchStatus implements Entities\API\Entity
 	public function getId(): int
 	{
 		return $this->id;
+	}
+
+	public function getType(): Types\ComponentType
+	{
+		return Types\ComponentType::get(Types\ComponentType::TYPE_TEMPERATURE);
 	}
 
 	public function getSource(): string
@@ -133,6 +139,7 @@ final class DeviceSwitchStatus implements Entities\API\Entity
 	{
 		return [
 			'id' => $this->getId(),
+			'type' => $this->getType()->getValue(),
 			'source' => $this->getSource(),
 			'output' => $this->getOutput(),
 			'timer_started_at' => $this->getTimerStartedAt()?->format(DateTimeInterface::ATOM),

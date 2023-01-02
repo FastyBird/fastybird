@@ -59,7 +59,7 @@ class Discovery extends Console\Command\Command
 
 	private const DISCOVERY_WAITING_INTERVAL = 5.0;
 
-	private const DISCOVERY_MAX_PROCESSING_INTERVAL = 30.0;
+	private const DISCOVERY_MAX_PROCESSING_INTERVAL = 60.0;
 
 	private const QUEUE_PROCESSING_INTERVAL = 0.01;
 
