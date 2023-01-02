@@ -18,7 +18,6 @@ namespace FastyBird\Connector\Shelly\Clients;
 use FastyBird\Connector\Shelly\Clients;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
-use FastyBird\Connector\Shelly\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
@@ -45,15 +44,12 @@ final class Local implements Client
 
 	private Clients\Local\Http|null $httpClient = null;
 
-	private Clients\Local\Mqtt|null $mqttClient = null;
-
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
 		private readonly Entities\ShellyConnector $connector,
 		private readonly Clients\Local\CoapFactory $coapClientFactory,
 		private readonly Clients\Local\HttpFactory $httpClientFactory,
-		private readonly Clients\Local\MqttFactory $mqttClientFactory,
 		Log\LoggerInterface|null $logger = null,
 	)
 	{
@@ -61,98 +57,61 @@ final class Local implements Client
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Terminate
-	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function connect(): void
 	{
-		$mode = $this->connector->getClientMode();
+		$this->coapClient = $this->coapClientFactory->create($this->connector);
+		$this->httpClient = $this->httpClientFactory->create($this->connector);
 
-		if ($mode->equalsValue(Types\ClientMode::MODE_LOCAL)) {
-			$this->coapClient = $this->coapClientFactory->create($this->connector);
-			$this->httpClient = $this->httpClientFactory->create($this->connector);
-
-			try {
-				$this->coapClient->connect();
-			} catch (Throwable $ex) {
-				$this->logger->error(
-					'CoAP client could not be started',
-					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-						'type' => 'gen1-client',
-						'exception' => [
-							'message' => $ex->getMessage(),
-							'code' => $ex->getCode(),
-						],
-						'connector' => [
-							'id' => $this->connector->getPlainId(),
-						],
+		try {
+			$this->coapClient->connect();
+		} catch (Throwable $ex) {
+			$this->logger->error(
+				'CoAP client could not be started',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+					'type' => 'gen1-client',
+					'exception' => [
+						'message' => $ex->getMessage(),
+						'code' => $ex->getCode(),
 					],
-				);
-
-				throw new DevicesExceptions\Terminate(
-					'CoAP client could not be started',
-					$ex->getCode(),
-					$ex,
-				);
-			}
-
-			try {
-				$this->httpClient->connect();
-			} catch (Throwable $ex) {
-				$this->logger->error(
-					'Http api client could not be started',
-					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-						'type' => 'gen1-client',
-						'exception' => [
-							'message' => $ex->getMessage(),
-							'code' => $ex->getCode(),
-						],
-						'connector' => [
-							'id' => $this->connector->getPlainId(),
-						],
+					'connector' => [
+						'id' => $this->connector->getPlainId(),
 					],
-				);
+				],
+			);
 
-				throw new DevicesExceptions\Terminate(
-					'Http api client could not be started',
-					$ex->getCode(),
-					$ex,
-				);
-			}
-		} elseif ($mode->equalsValue(Types\ClientMode::MODE_MQTT)) {
-			$this->mqttClient = $this->mqttClientFactory->create($this->connector);
+			throw new DevicesExceptions\Terminate(
+				'CoAP client could not be started',
+				$ex->getCode(),
+				$ex,
+			);
+		}
 
-			try {
-				$this->mqttClient->connect();
-			} catch (Throwable $ex) {
-				$this->logger->error(
-					'MQTT client could not be started',
-					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-						'type' => 'gen1-client',
-						'exception' => [
-							'message' => $ex->getMessage(),
-							'code' => $ex->getCode(),
-						],
-						'connector' => [
-							'id' => $this->connector->getPlainId(),
-						],
+		try {
+			$this->httpClient->connect();
+		} catch (Throwable $ex) {
+			$this->logger->error(
+				'Http api client could not be started',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+					'type' => 'gen1-client',
+					'exception' => [
+						'message' => $ex->getMessage(),
+						'code' => $ex->getCode(),
 					],
-				);
+					'connector' => [
+						'id' => $this->connector->getPlainId(),
+					],
+				],
+			);
 
-				throw new DevicesExceptions\Terminate(
-					'MQTT client could not be started',
-					$ex->getCode(),
-					$ex,
-				);
-			}
-		} else {
-			throw new DevicesExceptions\Terminate('Client mode is not configured');
+			throw new DevicesExceptions\Terminate(
+				'Http api client could not be started',
+				$ex->getCode(),
+				$ex,
+			);
 		}
 	}
 
@@ -195,31 +154,11 @@ final class Local implements Client
 				],
 			);
 		}
-
-		try {
-			$this->mqttClient?->disconnect();
-		} catch (Throwable $ex) {
-			$this->logger->error(
-				'MQTT client could not be disconnected',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-					'type' => 'gen1-client',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
-					'connector' => [
-						'id' => $this->connector->getPlainId(),
-					],
-				],
-			);
-		}
 	}
 
 	/**
 	 * @throws Exceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws DevicesExceptions\Terminate
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -232,11 +171,6 @@ final class Local implements Client
 		$deferred = new Promise\Deferred();
 
 		$this->httpClient?->writeChannelProperty($device, $channel, $property)
-			->then(static function () use ($deferred): void {
-				$deferred->resolve();
-			});
-
-		$this->mqttClient?->writeChannelProperty($device, $channel, $property)
 			->then(static function () use ($deferred): void {
 				$deferred->resolve();
 			});

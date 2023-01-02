@@ -113,7 +113,6 @@ final class Http implements Clients\Client
 		$this->handlerTimer = null;
 
 		$this->gen1httpApi = $this->gen1HttpApiFactory->create();
-
 		$this->gen2httpApi = $this->gen2HttpApiFactory->create();
 
 		$this->eventLoop->addTimer(
@@ -308,7 +307,6 @@ final class Http implements Clients\Client
 		$address = $this->buildDeviceAddress($device);
 
 		if ($address === null) {
-			// Promise\reject(new Exceptions\InvalidState('Device address could not be determined'));
 			return false;
 		}
 
@@ -345,19 +343,15 @@ final class Http implements Clients\Client
 		if ($cmd === self::CMD_STATUS) {
 			if ($generation->equalsValue(Types\DeviceGeneration::GENERATION_1)) {
 				$result = $this->gen1httpApi?->getDeviceStatus($address);
+				assert($result instanceof Promise\PromiseInterface);
 
 			} elseif ($generation->equalsValue(Types\DeviceGeneration::GENERATION_2)) {
 				$result = $this->gen2httpApi?->getDeviceStatus($address);
+				assert($result instanceof Promise\PromiseInterface);
 
 			} else {
 				return false;
 			}
-
-			if ($result === null) {
-				return false;
-			}
-
-			assert($result instanceof Promise\PromiseInterface);
 
 			$result
 				->then(
@@ -369,11 +363,56 @@ final class Http implements Clients\Client
 
 							foreach ($status->getInputs() as $index => $input) {
 								foreach ($device->getChannels() as $channel) {
-									if (Utils\Strings::endsWith($channel->getIdentifier(), 'input_' . $index)) {
+									if (Utils\Strings::endsWith($channel->getIdentifier(), '_' . $index)) {
+										$result = [];
+
+										foreach ($channel->getProperties() as $property) {
+											if (Utils\Strings::endsWith($property->getIdentifier(), '_input')) {
+												$result[] = new Entities\Messages\PropertyStatus(
+													Types\MessageSource::get(Types\MessageSource::SOURCE_GEN_1_HTTP),
+													$property->getIdentifier(),
+													$this->transformer->transformValueFromDevice(
+														$property->getDataType(),
+														$property->getFormat(),
+														$input->getInput(),
+													),
+												);
+											} elseif (Utils\Strings::endsWith(
+												$property->getIdentifier(),
+												'_inputEvent',
+											)) {
+												$result[] = new Entities\Messages\PropertyStatus(
+													Types\MessageSource::get(Types\MessageSource::SOURCE_GEN_1_HTTP),
+													$property->getIdentifier(),
+													$this->transformer->transformValueFromDevice(
+														$property->getDataType(),
+														$property->getFormat(),
+														$input->getEvent(),
+													),
+												);
+											} elseif (Utils\Strings::endsWith(
+												$property->getIdentifier(),
+												'_inputEventCnt',
+											)) {
+												$result[] = new Entities\Messages\PropertyStatus(
+													Types\MessageSource::get(Types\MessageSource::SOURCE_GEN_1_HTTP),
+													$property->getIdentifier(),
+													$this->transformer->transformValueFromDevice(
+														$property->getDataType(),
+														$property->getFormat(),
+														$input->getEventCnt(),
+													),
+												);
+											}
+										}
+
 										$statuses[] = new Entities\Messages\ChannelStatus(
 											Types\MessageSource::get(Types\MessageSource::SOURCE_GEN_1_HTTP),
 											$channel->getId(),
+											$result,
 										);
+
+										break;
 									}
 								}
 							}
@@ -381,10 +420,29 @@ final class Http implements Clients\Client
 							foreach ($status->getRelays() as $index => $relay) {
 								foreach ($device->getChannels() as $channel) {
 									if (Utils\Strings::endsWith($channel->getIdentifier(), 'relay_' . $index)) {
+										$result = [];
+
+										foreach ($channel->getProperties() as $property) {
+											if (Utils\Strings::endsWith($property->getIdentifier(), '_output')) {
+												$result[] = new Entities\Messages\PropertyStatus(
+													Types\MessageSource::get(Types\MessageSource::SOURCE_GEN_1_HTTP),
+													$property->getIdentifier(),
+													$this->transformer->transformValueFromDevice(
+														$property->getDataType(),
+														$property->getFormat(),
+														$relay->getState(),
+													),
+												);
+											}
+										}
+
 										$statuses[] = new Entities\Messages\ChannelStatus(
 											Types\MessageSource::get(Types\MessageSource::SOURCE_GEN_1_HTTP),
 											$channel->getId(),
+											$result,
 										);
+
+										break;
 									}
 								}
 							}
@@ -392,10 +450,57 @@ final class Http implements Clients\Client
 							foreach ($status->getRollers() as $index => $roller) {
 								foreach ($device->getChannels() as $channel) {
 									if (Utils\Strings::endsWith($channel->getIdentifier(), 'roller_' . $index)) {
+										$result = [];
+
+										foreach ($channel->getProperties() as $property) {
+											if (Utils\Strings::endsWith($property->getIdentifier(), '_roller')) {
+												$result[] = new Entities\Messages\PropertyStatus(
+													Types\MessageSource::get(Types\MessageSource::SOURCE_GEN_1_HTTP),
+													$property->getIdentifier(),
+													$this->transformer->transformValueFromDevice(
+														$property->getDataType(),
+														$property->getFormat(),
+														$roller->getState(),
+													),
+												);
+
+											} elseif (Utils\Strings::endsWith(
+												$property->getIdentifier(),
+												'_rollerPos',
+											)) {
+												$result[] = new Entities\Messages\PropertyStatus(
+													Types\MessageSource::get(Types\MessageSource::SOURCE_GEN_1_HTTP),
+													$property->getIdentifier(),
+													$this->transformer->transformValueFromDevice(
+														$property->getDataType(),
+														$property->getFormat(),
+														$roller->getCurrentPosition(),
+													),
+												);
+
+											} elseif (Utils\Strings::endsWith(
+												$property->getIdentifier(),
+												'_rollerStopReason',
+											)) {
+												$result[] = new Entities\Messages\PropertyStatus(
+													Types\MessageSource::get(Types\MessageSource::SOURCE_GEN_1_HTTP),
+													$property->getIdentifier(),
+													$this->transformer->transformValueFromDevice(
+														$property->getDataType(),
+														$property->getFormat(),
+														$roller->getStopReason(),
+													),
+												);
+											}
+										}
+
 										$statuses[] = new Entities\Messages\ChannelStatus(
 											Types\MessageSource::get(Types\MessageSource::SOURCE_GEN_1_HTTP),
 											$channel->getId(),
+											$result,
 										);
+
+										break;
 									}
 								}
 							}
@@ -403,10 +508,103 @@ final class Http implements Clients\Client
 							foreach ($status->getLights() as $index => $light) {
 								foreach ($device->getChannels() as $channel) {
 									if (Utils\Strings::endsWith($channel->getIdentifier(), 'light_' . $index)) {
+										$result = [];
+
+										foreach ($channel->getProperties() as $property) {
+											if (Utils\Strings::endsWith($property->getIdentifier(), '_red')) {
+												$result[] = new Entities\Messages\PropertyStatus(
+													Types\MessageSource::get(Types\MessageSource::SOURCE_GEN_1_HTTP),
+													$property->getIdentifier(),
+													$this->transformer->transformValueFromDevice(
+														$property->getDataType(),
+														$property->getFormat(),
+														$light->getRed(),
+													),
+												);
+
+											} elseif (Utils\Strings::endsWith($property->getIdentifier(), '_green')) {
+												$result[] = new Entities\Messages\PropertyStatus(
+													Types\MessageSource::get(Types\MessageSource::SOURCE_GEN_1_HTTP),
+													$property->getIdentifier(),
+													$this->transformer->transformValueFromDevice(
+														$property->getDataType(),
+														$property->getFormat(),
+														$light->getGreen(),
+													),
+												);
+											} elseif (Utils\Strings::endsWith($property->getIdentifier(), '_blue')) {
+												$result[] = new Entities\Messages\PropertyStatus(
+													Types\MessageSource::get(Types\MessageSource::SOURCE_GEN_1_HTTP),
+													$property->getIdentifier(),
+													$this->transformer->transformValueFromDevice(
+														$property->getDataType(),
+														$property->getFormat(),
+														$light->getBlue(),
+													),
+												);
+											} elseif (Utils\Strings::endsWith($property->getIdentifier(), '_gain')) {
+												$result[] = new Entities\Messages\PropertyStatus(
+													Types\MessageSource::get(Types\MessageSource::SOURCE_GEN_1_HTTP),
+													$property->getIdentifier(),
+													$this->transformer->transformValueFromDevice(
+														$property->getDataType(),
+														$property->getFormat(),
+														$light->getGain(),
+													),
+												);
+											} elseif (Utils\Strings::endsWith($property->getIdentifier(), '_white')) {
+												$result[] = new Entities\Messages\PropertyStatus(
+													Types\MessageSource::get(Types\MessageSource::SOURCE_GEN_1_HTTP),
+													$property->getIdentifier(),
+													$this->transformer->transformValueFromDevice(
+														$property->getDataType(),
+														$property->getFormat(),
+														$light->getWhite(),
+													),
+												);
+											} elseif (Utils\Strings::endsWith($property->getIdentifier(), '_effect')) {
+												$result[] = new Entities\Messages\PropertyStatus(
+													Types\MessageSource::get(Types\MessageSource::SOURCE_GEN_1_HTTP),
+													$property->getIdentifier(),
+													$this->transformer->transformValueFromDevice(
+														$property->getDataType(),
+														$property->getFormat(),
+														$light->getEffect(),
+													),
+												);
+											} elseif (Utils\Strings::endsWith(
+												$property->getIdentifier(),
+												'_brightness',
+											)) {
+												$result[] = new Entities\Messages\PropertyStatus(
+													Types\MessageSource::get(Types\MessageSource::SOURCE_GEN_1_HTTP),
+													$property->getIdentifier(),
+													$this->transformer->transformValueFromDevice(
+														$property->getDataType(),
+														$property->getFormat(),
+														$light->getBrightness(),
+													),
+												);
+											} elseif (Utils\Strings::endsWith($property->getIdentifier(), '_output')) {
+												$result[] = new Entities\Messages\PropertyStatus(
+													Types\MessageSource::get(Types\MessageSource::SOURCE_GEN_1_HTTP),
+													$property->getIdentifier(),
+													$this->transformer->transformValueFromDevice(
+														$property->getDataType(),
+														$property->getFormat(),
+														$light->getState(),
+													),
+												);
+											}
+										}
+
 										$statuses[] = new Entities\Messages\ChannelStatus(
 											Types\MessageSource::get(Types\MessageSource::SOURCE_GEN_1_HTTP),
 											$channel->getId(),
+											$result,
 										);
+
+										break;
 									}
 								}
 							}
@@ -739,6 +937,7 @@ final class Http implements Clients\Client
 				$sensorAction,
 				$valueToWrite,
 			);
+			assert($result instanceof Promise\PromiseInterface);
 
 		} elseif ($generation->equalsValue(Types\DeviceGeneration::GENERATION_2)) {
 			if (
@@ -765,29 +964,15 @@ final class Http implements Clients\Client
 					$propertyMatches['attribute'] => $valueToWrite,
 				],
 			);
+			assert($result instanceof Promise\PromiseInterface);
 
 		} else {
 			return Promise\reject(new Exceptions\InvalidState('Device is in unsupported generation'));
 		}
 
-		if ($result === null) {
-			return Promise\reject(new Exceptions\InvalidState('Device is in unsupported generation'));
-		}
-
-		assert($result instanceof Promise\PromiseInterface);
-
 		$result
 			->then(
-				function (Entities\API\Gen1\DeviceStatus|Entities\API\Gen2\DeviceStatus $status) use ($device, $deferred): void {
-					$this->consumer->append(
-						new Entities\Messages\DeviceStatus(
-							Types\MessageSource::get(Types\MessageSource::SOURCE_GEN_1_HTTP),
-							$this->connector->getId(),
-							$device->getIdentifier(),
-							[],
-						),
-					);
-
+				static function () use ($deferred): void {
 					$deferred->resolve();
 				},
 			)
@@ -853,7 +1038,6 @@ final class Http implements Clients\Client
 		}
 
 		$username = $device->getUsername();
-
 		$password = $device->getPassword();
 
 		if (is_string($username) && is_string($password)) {
