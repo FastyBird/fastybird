@@ -301,6 +301,101 @@
           "brightness"
         ]
       }
+    },
+    "meters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "power": {
+            "type": "number",
+            "description": "Current real AC power being drawn, in Watts",
+            "default": 0
+          },
+          "overpower": {
+            "type": "number",
+            "description": "Value in Watts, on which an overpower condition is detected",
+            "default": 0
+          },
+          "is_valid": {
+            "type": "boolean",
+            "description": "Whether power metering self-checks OK",
+            "default": false
+          },
+          "timestamp": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "description": "Timestamp of the last energy counter value, with the applied timezone",
+            "default": null
+          },
+          "counters": {
+            "type": "array",
+            "description": "Energy counter value for the last 3 round minutes in Watt-minute",
+            "items": {
+              "type": "number"
+            }
+          },
+          "total": {
+            "type": "number",
+            "description": "Total energy consumed by the attached electrical appliance in Watt-minute",
+            "default": 0
+          }
+        }
+      }
+    },
+    "emeters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "power": {
+            "type": "number",
+            "description": "Current real AC power being drawn, in Watts",
+            "default": 0
+          },
+          "pf": {
+            "type": "number",
+            "description": "Power factor (dimensionless)",
+            "default": 0
+          },
+          "reactive": {
+            "type": "number",
+            "description": "Instantaneous reactive power, Watts",
+            "default": 0
+          },
+          "current": {
+            "type": "number",
+            "description": "Current, A",
+            "default": 0
+          },
+          "voltage": {
+            "type": "number",
+            "description": "RMS voltage, Volts",
+            "default": 0
+          },
+          "is_valid": {
+            "type": "boolean",
+            "description": "Whether the associated meter is functioning properly",
+            "default": false
+          },
+          "total": {
+            "type": "number",
+            "description": "Total consumed energy, Wh",
+            "default": 0
+          },
+          "total_returned": {
+            "type": "number",
+            "description": "Total returned energy, Wh",
+            "default": 0
+          }
+        }
+      }
     }
   }
 }

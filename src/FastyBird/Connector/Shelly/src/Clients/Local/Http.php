@@ -753,6 +753,86 @@ final class Http implements Clients\Client
 			}
 		}
 
+		foreach ($status->getMeters() as $index => $meter) {
+			foreach ($device->getChannels() as $channel) {
+				if (Utils\Strings::endsWith($channel->getIdentifier(), '_' . $index)) {
+					$result = [];
+
+					foreach ($channel->getProperties() as $property) {
+						if (
+							Utils\Strings::endsWith(
+								$property->getIdentifier(),
+								'_' . Types\SensorDescription::DESC_ACTIVE_POWER,
+							)
+							|| Utils\Strings::endsWith(
+								$property->getIdentifier(),
+								'_' . Types\SensorDescription::DESC_ROLLER_POWER,
+							)
+						) {
+							$result[] = new Entities\Messages\PropertyStatus(
+								$source,
+								$property->getIdentifier(),
+								$this->transformer->transformValueFromDevice(
+									$property->getDataType(),
+									$property->getFormat(),
+									$meter->getPower(),
+								),
+							);
+						} elseif (
+							(
+								Utils\Strings::endsWith(
+									$property->getIdentifier(),
+									'_' . Types\SensorDescription::DESC_OVERPOWER,
+								)
+								|| Utils\Strings::endsWith(
+									$property->getIdentifier(),
+									'_' . Types\SensorDescription::DESC_OVERPOWER_VALUE,
+								)
+							)
+							&& !$property->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_BOOLEAN)
+						) {
+							$result[] = new Entities\Messages\PropertyStatus(
+								$source,
+								$property->getIdentifier(),
+								$this->transformer->transformValueFromDevice(
+									$property->getDataType(),
+									$property->getFormat(),
+									$meter->getOverpower(),
+								),
+							);
+						} elseif (
+							Utils\Strings::endsWith(
+								$property->getIdentifier(),
+								'_' . Types\SensorDescription::DESC_ENERGY,
+							)
+							|| Utils\Strings::endsWith(
+								$property->getIdentifier(),
+								'_' . Types\SensorDescription::DESC_ROLLER_ENERGY,
+							)
+						) {
+							$result[] = new Entities\Messages\PropertyStatus(
+								$source,
+								$property->getIdentifier(),
+								$this->transformer->transformValueFromDevice(
+									$property->getDataType(),
+									$property->getFormat(),
+									$meter->getTotal(),
+								),
+							);
+						}
+					}
+
+					$statuses[] = new Entities\Messages\ChannelStatus(
+						$source,
+						$channel->getId(),
+						$result,
+					);
+
+					break;
+				}
+			}
+		}
+
 		foreach ($status->getRelays() as $index => $relay) {
 			foreach ($device->getChannels() as $channel) {
 				if (Utils\Strings::endsWith(
@@ -1030,6 +1110,126 @@ final class Http implements Clients\Client
 									$property->getDataType(),
 									$property->getFormat(),
 									$light->getState(),
+								),
+							);
+						}
+					}
+
+					$statuses[] = new Entities\Messages\ChannelStatus(
+						$source,
+						$channel->getId(),
+						$result,
+					);
+
+					break;
+				}
+			}
+		}
+
+		foreach ($status->getEmeters() as $index => $emeter) {
+			foreach ($device->getChannels() as $channel) {
+				if (Utils\Strings::endsWith(
+					$channel->getIdentifier(),
+					Types\BlockDescription::DESC_EMETER . '_' . $index,
+				)) {
+					$result = [];
+
+					foreach ($channel->getProperties() as $property) {
+						if (Utils\Strings::endsWith(
+							$property->getIdentifier(),
+							'_' . Types\SensorDescription::DESC_ACTIVE_POWER,
+						)) {
+							$result[] = new Entities\Messages\PropertyStatus(
+								$source,
+								$property->getIdentifier(),
+								$this->transformer->transformValueFromDevice(
+									$property->getDataType(),
+									$property->getFormat(),
+									$emeter->getActivePower(),
+								),
+							);
+
+						} elseif (Utils\Strings::endsWith(
+							$property->getIdentifier(),
+							'_' . Types\SensorDescription::DESC_REACTIVE_POWER,
+						)) {
+							$result[] = new Entities\Messages\PropertyStatus(
+								$source,
+								$property->getIdentifier(),
+								$this->transformer->transformValueFromDevice(
+									$property->getDataType(),
+									$property->getFormat(),
+									$emeter->getReactivePower(),
+								),
+							);
+
+						} elseif (Utils\Strings::endsWith(
+							$property->getIdentifier(),
+							'_' . Types\SensorDescription::DESC_POWER_FACTOR,
+						)) {
+							$result[] = new Entities\Messages\PropertyStatus(
+								$source,
+								$property->getIdentifier(),
+								$this->transformer->transformValueFromDevice(
+									$property->getDataType(),
+									$property->getFormat(),
+									$emeter->getPowerFactor(),
+								),
+							);
+
+						} elseif (Utils\Strings::endsWith(
+							$property->getIdentifier(),
+							'_' . Types\SensorDescription::DESC_CURRENT,
+						)) {
+							$result[] = new Entities\Messages\PropertyStatus(
+								$source,
+								$property->getIdentifier(),
+								$this->transformer->transformValueFromDevice(
+									$property->getDataType(),
+									$property->getFormat(),
+									$emeter->getCurrent(),
+								),
+							);
+
+						} elseif (Utils\Strings::endsWith(
+							$property->getIdentifier(),
+							'_' . Types\SensorDescription::DESC_VOLTAGE,
+						)) {
+							$result[] = new Entities\Messages\PropertyStatus(
+								$source,
+								$property->getIdentifier(),
+								$this->transformer->transformValueFromDevice(
+									$property->getDataType(),
+									$property->getFormat(),
+									$emeter->getVoltage(),
+								),
+							);
+
+						} elseif (Utils\Strings::endsWith(
+							$property->getIdentifier(),
+							'_' . Types\SensorDescription::DESC_ENERGY,
+						)) {
+							$result[] = new Entities\Messages\PropertyStatus(
+								$source,
+								$property->getIdentifier(),
+								$this->transformer->transformValueFromDevice(
+									$property->getDataType(),
+									$property->getFormat(),
+									$emeter->getTotal(),
+								),
+							);
+
+						} elseif (Utils\Strings::endsWith(
+							$property->getIdentifier(),
+							'_' . Types\SensorDescription::DESC_ENERGY_RETURNED,
+						)) {
+							$result[] = new Entities\Messages\PropertyStatus(
+								$source,
+								$property->getIdentifier(),
+								$this->transformer->transformValueFromDevice(
+									$property->getDataType(),
+									$property->getFormat(),
+									$emeter->getTotalReturned(),
 								),
 							);
 						}

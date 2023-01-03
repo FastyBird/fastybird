@@ -104,7 +104,7 @@ final class DeviceRollerStatus implements Entities\API\Entity
 		return [
 			'state' => $this->getState(),
 			'power' => $this->getPower(),
-			'valid' => $this->isValid,
+			'valid' => $this->isValid(),
 			'safety_switch' => $this->hasSafetySwitch(),
 			'overtemperature' => $this->hasOvertemperature(),
 			'stop_reason' => $this->getStopReason(),

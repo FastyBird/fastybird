@@ -546,11 +546,45 @@ final class Gen1HttpApi extends HttpApi
 			}
 		}
 
+		$meters = [];
+
+		if (
+			$parsedMessage->offsetExists('meters')
+			&& is_array($parsedMessage->offsetGet('meters'))
+		) {
+			foreach ($parsedMessage->offsetGet('meters') as $meterStatus) {
+				assert($meterStatus instanceof Utils\ArrayHash);
+
+				$meters[] = $this->entityFactory->build(
+					Entities\API\Gen1\DeviceMeterStatus::class,
+					$meterStatus,
+				);
+			}
+		}
+
+		$emeters = [];
+
+		if (
+			$parsedMessage->offsetExists('emeters')
+			&& is_array($parsedMessage->offsetGet('emeters'))
+		) {
+			foreach ($parsedMessage->offsetGet('emeters') as $emeterStatus) {
+				assert($emeterStatus instanceof Utils\ArrayHash);
+
+				$emeters[] = $this->entityFactory->build(
+					Entities\API\Gen1\DeviceEmeterStatus::class,
+					$emeterStatus,
+				);
+			}
+		}
+
 		return new Entities\API\Gen1\DeviceStatus(
 			$relays,
 			$rollers,
 			$inputs,
 			$lights,
+			$meters,
+			$emeters,
 		);
 	}
 

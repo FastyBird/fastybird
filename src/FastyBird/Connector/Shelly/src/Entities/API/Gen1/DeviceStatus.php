@@ -37,12 +37,16 @@ final class DeviceStatus implements Entities\API\Entity
 	 * @param array<int, DeviceRollerStatus> $rollers
 	 * @param array<int, DeviceInputStatus> $inputs
 	 * @param array<int, DeviceLightStatus> $lights
+	 * @param array<int, DeviceMeterStatus> $meters
+	 * @param array<int, DeviceEmeterStatus> $emeters
 	 */
 	public function __construct(
 		private readonly array $relays = [],
 		private readonly array $rollers = [],
 		private readonly array $inputs = [],
 		private readonly array $lights = [],
+		private readonly array $meters = [],
+		private readonly array $emeters = [],
 	)
 	{
 	}
@@ -80,6 +84,22 @@ final class DeviceStatus implements Entities\API\Entity
 	}
 
 	/**
+	 * @return array<int, DeviceMeterStatus>
+	 */
+	public function getMeters(): array
+	{
+		return $this->meters;
+	}
+
+	/**
+	 * @return array<int, DeviceEmeterStatus>
+	 */
+	public function getEmeters(): array
+	{
+		return $this->emeters;
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public function toArray(): array
@@ -100,6 +120,14 @@ final class DeviceStatus implements Entities\API\Entity
 			'lights' => array_map(
 				static fn (DeviceLightStatus $status): array => $status->toArray(),
 				$this->getLights(),
+			),
+			'meters' => array_map(
+				static fn (DeviceMeterStatus $status): array => $status->toArray(),
+				$this->getMeters(),
+			),
+			'emeters' => array_map(
+				static fn (DeviceEmeterStatus $status): array => $status->toArray(),
+				$this->getEmeters(),
 			),
 		];
 	}

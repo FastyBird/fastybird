@@ -42,6 +42,10 @@ class SensorDescription extends Consistence\Enum\Enum
 
 	public const DESC_ROLLER_STOP_REASON = 'rollerStopReason';
 
+	public const DESC_ROLLER_POWER = 'rollerPower';
+
+	public const DESC_ROLLER_ENERGY = 'rollerEnergy';
+
 	public const DESC_RED = 'red';
 
 	public const DESC_GREEN = 'green';
@@ -62,6 +66,8 @@ class SensorDescription extends Consistence\Enum\Enum
 
 	public const DESC_OVERPOWER = 'overpower';
 
+	public const DESC_OVERPOWER_VALUE = 'overpowerValue';
+
 	public const DESC_OVERTEMPERATURE = 'overtemp';
 
 	public const DESC_INPUT = 'input';
@@ -69,6 +75,20 @@ class SensorDescription extends Consistence\Enum\Enum
 	public const DESC_INPUT_EVENT = 'inputEvent';
 
 	public const DESC_INPUT_EVENT_COUNT = 'inputEventCnt';
+
+	public const DESC_ACTIVE_POWER = 'power';
+
+	public const DESC_REACTIVE_POWER = 'reactive';
+
+	public const DESC_ENERGY = 'energy';
+
+	public const DESC_ENERGY_RETURNED = 'energyReturned';
+
+	public const DESC_VOLTAGE = 'voltage';
+
+	public const DESC_CURRENT = 'current';
+
+	public const DESC_POWER_FACTOR = 'powerFactor';
 
 	public function __toString(): string
 	{

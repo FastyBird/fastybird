@@ -69,8 +69,8 @@ final class SensorRange implements Entities\API\Entity
 	{
 		return [
 			'data_type' => $this->dataType->getValue(),
-			'format' => $this->format,
-			'invalid' => $this->invalid,
+			'format' => $this->getFormat(),
+			'invalid' => $this->getInvalid(),
 		];
 	}
 

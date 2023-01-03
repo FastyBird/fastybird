@@ -40,6 +40,8 @@ class BlockDescription extends Consistence\Enum\Enum
 
 	public const DESC_INPUT = 'input';
 
+	public const DESC_EMETER = 'emeter';
+
 	public const DESC_DEVICE = 'device';
 
 	public function __toString(): string
