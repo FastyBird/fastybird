@@ -87,17 +87,17 @@ final class Gen1HttpApi extends HttpApi
 	];
 
 	private const WRITABLE_SENSORS = [
-		Types\SensorDescription::TYPE_MODE,
-		Types\SensorDescription::TYPE_OUTPUT,
-		Types\SensorDescription::TYPE_ROLLER,
-		Types\SensorDescription::TYPE_RED,
-		Types\SensorDescription::TYPE_GREEN,
-		Types\SensorDescription::TYPE_BLUE,
-		Types\SensorDescription::TYPE_WHITE,
-		Types\SensorDescription::TYPE_GAIN,
-		Types\SensorDescription::TYPE_BRIGHTNESS,
-		Types\SensorDescription::TYPE_COLOR_TEMP,
-		Types\SensorDescription::TYPE_WHITE_LEVEL,
+		Types\SensorDescription::DESC_MODE,
+		Types\SensorDescription::DESC_OUTPUT,
+		Types\SensorDescription::DESC_ROLLER,
+		Types\SensorDescription::DESC_RED,
+		Types\SensorDescription::DESC_GREEN,
+		Types\SensorDescription::DESC_BLUE,
+		Types\SensorDescription::DESC_WHITE,
+		Types\SensorDescription::DESC_WHITE_LEVEL,
+		Types\SensorDescription::DESC_GAIN,
+		Types\SensorDescription::DESC_BRIGHTNESS,
+		Types\SensorDescription::DESC_COLOR_TEMP,
 	];
 
 	public function __construct(
