@@ -465,6 +465,108 @@ final class Discovery implements Evenement\EventEmitterInterface
 										true,
 										true,
 									));
+
+									$channel->addProperty(new Entities\Messages\PropertyDescription(
+										Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
+										(
+											$component->getType()->getValue()
+											. '_'
+											. $component->getId()
+											. '_'
+											. Types\ComponentAttributeType::ATTRIBUTE_ACTIVE_POWER
+										),
+										MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+										'W',
+										null,
+										null,
+										true,
+										false,
+									));
+
+									$channel->addProperty(new Entities\Messages\PropertyDescription(
+										Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
+										(
+											$component->getType()->getValue()
+											. '_'
+											. $component->getId()
+											. '_'
+											. Types\ComponentAttributeType::ATTRIBUTE_POWER_FACTOR
+										),
+										MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+										null,
+										null,
+										null,
+										true,
+										false,
+									));
+
+									$channel->addProperty(new Entities\Messages\PropertyDescription(
+										Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
+										(
+											$component->getType()->getValue()
+											. '_'
+											. $component->getId()
+											. '_'
+											. Types\ComponentAttributeType::ATTRIBUTE_ACTIVE_ENERGY
+										),
+										MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+										'Wh',
+										null,
+										null,
+										true,
+										false,
+									));
+
+									$channel->addProperty(new Entities\Messages\PropertyDescription(
+										Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
+										(
+											$component->getType()->getValue()
+											. '_'
+											. $component->getId()
+											. '_'
+											. Types\ComponentAttributeType::ATTRIBUTE_CURRENT
+										),
+										MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+										'A',
+										null,
+										null,
+										true,
+										false,
+									));
+
+									$channel->addProperty(new Entities\Messages\PropertyDescription(
+										Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
+										(
+											$component->getType()->getValue()
+											. '_'
+											. $component->getId()
+											. '_'
+											. Types\ComponentAttributeType::ATTRIBUTE_VOLTAGE
+										),
+										MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+										'V',
+										null,
+										null,
+										true,
+										false,
+									));
+
+									$channel->addProperty(new Entities\Messages\PropertyDescription(
+										Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
+										(
+											$component->getType()->getValue()
+											. '_'
+											. $component->getId()
+											. '_'
+											. Types\ComponentAttributeType::ATTRIBUTE_CELSIUS
+										),
+										MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+										'°C',
+										null,
+										null,
+										true,
+										false,
+									));
 								} elseif ($component instanceof Entities\API\Gen2\DeviceCoverConfiguration) {
 									$channel->addProperty(new Entities\Messages\PropertyDescription(
 										Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
@@ -472,6 +574,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 											$component->getType()->getValue()
 											. '_'
 											. $component->getId()
+											. '_'
+											. Types\ComponentAttributeType::ATTRIBUTE_STATE
 										),
 										MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
 										null,
@@ -503,6 +607,108 @@ final class Discovery implements Evenement\EventEmitterInterface
 										null,
 										true,
 										true,
+									));
+
+									$channel->addProperty(new Entities\Messages\PropertyDescription(
+										Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
+										(
+											$component->getType()->getValue()
+											. '_'
+											. $component->getId()
+											. '_'
+											. Types\ComponentAttributeType::ATTRIBUTE_ACTIVE_POWER
+										),
+										MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+										'W',
+										null,
+										null,
+										true,
+										false,
+									));
+
+									$channel->addProperty(new Entities\Messages\PropertyDescription(
+										Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
+										(
+											$component->getType()->getValue()
+											. '_'
+											. $component->getId()
+											. '_'
+											. Types\ComponentAttributeType::ATTRIBUTE_POWER_FACTOR
+										),
+										MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+										null,
+										null,
+										null,
+										true,
+										false,
+									));
+
+									$channel->addProperty(new Entities\Messages\PropertyDescription(
+										Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
+										(
+											$component->getType()->getValue()
+											. '_'
+											. $component->getId()
+											. '_'
+											. Types\ComponentAttributeType::ATTRIBUTE_ACTIVE_ENERGY
+										),
+										MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+										'Wh',
+										null,
+										null,
+										true,
+										false,
+									));
+
+									$channel->addProperty(new Entities\Messages\PropertyDescription(
+										Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
+										(
+											$component->getType()->getValue()
+											. '_'
+											. $component->getId()
+											. '_'
+											. Types\ComponentAttributeType::ATTRIBUTE_CURRENT
+										),
+										MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+										'A',
+										null,
+										null,
+										true,
+										false,
+									));
+
+									$channel->addProperty(new Entities\Messages\PropertyDescription(
+										Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
+										(
+											$component->getType()->getValue()
+											. '_'
+											. $component->getId()
+											. '_'
+											. Types\ComponentAttributeType::ATTRIBUTE_VOLTAGE
+										),
+										MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+										'V',
+										null,
+										null,
+										true,
+										false,
+									));
+
+									$channel->addProperty(new Entities\Messages\PropertyDescription(
+										Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
+										(
+											$component->getType()->getValue()
+											. '_'
+											. $component->getId()
+											. '_'
+											. Types\ComponentAttributeType::ATTRIBUTE_CELSIUS
+										),
+										MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+										'°C',
+										null,
+										null,
+										true,
+										false,
 									));
 								} elseif ($component instanceof Entities\API\Gen2\DeviceLightConfiguration) {
 									$channel->addProperty(new Entities\Messages\PropertyDescription(

@@ -1297,6 +1297,8 @@ final class Http implements Clients\Client
 							$component->getType()->getValue()
 							. '_'
 							. $component->getId()
+							. '_'
+							. Types\ComponentAttributeType::ATTRIBUTE_STATE
 						),
 					);
 
@@ -1475,6 +1477,149 @@ final class Http implements Clients\Client
 								$property->getDataType(),
 								$property->getFormat(),
 								$component->getRelativeHumidity(),
+							),
+						);
+					}
+				}
+
+				if (
+					$component instanceof Entities\API\Gen2\DeviceSwitchStatus
+					|| $component instanceof Entities\API\Gen2\DeviceCoverStatus
+				) {
+					$property = $this->findProperty(
+						$device,
+						(
+							$component->getType()->getValue()
+							. '_'
+							. $component->getId()
+							. '_'
+							. Types\ComponentAttributeType::ATTRIBUTE_ACTIVE_POWER
+						),
+					);
+
+					if ($property !== null) {
+						$result[] = new Entities\Messages\PropertyStatus(
+							$source,
+							$property->getIdentifier(),
+							$this->transformer->transformValueFromDevice(
+								$property->getDataType(),
+								$property->getFormat(),
+								$component->getActivePower(),
+							),
+						);
+					}
+
+					$property = $this->findProperty(
+						$device,
+						(
+							$component->getType()->getValue()
+							. '_'
+							. $component->getId()
+							. '_'
+							. Types\ComponentAttributeType::ATTRIBUTE_POWER_FACTOR
+						),
+					);
+
+					if ($property !== null) {
+						$result[] = new Entities\Messages\PropertyStatus(
+							$source,
+							$property->getIdentifier(),
+							$this->transformer->transformValueFromDevice(
+								$property->getDataType(),
+								$property->getFormat(),
+								$component->getPowerFactor(),
+							),
+						);
+					}
+
+					$property = $this->findProperty(
+						$device,
+						(
+							$component->getType()->getValue()
+							. '_'
+							. $component->getId()
+							. '_'
+							. Types\ComponentAttributeType::ATTRIBUTE_ACTIVE_ENERGY
+						),
+					);
+
+					if ($property !== null) {
+						$result[] = new Entities\Messages\PropertyStatus(
+							$source,
+							$property->getIdentifier(),
+							$this->transformer->transformValueFromDevice(
+								$property->getDataType(),
+								$property->getFormat(),
+								$component->getActiveEnergy()?->getTotal(),
+							),
+						);
+					}
+
+					$property = $this->findProperty(
+						$device,
+						(
+							$component->getType()->getValue()
+							. '_'
+							. $component->getId()
+							. '_'
+							. Types\ComponentAttributeType::ATTRIBUTE_CURRENT
+						),
+					);
+
+					if ($property !== null) {
+						$result[] = new Entities\Messages\PropertyStatus(
+							$source,
+							$property->getIdentifier(),
+							$this->transformer->transformValueFromDevice(
+								$property->getDataType(),
+								$property->getFormat(),
+								$component->getCurrent(),
+							),
+						);
+					}
+
+					$property = $this->findProperty(
+						$device,
+						(
+							$component->getType()->getValue()
+							. '_'
+							. $component->getId()
+							. '_'
+							. Types\ComponentAttributeType::ATTRIBUTE_VOLTAGE
+						),
+					);
+
+					if ($property !== null) {
+						$result[] = new Entities\Messages\PropertyStatus(
+							$source,
+							$property->getIdentifier(),
+							$this->transformer->transformValueFromDevice(
+								$property->getDataType(),
+								$property->getFormat(),
+								$component->getVoltage(),
+							),
+						);
+					}
+
+					$property = $this->findProperty(
+						$device,
+						(
+							$component->getType()->getValue()
+							. '_'
+							. $component->getId()
+							. '_'
+							. Types\ComponentAttributeType::ATTRIBUTE_CELSIUS
+						),
+					);
+
+					if ($property !== null) {
+						$result[] = new Entities\Messages\PropertyStatus(
+							$source,
+							$property->getIdentifier(),
+							$this->transformer->transformValueFromDevice(
+								$property->getDataType(),
+								$property->getFormat(),
+								$component->getTemperature()?->getTemperatureCelsius(),
 							),
 						);
 					}
