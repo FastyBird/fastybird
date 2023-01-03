@@ -112,6 +112,11 @@ class ShellyExtension extends DI\CompilerExtension
 			->getResultDefinition()
 			->setType(Clients\Mqtt::class);
 
+		$builder->addFactoryDefinition($this->prefix('clients.cloud'))
+			->setImplement(Clients\CloudFactory::class)
+			->getResultDefinition()
+			->setType(Clients\Cloud::class);
+
 		$builder->addFactoryDefinition($this->prefix('clients.discover'))
 			->setImplement(Clients\DiscoveryFactory::class)
 			->getResultDefinition()
