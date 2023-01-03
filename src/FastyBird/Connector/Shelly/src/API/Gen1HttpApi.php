@@ -147,7 +147,7 @@ final class Gen1HttpApi extends HttpApi
 		} elseif ($result instanceof Message\ResponseInterface) {
 			return $this->parseDeviceInformationResponse($result);
 		} else {
-			$ex = new Exceptions\InvalidState('Request promise could not be created');
+			$ex = new Exceptions\InvalidState('Request could not be created');
 
 			if ($async) {
 				Promise\reject($ex);
@@ -196,7 +196,7 @@ final class Gen1HttpApi extends HttpApi
 		} elseif ($result instanceof Message\ResponseInterface) {
 			return $this->parseDeviceDescriptionResponse($result);
 		} else {
-			$ex = new Exceptions\InvalidState('Request promise could not be created');
+			$ex = new Exceptions\InvalidState('Request could not be created');
 
 			if ($async) {
 				Promise\reject($ex);
@@ -245,7 +245,7 @@ final class Gen1HttpApi extends HttpApi
 		} elseif ($result instanceof Message\ResponseInterface) {
 			return $this->parseDeviceStatusResponse($result);
 		} else {
-			$ex = new Exceptions\InvalidState('Request promise could not be created');
+			$ex = new Exceptions\InvalidState('Request could not be created');
 
 			if ($async) {
 				Promise\reject($ex);
@@ -297,7 +297,7 @@ final class Gen1HttpApi extends HttpApi
 		} elseif ($result instanceof Message\ResponseInterface) {
 			return $result->getStatusCode() === StatusCodeInterface::STATUS_OK;
 		} else {
-			$ex = new Exceptions\InvalidState('Request promise could not be created');
+			$ex = new Exceptions\InvalidState('Request could not be created');
 
 			if ($async) {
 				Promise\reject($ex);
@@ -361,12 +361,34 @@ final class Gen1HttpApi extends HttpApi
 					|| !$block->offsetExists('I')
 					|| !$block->offsetExists('D')
 				) {
+					$this->logger->warning(
+						'Received block description is not in valid format',
+						[
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+							'type' => 'gen1-http-api',
+							'description' => (array) $block,
+						],
+					);
+
+					continue;
+				}
+
+				if (!Types\BlockDescription::isValidValue(strval($block->offsetGet('D')))) {
+					$this->logger->warning(
+						'Received block type is not supported by connector',
+						[
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+							'type' => 'gen1-http-api',
+							'description' => $block->offsetGet('D'),
+						],
+					);
+
 					continue;
 				}
 
 				$blockDescription = new Entities\API\Gen1\DeviceBlockDescription(
 					intval($block->offsetGet('I')),
-					strval($block->offsetGet('D')),
+					Types\BlockDescription::get(strval($block->offsetGet('D'))),
 				);
 
 				foreach ($sensors as $sensor) {
@@ -377,6 +399,15 @@ final class Gen1HttpApi extends HttpApi
 						|| !$sensor->offsetExists('D')
 						|| !$sensor->offsetExists('L')
 					) {
+						$this->logger->warning(
+							'Received sensor description is not in valid format',
+							[
+								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+								'type' => 'gen1-http-api',
+								'description' => (array) $sensor,
+							],
+						);
+
 						continue;
 					}
 
@@ -716,11 +747,17 @@ final class Gen1HttpApi extends HttpApi
 		MetadataTypes\DataType $dataType,
 	): MetadataTypes\DataType
 	{
-		if (Utils\Strings::startsWith($block, 'relay') && Utils\Strings::lower($description) === 'output') {
+		if (
+			Utils\Strings::startsWith($block, Types\BlockDescription::DESC_RELAY)
+			&& Utils\Strings::lower($description) === Types\SensorDescription::DESC_OUTPUT
+		) {
 			return MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_SWITCH);
 		}
 
-		if (Utils\Strings::startsWith($block, 'light') && Utils\Strings::lower($description) === 'output') {
+		if (
+			Utils\Strings::startsWith($block, Types\BlockDescription::DESC_LIGHT)
+			&& Utils\Strings::lower($description) === Types\SensorDescription::DESC_OUTPUT
+		) {
 			return MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_SWITCH);
 		}
 
@@ -738,7 +775,10 @@ final class Gen1HttpApi extends HttpApi
 		array|null $format,
 	): array|null
 	{
-		if (Utils\Strings::startsWith($block, 'relay') && Utils\Strings::lower($description) === 'output') {
+		if (
+			Utils\Strings::startsWith($block, Types\BlockDescription::DESC_RELAY)
+			&& Utils\Strings::lower($description) === Types\SensorDescription::DESC_OUTPUT
+		) {
 			return [
 				[MetadataTypes\SwitchPayload::PAYLOAD_ON, '1', Types\RelayPayload::PAYLOAD_ON],
 				[MetadataTypes\SwitchPayload::PAYLOAD_OFF, '0', Types\RelayPayload::PAYLOAD_OFF],
@@ -746,7 +786,10 @@ final class Gen1HttpApi extends HttpApi
 			];
 		}
 
-		if (Utils\Strings::startsWith($block, 'roller') && Utils\Strings::lower($description) === 'roller') {
+		if (
+			Utils\Strings::startsWith($block, Types\BlockDescription::DESC_ROLLER)
+			&& Utils\Strings::lower($description) === Types\SensorDescription::DESC_ROLLER
+		) {
 			return [
 				[MetadataTypes\CoverPayload::PAYLOAD_OPEN, Types\RollerPayload::PAYLOAD_OPEN, null],
 				[MetadataTypes\CoverPayload::PAYLOAD_OPENED, null, Types\RollerPayload::PAYLOAD_OPEN],
@@ -756,7 +799,10 @@ final class Gen1HttpApi extends HttpApi
 			];
 		}
 
-		if (Utils\Strings::startsWith($block, 'light') && Utils\Strings::lower($description) === 'output') {
+		if (
+			Utils\Strings::startsWith($block, Types\BlockDescription::DESC_LIGHT)
+			&& Utils\Strings::lower($description) === Types\SensorDescription::DESC_OUTPUT
+		) {
 			return [
 				[MetadataTypes\SwitchPayload::PAYLOAD_ON, '1', Types\LightSwitchPayload::PAYLOAD_ON],
 				[MetadataTypes\SwitchPayload::PAYLOAD_OFF, '0', Types\LightSwitchPayload::PAYLOAD_OFF],

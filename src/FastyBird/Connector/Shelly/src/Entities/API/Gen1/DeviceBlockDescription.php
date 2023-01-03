@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Shelly\Entities\API\Gen1;
 
 use FastyBird\Connector\Shelly\Entities;
+use FastyBird\Connector\Shelly\Types;
 use Nette;
 use function array_map;
 use function array_unique;
@@ -42,7 +43,7 @@ final class DeviceBlockDescription implements Entities\API\Entity
 	 */
 	public function __construct(
 		private readonly int $identifier,
-		private readonly string $description,
+		private readonly Types\BlockDescription $description,
 		array $sensors = [],
 	)
 	{
@@ -54,7 +55,7 @@ final class DeviceBlockDescription implements Entities\API\Entity
 		return $this->identifier;
 	}
 
-	public function getDescription(): string
+	public function getDescription(): Types\BlockDescription
 	{
 		return $this->description;
 	}
@@ -81,7 +82,7 @@ final class DeviceBlockDescription implements Entities\API\Entity
 	{
 		return [
 			'identifier' => $this->getIdentifier(),
-			'description' => $this->getDescription(),
+			'description' => $this->getDescription()->getValue(),
 			'sensors' => array_map(
 				static fn (BlockSensorDescription $sensor): array => $sensor->toArray(),
 				$this->getSensors(),

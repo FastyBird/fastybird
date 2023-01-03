@@ -96,7 +96,7 @@ final class LocalDiscovery implements Consumer
 					'Error during loading connector',
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-						'type' => 'discovery-message-consumer',
+						'type' => 'local-discovery-message-consumer',
 						'connector' => [
 							'id' => $entity->getConnector()->toString(),
 						],
@@ -123,7 +123,7 @@ final class LocalDiscovery implements Consumer
 				'New device was created',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-					'type' => 'discovery-message-consumer',
+					'type' => 'local-discovery-message-consumer',
 					'device' => [
 						'id' => $device->getPlainId(),
 						'identifier' => $entity->getIdentifier(),
@@ -205,7 +205,7 @@ final class LocalDiscovery implements Consumer
 						'Device sensor was created',
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-							'type' => 'description-message-consumer',
+							'type' => 'local-discovery-message-consumer',
 							'device' => [
 								'id' => $device->getPlainId(),
 							],
@@ -237,7 +237,7 @@ final class LocalDiscovery implements Consumer
 						'Device sensor was updated',
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-							'type' => 'description-message-consumer',
+							'type' => 'local-discovery-message-consumer',
 							'device' => [
 								'id' => $device->getPlainId(),
 							],
@@ -257,7 +257,7 @@ final class LocalDiscovery implements Consumer
 			'Consumed device found message',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-				'type' => 'discovery-message-consumer',
+				'type' => 'local-discovery-message-consumer',
 				'device' => [
 					'id' => $device->getPlainId(),
 				],

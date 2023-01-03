@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Shelly.php
+ * ShellyConnector.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com

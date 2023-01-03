@@ -107,10 +107,10 @@ class ShellyExtension extends DI\CompilerExtension
 			->getResultDefinition()
 			->setType(Clients\Local\Http::class);
 
-		$builder->addFactoryDefinition($this->prefix('clients.local.mqtt'))
-			->setImplement(Clients\Local\MqttFactory::class)
+		$builder->addFactoryDefinition($this->prefix('clients.mqtt'))
+			->setImplement(Clients\MqttFactory::class)
 			->getResultDefinition()
-			->setType(Clients\Local\Mqtt::class);
+			->setType(Clients\Mqtt::class);
 
 		$builder->addFactoryDefinition($this->prefix('clients.discover'))
 			->setImplement(Clients\DiscoveryFactory::class)

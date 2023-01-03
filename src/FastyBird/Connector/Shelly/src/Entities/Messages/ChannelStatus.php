@@ -23,7 +23,7 @@ use function array_unique;
 use const SORT_REGULAR;
 
 /**
- * Block status entity
+ * Device channel status entity
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Entities

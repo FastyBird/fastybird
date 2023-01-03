@@ -13,7 +13,7 @@
  * @date           20.07.22
  */
 
-namespace FastyBird\Connector\Shelly\Clients\Local;
+namespace FastyBird\Connector\Shelly\Clients;
 
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
@@ -30,7 +30,7 @@ use function sprintf;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Mqtt
+final class Mqtt implements Client
 {
 
 	use Nette\SmartObject;

@@ -156,7 +156,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 			} catch (InvalidArgumentException) {
 				$this->logger->warning(
-					'Invalid DNS question response received',
+					'Invalid mDNS question response received',
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'discovery-client',
@@ -308,7 +308,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 		$processedDevices = [];
 
 		$gen1HttpApi = $this->gen1HttpApiFactory->create();
-
 		$gen2HttpApi = $this->gen2HttpApiFactory->create();
 
 		foreach ($devices as $device) {
@@ -326,15 +325,17 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$this->logger->error(
 					'Could not load device basic information',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'discovery-client',
 						'exception' => [
 							'message' => $ex->getMessage(),
 							'code' => $ex->getCode(),
 						],
 						'device' => [
-							'identifier' => $device->getId(),
+							'identifier' => $device->getIdentifier(),
 							'ip_address' => $device->getIpAddress(),
+							'domain' => $device->getDomain(),
+							'generation' => $device->getGeneration()->getValue(),
 						],
 					],
 				);
@@ -356,17 +357,19 @@ final class Discovery implements Evenement\EventEmitterInterface
 				}
 			} catch (Throwable $ex) {
 				$this->logger->error(
-					'Could not load device description',
+					'Could not load device description or configuration',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'discovery-client',
 						'exception' => [
 							'message' => $ex->getMessage(),
 							'code' => $ex->getCode(),
 						],
 						'device' => [
-							'identifier' => $device->getId(),
+							'identifier' => $device->getIdentifier(),
 							'ip_address' => $device->getIpAddress(),
+							'domain' => $device->getDomain(),
+							'generation' => $device->getGeneration()->getValue(),
 						],
 					],
 				);
@@ -382,7 +385,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					$message = new Entities\Messages\DiscoveredLocalDevice(
 						Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
 						$this->connector->getId(),
-						$device->getId(),
+						$device->getIdentifier(),
 						$device->getGeneration(),
 						$device->getIpAddress(),
 						$device->getDomain(),
@@ -394,7 +397,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 							static function (Entities\API\Gen1\DeviceBlockDescription $block): Entities\Messages\ChannelDescription {
 								$channel = new Entities\Messages\ChannelDescription(
 									Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
-									$block->getIdentifier() . '_' . $block->getDescription(),
+									$block->getIdentifier() . '_' . $block->getDescription()->getValue(),
 								);
 
 								foreach ($block->getSensors() as $sensor) {
@@ -430,7 +433,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					$message = new Entities\Messages\DiscoveredLocalDevice(
 						Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
 						$this->connector->getId(),
-						$device->getId(),
+						$device->getIdentifier(),
 						$device->getGeneration(),
 						$device->getIpAddress(),
 						$device->getDomain(),
@@ -662,11 +665,17 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$this->logger->error(
 					'Could not create discovered device',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'discovery-client',
 						'exception' => [
 							'message' => $ex->getMessage(),
 							'code' => $ex->getCode(),
+						],
+						'device' => [
+							'identifier' => $device->getIdentifier(),
+							'ip_address' => $device->getIpAddress(),
+							'domain' => $device->getDomain(),
+							'generation' => $device->getGeneration()->getValue(),
 						],
 					],
 				);

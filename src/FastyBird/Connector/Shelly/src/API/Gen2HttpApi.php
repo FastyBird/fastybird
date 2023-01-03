@@ -110,7 +110,7 @@ final class Gen2HttpApi extends HttpApi
 		} elseif ($result instanceof Message\ResponseInterface) {
 			return $this->parseDeviceInformationResponse($result);
 		} else {
-			$ex = new Exceptions\InvalidState('Request promise could not be created');
+			$ex = new Exceptions\InvalidState('Request could not be created');
 
 			if ($async) {
 				Promise\reject($ex);
@@ -159,7 +159,7 @@ final class Gen2HttpApi extends HttpApi
 		} elseif ($result instanceof Message\ResponseInterface) {
 			return $this->parseDeviceConfigurationResponse($result);
 		} else {
-			$ex = new Exceptions\InvalidState('Request promise could not be created');
+			$ex = new Exceptions\InvalidState('Request could not be created');
 
 			if ($async) {
 				Promise\reject($ex);
@@ -208,7 +208,7 @@ final class Gen2HttpApi extends HttpApi
 		} elseif ($result instanceof Message\ResponseInterface) {
 			return $this->parseDeviceStatusResponse($result);
 		} else {
-			$ex = new Exceptions\InvalidState('Request promise could not be created');
+			$ex = new Exceptions\InvalidState('Request could not be created');
 
 			if ($async) {
 				Promise\reject($ex);
@@ -270,7 +270,7 @@ final class Gen2HttpApi extends HttpApi
 		} elseif ($result instanceof Message\ResponseInterface) {
 			return $result->getStatusCode() === StatusCodeInterface::STATUS_OK;
 		} else {
-			$ex = new Exceptions\InvalidState('Request promise could not be created');
+			$ex = new Exceptions\InvalidState('Request could not be created');
 
 			if ($async) {
 				Promise\reject($ex);

@@ -13,9 +13,10 @@
  * @date           20.07.22
  */
 
-namespace FastyBird\Connector\Shelly\Clients\Local;
+namespace FastyBird\Connector\Shelly\Clients;
 
 use FastyBird\Connector\Shelly\Entities;
+use FastyBird\Connector\Shelly\Types;
 
 /**
  * MQTT client factory
@@ -25,8 +26,10 @@ use FastyBird\Connector\Shelly\Entities;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-interface MqttFactory
+interface MqttFactory extends ClientFactory
 {
+
+	public const MODE = Types\ClientMode::MODE_MQTT;
 
 	public function create(Entities\ShellyConnector $connector): Mqtt;
 

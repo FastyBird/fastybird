@@ -22,7 +22,7 @@ use function is_scalar;
 use function strval;
 
 /**
- * Sensor status entity
+ * Device or channel property status entity
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Entities

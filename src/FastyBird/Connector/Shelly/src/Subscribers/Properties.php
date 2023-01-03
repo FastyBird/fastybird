@@ -65,10 +65,10 @@ final class Properties implements Common\EventSubscriber
 			return;
 		}
 
-		$stateProperty = $entity->getProperty(Types\DevicePropertyIdentifier::IDENTIFIER_STATE);
+		$property = $entity->getProperty(Types\DevicePropertyIdentifier::IDENTIFIER_STATE);
 
-		if ($stateProperty !== null) {
-			$entity->removeProperty($stateProperty);
+		if ($property !== null) {
+			$entity->removeProperty($property);
 		}
 
 		$this->propertiesManager->create(Utils\ArrayHash::from([

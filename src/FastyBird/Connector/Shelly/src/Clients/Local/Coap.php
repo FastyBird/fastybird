@@ -99,7 +99,7 @@ final class Coap implements Clients\Client
 
 		$this->server = $factory->createReceiver(self::COAP_ADDRESS . ':' . self::COAP_PORT);
 
-		$this->server->on('message', function ($message, $remote): void {
+		$this->server->on('message', function ($message): void {
 			$this->handlePacket($message);
 		});
 
@@ -128,7 +128,7 @@ final class Coap implements Clients\Client
 
 		$this->server->on('close', function (): void {
 			$this->logger->info(
-				'Client connection was successfully closed',
+				'Client CoAP connection was successfully closed',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'coap-client',

@@ -195,7 +195,10 @@ final class Http implements Clients\Client
 				})
 				->otherwise(function (Throwable $ex) use ($device, $channel, $property, $deferred): void {
 					if ($ex instanceof ReactHttp\Message\ResponseException) {
-						if ($ex->getCode() >= 400 && $ex->getCode() < 499) {
+						if (
+							$ex->getCode() >= StatusCodeInterface::STATUS_BAD_REQUEST
+							&& $ex->getCode() < StatusCodeInterface::STATUS_UNAVAILABLE_FOR_LEGAL_REASONS
+						) {
 							$this->propertyStateHelper->setValue(
 								$property,
 								Utils\ArrayHash::from([
@@ -228,7 +231,10 @@ final class Http implements Clients\Client
 								],
 							);
 
-						} elseif ($ex->getCode() >= 500 && $ex->getCode() < 599) {
+						} elseif (
+							$ex->getCode() >= StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR
+							&& $ex->getCode() < StatusCodeInterface::STATUS_NETWORK_AUTHENTICATION_REQUIRED
+						) {
 							$this->deviceConnectionManager->setState(
 								$device,
 								MetadataTypes\ConnectionState::get(
@@ -749,7 +755,10 @@ final class Http implements Clients\Client
 
 		foreach ($status->getRelays() as $index => $relay) {
 			foreach ($device->getChannels() as $channel) {
-				if (Utils\Strings::endsWith($channel->getIdentifier(), 'relay_' . $index)) {
+				if (Utils\Strings::endsWith(
+					$channel->getIdentifier(),
+					Types\BlockDescription::DESC_RELAY . '_' . $index,
+				)) {
 					$result = [];
 
 					foreach ($channel->getProperties() as $property) {
@@ -787,7 +796,7 @@ final class Http implements Clients\Client
 						$channel->getId(),
 						$result,
 					);
-				} elseif (Utils\Strings::endsWith($channel->getIdentifier(), 'device')) {
+				} elseif (Utils\Strings::endsWith($channel->getIdentifier(), Types\BlockDescription::DESC_DEVICE)) {
 					$result = [];
 
 					foreach ($channel->getProperties() as $property) {
@@ -818,7 +827,10 @@ final class Http implements Clients\Client
 
 		foreach ($status->getRollers() as $index => $roller) {
 			foreach ($device->getChannels() as $channel) {
-				if (Utils\Strings::endsWith($channel->getIdentifier(), 'roller_' . $index)) {
+				if (Utils\Strings::endsWith(
+					$channel->getIdentifier(),
+					Types\BlockDescription::DESC_ROLLER . '_' . $index,
+				)) {
 					$result = [];
 
 					foreach ($channel->getProperties() as $property) {
@@ -871,7 +883,7 @@ final class Http implements Clients\Client
 						$channel->getId(),
 						$result,
 					);
-				} elseif (Utils\Strings::endsWith($channel->getIdentifier(), 'device')) {
+				} elseif (Utils\Strings::endsWith($channel->getIdentifier(), Types\BlockDescription::DESC_DEVICE)) {
 					$result = [];
 
 					foreach ($channel->getProperties() as $property) {
@@ -902,7 +914,10 @@ final class Http implements Clients\Client
 
 		foreach ($status->getLights() as $index => $light) {
 			foreach ($device->getChannels() as $channel) {
-				if (Utils\Strings::endsWith($channel->getIdentifier(), 'light_' . $index)) {
+				if (Utils\Strings::endsWith(
+					$channel->getIdentifier(),
+					Types\BlockDescription::DESC_LIGHT . '_' . $index,
+				)) {
 					$result = [];
 
 					foreach ($channel->getProperties() as $property) {

@@ -18,7 +18,7 @@ namespace FastyBird\Connector\Shelly\Clients;
 use FastyBird\Connector\Shelly\Entities;
 
 /**
- * Local devices client factory
+ * Devices discovery client factory
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Clients

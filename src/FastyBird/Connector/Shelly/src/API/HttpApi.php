@@ -47,14 +47,14 @@ abstract class HttpApi
 
 	use Nette\SmartObject;
 
-	private GuzzleHttp\Client|null $client = null;
+	protected GuzzleHttp\Client|null $client = null;
 
-	private Http\Browser|null $asyncClient = null;
+	protected Http\Browser|null $asyncClient = null;
 
-	private Log\LoggerInterface $logger;
+	protected Log\LoggerInterface $logger;
 
 	public function __construct(
-		private readonly EventLoop\LoopInterface $eventLoop,
+		protected readonly EventLoop\LoopInterface $eventLoop,
 		Log\LoggerInterface|null $logger = null,
 	)
 	{

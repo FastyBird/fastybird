@@ -28,6 +28,4 @@ final class Constants
 
 	public const RESOURCES_FOLDER = __DIR__ . '/../resources';
 
-	public const GEN_1_PROPERTY_SENSOR = '/^(?P<identifier>[0-9]+)_(?P<type>[a-zA-Z]{1,3})_(?P<description>[a-zA-Z0-9]+)$/';
-
 }

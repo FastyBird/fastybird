@@ -71,7 +71,7 @@ final class Local implements Client
 				'CoAP client could not be started',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-					'type' => 'gen1-client',
+					'type' => 'local-client',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -96,7 +96,7 @@ final class Local implements Client
 				'Http api client could not be started',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-					'type' => 'gen1-client',
+					'type' => 'local-client',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -124,7 +124,7 @@ final class Local implements Client
 				'CoAP client could not be disconnected',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-					'type' => 'gen1-client',
+					'type' => 'local-client',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -143,7 +143,7 @@ final class Local implements Client
 				'Http api client could not be disconnected',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-					'type' => 'gen1-client',
+					'type' => 'local-client',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
