@@ -397,7 +397,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 							static function (Entities\API\Gen1\DeviceBlockDescription $block): Entities\Messages\ChannelDescription {
 								$channel = new Entities\Messages\ChannelDescription(
 									Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
-									$block->getIdentifier() . '_' . $block->getDescription()->getValue(),
+									$block->getIdentifier() . '_' . $block->getDescription(),
+									null,
 								);
 
 								foreach ($block->getSensors() as $sensor) {
@@ -446,6 +447,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 								$channel = new Entities\Messages\ChannelDescription(
 									Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
 									$component->getType()->getValue() . '_' . $component->getId(),
+									$component->getName(),
 								);
 
 								if ($component instanceof Entities\API\Gen2\DeviceSwitchConfiguration) {

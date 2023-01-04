@@ -373,22 +373,9 @@ final class Gen1HttpApi extends HttpApi
 					continue;
 				}
 
-				if (!Types\BlockDescription::isValidValue(strval($block->offsetGet('D')))) {
-					$this->logger->warning(
-						'Received block type is not supported by connector',
-						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-							'type' => 'gen1-http-api',
-							'description' => $block->offsetGet('D'),
-						],
-					);
-
-					continue;
-				}
-
 				$blockDescription = new Entities\API\Gen1\DeviceBlockDescription(
 					intval($block->offsetGet('I')),
-					Types\BlockDescription::get(strval($block->offsetGet('D'))),
+					strval($block->offsetGet('D')),
 				);
 
 				foreach ($sensors as $sensor) {

@@ -172,14 +172,22 @@ final class LocalDiscovery implements Consumer
 		foreach ($entity->getChannels() as $block) {
 			$channel = $device->findChannel($block->getIdentifier());
 
-			if ($channel === null) {
-				$channel = $this->databaseHelper->transaction(
-					fn (): DevicesEntities\Channels\Channel => $this->channelsManager->create(Utils\ArrayHash::from([
+			$channel = $channel === null ? $this->databaseHelper->transaction(
+				fn (): DevicesEntities\Channels\Channel => $this->channelsManager->create(Utils\ArrayHash::from([
+					'device' => $device,
+					'identifier' => $block->getIdentifier(),
+					'name' => $block->getName(),
+				])),
+			) : $this->databaseHelper->transaction(
+				fn (): DevicesEntities\Channels\Channel => $this->channelsManager->update(
+					$channel,
+					Utils\ArrayHash::from([
 						'device' => $device,
 						'identifier' => $block->getIdentifier(),
-					])),
-				);
-			}
+						'name' => $block->getName(),
+					]),
+				),
+			);
 
 			foreach ($block->getProperties() as $sensor) {
 				$channelProperty = $channel->findProperty($sensor->getIdentifier());
