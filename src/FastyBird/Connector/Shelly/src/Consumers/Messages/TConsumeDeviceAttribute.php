@@ -1,14 +1,14 @@
 <?php declare(strict_types = 1);
 
 /**
- * TConsumeDeviceType.php
+ * TConsumeDeviceAttribute.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Consumers
- * @since          0.37.0
+ * @since          1.0.0
  *
  * @date           31.08.22
  */

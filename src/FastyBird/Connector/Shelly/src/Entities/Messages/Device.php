@@ -7,8 +7,8 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ShellyConnector!
- * @subpackage     Properties
- * @since          0.37.0
+ * @subpackage     Entities
+ * @since          1.0.0
  *
  * @date           17.07.22
  */
@@ -23,7 +23,7 @@ use Ramsey\Uuid;
  * Base device message entity
  *
  * @package        FastyBird:ShellyConnector!
- * @subpackage     Properties
+ * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
@@ -36,8 +36,6 @@ abstract class Device implements Entity
 		private readonly Types\MessageSource $source,
 		private readonly Uuid\UuidInterface $connector,
 		private readonly string $identifier,
-		private readonly string|null $type,
-		private readonly string $ipAddress,
 	)
 	{
 	}
@@ -57,16 +55,6 @@ abstract class Device implements Entity
 		return $this->identifier;
 	}
 
-	public function getType(): string|null
-	{
-		return $this->type;
-	}
-
-	public function getIpAddress(): string
-	{
-		return $this->ipAddress;
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -75,8 +63,6 @@ abstract class Device implements Entity
 		return [
 			'source' => $this->getSource()->getValue(),
 			'identifier' => $this->getIdentifier(),
-			'type' => $this->getType(),
-			'ip_address' => $this->getIpAddress(),
 		];
 	}
 

@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Clients
- * @since          0.37.0
+ * @since          1.0.0
  *
  * @date           14.07.22
  */
@@ -18,7 +18,7 @@ namespace FastyBird\Connector\Shelly\Clients;
 use FastyBird\Connector\Shelly\Entities;
 
 /**
- * Base client factory
+ * Base device client factory
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Clients
@@ -28,7 +28,7 @@ use FastyBird\Connector\Shelly\Entities;
 interface ClientFactory
 {
 
-	public const VERSION_CONSTANT_NAME = 'VERSION';
+	public const MODE_CONSTANT_NAME = 'MODE';
 
 	public function create(Entities\ShellyConnector $connector): Client;
 

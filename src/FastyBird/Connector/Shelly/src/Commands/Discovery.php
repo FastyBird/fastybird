@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Commands
- * @since          0.37.0
+ * @since          1.0.0
  *
  * @date           30.07.22
  */
@@ -19,10 +19,8 @@ use DateTimeInterface;
 use FastyBird\Connector\Shelly\Clients;
 use FastyBird\Connector\Shelly\Consumers;
 use FastyBird\Connector\Shelly\Entities;
-use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -30,13 +28,11 @@ use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Psr\Log;
 use Ramsey\Uuid;
 use React\EventLoop;
-use ReflectionClass;
 use Symfony\Component\Console;
 use Symfony\Component\Console\Input;
 use Symfony\Component\Console\Output;
 use Symfony\Component\Console\Style;
 use Throwable;
-use function array_key_exists;
 use function array_key_first;
 use function array_search;
 use function array_values;
@@ -63,7 +59,7 @@ class Discovery extends Console\Command\Command
 
 	private const DISCOVERY_WAITING_INTERVAL = 5.0;
 
-	private const DISCOVERY_MAX_PROCESSING_INTERVAL = 30.0;
+	private const DISCOVERY_MAX_PROCESSING_INTERVAL = 60.0;
 
 	private const QUEUE_PROCESSING_INTERVAL = 0.01;
 
@@ -73,15 +69,12 @@ class Discovery extends Console\Command\Command
 
 	private EventLoop\TimerInterface|null $progressBarTimer;
 
+	private Clients\Discovery|null $client = null;
+
 	private Log\LoggerInterface $logger;
 
-	/**
-	 * @param array<Clients\ClientFactory> $clientsFactories
-	 */
 	public function __construct(
-		private readonly array $clientsFactories,
-		private readonly Helpers\Connector $connectorHelper,
-		private readonly Helpers\Device $deviceHelper,
+		private readonly Clients\DiscoveryFactory $clientFactory,
 		private readonly Consumers\Messages $consumer,
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
@@ -125,8 +118,6 @@ class Discovery extends Console\Command\Command
 	/**
 	 * @throws Console\Exception\InvalidArgumentException
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 */
 	protected function execute(Input\InputInterface $input, Output\OutputInterface $output): int
 	{
@@ -280,211 +271,191 @@ class Discovery extends Console\Command\Command
 			return Console\Command\Command::SUCCESS;
 		}
 
-		$version = $this->connectorHelper->getConfiguration(
-			$connector,
-			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_VERSION),
+		$this->client = $this->clientFactory->create($connector);
+
+		$progressBar = new Console\Helper\ProgressBar(
+			$output,
+			intval(self::DISCOVERY_MAX_PROCESSING_INTERVAL * 60),
 		);
 
-		if ($version === null) {
-			$io->error('Connector client version is not configured');
+		$progressBar->setFormat('[%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s% %');
+
+		try {
+			$this->eventLoop->addSignal(SIGINT, function () use ($io): void {
+				$this->logger->info(
+					'Stopping Shelly connector discovery...',
+					[
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+						'type' => 'discovery-cmd',
+					],
+				);
+
+				$io->info('Stopping Shelly connector discovery...');
+
+				$this->client?->disconnect();
+
+				$this->checkAndTerminate();
+			});
+
+			$this->eventLoop->futureTick(
+				async(function () use ($io, $progressBar): void {
+					$this->logger->info(
+						'Starting Shelly connector discovery...',
+						[
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+							'type' => 'discovery-cmd',
+						],
+					);
+
+					$io->info('Starting Shelly connector discovery...');
+
+					$progressBar->start();
+
+					$this->executedTime = $this->dateTimeFactory->getNow();
+
+					$this->client?->on('finished', function (): void {
+						$this->client?->disconnect();
+
+						$this->checkAndTerminate();
+					});
+
+					$this->client?->discover();
+				}),
+			);
+
+			$this->consumerTimer = $this->eventLoop->addPeriodicTimer(
+				self::QUEUE_PROCESSING_INTERVAL,
+				async(function (): void {
+					$this->consumer->consume();
+				}),
+			);
+
+			$this->progressBarTimer = $this->eventLoop->addPeriodicTimer(
+				0.1,
+				async(static function () use ($progressBar): void {
+					$progressBar->advance();
+				}),
+			);
+
+			$this->eventLoop->addTimer(
+				self::DISCOVERY_MAX_PROCESSING_INTERVAL,
+				async(function (): void {
+					$this->client?->disconnect();
+
+					$this->checkAndTerminate();
+				}),
+			);
+
+			$this->eventLoop->run();
+
+			$progressBar->finish();
+
+			$io->newLine();
+
+			$findDevicesQuery = new DevicesQueries\FindDevices();
+			$findDevicesQuery->byConnectorId($connector->getId());
+
+			$devices = $connector->getDevices();
+
+			$table = new Console\Helper\Table($output);
+			$table->setHeaders([
+				'#',
+				'ID',
+				'Name',
+				'Type',
+				'IP address',
+			]);
+
+			$foundDevices = 0;
+
+			foreach ($devices as $device) {
+				assert($device instanceof Entities\ShellyDevice);
+
+				$createdAt = $device->getCreatedAt();
+
+				if (
+					$createdAt !== null
+					&& $this->executedTime !== null
+					&& $createdAt->getTimestamp() > $this->executedTime->getTimestamp()
+				) {
+					$foundDevices++;
+
+					$ipAddress = $device->getIpAddress();
+
+					$hardwareModelAttribute = $device->findAttribute(
+						Types\DeviceAttributeIdentifier::IDENTIFIER_HARDWARE_MODEL,
+					);
+
+					$table->addRow([
+						$foundDevices,
+						$device->getPlainId(),
+						$device->getName() ?? $device->getIdentifier(),
+						$hardwareModelAttribute?->getContent(true) ?? 'N/A',
+						$ipAddress ?? 'N/A',
+					]);
+				}
+			}
+
+			if ($foundDevices > 0) {
+				$io->newLine();
+
+				$io->info(sprintf('Found %d new devices', $foundDevices));
+
+				$table->render();
+
+				$io->newLine();
+
+			} else {
+				$io->info('No devices were found');
+			}
+
+			$io->success('Devices discovery was successfully finished');
+
+			return Console\Command\Command::SUCCESS;
+		} catch (DevicesExceptions\Terminate $ex) {
+			$this->logger->error(
+				'An error occurred',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+					'type' => 'discovery-cmd',
+					'exception' => [
+						'message' => $ex->getMessage(),
+						'code' => $ex->getCode(),
+					],
+				],
+			);
+
+			$io->error('Something went wrong, discovery could not be finished. Error was logged.');
+
+			$this->client->disconnect();
+
+			$this->eventLoop->stop();
+
+			return Console\Command\Command::FAILURE;
+		} catch (Throwable $ex) {
+			$this->logger->error(
+				'An unhandled error occurred',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+					'type' => 'discovery-cmd',
+					'exception' => [
+						'message' => $ex->getMessage(),
+						'code' => $ex->getCode(),
+					],
+				],
+			);
+
+			$io->error('Something went wrong, discovery could not be finished. Error was logged.');
+
+			$this->client->disconnect();
+
+			$this->eventLoop->stop();
 
 			return Console\Command\Command::FAILURE;
 		}
-
-		foreach ($this->clientsFactories as $clientFactory) {
-			$rc = new ReflectionClass($clientFactory);
-
-			$constants = $rc->getConstants();
-
-			if (
-				array_key_exists(Clients\ClientFactory::VERSION_CONSTANT_NAME, $constants)
-				&& $constants[Clients\ClientFactory::VERSION_CONSTANT_NAME] === $version
-			) {
-				$client = $clientFactory->create($connector);
-
-				$progressBar = new Console\Helper\ProgressBar(
-					$output,
-					intval(self::DISCOVERY_MAX_PROCESSING_INTERVAL * 60),
-				);
-
-				$progressBar->setFormat('[%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s% %');
-
-				try {
-					$this->eventLoop->addSignal(SIGINT, function () use ($client, $io): void {
-						$this->logger->info(
-							'Stopping Shelly connector discovery...',
-							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-								'type' => 'discovery-cmd',
-							],
-						);
-
-						$io->info('Stopping Shelly connector discovery...');
-
-						$client->disconnect();
-
-						$this->checkAndTerminate($io);
-					});
-
-					$this->eventLoop->futureTick(function () use ($client, $io, $progressBar): void {
-						$this->logger->info(
-							'Starting Shelly connector discovery...',
-							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-								'type' => 'discovery-cmd',
-							],
-						);
-
-						$io->info('Starting Shelly connector discovery...');
-
-						$progressBar->start();
-
-						$this->executedTime = $this->dateTimeFactory->getNow();
-
-						$client->discover();
-					});
-
-					$this->consumerTimer = $this->eventLoop->addPeriodicTimer(
-						self::QUEUE_PROCESSING_INTERVAL,
-						async(function (): void {
-							$this->consumer->consume();
-						}),
-					);
-
-					$this->progressBarTimer = $this->eventLoop->addPeriodicTimer(
-						0.1,
-						async(static function () use ($progressBar): void {
-							$progressBar->advance();
-						}),
-					);
-
-					$this->eventLoop->addTimer(
-						self::DISCOVERY_MAX_PROCESSING_INTERVAL,
-						async(function () use ($client, $io): void {
-							$client->disconnect();
-
-							$this->checkAndTerminate($io);
-						}),
-					);
-
-					$this->eventLoop->run();
-
-					$progressBar->finish();
-
-					$io->newLine();
-
-					$devices = $connector->getDevices();
-
-					$table = new Console\Helper\Table($output);
-					$table->setHeaders([
-						'#',
-						'ID',
-						'Name',
-						'Type',
-						'IP address',
-					]);
-
-					$foundDevices = 0;
-
-					foreach ($devices as $device) {
-						assert($device instanceof Entities\ShellyDevice);
-
-						$createdAt = $device->getCreatedAt();
-
-						if (
-							$createdAt !== null
-							&& $this->executedTime !== null
-							&& $createdAt->getTimestamp() > $this->executedTime->getTimestamp()
-						) {
-							$foundDevices++;
-
-							$ipAddress = $this->deviceHelper->getConfiguration(
-								$device,
-								Types\DevicePropertyIdentifier::get(
-									Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS,
-								),
-							);
-
-							$hardwareModelAttribute = $device->findAttribute(
-								Types\DeviceAttributeIdentifier::IDENTIFIER_MODEL,
-							);
-
-							$table->addRow([
-								$foundDevices,
-								$device->getPlainId(),
-								$device->getName() ?? $device->getIdentifier(),
-								$hardwareModelAttribute?->getContent(true) ?? 'N/A',
-								is_string($ipAddress) ? $ipAddress : 'N/A',
-							]);
-						}
-					}
-
-					if ($foundDevices > 0) {
-						$io->newLine();
-
-						$io->info(sprintf('Found %d new devices', $foundDevices));
-
-						$table->render();
-
-						$io->newLine();
-
-					} else {
-						$io->info('No devices were found');
-					}
-
-					$io->success('Devices discovery was successfully finished');
-
-					return Console\Command\Command::SUCCESS;
-				} catch (DevicesExceptions\Terminate $ex) {
-					$this->logger->error(
-						'An error occurred',
-						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-							'type' => 'discovery-cmd',
-							'exception' => [
-								'message' => $ex->getMessage(),
-								'code' => $ex->getCode(),
-							],
-						],
-					);
-
-					$io->error('Something went wrong, discovery could not be finished. Error was logged.');
-
-					$client->disconnect();
-
-					$this->eventLoop->stop();
-
-					return Console\Command\Command::FAILURE;
-				} catch (Throwable $ex) {
-					$this->logger->error(
-						'An unhandled error occurred',
-						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-							'type' => 'discovery-cmd',
-							'exception' => [
-								'message' => $ex->getMessage(),
-								'code' => $ex->getCode(),
-							],
-						],
-					);
-
-					$io->error('Something went wrong, discovery could not be finished. Error was logged.');
-
-					$client->disconnect();
-
-					$this->eventLoop->stop();
-
-					return Console\Command\Command::FAILURE;
-				}
-			}
-		}
-
-		$io->error('Connector client is not configured');
-
-		return Console\Command\Command::FAILURE;
 	}
 
-	private function checkAndTerminate(Style\SymfonyStyle $io): void
+	private function checkAndTerminate(): void
 	{
 		if ($this->consumer->isEmpty()) {
 			if ($this->consumerTimer !== null) {
@@ -525,8 +496,8 @@ class Discovery extends Console\Command\Command
 
 			$this->eventLoop->addTimer(
 				self::DISCOVERY_WAITING_INTERVAL,
-				async(function () use ($io): void {
-					$this->checkAndTerminate($io);
+				async(function (): void {
+					$this->checkAndTerminate();
 				}),
 			);
 		}

@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Connector
- * @since          0.37.0
+ * @since          1.0.0
  *
  * @date           14.07.22
  */
@@ -18,8 +18,7 @@ namespace FastyBird\Connector\Shelly\Connector;
 use FastyBird\Connector\Shelly\Clients;
 use FastyBird\Connector\Shelly\Consumers;
 use FastyBird\Connector\Shelly\Entities;
-use FastyBird\Connector\Shelly\Helpers;
-use FastyBird\Connector\Shelly\Types;
+use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Connectors as DevicesConnectors;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
@@ -56,7 +55,6 @@ final class Connector implements DevicesConnectors\Connector
 	public function __construct(
 		private readonly DevicesEntities\Connectors\Connector $connector,
 		private readonly array $clientsFactories,
-		private readonly Helpers\Connector $connectorHelper,
 		private readonly Consumers\Messages $consumer,
 		private readonly EventLoop\LoopInterface $eventLoop,
 	)
@@ -66,6 +64,7 @@ final class Connector implements DevicesConnectors\Connector
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Terminate
+	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -73,14 +72,7 @@ final class Connector implements DevicesConnectors\Connector
 	{
 		assert($this->connector instanceof Entities\ShellyConnector);
 
-		$version = $this->connectorHelper->getConfiguration(
-			$this->connector,
-			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_VERSION),
-		);
-
-		if ($version === null) {
-			throw new DevicesExceptions\Terminate('Connector client version is not configured');
-		}
+		$mode = $this->connector->getClientMode();
 
 		foreach ($this->clientsFactories as $clientFactory) {
 			$rc = new ReflectionClass($clientFactory);
@@ -88,8 +80,8 @@ final class Connector implements DevicesConnectors\Connector
 			$constants = $rc->getConstants();
 
 			if (
-				array_key_exists(Clients\ClientFactory::VERSION_CONSTANT_NAME, $constants)
-				&& $constants[Clients\ClientFactory::VERSION_CONSTANT_NAME] === $version
+				array_key_exists(Clients\ClientFactory::MODE_CONSTANT_NAME, $constants)
+				&& $mode->equalsValue($constants[Clients\ClientFactory::MODE_CONSTANT_NAME])
 			) {
 				$this->client = $clientFactory->create($this->connector);
 			}

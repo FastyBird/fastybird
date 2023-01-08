@@ -7,8 +7,8 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ShellyConnector!
- * @subpackage     Properties
- * @since          0.37.0
+ * @subpackage     Entities
+ * @since          1.0.0
  *
  * @date           18.07.22
  */
@@ -24,7 +24,7 @@ use function array_merge;
  * Device status message entity
  *
  * @package        FastyBird:ShellyConnector!
- * @subpackage     Properties
+ * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
@@ -32,26 +32,30 @@ final class DeviceStatus extends Device
 {
 
 	/**
-	 * @param array<ChannelStatus> $channels
+	 * @param array<PropertyStatus|ChannelStatus> $statuses
 	 */
 	public function __construct(
 		Types\MessageSource $source,
 		Uuid\UuidInterface $connector,
 		string $identifier,
-		string $type,
-		string $ipAddress,
-		private array $channels,
+		private readonly string|null $ipAddress,
+		private readonly array $statuses,
 	)
 	{
-		parent::__construct($source, $connector, $identifier, $type, $ipAddress);
+		parent::__construct($source, $connector, $identifier);
+	}
+
+	public function getIpAddress(): string|null
+	{
+		return $this->ipAddress;
 	}
 
 	/**
-	 * @return array<ChannelStatus>
+	 * @return array<PropertyStatus|ChannelStatus>
 	 */
-	public function getChannels(): array
+	public function getStatuses(): array
 	{
-		return $this->channels;
+		return $this->statuses;
 	}
 
 	/**
@@ -60,9 +64,10 @@ final class DeviceStatus extends Device
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), [
-			'channels' => array_map(
-				static fn (ChannelStatus $channel): array => $channel->toArray(),
-				$this->getChannels(),
+			'ip_address' => $this->getIpAddress(),
+			'statuses' => array_map(
+				static fn (PropertyStatus|ChannelStatus $status): array => $status->toArray(),
+				$this->getStatuses(),
 			),
 		]);
 	}

@@ -20,7 +20,8 @@
     },
     "longid": {
       "type": "number",
-      "description" : "1 if the device identifies itself with its full MAC address; 0 if only the last 3 bytes are used"
+      "description" : "1 if the device identifies itself with its full MAC address; 0 if only the last 3 bytes are used",
+      "default": 1
     }
   },
   "required": [

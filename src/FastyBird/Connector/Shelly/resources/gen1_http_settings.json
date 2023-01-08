@@ -2,473 +2,744 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
-    "device": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string",
-          "description": "Device model identifier"
-        },
-        "mac": {
-          "type": "string",
-          "description": "MAC address of the device in hexadecimal"
-        },
-        "hostname": {
-          "type": "string",
-          "description": "Device hostname"
-        }
-      },
-      "required": [
-        "type",
-        "mac",
-        "hostname"
-      ]
-    },
-    "wifi_ap": {
-      "type": "object",
-      "properties": {
-        "enabled": {
-          "type": "boolean",
-          "description": "Whether AP mode is active"
-        },
-        "ssid": {
-          "type": "string",
-          "description": "SSID created by the device's AP"
-        },
-        "key": {
-          "type": "string",
-          "description": "WiFi password required for association with the device's AP"
-        }
-      },
-      "required": [
-        "enabled",
-        "ssid",
-        "key"
-      ]
-    },
-    "wifi_sta": {
-      "type": "object",
-      "properties": {
-        "enabled": {
-          "type": "boolean",
-          "description": "Whether STA mode is active"
-        },
-        "ssid": {
-          "oneOf": [
-            {
-              "type": "null"
-            },
-            {
-              "type": "string"
-            }
-          ],
-          "description": "SSID of STA the device will associate with"
-        },
-        "ipv4_method": {
-          "type": "string",
-          "enum": [
-            "dhcp",
-            "static"
-          ],
-          "description": "dhcp or static"
-        },
-        "ip": {
-          "oneOf": [
-            {
-              "type": "null"
-            },
-            {
-              "type": "string"
-            }
-          ],
-          "description": "Local IP address if ipv4_method is static"
-        },
-        "gw": {
-          "oneOf": [
-            {
-              "type": "null"
-            },
-            {
-              "type": "string"
-            }
-          ],
-          "description": "Local gateway IP address if ipv4_method is static"
-        },
-        "mask": {
-          "oneOf": [
-            {
-              "type": "null"
-            },
-            {
-              "type": "string"
-            }
-          ],
-          "description": "Mask if ipv4_method is static"
-        },
-        "dns": {
-          "oneOf": [
-            {
-              "type": "null"
-            },
-            {
-              "type": "string"
-            }
-          ],
-          "description": "DNS address if ipv4_method is static"
-        }
-      },
-      "required": [
-        "enabled",
-        "ssid",
-        "ipv4_method",
-        "ip",
-        "gw",
-        "mask",
-        "dns"
-      ]
-    },
-    "wifi_sta1": {
-      "type": "object",
-      "properties": {
-        "enabled": {
-          "type": "boolean",
-          "description": "Whether STA mode is active"
-        },
-        "ssid": {
-          "oneOf": [
-            {
-              "type": "null"
-            },
-            {
-              "type": "string"
-            }
-          ],
-          "description": "SSID of STA the device will associate with"
-        },
-        "ipv4_method": {
-          "type": "string",
-          "enum": [
-            "dhcp",
-            "static"
-          ],
-          "description": "dhcp or static"
-        },
-        "ip": {
-          "oneOf": [
-            {
-              "type": "null"
-            },
-            {
-              "type": "string"
-            }
-          ],
-          "description": "Local IP address if ipv4_method is static"
-        },
-        "gw": {
-          "oneOf": [
-            {
-              "type": "null"
-            },
-            {
-              "type": "string"
-            }
-          ],
-          "description": "Local gateway IP address if ipv4_method is static"
-        },
-        "mask": {
-          "oneOf": [
-            {
-              "type": "null"
-            },
-            {
-              "type": "string"
-            }
-          ],
-          "description": "Mask if ipv4_method is static"
-        },
-        "dns": {
-          "oneOf": [
-            {
-              "type": "null"
-            },
-            {
-              "type": "string"
-            }
-          ],
-          "description": "DNS address if ipv4_method is static"
-        }
-      },
-      "required": [
-        "enabled",
-        "ssid",
-        "ipv4_method",
-        "ip",
-        "gw",
-        "mask",
-        "dns"
-      ]
-    },
-    "ap_roaming": {
-      "type": "object",
-      "properties": {
-        "enabled": {
-          "type": "boolean",
-          "description": "AP roaming enabled flag"
-        },
-        "threshold": {
-          "type": "number",
-          "description": "AP roaming threshold, dBm"
-        }
-      },
-      "required": [
-        "enabled",
-        "threshold"
-      ]
-    },
-    "mqtt": {
-      "type": "object",
-      "properties": {
-        "enable": {
-          "type": "boolean"
-        },
-        "server": {
-          "type": "string"
-        },
-        "user": {
-          "type": "string"
-        },
-        "id": {
-          "type": "string"
-        },
-        "reconnect_timeout_max": {
-          "type": "number"
-        },
-        "reconnect_timeout_min": {
-          "type": "number"
-        },
-        "clean_session": {
-          "type": "boolean"
-        },
-        "keep_alive": {
-          "type": "number"
-        },
-        "max_qos": {
-          "type": "number"
-        },
-        "retain": {
-          "type": "boolean"
-        },
-        "update_period": {
-          "type": "number"
-        }
-      },
-      "required": [
-        "enable",
-        "server",
-        "user",
-        "id",
-        "reconnect_timeout_max",
-        "reconnect_timeout_min",
-        "clean_session",
-        "keep_alive",
-        "max_qos",
-        "retain",
-        "update_period"
-      ]
-    },
-    "coiot": {
-      "type": "object",
-      "properties": {
-        "enabled": {
-          "type": "boolean",
-          "description": "CoIoT enabled flag"
-        },
-        "update_period": {
-          "type": "number",
-          "description": "Update period of CoIoT messages, s"
-        },
-        "peer": {
-          "type": "string",
-          "description": "CoIoT peer (in format ip:port, empty means mcast)"
-        }
-      },
-      "required": [
-        "enabled",
-        "update_period",
-        "peer"
-      ]
-    },
-    "sntp": {
-      "type": "object",
-      "properties": {
-        "enabled": {
-          "type": "boolean",
-          "description": "SNTP enabled flag"
-        },
-        "server": {
-          "type": "string",
-          "description": "Time server host"
-        }
-      },
-      "required": [
-        "enabled",
-        "server"
-      ]
-    },
-    "login": {
-      "type": "object",
-      "properties": {
-        "enabled": {
-          "type": "boolean",
-          "description": "SNTP enabled flag"
-        },
-        "unprotected": {
-          "type": "boolean",
-          "description": "Time server host"
-        },
-        "username": {
-          "type": "string",
-          "description": "Time server host"
-        }
-      },
-      "description": "Credentials used for HTTP Basic authentication for the REST interface. If login.enabled is true clients must include an Authorization: Basic ... HTTP header with valid credentials when performing TP requests",
-      "required": [
-        "enabled",
-        "unprotected",
-        "username"
-      ]
-    },
-    "pin_code": {
-      "type": "string",
-      "description" : "Current generated PIN code"
-    },
     "name": {
       "type": "string",
-      "description" : "Unique name of the device"
+      "description": "Unique name of the device"
     },
     "fw": {
       "type": "string",
-      "description" : "Current FW version"
+      "description": "Current FW version"
     },
-    "discoverable": {
-      "type": "boolean",
-      "description" : "Device discoverable (i.e. visible) flag"
-    },
-    "build_info": {
-      "type": "object",
-      "properties": {
-        "build_id": {
-          "type": "string"
+    "mode": {
+      "oneOf": [
+        {
+          "type": "null"
         },
-        "build_timestamp": {
-          "type": "string"
-        },
-        "build_version": {
+        {
           "type": "string"
         }
-      },
-      "required": [
-        "build_id",
-        "build_timestamp",
-        "build_version"
-      ]
+      ],
+      "enum": [
+        "relay",
+        "roller",
+        "color",
+        "white"
+      ],
+      "default": null
     },
-    "cloud": {
-      "type": "object",
-      "properties": {
-        "enabled": {
-          "type": "boolean",
-          "description": "Cloud enabled flag"
+    "relays": {
+      "type": "array",
+      "description": "Current relay settings",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "description": "Relay name",
+            "default": null
+          },
+          "appliance_type": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "description": "Custom configurable appliance type",
+            "default": null
+          },
+          "ison": {
+            "type": "boolean",
+            "description": "Relay state"
+          },
+          "has_timer": {
+            "type": "boolean",
+            "description": "Whether there is an active timer",
+            "default": false
+          },
+          "default_state": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "description": "State on power-on, one of off, on, last, switch",
+            "enum": [
+              "off",
+              "on",
+              "last",
+              "switch"
+            ],
+            "default": null
+          },
+          "btn_type": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "description": "Button type, one of momentary, toggle, edge, detached, action, momentary_on_release",
+            "enum": [
+              "momentary",
+              "toggle",
+              "edge",
+              "detached",
+              "action",
+              "momentary_on_release"
+            ],
+            "default": null
+          },
+          "btn_reverse": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "description": "Whether logical state of the input is inverted",
+            "default": null
+          },
+          "btn1_type": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "description": "Button type, one of momentary, toggle, edge, detached, action, momentary_on_release, dual_momentary, dual_toggle, dual_edge, dual_detached, dual_action, dual_momentary_on_release",
+            "enum": [
+              "momentary",
+              "toggle",
+              "edge",
+              "detached",
+              "action",
+              "momentary_on_release",
+              "dual_momentary",
+              "dual_toggle",
+              "dual_edge",
+              "dual_detached",
+              "dual_action",
+              "dual_momentary_on_release"
+            ],
+            "default": null
+          },
+          "btn1_reverse": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "description": "Whether logical state of the input is inverted",
+            "default": null
+          },
+          "btn2_type": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "description": "Button type, one of momentary, toggle, edge, detached, action, momentary_on_release, dual_momentary, dual_toggle, dual_edge, dual_detached, dual_action, dual_momentary_on_release",
+            "enum": [
+              "momentary",
+              "toggle",
+              "edge",
+              "detached",
+              "action",
+              "momentary_on_release",
+              "dual_momentary",
+              "dual_toggle",
+              "dual_edge",
+              "dual_detached",
+              "dual_action",
+              "dual_momentary_on_release"
+            ],
+            "default": null
+          },
+          "btn2_reverse": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "description": "Whether logical state of the input is inverted",
+            "default": null
+          },
+          "swap_inputs": {
+            "type": "boolean",
+            "description": "Whether inputs are swapped",
+            "default": false
+          },
+          "auto_on": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "description": "Automatic flip back timer, seconds",
+            "default": null
+          },
+          "auto_off": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "description": "Automatic flip back timer, seconds",
+            "default": null
+          },
+          "power": {
+            "type": "number",
+            "description": "Current power consumption in Watts",
+            "default": 0
+          },
+          "schedule": {
+            "type": "boolean",
+            "description": "Whether scheduling is enabled",
+            "default": false
+          },
+          "schedule_rules": {
+            "type": "array",
+            "description": "Whether scheduling is enabled",
+            "items": {
+              "type": "string"
+            },
+            "default": []
+          },
+          "max_power": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "description": "Power threshold above which an overpower condition will be triggered",
+            "default": null
+          },
+          "overpower": {
+            "type": "boolean",
+            "description": "Whether an overpower condition has occurred",
+            "default": false
+          },
+          "source": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "description": "Source of the last relay command",
+            "default": null
+          }
         },
-        "connected": {
-          "type": "boolean",
-          "description": "Cloud connected flag"
-        }
-      },
-      "required": [
-        "enabled",
-        "connected"
-      ]
+        "required": [
+          "name",
+          "ison"
+        ]
+      }
     },
-    "timezone": {
-      "type": "string",
-      "description" : "Timezone identifier"
+    "rollers": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "properties": {
+          "maxtime": {
+            "type": "number",
+            "description": "The maximum time needed for the mechanism to completely open or close, seconds"
+          },
+          "maxtime_open": {
+            "type": "number",
+            "description": "The maximum time needed for the mechanism to completely open, seconds"
+          },
+          "maxtime_close": {
+            "type": "number",
+            "description": "The maximum time needed for the mechanism to completely close, seconds"
+          },
+          "default_state": {
+            "type": "string",
+            "description": "One of stop, open, close. This parameters determines the behavior on power-on",
+            "enum": [
+              "stop",
+              "open",
+              "close"
+            ]
+          },
+          "swap": {
+            "type": "boolean",
+            "description": "Whether to swap OPEN and CLOSE directions"
+          },
+          "swap_inputs": {
+            "type": "boolean",
+            "description": "Whether inputs are swapped"
+          },
+          "input_mode": {
+            "type": "string",
+            "description": "One of openclose -- each input controls one direction of motion, onebutton -- a single button press cycles through states: open, stop, close, stop ...",
+            "enum": [
+              "openclose",
+              "onebutton"
+            ]
+          },
+          "button_type": {
+            "type": "string",
+            "description": "One of momentary, toggle, detached or action",
+            "enum": [
+              "momentary",
+              "toggle",
+              "detached",
+              "action"
+            ]
+          },
+          "btn_reverse": {
+            "type": "number",
+            "description": "Whether to invert the state of input switch before interpreting it"
+          },
+          "state": {
+            "type": "string",
+            "description": "One of stop, open, close",
+            "enum": [
+              "stop",
+              "open",
+              "close"
+            ]
+          },
+          "power": {
+            "type": "number",
+            "description": "Current power consumption in Watts"
+          },
+          "is_valid": {
+            "type": "boolean",
+            "description": "If the power meter functions properly"
+          },
+          "safety_switch": {
+            "type": "boolean",
+            "description": "Whether the safety input is currently triggered"
+          },
+          "schedule": {
+            "type": "boolean",
+            "description": "Whether scheduling is enabled"
+          },
+          "schedule_rules": {
+            "type": "array",
+            "description": "Rules for schedule activation",
+            "items": {
+              "type": "string"
+            }
+          },
+          "obstacle_mode": {
+            "type": "string",
+            "description": "One of disabled, while_opening, while_closing, while_moving",
+            "enum": [
+              "disabled",
+              "while_opening",
+              "while_closing",
+              "while_moving"
+            ]
+          },
+          "obstacle_action": {
+            "type": "string",
+            "description": "One of stop, reverse",
+            "enum": [
+              "stop",
+              "reverse"
+            ]
+          },
+          "obstacle_power": {
+            "type": "number",
+            "description": "Power threshold for triggering 'obstacle' condition, Watts"
+          },
+          "obstacle_delay": {
+            "type": "number",
+            "description": "Number of seconds to wait after powering on the motor before obstacle detection is activated"
+          },
+          "ends_delay": {
+            "type": "number",
+            "description": "Period in ms after which the roller decides that it can't move anymore, 0-10000, with step of 100",
+            "minimum": 0,
+            "maximum": 10000,
+            "multipleOf": 100,
+            "default": 0
+          },
+          "safety_mode": {
+            "type": "string",
+            "description": "One of disabled, while_opening, while_closing, while_moving",
+            "enum": [
+              "disabled",
+              "while_opening",
+              "while_closing",
+              "while_moving"
+            ]
+          },
+          "safety_action": {
+            "type": "string",
+            "description": "One of stop, pause, reverse",
+            "enum": [
+              "stop",
+              "pause",
+              "reverse"
+            ]
+          },
+          "safety_allowed_on_trigger": {
+            "type": "string",
+            "description": "Which commands are allowed while the safety switch is triggered: none, open, close, all",
+            "enum": [
+              "none",
+              "open",
+              "close",
+              "all"
+            ]
+          },
+          "off_power": {
+            "type": "number",
+            "description": "Power value below which the roller is considered 'stopped', i.e. the actuator is stopped by an end-stop switch"
+          },
+          "positioning": {
+            "type": "boolean",
+            "description": "Whether the device is calibrated for positioning control"
+          }
+        },
+        "required": [
+          "maxtime",
+          "maxtime_open",
+          "maxtime_close",
+          "default_state",
+          "swap",
+          "swap_inputs",
+          "input_mode",
+          "button_type",
+          "btn_reverse",
+          "state",
+          "power",
+          "is_valid",
+          "safety_switch",
+          "schedule",
+          "schedule_rules",
+          "obstacle_mode",
+          "obstacle_action",
+          "obstacle_power",
+          "obstacle_delay",
+          "safety_mode",
+          "safety_action",
+          "safety_allowed_on_trigger",
+          "off_power",
+          "positioning"
+        ]
+      }
     },
-    "lat": {
-      "type": "number",
-      "description" : "Degrees latitude in decimal format, South is negative"
+    "inputs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Input name"
+          },
+          "btn_type": {
+            "type": "string",
+            "description": "Button type: toggle or momentary",
+            "enum": [
+              "toggle",
+              "momentary"
+            ],
+            "default": "momentary"
+          },
+          "btn_reverse": {
+            "type": "number",
+            "description": "If input logical state is inverted",
+            "default": 0
+          }
+        },
+        "required": [
+          "name"
+        ]
+      }
     },
-    "lng": {
-      "type": "number",
-      "description" : "Degrees longitude in decimal fomrat, between -180° and 180°"
-    },
-    "tzautodetect": {
-      "type": "boolean",
-      "description" : "Timezone auto-detect enabled"
-    },
-    "tz_utc_offset": {
-      "type": "number",
-      "description" : "UTC offset"
-    },
-    "tz_dst": {
-      "type": "boolean",
-      "description" : "Daylight saving time"
-    },
-    "tz_dst_auto": {
-      "type": "boolean",
-      "description" : "Auto update daylight saving time"
-    },
-    "time": {
-      "type": "string",
-      "description" : "Current time in HH:MM format if synced"
-    },
-    "unixtime": {
-      "type": "number",
-      "description" : "Unix timestamp if synced; 0 otherwise"
-    },
-    "led_status_disable": {
-      "type": "boolean",
-      "description" : "For Dimmer 1/2, DW2, i3, RGBW2, Plug, Plug S, EM, 3EM, 1L, 1PM, 2.5 and Button1 Whether LED indication for network status is enabled"
-    },
-    "debug_enable": {
-      "type": "boolean",
-      "description" : "Debug file logger enabled flag"
-    },
-    "allow_cross_origin": {
-      "type": "boolean",
-      "description" : "HTTP Cross-Origin Resource Sharing allowed flag"
-    },
-    "wifirecovery_reboot_enabled": {
-      "type": "boolean",
-      "description" : "Whether WiFi-Recovery reboot is enabled. Only applicable for Shelly 1/1PM, Shelly 2, Shelly 2.5, Shelly Plug/PlugS, Shelly EM, Shelly 3EM"
+    "lights": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "properties": {
+          "ison": {
+            "type": "boolean",
+            "description": "Whether the bulb is on or off"
+          },
+          "red": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "description": "Red brightness, 0..255, applies in mode='color'",
+            "default": null
+          },
+          "green": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "description": "Green brightness, 0..255, applies in mode='color'",
+            "default": null
+          },
+          "blue": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "description": "Blue brightness, 0..255, applies in mode='color'",
+            "default": null
+          },
+          "white": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "description": "White brightness, 0..255, applies in mode='color'",
+            "default": null
+          },
+          "gain": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "description": "Gain for all channels, 0..100, applies in mode='color'",
+            "default": null
+          },
+          "temp": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "description": "Color temperature in K, 3000..6500, applies in mode='white'",
+            "default": null
+          },
+          "brightness": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "description": "Brightness, 0..100, applies in mode='white'",
+            "default": null
+          },
+          "effect": {
+            "type": "number",
+            "description": "Currently applied effect",
+            "default": 0
+          },
+          "transition": {
+            "type": "number",
+            "description": "Transition time between on/off and color change, [0-5000] ms",
+            "minimum": 0,
+            "maximum": 5000,
+            "default": 0
+          },
+          "default_state": {
+            "type": "string",
+            "description": "One of on, off or last",
+            "enum": [
+              "on",
+              "off",
+              "last"
+            ],
+            "default": "last"
+          },
+          "auto_on": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "description": "Automatic flip back timer, seconds",
+            "default": null
+          },
+          "auto_off": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "description": "Automatic flip back timer, seconds",
+            "default": null
+          },
+          "power": {
+            "type": "number",
+            "description": "Current power consumption in Watts",
+            "default": 0
+          },
+          "schedule": {
+            "type": "boolean",
+            "description": "Whether scheduling is enabled",
+            "default": false
+          },
+          "schedule_rules": {
+            "type": "array",
+            "description": "Whether scheduling is enabled",
+            "items": {
+              "type": "string"
+            },
+            "default": []
+          },
+          "night_mode": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object"
+              }
+            ],
+            "properties": {
+              "enabled": {
+                "type": "boolean",
+                "description": "Enable/disable night mode",
+                "default": false
+              },
+              "start_time": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "description": "Set night mode start time in format hh:mm",
+                "default": null
+              },
+              "end_time": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "description": "Set night mode end time in format hh:mm",
+                "default": null
+              },
+              "brightness": {
+                "type": "number",
+                "description": "Set brightness when in night mode, 0..100",
+                "minimum": 0,
+                "maximum": 100,
+                "multipleOf": 1,
+                "default": 100
+              }
+            },
+            "default": null
+          },
+          "btn_type": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "description": "Input type, one of momentary, toggle, edge, detached or action",
+            "enum": [
+              "toggle",
+              "edge",
+              "detached",
+              "action"
+            ],
+            "default": null
+          },
+          "btn_reverse": {
+            "type": "boolean",
+            "description": "Whether the logical state of the input is inverted",
+            "default": false
+          },
+          "swap_inputs": {
+            "type": "boolean",
+            "description": "Swap inputs",
+            "default": false
+          }
+        },
+        "required": [
+          "icon"
+        ]
+      }
     }
   },
   "required": [
-    "device",
-    "wifi_ap",
-    "wifi_sta",
-    "wifi_sta1",
-    "ap_roaming",
-    "mqtt",
-    "coiot",
-    "sntp",
-    "login",
-    "pin_code",
     "name",
-    "fw",
-    "discoverable",
-    "build_info",
-    "cloud",
-    "timezone",
-    "lat",
-    "lng",
-    "tzautodetect",
-    "tz_utc_offset",
-    "tz_dst",
-    "tz_dst_auto",
-    "time",
-    "unixtime",
-    "debug_enable",
-    "allow_cross_origin"
+    "fw"
   ]
 }

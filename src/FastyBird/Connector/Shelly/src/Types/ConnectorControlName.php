@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Types
- * @since          0.37.0
+ * @since          1.0.0
  *
  * @date           30.07.22
  */
@@ -20,7 +20,7 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use function strval;
 
 /**
- * Connector control name types
+ * Connector control names
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Types

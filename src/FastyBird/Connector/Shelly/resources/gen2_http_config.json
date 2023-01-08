@@ -1,0 +1,506 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "patternProperties": {
+    "^input:[0-9]$": {
+      "properties": {
+        "id": {
+          "type": "number",
+          "description": "Id of the Input component instance"
+        },
+        "name": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "Name of the input instance",
+          "default": null
+        },
+        "type": {
+          "type": "string",
+          "description": "Type of associated input. Range of values switch, button, analog (only if applicable)",
+          "enum": [
+            "switch",
+            "button",
+            "analog"
+          ]
+        },
+        "invert": {
+          "type": "boolean",
+          "description": "(only for type switch, button) True if the logical state of the associated input is inverted, false otherwise. For the change to be applied, the physical switch has to be toggled once after invert is set"
+        },
+        "factory_reset": {
+          "type": "boolean",
+          "description": "(only for type switch, button) True if input-triggered factory reset option is enabled, false otherwise (shown if applicable)"
+        },
+        "report_thr": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "description": "(only for type analog) Analog input report threshold in percent. Accepted range is device-specific, default [1.0..50.0]% unless specified otherwise",
+          "default": null
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "type"
+      ]
+    },
+    "^switch:[0-9]$": {
+      "properties": {
+        "id": {
+          "type": "number",
+          "description": "Id of the Switch component instance"
+        },
+        "name": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "Name of the switch instance",
+          "default": null
+        },
+        "in_mode": {
+          "type": "string",
+          "description": "Mode of the associated input. Range of values: momentary, follow, flip, detached",
+          "enum": [
+            "momentary",
+            "follow",
+            "flip",
+            "detached"
+          ]
+        },
+        "initial_state": {
+          "type": "string",
+          "description": "Output state to set on power_on. Range of values: off, on, restore_last, match_input",
+          "enum": [
+            "off",
+            "on",
+            "restore_last",
+            "match_input"
+          ]
+        },
+        "auto_on": {
+          "type": "boolean",
+          "description": "True if the 'Automatic ON' function is enabled, false otherwise"
+        },
+        "auto_on_delay": {
+          "type": "number",
+          "description": "Seconds to pass until the component is switched back on"
+        },
+        "auto_off": {
+          "type": "boolean",
+          "description": "True if the 'Automatic OFF' function is enabled, false otherwise"
+        },
+        "auto_off_delay": {
+          "type": "number",
+          "description": "Seconds to pass until the component is switched back off"
+        },
+        "input_id": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "description": "Id of the Input component which controls the Switch. Applicable only to Pro1 and Pro1PM devices. Valid values: 0, 1",
+          "default": null
+        },
+        "power_limit": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "description": "Limit (in Watts) over which overpower condition occurs (shown if applicable)",
+          "default": null
+        },
+        "voltage_limit": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "description": "Limit (in Volts) over which overvoltage condition occurs (shown if applicable)",
+          "default": null
+        },
+        "current_limit": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "description": "Number, limit (in Amperes) over which overcurrent condition occurs (shown if applicable)",
+          "default": null
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "in_mode"
+      ]
+    },
+    "^cover:[0-9]$": {
+      "properties": {
+        "id": {
+          "type": "number",
+          "description": "The numeric ID of the Cover component instance"
+        },
+        "name": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "Name of the Cover component instance",
+          "default": null
+        },
+        "in_mode": {
+          "type": "string",
+          "description": "One of single, dual or detached, only present if there is at least one input associated with the Cover instance",
+          "enum": [
+            "single",
+            "dual",
+            "detached"
+          ],
+          "default": "dual"
+        },
+        "initial_state": {
+          "type": "string",
+          "description": "Defines Cover target state on power-on, one of open (Cover will fully open), closed (Cover will fully close) or stopped (Cover will not change its position)",
+          "enum": [
+            "open",
+            "closed",
+            "stopped"
+          ],
+          "default": "stopped"
+        },
+        "power_limit": {
+          "type": "number",
+          "description": "Watts, limit that must be exceeded to trigger an overpower error"
+        },
+        "voltage_limit": {
+          "type": "number",
+          "description": "Volts, limit that must be exceeded to trigger an overvoltage error"
+        },
+        "current_limit": {
+          "type": "number",
+          "description": "Amperes, limit that must be exceeded to trigger an overcurrent error"
+        },
+        "motor": {
+          "type": "object",
+          "properties": {
+            "idle_power_thr": {
+              "type": "number",
+              "description": "Watts, threshold below which the motor is considered stopped",
+              "default": 2
+            },
+            "idle_confirm_period": {
+              "type": "number",
+              "description": "Seconds, minimum period of time in idle state before state is confirmed",
+              "default": 0.25
+            }
+          }
+        },
+        "maxtime_open": {
+          "type": "number",
+          "description": "Default timeout after which Cover will stop moving in open direction",
+          "default": 60
+        },
+        "maxtime_close": {
+          "type": "number",
+          "description": "Default timeout after which Cover will stop moving in close direction",
+          "default": 60
+        },
+        "swap_inputs": {
+          "type": "boolean",
+          "description": "Only present if there are two inputs associated with the Cover instance, defines whether the functions of the two inputs are swapped. The effect of swap_inputs is observable only when in_mode != detached",
+          "default": false
+        },
+        "invert_directions": {
+          "type": "boolean",
+          "description": "Defines the motor rotation for open and close directions (changing this parameter requires a reboot)",
+          "default": false
+        },
+        "obstruction_detection": {
+          "type": "object",
+          "properties": {
+            "enable": {
+              "type": "boolean",
+              "description": "true when obstruction detection is enabled, false otherwise",
+              "default": false
+            },
+            "direction": {
+              "type": "string",
+              "description": "The direction of motion for which safety switch should be monitored, one of open, close, both",
+              "enum": [
+                "open",
+                "closed",
+                "both"
+              ],
+              "default": "both"
+            },
+            "action": {
+              "type": "string",
+              "description": "The recovery action which should be performed if the safety switch is engaged while moving in a monitored direction, one of",
+              "enum": [
+                "stop",
+                "reverse"
+              ],
+              "default": "stop"
+            },
+              "power_thr": {
+              "type": "number",
+              "description": "Watts, power consumption above this threshold should be interpreted as objects obstructing Cover movement. This property is editable at any time, but note that during the cover calibration procedure (Cover.Calibrate), power_thr will be automatically set to the peak power consumption + 15%, overwriting the current value. The automatic setup of power_thr during calibration will only start tracking power values when the holdoff time (see below) has elapsed",
+              "default": 1000
+            },
+            "holdoff": {
+              "type": "number",
+              "description": "Seconds, time to wait after Cover starts moving before obstruction detection is activated (to avoid false detections because of the initial power consumption spike)",
+              "default": 1
+            }
+          }
+        },
+        "safety_switch": {
+          "type": "object",
+          "properties": {
+            "enable": {
+              "type": "boolean",
+              "description": "true when safety switch is enabled, false otherwise",
+              "default": false
+            },
+            "direction": {
+              "type": "string",
+              "description": "The direction of motion for which safety switch should be monitored, one of open, close, both",
+              "enum": [
+                "open",
+                "closed",
+                "both"
+              ],
+              "default": "both"
+            },
+            "action": {
+              "type": "string",
+              "description": "The recovery action which should be performed if the safety switch is engaged while moving in a monitored direction, one of",
+              "enum": [
+                "stop",
+                "reverse",
+                "pause"
+              ],
+              "default": "stop"
+            },
+            "allowed_move": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "string"
+                }
+              ],
+              "description": "Allowed movement direction when the safety switch is engaged while moving in a monitored direction:",
+              "enum": [
+                null,
+                "reverse"
+              ],
+              "default": null
+            }
+          }
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "in_mode"
+      ]
+    },
+    "^light:[0-9]$": {
+      "properties": {
+        "id": {
+          "type": "number",
+          "description": "Id of the Light component instance"
+        },
+        "name": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "Name of the light instance",
+          "default": null
+        },
+        "initial_state": {
+          "type": "string",
+          "description": "Output state to set on power_on. Range of values: off, on, restore_last, match_input",
+          "enum": [
+            "off",
+            "on",
+            "restore_last",
+            "match_input"
+          ]
+        },
+        "auto_on": {
+          "type": "boolean",
+          "description": "True if the 'Automatic ON' function is enabled, false otherwise"
+        },
+        "auto_on_delay": {
+          "type": "number",
+          "description": "Seconds to pass until the component is switched back on"
+        },
+        "auto_off": {
+          "type": "boolean",
+          "description": "True if the 'Automatic OFF' function is enabled, false otherwise"
+        },
+        "auto_off_delay": {
+          "type": "number",
+          "description": "Seconds to pass until the component is switched back off"
+        },
+        "default": {
+          "type": "object",
+          "properties": {
+            "brightness": {
+              "type": "number",
+              "description": "Brightness level (in percent) after power on"
+            }
+          }
+        },
+        "night_mode": {
+          "type": "object",
+          "properties": {
+            "enable": {
+              "type": "boolean",
+              "description": "Enable or disable night mode",
+              "default": false
+            },
+            "brightness": {
+              "type": "number",
+              "description": "Brightness level limit when night mode is active"
+            },
+            "active_between": {
+              "type": "array",
+              "description": "Containing 2 elements of type string, the first element indicates the start of the period during which the night mode will be active, the second indicates the end of that period. Both start and end are strings in the format HH:MM, where HH and MM are hours and minutes with optinal leading zeros"
+            }
+          }
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "initial_state"
+      ]
+    }
+  },
+  "properties": {
+    "temperature": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number",
+          "description": "Id of the Temperature component instance"
+        },
+        "name": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "Name of the Temperature instance. name length should not exceed 64 chars",
+          "default": null
+        },
+        "report_thr_C": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "Temperature report threshold in Celsius. Accepted range is device-specific, default [0.5..5.0]C unless specified otherwise",
+          "default": null
+        },
+        "offset_C": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "Offset in Celsius to be applied to the measured temperature. Accepted range is device-specific, default [-50.0 .. 50.0] unless specified otherwise",
+          "default": null
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "humidity": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number",
+          "description": "Id of the Humidity component instance"
+        },
+        "name": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "Name of the Humidity instance. name length should not exceed 64 chars",
+          "default": null
+        },
+        "report_thr": {
+          "type": "number",
+          "description": "Humidity report threshold in %. Accepted range is device-specific, default [1.0..20.0]% unless specified otherwise"
+        },
+        "offset": {
+          "type": "number",
+          "description": "Humidity offset in %. Value is applied to measured humidity. Accepted range is device-specific, default [-50.0..50.0]% unless specified otherwise"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    }
+  }
+}

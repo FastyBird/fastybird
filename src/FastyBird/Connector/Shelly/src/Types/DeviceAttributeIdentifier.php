@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Types
- * @since          0.37.0
+ * @since          1.0.0
  *
  * @date           22.07.22
  */
@@ -20,7 +20,7 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use function strval;
 
 /**
- * Device attribute identifier types
+ * Device attribute identifiers
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Types
@@ -37,7 +37,7 @@ class DeviceAttributeIdentifier extends Consistence\Enum\Enum
 
 	public const IDENTIFIER_MAC_ADDRESS = MetadataTypes\DeviceAttributeIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS;
 
-	public const IDENTIFIER_MODEL = MetadataTypes\DeviceAttributeIdentifier::IDENTIFIER_HARDWARE_MODEL;
+	public const IDENTIFIER_HARDWARE_MODEL = MetadataTypes\DeviceAttributeIdentifier::IDENTIFIER_HARDWARE_MODEL;
 
 	public function __toString(): string
 	{

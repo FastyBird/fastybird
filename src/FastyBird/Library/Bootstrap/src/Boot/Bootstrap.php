@@ -189,7 +189,11 @@ class Bootstrap
 			define('FB_CONFIG_DIR', realpath(getenv('FB_CONFIG_DIR')));
 
 		} elseif (!defined('FB_CONFIG_DIR')) {
-			define('FB_CONFIG_DIR', realpath(FB_APP_DIR . DS . 'config'));
+			if (realpath(FB_APP_DIR . DS . 'config') !== false) {
+				define('FB_CONFIG_DIR', realpath(FB_APP_DIR . DS . 'config'));
+			} else {
+				define('FB_CONFIG_DIR', realpath(FB_APP_DIR . DS . 'var' . DS . 'config'));
+			}
 		}
 	}
 

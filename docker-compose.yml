@@ -72,6 +72,8 @@ services:
       # you may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
       # - ./docker/redis/other:/var/lib/redis:rw,delegated
       # - ./docker/redis/data:/data:rw,delegated
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
     networks:
       - fastybird
 

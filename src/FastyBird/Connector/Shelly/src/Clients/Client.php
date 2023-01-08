@@ -8,15 +8,19 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Clients
- * @since          0.37.0
+ * @since          1.0.0
  *
  * @date           23.02.20
  */
 
 namespace FastyBird\Connector\Shelly\Clients;
 
+use FastyBird\Connector\Shelly\Entities;
+use FastyBird\Module\Devices\Entities as DevicesEntities;
+use React\Promise;
+
 /**
- * Shelly device client interface
+ * Base device client interface
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Clients
@@ -27,11 +31,6 @@ interface Client
 {
 
 	/**
-	 * Discover new devices
-	 */
-	public function discover(): void;
-
-	/**
 	 * Create servers/clients
 	 */
 	public function connect(): void;
@@ -40,5 +39,14 @@ interface Client
 	 * Destroy servers/clients
 	 */
 	public function disconnect(): void;
+
+	/**
+	 * Write data to DPS
+	 */
+	public function writeChannelProperty(
+		Entities\ShellyDevice $device,
+		DevicesEntities\Channels\Channel $channel,
+		DevicesEntities\Channels\Properties\Dynamic $property,
+	): Promise\PromiseInterface;
 
 }
