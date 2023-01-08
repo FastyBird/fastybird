@@ -10,6 +10,7 @@ use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
 use FastyBird\Module\Triggers\DI;
 use FastyBird\Module\Triggers\Exceptions;
+use IPub\DoctrineCrud;
 use Nette;
 use Nettrine\ORM as NettrineORM;
 use PHPUnit\Framework\TestCase;
@@ -171,7 +172,7 @@ abstract class DbTestCase extends TestCase
 		if (!$this->isDatabaseSetUp) {
 			$db = $this->getDb();
 
-			/** @var list<ORM\Mapping\ClassMetadata> $metadatas */
+			/** @var list<ORM\Mapping\ClassMetadata<DoctrineCrud\Entities\IEntity>> $metadatas */
 			$metadatas = $this->getEntityManager()->getMetadataFactory()->getAllMetadata();
 			$schemaTool = new ORM\Tools\SchemaTool($this->getEntityManager());
 
