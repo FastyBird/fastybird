@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
 use FastyBird\Connector\Shelly\Entities;
+use Nette\Utils;
 
 /**
  * Generation 2 device switch or cover component temperature status entity
@@ -33,7 +34,7 @@ final class ActiveEnergyStatusBlock implements Entities\API\Entity
 	 */
 	public function __construct(
 		private readonly float $total,
-		private readonly array $byMinute,
+		private readonly array|Utils\ArrayHash $byMinute,
 		private readonly int $minuteTs,
 	)
 	{
@@ -49,7 +50,7 @@ final class ActiveEnergyStatusBlock implements Entities\API\Entity
 	 */
 	public function getByMinute(): array
 	{
-		return $this->byMinute;
+		return $this->byMinute instanceof Utils\ArrayHash ? (array) $this->byMinute : $this->byMinute;
 	}
 
 	public function getMinuteTs(): int

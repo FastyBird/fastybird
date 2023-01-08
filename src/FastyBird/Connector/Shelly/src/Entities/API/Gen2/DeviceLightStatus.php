@@ -54,7 +54,7 @@ final class DeviceLightStatus implements Entities\API\Entity
 
 	public function getType(): Types\ComponentType
 	{
-		return Types\ComponentType::get(Types\ComponentType::TYPE_TEMPERATURE);
+		return Types\ComponentType::get(Types\ComponentType::TYPE_LIGHT);
 	}
 
 	public function getSource(): string

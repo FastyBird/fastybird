@@ -53,7 +53,7 @@ final class DeviceCoverStatus implements Entities\API\Entity
 		private readonly bool $posControl,
 		private readonly ActiveEnergyStatusBlock|null $aenergy,
 		private readonly TemperatureBlockStatus|null $temperature,
-		private readonly array $errors = [],
+		private readonly array|Utils\ArrayHash $errors = [],
 	)
 	{
 	}
@@ -65,7 +65,7 @@ final class DeviceCoverStatus implements Entities\API\Entity
 
 	public function getType(): Types\ComponentType
 	{
-		return Types\ComponentType::get(Types\ComponentType::TYPE_TEMPERATURE);
+		return Types\ComponentType::get(Types\ComponentType::TYPE_COVER);
 	}
 
 	public function getSource(): string
@@ -149,7 +149,7 @@ final class DeviceCoverStatus implements Entities\API\Entity
 	 */
 	public function getErrors(): array
 	{
-		return $this->errors;
+		return $this->errors instanceof Utils\ArrayHash ? (array) $this->errors : $this->errors;
 	}
 
 	/**

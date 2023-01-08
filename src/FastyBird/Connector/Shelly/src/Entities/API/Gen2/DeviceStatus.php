@@ -45,6 +45,8 @@ final class DeviceStatus implements Entities\API\Entity
 		private readonly array $lights = [],
 		private readonly DeviceTemperatureStatus|null $temperature = null,
 		private readonly DeviceHumidityStatus|null $humidity = null,
+		private readonly EthernetStatus|null $ethernet = null,
+		private readonly WifiStatus|null $wifi = null,
 	)
 	{
 	}
@@ -91,6 +93,16 @@ final class DeviceStatus implements Entities\API\Entity
 		return $this->humidity;
 	}
 
+	public function getEthernet(): EthernetStatus|null
+	{
+		return $this->ethernet;
+	}
+
+	public function getWifi(): WifiStatus|null
+	{
+		return $this->wifi;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -115,6 +127,8 @@ final class DeviceStatus implements Entities\API\Entity
 			),
 			'temperature' => $this->getTemperature()?->toArray(),
 			'humidity' => $this->getHumidity()?->toArray(),
+			'ethernet' => $this->getEthernet()?->toArray(),
+			'wifi' => $this->getWifi()?->toArray(),
 		];
 	}
 

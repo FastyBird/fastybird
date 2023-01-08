@@ -99,8 +99,8 @@ final class Coap implements Clients\Client
 
 		$this->server = $factory->createReceiver(self::COAP_ADDRESS . ':' . self::COAP_PORT);
 
-		$this->server->on('message', function ($message): void {
-			$this->handlePacket($message);
+		$this->server->on('message', function ($message, $remote): void {
+			$this->handlePacket($message, $remote);
 		});
 
 		$this->server->on('error', function (Throwable $ex): void {
@@ -162,7 +162,7 @@ final class Coap implements Clients\Client
 	 * @throws MetadataExceptions\Logic
 	 * @throws MetadataExceptions\MalformedInput
 	 */
-	private function handlePacket(string $packet): void
+	private function handlePacket(string $packet, string $remote): void
 	{
 		$buffer = unpack('C*', $packet);
 
@@ -265,7 +265,7 @@ final class Coap implements Clients\Client
 				&& $deviceIdentifier !== null
 			) {
 				try {
-					$this->handleStatusMessage($deviceIdentifier, $message);
+					$this->handleStatusMessage($deviceIdentifier, $message, $remote);
 				} catch (Exceptions\ParseMessage $ex) {
 					$this->logger->warning(
 						'Received message could not be handled',
@@ -318,6 +318,7 @@ final class Coap implements Clients\Client
 	public function handleStatusMessage(
 		string $deviceIdentifier,
 		string $message,
+		string $remote,
 	): void
 	{
 		$filePath = Shelly\Constants::RESOURCES_FOLDER . DIRECTORY_SEPARATOR . self::STATUS_MESSAGE_SCHEMA_FILENAME;
@@ -368,6 +369,7 @@ final class Coap implements Clients\Client
 				Types\MessageSource::get(Types\MessageSource::SOURCE_GEN_1_COAP),
 				$this->connector->getId(),
 				$deviceIdentifier,
+				$remote,
 				$statuses,
 			),
 		);

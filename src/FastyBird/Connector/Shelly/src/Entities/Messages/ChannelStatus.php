@@ -17,7 +17,6 @@ namespace FastyBird\Connector\Shelly\Entities\Messages;
 
 use FastyBird\Connector\Shelly\Types;
 use Nette;
-use Ramsey\Uuid;
 use function array_map;
 use function array_unique;
 use const SORT_REGULAR;
@@ -43,7 +42,7 @@ final class ChannelStatus implements Entity
 	 */
 	public function __construct(
 		private readonly Types\MessageSource $source,
-		private readonly Uuid\UuidInterface $id,
+		private readonly string $identifier,
 		array $sensors = [],
 	)
 	{
@@ -55,9 +54,9 @@ final class ChannelStatus implements Entity
 		return $this->source;
 	}
 
-	public function getId(): Uuid\UuidInterface
+	public function getIdentifier(): string
 	{
-		return $this->id;
+		return $this->identifier;
 	}
 
 	/**
@@ -81,7 +80,7 @@ final class ChannelStatus implements Entity
 	public function toArray(): array
 	{
 		return [
-			'id' => $this->getId()->toString(),
+			'identifier' => $this->getIdentifier(),
 			'source' => $this->getSource()->getValue(),
 			'sensors' => array_map(
 				static fn (PropertyStatus $sensor): array => $sensor->toArray(),

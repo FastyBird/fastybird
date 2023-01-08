@@ -40,10 +40,10 @@ final class DeviceMeterStatus implements Entities\API\Entity
 	 */
 	public function __construct(
 		private readonly float $power,
-		private readonly float $overpower,
+		private readonly float|bool $overpower,
 		private readonly bool $isValid,
-		private readonly float $timestamp,
-		private readonly array $counters,
+		private readonly float|null $timestamp,
+		private readonly array|Utils\ArrayHash $counters,
 		private readonly float $total,
 	)
 	{
@@ -54,7 +54,7 @@ final class DeviceMeterStatus implements Entities\API\Entity
 		return $this->power;
 	}
 
-	public function getOverpower(): float
+	public function getOverpower(): float|bool
 	{
 		return $this->overpower;
 	}
@@ -67,9 +67,13 @@ final class DeviceMeterStatus implements Entities\API\Entity
 	/**
 	 * @throws Exception
 	 */
-	public function getTimestamp(): DateTimeInterface
+	public function getTimestamp(): DateTimeInterface|null
 	{
-		return Utils\DateTime::from(intval($this->timestamp));
+		if ($this->timestamp !== null) {
+			return Utils\DateTime::from(intval($this->timestamp));
+		}
+
+		return null;
 	}
 
 	/**
@@ -77,7 +81,7 @@ final class DeviceMeterStatus implements Entities\API\Entity
 	 */
 	public function getCounters(): array
 	{
-		return $this->counters;
+		return $this->counters instanceof Utils\ArrayHash ? (array) $this->counters : $this->counters;
 	}
 
 	public function getTotal(): float
@@ -96,7 +100,7 @@ final class DeviceMeterStatus implements Entities\API\Entity
 			'power' => $this->getPower(),
 			'overpower' => $this->getOverpower(),
 			'valid' => $this->isValid(),
-			'timestamp' => $this->getTimestamp()->format(DateTimeInterface::ATOM),
+			'timestamp' => $this->getTimestamp()?->format(DateTimeInterface::ATOM),
 			'counters' => $this->getCounters(),
 			'total' => $this->getTotal(),
 		];

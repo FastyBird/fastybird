@@ -210,7 +210,7 @@ final class LocalDiscovery implements Consumer
 					);
 
 					$this->logger->debug(
-						'Device sensor was created',
+						'Device channel property was created',
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 							'type' => 'local-discovery-message-consumer',
@@ -242,7 +242,7 @@ final class LocalDiscovery implements Consumer
 					);
 
 					$this->logger->debug(
-						'Device sensor was updated',
+						'Device channel property was updated',
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 							'type' => 'local-discovery-message-consumer',

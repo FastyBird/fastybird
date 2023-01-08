@@ -112,6 +112,7 @@ final class Gen1HttpApi extends HttpApi
 
 	/**
 	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\HttpApiCall
 	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\Logic
 	 * @throws MetadataExceptions\MalformedInput
@@ -122,18 +123,13 @@ final class Gen1HttpApi extends HttpApi
 		bool $async = true,
 	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\Gen1\DeviceInformation
 	{
-		$deferred = new Promise\Deferred();
+		if ($async) {
+			$deferred = new Promise\Deferred();
 
-		$result = $this->callRequest(
-			'GET',
-			sprintf(self::DEVICE_INFORMATION, $address),
-			[],
-			null,
-			$async,
-		);
-
-		if ($result instanceof Promise\PromiseInterface) {
-			$result
+			$this->callAsyncRequest(
+				'GET',
+				sprintf(self::DEVICE_INFORMATION, $address),
+			)
 				->then(function (Message\ResponseInterface $response) use ($deferred): void {
 					try {
 						$deferred->resolve($this->parseDeviceInformationResponse($response));
@@ -144,23 +140,21 @@ final class Gen1HttpApi extends HttpApi
 				->otherwise(static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);
 				});
-		} elseif ($result instanceof Message\ResponseInterface) {
-			return $this->parseDeviceInformationResponse($result);
-		} else {
-			$ex = new Exceptions\InvalidState('Request could not be created');
 
-			if ($async) {
-				Promise\reject($ex);
-			} else {
-				throw $ex;
-			}
+			return $deferred->promise();
 		}
 
-		return $deferred->promise();
+		return $this->parseDeviceInformationResponse(
+			$this->callRequest(
+				'GET',
+				sprintf(self::DEVICE_INFORMATION, $address),
+			),
+		);
 	}
 
 	/**
 	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\HttpApiCall
 	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\Logic
 	 * @throws MetadataExceptions\MalformedInput
@@ -168,21 +162,24 @@ final class Gen1HttpApi extends HttpApi
 	 */
 	public function getDeviceDescription(
 		string $address,
+		string|null $username,
+		string|null $password,
 		bool $async = true,
 	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\Gen1\DeviceDescription
 	{
-		$deferred = new Promise\Deferred();
+		if ($async) {
+			$deferred = new Promise\Deferred();
 
-		$result = $this->callRequest(
-			'GET',
-			sprintf(self::DEVICE_DESCRIPTION, $address),
-			[],
-			null,
-			$async,
-		);
-
-		if ($result instanceof Promise\PromiseInterface) {
-			$result
+			$this->callAsyncRequest(
+				'GET',
+				sprintf(self::DEVICE_DESCRIPTION, $address),
+				[],
+				[],
+				null,
+				self::AUTHORIZATION_BASIC,
+				$username,
+				$password,
+			)
 				->then(function (Message\ResponseInterface $response) use ($deferred): void {
 					try {
 						$deferred->resolve($this->parseDeviceDescriptionResponse($response));
@@ -193,23 +190,27 @@ final class Gen1HttpApi extends HttpApi
 				->otherwise(static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);
 				});
-		} elseif ($result instanceof Message\ResponseInterface) {
-			return $this->parseDeviceDescriptionResponse($result);
-		} else {
-			$ex = new Exceptions\InvalidState('Request could not be created');
 
-			if ($async) {
-				Promise\reject($ex);
-			} else {
-				throw $ex;
-			}
+			return $deferred->promise();
 		}
 
-		return $deferred->promise();
+		return $this->parseDeviceDescriptionResponse(
+			$this->callRequest(
+				'GET',
+				sprintf(self::DEVICE_DESCRIPTION, $address),
+				[],
+				[],
+				null,
+				self::AUTHORIZATION_BASIC,
+				$username,
+				$password,
+			),
+		);
 	}
 
 	/**
 	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\HttpApiCall
 	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\Logic
 	 * @throws MetadataExceptions\MalformedInput
@@ -217,21 +218,24 @@ final class Gen1HttpApi extends HttpApi
 	 */
 	public function getDeviceStatus(
 		string $address,
+		string|null $username,
+		string|null $password,
 		bool $async = true,
 	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\Gen1\DeviceStatus
 	{
-		$deferred = new Promise\Deferred();
+		if ($async) {
+			$deferred = new Promise\Deferred();
 
-		$result = $this->callRequest(
-			'GET',
-			sprintf(self::DEVICE_STATUS, $address),
-			[],
-			null,
-			$async,
-		);
-
-		if ($result instanceof Promise\PromiseInterface) {
-			$result
+			$this->callAsyncRequest(
+				'GET',
+				sprintf(self::DEVICE_STATUS, $address),
+				[],
+				[],
+				null,
+				self::AUTHORIZATION_BASIC,
+				$username,
+				$password,
+			)
 				->then(function (Message\ResponseInterface $response) use ($deferred): void {
 					try {
 						$deferred->resolve($this->parseDeviceStatusResponse($response));
@@ -242,26 +246,31 @@ final class Gen1HttpApi extends HttpApi
 				->otherwise(static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);
 				});
-		} elseif ($result instanceof Message\ResponseInterface) {
-			return $this->parseDeviceStatusResponse($result);
-		} else {
-			$ex = new Exceptions\InvalidState('Request could not be created');
 
-			if ($async) {
-				Promise\reject($ex);
-			} else {
-				throw $ex;
-			}
+			return $deferred->promise();
 		}
 
-		return $deferred->promise();
+		return $this->parseDeviceStatusResponse(
+			$this->callRequest(
+				'GET',
+				sprintf(self::DEVICE_STATUS, $address),
+				[],
+				[],
+				null,
+				self::AUTHORIZATION_BASIC,
+				$username,
+				$password,
+			),
+		);
 	}
 
 	/**
-	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\HttpApiCall
 	 */
 	public function setDeviceStatus(
 		string $address,
+		string|null $username,
+		string|null $password,
 		string $sensor,
 		int $channel,
 		string $action,
@@ -269,9 +278,37 @@ final class Gen1HttpApi extends HttpApi
 		bool $async = true,
 	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|bool
 	{
-		$deferred = new Promise\Deferred();
+		if ($async) {
+			$deferred = new Promise\Deferred();
 
-		$result = $this->callRequest(
+			$this->callAsyncRequest(
+				'GET',
+				sprintf(
+					self::DEVICE_ACTION,
+					$address,
+					$sensor,
+					$channel,
+					$action,
+					$value,
+				),
+				[],
+				[],
+				null,
+				self::AUTHORIZATION_BASIC,
+				$username,
+				$password,
+			)
+				->then(static function () use ($deferred): void {
+					$deferred->resolve();
+				})
+				->otherwise(static function (Throwable $ex) use ($deferred): void {
+					$deferred->reject($ex);
+				});
+
+			return $deferred->promise();
+		}
+
+		$response = $this->callRequest(
 			'GET',
 			sprintf(
 				self::DEVICE_ACTION,
@@ -282,31 +319,14 @@ final class Gen1HttpApi extends HttpApi
 				$value,
 			),
 			[],
+			[],
 			null,
-			$async,
+			self::AUTHORIZATION_BASIC,
+			$username,
+			$password,
 		);
 
-		if ($result instanceof Promise\PromiseInterface) {
-			$result
-				->then(static function () use ($deferred): void {
-					$deferred->resolve();
-				})
-				->otherwise(static function (Throwable $ex) use ($deferred): void {
-					$deferred->reject($ex);
-				});
-		} elseif ($result instanceof Message\ResponseInterface) {
-			return $result->getStatusCode() === StatusCodeInterface::STATUS_OK;
-		} else {
-			$ex = new Exceptions\InvalidState('Request could not be created');
-
-			if ($async) {
-				Promise\reject($ex);
-			} else {
-				throw $ex;
-			}
-		}
-
-		return $deferred->promise();
+		return $response->getStatusCode() === StatusCodeInterface::STATUS_OK;
 	}
 
 	/**
@@ -362,7 +382,7 @@ final class Gen1HttpApi extends HttpApi
 					|| !$block->offsetExists('D')
 				) {
 					$this->logger->warning(
-						'Received block description is not in valid format',
+						'Received device block description is not in valid format',
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 							'type' => 'gen1-http-api',
@@ -387,7 +407,7 @@ final class Gen1HttpApi extends HttpApi
 						|| !$sensor->offsetExists('L')
 					) {
 						$this->logger->warning(
-							'Received sensor description is not in valid format',
+							'Received block sensor description is not in valid format',
 							[
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 								'type' => 'gen1-http-api',
@@ -473,7 +493,10 @@ final class Gen1HttpApi extends HttpApi
 
 		if (
 			$parsedMessage->offsetExists('relays')
-			&& is_array($parsedMessage->offsetGet('relays'))
+			&& (
+				is_array($parsedMessage->offsetGet('relays'))
+				|| $parsedMessage->offsetGet('relays') instanceof Utils\ArrayHash
+			)
 		) {
 			foreach ($parsedMessage->offsetGet('relays') as $relayStatus) {
 				assert($relayStatus instanceof Utils\ArrayHash);
@@ -489,7 +512,10 @@ final class Gen1HttpApi extends HttpApi
 
 		if (
 			$parsedMessage->offsetExists('rollers')
-			&& is_array($parsedMessage->offsetGet('rollers'))
+			&& (
+				is_array($parsedMessage->offsetGet('rollers'))
+				|| $parsedMessage->offsetGet('rollers') instanceof Utils\ArrayHash
+			)
 		) {
 			foreach ($parsedMessage->offsetGet('rollers') as $rollerStatus) {
 				assert($rollerStatus instanceof Utils\ArrayHash);
@@ -505,7 +531,10 @@ final class Gen1HttpApi extends HttpApi
 
 		if (
 			$parsedMessage->offsetExists('inputs')
-			&& is_array($parsedMessage->offsetGet('inputs'))
+			&& (
+				is_array($parsedMessage->offsetGet('inputs'))
+				|| $parsedMessage->offsetGet('inputs') instanceof Utils\ArrayHash
+			)
 		) {
 			foreach ($parsedMessage->offsetGet('inputs') as $inputStatus) {
 				assert($inputStatus instanceof Utils\ArrayHash);
@@ -521,7 +550,10 @@ final class Gen1HttpApi extends HttpApi
 
 		if (
 			$parsedMessage->offsetExists('lights')
-			&& is_array($parsedMessage->offsetGet('lights'))
+			&& (
+				is_array($parsedMessage->offsetGet('lights'))
+				|| $parsedMessage->offsetGet('lights') instanceof Utils\ArrayHash
+			)
 		) {
 			foreach ($parsedMessage->offsetGet('lights') as $lightStatus) {
 				assert($lightStatus instanceof Utils\ArrayHash);
@@ -537,7 +569,10 @@ final class Gen1HttpApi extends HttpApi
 
 		if (
 			$parsedMessage->offsetExists('meters')
-			&& is_array($parsedMessage->offsetGet('meters'))
+			&& (
+				is_array($parsedMessage->offsetGet('meters'))
+				|| $parsedMessage->offsetGet('meters') instanceof Utils\ArrayHash
+			)
 		) {
 			foreach ($parsedMessage->offsetGet('meters') as $meterStatus) {
 				assert($meterStatus instanceof Utils\ArrayHash);
@@ -553,7 +588,10 @@ final class Gen1HttpApi extends HttpApi
 
 		if (
 			$parsedMessage->offsetExists('emeters')
-			&& is_array($parsedMessage->offsetGet('emeters'))
+			&& (
+				is_array($parsedMessage->offsetGet('emeters'))
+				|| $parsedMessage->offsetGet('emeters') instanceof Utils\ArrayHash
+			)
 		) {
 			foreach ($parsedMessage->offsetGet('emeters') as $emeterStatus) {
 				assert($emeterStatus instanceof Utils\ArrayHash);
@@ -565,6 +603,18 @@ final class Gen1HttpApi extends HttpApi
 			}
 		}
 
+		$wifi = null;
+
+		if (
+			$parsedMessage->offsetExists('wifi_sta')
+			&& $parsedMessage->offsetGet('wifi_sta') instanceof Utils\ArrayHash
+		) {
+			$wifi = $this->entityFactory->build(
+				Entities\API\Gen1\WifiStaStatus::class,
+				$parsedMessage->offsetGet('wifi_sta'),
+			);
+		}
+
 		return new Entities\API\Gen1\DeviceStatus(
 			$relays,
 			$rollers,
@@ -572,6 +622,7 @@ final class Gen1HttpApi extends HttpApi
 			$lights,
 			$meters,
 			$emeters,
+			$wifi,
 		);
 	}
 

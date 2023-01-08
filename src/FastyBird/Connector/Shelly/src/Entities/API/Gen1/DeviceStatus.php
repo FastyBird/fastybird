@@ -47,6 +47,7 @@ final class DeviceStatus implements Entities\API\Entity
 		private readonly array $lights = [],
 		private readonly array $meters = [],
 		private readonly array $emeters = [],
+		private readonly WifiStaStatus|null $wifi = null,
 	)
 	{
 	}
@@ -99,6 +100,11 @@ final class DeviceStatus implements Entities\API\Entity
 		return $this->emeters;
 	}
 
+	public function getWifi(): WifiStaStatus|null
+	{
+		return $this->wifi;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -129,6 +135,7 @@ final class DeviceStatus implements Entities\API\Entity
 				static fn (DeviceEmeterStatus $status): array => $status->toArray(),
 				$this->getEmeters(),
 			),
+			'wifi' => $this->getWifi()?->toArray(),
 		];
 	}
 

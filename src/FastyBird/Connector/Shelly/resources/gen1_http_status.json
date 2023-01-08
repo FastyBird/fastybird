@@ -2,6 +2,51 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
+    "wifi_sta": {
+      "type": "object",
+      "properties": {
+        "connected": {
+          "type": "boolean",
+          "default": false
+        },
+        "ssid": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "Ssid of the network (null if disconnected)",
+          "default": null
+        },
+        "rssi": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "description": "Strength of the signal in dBms",
+          "default": null
+        },
+        "ip": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "Ip of the device in the network (null if disconnected)",
+          "default": null
+        }
+      }
+    },
     "relays": {
       "type": "array",
       "items": {
@@ -111,7 +156,10 @@
           "last_direction": {
             "type": "string",
             "description": "Last direction of motion, open or close",
-            "enum": ["open", "close"]
+            "enum": [
+              "open",
+              "close"
+            ]
           },
           "current_pos": {
             "type": "number",
@@ -155,7 +203,15 @@
           "event": {
             "type": "string",
             "description": "Input event",
-            "enum": ["", "S", "L", "SS", "SSS", "SL", "LS"],
+            "enum": [
+              "",
+              "S",
+              "L",
+              "SS",
+              "SSS",
+              "SL",
+              "LS"
+            ],
             "default": ""
           },
           "event_cnt": {
@@ -218,7 +274,10 @@
           "mode": {
             "type": "string",
             "description": "Currently configured mode",
-            "enum": ["color","white"],
+            "enum": [
+              "color",
+              "white"
+            ],
             "default": "white"
           },
           "red": {
@@ -313,7 +372,14 @@
             "default": 0
           },
           "overpower": {
-            "type": "number",
+            "oneOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              }
+            ],
             "description": "Value in Watts, on which an overpower condition is detected",
             "default": 0
           },
@@ -339,7 +405,8 @@
             "description": "Energy counter value for the last 3 round minutes in Watt-minute",
             "items": {
               "type": "number"
-            }
+            },
+            "default": []
           },
           "total": {
             "type": "number",

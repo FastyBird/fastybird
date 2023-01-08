@@ -26,6 +26,7 @@ use FastyBird\Connector\Shelly\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use Fig\Http\Message\StatusCodeInterface;
 use InvalidArgumentException;
 use Nette;
 use Nette\Utils;
@@ -347,32 +348,65 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 			try {
 				if ($device->getGeneration()->equalsValue(Types\DeviceGeneration::GENERATION_1)) {
-					$deviceDescription = $gen1HttpApi->getDeviceDescription($device->getIpAddress(), false);
+					$deviceDescription = $gen1HttpApi->getDeviceDescription(
+						$device->getIpAddress(),
+						null,
+						null,
+						false,
+					);
 					assert($deviceDescription instanceof Entities\API\Gen1\DeviceDescription);
 				} elseif ($device->getGeneration()->equalsValue(Types\DeviceGeneration::GENERATION_2)) {
-					$deviceConfiguration = $gen2HttpApi->getDeviceConfiguration($device->getIpAddress(), false);
+					$deviceConfiguration = $gen2HttpApi->getDeviceConfiguration(
+						$device->getIpAddress(),
+						null,
+						null,
+						false,
+					);
 					assert($deviceConfiguration instanceof Entities\API\Gen2\DeviceConfiguration);
 				} else {
 					continue;
 				}
 			} catch (Throwable $ex) {
-				$this->logger->error(
-					'Could not load device description or configuration',
-					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-						'type' => 'discovery-client',
-						'exception' => [
-							'message' => $ex->getMessage(),
-							'code' => $ex->getCode(),
+				if (
+					$ex instanceof Exceptions\HttpApiCall
+					&& $ex->getCode() === StatusCodeInterface::STATUS_UNAUTHORIZED
+				) {
+					$this->logger->error(
+						'Device is password protected and could not be accessed',
+						[
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+							'type' => 'discovery-client',
+							'exception' => [
+								'message' => $ex->getMessage(),
+								'code' => $ex->getCode(),
+							],
+							'device' => [
+								'identifier' => $device->getIdentifier(),
+								'ip_address' => $device->getIpAddress(),
+								'domain' => $device->getDomain(),
+								'generation' => $device->getGeneration()->getValue(),
+							],
 						],
-						'device' => [
-							'identifier' => $device->getIdentifier(),
-							'ip_address' => $device->getIpAddress(),
-							'domain' => $device->getDomain(),
-							'generation' => $device->getGeneration()->getValue(),
+					);
+				} else {
+					$this->logger->error(
+						'Could not load device description or configuration',
+						[
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+							'type' => 'discovery-client',
+							'exception' => [
+								'message' => $ex->getMessage(),
+								'code' => $ex->getCode(),
+							],
+							'device' => [
+								'identifier' => $device->getIdentifier(),
+								'ip_address' => $device->getIpAddress(),
+								'domain' => $device->getDomain(),
+								'generation' => $device->getGeneration()->getValue(),
+							],
 						],
-					],
-				);
+					);
+				}
 
 				continue;
 			}

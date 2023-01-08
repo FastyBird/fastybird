@@ -18,6 +18,7 @@ namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Types;
 use Nette;
+use Nette\Utils;
 
 /**
  * Generation 2 device humidity status entity
@@ -38,7 +39,7 @@ final class DeviceHumidityStatus implements Entities\API\Entity
 	public function __construct(
 		private readonly int $id,
 		private readonly float|null $rh,
-		private readonly array $errors = [],
+		private readonly array|Utils\ArrayHash $errors = [],
 	)
 	{
 	}
@@ -50,7 +51,7 @@ final class DeviceHumidityStatus implements Entities\API\Entity
 
 	public function getType(): Types\ComponentType
 	{
-		return Types\ComponentType::get(Types\ComponentType::TYPE_TEMPERATURE);
+		return Types\ComponentType::get(Types\ComponentType::TYPE_HUMIDITY);
 	}
 
 	public function getRelativeHumidity(): float|null
@@ -63,7 +64,7 @@ final class DeviceHumidityStatus implements Entities\API\Entity
 	 */
 	public function getErrors(): array
 	{
-		return $this->errors;
+		return $this->errors instanceof Utils\ArrayHash ? (array) $this->errors : $this->errors;
 	}
 
 	/**

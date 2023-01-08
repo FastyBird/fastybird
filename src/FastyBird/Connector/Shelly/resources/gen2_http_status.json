@@ -354,6 +354,88 @@
     }
   },
   "properties": {
+    "wifi": {
+      "type": "object",
+      "properties": {
+        "sta_ip": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "Ip of the device in the network (null if disconnected)",
+          "default": null
+        },
+        "status": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "Status of the connection. Range of values: disconnected, connecting, connected, got ip",
+          "default": null
+        },
+        "ssid": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "Ssid of the network (null if disconnected)",
+          "default": null
+        },
+        "rssi": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "description": "Strength of the signal in dBms",
+          "default": null
+        },
+        "ap_client_count": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "description": "Number of clients connected to the access point. Present only when AP is enabled and range extender functionality is present and enabled.",
+          "default": null
+        }
+      }
+    },
+    "ethernet": {
+      "type": "object",
+      "properties": {
+        "ip": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "IP of the device in the network",
+          "default": null
+        }
+      }
+    },
     "temperature": {
       "type": "object",
       "properties": {

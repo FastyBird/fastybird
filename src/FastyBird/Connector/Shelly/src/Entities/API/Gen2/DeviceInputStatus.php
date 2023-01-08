@@ -18,6 +18,7 @@ namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Types;
 use Nette;
+use Nette\Utils;
 use function is_string;
 
 /**
@@ -40,7 +41,7 @@ final class DeviceInputStatus implements Entities\API\Entity
 		private readonly int $id,
 		private readonly string|bool|null $state,
 		private readonly int|null $percent,
-		private readonly array $errors = [],
+		private readonly array|Utils\ArrayHash $errors = [],
 	)
 	{
 	}
@@ -52,7 +53,7 @@ final class DeviceInputStatus implements Entities\API\Entity
 
 	public function getType(): Types\ComponentType
 	{
-		return Types\ComponentType::get(Types\ComponentType::TYPE_TEMPERATURE);
+		return Types\ComponentType::get(Types\ComponentType::TYPE_INPUT);
 	}
 
 	public function getState(): bool|Types\InputPayload|null
@@ -78,7 +79,7 @@ final class DeviceInputStatus implements Entities\API\Entity
 	 */
 	public function getErrors(): array
 	{
-		return $this->errors;
+		return $this->errors instanceof Utils\ArrayHash ? (array) $this->errors : $this->errors;
 	}
 
 	/**

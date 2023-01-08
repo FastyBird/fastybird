@@ -38,10 +38,16 @@ final class DeviceStatus extends Device
 		Types\MessageSource $source,
 		Uuid\UuidInterface $connector,
 		string $identifier,
+		private readonly string|null $ipAddress,
 		private readonly array $statuses,
 	)
 	{
 		parent::__construct($source, $connector, $identifier);
+	}
+
+	public function getIpAddress(): string|null
+	{
+		return $this->ipAddress;
 	}
 
 	/**
@@ -58,6 +64,7 @@ final class DeviceStatus extends Device
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), [
+			'ip_address' => $this->getIpAddress(),
 			'statuses' => array_map(
 				static fn (PropertyStatus|ChannelStatus $status): array => $status->toArray(),
 				$this->getStatuses(),

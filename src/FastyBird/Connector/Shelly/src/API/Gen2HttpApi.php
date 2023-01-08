@@ -75,6 +75,7 @@ final class Gen2HttpApi extends HttpApi
 
 	/**
 	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\HttpApiCall
 	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\Logic
 	 * @throws MetadataExceptions\MalformedInput
@@ -85,18 +86,13 @@ final class Gen2HttpApi extends HttpApi
 		bool $async = true,
 	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\Gen2\DeviceInformation
 	{
-		$deferred = new Promise\Deferred();
+		if ($async) {
+			$deferred = new Promise\Deferred();
 
-		$result = $this->callRequest(
-			'GET',
-			sprintf(self::DEVICE_INFORMATION_ENDPOINT, $address),
-			[],
-			null,
-			$async,
-		);
-
-		if ($result instanceof Promise\PromiseInterface) {
-			$result
+			$this->callAsyncRequest(
+				'GET',
+				sprintf(self::DEVICE_INFORMATION_ENDPOINT, $address),
+			)
 				->then(function (Message\ResponseInterface $response) use ($deferred): void {
 					try {
 						$deferred->resolve($this->parseDeviceInformationResponse($response));
@@ -107,23 +103,21 @@ final class Gen2HttpApi extends HttpApi
 				->otherwise(static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);
 				});
-		} elseif ($result instanceof Message\ResponseInterface) {
-			return $this->parseDeviceInformationResponse($result);
-		} else {
-			$ex = new Exceptions\InvalidState('Request could not be created');
 
-			if ($async) {
-				Promise\reject($ex);
-			} else {
-				throw $ex;
-			}
+			return $deferred->promise();
 		}
 
-		return $deferred->promise();
+		return $this->parseDeviceInformationResponse(
+			$this->callRequest(
+				'GET',
+				sprintf(self::DEVICE_INFORMATION_ENDPOINT, $address),
+			),
+		);
 	}
 
 	/**
 	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\HttpApiCall
 	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\Logic
 	 * @throws MetadataExceptions\MalformedInput
@@ -131,21 +125,24 @@ final class Gen2HttpApi extends HttpApi
 	 */
 	public function getDeviceConfiguration(
 		string $address,
+		string|null $username,
+		string|null $password,
 		bool $async = true,
 	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\Gen2\DeviceConfiguration
 	{
-		$deferred = new Promise\Deferred();
+		if ($async) {
+			$deferred = new Promise\Deferred();
 
-		$result = $this->callRequest(
-			'GET',
-			sprintf(self::DEVICE_CONFIGURATION_ENDPOINT, $address),
-			[],
-			null,
-			$async,
-		);
-
-		if ($result instanceof Promise\PromiseInterface) {
-			$result
+			$this->callAsyncRequest(
+				'GET',
+				sprintf(self::DEVICE_CONFIGURATION_ENDPOINT, $address),
+				[],
+				[],
+				null,
+				self::AUTHORIZATION_DIGEST,
+				$username,
+				$password,
+			)
 				->then(function (Message\ResponseInterface $response) use ($deferred): void {
 					try {
 						$deferred->resolve($this->parseDeviceConfigurationResponse($response));
@@ -156,23 +153,27 @@ final class Gen2HttpApi extends HttpApi
 				->otherwise(static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);
 				});
-		} elseif ($result instanceof Message\ResponseInterface) {
-			return $this->parseDeviceConfigurationResponse($result);
-		} else {
-			$ex = new Exceptions\InvalidState('Request could not be created');
 
-			if ($async) {
-				Promise\reject($ex);
-			} else {
-				throw $ex;
-			}
+			return $deferred->promise();
 		}
 
-		return $deferred->promise();
+		return $this->parseDeviceConfigurationResponse(
+			$this->callRequest(
+				'GET',
+				sprintf(self::DEVICE_CONFIGURATION_ENDPOINT, $address),
+				[],
+				[],
+				null,
+				self::AUTHORIZATION_BASIC,
+				$username,
+				$password,
+			),
+		);
 	}
 
 	/**
 	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\HttpApiCall
 	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\Logic
 	 * @throws MetadataExceptions\MalformedInput
@@ -180,21 +181,26 @@ final class Gen2HttpApi extends HttpApi
 	 */
 	public function getDeviceStatus(
 		string $address,
+		string|null $username,
+		string|null $password,
 		bool $async = true,
 	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\Gen2\DeviceStatus
 	{
-		$deferred = new Promise\Deferred();
+		if ($async) {
+			$deferred = new Promise\Deferred();
 
-		$result = $this->callRequest(
-			'GET',
-			sprintf(self::DEVICE_STATUS_ENDPOINT, $address),
-			[],
-			null,
-			$async,
-		);
+			$url = sprintf(self::DEVICE_STATUS_ENDPOINT, $address);
 
-		if ($result instanceof Promise\PromiseInterface) {
-			$result
+			$this->callAsyncRequest(
+				'GET',
+				$url,
+				[],
+				[],
+				null,
+				self::AUTHORIZATION_DIGEST,
+				$username,
+				$password,
+			)
 				->then(function (Message\ResponseInterface $response) use ($deferred): void {
 					try {
 						$deferred->resolve($this->parseDeviceStatusResponse($response));
@@ -205,35 +211,38 @@ final class Gen2HttpApi extends HttpApi
 				->otherwise(static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);
 				});
-		} elseif ($result instanceof Message\ResponseInterface) {
-			return $this->parseDeviceStatusResponse($result);
-		} else {
-			$ex = new Exceptions\InvalidState('Request could not be created');
 
-			if ($async) {
-				Promise\reject($ex);
-			} else {
-				throw $ex;
-			}
+			return $deferred->promise();
 		}
 
-		return $deferred->promise();
+		return $this->parseDeviceStatusResponse(
+			$this->callRequest(
+				'GET',
+				sprintf(self::DEVICE_STATUS_ENDPOINT, $address),
+				[],
+				[],
+				null,
+				self::AUTHORIZATION_BASIC,
+				$username,
+				$password,
+			),
+		);
 	}
 
 	/**
 	 * @param array<string, string|int|float|bool> $params
 	 *
-	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\HttpApiCall
 	 */
 	public function setDeviceStatus(
 		string $address,
+		string|null $username,
+		string|null $password,
 		string $method,
 		array $params,
 		bool $async = true,
 	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|bool
 	{
-		$deferred = new Promise\Deferred();
-
 		try {
 			$body = Utils\Json::encode([
 				'id' => uniqid(),
@@ -248,38 +257,47 @@ final class Gen2HttpApi extends HttpApi
 			));
 		}
 
-		$result = $this->callRequest(
-			'POST',
-			sprintf(
-				self::DEVICE_ACTION_ENDPOINT,
-				$address,
-			),
-			[],
-			$body,
-			$async,
-		);
+		if ($async) {
+			$deferred = new Promise\Deferred();
 
-		if ($result instanceof Promise\PromiseInterface) {
-			$result
+			$this->callAsyncRequest(
+				'POST',
+				sprintf(
+					self::DEVICE_ACTION_ENDPOINT,
+					$address,
+				),
+				[],
+				[],
+				$body,
+				self::AUTHORIZATION_DIGEST,
+				$username,
+				$password,
+			)
 				->then(static function () use ($deferred): void {
 					$deferred->resolve();
 				})
 				->otherwise(static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);
 				});
-		} elseif ($result instanceof Message\ResponseInterface) {
-			return $result->getStatusCode() === StatusCodeInterface::STATUS_OK;
-		} else {
-			$ex = new Exceptions\InvalidState('Request could not be created');
 
-			if ($async) {
-				Promise\reject($ex);
-			} else {
-				throw $ex;
-			}
+			return $deferred->promise();
 		}
 
-		return $deferred->promise();
+		$response = $this->callRequest(
+			'POST',
+			sprintf(
+				self::DEVICE_ACTION_ENDPOINT,
+				$address,
+			),
+			[],
+			[],
+			$body,
+			self::AUTHORIZATION_BASIC,
+			$username,
+			$password,
+		);
+
+		return $response->getStatusCode() === StatusCodeInterface::STATUS_OK;
 	}
 
 	/**
@@ -388,7 +406,7 @@ final class Gen2HttpApi extends HttpApi
 		);
 
 		$switches = $covers = $lights = $inputs = [];
-		$temperature = $humidity = null;
+		$ethernet = $wifi = $temperature = $humidity = null;
 
 		foreach ($parsedMessage as $key => $status) {
 			if (
@@ -427,6 +445,16 @@ final class Gen2HttpApi extends HttpApi
 						Entities\API\Gen2\DeviceHumidityStatus::class,
 						$status,
 					);
+				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_ETHERNET) {
+					$ethernet = $this->entityFactory->build(
+						Entities\API\Gen2\EthernetStatus::class,
+						$status,
+					);
+				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_WIFI) {
+					$wifi = $this->entityFactory->build(
+						Entities\API\Gen2\WifiStatus::class,
+						$status,
+					);
 				}
 			}
 		}
@@ -438,6 +466,8 @@ final class Gen2HttpApi extends HttpApi
 			$lights,
 			$temperature,
 			$humidity,
+			$ethernet,
+			$wifi,
 		);
 	}
 

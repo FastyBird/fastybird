@@ -36,6 +36,8 @@ use function class_exists;
 use function get_object_vars;
 use function in_array;
 use function is_callable;
+use function is_string;
+use function is_subclass_of;
 use function method_exists;
 use function preg_replace_callback;
 use function property_exists;
@@ -158,6 +160,7 @@ final class EntityFactory
 	 *
 	 * @return array<int, mixed>
 	 *
+	 * @throws Exceptions\InvalidState
 	 * @throws ReflectionException
 	 */
 	private function autowireArguments(
@@ -175,8 +178,13 @@ final class EntityFactory
 				!$parameter->isVariadic()
 				&& in_array($parameterName, array_keys(get_object_vars($decoded)), true) === true
 			) {
-				$res[$num] = $decoded->{$parameterName};
-
+				$res[$num] = (
+					is_string($parameterType)
+					&& class_exists($parameterType, false)
+					&& is_subclass_of($parameterType, Entities\API\Entity::class)
+				)
+					? $this->build($parameterType, $decoded->{$parameterName})
+					: $decoded->{$parameterName};
 			} elseif ($parameterName === 'id' && property_exists($decoded, 'id')) {
 				$res[$num] = $decoded->id;
 

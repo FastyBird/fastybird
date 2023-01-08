@@ -44,9 +44,11 @@ use function array_key_exists;
 use function array_map;
 use function array_merge;
 use function assert;
+use function count;
 use function in_array;
 use function intval;
-use function is_string;
+use function is_bool;
+use function is_numeric;
 use function preg_match;
 use function strval;
 
@@ -135,6 +137,7 @@ final class Http implements Clients\Client
 
 	/**
 	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\HttpApiCall
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -180,7 +183,7 @@ final class Http implements Clients\Client
 		}
 
 		if ($state->isPending() === true) {
-			$this->writeSensor($device, $channel, $property, $valueToWrite)
+			$this->writeProperty($device, $channel, $property, $valueToWrite)
 				->then(function () use ($property, $deferred): void {
 					$this->propertyStateHelper->setValue(
 						$property,
@@ -193,58 +196,8 @@ final class Http implements Clients\Client
 
 					$deferred->resolve();
 				})
-				->otherwise(function (Throwable $ex) use ($device, $channel, $property, $deferred): void {
-					if ($ex instanceof ReactHttp\Message\ResponseException) {
-						if (
-							$ex->getCode() >= StatusCodeInterface::STATUS_BAD_REQUEST
-							&& $ex->getCode() < StatusCodeInterface::STATUS_UNAVAILABLE_FOR_LEGAL_REASONS
-						) {
-							$this->propertyStateHelper->setValue(
-								$property,
-								Utils\ArrayHash::from([
-									DevicesStates\Property::EXPECTED_VALUE_KEY => null,
-									DevicesStates\Property::PENDING_KEY => false,
-								]),
-							);
-
-							$this->logger->warning(
-								'Expected value could not be set',
-								[
-									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-									'type' => 'http-client',
-									'exception' => [
-										'message' => $ex->getMessage(),
-										'code' => $ex->getCode(),
-									],
-									'connector' => [
-										'id' => $this->connector->getPlainId(),
-									],
-									'device' => [
-										'id' => $device->getPlainId(),
-									],
-									'channel' => [
-										'id' => $channel->getPlainId(),
-									],
-									'property' => [
-										'id' => $property->getPlainId(),
-									],
-								],
-							);
-
-						} elseif (
-							$ex->getCode() >= StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR
-							&& $ex->getCode() < StatusCodeInterface::STATUS_NETWORK_AUTHENTICATION_REQUIRED
-						) {
-							$this->deviceConnectionManager->setState(
-								$device,
-								MetadataTypes\ConnectionState::get(
-									MetadataTypes\ConnectionState::STATE_LOST,
-								),
-							);
-						}
-
-						$deferred->reject($ex);
-					}
+				->otherwise(static function (Throwable $ex) use ($deferred): void {
+					$deferred->reject($ex);
 				});
 
 		} else {
@@ -311,9 +264,14 @@ final class Http implements Clients\Client
 	 */
 	private function readDeviceData(string $cmd, Entities\ShellyDevice $device): bool
 	{
-		$address = $this->buildDeviceAddress($device);
+		$address = $this->getDeviceAddress($device);
 
 		if ($address === null) {
+			$this->deviceConnectionManager->setState(
+				$device,
+				MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_STOPPED),
+			);
+
 			return false;
 		}
 
@@ -349,11 +307,19 @@ final class Http implements Clients\Client
 
 		if ($cmd === self::CMD_STATUS) {
 			if ($generation->equalsValue(Types\DeviceGeneration::GENERATION_1)) {
-				$result = $this->gen1httpApi?->getDeviceStatus($address);
+				$result = $this->gen1httpApi?->getDeviceStatus(
+					$address,
+					$device->getUsername(),
+					$device->getPassword(),
+				);
 				assert($result instanceof Promise\PromiseInterface);
 
 			} elseif ($generation->equalsValue(Types\DeviceGeneration::GENERATION_2)) {
-				$result = $this->gen2httpApi?->getDeviceStatus($address);
+				$result = $this->gen2httpApi?->getDeviceStatus(
+					$address,
+					$device->getUsername(),
+					$device->getPassword(),
+				);
 				assert($result instanceof Promise\PromiseInterface);
 
 			} else {
@@ -362,7 +328,7 @@ final class Http implements Clients\Client
 
 			$result
 				->then(
-					function (Entities\API\Gen1\DeviceStatus|Entities\API\Gen2\DeviceStatus $status) use ($cmd, $device): void {
+					function (Entities\API\Gen1\DeviceStatus|Entities\API\Gen2\DeviceStatus $status) use ($device, $cmd): void {
 						if ($status instanceof Entities\API\Gen1\DeviceStatus) {
 							$this->processGen1DeviceStatus($device, $status);
 						} else {
@@ -372,8 +338,11 @@ final class Http implements Clients\Client
 						$this->processedDevicesCommands[$device->getIdentifier()][$cmd] = $this->dateTimeFactory->getNow();
 					},
 				)
-				->otherwise(function (Throwable $ex) use ($device): void {
-					if ($ex instanceof ReactHttp\Message\ResponseException) {
+				->otherwise(function (Throwable $ex) use ($device, $cmd): void {
+					if (
+						$ex instanceof ReactHttp\Message\ResponseException
+						|| $ex instanceof Exceptions\HttpApiCall
+					) {
 						if (
 							$ex->getCode() >= StatusCodeInterface::STATUS_BAD_REQUEST
 							&& $ex->getCode() < StatusCodeInterface::STATUS_UNAVAILABLE_FOR_LEGAL_REASONS
@@ -406,6 +375,25 @@ final class Http implements Clients\Client
 							MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_LOST),
 						);
 					}
+
+					$this->logger->error(
+						'Failed to call device http api',
+						[
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+							'type' => 'http-client',
+							'exception' => [
+								'message' => $ex->getMessage(),
+								'code' => $ex->getCode(),
+							],
+							'connector' => [
+								'id' => $this->connector->getPlainId(),
+							],
+							'device' => [
+								'id' => $device->getPlainId(),
+							],
+							'command' => $cmd,
+						],
+					);
 				});
 		}
 
@@ -414,11 +402,12 @@ final class Http implements Clients\Client
 
 	/**
 	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\HttpApiCall
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function writeSensor(
+	private function writeProperty(
 		Entities\ShellyDevice $device,
 		DevicesEntities\Channels\Channel $channel,
 		DevicesEntities\Channels\Properties\Dynamic $property,
@@ -427,10 +416,10 @@ final class Http implements Clients\Client
 	{
 		$deferred = new Promise\Deferred();
 
-		$address = $this->buildDeviceAddress($device);
+		$address = $this->getDeviceAddress($device);
 
 		if ($address === null) {
-			return Promise\reject(new Exceptions\InvalidState('Device address could not be determined'));
+			return Promise\reject(new Exceptions\InvalidState('Device ip address or domain is not configured'));
 		}
 
 		$generation = $device->getGeneration();
@@ -454,6 +443,8 @@ final class Http implements Clients\Client
 
 			$result = $this->gen1httpApi?->setDeviceStatus(
 				$address,
+				$device->getUsername(),
+				$device->getPassword(),
 				$channelMatches['description'],
 				intval($channelMatches['channel']),
 				$sensorAction,
@@ -480,6 +471,8 @@ final class Http implements Clients\Client
 
 			$result = $this->gen2httpApi?->setDeviceStatus(
 				$address,
+				$device->getUsername(),
+				$device->getPassword(),
 				$componentMethod,
 				[
 					'id' => intval($propertyMatches['identifier']),
@@ -489,7 +482,7 @@ final class Http implements Clients\Client
 			assert($result instanceof Promise\PromiseInterface);
 
 		} else {
-			return Promise\reject(new Exceptions\InvalidState('Device is in unsupported generation'));
+			return Promise\reject(new Exceptions\InvalidState('Unsupported device generation'));
 		}
 
 		$result
@@ -499,8 +492,40 @@ final class Http implements Clients\Client
 				},
 			)
 			->otherwise(function (Throwable $ex) use ($device, $channel, $property, $deferred): void {
+				if ($ex instanceof ReactHttp\Message\ResponseException) {
+					if (
+						$ex->getCode() >= StatusCodeInterface::STATUS_BAD_REQUEST
+						&& $ex->getCode() < StatusCodeInterface::STATUS_UNAVAILABLE_FOR_LEGAL_REASONS
+					) {
+						$this->propertyStateHelper->setValue(
+							$property,
+							Utils\ArrayHash::from([
+								DevicesStates\Property::EXPECTED_VALUE_KEY => null,
+								DevicesStates\Property::PENDING_KEY => false,
+							]),
+						);
+					} elseif (
+						$ex->getCode() >= StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR
+						&& $ex->getCode() < StatusCodeInterface::STATUS_NETWORK_AUTHENTICATION_REQUIRED
+					) {
+						$this->deviceConnectionManager->setState(
+							$device,
+							MetadataTypes\ConnectionState::get(
+								MetadataTypes\ConnectionState::STATE_LOST,
+							),
+						);
+					}
+				}
+
+				if ($ex instanceof Exceptions\Runtime) {
+					$this->deviceConnectionManager->setState(
+						$device,
+						MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_LOST),
+					);
+				}
+
 				$this->logger->error(
-					'Failed to call device http api',
+					'Failed to write channel property',
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'http-client',
@@ -537,36 +562,35 @@ final class Http implements Clients\Client
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function buildDeviceAddress(Entities\ShellyDevice $device): string|null
+	private function getDeviceAddress(Entities\ShellyDevice $device): string|null
 	{
+		$domain = $device->getDomain();
+
+		if ($domain !== null) {
+			return $domain;
+		}
+
 		$ipAddress = $device->getIpAddress();
 
-		if (!is_string($ipAddress)) {
-			$this->logger->error(
-				'Device IP address could not be determined',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-					'type' => 'http-client',
-					'connector' => [
-						'id' => $this->connector->getPlainId(),
-					],
-					'device' => [
-						'id' => $device->getPlainId(),
-					],
+		if ($ipAddress !== null) {
+			return $ipAddress;
+		}
+
+		$this->logger->error(
+			'Device ip address or domain is not configured',
+			[
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+				'type' => 'http-client',
+				'connector' => [
+					'id' => $this->connector->getPlainId(),
 				],
-			);
+				'device' => [
+					'id' => $device->getPlainId(),
+				],
+			],
+		);
 
-			return null;
-		}
-
-		$username = $device->getUsername();
-		$password = $device->getPassword();
-
-		if (is_string($username) && is_string($password)) {
-			return $username . ':' . $password . '@' . $ipAddress;
-		}
-
-		return $ipAddress;
+		return null;
 	}
 
 	private function registerLoopHandler(): void
@@ -742,11 +766,13 @@ final class Http implements Clients\Client
 						}
 					}
 
-					$statuses[] = new Entities\Messages\ChannelStatus(
-						$source,
-						$channel->getId(),
-						$result,
-					);
+					if (count($result) > 0) {
+						$statuses[] = new Entities\Messages\ChannelStatus(
+							$source,
+							$channel->getIdentifier(),
+							$result,
+						);
+					}
 
 					break;
 				}
@@ -789,17 +815,26 @@ final class Http implements Clients\Client
 									'_' . Types\SensorDescription::DESC_OVERPOWER_VALUE,
 								)
 							)
-							&& !$property->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_BOOLEAN)
 						) {
-							$result[] = new Entities\Messages\PropertyStatus(
-								$source,
-								$property->getIdentifier(),
-								$this->transformer->transformValueFromDevice(
-									$property->getDataType(),
-									$property->getFormat(),
-									$meter->getOverpower(),
-								),
-							);
+							if (
+								(
+									$property->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_BOOLEAN)
+									&& is_bool($meter->getOverpower())
+								) || (
+									!$property->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_BOOLEAN)
+									&& is_numeric($meter->getOverpower())
+								)
+							) {
+								$result[] = new Entities\Messages\PropertyStatus(
+									$source,
+									$property->getIdentifier(),
+									$this->transformer->transformValueFromDevice(
+										$property->getDataType(),
+										$property->getFormat(),
+										$meter->getOverpower(),
+									),
+								);
+							}
 						} elseif (
 							Utils\Strings::endsWith(
 								$property->getIdentifier(),
@@ -822,11 +857,13 @@ final class Http implements Clients\Client
 						}
 					}
 
-					$statuses[] = new Entities\Messages\ChannelStatus(
-						$source,
-						$channel->getId(),
-						$result,
-					);
+					if (count($result) > 0) {
+						$statuses[] = new Entities\Messages\ChannelStatus(
+							$source,
+							$channel->getIdentifier(),
+							$result,
+						);
+					}
 
 					break;
 				}
@@ -871,11 +908,13 @@ final class Http implements Clients\Client
 						}
 					}
 
-					$statuses[] = new Entities\Messages\ChannelStatus(
-						$source,
-						$channel->getId(),
-						$result,
-					);
+					if (count($result) > 0) {
+						$statuses[] = new Entities\Messages\ChannelStatus(
+							$source,
+							$channel->getIdentifier(),
+							$result,
+						);
+					}
 				} elseif (Utils\Strings::endsWith($channel->getIdentifier(), Types\BlockDescription::DESC_DEVICE)) {
 					$result = [];
 
@@ -896,11 +935,13 @@ final class Http implements Clients\Client
 						}
 					}
 
-					$statuses[] = new Entities\Messages\ChannelStatus(
-						$source,
-						$channel->getId(),
-						$result,
-					);
+					if (count($result) > 0) {
+						$statuses[] = new Entities\Messages\ChannelStatus(
+							$source,
+							$channel->getIdentifier(),
+							$result,
+						);
+					}
 				}
 			}
 		}
@@ -958,11 +999,13 @@ final class Http implements Clients\Client
 						}
 					}
 
-					$statuses[] = new Entities\Messages\ChannelStatus(
-						$source,
-						$channel->getId(),
-						$result,
-					);
+					if (count($result) > 0) {
+						$statuses[] = new Entities\Messages\ChannelStatus(
+							$source,
+							$channel->getIdentifier(),
+							$result,
+						);
+					}
 				} elseif (Utils\Strings::endsWith($channel->getIdentifier(), Types\BlockDescription::DESC_DEVICE)) {
 					$result = [];
 
@@ -983,11 +1026,13 @@ final class Http implements Clients\Client
 						}
 					}
 
-					$statuses[] = new Entities\Messages\ChannelStatus(
-						$source,
-						$channel->getId(),
-						$result,
-					);
+					if (count($result) > 0) {
+						$statuses[] = new Entities\Messages\ChannelStatus(
+							$source,
+							$channel->getIdentifier(),
+							$result,
+						);
+					}
 				}
 			}
 		}
@@ -1115,11 +1160,13 @@ final class Http implements Clients\Client
 						}
 					}
 
-					$statuses[] = new Entities\Messages\ChannelStatus(
-						$source,
-						$channel->getId(),
-						$result,
-					);
+					if (count($result) > 0) {
+						$statuses[] = new Entities\Messages\ChannelStatus(
+							$source,
+							$channel->getIdentifier(),
+							$result,
+						);
+					}
 
 					break;
 				}
@@ -1235,25 +1282,30 @@ final class Http implements Clients\Client
 						}
 					}
 
-					$statuses[] = new Entities\Messages\ChannelStatus(
-						$source,
-						$channel->getId(),
-						$result,
-					);
+					if (count($result) > 0) {
+						$statuses[] = new Entities\Messages\ChannelStatus(
+							$source,
+							$channel->getIdentifier(),
+							$result,
+						);
+					}
 
 					break;
 				}
 			}
 		}
 
-		$this->consumer->append(
-			new Entities\Messages\DeviceStatus(
-				$source,
-				$this->connector->getId(),
-				$device->getIdentifier(),
-				$statuses,
-			),
-		);
+		if (count($statuses) > 0) {
+			$this->consumer->append(
+				new Entities\Messages\DeviceStatus(
+					$source,
+					$this->connector->getId(),
+					$device->getIdentifier(),
+					$status->getWifi()?->getIp(),
+					$statuses,
+				),
+			);
+		}
 	}
 
 	private function processGen2DeviceStatus(
@@ -1645,6 +1697,7 @@ final class Http implements Clients\Client
 				$source,
 				$this->connector->getId(),
 				$device->getIdentifier(),
+				$status->getEthernet()?->getIp() ?? $status->getWifi()?->getStaIp(),
 				$statuses,
 			),
 		);

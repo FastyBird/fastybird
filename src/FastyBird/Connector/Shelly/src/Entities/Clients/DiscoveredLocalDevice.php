@@ -46,7 +46,7 @@ final class DiscoveredLocalDevice implements Entity
 		return $this->generation;
 	}
 
-	public function getIdentifier(): string
+	public function getId(): string
 	{
 		return $this->id;
 	}
@@ -54,6 +54,11 @@ final class DiscoveredLocalDevice implements Entity
 	public function getType(): string
 	{
 		return $this->type;
+	}
+
+	public function getIdentifier(): string
+	{
+		return $this->getId() . '-' . $this->getType();
 	}
 
 	public function getIpAddress(): string
@@ -73,7 +78,7 @@ final class DiscoveredLocalDevice implements Entity
 	{
 		return [
 			'generation' => $this->getGeneration()->getValue(),
-			'identifier' => $this->getIdentifier(),
+			'id' => $this->getId(),
 			'type' => $this->getType(),
 			'ip_address' => $this->getIpAddress(),
 			'domain' => $this->getDomain(),

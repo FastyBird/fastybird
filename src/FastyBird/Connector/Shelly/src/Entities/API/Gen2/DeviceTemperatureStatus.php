@@ -18,6 +18,7 @@ namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Types;
 use Nette;
+use Nette\Utils;
 
 /**
  * Generation 2 device temperature status entity
@@ -39,7 +40,7 @@ final class DeviceTemperatureStatus implements Entities\API\Entity
 		private readonly int $id,
 		private readonly float|null $tC,
 		private readonly float|null $tF,
-		private readonly array $errors = [],
+		private readonly array|Utils\ArrayHash $errors = [],
 	)
 	{
 	}
@@ -69,7 +70,7 @@ final class DeviceTemperatureStatus implements Entities\API\Entity
 	 */
 	public function getErrors(): array
 	{
-		return $this->errors;
+		return $this->errors instanceof Utils\ArrayHash ? (array) $this->errors : $this->errors;
 	}
 
 	/**

@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
 use FastyBird\Connector\Shelly\Entities;
+use Nette\Utils;
 
 /**
  * Generation 2 device light component night mode configuration entity
@@ -34,7 +35,7 @@ final class LightNightModeConfigurationBlock implements Entities\API\Entity
 	public function __construct(
 		private readonly bool $enable,
 		private readonly int $brightness,
-		private readonly array $activeBetween,
+		private readonly array|Utils\ArrayHash $activeBetween,
 	)
 	{
 	}
@@ -54,7 +55,7 @@ final class LightNightModeConfigurationBlock implements Entities\API\Entity
 	 */
 	public function getActiveBetween(): array
 	{
-		return $this->activeBetween;
+		return $this->activeBetween instanceof Utils\ArrayHash ? (array) $this->activeBetween : $this->activeBetween;
 	}
 
 	/**

@@ -158,6 +158,7 @@ final class Local implements Client
 
 	/**
 	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\HttpApiCall
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState

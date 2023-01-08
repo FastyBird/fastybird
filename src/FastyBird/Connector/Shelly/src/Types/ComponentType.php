@@ -44,6 +44,10 @@ class ComponentType extends Consistence\Enum\Enum
 
 	public const TYPE_HUMIDITY = 'humidity';
 
+	public const TYPE_ETHERNET = 'ethernet';
+
+	public const TYPE_WIFI = 'wifi';
+
 	public function __toString(): string
 	{
 		return strval(self::getValue());

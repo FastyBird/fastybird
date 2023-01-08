@@ -15,9 +15,11 @@
 
 namespace FastyBird\Connector\Shelly\Consumers\Messages;
 
+use Doctrine\DBAL;
 use FastyBird\Connector\Shelly\Consumers\Consumer;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Helpers;
+use FastyBird\Connector\Shelly\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
@@ -42,11 +44,15 @@ final class Status implements Consumer
 {
 
 	use Nette\SmartObject;
+	use TConsumeDeviceProperty;
 
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Devices\Properties\PropertiesRepository $propertiesRepository,
+		private readonly DevicesModels\Devices\Properties\PropertiesManager $propertiesManager,
+		private readonly DevicesModels\Channels\Properties\PropertiesManager $channelsPropertiesManager,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly Helpers\Property $propertyStateHelper,
 		Log\LoggerInterface|null $logger,
@@ -56,7 +62,9 @@ final class Status implements Consumer
 	}
 
 	/**
+	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws DevicesExceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -87,6 +95,12 @@ final class Status implements Consumer
 				MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_CONNECTED),
 			);
 		}
+
+		$this->setDeviceProperty(
+			$device->getId(),
+			$entity->getIpAddress(),
+			Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS,
+		);
 
 		foreach ($entity->getStatuses() as $status) {
 			if ($status instanceof Entities\Messages\PropertyStatus) {
@@ -121,6 +135,41 @@ final class Status implements Consumer
 						DevicesStates\Property::ACTUAL_VALUE_KEY => $actualValue,
 						DevicesStates\Property::VALID_KEY => true,
 					]));
+				}
+			} else {
+				$channel = $device->findChannel($status->getIdentifier());
+
+				if ($channel !== null) {
+					foreach ($status->getSensors() as $sensor) {
+						$property = $channel->findProperty($sensor->getIdentifier());
+
+						if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
+							$actualValue = DevicesUtilities\ValueHelper::flattenValue(
+								DevicesUtilities\ValueHelper::normalizeValue(
+									$property->getDataType(),
+									$sensor->getValue(),
+									$property->getFormat(),
+									$property->getInvalid(),
+								),
+							);
+
+							$this->propertyStateHelper->setValue($property, Utils\ArrayHash::from([
+								DevicesStates\Property::ACTUAL_VALUE_KEY => $actualValue,
+								DevicesStates\Property::VALID_KEY => true,
+							]));
+						} elseif ($property instanceof DevicesEntities\Channels\Properties\Variable) {
+							$this->databaseHelper->transaction(
+								function () use ($property, $sensor): void {
+									$this->channelsPropertiesManager->update(
+										$property,
+										Utils\ArrayHash::from([
+											'value' => $sensor->getValue(),
+										]),
+									);
+								},
+							);
+						}
+					}
 				}
 			}
 		}
