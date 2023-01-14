@@ -15,8 +15,6 @@
 
 namespace FastyBird\Connector\Shelly\Clients\Local;
 
-use FastyBird\Connector\Shelly\Entities;
-
 /**
  * HTTP api client factory
  *
@@ -28,6 +26,6 @@ use FastyBird\Connector\Shelly\Entities;
 interface HttpFactory
 {
 
-	public function create(Entities\ShellyConnector $connector): Http;
+	public function create(): Http;
 
 }

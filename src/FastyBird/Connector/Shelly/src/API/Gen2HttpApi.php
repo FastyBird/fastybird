@@ -17,7 +17,6 @@ namespace FastyBird\Connector\Shelly\API;
 
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
-use FastyBird\Connector\Shelly\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use Fig\Http\Message\StatusCodeInterface;
@@ -30,12 +29,13 @@ use React\Promise;
 use RuntimeException;
 use Throwable;
 use function array_key_exists;
+use function intval;
 use function preg_match;
 use function sprintf;
 use function uniqid;
 
 /**
- * Generation 2 device http api interface
+ * Generation 2 device http API interface
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     API
@@ -45,6 +45,7 @@ use function uniqid;
 final class Gen2HttpApi extends HttpApi
 {
 
+	use Gen2;
 	use Nette\SmartObject;
 
 	private const DEVICE_INFORMATION_ENDPOINT = 'http://%s/rpc/Shelly.GetDeviceInfo';
@@ -55,17 +56,17 @@ final class Gen2HttpApi extends HttpApi
 
 	private const DEVICE_ACTION_ENDPOINT = 'http://%s/rpc';
 
-	public const DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME = 'gen2_http_shelly.json';
+	private const DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME = 'gen2_http_shelly.json';
 
-	public const DEVICE_CONFIG_MESSAGE_SCHEMA_FILENAME = 'gen2_http_config.json';
+	private const DEVICE_CONFIG_MESSAGE_SCHEMA_FILENAME = 'gen2_http_config.json';
 
-	public const DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME = 'gen2_http_status.json';
+	private const DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME = 'gen2_http_status.json';
 
-	private const COMPONENT_KEY = '/^(?P<component>[a-zA-Z]+)(:(?P<channel>[0-9_]+))?$/';
+	private const PROPERTY_COMPONENT = '/^(?P<component>[a-zA-Z]+)_(?P<identifier>[0-9]+)(_(?P<attribute>[a-zA-Z0-9]+))?$/';
 
 	public function __construct(
-		private readonly EntityFactory $entityFactory,
-		private readonly MetadataSchemas\Validator $schemaValidator,
+		protected readonly EntityFactory $entityFactory,
+		protected readonly MetadataSchemas\Validator $schemaValidator,
 		EventLoop\LoopInterface $eventLoop,
 		Log\LoggerInterface|null $logger = null,
 	)
@@ -95,7 +96,12 @@ final class Gen2HttpApi extends HttpApi
 			)
 				->then(function (Message\ResponseInterface $response) use ($deferred): void {
 					try {
-						$deferred->resolve($this->parseDeviceInformationResponse($response));
+						$deferred->resolve(
+							$this->parseDeviceInformationResponse(
+								$response->getBody()->getContents(),
+								self::DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME,
+							),
+						);
 					} catch (Throwable $ex) {
 						$deferred->reject($ex);
 					}
@@ -111,7 +117,8 @@ final class Gen2HttpApi extends HttpApi
 			$this->callRequest(
 				'GET',
 				sprintf(self::DEVICE_INFORMATION_ENDPOINT, $address),
-			),
+			)->getBody()->getContents(),
+			self::DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME,
 		);
 	}
 
@@ -145,7 +152,12 @@ final class Gen2HttpApi extends HttpApi
 			)
 				->then(function (Message\ResponseInterface $response) use ($deferred): void {
 					try {
-						$deferred->resolve($this->parseDeviceConfigurationResponse($response));
+						$deferred->resolve(
+							$this->parseDeviceConfigurationResponse(
+								$response->getBody()->getContents(),
+								self::DEVICE_CONFIG_MESSAGE_SCHEMA_FILENAME,
+							),
+						);
 					} catch (Throwable $ex) {
 						$deferred->reject($ex);
 					}
@@ -167,7 +179,8 @@ final class Gen2HttpApi extends HttpApi
 				self::AUTHORIZATION_BASIC,
 				$username,
 				$password,
-			),
+			)->getBody()->getContents(),
+			self::DEVICE_CONFIG_MESSAGE_SCHEMA_FILENAME,
 		);
 	}
 
@@ -203,7 +216,12 @@ final class Gen2HttpApi extends HttpApi
 			)
 				->then(function (Message\ResponseInterface $response) use ($deferred): void {
 					try {
-						$deferred->resolve($this->parseDeviceStatusResponse($response));
+						$deferred->resolve(
+							$this->parseDeviceStatusResponse(
+								$response->getBody()->getContents(),
+								self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME,
+							),
+						);
 					} catch (Throwable $ex) {
 						$deferred->reject($ex);
 					}
@@ -225,29 +243,55 @@ final class Gen2HttpApi extends HttpApi
 				self::AUTHORIZATION_BASIC,
 				$username,
 				$password,
-			),
+			)->getBody()->getContents(),
+			self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME,
 		);
 	}
 
 	/**
-	 * @param array<string, string|int|float|bool> $params
-	 *
 	 * @throws Exceptions\HttpApiCall
 	 */
 	public function setDeviceStatus(
 		string $address,
 		string|null $username,
 		string|null $password,
-		string $method,
-		array $params,
+		string $component,
+		int|float|string|bool $value,
 		bool $async = true,
 	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|bool
 	{
+		if (
+			preg_match(self::PROPERTY_COMPONENT, $component, $propertyMatches) !== 1
+			|| !array_key_exists('component', $propertyMatches)
+			|| !array_key_exists('identifier', $propertyMatches)
+			|| !array_key_exists('attribute', $propertyMatches)
+		) {
+			if ($async) {
+				return Promise\reject(new Exceptions\InvalidState('Property identifier is not in expected format'));
+			}
+
+			throw new Exceptions\HttpApiCall('Property identifier is not in expected format');
+		}
+
+		try {
+			$componentMethod = $this->buildComponentMethod($component);
+
+		} catch (Exceptions\InvalidState) {
+			if ($async) {
+				return Promise\reject(new Exceptions\InvalidState('Component action could not be created'));
+			}
+
+			throw new Exceptions\HttpApiCall('Component action could not be created');
+		}
+
 		try {
 			$body = Utils\Json::encode([
 				'id' => uniqid(),
-				'method' => $method,
-				'params' => $params,
+				'method' => $componentMethod,
+				'params' => [
+					'id' => intval($propertyMatches['identifier']),
+					$propertyMatches['attribute'] => $value,
+				],
 			]);
 		} catch (Utils\JsonException $ex) {
 			return Promise\reject(new Exceptions\InvalidState(
@@ -298,177 +342,6 @@ final class Gen2HttpApi extends HttpApi
 		);
 
 		return $response->getStatusCode() === StatusCodeInterface::STATUS_OK;
-	}
-
-	/**
-	 * @throws MetadataExceptions\InvalidData
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws RuntimeException
-	 */
-	private function parseDeviceInformationResponse(
-		Message\ResponseInterface $response,
-	): Entities\API\Gen2\DeviceInformation
-	{
-		$parsedMessage = $this->schemaValidator->validate(
-			$response->getBody()->getContents(),
-			$this->getSchemaFilePath(self::DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME),
-		);
-
-		return $this->entityFactory->build(
-			Entities\API\Gen2\DeviceInformation::class,
-			$parsedMessage,
-		);
-	}
-
-	/**
-	 * @throws MetadataExceptions\InvalidData
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws RuntimeException
-	 */
-	private function parseDeviceConfigurationResponse(
-		Message\ResponseInterface $response,
-	): Entities\API\Gen2\DeviceConfiguration
-	{
-		$parsedMessage = $this->schemaValidator->validate(
-			$response->getBody()->getContents(),
-			$this->getSchemaFilePath(self::DEVICE_CONFIG_MESSAGE_SCHEMA_FILENAME),
-		);
-
-		$switches = $covers = $lights = $inputs = [];
-		$temperature = $humidity = null;
-
-		foreach ($parsedMessage as $key => $configuration) {
-			if (
-				$configuration instanceof Utils\ArrayHash
-				&& preg_match(self::COMPONENT_KEY, $key, $componentMatches) === 1
-				&& array_key_exists('component', $componentMatches)
-				&& Types\ComponentType::isValidValue($componentMatches['component'])
-			) {
-				if ($componentMatches['component'] === Types\ComponentType::TYPE_SWITCH) {
-					$switches[] = $this->entityFactory->build(
-						Entities\API\Gen2\DeviceSwitchConfiguration::class,
-						$configuration,
-					);
-				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_COVER) {
-					$covers[] = $this->entityFactory->build(
-						Entities\API\Gen2\DeviceCoverConfiguration::class,
-						$configuration,
-					);
-				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_LIGHT) {
-					$lights[] = $this->entityFactory->build(
-						Entities\API\Gen2\DeviceLightConfiguration::class,
-						$configuration,
-					);
-				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_INPUT) {
-					$inputs[] = $this->entityFactory->build(
-						Entities\API\Gen2\DeviceInputConfiguration::class,
-						$configuration,
-					);
-				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_TEMPERATURE) {
-					$temperature = $this->entityFactory->build(
-						Entities\API\Gen2\DeviceTemperatureConfiguration::class,
-						$configuration,
-					);
-				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_HUMIDITY) {
-					$humidity = $this->entityFactory->build(
-						Entities\API\Gen2\DeviceHumidityConfiguration::class,
-						$configuration,
-					);
-				}
-			}
-		}
-
-		return new Entities\API\Gen2\DeviceConfiguration(
-			$switches,
-			$covers,
-			$inputs,
-			$lights,
-			$temperature,
-			$humidity,
-		);
-	}
-
-	/**
-	 * @throws MetadataExceptions\InvalidData
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws RuntimeException
-	 */
-	private function parseDeviceStatusResponse(
-		Message\ResponseInterface $response,
-	): Entities\API\Gen2\DeviceStatus
-	{
-		$parsedMessage = $this->schemaValidator->validate(
-			$response->getBody()->getContents(),
-			$this->getSchemaFilePath(self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME),
-		);
-
-		$switches = $covers = $lights = $inputs = [];
-		$ethernet = $wifi = $temperature = $humidity = null;
-
-		foreach ($parsedMessage as $key => $status) {
-			if (
-				$status instanceof Utils\ArrayHash
-				&& preg_match(self::COMPONENT_KEY, $key, $componentMatches) === 1
-				&& array_key_exists('component', $componentMatches)
-				&& Types\ComponentType::isValidValue($componentMatches['component'])
-			) {
-				if ($componentMatches['component'] === Types\ComponentType::TYPE_SWITCH) {
-					$switches[] = $this->entityFactory->build(
-						Entities\API\Gen2\DeviceSwitchStatus::class,
-						$status,
-					);
-				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_COVER) {
-					$covers[] = $this->entityFactory->build(
-						Entities\API\Gen2\DeviceCoverStatus::class,
-						$status,
-					);
-				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_LIGHT) {
-					$lights[] = $this->entityFactory->build(
-						Entities\API\Gen2\DeviceLightStatus::class,
-						$status,
-					);
-				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_INPUT) {
-					$inputs[] = $this->entityFactory->build(
-						Entities\API\Gen2\DeviceInputStatus::class,
-						$status,
-					);
-				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_TEMPERATURE) {
-					$temperature = $this->entityFactory->build(
-						Entities\API\Gen2\DeviceTemperatureStatus::class,
-						$status,
-					);
-				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_HUMIDITY) {
-					$humidity = $this->entityFactory->build(
-						Entities\API\Gen2\DeviceHumidityStatus::class,
-						$status,
-					);
-				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_ETHERNET) {
-					$ethernet = $this->entityFactory->build(
-						Entities\API\Gen2\EthernetStatus::class,
-						$status,
-					);
-				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_WIFI) {
-					$wifi = $this->entityFactory->build(
-						Entities\API\Gen2\WifiStatus::class,
-						$status,
-					);
-				}
-			}
-		}
-
-		return new Entities\API\Gen2\DeviceStatus(
-			$switches,
-			$covers,
-			$inputs,
-			$lights,
-			$temperature,
-			$humidity,
-			$ethernet,
-			$wifi,
-		);
 	}
 
 }

@@ -15,7 +15,6 @@
 
 namespace FastyBird\Connector\Shelly\Entities\Messages;
 
-use FastyBird\Connector\Shelly\Types;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette;
 use function is_scalar;
@@ -35,16 +34,10 @@ final class PropertyStatus implements Entity
 	use Nette\SmartObject;
 
 	public function __construct(
-		private readonly Types\MessageSource $source,
 		private readonly string $identifier,
 		private readonly float|int|string|bool|MetadataTypes\SwitchPayload|null $value,
 	)
 	{
-	}
-
-	public function getSource(): Types\MessageSource
-	{
-		return $this->source;
 	}
 
 	public function getIdentifier(): string
@@ -63,7 +56,6 @@ final class PropertyStatus implements Entity
 	public function toArray(): array
 	{
 		return [
-			'source' => $this->getSource()->getValue(),
 			'identifier' => $this->getIdentifier(),
 			'value' => is_scalar($this->getValue()) ? $this->getValue() : strval($this->getValue()),
 		];

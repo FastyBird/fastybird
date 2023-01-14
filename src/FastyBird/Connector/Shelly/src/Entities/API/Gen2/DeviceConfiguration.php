@@ -34,14 +34,16 @@ final class DeviceConfiguration implements Entities\API\Entity
 	 * @param array<int, DeviceCoverConfiguration> $covers
 	 * @param array<int, DeviceInputConfiguration> $inputs
 	 * @param array<int, DeviceLightConfiguration> $lights
+	 * @param array<int, DeviceTemperatureConfiguration> $temperature
+	 * @param array<int, DeviceHumidityConfiguration> $humidity
 	 */
 	public function __construct(
 		private readonly array $switches = [],
 		private readonly array $covers = [],
 		private readonly array $inputs = [],
 		private readonly array $lights = [],
-		private readonly DeviceTemperatureConfiguration|null $temperature = null,
-		private readonly DeviceHumidityConfiguration|null $humidity = null,
+		private readonly array $temperature = [],
+		private readonly array $humidity = [],
 	)
 	{
 	}
@@ -78,12 +80,18 @@ final class DeviceConfiguration implements Entities\API\Entity
 		return $this->lights;
 	}
 
-	public function getTemperature(): DeviceTemperatureConfiguration|null
+	/**
+	 * @return array<DeviceTemperatureConfiguration>
+	 */
+	public function getTemperature(): array
 	{
 		return $this->temperature;
 	}
 
-	public function getHumidity(): DeviceHumidityConfiguration|null
+	/**
+	 * @return array<DeviceHumidityConfiguration>
+	 */
+	public function getHumidity(): array
 	{
 		return $this->humidity;
 	}
@@ -110,8 +118,14 @@ final class DeviceConfiguration implements Entities\API\Entity
 				static fn (DeviceLightConfiguration $status): array => $status->toArray(),
 				$this->getLights(),
 			),
-			'temperature' => $this->getTemperature()?->toArray(),
-			'humidity' => $this->getHumidity()?->toArray(),
+			'temperature' => array_map(
+				static fn (DeviceTemperatureConfiguration $status): array => $status->toArray(),
+				$this->getTemperature(),
+			),
+			'humidity' => array_map(
+				static fn (DeviceHumidityConfiguration $status): array => $status->toArray(),
+				$this->getHumidity(),
+			),
 		];
 	}
 

@@ -36,7 +36,6 @@ final class PropertyDescription implements Entity
 	 * @param array<string>|array<int>|array<float>|array<int, array<int, (string|null)>>|array<int, (int|null)>|array<int, (float|null)>|array<int, (MetadataTypes\SwitchPayload|string|Types\RelayPayload|null)>|null $format
 	 */
 	public function __construct(
-		private readonly Types\MessageSource $source,
 		private readonly string $identifier,
 		private readonly MetadataTypes\DataType $dataType,
 		private readonly string|null $unit = null,
@@ -46,11 +45,6 @@ final class PropertyDescription implements Entity
 		private readonly bool $settable = false,
 	)
 	{
-	}
-
-	public function getSource(): Types\MessageSource
-	{
-		return $this->source;
 	}
 
 	public function getIdentifier(): string
@@ -97,7 +91,6 @@ final class PropertyDescription implements Entity
 	public function toArray(): array
 	{
 		return [
-			'source' => $this->getSource()->getValue(),
 			'identifier' => $this->getIdentifier(),
 			'data_type' => $this->getDataType()->getValue(),
 			'unit' => $this->getUnit(),

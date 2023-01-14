@@ -15,7 +15,6 @@
 
 namespace FastyBird\Connector\Shelly\API;
 
-use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Fig\Http\Message\StatusCodeInterface;
@@ -39,7 +38,6 @@ use function parse_url;
 use function preg_match_all;
 use function sprintf;
 use function time;
-use const DIRECTORY_SEPARATOR;
 use const PHP_URL_PATH;
 
 /**
@@ -132,21 +130,6 @@ abstract class HttpApi
 
 			return $this->client->request($method, $path, $options);
 		} catch (Throwable $ex) {
-			$this->logger->error('Calling api endpoint failed', [
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-				'type' => 'http-api',
-				'exception' => [
-					'message' => $ex->getMessage(),
-					'code' => $ex->getCode(),
-				],
-				'request' => [
-					'method' => $method,
-					'url' => $path,
-					'params' => $params,
-					'body' => $body,
-				],
-			]);
-
 			throw new Exceptions\HttpApiCall('Calling api endpoint failed', $ex->getCode(), $ex);
 		}
 	}
@@ -261,21 +244,6 @@ abstract class HttpApi
 
 								return;
 							}
-						} else {
-							$this->logger->error('Calling api endpoint failed', [
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-								'type' => 'http-api',
-								'exception' => [
-									'message' => $ex->getMessage(),
-									'code' => $ex->getCode(),
-								],
-								'request' => [
-									'method' => $method,
-									'url' => $path,
-									'params' => $params,
-									'body' => $body,
-								],
-							]);
 						}
 
 						$deferred->reject($ex);
@@ -286,23 +254,6 @@ abstract class HttpApi
 		}
 
 		return $deferred->promise();
-	}
-
-	/**
-	 * @throws Exceptions\InvalidState
-	 */
-	protected function getSchemaFilePath(string $schemaFilename): string
-	{
-		try {
-			$schema = Utils\FileSystem::read(
-				Shelly\Constants::RESOURCES_FOLDER . DIRECTORY_SEPARATOR . $schemaFilename,
-			);
-
-		} catch (Nette\IOException) {
-			throw new Exceptions\InvalidState('Validation schema for response could not be loaded');
-		}
-
-		return $schema;
 	}
 
 	protected function parseAuthentication(

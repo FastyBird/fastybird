@@ -37,14 +37,16 @@ final class DeviceStatus implements Entities\API\Entity
 	 * @param array<int, DeviceCoverStatus> $covers
 	 * @param array<int, DeviceInputStatus> $inputs
 	 * @param array<int, DeviceLightStatus> $lights
+	 * @param array<int, DeviceTemperatureStatus> $temperature
+	 * @param array<int, DeviceHumidityStatus> $humidity
 	 */
 	public function __construct(
 		private readonly array $switches = [],
 		private readonly array $covers = [],
 		private readonly array $inputs = [],
 		private readonly array $lights = [],
-		private readonly DeviceTemperatureStatus|null $temperature = null,
-		private readonly DeviceHumidityStatus|null $humidity = null,
+		private readonly array $temperature = [],
+		private readonly array $humidity = [],
 		private readonly EthernetStatus|null $ethernet = null,
 		private readonly WifiStatus|null $wifi = null,
 	)
@@ -83,12 +85,18 @@ final class DeviceStatus implements Entities\API\Entity
 		return $this->lights;
 	}
 
-	public function getTemperature(): DeviceTemperatureStatus|null
+	/**
+	 * @return array<DeviceTemperatureStatus>
+	 */
+	public function getTemperature(): array
 	{
 		return $this->temperature;
 	}
 
-	public function getHumidity(): DeviceHumidityStatus|null
+	/**
+	 * @return array<DeviceHumidityStatus>
+	 */
+	public function getHumidity(): array
 	{
 		return $this->humidity;
 	}
@@ -125,8 +133,14 @@ final class DeviceStatus implements Entities\API\Entity
 				static fn (DeviceLightStatus $status): array => $status->toArray(),
 				$this->getLights(),
 			),
-			'temperature' => $this->getTemperature()?->toArray(),
-			'humidity' => $this->getHumidity()?->toArray(),
+			'temperature' => array_map(
+				static fn (DeviceTemperatureStatus $status): array => $status->toArray(),
+				$this->getTemperature(),
+			),
+			'humidity' => array_map(
+				static fn (DeviceHumidityStatus $status): array => $status->toArray(),
+				$this->getHumidity(),
+			),
 			'ethernet' => $this->getEthernet()?->toArray(),
 			'wifi' => $this->getWifi()?->toArray(),
 		];

@@ -18,13 +18,18 @@ namespace FastyBird\Connector\Shelly\Writers;
 use DateTimeInterface;
 use FastyBird\Connector\Shelly\Clients;
 use FastyBird\Connector\Shelly\Entities;
+use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
+use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
+use Nette\Utils;
+use Psr\Log;
 use React\EventLoop;
+use Throwable;
 use function array_key_exists;
 use function assert;
 use function in_array;
@@ -64,13 +69,18 @@ class Periodic implements Writer
 
 	private EventLoop\TimerInterface|null $handlerTimer = null;
 
+	private Log\LoggerInterface $logger;
+
 	public function __construct(
+		private readonly Helpers\Property $propertyStateHelper,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
+		Log\LoggerInterface|null $logger = null,
 	)
 	{
+		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	public function connect(
@@ -107,6 +117,8 @@ class Periodic implements Writer
 	 */
 	private function handleCommunication(): void
 	{
+		assert($this->connector instanceof Entities\ShellyConnector);
+
 		foreach ($this->processedProperties as $index => $processedProperty) {
 			if (
 				(float) $this->dateTimeFactory->getNow()->format('Uv') - (float) $processedProperty->format(
@@ -117,7 +129,7 @@ class Periodic implements Writer
 			}
 		}
 
-		foreach ($this->connector?->getDevices() ?? [] as $device) {
+		foreach ($this->connector->getDevices() as $device) {
 			assert($device instanceof Entities\ShellyDevice);
 
 			if (
@@ -147,6 +159,8 @@ class Periodic implements Writer
 	 */
 	private function writeChannelsProperty(Entities\ShellyDevice $device): bool
 	{
+		assert($this->connector instanceof Entities\ShellyConnector);
+
 		$now = $this->dateTimeFactory->getNow();
 
 		foreach ($device->getChannels() as $channel) {
@@ -197,7 +211,50 @@ class Periodic implements Writer
 					) {
 						$this->processedProperties[$property->getPlainId()] = $now;
 
-						$this->client?->writeChannelProperty($device, $channel, $property);
+						$this->client?->writeChannelProperty($device, $channel, $property)
+							->then(function () use ($property): void {
+								$this->propertyStateHelper->setValue(
+									$property,
+									Utils\ArrayHash::from([
+										DevicesStates\Property::PENDING_KEY => $this->dateTimeFactory->getNow()->format(
+											DateTimeInterface::ATOM,
+										),
+									]),
+								);
+							})
+							->otherwise(function (Throwable $ex) use ($device, $channel, $property): void {
+								$this->logger->error(
+									'Could write new property state',
+									[
+										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+										'type' => 'periodic-writer',
+										'exception' => [
+											'message' => $ex->getMessage(),
+											'code' => $ex->getCode(),
+										],
+										'connector' => [
+											'id' => $this->connector?->getPlainId(),
+										],
+										'device' => [
+											'id' => $device->getPlainId(),
+										],
+										'channel' => [
+											'id' => $channel->getPlainId(),
+										],
+										'property' => [
+											'id' => $property->getPlainId(),
+										],
+									],
+								);
+
+								$this->propertyStateHelper->setValue(
+									$property,
+									Utils\ArrayHash::from([
+										DevicesStates\Property::EXPECTED_VALUE_KEY => null,
+										DevicesStates\Property::PENDING_KEY => false,
+									]),
+								);
+							});
 
 						return true;
 					}

@@ -37,6 +37,7 @@
     "ext-pcntl": "*",
     "clue/multicast-react": "^1.1",
     "cweagans/composer-patches": "^1.7",
+    "evenement/evenement": "^3.0",
     "fastybird/bootstrap-library": "dev-main",
     "fastybird/datetime-factory": "^0.6",
     "fastybird/devices-module": "dev-main",

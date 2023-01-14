@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * TConsumeDeviceAttribute.php
+ * ConsumeDeviceAttribute.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -42,7 +42,7 @@ use function assert;
  * @property-read DevicesUtilities\Database $databaseHelper
  * @property-read Log\LoggerInterface $logger
  */
-trait TConsumeDeviceAttribute
+trait ConsumeDeviceAttribute
 {
 
 	/**

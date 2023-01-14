@@ -15,7 +15,6 @@
 
 namespace FastyBird\Connector\Shelly\Entities\Messages;
 
-use FastyBird\Connector\Shelly\Types;
 use Ramsey\Uuid;
 use function array_map;
 use function array_merge;
@@ -35,14 +34,13 @@ final class DeviceStatus extends Device
 	 * @param array<PropertyStatus|ChannelStatus> $statuses
 	 */
 	public function __construct(
-		Types\MessageSource $source,
 		Uuid\UuidInterface $connector,
 		string $identifier,
 		private readonly string|null $ipAddress,
 		private readonly array $statuses,
 	)
 	{
-		parent::__construct($source, $connector, $identifier);
+		parent::__construct($connector, $identifier);
 	}
 
 	public function getIpAddress(): string|null

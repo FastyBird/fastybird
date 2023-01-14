@@ -15,7 +15,6 @@
 
 namespace FastyBird\Connector\Shelly\Entities\Messages;
 
-use FastyBird\Connector\Shelly\Types;
 use Nette;
 use function array_map;
 use function array_unique;
@@ -41,18 +40,12 @@ final class ChannelDescription implements Entity
 	 * @param array<PropertyDescription> $properties
 	 */
 	public function __construct(
-		private readonly Types\MessageSource $source,
 		private readonly string $identifier,
 		private readonly string|null $name,
 		array $properties = [],
 	)
 	{
 		$this->properties = array_unique($properties, SORT_REGULAR);
-	}
-
-	public function getSource(): Types\MessageSource
-	{
-		return $this->source;
 	}
 
 	public function getIdentifier(): string
@@ -86,7 +79,6 @@ final class ChannelDescription implements Entity
 	public function toArray(): array
 	{
 		return [
-			'source' => $this->getSource()->getValue(),
 			'identifier' => $this->getIdentifier(),
 			'name' => $this->getName(),
 			'properties' => array_map(

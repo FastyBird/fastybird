@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Gen2HttpApiFactory.php
+ * WsApiFactory.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,22 +10,28 @@
  * @subpackage     API
  * @since          1.0.0
  *
- * @date           24.12.22
+ * @date           08.01.23
  */
 
 namespace FastyBird\Connector\Shelly\API;
 
 /**
- * Generation 2 device http API factory
+ * Websockets API factory
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     API
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-interface Gen2HttpApiFactory
+interface WsApiFactory
 {
 
-	public function create(): Gen2HttpApi;
+	public function create(
+		string $identifier,
+		string|null $ipAddress,
+		string|null $domain,
+		string|null $username,
+		string|null $password,
+	): WsApi;
 
 }

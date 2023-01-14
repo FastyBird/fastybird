@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\Shelly\API;
 
+use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Types;
@@ -40,11 +41,13 @@ use function in_array;
 use function intval;
 use function is_array;
 use function is_string;
+use function preg_match;
 use function sprintf;
 use function strval;
+use const DIRECTORY_SEPARATOR;
 
 /**
- * Generation 1 device http api interface
+ * Generation 1 device http API interface
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     API
@@ -64,11 +67,15 @@ final class Gen1HttpApi extends HttpApi
 
 	private const DEVICE_ACTION = 'http://%s/%s/%s?%s=%s';
 
-	public const DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME = 'gen1_http_shelly.json';
+	private const DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME = 'gen1_http_shelly.json';
 
-	public const DEVICE_DESCRIPTION_MESSAGE_SCHEMA_FILENAME = 'gen1_http_description.json';
+	private const DEVICE_DESCRIPTION_MESSAGE_SCHEMA_FILENAME = 'gen1_http_description.json';
 
-	public const DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME = 'gen1_http_status.json';
+	private const DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME = 'gen1_http_status.json';
+
+	private const CHANNEL_BLOCK = '/^(?P<identifier>[0-9]+)_(?P<description>[a-zA-Z]+)(_(?P<channel>[0-9]+))?$/';
+
+	private const PROPERTY_SENSOR = '/^(?P<identifier>[0-9]+)_(?P<type>[a-zA-Z]{1,3})_(?P<description>[a-zA-Z0-9]+)$/';
 
 	private const SENSORS_UNIT = [
 		'W' => 'W',
@@ -271,13 +278,28 @@ final class Gen1HttpApi extends HttpApi
 		string $address,
 		string|null $username,
 		string|null $password,
-		string $sensor,
-		int $channel,
-		string $action,
-		string|int|float|bool $value,
+		string $blockIdentifier,
+		string $sensorIdentifier,
+		int|float|string|bool $value,
 		bool $async = true,
 	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|bool
 	{
+		if (
+			preg_match(self::CHANNEL_BLOCK, $blockIdentifier, $channelMatches) !== 1
+			|| !array_key_exists('identifier', $channelMatches)
+			|| !array_key_exists('description', $channelMatches)
+			|| !array_key_exists('channel', $channelMatches)
+		) {
+			return Promise\reject(new Exceptions\InvalidState('Channel identifier is not in expected format'));
+		}
+
+		try {
+			$sensorAction = $this->buildSensorAction($sensorIdentifier);
+
+		} catch (Exceptions\InvalidState) {
+			return Promise\reject(new Exceptions\InvalidState('Sensor action could not be created'));
+		}
+
 		if ($async) {
 			$deferred = new Promise\Deferred();
 
@@ -286,9 +308,9 @@ final class Gen1HttpApi extends HttpApi
 				sprintf(
 					self::DEVICE_ACTION,
 					$address,
-					$sensor,
-					$channel,
-					$action,
+					$channelMatches['description'],
+					intval($channelMatches['channel']),
+					$sensorAction,
 					$value,
 				),
 				[],
@@ -313,9 +335,9 @@ final class Gen1HttpApi extends HttpApi
 			sprintf(
 				self::DEVICE_ACTION,
 				$address,
-				$sensor,
-				$channel,
-				$action,
+				$channelMatches['description'],
+				intval($channelMatches['channel']),
+				$sensorAction,
 				$value,
 			),
 			[],
@@ -381,7 +403,7 @@ final class Gen1HttpApi extends HttpApi
 					|| !$block->offsetExists('I')
 					|| !$block->offsetExists('D')
 				) {
-					$this->logger->warning(
+					$this->logger->debug(
 						'Received device block description is not in valid format',
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
@@ -406,7 +428,7 @@ final class Gen1HttpApi extends HttpApi
 						|| !$sensor->offsetExists('D')
 						|| !$sensor->offsetExists('L')
 					) {
-						$this->logger->warning(
+						$this->logger->debug(
 							'Received block sensor description is not in valid format',
 							[
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
@@ -883,6 +905,59 @@ final class Gen1HttpApi extends HttpApi
 		}
 
 		return $format;
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
+	private function buildSensorAction(string $property): string
+	{
+		if (preg_match(self::PROPERTY_SENSOR, $property, $propertyMatches) !== 1) {
+			throw new Exceptions\InvalidState('Property identifier is not valid');
+		}
+
+		if (
+			!array_key_exists('identifier', $propertyMatches)
+			|| !array_key_exists('type', $propertyMatches)
+			|| !array_key_exists('description', $propertyMatches)
+		) {
+			throw new Exceptions\InvalidState('Property identifier is not valid');
+		}
+
+		if ($propertyMatches['description'] === Types\SensorDescription::DESC_OUTPUT) {
+			return 'turn';
+		}
+
+		if ($propertyMatches['description'] === Types\SensorDescription::DESC_ROLLER) {
+			return 'go';
+		}
+
+		if ($propertyMatches['description'] === Types\SensorDescription::DESC_COLOR_TEMP) {
+			return 'temp';
+		}
+
+		if ($propertyMatches['description'] === Types\SensorDescription::DESC_WHITE_LEVEL) {
+			return 'white';
+		}
+
+		return $propertyMatches['description'];
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
+	private function getSchemaFilePath(string $schemaFilename): string
+	{
+		try {
+			$schema = Utils\FileSystem::read(
+				Shelly\Constants::RESOURCES_FOLDER . DIRECTORY_SEPARATOR . $schemaFilename,
+			);
+
+		} catch (Nette\IOException) {
+			throw new Exceptions\InvalidState('Validation schema for response could not be loaded');
+		}
+
+		return $schema;
 	}
 
 }

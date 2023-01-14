@@ -23,7 +23,6 @@ use FastyBird\Connector\Shelly\Clients;
 use FastyBird\Connector\Shelly\Consumers;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
-use FastyBird\Connector\Shelly\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -127,7 +126,7 @@ final class Coap implements Clients\Client
 		});
 
 		$this->server->on('close', function (): void {
-			$this->logger->info(
+			$this->logger->debug(
 				'Client CoAP connection was successfully closed',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
@@ -352,7 +351,6 @@ final class Coap implements Clients\Client
 
 				if ($property !== null) {
 					$statuses[] = new Entities\Messages\PropertyStatus(
-						Types\MessageSource::get(Types\MessageSource::SOURCE_GEN_1_COAP),
 						$property->getIdentifier(),
 						$this->transformer->transformValueFromDevice(
 							$property->getDataType(),
@@ -366,7 +364,6 @@ final class Coap implements Clients\Client
 
 		$this->consumer->append(
 			new Entities\Messages\DeviceStatus(
-				Types\MessageSource::get(Types\MessageSource::SOURCE_GEN_1_COAP),
 				$this->connector->getId(),
 				$deviceIdentifier,
 				$remote,

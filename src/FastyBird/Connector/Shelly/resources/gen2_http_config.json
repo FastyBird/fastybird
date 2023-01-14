@@ -419,10 +419,8 @@
         "name",
         "initial_state"
       ]
-    }
-  },
-  "properties": {
-    "temperature": {
+    },
+    "^temperature:[0-9]$": {
       "type": "object",
       "properties": {
         "id": {
@@ -470,7 +468,7 @@
         "id"
       ]
     },
-    "humidity": {
+    "^humidity:[0-9]$": {
       "type": "object",
       "properties": {
         "id": {

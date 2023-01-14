@@ -151,7 +151,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			return;
 		}
 
-		$this->server->on('message', function ($message, $remote): void {
+		$this->server->on('message', function ($message): void {
 			try {
 				$response = $this->parser->parseMessage($message);
 
@@ -417,7 +417,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 					&& $deviceDescription !== null
 				) {
 					$message = new Entities\Messages\DiscoveredLocalDevice(
-						Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
 						$this->connector->getId(),
 						$device->getIdentifier(),
 						$device->getGeneration(),
@@ -430,14 +429,12 @@ final class Discovery implements Evenement\EventEmitterInterface
 						array_map(
 							static function (Entities\API\Gen1\DeviceBlockDescription $block): Entities\Messages\ChannelDescription {
 								$channel = new Entities\Messages\ChannelDescription(
-									Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
 									$block->getIdentifier() . '_' . $block->getDescription(),
 									null,
 								);
 
 								foreach ($block->getSensors() as $sensor) {
 									$property = new Entities\Messages\PropertyDescription(
-										Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
 										(
 											$sensor->getIdentifier()
 											. '_'
@@ -466,7 +463,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 					&& $deviceConfiguration !== null
 				) {
 					$message = new Entities\Messages\DiscoveredLocalDevice(
-						Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
 						$this->connector->getId(),
 						$device->getIdentifier(),
 						$device->getGeneration(),
@@ -479,14 +475,12 @@ final class Discovery implements Evenement\EventEmitterInterface
 						array_map(
 							static function ($component): Entities\Messages\ChannelDescription {
 								$channel = new Entities\Messages\ChannelDescription(
-									Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
 									$component->getType()->getValue() . '_' . $component->getId(),
 									$component->getName(),
 								);
 
 								if ($component instanceof Entities\API\Gen2\DeviceSwitchConfiguration) {
 									$channel->addProperty(new Entities\Messages\PropertyDescription(
-										Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
 										(
 											$component->getType()->getValue()
 											. '_'
@@ -503,7 +497,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 									));
 
 									$channel->addProperty(new Entities\Messages\PropertyDescription(
-										Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
 										(
 											$component->getType()->getValue()
 											. '_'
@@ -520,7 +513,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 									));
 
 									$channel->addProperty(new Entities\Messages\PropertyDescription(
-										Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
 										(
 											$component->getType()->getValue()
 											. '_'
@@ -537,7 +529,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 									));
 
 									$channel->addProperty(new Entities\Messages\PropertyDescription(
-										Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
 										(
 											$component->getType()->getValue()
 											. '_'
@@ -554,7 +545,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 									));
 
 									$channel->addProperty(new Entities\Messages\PropertyDescription(
-										Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
 										(
 											$component->getType()->getValue()
 											. '_'
@@ -571,7 +561,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 									));
 
 									$channel->addProperty(new Entities\Messages\PropertyDescription(
-										Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
 										(
 											$component->getType()->getValue()
 											. '_'
@@ -588,7 +577,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 									));
 
 									$channel->addProperty(new Entities\Messages\PropertyDescription(
-										Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
 										(
 											$component->getType()->getValue()
 											. '_'
@@ -605,7 +593,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 									));
 								} elseif ($component instanceof Entities\API\Gen2\DeviceCoverConfiguration) {
 									$channel->addProperty(new Entities\Messages\PropertyDescription(
-										Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
 										(
 											$component->getType()->getValue()
 											. '_'
@@ -629,7 +616,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 									));
 
 									$channel->addProperty(new Entities\Messages\PropertyDescription(
-										Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
 										(
 											$component->getType()->getValue()
 											. '_'
@@ -646,7 +632,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 									));
 
 									$channel->addProperty(new Entities\Messages\PropertyDescription(
-										Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
 										(
 											$component->getType()->getValue()
 											. '_'
@@ -663,7 +648,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 									));
 
 									$channel->addProperty(new Entities\Messages\PropertyDescription(
-										Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
 										(
 											$component->getType()->getValue()
 											. '_'
@@ -680,7 +664,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 									));
 
 									$channel->addProperty(new Entities\Messages\PropertyDescription(
-										Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
 										(
 											$component->getType()->getValue()
 											. '_'
@@ -697,7 +680,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 									));
 
 									$channel->addProperty(new Entities\Messages\PropertyDescription(
-										Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
 										(
 											$component->getType()->getValue()
 											. '_'
@@ -714,7 +696,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 									));
 
 									$channel->addProperty(new Entities\Messages\PropertyDescription(
-										Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
 										(
 											$component->getType()->getValue()
 											. '_'
@@ -731,7 +712,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 									));
 
 									$channel->addProperty(new Entities\Messages\PropertyDescription(
-										Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
 										(
 											$component->getType()->getValue()
 											. '_'
@@ -748,7 +728,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 									));
 								} elseif ($component instanceof Entities\API\Gen2\DeviceLightConfiguration) {
 									$channel->addProperty(new Entities\Messages\PropertyDescription(
-										Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
 										(
 											$component->getType()->getValue()
 											. '_'
@@ -765,7 +744,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 									));
 
 									$channel->addProperty(new Entities\Messages\PropertyDescription(
-										Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
 										(
 											$component->getType()->getValue()
 											. '_'
@@ -783,7 +761,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 								} elseif ($component instanceof Entities\API\Gen2\DeviceInputConfiguration) {
 									if ($component->getInputType()->equalsValue(Types\InputType::TYPE_SWITCH)) {
 										$channel->addProperty(new Entities\Messages\PropertyDescription(
-											Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
 											(
 												$component->getType()->getValue()
 												. '_'
@@ -798,7 +775,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 										));
 									} elseif ($component->getInputType()->equalsValue(Types\InputType::TYPE_BUTTON)) {
 										$channel->addProperty(new Entities\Messages\PropertyDescription(
-											Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
 											(
 												$component->getType()->getValue()
 												. '_'
@@ -819,7 +795,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 										));
 									} elseif ($component->getInputType()->equalsValue(Types\InputType::TYPE_ANALOG)) {
 										$channel->addProperty(new Entities\Messages\PropertyDescription(
-											Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
 											(
 												$component->getType()->getValue()
 												. '_'
@@ -835,7 +810,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 									}
 								} elseif ($component instanceof Entities\API\Gen2\DeviceTemperatureConfiguration) {
 									$channel->addProperty(new Entities\Messages\PropertyDescription(
-										Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
 										(
 											$component->getType()->getValue()
 											. '_'
@@ -852,7 +826,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 									));
 
 									$channel->addProperty(new Entities\Messages\PropertyDescription(
-										Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
 										(
 											$component->getType()->getValue()
 											. '_'
@@ -869,7 +842,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 									));
 								} else {
 									$channel->addProperty(new Entities\Messages\PropertyDescription(
-										Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
 										(
 											$component->getType()->getValue()
 											. '_'
@@ -891,8 +863,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 								$deviceConfiguration->getCovers(),
 								$deviceConfiguration->getLights(),
 								$deviceConfiguration->getInputs(),
-								$deviceConfiguration->getTemperature() !== null ? [$deviceConfiguration->getTemperature()] : [],
-								$deviceConfiguration->getHumidity() !== null ? [$deviceConfiguration->getHumidity()] : [],
+								$deviceConfiguration->getTemperature(),
+								$deviceConfiguration->getHumidity(),
 							),
 						),
 					);

@@ -40,7 +40,6 @@ final class DiscoveredLocalDevice extends Device
 	 * @param array<ChannelDescription> $channels
 	 */
 	public function __construct(
-		Types\MessageSource $source,
 		Uuid\UuidInterface $connector,
 		string $identifier,
 		private readonly Types\DeviceGeneration $generation,
@@ -53,7 +52,7 @@ final class DiscoveredLocalDevice extends Device
 		array $channels,
 	)
 	{
-		parent::__construct($source, $connector, $identifier);
+		parent::__construct($connector, $identifier);
 
 		$this->channels = array_unique($channels, SORT_REGULAR);
 	}

@@ -44,8 +44,8 @@ final class LocalDiscovery implements Consumer
 {
 
 	use Nette\SmartObject;
-	use TConsumeDeviceAttribute;
-	use TConsumeDeviceProperty;
+	use ConsumeDeviceAttribute;
+	use ConsumeDeviceProperty;
 
 	private Log\LoggerInterface $logger;
 
@@ -169,28 +169,28 @@ final class LocalDiscovery implements Consumer
 			Types\DeviceAttributeIdentifier::IDENTIFIER_FIRMWARE_VERSION,
 		);
 
-		foreach ($entity->getChannels() as $block) {
-			$channel = $device->findChannel($block->getIdentifier());
+		foreach ($entity->getChannels() as $channelDescription) {
+			$channel = $device->findChannel($channelDescription->getIdentifier());
 
 			$channel = $channel === null ? $this->databaseHelper->transaction(
 				fn (): DevicesEntities\Channels\Channel => $this->channelsManager->create(Utils\ArrayHash::from([
 					'device' => $device,
-					'identifier' => $block->getIdentifier(),
-					'name' => $block->getName(),
+					'identifier' => $channelDescription->getIdentifier(),
+					'name' => $channelDescription->getName(),
 				])),
 			) : $this->databaseHelper->transaction(
 				fn (): DevicesEntities\Channels\Channel => $this->channelsManager->update(
 					$channel,
 					Utils\ArrayHash::from([
 						'device' => $device,
-						'identifier' => $block->getIdentifier(),
-						'name' => $block->getName(),
+						'identifier' => $channelDescription->getIdentifier(),
+						'name' => $channelDescription->getName(),
 					]),
 				),
 			);
 
-			foreach ($block->getProperties() as $sensor) {
-				$channelProperty = $channel->findProperty($sensor->getIdentifier());
+			foreach ($channelDescription->getProperties() as $propertyDescription) {
+				$channelProperty = $channel->findProperty($propertyDescription->getIdentifier());
 
 				if ($channelProperty === null) {
 					$channelProperty = $this->databaseHelper->transaction(
@@ -198,13 +198,13 @@ final class LocalDiscovery implements Consumer
 							Utils\ArrayHash::from([
 								'channel' => $channel,
 								'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
-								'identifier' => $sensor->getIdentifier(),
-								'unit' => $sensor->getUnit(),
-								'dataType' => $sensor->getDataType(),
-								'format' => $sensor->getFormat(),
-								'invalid' => $sensor->getInvalid(),
-								'queryable' => $sensor->isQueryable(),
-								'settable' => $sensor->isSettable(),
+								'identifier' => $propertyDescription->getIdentifier(),
+								'unit' => $propertyDescription->getUnit(),
+								'dataType' => $propertyDescription->getDataType(),
+								'format' => $propertyDescription->getFormat(),
+								'invalid' => $propertyDescription->getInvalid(),
+								'queryable' => $propertyDescription->isQueryable(),
+								'settable' => $propertyDescription->isSettable(),
 							]),
 						),
 					);
@@ -231,12 +231,12 @@ final class LocalDiscovery implements Consumer
 						fn (): DevicesEntities\Channels\Properties\Property => $this->channelsPropertiesManager->update(
 							$channelProperty,
 							Utils\ArrayHash::from([
-								'unit' => $sensor->getUnit(),
-								'dataType' => $sensor->getDataType(),
-								'format' => $sensor->getFormat(),
-								'invalid' => $sensor->getInvalid(),
-								'queryable' => $sensor->isQueryable(),
-								'settable' => $sensor->isSettable(),
+								'unit' => $propertyDescription->getUnit(),
+								'dataType' => $propertyDescription->getDataType(),
+								'format' => $propertyDescription->getFormat(),
+								'invalid' => $propertyDescription->getInvalid(),
+								'queryable' => $propertyDescription->isQueryable(),
+								'settable' => $propertyDescription->isSettable(),
 							]),
 						),
 					);
@@ -262,7 +262,7 @@ final class LocalDiscovery implements Consumer
 		}
 
 		$this->logger->debug(
-			'Consumed device found message',
+			'Consumed device discovery message',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 				'type' => 'local-discovery-message-consumer',

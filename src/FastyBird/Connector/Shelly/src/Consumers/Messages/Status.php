@@ -44,7 +44,7 @@ final class Status implements Consumer
 {
 
 	use Nette\SmartObject;
-	use TConsumeDeviceProperty;
+	use ConsumeDeviceProperty;
 
 	private Log\LoggerInterface $logger;
 

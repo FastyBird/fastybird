@@ -107,6 +107,11 @@ class ShellyExtension extends DI\CompilerExtension
 			->getResultDefinition()
 			->setType(Clients\Local\Http::class);
 
+		$builder->addFactoryDefinition($this->prefix('clients.local.ws'))
+			->setImplement(Clients\Local\WsFactory::class)
+			->getResultDefinition()
+			->setType(Clients\Local\Ws::class);
+
 		$builder->addFactoryDefinition($this->prefix('clients.mqtt'))
 			->setImplement(Clients\MqttFactory::class)
 			->getResultDefinition()
@@ -125,11 +130,20 @@ class ShellyExtension extends DI\CompilerExtension
 		$builder->addDefinition($this->prefix('api.entityFactory'), new DI\Definitions\ServiceDefinition())
 			->setType(API\EntityFactory::class);
 
-		$builder->addDefinition($this->prefix('api.gen1HttpApi'), new DI\Definitions\ServiceDefinition())
-			->setType(API\Gen1HttpApiFactory::class);
+		$builder->addFactoryDefinition($this->prefix('api.gen1HttpApi'))
+			->setImplement(API\Gen1HttpApiFactory::class)
+			->getResultDefinition()
+			->setType(API\Gen1HttpApi::class);
 
-		$builder->addDefinition($this->prefix('api.gen2HttpApi'), new DI\Definitions\ServiceDefinition())
-			->setType(API\Gen2HttpApiFactory::class);
+		$builder->addFactoryDefinition($this->prefix('api.gen2HttpApi'))
+			->setImplement(API\Gen2HttpApiFactory::class)
+			->getResultDefinition()
+			->setType(API\Gen2HttpApi::class);
+
+		$builder->addFactoryDefinition($this->prefix('api.ws'))
+			->setImplement(API\WsApiFactory::class)
+			->getResultDefinition()
+			->setType(API\WsApi::class);
 
 		$builder->addDefinition($this->prefix('api.gen1transformer'), new DI\Definitions\ServiceDefinition())
 			->setType(API\Gen1Transformer::class);
@@ -139,6 +153,12 @@ class ShellyExtension extends DI\CompilerExtension
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Consumers\Messages\Status::class);
+
+		$builder->addDefinition(
+			$this->prefix('consumers.messages.device.state'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Consumers\Messages\State::class);
 
 		$builder->addDefinition(
 			$this->prefix('consumers.messages.device.discovery'),
@@ -185,8 +205,8 @@ class ShellyExtension extends DI\CompilerExtension
 		$builder->addDefinition($this->prefix('commands.initialize'), new DI\Definitions\ServiceDefinition())
 			->setType(Commands\Initialize::class);
 
-		$builder->addDefinition($this->prefix('commands.discovery'), new DI\Definitions\ServiceDefinition())
-			->setType(Commands\Discovery::class);
+		$builder->addDefinition($this->prefix('commands.discover'), new DI\Definitions\ServiceDefinition())
+			->setType(Commands\Discover::class);
 
 		$builder->addDefinition($this->prefix('commands.execute'), new DI\Definitions\ServiceDefinition())
 			->setType(Commands\Execute::class);
