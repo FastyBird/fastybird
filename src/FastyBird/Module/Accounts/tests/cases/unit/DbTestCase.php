@@ -145,8 +145,8 @@ abstract class DbTestCase extends TestCase
 		$config->setForceReloadContainer();
 		$config->setTempDirectory(FB_TEMP_DIR);
 
-		$config->addParameters(['container' => ['class' => 'SystemContainer_' . md5((string) time())]]);
-		$config->addParameters(['appDir' => $rootDir, 'wwwDir' => $rootDir, 'vendorDir' => $vendorDir]);
+		$config->addStaticParameters(['container' => ['class' => 'SystemContainer_' . md5((string) time())]]);
+		$config->addStaticParameters(['appDir' => $rootDir, 'wwwDir' => $rootDir, 'vendorDir' => $vendorDir]);
 
 		$config->addConfig(__DIR__ . '/../../common.neon');
 
