@@ -108,6 +108,7 @@ final class Coap implements Clients\Client
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'coap-client',
+					'group' => 'client',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -131,6 +132,7 @@ final class Coap implements Clients\Client
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'coap-client',
+					'group' => 'client',
 					'connector' => [
 						'id' => $this->connector->getPlainId(),
 					],
@@ -252,6 +254,7 @@ final class Coap implements Clients\Client
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'coap-client',
+					'group' => 'client',
 					'connector' => [
 						'id' => $this->connector->getPlainId(),
 					],
@@ -271,6 +274,7 @@ final class Coap implements Clients\Client
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 							'type' => 'coap-client',
+							'group' => 'client',
 							'exception' => [
 								'message' => $ex->getMessage(),
 								'code' => $ex->getCode(),

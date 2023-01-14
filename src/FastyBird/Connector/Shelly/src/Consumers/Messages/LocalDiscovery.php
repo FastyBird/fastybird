@@ -97,6 +97,7 @@ final class LocalDiscovery implements Consumer
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'local-discovery-message-consumer',
+						'group' => 'consumer',
 						'connector' => [
 							'id' => $entity->getConnector()->toString(),
 						],
@@ -124,10 +125,9 @@ final class LocalDiscovery implements Consumer
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'local-discovery-message-consumer',
+					'group' => 'consumer',
 					'device' => [
 						'id' => $device->getPlainId(),
-						'identifier' => $entity->getIdentifier(),
-						'address' => $entity->getIpAddress(),
 					],
 				],
 			);
@@ -214,6 +214,7 @@ final class LocalDiscovery implements Consumer
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 							'type' => 'local-discovery-message-consumer',
+							'group' => 'consumer',
 							'device' => [
 								'id' => $device->getPlainId(),
 							],
@@ -246,6 +247,7 @@ final class LocalDiscovery implements Consumer
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 							'type' => 'local-discovery-message-consumer',
+							'group' => 'consumer',
 							'device' => [
 								'id' => $device->getPlainId(),
 							],
@@ -266,6 +268,7 @@ final class LocalDiscovery implements Consumer
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 				'type' => 'local-discovery-message-consumer',
+				'group' => 'consumer',
 				'device' => [
 					'id' => $device->getPlainId(),
 				],

@@ -25,7 +25,6 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
-use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Psr\Log;
 use React\Promise;
@@ -56,7 +55,6 @@ final class Ws
 
 	public function __construct(
 		private readonly API\WsApiFactory $wsApiFactory,
-		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		protected readonly API\Gen1Transformer $transformer,
 		protected readonly Consumers\Messages $consumer,
@@ -128,7 +126,7 @@ final class Ws
 		if ($client === null) {
 			$this->createDeviceClient($device);
 
-			return true;
+			return false;
 		}
 
 		if (!$client->isConnected()) {
@@ -153,15 +151,7 @@ final class Ws
 				}
 			}
 
-			return true;
-		}
-
-		if (
-			!$this->deviceConnectionManager->getState($device)->equalsValue(
-				MetadataTypes\ConnectionState::STATE_CONNECTED,
-			)
-		) {
-			return true;
+			return false;
 		}
 
 		$client->readStates()
@@ -230,9 +220,7 @@ final class Ws
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'ws-client',
-						'connector' => [
-							'id' => $device->getConnector()->getPlainId(),
-						],
+						'group' => 'client',
 						'device' => [
 							'id' => $device->getPlainId(),
 						],
@@ -257,9 +245,7 @@ final class Ws
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'ws-client',
-						'connector' => [
-							'id' => $device->getConnector()->getPlainId(),
-						],
+						'group' => 'client',
 						'device' => [
 							'id' => $device->getPlainId(),
 						],
@@ -284,12 +270,10 @@ final class Ws
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'ws-client',
+						'group' => 'client',
 						'exception' => [
 							'message' => $ex->getMessage(),
 							'code' => $ex->getCode(),
-						],
-						'connector' => [
-							'id' => $device->getConnector()->getPlainId(),
 						],
 						'device' => [
 							'id' => $device->getPlainId(),

@@ -311,9 +311,7 @@ final class Http
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 				'type' => 'http-client',
-				'connector' => [
-					'id' => $device->getConnector()->getPlainId(),
-				],
+				'group' => 'client',
 				'device' => [
 					'id' => $device->getPlainId(),
 				],

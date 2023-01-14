@@ -72,7 +72,7 @@ final class EntityFactory
 	): Entities\API\Entity
 	{
 		if (!class_exists($entityClass)) {
-			throw new Exceptions\InvalidState('Entity could not be created');
+			throw new Exceptions\InvalidState('Entity could not be created. Class could not be found');
 		}
 
 		$decoded = $this->convertKeys($data);
@@ -89,7 +89,7 @@ final class EntityFactory
 				)
 				: new $entityClass();
 		} catch (Throwable $ex) {
-			throw new Exceptions\InvalidState('Entity could not be created', 0, $ex);
+			throw new Exceptions\InvalidState('Entity could not be created: ' . $ex->getMessage(), 0, $ex);
 		}
 
 		$properties = $this->getProperties($rc);
@@ -129,7 +129,7 @@ final class EntityFactory
 				} catch (ReflectionException) {
 					continue;
 				} catch (Throwable $ex) {
-					throw new Exceptions\InvalidState('Entity could not be created', 0, $ex);
+					throw new Exceptions\InvalidState('Entity could not be created: ' . $ex->getMessage(), 0, $ex);
 				}
 			}
 		}

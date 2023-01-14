@@ -119,6 +119,7 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'event-writer',
+						'group' => 'writer',
 						'exception' => [
 							'message' => $ex->getMessage(),
 							'code' => $ex->getCode(),

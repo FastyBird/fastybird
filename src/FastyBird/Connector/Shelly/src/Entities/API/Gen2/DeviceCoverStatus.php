@@ -41,7 +41,7 @@ final class DeviceCoverStatus implements Entities\API\Entity
 	public function __construct(
 		private readonly int $id,
 		private readonly string $source,
-		private readonly string $state,
+		private readonly string|null $state,
 		private readonly float|null $apower,
 		private readonly float|null $voltage,
 		private readonly float|null $current,
@@ -75,7 +75,7 @@ final class DeviceCoverStatus implements Entities\API\Entity
 
 	public function getState(): Types\CoverPayload|null
 	{
-		if (Types\CoverPayload::isValidValue($this->state)) {
+		if ($this->state !== null && Types\CoverPayload::isValidValue($this->state)) {
 			return Types\CoverPayload::get($this->state);
 		}
 

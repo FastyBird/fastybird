@@ -290,6 +290,7 @@ class Initialize extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'initialize-cmd',
+					'group' => 'cmd',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -362,10 +363,11 @@ class Initialize extends Console\Command\Command
 			$io->error('Something went wrong, connector could not be loaded');
 
 			$this->logger->alert(
-				'Connector identifier was not able to get from answer',
+				'Could not read connector identifier from console answer',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'initialize-cmd',
+					'group' => 'cmd',
 				],
 			);
 
@@ -385,6 +387,7 @@ class Initialize extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'initialize-cmd',
+					'group' => 'cmd',
 				],
 			);
 
@@ -561,6 +564,7 @@ class Initialize extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'initialize-cmd',
+					'group' => 'cmd',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -619,10 +623,11 @@ class Initialize extends Console\Command\Command
 			$io->error('Something went wrong, connector could not be loaded');
 
 			$this->logger->alert(
-				'Connector identifier was not able to get from answer',
+				'Could not read connector identifier from console answer',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'initialize-cmd',
+					'group' => 'cmd',
 				],
 			);
 
@@ -642,6 +647,7 @@ class Initialize extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'initialize-cmd',
+					'group' => 'cmd',
 				],
 			);
 
@@ -679,6 +685,7 @@ class Initialize extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'initialize-cmd',
+					'group' => 'cmd',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),

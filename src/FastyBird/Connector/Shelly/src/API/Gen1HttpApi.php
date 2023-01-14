@@ -408,6 +408,7 @@ final class Gen1HttpApi extends HttpApi
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 							'type' => 'gen1-http-api',
+							'group' => 'api',
 							'description' => (array) $block,
 						],
 					);
@@ -433,6 +434,7 @@ final class Gen1HttpApi extends HttpApi
 							[
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 								'type' => 'gen1-http-api',
+								'group' => 'api',
 								'description' => (array) $sensor,
 							],
 						);

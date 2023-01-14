@@ -138,6 +138,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'discovery-client',
+					'group' => 'client',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -161,6 +162,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'discovery-client',
+						'group' => 'client',
 						'connector' => [
 							'id' => $this->connector->getPlainId(),
 						],
@@ -176,6 +178,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'discovery-client',
+						'group' => 'client',
 						'connector' => [
 							'id' => $this->connector->getPlainId(),
 						],
@@ -328,9 +331,13 @@ final class Discovery implements Evenement\EventEmitterInterface
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'discovery-client',
+						'group' => 'client',
 						'exception' => [
 							'message' => $ex->getMessage(),
 							'code' => $ex->getCode(),
+						],
+						'connector' => [
+							'id' => $this->connector->getPlainId(),
 						],
 						'device' => [
 							'identifier' => $device->getIdentifier(),
@@ -376,9 +383,13 @@ final class Discovery implements Evenement\EventEmitterInterface
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 							'type' => 'discovery-client',
+							'group' => 'client',
 							'exception' => [
 								'message' => $ex->getMessage(),
 								'code' => $ex->getCode(),
+							],
+							'connector' => [
+								'id' => $this->connector->getPlainId(),
 							],
 							'device' => [
 								'identifier' => $device->getIdentifier(),
@@ -394,9 +405,13 @@ final class Discovery implements Evenement\EventEmitterInterface
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 							'type' => 'discovery-client',
+							'group' => 'client',
 							'exception' => [
 								'message' => $ex->getMessage(),
 								'code' => $ex->getCode(),
+							],
+							'connector' => [
+								'id' => $this->connector->getPlainId(),
 							],
 							'device' => [
 								'identifier' => $device->getIdentifier(),
@@ -881,9 +896,13 @@ final class Discovery implements Evenement\EventEmitterInterface
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'discovery-client',
+						'group' => 'client',
 						'exception' => [
 							'message' => $ex->getMessage(),
 							'code' => $ex->getCode(),
+						],
+						'connector' => [
+							'id' => $this->connector->getPlainId(),
 						],
 						'device' => [
 							'identifier' => $device->getIdentifier(),

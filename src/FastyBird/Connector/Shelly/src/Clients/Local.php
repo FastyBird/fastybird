@@ -111,6 +111,7 @@ final class Local implements Client
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'local-client',
+					'group' => 'client',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -136,6 +137,7 @@ final class Local implements Client
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'local-client',
+					'group' => 'client',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -170,6 +172,7 @@ final class Local implements Client
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'local-client',
+					'group' => 'client',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -205,6 +208,7 @@ final class Local implements Client
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'local-client',
+					'group' => 'client',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -224,6 +228,7 @@ final class Local implements Client
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'local-client',
+					'group' => 'client',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -388,12 +393,10 @@ final class Local implements Client
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 							'type' => 'local-client',
+							'group' => 'client',
 							'exception' => [
 								'message' => $ex->getMessage(),
 								'code' => $ex->getCode(),
-							],
-							'connector' => [
-								'id' => $device->getConnector()->getPlainId(),
 							],
 							'device' => [
 								'id' => $device->getPlainId(),
@@ -418,12 +421,10 @@ final class Local implements Client
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 							'type' => 'local-client',
+							'group' => 'client',
 							'exception' => [
 								'message' => $ex->getMessage(),
 								'code' => $ex->getCode(),
-							],
-							'connector' => [
-								'id' => $device->getConnector()->getPlainId(),
 							],
 							'device' => [
 								'id' => $device->getPlainId(),

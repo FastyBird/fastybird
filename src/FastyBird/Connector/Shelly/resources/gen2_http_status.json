@@ -20,7 +20,8 @@
               "type": "string"
             }
           ],
-          "description": "(only for type switch, button) State of the input (null if the input instance is stateless, i.e. for type button)"
+          "description": "(only for type switch, button) State of the input (null if the input instance is stateless, i.e. for type button)",
+          "default": null
         },
         "percent": {
           "oneOf": [
@@ -31,14 +32,16 @@
               "type": "number"
             }
           ],
-          "description": "(only for type analog) Analog value in percent (null if valid value could not be obtained)"
+          "description": "(only for type analog) Analog value in percent (null if valid value could not be obtained)",
+          "default": null
         },
         "errors": {
           "type": "array",
           "description": "Shown only if at least one error is present. May contain out_of_range, read",
           "items": {
             "type": "string"
-          }
+          },
+          "default": []
         }
       },
       "required": [
@@ -84,27 +87,62 @@
           "default": null
         },
         "apower": {
-          "type": "number",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            }
+          ],
           "description": "Last measured instantaneous active power (in Watts) delivered to the attached load (shown if applicable)",
-          "default": 0
+          "default": null
         },
         "voltage": {
-          "type": "number",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            }
+          ],
           "description": "Last measured voltage in Volts (shown if applicable)",
-          "default": 0
+          "default": null
         },
         "current": {
-          "type": "number",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            }
+          ],
           "description": "Last measured current in Amperes (shown if applicable)",
-          "default": 0
+          "default": null
         },
         "pf": {
-          "type": "number",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            }
+          ],
           "description": "Last measured power factor (shown if applicable)",
-          "default": 0
+          "default": null
         },
         "aenergy": {
-          "type": "object",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object"
+            }
+          ],
           "properties": {
             "total": {
               "type": "number",
@@ -121,7 +159,8 @@
               "type": "number",
               "description": "Unix timestamp of the first second of the last minute (in UTC)"
             }
-          }
+          },
+          "default": null
         },
         "temperature": {
           "type": "object",

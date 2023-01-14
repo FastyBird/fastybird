@@ -228,6 +228,7 @@ class Periodic implements Writer
 									[
 										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 										'type' => 'periodic-writer',
+										'group' => 'writer',
 										'exception' => [
 											'message' => $ex->getMessage(),
 											'code' => $ex->getCode(),

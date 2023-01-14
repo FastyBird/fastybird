@@ -99,12 +99,12 @@ trait ConsumeDeviceProperty
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'message-consumer',
+					'group' => 'consumer',
 					'device' => [
 						'id' => $deviceId->toString(),
 					],
 					'property' => [
 						'id' => $property->getPlainId(),
-						'identifier' => $identifier,
 					],
 				],
 			);
@@ -145,12 +145,12 @@ trait ConsumeDeviceProperty
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'message-consumer',
+					'group' => 'consumer',
 					'device' => [
 						'id' => $deviceId->toString(),
 					],
 					'property' => [
 						'id' => $property->getPlainId(),
-						'identifier' => $identifier,
 					],
 				],
 			);
@@ -170,12 +170,12 @@ trait ConsumeDeviceProperty
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'message-consumer',
+					'group' => 'consumer',
 					'device' => [
 						'id' => $deviceId->toString(),
 					],
 					'property' => [
 						'id' => $property->getPlainId(),
-						'identifier' => $identifier,
 					],
 				],
 			);

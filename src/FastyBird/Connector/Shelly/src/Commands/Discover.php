@@ -217,7 +217,7 @@ class Discover extends Console\Command\Command
 				}
 			} else {
 				$question = new Console\Question\ChoiceQuestion(
-					'Please select connector to execute',
+					'Please select connector to perform discovery',
 					array_values($connectors),
 				);
 
@@ -229,10 +229,11 @@ class Discover extends Console\Command\Command
 					$io->error('Something went wrong, connector could not be loaded');
 
 					$this->logger->alert(
-						'Connector identifier was not able to get from answer',
+						'Could not read connector identifier from console answer',
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 							'type' => 'discovery-cmd',
+							'group' => 'cmd',
 						],
 					);
 
@@ -257,6 +258,7 @@ class Discover extends Console\Command\Command
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'discovery-cmd',
+						'group' => 'cmd',
 					],
 				);
 
@@ -286,6 +288,7 @@ class Discover extends Console\Command\Command
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'discovery-cmd',
+						'group' => 'cmd',
 					],
 				);
 
@@ -303,6 +306,7 @@ class Discover extends Console\Command\Command
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 							'type' => 'discovery-cmd',
+							'group' => 'cmd',
 						],
 					);
 
@@ -417,6 +421,7 @@ class Discover extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'discovery-cmd',
+					'group' => 'cmd',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -437,6 +442,7 @@ class Discover extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'discovery-cmd',
+					'group' => 'cmd',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -477,6 +483,7 @@ class Discover extends Console\Command\Command
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'discovery-cmd',
+						'group' => 'cmd',
 					],
 				);
 

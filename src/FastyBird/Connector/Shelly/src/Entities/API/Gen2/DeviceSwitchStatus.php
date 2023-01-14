@@ -40,8 +40,8 @@ final class DeviceSwitchStatus implements Entities\API\Entity
 	 */
 	public function __construct(
 		private readonly int $id,
-		private readonly string $source,
-		private readonly bool $output,
+		private readonly string|null $source,
+		private readonly bool|null $output,
 		private readonly int|null $timerStartedAt,
 		private readonly int|null $timerDuration,
 		private readonly float|null $apower,
@@ -65,12 +65,12 @@ final class DeviceSwitchStatus implements Entities\API\Entity
 		return Types\ComponentType::get(Types\ComponentType::TYPE_SWITCH);
 	}
 
-	public function getSource(): string
+	public function getSource(): string|null
 	{
 		return $this->source;
 	}
 
-	public function getOutput(): bool
+	public function getOutput(): bool|null
 	{
 		return $this->output;
 	}

@@ -43,7 +43,6 @@ use function React\Async\async;
 use function strval;
 use function time;
 use function uniqid;
-use function var_dump;
 
 /**
  * Websockets API interface
@@ -165,6 +164,7 @@ final class WsApi implements Evenement\EventEmitterInterface
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 							'type' => 'ws-api',
+							'group' => 'api',
 							'device' => [
 								'identifier' => $this->identifier,
 							],
@@ -174,7 +174,6 @@ final class WsApi implements Evenement\EventEmitterInterface
 					$connection->on(
 						'message',
 						function (RFC6455\Messaging\MessageInterface $message): void {
-							var_dump($message->getPayload());
 							try {
 								$payload = Utils\Json::decode($message->getPayload());
 
@@ -184,6 +183,7 @@ final class WsApi implements Evenement\EventEmitterInterface
 									[
 										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 										'type' => 'ws-api',
+										'group' => 'api',
 										'exception' => [
 											'message' => $ex->getMessage(),
 											'code' => $ex->getCode(),
@@ -212,14 +212,14 @@ final class WsApi implements Evenement\EventEmitterInterface
 									|| $payload->method === self::NOTIFY_FULL_STATUS_METHOD
 								) {
 									$entity = $this->parseDeviceStatusResponse(
-										$payload->params,
+										Utils\Json::encode($payload->params),
 										self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME,
 									);
 
 									$this->emit('message', [$entity]);
 								} elseif ($payload->method === self::NOTIFY_EVENT_METHOD) {
 									$entity = $this->parseDeviceEventResponse(
-										$payload->params,
+										Utils\Json::encode($payload->params),
 										self::DEVICE_EVENT_MESSAGE_SCHEMA_FILENAME,
 									);
 
@@ -230,6 +230,7 @@ final class WsApi implements Evenement\EventEmitterInterface
 										[
 											'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 											'type' => 'ws-api',
+											'group' => 'api',
 											'device' => [
 												'identifier' => $this->identifier,
 											],
@@ -252,7 +253,7 @@ final class WsApi implements Evenement\EventEmitterInterface
 							if (property_exists($payload, 'result')) {
 								if ($this->messages[$payload->id]->getFrame()->getMethod() === self::DEVICE_STATUS_METHOD) {
 									$entity = $this->parseDeviceStatusResponse(
-										$payload->result,
+										Utils\Json::encode($payload->result),
 										self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME,
 									);
 
@@ -352,6 +353,7 @@ final class WsApi implements Evenement\EventEmitterInterface
 									[
 										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 										'type' => 'ws-api',
+										'group' => 'api',
 										'device' => [
 											'identifier' => $this->identifier,
 										],
@@ -387,6 +389,7 @@ final class WsApi implements Evenement\EventEmitterInterface
 							[
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 								'type' => 'ws-api',
+								'group' => 'api',
 								'exception' => [
 									'message' => $ex->getMessage(),
 									'code' => $ex->getCode(),
@@ -406,6 +409,7 @@ final class WsApi implements Evenement\EventEmitterInterface
 							[
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 								'type' => 'ws-api',
+								'group' => 'api',
 								'connection' => [
 									'code' => $code,
 									'reason' => $reason,
@@ -423,6 +427,9 @@ final class WsApi implements Evenement\EventEmitterInterface
 
 					$this->emit('connected');
 
+					$this->connecting = false;
+					$this->connected = true;
+
 					$deferred->resolve();
 				})
 				->otherwise(function (Throwable $ex) use ($deferred): void {
@@ -436,6 +443,8 @@ final class WsApi implements Evenement\EventEmitterInterface
 					$deferred->reject($ex);
 				});
 		} catch (Throwable $ex) {
+			$this->connection = null;
+
 			$this->connecting = false;
 			$this->connected = false;
 
@@ -444,6 +453,7 @@ final class WsApi implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'ws-api',
+					'group' => 'api',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),

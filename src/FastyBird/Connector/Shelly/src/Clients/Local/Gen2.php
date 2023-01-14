@@ -60,7 +60,7 @@ trait Gen2
 						),
 					);
 
-					if ($property !== null) {
+					if ($property !== null && $component->getOutput() !== null) {
 						$result[] = new Entities\Messages\PropertyStatus(
 							$property->getIdentifier(),
 							$this->transformer->transformValueFromDevice(
@@ -82,15 +82,13 @@ trait Gen2
 						),
 					);
 
-					if ($property !== null) {
+					if ($property !== null && $component->getState() !== null) {
 						$result[] = new Entities\Messages\PropertyStatus(
 							$property->getIdentifier(),
 							$this->transformer->transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
-								$component->getState() !== null ? strval(
-									$component->getState()->getValue(),
-								) : null,
+								strval($component->getState()->getValue()),
 							),
 						);
 					}
@@ -128,7 +126,7 @@ trait Gen2
 						),
 					);
 
-					if ($property !== null) {
+					if ($property !== null && $component->getOutput() !== null) {
 						$result[] = new Entities\Messages\PropertyStatus(
 							$property->getIdentifier(),
 							$this->transformer->transformValueFromDevice(

@@ -39,7 +39,7 @@ final class DeviceLightStatus implements Entities\API\Entity
 	public function __construct(
 		private readonly int $id,
 		private readonly string $source,
-		private readonly bool $output,
+		private readonly bool|null $output,
 		private readonly int $brightness,
 		private readonly float|null $timerStartedAt,
 		private readonly int|null $timerDuration,
@@ -62,7 +62,7 @@ final class DeviceLightStatus implements Entities\API\Entity
 		return $this->source;
 	}
 
-	public function getOutput(): bool
+	public function getOutput(): bool|null
 	{
 		return $this->output;
 	}

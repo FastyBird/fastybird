@@ -131,6 +131,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 							'type' => 'exchange-writer',
+							'group' => 'writer',
 							'exception' => [
 								'message' => $ex->getMessage(),
 								'code' => $ex->getCode(),
