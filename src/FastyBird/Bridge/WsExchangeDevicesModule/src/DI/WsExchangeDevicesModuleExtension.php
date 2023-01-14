@@ -17,7 +17,6 @@ namespace FastyBird\Bridge\WsExchangeDevicesModule\DI;
 
 use FastyBird\Bridge\WsExchangeDevicesModule\Subscribers;
 use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
-use Nette;
 use Nette\DI;
 
 /**
@@ -34,12 +33,13 @@ class WsExchangeDevicesModuleExtension extends DI\CompilerExtension
 	public const NAME = 'fbWsExchangeDevicesModuleBridge';
 
 	public static function register(
-		Nette\Configurator|BootstrapBoot\Configurator $config,
+		BootstrapBoot\Configurator $config,
 		string $extensionName = self::NAME,
 	): void
 	{
+		// @phpstan-ignore-next-line
 		$config->onCompile[] = static function (
-			Nette\Configurator|BootstrapBoot\Configurator $config,
+			BootstrapBoot\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new WsExchangeDevicesModuleExtension());

@@ -149,7 +149,6 @@ class Discover extends Console\Command\Command
 
 			$findConnectorQuery = new DevicesQueries\FindConnectors();
 
-			// @phpstan-ignore-next-line
 			if (Uuid\Uuid::isValid($connectorId)) {
 				$findConnectorQuery->byId(Uuid\Uuid::fromString($connectorId));
 			} else {

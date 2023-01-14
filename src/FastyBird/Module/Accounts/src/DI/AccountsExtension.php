@@ -30,7 +30,6 @@ use FastyBird\Module\Accounts\Security;
 use FastyBird\Module\Accounts\Subscribers;
 use IPub\DoctrineCrud;
 use IPub\SlimRouter\Routing as SlimRouterRouting;
-use Nette;
 use Nette\DI;
 use Nette\PhpGenerator;
 use Nette\Schema;
@@ -53,12 +52,13 @@ class AccountsExtension extends DI\CompilerExtension
 	public const NAME = 'fbAccountsModule';
 
 	public static function register(
-		Nette\Configurator|BootstrapBoot\Configurator $config,
+		BootstrapBoot\Configurator $config,
 		string $extensionName = self::NAME,
 	): void
 	{
+		// @phpstan-ignore-next-line
 		$config->onCompile[] = static function (
-			Nette\Configurator|BootstrapBoot\Configurator $config,
+			BootstrapBoot\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new AccountsExtension());

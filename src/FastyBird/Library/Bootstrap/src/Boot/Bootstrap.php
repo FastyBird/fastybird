@@ -65,7 +65,7 @@ class Bootstrap
 		$config = new Configurator();
 
 		// Define variables
-		$config->addParameters([
+		$config->addStaticParameters([
 			'tempDir' => FB_TEMP_DIR,
 			'logsDir' => FB_LOGS_DIR,
 			'appDir' => FB_APP_DIR,
@@ -75,7 +75,7 @@ class Bootstrap
 		]);
 
 		// Load parameters from environment
-		$config->addParameters(self::loadEnvParameters($envPrefix));
+		$config->addStaticParameters(self::loadEnvParameters($envPrefix));
 
 		if (!class_exists('\Tester\Environment') || getenv(Tester\Environment::RUNNER) === false) {
 			$config->enableTracy(FB_LOGS_DIR);

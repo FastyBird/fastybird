@@ -29,7 +29,6 @@ use FastyBird\Connector\Shelly\Subscribers;
 use FastyBird\Connector\Shelly\Writers;
 use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
 use FastyBird\Module\Devices\DI as DevicesDI;
-use Nette;
 use Nette\DI;
 use Nette\Schema;
 use stdClass;
@@ -50,12 +49,13 @@ class ShellyExtension extends DI\CompilerExtension
 	public const NAME = 'fbShellyConnector';
 
 	public static function register(
-		Nette\Configurator|BootstrapBoot\Configurator $config,
+		BootstrapBoot\Configurator $config,
 		string $extensionName = self::NAME,
 	): void
 	{
+		// @phpstan-ignore-next-line
 		$config->onCompile[] = static function (
-			Nette\Configurator|BootstrapBoot\Configurator $config,
+			BootstrapBoot\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new ShellyExtension());

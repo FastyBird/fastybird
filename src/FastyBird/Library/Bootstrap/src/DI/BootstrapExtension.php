@@ -45,12 +45,13 @@ class BootstrapExtension extends DI\CompilerExtension
 	public const NAME = 'fbBootstrapLibrary';
 
 	public static function register(
-		Nette\Configurator|Boot\Configurator $config,
+		Boot\Configurator $config,
 		string $extensionName = self::NAME,
 	): void
 	{
+		// @phpstan-ignore-next-line
 		$config->onCompile[] = static function (
-			Nette\Configurator|Boot\Configurator $config,
+			Boot\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new BootstrapExtension());

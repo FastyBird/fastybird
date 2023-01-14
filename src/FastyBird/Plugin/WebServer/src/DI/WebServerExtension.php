@@ -24,7 +24,6 @@ use FastyBird\Plugin\WebServer\Router;
 use FastyBird\Plugin\WebServer\Server;
 use FastyBird\Plugin\WebServer\Subscribers;
 use Fig\Http\Message\RequestMethodInterface;
-use Nette;
 use Nette\DI;
 use Nette\Schema;
 use stdClass;
@@ -44,12 +43,13 @@ class WebServerExtension extends DI\CompilerExtension
 	public const NAME = 'fbWebServerPlugin';
 
 	public static function register(
-		Nette\Configurator|BootstrapBoot\Configurator $config,
+		BootstrapBoot\Configurator $config,
 		string $extensionName = self::NAME,
 	): void
 	{
+		// @phpstan-ignore-next-line
 		$config->onCompile[] = static function (
-			Nette\Configurator|BootstrapBoot\Configurator $config,
+			BootstrapBoot\Configurator $config,
 			DI\Compiler $compiler,
 		) use (
 			$extensionName,
