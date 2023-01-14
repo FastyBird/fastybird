@@ -150,6 +150,8 @@ abstract class DbTestCase extends TestCase
 			$config->addConfig($neonFile);
 		}
 
+		$config->setTimeZone('Europe/Prague');
+
 		DI\DevicesExtension::register($config);
 
 		$this->container = $config->createContainer();

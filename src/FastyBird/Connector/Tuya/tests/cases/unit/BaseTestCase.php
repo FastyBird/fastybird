@@ -41,6 +41,8 @@ abstract class BaseTestCase extends TestCase
 			$config->addConfig($additionalConfig);
 		}
 
+		$config->setTimeZone('Europe/Prague');
+
 		DI\TuyaExtension::register($config);
 
 		return $config->createContainer();

@@ -64,6 +64,8 @@ class Bootstrap
 		// Create app configurator
 		$config = new Configurator();
 
+		$config->setTimeZone('UTC');
+
 		// Define variables
 		$config->addStaticParameters([
 			'tempDir' => FB_TEMP_DIR,
@@ -80,8 +82,6 @@ class Bootstrap
 		if (!class_exists('\Tester\Environment') || getenv(Tester\Environment::RUNNER) === false) {
 			$config->enableTracy(FB_LOGS_DIR);
 		}
-
-		$config->setTimeZone('UTC');
 
 		// Default extension config
 		$config->addConfig(__DIR__ . DS . '..' . DS . '..' . DS . 'config' . DS . 'common.neon');

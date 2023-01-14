@@ -42,6 +42,8 @@ abstract class BaseTestCase extends TestCase
 			$config->addConfig($additionalConfig);
 		}
 
+		$config->setTimeZone('Europe/Prague');
+
 		WsExchange\DI\WsExchangeExtension::register($config);
 
 		return $config->createContainer();

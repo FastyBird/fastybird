@@ -54,6 +54,8 @@ abstract class BaseTestCase extends TestCase
 			$config->addConfig($additionalConfig);
 		}
 
+		$config->setTimeZone('Europe/Prague');
+
 		RedisDb\DI\RedisDbExtension::register($config);
 
 		return $config->createContainer();

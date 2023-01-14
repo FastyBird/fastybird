@@ -42,6 +42,8 @@ abstract class BaseTestCase extends TestCase
 			$config->addConfig($additionalConfig);
 		}
 
+		$config->setTimeZone('Europe/Prague');
+
 		WebServer\DI\WebServerExtension::register($config);
 
 		return $config->createContainer();
