@@ -35,7 +35,7 @@ final class DevicePropertiesRepository
 
 	use Nette\SmartObject;
 
-	public function __construct(protected readonly IDevicePropertiesRepository|null $repository)
+	public function __construct(protected readonly IDevicePropertiesRepository|null $repository = null)
 	{
 	}
 

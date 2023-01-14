@@ -41,8 +41,8 @@ final class ConnectorPropertiesManager
 	use Nette\SmartObject;
 
 	public function __construct(
-		protected readonly IConnectorPropertiesManager|null $manager,
-		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher,
+		protected readonly IConnectorPropertiesManager|null $manager = null,
+		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
 	}

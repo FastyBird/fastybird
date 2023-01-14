@@ -48,7 +48,7 @@ class WsClient implements EventDispatcher\EventSubscriberInterface
 		private readonly DevicesModels\States\ConnectorPropertiesRepository $connectorPropertiesStatesRepository,
 		private readonly DevicesModels\States\DevicePropertiesRepository $devicePropertiesStatesRepository,
 		private readonly DevicesModels\States\ChannelPropertiesRepository $channelPropertiesStatesRepository,
-		Log\LoggerInterface|null $logger,
+		Log\LoggerInterface|null $logger = null,
 	)
 	{
 		$this->logger = $logger ?? new Log\NullLogger();

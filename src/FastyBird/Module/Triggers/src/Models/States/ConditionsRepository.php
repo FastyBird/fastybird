@@ -33,7 +33,7 @@ final class ConditionsRepository
 
 	use Nette\SmartObject;
 
-	public function __construct(protected readonly IConditionsRepository|null $repository)
+	public function __construct(protected readonly IConditionsRepository|null $repository = null)
 	{
 	}
 

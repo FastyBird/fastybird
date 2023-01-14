@@ -57,7 +57,7 @@ class Action extends RedisDbStates\State implements TriggersStates\Action
 		return $this->createdAt !== null ? new DateTimeImmutable($this->createdAt) : null;
 	}
 
-	public function setCreatedAt(string|null $createdAt): void
+	public function setCreatedAt(string|null $createdAt = null): void
 	{
 		$this->createdAt = $createdAt;
 	}
@@ -70,7 +70,7 @@ class Action extends RedisDbStates\State implements TriggersStates\Action
 		return $this->updatedAt !== null ? new DateTimeImmutable($this->updatedAt) : null;
 	}
 
-	public function setUpdatedAt(string|null $updatedAt): void
+	public function setUpdatedAt(string|null $updatedAt = null): void
 	{
 		$this->updatedAt = $updatedAt;
 	}

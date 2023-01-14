@@ -45,8 +45,8 @@ final class ChannelPropertiesManager
 
 	public function __construct(
 		protected readonly ExchangeEntities\EntityFactory $entityFactory,
-		protected readonly IChannelPropertiesManager|null $manager,
-		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher,
+		protected readonly IChannelPropertiesManager|null $manager = null,
+		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
 	}
