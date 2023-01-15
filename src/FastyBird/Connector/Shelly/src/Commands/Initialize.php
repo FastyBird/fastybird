@@ -58,13 +58,11 @@ class Initialize extends Console\Command\Command
 
 	private const CHOICE_QUESTION_DELETE_CONNECTOR = 'Delete existing connector configuration';
 
-	private const CHOICE_QUESTION_LOCAL_CONNECTOR = 'Via local network services';
+	private const CHOICE_QUESTION_LOCAL_CONNECTOR = 'Local network mode';
 
-	private const CHOICE_QUESTION_CLOUD_CONNECTOR = 'Via cloud servers';
+	private const CHOICE_QUESTION_CLOUD_CONNECTOR = 'Cloud server mode';
 
-	private const CHOICE_QUESTION_MQTT_CONNECTOR = 'Via MQTT broker';
-
-	private const CHOICE_QUESTION_INTEGRATOR_CONNECTOR = 'Via Shelly integrator API';
+	private const CHOICE_QUESTION_MQTT_CONNECTOR = 'MQTT broker mode';
 
 	private Log\LoggerInterface $logger;
 
@@ -661,7 +659,7 @@ class Initialize extends Console\Command\Command
 
 		$continue = (bool) $io->askQuestion($question);
 
-		if ($continue) {
+		if (!$continue) {
 			return;
 		}
 
@@ -708,12 +706,11 @@ class Initialize extends Console\Command\Command
 	private function askMode(Style\SymfonyStyle $io): Types\ClientMode
 	{
 		$question = new Console\Question\ChoiceQuestion(
-			'What in what mode should this connector communicate with devices?',
+			'In what mode should this connector communicate with devices?',
 			[
 				self::CHOICE_QUESTION_LOCAL_CONNECTOR,
 				self::CHOICE_QUESTION_CLOUD_CONNECTOR,
 				self::CHOICE_QUESTION_MQTT_CONNECTOR,
-				self::CHOICE_QUESTION_INTEGRATOR_CONNECTOR,
 			],
 			0,
 		);
@@ -732,10 +729,6 @@ class Initialize extends Console\Command\Command
 
 		if ($mode === self::CHOICE_QUESTION_MQTT_CONNECTOR) {
 			return Types\ClientMode::get(Types\ClientMode::MODE_MQTT);
-		}
-
-		if ($mode === self::CHOICE_QUESTION_INTEGRATOR_CONNECTOR) {
-			return Types\ClientMode::get(Types\ClientMode::MODE_INTEGRATOR);
 		}
 
 		throw new Exceptions\InvalidState('Unknown connector mode selected');
