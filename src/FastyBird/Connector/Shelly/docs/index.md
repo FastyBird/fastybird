@@ -1,1 +1,3 @@
-# TBD
+# Configuration
+
+## Manual console configuration
