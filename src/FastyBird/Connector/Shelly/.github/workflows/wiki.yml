@@ -2,8 +2,8 @@ name: "wiki"
 
 on:
   push:
-    paths:
-      - "docs/**"
+    branches:
+      - "main"
 
 jobs:
   deploy:
@@ -15,11 +15,8 @@ jobs:
         uses: "actions/checkout@v3"
 
       - name: "Deploy to Wiki"
-        uses: "joeizzard/action-wiki-sync@master"
+        uses: "SwiftDocOrg/github-wiki-publish-action@v1"
         with:
-          username: "fastybird"
-          access_token: ${{ secrets.GITHUB_TOKEN }}
-          wiki_folder: "docs"
-          commit_username: "FastyBird"
-          commit_email: "code@fastybird.com"
-          commit_message: "action: wiki sync"
+          path: "docs"
+        env:
+          GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
