@@ -53,7 +53,7 @@ application under marketplace section.
 ## Documentation
 
 Learn how to connect Shelly devices and manage them with [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) system
-in [documentation](https://github.com/FastyBird/shelly-connector/blob/master/docs/index.md).
+in [documentation](https://github.com/FastyBird/shelly-connector/wiki).
 
 ## Feedback
 
