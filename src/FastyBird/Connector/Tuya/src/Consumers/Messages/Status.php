@@ -51,7 +51,7 @@ final class Status implements Consumer
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly Mappers\DataPoint $dataPointMapper,
 		private readonly Helpers\Property $propertyStateHelper,
-		Log\LoggerInterface|null $logger,
+		Log\LoggerInterface|null $logger = null,
 	)
 	{
 		$this->logger = $logger ?? new Log\NullLogger();

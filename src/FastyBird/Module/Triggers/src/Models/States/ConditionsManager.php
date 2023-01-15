@@ -43,9 +43,9 @@ final class ConditionsManager
 	use Nette\SmartObject;
 
 	public function __construct(
-		protected readonly IConditionsManager|null $manager,
 		protected readonly ExchangeEntities\EntityFactory $entityFactory,
-		protected readonly ExchangePublisher\Publisher|null $publisher,
+		protected readonly IConditionsManager|null $manager = null,
+		protected readonly ExchangePublisher\Publisher|null $publisher = null,
 	)
 	{
 	}

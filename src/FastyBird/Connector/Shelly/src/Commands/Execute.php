@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Commands
- * @since          0.37.0
+ * @since          1.0.0
  *
  * @date           30.07.22
  */
@@ -135,7 +135,6 @@ class Execute extends Console\Command\Command
 
 			$findConnectorQuery = new DevicesQueries\FindConnectors();
 
-			// @phpstan-ignore-next-line
 			if (Uuid\Uuid::isValid($connectorId)) {
 				$findConnectorQuery->byId(Uuid\Uuid::fromString($connectorId));
 			} else {
@@ -214,10 +213,11 @@ class Execute extends Console\Command\Command
 					$io->error('Something went wrong, connector could not be loaded');
 
 					$this->logger->alert(
-						'Connector identifier was not able to get from answer',
+						'Could not read connector identifier from console answer',
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 							'type' => 'execute-cmd',
+							'group' => 'cmd',
 						],
 					);
 
@@ -241,6 +241,7 @@ class Execute extends Console\Command\Command
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'execute-cmd',
+						'group' => 'cmd',
 					],
 				);
 

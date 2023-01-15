@@ -35,7 +35,7 @@ final class ChannelPropertiesRepository
 
 	use Nette\SmartObject;
 
-	public function __construct(private readonly IChannelPropertiesRepository|null $repository)
+	public function __construct(private readonly IChannelPropertiesRepository|null $repository = null)
 	{
 	}
 

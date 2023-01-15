@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Subscribers
- * @since          0.37.0
+ * @since          1.0.0
  *
  * @date           04.08.22
  */
@@ -65,10 +65,10 @@ final class Properties implements Common\EventSubscriber
 			return;
 		}
 
-		$stateProperty = $entity->getProperty(Types\DevicePropertyIdentifier::IDENTIFIER_STATE);
+		$property = $entity->getProperty(Types\DevicePropertyIdentifier::IDENTIFIER_STATE);
 
-		if ($stateProperty !== null) {
-			$entity->removeProperty($stateProperty);
+		if ($property !== null) {
+			$entity->removeProperty($property);
 		}
 
 		$this->propertiesManager->create(Utils\ArrayHash::from([

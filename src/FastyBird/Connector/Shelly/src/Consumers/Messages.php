@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Consumers
- * @since          0.37.0
+ * @since          1.0.0
  *
  * @date           16.07.22
  */
@@ -67,6 +67,7 @@ final class Messages
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 				'type' => 'consumer',
+				'group' => 'consumer',
 			],
 		);
 	}
@@ -80,6 +81,7 @@ final class Messages
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 				'type' => 'consumer',
+				'group' => 'consumer',
 				'message' => $entity->toArray(),
 			],
 		);
@@ -101,6 +103,7 @@ final class Messages
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'consumer',
+					'group' => 'consumer',
 				],
 			);
 
@@ -120,6 +123,7 @@ final class Messages
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 				'type' => 'consumer',
+				'group' => 'consumer',
 				'message' => $entity->toArray(),
 			],
 		);

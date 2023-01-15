@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Types
- * @since          0.37.0
+ * @since          1.0.0
  *
  * @date           19.07.22
  */
@@ -19,7 +19,7 @@ use Consistence;
 use function strval;
 
 /**
- * Connector property identifier types
+ * Connector property identifiers
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Types
@@ -32,8 +32,6 @@ class ConnectorPropertyIdentifier extends Consistence\Enum\Enum
 	/**
 	 * Define device states
 	 */
-	public const IDENTIFIER_CLIENT_VERSION = 'version';
-
 	public const IDENTIFIER_CLIENT_MODE = 'mode';
 
 	public const IDENTIFIER_CLOUD_AUTH_KEY = 'cloud_auth_key';

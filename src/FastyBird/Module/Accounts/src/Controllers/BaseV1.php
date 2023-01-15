@@ -96,7 +96,7 @@ abstract class BaseV1
 		$this->managerRegistry = $managerRegistry;
 	}
 
-	public function injectLogger(Log\LoggerInterface|null $logger): void
+	public function injectLogger(Log\LoggerInterface|null $logger = null): void
 	{
 		$this->logger = $logger ?? new Log\NullLogger();
 	}

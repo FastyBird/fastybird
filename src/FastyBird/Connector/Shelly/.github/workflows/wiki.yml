@@ -1,0 +1,32 @@
+name: "wiki"
+
+on:
+  push:
+    paths:
+      - "docs/**"
+
+jobs:
+  deploy:
+    name: "Deploy docs to wiki"
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v3"
+
+      - name: "Install node"
+        uses: "actions/setup-node@v3"
+        with:
+          node-version: 16
+
+      - name: "Install dependencies"
+        run: "npm ci"
+
+      - name: "Deploy to Wiki"
+        uses: "gavinbunney/gh-pages-action@v2"
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repo: ${{ secrets.REPO_NAME }}
+          base-path: "docs"
+          branch: "master"
+          message: "Deploy documentation"

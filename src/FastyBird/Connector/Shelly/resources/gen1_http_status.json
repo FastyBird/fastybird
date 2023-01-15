@@ -5,58 +5,464 @@
     "wifi_sta": {
       "type": "object",
       "properties": {
+        "connected": {
+          "type": "boolean",
+          "default": false
+        },
+        "ssid": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "Ssid of the network (null if disconnected)",
+          "default": null
+        },
+        "rssi": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "description": "Strength of the signal in dBms",
+          "default": null
+        },
         "ip": {
-          "type": "string",
-          "description": "IP address assigned to this device by the WiFi router"
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "Ip of the device in the network (null if disconnected)",
+          "default": null
         }
-      },
-      "required": [
-        "ip"
-      ]
+      }
     },
-    "cloud": {
-      "type": "object",
-      "properties": {
-        "connected": {
-          "type": "boolean",
-          "description": "Current cloud connection status"
+    "relays": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "ison": {
+            "type": "boolean",
+            "description": "Whether the channel is turned ON or OFF"
+          },
+          "has_timer": {
+            "type": "boolean",
+            "description": "Whether a timer is currently armed for this channel"
+          },
+          "timer_started": {
+            "type": "number",
+            "description": "Unix timestamp of timer start; 0 if timer inactive or time not synced",
+            "default": 0
+          },
+          "timer_duration": {
+            "type": "number",
+            "description": "Timer duration, s",
+            "default": 0
+          },
+          "timer_remaining": {
+            "type": "number",
+            "description": "experimental If there is an active timer, shows seconds until timer elapses; 0 otherwise",
+            "default": 0
+          },
+          "overpower": {
+            "type": "boolean",
+            "description": "Shelly1PM only if maximum allowed power was exceeded",
+            "default": false
+          },
+          "overtemperature": {
+            "type": "boolean",
+            "description": "Whether an over temperature condition occurred",
+            "default": false
+          },
+          "is_valid": {
+            "type": "boolean",
+            "description": "Whether the associated power meter is functioning correctly",
+            "default": true
+          },
+          "source": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "description": "Source of the last relay command",
+            "default": null
+          }
+        },
+        "required": [
+          "ison",
+          "has_timer",
+          "source"
+        ]
+      }
+    },
+    "rollers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "state": {
+            "type": "string",
+            "description": "One of stop, open, close",
+            "enum": [
+              "stop",
+              "open",
+              "close"
+            ]
+          },
+          "power": {
+            "type": "number",
+            "description": "Current power consumption in Watts"
+          },
+          "is_valid": {
+            "type": "boolean",
+            "description": "If the power meter functions properly",
+            "default": true
+          },
+          "safety_switch": {
+            "type": "boolean",
+            "description": "Whether the safety input is currently triggered",
+            "default": false
+          },
+          "overtemperature": {
+            "type": "boolean",
+            "description": "Whether an over temperature condition occurred",
+            "default": false
+          },
+          "stop_reason": {
+            "type": "string",
+            "description": "Last cause for stopping: normal, safety_switch, obstacle, overpower",
+            "enum": [
+              "normal",
+              "safety_switch",
+              "obstacle",
+              "overpower"
+            ]
+          },
+          "last_direction": {
+            "type": "string",
+            "description": "Last direction of motion, open or close",
+            "enum": [
+              "open",
+              "close"
+            ]
+          },
+          "current_pos": {
+            "type": "number",
+            "description": "Current position in percent",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "calibrating": {
+            "type": "boolean",
+            "description": "Whether the device is currently performing a calibration procedure",
+            "default": false
+          },
+          "positioning": {
+            "type": "boolean",
+            "description": "Whether the device is calibrated for positioning control",
+            "default": true
+          }
+        },
+        "required": [
+          "state",
+          "power",
+          "is_valid",
+          "safety_switch",
+          "stop_reason",
+          "last_direction",
+          "current_pos",
+          "calibrating",
+          "positioning"
+        ]
+      }
+    },
+    "inputs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "input": {
+            "type": "number",
+            "description": "0 = input is OFF, 1 = input is ON"
+          },
+          "event": {
+            "type": "string",
+            "description": "Input event",
+            "enum": [
+              "",
+              "S",
+              "L",
+              "SS",
+              "SSS",
+              "SL",
+              "LS"
+            ],
+            "default": ""
+          },
+          "event_cnt": {
+            "type": "number",
+            "description": "Input event counter",
+            "default": 0
+          },
+          "last_sequence": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "description": "Last triggered input event",
+            "default": null
+          }
+        },
+        "required": [
+          "input",
+          "event",
+          "event_cnt"
+        ]
+      }
+    },
+    "lights": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "ison": {
+            "type": "boolean",
+            "description": "Whether the channel is turned ON or OFF"
+          },
+          "source": {
+            "type": "string",
+            "description": "Source of the last command"
+          },
+          "has_timer": {
+            "type": "boolean",
+            "description": "Whether a timer is currently armed for this channel"
+          },
+          "timer_started": {
+            "type": "number",
+            "description": "Unix timestamp of timer start; 0 if timer inactive or time not synced",
+            "default": 0
+          },
+          "timer_duration": {
+            "type": "number",
+            "description": "Timer duration, s",
+            "default": 0
+          },
+          "timer_remaining": {
+            "type": "number",
+            "description": "experimental If there is an active timer, shows seconds until timer elapses; 0 otherwise",
+            "default": 0
+          },
+          "mode": {
+            "type": "string",
+            "description": "Currently configured mode",
+            "enum": [
+              "color",
+              "white"
+            ],
+            "default": "white"
+          },
+          "red": {
+            "type": "number",
+            "description": "Red brightness, 0..255, applies in mode='color'",
+            "minimum": 0,
+            "maximum": 255,
+            "multipleOf": 1,
+            "default": 0
+          },
+          "green": {
+            "type": "number",
+            "description": "Green brightness, 0..255, applies in mode='color'",
+            "minimum": 0,
+            "maximum": 255,
+            "multipleOf": 1,
+            "default": 0
+          },
+          "blue": {
+            "type": "number",
+            "description": "Blue brightness, 0..255, applies in mode='color'",
+            "minimum": 0,
+            "maximum": 255,
+            "multipleOf": 1,
+            "default": 0
+          },
+          "white": {
+            "type": "number",
+            "description": "White brightness, 0..255, applies in mode='color'",
+            "minimum": 0,
+            "maximum": 255,
+            "multipleOf": 1,
+            "default": 0
+          },
+          "gain": {
+            "type": "number",
+            "description": "Gain for all channels, 0..100, applies in mode='color'",
+            "minimum": 0,
+            "maximum": 255,
+            "multipleOf": 1,
+            "default": 0
+          },
+          "temp": {
+            "type": "number",
+            "description": "Color temperature in K, 3000..6500, applies in mode='white'",
+            "minimum": 2700,
+            "maximum": 6500,
+            "multipleOf": 1,
+            "default": 3000
+          },
+          "brightness": {
+            "type": "number",
+            "description": "Brightness, 0..100, applies in mode='white'",
+            "minimum": 0,
+            "maximum": 100,
+            "multipleOf": 1,
+            "default": 0
+          },
+          "effect": {
+            "type": "number",
+            "description": "Currently applied effect",
+            "default": 0
+          },
+          "transition": {
+            "type": "number",
+            "description": "One-shot transition, 0..5000 [ms]",
+            "minimum": 0,
+            "maximum": 5000,
+            "multipleOf": 1,
+            "default": 0
+          }
+        },
+        "required": [
+          "ison",
+          "source",
+          "has_timer",
+          "timer_started",
+          "timer_duration",
+          "timer_remaining",
+          "brightness"
+        ]
+      }
+    },
+    "meters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "power": {
+            "type": "number",
+            "description": "Current real AC power being drawn, in Watts",
+            "default": 0
+          },
+          "overpower": {
+            "oneOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              }
+            ],
+            "description": "Value in Watts, on which an overpower condition is detected",
+            "default": 0
+          },
+          "is_valid": {
+            "type": "boolean",
+            "description": "Whether power metering self-checks OK",
+            "default": false
+          },
+          "timestamp": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "description": "Timestamp of the last energy counter value, with the applied timezone",
+            "default": null
+          },
+          "counters": {
+            "type": "array",
+            "description": "Energy counter value for the last 3 round minutes in Watt-minute",
+            "items": {
+              "type": "number"
+            },
+            "default": []
+          },
+          "total": {
+            "type": "number",
+            "description": "Total energy consumed by the attached electrical appliance in Watt-minute",
+            "default": 0
+          }
         }
-      },
-      "required": [
-        "connected"
-      ]
+      }
     },
-    "mqtt": {
-      "type": "object",
-      "properties": {
-        "connected": {
-          "type": "boolean",
-          "description": "MQTT connection status, when MQTT is enabled"
+    "emeters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "power": {
+            "type": "number",
+            "description": "Current real AC power being drawn, in Watts",
+            "default": 0
+          },
+          "pf": {
+            "type": "number",
+            "description": "Power factor (dimensionless)",
+            "default": 0
+          },
+          "reactive": {
+            "type": "number",
+            "description": "Instantaneous reactive power, Watts",
+            "default": 0
+          },
+          "current": {
+            "type": "number",
+            "description": "Current, A",
+            "default": 0
+          },
+          "voltage": {
+            "type": "number",
+            "description": "RMS voltage, Volts",
+            "default": 0
+          },
+          "is_valid": {
+            "type": "boolean",
+            "description": "Whether the associated meter is functioning properly",
+            "default": false
+          },
+          "total": {
+            "type": "number",
+            "description": "Total consumed energy, Wh",
+            "default": 0
+          },
+          "total_returned": {
+            "type": "number",
+            "description": "Total returned energy, Wh",
+            "default": 0
+          }
         }
-      },
-      "required": [
-        "connected"
-      ]
-    },
-    "time": {
-      "type": "string",
-      "description" : "The current hour and minutes, in HH:MM format"
-    },
-    "unixtime": {
-      "type": "number",
-      "description" : "Unix timestamp if synced; 0 otherwise"
-    },
-    "serial": {
-      "type": "number",
-      "description" : "Cloud serial number"
+      }
     }
-  },
-  "required": [
-    "wifi_sta",
-    "cloud",
-    "mqtt",
-    "time",
-    "unixtime",
-    "serial"
-  ]
+  }
 }

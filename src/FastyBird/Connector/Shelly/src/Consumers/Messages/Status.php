@@ -8,19 +8,21 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Consumers
- * @since          0.37.0
+ * @since          1.0.0
  *
  * @date           20.07.22
  */
 
 namespace FastyBird\Connector\Shelly\Consumers\Messages;
 
+use Doctrine\DBAL;
 use FastyBird\Connector\Shelly\Consumers\Consumer;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Helpers;
-use FastyBird\Connector\Shelly\Mappers;
+use FastyBird\Connector\Shelly\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -42,22 +44,27 @@ final class Status implements Consumer
 {
 
 	use Nette\SmartObject;
+	use ConsumeDeviceProperty;
 
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Devices\Properties\PropertiesRepository $propertiesRepository,
+		private readonly DevicesModels\Devices\Properties\PropertiesManager $propertiesManager,
+		private readonly DevicesModels\Channels\Properties\PropertiesManager $channelsPropertiesManager,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
-		private readonly Mappers\Sensor $sensorMapper,
 		private readonly Helpers\Property $propertyStateHelper,
-		Log\LoggerInterface|null $logger,
+		Log\LoggerInterface|null $logger = null,
 	)
 	{
 		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	/**
+	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws DevicesExceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -89,19 +96,36 @@ final class Status implements Consumer
 			);
 		}
 
-		foreach ($entity->getChannels() as $shellyChannel) {
-			foreach ($shellyChannel->getSensors() as $sensor) {
-				$property = $this->sensorMapper->findProperty(
-					$entity->getConnector(),
-					$entity->getIdentifier(),
-					$sensor->getIdentifier(),
-				);
+		$this->setDeviceProperty(
+			$device->getId(),
+			$entity->getIpAddress(),
+			Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS,
+		);
 
-				if ($property !== null) {
+		foreach ($entity->getStatuses() as $status) {
+			if ($status instanceof Entities\Messages\PropertyStatus) {
+				$property = null;
+
+				$property = $device->findProperty($status->getIdentifier());
+
+				if ($property === null) {
+					foreach ($device->getChannels() as $channel) {
+						$property = $channel->findProperty($status->getIdentifier());
+
+						if ($property !== null) {
+							break;
+						}
+					}
+				}
+
+				if (
+					$property instanceof DevicesEntities\Devices\Properties\Dynamic
+					|| $property instanceof DevicesEntities\Channels\Properties\Dynamic
+				) {
 					$actualValue = DevicesUtilities\ValueHelper::flattenValue(
 						DevicesUtilities\ValueHelper::normalizeValue(
 							$property->getDataType(),
-							$sensor->getValue(),
+							$status->getValue(),
 							$property->getFormat(),
 							$property->getInvalid(),
 						),
@@ -112,6 +136,41 @@ final class Status implements Consumer
 						DevicesStates\Property::VALID_KEY => true,
 					]));
 				}
+			} else {
+				$channel = $device->findChannel($status->getIdentifier());
+
+				if ($channel !== null) {
+					foreach ($status->getSensors() as $sensor) {
+						$property = $channel->findProperty($sensor->getIdentifier());
+
+						if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
+							$actualValue = DevicesUtilities\ValueHelper::flattenValue(
+								DevicesUtilities\ValueHelper::normalizeValue(
+									$property->getDataType(),
+									$sensor->getValue(),
+									$property->getFormat(),
+									$property->getInvalid(),
+								),
+							);
+
+							$this->propertyStateHelper->setValue($property, Utils\ArrayHash::from([
+								DevicesStates\Property::ACTUAL_VALUE_KEY => $actualValue,
+								DevicesStates\Property::VALID_KEY => true,
+							]));
+						} elseif ($property instanceof DevicesEntities\Channels\Properties\Variable) {
+							$this->databaseHelper->transaction(
+								function () use ($property, $sensor): void {
+									$this->channelsPropertiesManager->update(
+										$property,
+										Utils\ArrayHash::from([
+											'value' => $sensor->getValue(),
+										]),
+									);
+								},
+							);
+						}
+					}
+				}
 			}
 		}
 
@@ -120,6 +179,7 @@ final class Status implements Consumer
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 				'type' => 'status-message-consumer',
+				'group' => 'consumer',
 				'device' => [
 					'id' => $device->getPlainId(),
 				],

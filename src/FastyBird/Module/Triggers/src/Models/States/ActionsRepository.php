@@ -33,7 +33,7 @@ final class ActionsRepository
 
 	use Nette\SmartObject;
 
-	public function __construct(protected readonly IActionsRepository|null $repository)
+	public function __construct(protected readonly IActionsRepository|null $repository = null)
 	{
 	}
 

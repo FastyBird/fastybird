@@ -71,7 +71,7 @@ class Connector extends Console\Command\Command
 		private readonly Utilities\ChannelPropertiesStates $channelPropertiesStateManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
-		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher,
+		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 		Log\LoggerInterface|null $logger = null,
 		string|null $name = null,
 	)
@@ -200,7 +200,6 @@ class Connector extends Console\Command\Command
 
 			$findConnectorQuery = new Queries\FindConnectors();
 
-			// @phpstan-ignore-next-line
 			if (Uuid\Uuid::isValid($connectorId)) {
 				$findConnectorQuery->byId(Uuid\Uuid::fromString($connectorId));
 			} else {

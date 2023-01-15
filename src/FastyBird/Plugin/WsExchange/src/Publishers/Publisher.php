@@ -44,7 +44,7 @@ final class Publisher
 	public function __construct(
 		private readonly WebSockets\Router\LinkGenerator $linkGenerator,
 		private readonly WebSocketsWAMP\Topics\IStorage $topicsStorage,
-		Log\LoggerInterface|null $logger,
+		Log\LoggerInterface|null $logger = null,
 	)
 	{
 		$this->logger = $logger ?? new Log\NullLogger();

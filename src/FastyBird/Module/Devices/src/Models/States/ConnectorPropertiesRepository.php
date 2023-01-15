@@ -35,7 +35,7 @@ final class ConnectorPropertiesRepository
 
 	use Nette\SmartObject;
 
-	public function __construct(protected readonly IConnectorPropertiesRepository|null $repository)
+	public function __construct(protected readonly IConnectorPropertiesRepository|null $repository = null)
 	{
 	}
 

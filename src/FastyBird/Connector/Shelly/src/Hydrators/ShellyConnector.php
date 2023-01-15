@@ -1,14 +1,14 @@
 <?php declare(strict_types = 1);
 
 /**
- * Shelly.php
+ * ShellyConnector.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Hydrators
- * @since          0.1.0
+ * @since          1.0.0
  *
  * @date           22.01.22
  */

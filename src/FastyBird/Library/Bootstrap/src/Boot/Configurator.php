@@ -80,7 +80,7 @@ class Configurator extends Bootstrap\Configurator
 	}
 
 	/**
-	 * @param array<int|string, string> $configFiles
+	 * @param array<string|array<string>> $configFiles
 	 * @return array<int|string, mixed>
 	 */
 	private function getContainerKey(array $configFiles): array

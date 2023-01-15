@@ -43,9 +43,9 @@ final class ActionsManager
 	use Nette\SmartObject;
 
 	public function __construct(
-		protected readonly IActionsManager|null $manager,
 		protected readonly ExchangeEntities\EntityFactory $entityFactory,
-		protected readonly ExchangePublisher\Publisher|null $publisher,
+		protected readonly IActionsManager|null $manager = null,
+		protected readonly ExchangePublisher\Publisher|null $publisher = null,
 	)
 	{
 	}

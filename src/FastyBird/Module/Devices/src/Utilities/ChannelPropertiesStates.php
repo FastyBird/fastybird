@@ -47,7 +47,7 @@ final class ChannelPropertiesStates
 		private readonly Models\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
 		private readonly Models\States\ChannelPropertiesRepository $channelPropertyStateRepository,
 		private readonly Models\States\ChannelPropertiesManager $channelPropertiesStatesManager,
-		Log\LoggerInterface|null $logger,
+		Log\LoggerInterface|null $logger = null,
 	)
 	{
 		$this->logger = $logger ?? new Log\NullLogger();

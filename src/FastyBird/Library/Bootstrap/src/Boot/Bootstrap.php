@@ -64,8 +64,10 @@ class Bootstrap
 		// Create app configurator
 		$config = new Configurator();
 
+		$config->setTimeZone('UTC');
+
 		// Define variables
-		$config->addParameters([
+		$config->addStaticParameters([
 			'tempDir' => FB_TEMP_DIR,
 			'logsDir' => FB_LOGS_DIR,
 			'appDir' => FB_APP_DIR,
@@ -75,13 +77,11 @@ class Bootstrap
 		]);
 
 		// Load parameters from environment
-		$config->addParameters(self::loadEnvParameters($envPrefix));
+		$config->addStaticParameters(self::loadEnvParameters($envPrefix));
 
 		if (!class_exists('\Tester\Environment') || getenv(Tester\Environment::RUNNER) === false) {
 			$config->enableTracy(FB_LOGS_DIR);
 		}
-
-		$config->setTimeZone('UTC');
 
 		// Default extension config
 		$config->addConfig(__DIR__ . DS . '..' . DS . '..' . DS . 'config' . DS . 'common.neon');
@@ -189,7 +189,11 @@ class Bootstrap
 			define('FB_CONFIG_DIR', realpath(getenv('FB_CONFIG_DIR')));
 
 		} elseif (!defined('FB_CONFIG_DIR')) {
-			define('FB_CONFIG_DIR', realpath(FB_APP_DIR . DS . 'config'));
+			if (realpath(FB_APP_DIR . DS . 'config') !== false) {
+				define('FB_CONFIG_DIR', realpath(FB_APP_DIR . DS . 'config'));
+			} else {
+				define('FB_CONFIG_DIR', realpath(FB_APP_DIR . DS . 'var' . DS . 'config'));
+			}
 		}
 	}
 

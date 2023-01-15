@@ -7,28 +7,24 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ShellyConnector!
- * @subpackage     Properties
- * @since          0.37.0
+ * @subpackage     Entities
+ * @since          1.0.0
  *
  * @date           16.07.22
  */
 
 namespace FastyBird\Connector\Shelly\Entities\Messages;
 
-use FastyBird\Connector\Shelly\Types;
-
 /**
  * Shelly base message data entity interface
  *
  * @package        FastyBird:ShellyConnector!
- * @subpackage     Properties
+ * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 interface Entity
 {
-
-	public function getSource(): Types\MessageSource;
 
 	/**
 	 * @return array<string, mixed>

@@ -17,15 +17,18 @@
 Shelly connector is extension for [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem
 which is integrating [Shelly](https://shelly.cloud) devices.
 
-Shelly connector is an [Apache2 licensed](http://www.apache.org/licenses/LICENSE-2.0) distributed extension, developed
-in [PHP](https://www.php.net) on top of the [Nette framework](https://nette.org) and [Symfony framework](https://symfony.com).
+Shelly Connector is a distributed extension that is developed in [PHP](https://www.php.net), built on the [Nette framework](https://nette.org) and [Symfony framework](https://symfony.com) frameworks,
+and is licensed under [Apache2](http://www.apache.org/licenses/LICENSE-2.0).
 
 ### Features:
 
-- Shelly gen1 devices support
-- Shelly connector management for [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) [devices module](https://github.com/FastyBird/devices-module)
-- Shelly device management for [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) [devices module](https://github.com/FastyBird/devices-module)
-- [{JSON:API}](https://jsonapi.org/) schemas for full api access
+- Support for Shelly Gen1 and Gen2 devices, allowing users to connect and control a wide range of Shelly devices
+- Automated device discovery feature, which automatically detects and adds Shelly devices to the FastyBird ecosystem
+- Support for Shelly device authentication using a username and password, providing an extra layer of security for connected devices
+- Shelly Connector management for the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) [devices module](https://github.com/FastyBird/devices-module), allowing users to easily manage and monitor Shelly devices
+- Advanced device management features, such as controlling power status, measuring energy consumption, and reading sensor data
+- [{JSON:API}](https://jsonapi.org/) schemas for full API access, providing a standardized and consistent way for developers to access and manipulate Shelly device data
+- Regular updates with new features and bug fixes, ensuring that the Shelly Connector is always up-to-date and reliable.
 
 ## Requirements
 

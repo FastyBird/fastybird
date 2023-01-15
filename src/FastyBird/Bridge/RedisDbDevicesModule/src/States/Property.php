@@ -59,7 +59,7 @@ class Property extends RedisDbStates\State implements DevicesStates\Property
 		return $this->createdAt !== null ? new DateTime($this->createdAt) : null;
 	}
 
-	public function setCreatedAt(string|null $createdAt): void
+	public function setCreatedAt(string|null $createdAt = null): void
 	{
 		$this->createdAt = $createdAt;
 	}
@@ -72,7 +72,7 @@ class Property extends RedisDbStates\State implements DevicesStates\Property
 		return $this->updatedAt !== null ? new DateTimeImmutable($this->updatedAt) : null;
 	}
 
-	public function setUpdatedAt(string|null $updatedAt): void
+	public function setUpdatedAt(string|null $updatedAt = null): void
 	{
 		$this->updatedAt = $updatedAt;
 	}
@@ -115,7 +115,7 @@ class Property extends RedisDbStates\State implements DevicesStates\Property
 		return $this->pending;
 	}
 
-	public function setPending(bool|string|null $pending): void
+	public function setPending(bool|string|null $pending = null): void
 	{
 		$this->pending = $pending;
 	}

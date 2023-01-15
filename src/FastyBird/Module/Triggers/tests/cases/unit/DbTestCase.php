@@ -10,6 +10,7 @@ use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
 use FastyBird\Module\Triggers\DI;
 use FastyBird\Module\Triggers\Exceptions;
+use IPub\DoctrineCrud;
 use Nette;
 use Nettrine\ORM as NettrineORM;
 use PHPUnit\Framework\TestCase;
@@ -140,14 +141,16 @@ abstract class DbTestCase extends TestCase
 		$config->setForceReloadContainer();
 		$config->setTempDirectory(FB_TEMP_DIR);
 
-		$config->addParameters(['container' => ['class' => 'SystemContainer_' . md5((string) time())]]);
-		$config->addParameters(['appDir' => $rootDir, 'wwwDir' => $rootDir, 'vendorDir' => $vendorDir]);
+		$config->addStaticParameters(['container' => ['class' => 'SystemContainer_' . md5((string) time())]]);
+		$config->addStaticParameters(['appDir' => $rootDir, 'wwwDir' => $rootDir, 'vendorDir' => $vendorDir]);
 
 		$config->addConfig(__DIR__ . '/../../common.neon');
 
 		foreach ($this->neonFiles as $neonFile) {
 			$config->addConfig($neonFile);
 		}
+
+		$config->setTimeZone('Europe/Prague');
 
 		DI\TriggersExtension::register($config);
 
@@ -171,7 +174,7 @@ abstract class DbTestCase extends TestCase
 		if (!$this->isDatabaseSetUp) {
 			$db = $this->getDb();
 
-			/** @var list<ORM\Mapping\ClassMetadata> $metadatas */
+			/** @var list<ORM\Mapping\ClassMetadata<DoctrineCrud\Entities\IEntity>> $metadatas */
 			$metadatas = $this->getEntityManager()->getMetadataFactory()->getAllMetadata();
 			$schemaTool = new ORM\Tools\SchemaTool($this->getEntityManager());
 

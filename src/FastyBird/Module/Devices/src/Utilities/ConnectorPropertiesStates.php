@@ -45,7 +45,7 @@ final class ConnectorPropertiesStates
 	public function __construct(
 		private readonly Models\States\ConnectorPropertiesRepository $connectorPropertyStateRepository,
 		private readonly Models\States\ConnectorPropertiesManager $connectorPropertiesStatesManager,
-		Log\LoggerInterface|null $logger,
+		Log\LoggerInterface|null $logger = null,
 	)
 	{
 		$this->logger = $logger ?? new Log\NullLogger();

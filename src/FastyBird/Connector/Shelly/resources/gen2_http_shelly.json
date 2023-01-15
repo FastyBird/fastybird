@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Id of the device"
+    },
+    "mac": {
+      "type": "string",
+      "description": "Mac address of the device"
+    },
+    "model": {
+      "type": "string",
+      "description": "Model of the device"
+    },
+    "gen": {
+      "type": "number",
+      "description": "Generation of the device"
+    },
+    "fw_id": {
+      "type": "string",
+      "description": "Id of the firmware of the device"
+    },
+    "ver": {
+      "type": "string",
+      "description": "Version of the firmware of the device"
+    },
+    "app": {
+      "type": "string",
+      "description": "Application name"
+    },
+    "auth_en": {
+      "type": "boolean",
+      "description": "true if authentication is enabled, false otherwise",
+      "default": false
+    },
+    "auth_domain": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string"
+        }
+      ],
+      "description": "Name of the domain (null if authentication is not enabled)",
+      "default": null
+    }
+  },
+  "required": [
+    "id",
+    "mac",
+    "model",
+    "gen",
+    "fw_id",
+    "ver",
+    "app",
+    "auth_en",
+    "auth_domain"
+  ]
+}

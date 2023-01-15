@@ -108,7 +108,7 @@ abstract class Connector implements Entities\Entity,
 	 * @IPubDoctrine\Crud(is="writable")
 	 * @ORM\OneToMany(targetEntity="FastyBird\Module\Devices\Entities\Connectors\Properties\Property", mappedBy="connector", cascade={"persist", "remove"}, orphanRemoval=true)
 	 */
-	private Common\Collections\Collection $properties;
+	protected Common\Collections\Collection $properties;
 
 	/**
 	 * @var Common\Collections\Collection<int, Entities\Connectors\Controls\Control>

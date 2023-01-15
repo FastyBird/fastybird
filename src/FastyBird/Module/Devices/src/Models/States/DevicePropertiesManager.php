@@ -43,8 +43,8 @@ final class DevicePropertiesManager
 	use Nette\SmartObject;
 
 	public function __construct(
-		protected readonly IDevicePropertiesManager|null $manager,
-		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher,
+		protected readonly IDevicePropertiesManager|null $manager = null,
+		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
 	}
