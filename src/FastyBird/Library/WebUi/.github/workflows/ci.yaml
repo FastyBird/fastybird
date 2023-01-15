@@ -174,7 +174,7 @@ jobs:
         node-version: [ "16" ]
         operating-system: [ "ubuntu-latest" ]
 
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
 
     steps:
       - name: "Checkout"
@@ -227,7 +227,7 @@ jobs:
         node-version: [ "16" ]
         operating-system: [ "ubuntu-latest" ]
 
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
 
     steps:
       - name: "Checkout"

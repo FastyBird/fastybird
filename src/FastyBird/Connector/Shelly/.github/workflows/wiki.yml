@@ -14,19 +14,12 @@ jobs:
       - name: "Checkout"
         uses: "actions/checkout@v3"
 
-      - name: "Install node"
-        uses: "actions/setup-node@v3"
-        with:
-          node-version: 16
-
-      - name: "Install dependencies"
-        run: "npm ci"
-
       - name: "Deploy to Wiki"
-        uses: "gavinbunney/gh-pages-action@v2"
+        uses: "joeizzard/action-wiki-sync@master"
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          repo: ${{ secrets.REPO_NAME }}
-          base-path: "docs"
-          branch: "master"
-          message: "Deploy documentation"
+          username: "fastybird"
+          access_token: ${{ secrets.GITHUB_TOKEN }}
+          wiki_folder: "docs"
+          commit_username: "FastyBird"
+          commit_email: "code@fastybird.com"
+          commit_message: "action: wiki sync"
