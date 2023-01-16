@@ -58,9 +58,9 @@ class Initialize extends Console\Command\Command
 
 	private const CHOICE_QUESTION_DELETE_CONNECTOR = 'Delete existing connector configuration';
 
-	private const CHOICE_QUESTION_LOCAL_MODE = 'Local network';
+	private const CHOICE_QUESTION_LOCAL_MODE = 'Local network mode';
 
-	private const CHOICE_QUESTION_CLOUD_MODE = 'Cloud';
+	private const CHOICE_QUESTION_CLOUD_MODE = 'Cloud server mode';
 
 	private Log\LoggerInterface $logger;
 
@@ -365,7 +365,7 @@ class Initialize extends Console\Command\Command
 			$io->error('Something went wrong, connector could not be loaded');
 
 			$this->logger->alert(
-				'Connector identifier was not able to get from answer',
+				'Could not read connector identifier from console answer',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'initialize-cmd',
@@ -760,7 +760,7 @@ class Initialize extends Console\Command\Command
 	private function askMode(Style\SymfonyStyle $io): Types\ClientMode
 	{
 		$question = new Console\Question\ChoiceQuestion(
-			'What type of Tuya devices should this connector handle?',
+			'In what mode should this connector communicate with devices?',
 			[
 				self::CHOICE_QUESTION_LOCAL_MODE,
 				self::CHOICE_QUESTION_CLOUD_MODE,

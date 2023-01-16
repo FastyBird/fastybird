@@ -189,13 +189,16 @@ final class LocalApi implements Evenement\EventEmitterInterface
 		$this->messagesListeners = [];
 		$this->messagesListenersTimers = [];
 
-		$this->heartBeatTimer = null;
-		$this->lastHeartbeat = null;
-
+		$this->connection = null;
 		$this->connecting = true;
 		$this->connected = false;
 
+		$this->heartBeatTimer = null;
+		$this->lastHeartbeat = null;
+
 		$this->lastConnectAttempt = $this->dateTimeFactory->getNow();
+		$this->lost = null;
+		$this->disconnected = null;
 
 		$deferred = new Promise\Deferred();
 
@@ -204,13 +207,12 @@ final class LocalApi implements Evenement\EventEmitterInterface
 
 			$connector->connect($this->ipAddress . ':' . self::SOCKET_PORT)
 				->then(function (Socket\ConnectionInterface $connection) use ($deferred): void {
+					$this->connection = $connection;
 					$this->connecting = false;
 					$this->connected = true;
 
-					$this->disconnected = null;
 					$this->lost = null;
-
-					$this->connection = $connection;
+					$this->disconnected = null;
 
 					$this->connection->on('data', function ($chunk): void {
 						$message = $this->decodePayload($chunk);
@@ -286,8 +288,6 @@ final class LocalApi implements Evenement\EventEmitterInterface
 					});
 
 					$this->connection->on('error', function (Throwable $ex): void {
-						$this->lost();
-
 						$this->logger->error(
 							'An error occurred on device connection',
 							[
@@ -302,11 +302,11 @@ final class LocalApi implements Evenement\EventEmitterInterface
 								],
 							],
 						);
+
+						$this->lost();
 					});
 
 					$this->connection->on('close', function (): void {
-						$this->disconnect();
-
 						$this->logger->debug(
 							'Connection with device was closed',
 							[
@@ -317,6 +317,10 @@ final class LocalApi implements Evenement\EventEmitterInterface
 								],
 							],
 						);
+
+						$this->disconnect();
+
+						$this->emit('disconnected');
 					});
 
 					$this->heartBeatTimer = $this->eventLoop->addPeriodicTimer(
@@ -374,6 +378,8 @@ final class LocalApi implements Evenement\EventEmitterInterface
 					$deferred->reject($ex);
 				});
 		} catch (Throwable $ex) {
+			$this->connection = null;
+
 			$this->connecting = false;
 			$this->connected = false;
 

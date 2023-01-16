@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\Tuya\Entities\Messages;
 
-use FastyBird\Connector\Tuya\Types;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Ramsey\Uuid;
 use function array_merge;
 
@@ -31,18 +31,17 @@ final class DeviceState extends Device
 {
 
 	public function __construct(
-		Types\MessageSource $source,
 		Uuid\UuidInterface $connector,
 		string $identifier,
-		private readonly bool $online,
+		private readonly MetadataTypes\ConnectionState $state,
 	)
 	{
-		parent::__construct($source, $connector, $identifier);
+		parent::__construct($connector, $identifier);
 	}
 
-	public function isOnline(): bool
+	public function getState(): MetadataTypes\ConnectionState
 	{
-		return $this->online;
+		return $this->state;
 	}
 
 	/**
@@ -51,7 +50,7 @@ final class DeviceState extends Device
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), [
-			'online' => $this->isOnline(),
+			'state' => $this->getState()->getValue(),
 		]);
 	}
 

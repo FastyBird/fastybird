@@ -15,8 +15,6 @@
 
 namespace FastyBird\Connector\Tuya\Entities\Messages;
 
-use FastyBird\Connector\Tuya\Types;
-
 /**
  * Tuya base message data entity interface
  *
@@ -27,8 +25,6 @@ use FastyBird\Connector\Tuya\Types;
  */
 interface Entity
 {
-
-	public function getSource(): Types\MessageSource;
 
 	/**
 	 * @return array<string, mixed>

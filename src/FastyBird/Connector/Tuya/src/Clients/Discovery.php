@@ -21,7 +21,6 @@ use FastyBird\Connector\Tuya\Consumers;
 use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Entities\Clients\DiscoveredLocalDevice;
 use FastyBird\Connector\Tuya\Exceptions;
-use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -108,7 +107,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 		private readonly Entities\TuyaConnector $connector,
 		private readonly API\OpenApiFactory $openApiApiFactory,
 		private readonly API\LocalApiFactory $localApiFactory,
-		private readonly Helpers\Connector $connectorHelper,
 		private readonly Consumers\Messages $consumer,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		Log\LoggerInterface|null $logger = null,
@@ -134,15 +132,12 @@ final class Discovery implements Evenement\EventEmitterInterface
 	{
 		$this->discoveredLocalDevices = new SplObjectStorage();
 
-		$mode = $this->connectorHelper->getConfiguration(
-			$this->connector,
-			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE),
-		);
+		$mode = $this->connector->getClientMode();
 
-		if ($mode === Types\ClientMode::MODE_CLOUD) {
+		if ($mode->equalsValue(Types\ClientMode::MODE_CLOUD)) {
 			$this->discoverCloudDevices();
 
-		} elseif ($mode === Types\ClientMode::MODE_LOCAL) {
+		} elseif ($mode->equalsValue(Types\ClientMode::MODE_LOCAL)) {
 			$this->discoverLocalDevices();
 		}
 	}
@@ -275,10 +270,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 		try {
 			/** @var array<Entities\API\DeviceInformation> $devices */
 			$devices = await($this->openApiApi->getDevices([
-				'source_id' => $this->connectorHelper->getConfiguration(
-					$this->connector,
-					Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_UID),
-				),
+				'source_id' => $this->connector->getUid(),
 				'source_type' => 'tuyaUser',
 			]));
 
@@ -516,7 +508,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 					$deviceFactoryInfos?->getSn(),
 					$deviceFactoryInfos?->getMac(),
 					$dataPoints,
-					Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
 				);
 
 				$processedDevices[] = $message;
@@ -628,7 +619,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 							$childDeviceFactoryInfos?->getSn(),
 							$childDeviceFactoryInfos?->getMac(),
 							$dataPoints,
-							Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
 						);
 
 						$processedDevices[] = $message;
@@ -791,7 +781,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 						) : null,
 						$dataPointStatus !== null,
 						$dataPointFunction !== null,
-						Types\MessageSource::get(Types\MessageSource::SOURCE_CLOUD_DISCOVERY),
 					);
 				}
 			} catch (Exceptions\OpenApiCall $ex) {
@@ -827,7 +816,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$deviceFactoryInfos?->getSn(),
 				$deviceFactoryInfos?->getMac(),
 				$dataPoints,
-				Types\MessageSource::get(Types\MessageSource::SOURCE_CLOUD_DISCOVERY),
 			);
 
 			$processedDevices[] = $message;
@@ -916,7 +904,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 							null,
 							true,
 							true,
-							Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
 						);
 					}
 				}

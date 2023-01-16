@@ -15,7 +15,6 @@
 
 namespace FastyBird\Connector\Tuya\Entities\Messages;
 
-use FastyBird\Connector\Tuya\Types;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette;
 
@@ -44,7 +43,6 @@ final class DiscoveredLocalDataPoint implements Entity
 		private readonly int|float|null $step,
 		private readonly bool $queryable,
 		private readonly bool $settable,
-		private readonly Types\MessageSource $source,
 	)
 	{
 	}
@@ -104,11 +102,6 @@ final class DiscoveredLocalDataPoint implements Entity
 		return $this->settable;
 	}
 
-	public function getSource(): Types\MessageSource
-	{
-		return $this->source;
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -127,7 +120,6 @@ final class DiscoveredLocalDataPoint implements Entity
 			'step' => $this->getStep(),
 			'queryable' => $this->isQueryable(),
 			'settable' => $this->isSettable(),
-			'source' => $this->getSource()->getValue(),
 		];
 	}
 

@@ -15,7 +15,6 @@
 
 namespace FastyBird\Connector\Tuya\Entities\Messages;
 
-use FastyBird\Connector\Tuya\Types;
 use Ramsey\Uuid;
 use function array_map;
 use function array_merge;
@@ -35,13 +34,12 @@ final class DeviceStatus extends Device
 	 * @param array<DataPointStatus> $dataPoints
 	 */
 	public function __construct(
-		Types\MessageSource $source,
 		Uuid\UuidInterface $connector,
 		string $identifier,
 		private readonly array $dataPoints,
 	)
 	{
-		parent::__construct($source, $connector, $identifier);
+		parent::__construct($connector, $identifier);
 	}
 
 	/**

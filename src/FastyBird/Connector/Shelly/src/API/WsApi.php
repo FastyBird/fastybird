@@ -122,9 +122,9 @@ final class WsApi implements Evenement\EventEmitterInterface
 	{
 		$this->messages = [];
 
+		$this->connection = null;
 		$this->connecting = true;
 		$this->connected = false;
-		$this->connection = null;
 
 		$this->session = null;
 
@@ -158,6 +158,11 @@ final class WsApi implements Evenement\EventEmitterInterface
 			)
 				->then(function (Ratchet\Client\WebSocket $connection) use ($deferred): void {
 					$this->connection = $connection;
+					$this->connecting = false;
+					$this->connected = true;
+
+					$this->lost = null;
+					$this->disconnected = null;
 
 					$this->logger->debug(
 						'Connected to device sockets server',
@@ -426,9 +431,6 @@ final class WsApi implements Evenement\EventEmitterInterface
 					});
 
 					$this->emit('connected');
-
-					$this->connecting = false;
-					$this->connected = true;
 
 					$deferred->resolve();
 				})

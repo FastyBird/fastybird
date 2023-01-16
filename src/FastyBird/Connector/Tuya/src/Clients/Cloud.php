@@ -22,7 +22,6 @@ use FastyBird\Connector\Tuya\API;
 use FastyBird\Connector\Tuya\Consumers;
 use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Exceptions;
-use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\Connector\Tuya\Writers;
 use FastyBird\DateTimeFactory;
@@ -31,7 +30,6 @@ use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
-use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use InvalidArgumentException;
 use Nette;
@@ -48,7 +46,6 @@ use function array_key_exists;
 use function assert;
 use function base64_decode;
 use function in_array;
-use function intval;
 use function is_bool;
 use function is_numeric;
 use function is_string;
@@ -114,9 +111,6 @@ final class Cloud implements Client
 	 */
 	public function __construct(
 		private readonly Entities\TuyaConnector $connector,
-		private readonly Helpers\Connector $connectorHelper,
-		private readonly Helpers\Device $deviceHelper,
-		private readonly Helpers\Property $propertyStateHelper,
 		private readonly Consumers\Messages $consumer,
 		API\OpenApiFactory $openApiApiFactory,
 		private readonly Writers\Writer $writer,
@@ -164,10 +158,7 @@ final class Cloud implements Client
 			[],
 			[
 				'Connection' => 'Upgrade',
-				'username' => $this->connectorHelper->getConfiguration(
-					$this->connector,
-					Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_ACCESS_ID),
-				),
+				'username' => $this->connector->getAccessId(),
 				'password' => $this->generatePassword(),
 			],
 		)
@@ -241,12 +232,7 @@ final class Cloud implements Client
 					self::PING_INTERVAL,
 					async(function () use ($connection): void {
 						$connection->send(new RFC6455\Messaging\Frame(
-							strval($this->connectorHelper->getConfiguration(
-								$this->connector,
-								Types\ConnectorPropertyIdentifier::get(
-									Types\ConnectorPropertyIdentifier::IDENTIFIER_ACCESS_ID,
-								),
-							)),
+							strval($this->connector->getAccessId()),
 							true,
 							RFC6455\Messaging\Frame::OP_PING,
 						));
@@ -317,8 +303,6 @@ final class Cloud implements Client
 		DevicesEntities\Channels\Properties\Dynamic $property,
 	): Promise\PromiseInterface
 	{
-		$deferred = new Promise\Deferred();
-
 		$state = $this->channelPropertiesStates->getValue($property);
 
 		if ($state === null) {
@@ -340,63 +324,14 @@ final class Cloud implements Client
 		}
 
 		if ($state->isPending() === true) {
-			$this->openApiApi->setDeviceStatus(
+			return $this->openApiApi->setDeviceStatus(
 				$device->getIdentifier(),
 				$property->getIdentifier(),
 				$expectedValue,
-			)
-				->then(function () use ($property, $deferred): void {
-					$this->propertyStateHelper->setValue(
-						$property,
-						Utils\ArrayHash::from([
-							DevicesStates\Property::PENDING_KEY => $this->dateTimeFactory->getNow()->format(
-								DateTimeInterface::ATOM,
-							),
-						]),
-					);
-
-					$deferred->resolve();
-				})
-				->otherwise(function (Throwable $ex) use ($property, $deferred): void {
-					$this->propertyStateHelper->setValue(
-						$property,
-						Utils\ArrayHash::from([
-							DevicesStates\Property::EXPECTED_VALUE_KEY => null,
-							DevicesStates\Property::PENDING_KEY => false,
-						]),
-					);
-
-					if (!$ex instanceof Exceptions\OpenApiCall) {
-						$this->logger->error(
-							'Calling Tuya cloud failed',
-							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-								'type' => 'cloud-client',
-								'exception' => [
-									'message' => $ex->getMessage(),
-									'code' => $ex->getCode(),
-								],
-								'connector' => [
-									'id' => $this->connector->getPlainId(),
-								],
-							],
-						);
-
-						throw new DevicesExceptions\Terminate(
-							'Calling Tuya cloud failed',
-							$ex->getCode(),
-							$ex,
-						);
-					}
-
-					$deferred->reject($ex);
-				});
-
-		} else {
-			return Promise\reject(new Exceptions\InvalidArgument('Provided property state is in invalid state'));
+			);
 		}
 
-		return $deferred->promise();
+		return Promise\reject(new Exceptions\InvalidArgument('Provided property state is in invalid state'));
 	}
 
 	/**
@@ -445,11 +380,81 @@ final class Cloud implements Client
 	 */
 	private function processDevice(Entities\TuyaDevice $device): bool
 	{
-		if ($this->readDeviceData(self::CMD_HEARTBEAT, $device)) {
+		if ($this->readDeviceInformation($device)) {
 			return true;
 		}
 
-		return $this->readDeviceData(self::CMD_STATUS, $device);
+		return $this->readDeviceStatus($device);
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws RuntimeException
+	 */
+	private function readDeviceInformation(Entities\TuyaDevice $device): bool
+	{
+		if (!array_key_exists($device->getIdentifier(), $this->processedDevicesCommands)) {
+			$this->processedDevicesCommands[$device->getIdentifier()] = [];
+		}
+
+		if (array_key_exists(self::CMD_HEARTBEAT, $this->processedDevicesCommands[$device->getIdentifier()])) {
+			$cmdResult = $this->processedDevicesCommands[$device->getIdentifier()][self::CMD_HEARTBEAT];
+
+			if (
+				$cmdResult instanceof DateTimeInterface
+				&& (
+					$this->dateTimeFactory->getNow()->getTimestamp() - $cmdResult->getTimestamp() < self::HEARTBEAT_DELAY
+				)
+			) {
+				return false;
+			}
+		}
+
+		$this->processedDevicesCommands[$device->getIdentifier()][self::CMD_HEARTBEAT] = $this->dateTimeFactory->getNow();
+
+		$this->openApiApi->getDeviceInformation($device->getIdentifier())
+			->then(function (Entities\API\DeviceInformation $deviceInformation) use ($device): void {
+				$this->processedDevicesCommands[$device->getIdentifier()][self::CMD_HEARTBEAT] = $this->dateTimeFactory->getNow();
+
+				$this->consumer->append(
+					new Entities\Messages\DeviceState(
+						$device->getConnector()->getId(),
+						$device->getIdentifier(),
+						$deviceInformation->isOnline() ? MetadataTypes\ConnectionState::get(
+							MetadataTypes\ConnectionState::STATE_CONNECTED,
+						) : MetadataTypes\ConnectionState::get(
+							MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+						),
+					),
+				);
+			})
+			->otherwise(function (Throwable $ex): void {
+				$this->logger->error(
+					'Could not call cloud openapi',
+					[
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+						'type' => 'cloud-client',
+						'exception' => [
+							'message' => $ex->getMessage(),
+							'code' => $ex->getCode(),
+						],
+						'connector' => [
+							'id' => $this->connector->getPlainId(),
+						],
+					],
+				);
+
+				throw new DevicesExceptions\Terminate(
+					'Could not call cloud openapi',
+					$ex->getCode(),
+					$ex,
+				);
+			});
+
+		return true;
 	}
 
 	/**
@@ -460,57 +465,52 @@ final class Cloud implements Client
 	 * @throws MetadataExceptions\Logic
 	 * @throws RuntimeException
 	 */
-	private function readDeviceData(string $cmd, Entities\TuyaDevice $device): bool
+	private function readDeviceStatus(Entities\TuyaDevice $device): bool
 	{
-		$cmdResult = null;
-
 		if (!array_key_exists($device->getIdentifier(), $this->processedDevicesCommands)) {
 			$this->processedDevicesCommands[$device->getIdentifier()] = [];
 		}
 
-		if (array_key_exists($cmd, $this->processedDevicesCommands[$device->getIdentifier()])) {
-			$cmdResult = $this->processedDevicesCommands[$device->getIdentifier()][$cmd];
-		}
+		if (array_key_exists(self::CMD_STATUS, $this->processedDevicesCommands[$device->getIdentifier()])) {
+			$cmdResult = $this->processedDevicesCommands[$device->getIdentifier()][self::CMD_STATUS];
 
-		$delay = null;
-
-		if ($cmd === self::CMD_STATUS) {
-			$delay = intval($this->deviceHelper->getConfiguration(
-				$device,
-				Types\DevicePropertyIdentifier::get(Types\DevicePropertyIdentifier::IDENTIFIER_STATUS_READING_DELAY),
-			));
-
-		} elseif ($cmd === self::CMD_HEARTBEAT) {
-			$delay = self::HEARTBEAT_DELAY;
-		}
-
-		if (
-			$delay === null && $cmdResult === null
-			|| (
+			if (
 				$cmdResult instanceof DateTimeInterface
-				&& ($this->dateTimeFactory->getNow()->getTimestamp() - $cmdResult->getTimestamp()) < $delay
-			)
-		) {
-			return false;
+				&& (
+					$this->dateTimeFactory->getNow()->getTimestamp() - $cmdResult->getTimestamp() < $device->getStatusReadingDelay()
+				)
+			) {
+				return false;
+			}
 		}
 
-		$this->processedDevicesCommands[$device->getIdentifier()][$cmd] = $this->dateTimeFactory->getNow();
+		$this->processedDevicesCommands[$device->getIdentifier()][self::CMD_STATUS] = $this->dateTimeFactory->getNow();
 
-		if ($cmd === self::CMD_HEARTBEAT) {
-			$this->openApiApi->getDeviceInformation($device->getIdentifier())
-				->then(function (Entities\API\DeviceInformation $deviceInformation) use ($cmd, $device): void {
-					$this->processedDevicesCommands[$device->getIdentifier()][$cmd] = $this->dateTimeFactory->getNow();
+		$this->openApiApi->getDeviceStatus($device->getIdentifier())
+			->then(function (array $statuses) use ($device): void {
+				$this->processedDevicesCommands[$device->getIdentifier()][self::CMD_STATUS] = $this->dateTimeFactory->getNow();
 
-					$this->consumer->append(new Entities\Messages\DeviceState(
-						Types\MessageSource::get(Types\MessageSource::SOURCE_CLOUD_OPENAPI),
-						$this->connector->getId(),
-						$device->getIdentifier(),
-						$deviceInformation->isOnline(),
-					));
-				})
-				->otherwise(function (Throwable $ex): void {
+				$dataPointsStatuses = [];
+
+				foreach ($statuses as $status) {
+					if (!in_array($status->getCode(), $device->getExcludedDps(), true)) {
+						$dataPointsStatuses[] = new Entities\Messages\DataPointStatus(
+							$status->getCode(),
+							$status->getValue(),
+						);
+					}
+				}
+
+				$this->consumer->append(new Entities\Messages\DeviceStatus(
+					$this->connector->getId(),
+					$device->getIdentifier(),
+					$dataPointsStatuses,
+				));
+			})
+			->otherwise(function (Throwable $ex): void {
+				if (!$ex instanceof Exceptions\OpenApiCall) {
 					$this->logger->error(
-						'Could not call cloud openapi',
+						'Calling Tuya cloud failed',
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 							'type' => 'cloud-client',
@@ -525,68 +525,12 @@ final class Cloud implements Client
 					);
 
 					throw new DevicesExceptions\Terminate(
-						'Could not call cloud openapi',
+						'Calling Tuya cloud failed',
 						$ex->getCode(),
 						$ex,
 					);
-				});
-
-		} elseif ($cmd === self::CMD_STATUS) {
-			$this->openApiApi->getDeviceStatus($device->getIdentifier())
-				->then(function (array $statuses) use ($cmd, $device): void {
-					$this->processedDevicesCommands[$device->getIdentifier()][$cmd] = $this->dateTimeFactory->getNow();
-
-					$excludeDps = [$this->deviceHelper->getConfiguration(
-						$device,
-						Types\DevicePropertyIdentifier::get(
-							Types\DevicePropertyIdentifier::IDENTIFIER_READ_STATE_EXCLUDE_DPS,
-						),
-					)];
-
-					$dataPointsStatuses = [];
-
-					foreach ($statuses as $status) {
-						if (!in_array($status->getCode(), $excludeDps, true)) {
-							$dataPointsStatuses[] = new Entities\Messages\DataPointStatus(
-								Types\MessageSource::get(Types\MessageSource::SOURCE_CLOUD_OPENAPI),
-								$status->getCode(),
-								$status->getValue(),
-							);
-						}
-					}
-
-					$this->consumer->append(new Entities\Messages\DeviceStatus(
-						Types\MessageSource::get(Types\MessageSource::SOURCE_CLOUD_OPENAPI),
-						$this->connector->getId(),
-						$device->getIdentifier(),
-						$dataPointsStatuses,
-					));
-				})
-				->otherwise(function (Throwable $ex): void {
-					if (!$ex instanceof Exceptions\OpenApiCall) {
-						$this->logger->error(
-							'Calling Tuya cloud failed',
-							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-								'type' => 'cloud-client',
-								'exception' => [
-									'message' => $ex->getMessage(),
-									'code' => $ex->getCode(),
-								],
-								'connector' => [
-									'id' => $this->connector->getPlainId(),
-								],
-							],
-						);
-
-						throw new DevicesExceptions\Terminate(
-							'Calling Tuya cloud failed',
-							$ex->getCode(),
-							$ex,
-						);
-					}
-				});
-		}
+				}
+			});
 
 		return true;
 	}
@@ -759,12 +703,7 @@ final class Cloud implements Client
 			return;
 		}
 
-		$accessSecret = $this->connectorHelper->getConfiguration(
-			$this->connector,
-			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_ACCESS_SECRET),
-		);
-
-		$decodingKey = Utils\Strings::substring(strval($accessSecret), 8, 16);
+		$decodingKey = Utils\Strings::substring(strval($this->connector->getAccessSecret()), 8, 16);
 
 		$decryptedData = openssl_decrypt(
 			$data,
@@ -846,7 +785,6 @@ final class Cloud implements Client
 
 				if (is_string($status->value) || is_bool($status->value) || is_numeric($status->value)) {
 					$dataPointsStatuses[] = new Entities\Messages\DataPointStatus(
-						Types\MessageSource::get(Types\MessageSource::SOURCE_CLOUD_OPENPULSAR),
 						$status->code,
 						$status->value,
 					);
@@ -854,7 +792,6 @@ final class Cloud implements Client
 			}
 
 			$this->consumer->append(new Entities\Messages\DeviceStatus(
-				Types\MessageSource::get(Types\MessageSource::SOURCE_CLOUD_OPENPULSAR),
 				$this->connector->getId(),
 				$decryptedData->devId,
 				$dataPointsStatuses,
@@ -870,12 +807,19 @@ final class Cloud implements Client
 				|| $decryptedData->offsetGet('bizCode') === Types\OpenPulsarMessageType::BIZ_CODE_OFFLINE
 			)
 		) {
-			$this->consumer->append(new Entities\Messages\DeviceState(
-				Types\MessageSource::get(Types\MessageSource::SOURCE_CLOUD_OPENPULSAR),
-				$this->connector->getId(),
-				$decryptedData->devId,
-				$decryptedData->offsetGet('bizCode') === Types\OpenPulsarMessageType::BIZ_CODE_ONLINE,
-			));
+			$this->consumer->append(
+				new Entities\Messages\DeviceState(
+					$this->connector->getId(),
+					$decryptedData->devId,
+					$decryptedData->offsetGet(
+						'bizCode',
+					) === Types\OpenPulsarMessageType::BIZ_CODE_ONLINE ? MetadataTypes\ConnectionState::get(
+						MetadataTypes\ConnectionState::STATE_CONNECTED,
+					) : MetadataTypes\ConnectionState::get(
+						MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+					),
+				),
+			);
 		}
 	}
 
@@ -886,22 +830,13 @@ final class Cloud implements Client
 	 */
 	private function buildWsTopicUrl(): string
 	{
-		$endpoint = $this->connectorHelper->getConfiguration(
-			$this->connector,
-			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_OPENPULSAR_ENDPOINT),
-		);
+		$endpoint = $this->connector->getOpenpulsarEndpoint();
 		assert(is_string($endpoint));
 
-		$accessId = $this->connectorHelper->getConfiguration(
-			$this->connector,
-			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_ACCESS_ID),
-		);
+		$accessId = $this->connector->getAccessId();
 		assert(is_string($accessId));
 
-		$topic = $this->connectorHelper->getConfiguration(
-			$this->connector,
-			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_OPENPULSAR_TOPIC),
-		);
+		$topic = $this->connector->getOpenpulsarTopic();
 		assert(is_string($topic));
 
 		return $endpoint . 'ws/v2/consumer/persistent/'
@@ -915,16 +850,10 @@ final class Cloud implements Client
 	 */
 	private function generatePassword(): string
 	{
-		$accessId = $this->connectorHelper->getConfiguration(
-			$this->connector,
-			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_ACCESS_ID),
-		);
+		$accessId = $this->connector->getAccessId();
 		assert(is_string($accessId));
 
-		$accessSecret = $this->connectorHelper->getConfiguration(
-			$this->connector,
-			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_ACCESS_SECRET),
-		);
+		$accessSecret = $this->connector->getAccessSecret();
 		assert(is_string($accessSecret));
 
 		$passString = $accessId . md5($accessSecret);

@@ -21,6 +21,7 @@ use FastyBird\Connector\Shelly\Clients;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Types;
+use FastyBird\Connector\Shelly\Writers;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -79,6 +80,7 @@ final class Local implements Client
 		private readonly Clients\Local\CoapFactory $coapClientFactory,
 		private readonly Clients\Local\HttpFactory $httpClientFactory,
 		private readonly Clients\Local\WsFactory $wsClientFactory,
+		private readonly Writers\Writer $writer,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
@@ -196,6 +198,8 @@ final class Local implements Client
 				$this->registerLoopHandler();
 			},
 		);
+
+		$this->writer->connect($this->connector, $this);
 	}
 
 	public function disconnect(): void
@@ -245,6 +249,8 @@ final class Local implements Client
 
 			$this->handlerTimer = null;
 		}
+
+		$this->writer->disconnect();
 	}
 
 	/**

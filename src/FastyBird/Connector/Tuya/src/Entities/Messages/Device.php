@@ -15,7 +15,6 @@
 
 namespace FastyBird\Connector\Tuya\Entities\Messages;
 
-use FastyBird\Connector\Tuya\Types;
 use Nette;
 use Ramsey\Uuid;
 
@@ -33,16 +32,10 @@ abstract class Device implements Entity
 	use Nette\SmartObject;
 
 	public function __construct(
-		private readonly Types\MessageSource $source,
 		private readonly Uuid\UuidInterface $connector,
 		private readonly string $identifier,
 	)
 	{
-	}
-
-	public function getSource(): Types\MessageSource
-	{
-		return $this->source;
 	}
 
 	public function getConnector(): Uuid\UuidInterface
@@ -61,7 +54,6 @@ abstract class Device implements Entity
 	public function toArray(): array
 	{
 		return [
-			'source' => $this->getSource()->getValue(),
 			'identifier' => $this->getIdentifier(),
 		];
 	}
