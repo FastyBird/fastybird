@@ -105,6 +105,7 @@ trait TConsumeDeviceProperty
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'message-consumer',
+						'group' => 'consumer',
 						'device' => [
 							'id' => $deviceId->toString(),
 						],
@@ -152,6 +153,7 @@ trait TConsumeDeviceProperty
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'message-consumer',
+					'group' => 'consumer',
 					'device' => [
 						'id' => $deviceId->toString(),
 					],
@@ -177,6 +179,7 @@ trait TConsumeDeviceProperty
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'message-consumer',
+					'group' => 'consumer',
 					'device' => [
 						'id' => $deviceId->toString(),
 					],

@@ -105,7 +105,6 @@ final class Cloud implements Client
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -124,7 +123,14 @@ final class Cloud implements Client
 	{
 		$this->logger = $logger ?? new Log\NullLogger();
 
-		$this->openApiApi = $openApiApiFactory->create($this->connector);
+		assert(is_string($this->connector->getAccessId()));
+		assert(is_string($this->connector->getAccessSecret()));
+
+		$this->openApiApi = $openApiApiFactory->create(
+			$this->connector->getAccessId(),
+			$this->connector->getAccessSecret(),
+			$this->connector->getOpenApiEndpoint(),
+		);
 	}
 
 	/**
@@ -168,6 +174,7 @@ final class Cloud implements Client
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'cloud-client',
+						'group' => 'client',
 						'connector' => [
 							'id' => $this->connector->getPlainId(),
 						],
@@ -186,6 +193,7 @@ final class Cloud implements Client
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 							'type' => 'cloud-client',
+							'group' => 'client',
 							'connection' => [
 								'code' => $code,
 								'reason' => $reason,
@@ -211,6 +219,7 @@ final class Cloud implements Client
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 							'type' => 'cloud-client',
+							'group' => 'client',
 							'exception' => [
 								'message' => $ex->getMessage(),
 								'code' => $ex->getCode(),
@@ -245,6 +254,7 @@ final class Cloud implements Client
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'cloud-client',
+						'group' => 'client',
 						'exception' => [
 							'message' => $ex->getMessage(),
 							'code' => $ex->getCode(),
@@ -437,6 +447,7 @@ final class Cloud implements Client
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'cloud-client',
+						'group' => 'client',
 						'exception' => [
 							'message' => $ex->getMessage(),
 							'code' => $ex->getCode(),
@@ -514,6 +525,7 @@ final class Cloud implements Client
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 							'type' => 'cloud-client',
+							'group' => 'client',
 							'exception' => [
 								'message' => $ex->getMessage(),
 								'code' => $ex->getCode(),
@@ -554,6 +566,7 @@ final class Cloud implements Client
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'cloud-client',
+					'group' => 'client',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -582,6 +595,7 @@ final class Cloud implements Client
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'cloud-client',
+						'group' => 'client',
 						'exception' => [
 							'message' => $ex->getMessage(),
 							'code' => $ex->getCode(),
@@ -603,6 +617,7 @@ final class Cloud implements Client
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'cloud-client',
+					'group' => 'client',
 					'connector' => [
 						'id' => $this->connector->getPlainId(),
 					],
@@ -620,6 +635,7 @@ final class Cloud implements Client
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'cloud-client',
+					'group' => 'client',
 					'connector' => [
 						'id' => $this->connector->getPlainId(),
 					],
@@ -634,6 +650,7 @@ final class Cloud implements Client
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 				'type' => 'cloud-client',
+				'group' => 'client',
 				'data' => [
 					'payload' => $payload,
 				],
@@ -655,6 +672,7 @@ final class Cloud implements Client
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'cloud-client',
+					'group' => 'client',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -677,6 +695,7 @@ final class Cloud implements Client
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'cloud-client',
+					'group' => 'client',
 					'connector' => [
 						'id' => $this->connector->getPlainId(),
 					],
@@ -694,6 +713,7 @@ final class Cloud implements Client
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'cloud-client',
+					'group' => 'client',
 					'connector' => [
 						'id' => $this->connector->getPlainId(),
 					],
@@ -718,6 +738,7 @@ final class Cloud implements Client
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'cloud-client',
+					'group' => 'client',
 					'connector' => [
 						'id' => $this->connector->getPlainId(),
 					],
@@ -732,6 +753,7 @@ final class Cloud implements Client
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 				'type' => 'cloud-client',
+				'group' => 'client',
 				'data' => $decryptedData,
 				'connector' => [
 					'id' => $this->connector->getPlainId(),
@@ -751,6 +773,7 @@ final class Cloud implements Client
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'cloud-client',
+					'group' => 'client',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -831,7 +854,6 @@ final class Cloud implements Client
 	private function buildWsTopicUrl(): string
 	{
 		$endpoint = $this->connector->getOpenpulsarEndpoint();
-		assert(is_string($endpoint));
 
 		$accessId = $this->connector->getAccessId();
 		assert(is_string($accessId));
@@ -839,7 +861,7 @@ final class Cloud implements Client
 		$topic = $this->connector->getOpenpulsarTopic();
 		assert(is_string($topic));
 
-		return $endpoint . 'ws/v2/consumer/persistent/'
+		return $endpoint->getValue() . 'ws/v2/consumer/persistent/'
 			. $accessId . '/out/' . $topic . '/' . $accessId . '-sub?ackTimeoutMillis=3000&subscriptionType=Failover';
 	}
 

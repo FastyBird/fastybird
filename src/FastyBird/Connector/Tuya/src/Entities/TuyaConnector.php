@@ -77,7 +77,7 @@ class TuyaConnector extends DevicesEntities\Connectors\Connector
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getOpenApiEndpoint(): Types\OpenApiEndpoint|null
+	public function getOpenApiEndpoint(): Types\OpenApiEndpoint
 	{
 		$property = $this->properties
 			->filter(
@@ -88,12 +88,13 @@ class TuyaConnector extends DevicesEntities\Connectors\Connector
 
 		if (
 			$property instanceof DevicesEntities\Connectors\Properties\Variable
+			&& is_string($property->getValue())
 			&& Types\OpenApiEndpoint::isValidValue($property->getValue())
 		) {
 			return Types\OpenApiEndpoint::get($property->getValue());
 		}
 
-		return null;
+		return Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::ENDPOINT_EUROPE);
 	}
 
 	/**
@@ -101,7 +102,7 @@ class TuyaConnector extends DevicesEntities\Connectors\Connector
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getOpenpulsarEndpoint(): string|null
+	public function getOpenpulsarEndpoint(): Types\OpenPulsarEndpoint
 	{
 		$property = $this->properties
 			->filter(
@@ -113,11 +114,12 @@ class TuyaConnector extends DevicesEntities\Connectors\Connector
 		if (
 			$property instanceof DevicesEntities\Connectors\Properties\Variable
 			&& is_string($property->getValue())
+			&& Types\OpenPulsarEndpoint::isValidValue($property->getValue())
 		) {
-			return $property->getValue();
+			return Types\OpenPulsarEndpoint::get($property->getValue());
 		}
 
-		return null;
+		return Types\OpenPulsarEndpoint::get(Types\OpenPulsarEndpoint::ENDPOINT_EUROPE);
 	}
 
 	/**

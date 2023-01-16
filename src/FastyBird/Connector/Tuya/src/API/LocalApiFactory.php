@@ -17,10 +17,6 @@ namespace FastyBird\Connector\Tuya\API;
 
 use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Types;
-use FastyBird\DateTimeFactory;
-use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
-use Psr\Log;
-use React\EventLoop;
 
 /**
  * Local device API factory
@@ -30,20 +26,8 @@ use React\EventLoop;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class LocalApiFactory
+interface LocalApiFactory
 {
-
-	private Log\LoggerInterface $logger;
-
-	public function __construct(
-		private readonly MetadataSchemas\Validator $schemaValidator,
-		private readonly DateTimeFactory\Factory $dateTimeFactory,
-		private readonly EventLoop\LoopInterface $eventLoop,
-		Log\LoggerInterface|null $logger = null,
-	)
-	{
-		$this->logger = $logger ?? new Log\NullLogger();
-	}
 
 	/**
 	 * @param array<Entities\Clients\LocalChild> $children
@@ -56,21 +40,6 @@ final class LocalApiFactory
 		string $ipAddress,
 		Types\DeviceProtocolVersion $protocolVersion,
 		array $children = [],
-	): LocalApi
-	{
-		return new LocalApi(
-			$identifier,
-			$gateway,
-			$nodeId,
-			$localKey,
-			$ipAddress,
-			$protocolVersion,
-			$children,
-			$this->schemaValidator,
-			$this->dateTimeFactory,
-			$this->eventLoop,
-			$this->logger,
-		);
-	}
+	): LocalApi;
 
 }

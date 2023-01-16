@@ -118,14 +118,18 @@ class TuyaExtension extends DI\CompilerExtension
 				->setType(Writers\Periodic::class);
 		}
 
-		$builder->addDefinition($this->prefix('api.openApi.api'))
-			->setType(API\OpenApiFactory::class);
-
-		$builder->addDefinition($this->prefix('api.openApi.entityFactory'))
+		$builder->addDefinition($this->prefix('api.entityFactory'), new DI\Definitions\ServiceDefinition())
 			->setType(API\EntityFactory::class);
 
-		$builder->addDefinition($this->prefix('api.localApi.api'))
-			->setType(API\LocalApiFactory::class);
+		$builder->addFactoryDefinition($this->prefix('api.openApi'))
+			->setImplement(API\OpenApiFactory::class)
+			->getResultDefinition()
+			->setType(API\OpenApi::class);
+
+		$builder->addFactoryDefinition($this->prefix('api.local'))
+			->setImplement(API\LocalApiFactory::class)
+			->getResultDefinition()
+			->setType(API\LocalApi::class);
 
 		$builder->addFactoryDefinition($this->prefix('clients.local'))
 			->setImplement(Clients\LocalFactory::class)
