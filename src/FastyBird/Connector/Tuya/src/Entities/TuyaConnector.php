@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:TuyaConnector!
  * @subpackage     Entities
- * @since          0.1.0
+ * @since          1.0.0
  *
  * @date           25.04.22
  */
@@ -102,7 +102,7 @@ class TuyaConnector extends DevicesEntities\Connectors\Connector
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getOpenpulsarEndpoint(): Types\OpenPulsarEndpoint
+	public function getOpenPulsarEndpoint(): Types\OpenPulsarEndpoint
 	{
 		$property = $this->properties
 			->filter(
@@ -127,7 +127,7 @@ class TuyaConnector extends DevicesEntities\Connectors\Connector
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getOpenpulsarTopic(): string|null
+	public function getOpenPulsarTopic(): Types\OpenPulsarTopic
 	{
 		$property = $this->properties
 			->filter(
@@ -139,11 +139,12 @@ class TuyaConnector extends DevicesEntities\Connectors\Connector
 		if (
 			$property instanceof DevicesEntities\Connectors\Properties\Variable
 			&& is_string($property->getValue())
+			&& Types\OpenPulsarTopic::isValidValue($property->getValue())
 		) {
-			return $property->getValue();
+			return Types\OpenPulsarTopic::get($property->getValue());
 		}
 
-		return null;
+		return Types\OpenPulsarTopic::get(Types\OpenPulsarTopic::TOPIC_PROD);
 	}
 
 	/**

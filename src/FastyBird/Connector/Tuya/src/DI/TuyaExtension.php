@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:TuyaConnector!
  * @subpackage     DI
- * @since          0.13.0
+ * @since          1.0.0
  *
  * @date           24.08.22
  */
@@ -125,6 +125,11 @@ class TuyaExtension extends DI\CompilerExtension
 			->setImplement(API\OpenApiFactory::class)
 			->getResultDefinition()
 			->setType(API\OpenApi::class);
+
+		$builder->addFactoryDefinition($this->prefix('api.openPulsar'))
+			->setImplement(API\OpenPulsarFactory::class)
+			->getResultDefinition()
+			->setType(API\OpenPulsar::class);
 
 		$builder->addFactoryDefinition($this->prefix('api.local'))
 			->setImplement(API\LocalApiFactory::class)

@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * UserDeviceSpecificationsStatus.php
+ * DeviceState.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,47 +10,39 @@
  * @subpackage     Entities
  * @since          1.0.0
  *
- * @date           26.04.22
+ * @date           16.11.23
  */
 
 namespace FastyBird\Connector\Tuya\Entities\API;
 
-use Nette;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 
 /**
- * OpenAPI device specifications status entity
+ * Device state message entity
  *
  * @package        FastyBird:TuyaConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class UserDeviceSpecificationsStatus implements Entity
+final class DeviceState implements Entity
 {
 
-	use Nette\SmartObject;
-
 	public function __construct(
-		private readonly string $code,
-		private readonly string $type,
-		private readonly string $values,
+		private readonly string $identifier,
+		private readonly MetadataTypes\ConnectionState $state,
 	)
 	{
 	}
 
-	public function getCode(): string
+	public function getIdentifier(): string
 	{
-		return $this->code;
+		return $this->identifier;
 	}
 
-	public function getType(): string
+	public function getState(): MetadataTypes\ConnectionState
 	{
-		return $this->type;
-	}
-
-	public function getValues(): string
-	{
-		return $this->values;
+		return $this->state;
 	}
 
 	/**
@@ -59,9 +51,8 @@ final class UserDeviceSpecificationsStatus implements Entity
 	public function toArray(): array
 	{
 		return [
-			'code' => $this->getCode(),
-			'type' => $this->getType(),
-			'values' => $this->getValues(),
+			'identifier' => $this->getIdentifier(),
+			'state' => $this->getState()->getValue(),
 		];
 	}
 

@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:TuyaConnector!
  * @subpackage     Exceptions
- * @since          0.13.0
+ * @since          1.0.0
  *
  * @date           24.08.22
  */

@@ -7,8 +7,8 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:TuyaConnector!
- * @subpackage     Properties
- * @since          0.13.0
+ * @subpackage     Entities
+ * @since          1.0.0
  *
  * @date           13.12.22
  */
@@ -22,7 +22,7 @@ use Nette;
  * Local device child entity
  *
  * @package        FastyBird:TuyaConnector!
- * @subpackage     Properties
+ * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */

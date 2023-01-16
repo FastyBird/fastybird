@@ -406,6 +406,8 @@ final class WsApi implements Evenement\EventEmitterInterface
 						);
 
 						$this->lost();
+
+						$this->emit('error', [$ex]);
 					});
 
 					$connection->on('close', function ($code = null, $reason = null): void {
@@ -435,6 +437,22 @@ final class WsApi implements Evenement\EventEmitterInterface
 					$deferred->resolve();
 				})
 				->otherwise(function (Throwable $ex) use ($deferred): void {
+					$this->logger->error(
+						'Connection to device failed',
+						[
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+							'type' => 'ws-api',
+							'group' => 'api',
+							'exception' => [
+								'message' => $ex->getMessage(),
+								'code' => $ex->getCode(),
+							],
+							'device' => [
+								'identifier' => $this->identifier,
+							],
+						],
+					);
+
 					$this->connection = null;
 
 					$this->connecting = false;

@@ -7,8 +7,8 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:TuyaConnector!
- * @subpackage     Properties
- * @since          0.13.0
+ * @subpackage     Entities
+ * @since          1.0.0
  *
  * @date           04.09.22
  */
@@ -23,7 +23,7 @@ use function array_merge;
  * Device status message entity
  *
  * @package        FastyBird:TuyaConnector!
- * @subpackage     Properties
+ * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */

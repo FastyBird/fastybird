@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * UserDeviceSpecificationsStatus.php
+ * DataPointStatus.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,47 +10,44 @@
  * @subpackage     Entities
  * @since          1.0.0
  *
- * @date           26.04.22
+ * @date           16.11.23
  */
 
 namespace FastyBird\Connector\Tuya\Entities\API;
 
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette;
+use function is_scalar;
+use function strval;
 
 /**
- * OpenAPI device specifications status entity
+ * Data point status entity
  *
  * @package        FastyBird:TuyaConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class UserDeviceSpecificationsStatus implements Entity
+final class DataPointStatus implements Entity
 {
 
 	use Nette\SmartObject;
 
 	public function __construct(
-		private readonly string $code,
-		private readonly string $type,
-		private readonly string $values,
+		private readonly string $identifier,
+		private readonly float|int|string|bool|MetadataTypes\SwitchPayload|null $value,
 	)
 	{
 	}
 
-	public function getCode(): string
+	public function getIdentifier(): string
 	{
-		return $this->code;
+		return $this->identifier;
 	}
 
-	public function getType(): string
+	public function getValue(): float|int|string|bool|MetadataTypes\SwitchPayload|null
 	{
-		return $this->type;
-	}
-
-	public function getValues(): string
-	{
-		return $this->values;
+		return $this->value;
 	}
 
 	/**
@@ -59,9 +56,8 @@ final class UserDeviceSpecificationsStatus implements Entity
 	public function toArray(): array
 	{
 		return [
-			'code' => $this->getCode(),
-			'type' => $this->getType(),
-			'values' => $this->getValues(),
+			'identifier' => $this->getIdentifier(),
+			'value' => is_scalar($this->getValue()) ? $this->getValue() : strval($this->getValue()),
 		];
 	}
 

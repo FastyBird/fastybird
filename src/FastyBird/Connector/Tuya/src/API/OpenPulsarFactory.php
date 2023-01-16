@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * OpenApiFactory.php
+ * OpenPulsarFactory.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,7 +10,7 @@
  * @subpackage     API
  * @since          1.0.0
  *
- * @date           27.08.22
+ * @date           16.01.23
  */
 
 namespace FastyBird\Connector\Tuya\API;
@@ -18,21 +18,22 @@ namespace FastyBird\Connector\Tuya\API;
 use FastyBird\Connector\Tuya\Types;
 
 /**
- * OpenAPI API factory
+ * OpenPulsar API factory
  *
  * @package        FastyBird:TuyaConnector!
  * @subpackage     API
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-interface OpenApiFactory
+interface OpenPulsarFactory
 {
 
 	public function create(
+		string $identifier,
 		string $accessId,
 		string $accessSecret,
-		Types\OpenApiEndpoint $endpoint,
-		string $lang = 'en',
-	): OpenApi;
+		Types\OpenPulsarTopic $topic,
+		Types\OpenPulsarEndpoint $endpoint,
+	): OpenPulsar;
 
 }

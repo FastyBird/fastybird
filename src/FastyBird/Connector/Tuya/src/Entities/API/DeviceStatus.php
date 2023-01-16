@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * UserDeviceSpecificationsStatus.php
+ * DeviceStatus.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,47 +10,48 @@
  * @subpackage     Entities
  * @since          1.0.0
  *
- * @date           26.04.22
+ * @date           16.11.23
  */
 
 namespace FastyBird\Connector\Tuya\Entities\API;
 
 use Nette;
+use function array_map;
 
 /**
- * OpenAPI device specifications status entity
+ * Device status message entity
  *
  * @package        FastyBird:TuyaConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class UserDeviceSpecificationsStatus implements Entity
+final class DeviceStatus implements Entity
 {
 
 	use Nette\SmartObject;
 
+	/**
+	 * @param array<DataPointStatus> $dataPoints
+	 */
 	public function __construct(
-		private readonly string $code,
-		private readonly string $type,
-		private readonly string $values,
+		private readonly string $identifier,
+		private readonly array $dataPoints,
 	)
 	{
 	}
 
-	public function getCode(): string
+	public function getIdentifier(): string
 	{
-		return $this->code;
+		return $this->identifier;
 	}
 
-	public function getType(): string
+	/**
+	 * @return array<DataPointStatus>
+	 */
+	public function getDataPoints(): array
 	{
-		return $this->type;
-	}
-
-	public function getValues(): string
-	{
-		return $this->values;
+		return $this->dataPoints;
 	}
 
 	/**
@@ -59,9 +60,11 @@ final class UserDeviceSpecificationsStatus implements Entity
 	public function toArray(): array
 	{
 		return [
-			'code' => $this->getCode(),
-			'type' => $this->getType(),
-			'values' => $this->getValues(),
+			'identifier' => $this->getIdentifier(),
+			'data_points' => array_map(
+				static fn (DataPointStatus $channel): array => $channel->toArray(),
+				$this->getDataPoints(),
+			),
 		];
 	}
 
