@@ -36,6 +36,7 @@ use Throwable;
 use function array_search;
 use function array_values;
 use function count;
+use function intval;
 use function sprintf;
 use function strval;
 
@@ -232,26 +233,27 @@ class Initialize extends Console\Command\Command
 		switch ($this->askOpenApiEndpoint($io)) {
 			case 1:
 				$dataCentre = Types\OpenApiEndpoint::ENDPOINT_EUROPE_MS;
-				break;
 
+				break;
 			case 2:
 				$dataCentre = Types\OpenApiEndpoint::ENDPOINT_AMERICA;
-				break;
 
+				break;
 			case 3:
 				$dataCentre = Types\OpenApiEndpoint::ENDPOINT_AMERICA_AZURE;
-				break;
 
+				break;
 			case 4:
 				$dataCentre = Types\OpenApiEndpoint::ENDPOINT_CHINA;
-				break;
 
+				break;
 			case 5:
 				$dataCentre = Types\OpenApiEndpoint::ENDPOINT_INDIA;
-				break;
 
+				break;
 			default:
 				$dataCentre = Types\OpenApiEndpoint::ENDPOINT_EUROPE;
+
 				break;
 		}
 
