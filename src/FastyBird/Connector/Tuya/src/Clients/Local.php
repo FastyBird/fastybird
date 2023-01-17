@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:TuyaConnector!
  * @subpackage     Clients
- * @since          0.13.0
+ * @since          1.0.0
  *
  * @date           25.08.22
  */
@@ -21,7 +21,6 @@ use FastyBird\Connector\Tuya\API;
 use FastyBird\Connector\Tuya\Consumers;
 use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Exceptions;
-use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\Connector\Tuya\Writers;
 use FastyBird\DateTimeFactory;
@@ -29,10 +28,8 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
-use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
-use Nette\Utils;
 use Psr\Log;
 use React\EventLoop;
 use React\Promise;
@@ -41,9 +38,8 @@ use function array_key_exists;
 use function array_map;
 use function assert;
 use function in_array;
-use function intval;
 use function is_array;
-use function strval;
+use function is_string;
 
 /**
  * Local devices client
@@ -75,17 +71,12 @@ final class Local implements Client
 	/** @var array<string, array<string, DateTimeInterface|false>> */
 	private array $processedDevicesCommands = [];
 
-	/** @var array<string, DateTimeInterface> */
-	private array $devicesLastMessage = [];
-
 	private EventLoop\TimerInterface|null $handlerTimer = null;
 
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
 		private readonly Entities\TuyaConnector $connector,
-		private readonly Helpers\Device $deviceHelper,
-		private readonly Helpers\Property $propertyStateHelper,
 		private readonly Consumers\Messages $consumer,
 		private readonly API\LocalApiFactory $localApiFactory,
 		private readonly Writers\Writer $writer,
@@ -101,6 +92,7 @@ final class Local implements Client
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -138,7 +130,7 @@ final class Local implements Client
 			$this->handlerTimer = null;
 		}
 
-		$this->writer->disconnect();
+		$this->writer->disconnect($this->connector, $this);
 	}
 
 	/**
@@ -158,8 +150,6 @@ final class Local implements Client
 		if ($client === null) {
 			return Promise\reject(new Exceptions\InvalidArgument('For provided device is not created client'));
 		}
-
-		$deferred = new Promise\Deferred();
 
 		$state = $this->channelPropertiesStates->getValue($property);
 
@@ -182,60 +172,14 @@ final class Local implements Client
 		}
 
 		if ($state->isPending() === true) {
-			$client->writeState(
+			return $client->writeState(
 				$property->getIdentifier(),
 				$expectedValue,
 				$device->getGateway() instanceof Entities\TuyaDevice ? $device->getIdentifier() : null,
-			)
-				->then(function () use ($property, $deferred): void {
-					$this->propertyStateHelper->setValue(
-						$property,
-						Utils\ArrayHash::from([
-							DevicesStates\Property::PENDING_KEY => $this->dateTimeFactory->getNow()->format(
-								DateTimeInterface::ATOM,
-							),
-						]),
-					);
-
-					$deferred->resolve();
-				})
-				->otherwise(function (Throwable $ex) use ($device, $property, $deferred): void {
-					$this->logger->error(
-						'Could not call local device api',
-						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-							'type' => 'local-client',
-							'exception' => [
-								'message' => $ex->getMessage(),
-								'code' => $ex->getCode(),
-							],
-							'connector' => [
-								'id' => $this->connector->getPlainId(),
-							],
-							'device' => [
-								'id' => $device->getPlainId(),
-							],
-						],
-					);
-
-					$this->propertyStateHelper->setValue(
-						$property,
-						Utils\ArrayHash::from([
-							DevicesStates\Property::EXPECTED_VALUE_KEY => null,
-							DevicesStates\Property::PENDING_KEY => false,
-						]),
-					);
-
-					$this->setDeviceState($device, false);
-
-					$deferred->reject($ex);
-				});
-
-		} else {
-			return Promise\reject(new Exceptions\InvalidArgument('Provided property state is in invalid state'));
+			);
 		}
 
-		return $deferred->promise();
+		return Promise\reject(new Exceptions\InvalidArgument('Provided property state is in invalid state'));
 	}
 
 	/**
@@ -284,192 +228,128 @@ final class Local implements Client
 		if ($client === null) {
 			if ($device->getGateway() === false) {
 				$this->createDeviceClient($device);
+
+				return false;
 			}
 
 			return true;
-		}
-
-		if (array_key_exists($device->getIdentifier(), $this->devicesLastMessage)) {
-			$lastMessageTimestamp = $this->devicesLastMessage[$device->getIdentifier()];
-
-			$statusReadingDelay = intval($this->deviceHelper->getConfiguration(
-				$device,
-				Types\DevicePropertyIdentifier::get(Types\DevicePropertyIdentifier::IDENTIFIER_STATUS_READING_DELAY),
-			));
-
-			if (
-				$this->dateTimeFactory->getNow()->getTimestamp() - $lastMessageTimestamp->getTimestamp() >= $statusReadingDelay + 1
-			) {
-				$this->setDeviceState($device, false);
-
-				if ($device->getGateway() === false) {
-					$client->disconnect();
-
-					unset($this->processedDevicesCommands[$device->getIdentifier()]);
-
-					foreach ($device->getChildren() as $child) {
-						unset($this->processedDevicesCommands[$child->getIdentifier()]);
-					}
-				}
-			}
 		}
 
 		if (!$client->isConnected()) {
 			if (!$client->isConnecting()) {
 				if (
 					$client->getLastConnectAttempt() === null
-					||
-						($this->dateTimeFactory->getNow()->getTimestamp() - $client->getLastConnectAttempt()->getTimestamp())
-						>= self::RECONNECT_COOL_DOWN_TIME
+					|| (
+						// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+						$this->dateTimeFactory->getNow()->getTimestamp() - $client->getLastConnectAttempt()->getTimestamp() >= self::RECONNECT_COOL_DOWN_TIME
+					)
 				) {
-					unset($this->processedDevicesCommands[$device->getIdentifier()]);
-
 					$client->connect();
 
 				} else {
-					$this->setDeviceState($device, false);
+					$this->consumer->append(
+						new Entities\Messages\DeviceState(
+							$device->getConnector()->getId(),
+							$device->getIdentifier(),
+							MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_DISCONNECTED),
+						),
+					);
 				}
 			}
 
-			return true;
+			return false;
 		}
-
-		if (
-			!$this->deviceConnectionManager->getState($device)->equalsValue(
-				MetadataTypes\ConnectionState::STATE_CONNECTED,
-			)
-		) {
-			if ($device->getGateway() === false) {
-				return true;
-			}
-		}
-
-		return $this->readDeviceData(self::CMD_STATUS, $device);
-	}
-
-	/**
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\InvalidArgument
-	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 */
-	private function readDeviceData(
-		string $cmd,
-		Entities\TuyaDevice $device,
-	): bool
-	{
-		$client = $this->getDeviceClient($device);
-
-		if ($client === null) {
-			throw new Exceptions\InvalidState('Device client is not created');
-		}
-
-		$cmdResult = null;
 
 		if (!array_key_exists($device->getIdentifier(), $this->processedDevicesCommands)) {
 			$this->processedDevicesCommands[$device->getIdentifier()] = [];
 		}
 
-		if (array_key_exists($cmd, $this->processedDevicesCommands[$device->getIdentifier()])) {
-			$cmdResult = $this->processedDevicesCommands[$device->getIdentifier()][$cmd];
-		}
+		if (array_key_exists(self::CMD_STATUS, $this->processedDevicesCommands[$device->getIdentifier()])) {
+			$cmdResult = $this->processedDevicesCommands[$device->getIdentifier()][self::CMD_STATUS];
 
-		$delay = null;
-
-		if ($cmd === self::CMD_STATUS) {
-			$delay = intval($this->deviceHelper->getConfiguration(
-				$device,
-				Types\DevicePropertyIdentifier::get(Types\DevicePropertyIdentifier::IDENTIFIER_STATUS_READING_DELAY),
-			));
-		}
-
-		if (
-			$delay === null && $cmdResult === null
-			|| (
+			if (
 				$cmdResult instanceof DateTimeInterface
-				&& ($this->dateTimeFactory->getNow()->getTimestamp() - $cmdResult->getTimestamp()) < $delay
-			)
-		) {
-			return false;
+				&& (
+					$this->dateTimeFactory->getNow()->getTimestamp() - $cmdResult->getTimestamp() < $device->getStatusReadingDelay()
+				)
+			) {
+				return false;
+			}
 		}
 
-		$this->processedDevicesCommands[$device->getIdentifier()][$cmd] = $this->dateTimeFactory->getNow();
+		$this->processedDevicesCommands[$device->getIdentifier()][self::CMD_STATUS] = $this->dateTimeFactory->getNow();
 
-		if ($cmd === self::CMD_STATUS) {
-			$client->readStates($device->getGateway() instanceof Entities\TuyaDevice ? $device->getIdentifier() : null)
-				->then(function (array|Types\LocalDeviceError|null $statuses) use ($cmd, $device): void {
-					$this->processedDevicesCommands[$device->getIdentifier()][$cmd] = $this->dateTimeFactory->getNow();
-					$this->devicesLastMessage[$device->getIdentifier()] = $this->dateTimeFactory->getNow();
+		$client->readStates($device->getGateway() instanceof Entities\TuyaDevice ? $device->getIdentifier() : null)
+			->then(function (array|Types\LocalDeviceError|null $statuses) use ($device): void {
+				$this->processedDevicesCommands[$device->getIdentifier()][self::CMD_STATUS] = $this->dateTimeFactory->getNow();
 
-					$excludeDps = [$this->deviceHelper->getConfiguration(
-						$device,
-						Types\DevicePropertyIdentifier::get(
-							Types\DevicePropertyIdentifier::IDENTIFIER_READ_STATE_EXCLUDE_DPS,
-						),
-					)];
+				if (is_array($statuses)) {
+					$dataPointsStatuses = [];
 
-					if (is_array($statuses)) {
-						$dataPointsStatuses = [];
-
-						foreach ($statuses as $status) {
-							if (!in_array($status->getCode(), $excludeDps, true)) {
-								$dataPointsStatuses[] = new Entities\Messages\DataPointStatus(
-									Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_API),
-									$status->getCode(),
-									$status->getValue(),
-								);
-							}
+					foreach ($statuses as $status) {
+						if (!in_array($status->getCode(), $device->getExcludedDps(), true)) {
+							$dataPointsStatuses[] = new Entities\Messages\DataPointStatus(
+								$status->getCode(),
+								$status->getValue(),
+							);
 						}
-
-						$this->consumer->append(new Entities\Messages\DeviceStatus(
-							Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_API),
-							$this->connector->getId(),
-							$device->getIdentifier(),
-							$dataPointsStatuses,
-						));
 					}
 
-					$this->consumer->append(new Entities\Messages\DeviceState(
-						Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_API),
+					$this->consumer->append(new Entities\Messages\DeviceStatus(
 						$this->connector->getId(),
 						$device->getIdentifier(),
-						true,
+						$dataPointsStatuses,
 					));
-				})
-				->otherwise(function (Throwable $ex) use ($cmd, $device): void {
-					if ($ex instanceof Exceptions\LocalApiBusy) {
-						$this->processedDevicesCommands[$device->getIdentifier()][$cmd] = false;
+				}
 
-					} else {
-						$this->logger->warning(
-							'Could not call local api',
-							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-								'type' => 'local-client',
-								'exception' => [
-									'message' => $ex->getMessage(),
-									'code' => $ex->getCode(),
-								],
-								'connector' => [
-									'id' => $this->connector->getPlainId(),
-								],
-								'device' => [
-									'id' => $device->getPlainId(),
-								],
+				$this->consumer->append(
+					new Entities\Messages\DeviceState(
+						$this->connector->getId(),
+						$device->getIdentifier(),
+						MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_CONNECTED),
+					),
+				);
+			})
+			->otherwise(function (Throwable $ex) use ($device): void {
+				if ($ex instanceof Exceptions\LocalApiBusy) {
+					$this->processedDevicesCommands[$device->getIdentifier()][self::CMD_STATUS] = false;
+
+				} else {
+					$this->logger->warning(
+						'Could not call local api',
+						[
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+							'type' => 'local-client',
+							'group' => 'client',
+							'exception' => [
+								'message' => $ex->getMessage(),
+								'code' => $ex->getCode(),
 							],
-						);
+							'connector' => [
+								'id' => $this->connector->getPlainId(),
+							],
+							'device' => [
+								'id' => $device->getPlainId(),
+							],
+						],
+					);
 
-						$this->setDeviceState($device, false);
-					}
-				});
-		}
+					$this->consumer->append(
+						new Entities\Messages\DeviceState(
+							$device->getConnector()->getId(),
+							$device->getIdentifier(),
+							MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_DISCONNECTED),
+						),
+					);
+				}
+			});
 
 		return true;
 	}
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -477,45 +357,27 @@ final class Local implements Client
 	{
 		unset($this->processedDevicesCommands[$device->getIdentifier()]);
 
-		$nodeId = $this->deviceHelper->getConfiguration(
-			$device,
-			Types\DevicePropertyIdentifier::get(Types\DevicePropertyIdentifier::IDENTIFIER_NODE_ID),
-		);
-
-		$gatewayId = $this->deviceHelper->getConfiguration(
-			$device,
-			Types\DevicePropertyIdentifier::get(Types\DevicePropertyIdentifier::IDENTIFIER_GATEWAY_ID),
-		);
-
-		if ($gatewayId !== null || $nodeId !== null) {
+		if ($device->getGatewayId() !== null || $device->getNodeId() !== null) {
 			return;
 		}
+
+		assert(is_string($device->getLocalKey()));
+		assert(is_string($device->getIpAddress()));
 
 		$client = $this->localApiFactory->create(
 			$device->getIdentifier(),
 			null,
 			null,
-			strval($this->deviceHelper->getConfiguration(
-				$device,
-				Types\DevicePropertyIdentifier::get(Types\DevicePropertyIdentifier::IDENTIFIER_LOCAL_KEY),
-			)),
-			strval($this->deviceHelper->getConfiguration(
-				$device,
-				Types\DevicePropertyIdentifier::get(Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS),
-			)),
-			Types\DeviceProtocolVersion::get(strval($this->deviceHelper->getConfiguration(
-				$device,
-				Types\DevicePropertyIdentifier::get(Types\DevicePropertyIdentifier::IDENTIFIER_PROTOCOL_VERSION),
-			))),
-			array_map(function (DevicesEntities\Devices\Device $child): Entities\Clients\LocalChild {
+			$device->getLocalKey(),
+			$device->getIpAddress(),
+			$device->getProtocolVersion(),
+			array_map(static function (DevicesEntities\Devices\Device $child): Entities\Clients\LocalChild {
 				assert($child instanceof Entities\TuyaDevice);
+				assert(is_string($child->getNodeId()));
 
 				return new Entities\Clients\LocalChild(
 					$child->getIdentifier(),
-					strval($this->deviceHelper->getConfiguration(
-						$child,
-						Types\DevicePropertyIdentifier::get(Types\DevicePropertyIdentifier::IDENTIFIER_NODE_ID),
-					)),
+					$child->getNodeId(),
 					Types\LocalDeviceType::get(Types\LocalDeviceType::ZIGBEE),
 				);
 			}, $device->getChildren()),
@@ -534,7 +396,6 @@ final class Local implements Client
 					foreach ($message->getData() as $entity) {
 						if ($entity instanceof Entities\API\DeviceDataPointStatus) {
 							$dataPointsStatuses[] = new Entities\Messages\DataPointStatus(
-								Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_API),
 								$entity->getCode(),
 								$entity->getValue(),
 							);
@@ -542,7 +403,6 @@ final class Local implements Client
 					}
 
 					$this->consumer->append(new Entities\Messages\DeviceStatus(
-						Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_API),
 						$this->connector->getId(),
 						$message->getIdentifier(),
 						$dataPointsStatuses,
@@ -559,6 +419,7 @@ final class Local implements Client
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'local-client',
+						'group' => 'client',
 						'connector' => [
 							'id' => $this->connector->getPlainId(),
 						],
@@ -568,7 +429,13 @@ final class Local implements Client
 					],
 				);
 
-				$this->setDeviceState($device, true);
+				$this->consumer->append(
+					new Entities\Messages\DeviceState(
+						$device->getConnector()->getId(),
+						$device->getIdentifier(),
+						MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_CONNECTED),
+					),
+				);
 			},
 		);
 
@@ -580,6 +447,7 @@ final class Local implements Client
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'local-client',
+						'group' => 'client',
 						'exception' => [
 							'message' => $ex->getMessage(),
 							'code' => $ex->getCode(),
@@ -593,7 +461,13 @@ final class Local implements Client
 					],
 				);
 
-				$this->setDeviceState($device, false);
+				$this->consumer->append(
+					new Entities\Messages\DeviceState(
+						$device->getConnector()->getId(),
+						$device->getIdentifier(),
+						MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_DISCONNECTED),
+					),
+				);
 			},
 		);
 
@@ -629,25 +503,6 @@ final class Local implements Client
 				$this->handleCommunication();
 			},
 		);
-	}
-
-	private function setDeviceState(Entities\TuyaDevice $device, bool $state): void
-	{
-		$this->consumer->append(new Entities\Messages\DeviceState(
-			Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_API),
-			$this->connector->getId(),
-			$device->getIdentifier(),
-			$state,
-		));
-
-		foreach ($device->getChildren() as $child) {
-			$this->consumer->append(new Entities\Messages\DeviceState(
-				Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_API),
-				$this->connector->getId(),
-				$child->getIdentifier(),
-				$state,
-			));
-		}
 	}
 
 }

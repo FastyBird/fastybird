@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:TuyaConnector!
  * @subpackage     Writers
- * @since          0.13.0
+ * @since          1.0.0
  *
  * @date           14.12.22
  */
@@ -34,6 +34,9 @@ interface Writer
 		Clients\Client $client,
 	): void;
 
-	public function disconnect(): void;
+	public function disconnect(
+		Entities\TuyaConnector $connector,
+		Clients\Client $client,
+	): void;
 
 }

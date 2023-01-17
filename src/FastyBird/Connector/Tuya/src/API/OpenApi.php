@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:TuyaConnector!
  * @subpackage     API
- * @since          0.13.0
+ * @since          1.0.0
  *
  * @date           25.08.22
  */
@@ -1044,6 +1044,7 @@ final class OpenApi
 		), [
 			'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 			'type' => 'openapi-api',
+			'group' => 'api',
 			'request' => [
 				'method' => $method,
 				'url' => $this->endpoint->getValue() . $path,
@@ -1080,6 +1081,7 @@ final class OpenApi
 								$this->logger->error('Received payload is not valid', [
 									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 									'type' => 'openapi-api',
+									'group' => 'api',
 									'exception' => [
 										'message' => $ex->getMessage(),
 										'code' => $ex->getCode(),
@@ -1103,6 +1105,7 @@ final class OpenApi
 							$this->logger->error('Calling api endpoint failed', [
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 								'type' => 'openapi-api',
+								'group' => 'api',
 								'exception' => [
 									'message' => $ex->getMessage(),
 									'code' => $ex->getCode(),
@@ -1142,6 +1145,7 @@ final class OpenApi
 				$this->logger->error('Calling api endpoint failed', [
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'openapi-api',
+					'group' => 'api',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -1159,6 +1163,7 @@ final class OpenApi
 				$this->logger->error('Received payload is not valid', [
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'openapi-api',
+					'group' => 'api',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -1292,6 +1297,7 @@ final class OpenApi
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'openapi-api',
+					'group' => 'api',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),

@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:TuyaConnector!
  * @subpackage     Commands
- * @since          0.13.0
+ * @since          1.0.0
  *
  * @date           24.08.22
  */
@@ -171,7 +171,10 @@ class Execute extends Console\Command\Command
 				$findConnectorQuery = new DevicesQueries\FindConnectors();
 				$findConnectorQuery->byIdentifier($connectorIdentifier);
 
-				$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\TuyaConnector::class);
+				$connector = $this->connectorsRepository->findOneBy(
+					$findConnectorQuery,
+					Entities\TuyaConnector::class,
+				);
 
 				if ($connector === null) {
 					$io->warning('Connector was not found in system');
@@ -206,10 +209,11 @@ class Execute extends Console\Command\Command
 					$io->error('Something went wrong, connector could not be loaded');
 
 					$this->logger->alert(
-						'Connector identifier was not able to get from answer',
+						'Could not read connector identifier from console answer',
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 							'type' => 'execute-cmd',
+							'group' => 'cmd',
 						],
 					);
 
@@ -219,7 +223,10 @@ class Execute extends Console\Command\Command
 				$findConnectorQuery = new DevicesQueries\FindConnectors();
 				$findConnectorQuery->byIdentifier($connectorIdentifierKey);
 
-				$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\TuyaConnector::class);
+				$connector = $this->connectorsRepository->findOneBy(
+					$findConnectorQuery,
+					Entities\TuyaConnector::class,
+				);
 			}
 
 			if ($connector === null) {
@@ -230,6 +237,7 @@ class Execute extends Console\Command\Command
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'execute-cmd',
+						'group' => 'cmd',
 					],
 				);
 

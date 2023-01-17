@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:TuyaConnector!
  * @subpackage     Writers
- * @since          0.13.0
+ * @since          1.0.0
  *
  * @date           14.12.22
  */
@@ -18,13 +18,22 @@ namespace FastyBird\Connector\Tuya\Writers;
 use DateTimeInterface;
 use FastyBird\Connector\Tuya\Clients;
 use FastyBird\Connector\Tuya\Entities;
+use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
+use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
+use Nette\Utils;
+use Psr\Log;
+use Ramsey\Uuid;
 use React\EventLoop;
+use Throwable;
 use function array_key_exists;
 use function assert;
 use function in_array;
@@ -58,19 +67,24 @@ class Periodic implements Writer
 	/** @var array<string, DateTimeInterface> */
 	private array $processedProperties = [];
 
-	private Entities\TuyaConnector|null $connector = null;
-
-	private Clients\Client|null $client = null;
+	/** @var array<string, Clients\Client> */
+	private array $clients = [];
 
 	private EventLoop\TimerInterface|null $handlerTimer = null;
 
+	private Log\LoggerInterface $logger;
+
 	public function __construct(
+		private readonly Helpers\Property $propertyStateHelper,
+		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
+		Log\LoggerInterface|null $logger = null,
 	)
 	{
+		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	public function connect(
@@ -78,8 +92,7 @@ class Periodic implements Writer
 		Clients\Client $client,
 	): void
 	{
-		$this->connector = $connector;
-		$this->client = $client;
+		$this->clients[$connector->getPlainId()] = $client;
 
 		$this->processedDevices = [];
 		$this->processedProperties = [];
@@ -92,9 +105,14 @@ class Periodic implements Writer
 		);
 	}
 
-	public function disconnect(): void
+	public function disconnect(
+		Entities\TuyaConnector $connector,
+		Clients\Client $client,
+	): void
 	{
-		if ($this->handlerTimer !== null) {
+		unset($this->clients[$connector->getPlainId()]);
+
+		if ($this->clients === [] && $this->handlerTimer !== null) {
 			$this->eventLoop->cancelTimer($this->handlerTimer);
 
 			$this->handlerTimer = null;
@@ -102,6 +120,7 @@ class Periodic implements Writer
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -117,21 +136,26 @@ class Periodic implements Writer
 			}
 		}
 
-		foreach ($this->connector?->getDevices() ?? [] as $device) {
-			assert($device instanceof Entities\TuyaDevice);
+		foreach ($this->clients as $id => $client) {
+			$findDevicesQuery = new DevicesQueries\FindDevices();
+			$findDevicesQuery->byConnectorId(Uuid\Uuid::fromString($id));
 
-			if (
-				!in_array($device->getPlainId(), $this->processedDevices, true)
-				&& $this->deviceConnectionManager->getState($device)->equalsValue(
-					MetadataTypes\ConnectionState::STATE_CONNECTED,
-				)
-			) {
-				$this->processedDevices[] = $device->getPlainId();
+			foreach ($this->devicesRepository->findAllBy($findDevicesQuery) as $device) {
+				assert($device instanceof Entities\TuyaDevice);
 
-				if ($this->writeChannelsProperty($device)) {
-					$this->registerLoopHandler();
+				if (
+					!in_array($device->getPlainId(), $this->processedDevices, true)
+					&& $this->deviceConnectionManager->getState($device)->equalsValue(
+						MetadataTypes\ConnectionState::STATE_CONNECTED,
+					)
+				) {
+					$this->processedDevices[] = $device->getPlainId();
 
-					return;
+					if ($this->writeChannelsProperty($client, $device)) {
+						$this->registerLoopHandler();
+
+						return;
+					}
 				}
 			}
 		}
@@ -145,7 +169,10 @@ class Periodic implements Writer
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function writeChannelsProperty(Entities\TuyaDevice $device): bool
+	private function writeChannelsProperty(
+		Clients\Client $client,
+		Entities\TuyaDevice $device,
+	): bool
 	{
 		$now = $this->dateTimeFactory->getNow();
 
@@ -197,7 +224,51 @@ class Periodic implements Writer
 					) {
 						$this->processedProperties[$property->getPlainId()] = $now;
 
-						$this->client?->writeChannelProperty($device, $channel, $property);
+						$client->writeChannelProperty($device, $channel, $property)
+							->then(function () use ($property): void {
+								$this->propertyStateHelper->setValue(
+									$property,
+									Utils\ArrayHash::from([
+										DevicesStates\Property::PENDING_KEY => $this->dateTimeFactory->getNow()->format(
+											DateTimeInterface::ATOM,
+										),
+									]),
+								);
+							})
+							->otherwise(function (Throwable $ex) use ($device, $channel, $property): void {
+								$this->logger->error(
+									'Could write new property state',
+									[
+										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+										'type' => 'periodic-writer',
+										'group' => 'writer',
+										'exception' => [
+											'message' => $ex->getMessage(),
+											'code' => $ex->getCode(),
+										],
+										'connector' => [
+											'id' => $device->getConnector()->getPlainId(),
+										],
+										'device' => [
+											'id' => $device->getPlainId(),
+										],
+										'channel' => [
+											'id' => $channel->getPlainId(),
+										],
+										'property' => [
+											'id' => $property->getPlainId(),
+										],
+									],
+								);
+
+								$this->propertyStateHelper->setValue(
+									$property,
+									Utils\ArrayHash::from([
+										DevicesStates\Property::EXPECTED_VALUE_KEY => null,
+										DevicesStates\Property::PENDING_KEY => false,
+									]),
+								);
+							});
 
 						return true;
 					}

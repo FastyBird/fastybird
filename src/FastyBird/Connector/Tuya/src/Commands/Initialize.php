@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:TuyaConnector!
  * @subpackage     Commands
- * @since          0.34.0
+ * @since          1.0.0
  *
  * @date           04.08.22
  */
@@ -36,6 +36,7 @@ use Throwable;
 use function array_search;
 use function array_values;
 use function count;
+use function intval;
 use function sprintf;
 use function strval;
 
@@ -58,9 +59,21 @@ class Initialize extends Console\Command\Command
 
 	private const CHOICE_QUESTION_DELETE_CONNECTOR = 'Delete existing connector configuration';
 
-	private const CHOICE_QUESTION_LOCAL_MODE = 'Local network';
+	private const CHOICE_QUESTION_LOCAL_MODE = 'Local network mode';
 
-	private const CHOICE_QUESTION_CLOUD_MODE = 'Cloud';
+	private const CHOICE_QUESTION_CLOUD_MODE = 'Cloud server mode';
+
+	private const CHOICE_QUESTION_CENTRAL_EUROPE_DC = 'Central Europe';
+
+	private const CHOICE_QUESTION_WESTERN_EUROPE_DC = 'Western Europe';
+
+	private const CHOICE_QUESTION_WESTERN_AMERICA_DC = 'Western America';
+
+	private const CHOICE_QUESTION_EASTERN_AMERICA_DC = 'Eastern America';
+
+	private const CHOICE_QUESTION_CHINA_DC = 'China';
+
+	private const CHOICE_QUESTION_INDIA_DC = 'India';
 
 	private Log\LoggerInterface $logger;
 
@@ -217,6 +230,33 @@ class Initialize extends Console\Command\Command
 
 		$accessSecret = $this->askAccessSecret($io);
 
+		switch ($this->askOpenApiEndpoint($io)) {
+			case 1:
+				$dataCentre = Types\OpenApiEndpoint::ENDPOINT_EUROPE_MS;
+
+				break;
+			case 2:
+				$dataCentre = Types\OpenApiEndpoint::ENDPOINT_AMERICA;
+
+				break;
+			case 3:
+				$dataCentre = Types\OpenApiEndpoint::ENDPOINT_AMERICA_AZURE;
+
+				break;
+			case 4:
+				$dataCentre = Types\OpenApiEndpoint::ENDPOINT_CHINA;
+
+				break;
+			case 5:
+				$dataCentre = Types\OpenApiEndpoint::ENDPOINT_INDIA;
+
+				break;
+			default:
+				$dataCentre = Types\OpenApiEndpoint::ENDPOINT_EUROPE;
+
+				break;
+		}
+
 		$uid = null;
 
 		if ($mode->equalsValue(Types\ClientMode::MODE_CLOUD)) {
@@ -257,6 +297,14 @@ class Initialize extends Console\Command\Command
 				'connector' => $connector,
 			]));
 
+			$this->propertiesManager->create(Utils\ArrayHash::from([
+				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
+				'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_OPENPULSAR_ENDPOINT,
+				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+				'value' => $dataCentre,
+				'connector' => $connector,
+			]));
+
 			if ($mode->equalsValue(Types\ClientMode::MODE_CLOUD)) {
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
@@ -291,6 +339,7 @@ class Initialize extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'initialize-cmd',
+					'group' => 'cmd',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -365,10 +414,11 @@ class Initialize extends Console\Command\Command
 			$io->error('Something went wrong, connector could not be loaded');
 
 			$this->logger->alert(
-				'Connector identifier was not able to get from answer',
+				'Could not read connector identifier from console answer',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'initialize-cmd',
+					'group' => 'cmd',
 				],
 			);
 
@@ -388,6 +438,7 @@ class Initialize extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'initialize-cmd',
+					'group' => 'cmd',
 				],
 			);
 
@@ -618,6 +669,7 @@ class Initialize extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'initialize-cmd',
+					'group' => 'cmd',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -682,6 +734,7 @@ class Initialize extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'initialize-cmd',
+					'group' => 'cmd',
 				],
 			);
 
@@ -701,6 +754,7 @@ class Initialize extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'initialize-cmd',
+					'group' => 'cmd',
 				],
 			);
 
@@ -738,6 +792,7 @@ class Initialize extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'initialize-cmd',
+					'group' => 'cmd',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -760,7 +815,7 @@ class Initialize extends Console\Command\Command
 	private function askMode(Style\SymfonyStyle $io): Types\ClientMode
 	{
 		$question = new Console\Question\ChoiceQuestion(
-			'What type of Tuya devices should this connector handle?',
+			'In what mode should this connector communicate with devices?',
 			[
 				self::CHOICE_QUESTION_LOCAL_MODE,
 				self::CHOICE_QUESTION_CLOUD_MODE,
@@ -795,6 +850,26 @@ class Initialize extends Console\Command\Command
 		$question = new Console\Question\Question('Provide cloud authentication Access Secret');
 
 		return strval($io->askQuestion($question));
+	}
+
+	private function askOpenApiEndpoint(Style\SymfonyStyle $io): int
+	{
+		$question = new Console\Question\ChoiceQuestion(
+			'Provide which cloud data center you are using?',
+			[
+				0 => self::CHOICE_QUESTION_CENTRAL_EUROPE_DC,
+				1 => self::CHOICE_QUESTION_WESTERN_EUROPE_DC,
+				2 => self::CHOICE_QUESTION_WESTERN_AMERICA_DC,
+				3 => self::CHOICE_QUESTION_EASTERN_AMERICA_DC,
+				4 => self::CHOICE_QUESTION_CHINA_DC,
+				5 => self::CHOICE_QUESTION_INDIA_DC,
+			],
+			0,
+		);
+
+		$question->setErrorMessage('Selected answer: "%s" is not valid.');
+
+		return intval($io->askQuestion($question));
 	}
 
 	private function askUid(Style\SymfonyStyle $io): string

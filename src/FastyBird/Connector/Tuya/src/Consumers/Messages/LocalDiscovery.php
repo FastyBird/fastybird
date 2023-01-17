@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:TuyaConnector!
  * @subpackage     Consumers
- * @since          0.13.0
+ * @since          1.0.0
  *
  * @date           24.08.22
  */
@@ -119,6 +119,7 @@ final class LocalDiscovery implements Consumer
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'local-discovery-message-consumer',
+					'group' => 'consumer',
 					'device' => [
 						'id' => $device->getPlainId(),
 						'identifier' => $entity->getId(),
@@ -143,33 +144,12 @@ final class LocalDiscovery implements Consumer
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'local-discovery-message-consumer',
+					'group' => 'consumer',
 					'device' => [
 						'id' => $device->getPlainId(),
 					],
 				],
 			);
-		}
-
-		$findDeviceQuery = new DevicesQueries\FindDevices();
-		$findDeviceQuery->byConnectorId($entity->getConnector());
-		$findDeviceQuery->byIdentifier($entity->getId());
-
-		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\TuyaDevice::class);
-
-		if ($device === null) {
-			$this->logger->error(
-				'Newly created device could not be loaded',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-					'type' => 'cloud-discovery-message-consumer',
-					'device' => [
-						'identifier' => $entity->getId(),
-						'address' => $entity->getIpAddress(),
-					],
-				],
-			);
-
-			return true;
 		}
 
 		if ($entity->getGateway() !== null) {
@@ -294,6 +274,7 @@ final class LocalDiscovery implements Consumer
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 							'type' => 'local-discovery-message-consumer',
+							'group' => 'consumer',
 							'device' => [
 								'id' => $device->getPlainId(),
 							],
@@ -341,6 +322,7 @@ final class LocalDiscovery implements Consumer
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 				'type' => 'local-discovery-message-consumer',
+				'group' => 'consumer',
 				'device' => [
 					'id' => $device->getPlainId(),
 				],

@@ -8,14 +8,13 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:TuyaConnector!
  * @subpackage     Entities
- * @since          0.13.0
+ * @since          1.0.0
  *
  * @date           27.08.22
  */
 
 namespace FastyBird\Connector\Tuya\Entities\Messages;
 
-use FastyBird\Connector\Tuya\Types;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette;
 
@@ -48,7 +47,6 @@ final class DiscoveredCloudDataPoint implements Entity
 		private readonly int|float|null $scale,
 		private readonly bool $queryable,
 		private readonly bool $settable,
-		private readonly Types\MessageSource $source,
 	)
 	{
 	}
@@ -155,11 +153,6 @@ final class DiscoveredCloudDataPoint implements Entity
 		return null;
 	}
 
-	public function getSource(): Types\MessageSource
-	{
-		return $this->source;
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -179,7 +172,6 @@ final class DiscoveredCloudDataPoint implements Entity
 			'scale' => $this->getScale(),
 			'queryable' => $this->isQueryable(),
 			'settable' => $this->isSettable(),
-			'source' => $this->getSource()->getValue(),
 		];
 	}
 

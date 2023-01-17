@@ -17,7 +17,7 @@
 Shelly connector is extension for [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem
 which is integrating [Shelly](https://shelly.cloud) devices.
 
-Shelly Connector is a distributed extension that is developed in [PHP](https://www.php.net), built on the [Nette framework](https://nette.org) and [Symfony framework](https://symfony.com) frameworks,
+Shelly Connector is a distributed extension that is developed in [PHP](https://www.php.net), built on the [Nette](https://nette.org) and [Symfony](https://symfony.com) frameworks,
 and is licensed under [Apache2](http://www.apache.org/licenses/LICENSE-2.0).
 
 ### Features:

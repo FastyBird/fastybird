@@ -8,14 +8,13 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:TuyaConnector!
  * @subpackage     Entities
- * @since          0.13.0
+ * @since          1.0.0
  *
  * @date           27.08.22
  */
 
 namespace FastyBird\Connector\Tuya\Entities\Messages;
 
-use FastyBird\Connector\Tuya\Types;
 use Nette;
 use Ramsey\Uuid;
 use function array_map;
@@ -56,7 +55,6 @@ final class DiscoveredLocalDevice implements Entity
 		private readonly string|null $sn,
 		private readonly string|null $mac,
 		private readonly array $dataPoints,
-		private readonly Types\MessageSource $source,
 	)
 	{
 	}
@@ -151,11 +149,6 @@ final class DiscoveredLocalDevice implements Entity
 		return $this->mac;
 	}
 
-	public function getSource(): Types\MessageSource
-	{
-		return $this->source;
-	}
-
 	/**
 	 * @return array<DiscoveredLocalDataPoint>
 	 */
@@ -192,7 +185,6 @@ final class DiscoveredLocalDevice implements Entity
 				static fn (DiscoveredLocalDataPoint $item): array => $item->toArray(),
 				$this->getDataPoints(),
 			),
-			'source' => $this->getSource()->getValue(),
 		];
 	}
 

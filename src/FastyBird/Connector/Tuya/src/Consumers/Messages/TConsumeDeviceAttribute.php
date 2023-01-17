@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:TuyaConnector!
  * @subpackage     Consumers
- * @since          0.13.0
+ * @since          1.0.0
  *
  * @date           31.08.22
  */
@@ -109,6 +109,7 @@ trait TConsumeDeviceAttribute
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'message-consumer',
+					'group' => 'consumer',
 					'device' => [
 						'id' => $deviceId->toString(),
 					],
@@ -134,6 +135,7 @@ trait TConsumeDeviceAttribute
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'message-consumer',
+					'group' => 'consumer',
 					'device' => [
 						'id' => $deviceId->toString(),
 					],

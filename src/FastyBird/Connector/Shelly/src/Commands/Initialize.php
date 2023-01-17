@@ -58,11 +58,11 @@ class Initialize extends Console\Command\Command
 
 	private const CHOICE_QUESTION_DELETE_CONNECTOR = 'Delete existing connector configuration';
 
-	private const CHOICE_QUESTION_LOCAL_CONNECTOR = 'Local network mode';
+	private const CHOICE_QUESTION_LOCAL_MODE = 'Local network mode';
 
-	private const CHOICE_QUESTION_CLOUD_CONNECTOR = 'Cloud server mode';
+	private const CHOICE_QUESTION_CLOUD_MODE = 'Cloud server mode';
 
-	private const CHOICE_QUESTION_MQTT_CONNECTOR = 'MQTT broker mode';
+	private const CHOICE_QUESTION_MQTT_MODE = 'MQTT broker mode';
 
 	private Log\LoggerInterface $logger;
 
@@ -708,9 +708,9 @@ class Initialize extends Console\Command\Command
 		$question = new Console\Question\ChoiceQuestion(
 			'In what mode should this connector communicate with devices?',
 			[
-				self::CHOICE_QUESTION_LOCAL_CONNECTOR,
-				self::CHOICE_QUESTION_CLOUD_CONNECTOR,
-				self::CHOICE_QUESTION_MQTT_CONNECTOR,
+				self::CHOICE_QUESTION_LOCAL_MODE,
+				self::CHOICE_QUESTION_CLOUD_MODE,
+				self::CHOICE_QUESTION_MQTT_MODE,
 			],
 			0,
 		);
@@ -719,15 +719,15 @@ class Initialize extends Console\Command\Command
 
 		$mode = $io->askQuestion($question);
 
-		if ($mode === self::CHOICE_QUESTION_LOCAL_CONNECTOR) {
+		if ($mode === self::CHOICE_QUESTION_LOCAL_MODE) {
 			return Types\ClientMode::get(Types\ClientMode::MODE_LOCAL);
 		}
 
-		if ($mode === self::CHOICE_QUESTION_CLOUD_CONNECTOR) {
+		if ($mode === self::CHOICE_QUESTION_CLOUD_MODE) {
 			return Types\ClientMode::get(Types\ClientMode::MODE_CLOUD);
 		}
 
-		if ($mode === self::CHOICE_QUESTION_MQTT_CONNECTOR) {
+		if ($mode === self::CHOICE_QUESTION_MQTT_MODE) {
 			return Types\ClientMode::get(Types\ClientMode::MODE_MQTT);
 		}
 

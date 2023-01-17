@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:TuyaConnector!
  * @subpackage     Consumers
- * @since          0.13.0
+ * @since          1.0.0
  *
  * @date           04.09.22
  */
@@ -120,6 +120,7 @@ final class Status implements Consumer
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 				'type' => 'status-message-consumer',
+				'group' => 'consumer',
 				'device' => [
 					'id' => $device->getPlainId(),
 				],

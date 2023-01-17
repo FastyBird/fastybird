@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:TuyaConnector!
  * @subpackage     Clients
- * @since          0.13.0
+ * @since          1.0.0
  *
  * @date           27.08.22
  */
@@ -21,7 +21,6 @@ use FastyBird\Connector\Tuya\Consumers;
 use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Entities\Clients\DiscoveredLocalDevice;
 use FastyBird\Connector\Tuya\Exceptions;
-use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -108,7 +107,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 		private readonly Entities\TuyaConnector $connector,
 		private readonly API\OpenApiFactory $openApiApiFactory,
 		private readonly API\LocalApiFactory $localApiFactory,
-		private readonly Helpers\Connector $connectorHelper,
 		private readonly Consumers\Messages $consumer,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		Log\LoggerInterface|null $logger = null,
@@ -134,15 +132,12 @@ final class Discovery implements Evenement\EventEmitterInterface
 	{
 		$this->discoveredLocalDevices = new SplObjectStorage();
 
-		$mode = $this->connectorHelper->getConfiguration(
-			$this->connector,
-			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE),
-		);
+		$mode = $this->connector->getClientMode();
 
-		if ($mode === Types\ClientMode::MODE_CLOUD) {
+		if ($mode->equalsValue(Types\ClientMode::MODE_CLOUD)) {
 			$this->discoverCloudDevices();
 
-		} elseif ($mode === Types\ClientMode::MODE_LOCAL) {
+		} elseif ($mode->equalsValue(Types\ClientMode::MODE_LOCAL)) {
 			$this->discoverLocalDevices();
 		}
 	}
@@ -182,6 +177,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'discovery-client',
+					'group' => 'client',
 					'protocol' => $protocolVersion,
 				],
 			);
@@ -203,6 +199,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'discovery-client',
+						'group' => 'client',
 						'exception' => [
 							'message' => $ex->getMessage(),
 							'code' => $ex->getCode(),
@@ -262,23 +259,28 @@ final class Discovery implements Evenement\EventEmitterInterface
 	 */
 	private function discoverCloudDevices(): void
 	{
-		$this->openApiApi = $this->openApiApiFactory->create($this->connector);
+		assert(is_string($this->connector->getAccessId()));
+		assert(is_string($this->connector->getAccessSecret()));
+
+		$this->openApiApi = $this->openApiApiFactory->create(
+			$this->connector->getAccessId(),
+			$this->connector->getAccessSecret(),
+			$this->connector->getOpenApiEndpoint(),
+		);
 
 		$this->logger->debug(
 			'Starting cloud devices discovery',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 				'type' => 'discovery-client',
+				'group' => 'client',
 			],
 		);
 
 		try {
 			/** @var array<Entities\API\DeviceInformation> $devices */
 			$devices = await($this->openApiApi->getDevices([
-				'source_id' => $this->connectorHelper->getConfiguration(
-					$this->connector,
-					Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_UID),
-				),
+				'source_id' => $this->connector->getUid(),
 				'source_type' => 'tuyaUser',
 			]));
 
@@ -288,6 +290,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'discovery-client',
+					'group' => 'client',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -313,6 +316,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'discovery-client',
+					'group' => 'client',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -343,6 +347,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'discovery-client',
+					'group' => 'client',
 				],
 			);
 
@@ -358,6 +363,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'discovery-client',
+						'group' => 'client',
 					],
 				);
 
@@ -378,6 +384,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'discovery-client',
+						'group' => 'client',
 					],
 				);
 
@@ -398,6 +405,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'discovery-client',
+					'group' => 'client',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -427,7 +435,14 @@ final class Discovery implements Evenement\EventEmitterInterface
 	{
 		$processedDevices = [];
 
-		$this->openApiApi = $this->openApiApiFactory->create($this->connector);
+		assert(is_string($this->connector->getAccessId()));
+		assert(is_string($this->connector->getAccessSecret()));
+
+		$this->openApiApi = $this->openApiApiFactory->create(
+			$this->connector->getAccessId(),
+			$this->connector->getAccessSecret(),
+			$this->connector->getOpenApiEndpoint(),
+		);
 
 		$this->openApiApi->connect();
 
@@ -448,6 +463,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'discovery-client',
+					'group' => 'client',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -466,6 +482,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'discovery-client',
+						'group' => 'client',
 						'exception' => [
 							'message' => $ex->getMessage(),
 							'code' => $ex->getCode(),
@@ -516,7 +533,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 					$deviceFactoryInfos?->getSn(),
 					$deviceFactoryInfos?->getMac(),
 					$dataPoints,
-					Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
 				);
 
 				$processedDevices[] = $message;
@@ -528,6 +544,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'discovery-client',
+						'group' => 'client',
 						'exception' => [
 							'message' => $ex->getMessage(),
 							'code' => $ex->getCode(),
@@ -548,6 +565,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 							'type' => 'discovery-client',
+							'group' => 'client',
 							'exception' => [
 								'message' => $ex->getMessage(),
 								'code' => $ex->getCode(),
@@ -572,6 +590,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 							[
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 								'type' => 'discovery-client',
+								'group' => 'client',
 								'exception' => [
 									'message' => $ex->getMessage(),
 									'code' => $ex->getCode(),
@@ -628,7 +647,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 							$childDeviceFactoryInfos?->getSn(),
 							$childDeviceFactoryInfos?->getMac(),
 							$dataPoints,
-							Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
 						);
 
 						$processedDevices[] = $message;
@@ -640,6 +658,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 							[
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 								'type' => 'discovery-client',
+								'group' => 'client',
 								'exception' => [
 									'message' => $ex->getMessage(),
 									'code' => $ex->getCode(),
@@ -791,7 +810,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 						) : null,
 						$dataPointStatus !== null,
 						$dataPointFunction !== null,
-						Types\MessageSource::get(Types\MessageSource::SOURCE_CLOUD_DISCOVERY),
 					);
 				}
 			} catch (Exceptions\OpenApiCall $ex) {
@@ -800,6 +818,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'discovery-client',
+						'group' => 'client',
 						'exception' => [
 							'message' => $ex->getMessage(),
 							'code' => $ex->getCode(),
@@ -827,7 +846,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$deviceFactoryInfos?->getSn(),
 				$deviceFactoryInfos?->getMac(),
 				$dataPoints,
-				Types\MessageSource::get(Types\MessageSource::SOURCE_CLOUD_DISCOVERY),
 			);
 
 			$processedDevices[] = $message;
@@ -869,6 +887,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'discovery-client',
+					'group' => 'client',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -916,7 +935,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 							null,
 							true,
 							true,
-							Types\MessageSource::get(Types\MessageSource::SOURCE_LOCAL_DISCOVERY),
 						);
 					}
 				}
@@ -926,6 +944,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'discovery-client',
+						'group' => 'client',
 						'device' => [
 							'identifier' => $id,
 							'ip_address' => $ipAddress,
@@ -941,6 +960,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'discovery-client',
+					'group' => 'client',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),

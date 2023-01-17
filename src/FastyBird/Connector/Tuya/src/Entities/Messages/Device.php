@@ -7,15 +7,14 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:TuyaConnector!
- * @subpackage     Properties
- * @since          0.13.0
+ * @subpackage     Entities
+ * @since          1.0.0
  *
  * @date           04.09.22
  */
 
 namespace FastyBird\Connector\Tuya\Entities\Messages;
 
-use FastyBird\Connector\Tuya\Types;
 use Nette;
 use Ramsey\Uuid;
 
@@ -23,7 +22,7 @@ use Ramsey\Uuid;
  * Base device message entity
  *
  * @package        FastyBird:TuyaConnector!
- * @subpackage     Properties
+ * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
@@ -33,16 +32,10 @@ abstract class Device implements Entity
 	use Nette\SmartObject;
 
 	public function __construct(
-		private readonly Types\MessageSource $source,
 		private readonly Uuid\UuidInterface $connector,
 		private readonly string $identifier,
 	)
 	{
-	}
-
-	public function getSource(): Types\MessageSource
-	{
-		return $this->source;
 	}
 
 	public function getConnector(): Uuid\UuidInterface
@@ -61,7 +54,6 @@ abstract class Device implements Entity
 	public function toArray(): array
 	{
 		return [
-			'source' => $this->getSource()->getValue(),
 			'identifier' => $this->getIdentifier(),
 		];
 	}

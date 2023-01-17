@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:TuyaConnector!
  * @subpackage     Consumers
- * @since          0.13.0
+ * @since          1.0.0
  *
  * @date           04.09.22
  */
@@ -76,21 +76,17 @@ final class State implements Consumer
 			return true;
 		}
 
-		$actualDeviceState = Metadata\Types\ConnectionState::get(
-			$entity->isOnline() ? Metadata\Types\ConnectionState::STATE_CONNECTED : Metadata\Types\ConnectionState::STATE_DISCONNECTED,
-		);
-
 		// Check device state...
 		if (
-			!$this->deviceConnectionManager->getState($device)->equals($actualDeviceState)
+			!$this->deviceConnectionManager->getState($device)->equals($entity->getState())
 		) {
 			// ... and if it is not ready, set it to ready
 			$this->deviceConnectionManager->setState(
 				$device,
-				$actualDeviceState,
+				$entity->getState(),
 			);
 
-			if ($actualDeviceState->equalsValue(Metadata\Types\ConnectionState::STATE_DISCONNECTED)) {
+			if ($entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_DISCONNECTED)) {
 				foreach ($device->getProperties() as $property) {
 					if (!$property instanceof DevicesEntities\Devices\Properties\Dynamic) {
 						continue;
@@ -119,6 +115,43 @@ final class State implements Consumer
 					}
 				}
 			}
+
+			foreach ($device->getChildren() as $child) {
+				$this->deviceConnectionManager->setState(
+					$child,
+					$entity->getState(),
+				);
+
+				if ($entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_DISCONNECTED)) {
+					foreach ($child->getProperties() as $property) {
+						if (!$property instanceof DevicesEntities\Devices\Properties\Dynamic) {
+							continue;
+						}
+
+						$this->propertyStateHelper->setValue(
+							$property,
+							Nette\Utils\ArrayHash::from([
+								DevicesStates\Property::VALID_KEY => false,
+							]),
+						);
+					}
+
+					foreach ($child->getChannels() as $channel) {
+						foreach ($channel->getProperties() as $property) {
+							if (!$property instanceof DevicesEntities\Channels\Properties\Dynamic) {
+								continue;
+							}
+
+							$this->propertyStateHelper->setValue(
+								$property,
+								Nette\Utils\ArrayHash::from([
+									DevicesStates\Property::VALID_KEY => false,
+								]),
+							);
+						}
+					}
+				}
+			}
 		}
 
 		$this->logger->debug(
@@ -126,6 +159,7 @@ final class State implements Consumer
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 				'type' => 'state-message-consumer',
+				'group' => 'consumer',
 				'device' => [
 					'id' => $device->getPlainId(),
 				],

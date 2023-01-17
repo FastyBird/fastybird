@@ -8,14 +8,12 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:TuyaConnector!
  * @subpackage     Entities
- * @since          0.13.0
+ * @since          1.0.0
  *
  * @date           24.08.22
  */
 
 namespace FastyBird\Connector\Tuya\Entities\Messages;
-
-use FastyBird\Connector\Tuya\Types;
 
 /**
  * Tuya base message data entity interface
@@ -27,8 +25,6 @@ use FastyBird\Connector\Tuya\Types;
  */
 interface Entity
 {
-
-	public function getSource(): Types\MessageSource;
 
 	/**
 	 * @return array<string, mixed>

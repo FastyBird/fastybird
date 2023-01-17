@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:TuyaConnector!
  * @subpackage     DI
- * @since          0.13.0
+ * @since          1.0.0
  *
  * @date           24.08.22
  */
@@ -118,14 +118,23 @@ class TuyaExtension extends DI\CompilerExtension
 				->setType(Writers\Periodic::class);
 		}
 
-		$builder->addDefinition($this->prefix('api.openApi.api'))
-			->setType(API\OpenApiFactory::class);
-
-		$builder->addDefinition($this->prefix('api.openApi.entityFactory'))
+		$builder->addDefinition($this->prefix('api.entityFactory'), new DI\Definitions\ServiceDefinition())
 			->setType(API\EntityFactory::class);
 
-		$builder->addDefinition($this->prefix('api.localApi.api'))
-			->setType(API\LocalApiFactory::class);
+		$builder->addFactoryDefinition($this->prefix('api.openApi'))
+			->setImplement(API\OpenApiFactory::class)
+			->getResultDefinition()
+			->setType(API\OpenApi::class);
+
+		$builder->addFactoryDefinition($this->prefix('api.openPulsar'))
+			->setImplement(API\OpenPulsarFactory::class)
+			->getResultDefinition()
+			->setType(API\OpenPulsar::class);
+
+		$builder->addFactoryDefinition($this->prefix('api.local'))
+			->setImplement(API\LocalApiFactory::class)
+			->getResultDefinition()
+			->setType(API\LocalApi::class);
 
 		$builder->addFactoryDefinition($this->prefix('clients.local'))
 			->setImplement(Clients\LocalFactory::class)
@@ -156,12 +165,6 @@ class TuyaExtension extends DI\CompilerExtension
 
 		$builder->addDefinition($this->prefix('hydrators.device.tuya'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\TuyaDevice::class);
-
-		$builder->addDefinition($this->prefix('helpers.connector'), new DI\Definitions\ServiceDefinition())
-			->setType(Helpers\Connector::class);
-
-		$builder->addDefinition($this->prefix('helpers.device'), new DI\Definitions\ServiceDefinition())
-			->setType(Helpers\Device::class);
 
 		$builder->addDefinition($this->prefix('helpers.property'), new DI\Definitions\ServiceDefinition())
 			->setType(Helpers\Property::class);

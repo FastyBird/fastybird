@@ -122,9 +122,9 @@ final class WsApi implements Evenement\EventEmitterInterface
 	{
 		$this->messages = [];
 
+		$this->connection = null;
 		$this->connecting = true;
 		$this->connected = false;
-		$this->connection = null;
 
 		$this->session = null;
 
@@ -158,6 +158,11 @@ final class WsApi implements Evenement\EventEmitterInterface
 			)
 				->then(function (Ratchet\Client\WebSocket $connection) use ($deferred): void {
 					$this->connection = $connection;
+					$this->connecting = false;
+					$this->connected = true;
+
+					$this->lost = null;
+					$this->disconnected = null;
 
 					$this->logger->debug(
 						'Connected to device sockets server',
@@ -401,6 +406,8 @@ final class WsApi implements Evenement\EventEmitterInterface
 						);
 
 						$this->lost();
+
+						$this->emit('error', [$ex]);
 					});
 
 					$connection->on('close', function ($code = null, $reason = null): void {
@@ -427,12 +434,25 @@ final class WsApi implements Evenement\EventEmitterInterface
 
 					$this->emit('connected');
 
-					$this->connecting = false;
-					$this->connected = true;
-
 					$deferred->resolve();
 				})
 				->otherwise(function (Throwable $ex) use ($deferred): void {
+					$this->logger->error(
+						'Connection to device failed',
+						[
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+							'type' => 'ws-api',
+							'group' => 'api',
+							'exception' => [
+								'message' => $ex->getMessage(),
+								'code' => $ex->getCode(),
+							],
+							'device' => [
+								'identifier' => $this->identifier,
+							],
+						],
+					);
+
 					$this->connection = null;
 
 					$this->connecting = false;

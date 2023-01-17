@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:TuyaConnector!
  * @subpackage     Commands
- * @since          0.13.0
+ * @since          1.0.0
  *
  * @date           24.08.22
  */
@@ -19,10 +19,8 @@ use DateTimeInterface;
 use FastyBird\Connector\Tuya\Clients;
 use FastyBird\Connector\Tuya\Consumers;
 use FastyBird\Connector\Tuya\Entities;
-use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -77,8 +75,6 @@ class Discovery extends Console\Command\Command
 
 	public function __construct(
 		private readonly Clients\DiscoveryFactory $clientFactory,
-		private readonly Helpers\Connector $connectorHelper,
-		private readonly Helpers\Device $deviceHelper,
 		private readonly Consumers\Messages $consumer,
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
@@ -122,8 +118,6 @@ class Discovery extends Console\Command\Command
 	/**
 	 * @throws Console\Exception\InvalidArgumentException
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 */
 	protected function execute(Input\InputInterface $input, Output\OutputInterface $output): int
 	{
@@ -196,7 +190,10 @@ class Discovery extends Console\Command\Command
 				$findConnectorQuery = new DevicesQueries\FindConnectors();
 				$findConnectorQuery->byIdentifier($connectorIdentifier);
 
-				$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\TuyaConnector::class);
+				$connector = $this->connectorsRepository->findOneBy(
+					$findConnectorQuery,
+					Entities\TuyaConnector::class,
+				);
 				assert($connector instanceof Entities\TuyaConnector || $connector === null);
 
 				if ($connector === null) {
@@ -220,7 +217,7 @@ class Discovery extends Console\Command\Command
 				}
 			} else {
 				$question = new Console\Question\ChoiceQuestion(
-					'Please select connector to execute',
+					'Please select connector to perform discovery',
 					array_values($connectors),
 				);
 
@@ -232,10 +229,11 @@ class Discovery extends Console\Command\Command
 					$io->error('Something went wrong, connector could not be loaded');
 
 					$this->logger->alert(
-						'Connector identifier was not able to get from answer',
+						'Could not read connector identifier from console answer',
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 							'type' => 'discovery-cmd',
+							'group' => 'cmd',
 						],
 					);
 
@@ -245,7 +243,10 @@ class Discovery extends Console\Command\Command
 				$findConnectorQuery = new DevicesQueries\FindConnectors();
 				$findConnectorQuery->byIdentifier($connectorIdentifier);
 
-				$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\TuyaConnector::class);
+				$connector = $this->connectorsRepository->findOneBy(
+					$findConnectorQuery,
+					Entities\TuyaConnector::class,
+				);
 				assert($connector instanceof Entities\TuyaConnector || $connector === null);
 			}
 
@@ -255,8 +256,9 @@ class Discovery extends Console\Command\Command
 				$this->logger->alert(
 					'Connector was not found',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'discovery-cmd',
+						'group' => 'cmd',
 					],
 				);
 
@@ -268,17 +270,6 @@ class Discovery extends Console\Command\Command
 			$io->warning('Connector is disabled. Disabled connector could not be executed');
 
 			return Console\Command\Command::SUCCESS;
-		}
-
-		$mode = $this->connectorHelper->getConfiguration(
-			$connector,
-			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE),
-		);
-
-		if ($mode === null) {
-			$io->error('Connector client mode is not configured');
-
-			return Console\Command\Command::FAILURE;
 		}
 
 		$this->client = $this->clientFactory->create($connector);
@@ -297,6 +288,7 @@ class Discovery extends Console\Command\Command
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'discovery-cmd',
+						'group' => 'cmd',
 					],
 				);
 
@@ -314,6 +306,7 @@ class Discovery extends Console\Command\Command
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 							'type' => 'discovery-cmd',
+							'group' => 'cmd',
 						],
 					);
 
@@ -390,10 +383,7 @@ class Discovery extends Console\Command\Command
 				) {
 					$foundDevices++;
 
-					$ipAddress = $this->deviceHelper->getConfiguration(
-						$device,
-						Types\DevicePropertyIdentifier::get(Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS),
-					);
+					$ipAddress = $device->getIpAddress();
 
 					$hardwareModelAttribute = $device->findAttribute(
 						Types\DeviceAttributeIdentifier::IDENTIFIER_HARDWARE_MODEL,
@@ -404,7 +394,7 @@ class Discovery extends Console\Command\Command
 						$device->getPlainId(),
 						$device->getName() ?? $device->getIdentifier(),
 						$hardwareModelAttribute?->getContent(true) ?? 'N/A',
-						is_string($ipAddress) ? $ipAddress : 'N/A',
+						$ipAddress ?? 'N/A',
 					]);
 				}
 			}
@@ -431,6 +421,7 @@ class Discovery extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'discovery-cmd',
+					'group' => 'cmd',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -451,6 +442,7 @@ class Discovery extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'discovery-cmd',
+					'group' => 'cmd',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -491,6 +483,7 @@ class Discovery extends Console\Command\Command
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'discovery-cmd',
+						'group' => 'cmd',
 					],
 				);
 

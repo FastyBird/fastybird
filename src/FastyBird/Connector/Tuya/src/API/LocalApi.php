@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:TuyaConnector!
  * @subpackage     API
- * @since          0.13.0
+ * @since          1.0.0
  *
  * @date           31.08.22
  */
@@ -189,13 +189,16 @@ final class LocalApi implements Evenement\EventEmitterInterface
 		$this->messagesListeners = [];
 		$this->messagesListenersTimers = [];
 
-		$this->heartBeatTimer = null;
-		$this->lastHeartbeat = null;
-
+		$this->connection = null;
 		$this->connecting = true;
 		$this->connected = false;
 
+		$this->heartBeatTimer = null;
+		$this->lastHeartbeat = null;
+
 		$this->lastConnectAttempt = $this->dateTimeFactory->getNow();
+		$this->lost = null;
+		$this->disconnected = null;
 
 		$deferred = new Promise\Deferred();
 
@@ -204,13 +207,12 @@ final class LocalApi implements Evenement\EventEmitterInterface
 
 			$connector->connect($this->ipAddress . ':' . self::SOCKET_PORT)
 				->then(function (Socket\ConnectionInterface $connection) use ($deferred): void {
+					$this->connection = $connection;
 					$this->connecting = false;
 					$this->connected = true;
 
-					$this->disconnected = null;
 					$this->lost = null;
-
-					$this->connection = $connection;
+					$this->disconnected = null;
 
 					$this->connection->on('data', function ($chunk): void {
 						$message = $this->decodePayload($chunk);
@@ -226,6 +228,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 									[
 										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 										'type' => 'local-api',
+										'group' => 'api',
 										'device' => [
 											'identifier' => $this->identifier,
 										],
@@ -258,6 +261,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 									[
 										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 										'type' => 'local-api',
+										'group' => 'api',
 										'device' => [
 											'identifier' => $this->identifier,
 										],
@@ -271,6 +275,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 									[
 										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 										'type' => 'local-api',
+										'group' => 'api',
 										'device' => [
 											'identifier' => $this->identifier,
 										],
@@ -286,13 +291,12 @@ final class LocalApi implements Evenement\EventEmitterInterface
 					});
 
 					$this->connection->on('error', function (Throwable $ex): void {
-						$this->lost();
-
 						$this->logger->error(
 							'An error occurred on device connection',
 							[
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 								'type' => 'local-api',
+								'group' => 'api',
 								'exception' => [
 									'message' => $ex->getMessage(),
 									'code' => $ex->getCode(),
@@ -302,21 +306,26 @@ final class LocalApi implements Evenement\EventEmitterInterface
 								],
 							],
 						);
+
+						$this->lost();
 					});
 
 					$this->connection->on('close', function (): void {
-						$this->disconnect();
-
 						$this->logger->debug(
 							'Connection with device was closed',
 							[
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 								'type' => 'local-api',
+								'group' => 'api',
 								'device' => [
 									'identifier' => $this->identifier,
 								],
 							],
 						);
+
+						$this->disconnect();
+
+						$this->emit('disconnected');
 					});
 
 					$this->heartBeatTimer = $this->eventLoop->addPeriodicTimer(
@@ -336,6 +345,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 									[
 										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 										'type' => 'local-api',
+										'group' => 'api',
 										'device' => [
 											'identifier' => $this->identifier,
 										],
@@ -374,6 +384,8 @@ final class LocalApi implements Evenement\EventEmitterInterface
 					$deferred->reject($ex);
 				});
 		} catch (Throwable $ex) {
+			$this->connection = null;
+
 			$this->connecting = false;
 			$this->connected = false;
 
@@ -382,6 +394,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'local-api',
+					'group' => 'api',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -604,6 +617,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'local-api',
+						'group' => 'api',
 						'exception' => [
 							'message' => $ex->getMessage(),
 							'code' => $ex->getCode(),
@@ -637,6 +651,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 				'type' => 'local-api',
+				'group' => 'api',
 				'device' => [
 					'identifier' => $this->identifier,
 				],
@@ -699,6 +714,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 				'type' => 'local-api',
+				'group' => 'api',
 				'device' => [
 					'identifier' => $this->identifier,
 				],
@@ -898,6 +914,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'local-api',
+					'group' => 'api',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -917,6 +934,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'local-api',
+					'group' => 'api',
 					'device' => [
 						'identifier' => $this->identifier,
 					],
@@ -936,6 +954,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'local-api',
+					'group' => 'api',
 					'device' => [
 						'identifier' => $this->identifier,
 					],
@@ -954,6 +973,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'local-api',
+					'group' => 'api',
 					'device' => [
 						'identifier' => $this->identifier,
 					],
@@ -975,6 +995,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'local-api',
+					'group' => 'api',
 					'device' => [
 						'identifier' => $this->identifier,
 					],
@@ -1005,6 +1026,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'local-api',
+					'group' => 'api',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -1032,6 +1054,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'local-api',
+					'group' => 'api',
 					'device' => [
 						'identifier' => $this->identifier,
 					],
@@ -1051,6 +1074,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'local-api',
+					'group' => 'api',
 					'device' => [
 						'identifier' => $this->identifier,
 					],
@@ -1080,6 +1104,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'local-api',
+						'group' => 'api',
 						'device' => [
 							'identifier' => $this->identifier,
 						],
@@ -1109,6 +1134,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'local-api',
+						'group' => 'api',
 						'device' => [
 							'identifier' => $this->identifier,
 						],
@@ -1133,6 +1159,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 							'type' => 'local-api',
+							'group' => 'api',
 							'device' => [
 								'identifier' => $this->identifier,
 							],
@@ -1187,6 +1214,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 							[
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 								'type' => 'local-api',
+								'group' => 'api',
 								'device' => [
 									'identifier' => $this->identifier,
 								],
@@ -1217,6 +1245,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 							'type' => 'local-api',
+							'group' => 'api',
 							'device' => [
 								'identifier' => $this->identifier,
 							],
@@ -1246,6 +1275,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'local-api',
+						'group' => 'api',
 						'device' => [
 							'identifier' => $this->identifier,
 							'payload' => $payload,
@@ -1268,6 +1298,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'local-api',
+					'group' => 'api',
 					'device' => [
 						'identifier' => $this->identifier,
 					],
@@ -1287,6 +1318,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 				'type' => 'local-api',
+				'group' => 'api',
 				'device' => [
 					'identifier' => $this->identifier,
 				],
@@ -1322,6 +1354,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'local-api',
+						'group' => 'api',
 						'exception' => [
 							'message' => $ex->getMessage(),
 							'code' => $ex->getCode(),
@@ -1371,6 +1404,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'local-api',
+						'group' => 'api',
 						'exception' => [
 							'message' => $ex->getMessage(),
 							'code' => $ex->getCode(),
@@ -1607,6 +1641,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'local-api',
+					'group' => 'api',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),

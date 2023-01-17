@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:TuyaConnector!
  * @subpackage     Connector
- * @since          0.13.0
+ * @since          1.0.0
  *
  * @date           24.08.22
  */
@@ -18,8 +18,7 @@ namespace FastyBird\Connector\Tuya\Connector;
 use FastyBird\Connector\Tuya\Clients;
 use FastyBird\Connector\Tuya\Consumers;
 use FastyBird\Connector\Tuya\Entities;
-use FastyBird\Connector\Tuya\Helpers;
-use FastyBird\Connector\Tuya\Types;
+use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Connectors as DevicesConnectors;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
@@ -56,7 +55,6 @@ final class Connector implements DevicesConnectors\Connector
 	public function __construct(
 		private readonly DevicesEntities\Connectors\Connector $connector,
 		private readonly array $clientsFactories,
-		private readonly Helpers\Connector $connectorHelper,
 		private readonly Consumers\Messages $consumer,
 		private readonly EventLoop\LoopInterface $eventLoop,
 	)
@@ -66,21 +64,13 @@ final class Connector implements DevicesConnectors\Connector
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Terminate
+	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function execute(): void
 	{
 		assert($this->connector instanceof Entities\TuyaConnector);
-
-		$mode = $this->connectorHelper->getConfiguration(
-			$this->connector,
-			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE),
-		);
-
-		if ($mode === null) {
-			throw new DevicesExceptions\Terminate('Connector client mode is not configured');
-		}
 
 		foreach ($this->clientsFactories as $clientFactory) {
 			$rc = new ReflectionClass($clientFactory);
@@ -89,7 +79,7 @@ final class Connector implements DevicesConnectors\Connector
 
 			if (
 				array_key_exists(Clients\ClientFactory::MODE_CONSTANT_NAME, $constants)
-				&& $constants[Clients\ClientFactory::MODE_CONSTANT_NAME] === $mode
+				&& $constants[Clients\ClientFactory::MODE_CONSTANT_NAME] === $this->connector->getClientMode()->getValue()
 			) {
 				$this->client = $clientFactory->create($this->connector);
 			}

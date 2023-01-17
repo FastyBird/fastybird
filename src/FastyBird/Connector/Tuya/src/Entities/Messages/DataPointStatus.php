@@ -7,15 +7,14 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:TuyaConnector!
- * @subpackage     Properties
- * @since          0.13.0
+ * @subpackage     Entities
+ * @since          1.0.0
  *
  * @date           04.09.22
  */
 
 namespace FastyBird\Connector\Tuya\Entities\Messages;
 
-use FastyBird\Connector\Tuya\Types;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette;
 use function is_scalar;
@@ -25,7 +24,7 @@ use function strval;
  * Data point status entity
  *
  * @package        FastyBird:TuyaConnector!
- * @subpackage     Properties
+ * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
@@ -35,16 +34,10 @@ final class DataPointStatus implements Entity
 	use Nette\SmartObject;
 
 	public function __construct(
-		private readonly Types\MessageSource $source,
 		private readonly string $identifier,
 		private readonly float|int|string|bool|MetadataTypes\SwitchPayload|null $value,
 	)
 	{
-	}
-
-	public function getSource(): Types\MessageSource
-	{
-		return $this->source;
 	}
 
 	public function getIdentifier(): string
@@ -63,7 +56,6 @@ final class DataPointStatus implements Entity
 	public function toArray(): array
 	{
 		return [
-			'source' => $this->getSource()->getValue(),
 			'identifier' => $this->getIdentifier(),
 			'value' => is_scalar($this->getValue()) ? $this->getValue() : strval($this->getValue()),
 		];
