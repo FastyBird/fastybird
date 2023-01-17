@@ -239,7 +239,7 @@ class Periodic implements Writer
 								$this->logger->error(
 									'Could write new property state',
 									[
-										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 										'type' => 'periodic-writer',
 										'group' => 'writer',
 										'exception' => [

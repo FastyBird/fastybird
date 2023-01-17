@@ -231,7 +231,7 @@ class Discovery extends Console\Command\Command
 					$this->logger->alert(
 						'Could not read connector identifier from console answer',
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 							'type' => 'discovery-cmd',
 							'group' => 'cmd',
 						],
@@ -256,7 +256,7 @@ class Discovery extends Console\Command\Command
 				$this->logger->alert(
 					'Connector was not found',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'discovery-cmd',
 						'group' => 'cmd',
 					],
