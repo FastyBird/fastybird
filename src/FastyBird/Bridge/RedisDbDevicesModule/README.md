@@ -1,7 +1,7 @@
 # FastyBird IoT Redis DB & Devices module bridge
 
-[![Build Status](https://badgen.net/github/checks/FastyBird/redisdb-devices-module-bridge/master?cache=300&style=flast-square)](https://github.com/FastyBird/redisdb-devices-module-bridge/actions)
-[![Licence](https://badgen.net/github/license/FastyBird/redisdb-devices-module-bridge?cache=300&style=flast-square)](https://github.com/FastyBird/redisdb-devices-module-bridge/blob/master/LICENSE.md)
+[![Build Status](https://badgen.net/github/checks/FastyBird/redisdb-devices-module-bridge/main?cache=300&style=flast-square)](https://github.com/FastyBird/redisdb-devices-module-bridge/actions)
+[![Licence](https://badgen.net/github/license/FastyBird/redisdb-devices-module-bridge?cache=300&style=flast-square)](https://github.com/FastyBird/redisdb-devices-module-bridge/blob/main/LICENSE.md)
 [![Code coverage](https://badgen.net/coveralls/c/github/FastyBird/redisdb-devices-module-bridge?cache=300&style=flast-square)](https://coveralls.io/r/FastyBird/redisdb-devices-module-bridge)
 [![Mutation testing](https://img.shields.io/endpoint?style=flat-square&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2FFastyBird%2Fredisdb-devices-module-bridge%2Fmain)](https://dashboard.stryker-mutator.io/reports/github.com/FastyBird/redisdb-devices-module-bridge/main)
 
@@ -41,7 +41,7 @@ composer require fastybird/redisdb-devices-module-bridge
 ## Documentation
 
 Learn how to build bridge between Redis DB and Devices module
-in [documentation](https://github.com/FastyBird/redisdb-devices-module-bridge/blob/master/docs/index.md).
+in [documentation](https://github.com/FastyBird/redisdb-devices-module-bridge/blob/main/docs/index.md).
 
 ## Feedback
 

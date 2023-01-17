@@ -1,7 +1,7 @@
 # FastyBird IoT date & time automator
 
-[![Build Status](https://badgen.net/github/checks/FastyBird/date-time-automator/master?cache=300&style=flast-square)](https://github.com/FastyBird/date-time-automator/actions)
-[![Licence](https://badgen.net/github/license/FastyBird/date-time-automator?cache=300&style=flast-square)](https://github.com/FastyBird/date-time-automator/blob/master/LICENSE.md)
+[![Build Status](https://badgen.net/github/checks/FastyBird/date-time-automator/main?cache=300&style=flast-square)](https://github.com/FastyBird/date-time-automator/actions)
+[![Licence](https://badgen.net/github/license/FastyBird/date-time-automator?cache=300&style=flast-square)](https://github.com/FastyBird/date-time-automator/blob/main/LICENSE.md)
 [![Code coverage](https://badgen.net/coveralls/c/github/FastyBird/date-time-automator?cache=300&style=flast-square)](https://coveralls.io/r/FastyBird/date-time-automator)
 [![Mutation testing](https://img.shields.io/endpoint?style=flat-square&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2FFastyBird%2Fdate-time-automator%2Fmain)](https://dashboard.stryker-mutator.io/reports/github.com/FastyBird/date-time-automator/main)
 
@@ -49,7 +49,7 @@ application under marketplace section.
 ## Documentation
 
 Learn how to manage date & time based automation for devices connected with [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) system
-in [documentation](https://github.com/FastyBird/date-time-automator/blob/master/docs/index.md).
+in [documentation](https://github.com/FastyBird/date-time-automator/blob/main/docs/index.md).
 
 ## Feedback
 
