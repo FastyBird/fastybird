@@ -62,6 +62,18 @@ class Initialize extends Console\Command\Command
 
 	private const CHOICE_QUESTION_CLOUD_MODE = 'Cloud server mode';
 
+	private const CHOICE_QUESTION_CENTRAL_EUROPE_DC = 'Central Europe';
+
+	private const CHOICE_QUESTION_WESTERN_EUROPE_DC = 'Western Europe';
+
+	private const CHOICE_QUESTION_WESTERN_AMERICA_DC = 'Western America';
+
+	private const CHOICE_QUESTION_EASTERN_AMERICA_DC = 'Eastern America';
+
+	private const CHOICE_QUESTION_CHINA_DC = 'China';
+
+	private const CHOICE_QUESTION_INDIA_DC = 'India';
+
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
@@ -217,6 +229,32 @@ class Initialize extends Console\Command\Command
 
 		$accessSecret = $this->askAccessSecret($io);
 
+		switch ($this->askOpenApiEndpoint($io)) {
+			case 1:
+				$dataCentre = Types\OpenApiEndpoint::ENDPOINT_EUROPE_MS;
+				break;
+
+			case 2:
+				$dataCentre = Types\OpenApiEndpoint::ENDPOINT_AMERICA;
+				break;
+
+			case 3:
+				$dataCentre = Types\OpenApiEndpoint::ENDPOINT_AMERICA_AZURE;
+				break;
+
+			case 4:
+				$dataCentre = Types\OpenApiEndpoint::ENDPOINT_CHINA;
+				break;
+
+			case 5:
+				$dataCentre = Types\OpenApiEndpoint::ENDPOINT_INDIA;
+				break;
+
+			default:
+				$dataCentre = Types\OpenApiEndpoint::ENDPOINT_EUROPE;
+				break;
+		}
+
 		$uid = null;
 
 		if ($mode->equalsValue(Types\ClientMode::MODE_CLOUD)) {
@@ -254,6 +292,14 @@ class Initialize extends Console\Command\Command
 				'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_ACCESS_SECRET,
 				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 				'value' => $accessSecret,
+				'connector' => $connector,
+			]));
+
+			$this->propertiesManager->create(Utils\ArrayHash::from([
+				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
+				'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_OPENPULSAR_ENDPOINT,
+				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+				'value' => $dataCentre,
 				'connector' => $connector,
 			]));
 
@@ -802,6 +848,26 @@ class Initialize extends Console\Command\Command
 		$question = new Console\Question\Question('Provide cloud authentication Access Secret');
 
 		return strval($io->askQuestion($question));
+	}
+
+	private function askOpenApiEndpoint(Style\SymfonyStyle $io): int
+	{
+		$question = new Console\Question\ChoiceQuestion(
+			'Provide which cloud data center you are using?',
+			[
+				0 => self::CHOICE_QUESTION_CENTRAL_EUROPE_DC,
+				1 => self::CHOICE_QUESTION_WESTERN_EUROPE_DC,
+				2 => self::CHOICE_QUESTION_WESTERN_AMERICA_DC,
+				3 => self::CHOICE_QUESTION_EASTERN_AMERICA_DC,
+				4 => self::CHOICE_QUESTION_CHINA_DC,
+				5 => self::CHOICE_QUESTION_INDIA_DC,
+			],
+			0,
+		);
+
+		$question->setErrorMessage('Selected answer: "%s" is not valid.');
+
+		return intval($io->askQuestion($question));
 	}
 
 	private function askUid(Style\SymfonyStyle $io): string

@@ -17,22 +17,23 @@
 Tuya connector is extension for [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem
 which is integrating [Tuya](https://www.tuya.com) devices.
 
-Tuya connector is an [Apache2 licensed](http://www.apache.org/licenses/LICENSE-2.0) distributed extension, developed
-in [PHP](https://www.php.net) on top of the [Nette framework](https://nette.org) and [Symfony framework](https://symfony.com).
+Tuya Connector is a distributed extension that is developed in [PHP](https://www.php.net), built on the [Nette](https://nette.org) and [Symfony](https://symfony.com) frameworks,
+and is licensed under [Apache2](http://www.apache.org/licenses/LICENSE-2.0).
 
 ### Features:
 
-- Tuya local network communication
-- Tuya cloud network communication
-- Tuya connector management for [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) [devices module](https://github.com/FastyBird/devices-module)
-- Tuya device management for [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) [devices module](https://github.com/FastyBird/devices-module)
-- [{JSON:API}](https://jsonapi.org/) schemas for full api access
-- Integrated connector Python worker
+- The Tuya Connector offers support for both local and cloud-based communication with Tuya devices, providing users with a versatile and flexible way to connect and control a wide range of Tuya devices in their home or office.
+- Automated device discovery feature, which automatically detects and adds Tuya devices to the FastyBird ecosystem
+- Tuya Connector management for the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) [devices module](https://github.com/FastyBird/devices-module), allowing users to easily manage and monitor Tuya devices
+- Advanced device management features, such as controlling power status, measuring energy consumption, and reading sensor data
+- [{JSON:API}](https://jsonapi.org/) schemas for full API access, providing a standardized and consistent way for developers to access and manipulate Tuya device data
+- Regular updates with new features and bug fixes, ensuring that the Tuya Connector is always up-to-date and reliable.
+
 
 ## Requirements
 
-Tuya connector is tested against PHP 8.1 and require installed [OpenSSL](https://www.php.net/manual/en/book.openssl.php) and [Process Control](https://www.php.net/manual/en/book.pcntl.php)
-PHP extensions.
+Tuya connector is tested against PHP 8.1 and require installed [Process Control](https://www.php.net/manual/en/book.pcntl.php)
+PHP extension.
 
 ## Installation
 
@@ -52,7 +53,7 @@ application under marketplace section.
 ## Documentation
 
 Learn how to connect Tuya devices and manage them with [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) system
-in [documentation](https://github.com/FastyBird/tuya-connector/blob/master/docs/index.md).
+in [documentation](https://github.com/FastyBird/tuya-connector/wiki).
 
 ## Feedback
 

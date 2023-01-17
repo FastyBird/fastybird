@@ -119,6 +119,25 @@ class TuyaConnector extends DevicesEntities\Connectors\Connector
 			return Types\OpenPulsarEndpoint::get($property->getValue());
 		}
 
+		if (
+			$this->getOpenApiEndpoint()->equalsValue(Types\OpenApiEndpoint::ENDPOINT_EUROPE)
+			|| $this->getOpenApiEndpoint()->equalsValue(Types\OpenApiEndpoint::ENDPOINT_EUROPE_MS)
+		) {
+			return Types\OpenPulsarEndpoint::get(Types\OpenPulsarEndpoint::ENDPOINT_EUROPE);
+
+		} else if (
+			$this->getOpenApiEndpoint()->equalsValue(Types\OpenApiEndpoint::ENDPOINT_AMERICA)
+			|| $this->getOpenApiEndpoint()->equalsValue(Types\OpenApiEndpoint::ENDPOINT_AMERICA_AZURE)
+		) {
+			return Types\OpenPulsarEndpoint::get(Types\OpenPulsarEndpoint::ENDPOINT_AMERICA);
+
+		} else if ($this->getOpenApiEndpoint()->equalsValue(Types\OpenApiEndpoint::ENDPOINT_CHINA)) {
+			return Types\OpenPulsarEndpoint::get(Types\OpenPulsarEndpoint::ENDPOINT_CHINA);
+
+		} else if ($this->getOpenApiEndpoint()->equalsValue(Types\OpenApiEndpoint::ENDPOINT_INDIA)) {
+			return Types\OpenPulsarEndpoint::get(Types\OpenPulsarEndpoint::ENDPOINT_INDIA);
+		}
+
 		return Types\OpenPulsarEndpoint::get(Types\OpenPulsarEndpoint::ENDPOINT_EUROPE);
 	}
 
