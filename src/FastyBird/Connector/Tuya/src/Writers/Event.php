@@ -27,6 +27,7 @@ use FastyBird\Module\Devices\States as DevicesStates;
 use Nette;
 use Nette\Utils;
 use Psr\Log;
+use Ramsey\Uuid;
 use Symfony\Component\EventDispatcher;
 use Throwable;
 use function assert;
@@ -46,9 +47,8 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 
 	public const NAME = 'event';
 
-	private Entities\TuyaConnector|null $connector = null;
-
-	private Clients\Client|null $client = null;
+	/** @var array<string, Clients\Client> */
+	private array $clients = [];
 
 	private Log\LoggerInterface $logger;
 
@@ -74,26 +74,37 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 		Clients\Client $client,
 	): void
 	{
-		$this->connector = $connector;
-		$this->client = $client;
+		$this->clients[$connector->getPlainId()] = $client;
 	}
 
-	public function disconnect(): void
+	public function disconnect(
+		Entities\TuyaConnector $connector,
+		Clients\Client $client,
+	): void
 	{
-		// Nothing to do here
+		unset($this->clients[$connector->getPlainId()]);
 	}
 
 	public function stateChanged(DevicesEvents\StateEntityCreated|DevicesEvents\StateEntityUpdated $event): void
 	{
-		assert($this->connector instanceof Entities\TuyaConnector);
+		foreach ($this->clients as $id => $client) {
+			$this->processClient(Uuid\Uuid::fromString($id), $event, $client);
+		}
+	}
 
+	public function processClient(
+		Uuid\UuidInterface $connectorId,
+		DevicesEvents\StateEntityCreated|DevicesEvents\StateEntityUpdated $event,
+		Clients\Client $client,
+	): void
+	{
 		$property = $event->getProperty();
 
 		if (!$property instanceof DevicesEntities\Channels\Properties\Dynamic) {
 			return;
 		}
 
-		if (!$property->getChannel()->getDevice()->getConnector()->getId()->equals($this->connector->getId())) {
+		if (!$property->getChannel()->getDevice()->getConnector()->getId()->equals($connectorId)) {
 			return;
 		}
 
@@ -102,7 +113,7 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 
 		assert($device instanceof Entities\TuyaDevice);
 
-		$this->client?->writeChannelProperty($device, $channel, $property)
+		$client->writeChannelProperty($device, $channel, $property)
 			->then(function () use ($property): void {
 				$this->propertyStateHelper->setValue(
 					$property,
@@ -113,7 +124,7 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 					]),
 				);
 			})
-			->otherwise(function (Throwable $ex) use ($device, $channel, $property): void {
+			->otherwise(function (Throwable $ex) use ($connectorId, $device, $channel, $property): void {
 				$this->logger->error(
 					'Could write new property state',
 					[
@@ -125,7 +136,7 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 							'code' => $ex->getCode(),
 						],
 						'connector' => [
-							'id' => $this->connector?->getPlainId(),
+							'id' => $connectorId->toString(),
 						],
 						'device' => [
 							'id' => $device->getPlainId(),

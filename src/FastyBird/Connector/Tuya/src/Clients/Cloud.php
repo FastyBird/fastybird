@@ -183,7 +183,7 @@ final class Cloud implements Client
 			$this->handlerTimer = null;
 		}
 
-		$this->writer->disconnect();
+		$this->writer->disconnect($this->connector, $this);
 	}
 
 	/**

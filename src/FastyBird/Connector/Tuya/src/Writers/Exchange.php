@@ -31,6 +31,7 @@ use FastyBird\Module\Devices\States as DevicesStates;
 use Nette;
 use Nette\Utils;
 use Psr\Log;
+use Ramsey\Uuid;
 use Throwable;
 use function assert;
 
@@ -49,9 +50,8 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 
 	public const NAME = 'exchange';
 
-	private Entities\TuyaConnector|null $connector = null;
-
-	private Clients\Client|null $client = null;
+	/** @var array<string, Clients\Client> */
+	private array $clients = [];
 
 	private Log\LoggerInterface $logger;
 
@@ -71,15 +71,21 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 		Clients\Client $client,
 	): void
 	{
-		$this->connector = $connector;
-		$this->client = $client;
+		$this->clients[$connector->getPlainId()] = $client;
 
 		$this->consumer->enable(self::class);
 	}
 
-	public function disconnect(): void
+	public function disconnect(
+		Entities\TuyaConnector $connector,
+		Clients\Client $client,
+	): void
 	{
-		$this->consumer->disable(self::class);
+		unset($this->clients[$connector->getPlainId()]);
+
+		if ($this->clients === []) {
+			$this->consumer->disable(self::class);
+		}
 	}
 
 	/**
@@ -91,8 +97,21 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 		MetadataEntities\Entity|null $entity,
 	): void
 	{
-		assert($this->connector instanceof Entities\TuyaConnector);
+		foreach ($this->clients as $id => $client) {
+			$this->processClient(Uuid\Uuid::fromString($id), $source, $entity, $client);
+		}
+	}
 
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 */
+	public function processClient(
+		Uuid\UuidInterface $connectorId,
+		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|MetadataTypes\AutomatorSource $source,
+		MetadataEntities\Entity|null $entity,
+		Clients\Client $client,
+	): void
+	{
 		if ($entity instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty) {
 			$findPropertyQuery = new DevicesQueries\FindChannelProperties();
 			$findPropertyQuery->byId($entity->getId());
@@ -105,7 +124,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 
 			assert($property instanceof DevicesEntities\Channels\Properties\Dynamic);
 
-			if (!$property->getChannel()->getDevice()->getConnector()->getId()->equals($this->connector->getId())) {
+			if (!$property->getChannel()->getDevice()->getConnector()->getId()->equals($connectorId)) {
 				return;
 			}
 
@@ -114,7 +133,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 
 			assert($device instanceof Entities\TuyaDevice);
 
-			$this->client?->writeChannelProperty($device, $channel, $property)
+			$client->writeChannelProperty($device, $channel, $property)
 				->then(function () use ($property): void {
 					$this->propertyStateHelper->setValue(
 						$property,
@@ -125,7 +144,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 						]),
 					);
 				})
-				->otherwise(function (Throwable $ex) use ($device, $channel, $property): void {
+				->otherwise(function (Throwable $ex) use ($connectorId, $device, $channel, $property): void {
 					$this->logger->error(
 						'Could write new property state',
 						[
@@ -137,7 +156,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 								'code' => $ex->getCode(),
 							],
 							'connector' => [
-								'id' => $this->connector?->getPlainId(),
+								'id' => $connectorId->toString(),
 							],
 							'device' => [
 								'id' => $device->getPlainId(),

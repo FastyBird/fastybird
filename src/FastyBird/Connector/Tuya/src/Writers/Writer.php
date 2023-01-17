@@ -34,6 +34,9 @@ interface Writer
 		Clients\Client $client,
 	): void;
 
-	public function disconnect(): void;
+	public function disconnect(
+		Entities\TuyaConnector $connector,
+		Clients\Client $client,
+	): void;
 
 }
