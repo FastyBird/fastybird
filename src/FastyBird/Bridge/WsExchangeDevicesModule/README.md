@@ -1,7 +1,7 @@
 # FastyBird IoT WS exchange & Devices module bridge
 
-[![Build Status](https://badgen.net/github/checks/FastyBird/ws-exchange-devices-module-birdge/master?cache=300&style=flast-square)](https://github.com/FastyBird/ws-exchange-devices-module-birdge/actions)
-[![Licence](https://badgen.net/github/license/FastyBird/ws-exchange-devices-module?cache=300&style=flast-square)](https://github.com/FastyBird/ws-exchange-devices-module-birdge/blob/master/LICENSE.md)
+[![Build Status](https://badgen.net/github/checks/FastyBird/ws-exchange-devices-module-birdge/main?cache=300&style=flast-square)](https://github.com/FastyBird/ws-exchange-devices-module-birdge/actions)
+[![Licence](https://badgen.net/github/license/FastyBird/ws-exchange-devices-module?cache=300&style=flast-square)](https://github.com/FastyBird/ws-exchange-devices-module-birdge/blob/main/LICENSE.md)
 [![Code coverage](https://badgen.net/coveralls/c/github/FastyBird/ws-exchange-devices-module?cache=300&style=flast-square)](https://coveralls.io/r/FastyBird/ws-exchange-devices-module)
 [![Mutation testing](https://img.shields.io/endpoint?style=flat-square&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2FFastyBird%2Fws-exchange-devices-module%2Fmain)](https://dashboard.stryker-mutator.io/reports/github.com/FastyBird/ws-exchange-devices-module-birdge/main)
 
@@ -40,7 +40,7 @@ composer require fastybird/ws-exchange-devices-module-bridge
 ## Documentation
 
 Learn how to build bridge between Devices module and WS exchange plugin
-in [documentation](https://github.com/FastyBird/ws-exchange-devices-module-birdge/blob/master/docs/index.md).
+in [documentation](https://github.com/FastyBird/ws-exchange-devices-module-birdge/blob/main/docs/index.md).
 
 ## Feedback
 

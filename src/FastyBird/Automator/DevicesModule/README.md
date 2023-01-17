@@ -1,7 +1,7 @@
 # FastyBird IoT devices module automator
 
-[![Build Status](https://badgen.net/github/checks/FastyBird/devices-module-automator/master?cache=300&style=flast-square)](https://github.com/FastyBird/devices-module-automator/actions)
-[![Licence](https://badgen.net/github/license/FastyBird/devices-module-automator?cache=300&style=flast-square)](https://github.com/FastyBird/devices-module-automator/blob/master/LICENSE.md)
+[![Build Status](https://badgen.net/github/checks/FastyBird/devices-module-automator/main?cache=300&style=flast-square)](https://github.com/FastyBird/devices-module-automator/actions)
+[![Licence](https://badgen.net/github/license/FastyBird/devices-module-automator?cache=300&style=flast-square)](https://github.com/FastyBird/devices-module-automator/blob/main/LICENSE.md)
 [![Code coverage](https://badgen.net/coveralls/c/github/FastyBird/devices-module-automator?cache=300&style=flast-square)](https://coveralls.io/r/FastyBird/devices-module-automator)
 [![Mutation testing](https://img.shields.io/endpoint?style=flat-square&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2FFastyBird%2Fdevices-module-automator%2Fmain)](https://dashboard.stryker-mutator.io/reports/github.com/FastyBird/devices-module-automator/main)
 
@@ -49,7 +49,7 @@ application under marketplace section.
 ## Documentation
 
 Learn how to manage automation for devices connected with [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) system
-in [documentation](https://github.com/FastyBird/devices-module-automator/blob/master/docs/index.md).
+in [documentation](https://github.com/FastyBird/devices-module-automator/blob/main/docs/index.md).
 
 ## Feedback
 

@@ -1,7 +1,7 @@
 # FastyBird IoT Redis DB & WS exchange bridge
 
-[![Build Status](https://badgen.net/github/checks/FastyBird/redisdb-ws-exchange-bridge/master?cache=300&style=flast-square)](https://github.com/FastyBird/redisdb-ws-exchange-bridge/actions)
-[![Licence](https://badgen.net/github/license/FastyBird/redisdb-ws-exchange-bridge?cache=300&style=flast-square)](https://github.com/FastyBird/redisdb-ws-exchange-bridge/blob/master/LICENSE.md)
+[![Build Status](https://badgen.net/github/checks/FastyBird/redisdb-ws-exchange-bridge/main?cache=300&style=flast-square)](https://github.com/FastyBird/redisdb-ws-exchange-bridge/actions)
+[![Licence](https://badgen.net/github/license/FastyBird/redisdb-ws-exchange-bridge?cache=300&style=flast-square)](https://github.com/FastyBird/redisdb-ws-exchange-bridge/blob/main/LICENSE.md)
 [![Code coverage](https://badgen.net/coveralls/c/github/FastyBird/redisdb-ws-exchange-bridge?cache=300&style=flast-square)](https://coveralls.io/r/FastyBird/redisdb-ws-exchange-bridge)
 [![Mutation testing](https://img.shields.io/endpoint?style=flat-square&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2FFastyBird%2Fredisdb-ws-exchange-bridge%2Fmain)](https://dashboard.stryker-mutator.io/reports/github.com/FastyBird/redisdb-ws-exchange-bridge/main)
 
@@ -41,7 +41,7 @@ composer require fastybird/redisdb-ws-exchange-bridge
 ## Documentation
 
 Learn how to build bridge between Redis DB and WS exchange
-in [documentation](https://github.com/FastyBird/redisdb-ws-exchange-bridge/blob/master/docs/index.md).
+in [documentation](https://github.com/FastyBird/redisdb-ws-exchange-bridge/blob/main/docs/index.md).
 
 ## Feedback
 

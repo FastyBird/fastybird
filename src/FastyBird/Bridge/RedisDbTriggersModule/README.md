@@ -1,7 +1,7 @@
 # FastyBird IoT Redis DB & Triggers module bridge
 
-[![Build Status](https://badgen.net/github/checks/FastyBird/redisdb-triggers-module-bridge/master?cache=300&style=flast-square)](https://github.com/FastyBird/redisdb-triggers-module-bridge/actions)
-[![Licence](https://badgen.net/github/license/FastyBird/redisdb-triggers-module-bridge?cache=300&style=flast-square)](https://github.com/FastyBird/redisdb-triggers-module-bridge/blob/master/LICENSE.md)
+[![Build Status](https://badgen.net/github/checks/FastyBird/redisdb-triggers-module-bridge/main?cache=300&style=flast-square)](https://github.com/FastyBird/redisdb-triggers-module-bridge/actions)
+[![Licence](https://badgen.net/github/license/FastyBird/redisdb-triggers-module-bridge?cache=300&style=flast-square)](https://github.com/FastyBird/redisdb-triggers-module-bridge/blob/main/LICENSE.md)
 [![Code coverage](https://badgen.net/coveralls/c/github/FastyBird/redisdb-triggers-module-bridge?cache=300&style=flast-square)](https://coveralls.io/r/FastyBird/redisdb-triggers-module-bridge)
 [![Mutation testing](https://img.shields.io/endpoint?style=flat-square&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2FFastyBird%2Fredisdb-triggers-module-bridge%2Fmain)](https://dashboard.stryker-mutator.io/reports/github.com/FastyBird/redisdb-triggers-module-bridge/main)
 
@@ -41,7 +41,7 @@ composer require fastybird/redisdb-triggers-module-bridge
 ## Documentation
 
 Learn how to build bridge between Redis DB and Triggers module
-in [documentation](https://github.com/FastyBird/redisdb-triggers-module-bridge/blob/master/docs/index.md).
+in [documentation](https://github.com/FastyBird/redisdb-triggers-module-bridge/blob/main/docs/index.md).
 
 ## Feedback
 

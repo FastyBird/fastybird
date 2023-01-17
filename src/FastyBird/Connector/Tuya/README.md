@@ -1,7 +1,7 @@
 # FastyBird IoT Tuya connector
 
-[![Build Status](https://badgen.net/github/checks/FastyBird/tuya-connector/master?cache=300&style=flast-square)](https://github.com/FastyBird/tuya-connector/actions)
-[![Licence](https://badgen.net/github/license/FastyBird/tuya-connector?cache=300&style=flast-square)](https://github.com/FastyBird/tuya-connector/blob/master/LICENSE.md)
+[![Build Status](https://badgen.net/github/checks/FastyBird/tuya-connector/main?cache=300&style=flast-square)](https://github.com/FastyBird/tuya-connector/actions)
+[![Licence](https://badgen.net/github/license/FastyBird/tuya-connector?cache=300&style=flast-square)](https://github.com/FastyBird/tuya-connector/blob/main/LICENSE.md)
 [![Code coverage](https://badgen.net/coveralls/c/github/FastyBird/tuya-connector?cache=300&style=flast-square)](https://coveralls.io/r/FastyBird/tuya-connector)
 [![Mutation testing](https://img.shields.io/endpoint?style=flat-square&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2FFastyBird%2Ftuya-connector%2Fmain)](https://dashboard.stryker-mutator.io/reports/github.com/FastyBird/tuya-connector/main)
 
