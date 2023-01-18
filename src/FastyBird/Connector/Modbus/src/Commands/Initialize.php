@@ -113,7 +113,7 @@ class Initialize extends Console\Command\Command
 
 		$io->title('Modbus connector - initialization');
 
-		$io->note('This action will create|update connector configuration.');
+		$io->note('This action will create|update|delete connector configuration.');
 
 		if ($input->getOption('no-confirm') === false) {
 			$question = new Console\Question\ConfirmationQuestion(
@@ -320,7 +320,7 @@ class Initialize extends Console\Command\Command
 			$io->error('Something went wrong, connector could not be loaded');
 
 			$this->logger->alert(
-				'Connector identifier was not able to get from answer',
+				'Could not read connector identifier from console answer',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
 					'type' => 'initialize-cmd',
@@ -586,6 +586,7 @@ class Initialize extends Console\Command\Command
 			[
 				self::CHOICE_QUESTION_RTU_MODE,
 				self::CHOICE_QUESTION_TCP_MODE,
+				self::CHOICE_QUESTION_RTU_TCP_MODE,
 			],
 			0,
 		);
@@ -600,6 +601,10 @@ class Initialize extends Console\Command\Command
 
 		if ($mode === self::CHOICE_QUESTION_TCP_MODE) {
 			return Types\ClientMode::get(Types\ClientMode::MODE_TCP);
+		}
+
+		if ($mode === self::CHOICE_QUESTION_RTU_TCP_MODE) {
+			return Types\ClientMode::get(Types\ClientMode::MODE_TCP_RTU);
 		}
 
 		throw new Exceptions\InvalidState('Unknown connector mode selected');
