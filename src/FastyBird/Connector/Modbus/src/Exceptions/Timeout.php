@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Runtime.php
+ * Timeout.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,14 +10,14 @@
  * @subpackage     Exceptions
  * @since          1.0.0
  *
- * @date           31.07.22
+ * @date           18.01.23
  */
 
 namespace FastyBird\Connector\Modbus\Exceptions;
 
-use RuntimeException as PHPRuntimeException;
+use Exception as PhpException;
 
-class Runtime extends PHPRuntimeException implements Exception
+class Timeout extends PhpException implements Exception
 {
 
 }

@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ModbusConnector!
  * @subpackage     Clients
- * @since          0.34.0
+ * @since          1.0.0
  *
  * @date           31.07.22
  */
@@ -19,10 +19,12 @@ use DateTimeInterface;
 use Exception;
 use FastyBird\Connector\Modbus\API;
 use FastyBird\Connector\Modbus\Clients;
+use FastyBird\Connector\Modbus\Consumers;
 use FastyBird\Connector\Modbus\Entities;
 use FastyBird\Connector\Modbus\Exceptions;
 use FastyBird\Connector\Modbus\Helpers;
 use FastyBird\Connector\Modbus\Types;
+use FastyBird\Connector\Modbus\Writers;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -35,10 +37,10 @@ use Nette;
 use Nette\Utils;
 use Psr\Log;
 use React\EventLoop;
+use React\Promise;
 use function array_chunk;
 use function array_key_exists;
 use function array_map;
-use function array_merge;
 use function array_reduce;
 use function array_reverse;
 use function array_slice;
@@ -54,7 +56,6 @@ use function is_array;
 use function is_bool;
 use function is_int;
 use function is_numeric;
-use function is_string;
 use function pack;
 use function sprintf;
 use function strlen;
@@ -80,11 +81,7 @@ class Rtu implements Client
 
 	private const MODBUS_ERROR = 'C1station/C1error/C1exception/';
 
-	private const WRITE_DEBOUNCE_DELAY = 500; // in ms
-
-	private const WRITE_PENDING_DELAY = 2_000; // in ms
-
-	private const WRITE_MAX_ATTEMPTS = 5;
+	private const READ_DEBOUNCE_DELAY = 500; // in ms
 
 	private const READ_DELAY = 10; // in s
 
@@ -117,14 +114,11 @@ class Rtu implements Client
 	/** @var array<string> */
 	private array $processedDevices = [];
 
-	/** @var array<string, DateTimeInterface> */
-	private array $lostDevices = [];
-
-	/** @var array<string, DateTimeInterface|int> */
-	private array $processedWrittenProperties = [];
-
 	/** @var array<string, DateTimeInterface|int> */
 	private array $processedReadProperties = [];
+
+	/** @var array<string, DateTimeInterface> */
+	private array $lostDevices = [];
 
 	private bool|null $machineUsingLittleEndian = null;
 
@@ -136,13 +130,12 @@ class Rtu implements Client
 
 	public function __construct(
 		private readonly Entities\ModbusConnector $connector,
-		private readonly Helpers\Connector $connectorHelper,
-		private readonly Helpers\Device $deviceHelper,
 		private readonly Helpers\Channel $channelHelper,
 		private readonly Helpers\Property $propertyStateHelper,
 		private readonly API\Transformer $transformer,
+		private readonly Consumers\Messages $consumer,
+		private readonly Writers\Writer $writer,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
-		private readonly DevicesUtilities\DevicePropertiesStates $devicePropertiesStates,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
@@ -161,30 +154,10 @@ class Rtu implements Client
 	public function connect(): void
 	{
 		$configuration = new Clients\Interfaces\Configuration(
-			Types\BaudRate::get($this->connectorHelper->getConfiguration(
-				$this->connector,
-				Types\ConnectorPropertyIdentifier::get(
-					Types\ConnectorPropertyIdentifier::IDENTIFIER_RTU_BAUD_RATE,
-				),
-			)),
-			Types\ByteSize::get($this->connectorHelper->getConfiguration(
-				$this->connector,
-				Types\ConnectorPropertyIdentifier::get(
-					Types\ConnectorPropertyIdentifier::IDENTIFIER_RTU_BYTE_SIZE,
-				),
-			)),
-			Types\StopBits::get($this->connectorHelper->getConfiguration(
-				$this->connector,
-				Types\ConnectorPropertyIdentifier::get(
-					Types\ConnectorPropertyIdentifier::IDENTIFIER_RTU_STOP_BITS,
-				),
-			)),
-			Types\Parity::get($this->connectorHelper->getConfiguration(
-				$this->connector,
-				Types\ConnectorPropertyIdentifier::get(
-					Types\ConnectorPropertyIdentifier::IDENTIFIER_RTU_PARITY,
-				),
-			)),
+			$this->connector->getBaudRate(),
+			$this->connector->getByteSize(),
+			$this->connector->getStopBits(),
+			$this->connector->getParity(),
 			false,
 			false,
 		);
@@ -199,17 +172,9 @@ class Rtu implements Client
 			}
 		}
 
-		$interface = $this->connectorHelper->getConfiguration(
-			$this->connector,
-			Types\ConnectorPropertyIdentifier::get(
-				Types\ConnectorPropertyIdentifier::IDENTIFIER_RTU_INTERFACE,
-			),
-		);
-		assert(is_string($interface));
-
 		$this->interface = $useDio
-			? new Clients\Interfaces\SerialDio($interface, $configuration)
-			: new Clients\Interfaces\SerialFile($interface, $configuration);
+			? new Clients\Interfaces\SerialDio($this->connector->getRtuInterface(), $configuration)
+			: new Clients\Interfaces\SerialFile($this->connector->getRtuInterface(), $configuration);
 
 		$this->interface->open();
 
@@ -221,6 +186,8 @@ class Rtu implements Client
 				$this->registerLoopHandler();
 			},
 		);
+
+		$this->writer->connect($this->connector, $this);
 	}
 
 	/**
@@ -235,6 +202,141 @@ class Rtu implements Client
 		}
 
 		$this->interface?->close();
+
+		$this->writer->disconnect($this->connector, $this);
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exception
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\Runtime
+	 * @throws Exceptions\NotReachable
+	 * @throws Exceptions\NotSupported
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function writeChannelProperty(
+		Entities\ModbusDevice $device,
+		DevicesEntities\Channels\Channel $channel,
+		DevicesEntities\Channels\Properties\Dynamic $property,
+	): Promise\PromiseInterface
+	{
+		$state = $this->channelPropertiesStates->getValue($property);
+
+		$station = $device->getAddress();
+
+		if (!is_numeric($station)) {
+			$this->consumer->append(new Entities\Messages\DeviceState(
+				$this->connector->getId(),
+				$device->getIdentifier(),
+				MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_STOPPED),
+			));
+
+			return Promise\reject(new Exceptions\InvalidState('Device address is not configured'));
+		}
+
+		$address = $this->channelHelper->getConfiguration(
+			$channel,
+			Types\DevicePropertyIdentifier::get(
+				Types\ChannelPropertyIdentifier::IDENTIFIER_ADDRESS,
+			),
+		);
+
+		if (!is_int($address)) {
+			return Promise\reject(new Exceptions\InvalidState('Channel address is not configured'));
+		}
+
+		if (
+			$state?->getExpectedValue() !== null
+			&& $state->isPending() === true
+		) {
+			$deviceExpectedDataType = $this->transformer->determineDeviceWriteDataType(
+				$property->getDataType(),
+				$property->getFormat(),
+			);
+
+			if (!in_array($deviceExpectedDataType->getValue(), [
+				MetadataTypes\DataType::DATA_TYPE_CHAR,
+				MetadataTypes\DataType::DATA_TYPE_SHORT,
+				MetadataTypes\DataType::DATA_TYPE_UCHAR,
+				MetadataTypes\DataType::DATA_TYPE_USHORT,
+				MetadataTypes\DataType::DATA_TYPE_BOOLEAN,
+			], true)) {
+				return Promise\reject(
+					new Exceptions\NotSupported(
+						sprintf(
+							'Trying to write property with unsupported data type: %s for channel property',
+							strval($deviceExpectedDataType->getValue()),
+						),
+					),
+				);
+			}
+
+			$valueToWrite = $this->transformer->transformValueToDevice(
+				$property->getDataType(),
+				$property->getFormat(),
+				$state->getExpectedValue(),
+			);
+
+			if ($valueToWrite === null) {
+				return Promise\reject(new Exceptions\InvalidState('Value to write to register is invalid'));
+			}
+
+			try {
+				if ($valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_BOOLEAN)) {
+					if (in_array($valueToWrite->getValue(), [0, 1], true) || is_bool($valueToWrite->getValue())) {
+						$result = $this->writeSingleCoil(
+							$station,
+							$address,
+							is_bool(
+								$valueToWrite->getValue(),
+							) ? $valueToWrite->getValue() : $valueToWrite->getValue() === 1,
+						);
+
+					} else {
+						return Promise\reject(
+							new Exceptions\InvalidArgument(
+								'Value for boolean property have to be 1/0 or true/false',
+							),
+						);
+					}
+				} elseif (
+					$valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_SHORT)
+					|| $valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_USHORT)
+					|| $valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_CHAR)
+					|| $valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_UCHAR)
+				) {
+					$result = $this->writeSingleRegister(
+						$station,
+						$address,
+						(int) $valueToWrite->getValue(),
+						$property->getNumberOfDecimals(),
+						(
+							$valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_SHORT)
+							|| $valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_CHAR)
+						),
+					);
+				} else {
+					return Promise\reject(
+						new Exceptions\InvalidState(sprintf(
+							'Unsupported value data type: %s',
+							strval($valueToWrite->getDataType()->getValue()),
+						)),
+					);
+				}
+			} catch (Exceptions\ModbusRtu $ex) {
+				return Promise\reject($ex);
+			}
+
+			// Register writing failed
+			return $result === false
+				? Promise\reject(new Exceptions\Timeout('Write value to register failed'))
+				: Promise\resolve();
+		}
+
+		return Promise\reject(new Exceptions\InvalidArgument('Provided property state is in invalid state'));
 	}
 
 	/**
@@ -245,14 +347,14 @@ class Rtu implements Client
 	 */
 	private function handleCommunication(): void
 	{
-		foreach ($this->processedWrittenProperties as $index => $processedProperty) {
+		foreach ($this->processedReadProperties as $index => $processedProperty) {
 			if (
 				$processedProperty instanceof DateTimeInterface
 				&& ((float) $this->dateTimeFactory->getNow()->format('Uv') - (float) $processedProperty->format(
 					'Uv',
-				)) >= self::WRITE_DEBOUNCE_DELAY
+				)) >= self::READ_DEBOUNCE_DELAY
 			) {
-				unset($this->processedWrittenProperties[$index]);
+				unset($this->processedReadProperties[$index]);
 			}
 		}
 
@@ -264,46 +366,30 @@ class Rtu implements Client
 				&& !$this->deviceConnectionManager->getState($device)
 					->equalsValue(MetadataTypes\ConnectionState::STATE_STOPPED)
 			) {
-				$deviceAddress = $this->deviceHelper->getConfiguration(
-					$device,
-					Types\DevicePropertyIdentifier::get(
-						Types\DevicePropertyIdentifier::IDENTIFIER_ADDRESS,
-					),
-				);
+				$deviceAddress = $device->getAddress();
 
 				if (!is_int($deviceAddress)) {
-					$this->deviceConnectionManager->setState(
-						$device,
+					$this->consumer->append(new Entities\Messages\DeviceState(
+						$this->connector->getId(),
+						$device->getIdentifier(),
 						MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_STOPPED),
-					);
+					));
 
 					continue;
 				}
 
 				// Check if device is lost or not
 				if (array_key_exists($device->getPlainId(), $this->lostDevices)) {
-					if ($this->deviceConnectionManager->getState($device)
-						->equalsValue(MetadataTypes\ConnectionState::STATE_LOST)) {
-						$this->logger->debug(
-							'Device is still lost',
-							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
-								'type' => 'rtu-client',
-								'connector' => [
-									'id' => $this->connector->getPlainId(),
-								],
-								'device' => [
-									'id' => $device->getPlainId(),
-								],
-							],
-						);
-
-					} else {
+					if (
+						!$this->deviceConnectionManager->getState($device)
+							->equalsValue(MetadataTypes\ConnectionState::STATE_LOST)
+					) {
 						$this->logger->debug(
 							'Device is lost',
 							[
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
 								'type' => 'rtu-client',
+								'group' => 'client',
 								'connector' => [
 									'id' => $this->connector->getPlainId(),
 								],
@@ -313,14 +399,17 @@ class Rtu implements Client
 							],
 						);
 
-						$this->deviceConnectionManager->setState(
-							$device,
+						$this->consumer->append(new Entities\Messages\DeviceState(
+							$this->connector->getId(),
+							$device->getIdentifier(),
 							MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_LOST),
-						);
+						));
 					}
 
-					if ($this->dateTimeFactory->getNow()->getTimestamp() - $this->lostDevices[$device->getId()
-						->toString()]->getTimestamp() < self::LOST_DELAY) {
+					if (
+						$this->dateTimeFactory->getNow()->getTimestamp() - $this->lostDevices[$device->getId()
+							->toString()]->getTimestamp() < self::LOST_DELAY
+					) {
 						continue;
 					}
 				}
@@ -331,10 +420,11 @@ class Rtu implements Client
 						->equalsValue(Metadata\Types\ConnectionState::STATE_CONNECTED)
 				) {
 					// ... and if it is not ready, set it to ready
-					$this->deviceConnectionManager->setState(
-						$device,
-						Metadata\Types\ConnectionState::get(Metadata\Types\ConnectionState::STATE_CONNECTED),
-					);
+					$this->consumer->append(new Entities\Messages\DeviceState(
+						$this->connector->getId(),
+						$device->getIdentifier(),
+						MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_CONNECTED),
+					));
 				}
 
 				$this->processedDevices[] = $device->getPlainId();
@@ -362,12 +452,7 @@ class Rtu implements Client
 	 */
 	private function processDevice(Entities\ModbusDevice $device): bool
 	{
-		$station = $this->deviceHelper->getConfiguration(
-			$device,
-			Types\DevicePropertyIdentifier::get(
-				Types\DevicePropertyIdentifier::IDENTIFIER_ADDRESS,
-			),
-		);
+		$station = $device->getAddress();
 		assert(is_numeric($station));
 
 		foreach ($device->getChannels() as $channel) {
@@ -399,6 +484,7 @@ class Rtu implements Client
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
 						'type' => 'rtu-client',
+						'group' => 'client',
 						'connector' => [
 							'id' => $this->connector->getPlainId(),
 						],
@@ -419,137 +505,40 @@ class Rtu implements Client
 					continue;
 				}
 
-				$logContext = [
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
-					'type' => 'rtu-client',
-					'connector' => [
-						'id' => $this->connector->getPlainId(),
-					],
-					'device' => [
-						'id' => $device->getPlainId(),
-					],
-					'channel' => [
-						'id' => $channel->getPlainId(),
-					],
-					'property' => [
-						'id' => $property->getPlainId(),
-					],
-				];
-
-				/**
-				 * Channel property writing
-				 */
-
-				try {
-					$result = $this->writeProperty((int) $station, $address, $device, $property);
-
-					if ($result) {
-						return true;
-					}
-				} catch (Exceptions\InvalidArgument $ex) {
-					$this->logger->warning(
-						'Channel property value could not be written',
-						array_merge($logContext, [
-							'exception' => [
-								'message' => $ex->getMessage(),
-								'code' => $ex->getCode(),
-							],
-						]),
-					);
-				} catch (Exceptions\NotSupported $ex) {
-					$this->logger->warning(
-						'Channel property value is not supported for now',
-						array_merge($logContext, [
-							'exception' => [
-								'message' => $ex->getMessage(),
-								'code' => $ex->getCode(),
-							],
-						]),
-					);
-				} catch (Exceptions\ModbusRtu $ex) {
-					$this->logger->error(
-						'Modbus communication with device failed',
-						array_merge($logContext, [
-							'exception' => [
-								'message' => $ex->getMessage(),
-								'code' => $ex->getCode(),
-							],
-						]),
-					);
-
-					// Something wrong during communication
-					return true;
-				} catch (Exceptions\NotReachable $ex) {
-					$this->logger->error(
-						'Maximum channel property write attempts reached',
-						array_merge($logContext, [
-							'exception' => [
-								'message' => $ex->getMessage(),
-								'code' => $ex->getCode(),
-							],
-						]),
-					);
-
-					// Device is probably offline
-					return true;
-				}
-
 				/**
 				 * Channel property reading
 				 */
 
 				try {
-					$result = $this->readProperty((int) $station, $address, $device, $property);
-
-					if ($result) {
-						return true;
-					}
-				} catch (Exceptions\InvalidArgument $ex) {
-					$this->logger->warning(
-						'Channel property value could not be read',
-						array_merge($logContext, [
-							'exception' => [
-								'message' => $ex->getMessage(),
-								'code' => $ex->getCode(),
-							],
-						]),
-					);
-				} catch (Exceptions\NotSupported $ex) {
-					$this->logger->warning(
-						'Channel property data type is not supported for now',
-						array_merge($logContext, [
-							'exception' => [
-								'message' => $ex->getMessage(),
-								'code' => $ex->getCode(),
-							],
-						]),
-					);
+					$this->readProperty($station, $address, $device, $property);
 				} catch (Exceptions\ModbusRtu $ex) {
 					$this->logger->error(
 						'Modbus communication with device failed',
-						array_merge($logContext, [
+						[
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
+							'type' => 'rtu-client',
+							'group' => 'client',
 							'exception' => [
 								'message' => $ex->getMessage(),
 								'code' => $ex->getCode(),
 							],
-						]),
+							'connector' => [
+								'id' => $this->connector->getPlainId(),
+							],
+							'device' => [
+								'id' => $device->getPlainId(),
+							],
+							'channel' => [
+								'id' => $channel->getPlainId(),
+							],
+							'property' => [
+								'id' => $property->getPlainId(),
+							],
+						],
 					);
 
 					// Something wrong during communication
 					return true;
-				} catch (Exceptions\NotReachable $ex) {
-					$this->logger->error(
-						'Maximum channel property read attempts reached',
-						array_merge($logContext, [
-							'exception' => [
-								'message' => $ex->getMessage(),
-								'code' => $ex->getCode(),
-							],
-						]),
-					);
-
-					// Device is probably offline
-					return true;
 				}
 			}
 		}
@@ -559,294 +548,8 @@ class Rtu implements Client
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exception
-	 * @throws Exceptions\InvalidArgument
-	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\Runtime
-	 * @throws Exceptions\ModbusRtu
-	 * @throws Exceptions\NotReachable
-	 * @throws Exceptions\NotSupported
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 */
-	private function writeProperty(
-		int $station,
-		int $address,
-		Entities\ModbusDevice $device,
-		DevicesEntities\Devices\Properties\Dynamic|DevicesEntities\Channels\Properties\Dynamic $property,
-	): bool
-	{
-		$now = $this->dateTimeFactory->getNow();
-
-		$propertyUuid = $property->getPlainId();
-
-		$state = $property instanceof DevicesEntities\Devices\Properties\Dynamic
-			? $this->devicePropertiesStates->getValue($property)
-			: $this->channelPropertiesStates->getValue($property);
-
-		if (
-			$state !== null
-			// Property have to be writable
-			&& $property->isSettable()
-			&& $state->getExpectedValue() !== null
-			&& $state->isPending() === true
-		) {
-			if (!in_array($property->getDataType()->getValue(), [
-				MetadataTypes\DataType::DATA_TYPE_CHAR,
-				MetadataTypes\DataType::DATA_TYPE_SHORT,
-				MetadataTypes\DataType::DATA_TYPE_INT,
-				MetadataTypes\DataType::DATA_TYPE_UCHAR,
-				MetadataTypes\DataType::DATA_TYPE_USHORT,
-				MetadataTypes\DataType::DATA_TYPE_UINT,
-				MetadataTypes\DataType::DATA_TYPE_FLOAT,
-				MetadataTypes\DataType::DATA_TYPE_BOOLEAN,
-				MetadataTypes\DataType::DATA_TYPE_STRING,
-				MetadataTypes\DataType::DATA_TYPE_ENUM,
-				MetadataTypes\DataType::DATA_TYPE_SWITCH,
-				MetadataTypes\DataType::DATA_TYPE_BUTTON,
-			], true)) {
-				unset($this->processedWrittenProperties[$propertyUuid]);
-
-				$this->propertyStateHelper->setValue(
-					$property,
-					Utils\ArrayHash::from([
-						DevicesStates\Property::EXPECTED_VALUE_KEY => null,
-						DevicesStates\Property::PENDING_KEY => false,
-					]),
-				);
-
-				throw new Exceptions\InvalidArgument(
-					sprintf(
-						'Trying to write property with unsupported data type: %s for channel property',
-						strval($property->getDataType()->getValue()),
-					),
-				);
-			}
-
-			if (
-				isset($this->processedWrittenProperties[$propertyUuid])
-				&& is_int($this->processedWrittenProperties[$propertyUuid])
-				&& $this->processedWrittenProperties[$propertyUuid] > self::WRITE_MAX_ATTEMPTS
-			) {
-				unset($this->processedWrittenProperties[$propertyUuid]);
-
-				$this->lostDevices[$device->getPlainId()] = $now;
-
-				$this->propertyStateHelper->setValue(
-					$property,
-					Utils\ArrayHash::from([
-						DevicesStates\Property::EXPECTED_VALUE_KEY => null,
-						DevicesStates\Property::PENDING_KEY => false,
-					]),
-				);
-
-				throw new Exceptions\NotReachable('Maximum writing attempts reached');
-			}
-
-			if (
-				array_key_exists($propertyUuid, $this->processedWrittenProperties)
-				&& $this->processedWrittenProperties[$propertyUuid] instanceof DateTimeInterface
-				&& (float) $now->format('Uv') - (float) $this->processedWrittenProperties[$propertyUuid]->format(
-					'Uv',
-				) < self::WRITE_DEBOUNCE_DELAY
-			) {
-				return false;
-			}
-
-			$pending = $state->getPending();
-
-			if (
-				$pending === true
-				|| (
-					$pending instanceof DateTimeInterface
-					&& (float) $now->format('Uv') - (float) $pending->format('Uv') > self::WRITE_PENDING_DELAY
-				)
-			) {
-				$valueToWrite = $this->transformer->transformValueToDevice(
-					$property->getDataType(),
-					$property->getFormat(),
-					$state->getExpectedValue(),
-				);
-
-				if ($valueToWrite === null) {
-					return false;
-				}
-
-				try {
-					if ($valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_BOOLEAN)) {
-						if (in_array($valueToWrite->getValue(), [0, 1], true) || is_bool($valueToWrite->getValue())) {
-							$result = $this->writeSingleCoil(
-								$station,
-								$address,
-								is_bool(
-									$valueToWrite->getValue(),
-								) ? $valueToWrite->getValue() : $valueToWrite->getValue() === 1,
-							);
-
-						} else {
-							unset($this->processedWrittenProperties[$propertyUuid]);
-
-							$this->propertyStateHelper->setValue(
-								$property,
-								Utils\ArrayHash::from([
-									DevicesStates\Property::EXPECTED_VALUE_KEY => null,
-									DevicesStates\Property::PENDING_KEY => false,
-								]),
-							);
-
-							throw new Exceptions\InvalidState(
-								'Value for boolean property have to be 1/0 or true/false',
-							);
-						}
-					} elseif ($valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_FLOAT)) {
-						unset($this->processedWrittenProperties[$propertyUuid]);
-
-						$this->propertyStateHelper->setValue(
-							$property,
-							Utils\ArrayHash::from([
-								DevicesStates\Property::EXPECTED_VALUE_KEY => null,
-								DevicesStates\Property::PENDING_KEY => false,
-							]),
-						);
-
-						throw new Exceptions\NotSupported('Float value is not supported for now');
-					} elseif (
-						$valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_INT)
-						|| $valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_UINT)
-					) {
-						unset($this->processedWrittenProperties[$propertyUuid]);
-
-						$this->propertyStateHelper->setValue(
-							$property,
-							Utils\ArrayHash::from([
-								DevicesStates\Property::EXPECTED_VALUE_KEY => null,
-								DevicesStates\Property::PENDING_KEY => false,
-							]),
-						);
-
-						throw new Exceptions\NotSupported('Long integer value is not supported for now');
-					} elseif (
-						$valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_SHORT)
-						|| $valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_USHORT)
-						|| $valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_CHAR)
-						|| $valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_UCHAR)
-					) {
-						$result = $this->writeSingleRegister(
-							$station,
-							$address,
-							(int) $valueToWrite->getValue(),
-							$property->getNumberOfDecimals(),
-							(
-								$valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_SHORT)
-								|| $valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_CHAR)
-							),
-						);
-
-					} elseif ($valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_STRING)) {
-						unset($this->processedWrittenProperties[$propertyUuid]);
-
-						$this->propertyStateHelper->setValue(
-							$property,
-							Utils\ArrayHash::from([
-								DevicesStates\Property::EXPECTED_VALUE_KEY => null,
-								DevicesStates\Property::PENDING_KEY => false,
-							]),
-						);
-
-						throw new Exceptions\NotSupported('String value is not supported for now');
-					} elseif ($valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_SWITCH)) {
-						unset($this->processedWrittenProperties[$propertyUuid]);
-
-						$this->propertyStateHelper->setValue(
-							$property,
-							Utils\ArrayHash::from([
-								DevicesStates\Property::EXPECTED_VALUE_KEY => null,
-								DevicesStates\Property::PENDING_KEY => false,
-							]),
-						);
-
-						throw new Exceptions\NotSupported('Simple switch value is not supported for now');
-					} elseif ($valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)) {
-						unset($this->processedWrittenProperties[$propertyUuid]);
-
-						$this->propertyStateHelper->setValue(
-							$property,
-							Utils\ArrayHash::from([
-								DevicesStates\Property::EXPECTED_VALUE_KEY => null,
-								DevicesStates\Property::PENDING_KEY => false,
-							]),
-						);
-
-						throw new Exceptions\NotSupported('Simple button value is not supported for now');
-					} else {
-						unset($this->processedWrittenProperties[$propertyUuid]);
-
-						$this->propertyStateHelper->setValue(
-							$property,
-							Utils\ArrayHash::from([
-								DevicesStates\Property::EXPECTED_VALUE_KEY => null,
-								DevicesStates\Property::PENDING_KEY => false,
-							]),
-						);
-
-						throw new Exceptions\InvalidState(sprintf(
-							'Unsupported value data type: %s',
-							strval($valueToWrite->getDataType()->getValue()),
-						));
-					}
-				} catch (Exceptions\ModbusRtu $ex) {
-					unset($this->processedWrittenProperties[$propertyUuid]);
-
-					$this->propertyStateHelper->setValue(
-						$property,
-						Utils\ArrayHash::from([
-							DevicesStates\Property::EXPECTED_VALUE_KEY => null,
-							DevicesStates\Property::PENDING_KEY => false,
-						]),
-					);
-
-					throw $ex;
-				}
-
-				// Register writing failed
-				if ($result === false) {
-					// Increment failed attempts counter
-					if (!array_key_exists($propertyUuid, $this->processedWrittenProperties)) {
-						$this->processedWrittenProperties[$propertyUuid] = 1;
-					} else {
-						$this->processedWrittenProperties[$propertyUuid] = is_int(
-							$this->processedWrittenProperties[$propertyUuid],
-						)
-							? $this->processedWrittenProperties[$propertyUuid] + 1
-							: 1;
-					}
-				} else {
-					$this->processedWrittenProperties[$propertyUuid] = $now;
-
-					$this->propertyStateHelper->setValue(
-						$property,
-						Utils\ArrayHash::from([
-							DevicesStates\Property::PENDING_KEY => $this->dateTimeFactory->getNow()->format(
-								DateTimeInterface::ATOM,
-							),
-						]),
-					);
-				}
-
-				return $result !== false;
-			}
-		}
-
-		return false;
-	}
-
-	/**
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\ModbusRtu
-	 * @throws Exceptions\NotReachable
-	 * @throws Exceptions\NotSupported
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -855,8 +558,8 @@ class Rtu implements Client
 		int $station,
 		int $address,
 		Entities\ModbusDevice $device,
-		DevicesEntities\Devices\Properties\Dynamic|DevicesEntities\Channels\Properties\Dynamic $property,
-	): bool
+		DevicesEntities\Channels\Properties\Dynamic $property,
+	): void
 	{
 		$now = $this->dateTimeFactory->getNow();
 
@@ -874,16 +577,9 @@ class Rtu implements Client
 			if (!in_array($deviceExpectedDataType->getValue(), [
 				MetadataTypes\DataType::DATA_TYPE_CHAR,
 				MetadataTypes\DataType::DATA_TYPE_SHORT,
-				MetadataTypes\DataType::DATA_TYPE_INT,
 				MetadataTypes\DataType::DATA_TYPE_UCHAR,
 				MetadataTypes\DataType::DATA_TYPE_USHORT,
-				MetadataTypes\DataType::DATA_TYPE_UINT,
-				MetadataTypes\DataType::DATA_TYPE_FLOAT,
 				MetadataTypes\DataType::DATA_TYPE_BOOLEAN,
-				MetadataTypes\DataType::DATA_TYPE_STRING,
-				MetadataTypes\DataType::DATA_TYPE_ENUM,
-				MetadataTypes\DataType::DATA_TYPE_SWITCH,
-				MetadataTypes\DataType::DATA_TYPE_BUTTON,
 			], true)) {
 				unset($this->processedReadProperties[$propertyUuid]);
 
@@ -894,12 +590,28 @@ class Rtu implements Client
 					]),
 				);
 
-				throw new Exceptions\InvalidArgument(
-					sprintf(
-						'Trying to write property with unsupported data type: %s for channel property',
-						strval($property->getDataType()->getValue()),
-					),
+				$this->logger->warning(
+					'Channel property data type is not supported for now',
+					[
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
+						'type' => 'rtu-client',
+						'group' => 'client',
+						'connector' => [
+							'id' => $this->connector->getPlainId(),
+						],
+						'device' => [
+							'id' => $device->getPlainId(),
+						],
+						'channel' => [
+							'id' => $property->getChannel()->getPlainId(),
+						],
+						'property' => [
+							'id' => $property->getPlainId(),
+						],
+					],
 				);
+
+				return;
 			}
 
 			if (
@@ -918,7 +630,34 @@ class Rtu implements Client
 					]),
 				);
 
-				throw new Exceptions\NotReachable('Maximum writing attempts reached');
+				$this->consumer->append(new Entities\Messages\DeviceState(
+					$this->connector->getId(),
+					$device->getIdentifier(),
+					MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_LOST),
+				));
+
+				$this->logger->warning(
+					'Maximum channel property read attempts reached',
+					[
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
+						'type' => 'rtu-client',
+						'group' => 'client',
+						'connector' => [
+							'id' => $this->connector->getPlainId(),
+						],
+						'device' => [
+							'id' => $device->getPlainId(),
+						],
+						'channel' => [
+							'id' => $property->getChannel()->getPlainId(),
+						],
+						'property' => [
+							'id' => $property->getPlainId(),
+						],
+					],
+				);
+
+				return;
 			}
 
 			if (
@@ -926,7 +665,7 @@ class Rtu implements Client
 				&& $this->processedReadProperties[$propertyUuid] instanceof DateTimeInterface
 				&& $now->getTimestamp() - $this->processedReadProperties[$propertyUuid]->getTimestamp() < self::READ_DELAY
 			) {
-				return false;
+				return;
 			}
 
 			try {
@@ -940,32 +679,6 @@ class Rtu implements Client
 					)
 						? false
 						: $result['registers'][0];
-
-				} elseif ($deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_FLOAT)) {
-					unset($this->processedReadProperties[$propertyUuid]);
-
-					$this->propertyStateHelper->setValue(
-						$property,
-						Utils\ArrayHash::from([
-							DevicesStates\Property::VALID_KEY => false,
-						]),
-					);
-
-					throw new Exceptions\NotSupported('Float data type is not supported for now');
-				} elseif (
-					$deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_INT)
-					|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_UINT)
-				) {
-					unset($this->processedReadProperties[$propertyUuid]);
-
-					$this->propertyStateHelper->setValue(
-						$property,
-						Utils\ArrayHash::from([
-							DevicesStates\Property::VALID_KEY => false,
-						]),
-					);
-
-					throw new Exceptions\NotSupported('Long integer data type is not supported for now');
 				} elseif (
 					$deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SHORT)
 					|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_USHORT)
@@ -997,51 +710,6 @@ class Rtu implements Client
 					)
 						? false
 						: $result['registers'][0];
-
-				} elseif ($deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_STRING)) {
-					unset($this->processedReadProperties[$propertyUuid]);
-
-					$this->propertyStateHelper->setValue(
-						$property,
-						Utils\ArrayHash::from([
-							DevicesStates\Property::VALID_KEY => false,
-						]),
-					);
-
-					throw new Exceptions\NotSupported('String data type is not supported for now');
-				} elseif ($deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_ENUM)) {
-					unset($this->processedReadProperties[$propertyUuid]);
-
-					$this->propertyStateHelper->setValue(
-						$property,
-						Utils\ArrayHash::from([
-							DevicesStates\Property::VALID_KEY => false,
-						]),
-					);
-
-					throw new Exceptions\NotSupported('Enum data type is not supported for now');
-				} elseif ($deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SWITCH)) {
-					unset($this->processedReadProperties[$propertyUuid]);
-
-					$this->propertyStateHelper->setValue(
-						$property,
-						Utils\ArrayHash::from([
-							DevicesStates\Property::VALID_KEY => false,
-						]),
-					);
-
-					throw new Exceptions\NotSupported('Simple switch data type is not supported for now');
-				} elseif ($deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)) {
-					unset($this->processedReadProperties[$propertyUuid]);
-
-					$this->propertyStateHelper->setValue(
-						$property,
-						Utils\ArrayHash::from([
-							DevicesStates\Property::VALID_KEY => false,
-						]),
-					);
-
-					throw new Exceptions\NotSupported('Simple button data type is not supported for now');
 				} else {
 					unset($this->processedReadProperties[$propertyUuid]);
 
@@ -1052,7 +720,28 @@ class Rtu implements Client
 						]),
 					);
 
-					throw new Exceptions\InvalidState('Unsupported data type');
+					$this->logger->warning(
+						'Channel property data type is not supported for now',
+						[
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
+							'type' => 'rtu-client',
+							'group' => 'client',
+							'connector' => [
+								'id' => $this->connector->getPlainId(),
+							],
+							'device' => [
+								'id' => $device->getPlainId(),
+							],
+							'channel' => [
+								'id' => $property->getChannel()->getPlainId(),
+							],
+							'property' => [
+								'id' => $property->getPlainId(),
+							],
+						],
+					);
+
+					return;
 				}
 			} catch (Exceptions\ModbusRtu $ex) {
 				unset($this->processedReadProperties[$propertyUuid]);
@@ -1105,11 +794,7 @@ class Rtu implements Client
 					]),
 				);
 			}
-
-			return $value !== false;
 		}
-
-		return false;
 	}
 
 	/**

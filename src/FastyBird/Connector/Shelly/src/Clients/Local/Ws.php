@@ -56,7 +56,7 @@ final class Ws
 	public function __construct(
 		private readonly API\WsApiFactory $wsApiFactory,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
-		protected readonly API\Gen1Transformer $transformer,
+		protected readonly API\Transformer $transformer,
 		protected readonly Consumers\Messages $consumer,
 		Log\LoggerInterface|null $logger = null,
 	)

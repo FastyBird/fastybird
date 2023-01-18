@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ModbusConnector!
  * @subpackage     API
- * @since          0.34.0
+ * @since          1.0.0
  *
  * @date           02.08.22
  */
@@ -312,6 +312,40 @@ final class Transformer
 					&& $enumItem[1]->getDataType() !== null
 				) {
 					$enumDataTypes[] = $enumItem[1]->getDataType();
+				}
+			}
+
+			$enumDataTypes = array_unique($enumDataTypes);
+
+			if (count($enumDataTypes) === 1) {
+				$enumDataType = $this->shortDataTypeToLong($enumDataTypes[0]);
+
+				if ($enumDataType instanceof MetadataTypes\DataType) {
+					$deviceExpectedDataType = $enumDataType;
+				}
+			}
+		}
+
+		return $deviceExpectedDataType;
+	}
+
+	public function determineDeviceWriteDataType(
+		MetadataTypes\DataType $dataType,
+		MetadataValueObjects\StringEnumFormat|MetadataValueObjects\NumberRangeFormat|MetadataValueObjects\CombinedEnumFormat|null $format,
+	): MetadataTypes\DataType
+	{
+		$deviceExpectedDataType = $dataType;
+
+		if ($format instanceof MetadataValueObjects\CombinedEnumFormat) {
+			$enumDataTypes = [];
+
+			foreach ($format->getItems() as $enumItem) {
+				if (
+					count($enumItem) === 3
+					&& $enumItem[2] instanceof MetadataValueObjects\CombinedEnumFormatItem
+					&& $enumItem[2]->getDataType() !== null
+				) {
+					$enumDataTypes[] = $enumItem[2]->getDataType();
 				}
 			}
 

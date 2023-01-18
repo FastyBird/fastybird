@@ -77,7 +77,7 @@ final class Coap implements Clients\Client
 
 	public function __construct(
 		private readonly Entities\ShellyConnector $connector,
-		private readonly API\Gen1Transformer $transformer,
+		private readonly API\Transformer $transformer,
 		private readonly Consumers\Messages $consumer,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly MetadataSchemas\Validator $schemaValidator,

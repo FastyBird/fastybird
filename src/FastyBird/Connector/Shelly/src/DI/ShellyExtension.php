@@ -145,8 +145,8 @@ class ShellyExtension extends DI\CompilerExtension
 			->getResultDefinition()
 			->setType(API\WsApi::class);
 
-		$builder->addDefinition($this->prefix('api.gen1transformer'), new DI\Definitions\ServiceDefinition())
-			->setType(API\Gen1Transformer::class);
+		$builder->addDefinition($this->prefix('api.transformer'), new DI\Definitions\ServiceDefinition())
+			->setType(API\Transformer::class);
 
 		$builder->addDefinition(
 			$this->prefix('consumers.messages.device.status'),

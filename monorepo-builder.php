@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-use Symplify\ComposerJsonManipulator\ValueObject\ComposerJsonSection;
+use Symplify\MonorepoBuilder\ComposerJsonManipulator;
 use Symplify\MonorepoBuilder\Config\MBConfig;
 use Symplify\MonorepoBuilder\Release\ReleaseWorker\PushNextDevReleaseWorker;
 use Symplify\MonorepoBuilder\Release\ReleaseWorker\PushTagReleaseWorker;
@@ -18,7 +18,7 @@ return static function (MBConfig $mbConfig): void {
 	$mbConfig->defaultBranch('main');
 
 	$mbConfig->dataToAppend([
-		ComposerJsonSection::REQUIRE => [
+		ComposerJsonManipulator\ValueObject\ComposerJsonSection::REQUIRE => [
 			'fastybird/datetime-factory' => '^0.6',
 			'fastybird/json-api' => '^0.13',
 			'fastybird/simple-auth' => '^0.6',
@@ -26,13 +26,13 @@ return static function (MBConfig $mbConfig): void {
 	]);
 
 	$mbConfig->dataToRemove([
-		ComposerJsonSection::REQUIRE_DEV => [
+		ComposerJsonManipulator\ValueObject\ComposerJsonSection::REQUIRE_DEV => [
 			# remove these to merge of packages' composer.json
 			'mockery/mockery' => '*',
 			'ninjify/nunjuck' => '*',
 		],
-		ComposerJsonSection::MINIMUM_STABILITY => 'dev',
-		ComposerJsonSection::PREFER_STABLE => true,
+		ComposerJsonManipulator\ValueObject\ComposerJsonSection::MINIMUM_STABILITY => 'dev',
+		ComposerJsonManipulator\ValueObject\ComposerJsonSection::PREFER_STABLE => true,
 	]);
 
 	$mbConfig->workers([

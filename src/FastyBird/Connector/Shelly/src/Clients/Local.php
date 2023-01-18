@@ -76,7 +76,7 @@ final class Local implements Client
 
 	public function __construct(
 		private readonly Entities\ShellyConnector $connector,
-		private readonly API\Gen1Transformer $transformer,
+		private readonly API\Transformer $transformer,
 		private readonly Clients\Local\CoapFactory $coapClientFactory,
 		private readonly Clients\Local\HttpFactory $httpClientFactory,
 		private readonly Clients\Local\WsFactory $wsClientFactory,

@@ -6,18 +6,18 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:ShellyConnector!
+ * @package        FastyBird:ModbusConnector!
  * @subpackage     Consumers
  * @since          0.13.0
  *
- * @date           12.01.23
+ * @date           18.01.23
  */
 
-namespace FastyBird\Connector\Shelly\Consumers\Messages;
+namespace FastyBird\Connector\Modbus\Consumers\Messages;
 
-use FastyBird\Connector\Shelly\Consumers\Consumer;
-use FastyBird\Connector\Shelly\Entities;
-use FastyBird\Connector\Shelly\Helpers;
+use FastyBird\Connector\Modbus\Consumers\Consumer;
+use FastyBird\Connector\Modbus\Entities;
+use FastyBird\Connector\Modbus\Helpers;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -33,7 +33,7 @@ use Psr\Log;
 /**
  * Device state message consumer
  *
- * @package        FastyBird:ShellyConnector!
+ * @package        FastyBird:ModbusConnector!
  * @subpackage     Consumers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
@@ -70,7 +70,7 @@ final class State implements Consumer
 		$findDeviceQuery->byConnectorId($entity->getConnector());
 		$findDeviceQuery->byIdentifier($entity->getIdentifier());
 
-		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\ShellyDevice::class);
+		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\ModbusDevice::class);
 
 		if ($device === null) {
 			return true;
@@ -125,7 +125,7 @@ final class State implements Consumer
 		$this->logger->debug(
 			'Consumed device state message',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
 				'type' => 'state-message-consumer',
 				'group' => 'consumer',
 				'device' => [

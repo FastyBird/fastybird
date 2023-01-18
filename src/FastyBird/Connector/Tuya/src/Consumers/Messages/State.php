@@ -86,7 +86,12 @@ final class State implements Consumer
 				$entity->getState(),
 			);
 
-			if ($entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_DISCONNECTED)) {
+			if (
+				$entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_DISCONNECTED)
+				|| $entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_STOPPED)
+				|| $entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_LOST)
+				|| $entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_UNKNOWN)
+			) {
 				foreach ($device->getProperties() as $property) {
 					if (!$property instanceof DevicesEntities\Devices\Properties\Dynamic) {
 						continue;

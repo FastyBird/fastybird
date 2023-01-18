@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ModbusConnector!
  * @subpackage     Commands
- * @since          0.34.0
+ * @since          1.0.0
  *
  * @date           04.08.22
  */
@@ -57,9 +57,11 @@ class Initialize extends Console\Command\Command
 
 	private const CHOICE_QUESTION_DELETE_CONNECTOR = 'Delete existing connector configuration';
 
-	private const CHOICE_QUESTION_RTU_MODE = 'Modbus RTU over serial line';
+	private const CHOICE_QUESTION_RTU_MODE = 'Modbus RTU over serial line mode';
 
-	private const CHOICE_QUESTION_TCP_MODE = 'Modbus TCP';
+	private const CHOICE_QUESTION_TCP_MODE = 'Modbus TCP mode';
+
+	private const CHOICE_QUESTION_RTU_TCP_MODE = 'Modbus RTU over TCP mode';
 
 	private Log\LoggerInterface $logger;
 
@@ -247,6 +249,7 @@ class Initialize extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
 					'type' => 'initialize-cmd',
+					'group' => 'cmd',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -321,6 +324,7 @@ class Initialize extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
 					'type' => 'initialize-cmd',
+					'group' => 'cmd',
 				],
 			);
 
@@ -340,6 +344,7 @@ class Initialize extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
 					'type' => 'initialize-cmd',
+					'group' => 'cmd',
 				],
 			);
 
@@ -433,6 +438,7 @@ class Initialize extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
 					'type' => 'initialize-cmd',
+					'group' => 'cmd',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -495,6 +501,7 @@ class Initialize extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
 					'type' => 'initialize-cmd',
+					'group' => 'cmd',
 				],
 			);
 
@@ -514,6 +521,7 @@ class Initialize extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
 					'type' => 'initialize-cmd',
+					'group' => 'cmd',
 				],
 			);
 
@@ -551,6 +559,7 @@ class Initialize extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
 					'type' => 'initialize-cmd',
+					'group' => 'cmd',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),

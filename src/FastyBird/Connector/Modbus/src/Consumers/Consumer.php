@@ -1,35 +1,33 @@
 <?php declare(strict_types = 1);
 
 /**
- * ClientFactory.php
+ * Consumer.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ModbusConnector!
- * @subpackage     Clients
+ * @subpackage     Consumers
  * @since          1.0.0
  *
- * @date           31.07.22
+ * @date           18.01.23
  */
 
-namespace FastyBird\Connector\Modbus\Clients;
+namespace FastyBird\Connector\Modbus\Consumers;
 
 use FastyBird\Connector\Modbus\Entities;
 
 /**
- * Base client factory
+ * Clients messages consumer interface
  *
  * @package        FastyBird:ModbusConnector!
- * @subpackage     Clients
+ * @subpackage     Consumers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-interface ClientFactory
+interface Consumer
 {
 
-	public const MODE_CONSTANT_NAME = 'MODE';
-
-	public function create(Entities\ModbusConnector $connector): Client;
+	public function consume(Entities\Messages\Entity $entity): bool;
 
 }
