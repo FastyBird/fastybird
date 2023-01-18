@@ -258,7 +258,7 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 			$this->logger->error(
 				'Connection to Tuya WS could not be created',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'ws-api',
 					'group' => 'api',
 					'exception' => [
