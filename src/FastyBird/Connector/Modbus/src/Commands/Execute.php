@@ -213,7 +213,7 @@ class Execute extends Console\Command\Command
 					$io->error('Something went wrong, connector could not be loaded');
 
 					$this->logger->alert(
-						'Connector identifier was not able to get from answer',
+						'Could not read connector identifier from console answer',
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
 							'type' => 'execute-cmd',

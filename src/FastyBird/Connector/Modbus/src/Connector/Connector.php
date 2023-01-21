@@ -81,7 +81,7 @@ final class Connector implements DevicesConnectors\Connector
 
 			if (
 				array_key_exists(Clients\ClientFactory::MODE_CONSTANT_NAME, $constants)
-				&& $constants[Clients\ClientFactory::MODE_CONSTANT_NAME] === $mode
+				&& $mode->equalsValue($constants[Clients\ClientFactory::MODE_CONSTANT_NAME])
 			) {
 				$this->client = $clientFactory->create($this->connector);
 			}

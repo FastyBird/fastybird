@@ -76,6 +76,30 @@ class ModbusDevice extends DevicesEntities\Devices\Device
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
+	public function getIpAddress(): string|null
+	{
+		$property = $this->properties
+			->filter(
+			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS
+			)
+			->first();
+
+		if (
+			$property instanceof DevicesEntities\Devices\Properties\Variable
+			&& is_string($property->getValue())
+		) {
+			return $property->getValue();
+		}
+
+		return null;
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
 	public function getByteOrder(): Types\ByteOrder
 	{
 		$property = $this->properties
@@ -94,6 +118,30 @@ class ModbusDevice extends DevicesEntities\Devices\Device
 		}
 
 		return Types\ByteOrder::get(Types\ByteOrder::BYTE_ORDER_BIG);
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function getUnitId(): int
+	{
+		$property = $this->properties
+			->filter(
+			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::IDENTIFIER_UNIT_ID
+			)
+			->first();
+
+		if (
+			$property instanceof DevicesEntities\Devices\Properties\Variable
+			&& is_int($property->getValue())
+		) {
+			return $property->getValue();
+		}
+
+		return 0;
 	}
 
 }

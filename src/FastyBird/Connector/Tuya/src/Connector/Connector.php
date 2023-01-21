@@ -72,6 +72,8 @@ final class Connector implements DevicesConnectors\Connector
 	{
 		assert($this->connector instanceof Entities\TuyaConnector);
 
+		$mode = $this->connector->getClientMode();
+
 		foreach ($this->clientsFactories as $clientFactory) {
 			$rc = new ReflectionClass($clientFactory);
 
@@ -79,7 +81,7 @@ final class Connector implements DevicesConnectors\Connector
 
 			if (
 				array_key_exists(Clients\ClientFactory::MODE_CONSTANT_NAME, $constants)
-				&& $constants[Clients\ClientFactory::MODE_CONSTANT_NAME] === $this->connector->getClientMode()->getValue()
+				&& $mode->equalsValue($constants[Clients\ClientFactory::MODE_CONSTANT_NAME])
 			) {
 				$this->client = $clientFactory->create($this->connector);
 			}
