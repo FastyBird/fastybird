@@ -126,16 +126,6 @@ class Periodic implements Writer
 	 */
 	private function handleCommunication(): void
 	{
-		foreach ($this->processedProperties as $index => $processedProperty) {
-			if (
-				(float) $this->dateTimeFactory->getNow()->format('Uv') - (float) $processedProperty->format(
-					'Uv',
-				) >= 500
-			) {
-				unset($this->processedProperties[$index]);
-			}
-		}
-
 		foreach ($this->clients as $id => $client) {
 			$findDevicesQuery = new DevicesQueries\FindDevices();
 			$findDevicesQuery->byConnectorId(Uuid\Uuid::fromString($id));
@@ -234,6 +224,8 @@ class Periodic implements Writer
 										),
 									]),
 								);
+
+								unset($this->processedProperties[$property->getPlainId()]);
 							})
 							->otherwise(function (Throwable $ex) use ($device, $channel, $property): void {
 								$this->logger->error(
