@@ -43,6 +43,8 @@ class DevicePropertyIdentifier extends Consistence\Enum\Enum
 
 	public const IDENTIFIER_UNIT_ID = 'unit_id';
 
+	public const IDENTIFIER_REGISTERS_READING_DELAY = 'registers_reading_delay';
+
 	public function __toString(): string
 	{
 		return strval(self::getValue());

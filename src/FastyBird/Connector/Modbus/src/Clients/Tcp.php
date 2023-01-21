@@ -65,15 +65,11 @@ class Tcp implements Client
 
 	use Nette\SmartObject;
 
-	private const READ_DEBOUNCE_DELAY = 500; // in ms
-
-	private const READ_DELAY = 10; // in s
-
 	private const READ_MAX_ATTEMPTS = 5;
 
-	private const LOST_DELAY = 5; // in s - Waiting delay before another communication with device after device was lost
+	private const LOST_DELAY = 5.0; // in s - Waiting delay before another communication with device after device was lost
 
-	private const HANDLER_START_DELAY = 2;
+	private const HANDLER_START_DELAY = 2.0;
 
 	private const HANDLER_PROCESSING_INTERVAL = 0.01;
 

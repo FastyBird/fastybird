@@ -32,6 +32,8 @@ class ModbusDevice extends DevicesEntities\Devices\Device
 
 	public const DEVICE_TYPE = 'modbus';
 
+	private const REGISTERS_READING_DELAY = 120.0;
+
 	public function getType(): string
 	{
 		return self::DEVICE_TYPE;
@@ -142,6 +144,33 @@ class ModbusDevice extends DevicesEntities\Devices\Device
 		}
 
 		return 0;
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function getRegistersReadingDelay(): float
+	{
+		$property = $this->properties
+			->filter(
+			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::IDENTIFIER_REGISTERS_READING_DELAY
+			)
+			->first();
+
+		if (
+			$property instanceof DevicesEntities\Devices\Properties\Variable
+			&& (
+				is_int($property->getValue())
+				|| is_float($property->getValue())
+			)
+		) {
+			return $property->getValue();
+		}
+
+		return self::REGISTERS_READING_DELAY;
 	}
 
 }

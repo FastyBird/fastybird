@@ -81,15 +81,11 @@ class Rtu implements Client
 
 	private const MODBUS_ERROR = 'C1station/C1error/C1exception/';
 
-	private const READ_DEBOUNCE_DELAY = 500; // in ms
-
-	private const READ_DELAY = 10; // in s
-
 	private const READ_MAX_ATTEMPTS = 5;
 
-	private const LOST_DELAY = 5; // in s - Waiting delay before another communication with device after device was lost
+	private const LOST_DELAY = 5.0; // in s - Waiting delay before another communication with device after device was lost
 
-	private const HANDLER_START_DELAY = 2;
+	private const HANDLER_START_DELAY = 2.0;
 
 	private const HANDLER_PROCESSING_INTERVAL = 0.01;
 
@@ -347,17 +343,6 @@ class Rtu implements Client
 	 */
 	private function handleCommunication(): void
 	{
-		foreach ($this->processedReadProperties as $index => $processedProperty) {
-			if (
-				$processedProperty instanceof DateTimeInterface
-				&& ((float) $this->dateTimeFactory->getNow()->format('Uv') - (float) $processedProperty->format(
-					'Uv',
-				)) >= self::READ_DEBOUNCE_DELAY
-			) {
-				unset($this->processedReadProperties[$index]);
-			}
-		}
-
 		foreach ($this->connector->getDevices() as $device) {
 			assert($device instanceof Entities\ModbusDevice);
 
@@ -663,7 +648,7 @@ class Rtu implements Client
 			if (
 				array_key_exists($propertyUuid, $this->processedReadProperties)
 				&& $this->processedReadProperties[$propertyUuid] instanceof DateTimeInterface
-				&& $now->getTimestamp() - $this->processedReadProperties[$propertyUuid]->getTimestamp() < self::READ_DELAY
+				&& $now->getTimestamp() - $this->processedReadProperties[$propertyUuid]->getTimestamp() < $device->getRegistersReadingDelay()
 			) {
 				return;
 			}
@@ -778,6 +763,7 @@ class Rtu implements Client
 				);
 
 			} else {
+				var_dump($value);
 				$this->processedReadProperties[$propertyUuid] = $now;
 
 				$this->propertyStateHelper->setValue(

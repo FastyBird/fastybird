@@ -55,11 +55,11 @@ class Periodic implements Writer
 
 	private const HANDLER_START_DELAY = 5.0;
 
-	private const HANDLER_DEBOUNCE_INTERVAL = 500;
+	private const HANDLER_DEBOUNCE_INTERVAL = 500.0;
 
 	private const HANDLER_PROCESSING_INTERVAL = 0.01;
 
-	private const HANDLER_PENDING_DELAY = 2_000;
+	private const HANDLER_PENDING_DELAY = 2_000.0;
 
 	/** @var array<string> */
 	private array $processedDevices = [];
