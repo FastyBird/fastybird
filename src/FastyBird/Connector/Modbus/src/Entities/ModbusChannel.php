@@ -30,7 +30,7 @@ use function is_string;
 class ModbusChannel extends DevicesEntities\Channels\Channel
 {
 
-	public const CHANNEL_TYPE = 'modbus-register';
+	public const CHANNEL_TYPE = 'modbus';
 
 	public function getType(): string
 	{

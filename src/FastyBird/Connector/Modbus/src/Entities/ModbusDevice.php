@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Modbus\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
+use FastyBird\Connector\Modbus\Exceptions;
 use FastyBird\Connector\Modbus\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -35,6 +36,8 @@ class ModbusDevice extends DevicesEntities\Devices\Device
 
 	private const REGISTERS_READING_DELAY = 120.0;
 
+	private const DEFAULT_TCP_PORT = 502;
+
 	public function getType(): string
 	{
 		return self::DEVICE_TYPE;
@@ -48,6 +51,48 @@ class ModbusDevice extends DevicesEntities\Devices\Device
 	public function getSource(): MetadataTypes\ConnectorSource
 	{
 		return MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS);
+	}
+
+	/**
+	 * @return array<ModbusChannel>
+	 */
+	public function getChannels(): array
+	{
+		$channels = [];
+
+		foreach (parent::getChannels() as $channel) {
+			if ($channel instanceof ModbusChannel) {
+				$channels[] = $channel;
+			}
+		}
+
+		return $channels;
+	}
+
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 */
+	public function addChannel(DevicesEntities\Channels\Channel $channel): void
+	{
+		if (!$channel instanceof ModbusChannel) {
+			throw new Exceptions\InvalidArgument('Provided channel type is not valid');
+		}
+
+		parent::addChannel($channel);
+	}
+
+	public function getChannel(string $id): ModbusChannel|null
+	{
+		$channel = parent::getChannel($id);
+
+		return $channel instanceof ModbusChannel ? $channel : null;
+	}
+
+	public function findChannel(string $identifier): ModbusChannel|null
+	{
+		$channel = parent::findChannel($identifier);
+
+		return $channel instanceof ModbusChannel ? $channel : null;
 	}
 
 	/**
@@ -119,7 +164,7 @@ class ModbusDevice extends DevicesEntities\Devices\Device
 			return $property->getValue();
 		}
 
-		return 502;
+		return self::DEFAULT_TCP_PORT;
 	}
 
 	/**

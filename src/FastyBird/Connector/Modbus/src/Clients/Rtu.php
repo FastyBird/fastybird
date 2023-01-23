@@ -127,7 +127,6 @@ class Rtu implements Client
 
 	public function __construct(
 		private readonly Entities\ModbusConnector $connector,
-		private readonly Helpers\Channel $channelHelper,
 		private readonly Helpers\Property $propertyStateHelper,
 		private readonly API\Transformer $transformer,
 		private readonly Consumers\Messages $consumer,
@@ -216,7 +215,7 @@ class Rtu implements Client
 	 */
 	public function writeChannelProperty(
 		Entities\ModbusDevice $device,
-		DevicesEntities\Channels\Channel $channel,
+		Entities\ModbusChannel $channel,
 		DevicesEntities\Channels\Properties\Dynamic $property,
 	): Promise\PromiseInterface
 	{
@@ -234,12 +233,7 @@ class Rtu implements Client
 			return Promise\reject(new Exceptions\InvalidState('Device address is not configured'));
 		}
 
-		$address = $this->channelHelper->getConfiguration(
-			$channel,
-			Types\ChannelPropertyIdentifier::get(
-				Types\ChannelPropertyIdentifier::IDENTIFIER_ADDRESS,
-			),
-		);
+		$address = $channel->getAddress();
 
 		if (!is_int($address)) {
 			return Promise\reject(new Exceptions\InvalidState('Channel address is not configured'));
@@ -442,12 +436,7 @@ class Rtu implements Client
 		assert(is_numeric($station));
 
 		foreach ($device->getChannels() as $channel) {
-			$address = $this->channelHelper->getConfiguration(
-				$channel,
-				Types\ChannelPropertyIdentifier::get(
-					Types\ChannelPropertyIdentifier::IDENTIFIER_ADDRESS,
-				),
-			);
+			$address = $channel->getAddress();
 
 			if (!is_int($address)) {
 				foreach ($channel->getProperties() as $property) {

@@ -17,6 +17,7 @@ namespace FastyBird\Connector\Modbus\Fixtures;
 
 use Doctrine\Common\DataFixtures;
 use Doctrine\Persistence;
+use FastyBird\Connector\Modbus\Entities;
 use FastyBird\Connector\Modbus\Exceptions;
 use FastyBird\Connector\Modbus\Types\ChannelPropertyIdentifier;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -47,7 +48,7 @@ final class ChannelsProperties extends DataFixtures\AbstractFixture implements D
 		for ($i = 1; $i <= 4; $i++) {
 			$channel = $this->getReference('modbus-rtu-channel-' . $i);
 
-			if (!$channel instanceof DevicesEntities\Channels\Channel) {
+			if (!$channel instanceof Entities\ModbusChannel) {
 				throw new Exceptions\InvalidState('Channel reference could not be loaded');
 			}
 

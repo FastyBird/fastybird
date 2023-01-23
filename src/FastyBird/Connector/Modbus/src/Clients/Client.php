@@ -45,7 +45,7 @@ interface Client
 	 */
 	public function writeChannelProperty(
 		Entities\ModbusDevice $device,
-		DevicesEntities\Channels\Channel $channel,
+		Entities\ModbusChannel $channel,
 		DevicesEntities\Channels\Properties\Dynamic $property,
 	): Promise\PromiseInterface;
 

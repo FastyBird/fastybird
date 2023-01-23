@@ -19,7 +19,6 @@ use Doctrine\DBAL;
 use Doctrine\Persistence;
 use FastyBird\Connector\Modbus\Entities;
 use FastyBird\Connector\Modbus\Exceptions;
-use FastyBird\Connector\Modbus\Helpers;
 use FastyBird\Connector\Modbus\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -44,7 +43,6 @@ use function filter_var;
 use function intval;
 use function is_array;
 use function is_int;
-use function is_string;
 use function preg_match;
 use function range;
 use function sprintf;
@@ -90,7 +88,6 @@ class Devices extends Console\Command\Command
 		private readonly DevicesModels\Channels\ChannelsManager $channelsManager,
 		private readonly DevicesModels\Devices\Properties\PropertiesManager $devicesPropertiesManager,
 		private readonly DevicesModels\Channels\Properties\PropertiesManager $channelsPropertiesManager,
-		private readonly Helpers\Channel $channelHelper,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 		Log\LoggerInterface|null $logger = null,
 		string|null $name = null,
@@ -881,7 +878,7 @@ class Devices extends Console\Command\Command
 
 			foreach (range($addresses[0], $addresses[1], 1) as $address) {
 				$channel = $this->channelsManager->create(Utils\ArrayHash::from([
-					'entity' => DevicesEntities\Channels\Channel::class,
+					'entity' => Entities\ModbusChannel::class,
 					'identifier' => $type . '_' . $address,
 					'name' => $name,
 					'device' => $device,
@@ -1005,21 +1002,13 @@ class Devices extends Console\Command\Command
 		$findChannelsQuery = new DevicesQueries\FindChannels();
 		$findChannelsQuery->forDevice($device);
 
-		foreach ($this->channelsRepository->findAllBy($findChannelsQuery) as $channel) {
-			$type = $this->channelHelper->getConfiguration(
-				$channel,
-				Types\ChannelPropertyIdentifier::get(Types\ChannelPropertyIdentifier::IDENTIFIER_TYPE),
-			);
-			assert(is_string($type) || $type === null);
-			$type = $type !== null
-				? Types\ChannelType::get($type)
-				: Types\ChannelType::get(Types\ChannelType::DISCRETE_INPUT);
+		foreach ($this->channelsRepository->findAllBy($findChannelsQuery, Entities\ModbusChannel::class) as $channel) {
+			assert($channel instanceof Entities\ModbusChannel);
 
-			$address = $this->channelHelper->getConfiguration(
-				$channel,
-				Types\ChannelPropertyIdentifier::get(Types\ChannelPropertyIdentifier::IDENTIFIER_ADDRESS),
-			);
-			assert(is_int($address) || $address === null);
+			$type = $channel->getRegisterType();
+			$type ??= Types\ChannelType::get(Types\ChannelType::DISCRETE_INPUT);
+
+			$address = $channel->getAddress();
 
 			$channels[$channel->getIdentifier()] = sprintf(
 				'%s %s, Type: %s, Address: %d',
@@ -1074,7 +1063,8 @@ class Devices extends Console\Command\Command
 		$findRegisterQuery = new DevicesQueries\FindChannels();
 		$findRegisterQuery->forDevice($device);
 
-		$channel = $this->channelsRepository->findOneBy($findChannelsQuery);
+		$channel = $this->channelsRepository->findOneBy($findChannelsQuery, Entities\ModbusChannel::class);
+		assert($channel instanceof Entities\ModbusChannel || $channel === null);
 
 		if ($channel === null) {
 			$io->error('Something went wrong, channel could not be loaded');
@@ -1232,18 +1222,12 @@ class Devices extends Console\Command\Command
 	 */
 	private function askRegisterType(
 		Style\SymfonyStyle $io,
-		DevicesEntities\Channels\Channel|null $channel = null,
+		Entities\ModbusChannel|null $channel = null,
 	): Types\ChannelType
 	{
 		if ($channel !== null) {
-			$type = $this->channelHelper->getConfiguration(
-				$channel,
-				Types\ChannelPropertyIdentifier::get(Types\ChannelPropertyIdentifier::IDENTIFIER_TYPE),
-			);
-			assert(is_string($type) || $type === null);
-			$type = $type !== null
-				? Types\ChannelType::get($type)
-				: Types\ChannelType::get(Types\ChannelType::DISCRETE_INPUT);
+			$type = $channel->getRegisterType();
+			$type ??= Types\ChannelType::get(Types\ChannelType::DISCRETE_INPUT);
 
 			$default = 0;
 
@@ -1312,18 +1296,10 @@ class Devices extends Console\Command\Command
 		Style\SymfonyStyle $io,
 		Types\ChannelType $type,
 		Entities\ModbusDevice $device,
-		DevicesEntities\Channels\Channel|null $channel = null,
+		Entities\ModbusChannel|null $channel = null,
 	): int|array
 	{
-		$address = null;
-
-		if ($channel !== null) {
-			$address = $this->channelHelper->getConfiguration(
-				$channel,
-				Types\ChannelPropertyIdentifier::get(Types\ChannelPropertyIdentifier::IDENTIFIER_ADDRESS),
-			);
-			assert(is_int($address) || $address === null);
-		}
+		$address = $channel?->getAddress();
 
 		$question = new Console\Question\Question(
 			(
@@ -1333,17 +1309,11 @@ class Devices extends Console\Command\Command
 			),
 			$address,
 		);
-		$question->setValidator(function ($answer) use ($type, $device, $channel) {
+		$question->setValidator(static function ($answer) use ($type, $device, $channel) {
 			if (strval(intval($answer)) === strval($answer)) {
 				foreach ($device->getChannels() as $deviceChannel) {
 					if (Utils\Strings::startsWith($deviceChannel->getIdentifier(), strval($type->getValue()))) {
-						$address = $this->channelHelper->getConfiguration(
-							$deviceChannel,
-							Types\ChannelPropertyIdentifier::get(
-								Types\ChannelPropertyIdentifier::IDENTIFIER_ADDRESS,
-							),
-						);
-						assert(is_int($address) || $address === null);
+						$address = $deviceChannel->getAddress();
 
 						if (
 							intval($address) === intval($answer)
@@ -1370,13 +1340,7 @@ class Devices extends Console\Command\Command
 
 					if ($start < $end) {
 						foreach ($device->getChannels() as $deviceChannel) {
-							$address = $this->channelHelper->getConfiguration(
-								$deviceChannel,
-								Types\ChannelPropertyIdentifier::get(
-									Types\ChannelPropertyIdentifier::IDENTIFIER_ADDRESS,
-								),
-							);
-							assert(is_int($address) || $address === null);
+							$address = $deviceChannel->getAddress();
 
 							if (intval($address) >= $start && intval($address) <= $end) {
 								throw new Exceptions\Runtime(sprintf(
@@ -1404,7 +1368,7 @@ class Devices extends Console\Command\Command
 
 	private function askRegisterName(
 		Style\SymfonyStyle $io,
-		DevicesEntities\Channels\Channel|null $channel = null,
+		Entities\ModbusChannel|null $channel = null,
 	): string|null
 	{
 		$question = new Console\Question\Question('Provide channel name (optional)', $channel?->getName());
@@ -1423,19 +1387,16 @@ class Devices extends Console\Command\Command
 	private function askRegisterDataType(
 		Style\SymfonyStyle $io,
 		Types\ChannelType $type,
-		DevicesEntities\Channels\Channel|null $channel = null,
+		Entities\ModbusChannel|null $channel = null,
 	): MetadataTypes\DataType
 	{
 		$default = $existingType = null;
 
 		if ($channel !== null) {
-			$existingType = $this->channelHelper->getConfiguration(
-				$channel,
-				Types\ChannelPropertyIdentifier::get(Types\ChannelPropertyIdentifier::IDENTIFIER_TYPE),
+			$existingType = $channel->getRegisterType();
+			$existingType ??= Types\ChannelType::get(
+				Types\ChannelType::DISCRETE_INPUT,
 			);
-			$existingType = $existingType !== null
-				? Types\ChannelType::get($existingType)
-				: Types\ChannelType::get(Types\ChannelType::DISCRETE_INPUT);
 		}
 
 		if ($type->equalsValue(Types\ChannelType::DISCRETE_INPUT)) {

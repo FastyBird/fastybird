@@ -132,6 +132,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 			$channel = $property->getChannel();
 
 			assert($device instanceof Entities\ModbusDevice);
+			assert($channel instanceof Entities\ModbusChannel);
 
 			$client->writeChannelProperty($device, $channel, $property)
 				->then(function () use ($property): void {

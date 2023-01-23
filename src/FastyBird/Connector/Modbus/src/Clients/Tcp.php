@@ -22,7 +22,6 @@ use FastyBird\Connector\Modbus\Consumers;
 use FastyBird\Connector\Modbus\Entities;
 use FastyBird\Connector\Modbus\Exceptions;
 use FastyBird\Connector\Modbus\Helpers;
-use FastyBird\Connector\Modbus\Types;
 use FastyBird\Connector\Modbus\Writers;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata;
@@ -102,7 +101,6 @@ class Tcp implements Client
 
 	public function __construct(
 		private readonly Entities\ModbusConnector $connector,
-		private readonly Helpers\Channel $channelHelper,
 		private readonly Helpers\Property $propertyStateHelper,
 		private readonly API\Transformer $transformer,
 		private readonly Consumers\Messages $consumer,
@@ -144,7 +142,7 @@ class Tcp implements Client
 
 	public function writeChannelProperty(
 		Entities\ModbusDevice $device,
-		DevicesEntities\Channels\Channel $channel,
+		Entities\ModbusChannel $channel,
 		DevicesEntities\Channels\Properties\Dynamic $property,
 	): Promise\PromiseInterface
 	{
@@ -275,12 +273,7 @@ class Tcp implements Client
 		$this->readHoldingRegistersAddresses = $this->readInputsRegistersAddresses = [];
 
 		foreach ($device->getChannels() as $channel) {
-			$address = $this->channelHelper->getConfiguration(
-				$channel,
-				Types\ChannelPropertyIdentifier::get(
-					Types\ChannelPropertyIdentifier::IDENTIFIER_ADDRESS,
-				),
-			);
+			$address = $channel->getAddress();
 
 			if (!is_int($address)) {
 				foreach ($channel->getProperties() as $property) {

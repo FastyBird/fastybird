@@ -112,6 +112,7 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 		$channel = $property->getChannel();
 
 		assert($device instanceof Entities\ModbusDevice);
+		assert($channel instanceof Entities\ModbusChannel);
 
 		$client->writeChannelProperty($device, $channel, $property)
 			->then(function () use ($property): void {
