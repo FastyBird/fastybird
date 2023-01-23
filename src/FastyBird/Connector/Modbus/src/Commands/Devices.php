@@ -44,6 +44,7 @@ use function filter_var;
 use function intval;
 use function is_array;
 use function is_int;
+use function is_string;
 use function preg_match;
 use function range;
 use function sprintf;
@@ -1005,22 +1006,27 @@ class Devices extends Console\Command\Command
 		$findChannelsQuery->forDevice($device);
 
 		foreach ($this->channelsRepository->findAllBy($findChannelsQuery) as $channel) {
-			$type = Types\ChannelType::get($this->channelHelper->getConfiguration(
+			$type = $this->channelHelper->getConfiguration(
 				$channel,
 				Types\ChannelPropertyIdentifier::get(Types\ChannelPropertyIdentifier::IDENTIFIER_TYPE),
-			));
+			);
+			assert(is_string($type) || $type === null);
+			$type = $type !== null
+				? Types\ChannelType::get($type)
+				: Types\ChannelType::get(Types\ChannelType::DISCRETE_INPUT);
 
-			$addresses = $this->channelHelper->getConfiguration(
+			$address = $this->channelHelper->getConfiguration(
 				$channel,
 				Types\ChannelPropertyIdentifier::get(Types\ChannelPropertyIdentifier::IDENTIFIER_ADDRESS),
 			);
+			assert(is_int($address) || $address === null);
 
 			$channels[$channel->getIdentifier()] = sprintf(
 				'%s %s, Type: %s, Address: %d',
 				$channel->getIdentifier(),
 				($channel->getName() !== null ? ' [' . $channel->getName() . ']' : ''),
 				strval($type->getValue()),
-				intval($addresses),
+				$address,
 			);
 		}
 
@@ -1230,10 +1236,14 @@ class Devices extends Console\Command\Command
 	): Types\ChannelType
 	{
 		if ($channel !== null) {
-			$type = Types\ChannelType::get($this->channelHelper->getConfiguration(
+			$type = $this->channelHelper->getConfiguration(
 				$channel,
 				Types\ChannelPropertyIdentifier::get(Types\ChannelPropertyIdentifier::IDENTIFIER_TYPE),
-			));
+			);
+			assert(is_string($type) || $type === null);
+			$type = $type !== null
+				? Types\ChannelType::get($type)
+				: Types\ChannelType::get(Types\ChannelType::DISCRETE_INPUT);
 
 			$default = 0;
 
@@ -1308,10 +1318,11 @@ class Devices extends Console\Command\Command
 		$address = null;
 
 		if ($channel !== null) {
-			$address = intval($this->channelHelper->getConfiguration(
+			$address = $this->channelHelper->getConfiguration(
 				$channel,
 				Types\ChannelPropertyIdentifier::get(Types\ChannelPropertyIdentifier::IDENTIFIER_ADDRESS),
-			));
+			);
+			assert(is_int($address) || $address === null);
 		}
 
 		$question = new Console\Question\Question(
@@ -1332,6 +1343,7 @@ class Devices extends Console\Command\Command
 								Types\ChannelPropertyIdentifier::IDENTIFIER_ADDRESS,
 							),
 						);
+						assert(is_int($address) || $address === null);
 
 						if (
 							intval($address) === intval($answer)
@@ -1364,6 +1376,7 @@ class Devices extends Console\Command\Command
 									Types\ChannelPropertyIdentifier::IDENTIFIER_ADDRESS,
 								),
 							);
+							assert(is_int($address) || $address === null);
 
 							if (intval($address) >= $start && intval($address) <= $end) {
 								throw new Exceptions\Runtime(sprintf(
@@ -1416,10 +1429,13 @@ class Devices extends Console\Command\Command
 		$default = $existingType = null;
 
 		if ($channel !== null) {
-			$existingType = Types\ChannelType::get($this->channelHelper->getConfiguration(
+			$existingType = $this->channelHelper->getConfiguration(
 				$channel,
 				Types\ChannelPropertyIdentifier::get(Types\ChannelPropertyIdentifier::IDENTIFIER_TYPE),
-			));
+			);
+			$existingType = $existingType !== null
+				? Types\ChannelType::get($existingType)
+				: Types\ChannelType::get(Types\ChannelType::DISCRETE_INPUT);
 		}
 
 		if ($type->equalsValue(Types\ChannelType::DISCRETE_INPUT)) {
