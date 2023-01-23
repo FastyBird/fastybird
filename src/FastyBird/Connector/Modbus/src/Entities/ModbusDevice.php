@@ -21,6 +21,7 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use function is_float;
 use function is_int;
 use function is_string;
 
@@ -95,6 +96,30 @@ class ModbusDevice extends DevicesEntities\Devices\Device
 		}
 
 		return null;
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function getPort(): int
+	{
+		$property = $this->properties
+			->filter(
+			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS_PORT
+			)
+			->first();
+
+		if (
+			$property instanceof DevicesEntities\Devices\Properties\Variable
+			&& is_int($property->getValue())
+		) {
+			return $property->getValue();
+		}
+
+		return 502;
 	}
 
 	/**

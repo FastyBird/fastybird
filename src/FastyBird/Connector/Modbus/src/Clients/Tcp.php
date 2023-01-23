@@ -277,7 +277,7 @@ class Tcp implements Client
 		foreach ($device->getChannels() as $channel) {
 			$address = $this->channelHelper->getConfiguration(
 				$channel,
-				Types\DevicePropertyIdentifier::get(
+				Types\ChannelPropertyIdentifier::get(
 					Types\ChannelPropertyIdentifier::IDENTIFIER_ADDRESS,
 				),
 			);

@@ -171,10 +171,12 @@ class Initialize extends Console\Command\Command
 				$findConnectorQuery = new DevicesQueries\FindConnectors();
 				$findConnectorQuery->byIdentifier($answer);
 
-				if ($this->connectorsRepository->findOneBy(
-					$findConnectorQuery,
-					Entities\ModbusConnector::class,
-				) !== null) {
+				if (
+					$this->connectorsRepository->findOneBy(
+						$findConnectorQuery,
+						Entities\ModbusConnector::class,
+					) !== null
+				) {
 					throw new Exceptions\Runtime('This identifier is already used');
 				}
 			}
@@ -193,10 +195,12 @@ class Initialize extends Console\Command\Command
 				$findConnectorQuery = new DevicesQueries\FindConnectors();
 				$findConnectorQuery->byIdentifier($identifier);
 
-				if ($this->connectorsRepository->findOneBy(
-					$findConnectorQuery,
-					Entities\ModbusConnector::class,
-				) === null) {
+				if (
+					$this->connectorsRepository->findOneBy(
+						$findConnectorQuery,
+						Entities\ModbusConnector::class,
+					) === null
+				) {
 					break;
 				}
 			}

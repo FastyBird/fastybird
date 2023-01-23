@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ChannelPropertyIdentifier.php
+ * ChannelType.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,34 +10,35 @@
  * @subpackage     Types
  * @since          1.0.0
  *
- * @date           01.08.22
+ * @date           21.01.23
  */
 
 namespace FastyBird\Connector\Modbus\Types;
 
 use Consistence;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use function strval;
 
 /**
- * Device property identifier types
+ * Device channel type types
  *
  * @package        FastyBird:ModbusConnector!
  * @subpackage     Types
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class ChannelPropertyIdentifier extends Consistence\Enum\Enum
+class ChannelType extends Consistence\Enum\Enum
 {
 
 	/**
 	 * Define device states
 	 */
-	public const IDENTIFIER_ADDRESS = MetadataTypes\ChannelPropertyIdentifier::IDENTIFIER_ADDRESS;
+	public const DISCRETE_INPUT = 'discrete_input';
 
-	public const IDENTIFIER_TYPE = 'type';
+	public const COIL = 'coil';
 
-	public const IDENTIFIER_VALUE = 'value';
+	public const INPUT_REGISTER = 'input_register';
+
+	public const HOLDING_REGISTER = 'holding_register';
 
 	public function __toString(): string
 	{

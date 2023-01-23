@@ -39,6 +39,8 @@ class DevicePropertyIdentifier extends Consistence\Enum\Enum
 
 	public const IDENTIFIER_IP_ADDRESS = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS;
 
+	public const IDENTIFIER_IP_ADDRESS_PORT = 'ip_address_port';
+
 	public const IDENTIFIER_BYTE_ORDER = 'byte_order';
 
 	public const IDENTIFIER_UNIT_ID = 'unit_id';

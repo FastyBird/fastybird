@@ -63,6 +63,7 @@ use function strval;
 use function substr;
 use function unpack;
 use function usleep;
+use function var_dump;
 
 /**
  * Modbus RTU devices client interface
@@ -235,7 +236,7 @@ class Rtu implements Client
 
 		$address = $this->channelHelper->getConfiguration(
 			$channel,
-			Types\DevicePropertyIdentifier::get(
+			Types\ChannelPropertyIdentifier::get(
 				Types\ChannelPropertyIdentifier::IDENTIFIER_ADDRESS,
 			),
 		);
@@ -443,7 +444,7 @@ class Rtu implements Client
 		foreach ($device->getChannels() as $channel) {
 			$address = $this->channelHelper->getConfiguration(
 				$channel,
-				Types\DevicePropertyIdentifier::get(
+				Types\ChannelPropertyIdentifier::get(
 					Types\ChannelPropertyIdentifier::IDENTIFIER_ADDRESS,
 				),
 			);

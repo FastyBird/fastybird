@@ -157,6 +157,9 @@ class ModbusExtension extends DI\CompilerExtension
 
 		$builder->addDefinition($this->prefix('commands.execute'), new DI\Definitions\ServiceDefinition())
 			->setType(Commands\Execute::class);
+
+		$builder->addDefinition($this->prefix('commands.devices'), new DI\Definitions\ServiceDefinition())
+			->setType(Commands\Devices::class);
 	}
 
 	/**
