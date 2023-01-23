@@ -20,6 +20,7 @@ use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities;
 use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
+use IPub\DoctrineDynamicDiscriminatorMap\Entities as DoctrineDynamicDiscriminatorMapEntities;
 use IPub\DoctrineTimestampable;
 use Ramsey\Uuid;
 
@@ -48,7 +49,8 @@ use Ramsey\Uuid;
  */
 class Channel implements Entities\Entity,
 	Entities\EntityParams,
-	DoctrineTimestampable\Entities\IEntityCreated, DoctrineTimestampable\Entities\IEntityUpdated
+	DoctrineTimestampable\Entities\IEntityCreated, DoctrineTimestampable\Entities\IEntityUpdated,
+	DoctrineDynamicDiscriminatorMapEntities\IDiscriminatorProvider
 {
 
 	use Entities\TEntity;
@@ -67,19 +69,19 @@ class Channel implements Entities\Entity,
 	 * @IPubDoctrine\Crud(is="required")
 	 * @ORM\Column(type="string", name="channel_identifier", length=50, nullable=false)
 	 */
-	private string $identifier;
+	protected string $identifier;
 
 	/**
 	 * @IPubDoctrine\Crud(is="writable")
 	 * @ORM\Column(type="string", name="channel_name", nullable=true, options={"default": null})
 	 */
-	private string|null $name;
+	protected string|null $name;
 
 	/**
 	 * @IPubDoctrine\Crud(is="writable")
 	 * @ORM\Column(type="text", name="channel_comment", nullable=true, options={"default": null})
 	 */
-	private string|null $comment = null;
+	protected string|null $comment = null;
 
 	/**
 	 * @var Common\Collections\Collection<int, Entities\Channels\Properties\Property>
@@ -87,7 +89,7 @@ class Channel implements Entities\Entity,
 	 * @IPubDoctrine\Crud(is="writable")
 	 * @ORM\OneToMany(targetEntity="FastyBird\Module\Devices\Entities\Channels\Properties\Property", mappedBy="channel", cascade={"persist", "remove"}, orphanRemoval=true)
 	 */
-	private Common\Collections\Collection $properties;
+	protected Common\Collections\Collection $properties;
 
 	/**
 	 * @var Common\Collections\Collection<int, Entities\Channels\Controls\Control>
@@ -95,14 +97,14 @@ class Channel implements Entities\Entity,
 	 * @IPubDoctrine\Crud(is="writable")
 	 * @ORM\OneToMany(targetEntity="FastyBird\Module\Devices\Entities\Channels\Controls\Control", mappedBy="channel", cascade={"persist", "remove"}, orphanRemoval=true)
 	 */
-	private Common\Collections\Collection $controls;
+	protected Common\Collections\Collection $controls;
 
 	/**
 	 * @IPubDoctrine\Crud(is="required")
 	 * @ORM\ManyToOne(targetEntity="FastyBird\Module\Devices\Entities\Devices\Device", inversedBy="channels")
 	 * @ORM\JoinColumn(name="device_id", referencedColumnName="device_id", onDelete="CASCADE", nullable=false)
 	 */
-	private Entities\Devices\Device $device;
+	protected Entities\Devices\Device $device;
 
 	public function __construct(
 		Entities\Devices\Device $device,
@@ -288,9 +290,15 @@ class Channel implements Entities\Entity,
 		];
 	}
 
-	public function getSource(): MetadataTypes\ModuleSource
+	// @phpstan-ignore-next-line
+	public function getSource(): MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource
 	{
 		return MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES);
+	}
+
+	public function getDiscriminatorName(): string
+	{
+		return 'channel';
 	}
 
 }
