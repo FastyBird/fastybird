@@ -27,7 +27,8 @@ use function in_array;
 /**
  * Find device channels entities query
  *
- * @extends  DoctrineOrmQuery\QueryObject<Entities\Channels\Channel>
+ * @template T of Entities\Channels\Channel
+ * @extends  DoctrineOrmQuery\QueryObject<T>
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Queries
@@ -105,7 +106,7 @@ class FindChannels extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @phpstan-param ORM\EntityRepository<Entities\Channels\Channel> $repository
+	 * @phpstan-param ORM\EntityRepository<T> $repository
 	 */
 	protected function doCreateQuery(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{
@@ -119,7 +120,7 @@ class FindChannels extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @phpstan-param ORM\EntityRepository<Entities\Channels\Channel> $repository
+	 * @phpstan-param ORM\EntityRepository<T> $repository
 	 */
 	private function createBasicDql(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{
@@ -135,7 +136,7 @@ class FindChannels extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @phpstan-param ORM\EntityRepository<Entities\Channels\Channel> $repository
+	 * @phpstan-param ORM\EntityRepository<T> $repository
 	 */
 	protected function doCreateCountQuery(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{

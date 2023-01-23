@@ -38,8 +38,8 @@ final class ChannelsRepository
 
 	use Nette\SmartObject;
 
-	/** @var ORM\EntityRepository<Entities\Channels\Channel>|null */
-	private ORM\EntityRepository|null $repository = null;
+	/** @var array<ORM\EntityRepository<Entities\Channels\Channel>> */
+	private array $repository = [];
 
 	public function __construct(
 		private readonly Utilities\Database $database,
@@ -49,52 +49,80 @@ final class ChannelsRepository
 	}
 
 	/**
+	 * @template T of Entities\Channels\Channel
+	 *
+	 * @phpstan-param Queries\FindChannels<T> $queryObject
+	 * @phpstan-param class-string<T> $type
+	 *
 	 * @throws Exceptions\InvalidState
 	 */
-	public function findOneBy(Queries\FindChannels $queryObject): Entities\Channels\Channel|null
+	public function findOneBy(
+		Queries\FindChannels $queryObject,
+		string $type = Entities\Channels\Channel::class,
+	): Entities\Channels\Channel|null
 	{
 		return $this->database->query(
-			fn (): Entities\Channels\Channel|null => $queryObject->fetchOne($this->getRepository()),
+			fn (): Entities\Channels\Channel|null => $queryObject->fetchOne($this->getRepository($type)),
 		);
 	}
 
 	/**
-	 * @phpstan-return array<Entities\Channels\Channel>
+	 * @template T of Entities\Channels\Channel
+	 *
+	 * @phpstan-param Queries\FindChannels<T> $queryObject
+	 * @phpstan-param class-string<T> $type
+	 *
+	 * @phpstan-return array<T>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
-	public function findAllBy(Queries\FindChannels $queryObject): array
+	public function findAllBy(
+		Queries\FindChannels $queryObject,
+		string $type = Entities\Channels\Channel::class,
+	): array
 	{
-		return $this->database->query(
-			function () use ($queryObject): array {
-				/** @var array<Entities\Channels\Channel>|DoctrineOrmQuery\ResultSet<Entities\Channels\Channel> $result */
-				$result = $queryObject->fetch($this->getRepository());
+		/** @var array<T> $result */
+		$result = $this->database->query(
+			function () use ($queryObject, $type): array {
+				/** @var array<T>|DoctrineOrmQuery\ResultSet<T> $result */
+				$result = $queryObject->fetch($this->getRepository($type));
 
 				if (is_array($result)) {
 					return $result;
 				}
 
-				/** @var array<Entities\Channels\Channel> $data */
+				/** @var array<T> $data */
 				$data = $result->toArray();
 
 				return $data;
 			},
 		);
+
+		return $result;
 	}
 
 	/**
-	 * @phpstan-return DoctrineOrmQuery\ResultSet<Entities\Channels\Channel>
+	 * @template T of Entities\Channels\Channel
+	 *
+	 * @phpstan-param Queries\FindChannels<T> $queryObject
+	 * @phpstan-param class-string<T> $type
+	 *
+	 * @phpstan-return DoctrineOrmQuery\ResultSet<T>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
 	public function getResultSet(
 		Queries\FindChannels $queryObject,
+		string $type = Entities\Channels\Channel::class,
 	): DoctrineOrmQuery\ResultSet
 	{
 		return $this->database->query(
-			function () use ($queryObject): DoctrineOrmQuery\ResultSet {
-				/** @var DoctrineOrmQuery\ResultSet<Entities\Channels\Channel> $result */
-				$result = $queryObject->fetch($this->getRepository());
+			function () use ($queryObject, $type): DoctrineOrmQuery\ResultSet {
+				$result = $queryObject->fetch($this->getRepository($type));
+
+				if (is_array($result)) {
+					throw new Exceptions\InvalidState('Err');
+				}
 
 				return $result;
 			},
@@ -102,17 +130,22 @@ final class ChannelsRepository
 	}
 
 	/**
-	 * @param class-string<Entities\Channels\Channel> $type
+	 * @template T of Entities\Channels\Channel
 	 *
-	 * @return ORM\EntityRepository<Entities\Channels\Channel>
+	 * @phpstan-param class-string<T> $type
+	 *
+	 * @phpstan-return ORM\EntityRepository<T>
 	 */
-	private function getRepository(string $type = Entities\Channels\Channel::class): ORM\EntityRepository
+	private function getRepository(string $type): ORM\EntityRepository
 	{
-		if ($this->repository === null) {
-			$this->repository = $this->managerRegistry->getRepository($type);
+		if (!isset($this->repository[$type])) {
+			$this->repository[$type] = $this->managerRegistry->getRepository($type);
 		}
 
-		return $this->repository;
+		/** @var ORM\EntityRepository<T> $repository */
+		$repository = $this->repository[$type];
+
+		return $repository;
 	}
 
 }

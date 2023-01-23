@@ -39,6 +39,12 @@ use Ramsey\Uuid;
  *       @ORM\Index(name="channel_identifier_idx", columns={"channel_identifier"})
  *     }
  * )
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorColumn(name="channel_type", type="string", length=40)
+ * @ORM\DiscriminatorMap({
+ *    "channel" = "FastyBird\Module\Devices\Entities\Channels\Channel"
+ * })
+ * @ORM\MappedSuperclass
  */
 class Channel implements Entities\Entity,
 	Entities\EntityParams,
