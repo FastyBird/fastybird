@@ -24,13 +24,14 @@ use function is_scalar;
 /**
  * Device channel entity hydrator
  *
- * @extends JsonApiHydrators\Hydrator<Entities\Channels\Channel>
+ * @template  T of Entities\Channels\Channel
+ * @extends   JsonApiHydrators\Hydrator<T>
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Hydrators
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Channel extends JsonApiHydrators\Hydrator
+class Channel extends JsonApiHydrators\Hydrator
 {
 
 	/** @var array<int|string, string> */

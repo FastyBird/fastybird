@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ModbusDevice.php
+ * ModbusChannel.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,7 +10,7 @@
  * @subpackage     Schemas
  * @since          1.0.0
  *
- * @date           22.01.22
+ * @date           24.01.23
  */
 
 namespace FastyBird\Connector\Modbus\Schemas;
@@ -20,25 +20,25 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Schemas as DevicesSchemas;
 
 /**
- * Modbus device entity schema
+ * Modbus channel entity schema
  *
- * @extends DevicesSchemas\Devices\Device<Entities\ModbusDevice>
+ * @extends DevicesSchemas\Channels\Channel<Entities\ModbusChannel>
  *
  * @package        FastyBird:ModbusConnector!
  * @subpackage     Schemas
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ModbusDevice extends DevicesSchemas\Devices\Device
+final class ModbusChannel extends DevicesSchemas\Channels\Channel
 {
 
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS . '/device/' . Entities\ModbusDevice::DEVICE_TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS . '/channel/' . Entities\ModbusChannel::CHANNEL_TYPE;
 
 	public function getEntityClass(): string
 	{
-		return Entities\ModbusDevice::class;
+		return Entities\ModbusChannel::class;
 	}
 
 	public function getType(): string

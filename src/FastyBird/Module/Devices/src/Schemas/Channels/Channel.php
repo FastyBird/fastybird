@@ -28,13 +28,14 @@ use function count;
 /**
  * Channel entity schema
  *
- * @extends JsonApiSchemas\JsonApi<Entities\Channels\Channel>
+ * @template T of Entities\Channels\Channel
+ * @extends  JsonApiSchemas\JsonApi<T>
  *
  * @package         FastyBird:DevicesModule!
  * @subpackage      Schemas
  * @author          Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Channel extends JsonApiSchemas\JsonApi
+class Channel extends JsonApiSchemas\JsonApi
 {
 
 	/**
@@ -66,7 +67,7 @@ final class Channel extends JsonApiSchemas\JsonApi
 	}
 
 	/**
-	 * @phpstan-param Entities\Channels\Channel $resource
+	 * @phpstan-param T $resource
 	 *
 	 * @phpstan-return iterable<string, (string|array<string>|null)>
 	 *
@@ -85,7 +86,7 @@ final class Channel extends JsonApiSchemas\JsonApi
 	}
 
 	/**
-	 * @phpstan-param Entities\Channels\Channel $resource
+	 * @phpstan-param T $resource
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -105,7 +106,7 @@ final class Channel extends JsonApiSchemas\JsonApi
 	}
 
 	/**
-	 * @phpstan-param Entities\Channels\Channel $resource
+	 * @phpstan-param T $resource
 	 *
 	 * @phpstan-return iterable<string, mixed>
 	 *
@@ -136,7 +137,7 @@ final class Channel extends JsonApiSchemas\JsonApi
 	}
 
 	/**
-	 * @phpstan-param Entities\Channels\Channel $resource
+	 * @phpstan-param T $resource
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -192,7 +193,7 @@ final class Channel extends JsonApiSchemas\JsonApi
 	}
 
 	/**
-	 * @phpstan-param Entities\Channels\Channel $resource
+	 * @phpstan-param T $resource
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
