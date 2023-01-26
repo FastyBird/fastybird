@@ -63,7 +63,6 @@ use function strval;
 use function substr;
 use function unpack;
 use function usleep;
-use function var_dump;
 
 /**
  * Modbus RTU devices client interface
@@ -485,7 +484,7 @@ class Rtu implements Client
 				 */
 
 				try {
-					$this->readProperty($station, $address, $device, $property);
+					$this->readProperty($station, $address, $device, $channel, $property);
 				} catch (Exceptions\ModbusRtu $ex) {
 					$this->logger->error(
 						'Modbus communication with device failed',
@@ -533,6 +532,7 @@ class Rtu implements Client
 		int $station,
 		int $address,
 		Entities\ModbusDevice $device,
+		Entities\ModbusChannel $channel,
 		DevicesEntities\Channels\Properties\Dynamic $property,
 	): void
 	{
@@ -592,7 +592,7 @@ class Rtu implements Client
 			if (
 				isset($this->processedReadProperties[$propertyUuid])
 				&& is_int($this->processedReadProperties[$propertyUuid])
-				&& $this->processedReadProperties[$propertyUuid] > self::READ_MAX_ATTEMPTS
+				&& $this->processedReadProperties[$propertyUuid] >= self::READ_MAX_ATTEMPTS
 			) {
 				unset($this->processedReadProperties[$propertyUuid]);
 
@@ -638,7 +638,7 @@ class Rtu implements Client
 			if (
 				array_key_exists($propertyUuid, $this->processedReadProperties)
 				&& $this->processedReadProperties[$propertyUuid] instanceof DateTimeInterface
-				&& $now->getTimestamp() - $this->processedReadProperties[$propertyUuid]->getTimestamp() < $device->getRegistersReadingDelay()
+				&& $now->getTimestamp() - $this->processedReadProperties[$propertyUuid]->getTimestamp() < $channel->getReadingDelay()
 			) {
 				return;
 			}
@@ -719,7 +719,16 @@ class Rtu implements Client
 					return;
 				}
 			} catch (Exceptions\ModbusRtu $ex) {
-				unset($this->processedReadProperties[$propertyUuid]);
+				// Increment failed attempts counter
+				if (!array_key_exists($propertyUuid, $this->processedReadProperties)) {
+					$this->processedReadProperties[$propertyUuid] = 1;
+				} else {
+					$this->processedReadProperties[$propertyUuid] = is_int(
+						$this->processedReadProperties[$propertyUuid],
+					)
+						? $this->processedReadProperties[$propertyUuid] + 1
+						: 1;
+				}
 
 				$this->propertyStateHelper->setValue(
 					$property,
@@ -753,7 +762,6 @@ class Rtu implements Client
 				);
 
 			} else {
-				var_dump($value);
 				$this->processedReadProperties[$propertyUuid] = $now;
 
 				$this->propertyStateHelper->setValue(
@@ -842,7 +850,7 @@ class Rtu implements Client
 				return false;
 			}
 
-			$response = $unpacked + ['status' => array_values($statusUnpacked)];
+			$response = $unpacked + ['registers' => array_values($statusUnpacked)];
 		}
 
 		return $response;
@@ -903,7 +911,7 @@ class Rtu implements Client
 				return false;
 			}
 
-			$response = $unpacked + ['status' => array_values($statusUnpacked)];
+			$response = $unpacked + ['registers' => array_values($statusUnpacked)];
 		}
 
 		return $response;

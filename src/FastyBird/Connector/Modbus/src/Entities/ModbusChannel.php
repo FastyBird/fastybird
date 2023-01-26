@@ -21,6 +21,7 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use function is_float;
 use function is_int;
 use function is_string;
 
@@ -31,6 +32,8 @@ class ModbusChannel extends DevicesEntities\Channels\Channel
 {
 
 	public const CHANNEL_TYPE = 'modbus';
+
+	public const READING_DELAY = 5.0;
 
 	public function getType(): string
 	{
@@ -94,6 +97,33 @@ class ModbusChannel extends DevicesEntities\Channels\Channel
 		}
 
 		return null;
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function getReadingDelay(): float
+	{
+		$property = $this->properties
+			->filter(
+			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Channels\Properties\Property $property): bool => $property->getIdentifier() === Types\ChannelPropertyIdentifier::IDENTIFIER_READING_DELAY
+			)
+			->first();
+
+		if (
+			$property instanceof DevicesEntities\Channels\Properties\Variable
+			&& (
+				is_int($property->getValue())
+				|| is_float($property->getValue())
+			)
+		) {
+			return $property->getValue();
+		}
+
+		return self::READING_DELAY;
 	}
 
 }

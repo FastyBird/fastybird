@@ -35,7 +35,6 @@ use Symfony\Component\Console\Output;
 use Symfony\Component\Console\Style;
 use Throwable;
 use function array_key_exists;
-use function array_key_first;
 use function array_search;
 use function array_values;
 use function assert;
@@ -179,6 +178,8 @@ class Devices extends Console\Command\Command
 		$connector = $this->askWhichConnector($io);
 
 		if ($connector === null) {
+			$io->warning('No connectors registered in system');
+
 			return Console\Command\Command::SUCCESS;
 		}
 
@@ -248,87 +249,32 @@ class Devices extends Console\Command\Command
 			return;
 		}
 
-		$question = new Console\Question\Question('Provide device name');
-
-		$name = $io->askQuestion($question);
+		$name = $this->askDeviceName($io);
 
 		$address = $ipAddress = $port = $unitId = null;
 
 		if ($connector->getClientMode()->equalsValue(Types\ClientMode::MODE_RTU)) {
-			$question = new Console\Question\Question('Provide device hardware address');
-			$question->setValidator(static function ($answer) use ($connector) {
-				if (strval(intval($answer)) !== strval($answer)) {
-					throw new Exceptions\Runtime('Device hardware address have to be numeric');
-				}
-
-				foreach ($connector->getDevices() as $device) {
-					assert($device instanceof Entities\ModbusDevice);
-
-					if ($device->getAddress() === intval($answer)) {
-						throw new Exceptions\InvalidArgument('Device hardware address already taken');
-					}
-				}
-
-				return $answer;
-			});
-
-			$address = intval($io->askQuestion($question));
+			$address = $this->askDeviceAddress($io, $connector);
 		}
 
 		if ($connector->getClientMode()->equalsValue(Types\ClientMode::MODE_TCP)) {
-			$question = new Console\Question\Question('Provide device IP address');
-			$question->setValidator(static function ($answer) use (&$port) {
-				if (!filter_var(strval($answer), FILTER_FLAG_IPV4)) {
-					if (
-						preg_match(self::MATCH_IP_ADDRESS_PORT, strval($answer), $matches) === 1
-						&& array_key_exists('address', $matches)
-						&& array_key_exists('port', $matches)
-					) {
-						$port = intval($matches['port']);
+			$ipAddress = $this->askDeviceIpAddress($io);
 
-						return $matches['address'];
-					}
-
-					throw new Exceptions\Runtime('Provided device IP address is not valid');
-				}
-
-				return $answer;
-			});
-
-			$ipAddress = strval($io->askQuestion($question));
-
-			if ($port === null) {
-				$question = new Console\Question\Question('Provide device IP address port', 502);
-				$question->setValidator(static function ($answer) {
-					if (strval(intval($answer)) !== strval($answer)) {
-						throw new Exceptions\Runtime('Provided device IP address port is not valid');
-					}
-
-					return $answer;
-				});
-
-				$port = intval($io->askQuestion($question));
+			if (
+				preg_match(self::MATCH_IP_ADDRESS_PORT, $ipAddress, $matches) === 1
+				&& array_key_exists('address', $matches)
+				&& array_key_exists('port', $matches)
+			) {
+				$ipAddress = $matches['address'];
+				$port = intval($matches['port']);
+			} else {
+				$port = $this->askIpAddressPort($io);
 			}
 
-			$question = new Console\Question\Question('Provide device unit identifier', 0);
-			$question->setValidator(static function ($answer) use ($connector) {
-				if (strval(intval($answer)) !== strval($answer)) {
-					throw new Exceptions\Runtime('Device unit identifier have to be numeric');
-				}
-
-				foreach ($connector->getDevices() as $device) {
-					assert($device instanceof Entities\ModbusDevice);
-
-					if ($device->getUnitId() === intval($answer)) {
-						throw new Exceptions\InvalidArgument('Device unit identifier already taken');
-					}
-				}
-
-				return $answer;
-			});
-
-			$unitId = intval($io->askQuestion($question));
+			$unitId = $this->askDeviceUnitId($io, $connector);
 		}
+
+		$byteOrder = $this->askDeviceByteOrder($io);
 
 		try {
 			// Start transaction connection to the database
@@ -338,7 +284,7 @@ class Devices extends Console\Command\Command
 				'entity' => Entities\ModbusDevice::class,
 				'connector' => $connector,
 				'identifier' => $identifier,
-				'name' => $name === '' ? null : $name,
+				'name' => $name,
 			]));
 			assert($device instanceof Entities\ModbusDevice);
 
@@ -364,7 +310,7 @@ class Devices extends Console\Command\Command
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
 					'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS_PORT,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UINT),
 					'value' => $port,
 					'device' => $device,
 				]));
@@ -378,8 +324,21 @@ class Devices extends Console\Command\Command
 				]));
 			}
 
+			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
+				'entity' => DevicesEntities\Devices\Properties\Variable::class,
+				'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_BYTE_ORDER,
+				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+				'value' => $byteOrder->getValue(),
+				'device' => $device,
+			]));
+
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
+
+			$io->success(sprintf(
+				'Device "%s" was successfully created',
+				$device->getName() ?? $device->getIdentifier(),
+			));
 		} catch (Throwable $ex) {
 			// Log caught exception
 			$this->logger->error(
@@ -415,11 +374,6 @@ class Devices extends Console\Command\Command
 		if ($createRegisters) {
 			$this->createRegister($io, $device);
 		}
-
-		$io->success(sprintf(
-			'Device "%s" was successfully created',
-			$device->getName() ?? $device->getIdentifier(),
-		));
 	}
 
 	/**
@@ -433,27 +387,9 @@ class Devices extends Console\Command\Command
 	 */
 	private function editExistingDevice(Style\SymfonyStyle $io, Entities\ModbusConnector $connector): void
 	{
-		$io->newLine();
+		$device = $this->askWhichDevice($io, $connector);
 
-		$devices = [];
-
-		$findDevicesQuery = new DevicesQueries\FindDevices();
-		$findDevicesQuery->forConnector($connector);
-
-		$connectorDevices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\ModbusDevice::class);
-		usort(
-			$devices,
-			static fn (DevicesEntities\Devices\Device $a, DevicesEntities\Devices\Device $b): int => $a->getIdentifier() <=> $b->getIdentifier()
-		);
-
-		foreach ($connectorDevices as $device) {
-			assert($device instanceof Entities\ModbusDevice);
-
-			$devices[$device->getIdentifier()] = $device->getIdentifier()
-				. ($device->getName() !== null ? ' [' . $device->getName() . ']' : '');
-		}
-
-		if (count($devices) === 0) {
+		if ($device === null) {
 			$io->warning('No devices registered in Modbus connector');
 
 			$question = new Console\Question\ConfirmationQuestion(
@@ -470,55 +406,7 @@ class Devices extends Console\Command\Command
 			return;
 		}
 
-		$question = new Console\Question\ChoiceQuestion(
-			'Please select device to edit',
-			array_values($devices),
-		);
-
-		$question->setErrorMessage('Selected device: "%s" is not valid.');
-
-		$deviceIdentifier = array_search($io->askQuestion($question), $devices, true);
-
-		if ($deviceIdentifier === false) {
-			$io->error('Something went wrong, device could not be loaded');
-
-			$this->logger->alert(
-				'Could not read device identifier from console answer',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
-					'type' => 'devices-cmd',
-					'group' => 'cmd',
-				],
-			);
-
-			return;
-		}
-
-		$findDeviceQuery = new DevicesQueries\FindDevices();
-		$findDeviceQuery->byIdentifier($deviceIdentifier);
-
-		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\ModbusDevice::class);
-
-		if ($device === null) {
-			$io->error('Something went wrong, device could not be loaded');
-
-			$this->logger->alert(
-				'Device was not found',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
-					'type' => 'devices-cmd',
-					'group' => 'cmd',
-				],
-			);
-
-			return;
-		}
-
-		assert($device instanceof Entities\ModbusDevice);
-
-		$question = new Console\Question\Question('Provide device name', $device->getName());
-
-		$name = $io->askQuestion($question);
+		$name = $this->askDeviceName($io, $device);
 
 		$address = $ipAddress = $port = $unitId = null;
 
@@ -526,95 +414,37 @@ class Devices extends Console\Command\Command
 		$ipAddressProperty = $device->findProperty(Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS);
 		$portProperty = $device->findProperty(Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS_PORT);
 		$unitIdProperty = $device->findProperty(Types\DevicePropertyIdentifier::IDENTIFIER_UNIT_ID);
+		$byteOrderProperty = $device->findProperty(Types\DevicePropertyIdentifier::IDENTIFIER_BYTE_ORDER);
 
 		if ($connector->getClientMode()->equalsValue(Types\ClientMode::MODE_RTU)) {
-			$question = new Console\Question\Question('Provide device hardware address', $device->getAddress());
-			$question->setValidator(static function ($answer) use ($connector, $device) {
-				if (strval(intval($answer)) !== strval($answer)) {
-					throw new Exceptions\Runtime('Device hardware address have to be numeric');
-				}
-
-				foreach ($connector->getDevices() as $connectorDevice) {
-					assert($connectorDevice instanceof Entities\ModbusDevice);
-
-					if (
-						$connectorDevice->getAddress() === intval($answer)
-						&& !$connectorDevice->getId()->equals($device->getId())
-					) {
-						throw new Exceptions\InvalidArgument('Device hardware address already taken');
-					}
-				}
-
-				return $answer;
-			});
-
-			$address = intval($io->askQuestion($question));
+			$address = $this->askDeviceAddress($io, $connector, $device);
 		}
 
 		if ($connector->getClientMode()->equalsValue(Types\ClientMode::MODE_TCP)) {
-			$question = new Console\Question\Question('Provide device IP address', $device->getIpAddress());
-			$question->setValidator(static function ($answer) use (&$port) {
-				if (!filter_var(strval($answer), FILTER_FLAG_IPV4)) {
-					if (
-						preg_match(self::MATCH_IP_ADDRESS_PORT, strval($answer), $matches) === 1
-						&& array_key_exists('address', $matches)
-						&& array_key_exists('port', $matches)
-					) {
-						$port = intval($matches['port']);
+			$ipAddress = $this->askDeviceIpAddress($io, $device);
 
-						return $matches['address'];
-					}
-
-					throw new Exceptions\Runtime('Provided device IP address is not valid');
-				}
-
-				return $answer;
-			});
-
-			$ipAddress = strval($io->askQuestion($question));
-
-			if ($port === null) {
-				$question = new Console\Question\Question('Provide device IP address port', $device->getPort());
-				$question->setValidator(static function ($answer) {
-					if (strval(intval($answer)) !== strval($answer)) {
-						throw new Exceptions\Runtime('Provided device IP address port is not valid');
-					}
-
-					return $answer;
-				});
-
-				$port = intval($io->askQuestion($question));
+			if (
+				preg_match(self::MATCH_IP_ADDRESS_PORT, $ipAddress, $matches) === 1
+				&& array_key_exists('address', $matches)
+				&& array_key_exists('port', $matches)
+			) {
+				$ipAddress = $matches['address'];
+				$port = intval($matches['port']);
+			} else {
+				$port = $this->askIpAddressPort($io, $device);
 			}
 
-			$question = new Console\Question\Question('Provide device unit identifier', $device->getUnitId());
-			$question->setValidator(static function ($answer) use ($connector, $device) {
-				if (strval(intval($answer)) !== strval($answer)) {
-					throw new Exceptions\Runtime('Device unit identifier have to be numeric');
-				}
-
-				foreach ($connector->getDevices() as $connectorDevice) {
-					assert($connectorDevice instanceof Entities\ModbusDevice);
-
-					if (
-						$connectorDevice->getUnitId() === intval($answer)
-						&& !$connectorDevice->getId()->equals($device->getId())
-					) {
-						throw new Exceptions\InvalidArgument('Device unit identifier already taken');
-					}
-				}
-
-				return $answer;
-			});
-
-			$unitId = intval($io->askQuestion($question));
+			$unitId = $this->askDeviceUnitId($io, $connector, $device);
 		}
+
+		$byteOrder = $this->askDeviceByteOrder($io, $device);
 
 		try {
 			// Start transaction connection to the database
 			$this->getOrmConnection()->beginTransaction();
 
 			$device = $this->devicesManager->update($device, Utils\ArrayHash::from([
-				'name' => $name === '' ? null : $name,
+				'name' => $name,
 			]));
 
 			if ($connector->getClientMode()->equalsValue(Types\ClientMode::MODE_RTU)) {
@@ -691,6 +521,20 @@ class Devices extends Console\Command\Command
 				}
 			}
 
+			if ($byteOrderProperty === null) {
+				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
+					'entity' => DevicesEntities\Devices\Properties\Variable::class,
+					'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_BYTE_ORDER,
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+					'value' => $byteOrder->getValue(),
+					'device' => $device,
+				]));
+			} elseif ($byteOrderProperty instanceof DevicesEntities\Devices\Properties\Variable) {
+				$this->devicesPropertiesManager->update($byteOrderProperty, Utils\ArrayHash::from([
+					'value' => $byteOrder->getValue(),
+				]));
+			}
+
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
@@ -759,69 +603,10 @@ class Devices extends Console\Command\Command
 	 */
 	private function deleteExistingDevice(Style\SymfonyStyle $io, Entities\ModbusConnector $connector): void
 	{
-		$io->newLine();
-
-		$devices = [];
-
-		$findDevicesQuery = new DevicesQueries\FindDevices();
-		$findDevicesQuery->forConnector($connector);
-
-		foreach ($this->devicesRepository->findAllBy(
-			$findDevicesQuery,
-			Entities\ModbusDevice::class,
-		) as $device) {
-			assert($device instanceof Entities\ModbusDevice);
-
-			$devices[$device->getIdentifier()] = $device->getIdentifier()
-				. ($device->getName() !== null ? ' [' . $device->getName() . ']' : '');
-		}
-
-		if (count($devices) === 0) {
-			$io->info('No Modbus devices registered in selected connector');
-
-			return;
-		}
-
-		$question = new Console\Question\ChoiceQuestion(
-			'Please select device to remove',
-			array_values($devices),
-		);
-
-		$question->setErrorMessage('Selected device: "%s" is not valid.');
-
-		$deviceIdentifier = array_search($io->askQuestion($question), $devices, true);
-
-		if ($deviceIdentifier === false) {
-			$io->error('Something went wrong, device could not be loaded');
-
-			$this->logger->alert(
-				'Device identifier was not able to get from answer',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
-					'type' => 'devices-cmd',
-					'group' => 'cmd',
-				],
-			);
-
-			return;
-		}
-
-		$findDeviceQuery = new DevicesQueries\FindDevices();
-		$findDeviceQuery->byIdentifier($deviceIdentifier);
-
-		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\ModbusDevice::class);
+		$device = $this->askWhichDevice($io, $connector);
 
 		if ($device === null) {
-			$io->error('Something went wrong, device could not be loaded');
-
-			$this->logger->alert(
-				'Device was not found',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
-					'type' => 'devices-cmd',
-					'group' => 'cmd',
-				],
-			);
+			$io->info('No Modbus devices registered in selected connector');
 
 			return;
 		}
@@ -887,6 +672,8 @@ class Devices extends Console\Command\Command
 	{
 		$type = $this->askRegisterType($io);
 
+		$dataType = $this->askRegisterDataType($io, $type);
+
 		$addresses = $this->askRegisterAddress($io, $device);
 
 		if (is_int($addresses)) {
@@ -895,7 +682,7 @@ class Devices extends Console\Command\Command
 
 		$name = $addresses[0] === $addresses[1] ? $this->askRegisterName($io) : null;
 
-		$dataType = $this->askRegisterDataType($io, $type);
+		$readingDelay = $this->askReadingDelay($io);
 
 		$format = null;
 
@@ -910,7 +697,7 @@ class Devices extends Console\Command\Command
 			// Start transaction connection to the database
 			$this->getOrmConnection()->beginTransaction();
 
-			foreach (range($addresses[0], $addresses[1], 1) as $address) {
+			foreach (range($addresses[0], $addresses[1]) as $address) {
 				$channel = $this->channelsManager->create(Utils\ArrayHash::from([
 					'entity' => Entities\ModbusChannel::class,
 					'identifier' => $type . '_' . $address,
@@ -931,6 +718,14 @@ class Devices extends Console\Command\Command
 					'identifier' => Types\ChannelPropertyIdentifier::IDENTIFIER_TYPE,
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 					'value' => $type->getValue(),
+					'channel' => $channel,
+				]));
+
+				$this->channelsPropertiesManager->create(Utils\ArrayHash::from([
+					'entity' => DevicesEntities\Channels\Properties\Variable::class,
+					'identifier' => Types\ChannelPropertyIdentifier::IDENTIFIER_READING_DELAY,
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UINT),
+					'value' => $readingDelay,
 					'channel' => $channel,
 				]));
 
@@ -1010,8 +805,6 @@ class Devices extends Console\Command\Command
 	 */
 	private function editRegister(Style\SymfonyStyle $io, Entities\ModbusDevice $device): void
 	{
-		$io->newLine();
-
 		$channels = $this->getRegistersList($device);
 
 		if (count($channels) === 0) {
@@ -1031,7 +824,7 @@ class Devices extends Console\Command\Command
 			return;
 		}
 
-		$channel = $this->chooseRegister($io, $device, $channels);
+		$channel = $this->askWhichRegister($io, $device, $channels);
 
 		if ($channel === null) {
 			return;
@@ -1043,6 +836,8 @@ class Devices extends Console\Command\Command
 			$type = $this->askRegisterType($io, $channel);
 		}
 
+		$dataType = $this->askRegisterDataType($io, $type, $channel);
+
 		$address = $this->askRegisterAddress($io, $device, $channel);
 
 		if (is_array($address)) {
@@ -1051,7 +846,7 @@ class Devices extends Console\Command\Command
 
 		$name = $this->askRegisterName($io, $channel);
 
-		$dataType = $this->askRegisterDataType($io, $type, $channel);
+		$readingDelay = $this->askReadingDelay($io, $channel);
 
 		$format = null;
 
@@ -1066,6 +861,8 @@ class Devices extends Console\Command\Command
 
 		$typeProperty = $channel->findProperty(Types\ChannelPropertyIdentifier::IDENTIFIER_TYPE);
 
+		$readingDelayProperty = $channel->findProperty(Types\ChannelPropertyIdentifier::IDENTIFIER_READING_DELAY);
+
 		$valueProperty = $channel->findProperty(Types\ChannelPropertyIdentifier::IDENTIFIER_VALUE);
 
 		try {
@@ -1073,7 +870,7 @@ class Devices extends Console\Command\Command
 			$this->getOrmConnection()->beginTransaction();
 
 			$channel = $this->channelsManager->update($channel, Utils\ArrayHash::from([
-				'name' => $name === '' ? null : $name,
+				'name' => $name,
 			]));
 
 			if ($addressProperty === null) {
@@ -1097,6 +894,20 @@ class Devices extends Console\Command\Command
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 					'value' => $type->getValue(),
 					'channel' => $channel,
+				]));
+			}
+
+			if ($readingDelayProperty === null) {
+				$this->channelsPropertiesManager->create(Utils\ArrayHash::from([
+					'entity' => DevicesEntities\Channels\Properties\Variable::class,
+					'identifier' => Types\ChannelPropertyIdentifier::IDENTIFIER_READING_DELAY,
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
+					'value' => $readingDelay,
+					'channel' => $channel,
+				]));
+			} else {
+				$this->channelsPropertiesManager->update($readingDelayProperty, Utils\ArrayHash::from([
+					'value' => $readingDelay,
 				]));
 			}
 
@@ -1183,8 +994,6 @@ class Devices extends Console\Command\Command
 	 */
 	private function deleteRegister(Style\SymfonyStyle $io, Entities\ModbusDevice $device): void
 	{
-		$io->newLine();
-
 		$channels = $this->getRegistersList($device);
 
 		if (count($channels) === 0) {
@@ -1193,7 +1002,7 @@ class Devices extends Console\Command\Command
 			return;
 		}
 
-		$channel = $this->chooseRegister($io, $device, $channels);
+		$channel = $this->askWhichRegister($io, $device, $channels);
 
 		if ($channel === null) {
 			return;
@@ -1299,6 +1108,188 @@ class Devices extends Console\Command\Command
 		if (count($device->getChannels()) > 0) {
 			$this->askRegisterAction($io, $device, true);
 		}
+	}
+
+	private function askDeviceName(Style\SymfonyStyle $io, Entities\ModbusDevice|null $device = null): string|null
+	{
+		$question = new Console\Question\Question('Provide device name', $device?->getName());
+
+		$name = $io->askQuestion($question);
+
+		return $name === '' ? null : strval($name);
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	private function askDeviceAddress(
+		Style\SymfonyStyle $io,
+		Entities\ModbusConnector $connector,
+		Entities\ModbusDevice|null $device = null,
+	): int
+	{
+		$question = new Console\Question\Question('Provide device hardware address', $device?->getAddress());
+		$question->setValidator(static function ($answer) use ($connector, $device) {
+			if (strval(intval($answer)) !== strval($answer)) {
+				throw new Exceptions\Runtime('Device hardware address have to be numeric');
+			}
+
+			foreach ($connector->getDevices() as $connectorDevice) {
+				assert($connectorDevice instanceof Entities\ModbusDevice);
+
+				if (
+					$connectorDevice->getAddress() === intval($answer)
+					&& ($device === null || !$device->getId()->equals($connectorDevice->getId()))
+				) {
+					throw new Exceptions\InvalidArgument('Device hardware address already taken');
+				}
+			}
+
+			return $answer;
+		});
+
+		return intval($io->askQuestion($question));
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	private function askDeviceIpAddress(
+		Style\SymfonyStyle $io,
+		Entities\ModbusDevice|null $device = null,
+	): string
+	{
+		$question = new Console\Question\Question('Provide device IP address', $device?->getIpAddress());
+		$question->setValidator(static function ($answer) use (&$port) {
+			if (!filter_var(strval($answer), FILTER_FLAG_IPV4)) {
+				if (
+					preg_match(self::MATCH_IP_ADDRESS_PORT, strval($answer), $matches) === 1
+					&& array_key_exists('address', $matches)
+					&& array_key_exists('port', $matches)
+				) {
+					$port = intval($matches['port']);
+
+					return $matches['address'] . ':' . $matches['port'];
+				}
+
+				throw new Exceptions\Runtime('Provided device IP address is not valid');
+			}
+
+			return $answer;
+		});
+
+		return strval($io->askQuestion($question));
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	private function askIpAddressPort(
+		Style\SymfonyStyle $io,
+		Entities\ModbusDevice|null $device = null,
+	): int
+	{
+		$question = new Console\Question\Question('Provide device IP address port', $device?->getPort());
+		$question->setValidator(static function ($answer) {
+			if (strval(intval($answer)) !== strval($answer)) {
+				throw new Exceptions\Runtime('Provided device IP address port is not valid');
+			}
+
+			return $answer;
+		});
+
+		return intval($io->askQuestion($question));
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	private function askDeviceUnitId(
+		Style\SymfonyStyle $io,
+		Entities\ModbusConnector $connector,
+		Entities\ModbusDevice|null $device = null,
+	): int
+	{
+		$question = new Console\Question\Question('Provide device unit identifier', $device?->getUnitId());
+		$question->setValidator(static function ($answer) use ($connector, $device) {
+			if (strval(intval($answer)) !== strval($answer)) {
+				throw new Exceptions\Runtime('Device unit identifier have to be numeric');
+			}
+
+			foreach ($connector->getDevices() as $connectorDevice) {
+				assert($connectorDevice instanceof Entities\ModbusDevice);
+
+				if (
+					$connectorDevice->getUnitId() === intval($answer)
+					&& ($device === null || !$device->getId()->equals($connectorDevice->getId()))
+				) {
+					throw new Exceptions\InvalidArgument('Device unit identifier already taken');
+				}
+			}
+
+			return $answer;
+		});
+
+		return intval($io->askQuestion($question));
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	private function askDeviceByteOrder(
+		Style\SymfonyStyle $io,
+		Entities\ModbusDevice|null $device = null,
+	): Types\ByteOrder
+	{
+		$default = 0;
+
+		if ($device !== null) {
+			if ($device->getByteOrder()->equalsValue(Types\ByteOrder::BYTE_ORDER_BIG_SWAP)) {
+				$default = 1;
+			} elseif ($device->getByteOrder()->equalsValue(Types\ByteOrder::BYTE_ORDER_LITTLE)) {
+				$default = 2;
+			} elseif ($device->getByteOrder()->equalsValue(Types\ByteOrder::BYTE_ORDER_LITTLE_SWAP)) {
+				$default = 3;
+			}
+		}
+
+		$question = new Console\Question\ChoiceQuestion(
+			'What byte order device uses?',
+			[
+				0 => Types\ByteOrder::BYTE_ORDER_BIG,
+				1 => Types\ByteOrder::BYTE_ORDER_BIG_SWAP,
+				2 => Types\ByteOrder::BYTE_ORDER_LITTLE,
+				3 => Types\ByteOrder::BYTE_ORDER_LITTLE_SWAP,
+			],
+			$default,
+		);
+
+		$question->setErrorMessage('Selected answer: "%s" is not valid.');
+
+		$answer = $io->askQuestion($question);
+
+		if ($answer === 0) {
+			return Types\ByteOrder::get(Types\ByteOrder::BYTE_ORDER_BIG);
+		} elseif ($answer === 1) {
+			return Types\ByteOrder::get(Types\ByteOrder::BYTE_ORDER_BIG_SWAP);
+		} elseif ($answer === 2) {
+			return Types\ByteOrder::get(Types\ByteOrder::BYTE_ORDER_LITTLE);
+		} elseif ($answer === 3) {
+			return Types\ByteOrder::get(Types\ByteOrder::BYTE_ORDER_LITTLE_SWAP);
+		}
+
+		throw new Exceptions\InvalidState('Selected value is not valid');
 	}
 
 	/**
@@ -1413,7 +1404,7 @@ class Devices extends Console\Command\Command
 			return Types\ChannelType::get(Types\ChannelType::HOLDING_REGISTER);
 		}
 
-		throw new Exceptions\InvalidState('Unknown channel type selected');
+		throw new Exceptions\InvalidState('Unknown register type selected');
 	}
 
 	/**
@@ -1482,10 +1473,10 @@ class Devices extends Console\Command\Command
 					}
 				}
 
-				throw new Exceptions\Runtime('Channel address have to be numeric or interval definition');
+				throw new Exceptions\Runtime('Register address have to be numeric or interval definition');
 			}
 
-			throw new Exceptions\Runtime('Channel address have to be numeric value');
+			throw new Exceptions\Runtime('Register address have to be numeric value');
 		});
 
 		/** @var int|array<int> $address */
@@ -1499,7 +1490,27 @@ class Devices extends Console\Command\Command
 		Entities\ModbusChannel|null $channel = null,
 	): string|null
 	{
-		$question = new Console\Question\Question('Provide channel name (optional)', $channel?->getName());
+		$question = new Console\Question\Question('Provide register name (optional)', $channel?->getName());
+
+		$name = strval($io->askQuestion($question));
+
+		return $name === '' ? null : $name;
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	private function askReadingDelay(
+		Style\SymfonyStyle $io,
+		Entities\ModbusChannel|null $channel = null,
+	): string|null
+	{
+		$question = new Console\Question\Question(
+			'Provide register sampling time (s)',
+			$channel?->getReadingDelay() ?? Entities\ModbusChannel::READING_DELAY,
+		);
 
 		$name = strval($io->askQuestion($question));
 
@@ -1588,7 +1599,7 @@ class Devices extends Console\Command\Command
 					break;
 			}
 		} else {
-			throw new Exceptions\InvalidArgument('Unknown channel type');
+			throw new Exceptions\InvalidArgument('Unknown register type');
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
@@ -2102,10 +2113,17 @@ class Devices extends Console\Command\Command
 
 		$findConnectorsQuery = new DevicesQueries\FindConnectors();
 
-		foreach ($this->connectorsRepository->findAllBy(
+		$systemConnectors = $this->connectorsRepository->findAllBy(
 			$findConnectorsQuery,
 			Entities\ModbusConnector::class,
-		) as $connector) {
+		);
+		usort(
+			$systemConnectors,
+			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+			static fn (DevicesEntities\Connectors\Connector $a, DevicesEntities\Connectors\Connector $b): int => $a->getIdentifier() <=> $b->getIdentifier()
+		);
+
+		foreach ($systemConnectors as $connector) {
 			assert($connector instanceof Entities\ModbusConnector);
 
 			$connectors[$connector->getIdentifier()] = $connector->getIdentifier()
@@ -2113,61 +2131,129 @@ class Devices extends Console\Command\Command
 		}
 
 		if (count($connectors) === 0) {
-			$io->warning('No connectors registered in system');
-
 			return null;
-		}
-
-		if (count($connectors) === 1) {
-			$connectorIdentifier = array_key_first($connectors);
-
-			$findConnectorQuery = new DevicesQueries\FindConnectors();
-			$findConnectorQuery->byIdentifier($connectorIdentifier);
-
-			$connector = $this->connectorsRepository->findOneBy(
-				$findConnectorQuery,
-				Entities\ModbusConnector::class,
-			);
-
-			if ($connector === null) {
-				$io->warning('Connector was not found in system');
-
-				return null;
-			}
-
-			assert($connector instanceof Entities\ModbusConnector);
-
-			$question = new Console\Question\ConfirmationQuestion(
-				sprintf(
-					'Would you like to manage device for: %s connector ?',
-					$connector->getIdentifier() . ($connector->getName() !== null ? ' [' . $connector->getName() . ']' : ''),
-				),
-				true,
-			);
-
-			$continue = (bool) $io->askQuestion($question);
-
-			if (!$continue) {
-				return null;
-			}
-
-			return $connector;
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
 			'Please select connector under which you want to manage devices',
 			array_values($connectors),
 		);
+		$question->setValidator(function ($answer) use ($connectors): Entities\ModbusConnector {
+			$connectorIdentifier = array_search($answer, $connectors, true);
 
-		$question->setErrorMessage('Selected connector: %s is not valid.');
+			if ($connectorIdentifier === false) {
+				throw new Exceptions\Runtime('You have to select connector from list');
+			}
 
-		$connectorIdentifierKey = array_search($io->askQuestion($question), $connectors, true);
+			$findConnectorQuery = new DevicesQueries\FindConnectors();
+			$findConnectorQuery->byIdentifier($connectorIdentifier);
 
-		if ($connectorIdentifierKey === false) {
-			$io->error('Something went wrong, connector could not be loaded');
+			$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\ModbusConnector::class);
+			assert($connector instanceof Entities\ModbusConnector || $connector === null);
+
+			if ($connector === null) {
+				throw new Exceptions\Runtime('You have to select connector from list');
+			}
+
+			return $connector;
+		});
+
+		$question->setErrorMessage('Selected connector: "%s" is not valid.');
+
+		$connector = $io->askQuestion($question);
+		assert($connector instanceof Entities\ModbusConnector);
+
+		return $connector;
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 */
+	private function askWhichDevice(
+		Style\SymfonyStyle $io,
+		Entities\ModbusConnector $connector,
+	): Entities\ModbusDevice|null
+	{
+		$devices = [];
+
+		$findDevicesQuery = new DevicesQueries\FindDevices();
+		$findDevicesQuery->forConnector($connector);
+
+		$connectorDevices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\ModbusDevice::class);
+		usort(
+			$connectorDevices,
+			static fn (DevicesEntities\Devices\Device $a, DevicesEntities\Devices\Device $b): int => $a->getIdentifier() <=> $b->getIdentifier()
+		);
+
+		foreach ($connectorDevices as $device) {
+			assert($device instanceof Entities\ModbusDevice);
+
+			$devices[$device->getIdentifier()] = $device->getIdentifier()
+				. ($device->getName() !== null ? ' [' . $device->getName() . ']' : '');
+		}
+
+		if (count($devices) === 0) {
+			return null;
+		}
+
+		$question = new Console\Question\ChoiceQuestion(
+			'Please select device to manage',
+			array_values($devices),
+		);
+		$question->setValidator(function ($answer) use ($connector, $devices): Entities\ModbusDevice {
+			$connectorIdentifier = array_search($answer, $devices, true);
+
+			if ($connectorIdentifier === false) {
+				throw new Exceptions\Runtime('You have to select device from list');
+			}
+
+			$findDeviceQuery = new DevicesQueries\FindDevices();
+			$findDeviceQuery->byIdentifier($connectorIdentifier);
+			$findDeviceQuery->forConnector($connector);
+
+			$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\ModbusDevice::class);
+			assert($device instanceof Entities\ModbusDevice || $device === null);
+
+			if ($device === null) {
+				throw new Exceptions\Runtime('You have to select device from list');
+			}
+
+			return $device;
+		});
+
+		$question->setErrorMessage('Selected device: "%s" is not valid.');
+
+		$device = $io->askQuestion($question);
+		assert($device instanceof Entities\ModbusDevice);
+
+		return $device;
+	}
+
+	/**
+	 * @param array<string, string> $channels
+	 *
+	 * @throws DevicesExceptions\InvalidState
+	 */
+	private function askWhichRegister(
+		Style\SymfonyStyle $io,
+		Entities\ModbusDevice $device,
+		array $channels,
+	): Entities\ModbusChannel|null
+	{
+		$question = new Console\Question\ChoiceQuestion(
+			'Please select device\'s register',
+			array_values($channels),
+		);
+
+		$question->setErrorMessage('Selected register: "%s" is not valid.');
+
+		$registerIdentifier = array_search($io->askQuestion($question), $channels, true);
+
+		if ($registerIdentifier === false) {
+			$io->error('Something went wrong, register could not be loaded');
 
 			$this->logger->alert(
-				'Could not read connector identifier from console answer',
+				'Could not read register identifier from console answer',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
 					'type' => 'devices-cmd',
@@ -2178,17 +2264,29 @@ class Devices extends Console\Command\Command
 			return null;
 		}
 
-		$findConnectorQuery = new DevicesQueries\FindConnectors();
-		$findConnectorQuery->byIdentifier($connectorIdentifierKey);
+		$findChannelQuery = new DevicesQueries\FindChannels();
+		$findChannelQuery->forDevice($device);
+		$findChannelQuery->byIdentifier($registerIdentifier);
 
-		$connector = $this->connectorsRepository->findOneBy(
-			$findConnectorQuery,
-			Entities\ModbusConnector::class,
-		);
+		$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\ModbusChannel::class);
+		assert($channel instanceof Entities\ModbusChannel || $channel === null);
 
-		assert($connector instanceof Entities\ModbusConnector || $connector === null);
+		if ($channel === null) {
+			$io->error('Something went wrong, register could not be loaded');
 
-		return $connector;
+			$this->logger->alert(
+				'Channel was not found',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
+					'type' => 'devices-cmd',
+					'group' => 'cmd',
+				],
+			);
+
+			return null;
+		}
+
+		return $channel;
 	}
 
 	/**
@@ -2238,66 +2336,6 @@ class Devices extends Console\Command\Command
 		}
 
 		return $channels;
-	}
-
-	/**
-	 * @param array<string, string> $channels
-	 *
-	 * @throws DevicesExceptions\InvalidState
-	 */
-	private function chooseRegister(
-		Style\SymfonyStyle $io,
-		Entities\ModbusDevice $device,
-		array $channels,
-	): Entities\ModbusChannel|null
-	{
-		$question = new Console\Question\ChoiceQuestion(
-			'Please select device\'s register',
-			array_values($channels),
-		);
-
-		$question->setErrorMessage('Selected register: "%s" is not valid.');
-
-		$registerIdentifier = array_search($io->askQuestion($question), $channels, true);
-
-		if ($registerIdentifier === false) {
-			$io->error('Something went wrong, register could not be loaded');
-
-			$this->logger->alert(
-				'Could not read register identifier from console answer',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
-					'type' => 'devices-cmd',
-					'group' => 'cmd',
-				],
-			);
-
-			return null;
-		}
-
-		$findChannelQuery = new DevicesQueries\FindChannels();
-		$findChannelQuery->forDevice($device);
-		$findChannelQuery->byIdentifier($registerIdentifier);
-
-		$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\ModbusChannel::class);
-		assert($channel instanceof Entities\ModbusChannel || $channel === null);
-
-		if ($channel === null) {
-			$io->error('Something went wrong, channel could not be loaded');
-
-			$this->logger->alert(
-				'Channel was not found',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
-					'type' => 'devices-cmd',
-					'group' => 'cmd',
-				],
-			);
-
-			return null;
-		}
-
-		return $channel;
 	}
 
 	/**

@@ -39,6 +39,8 @@ class ChannelPropertyIdentifier extends Consistence\Enum\Enum
 
 	public const IDENTIFIER_VALUE = 'value';
 
+	public const IDENTIFIER_READING_DELAY = 'reading_delay';
+
 	public function __toString(): string
 	{
 		return strval(self::getValue());
