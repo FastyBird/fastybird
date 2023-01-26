@@ -33,11 +33,14 @@ use Symfony\Component\Console\Input;
 use Symfony\Component\Console\Output;
 use Symfony\Component\Console\Style;
 use Throwable;
-use function array_search;
+use function array_key_exists;
+use function array_keys;
 use function array_values;
 use function assert;
 use function count;
+use function intval;
 use function sprintf;
+use function usort;
 
 /**
  * Connector initialize command
@@ -105,7 +108,6 @@ class Initialize extends Console\Command\Command
 	 * @throws Console\Exception\InvalidArgumentException
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -160,7 +162,6 @@ class Initialize extends Console\Command\Command
 	/**
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 */
 	private function createNewConfiguration(Style\SymfonyStyle $io): void
@@ -169,8 +170,8 @@ class Initialize extends Console\Command\Command
 
 		$question = new Console\Question\Question('Provide connector identifier');
 
-		$question->setValidator(function ($answer) {
-			if ($answer !== null) {
+		$question->setValidator(function (string|null $answer) {
+			if ($answer !== '' && $answer !== null) {
 				$findConnectorQuery = new DevicesQueries\FindConnectors();
 				$findConnectorQuery->byIdentifier($answer);
 
@@ -308,30 +309,15 @@ class Initialize extends Console\Command\Command
 	/**
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	private function editExistingConfiguration(Style\SymfonyStyle $io): void
 	{
-		$io->newLine();
+		$connector = $this->askWhichConnector($io);
 
-		$connectors = [];
-
-		$findConnectorsQuery = new DevicesQueries\FindConnectors();
-
-		foreach ($this->connectorsRepository->findAllBy(
-			$findConnectorsQuery,
-			Entities\ShellyConnector::class,
-		) as $connector) {
-			assert($connector instanceof Entities\ShellyConnector);
-
-			$connectors[$connector->getIdentifier()] = $connector->getIdentifier()
-				. ($connector->getName() !== null ? ' [' . $connector->getName() . ']' : '');
-		}
-
-		if (count($connectors) === 0) {
+		if ($connector === null) {
 			$io->warning('No Shelly connectors registered in system');
 
 			$question = new Console\Question\ConfirmationQuestion(
@@ -344,50 +330,6 @@ class Initialize extends Console\Command\Command
 			if ($continue) {
 				$this->createNewConfiguration($io);
 			}
-
-			return;
-		}
-
-		$question = new Console\Question\ChoiceQuestion(
-			'Please select connector to configure',
-			array_values($connectors),
-		);
-
-		$question->setErrorMessage('Selected connector: "%s" is not valid.');
-
-		$connectorIdentifier = array_search($io->askQuestion($question), $connectors, true);
-
-		if ($connectorIdentifier === false) {
-			$io->error('Something went wrong, connector could not be loaded');
-
-			$this->logger->alert(
-				'Could not read connector identifier from console answer',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-					'type' => 'initialize-cmd',
-					'group' => 'cmd',
-				],
-			);
-
-			return;
-		}
-
-		$findConnectorQuery = new DevicesQueries\FindConnectors();
-		$findConnectorQuery->byIdentifier($connectorIdentifier);
-
-		$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\ShellyConnector::class);
-
-		if ($connector === null) {
-			$io->error('Something went wrong, connector could not be loaded');
-
-			$this->logger->alert(
-				'Connector was not found',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-					'type' => 'initialize-cmd',
-					'group' => 'cmd',
-				],
-			);
 
 			return;
 		}
@@ -586,68 +528,10 @@ class Initialize extends Console\Command\Command
 	 */
 	private function deleteExistingConfiguration(Style\SymfonyStyle $io): void
 	{
-		$io->newLine();
-
-		$connectors = [];
-
-		$findConnectorsQuery = new DevicesQueries\FindConnectors();
-
-		foreach ($this->connectorsRepository->findAllBy(
-			$findConnectorsQuery,
-			Entities\ShellyConnector::class,
-		) as $connector) {
-			assert($connector instanceof Entities\ShellyConnector);
-
-			$connectors[$connector->getIdentifier()] = $connector->getIdentifier()
-				. ($connector->getName() !== null ? ' [' . $connector->getName() . ']' : '');
-		}
-
-		if (count($connectors) === 0) {
-			$io->info('No Shelly connectors registered in system');
-
-			return;
-		}
-
-		$question = new Console\Question\ChoiceQuestion(
-			'Please select connector to remove',
-			array_values($connectors),
-		);
-
-		$question->setErrorMessage('Selected connector: "%s" is not valid.');
-
-		$connectorIdentifier = array_search($io->askQuestion($question), $connectors, true);
-
-		if ($connectorIdentifier === false) {
-			$io->error('Something went wrong, connector could not be loaded');
-
-			$this->logger->alert(
-				'Could not read connector identifier from console answer',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-					'type' => 'initialize-cmd',
-					'group' => 'cmd',
-				],
-			);
-
-			return;
-		}
-
-		$findConnectorQuery = new DevicesQueries\FindConnectors();
-		$findConnectorQuery->byIdentifier($connectorIdentifier);
-
-		$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\ShellyConnector::class);
+		$connector = $this->askWhichConnector($io);
 
 		if ($connector === null) {
-			$io->error('Something went wrong, connector could not be loaded');
-
-			$this->logger->alert(
-				'Connector was not found',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-					'type' => 'initialize-cmd',
-					'group' => 'cmd',
-				],
-			);
+			$io->info('No Shelly connectors registered in system');
 
 			return;
 		}
@@ -700,9 +584,6 @@ class Initialize extends Console\Command\Command
 		}
 	}
 
-	/**
-	 * @throws Exceptions\InvalidState
-	 */
 	private function askMode(Style\SymfonyStyle $io): Types\ClientMode
 	{
 		$question = new Console\Question\ChoiceQuestion(
@@ -714,24 +595,96 @@ class Initialize extends Console\Command\Command
 			],
 			0,
 		);
-
 		$question->setErrorMessage('Selected answer: "%s" is not valid.');
+		$question->setValidator(static function (string|null $answer): Types\ClientMode {
+			if ($answer === null) {
+				throw new Exceptions\InvalidState('Selected answer is not valid');
+			}
 
-		$mode = $io->askQuestion($question);
+			if ($answer === self::CHOICE_QUESTION_LOCAL_MODE || intval($answer) === 0) {
+				return Types\ClientMode::get(Types\ClientMode::MODE_LOCAL);
+			}
 
-		if ($mode === self::CHOICE_QUESTION_LOCAL_MODE) {
-			return Types\ClientMode::get(Types\ClientMode::MODE_LOCAL);
+			if ($answer === self::CHOICE_QUESTION_CLOUD_MODE || intval($answer) === 1) {
+				return Types\ClientMode::get(Types\ClientMode::MODE_CLOUD);
+			}
+
+			if ($answer === self::CHOICE_QUESTION_MQTT_MODE || intval($answer) === 2) {
+				return Types\ClientMode::get(Types\ClientMode::MODE_MQTT);
+			}
+
+			throw new Exceptions\InvalidState('Selected answer is not valid');
+		});
+
+		$answer = $io->askQuestion($question);
+		assert($answer instanceof Types\ClientMode);
+
+		return $answer;
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 */
+	private function askWhichConnector(Style\SymfonyStyle $io): Entities\ShellyConnector|null
+	{
+		$connectors = [];
+
+		$findConnectorsQuery = new DevicesQueries\FindConnectors();
+
+		$systemConnectors = $this->connectorsRepository->findAllBy(
+			$findConnectorsQuery,
+			Entities\ShellyConnector::class,
+		);
+		usort(
+			$systemConnectors,
+			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+			static fn (DevicesEntities\Connectors\Connector $a, DevicesEntities\Connectors\Connector $b): int => $a->getIdentifier() <=> $b->getIdentifier()
+		);
+
+		foreach ($systemConnectors as $connector) {
+			assert($connector instanceof Entities\ShellyConnector);
+
+			$connectors[$connector->getIdentifier()] = $connector->getIdentifier()
+				. ($connector->getName() !== null ? ' [' . $connector->getName() . ']' : '');
 		}
 
-		if ($mode === self::CHOICE_QUESTION_CLOUD_MODE) {
-			return Types\ClientMode::get(Types\ClientMode::MODE_CLOUD);
+		if (count($connectors) === 0) {
+			return null;
 		}
 
-		if ($mode === self::CHOICE_QUESTION_MQTT_MODE) {
-			return Types\ClientMode::get(Types\ClientMode::MODE_MQTT);
-		}
+		$question = new Console\Question\ChoiceQuestion(
+			'Please select connector to manage',
+			array_values($connectors),
+		);
+		$question->setErrorMessage('Selected answer: "%s" is not valid.');
+		$question->setValidator(function (string|null $answer) use ($connectors): Entities\ShellyConnector {
+			if ($answer === null) {
+				throw new Exceptions\InvalidState('Selected answer is not valid');
+			}
 
-		throw new Exceptions\InvalidState('Unknown connector mode selected');
+			$connectorIdentifiers = array_keys($connectors);
+
+			if (!array_key_exists(intval($answer), $connectorIdentifiers)) {
+				throw new Exceptions\Runtime('You have to select connector from list');
+			}
+
+			$findConnectorQuery = new DevicesQueries\FindConnectors();
+			$findConnectorQuery->byIdentifier($connectorIdentifiers[intval($answer)]);
+
+			$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\ShellyConnector::class);
+			assert($connector instanceof Entities\ShellyConnector || $connector === null);
+
+			if ($connector === null) {
+				throw new Exceptions\Runtime('You have to select connector from list');
+			}
+
+			return $connector;
+		});
+
+		$answer = $io->askQuestion($question);
+		assert($answer instanceof Entities\ShellyConnector);
+
+		return $answer;
 	}
 
 	/**
