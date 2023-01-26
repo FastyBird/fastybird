@@ -35,6 +35,7 @@ use Symfony\Component\Console\Output;
 use Symfony\Component\Console\Style;
 use Throwable;
 use function array_key_exists;
+use function array_keys;
 use function array_search;
 use function array_values;
 use function assert;
@@ -178,7 +179,7 @@ class Devices extends Console\Command\Command
 		$connector = $this->askWhichConnector($io);
 
 		if ($connector === null) {
-			$io->warning('No connectors registered in system');
+			$io->warning('No Modbus connectors registered in system');
 
 			return Console\Command\Command::SUCCESS;
 		}
@@ -209,8 +210,8 @@ class Devices extends Console\Command\Command
 	{
 		$question = new Console\Question\Question('Provide device identifier');
 
-		$question->setValidator(function ($answer) {
-			if ($answer !== null) {
+		$question->setValidator(function (string|null $answer) {
+			if ($answer !== '' && $answer !== null) {
 				$findDeviceQuery = new DevicesQueries\FindDevices();
 				$findDeviceQuery->byIdentifier($answer);
 
@@ -268,7 +269,7 @@ class Devices extends Console\Command\Command
 				$ipAddress = $matches['address'];
 				$port = intval($matches['port']);
 			} else {
-				$port = $this->askIpAddressPort($io);
+				$port = $this->askDeviceIpAddressPort($io);
 			}
 
 			$unitId = $this->askDeviceUnitId($io, $connector);
@@ -431,7 +432,7 @@ class Devices extends Console\Command\Command
 				$ipAddress = $matches['address'];
 				$port = intval($matches['port']);
 			} else {
-				$port = $this->askIpAddressPort($io, $device);
+				$port = $this->askDeviceIpAddressPort($io, $device);
 			}
 
 			$unitId = $this->askDeviceUnitId($io, $connector, $device);
@@ -1131,7 +1132,7 @@ class Devices extends Console\Command\Command
 	): int
 	{
 		$question = new Console\Question\Question('Provide device hardware address', $device?->getAddress());
-		$question->setValidator(static function ($answer) use ($connector, $device) {
+		$question->setValidator(static function (string|null $answer) use ($connector, $device) {
 			if (strval(intval($answer)) !== strval($answer)) {
 				throw new Exceptions\Runtime('Device hardware address have to be numeric');
 			}
@@ -1164,7 +1165,7 @@ class Devices extends Console\Command\Command
 	): string
 	{
 		$question = new Console\Question\Question('Provide device IP address', $device?->getIpAddress());
-		$question->setValidator(static function ($answer) use (&$port) {
+		$question->setValidator(static function (string|null $answer) use (&$port) {
 			if (!filter_var(strval($answer), FILTER_FLAG_IPV4)) {
 				if (
 					preg_match(self::MATCH_IP_ADDRESS_PORT, strval($answer), $matches) === 1
@@ -1190,13 +1191,13 @@ class Devices extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function askIpAddressPort(
+	private function askDeviceIpAddressPort(
 		Style\SymfonyStyle $io,
 		Entities\ModbusDevice|null $device = null,
 	): int
 	{
 		$question = new Console\Question\Question('Provide device IP address port', $device?->getPort());
-		$question->setValidator(static function ($answer) {
+		$question->setValidator(static function (string|null $answer) {
 			if (strval(intval($answer)) !== strval($answer)) {
 				throw new Exceptions\Runtime('Provided device IP address port is not valid');
 			}
@@ -1219,7 +1220,7 @@ class Devices extends Console\Command\Command
 	): int
 	{
 		$question = new Console\Question\Question('Provide device unit identifier', $device?->getUnitId());
-		$question->setValidator(static function ($answer) use ($connector, $device) {
+		$question->setValidator(static function (string|null $answer) use ($connector, $device) {
 			if (strval(intval($answer)) !== strval($answer)) {
 				throw new Exceptions\Runtime('Device unit identifier have to be numeric');
 			}
@@ -1243,7 +1244,6 @@ class Devices extends Console\Command\Command
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -1276,20 +1276,34 @@ class Devices extends Console\Command\Command
 		);
 
 		$question->setErrorMessage('Selected answer: "%s" is not valid.');
+		$question->setValidator(static function (string|null $answer): Types\ByteOrder {
+			if ($answer === null) {
+				throw new Exceptions\InvalidState('Selected answer is not valid');
+			}
+
+			if ($answer === Types\ByteOrder::BYTE_ORDER_BIG || intval($answer) === 0) {
+				return Types\ByteOrder::get(Types\ByteOrder::BYTE_ORDER_BIG);
+			}
+
+			if ($answer === Types\ByteOrder::BYTE_ORDER_BIG_SWAP || intval($answer) === 1) {
+				return Types\ByteOrder::get(Types\ByteOrder::BYTE_ORDER_BIG_SWAP);
+			}
+
+			if ($answer === Types\ByteOrder::BYTE_ORDER_LITTLE || intval($answer) === 2) {
+				return Types\ByteOrder::get(Types\ByteOrder::BYTE_ORDER_LITTLE);
+			}
+
+			if ($answer === Types\ByteOrder::BYTE_ORDER_LITTLE_SWAP || intval($answer) === 3) {
+				return Types\ByteOrder::get(Types\ByteOrder::BYTE_ORDER_LITTLE_SWAP);
+			}
+
+			throw new Exceptions\InvalidState('Selected answer is not valid');
+		});
 
 		$answer = $io->askQuestion($question);
+		assert($answer instanceof Types\ByteOrder);
 
-		if ($answer === 0) {
-			return Types\ByteOrder::get(Types\ByteOrder::BYTE_ORDER_BIG);
-		} elseif ($answer === 1) {
-			return Types\ByteOrder::get(Types\ByteOrder::BYTE_ORDER_BIG_SWAP);
-		} elseif ($answer === 2) {
-			return Types\ByteOrder::get(Types\ByteOrder::BYTE_ORDER_LITTLE);
-		} elseif ($answer === 3) {
-			return Types\ByteOrder::get(Types\ByteOrder::BYTE_ORDER_LITTLE_SWAP);
-		}
-
-		throw new Exceptions\InvalidState('Selected value is not valid');
+		return $answer;
 	}
 
 	/**
@@ -1339,7 +1353,6 @@ class Devices extends Console\Command\Command
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -1385,26 +1398,34 @@ class Devices extends Console\Command\Command
 		}
 
 		$question->setErrorMessage('Selected answer: "%s" is not valid.');
+		$question->setValidator(static function (string|null $answer): Types\ChannelType {
+			if ($answer === null) {
+				throw new Exceptions\InvalidState('Selected answer is not valid');
+			}
 
-		$mode = $io->askQuestion($question);
+			if ($answer === self::CHOICE_QUESTION_CHANNEL_DISCRETE_INPUT || intval($answer) === 0) {
+				return Types\ChannelType::get(Types\ChannelType::DISCRETE_INPUT);
+			}
 
-		if ($mode === self::CHOICE_QUESTION_CHANNEL_DISCRETE_INPUT) {
-			return Types\ChannelType::get(Types\ChannelType::DISCRETE_INPUT);
-		}
+			if ($answer === self::CHOICE_QUESTION_CHANNEL_COIL || intval($answer) === 1) {
+				return Types\ChannelType::get(Types\ChannelType::COIL);
+			}
 
-		if ($mode === self::CHOICE_QUESTION_CHANNEL_COIL) {
-			return Types\ChannelType::get(Types\ChannelType::COIL);
-		}
+			if ($answer === self::CHOICE_QUESTION_CHANNEL_INPUT_REGISTER || intval($answer) === 2) {
+				return Types\ChannelType::get(Types\ChannelType::INPUT_REGISTER);
+			}
 
-		if ($mode === self::CHOICE_QUESTION_CHANNEL_INPUT_REGISTER) {
-			return Types\ChannelType::get(Types\ChannelType::INPUT_REGISTER);
-		}
+			if ($answer === self::CHOICE_QUESTION_CHANNEL_HOLDING_REGISTER || intval($answer) === 3) {
+				return Types\ChannelType::get(Types\ChannelType::HOLDING_REGISTER);
+			}
 
-		if ($mode === self::CHOICE_QUESTION_CHANNEL_HOLDING_REGISTER) {
-			return Types\ChannelType::get(Types\ChannelType::HOLDING_REGISTER);
-		}
+			throw new Exceptions\InvalidState('Selected answer is not valid');
+		});
 
-		throw new Exceptions\InvalidState('Unknown register type selected');
+		$answer = $io->askQuestion($question);
+		assert($answer instanceof Types\ChannelType);
+
+		return $answer;
 	}
 
 	/**
@@ -1430,7 +1451,7 @@ class Devices extends Console\Command\Command
 			),
 			$address,
 		);
-		$question->setValidator(static function ($answer) use ($device, $channel) {
+		$question->setValidator(static function (string|null $answer) use ($device, $channel) {
 			if (strval(intval($answer)) === strval($answer)) {
 				foreach ($device->getChannels() as $deviceChannel) {
 					$address = $deviceChannel->getAddress();
@@ -1607,19 +1628,30 @@ class Devices extends Console\Command\Command
 			$dataTypes,
 			$default ?? $dataTypes[0],
 		);
-		$question->setValidator(static function ($answer) {
-			if (MetadataTypes\DataType::isValidValue($answer)) {
-				return $answer;
+		$question->setErrorMessage('Selected answer: "%s" is not valid.');
+		$question->setValidator(static function (string|null $answer) use ($question): MetadataTypes\DataType {
+			if ($answer === null) {
+				throw new Exceptions\InvalidState('Selected answer is not valid');
 			}
 
-			throw new Exceptions\Runtime('Selected data type is not valid');
+			if (MetadataTypes\DataType::isValidValue($answer)) {
+				return MetadataTypes\DataType::get($answer);
+			}
+
+			if (
+				array_key_exists($answer, $question->getChoices())
+				&& MetadataTypes\DataType::isValidValue($question->getChoices()[$answer])
+			) {
+				return MetadataTypes\DataType::get($question->getChoices()[$answer]);
+			}
+
+			throw new Exceptions\InvalidState('Selected answer is not valid');
 		});
 
-		$question->setErrorMessage('Selected answer: "%s" is not valid.');
+		$answer = $io->askQuestion($question);
+		assert($answer instanceof MetadataTypes\DataType);
 
-		$dataType = $io->askQuestion($question);
-
-		return MetadataTypes\DataType::get($dataType);
+		return $answer;
 	}
 
 	/**
@@ -1787,7 +1819,7 @@ class Devices extends Console\Command\Command
 		}
 
 		$question = new Console\Question\Question($questionText, $default !== null ? $default[1] : null);
-		$question->setValidator(static function ($answer) use ($io, $questionError): string|null {
+		$question->setValidator(static function (string|null $answer) use ($io, $questionError): string|null {
 			if (trim(strval($answer)) === '') {
 				$question = new Console\Question\ConfirmationQuestion(
 					'Are you sure to skip this value?',
@@ -1849,15 +1881,25 @@ class Devices extends Console\Command\Command
 				$dataTypes,
 				$selected,
 			);
-			$question->setValidator(static function ($answer): string {
-				if (MetadataTypes\DataType::isValidValue($answer)) {
-					return strval($answer);
+			$question->setErrorMessage('Selected answer: "%s" is not valid.');
+			$question->setValidator(static function (string|null $answer) use ($question): string {
+				if ($answer === null) {
+					throw new Exceptions\InvalidState('Selected answer is not valid');
 				}
 
-				throw new Exceptions\Runtime('Selected data type is not valid');
-			});
+				if (MetadataTypes\DataTypeShort::isValidValue($answer)) {
+					return $answer;
+				}
 
-			$question->setErrorMessage('Selected answer: "%s" is not valid.');
+				if (
+					array_key_exists($answer, $question->getChoices())
+					&& MetadataTypes\DataTypeShort::isValidValue($question->getChoices()[$answer])
+				) {
+					return $question->getChoices()[$answer];
+				}
+
+				throw new Exceptions\InvalidState('Selected answer is not valid');
+			});
 
 			$dataType = strval($io->askQuestion($question));
 
@@ -2018,7 +2060,7 @@ class Devices extends Console\Command\Command
 		}
 
 		$question = new Console\Question\Question($questionText, $default !== null ? $default[1] : null);
-		$question->setValidator(static function ($answer) use ($io, $questionError): string|null {
+		$question->setValidator(static function (string|null $answer) use ($io, $questionError): string|null {
 			if (trim(strval($answer)) === '') {
 				$question = new Console\Question\ConfirmationQuestion(
 					'Are you sure to skip this value?',
@@ -2034,7 +2076,7 @@ class Devices extends Console\Command\Command
 				throw new Exceptions\Runtime($questionError);
 			}
 
-			return strval($answer);
+			return $answer;
 		});
 
 		$switchReading = $io->askQuestion($question);
@@ -2080,15 +2122,25 @@ class Devices extends Console\Command\Command
 				$dataTypes,
 				$selected,
 			);
-			$question->setValidator(static function ($answer): string {
-				if (MetadataTypes\DataType::isValidValue($answer)) {
-					return strval($answer);
+			$question->setErrorMessage('Selected answer: "%s" is not valid.');
+			$question->setValidator(static function (string|null $answer) use ($question): string {
+				if ($answer === null) {
+					throw new Exceptions\InvalidState('Selected answer is not valid');
 				}
 
-				throw new Exceptions\Runtime('Selected data type is not valid');
-			});
+				if (MetadataTypes\DataTypeShort::isValidValue($answer)) {
+					return $answer;
+				}
 
-			$question->setErrorMessage('Selected answer: "%s" is not valid.');
+				if (
+					array_key_exists($answer, $question->getChoices())
+					&& MetadataTypes\DataTypeShort::isValidValue($question->getChoices()[$answer])
+				) {
+					return $question->getChoices()[$answer];
+				}
+
+				throw new Exceptions\InvalidState('Selected answer is not valid');
+			});
 
 			$dataType = strval($io->askQuestion($question));
 
@@ -2137,16 +2189,22 @@ class Devices extends Console\Command\Command
 		$question = new Console\Question\ChoiceQuestion(
 			'Please select connector under which you want to manage devices',
 			array_values($connectors),
+			count($connectors) === 1 ? 0 : null,
 		);
-		$question->setValidator(function ($answer) use ($connectors): Entities\ModbusConnector {
-			$connectorIdentifier = array_search($answer, $connectors, true);
+		$question->setErrorMessage('Selected connector: "%s" is not valid.');
+		$question->setValidator(function (string|null $answer) use ($connectors): Entities\ModbusConnector {
+			if ($answer === null) {
+				throw new Exceptions\InvalidState('Selected answer is not valid');
+			}
 
-			if ($connectorIdentifier === false) {
+			$connectorIdentifiers = array_keys($connectors);
+
+			if (!array_key_exists(intval($answer), $connectorIdentifiers)) {
 				throw new Exceptions\Runtime('You have to select connector from list');
 			}
 
 			$findConnectorQuery = new DevicesQueries\FindConnectors();
-			$findConnectorQuery->byIdentifier($connectorIdentifier);
+			$findConnectorQuery->byIdentifier($connectorIdentifiers[intval($answer)]);
 
 			$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\ModbusConnector::class);
 			assert($connector instanceof Entities\ModbusConnector || $connector === null);
@@ -2157,8 +2215,6 @@ class Devices extends Console\Command\Command
 
 			return $connector;
 		});
-
-		$question->setErrorMessage('Selected connector: "%s" is not valid.');
 
 		$connector = $io->askQuestion($question);
 		assert($connector instanceof Entities\ModbusConnector);
@@ -2199,16 +2255,22 @@ class Devices extends Console\Command\Command
 		$question = new Console\Question\ChoiceQuestion(
 			'Please select device to manage',
 			array_values($devices),
+			count($devices) === 1 ? 0 : null,
 		);
-		$question->setValidator(function ($answer) use ($connector, $devices): Entities\ModbusDevice {
-			$connectorIdentifier = array_search($answer, $devices, true);
+		$question->setErrorMessage('Selected device: "%s" is not valid.');
+		$question->setValidator(function (string|null $answer) use ($connector, $devices): Entities\ModbusDevice {
+			if ($answer === null) {
+				throw new Exceptions\InvalidState('Selected answer is not valid');
+			}
 
-			if ($connectorIdentifier === false) {
+			$devicesIdentifiers = array_keys($devices);
+
+			if (!array_key_exists(intval($answer), $devicesIdentifiers)) {
 				throw new Exceptions\Runtime('You have to select device from list');
 			}
 
 			$findDeviceQuery = new DevicesQueries\FindDevices();
-			$findDeviceQuery->byIdentifier($connectorIdentifier);
+			$findDeviceQuery->byIdentifier($devicesIdentifiers[intval($answer)]);
 			$findDeviceQuery->forConnector($connector);
 
 			$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\ModbusDevice::class);
@@ -2220,8 +2282,6 @@ class Devices extends Console\Command\Command
 
 			return $device;
 		});
-
-		$question->setErrorMessage('Selected device: "%s" is not valid.');
 
 		$device = $io->askQuestion($question);
 		assert($device instanceof Entities\ModbusDevice);

@@ -78,6 +78,17 @@ class BaudRate extends Consistence\Enum\Enum
 
 	public const BAUD_RATE_460800 = 460_800; // posix
 
+	/**
+	 * @return array<int>
+	 */
+	public static function getValues(): array
+	{
+		/** @var iterable<int> $availableValues */
+		$availableValues = parent::getAvailableValues();
+
+		return (array) $availableValues;
+	}
+
 	public function __toString(): string
 	{
 		return strval(self::getValue());

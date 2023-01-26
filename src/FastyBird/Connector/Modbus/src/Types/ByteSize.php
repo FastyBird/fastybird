@@ -42,6 +42,17 @@ class ByteSize extends Consistence\Enum\Enum
 
 	public const SIZE_8 = 8;
 
+	/**
+	 * @return array<int>
+	 */
+	public static function getValues(): array
+	{
+		/** @var iterable<int> $availableValues */
+		$availableValues = parent::getAvailableValues();
+
+		return (array) $availableValues;
+	}
+
 	public function __toString(): string
 	{
 		return strval(self::getValue());
