@@ -40,7 +40,6 @@ use function array_search;
 use function array_values;
 use function assert;
 use function count;
-use function filter_var;
 use function intval;
 use function is_array;
 use function is_int;
@@ -51,7 +50,6 @@ use function sprintf;
 use function strval;
 use function trim;
 use function usort;
-use const FILTER_FLAG_IPV4;
 
 /**
  * Connector devices management command
@@ -90,7 +88,7 @@ class Devices extends Console\Command\Command
 
 	private const CHOICE_QUESTION_CHANNEL_HOLDING_REGISTER = 'Holding Register';
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-	private const MATCH_IP_ADDRESS_PORT = '/^(?P<address>((?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])[.]){3}(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])):(?P<port>[0-9]{1,5})$/';
+	private const MATCH_IP_ADDRESS_PORT = '/^(?P<address>((?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])[.]){3}(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]))(:(?P<port>[0-9]{1,5}))?$/';
 
 	private Log\LoggerInterface $logger;
 
@@ -1165,22 +1163,19 @@ class Devices extends Console\Command\Command
 	): string
 	{
 		$question = new Console\Question\Question('Provide device IP address', $device?->getIpAddress());
-		$question->setValidator(static function (string|null $answer) use (&$port) {
-			if (!filter_var(strval($answer), FILTER_FLAG_IPV4)) {
-				if (
-					preg_match(self::MATCH_IP_ADDRESS_PORT, strval($answer), $matches) === 1
-					&& array_key_exists('address', $matches)
-					&& array_key_exists('port', $matches)
-				) {
-					$port = intval($matches['port']);
-
+		$question->setValidator(static function (string|null $answer) {
+			if (
+				preg_match(self::MATCH_IP_ADDRESS_PORT, strval($answer), $matches) === 1
+				&& array_key_exists('address', $matches)
+			) {
+				if (array_key_exists('port', $matches)) {
 					return $matches['address'] . ':' . $matches['port'];
 				}
 
-				throw new Exceptions\Runtime('Provided device IP address is not valid');
+				return $matches['address'];
 			}
 
-			return $answer;
+			throw new Exceptions\Runtime('Provided device IP address is not valid');
 		});
 
 		return strval($io->askQuestion($question));
