@@ -249,8 +249,8 @@ class Rtu implements Client
 
 			if (!in_array($deviceExpectedDataType->getValue(), [
 				MetadataTypes\DataType::DATA_TYPE_CHAR,
-				MetadataTypes\DataType::DATA_TYPE_SHORT,
 				MetadataTypes\DataType::DATA_TYPE_UCHAR,
+				MetadataTypes\DataType::DATA_TYPE_SHORT,
 				MetadataTypes\DataType::DATA_TYPE_USHORT,
 				MetadataTypes\DataType::DATA_TYPE_BOOLEAN,
 			], true)) {
