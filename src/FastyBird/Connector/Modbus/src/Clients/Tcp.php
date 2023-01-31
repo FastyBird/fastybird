@@ -67,8 +67,6 @@ class Tcp implements Client
 
 	use Nette\SmartObject;
 
-	private const READ_MAX_ATTEMPTS = 5;
-
 	private const LOST_DELAY = 5.0; // in s - Waiting delay before another communication with device after device was lost
 
 	private const HANDLER_START_DELAY = 2.0;
@@ -80,8 +78,8 @@ class Tcp implements Client
 	/** @var array<string> */
 	private array $processedDevices = [];
 
-	/** @var array<string, DateTimeInterface|int> */
-	private array $processedReadProperties = [];
+	/** @var array<string, DateTimeInterface> */
+	private array $processedReadRegister = [];
 
 	/** @var array<string, array<string, ModbusComposer\Read\Coil\ReadCoilAddress>> */
 	private array $readCoilsStatusesAddresses = [];
@@ -528,10 +526,6 @@ class Tcp implements Client
 	{
 		$now = $this->dateTimeFactory->getNow();
 
-		$builder = ModbusComposer\Read\ReadCoilsBuilder::newReadInputDiscretes('');
-		$builder->coil(0, 'test_1');
-		$builder->build();
-
 		$ipAddress = $device->getIpAddress();
 		assert(is_string($ipAddress));
 
@@ -644,7 +638,7 @@ class Tcp implements Client
 			]);
 
 			$connector->connect($request->getUri())
-				->then(function (Socket\ConnectionInterface $connection) use ($request, $device): void {
+				->then(function (Socket\ConnectionInterface $connection) use ($request, $device, $now): void {
 					$receivedData = '';
 
 					$this->logger->debug(
@@ -670,7 +664,7 @@ class Tcp implements Client
 					// Wait for response event
 					$connection->on(
 						'data',
-						function ($data) use ($connection, $request, $device, &$receivedData): void {
+						function ($data) use ($connection, $request, $device, $now, &$receivedData): void {
 							// There are rare cases when MODBUS packet is received by multiple fragmented TCP packets, and it could
 							// take PHP multiple reads from stream to get full packet. So we concatenate data and check if all that
 							// we have received makes a complete modbus packet.
@@ -680,19 +674,7 @@ class Tcp implements Client
 								$response = $request->parse($receivedData);
 
 								if ($response instanceof ModbusPacket\ErrorResponse) {
-
 									foreach ($request->getAddresses() as $address) {
-										// Increment failed attempts counter
-										if (!array_key_exists($address->getName(), $this->processedReadProperties)) {
-											$this->processedReadProperties[$address->getName()] = 1;
-										} else {
-											$this->processedReadProperties[$address->getName()] = is_int(
-												$this->processedReadProperties[$address->getName()],
-											)
-												? $this->processedReadProperties[$address->getName()] + 1
-												: 1;
-										}
-
 										$channel = $device->findChannel($address->getName());
 
 										if ($channel !== null) {
@@ -747,7 +729,7 @@ class Tcp implements Client
 										$channel = $device->findChannel($identifier);
 
 										if ($channel !== null) {
-											$this->processedReadProperties[$channel->getIdentifier()] = $this->dateTimeFactory->getNow();
+											$this->processedReadRegister[$channel->getIdentifier()] = $now;
 
 											$property = $channel->findProperty(
 												ChannelPropertyIdentifier::IDENTIFIER_VALUE,
@@ -797,17 +779,6 @@ class Tcp implements Client
 
 					$connection->on('error', function (Throwable $ex) use ($connection, $request, $device): void {
 						foreach ($request->getAddresses() as $address) {
-							// Increment failed attempts counter
-							if (!array_key_exists($address->getName(), $this->processedReadProperties)) {
-								$this->processedReadProperties[$address->getName()] = 1;
-							} else {
-								$this->processedReadProperties[$address->getName()] = is_int(
-									$this->processedReadProperties[$address->getName()],
-								)
-									? $this->processedReadProperties[$address->getName()] + 1
-									: 1;
-							}
-
 							$channel = $device->findChannel($address->getName());
 
 							if ($channel !== null) {
@@ -924,55 +895,8 @@ class Tcp implements Client
 			$property->isQueryable()
 		) {
 			if (
-				isset($this->processedReadProperties[$channel->getIdentifier()])
-				&& is_int($this->processedReadProperties[$channel->getIdentifier()])
-				&& $this->processedReadProperties[$channel->getIdentifier()] >= self::READ_MAX_ATTEMPTS
-			) {
-				unset($this->processedReadProperties[$channel->getIdentifier()]);
-
-				$this->lostDevices[$device->getPlainId()] = $now;
-
-				$this->propertyStateHelper->setValue(
-					$property,
-					Utils\ArrayHash::from([
-						DevicesStates\Property::VALID_KEY => false,
-					]),
-				);
-
-				$this->consumer->append(new Entities\Messages\DeviceState(
-					$this->connector->getId(),
-					$device->getIdentifier(),
-					MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_LOST),
-				));
-
-				$this->logger->warning(
-					'Maximum channel property read attempts reached',
-					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
-						'type' => 'rtu-client',
-						'group' => 'client',
-						'connector' => [
-							'id' => $this->connector->getPlainId(),
-						],
-						'device' => [
-							'id' => $device->getPlainId(),
-						],
-						'channel' => [
-							'id' => $property->getChannel()->getPlainId(),
-						],
-						'property' => [
-							'id' => $property->getPlainId(),
-						],
-					],
-				);
-
-				return;
-			}
-
-			if (
-				array_key_exists($channel->getIdentifier(), $this->processedReadProperties)
-				&& $this->processedReadProperties[$channel->getIdentifier()] instanceof DateTimeInterface
-				&& $now->getTimestamp() - $this->processedReadProperties[$channel->getIdentifier()]->getTimestamp() < $channel->getReadingDelay()
+				array_key_exists($channel->getIdentifier(), $this->processedReadRegister)
+				&& $now->getTimestamp() - $this->processedReadRegister[$channel->getIdentifier()]->getTimestamp() < $channel->getReadingDelay()
 			) {
 				return;
 			}
@@ -993,6 +917,8 @@ class Tcp implements Client
 				} else {
 					$this->readInputsStatusesAddresses[$modbusPath][$address->getName()] = $address;
 				}
+
+				$this->processedReadRegister[$channel->getIdentifier()] = $now;
 
 				return;
 			} elseif (
@@ -1066,6 +992,10 @@ class Tcp implements Client
 				} else {
 					$this->readInputsRegistersAddresses[$modbusPath][$address->getName()] = $address;
 				}
+
+				$this->processedReadRegister[$channel->getIdentifier()] = $now;
+
+				return;
 			}
 		}
 
