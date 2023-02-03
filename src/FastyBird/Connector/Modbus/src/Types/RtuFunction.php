@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ByteOrder.php
+ * RtuFunction.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,7 +10,7 @@
  * @subpackage     Types
  * @since          1.0.0
  *
- * @date           21.08.22
+ * @date           03.02.23
  */
 
 namespace FastyBird\Connector\Modbus\Types;
@@ -19,30 +19,34 @@ use Consistence;
 use function strval;
 
 /**
- * Communication byte order types
+ * RTU function types
  *
  * @package        FastyBird:ModbusConnector!
  * @subpackage     Types
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class ByteOrder extends Consistence\Enum\Enum
+class RtuFunction extends Consistence\Enum\Enum
 {
 
 	/**
 	 * Define versions
 	 */
-	public const BYTE_ORDER_BIG = 'big';
+	public const FUNCTION_CODE_READ_COIL = 0x01;
 
-	public const BYTE_ORDER_BIG_SWAP = 'big_swap';
+	public const FUNCTION_CODE_READ_DISCRETE = 0x02;
 
-	public const BYTE_ORDER_BIG_LOW_WORD_FIRST = 'big_lwf';
+	public const FUNCTION_CODE_READ_HOLDING = 0x03;
 
-	public const BYTE_ORDER_LITTLE = 'little';
+	public const FUNCTION_CODE_READ_INPUT = 0x04;
 
-	public const BYTE_ORDER_LITTLE_SWAP = 'little_swap';
+	public const FUNCTION_CODE_WRITE_SINGLE_COIL = 0x05;
 
-	public const BYTE_ORDER_LITTLE_LOW_WORD_FIRST = 'little_lwf';
+	public const FUNCTION_CODE_WRITE_SINGLE_HOLDING = 0x06;
+
+	public const FUNCTION_CODE_WRITE_MULTIPLE_COILS = 0x1F;
+
+	public const FUNCTION_CODE_WRITE_MULTIPLE_HOLDINGS = 0x10;
 
 	public function __toString(): string
 	{

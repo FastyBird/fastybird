@@ -18,12 +18,10 @@ namespace FastyBird\Connector\Modbus\Clients;
 use DateTimeInterface;
 use Exception;
 use FastyBird\Connector\Modbus\API;
-use FastyBird\Connector\Modbus\Clients;
 use FastyBird\Connector\Modbus\Consumers;
 use FastyBird\Connector\Modbus\Entities;
 use FastyBird\Connector\Modbus\Exceptions;
 use FastyBird\Connector\Modbus\Helpers;
-use FastyBird\Connector\Modbus\Types;
 use FastyBird\Connector\Modbus\Writers;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata;
@@ -38,31 +36,15 @@ use Nette\Utils;
 use Psr\Log;
 use React\EventLoop;
 use React\Promise;
-use function array_chunk;
 use function array_key_exists;
-use function array_map;
-use function array_reduce;
-use function array_reverse;
-use function array_slice;
-use function array_values;
 use function assert;
-use function current;
-use function func_get_args;
-use function func_num_args;
 use function get_loaded_extensions;
 use function in_array;
-use function intval;
-use function is_array;
 use function is_bool;
 use function is_int;
 use function is_numeric;
-use function pack;
 use function sprintf;
-use function strlen;
 use function strval;
-use function substr;
-use function unpack;
-use function usleep;
 
 /**
  * Modbus RTU devices client interface
@@ -77,10 +59,6 @@ class Rtu implements Client
 
 	use Nette\SmartObject;
 
-	private const MODBUS_ADU = 'C1station/C1function/C*data/';
-
-	private const MODBUS_ERROR = 'C1station/C1error/C1exception/';
-
 	private const READ_MAX_ATTEMPTS = 5;
 
 	private const LOST_DELAY = 5.0; // in s - Waiting delay before another communication with device after device was lost
@@ -88,22 +66,6 @@ class Rtu implements Client
 	private const HANDLER_START_DELAY = 2.0;
 
 	private const HANDLER_PROCESSING_INTERVAL = 0.01;
-
-	private const FUNCTION_CODE_READ_COIL = 0x01;
-
-	private const FUNCTION_CODE_READ_DISCRETE = 0x02;
-
-	private const FUNCTION_CODE_READ_HOLDING = 0x03;
-
-	private const FUNCTION_CODE_READ_INPUT = 0x04;
-
-	private const FUNCTION_CODE_WRITE_SINGLE_COIL = 0x05;
-
-	private const FUNCTION_CODE_WRITE_SINGLE_HOLDING = 0x06;
-
-	private const FUNCTION_CODE_WRITE_MULTIPLE_COILS = 0x15;
-
-	private const FUNCTION_CODE_WRITE_MULTIPLE_HOLDINGS = 0x16;
 
 	private bool $closed = true;
 
@@ -116,18 +78,19 @@ class Rtu implements Client
 	/** @var array<string, DateTimeInterface> */
 	private array $lostDevices = [];
 
-	private bool|null $machineUsingLittleEndian = null;
-
 	private EventLoop\TimerInterface|null $handlerTimer;
 
-	private Clients\Interfaces\Serial|null $interface;
+	private API\Interfaces\Serial|null $interface = null;
+
+	private API\Rtu|null $rtu = null;
 
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
 		private readonly Entities\ModbusConnector $connector,
-		private readonly Helpers\Property $propertyStateHelper,
+		private readonly API\RtuFactory $rtuFactory,
 		private readonly API\Transformer $transformer,
+		private readonly Helpers\Property $propertyStateHelper,
 		private readonly Consumers\Messages $consumer,
 		private readonly Writers\Writer $writer,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
@@ -148,7 +111,7 @@ class Rtu implements Client
 	 */
 	public function connect(): void
 	{
-		$configuration = new Clients\Interfaces\Configuration(
+		$configuration = new API\Interfaces\Configuration(
 			$this->connector->getBaudRate(),
 			$this->connector->getByteSize(),
 			$this->connector->getStopBits(),
@@ -168,10 +131,12 @@ class Rtu implements Client
 		}
 
 		$this->interface = $useDio
-			? new Clients\Interfaces\SerialDio($this->connector->getRtuInterface(), $configuration)
-			: new Clients\Interfaces\SerialFile($this->connector->getRtuInterface(), $configuration);
+			? new API\Interfaces\SerialDio($this->connector->getRtuInterface(), $configuration)
+			: new API\Interfaces\SerialFile($this->connector->getRtuInterface(), $configuration);
 
 		$this->interface->open();
+
+		$this->rtu = $this->rtuFactory->create($this->interface);
 
 		$this->closed = false;
 
@@ -206,7 +171,6 @@ class Rtu implements Client
 	 * @throws Exception
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\Runtime
 	 * @throws Exceptions\NotReachable
 	 * @throws Exceptions\NotSupported
 	 * @throws MetadataExceptions\InvalidArgument
@@ -252,6 +216,9 @@ class Rtu implements Client
 				MetadataTypes\DataType::DATA_TYPE_UCHAR,
 				MetadataTypes\DataType::DATA_TYPE_SHORT,
 				MetadataTypes\DataType::DATA_TYPE_USHORT,
+				MetadataTypes\DataType::DATA_TYPE_INT,
+				MetadataTypes\DataType::DATA_TYPE_UINT,
+				MetadataTypes\DataType::DATA_TYPE_FLOAT,
 				MetadataTypes\DataType::DATA_TYPE_BOOLEAN,
 			], true)) {
 				return Promise\reject(
@@ -268,6 +235,7 @@ class Rtu implements Client
 				$property->getDataType(),
 				$property->getFormat(),
 				$state->getExpectedValue(),
+				$property->getNumberOfDecimals(),
 			);
 
 			if ($valueToWrite === null) {
@@ -277,7 +245,7 @@ class Rtu implements Client
 			try {
 				if ($valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_BOOLEAN)) {
 					if (in_array($valueToWrite->getValue(), [0, 1], true) || is_bool($valueToWrite->getValue())) {
-						$result = $this->writeSingleCoil(
+						$this->rtu?->writeSingleCoil(
 							$station,
 							$address,
 							is_bool(
@@ -297,16 +265,16 @@ class Rtu implements Client
 					|| $valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_USHORT)
 					|| $valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_CHAR)
 					|| $valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_UCHAR)
+					|| $valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_INT)
+					|| $valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_UINT)
+					|| $valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_FLOAT)
 				) {
-					$result = $this->writeSingleRegister(
+					$this->rtu?->writeSingleHolding(
 						$station,
 						$address,
 						(int) $valueToWrite->getValue(),
-						$property->getNumberOfDecimals(),
-						(
-							$valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_SHORT)
-							|| $valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_CHAR)
-						),
+						$valueToWrite->getDataType(),
+						$device->getByteOrder(),
 					);
 				} else {
 					return Promise\reject(
@@ -321,9 +289,7 @@ class Rtu implements Client
 			}
 
 			// Register writing failed
-			return $result === false
-				? Promise\reject(new Exceptions\Timeout('Write value to register failed'))
-				: Promise\resolve();
+			return Promise\resolve();
 		}
 
 		return Promise\reject(new Exceptions\InvalidArgument('Provided property state is in invalid state'));
@@ -425,7 +391,6 @@ class Rtu implements Client
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exception
 	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -522,9 +487,9 @@ class Rtu implements Client
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\ModbusRtu
-	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -551,9 +516,12 @@ class Rtu implements Client
 
 			if (!in_array($deviceExpectedDataType->getValue(), [
 				MetadataTypes\DataType::DATA_TYPE_CHAR,
-				MetadataTypes\DataType::DATA_TYPE_SHORT,
 				MetadataTypes\DataType::DATA_TYPE_UCHAR,
+				MetadataTypes\DataType::DATA_TYPE_SHORT,
 				MetadataTypes\DataType::DATA_TYPE_USHORT,
+				MetadataTypes\DataType::DATA_TYPE_INT,
+				MetadataTypes\DataType::DATA_TYPE_UINT,
+				MetadataTypes\DataType::DATA_TYPE_FLOAT,
 				MetadataTypes\DataType::DATA_TYPE_BOOLEAN,
 			], true)) {
 				unset($this->processedReadProperties[$propertyUuid]);
@@ -646,45 +614,34 @@ class Rtu implements Client
 			try {
 				if ($deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BOOLEAN)) {
 					$result = $property->isSettable()
-						? $this->readCoils($station, $address, 1)
-						: $this->readDiscreteInputs($station, $address, 1);
+						? $this->rtu?->readCoils($station, $address, 1)
+						: $this->rtu?->readDiscreteInputs($station, $address, 1);
 
-					$value = !is_array($result) || !array_key_exists('registers', $result) || !is_array(
-						$result['registers'],
-					)
-						? false
-						: $result['registers'][0];
+					$value = $result instanceof Entities\API\ReadDigitalInputs ? $result->findRegister($address) : null;
 				} elseif (
 					$deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SHORT)
 					|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_USHORT)
 					|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_CHAR)
 					|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_UCHAR)
+					|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_INT)
+					|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_UINT)
+					|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_FLOAT)
 				) {
-					$result = $property->isSettable() ? $this->readHoldingRegisters(
+					$result = $property->isSettable() ? $this->rtu?->readHoldingRegisters(
 						$station,
 						$address,
 						1,
-						$property->getNumberOfDecimals(),
-						(
-								$deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SHORT)
-								|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_CHAR)
-							),
-					) : $this->readInputRegisters(
+						$deviceExpectedDataType,
+						$device->getByteOrder(),
+					) : $this->rtu?->readInputRegisters(
 						$station,
 						$address,
 						1,
-						$property->getNumberOfDecimals(),
-						(
-								$deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SHORT)
-								|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_CHAR)
-							),
+						$deviceExpectedDataType,
+						$device->getByteOrder(),
 					);
 
-					$value = !is_array($result) || !array_key_exists('registers', $result) || !is_array(
-						$result['registers'],
-					)
-						? false
-						: $result['registers'][0];
+					$value = $result instanceof Entities\API\ReadAnalogInputs ? $result->findRegister($address) : null;
 				} else {
 					unset($this->processedReadProperties[$propertyUuid]);
 
@@ -741,7 +698,7 @@ class Rtu implements Client
 			}
 
 			// Register reading failed
-			if ($value === false) {
+			if ($value === null) {
 				// Increment failed attempts counter
 				if (!array_key_exists($propertyUuid, $this->processedReadProperties)) {
 					$this->processedReadProperties[$propertyUuid] = 1;
@@ -772,6 +729,7 @@ class Rtu implements Client
 								$property->getDataType(),
 								$property->getFormat(),
 								$value,
+								$property->getNumberOfDecimals(),
 							),
 						),
 						DevicesStates\Property::VALID_KEY => true,
@@ -779,819 +737,6 @@ class Rtu implements Client
 				);
 			}
 		}
-	}
-
-	/**
-	 * (0x01) Read Coils
-	 *
-	 * This function code is used to read from 1 to 2000 contiguous status of coils in a remote device.
-	 * The Request PDU specifies the starting address, i.e. the address of the first coil specified,
-	 * and the number of coils. In the PDU Coils are addressed starting at zero, therefore coils
-	 * numbered 1-16 are addressed as 0-15.
-	 *
-	 * The coils in the response message are packed as one coil per a bit of the data field.
-	 * Status is indicated as 1= ON and 0= OFF. The LSB of the first data byte contains the output
-	 * addressed in the query. The other coils follow toward the high order end of this byte,
-	 * and from low order to high order in subsequent bytes.
-	 *
-	 * If the returned output quantity is not a multiple of eight, the remaining bits in the final data byte
-	 * will be padded with zeros (toward the high order end of the byte). The Byte Count field specifies
-	 * the quantity of complete bytes of data.
-	 *
-	 * @param int $station Station Address (C1)
-	 * @param int $startingAddress Starting Address (n1)
-	 * @param int $quantity Quantity of coils (n1)
-	 *
-	 * @return array<string, int|array<int, int>>|string|false
-	 * [
-	 *    'station'  => $station,
-	 *    'function' => 0x01,
-	 *    'count'    => $count,
-	 *    'status'   => [],
-	 * ]
-	 *
-	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\ModbusRtu
-	 * @throws Exceptions\Runtime
-	 */
-	private function readCoils(
-		int $station,
-		int $startingAddress,
-		int $quantity,
-		bool $raw = false,
-	): string|array|false
-	{
-		$request = pack('C2n2', $station, self::FUNCTION_CODE_READ_COIL, $startingAddress, $quantity);
-
-		$crc = $this->crc16($request);
-
-		if ($crc === false) {
-			return false;
-		}
-
-		$request .= $crc;
-
-		$response = $this->sendRequest($request);
-
-		if ($response === false) {
-			return false;
-		}
-
-		if ($raw === false) {
-			$unpacked = unpack('C1station/C1function/C1count', $response);
-
-			if ($unpacked === false) {
-				return false;
-			}
-
-			$statusUnpacked = unpack('C*', substr($response, 3, -2));
-
-			if ($statusUnpacked === false) {
-				return false;
-			}
-
-			$response = $unpacked + ['registers' => array_values($statusUnpacked)];
-		}
-
-		return $response;
-	}
-
-	/**
-	 * (0x02) Read Discrete Inputs
-	 *
-	 * @param int $station Station Address (C1)
-	 * @param int $startingAddress Starting Address (n1)
-	 * @param int $quantity Quantity of Inputs (n1)
-	 *
-	 * @return array<string, int|array<int, int>>|string|false
-	 * [
-	 *    'station'  => $station,
-	 *    'function' => 0x02,
-	 *    'count'    => $count,
-	 *    'status'   => [],
-	 * ]
-	 *
-	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\ModbusRtu
-	 * @throws Exceptions\Runtime
-	 */
-	private function readDiscreteInputs(
-		int $station,
-		int $startingAddress,
-		int $quantity,
-		bool $raw = false,
-	): string|array|false
-	{
-		$request = pack('C2n2', $station, self::FUNCTION_CODE_READ_DISCRETE, $startingAddress, $quantity);
-
-		$crc = $this->crc16($request);
-
-		if ($crc === false) {
-			return false;
-		}
-
-		$request .= $crc;
-
-		$response = $this->sendRequest($request);
-
-		if ($response === false) {
-			return false;
-		}
-
-		if ($raw === false) {
-			$unpacked = unpack('C1station/C1function/C1count', $response);
-
-			if ($unpacked === false) {
-				return false;
-			}
-
-			$statusUnpacked = unpack('C*', substr($response, 3, -2));
-
-			if ($statusUnpacked === false) {
-				return false;
-			}
-
-			$response = $unpacked + ['registers' => array_values($statusUnpacked)];
-		}
-
-		return $response;
-	}
-
-	/**
-	 * (0x03) Read Holding Registers
-	 *
-	 * @param int $station Station Address (C1)
-	 * @param int $startingAddress Starting Address (n1)
-	 * @param int $quantity Quantity of Registers (n1)
-	 *
-	 * @return array<string, int|array<int, int|float|null>>|string|false
-	 * [
-	 *    'station'   => $station,
-	 *    'function'  => 0x03,
-	 *    'count'     => $count,
-	 *    'registers' => [],
-	 * ]
-	 *
-	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\ModbusRtu
-	 * @throws Exceptions\Runtime
-	 */
-	private function readHoldingRegisters(
-		int $station,
-		int $startingAddress,
-		int $quantity,
-		int|null $numberOfDecimals = null,
-		bool $signed = false,
-		bool $raw = false,
-	): string|array|false
-	{
-		$request = pack('C2n2', $station, self::FUNCTION_CODE_READ_HOLDING, $startingAddress, $quantity);
-
-		$crc = $this->crc16($request);
-
-		if ($crc === false) {
-			return false;
-		}
-
-		$request .= $crc;
-
-		$response = $this->sendRequest($request);
-
-		if ($response === false) {
-			return false;
-		}
-
-		if ($raw === false) {
-			$unpacked = unpack('C1station/C1function/C1count', $response);
-
-			if ($unpacked === false) {
-				return false;
-			}
-
-			$registersUnpacked = unpack('C*', substr($response, 3, -2));
-
-			if ($registersUnpacked === false) {
-				return false;
-			}
-
-			$registersValuesChunks = array_chunk($registersUnpacked, 2);
-
-			$response = $signed ? $unpacked + [
-				'registers' => array_values(array_map(fn (array $valueChunk): int|null => $this->unpackSignedInt(
-					$valueChunk,
-					Types\ByteOrder::get(Types\ByteOrder::BYTE_ORDER_BIG),
-				), $registersValuesChunks)),
-			] : $unpacked + [
-				'registers' => array_values(array_map(fn (array $valueChunk): int|null => $this->unpackUnsignedInt(
-					$valueChunk,
-					Types\ByteOrder::get(Types\ByteOrder::BYTE_ORDER_BIG),
-				), $registersValuesChunks)),
-			];
-		}
-
-		return $response;
-	}
-
-	/**
-	 * (0x04) Read Input Registers
-	 *
-	 * @param int $station Station Address (C1)
-	 * @param int $startingAddress Starting Address (n1)
-	 * @param int $quantity Quantity of Input Registers
-	 *
-	 * @return array<string, int|array<int, int|float|null>>|string|false
-	 * [
-	 *    'station'   => $station,
-	 *    'function'  => 0x04,
-	 *    'count'     => $count,
-	 *    'registers' => [],
-	 * ]
-	 *
-	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\ModbusRtu
-	 * @throws Exceptions\Runtime
-	 */
-	private function readInputRegisters(
-		int $station,
-		int $startingAddress,
-		int $quantity,
-		int|null $numberOfDecimals = null,
-		bool $signed = false,
-		bool $raw = false,
-	): string|array|false
-	{
-		$request = pack('C2n2', $station, self::FUNCTION_CODE_READ_INPUT, $startingAddress, $quantity);
-
-		$crc = $this->crc16($request);
-
-		if ($crc === false) {
-			return false;
-		}
-
-		$request .= $crc;
-
-		$response = $this->sendRequest($request);
-
-		if ($response === false) {
-			return false;
-		}
-
-		if ($raw === false) {
-			$unpacked = unpack('C1station/C1function/C1count', $response);
-
-			if ($unpacked === false) {
-				return false;
-			}
-
-			$registersUnpacked = unpack('C*', substr($response, 3, -2));
-
-			if ($registersUnpacked === false) {
-				return false;
-			}
-
-			$registersValuesChunks = array_chunk($registersUnpacked, 2);
-
-			$response = $signed ? $unpacked + [
-				'registers' => array_values(array_map(fn (array $valueChunk): int|null => $this->unpackSignedInt(
-					$valueChunk,
-					Types\ByteOrder::get(Types\ByteOrder::BYTE_ORDER_BIG),
-				), $registersValuesChunks)),
-			] : $unpacked + [
-				'registers' => array_values(array_map(fn (array $valueChunk): int|null => $this->unpackUnsignedInt(
-					$valueChunk,
-					Types\ByteOrder::get(Types\ByteOrder::BYTE_ORDER_BIG),
-				), $registersValuesChunks)),
-			];
-		}
-
-		return $response;
-	}
-
-	/**
-	 * (0x05) Write Single Coil
-	 *
-	 * @param int $station Station Address (C1)
-	 * @param int $coilAddress Coil Address (n1)
-	 * @param bool $value Output Value (n1)
-	 *
-	 * @return array<string, int|bool>|string|false
-	 *
-	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\ModbusRtu
-	 * @throws Exceptions\Runtime
-	 */
-	private function writeSingleCoil(
-		int $station,
-		int $coilAddress,
-		bool $value,
-		bool $raw = false,
-	): string|array|false
-	{
-		// Pack header (transform to binary)
-		$request = pack('C2n', $station, self::FUNCTION_CODE_WRITE_SINGLE_COIL, $coilAddress);
-		// Pack value (transform to binary)
-		$request .= pack('n', $value ? 0xFF00 : 0x0000);
-
-		$crc = $this->crc16($request);
-
-		if ($crc === false) {
-			return false;
-		}
-
-		$request .= $crc;
-
-		$response = $this->sendRequest($request);
-
-		if ($response === false) {
-			return false;
-		}
-
-		if ($raw === false) {
-			$unpacked = unpack('C1station/C1function/n1address', $response);
-
-			if ($unpacked === false) {
-				return false;
-			}
-
-			$valueUnpacked = unpack('n1', substr($response, 4, -2));
-
-			if ($valueUnpacked === false) {
-				return false;
-			}
-
-			$response = $unpacked + ['value' => current($valueUnpacked) === 0xFF00];
-		}
-
-		return $response;
-	}
-
-	/**
-	 * (0x06) Write Single Register
-	 *
-	 * @param int $station Station Address (C1)
-	 * @param int $registerAddress Register Address (n1)
-	 * @param int|float $value Register Value (n1)
-	 *
-	 * @return array<string, int|float|null>|string|false
-	 *
-	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\ModbusRtu
-	 * @throws Exceptions\Runtime
-	 */
-	private function writeSingleRegister(
-		int $station,
-		int $registerAddress,
-		int|float $value,
-		int|null $numberOfDecimals = null,
-		bool $signed = false,
-		bool $raw = false,
-	): string|array|false
-	{
-		// Pack header (transform to binary)
-		$request = pack('C2n', $station, self::FUNCTION_CODE_WRITE_SINGLE_HOLDING, $registerAddress);
-		// Pack value (transform to binary)
-		// TODO: Add handling for 32 (C4) and 64 (C8) bytes
-		$request .= pack('C2', ($value >> 8) & 0xFF, ($value >> 0) & 0xFF);
-
-		$crc = $this->crc16($request);
-
-		if ($crc === false) {
-			return false;
-		}
-
-		$request .= $crc;
-
-		$response = $this->sendRequest($request);
-
-		if ($response === false) {
-			return false;
-		}
-
-		if ($raw === false) {
-			$unpacked = unpack('C1station/C1function/n1address', $response);
-
-			if ($unpacked === false) {
-				return false;
-			}
-
-			$valueChunk = unpack('C*', substr($response, 4, -2));
-
-			if ($valueChunk === false) {
-				return false;
-			}
-
-			$response = $signed ? $unpacked + [
-				'value' => $this->unpackSignedInt(
-					$valueChunk,
-					Types\ByteOrder::get(Types\ByteOrder::BYTE_ORDER_BIG),
-				),
-			] : $unpacked + [
-				'value' => $this->unpackUnsignedInt(
-					$valueChunk,
-					Types\ByteOrder::get(Types\ByteOrder::BYTE_ORDER_BIG),
-				),
-			];
-		}
-
-		return $response;
-	}
-
-	/**
-	 * (0x15) Write Multiple Coils
-	 *
-	 * @param int $station Station Address (C1)
-	 * @param int $startingAddress Starting Address (n1)
-	 * @param int $quantity Quantity of Outputs (n1)
-	 *
-	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\ModbusRtu
-	 * @throws Exceptions\Runtime
-	 */
-	private function writeMultipleCoils(
-		int $station,
-		int $startingAddress,
-		int $quantity,
-	): string|false
-	{
-		if (func_num_args() !== 3 + $quantity) {
-			throw new Exceptions\ModbusRtu('Incorrect number of arguments', -4);
-		}
-
-		$request = pack('C2n2', $station, self::FUNCTION_CODE_WRITE_MULTIPLE_COILS, $startingAddress, $quantity);
-		$request .= pack('C1C*', $quantity, ...array_slice(func_get_args(), 3));
-
-		$crc = $this->crc16($request);
-
-		if ($crc === false) {
-			return false;
-		}
-
-		return $this->sendRequest($request);
-	}
-
-	/**
-	 * (0x16) Write Multiple registers
-	 *
-	 * @param int $station Station Address (C1)
-	 * @param int $startingAddress Starting Address (n1)
-	 * @param int $quantity Quantity of Registers (n1)
-	 *
-	 * Registers Value (n*)
-	 *
-	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\ModbusRtu
-	 * @throws Exceptions\Runtime
-	 */
-	private function writeMultipleRegisters(
-		int $station,
-		int $startingAddress,
-		int $quantity,
-	): string|false
-	{
-		if (func_num_args() !== 3 + $quantity) {
-			throw new Exceptions\ModbusRtu('Incorrect number of arguments', -4);
-		}
-
-		$request = pack('C2n2', $station, self::FUNCTION_CODE_WRITE_MULTIPLE_HOLDINGS, $startingAddress, $quantity);
-		$request .= pack('C1n*', 2 * $quantity, ...array_slice(func_get_args(), 3));
-
-		$crc = $this->crc16($request);
-
-		if ($crc === false) {
-			return false;
-		}
-
-		return $this->sendRequest($request);
-	}
-
-	/**
-	 * (0x07) Read Exception Status (Serial Line only)
-	 *
-	 * @param int $station Station Address (C1)
-	 *
-	 * @return array<string, string|int>|string|false
-	 *
-	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\ModbusRtu
-	 * @throws Exceptions\Runtime
-	 */
-	private function readExceptionStatus(
-		int $station,
-		bool $raw = false,
-	): string|array|false
-	{
-		$request = pack('C2', $station, 0x07);
-
-		$crc = $this->crc16($request);
-
-		if ($crc === false) {
-			return false;
-		}
-
-		$request .= $crc;
-
-		$response = $this->sendRequest($request);
-
-		if ($response === false) {
-			return false;
-		}
-
-		if ($raw === false) {
-			$response = unpack('C1station/C1function/C1data', $response);
-		}
-
-		return $response;
-	}
-
-	/**
-	 * (0x08) Diagnostics (Serial Line only)
-	 *
-	 * @param int $station Station Address (C1)
-	 * @param int $subFunction Sub-function (n1)
-	 *
-	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\ModbusRtu
-	 * @throws Exceptions\Runtime
-	 */
-	private function diagnostics(int $station, int $subFunction): string|false
-	{
-		if (func_num_args() < 3) {
-			throw new Exceptions\ModbusRtu('Incorrect number of arguments', -4);
-		}
-
-		$request = pack('C2n1', $station, 0x08, $subFunction);
-		$request .= pack('n*', ...array_slice(func_get_args(), 2));
-
-		$crc = $this->crc16($request);
-
-		if ($crc === false) {
-			return false;
-		}
-
-		$request .= $crc;
-
-		return $this->sendRequest($request);
-	}
-
-	/**
-	 * (0x0B) Get Comm Event Counter (Serial Line only)
-	 *
-	 * @param int $station Station Address (C1)
-	 *
-	 * @return array<string, string|int>|string|false
-	 *
-	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\ModbusRtu
-	 * @throws Exceptions\Runtime
-	 */
-	private function getCommEventCounter(
-		int $station,
-		bool $raw = false,
-	): string|array|false
-	{
-		$request = pack('C2', $station, 0x0B);
-
-		$crc = $this->crc16($request);
-
-		if ($crc === false) {
-			return false;
-		}
-
-		$response = $this->sendRequest($request);
-
-		if ($response === false) {
-			return false;
-		}
-
-		if ($raw === false) {
-			$response = unpack('C1station/C1function/n1status/n1eventcount', $response);
-		}
-
-		return $response;
-	}
-
-	/**
-	 * (0x0C) Get Comm Event Log (Serial Line only)
-	 *
-	 * @param int $station Station Address (C1)
-	 *
-	 * @return array<string, string|int>|string|false
-	 *
-	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\ModbusRtu
-	 * @throws Exceptions\Runtime
-	 */
-	private function getCommEventLog(
-		int $station,
-		bool $raw = false,
-	): string|array|false
-	{
-		$request = pack('C2', $station, 0x0C);
-
-		$crc = $this->crc16($request);
-
-		if ($crc === false) {
-			return false;
-		}
-
-		$response = $this->sendRequest($request);
-
-		if ($response === false) {
-			return false;
-		}
-
-		if ($raw === false) {
-			$unpacked = unpack('C1station/C1function/C1count/n1status/n1eventcount/n1messagecount', $response);
-
-			if ($unpacked === false) {
-				return false;
-			}
-
-			$eventsUnpacked = unpack('C*', substr($response, 9, -2));
-
-			if ($eventsUnpacked === false) {
-				return false;
-			}
-
-			$response = $unpacked + ['events' => array_values($eventsUnpacked)];
-		}
-
-		return $response;
-	}
-
-	/**
-	 * (0x11) Report Server ID (Serial Line only)
-	 *
-	 * @param int $station Station Address (C1)
-	 *
-	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\ModbusRtu
-	 * @throws Exceptions\Runtime
-	 */
-	private function reportServerId(int $station = 0x00): string|false
-	{
-		$request = pack('C2', $station, 0x11);
-
-		$crc = $this->crc16($request);
-
-		if ($crc === false) {
-			return false;
-		}
-
-		return $this->sendRequest($request);
-	}
-
-	/**
-	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\ModbusRtu
-	 * @throws Exceptions\Runtime
-	 */
-	private function sendRequest(string $request): string|false
-	{
-		if ($this->interface === null) {
-			throw new Exceptions\Runtime('Connection is not established');
-		}
-
-		$this->interface->send($request);
-
-		usleep((int) (0.1 * 1000_000));
-
-		$response = $this->interface->read();
-
-		if ($response === false) {
-			return false;
-		}
-
-		if (strlen($response) < 4) {
-			throw new Exceptions\ModbusRtu('Response length too short', -1, $request, $response);
-		}
-
-		$aduRequest = unpack(self::MODBUS_ADU, $request);
-
-		if ($aduRequest === false) {
-			return false;
-		}
-
-		$aduResponse = unpack(self::MODBUS_ERROR, $response);
-
-		if ($aduResponse === false) {
-			return false;
-		}
-
-		if ($aduRequest['function'] !== $aduResponse['error']) {
-			// Error code = Function code + 0x80
-			if ($aduResponse['error'] === $aduRequest['function'] + 0x80) {
-				throw new Exceptions\ModbusRtu(null, $aduResponse['exception'], $request, $response);
-			} else {
-				throw new Exceptions\ModbusRtu('Illegal error code', -3, $request, $response);
-			}
-		}
-
-		if (substr($response, -2) !== $this->crc16(substr($response, 0, -2))) {
-			throw new Exceptions\ModbusRtu('Error check fails', -2, $request, $response);
-		}
-
-		return $response;
-	}
-
-	private function crc16(string $data): string|false
-	{
-		$crc = 0xFFFF;
-
-		$bytes = unpack('C*', $data);
-
-		if ($bytes === false) {
-			return false;
-		}
-
-		foreach ($bytes as $byte) {
-			$crc ^= $byte;
-
-			for ($j = 8; $j; $j--) {
-				$crc = ($crc >> 1) ^ ($crc & 0x0001) * 0xA001;
-			}
-		}
-
-		return pack('v1', $crc);
-	}
-
-	/**
-	 * @param array<int> $bytes
-	 *
-	 * @throws Exceptions\InvalidState
-	 */
-	private function unpackSignedInt(array $bytes, Types\ByteOrder $byteOrder): int|null
-	{
-		if (
-			(
-				$this->isLittleEndian()
-				&& $byteOrder->equalsValue(Types\ByteOrder::BYTE_ORDER_LITTLE)
-			) || (
-				!$this->isLittleEndian()
-				&& $byteOrder->equalsValue(Types\ByteOrder::BYTE_ORDER_BIG)
-			)
-		) {
-			// If machine is using same byte order as device
-			$value = unpack('s', pack('C*', ...array_values($bytes)));
-
-		} elseif (
-			(
-				!$this->isLittleEndian()
-				&& $byteOrder->equalsValue(Types\ByteOrder::BYTE_ORDER_LITTLE)
-			) || (
-				$this->isLittleEndian()
-				&& $byteOrder->equalsValue(Types\ByteOrder::BYTE_ORDER_BIG)
-			)
-		) {
-			// If machine is using different byte order than device, do byte order swap
-			$value = unpack('s', pack('C*', ...array_reverse(array_values($bytes))));
-
-		} else {
-			return null;
-		}
-
-		if ($value === false) {
-			return null;
-		}
-
-		return intval(current($value));
-	}
-
-	/**
-	 * @param array<int> $bytes
-	 */
-	private function unpackUnsignedInt(array $bytes, Types\ByteOrder $byteOrder): int|null
-	{
-		if ($byteOrder->equalsValue(Types\ByteOrder::BYTE_ORDER_LITTLE)) {
-			$bytes = array_reverse(array_values($bytes));
-		}
-
-		return array_reduce(
-			$bytes,
-			static fn ($out, $in): int => $out << 8 | $in,
-		);
-	}
-
-	/**
-	 * Detect machine byte order configuration
-	 *
-	 * @throws Exceptions\InvalidState
-	 */
-	private function isLittleEndian(): bool
-	{
-		if ($this->machineUsingLittleEndian !== null) {
-			return $this->machineUsingLittleEndian;
-		}
-
-		$testUnpacked = unpack('S', '\x01\x00');
-
-		if ($testUnpacked === false) {
-			throw new Exceptions\InvalidState('Endian order could not be determined');
-		}
-
-		$this->machineUsingLittleEndian = current($testUnpacked) === 1;
-
-		return $this->machineUsingLittleEndian;
 	}
 
 	private function registerLoopHandler(): void

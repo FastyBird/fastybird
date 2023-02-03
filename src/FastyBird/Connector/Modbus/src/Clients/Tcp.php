@@ -22,6 +22,7 @@ use FastyBird\Connector\Modbus\Consumers;
 use FastyBird\Connector\Modbus\Entities;
 use FastyBird\Connector\Modbus\Exceptions;
 use FastyBird\Connector\Modbus\Helpers;
+use FastyBird\Connector\Modbus\Types\ByteOrder;
 use FastyBird\Connector\Modbus\Types\ChannelPropertyIdentifier;
 use FastyBird\Connector\Modbus\Writers;
 use FastyBird\DateTimeFactory;
@@ -207,6 +208,7 @@ class Tcp implements Client
 				$property->getDataType(),
 				$property->getFormat(),
 				$state->getExpectedValue(),
+				$property->getNumberOfDecimals(),
 			);
 
 			if ($valueToWrite === null) {
@@ -744,6 +746,7 @@ class Tcp implements Client
 																$property->getDataType(),
 																$property->getFormat(),
 																$value,
+																$property->getNumberOfDecimals(),
 															),
 														),
 														DevicesStates\Property::VALID_KEY => true,
@@ -931,6 +934,18 @@ class Tcp implements Client
 				|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_FLOAT)
 				|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_STRING)
 			) {
+				$endian = ModbusUtils\Endian::$defaultEndian;
+
+				if ($device->getByteOrder()->equalsValue(ByteOrder::BYTE_ORDER_LITTLE_SWAP)) {
+					$endian = ModbusUtils\Endian::LITTLE_ENDIAN;
+				} elseif ($device->getByteOrder()->equalsValue(ByteOrder::BYTE_ORDER_LITTLE)) {
+					$endian = ModbusUtils\Endian::LITTLE_ENDIAN | ModbusUtils\Endian::LOW_WORD_FIRST;
+				} elseif ($device->getByteOrder()->equalsValue(ByteOrder::BYTE_ORDER_BIG_SWAP)) {
+					$endian = ModbusUtils\Endian::BIG_ENDIAN;
+				} elseif ($device->getByteOrder()->equalsValue(ByteOrder::BYTE_ORDER_BIG)) {
+					$endian = ModbusUtils\Endian::BIG_ENDIAN | ModbusUtils\Endian::LOW_WORD_FIRST;
+				}
+
 				if (
 					$deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_CHAR)
 					|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_UCHAR)
@@ -946,6 +961,9 @@ class Tcp implements Client
 						$address,
 						ModbusComposer\Address::TYPE_INT16,
 						$channel->getIdentifier(),
+						null,
+						null,
+						$endian,
 					);
 
 				} elseif ($deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_USHORT)) {
@@ -953,6 +971,9 @@ class Tcp implements Client
 						$address,
 						ModbusComposer\Address::TYPE_UINT16,
 						$channel->getIdentifier(),
+						null,
+						null,
+						$endian,
 					);
 
 				} elseif ($deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_INT)) {
@@ -960,6 +981,9 @@ class Tcp implements Client
 						$address,
 						ModbusComposer\Address::TYPE_INT32,
 						$channel->getIdentifier(),
+						null,
+						null,
+						$endian,
 					);
 
 				} elseif ($deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_UINT)) {
@@ -967,6 +991,9 @@ class Tcp implements Client
 						$address,
 						ModbusComposer\Address::TYPE_UINT32,
 						$channel->getIdentifier(),
+						null,
+						null,
+						$endian,
 					);
 
 				} elseif ($deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_FLOAT)) {
@@ -974,6 +1001,9 @@ class Tcp implements Client
 						$address,
 						ModbusComposer\Address::TYPE_FLOAT,
 						$channel->getIdentifier(),
+						null,
+						null,
+						$endian,
 					);
 
 				} elseif ($deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_STRING)) {
@@ -981,6 +1011,9 @@ class Tcp implements Client
 						$address,
 						ModbusComposer\Address::TYPE_STRING,
 						$channel->getIdentifier(),
+						null,
+						null,
+						$endian,
 					);
 
 				} else {

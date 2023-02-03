@@ -104,6 +104,11 @@ class ModbusExtension extends DI\CompilerExtension
 			->getResultDefinition()
 			->setType(Clients\Tcp::class);
 
+		$builder->addFactoryDefinition($this->prefix('api.rtu'))
+			->setImplement(API\RtuFactory::class)
+			->getResultDefinition()
+			->setType(API\Rtu::class);
+
 		$builder->addDefinition($this->prefix('api.transformer'), new DI\Definitions\ServiceDefinition())
 			->setType(API\Transformer::class);
 
