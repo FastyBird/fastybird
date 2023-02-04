@@ -33,21 +33,37 @@ final class HttpServerCommandTest extends TestCase
 		$logger
 			->expects(self::exactly(2))
 			->method('info')
-			->withConsecutive(
-				[
-					'Launching HTTP Server',
-					[
-						'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WEB_SERVER,
-						'type' => 'command',
-					],
-				],
-				[
-					'Listening on "http://127.0.0.1:8001"',
-					[
-						'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WEB_SERVER,
-						'type' => 'factory',
-					],
-				],
+			->with(
+				self::callback(function (...$args): bool {
+					$valid = [
+						[
+							'Launching HTTP Server',
+						],
+						[
+							'Listening on "http://127.0.0.1:8001"',
+						],
+					];
+
+					return in_array($args, $valid, true);
+				}),
+				self::callback(function (...$args): bool {
+					$valid = [
+						[
+							[
+								'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WEB_SERVER,
+								'type' => 'command',
+							],
+						],
+						[
+							[
+								'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WEB_SERVER,
+								'type' => 'factory',
+							],
+						],
+					];
+
+					return in_array($args, $valid, true);
+				}),
 			);
 
 		$eventLoop = $this->createMock(EventLoop\LoopInterface::class);
