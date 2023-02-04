@@ -14,6 +14,7 @@ use React\Promise;
 use Symfony\Component\Console;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
+use function in_array;
 
 final class HttpServerCommandTest extends TestCase
 {
@@ -34,7 +35,7 @@ final class HttpServerCommandTest extends TestCase
 			->expects(self::exactly(2))
 			->method('info')
 			->with(
-				self::callback(function (...$args): bool {
+				self::callback(static function (...$args): bool {
 					$valid = [
 						[
 							'Launching HTTP Server',
@@ -46,7 +47,7 @@ final class HttpServerCommandTest extends TestCase
 
 					return in_array($args, $valid, true);
 				}),
-				self::callback(function (...$args): bool {
+				self::callback(static function (...$args): bool {
 					$valid = [
 						[
 							[
