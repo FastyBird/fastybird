@@ -646,14 +646,20 @@ final class Transformer
 		}
 
 		if (
-			$byteOrder->equalsValue(Types\ByteOrder::BYTE_ORDER_BIG_SWAP)
-			|| $byteOrder->equalsValue(Types\ByteOrder::BYTE_ORDER_LITTLE_SWAP)
+			$bytes === 4
+			&& (
+				$byteOrder->equalsValue(Types\ByteOrder::BYTE_ORDER_BIG_SWAP)
+				|| $byteOrder->equalsValue(Types\ByteOrder::BYTE_ORDER_LITTLE_SWAP)
+			)
 		) {
 			$bytearray = [$bytearray[1], $bytearray[0], $bytearray[3], $bytearray[2]];
 
 		} elseif (
-			$byteOrder->equalsValue(Types\ByteOrder::BYTE_ORDER_BIG_LOW_WORD_FIRST)
-			|| $byteOrder->equalsValue(Types\ByteOrder::BYTE_ORDER_LITTLE_LOW_WORD_FIRST)
+			$bytes === 4
+			&& (
+				$byteOrder->equalsValue(Types\ByteOrder::BYTE_ORDER_BIG_LOW_WORD_FIRST)
+				|| $byteOrder->equalsValue(Types\ByteOrder::BYTE_ORDER_LITTLE_LOW_WORD_FIRST)
+			)
 		) {
 			$bytearray = [$bytearray[2], $bytearray[3], $bytearray[0], $bytearray[1]];
 		}
@@ -672,7 +678,7 @@ final class Transformer
 			return $this->machineUsingLittleEndian;
 		}
 
-		$testUnpacked = unpack('S', '\x01\x00');
+		$testUnpacked = unpack('S', "\x01\x00");
 
 		if ($testUnpacked === false) {
 			throw new Exceptions\InvalidState('Machine endian order could not be determined');
