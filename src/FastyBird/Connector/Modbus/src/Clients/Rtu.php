@@ -510,12 +510,12 @@ class Rtu implements Client
 				} elseif ($request instanceof Entities\Clients\ReadHoldingsRequest) {
 					$channel = $device->findChannelByType(
 						$address,
-						Types\ChannelType::get(Types\ChannelType::HOLDING),
+						Types\ChannelType::get(Types\ChannelType::HOLDING_REGISTER),
 					);
 				} elseif ($request instanceof Entities\Clients\ReadInputsRequest) {
 					$channel = $device->findChannelByType(
 						$address,
-						Types\ChannelType::get(Types\ChannelType::INPUT),
+						Types\ChannelType::get(Types\ChannelType::INPUT_REGISTER),
 					);
 				} else {
 					continue;
@@ -576,12 +576,12 @@ class Rtu implements Client
 						} elseif ($request instanceof Entities\Clients\ReadHoldingsRequest) {
 							$channel = $device->findChannelByType(
 								$address,
-								Types\ChannelType::get(Types\ChannelType::HOLDING),
+								Types\ChannelType::get(Types\ChannelType::HOLDING_REGISTER),
 							);
 						} else {
 							$channel = $device->findChannelByType(
 								$address,
-								Types\ChannelType::get(Types\ChannelType::INPUT),
+								Types\ChannelType::get(Types\ChannelType::INPUT_REGISTER),
 							);
 						}
 
@@ -627,12 +627,12 @@ class Rtu implements Client
 					} elseif ($request instanceof Entities\Clients\ReadHoldingsRequest) {
 						$channel = $device->findChannelByType(
 							$address,
-							Types\ChannelType::get(Types\ChannelType::HOLDING),
+							Types\ChannelType::get(Types\ChannelType::HOLDING_REGISTER),
 						);
 					} else {
 						$channel = $device->findChannelByType(
 							$address,
-							Types\ChannelType::get(Types\ChannelType::INPUT),
+							Types\ChannelType::get(Types\ChannelType::INPUT_REGISTER),
 						);
 					}
 

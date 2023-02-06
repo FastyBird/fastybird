@@ -148,7 +148,7 @@ class Tcp
 	{
 		return $this->readAnalogRegisters(
 			$uri,
-			Types\ModbusFunction::get(Types\ModbusFunction::FUNCTION_CODE_READ_HOLDING),
+			Types\ModbusFunction::get(Types\ModbusFunction::FUNCTION_CODE_READ_HOLDINGS_REGISTERS),
 			$station,
 			$startingAddress,
 			$quantity,
@@ -179,7 +179,7 @@ class Tcp
 	{
 		return $this->readAnalogRegisters(
 			$uri,
-			Types\ModbusFunction::get(Types\ModbusFunction::FUNCTION_CODE_READ_INPUT),
+			Types\ModbusFunction::get(Types\ModbusFunction::FUNCTION_CODE_READ_INPUTS_REGISTERS),
 			$station,
 			$startingAddress,
 			$quantity,

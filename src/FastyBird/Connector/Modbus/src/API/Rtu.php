@@ -154,7 +154,7 @@ class Rtu
 	): string|Entities\API\ReadAnalogInputs
 	{
 		return $this->readAnalogRegisters(
-			Types\ModbusFunction::get(Types\ModbusFunction::FUNCTION_CODE_READ_HOLDING),
+			Types\ModbusFunction::get(Types\ModbusFunction::FUNCTION_CODE_READ_HOLDINGS_REGISTERS),
 			$station,
 			$startingAddress,
 			$quantity,
@@ -183,7 +183,7 @@ class Rtu
 	): string|Entities\API\ReadAnalogInputs
 	{
 		return $this->readAnalogRegisters(
-			Types\ModbusFunction::get(Types\ModbusFunction::FUNCTION_CODE_READ_INPUT),
+			Types\ModbusFunction::get(Types\ModbusFunction::FUNCTION_CODE_READ_INPUTS_REGISTERS),
 			$station,
 			$startingAddress,
 			$quantity,
@@ -268,9 +268,9 @@ class Rtu
 			|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SHORT)
 			|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_USHORT)
 		)
-			? Types\ModbusFunction::get(Types\ModbusFunction::FUNCTION_CODE_WRITE_SINGLE_HOLDING)
+			? Types\ModbusFunction::get(Types\ModbusFunction::FUNCTION_CODE_WRITE_SINGLE_HOLDING_REGISTER)
 			: Types\ModbusFunction::get(
-				Types\ModbusFunction::FUNCTION_CODE_WRITE_MULTIPLE_HOLDINGS,
+				Types\ModbusFunction::FUNCTION_CODE_WRITE_MULTIPLE_HOLDINGS_REGISTERS,
 			);
 
 		// Pack header (transform to binary)
@@ -332,7 +332,7 @@ class Rtu
 
 			$value = null;
 
-			if ($functionCode->equalsValue(Types\ModbusFunction::FUNCTION_CODE_WRITE_SINGLE_HOLDING)) {
+			if ($functionCode->equalsValue(Types\ModbusFunction::FUNCTION_CODE_WRITE_SINGLE_HOLDING_REGISTER)) {
 				$valueUnpacked = unpack('C*', substr($response, 4, -2));
 
 				if ($valueUnpacked === false) {
@@ -455,7 +455,7 @@ class Rtu
 		bool $raw = false,
 	): string|Entities\API\WriteMultiple
 	{
-		$functionCode = Types\ModbusFunction::get(Types\ModbusFunction::FUNCTION_CODE_WRITE_MULTIPLE_HOLDINGS);
+		$functionCode = Types\ModbusFunction::get(Types\ModbusFunction::FUNCTION_CODE_WRITE_MULTIPLE_HOLDINGS_REGISTERS);
 
 		$byteOrder ??= Types\ByteOrder::get(Types\ByteOrder::BYTE_ORDER_BIG);
 
