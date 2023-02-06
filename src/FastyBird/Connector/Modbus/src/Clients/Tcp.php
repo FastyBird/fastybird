@@ -22,8 +22,7 @@ use FastyBird\Connector\Modbus\Consumers;
 use FastyBird\Connector\Modbus\Entities;
 use FastyBird\Connector\Modbus\Exceptions;
 use FastyBird\Connector\Modbus\Helpers;
-use FastyBird\Connector\Modbus\Types\ByteOrder;
-use FastyBird\Connector\Modbus\Types\ChannelPropertyIdentifier;
+use FastyBird\Connector\Modbus\Types;
 use FastyBird\Connector\Modbus\Writers;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata;
@@ -639,6 +638,14 @@ class Tcp implements Client
 				'timeout' => 0.2,
 			]);
 
+			foreach ($request->getAddresses() as $address) {
+				$channel = $device->findChannel($address->getName());
+
+				if ($channel !== null) {
+					$this->processedReadRegister[$channel->getIdentifier()] = $now;
+				}
+			}
+
 			$connector->connect($request->getUri())
 				->then(function (Socket\ConnectionInterface $connection) use ($request, $device, $now): void {
 					$receivedData = '';
@@ -681,7 +688,7 @@ class Tcp implements Client
 
 										if ($channel !== null) {
 											$property = $channel->findProperty(
-												ChannelPropertyIdentifier::IDENTIFIER_VALUE,
+												Types\ChannelPropertyIdentifier::IDENTIFIER_VALUE,
 											);
 
 											if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
@@ -734,7 +741,7 @@ class Tcp implements Client
 											$this->processedReadRegister[$channel->getIdentifier()] = $now;
 
 											$property = $channel->findProperty(
-												ChannelPropertyIdentifier::IDENTIFIER_VALUE,
+												Types\ChannelPropertyIdentifier::IDENTIFIER_VALUE,
 											);
 
 											if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
@@ -785,7 +792,7 @@ class Tcp implements Client
 							$channel = $device->findChannel($address->getName());
 
 							if ($channel !== null) {
-								$property = $channel->findProperty(ChannelPropertyIdentifier::IDENTIFIER_VALUE);
+								$property = $channel->findProperty(Types\ChannelPropertyIdentifier::IDENTIFIER_VALUE);
 
 								if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
 									$this->propertyStateHelper->setValue(
@@ -881,9 +888,12 @@ class Tcp implements Client
 		$unitIdPrefix = ModbusComposer\AddressSplitter::UNIT_ID_PREFIX;
 		$modbusPath = "{$ipAddress}{$unitIdPrefix}{$device->getUnitId()}";
 
-		$property = $channel->findProperty(ChannelPropertyIdentifier::IDENTIFIER_VALUE);
+		$property = $channel->findProperty(Types\ChannelPropertyIdentifier::IDENTIFIER_VALUE);
 
-		if (!$property instanceof DevicesEntities\Channels\Properties\Dynamic) {
+		if (
+			!$property instanceof DevicesEntities\Channels\Properties\Dynamic
+			|| !$property->isQueryable()
+		) {
 			return;
 		}
 
@@ -894,142 +904,139 @@ class Tcp implements Client
 		}
 
 		if (
-			// Property have to be readable
-			$property->isQueryable()
+			array_key_exists($channel->getIdentifier(), $this->processedReadRegister)
+			&& $now->getTimestamp() - $this->processedReadRegister[$channel->getIdentifier()]->getTimestamp() < $channel->getReadingDelay()
 		) {
-			if (
-				array_key_exists($channel->getIdentifier(), $this->processedReadRegister)
-				&& $now->getTimestamp() - $this->processedReadRegister[$channel->getIdentifier()]->getTimestamp() < $channel->getReadingDelay()
-			) {
-				return;
-			}
+			return;
+		}
 
-			$deviceExpectedDataType = $this->transformer->determineDeviceReadDataType(
-				$property->getDataType(),
-				$property->getFormat(),
+		$deviceExpectedDataType = $this->transformer->determineDeviceReadDataType(
+			$property->getDataType(),
+			$property->getFormat(),
+		);
+
+		if ($deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BOOLEAN)) {
+			$address = new ModbusComposer\Read\Coil\ReadCoilAddress(
+				$address,
+				$channel->getIdentifier(),
 			);
 
-			if ($deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BOOLEAN)) {
-				$address = new ModbusComposer\Read\Coil\ReadCoilAddress(
+			if ($property->isSettable()) {
+				$this->readCoilsStatusesAddresses[$modbusPath][$address->getName()] = $address;
+			} else {
+				$this->readInputsStatusesAddresses[$modbusPath][$address->getName()] = $address;
+			}
+
+			return;
+		} elseif (
+			$deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_CHAR)
+			|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_UCHAR)
+			|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SHORT)
+			|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_USHORT)
+			|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_INT)
+			|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_UINT)
+			|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_FLOAT)
+			|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_STRING)
+		) {
+			$endian = ModbusUtils\Endian::$defaultEndian;
+
+			if (
+				$device->getByteOrder()->equalsValue(Types\ByteOrder::BYTE_ORDER_LITTLE)
+				|| $device->getByteOrder()->equalsValue(Types\ByteOrder::BYTE_ORDER_LITTLE_SWAP)
+			) {
+				$endian = ModbusUtils\Endian::LITTLE_ENDIAN;
+			} elseif ($device->getByteOrder()->equalsValue(Types\ByteOrder::BYTE_ORDER_LITTLE_LOW_WORD_FIRST)) {
+				$endian = ModbusUtils\Endian::LITTLE_ENDIAN | ModbusUtils\Endian::LOW_WORD_FIRST;
+			} elseif (
+				$device->getByteOrder()->equalsValue(Types\ByteOrder::BYTE_ORDER_BIG)
+				|| $device->getByteOrder()->equalsValue(Types\ByteOrder::BYTE_ORDER_BIG_SWAP)
+			) {
+				$endian = ModbusUtils\Endian::BIG_ENDIAN;
+			} elseif ($device->getByteOrder()->equalsValue(Types\ByteOrder::BYTE_ORDER_BIG_LOW_WORD_FIRST)) {
+				$endian = ModbusUtils\Endian::BIG_ENDIAN | ModbusUtils\Endian::LOW_WORD_FIRST;
+			}
+
+			if (
+				$deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_CHAR)
+				|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_UCHAR)
+			) {
+				$address = new ModbusComposer\Read\Register\ByteReadRegisterAddress(
 					$address,
+					true,
 					$channel->getIdentifier(),
 				);
 
-				if ($property->isSettable()) {
-					$this->readCoilsStatusesAddresses[$modbusPath][$address->getName()] = $address;
-				} else {
-					$this->readInputsStatusesAddresses[$modbusPath][$address->getName()] = $address;
-				}
+			} elseif ($deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SHORT)) {
+				$address = new ModbusComposer\Read\Register\ReadRegisterAddress(
+					$address,
+					ModbusComposer\Address::TYPE_INT16,
+					$channel->getIdentifier(),
+					null,
+					null,
+					$endian,
+				);
 
-				$this->processedReadRegister[$channel->getIdentifier()] = $now;
+			} elseif ($deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_USHORT)) {
+				$address = new ModbusComposer\Read\Register\ReadRegisterAddress(
+					$address,
+					ModbusComposer\Address::TYPE_UINT16,
+					$channel->getIdentifier(),
+					null,
+					null,
+					$endian,
+				);
 
-				return;
-			} elseif (
-				$deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_CHAR)
-				|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_UCHAR)
-				|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SHORT)
-				|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_USHORT)
-				|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_INT)
-				|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_UINT)
-				|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_FLOAT)
-				|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_STRING)
-			) {
-				$endian = ModbusUtils\Endian::$defaultEndian;
+			} elseif ($deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_INT)) {
+				$address = new ModbusComposer\Read\Register\ReadRegisterAddress(
+					$address,
+					ModbusComposer\Address::TYPE_INT32,
+					$channel->getIdentifier(),
+					null,
+					null,
+					$endian,
+				);
 
-				if ($device->getByteOrder()->equalsValue(ByteOrder::BYTE_ORDER_LITTLE_SWAP)) {
-					$endian = ModbusUtils\Endian::LITTLE_ENDIAN;
-				} elseif ($device->getByteOrder()->equalsValue(ByteOrder::BYTE_ORDER_LITTLE)) {
-					$endian = ModbusUtils\Endian::LITTLE_ENDIAN | ModbusUtils\Endian::LOW_WORD_FIRST;
-				} elseif ($device->getByteOrder()->equalsValue(ByteOrder::BYTE_ORDER_BIG_SWAP)) {
-					$endian = ModbusUtils\Endian::BIG_ENDIAN;
-				} elseif ($device->getByteOrder()->equalsValue(ByteOrder::BYTE_ORDER_BIG)) {
-					$endian = ModbusUtils\Endian::BIG_ENDIAN | ModbusUtils\Endian::LOW_WORD_FIRST;
-				}
+			} elseif ($deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_UINT)) {
+				$address = new ModbusComposer\Read\Register\ReadRegisterAddress(
+					$address,
+					ModbusComposer\Address::TYPE_UINT32,
+					$channel->getIdentifier(),
+					null,
+					null,
+					$endian,
+				);
 
-				if (
-					$deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_CHAR)
-					|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_UCHAR)
-				) {
-					$address = new ModbusComposer\Read\Register\ByteReadRegisterAddress(
-						$address,
-						true,
-						$channel->getIdentifier(),
-					);
+			} elseif ($deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_FLOAT)) {
+				$address = new ModbusComposer\Read\Register\ReadRegisterAddress(
+					$address,
+					ModbusComposer\Address::TYPE_FLOAT,
+					$channel->getIdentifier(),
+					null,
+					null,
+					$endian,
+				);
 
-				} elseif ($deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SHORT)) {
-					$address = new ModbusComposer\Read\Register\ReadRegisterAddress(
-						$address,
-						ModbusComposer\Address::TYPE_INT16,
-						$channel->getIdentifier(),
-						null,
-						null,
-						$endian,
-					);
+			} elseif ($deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_STRING)) {
+				$address = new ModbusComposer\Read\Register\ReadRegisterAddress(
+					$address,
+					ModbusComposer\Address::TYPE_STRING,
+					$channel->getIdentifier(),
+					null,
+					null,
+					$endian,
+				);
 
-				} elseif ($deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_USHORT)) {
-					$address = new ModbusComposer\Read\Register\ReadRegisterAddress(
-						$address,
-						ModbusComposer\Address::TYPE_UINT16,
-						$channel->getIdentifier(),
-						null,
-						null,
-						$endian,
-					);
-
-				} elseif ($deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_INT)) {
-					$address = new ModbusComposer\Read\Register\ReadRegisterAddress(
-						$address,
-						ModbusComposer\Address::TYPE_INT32,
-						$channel->getIdentifier(),
-						null,
-						null,
-						$endian,
-					);
-
-				} elseif ($deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_UINT)) {
-					$address = new ModbusComposer\Read\Register\ReadRegisterAddress(
-						$address,
-						ModbusComposer\Address::TYPE_UINT32,
-						$channel->getIdentifier(),
-						null,
-						null,
-						$endian,
-					);
-
-				} elseif ($deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_FLOAT)) {
-					$address = new ModbusComposer\Read\Register\ReadRegisterAddress(
-						$address,
-						ModbusComposer\Address::TYPE_FLOAT,
-						$channel->getIdentifier(),
-						null,
-						null,
-						$endian,
-					);
-
-				} elseif ($deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_STRING)) {
-					$address = new ModbusComposer\Read\Register\ReadRegisterAddress(
-						$address,
-						ModbusComposer\Address::TYPE_STRING,
-						$channel->getIdentifier(),
-						null,
-						null,
-						$endian,
-					);
-
-				} else {
-					return;
-				}
-
-				if ($property->isSettable()) {
-					$this->readHoldingRegistersAddresses[$modbusPath][$address->getName()] = $address;
-				} else {
-					$this->readInputsRegistersAddresses[$modbusPath][$address->getName()] = $address;
-				}
-
-				$this->processedReadRegister[$channel->getIdentifier()] = $now;
-
+			} else {
 				return;
 			}
+
+			if ($property->isSettable()) {
+				$this->readHoldingRegistersAddresses[$modbusPath][$address->getName()] = $address;
+			} else {
+				$this->readInputsRegistersAddresses[$modbusPath][$address->getName()] = $address;
+			}
+
+			return;
 		}
 
 		$this->logger->warning(

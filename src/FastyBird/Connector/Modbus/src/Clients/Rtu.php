@@ -22,6 +22,7 @@ use FastyBird\Connector\Modbus\Consumers;
 use FastyBird\Connector\Modbus\Entities;
 use FastyBird\Connector\Modbus\Exceptions;
 use FastyBird\Connector\Modbus\Helpers;
+use FastyBird\Connector\Modbus\Types;
 use FastyBird\Connector\Modbus\Writers;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata;
@@ -37,14 +38,17 @@ use Psr\Log;
 use React\EventLoop;
 use React\Promise;
 use function array_key_exists;
+use function array_merge;
 use function assert;
 use function get_loaded_extensions;
 use function in_array;
 use function is_bool;
 use function is_int;
 use function is_numeric;
+use function is_object;
 use function sprintf;
 use function strval;
+use function usort;
 
 /**
  * Modbus RTU devices client interface
@@ -67,13 +71,17 @@ class Rtu implements Client
 
 	private const HANDLER_PROCESSING_INTERVAL = 0.01;
 
+	private const MAX_ANALOG_REGISTERS_PER_MODBUS_REQUEST = 124;
+
+	private const MAX_DISCRETE_REGISTERS_PER_MODBUS_REQUEST = 2_048;
+
 	private bool $closed = true;
 
 	/** @var array<string> */
 	private array $processedDevices = [];
 
 	/** @var array<string, DateTimeInterface|int> */
-	private array $processedReadProperties = [];
+	private array $processedReadRegister = [];
 
 	/** @var array<string, DateTimeInterface> */
 	private array $lostDevices = [];
@@ -396,8 +404,12 @@ class Rtu implements Client
 	 */
 	private function processDevice(Entities\ModbusDevice $device): bool
 	{
+		$now = $this->dateTimeFactory->getNow();
+
 		$station = $device->getAddress();
 		assert(is_numeric($station));
+
+		$coilsAddresses = $discreteInputsAddresses = $holdingAddresses = $inputsAddresses = [];
 
 		foreach ($device->getChannels() as $channel) {
 			$address = $channel->getAddress();
@@ -439,23 +451,135 @@ class Rtu implements Client
 				continue;
 			}
 
-			foreach ($channel->getProperties() as $property) {
-				if (!$property instanceof DevicesEntities\Channels\Properties\Dynamic) {
+			$registerReadAddress = $this->createReadAddress($device, $channel);
+
+			if ($registerReadAddress instanceof Entities\Clients\ReadCoilAddress) {
+				$coilsAddresses[] = $registerReadAddress;
+			} elseif ($registerReadAddress instanceof Entities\Clients\ReadDiscreteInputAddress) {
+				$discreteInputsAddresses[] = $registerReadAddress;
+			} elseif ($registerReadAddress instanceof Entities\Clients\ReadHoldingAddress) {
+				$holdingAddresses[] = $registerReadAddress;
+			} elseif ($registerReadAddress instanceof Entities\Clients\ReadInputAddress) {
+				$inputsAddresses[] = $registerReadAddress;
+			}
+		}
+
+		if (
+			$coilsAddresses === []
+			&& $discreteInputsAddresses === []
+			&& $holdingAddresses === []
+			&& $inputsAddresses === []
+		) {
+			return false;
+		}
+
+		$requests = [];
+
+		if ($coilsAddresses !== []) {
+			$requests = array_merge($requests, $this->split($coilsAddresses));
+		}
+
+		if ($discreteInputsAddresses !== []) {
+			$requests = array_merge($requests, $this->split($discreteInputsAddresses));
+		}
+
+		if ($holdingAddresses !== []) {
+			$requests = array_merge($requests, $this->split($holdingAddresses));
+		}
+
+		if ($inputsAddresses !== []) {
+			$requests = array_merge($requests, $this->split($inputsAddresses));
+		}
+
+		if ($requests === []) {
+			return false;
+		}
+
+		foreach ($requests as $request) {
+			try {
+				if ($request instanceof Entities\Clients\ReadCoilsRequest) {
+					$response = $this->rtu?->readCoils($station, $request->getStartAddress(), $request->getQuantity());
+				} elseif ($request instanceof Entities\Clients\ReadDiscreteInputsRequest) {
+					$response = $this->rtu?->readDiscreteInputs(
+						$station,
+						$request->getStartAddress(),
+						$request->getQuantity(),
+					);
+				} elseif ($request instanceof Entities\Clients\ReadHoldingsRequest) {
+					$response = $this->rtu?->readHoldingRegisters(
+						$station,
+						$request->getStartAddress(),
+						$request->getQuantity(),
+						$request->getDataType(),
+						$device->getByteOrder(),
+					);
+				} elseif ($request instanceof Entities\Clients\ReadInputsRequest) {
+					$response = $this->rtu?->readHoldingRegisters(
+						$station,
+						$request->getStartAddress(),
+						$request->getQuantity(),
+						$request->getDataType(),
+						$device->getByteOrder(),
+					);
+				} else {
 					continue;
 				}
 
-				/**
-				 * Channel property reading
-				 */
+				if (is_object($response)) {
+					foreach ($request->getAddresses() as $address) {
+						$this->processedReadRegister[$address->getChannel()->getIdentifier()] = $now;
 
-				try {
-					$this->readProperty($station, $address, $device, $channel, $property);
-				} catch (Exceptions\ModbusRtu $ex) {
+						$property = $address->getChannel()->findProperty(
+							Types\ChannelPropertyIdentifier::IDENTIFIER_VALUE,
+						);
+
+						if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
+							$this->propertyStateHelper->setValue(
+								$property,
+								Utils\ArrayHash::from([
+									DevicesStates\Property::ACTUAL_VALUE_KEY => DevicesUtilities\ValueHelper::flattenValue(
+										$this->transformer->transformValueFromDevice(
+											$property->getDataType(),
+											$property->getFormat(),
+											$response->findRegister($address->getAddress()),
+											$property->getNumberOfDecimals(),
+										),
+									),
+									DevicesStates\Property::VALID_KEY => true,
+								]),
+							);
+						}
+					}
+				}
+			} catch (Exceptions\ModbusRtu $ex) {
+				foreach ($request->getAddresses() as $address) {
+					$property = $address->getChannel()->findProperty(Types\ChannelPropertyIdentifier::IDENTIFIER_VALUE);
+
+					if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
+						$this->propertyStateHelper->setValue(
+							$property,
+							Utils\ArrayHash::from([
+								DevicesStates\Property::VALID_KEY => false,
+							]),
+						);
+					}
+
+					// Increment failed attempts counter
+					if (!array_key_exists($address->getChannel()->getIdentifier(), $this->processedReadRegister)) {
+						$this->processedReadRegister[$address->getChannel()->getIdentifier()] = 1;
+					} else {
+						$this->processedReadRegister[$address->getChannel()->getIdentifier()] = is_int(
+							$this->processedReadRegister[$address->getChannel()->getIdentifier()],
+						)
+							? $this->processedReadRegister[$address->getChannel()->getIdentifier()] + 1
+							: 1;
+					}
+
 					$this->logger->error(
-						'Modbus communication with device failed',
+						'Could not handle register reading',
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
-							'type' => 'rtu-client',
+							'type' => 'tcp-client',
 							'group' => 'client',
 							'exception' => [
 								'message' => $ex->getMessage(),
@@ -468,275 +592,149 @@ class Rtu implements Client
 								'id' => $device->getPlainId(),
 							],
 							'channel' => [
-								'id' => $channel->getPlainId(),
-							],
-							'property' => [
-								'id' => $property->getPlainId(),
+								'id' => $address->getChannel()->getPlainId(),
 							],
 						],
 					);
-
-					// Something wrong during communication
-					return true;
 				}
+
+				// Something wrong during communication
+				return true;
 			}
 		}
 
-		return false;
+		return true;
 	}
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\InvalidArgument
-	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\ModbusRtu
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function readProperty(
-		int $station,
-		int $address,
+	private function createReadAddress(
 		Entities\ModbusDevice $device,
 		Entities\ModbusChannel $channel,
-		DevicesEntities\Channels\Properties\Dynamic $property,
-	): void
+	): Entities\Clients\ReadAddress|null
 	{
 		$now = $this->dateTimeFactory->getNow();
 
-		$propertyUuid = $property->getPlainId();
+		$property = $channel->findProperty(Types\ChannelPropertyIdentifier::IDENTIFIER_VALUE);
 
 		if (
-			// Property have to be readable
-			$property->isQueryable()
+			!$property instanceof DevicesEntities\Channels\Properties\Dynamic
+			|| !$property->isQueryable()
 		) {
-			$deviceExpectedDataType = $this->transformer->determineDeviceReadDataType(
-				$property->getDataType(),
-				$property->getFormat(),
+			return null;
+		}
+
+		$address = $channel->getAddress();
+
+		if ($address === null) {
+			return null;
+		}
+
+		if (
+			isset($this->processedReadRegister[$channel->getIdentifier()])
+			&& is_int($this->processedReadRegister[$channel->getIdentifier()])
+			&& $this->processedReadRegister[$channel->getIdentifier()] >= self::READ_MAX_ATTEMPTS
+		) {
+			unset($this->processedReadRegister[$channel->getIdentifier()]);
+
+			$this->lostDevices[$device->getPlainId()] = $now;
+
+			$this->propertyStateHelper->setValue(
+				$property,
+				Utils\ArrayHash::from([
+					DevicesStates\Property::VALID_KEY => false,
+				]),
 			);
 
-			if (!in_array($deviceExpectedDataType->getValue(), [
-				MetadataTypes\DataType::DATA_TYPE_CHAR,
-				MetadataTypes\DataType::DATA_TYPE_UCHAR,
-				MetadataTypes\DataType::DATA_TYPE_SHORT,
-				MetadataTypes\DataType::DATA_TYPE_USHORT,
-				MetadataTypes\DataType::DATA_TYPE_INT,
-				MetadataTypes\DataType::DATA_TYPE_UINT,
-				MetadataTypes\DataType::DATA_TYPE_FLOAT,
-				MetadataTypes\DataType::DATA_TYPE_BOOLEAN,
-			], true)) {
-				unset($this->processedReadProperties[$propertyUuid]);
+			$this->consumer->append(new Entities\Messages\DeviceState(
+				$this->connector->getId(),
+				$device->getIdentifier(),
+				MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_LOST),
+			));
 
-				$this->propertyStateHelper->setValue(
-					$property,
-					Utils\ArrayHash::from([
-						DevicesStates\Property::VALID_KEY => false,
-					]),
-				);
-
-				$this->logger->warning(
-					'Channel property data type is not supported for now',
-					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
-						'type' => 'rtu-client',
-						'group' => 'client',
-						'connector' => [
-							'id' => $this->connector->getPlainId(),
-						],
-						'device' => [
-							'id' => $device->getPlainId(),
-						],
-						'channel' => [
-							'id' => $property->getChannel()->getPlainId(),
-						],
-						'property' => [
-							'id' => $property->getPlainId(),
-						],
+			$this->logger->warning(
+				'Maximum channel property read attempts reached',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
+					'type' => 'rtu-client',
+					'group' => 'client',
+					'connector' => [
+						'id' => $this->connector->getPlainId(),
 					],
-				);
-
-				return;
-			}
-
-			if (
-				isset($this->processedReadProperties[$propertyUuid])
-				&& is_int($this->processedReadProperties[$propertyUuid])
-				&& $this->processedReadProperties[$propertyUuid] >= self::READ_MAX_ATTEMPTS
-			) {
-				unset($this->processedReadProperties[$propertyUuid]);
-
-				$this->lostDevices[$device->getPlainId()] = $now;
-
-				$this->propertyStateHelper->setValue(
-					$property,
-					Utils\ArrayHash::from([
-						DevicesStates\Property::VALID_KEY => false,
-					]),
-				);
-
-				$this->consumer->append(new Entities\Messages\DeviceState(
-					$this->connector->getId(),
-					$device->getIdentifier(),
-					MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_LOST),
-				));
-
-				$this->logger->warning(
-					'Maximum channel property read attempts reached',
-					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
-						'type' => 'rtu-client',
-						'group' => 'client',
-						'connector' => [
-							'id' => $this->connector->getPlainId(),
-						],
-						'device' => [
-							'id' => $device->getPlainId(),
-						],
-						'channel' => [
-							'id' => $property->getChannel()->getPlainId(),
-						],
-						'property' => [
-							'id' => $property->getPlainId(),
-						],
+					'device' => [
+						'id' => $device->getPlainId(),
 					],
-				);
+					'channel' => [
+						'id' => $property->getChannel()->getPlainId(),
+					],
+					'property' => [
+						'id' => $property->getPlainId(),
+					],
+				],
+			);
 
-				return;
-			}
-
-			if (
-				array_key_exists($propertyUuid, $this->processedReadProperties)
-				&& $this->processedReadProperties[$propertyUuid] instanceof DateTimeInterface
-				&& $now->getTimestamp() - $this->processedReadProperties[$propertyUuid]->getTimestamp() < $channel->getReadingDelay()
-			) {
-				return;
-			}
-
-			try {
-				if ($deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BOOLEAN)) {
-					$result = $property->isSettable()
-						? $this->rtu?->readCoils($station, $address, 1)
-						: $this->rtu?->readDiscreteInputs($station, $address, 1);
-
-					$value = $result instanceof Entities\API\ReadDigitalInputs ? $result->findRegister($address) : null;
-				} elseif (
-					$deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SHORT)
-					|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_USHORT)
-					|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_CHAR)
-					|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_UCHAR)
-					|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_INT)
-					|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_UINT)
-					|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_FLOAT)
-				) {
-					$result = $property->isSettable() ? $this->rtu?->readHoldingRegisters(
-						$station,
-						$address,
-						1,
-						$deviceExpectedDataType,
-						$device->getByteOrder(),
-					) : $this->rtu?->readInputRegisters(
-						$station,
-						$address,
-						1,
-						$deviceExpectedDataType,
-						$device->getByteOrder(),
-					);
-
-					$value = $result instanceof Entities\API\ReadAnalogInputs ? $result->findRegister($address) : null;
-				} else {
-					unset($this->processedReadProperties[$propertyUuid]);
-
-					$this->propertyStateHelper->setValue(
-						$property,
-						Utils\ArrayHash::from([
-							DevicesStates\Property::VALID_KEY => false,
-						]),
-					);
-
-					$this->logger->warning(
-						'Channel property data type is not supported for now',
-						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
-							'type' => 'rtu-client',
-							'group' => 'client',
-							'connector' => [
-								'id' => $this->connector->getPlainId(),
-							],
-							'device' => [
-								'id' => $device->getPlainId(),
-							],
-							'channel' => [
-								'id' => $property->getChannel()->getPlainId(),
-							],
-							'property' => [
-								'id' => $property->getPlainId(),
-							],
-						],
-					);
-
-					return;
-				}
-			} catch (Exceptions\ModbusRtu $ex) {
-				// Increment failed attempts counter
-				if (!array_key_exists($propertyUuid, $this->processedReadProperties)) {
-					$this->processedReadProperties[$propertyUuid] = 1;
-				} else {
-					$this->processedReadProperties[$propertyUuid] = is_int(
-						$this->processedReadProperties[$propertyUuid],
-					)
-						? $this->processedReadProperties[$propertyUuid] + 1
-						: 1;
-				}
-
-				$this->propertyStateHelper->setValue(
-					$property,
-					Utils\ArrayHash::from([
-						DevicesStates\Property::VALID_KEY => false,
-					]),
-				);
-
-				throw $ex;
-			}
-
-			// Register reading failed
-			if ($value === null) {
-				// Increment failed attempts counter
-				if (!array_key_exists($propertyUuid, $this->processedReadProperties)) {
-					$this->processedReadProperties[$propertyUuid] = 1;
-				} else {
-					$this->processedReadProperties[$propertyUuid] = is_int(
-						$this->processedReadProperties[$propertyUuid],
-					)
-						? $this->processedReadProperties[$propertyUuid] + 1
-						: 1;
-				}
-
-				// Mark value as invalid
-				$this->propertyStateHelper->setValue(
-					$property,
-					Utils\ArrayHash::from([
-						DevicesStates\Property::VALID_KEY => false,
-					]),
-				);
-
-			} else {
-				$this->processedReadProperties[$propertyUuid] = $now;
-
-				$this->propertyStateHelper->setValue(
-					$property,
-					Utils\ArrayHash::from([
-						DevicesStates\Property::ACTUAL_VALUE_KEY => DevicesUtilities\ValueHelper::flattenValue(
-							$this->transformer->transformValueFromDevice(
-								$property->getDataType(),
-								$property->getFormat(),
-								$value,
-								$property->getNumberOfDecimals(),
-							),
-						),
-						DevicesStates\Property::VALID_KEY => true,
-					]),
-				);
-			}
+			return null;
 		}
+
+		if (
+			array_key_exists($channel->getIdentifier(), $this->processedReadRegister)
+			&& $this->processedReadRegister[$channel->getIdentifier()] instanceof DateTimeInterface
+			&& $now->getTimestamp() - $this->processedReadRegister[$channel->getIdentifier()]->getTimestamp() < $channel->getReadingDelay()
+		) {
+			return null;
+		}
+
+		$deviceExpectedDataType = $this->transformer->determineDeviceReadDataType(
+			$property->getDataType(),
+			$property->getFormat(),
+		);
+
+		if ($deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BOOLEAN)) {
+			return $property->isSettable()
+				? new Entities\Clients\ReadCoilAddress($address, $channel)
+				: new Entities\Clients\ReadDiscreteInputAddress(
+					$address,
+					$channel,
+				);
+		} elseif (
+			$deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_CHAR)
+			|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_UCHAR)
+			|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SHORT)
+			|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_USHORT)
+			|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_INT)
+			|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_UINT)
+			|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_FLOAT)
+		) {
+			return $property->isSettable()
+				? new Entities\Clients\ReadHoldingAddress($address, $channel)
+				: new Entities\Clients\ReadInputAddress($address, $channel);
+		}
+
+		$this->logger->warning(
+			'Channel property data type is not supported for now',
+			[
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
+				'type' => 'rtu-client',
+				'group' => 'client',
+				'connector' => [
+					'id' => $this->connector->getPlainId(),
+				],
+				'device' => [
+					'id' => $device->getPlainId(),
+				],
+				'channel' => [
+					'id' => $property->getChannel()->getPlainId(),
+				],
+				'property' => [
+					'id' => $property->getPlainId(),
+				],
+			],
+		);
+
+		return null;
 	}
 
 	private function registerLoopHandler(): void
@@ -751,6 +749,106 @@ class Rtu implements Client
 				$this->handleCommunication();
 			},
 		);
+	}
+
+	/**
+	 * @param array<Entities\Clients\ReadAddress> $addresses
+	 *
+	 * @return array<Entities\Clients\ReadRequest>
+	 */
+	public function split(array $addresses): array
+	{
+		$result = [];
+
+		// Sort by address and size to help chunking
+		usort($addresses, static function (Entities\Clients\ReadAddress $a, Entities\Clients\ReadAddress $b) {
+			$aAddr = $a->getAddress();
+			$bAddr = $b->getAddress();
+
+			if ($aAddr === $bAddr) {
+				$sizeCmp = $a->getSize() <=> $b->getSize();
+
+				return $sizeCmp !== 0
+					? $sizeCmp
+					: $a->getChannel()->getIdentifier() <=> $b->getChannel()->getIdentifier();
+			}
+
+			return $aAddr <=> $bAddr;
+		});
+
+		$startAddress = null;
+		$quantity = 0;
+		$chunk = [];
+		$maxAvailableRegister = null;
+
+		foreach ($addresses as $currentAddress) {
+			$currentStartAddress = $currentAddress->getAddress();
+
+			if ($startAddress === null) {
+				$startAddress = $currentStartAddress;
+			}
+
+			$nextAvailableRegister = $currentStartAddress + $currentAddress->getSize();
+
+			// In case next address is smaller than previous address with its size
+			// we need to make sure that quantity does not change as those addresses overlap
+			if ($maxAvailableRegister === null || $nextAvailableRegister > $maxAvailableRegister) {
+				$maxAvailableRegister = $nextAvailableRegister;
+			} elseif ($nextAvailableRegister < $maxAvailableRegister) {
+				$nextAvailableRegister = $maxAvailableRegister;
+			}
+
+			$previousQuantity = $quantity;
+			$quantity = $nextAvailableRegister - $startAddress;
+
+			$maxAddressesPerModbusRequest = (
+				$currentAddress instanceof Entities\Clients\ReadCoilAddress
+				|| $currentAddress instanceof Entities\Clients\ReadDiscreteInputAddress
+			) ? self::MAX_DISCRETE_REGISTERS_PER_MODBUS_REQUEST : self::MAX_ANALOG_REGISTERS_PER_MODBUS_REQUEST;
+
+			if ($quantity >= $maxAddressesPerModbusRequest) {
+				if ($currentAddress instanceof Entities\Clients\ReadCoilAddress) {
+					$result[] = new Entities\Clients\ReadCoilsRequest($chunk, $startAddress, $previousQuantity);
+
+				} elseif ($currentAddress instanceof Entities\Clients\ReadDiscreteInputAddress) {
+					$result[] = new Entities\Clients\ReadDiscreteInputsRequest(
+						$chunk,
+						$startAddress,
+						$previousQuantity,
+					);
+
+				} elseif ($currentAddress instanceof Entities\Clients\ReadHoldingAddress) {
+					$result[] = new Entities\Clients\ReadHoldingsRequest($chunk, $startAddress, $previousQuantity);
+
+				} elseif ($currentAddress instanceof Entities\Clients\ReadInputAddress) {
+					$result[] = new Entities\Clients\ReadInputsRequest($chunk, $startAddress, $previousQuantity);
+				}
+
+				$startAddress = $currentStartAddress;
+				$quantity = $currentAddress->getSize();
+				$chunk = [];
+				$maxAvailableRegister = null;
+			}
+
+			$chunk[] = $currentAddress;
+		}
+
+		if ($chunk !== []) {
+			if ($chunk[0] instanceof Entities\Clients\ReadCoilAddress) {
+				$result[] = new Entities\Clients\ReadCoilsRequest($chunk, $startAddress, $quantity);
+
+			} elseif ($chunk[0] instanceof Entities\Clients\ReadDiscreteInputAddress) {
+				$result[] = new Entities\Clients\ReadDiscreteInputsRequest($chunk, $startAddress, $quantity);
+
+			} elseif ($chunk[0] instanceof Entities\Clients\ReadHoldingAddress) {
+				$result[] = new Entities\Clients\ReadHoldingsRequest($chunk, $startAddress, $quantity);
+
+			} elseif ($chunk[0] instanceof Entities\Clients\ReadInputAddress) {
+				$result[] = new Entities\Clients\ReadInputsRequest($chunk, $startAddress, $quantity);
+			}
+		}
+
+		return $result;
 	}
 
 }

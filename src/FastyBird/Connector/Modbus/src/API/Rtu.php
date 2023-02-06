@@ -90,6 +90,8 @@ class Rtu
 	 * will be padded with zeros (toward the high order end of the byte). The Byte Count field specifies
 	 * the quantity of complete bytes of data.
 	 *
+	 * @return ($raw is true ? string : Entities\API\ReadDigitalInputs)
+	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\ModbusRtu
 	 */
@@ -98,7 +100,7 @@ class Rtu
 		int $startingAddress,
 		int $quantity,
 		bool $raw = false,
-	): string|Entities\API\ReadDigitalInputs|false
+	): string|Entities\API\ReadDigitalInputs
 	{
 		return $this->readDigitalRegisters(
 			Types\RtuFunction::get(Types\RtuFunction::FUNCTION_CODE_READ_COIL),
@@ -112,6 +114,8 @@ class Rtu
 	/**
 	 * (0x02) Read Discrete Inputs
 	 *
+	 * @return ($raw is true ? string : Entities\API\ReadDigitalInputs)
+	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\ModbusRtu
 	 */
@@ -120,7 +124,7 @@ class Rtu
 		int $startingAddress,
 		int $quantity,
 		bool $raw = false,
-	): string|Entities\API\ReadDigitalInputs|false
+	): string|Entities\API\ReadDigitalInputs
 	{
 		return $this->readDigitalRegisters(
 			Types\RtuFunction::get(Types\RtuFunction::FUNCTION_CODE_READ_DISCRETE),
@@ -133,6 +137,8 @@ class Rtu
 
 	/**
 	 * (0x03) Read Holding Registers
+	 *
+	 * @return ($raw is true ? string : Entities\API\ReadAnalogInputs)
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
@@ -161,6 +167,8 @@ class Rtu
 	/**
 	 * (0x04) Read Input Registers
 	 *
+	 * @return ($raw is true ? string : Entities\API\ReadAnalogInputs)
+	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\ModbusRtu
@@ -188,6 +196,8 @@ class Rtu
 	/**
 	 * (0x05) Write Single Coil
 	 *
+	 * @return ($raw is true ? string : Entities\API\WriteCoil)
+	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\ModbusRtu
 	 */
@@ -196,7 +206,7 @@ class Rtu
 		int $coilAddress,
 		bool $value,
 		bool $raw = false,
-	): string|Entities\API\WriteCoil|false
+	): string|Entities\API\WriteCoil
 	{
 		$functionCode = Types\RtuFunction::get(Types\RtuFunction::FUNCTION_CODE_WRITE_SINGLE_COIL);
 
@@ -234,6 +244,8 @@ class Rtu
 
 	/**
 	 * (0x06) Write Single Register
+	 *
+	 * @return ($raw is true ? string : Entities\API\WriteHolding)
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -370,6 +382,8 @@ class Rtu
 	 *
 	 * @param array<bool> $values
 	 *
+	 * @return ($raw is true ? string : Entities\API\WriteMultiple)
+	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\ModbusRtu
 	 */
@@ -425,6 +439,8 @@ class Rtu
 	 * (0x16) Write Multiple Holdings Registers
 	 *
 	 * @param array<int|float> $values
+	 *
+	 * @return ($raw is true ? string : Entities\API\WriteMultiple)
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
