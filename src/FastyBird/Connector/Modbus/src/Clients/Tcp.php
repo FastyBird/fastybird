@@ -33,22 +33,17 @@ use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use InvalidArgumentException;
-use ModbusTcpClient\Composer as ModbusComposer;
-use ModbusTcpClient\Packet as ModbusPacket;
-use ModbusTcpClient\Utils as ModbusUtils;
 use Nette;
 use Nette\Utils;
 use Psr\Log;
 use React\EventLoop;
 use React\Promise;
-use React\Socket;
 use Throwable;
 use function array_key_exists;
 use function array_merge;
 use function assert;
 use function in_array;
 use function is_bool;
-use function is_float;
 use function is_int;
 use function is_string;
 use function range;
@@ -138,6 +133,7 @@ class Tcp implements Client
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exception
 	 * @throws InvalidArgumentException
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -161,6 +157,12 @@ class Tcp implements Client
 
 			return Promise\reject(new Exceptions\InvalidState('Device ip address is not configured'));
 		}
+
+		$port = $device->getPort();
+
+		$deviceAddress = $ipAddress . ':' . $port;
+
+		$unitId = $device->getUnitId();
 
 		$address = $channel->getAddress();
 
@@ -211,206 +213,58 @@ class Tcp implements Client
 
 			$deferred = new Promise\Deferred();
 
-			$unitIdPrefix = ModbusComposer\AddressSplitter::UNIT_ID_PREFIX;
-			$modbusPath = "{$ipAddress}{$unitIdPrefix}{$device->getUnitId()}";
-
 			if ($valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_BOOLEAN)) {
-				if (!is_bool($valueToWrite->getValue())) {
-					return Promise\reject(new Exceptions\InvalidState('Value to write to register is invalid'));
+				if (in_array($valueToWrite->getValue(), [0, 1], true) || is_bool($valueToWrite->getValue())) {
+					$promise = $this->tcp?->writeSingleCoil(
+						$deviceAddress,
+						$unitId,
+						$address,
+						is_bool(
+							$valueToWrite->getValue(),
+						) ? $valueToWrite->getValue() : $valueToWrite->getValue() === 1,
+					);
+
+				} else {
+					return Promise\reject(
+						new Exceptions\InvalidArgument(
+							'Value for boolean property have to be 1/0 or true/false',
+						),
+					);
 				}
-
-				$address = new ModbusComposer\Write\Coil\WriteCoilAddress(
-					$address,
-					$valueToWrite->getValue(),
-				);
-
-				$writeAddresses = [
-					$modbusPath => [
-						strval($address->getAddress()) => $address,
-					],
-				];
-
-				$addressSplitter = new ModbusComposer\Write\Coil\WriteCoilAddressSplitter(
-					ModbusPacket\ModbusFunction\WriteMultipleCoilsRequest::class,
-				);
-
-				// @phpstan-ignore-next-line
-				$requests = $addressSplitter->split($writeAddresses);
 			} elseif (
 				$valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_SHORT)
 				|| $valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_USHORT)
+				|| $valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_CHAR)
+				|| $valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_UCHAR)
 				|| $valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_INT)
 				|| $valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_UINT)
 				|| $valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_FLOAT)
-				|| $valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_STRING)
 			) {
-				if (
-					$valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_SHORT)
-					&& is_int($valueToWrite->getValue())
-				) {
-					$address = new ModbusComposer\Write\Register\WriteRegisterAddress(
-						$address,
-						ModbusComposer\Address::TYPE_INT16,
-						$valueToWrite->getValue(),
-					);
-				} elseif (
-					$valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_USHORT)
-					&& is_int($valueToWrite->getValue())
-				) {
-					$address = new ModbusComposer\Write\Register\WriteRegisterAddress(
-						$address,
-						ModbusComposer\Address::TYPE_UINT16,
-						$valueToWrite->getValue(),
-					);
-				} elseif (
-					$valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_INT)
-					&& is_int($valueToWrite->getValue())
-				) {
-					$address = new ModbusComposer\Write\Register\WriteRegisterAddress(
-						$address,
-						ModbusComposer\Address::TYPE_INT32,
-						$valueToWrite->getValue(),
-					);
-				} elseif (
-					$valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_INT)
-					&& is_int($valueToWrite->getValue())
-				) {
-					$address = new ModbusComposer\Write\Register\WriteRegisterAddress(
-						$address,
-						ModbusComposer\Address::TYPE_UINT32,
-						$valueToWrite->getValue(),
-					);
-				} elseif (
-					$valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_FLOAT)
-					&& is_float($valueToWrite->getValue())
-				) {
-					$address = new ModbusComposer\Write\Register\WriteRegisterAddress(
-						$address,
-						ModbusComposer\Address::TYPE_FLOAT,
-						$valueToWrite->getValue(),
-					);
-				} elseif (
-					$valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_STRING)
-					&& is_string($valueToWrite->getValue())
-				) {
-					$address = new ModbusComposer\Write\Register\WriteRegisterAddress(
-						$address,
-						ModbusComposer\Address::TYPE_STRING,
-						$valueToWrite->getValue(),
-					);
-				} else {
-					return Promise\reject(new Exceptions\InvalidState('Value to write to register is invalid'));
-				}
-
-				$writeAddresses = [
-					$modbusPath => [
-						strval($address->getAddress()) => $address,
-					],
-				];
-
-				$addressSplitter = new ModbusComposer\Write\Register\WriteRegisterAddressSplitter(
-					ModbusPacket\ModbusFunction\WriteMultipleRegistersRequest::class,
+				$promise = $this->tcp?->writeSingleHolding(
+					$deviceAddress,
+					$unitId,
+					$address,
+					(int) $valueToWrite->getValue(),
+					$valueToWrite->getDataType(),
+					$device->getByteOrder(),
 				);
-
-				// @phpstan-ignore-next-line
-				$requests = $addressSplitter->split($writeAddresses);
 			} else {
 				return Promise\reject(
-					new Exceptions\NotSupported(
-						sprintf(
-							'Trying to write property with unsupported data type: %s for channel property',
-							strval($deviceExpectedDataType->getValue()),
-						),
-					),
+					new Exceptions\InvalidState(sprintf(
+						'Unsupported value data type: %s',
+						strval($valueToWrite->getDataType()->getValue()),
+					)),
 				);
 			}
 
-			foreach ($requests as $request) {
-				assert(
-					$request instanceof ModbusComposer\Write\Coil\WriteCoilRequest
-					|| $request instanceof ModbusComposer\Write\Register\WriteRegisterRequest,
-				);
-
-				$connector = new Socket\Connector($this->eventLoop, [
-					'dns' => false,
-					'timeout' => 0.2,
-				]);
-
-				$connector->connect($request->getUri())
-					->then(function (Socket\ConnectionInterface $connection) use ($request, $device, $deferred): void {
-						$receivedData = '';
-
-						$this->logger->debug(
-							'Connected to device for registers writing',
-							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
-								'type' => 'tcp-client',
-								'group' => 'client',
-								'connector' => [
-									'id' => $this->connector->getPlainId(),
-								],
-								'device' => [
-									'id' => $device->getPlainId(),
-								],
-								'connection' => [
-									'uri' => $request->getUri(),
-								],
-							],
-						);
-
-						$connection->write($request);
-
-						// Wait for response event
-						$connection->on(
-							'data',
-							function ($data) use ($connection, $request, $device, $deferred, &$receivedData): void {
-								$receivedData .= $data;
-
-								if (ModbusUtils\Packet::isCompleteLength($receivedData)) {
-									$response = $request->parse($receivedData);
-
-									if ($response instanceof ModbusPacket\ErrorResponse) {
-										$deferred->reject();
-									} elseif (
-										$response instanceof ModbusPacket\ModbusFunction\WriteSingleCoilResponse
-										|| $response instanceof ModbusPacket\ModbusFunction\WriteSingleRegisterResponse
-									) {
-										$deferred->resolve();
-									}
-
-									$connection->end();
-								} else {
-									$this->logger->debug(
-										'Received partial response',
-										[
-											'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
-											'type' => 'tcp-client',
-											'group' => 'client',
-											'connector' => [
-												'id' => $this->connector->getPlainId(),
-											],
-											'device' => [
-												'id' => $device->getPlainId(),
-											],
-											'connection' => [
-												'uri' => $request->getUri(),
-											],
-										],
-									);
-								}
-							},
-						);
-
-						$connection->on('error', static function (Throwable $ex) use ($connection, $deferred): void {
-							$deferred->reject($ex);
-
-							$connection->end();
-						});
-					})
-					->otherwise(static function (Throwable $ex) use ($deferred): void {
-						$deferred->reject($ex);
-					});
-			}
+			$promise?->then(
+				static function () use ($deferred): void {
+					$deferred->resolve();
+				},
+				static function (Throwable $ex) use ($deferred): void {
+					$deferred->reject($ex);
+				},
+			);
 
 			return $deferred->promise();
 		}
