@@ -34,7 +34,7 @@ final class WriteHolding implements Entities\API\Entity
 
 	public function __construct(
 		private readonly int $station,
-		private readonly Types\RtuFunction $function,
+		private readonly Types\ModbusFunction $function,
 		private readonly int|null $value,
 	)
 	{
@@ -45,7 +45,7 @@ final class WriteHolding implements Entities\API\Entity
 		return $this->station;
 	}
 
-	public function getFunction(): Types\RtuFunction
+	public function getFunction(): Types\ModbusFunction
 	{
 		return $this->function;
 	}

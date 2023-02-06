@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * RtuFunction.php
+ * ModbusFunction.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -26,7 +26,7 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class RtuFunction extends Consistence\Enum\Enum
+class ModbusFunction extends Consistence\Enum\Enum
 {
 
 	/**

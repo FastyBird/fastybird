@@ -53,6 +53,7 @@ use function is_int;
 use function is_string;
 use function sprintf;
 use function strval;
+use function var_dump;
 
 /**
  * Modbus TCP devices client interface
@@ -681,6 +682,7 @@ class Tcp implements Client
 
 							if (ModbusUtils\Packet::isCompleteLength($receivedData)) {
 								$response = $request->parse($receivedData);
+								var_dump($response);
 
 								if ($response instanceof ModbusPacket\ErrorResponse) {
 									foreach ($request->getAddresses() as $address) {
