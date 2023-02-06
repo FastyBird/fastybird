@@ -90,11 +90,11 @@ trait TReading
 						$previousQuantity,
 					);
 
-				} elseif ($currentAddress instanceof Entities\Clients\ReadHoldingAddress) {
-					$result[] = new Entities\Clients\ReadHoldingsRequest($chunk, $startAddress, $previousQuantity);
+				} elseif ($currentAddress instanceof Entities\Clients\ReadHoldingRegisterAddress) {
+					$result[] = new Entities\Clients\ReadHoldingsRegistersRequest($chunk, $startAddress, $previousQuantity);
 
-				} elseif ($currentAddress instanceof Entities\Clients\ReadInputAddress) {
-					$result[] = new Entities\Clients\ReadInputsRequest($chunk, $startAddress, $previousQuantity);
+				} elseif ($currentAddress instanceof Entities\Clients\ReadInputRegisterAddress) {
+					$result[] = new Entities\Clients\ReadInputsRegistersRequest($chunk, $startAddress, $previousQuantity);
 				}
 
 				$startAddress = $currentStartAddress;
@@ -113,11 +113,11 @@ trait TReading
 			} elseif ($chunk[0] instanceof Entities\Clients\ReadDiscreteInputAddress) {
 				$result[] = new Entities\Clients\ReadDiscreteInputsRequest($chunk, $startAddress, $quantity);
 
-			} elseif ($chunk[0] instanceof Entities\Clients\ReadHoldingAddress) {
-				$result[] = new Entities\Clients\ReadHoldingsRequest($chunk, $startAddress, $quantity);
+			} elseif ($chunk[0] instanceof Entities\Clients\ReadHoldingRegisterAddress) {
+				$result[] = new Entities\Clients\ReadHoldingsRegistersRequest($chunk, $startAddress, $quantity);
 
-			} elseif ($chunk[0] instanceof Entities\Clients\ReadInputAddress) {
-				$result[] = new Entities\Clients\ReadInputsRequest($chunk, $startAddress, $quantity);
+			} elseif ($chunk[0] instanceof Entities\Clients\ReadInputRegisterAddress) {
+				$result[] = new Entities\Clients\ReadInputsRegistersRequest($chunk, $startAddress, $quantity);
 			}
 		}
 

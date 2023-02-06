@@ -452,9 +452,9 @@ class Rtu implements Client
 				$coilsAddresses[] = $registerReadAddress;
 			} elseif ($registerReadAddress instanceof Entities\Clients\ReadDiscreteInputAddress) {
 				$discreteInputsAddresses[] = $registerReadAddress;
-			} elseif ($registerReadAddress instanceof Entities\Clients\ReadHoldingAddress) {
+			} elseif ($registerReadAddress instanceof Entities\Clients\ReadHoldingRegisterAddress) {
 				$holdingAddresses[] = $registerReadAddress;
-			} elseif ($registerReadAddress instanceof Entities\Clients\ReadInputAddress) {
+			} elseif ($registerReadAddress instanceof Entities\Clients\ReadInputRegisterAddress) {
 				$inputsAddresses[] = $registerReadAddress;
 			}
 		}
@@ -507,12 +507,12 @@ class Rtu implements Client
 						$address,
 						Types\ChannelType::get(Types\ChannelType::DISCRETE_INPUT),
 					);
-				} elseif ($request instanceof Entities\Clients\ReadHoldingsRequest) {
+				} elseif ($request instanceof Entities\Clients\ReadHoldingsRegistersRequest) {
 					$channel = $device->findChannelByType(
 						$address,
 						Types\ChannelType::get(Types\ChannelType::HOLDING_REGISTER),
 					);
-				} elseif ($request instanceof Entities\Clients\ReadInputsRequest) {
+				} elseif ($request instanceof Entities\Clients\ReadInputsRegistersRequest) {
 					$channel = $device->findChannelByType(
 						$address,
 						Types\ChannelType::get(Types\ChannelType::INPUT_REGISTER),
@@ -539,7 +539,7 @@ class Rtu implements Client
 						$request->getStartAddress(),
 						$request->getQuantity(),
 					);
-				} elseif ($request instanceof Entities\Clients\ReadHoldingsRequest) {
+				} elseif ($request instanceof Entities\Clients\ReadHoldingsRegistersRequest) {
 					$response = $this->rtu?->readHoldingRegisters(
 						$station,
 						$request->getStartAddress(),
@@ -547,7 +547,7 @@ class Rtu implements Client
 						$request->getDataType(),
 						$device->getByteOrder(),
 					);
-				} elseif ($request instanceof Entities\Clients\ReadInputsRequest) {
+				} elseif ($request instanceof Entities\Clients\ReadInputsRegistersRequest) {
 					$response = $this->rtu?->readHoldingRegisters(
 						$station,
 						$request->getStartAddress(),
@@ -573,7 +573,7 @@ class Rtu implements Client
 								$address,
 								Types\ChannelType::get(Types\ChannelType::DISCRETE_INPUT),
 							);
-						} elseif ($request instanceof Entities\Clients\ReadHoldingsRequest) {
+						} elseif ($request instanceof Entities\Clients\ReadHoldingsRegistersRequest) {
 							$channel = $device->findChannelByType(
 								$address,
 								Types\ChannelType::get(Types\ChannelType::HOLDING_REGISTER),
@@ -624,7 +624,7 @@ class Rtu implements Client
 							$address,
 							Types\ChannelType::get(Types\ChannelType::DISCRETE_INPUT),
 						);
-					} elseif ($request instanceof Entities\Clients\ReadHoldingsRequest) {
+					} elseif ($request instanceof Entities\Clients\ReadHoldingsRegistersRequest) {
 						$channel = $device->findChannelByType(
 							$address,
 							Types\ChannelType::get(Types\ChannelType::HOLDING_REGISTER),
@@ -794,8 +794,8 @@ class Rtu implements Client
 			|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_FLOAT)
 		) {
 			return $property->isSettable()
-				? new Entities\Clients\ReadHoldingAddress($address, $channel)
-				: new Entities\Clients\ReadInputAddress($address, $channel);
+				? new Entities\Clients\ReadHoldingRegisterAddress($address, $channel)
+				: new Entities\Clients\ReadInputRegisterAddress($address, $channel);
 		}
 
 		$this->logger->warning(

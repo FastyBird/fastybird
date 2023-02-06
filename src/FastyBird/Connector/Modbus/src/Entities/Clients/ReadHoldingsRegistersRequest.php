@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ReadHoldingsRequest.php
+ * ReadHoldingsRegistersRequest.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -27,7 +27,7 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ReadHoldingsRequest extends ReadRequest
+final class ReadHoldingsRegistersRequest extends ReadRequest
 {
 
 	/**

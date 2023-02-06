@@ -258,7 +258,7 @@ class Rtu
 		MetadataTypes\DataType $dataType,
 		Types\ByteOrder|null $byteOrder = null,
 		bool $raw = false,
-	): string|Entities\API\WriteHolding
+	): string|Entities\API\WriteHoldingRegister
 	{
 		$byteOrder ??= Types\ByteOrder::get(Types\ByteOrder::BYTE_ORDER_BIG);
 
@@ -367,7 +367,7 @@ class Rtu
 				}
 			}
 
-			return new Entities\API\WriteHolding(
+			return new Entities\API\WriteHoldingRegister(
 				$header['station'],
 				$functionCode,
 				$value,

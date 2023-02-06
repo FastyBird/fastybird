@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ReadAnalogInputs.php
+ * WriteHoldingRegister.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -27,7 +27,7 @@ use Nette;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class WriteHolding implements Entities\API\Entity
+final class WriteHoldingRegister implements Entities\API\Entity
 {
 
 	use Nette\SmartObject;

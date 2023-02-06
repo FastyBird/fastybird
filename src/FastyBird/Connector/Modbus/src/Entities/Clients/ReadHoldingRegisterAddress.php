@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ReadHoldingAddress.php
+ * ReadHoldingRegisterAddress.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -27,7 +27,7 @@ use FastyBird\Library\Metadata\Types\DataType;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ReadHoldingAddress extends ReadAddress
+final class ReadHoldingRegisterAddress extends ReadAddress
 {
 
 	/**
