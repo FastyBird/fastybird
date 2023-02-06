@@ -34,7 +34,6 @@
   "require": {
     "php": ">=8.1.0",
     "ext-pcntl": "*",
-    "aldas/modbus-tcp-client": "^3.1",
     "cweagans/composer-patches": "^1.7",
     "fastybird/bootstrap-library": "dev-main",
     "fastybird/datetime-factory": "^0.6",
