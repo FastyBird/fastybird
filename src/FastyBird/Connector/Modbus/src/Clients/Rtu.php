@@ -493,6 +493,39 @@ class Rtu implements Client
 		$now = $this->dateTimeFactory->getNow();
 
 		foreach ($requests as $request) {
+			foreach (range(
+				$request->getStartAddress(),
+				$request->getStartAddress() + $request->getQuantity(),
+			) as $address) {
+				if ($request instanceof Entities\Clients\ReadCoilsRequest) {
+					$channel = $device->findChannelByType(
+						$address,
+						Types\ChannelType::get(Types\ChannelType::COIL),
+					);
+				} elseif ($request instanceof Entities\Clients\ReadDiscreteInputsRequest) {
+					$channel = $device->findChannelByType(
+						$address,
+						Types\ChannelType::get(Types\ChannelType::DISCRETE_INPUT),
+					);
+				} elseif ($request instanceof Entities\Clients\ReadHoldingsRequest) {
+					$channel = $device->findChannelByType(
+						$address,
+						Types\ChannelType::get(Types\ChannelType::HOLDING),
+					);
+				} elseif ($request instanceof Entities\Clients\ReadInputsRequest) {
+					$channel = $device->findChannelByType(
+						$address,
+						Types\ChannelType::get(Types\ChannelType::INPUT),
+					);
+				} else {
+					continue;
+				}
+
+				if ($channel !== null) {
+					$this->processedReadRegister[$channel->getIdentifier()] = $now;
+				}
+			}
+
 			try {
 				if ($request instanceof Entities\Clients\ReadCoilsRequest) {
 					$response = $this->rtu?->readCoils(
@@ -527,6 +560,8 @@ class Rtu implements Client
 				}
 
 				if (is_object($response)) {
+					$now = $this->dateTimeFactory->getNow();
+
 					foreach ($response->getRegisters() as $address => $value) {
 						if ($request instanceof Entities\Clients\ReadCoilsRequest) {
 							$channel = $device->findChannelByType(
