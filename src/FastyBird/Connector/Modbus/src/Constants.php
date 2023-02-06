@@ -28,4 +28,8 @@ final class Constants
 
 	public const DEFAULT_RTU_SERIAL_INTERFACE = '/dev/ttyAMA0';
 
+	public const MAX_ANALOG_REGISTERS_PER_MODBUS_REQUEST = 124;
+
+	public const MAX_DISCRETE_REGISTERS_PER_MODBUS_REQUEST = 2_048;
+
 }

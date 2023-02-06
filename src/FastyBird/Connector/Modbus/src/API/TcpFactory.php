@@ -15,8 +15,6 @@
 
 namespace FastyBird\Connector\Modbus\API;
 
-use FastyBird\Connector\Modbus\API;
-
 /**
  * Modbus TCP API interface factory
  *
@@ -28,6 +26,6 @@ use FastyBird\Connector\Modbus\API;
 interface TcpFactory
 {
 
-	public function create(API\Interfaces\Serial $interface): Tcp;
+	public function create(): Tcp;
 
 }

@@ -48,7 +48,6 @@ use function is_numeric;
 use function is_object;
 use function sprintf;
 use function strval;
-use function usort;
 
 /**
  * Modbus RTU devices client interface
@@ -61,6 +60,7 @@ use function usort;
 class Rtu implements Client
 {
 
+	use TReading;
 	use Nette\SmartObject;
 
 	private const READ_MAX_ATTEMPTS = 5;
@@ -70,10 +70,6 @@ class Rtu implements Client
 	private const HANDLER_START_DELAY = 2.0;
 
 	private const HANDLER_PROCESSING_INTERVAL = 0.01;
-
-	private const MAX_ANALOG_REGISTERS_PER_MODBUS_REQUEST = 124;
-
-	private const MAX_DISCRETE_REGISTERS_PER_MODBUS_REQUEST = 2_048;
 
 	private bool $closed = true;
 
@@ -749,106 +745,6 @@ class Rtu implements Client
 				$this->handleCommunication();
 			},
 		);
-	}
-
-	/**
-	 * @param array<Entities\Clients\ReadAddress> $addresses
-	 *
-	 * @return array<Entities\Clients\ReadRequest>
-	 */
-	public function split(array $addresses): array
-	{
-		$result = [];
-
-		// Sort by address and size to help chunking
-		usort($addresses, static function (Entities\Clients\ReadAddress $a, Entities\Clients\ReadAddress $b) {
-			$aAddr = $a->getAddress();
-			$bAddr = $b->getAddress();
-
-			if ($aAddr === $bAddr) {
-				$sizeCmp = $a->getSize() <=> $b->getSize();
-
-				return $sizeCmp !== 0
-					? $sizeCmp
-					: $a->getChannel()->getIdentifier() <=> $b->getChannel()->getIdentifier();
-			}
-
-			return $aAddr <=> $bAddr;
-		});
-
-		$startAddress = null;
-		$quantity = 0;
-		$chunk = [];
-		$maxAvailableRegister = null;
-
-		foreach ($addresses as $currentAddress) {
-			$currentStartAddress = $currentAddress->getAddress();
-
-			if ($startAddress === null) {
-				$startAddress = $currentStartAddress;
-			}
-
-			$nextAvailableRegister = $currentStartAddress + $currentAddress->getSize();
-
-			// In case next address is smaller than previous address with its size
-			// we need to make sure that quantity does not change as those addresses overlap
-			if ($maxAvailableRegister === null || $nextAvailableRegister > $maxAvailableRegister) {
-				$maxAvailableRegister = $nextAvailableRegister;
-			} elseif ($nextAvailableRegister < $maxAvailableRegister) {
-				$nextAvailableRegister = $maxAvailableRegister;
-			}
-
-			$previousQuantity = $quantity;
-			$quantity = $nextAvailableRegister - $startAddress;
-
-			$maxAddressesPerModbusRequest = (
-				$currentAddress instanceof Entities\Clients\ReadCoilAddress
-				|| $currentAddress instanceof Entities\Clients\ReadDiscreteInputAddress
-			) ? self::MAX_DISCRETE_REGISTERS_PER_MODBUS_REQUEST : self::MAX_ANALOG_REGISTERS_PER_MODBUS_REQUEST;
-
-			if ($quantity >= $maxAddressesPerModbusRequest) {
-				if ($currentAddress instanceof Entities\Clients\ReadCoilAddress) {
-					$result[] = new Entities\Clients\ReadCoilsRequest($chunk, $startAddress, $previousQuantity);
-
-				} elseif ($currentAddress instanceof Entities\Clients\ReadDiscreteInputAddress) {
-					$result[] = new Entities\Clients\ReadDiscreteInputsRequest(
-						$chunk,
-						$startAddress,
-						$previousQuantity,
-					);
-
-				} elseif ($currentAddress instanceof Entities\Clients\ReadHoldingAddress) {
-					$result[] = new Entities\Clients\ReadHoldingsRequest($chunk, $startAddress, $previousQuantity);
-
-				} elseif ($currentAddress instanceof Entities\Clients\ReadInputAddress) {
-					$result[] = new Entities\Clients\ReadInputsRequest($chunk, $startAddress, $previousQuantity);
-				}
-
-				$startAddress = $currentStartAddress;
-				$quantity = $currentAddress->getSize();
-				$chunk = [];
-				$maxAvailableRegister = null;
-			}
-
-			$chunk[] = $currentAddress;
-		}
-
-		if ($chunk !== []) {
-			if ($chunk[0] instanceof Entities\Clients\ReadCoilAddress) {
-				$result[] = new Entities\Clients\ReadCoilsRequest($chunk, $startAddress, $quantity);
-
-			} elseif ($chunk[0] instanceof Entities\Clients\ReadDiscreteInputAddress) {
-				$result[] = new Entities\Clients\ReadDiscreteInputsRequest($chunk, $startAddress, $quantity);
-
-			} elseif ($chunk[0] instanceof Entities\Clients\ReadHoldingAddress) {
-				$result[] = new Entities\Clients\ReadHoldingsRequest($chunk, $startAddress, $quantity);
-
-			} elseif ($chunk[0] instanceof Entities\Clients\ReadInputAddress) {
-				$result[] = new Entities\Clients\ReadInputsRequest($chunk, $startAddress, $quantity);
-			}
-		}
-
-		return $result;
 	}
 
 }
