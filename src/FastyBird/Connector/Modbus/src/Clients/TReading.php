@@ -91,10 +91,18 @@ trait TReading
 					);
 
 				} elseif ($currentAddress instanceof Entities\Clients\ReadHoldingRegisterAddress) {
-					$result[] = new Entities\Clients\ReadHoldingsRegistersRequest($chunk, $startAddress, $previousQuantity);
+					$result[] = new Entities\Clients\ReadHoldingsRegistersRequest(
+						$chunk,
+						$startAddress,
+						$previousQuantity,
+					);
 
 				} elseif ($currentAddress instanceof Entities\Clients\ReadInputRegisterAddress) {
-					$result[] = new Entities\Clients\ReadInputsRegistersRequest($chunk, $startAddress, $previousQuantity);
+					$result[] = new Entities\Clients\ReadInputsRegistersRequest(
+						$chunk,
+						$startAddress,
+						$previousQuantity,
+					);
 				}
 
 				$startAddress = $currentStartAddress;

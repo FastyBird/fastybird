@@ -245,7 +245,7 @@ class Rtu
 	/**
 	 * (0x06) Write Single Register
 	 *
-	 * @return ($raw is true ? string : Entities\API\WriteHolding)
+	 * @return ($raw is true ? string : Entities\API\WriteHoldingRegister)
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -268,7 +268,9 @@ class Rtu
 			|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SHORT)
 			|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_USHORT)
 		)
-			? Types\ModbusFunction::get(Types\ModbusFunction::FUNCTION_CODE_WRITE_SINGLE_HOLDING_REGISTER)
+			? Types\ModbusFunction::get(
+				Types\ModbusFunction::FUNCTION_CODE_WRITE_SINGLE_HOLDING_REGISTER,
+			)
 			: Types\ModbusFunction::get(
 				Types\ModbusFunction::FUNCTION_CODE_WRITE_MULTIPLE_HOLDINGS_REGISTERS,
 			);
@@ -455,7 +457,9 @@ class Rtu
 		bool $raw = false,
 	): string|Entities\API\WriteMultiple
 	{
-		$functionCode = Types\ModbusFunction::get(Types\ModbusFunction::FUNCTION_CODE_WRITE_MULTIPLE_HOLDINGS_REGISTERS);
+		$functionCode = Types\ModbusFunction::get(
+			Types\ModbusFunction::FUNCTION_CODE_WRITE_MULTIPLE_HOLDINGS_REGISTERS,
+		);
 
 		$byteOrder ??= Types\ByteOrder::get(Types\ByteOrder::BYTE_ORDER_BIG);
 

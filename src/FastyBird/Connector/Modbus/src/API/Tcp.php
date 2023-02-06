@@ -35,7 +35,10 @@ use function array_map;
 use function array_merge;
 use function array_values;
 use function count;
+use function current;
 use function decbin;
+use function floatval;
+use function intval;
 use function pack;
 use function random_int;
 use function sprintf;
@@ -188,6 +191,248 @@ class Tcp
 			$transactionId,
 			$raw,
 		);
+	}
+
+	/**
+	 * (0x05) Write Single Coil
+	 *
+	 * @throws Exception
+	 * @throws Exceptions\InvalidState
+	 * @throws InvalidArgumentException
+	 */
+	public function writeSingleCoil(
+		string $uri,
+		int $station,
+		int $coilAddress,
+		bool $value,
+		int|null $transactionId = null,
+		bool $raw = false,
+	): Promise\PromiseInterface
+	{
+		$functionCode = Types\ModbusFunction::get(Types\ModbusFunction::FUNCTION_CODE_WRITE_SINGLE_COIL);
+
+		$deferred = new Promise\Deferred();
+
+		if (!$this->validateTransactionId($transactionId)) {
+			return Promise\reject(
+				new Exceptions\InvalidArgument(sprintf('Transaction Id is out of range: %s', $transactionId)),
+			);
+		}
+
+		$transactionId ??= random_int(1, self::MAX_TRANSACTION_ID);
+
+		// Pack header (transform to binary)
+		$request = pack(
+			'n3C2n1',
+			$transactionId,
+			self::PROTOCOL_ID,
+			6, // By default, for writing coil
+			$station,
+			$functionCode->getValue(),
+			$coilAddress,
+		);
+		// Pack value (transform to binary)
+		$request .= pack('n1', $value ? 0xFF00 : 0x0000);
+
+		$this->sendRequest($uri, $request)
+			->then(static function (string $response) use ($deferred, $functionCode, $raw): void {
+				if ($raw) {
+					$deferred->resolve($response);
+
+					return;
+				}
+
+				$header = unpack('n1transaction/n1protocol/n1length/C1station/C1function/n1address', $response);
+
+				if ($header === false) {
+					$deferred->reject(new Exceptions\ModbusTcp('Response header could not be parsed'));
+
+					return;
+				}
+
+				$valueUnpacked = unpack('n1', substr($response, 10));
+
+				if ($valueUnpacked === false) {
+					$deferred->reject(new Exceptions\ModbusRtu('Response data could not be parsed'));
+
+					return;
+				}
+
+				$deferred->resolve(new Entities\API\WriteCoil(
+					$header['station'],
+					$functionCode,
+					current($valueUnpacked) === 0xFF00,
+				));
+			})
+			->otherwise(static function (Throwable $ex) use ($deferred): void {
+				$deferred->reject($ex);
+			});
+
+		return $deferred->promise();
+	}
+
+	/**
+	 * (0x06) Write Single Register
+	 *
+	 * @throws Exception
+	 * @throws Exceptions\InvalidState
+	 * @throws InvalidArgumentException
+	 */
+	public function writeSingleHolding(
+		string $uri,
+		int $station,
+		int $registerAddress,
+		int|float $value,
+		MetadataTypes\DataType $dataType,
+		Types\ByteOrder|null $byteOrder = null,
+		int|null $transactionId = null,
+		bool $raw = false,
+	): Promise\PromiseInterface
+	{
+		$byteOrder ??= Types\ByteOrder::get(Types\ByteOrder::BYTE_ORDER_BIG);
+
+		$deferred = new Promise\Deferred();
+
+		if (!$this->validateTransactionId($transactionId)) {
+			return Promise\reject(
+				new Exceptions\InvalidArgument(sprintf('Transaction Id is out of range: %s', $transactionId)),
+			);
+		}
+
+		$functionCode = (
+			$dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_CHAR)
+			|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_UCHAR)
+			|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SHORT)
+			|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_USHORT)
+		)
+			? Types\ModbusFunction::get(
+				Types\ModbusFunction::FUNCTION_CODE_WRITE_SINGLE_HOLDING_REGISTER,
+			)
+			: Types\ModbusFunction::get(
+				Types\ModbusFunction::FUNCTION_CODE_WRITE_MULTIPLE_HOLDINGS_REGISTERS,
+			);
+
+		// Pack header (transform to binary)
+		$request = pack(
+			'n3C2n1',
+			$transactionId,
+			self::PROTOCOL_ID,
+			6, // By default, for writing coil
+			$station,
+			$functionCode->getValue(),
+			$registerAddress,
+		);
+
+		if (
+			$dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_CHAR)
+			|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SHORT)
+		) {
+			$bytes = $this->transformer->packSignedInt(intval($value), 2, $byteOrder);
+
+		} elseif (
+			$dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_UCHAR)
+			|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_USHORT)
+		) {
+			$bytes = $this->transformer->packUnsignedInt(intval($value), 2, $byteOrder);
+
+		} elseif ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_INT)) {
+			$bytes = $this->transformer->packSignedInt(intval($value), 4, $byteOrder);
+
+		} elseif ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_UINT)) {
+			$bytes = $this->transformer->packUnsignedInt(intval($value), 4, $byteOrder);
+
+		} elseif ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_FLOAT)) {
+			$bytes = $this->transformer->packFloat(floatval($value), $byteOrder);
+
+		} else {
+			return Promise\reject(new Exceptions\InvalidArgument('Provided data type is not supported'));
+		}
+
+		if ($bytes === null) {
+			return Promise\reject(new Exceptions\ModbusRtu('Data could not be converted for write'));
+		}
+
+		if (count($bytes) === 2) {
+			// Pack value (transform to binary)
+			$request .= pack('C2', ...$bytes);
+
+		} elseif (count($bytes) === 4) {
+			$request .= pack('n1C1', 2, 4);
+			// Pack value (transform to binary)
+			$request .= pack('C4', ...$bytes);
+
+		} else {
+			return Promise\reject(new Exceptions\InvalidState('Value could not be converted to bytes'));
+		}
+
+		$this->sendRequest($uri, $request)
+			->then(
+				function (string $response) use ($deferred, $functionCode, $dataType, $byteOrder, $raw): void {
+					if ($raw) {
+						$deferred->resolve($response);
+
+						return;
+					}
+
+					$header = unpack('n1transaction/n1protocol/n1length/C1station/C1function/n1address', $response);
+
+					if ($header === false) {
+						$deferred->reject(new Exceptions\ModbusTcp('Response header could not be parsed'));
+
+						return;
+					}
+
+					$value = null;
+
+					if ($functionCode->equalsValue(Types\ModbusFunction::FUNCTION_CODE_WRITE_SINGLE_HOLDING_REGISTER)) {
+						$valueUnpacked = unpack('C*', substr($response, 10));
+
+						if ($valueUnpacked === false) {
+							$deferred->reject(new Exceptions\ModbusRtu('Response data could not be parsed'));
+
+							return;
+						}
+
+						// Only one 2 byte register is returned as reply
+						$registersValuesChunks = array_chunk($valueUnpacked, 2);
+
+						if (
+							$dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_CHAR)
+							|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SHORT)
+						) {
+							$value = current(array_values(
+								array_map(fn (array $valueChunk): int|null => $this->transformer->unpackSignedInt(
+									$valueChunk,
+									$byteOrder,
+								), $registersValuesChunks),
+							));
+							$value = $value === false ? null : $value;
+						} elseif (
+							$dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_UCHAR)
+							|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_USHORT)
+						) {
+							$value = current(array_values(
+								array_map(fn (array $valueChunk): int|null => $this->transformer->unpackUnsignedInt(
+									$valueChunk,
+									$byteOrder,
+								), $registersValuesChunks),
+							));
+							$value = $value === false ? null : $value;
+						}
+					}
+
+					$deferred->resolve(new Entities\API\WriteHoldingRegister(
+						$header['station'],
+						$functionCode,
+						$value,
+					));
+				},
+			)
+			->otherwise(static function (Throwable $ex) use ($deferred): void {
+				$deferred->reject($ex);
+			});
+
+		return $deferred->promise();
 	}
 
 	/**
