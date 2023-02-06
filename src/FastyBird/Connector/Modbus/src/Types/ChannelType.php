@@ -36,9 +36,9 @@ class ChannelType extends Consistence\Enum\Enum
 
 	public const COIL = 'coil';
 
-	public const INPUT_REGISTER = 'input_register';
+	public const INPUT = 'input';
 
-	public const HOLDING_REGISTER = 'holding_register';
+	public const HOLDING = 'holding';
 
 	public function __toString(): string
 	{

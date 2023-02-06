@@ -735,7 +735,7 @@ class Devices extends Console\Command\Command
 					'format' => $format,
 					'settable' => (
 						$type->equalsValue(Types\ChannelType::COIL)
-						|| $type->equalsValue(Types\ChannelType::HOLDING_REGISTER)
+						|| $type->equalsValue(Types\ChannelType::HOLDING)
 					),
 					'queryable' => true,
 					'channel' => $channel,
@@ -918,7 +918,7 @@ class Devices extends Console\Command\Command
 					'format' => $format,
 					'settable' => (
 						$type->equalsValue(Types\ChannelType::COIL)
-						|| $type->equalsValue(Types\ChannelType::HOLDING_REGISTER)
+						|| $type->equalsValue(Types\ChannelType::HOLDING)
 					),
 					'queryable' => true,
 					'channel' => $channel,
@@ -929,7 +929,7 @@ class Devices extends Console\Command\Command
 					'format' => $format,
 					'settable' => (
 						$type->equalsValue(Types\ChannelType::COIL)
-						|| $type->equalsValue(Types\ChannelType::HOLDING_REGISTER)
+						|| $type->equalsValue(Types\ChannelType::HOLDING)
 					),
 				]));
 			}
@@ -1363,9 +1363,9 @@ class Devices extends Console\Command\Command
 
 			if ($type !== null && $type->equalsValue(Types\ChannelType::COIL)) {
 				$default = 1;
-			} elseif ($type !== null && $type->equalsValue(Types\ChannelType::INPUT_REGISTER)) {
+			} elseif ($type !== null && $type->equalsValue(Types\ChannelType::INPUT)) {
 				$default = 2;
-			} elseif ($type !== null && $type->equalsValue(Types\ChannelType::HOLDING_REGISTER)) {
+			} elseif ($type !== null && $type->equalsValue(Types\ChannelType::HOLDING)) {
 				$default = 3;
 			}
 
@@ -1407,11 +1407,11 @@ class Devices extends Console\Command\Command
 			}
 
 			if ($answer === self::CHOICE_QUESTION_CHANNEL_INPUT_REGISTER || intval($answer) === 2) {
-				return Types\ChannelType::get(Types\ChannelType::INPUT_REGISTER);
+				return Types\ChannelType::get(Types\ChannelType::INPUT);
 			}
 
 			if ($answer === self::CHOICE_QUESTION_CHANNEL_HOLDING_REGISTER || intval($answer) === 3) {
-				return Types\ChannelType::get(Types\ChannelType::HOLDING_REGISTER);
+				return Types\ChannelType::get(Types\ChannelType::HOLDING);
 			}
 
 			throw new Exceptions\InvalidState('Selected answer is not valid');
@@ -1550,8 +1550,8 @@ class Devices extends Console\Command\Command
 		) {
 			return MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN);
 		} elseif (
-			$type->equalsValue(Types\ChannelType::HOLDING_REGISTER)
-			|| $type->equalsValue(Types\ChannelType::INPUT_REGISTER)
+			$type->equalsValue(Types\ChannelType::HOLDING)
+			|| $type->equalsValue(Types\ChannelType::INPUT)
 		) {
 			$dataTypes = [
 				MetadataTypes\DataType::DATA_TYPE_CHAR,
@@ -1564,9 +1564,7 @@ class Devices extends Console\Command\Command
 				MetadataTypes\DataType::DATA_TYPE_STRING,
 			];
 
-			$dataTypes[] = $type->equalsValue(
-				Types\ChannelType::HOLDING_REGISTER,
-			)
+			$dataTypes[] = $type->equalsValue(Types\ChannelType::HOLDING)
 				? MetadataTypes\DataType::DATA_TYPE_SWITCH
 				: MetadataTypes\DataType::DATA_TYPE_BUTTON;
 

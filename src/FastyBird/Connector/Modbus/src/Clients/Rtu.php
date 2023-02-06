@@ -46,6 +46,7 @@ use function is_bool;
 use function is_int;
 use function is_numeric;
 use function is_object;
+use function range;
 use function sprintf;
 use function strval;
 
@@ -400,8 +401,6 @@ class Rtu implements Client
 	 */
 	private function processDevice(Entities\ModbusDevice $device): bool
 	{
-		$now = $this->dateTimeFactory->getNow();
-
 		$station = $device->getAddress();
 		assert(is_numeric($station));
 
@@ -491,10 +490,16 @@ class Rtu implements Client
 			return false;
 		}
 
+		$now = $this->dateTimeFactory->getNow();
+
 		foreach ($requests as $request) {
 			try {
 				if ($request instanceof Entities\Clients\ReadCoilsRequest) {
-					$response = $this->rtu?->readCoils($station, $request->getStartAddress(), $request->getQuantity());
+					$response = $this->rtu?->readCoils(
+						$station,
+						$request->getStartAddress(),
+						$request->getQuantity(),
+					);
 				} elseif ($request instanceof Entities\Clients\ReadDiscreteInputsRequest) {
 					$response = $this->rtu?->readDiscreteInputs(
 						$station,
@@ -522,76 +527,125 @@ class Rtu implements Client
 				}
 
 				if (is_object($response)) {
-					foreach ($request->getAddresses() as $address) {
-						$this->processedReadRegister[$address->getChannel()->getIdentifier()] = $now;
+					foreach ($response->getRegisters() as $address => $value) {
+						if ($request instanceof Entities\Clients\ReadCoilsRequest) {
+							$channel = $device->findChannelByType(
+								$address,
+								Types\ChannelType::get(Types\ChannelType::COIL),
+							);
+						} elseif ($request instanceof Entities\Clients\ReadDiscreteInputsRequest) {
+							$channel = $device->findChannelByType(
+								$address,
+								Types\ChannelType::get(Types\ChannelType::DISCRETE_INPUT),
+							);
+						} elseif ($request instanceof Entities\Clients\ReadHoldingsRequest) {
+							$channel = $device->findChannelByType(
+								$address,
+								Types\ChannelType::get(Types\ChannelType::HOLDING),
+							);
+						} else {
+							$channel = $device->findChannelByType(
+								$address,
+								Types\ChannelType::get(Types\ChannelType::INPUT),
+							);
+						}
 
-						$property = $address->getChannel()->findProperty(
-							Types\ChannelPropertyIdentifier::IDENTIFIER_VALUE,
+						if ($channel !== null) {
+							$this->processedReadRegister[$channel->getIdentifier()] = $now;
+
+							$property = $channel->findProperty(Types\ChannelPropertyIdentifier::IDENTIFIER_VALUE);
+
+							if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
+								$this->propertyStateHelper->setValue(
+									$property,
+									Utils\ArrayHash::from([
+										DevicesStates\Property::ACTUAL_VALUE_KEY => DevicesUtilities\ValueHelper::flattenValue(
+											$this->transformer->transformValueFromDevice(
+												$property->getDataType(),
+												$property->getFormat(),
+												$value,
+												$property->getNumberOfDecimals(),
+											),
+										),
+										DevicesStates\Property::VALID_KEY => true,
+									]),
+								);
+							}
+						}
+					}
+				}
+			} catch (Exceptions\ModbusRtu $ex) {
+				foreach (range(
+					$request->getStartAddress(),
+					$request->getStartAddress() + $request->getQuantity(),
+				) as $address) {
+					if ($request instanceof Entities\Clients\ReadCoilsRequest) {
+						$channel = $device->findChannelByType(
+							$address,
+							Types\ChannelType::get(Types\ChannelType::COIL),
 						);
+					} elseif ($request instanceof Entities\Clients\ReadDiscreteInputsRequest) {
+						$channel = $device->findChannelByType(
+							$address,
+							Types\ChannelType::get(Types\ChannelType::DISCRETE_INPUT),
+						);
+					} elseif ($request instanceof Entities\Clients\ReadHoldingsRequest) {
+						$channel = $device->findChannelByType(
+							$address,
+							Types\ChannelType::get(Types\ChannelType::HOLDING),
+						);
+					} else {
+						$channel = $device->findChannelByType(
+							$address,
+							Types\ChannelType::get(Types\ChannelType::INPUT),
+						);
+					}
+
+					if ($channel !== null) {
+						$property = $channel->findProperty(Types\ChannelPropertyIdentifier::IDENTIFIER_VALUE);
 
 						if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
 							$this->propertyStateHelper->setValue(
 								$property,
 								Utils\ArrayHash::from([
-									DevicesStates\Property::ACTUAL_VALUE_KEY => DevicesUtilities\ValueHelper::flattenValue(
-										$this->transformer->transformValueFromDevice(
-											$property->getDataType(),
-											$property->getFormat(),
-											$response->findRegister($address->getAddress()),
-											$property->getNumberOfDecimals(),
-										),
-									),
-									DevicesStates\Property::VALID_KEY => true,
+									DevicesStates\Property::VALID_KEY => false,
 								]),
 							);
 						}
-					}
-				}
-			} catch (Exceptions\ModbusRtu $ex) {
-				foreach ($request->getAddresses() as $address) {
-					$property = $address->getChannel()->findProperty(Types\ChannelPropertyIdentifier::IDENTIFIER_VALUE);
 
-					if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
-						$this->propertyStateHelper->setValue(
-							$property,
-							Utils\ArrayHash::from([
-								DevicesStates\Property::VALID_KEY => false,
-							]),
+						// Increment failed attempts counter
+						if (!array_key_exists($channel->getIdentifier(), $this->processedReadRegister)) {
+							$this->processedReadRegister[$channel->getIdentifier()] = 1;
+						} else {
+							$this->processedReadRegister[$channel->getIdentifier()] = is_int(
+								$this->processedReadRegister[$channel->getIdentifier()],
+							)
+								? $this->processedReadRegister[$channel->getIdentifier()] + 1
+								: 1;
+						}
+
+						$this->logger->error(
+							'Could not handle register reading',
+							[
+								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
+								'type' => 'tcp-client',
+								'group' => 'client',
+								'exception' => [
+									'message' => $ex->getMessage(),
+									'code' => $ex->getCode(),
+								],
+								'connector' => [
+									'id' => $this->connector->getPlainId(),
+								],
+								'device' => [
+									'id' => $device->getPlainId(),
+								],
+								'channel' => [
+									'id' => $channel->getPlainId(),
+								],
+							],
 						);
 					}
-
-					// Increment failed attempts counter
-					if (!array_key_exists($address->getChannel()->getIdentifier(), $this->processedReadRegister)) {
-						$this->processedReadRegister[$address->getChannel()->getIdentifier()] = 1;
-					} else {
-						$this->processedReadRegister[$address->getChannel()->getIdentifier()] = is_int(
-							$this->processedReadRegister[$address->getChannel()->getIdentifier()],
-						)
-							? $this->processedReadRegister[$address->getChannel()->getIdentifier()] + 1
-							: 1;
-					}
-
-					$this->logger->error(
-						'Could not handle register reading',
-						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
-							'type' => 'tcp-client',
-							'group' => 'client',
-							'exception' => [
-								'message' => $ex->getMessage(),
-								'code' => $ex->getCode(),
-							],
-							'connector' => [
-								'id' => $this->connector->getPlainId(),
-							],
-							'device' => [
-								'id' => $device->getPlainId(),
-							],
-							'channel' => [
-								'id' => $address->getChannel()->getPlainId(),
-							],
-						],
-					);
 				}
 
 				// Something wrong during communication
@@ -664,7 +718,7 @@ class Rtu implements Client
 						'id' => $device->getPlainId(),
 					],
 					'channel' => [
-						'id' => $property->getChannel()->getPlainId(),
+						'id' => $channel->getPlainId(),
 					],
 					'property' => [
 						'id' => $property->getPlainId(),
@@ -722,7 +776,7 @@ class Rtu implements Client
 					'id' => $device->getPlainId(),
 				],
 				'channel' => [
-					'id' => $property->getChannel()->getPlainId(),
+					'id' => $channel->getPlainId(),
 				],
 				'property' => [
 					'id' => $property->getPlainId(),

@@ -216,7 +216,7 @@ class Tcp
 		$transactionId ??= random_int(1, self::MAX_TRANSACTION_ID);
 
 		$request = pack(
-			'n3C2',
+			'n3C2n2',
 			$transactionId,
 			self::PROTOCOL_ID,
 			6, // By default, for reading
@@ -313,7 +313,7 @@ class Tcp
 		}
 
 		$request = pack(
-			'n3C2',
+			'n3C2n2',
 			$transactionId,
 			self::PROTOCOL_ID,
 			6, // By default, for reading

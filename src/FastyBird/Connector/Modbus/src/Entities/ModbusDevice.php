@@ -97,6 +97,30 @@ class ModbusDevice extends DevicesEntities\Devices\Device
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
+	public function findChannelByType(int $address, Types\ChannelType $type): ModbusChannel|null
+	{
+		foreach (parent::getChannels() as $channel) {
+			if (!$channel instanceof ModbusChannel) {
+				continue;
+			}
+
+			if (
+				$channel->getRegisterType() !== null
+				&& $channel->getRegisterType()->equals($type)
+				&& $channel->getAddress() === $address
+			) {
+				return $channel;
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
 	public function getAddress(): int|null
 	{
 		$property = $this->properties

@@ -51,6 +51,7 @@ use function is_bool;
 use function is_float;
 use function is_int;
 use function is_string;
+use function range;
 use function sprintf;
 use function strval;
 
@@ -519,8 +520,6 @@ class Tcp implements Client
 	 */
 	private function processDevice(Entities\ModbusDevice $device): bool
 	{
-		$now = $this->dateTimeFactory->getNow();
-
 		$ipAddress = $device->getIpAddress();
 		assert(is_string($ipAddress));
 
@@ -616,9 +615,40 @@ class Tcp implements Client
 			return false;
 		}
 
+		$now = $this->dateTimeFactory->getNow();
+
 		foreach ($requests as $request) {
-			foreach ($request->getAddresses() as $address) {
-				$this->processedReadRegister[$address->getChannel()->getIdentifier()] = $now;
+			foreach (range(
+				$request->getStartAddress(),
+				$request->getStartAddress() + $request->getQuantity(),
+			) as $address) {
+				if ($request instanceof Entities\Clients\ReadCoilsRequest) {
+					$channel = $device->findChannelByType(
+						$address,
+						Types\ChannelType::get(Types\ChannelType::COIL),
+					);
+				} elseif ($request instanceof Entities\Clients\ReadDiscreteInputsRequest) {
+					$channel = $device->findChannelByType(
+						$address,
+						Types\ChannelType::get(Types\ChannelType::DISCRETE_INPUT),
+					);
+				} elseif ($request instanceof Entities\Clients\ReadHoldingsRequest) {
+					$channel = $device->findChannelByType(
+						$address,
+						Types\ChannelType::get(Types\ChannelType::HOLDING),
+					);
+				} elseif ($request instanceof Entities\Clients\ReadInputsRequest) {
+					$channel = $device->findChannelByType(
+						$address,
+						Types\ChannelType::get(Types\ChannelType::INPUT),
+					);
+				} else {
+					continue;
+				}
+
+				if ($channel !== null) {
+					$this->processedReadRegister[$channel->getIdentifier()] = $now;
+				}
 			}
 
 			if ($request instanceof Entities\Clients\ReadCoilsRequest) {
@@ -658,7 +688,9 @@ class Tcp implements Client
 			}
 
 			$promise?->then(
-				function (Entities\API\Entity $response) use ($request, $now): void {
+				function (Entities\API\Entity $response) use ($request, $device): void {
+					$now = $this->dateTimeFactory->getNow();
+
 					if (
 						!$response instanceof Entities\API\ReadDigitalInputs
 						&& !$response instanceof Entities\API\ReadAnalogInputs
@@ -666,38 +698,33 @@ class Tcp implements Client
 						return;
 					}
 
-					foreach ($request->getAddresses() as $address) {
-						$this->processedReadRegister[$address->getChannel()->getIdentifier()] = $now;
-
-						$property = $address->getChannel()->findProperty(
-							Types\ChannelPropertyIdentifier::IDENTIFIER_VALUE,
-						);
-
-						if (
-							$property instanceof DevicesEntities\Channels\Properties\Dynamic
-							&& $response->findRegister($address->getAddress()) !== null
-						) {
-							$this->propertyStateHelper->setValue(
-								$property,
-								Utils\ArrayHash::from([
-									DevicesStates\Property::ACTUAL_VALUE_KEY => DevicesUtilities\ValueHelper::flattenValue(
-										$this->transformer->transformValueFromDevice(
-											$property->getDataType(),
-											$property->getFormat(),
-											$response->findRegister($address->getAddress()),
-											$property->getNumberOfDecimals(),
-										),
-									),
-									DevicesStates\Property::VALID_KEY => true,
-								]),
+					foreach ($response->getRegisters() as $address => $value) {
+						if ($request instanceof Entities\Clients\ReadCoilsRequest) {
+							$channel = $device->findChannelByType(
+								$address,
+								Types\ChannelType::get(Types\ChannelType::COIL),
+							);
+						} elseif ($request instanceof Entities\Clients\ReadDiscreteInputsRequest) {
+							$channel = $device->findChannelByType(
+								$address,
+								Types\ChannelType::get(Types\ChannelType::DISCRETE_INPUT),
+							);
+						} elseif ($request instanceof Entities\Clients\ReadHoldingsRequest) {
+							$channel = $device->findChannelByType(
+								$address,
+								Types\ChannelType::get(Types\ChannelType::HOLDING),
+							);
+						} else {
+							$channel = $device->findChannelByType(
+								$address,
+								Types\ChannelType::get(Types\ChannelType::INPUT),
 							);
 						}
-					}
-				},
-				function (Throwable $ex) use ($request, $device, $now): void {
-					if ($ex instanceof Exceptions\ModbusTcp) {
-						foreach ($request->getAddresses() as $address) {
-							$property = $address->getChannel()->findProperty(
+
+						if ($channel !== null) {
+							$this->processedReadRegister[$channel->getIdentifier()] = $now;
+
+							$property = $channel->findProperty(
 								Types\ChannelPropertyIdentifier::IDENTIFIER_VALUE,
 							);
 
@@ -705,32 +732,87 @@ class Tcp implements Client
 								$this->propertyStateHelper->setValue(
 									$property,
 									Utils\ArrayHash::from([
-										DevicesStates\Property::VALID_KEY => false,
+										DevicesStates\Property::ACTUAL_VALUE_KEY => DevicesUtilities\ValueHelper::flattenValue(
+											$this->transformer->transformValueFromDevice(
+												$property->getDataType(),
+												$property->getFormat(),
+												$value,
+												$property->getNumberOfDecimals(),
+											),
+										),
+										DevicesStates\Property::VALID_KEY => true,
 									]),
 								);
 							}
+						}
+					}
+				},
+				function (Throwable $ex) use ($request, $device): void {
+					$now = $this->dateTimeFactory->getNow();
 
-							$this->logger->error(
-								'Could not handle register reading',
-								[
-									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
-									'type' => 'tcp-client',
-									'group' => 'client',
-									'exception' => [
-										'message' => $ex->getMessage(),
-										'code' => $ex->getCode(),
+					if ($ex instanceof Exceptions\ModbusTcp) {
+						foreach (range(
+							$request->getStartAddress(),
+							$request->getStartAddress() + $request->getQuantity(),
+						) as $address) {
+							if ($request instanceof Entities\Clients\ReadCoilsRequest) {
+								$channel = $device->findChannelByType(
+									$address,
+									Types\ChannelType::get(Types\ChannelType::COIL),
+								);
+							} elseif ($request instanceof Entities\Clients\ReadDiscreteInputsRequest) {
+								$channel = $device->findChannelByType(
+									$address,
+									Types\ChannelType::get(Types\ChannelType::DISCRETE_INPUT),
+								);
+							} elseif ($request instanceof Entities\Clients\ReadHoldingsRequest) {
+								$channel = $device->findChannelByType(
+									$address,
+									Types\ChannelType::get(Types\ChannelType::HOLDING),
+								);
+							} else {
+								$channel = $device->findChannelByType(
+									$address,
+									Types\ChannelType::get(Types\ChannelType::INPUT),
+								);
+							}
+
+							if ($channel !== null) {
+								$this->processedReadRegister[$channel->getIdentifier()] = $now;
+
+								$property = $channel->findProperty(Types\ChannelPropertyIdentifier::IDENTIFIER_VALUE);
+
+								if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
+									$this->propertyStateHelper->setValue(
+										$property,
+										Utils\ArrayHash::from([
+											DevicesStates\Property::VALID_KEY => false,
+										]),
+									);
+								}
+
+								$this->logger->error(
+									'Could not handle register reading',
+									[
+										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
+										'type' => 'tcp-client',
+										'group' => 'client',
+										'exception' => [
+											'message' => $ex->getMessage(),
+											'code' => $ex->getCode(),
+										],
+										'connector' => [
+											'id' => $this->connector->getPlainId(),
+										],
+										'device' => [
+											'id' => $device->getPlainId(),
+										],
+										'channel' => [
+											'id' => $channel->getPlainId(),
+										],
 									],
-									'connector' => [
-										'id' => $this->connector->getPlainId(),
-									],
-									'device' => [
-										'id' => $device->getPlainId(),
-									],
-									'channel' => [
-										'id' => $address->getChannel()->getPlainId(),
-									],
-								],
-							);
+								);
+							}
 						}
 					} else {
 						$this->lostDevices[$device->getPlainId()] = $now;
@@ -840,7 +922,7 @@ class Tcp implements Client
 					'id' => $device->getPlainId(),
 				],
 				'channel' => [
-					'id' => $property->getChannel()->getPlainId(),
+					'id' => $channel->getPlainId(),
 				],
 				'property' => [
 					'id' => $property->getPlainId(),
