@@ -1,6 +1,6 @@
 {
   "name": "@fastybird/triggers-module",
-  "version": "1.0.0-dev.9",
+  "version": "1.0.0-dev.10",
   "type": "module",
   "description": "FastyBird IoT module for triggers management & basic automation logic",
   "keywords": [
