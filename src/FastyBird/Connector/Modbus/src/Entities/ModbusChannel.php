@@ -33,7 +33,7 @@ class ModbusChannel extends DevicesEntities\Channels\Channel
 
 	public const CHANNEL_TYPE = 'modbus';
 
-	public const READING_DELAY = 5.0;
+	public const READING_DELAY = 120.0;
 
 	public function getType(): string
 	{
