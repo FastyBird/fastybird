@@ -33,12 +33,15 @@ use Symfony\Component\Console\Input;
 use Symfony\Component\Console\Output;
 use Symfony\Component\Console\Style;
 use Throwable;
-use function array_search;
+use function array_key_exists;
+use function array_keys;
 use function array_values;
+use function assert;
 use function count;
 use function intval;
 use function sprintf;
 use function strval;
+use function usort;
 
 /**
  * Connector initialize command
@@ -180,8 +183,8 @@ class Initialize extends Console\Command\Command
 
 		$question = new Console\Question\Question('Provide connector identifier');
 
-		$question->setValidator(function ($answer) {
-			if ($answer !== null) {
+		$question->setValidator(function (string|null $answer) {
+			if ($answer !== '' && $answer !== null) {
 				$findConnectorQuery = new DevicesQueries\FindConnectors();
 				$findConnectorQuery->byIdentifier($answer);
 
@@ -230,32 +233,7 @@ class Initialize extends Console\Command\Command
 
 		$accessSecret = $this->askAccessSecret($io);
 
-		switch ($this->askOpenApiEndpoint($io)) {
-			case 1:
-				$dataCentre = Types\OpenApiEndpoint::ENDPOINT_EUROPE_MS;
-
-				break;
-			case 2:
-				$dataCentre = Types\OpenApiEndpoint::ENDPOINT_AMERICA;
-
-				break;
-			case 3:
-				$dataCentre = Types\OpenApiEndpoint::ENDPOINT_AMERICA_AZURE;
-
-				break;
-			case 4:
-				$dataCentre = Types\OpenApiEndpoint::ENDPOINT_CHINA;
-
-				break;
-			case 5:
-				$dataCentre = Types\OpenApiEndpoint::ENDPOINT_INDIA;
-
-				break;
-			default:
-				$dataCentre = Types\OpenApiEndpoint::ENDPOINT_EUROPE;
-
-				break;
-		}
+		$dataCentre = $this->askOpenApiEndpoint($io);
 
 		$uid = null;
 
@@ -299,9 +277,9 @@ class Initialize extends Console\Command\Command
 
 			$this->propertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-				'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_OPENPULSAR_ENDPOINT,
+				'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_OPENAPI_ENDPOINT,
 				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-				'value' => $dataCentre,
+				'value' => $dataCentre->getValue(),
 				'connector' => $connector,
 			]));
 
@@ -366,25 +344,9 @@ class Initialize extends Console\Command\Command
 	 */
 	private function editExistingConfiguration(Style\SymfonyStyle $io): void
 	{
-		$io->newLine();
+		$connector = $this->askWhichConnector($io);
 
-		$connectors = [];
-
-		$findConnectorsQuery = new DevicesQueries\FindConnectors();
-
-		foreach ($this->connectorsRepository->findAllBy(
-			$findConnectorsQuery,
-			Entities\TuyaConnector::class,
-		) as $connector) {
-			if ($connector->getType() !== Entities\TuyaConnector::CONNECTOR_TYPE) {
-				continue;
-			}
-
-			$connectors[$connector->getIdentifier()] = $connector->getIdentifier()
-				. ($connector->getName() !== null ? ' [' . $connector->getName() . ']' : '');
-		}
-
-		if (count($connectors) === 0) {
+		if ($connector === null) {
 			$io->warning('No Tuya connectors registered in system');
 
 			$question = new Console\Question\ConfirmationQuestion(
@@ -397,50 +359,6 @@ class Initialize extends Console\Command\Command
 			if ($continue) {
 				$this->createNewConfiguration($io);
 			}
-
-			return;
-		}
-
-		$question = new Console\Question\ChoiceQuestion(
-			'Please select connector to configure',
-			array_values($connectors),
-		);
-
-		$question->setErrorMessage('Selected connector: "%s" is not valid.');
-
-		$connectorIdentifier = array_search($io->askQuestion($question), $connectors, true);
-
-		if ($connectorIdentifier === false) {
-			$io->error('Something went wrong, connector could not be loaded');
-
-			$this->logger->alert(
-				'Could not read connector identifier from console answer',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-					'type' => 'initialize-cmd',
-					'group' => 'cmd',
-				],
-			);
-
-			return;
-		}
-
-		$findConnectorQuery = new DevicesQueries\FindConnectors();
-		$findConnectorQuery->byIdentifier($connectorIdentifier);
-
-		$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\TuyaConnector::class);
-
-		if ($connector === null) {
-			$io->error('Something went wrong, connector could not be loaded');
-
-			$this->logger->alert(
-				'Connector was not found',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-					'type' => 'initialize-cmd',
-					'group' => 'cmd',
-				],
-			);
 
 			return;
 		}
@@ -693,70 +611,10 @@ class Initialize extends Console\Command\Command
 	 */
 	private function deleteExistingConfiguration(Style\SymfonyStyle $io): void
 	{
-		$io->newLine();
-
-		$connectors = [];
-
-		$findConnectorsQuery = new DevicesQueries\FindConnectors();
-
-		foreach ($this->connectorsRepository->findAllBy(
-			$findConnectorsQuery,
-			Entities\TuyaConnector::class,
-		) as $connector) {
-			if ($connector->getType() !== Entities\TuyaConnector::CONNECTOR_TYPE) {
-				continue;
-			}
-
-			$connectors[$connector->getIdentifier()] = $connector->getIdentifier()
-				. ($connector->getName() !== null ? ' [' . $connector->getName() . ']' : '');
-		}
-
-		if (count($connectors) === 0) {
-			$io->info('No Tuya connectors registered in system');
-
-			return;
-		}
-
-		$question = new Console\Question\ChoiceQuestion(
-			'Please select connector to remove',
-			array_values($connectors),
-		);
-
-		$question->setErrorMessage('Selected connector: "%s" is not valid.');
-
-		$connectorIdentifier = array_search($io->askQuestion($question), $connectors, true);
-
-		if ($connectorIdentifier === false) {
-			$io->error('Something went wrong, connector could not be loaded');
-
-			$this->logger->alert(
-				'Connector identifier was not able to get from answer',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-					'type' => 'initialize-cmd',
-					'group' => 'cmd',
-				],
-			);
-
-			return;
-		}
-
-		$findConnectorQuery = new DevicesQueries\FindConnectors();
-		$findConnectorQuery->byIdentifier($connectorIdentifier);
-
-		$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\TuyaConnector::class);
+		$connector = $this->askWhichConnector($io);
 
 		if ($connector === null) {
-			$io->error('Something went wrong, connector could not be loaded');
-
-			$this->logger->alert(
-				'Connector was not found',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-					'type' => 'initialize-cmd',
-					'group' => 'cmd',
-				],
-			);
+			$io->info('No Tuya connectors registered in system');
 
 			return;
 		}
@@ -852,7 +710,7 @@ class Initialize extends Console\Command\Command
 		return strval($io->askQuestion($question));
 	}
 
-	private function askOpenApiEndpoint(Style\SymfonyStyle $io): int
+	private function askOpenApiEndpoint(Style\SymfonyStyle $io): Types\OpenApiEndpoint
 	{
 		$question = new Console\Question\ChoiceQuestion(
 			'Provide which cloud data center you are using?',
@@ -866,10 +724,43 @@ class Initialize extends Console\Command\Command
 			],
 			0,
 		);
-
 		$question->setErrorMessage('Selected answer: "%s" is not valid.');
+		$question->setValidator(static function (string|null $answer): Types\OpenApiEndpoint {
+			if ($answer === null) {
+				throw new Exceptions\InvalidState('Selected answer is not valid');
+			}
 
-		return intval($io->askQuestion($question));
+			if ($answer === self::CHOICE_QUESTION_CENTRAL_EUROPE_DC || intval($answer) === 0) {
+				return Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::ENDPOINT_EUROPE);
+			}
+
+			if ($answer === self::CHOICE_QUESTION_WESTERN_EUROPE_DC || intval($answer) === 1) {
+				return Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::ENDPOINT_EUROPE_MS);
+			}
+
+			if ($answer === self::CHOICE_QUESTION_WESTERN_AMERICA_DC || intval($answer) === 2) {
+				return Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::ENDPOINT_AMERICA);
+			}
+
+			if ($answer === self::CHOICE_QUESTION_EASTERN_AMERICA_DC || intval($answer) === 3) {
+				return Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::ENDPOINT_AMERICA_AZURE);
+			}
+
+			if ($answer === self::CHOICE_QUESTION_CHINA_DC || intval($answer) === 4) {
+				return Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::ENDPOINT_CHINA);
+			}
+
+			if ($answer === self::CHOICE_QUESTION_INDIA_DC || intval($answer) === 5) {
+				return Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::ENDPOINT_INDIA);
+			}
+
+			throw new Exceptions\InvalidState('Selected answer is not valid');
+		});
+
+		$answer = $io->askQuestion($question);
+		assert($answer instanceof Types\OpenApiEndpoint);
+
+		return $answer;
 	}
 
 	private function askUid(Style\SymfonyStyle $io): string
@@ -877,6 +768,71 @@ class Initialize extends Console\Command\Command
 		$question = new Console\Question\Question('Provide cloud user identification');
 
 		return strval($io->askQuestion($question));
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 */
+	private function askWhichConnector(Style\SymfonyStyle $io): Entities\TuyaConnector|null
+	{
+		$connectors = [];
+
+		$findConnectorsQuery = new DevicesQueries\FindConnectors();
+
+		$systemConnectors = $this->connectorsRepository->findAllBy(
+			$findConnectorsQuery,
+			Entities\TuyaConnector::class,
+		);
+		usort(
+			$systemConnectors,
+			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+			static fn (DevicesEntities\Connectors\Connector $a, DevicesEntities\Connectors\Connector $b): int => $a->getIdentifier() <=> $b->getIdentifier()
+		);
+
+		foreach ($systemConnectors as $connector) {
+			assert($connector instanceof Entities\TuyaConnector);
+
+			$connectors[$connector->getIdentifier()] = $connector->getIdentifier()
+				. ($connector->getName() !== null ? ' [' . $connector->getName() . ']' : '');
+		}
+
+		if (count($connectors) === 0) {
+			return null;
+		}
+
+		$question = new Console\Question\ChoiceQuestion(
+			'Please select connector to manage',
+			array_values($connectors),
+		);
+		$question->setErrorMessage('Selected answer: "%s" is not valid.');
+		$question->setValidator(function (string|null $answer) use ($connectors): Entities\TuyaConnector {
+			if ($answer === null) {
+				throw new Exceptions\InvalidState('Selected answer is not valid');
+			}
+
+			$connectorIdentifiers = array_keys($connectors);
+
+			if (!array_key_exists(intval($answer), $connectorIdentifiers)) {
+				throw new Exceptions\Runtime('You have to select connector from list');
+			}
+
+			$findConnectorQuery = new DevicesQueries\FindConnectors();
+			$findConnectorQuery->byIdentifier($connectorIdentifiers[intval($answer)]);
+
+			$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\TuyaConnector::class);
+			assert($connector instanceof Entities\TuyaConnector || $connector === null);
+
+			if ($connector === null) {
+				throw new Exceptions\Runtime('You have to select connector from list');
+			}
+
+			return $connector;
+		});
+
+		$answer = $io->askQuestion($question);
+		assert($answer instanceof Entities\TuyaConnector);
+
+		return $answer;
 	}
 
 	/**

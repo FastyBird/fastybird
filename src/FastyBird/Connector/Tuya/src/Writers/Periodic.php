@@ -55,11 +55,11 @@ class Periodic implements Writer
 
 	private const HANDLER_START_DELAY = 5.0;
 
-	private const HANDLER_DEBOUNCE_INTERVAL = 500;
+	private const HANDLER_DEBOUNCE_INTERVAL = 500.0;
 
 	private const HANDLER_PROCESSING_INTERVAL = 0.01;
 
-	private const HANDLER_PENDING_DELAY = 2_000;
+	private const HANDLER_PENDING_DELAY = 2_000.0;
 
 	/** @var array<string> */
 	private array $processedDevices = [];
@@ -126,16 +126,6 @@ class Periodic implements Writer
 	 */
 	private function handleCommunication(): void
 	{
-		foreach ($this->processedProperties as $index => $processedProperty) {
-			if (
-				(float) $this->dateTimeFactory->getNow()->format('Uv') - (float) $processedProperty->format(
-					'Uv',
-				) >= 500
-			) {
-				unset($this->processedProperties[$index]);
-			}
-		}
-
 		foreach ($this->clients as $id => $client) {
 			$findDevicesQuery = new DevicesQueries\FindDevices();
 			$findDevicesQuery->byConnectorId(Uuid\Uuid::fromString($id));
@@ -234,6 +224,8 @@ class Periodic implements Writer
 										),
 									]),
 								);
+
+								unset($this->processedProperties[$property->getPlainId()]);
 							})
 							->otherwise(function (Throwable $ex) use ($device, $channel, $property): void {
 								$this->logger->error(

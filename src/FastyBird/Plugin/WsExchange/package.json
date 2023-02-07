@@ -1,6 +1,6 @@
 {
   "name": "@fastybird/ws-exchange-plugin",
-  "version": "1.0.0-dev.9",
+  "version": "1.0.0-dev.10",
   "description": "FastyBird IoT WS WAMP client & server plugin for handling UI communication",
   "keywords": [
     "fastybird",

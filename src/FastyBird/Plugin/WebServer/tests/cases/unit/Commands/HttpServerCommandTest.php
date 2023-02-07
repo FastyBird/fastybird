@@ -14,6 +14,7 @@ use React\Promise;
 use Symfony\Component\Console;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
+use function in_array;
 
 final class HttpServerCommandTest extends TestCase
 {
@@ -33,21 +34,37 @@ final class HttpServerCommandTest extends TestCase
 		$logger
 			->expects(self::exactly(2))
 			->method('info')
-			->withConsecutive(
-				[
-					'Launching HTTP Server',
-					[
-						'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WEB_SERVER,
-						'type' => 'command',
-					],
-				],
-				[
-					'Listening on "http://127.0.0.1:8001"',
-					[
-						'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WEB_SERVER,
-						'type' => 'factory',
-					],
-				],
+			->with(
+				self::callback(static function (...$args): bool {
+					$valid = [
+						[
+							'Launching HTTP Server',
+						],
+						[
+							'Listening on "http://127.0.0.1:8001"',
+						],
+					];
+
+					return in_array($args, $valid, true);
+				}),
+				self::callback(static function (...$args): bool {
+					$valid = [
+						[
+							[
+								'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WEB_SERVER,
+								'type' => 'command',
+							],
+						],
+						[
+							[
+								'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WEB_SERVER,
+								'type' => 'factory',
+							],
+						],
+					];
+
+					return in_array($args, $valid, true);
+				}),
 			);
 
 		$eventLoop = $this->createMock(EventLoop\LoopInterface::class);

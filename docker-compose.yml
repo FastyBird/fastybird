@@ -38,8 +38,8 @@ services:
       - "51827:51827/udp"
     networks:
       - fastybird
-    devices:
-      - "/dev/tty.usbserial-21420:/dev/ttyUSB0"
+    #devices:
+    #  - "/dev/tty.usbserial-31420:/dev/ttyUSB0"
 
   # MYSQL DATABASE STORAGE
   database:

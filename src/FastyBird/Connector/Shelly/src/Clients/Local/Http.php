@@ -60,7 +60,7 @@ final class Http
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
-		private readonly API\Gen1Transformer $transformer,
+		private readonly API\Transformer $transformer,
 		private readonly API\Gen1HttpApiFactory $gen1HttpApiFactory,
 		private readonly API\Gen2HttpApiFactory $gen2HttpApiFactory,
 		private readonly Consumers\Messages $consumer,

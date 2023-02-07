@@ -33,7 +33,7 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *
- * @property-read API\Gen1Transformer $transformer
+ * @property-read API\Transformer $transformer
  * @property-read Consumers\Messages $consumer
  */
 trait Gen2

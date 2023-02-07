@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Gen1Transformer.php
+ * Transformer.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -39,7 +39,7 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Gen1Transformer
+final class Transformer
 {
 
 	use Nette\SmartObject;
