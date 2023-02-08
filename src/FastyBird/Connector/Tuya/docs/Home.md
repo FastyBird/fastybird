@@ -102,7 +102,7 @@ The console will ask you to confirm that you want to continue with the configura
 Tuya connector - initialization
 =================================
 
- ! [NOTE] This action will create|update connector configuration.                                                       
+ ! [NOTE] This action will create|update|delete connector configuration.                                                       
 
  Would you like to continue? (yes/no) [no]:
  > y

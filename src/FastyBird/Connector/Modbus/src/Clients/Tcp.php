@@ -17,6 +17,7 @@ namespace FastyBird\Connector\Modbus\Clients;
 
 use DateTimeInterface;
 use Exception;
+use FastyBird\Connector\Modbus;
 use FastyBird\Connector\Modbus\API;
 use FastyBird\Connector\Modbus\Consumers;
 use FastyBird\Connector\Modbus\Entities;
@@ -42,7 +43,9 @@ use Throwable;
 use function array_key_exists;
 use function array_merge;
 use function assert;
+use function floatval;
 use function in_array;
+use function intval;
 use function is_bool;
 use function is_int;
 use function is_string;
@@ -239,13 +242,59 @@ class Tcp implements Client
 				|| $valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_UINT)
 				|| $valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_FLOAT)
 			) {
+				if (
+					$deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_CHAR)
+					|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SHORT)
+				) {
+					$bytes = $this->transformer->packSignedInt(
+						intval($valueToWrite->getValue()),
+						2,
+						$device->getByteOrder(),
+					);
+
+				} elseif (
+					$deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_UCHAR)
+					|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_USHORT)
+				) {
+					$bytes = $this->transformer->packUnsignedInt(
+						intval($valueToWrite->getValue()),
+						2,
+						$device->getByteOrder(),
+					);
+
+				} elseif ($deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_INT)) {
+					$bytes = $this->transformer->packSignedInt(
+						intval($valueToWrite->getValue()),
+						4,
+						$device->getByteOrder(),
+					);
+
+				} elseif ($deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_UINT)) {
+					$bytes = $this->transformer->packUnsignedInt(
+						intval($valueToWrite->getValue()),
+						4,
+						$device->getByteOrder(),
+					);
+
+				} elseif ($deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_FLOAT)) {
+					$bytes = $this->transformer->packFloat(
+						floatval($valueToWrite->getValue()),
+						$device->getByteOrder(),
+					);
+
+				} else {
+					return Promise\reject(new Exceptions\InvalidArgument('Provided data type is not supported'));
+				}
+
+				if ($bytes === null) {
+					return Promise\reject(new Exceptions\InvalidState('Data could not be converted for write'));
+				}
+
 				$promise = $this->tcp?->writeSingleHolding(
 					$deviceAddress,
 					$unitId,
 					$address,
-					(int) $valueToWrite->getValue(),
-					$valueToWrite->getDataType(),
-					$device->getByteOrder(),
+					$bytes,
 				);
 			} else {
 				return Promise\reject(
@@ -449,19 +498,31 @@ class Tcp implements Client
 		$requests = [];
 
 		if ($coilsAddresses !== []) {
-			$requests = array_merge($requests, $this->split($coilsAddresses));
+			$requests = array_merge(
+				$requests,
+				$this->split($coilsAddresses, Modbus\Constants::MAX_DISCRETE_REGISTERS_PER_MODBUS_REQUEST),
+			);
 		}
 
 		if ($discreteInputsAddresses !== []) {
-			$requests = array_merge($requests, $this->split($discreteInputsAddresses));
+			$requests = array_merge(
+				$requests,
+				$this->split($discreteInputsAddresses, Modbus\Constants::MAX_DISCRETE_REGISTERS_PER_MODBUS_REQUEST),
+			);
 		}
 
 		if ($holdingAddresses !== []) {
-			$requests = array_merge($requests, $this->split($holdingAddresses));
+			$requests = array_merge(
+				$requests,
+				$this->split($holdingAddresses, Modbus\Constants::MAX_ANALOG_REGISTERS_PER_MODBUS_REQUEST),
+			);
 		}
 
 		if ($inputsAddresses !== []) {
-			$requests = array_merge($requests, $this->split($inputsAddresses));
+			$requests = array_merge(
+				$requests,
+				$this->split($inputsAddresses, Modbus\Constants::MAX_ANALOG_REGISTERS_PER_MODBUS_REQUEST),
+			);
 		}
 
 		if ($requests === []) {
@@ -524,17 +585,13 @@ class Tcp implements Client
 					$unitId,
 					$request->getStartAddress(),
 					$request->getQuantity(),
-					$request->getDataType(),
-					$device->getByteOrder(),
 				);
 			} elseif ($request instanceof Entities\Clients\ReadInputsRegistersRequest) {
-				$promise = $this->tcp?->readHoldingRegisters(
+				$promise = $this->tcp?->readInputRegisters(
 					$deviceAddress,
 					$unitId,
 					$request->getStartAddress(),
 					$request->getQuantity(),
-					$request->getDataType(),
-					$device->getByteOrder(),
 				);
 			} else {
 				continue;
@@ -742,11 +799,8 @@ class Tcp implements Client
 
 		if ($deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BOOLEAN)) {
 			return $property->isSettable()
-				? new Entities\Clients\ReadCoilAddress($address, $channel)
-				: new Entities\Clients\ReadDiscreteInputAddress(
-					$address,
-					$channel,
-				);
+				? new Entities\Clients\ReadCoilAddress($address, $channel, $deviceExpectedDataType)
+				: new Entities\Clients\ReadDiscreteInputAddress($address, $channel, $deviceExpectedDataType);
 		} elseif (
 			$deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_CHAR)
 			|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_UCHAR)
@@ -757,8 +811,8 @@ class Tcp implements Client
 			|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_FLOAT)
 		) {
 			return $property->isSettable()
-				? new Entities\Clients\ReadHoldingRegisterAddress($address, $channel)
-				: new Entities\Clients\ReadInputRegisterAddress($address, $channel);
+				? new Entities\Clients\ReadHoldingRegisterAddress($address, $channel, $deviceExpectedDataType)
+				: new Entities\Clients\ReadInputRegisterAddress($address, $channel, $deviceExpectedDataType);
 		}
 
 		$this->logger->warning(
