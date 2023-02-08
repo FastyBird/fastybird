@@ -244,69 +244,8 @@ If your device have more register, you could continue answering and configuring 
 
 In instances where some devices utilize different data types for reading and writing values, a special data type `SWITCH` can be used.
 
-For example, a Chinese relay module might use binary values for reading the relay state and integers for setting the state.
-In this scenario, a special format can be configured, as demonstrated in this example:
-
-```shell
- What type of device register you would like to add? [Discrete Input]:
-  [0] Discrete Input
-  [1] Coil
-  [2] Input Register
-  [3] Holding Register
- > 3
-
- What type of data type this register has [char]:
-  [0] char
-  [1] uchar
-  [2] short
-  [3] ushort
-  [4] int
-  [5] uint
-  [6] float
-  [7] string
-  [8] switch
- > 8
-
- Provide register address. It could be single number or range like 1-2:
- > 1
-
- Provide register name (optional):
- > Relay 01
-
- Provide register sampling time (s) [120]:
- > 120
-
- Does register support Switch ON action? (yes/no) [no]:
- > y
-
- Provide read value representing Switch ON:
- > 1
-
- What type of data type provided value has:
-  [0] b
-  [1] i8
-  [2] u8
-  [3] i16
-  [4] u16
-  [5] i32
-  [6] u32
-  [7] f
- > 0
-
- Provide write value representing Switch ON:
- > 128
-
- What type of data type provided value has:
-  [0] b
-  [1] i8
-  [2] u8
-  [3] i16
-  [4] u16
-  [5] i32
-  [6] u32
-  [7] f
- > 2
-```
+For instance, a Chinese relay device could utilize binary representations when retrieving the relay state and integer values for adjusting the state.
+To accommodate this, a specialized format can be set up. For more information, refer to the relevant relay type's [page](https://github.com/FastyBird/modbus-connector/wiki/RelayBoard).
 
 # Known Issues and Limitations
 
