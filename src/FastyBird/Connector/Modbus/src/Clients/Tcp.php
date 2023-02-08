@@ -49,7 +49,6 @@ use function intval;
 use function is_bool;
 use function is_int;
 use function is_string;
-use function range;
 use function sprintf;
 use function strval;
 
@@ -532,28 +531,25 @@ class Tcp implements Client
 		$now = $this->dateTimeFactory->getNow();
 
 		foreach ($requests as $request) {
-			foreach (range(
-				$request->getStartAddress(),
-				$request->getStartAddress() + $request->getQuantity(),
-			) as $address) {
+			foreach ($request->getAddresses() as $requestAddress) {
 				if ($request instanceof Entities\Clients\ReadCoilsRequest) {
 					$channel = $device->findChannelByType(
-						$address,
+						$requestAddress->getAddress(),
 						Types\ChannelType::get(Types\ChannelType::COIL),
 					);
 				} elseif ($request instanceof Entities\Clients\ReadDiscreteInputsRequest) {
 					$channel = $device->findChannelByType(
-						$address,
+						$requestAddress->getAddress(),
 						Types\ChannelType::get(Types\ChannelType::DISCRETE_INPUT),
 					);
 				} elseif ($request instanceof Entities\Clients\ReadHoldingsRegistersRequest) {
 					$channel = $device->findChannelByType(
-						$address,
+						$requestAddress->getAddress(),
 						Types\ChannelType::get(Types\ChannelType::HOLDING_REGISTER),
 					);
 				} elseif ($request instanceof Entities\Clients\ReadInputsRegistersRequest) {
 					$channel = $device->findChannelByType(
-						$address,
+						$requestAddress->getAddress(),
 						Types\ChannelType::get(Types\ChannelType::INPUT_REGISTER),
 					);
 				} else {
@@ -660,28 +656,25 @@ class Tcp implements Client
 					$now = $this->dateTimeFactory->getNow();
 
 					if ($ex instanceof Exceptions\ModbusTcp) {
-						foreach (range(
-							$request->getStartAddress(),
-							$request->getStartAddress() + $request->getQuantity(),
-						) as $address) {
+						foreach ($request->getAddresses() as $requestAddress) {
 							if ($request instanceof Entities\Clients\ReadCoilsRequest) {
 								$channel = $device->findChannelByType(
-									$address,
+									$requestAddress->getAddress(),
 									Types\ChannelType::get(Types\ChannelType::COIL),
 								);
 							} elseif ($request instanceof Entities\Clients\ReadDiscreteInputsRequest) {
 								$channel = $device->findChannelByType(
-									$address,
+									$requestAddress->getAddress(),
 									Types\ChannelType::get(Types\ChannelType::DISCRETE_INPUT),
 								);
 							} elseif ($request instanceof Entities\Clients\ReadHoldingsRegistersRequest) {
 								$channel = $device->findChannelByType(
-									$address,
+									$requestAddress->getAddress(),
 									Types\ChannelType::get(Types\ChannelType::HOLDING_REGISTER),
 								);
 							} else {
 								$channel = $device->findChannelByType(
-									$address,
+									$requestAddress->getAddress(),
 									Types\ChannelType::get(Types\ChannelType::INPUT_REGISTER),
 								);
 							}

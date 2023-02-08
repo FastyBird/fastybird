@@ -28,7 +28,6 @@ use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette\Utils;
 use function array_splice;
-use function range;
 use function usort;
 
 /**
@@ -81,7 +80,7 @@ trait TReading
 
 			if (
 				$quantity >= $maxAddressesPerModbusRequest
-				|| ($previousAddress !== null && ($currentAddress->getAddress() - $previousAddress) > 1)
+				|| ($previousAddress !== null && ($currentAddress->getAddress() - $previousAddress->getAddress()) > $previousAddress->getSize())
 			) {
 				if ($currentAddress instanceof Entities\Clients\ReadCoilAddress) {
 					$result[] = new Entities\Clients\ReadCoilsRequest($chunk, $startAddress, $previousQuantity);
@@ -114,7 +113,7 @@ trait TReading
 				$maxAvailableAddress = null;
 			}
 
-			$previousAddress = $currentAddress->getAddress();
+			$previousAddress = $currentAddress;
 
 			$chunk[] = $currentAddress;
 		}
@@ -149,18 +148,15 @@ trait TReading
 	{
 		$registersBytes = $response->getRegisters();
 
-		foreach (range(
-			$request->getStartAddress(),
-			$request->getStartAddress() + $request->getQuantity(),
-		) as $address) {
+		foreach ($request->getAddresses() as $requestAddress) {
 			if ($request instanceof Entities\Clients\ReadHoldingsRegistersRequest) {
 				$channel = $device->findChannelByType(
-					$address,
+					$requestAddress->getAddress(),
 					Types\ChannelType::get(Types\ChannelType::HOLDING_REGISTER),
 				);
 			} elseif ($request instanceof Entities\Clients\ReadInputsRegistersRequest) {
 				$channel = $device->findChannelByType(
-					$address,
+					$requestAddress->getAddress(),
 					Types\ChannelType::get(Types\ChannelType::INPUT_REGISTER),
 				);
 			} else {
