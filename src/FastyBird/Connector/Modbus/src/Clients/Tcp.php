@@ -604,52 +604,47 @@ class Tcp implements Client
 						return;
 					}
 
-					foreach ($response->getRegisters() as $address => $value) {
-						if ($request instanceof Entities\Clients\ReadCoilsRequest) {
-							$channel = $device->findChannelByType(
-								$address,
-								Types\ChannelType::get(Types\ChannelType::COIL),
-							);
-						} elseif ($request instanceof Entities\Clients\ReadDiscreteInputsRequest) {
-							$channel = $device->findChannelByType(
-								$address,
-								Types\ChannelType::get(Types\ChannelType::DISCRETE_INPUT),
-							);
-						} elseif ($request instanceof Entities\Clients\ReadHoldingsRegistersRequest) {
-							$channel = $device->findChannelByType(
-								$address,
-								Types\ChannelType::get(Types\ChannelType::HOLDING_REGISTER),
-							);
-						} else {
-							$channel = $device->findChannelByType(
-								$address,
-								Types\ChannelType::get(Types\ChannelType::INPUT_REGISTER),
-							);
-						}
-
-						if ($channel !== null) {
-							$this->processedReadRegister[$channel->getIdentifier()] = $now;
-
-							$property = $channel->findProperty(
-								Types\ChannelPropertyIdentifier::IDENTIFIER_VALUE,
-							);
-
-							if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
-								$this->propertyStateHelper->setValue(
-									$property,
-									Utils\ArrayHash::from([
-										DevicesStates\Property::ACTUAL_VALUE_KEY => DevicesUtilities\ValueHelper::flattenValue(
-											$this->transformer->transformValueFromDevice(
-												$property->getDataType(),
-												$property->getFormat(),
-												$value,
-											),
-										),
-										DevicesStates\Property::VALID_KEY => true,
-									]),
+					if ($response instanceof Entities\API\ReadDigitalInputs) {
+						foreach ($response->getRegisters() as $address => $value) {
+							if ($request instanceof Entities\Clients\ReadCoilsRequest) {
+								$channel = $device->findChannelByType(
+									$address,
+									Types\ChannelType::get(Types\ChannelType::COIL),
 								);
+							} elseif ($request instanceof Entities\Clients\ReadDiscreteInputsRequest) {
+								$channel = $device->findChannelByType(
+									$address,
+									Types\ChannelType::get(Types\ChannelType::DISCRETE_INPUT),
+								);
+							} else {
+								continue;
+							}
+
+							if ($channel !== null) {
+								$this->processedReadRegister[$channel->getIdentifier()] = $now;
+
+								$property = $channel->findProperty(Types\ChannelPropertyIdentifier::IDENTIFIER_VALUE);
+
+								if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
+									$this->propertyStateHelper->setValue(
+										$property,
+										Utils\ArrayHash::from([
+											DevicesStates\Property::ACTUAL_VALUE_KEY => DevicesUtilities\ValueHelper::flattenValue(
+												$this->transformer->transformValueFromDevice(
+													$property->getDataType(),
+													$property->getFormat(),
+													$value,
+												),
+											),
+											DevicesStates\Property::VALID_KEY => true,
+										]),
+									);
+								}
 							}
 						}
+
+					} else {
+						$this->processAnalogRegistersResponse($request, $response, $device);
 					}
 				},
 				function (Throwable $ex) use ($request, $device): void {
