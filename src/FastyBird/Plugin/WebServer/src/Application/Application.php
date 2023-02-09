@@ -21,7 +21,7 @@ use Nette;
 use Psr\EventDispatcher;
 use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
-use Sunrise\Http\ServerRequest\ServerRequestFactory;
+use Sunrise\Http\Message\ServerRequestFactory;
 use function header;
 use function in_array;
 use function sprintf;
