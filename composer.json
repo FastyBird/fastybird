@@ -198,7 +198,7 @@
             "cweagans/composer-patches": true,
             "phpstan/extension-installer": true,
             "infection/extension-installer": true,
-            "php-http/discovery": false
+            "php-http/discovery": true
         }
     },
     "bin": [
