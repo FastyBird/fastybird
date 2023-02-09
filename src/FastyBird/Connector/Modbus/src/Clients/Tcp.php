@@ -642,7 +642,6 @@ class Tcp implements Client
 								}
 							}
 						}
-
 					} else {
 						$this->processAnalogRegistersResponse($request, $response, $device);
 					}
