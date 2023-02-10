@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:FbMqttConnector!
  * @subpackage     Clients
- * @since          0.25.0
+ * @since          1.0.0
  *
  * @date           23.02.20
  */
@@ -21,10 +21,10 @@ use FastyBird\Connector\FbMqtt;
 use FastyBird\Connector\FbMqtt\Consumers;
 use FastyBird\Connector\FbMqtt\Entities;
 use FastyBird\Connector\FbMqtt\Exceptions;
-use FastyBird\Connector\FbMqtt\Helpers;
-use FastyBird\Connector\FbMqtt\Types;
+use FastyBird\Connector\FbMqtt\Writers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use InvalidArgumentException;
 use Nette;
@@ -40,10 +40,7 @@ use function assert;
 use function call_user_func;
 use function count;
 use function floor;
-use function intval;
-use function is_string;
 use function sprintf;
-use function strval;
 
 /**
  * MQTT client service
@@ -70,8 +67,6 @@ abstract class Client
 
 	use Nette\SmartObject;
 
-	private const HANDLER_PROCESSING_INTERVAL = 0.01;
-
 	protected bool $isConnected = false;
 
 	protected bool $isConnecting = false;
@@ -92,8 +87,6 @@ abstract class Client
 
 	protected Flow|null $writtenFlow = null;
 
-	protected EventLoop\TimerInterface|null $handlerTimer;
-
 	protected Stream\DuplexStreamInterface|null $stream = null;
 
 	protected Mqtt\StreamParser $parser;
@@ -108,8 +101,8 @@ abstract class Client
 
 	public function __construct(
 		protected Entities\FbMqttConnector $connector,
-		protected Helpers\Connector $connectorHelper,
 		protected Consumers\Messages $consumer,
+		private readonly Writers\Writer $writer,
 		protected EventLoop\LoopInterface $eventLoop,
 		Mqtt\ClientIdentifierGenerator|null $identifierGenerator = null,
 		Mqtt\FlowFactory|null $flowFactory = null,
@@ -119,8 +112,8 @@ abstract class Client
 	{
 		$this->parser = $parser ?? new Mqtt\StreamParser(new Mqtt\DefaultPacketFactory());
 
-		$this->parser->onError(function (Throwable $error): void {
-			$this->onWarning($error);
+		$this->parser->onError(function (Throwable $ex): void {
+			$this->onWarning($ex);
 		});
 
 		$this->identifierGenerator = $identifierGenerator ?? new Mqtt\DefaultIdentifierGenerator();
@@ -135,6 +128,14 @@ abstract class Client
 	}
 
 	/**
+	 * Write data to DPS
+	 */
+	abstract public function writeProperty(
+		Entities\FbMqttDevice $device,
+		DevicesEntities\Devices\Properties\Dynamic|DevicesEntities\Channels\Properties\Dynamic $property,
+	): Promise\PromiseInterface;
+
+	/**
 	 * Connects to a broker
 	 *
 	 * @throws InvalidArgumentException
@@ -146,6 +147,8 @@ abstract class Client
 	{
 		$deferred = new Promise\Deferred();
 
+		$this->writer->connect($this->connector, $this);
+
 		if ($this->isConnected || $this->isConnecting) {
 			$promise = Promise\reject(new Exceptions\Logic('The client is already connected'));
 			assert($promise instanceof Promise\ExtendedPromiseInterface);
@@ -156,29 +159,9 @@ abstract class Client
 		$this->isConnecting = true;
 		$this->isConnected = false;
 
-		$username = $this->connectorHelper->getConfiguration(
-			$this->connector,
-			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_USERNAME),
-		);
-
-		$password = $this->connectorHelper->getConfiguration(
-			$this->connector,
-			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_PASSWORD),
-		);
-
-		$server = $this->connectorHelper->getConfiguration(
-			$this->connector,
-			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_SERVER),
-		);
-
-		$port = $this->connectorHelper->getConfiguration(
-			$this->connector,
-			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_PORT),
-		);
-
 		$connection = new Mqtt\DefaultConnection(
-			is_string($username) ? $username : '',
-			is_string($password) ? $password : '',
+			$this->connector->getUsername() ?? '',
+			$this->connector->getPassword() ?? '',
 			null,
 			$this->connector->getPlainId(),
 		);
@@ -187,7 +170,7 @@ abstract class Client
 			$connection = $connection->withClientID($this->identifierGenerator->generateClientIdentifier());
 		}
 
-		$this->establishConnection(strval($server), intval($port), $timeout)
+		$this->establishConnection($this->connector->getServerAddress(), $this->connector->getServerPort(), $timeout)
 			->then(function (Stream\DuplexStreamInterface $stream) use ($connection, $deferred, $timeout): void {
 				$this->stream = $stream;
 
@@ -203,24 +186,24 @@ abstract class Client
 
 						$deferred->resolve($result ?? $connection);
 					})
-					->otherwise(function (Throwable $reason) use ($connection, $deferred): void {
+					->otherwise(function (Throwable $ex) use ($connection, $deferred): void {
 						$this->isConnecting = false;
 
-						$this->onError($reason);
+						$this->onError($ex);
 
-						$deferred->reject($reason);
+						$deferred->reject($ex);
 
 						$this->stream?->close();
 
 						$this->onClose($connection);
 					});
 			})
-			->otherwise(function (Throwable $reason) use ($deferred): void {
+			->otherwise(function (Throwable $ex) use ($deferred): void {
 				$this->isConnecting = false;
 
-				$this->onError($reason);
+				$this->onError($ex);
 
-				$deferred->reject($reason);
+				$deferred->reject($ex);
 			});
 
 		$promise = $deferred->promise();
@@ -231,8 +214,6 @@ abstract class Client
 
 	/**
 	 * Disconnects from a broker
-	 *
-	 * @throws DevicesExceptions\Terminate
 	 */
 	public function disconnect(int $timeout = 5): Promise\ExtendedPromiseInterface
 	{
@@ -286,13 +267,13 @@ abstract class Client
 		$promise = $deferred->promise();
 		assert($promise instanceof Promise\ExtendedPromiseInterface);
 
+		$this->writer->disconnect($this->connector, $this);
+
 		return $promise;
 	}
 
 	/**
 	 * Subscribes to a topic filter
-	 *
-	 * @throws DevicesExceptions\Terminate
 	 */
 	public function subscribe(Mqtt\Subscription $subscription): Promise\ExtendedPromiseInterface
 	{
@@ -308,8 +289,6 @@ abstract class Client
 
 	/**
 	 * Unsubscribes from a topic filter
-	 *
-	 * @throws DevicesExceptions\Terminate
 	 */
 	public function unsubscribe(Mqtt\Subscription $subscription): Promise\ExtendedPromiseInterface
 	{
@@ -336,9 +315,6 @@ abstract class Client
 		return $promise;
 	}
 
-	/**
-	 * @throws DevicesExceptions\Terminate
-	 */
 	public function publish(
 		string $topic,
 		string|null $payload = null,
@@ -357,8 +333,6 @@ abstract class Client
 
 		return $this->startFlow($this->flowFactory->buildOutgoingPublishFlow($message));
 	}
-
-	abstract protected function handleCommunication(): void;
 
 	protected function onOpen(Mqtt\Connection $connection): void
 	{
@@ -394,10 +368,6 @@ abstract class Client
 				],
 			],
 		);
-
-		if ($this->handlerTimer !== null) {
-			$this->eventLoop->cancelTimer($this->handlerTimer);
-		}
 	}
 
 	protected function onConnect(Mqtt\Connection $connection): void
@@ -416,8 +386,6 @@ abstract class Client
 				],
 			],
 		);
-
-		$this->registerLoopHandler();
 	}
 
 	protected function onDisconnect(Mqtt\Connection $connection): void
@@ -466,9 +434,6 @@ abstract class Client
 		);
 	}
 
-	/**
-	 * @throws DevicesExceptions\Terminate
-	 */
 	protected function onError(Throwable $ex): void
 	{
 		// Broker error occur
@@ -485,12 +450,6 @@ abstract class Client
 					'id' => $this->connector->getPlainId(),
 				],
 			],
-		);
-
-		throw new DevicesExceptions\Terminate(
-			'There was an error during handling requests',
-			$ex->getCode(),
-			$ex,
 		);
 	}
 
@@ -537,16 +496,6 @@ abstract class Client
 		// TODO: Implement onPublish() method.
 	}
 
-	protected function registerLoopHandler(): void
-	{
-		$this->handlerTimer = $this->eventLoop->addTimer(
-			self::HANDLER_PROCESSING_INTERVAL,
-			function (): void {
-				$this->handleCommunication();
-			},
-		);
-	}
-
 	/**
 	 * Establishes a network connection to a server
 	 *
@@ -589,14 +538,14 @@ abstract class Client
 						$this->handleClose();
 					});
 
-					$stream->on('error', function (Throwable $error): void {
-						$this->handleError($error);
+					$stream->on('error', function (Throwable $ex): void {
+						$this->handleError($ex);
 					});
 
 					$deferred->resolve($stream);
 				})
-				->otherwise(static function (Throwable $reason) use ($deferred): void {
-					$deferred->reject($reason);
+				->otherwise(static function (Throwable $ex) use ($deferred): void {
+					$deferred->reject($ex);
 				});
 		}
 
@@ -608,8 +557,6 @@ abstract class Client
 
 	/**
 	 * Registers a new client with the broker
-	 *
-	 * @throws DevicesExceptions\Terminate
 	 */
 	private function registerClient(Mqtt\Connection $connection, int $timeout): Promise\ExtendedPromiseInterface
 	{
@@ -637,8 +584,8 @@ abstract class Client
 
 				$deferred->resolve($result ?? $connection);
 			})
-			->otherwise(static function (Throwable $reason) use ($deferred): void {
-				$deferred->reject($reason);
+			->otherwise(static function (Throwable $ex) use ($deferred): void {
+				$deferred->reject($ex);
 			});
 
 		$promise = $deferred->promise();
@@ -806,12 +753,16 @@ abstract class Client
 	private function handleError(Throwable $error): void
 	{
 		$this->onError($error);
+
+		throw new DevicesExceptions\Terminate(
+			'There was an error during handling requests',
+			$error->getCode(),
+			$error,
+		);
 	}
 
 	/**
 	 * Starts the given flow
-	 *
-	 * @throws DevicesExceptions\Terminate
 	 */
 	private function startFlow(Mqtt\Flow $flow, bool $isSilent = false): Promise\ExtendedPromiseInterface
 	{
@@ -861,10 +812,14 @@ abstract class Client
 		try {
 			$response = $flow->next($packet);
 
-		} catch (Throwable $t) {
-			$this->onError($t);
+		} catch (Throwable $ex) {
+			$this->onError($ex);
 
-			return;
+			throw new DevicesExceptions\Terminate(
+				'There was an error during handling requests',
+				$ex->getCode(),
+				$ex,
+			);
 		}
 
 		if ($response !== null) {
@@ -945,9 +900,9 @@ abstract class Client
 		} else {
 			$result = new Exceptions\Runtime($flow->getErrorMessage());
 
-			$this->onWarning($result);
-
 			$flow->getDeferred()->reject($result);
+
+			$this->onWarning($result);
 		}
 	}
 

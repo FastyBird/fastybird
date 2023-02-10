@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:FbMqttConnector!
  * @subpackage     Hydrators
- * @since          0.4.0
+ * @since          1.0.0
  *
  * @date           07.12.21
  */

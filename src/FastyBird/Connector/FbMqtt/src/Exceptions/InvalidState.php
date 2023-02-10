@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * InvalidArgument.php
+ * InvalidState.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,14 +10,14 @@
  * @subpackage     Exceptions
  * @since          1.0.0
  *
- * @date           23.02.20
+ * @date           09.02.23
  */
 
 namespace FastyBird\Connector\FbMqtt\Exceptions;
 
-use InvalidArgumentException as PHPInvalidArgumentException;
+use RuntimeException;
 
-class InvalidArgument extends PHPInvalidArgumentException implements Exception
+class InvalidState extends RuntimeException implements Exception
 {
 
 }

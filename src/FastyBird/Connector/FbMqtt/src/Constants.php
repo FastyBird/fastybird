@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:FbMqttConnector!
  * @subpackage     common
- * @since          0.1.0
+ * @since          1.0.0
  *
  * @date           23.02.20
  */
@@ -58,12 +58,6 @@ final class Constants
 
 	public const PAYLOAD_BOOL_FALSE_VALUE = 'false';
 
-	public const VALUE_NOT_SET = 'noneprivate readonly';
-
-	public const BROKER_LOCALHOST_ADDRESS = '127.0.0.1';
-
-	public const BROKER_LOCALHOST_PORT = 1_883;
-
-	public const BROKER_LOCALHOST_SECURED_PORT = 8_883;
+	public const VALUE_NOT_SET = 'value_not_set';
 
 }

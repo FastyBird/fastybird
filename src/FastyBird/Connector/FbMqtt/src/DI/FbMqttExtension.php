@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:FbMqttConnector!
  * @subpackage     DI
- * @since          0.1.0
+ * @since          1.0.0
  *
  * @date           03.12.20
  */
@@ -18,16 +18,21 @@ namespace FastyBird\Connector\FbMqtt\DI;
 use Doctrine\Persistence;
 use FastyBird\Connector\FbMqtt\API;
 use FastyBird\Connector\FbMqtt\Clients;
+use FastyBird\Connector\FbMqtt\Commands;
 use FastyBird\Connector\FbMqtt\Connector;
 use FastyBird\Connector\FbMqtt\Consumers;
 use FastyBird\Connector\FbMqtt\Entities;
 use FastyBird\Connector\FbMqtt\Helpers;
 use FastyBird\Connector\FbMqtt\Hydrators;
 use FastyBird\Connector\FbMqtt\Schemas;
+use FastyBird\Connector\FbMqtt\Writers;
 use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
 use FastyBird\Module\Devices\DI as DevicesDI;
 use Nette;
 use Nette\DI;
+use Nette\Schema;
+use stdClass;
+use function assert;
 use const DIRECTORY_SEPARATOR;
 
 /**
@@ -57,9 +62,35 @@ class FbMqttExtension extends DI\CompilerExtension
 		};
 	}
 
+	public function getConfigSchema(): Schema\Schema
+	{
+		return Schema\Expect::structure([
+			'writer' => Schema\Expect::anyOf(
+				Writers\Event::NAME,
+				Writers\Exchange::NAME,
+				Writers\Periodic::NAME,
+			)->default(
+				Writers\Periodic::NAME,
+			),
+		]);
+	}
+
 	public function loadConfiguration(): void
 	{
 		$builder = $this->getContainerBuilder();
+		$configuration = $this->getConfig();
+		assert($configuration instanceof stdClass);
+
+		if ($configuration->writer === Writers\Event::NAME) {
+			$builder->addDefinition($this->prefix('writers.event'), new DI\Definitions\ServiceDefinition())
+				->setType(Writers\Event::class);
+		} elseif ($configuration->writer === Writers\Exchange::NAME) {
+			$builder->addDefinition($this->prefix('writers.exchange'), new DI\Definitions\ServiceDefinition())
+				->setType(Writers\Exchange::class);
+		} elseif ($configuration->writer === Writers\Periodic::NAME) {
+			$builder->addDefinition($this->prefix('writers.periodic'), new DI\Definitions\ServiceDefinition())
+				->setType(Writers\Periodic::class);
+		}
 
 		$builder->addFactoryDefinition($this->prefix('client.apiv1'))
 			->setImplement(Clients\FbMqttV1Factory::class)
@@ -123,9 +154,6 @@ class FbMqttExtension extends DI\CompilerExtension
 		$builder->addDefinition($this->prefix('hydrators.device.fbMqtt'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\FbMqttDevice::class);
 
-		$builder->addDefinition($this->prefix('helpers.connector'), new DI\Definitions\ServiceDefinition())
-			->setType(Helpers\Connector::class);
-
 		$builder->addDefinition($this->prefix('helpers.property'), new DI\Definitions\ServiceDefinition())
 			->setType(Helpers\Property::class);
 
@@ -140,6 +168,15 @@ class FbMqttExtension extends DI\CompilerExtension
 			->setArguments([
 				'clientsFactories' => $builder->findByType(Clients\ClientFactory::class),
 			]);
+
+		$builder->addDefinition($this->prefix('commands.initialize'), new DI\Definitions\ServiceDefinition())
+			->setType(Commands\Initialize::class);
+
+		$builder->addDefinition($this->prefix('commands.execute'), new DI\Definitions\ServiceDefinition())
+			->setType(Commands\Execute::class);
+
+		$builder->addDefinition($this->prefix('commands.devices'), new DI\Definitions\ServiceDefinition())
+			->setType(Commands\Devices::class);
 	}
 
 	/**
