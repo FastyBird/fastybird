@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:FbMqttConnector!
  * @subpackage     Connector
- * @since          0.25.0
+ * @since          1.0.0
  *
  * @date           23.07.22
  */

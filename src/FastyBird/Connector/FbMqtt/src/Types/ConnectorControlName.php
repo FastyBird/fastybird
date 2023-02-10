@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ProtocolVersion.php
+ * ConnectorControlName.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,29 +10,30 @@
  * @subpackage     Types
  * @since          1.0.0
  *
- * @date           05.02.22
+ * @date           10.02.23
  */
 
 namespace FastyBird\Connector\FbMqtt\Types;
 
 use Consistence;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use function strval;
 
 /**
- * Protocol versions
+ * Connector control name types
  *
  * @package        FastyBird:FbMqttConnector!
  * @subpackage     Types
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class ProtocolVersion extends Consistence\Enum\Enum
+class ConnectorControlName extends Consistence\Enum\Enum
 {
 
 	/**
-	 * Define states
+	 * Define device states
 	 */
-	public const VERSION_1 = 'v1';
+	public const NAME_REBOOT = MetadataTypes\ControlName::NAME_REBOOT;
 
 	public function __toString(): string
 	{

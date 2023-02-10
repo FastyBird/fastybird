@@ -100,7 +100,7 @@ The console will ask you to confirm that you want to continue with the configura
 
 ```shell
 Tuya connector - initialization
-=================================
+===============================
 
  ! [NOTE] This action will create|update|delete connector configuration.                                                       
 

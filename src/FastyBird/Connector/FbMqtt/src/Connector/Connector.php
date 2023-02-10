@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:FbMqttConnector!
  * @subpackage     Connector
- * @since          0.25.0
+ * @since          1.0.0
  *
  * @date           23.07.22
  */
@@ -18,8 +18,7 @@ namespace FastyBird\Connector\FbMqtt\Connector;
 use FastyBird\Connector\FbMqtt\Clients;
 use FastyBird\Connector\FbMqtt\Consumers;
 use FastyBird\Connector\FbMqtt\Entities;
-use FastyBird\Connector\FbMqtt\Helpers;
-use FastyBird\Connector\FbMqtt\Types;
+use FastyBird\Connector\FbMqtt\Exceptions;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Connectors as DevicesConnectors;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
@@ -57,7 +56,6 @@ final class Connector implements DevicesConnectors\Connector
 	public function __construct(
 		private readonly DevicesEntities\Connectors\Connector $connector,
 		private readonly array $clientsFactories,
-		private readonly Helpers\Connector $connectorHelper,
 		private readonly Consumers\Messages $consumer,
 		private readonly EventLoop\LoopInterface $eventLoop,
 	)
@@ -67,6 +65,7 @@ final class Connector implements DevicesConnectors\Connector
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Terminate
+	 * @throws Exceptions\InvalidState
 	 * @throws InvalidArgumentException
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -75,15 +74,6 @@ final class Connector implements DevicesConnectors\Connector
 	{
 		assert($this->connector instanceof Entities\FbMqttConnector);
 
-		$version = $this->connectorHelper->getConfiguration(
-			$this->connector,
-			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_PROTOCOL_VERSION),
-		);
-
-		if ($version === null) {
-			throw new DevicesExceptions\Terminate('Connector protocol version is not configured');
-		}
-
 		foreach ($this->clientsFactories as $clientFactory) {
 			$rc = new ReflectionClass($clientFactory);
 
@@ -91,7 +81,9 @@ final class Connector implements DevicesConnectors\Connector
 
 			if (
 				array_key_exists(Clients\ClientFactory::VERSION_CONSTANT_NAME, $constants)
-				&& $constants[Clients\ClientFactory::VERSION_CONSTANT_NAME] === $version
+				&& $this->connector->getProtocolVersion()->equalsValue(
+					$constants[Clients\ClientFactory::VERSION_CONSTANT_NAME],
+				)
 			) {
 				$this->client = $clientFactory->create($this->connector);
 			}
@@ -111,9 +103,6 @@ final class Connector implements DevicesConnectors\Connector
 		);
 	}
 
-	/**
-	 * @throws DevicesExceptions\Terminate
-	 */
 	public function terminate(): void
 	{
 		$this->client?->disconnect();

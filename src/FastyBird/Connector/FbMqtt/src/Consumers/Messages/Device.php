@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:FbMqttConnector!
  * @subpackage     Consumers
- * @since          0.4.0
+ * @since          1.0.0
  *
  * @date           05.02.22
  */
@@ -32,7 +32,6 @@ use Nette\Utils;
 use Psr\Log;
 use function in_array;
 use function is_array;
-use function sprintf;
 
 /**
  * Device attributes MQTT message consumer
@@ -83,23 +82,14 @@ final class Device implements Consumers\Consumer
 
 		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\FbMqttDevice::class);
 
-		if ($device === null) {
-			$this->logger->error(
-				sprintf('Device "%s" is not registered', $entity->getDevice()),
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
-					'type' => 'device-message-consumer',
-					'device' => [
-						'identifier' => $entity->getDevice(),
-					],
-				],
-			);
-
-			return true;
-		}
-
 		if ($entity->getAttribute() === Entities\Messages\Attribute::STATE) {
 			if (MetadataTypes\ConnectionState::isValidValue($entity->getValue())) {
+				if ($device === null) {
+					$device = $this->devicesManager->create(Utils\ArrayHash::from([
+						'identifier' => $entity->getDevice(),
+					]));
+				}
+
 				$this->deviceConnectionManager->setState(
 					$device,
 					MetadataTypes\ConnectionState::get($entity->getValue()),
@@ -111,6 +101,15 @@ final class Device implements Consumers\Consumer
 
 				if ($entity->getAttribute() === Entities\Messages\Attribute::NAME) {
 					$toUpdate['name'] = $entity->getValue();
+				}
+
+				if ($device === null) {
+					$toUpdate['identifier'] = $entity->getDevice();
+
+					$device = $this->devicesManager->create(Utils\ArrayHash::from($toUpdate));
+
+				} elseif ($toUpdate !== []) {
+					$this->devicesManager->update($device, Utils\ArrayHash::from($toUpdate));
 				}
 
 				if (
@@ -139,10 +138,6 @@ final class Device implements Consumers\Consumer
 					&& is_array($entity->getValue())
 				) {
 					$this->setDeviceControls($device, Utils\ArrayHash::from($entity->getValue()));
-				}
-
-				if ($toUpdate !== []) {
-					$this->devicesManager->update($device, Utils\ArrayHash::from($toUpdate));
 				}
 			});
 		}
