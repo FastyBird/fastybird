@@ -660,7 +660,7 @@ class Initialize extends Console\Command\Command
 	{
 		$question = new Console\Question\Question(
 			'Provide server port',
-			$connector?->getServerAddress() ?? Entities\FbMqttConnector::DEFAULT_SERVER_PORT,
+			$connector?->getServerPort() ?? Entities\FbMqttConnector::DEFAULT_SERVER_PORT,
 		);
 		$question->setValidator(static function (string|null $answer): string {
 			if ($answer === '' || $answer === null) {
@@ -682,7 +682,7 @@ class Initialize extends Console\Command\Command
 	{
 		$question = new Console\Question\Question(
 			'Provide server secured port',
-			$connector?->getServerAddress() ?? Entities\FbMqttConnector::DEFAULT_SERVER_SECURED_PORT,
+			$connector?->getServerSecuredPort() ?? Entities\FbMqttConnector::DEFAULT_SERVER_SECURED_PORT,
 		);
 		$question->setValidator(static function (string|null $answer): string {
 			if ($answer === '' || $answer === null) {
@@ -716,7 +716,7 @@ class Initialize extends Console\Command\Command
 	 */
 	private function askPassword(Style\SymfonyStyle $io, Entities\FbMqttConnector|null $connector = null): string|null
 	{
-		$question = new Console\Question\Question('Provide server password', $connector?->getUsername());
+		$question = new Console\Question\Question('Provide server password', $connector?->getPassword());
 
 		$password = $io->askQuestion($question);
 
