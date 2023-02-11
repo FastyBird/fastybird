@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:HomeKitConnector!
  * @subpackage     Controllers
- * @since          0.19.0
+ * @since          1.0.0
  *
  * @date           19.09.22
  */
@@ -200,6 +200,7 @@ final class PairingController extends BaseController
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 				'type' => 'pairing-controller',
+				'group' => 'controller',
 				'request' => [
 					'query' => $request->getQueryParams(),
 				],
@@ -318,6 +319,7 @@ final class PairingController extends BaseController
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 				'type' => 'pairing-controller',
+				'group' => 'controller',
 				'request' => [
 					'query' => $request->getQueryParams(),
 				],
@@ -403,6 +405,7 @@ final class PairingController extends BaseController
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 				'type' => 'pairing-controller',
+				'group' => 'controller',
 				'request' => [
 					'query' => $request->getQueryParams(),
 				],
@@ -534,6 +537,7 @@ final class PairingController extends BaseController
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'pairing-controller',
+					'group' => 'controller',
 					'connector' => [
 						'id' => $connectorId->toString(),
 					],
@@ -558,6 +562,7 @@ final class PairingController extends BaseController
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'pairing-controller',
+					'group' => 'controller',
 					'connector' => [
 						'id' => $connectorId->toString(),
 					],
@@ -582,6 +587,7 @@ final class PairingController extends BaseController
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'pairing-controller',
+					'group' => 'controller',
 					'connector' => [
 						'id' => $connectorId->toString(),
 					],
@@ -606,6 +612,7 @@ final class PairingController extends BaseController
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'pairing-controller',
+					'group' => 'controller',
 					'connector' => [
 						'id' => $connectorId->toString(),
 					],
@@ -641,6 +648,7 @@ final class PairingController extends BaseController
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'pairing-controller',
+					'group' => 'controller',
 					'connector' => [
 						'id' => $connectorId->toString(),
 					],
@@ -667,6 +675,7 @@ final class PairingController extends BaseController
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'pairing-controller',
+					'group' => 'controller',
 					'connector' => [
 						'id' => $connectorId->toString(),
 					],
@@ -690,6 +699,7 @@ final class PairingController extends BaseController
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 				'type' => 'pairing-controller',
+				'group' => 'controller',
 				'connector' => [
 					'id' => $connectorId->toString(),
 				],
@@ -730,6 +740,7 @@ final class PairingController extends BaseController
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'pairing-controller',
+					'group' => 'controller',
 					'connector' => [
 						'id' => $connectorId->toString(),
 					],
@@ -758,6 +769,7 @@ final class PairingController extends BaseController
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'pairing-controller',
+					'group' => 'controller',
 					'connector' => [
 						'id' => $connectorId->toString(),
 					],
@@ -782,6 +794,7 @@ final class PairingController extends BaseController
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'pairing-controller',
+					'group' => 'controller',
 					'connector' => [
 						'id' => $connectorId->toString(),
 					],
@@ -808,6 +821,7 @@ final class PairingController extends BaseController
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'pairing-controller',
+					'group' => 'controller',
 					'connector' => [
 						'id' => $connectorId->toString(),
 					],
@@ -831,6 +845,7 @@ final class PairingController extends BaseController
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 				'type' => 'pairing-controller',
+				'group' => 'controller',
 				'connector' => [
 					'id' => $connectorId->toString(),
 				],
@@ -873,6 +888,7 @@ final class PairingController extends BaseController
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'pairing-controller',
+					'group' => 'controller',
 					'connector' => [
 						'id' => $connectorId->toString(),
 					],
@@ -912,6 +928,7 @@ final class PairingController extends BaseController
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'pairing-controller',
+					'group' => 'controller',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -951,6 +968,7 @@ final class PairingController extends BaseController
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'pairing-controller',
+					'group' => 'controller',
 					'connector' => [
 						'id' => $connectorId->toString(),
 					],
@@ -975,6 +993,7 @@ final class PairingController extends BaseController
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'pairing-controller',
+					'group' => 'controller',
 					'connector' => [
 						'id' => $connectorId->toString(),
 					],
@@ -1008,6 +1027,7 @@ final class PairingController extends BaseController
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'pairing-controller',
+					'group' => 'controller',
 					'connector' => [
 						'id' => $connectorId->toString(),
 					],
@@ -1050,6 +1070,7 @@ final class PairingController extends BaseController
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'pairing-controller',
+					'group' => 'controller',
 					'connector' => [
 						'id' => $connectorId->toString(),
 					],
@@ -1154,6 +1175,7 @@ final class PairingController extends BaseController
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'pairing-controller',
+					'group' => 'controller',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -1182,6 +1204,7 @@ final class PairingController extends BaseController
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'pairing-controller',
+					'group' => 'controller',
 					'connector' => [
 						'id' => $connectorId->toString(),
 					],
@@ -1207,6 +1230,7 @@ final class PairingController extends BaseController
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 				'type' => 'pairing-controller',
+				'group' => 'controller',
 				'connector' => [
 					'id' => $connectorId->toString(),
 				],
@@ -1297,6 +1321,7 @@ final class PairingController extends BaseController
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'pairing-controller',
+					'group' => 'controller',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -1325,6 +1350,7 @@ final class PairingController extends BaseController
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'pairing-controller',
+					'group' => 'controller',
 					'connector' => [
 						'id' => $connectorId->toString(),
 					],
@@ -1351,6 +1377,7 @@ final class PairingController extends BaseController
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'pairing-controller',
+					'group' => 'controller',
 					'connector' => [
 						'id' => $connectorId->toString(),
 					],
@@ -1392,6 +1419,7 @@ final class PairingController extends BaseController
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 				'type' => 'pairing-controller',
+				'group' => 'controller',
 				'connector' => [
 					'id' => $connectorId->toString(),
 				],
@@ -1444,6 +1472,7 @@ final class PairingController extends BaseController
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'pairing-controller',
+					'group' => 'controller',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -1483,6 +1512,7 @@ final class PairingController extends BaseController
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'pairing-controller',
+					'group' => 'controller',
 					'connector' => [
 						'id' => $connectorId->toString(),
 					],
@@ -1507,6 +1537,7 @@ final class PairingController extends BaseController
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'pairing-controller',
+					'group' => 'controller',
 					'connector' => [
 						'id' => $connectorId->toString(),
 					],
@@ -1538,6 +1569,7 @@ final class PairingController extends BaseController
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'pairing-controller',
+					'group' => 'controller',
 					'connector' => [
 						'id' => $connectorId->toString(),
 					],
@@ -1568,6 +1600,7 @@ final class PairingController extends BaseController
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'pairing-controller',
+					'group' => 'controller',
 					'connector' => [
 						'id' => $connectorId->toString(),
 					],
@@ -1611,6 +1644,7 @@ final class PairingController extends BaseController
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'pairing-controller',
+					'group' => 'controller',
 					'connector' => [
 						'id' => $connectorId->toString(),
 					],
@@ -1634,6 +1668,7 @@ final class PairingController extends BaseController
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 				'type' => 'pairing-controller',
+				'group' => 'controller',
 				'connector' => [
 					'id' => $connectorId->toString(),
 				],
@@ -1661,6 +1696,7 @@ final class PairingController extends BaseController
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 				'type' => 'pairing-controller',
+				'group' => 'controller',
 				'connector' => [
 					'id' => $connectorId->toString(),
 				],
@@ -1716,6 +1752,7 @@ final class PairingController extends BaseController
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 				'type' => 'pairing-controller',
+				'group' => 'controller',
 				'connector' => [
 					'id' => $connectorId->toString(),
 				],
@@ -1744,6 +1781,7 @@ final class PairingController extends BaseController
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 						'type' => 'pairing-controller',
+						'group' => 'controller',
 						'connector' => [
 							'id' => $connectorId->toString(),
 						],
@@ -1832,6 +1870,7 @@ final class PairingController extends BaseController
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 				'type' => 'pairing-controller',
+				'group' => 'controller',
 				'connector' => [
 					'id' => $connectorId->toString(),
 				],

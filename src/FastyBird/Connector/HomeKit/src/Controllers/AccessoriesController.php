@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:HomeKitConnector!
  * @subpackage     Controllers
- * @since          0.19.0
+ * @since          1.0.0
  *
  * @date           19.09.22
  */
@@ -67,6 +67,7 @@ final class AccessoriesController extends BaseController
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 				'type' => 'accessories-controller',
+				'group' => 'controller',
 				'request' => [
 					'address' => $request->getServerParams()['REMOTE_ADDR'],
 					'path' => $request->getUri()->getPath(),
@@ -112,6 +113,7 @@ final class AccessoriesController extends BaseController
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 				'type' => 'accessories-controller',
+				'group' => 'controller',
 				'request' => [
 					'address' => $request->getServerParams()['REMOTE_ADDR'],
 					'path' => $request->getUri()->getPath(),
@@ -138,6 +140,7 @@ final class AccessoriesController extends BaseController
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'accessories-controller',
+					'group' => 'controller',
 					'request' => [
 						'address' => $request->getServerParams()['REMOTE_ADDR'],
 						'path' => $request->getUri()->getPath(),
@@ -175,6 +178,7 @@ final class AccessoriesController extends BaseController
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 				'type' => 'accessories-controller',
+				'group' => 'controller',
 				'request' => [
 					'address' => $request->getServerParams()['REMOTE_ADDR'],
 					'path' => $request->getUri()->getPath(),

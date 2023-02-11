@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:HomeKitConnector!
  * @subpackage     Servers
- * @since          0.19.0
+ * @since          1.0.0
  *
  * @date           19.09.22
  */
@@ -99,6 +99,7 @@ final class Http implements Server
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 							'type' => 'http-server',
+							'group' => 'server',
 							'connector' => [
 								'id' => $this->connector->getPlainId(),
 							],
@@ -128,6 +129,7 @@ final class Http implements Server
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 							'type' => 'http-server',
+							'group' => 'server',
 							'connector' => [
 								'id' => $this->connector->getPlainId(),
 							],
@@ -168,11 +170,7 @@ final class Http implements Server
 		foreach ($this->connector->getDevices() as $device) {
 			assert($device instanceof Entities\HomeKitDevice);
 
-			$accessory = $this->accessoryFactory->create(
-				$device,
-				null,
-				Types\AccessoryCategory::get(Types\AccessoryCategory::CATEGORY_OUTLET),
-			);
+			$accessory = $this->accessoryFactory->create($device);
 			assert($accessory instanceof Entities\Protocol\Device);
 
 			foreach ($device->getChannels() as $channel) {
@@ -201,14 +199,6 @@ final class Http implements Server
 					}
 				}
 
-				$characteristic = $this->characteristicsFactory->create(
-					'OutletInUse',
-					$service,
-				);
-				$characteristic->setActualValue(true);
-
-				$service->addCharacteristic($characteristic);
-
 				$accessory->addService($service);
 			}
 
@@ -229,6 +219,7 @@ final class Http implements Server
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'http-server',
+					'group' => 'server',
 					'connector' => [
 						'id' => $this->connector->getPlainId(),
 					],
@@ -249,6 +240,7 @@ final class Http implements Server
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'http-server',
+					'group' => 'server',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -272,6 +264,7 @@ final class Http implements Server
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'http-server',
+					'group' => 'server',
 					'connector' => [
 						'id' => $this->connector->getPlainId(),
 					],
@@ -289,6 +282,7 @@ final class Http implements Server
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 						'type' => 'http-server',
+						'group' => 'server',
 						'connector' => [
 							'id' => $this->connector->getPlainId(),
 						],
@@ -308,6 +302,7 @@ final class Http implements Server
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'http-server',
+					'group' => 'server',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -331,6 +326,7 @@ final class Http implements Server
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'mdns-server',
+					'group' => 'server',
 					'connector' => [
 						'id' => $this->connector->getPlainId(),
 					],
@@ -358,6 +354,7 @@ final class Http implements Server
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'http-server',
+					'group' => 'server',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -383,6 +380,7 @@ final class Http implements Server
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 				'type' => 'http-server',
+				'group' => 'server',
 				'connector' => [
 					'id' => $this->connector->getPlainId(),
 				],

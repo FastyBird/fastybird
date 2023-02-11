@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:HomeKitConnector!
  * @subpackage     Servers
- * @since          0.19.0
+ * @since          1.0.0
  *
  * @date           17.09.22
  */
@@ -112,6 +112,7 @@ final class Mdns implements Server
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 							'type' => 'mdns-server',
+							'group' => 'server',
 							'connector' => [
 								'id' => $this->connector->getPlainId(),
 							],
@@ -142,6 +143,7 @@ final class Mdns implements Server
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 				'type' => 'mdns-server',
+				'group' => 'server',
 				'connector' => [
 					'id' => $this->connector->getPlainId(),
 				],
@@ -177,6 +179,7 @@ final class Mdns implements Server
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 							'type' => 'mdns-server',
+							'group' => 'server',
 							'exception' => [
 								'message' => $ex->getMessage(),
 								'code' => $ex->getCode(),
@@ -200,6 +203,7 @@ final class Mdns implements Server
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 							'type' => 'mdns-server',
+							'group' => 'server',
 							'connector' => [
 								'id' => $this->connector->getPlainId(),
 							],
@@ -224,6 +228,7 @@ final class Mdns implements Server
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 						'type' => 'mdns-server',
+						'group' => 'server',
 						'exception' => [
 							'message' => $ex->getMessage(),
 							'code' => $ex->getCode(),
@@ -243,6 +248,7 @@ final class Mdns implements Server
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 				'type' => 'mdns-server',
+				'group' => 'server',
 				'connector' => [
 					'id' => $this->connector->getPlainId(),
 				],
@@ -259,6 +265,7 @@ final class Mdns implements Server
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 				'type' => 'mdns-server',
+				'group' => 'server',
 				'connector' => [
 					'id' => $this->connector->getPlainId(),
 				],

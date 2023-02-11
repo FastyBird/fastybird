@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:HomeKitConnector!
  * @subpackage     Commands
- * @since          0.19.0
+ * @since          1.0.0
  *
  * @date           17.09.22
  */
@@ -286,6 +286,7 @@ class Initialize extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'initialize-cmd',
+					'group' => 'cmd',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -309,8 +310,6 @@ class Initialize extends Console\Command\Command
 	 */
 	private function editExistingConfiguration(Style\SymfonyStyle $io): void
 	{
-		$io->newLine();
-
 		$connectors = [];
 
 		$findConnectorsQuery = new DevicesQueries\FindConnectors();
@@ -359,6 +358,7 @@ class Initialize extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'initialize-cmd',
+					'group' => 'cmd',
 				],
 			);
 
@@ -378,6 +378,7 @@ class Initialize extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'initialize-cmd',
+					'group' => 'cmd',
 				],
 			);
 
@@ -433,6 +434,7 @@ class Initialize extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'initialize-cmd',
+					'group' => 'cmd',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -456,8 +458,6 @@ class Initialize extends Console\Command\Command
 	 */
 	private function deleteExistingConfiguration(Style\SymfonyStyle $io): void
 	{
-		$io->newLine();
-
 		$connectors = [];
 
 		$findConnectorsQuery = new DevicesQueries\FindConnectors();
@@ -495,6 +495,7 @@ class Initialize extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'initialize-cmd',
+					'group' => 'cmd',
 				],
 			);
 
@@ -514,6 +515,7 @@ class Initialize extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'initialize-cmd',
+					'group' => 'cmd',
 				],
 			);
 
@@ -551,6 +553,7 @@ class Initialize extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'initialize-cmd',
+					'group' => 'cmd',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
