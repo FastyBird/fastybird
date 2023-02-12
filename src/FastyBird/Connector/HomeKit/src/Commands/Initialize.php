@@ -20,8 +20,8 @@ use Doctrine\Persistence;
 use FastyBird\Connector\HomeKit;
 use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Exceptions;
-use FastyBird\Connector\HomeKit\Helpers;
 use FastyBird\Connector\HomeKit\Types;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -38,7 +38,9 @@ use function array_search;
 use function array_values;
 use function assert;
 use function count;
+use function intval;
 use function sprintf;
+use function strval;
 
 /**
  * Connector initialize command
@@ -65,7 +67,6 @@ class Initialize extends Console\Command\Command
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Connectors\ConnectorsManager $connectorsManager,
 		private readonly DevicesModels\Connectors\Properties\PropertiesManager $propertiesManager,
-		private readonly DevicesModels\Connectors\Controls\ControlsManager $controlsManager,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 		Log\LoggerInterface|null $logger = null,
 		string|null $name = null,
@@ -101,6 +102,8 @@ class Initialize extends Console\Command\Command
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
 	 */
 	protected function execute(Input\InputInterface $input, Output\OutputInterface $output): int
 	{
@@ -153,6 +156,8 @@ class Initialize extends Console\Command\Command
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
 	 */
 	private function createNewConfiguration(Style\SymfonyStyle $io): void
 	{
@@ -200,9 +205,9 @@ class Initialize extends Console\Command\Command
 			return;
 		}
 
-		$question = new Console\Question\Question('Provide connector name');
+		$name = $this->askName($io);
 
-		$name = $io->askQuestion($question);
+		$port = $this->askPort($io);
 
 		try {
 			// Start transaction connection to the database
@@ -214,61 +219,11 @@ class Initialize extends Console\Command\Command
 				'name' => $name === '' ? null : $name,
 			]));
 
-			$this->controlsManager->create(Utils\ArrayHash::from([
-				'name' => Types\ConnectorControlName::NAME_REBOOT,
-				'connector' => $connector,
-			]));
-
-			$this->controlsManager->create(Utils\ArrayHash::from([
-				'name' => Types\ConnectorControlName::NAME_RESET,
-				'connector' => $connector,
-			]));
-
 			$this->propertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 				'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_PORT,
 				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
-				'value' => HomeKit\Constants::DEFAULT_PORT,
-				'connector' => $connector,
-			]));
-
-			$this->propertiesManager->create(Utils\ArrayHash::from([
-				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-				'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_PIN_CODE,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-				'value' => Helpers\Protocol::generatePinCode(),
-				'connector' => $connector,
-			]));
-
-			$this->propertiesManager->create(Utils\ArrayHash::from([
-				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-				'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_MAC_ADDRESS,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-				'value' => Helpers\Protocol::generateMacAddress(),
-				'connector' => $connector,
-			]));
-
-			$this->propertiesManager->create(Utils\ArrayHash::from([
-				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-				'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_SETUP_ID,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-				'value' => Helpers\Protocol::generateSetupId(),
-				'connector' => $connector,
-			]));
-
-			$this->propertiesManager->create(Utils\ArrayHash::from([
-				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-				'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_CONFIG_VERSION,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_USHORT),
-				'value' => 1,
-				'connector' => $connector,
-			]));
-
-			$this->propertiesManager->create(Utils\ArrayHash::from([
-				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-				'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_PAIRED,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN),
-				'value' => false,
+				'value' => $port,
 				'connector' => $connector,
 			]));
 
@@ -307,6 +262,8 @@ class Initialize extends Console\Command\Command
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
 	 */
 	private function editExistingConfiguration(Style\SymfonyStyle $io): void
 	{
@@ -385,9 +342,9 @@ class Initialize extends Console\Command\Command
 			return;
 		}
 
-		$question = new Console\Question\Question('Provide connector name', $connector->getName());
+		assert($connector instanceof Entities\HomeKitConnector);
 
-		$name = $io->askQuestion($question);
+		$name = $this->askName($io, $connector);
 
 		$enabled = $connector->isEnabled();
 
@@ -411,6 +368,10 @@ class Initialize extends Console\Command\Command
 			}
 		}
 
+		$port = $this->askPort($io, $connector);
+
+		$portProperty = $connector->findProperty(Types\ConnectorPropertyIdentifier::IDENTIFIER_PORT);
+
 		try {
 			// Start transaction connection to the database
 			$this->getOrmConnection()->beginTransaction();
@@ -419,6 +380,20 @@ class Initialize extends Console\Command\Command
 				'name' => $name === '' ? null : $name,
 				'enabled' => $enabled,
 			]));
+
+			if ($portProperty === null) {
+				$this->propertiesManager->create(Utils\ArrayHash::from([
+					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
+					'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_PORT,
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
+					'value' => $port,
+					'connector' => $connector,
+				]));
+			} else {
+				$this->propertiesManager->update($portProperty, Utils\ArrayHash::from([
+					'value' => $port,
+				]));
+			}
 
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
@@ -568,6 +543,37 @@ class Initialize extends Console\Command\Command
 				$this->getOrmConnection()->rollBack();
 			}
 		}
+	}
+
+	private function askName(Style\SymfonyStyle $io, Entities\HomeKitConnector|null $connector = null): string|null
+	{
+		$question = new Console\Question\Question('Provide connector name', $connector?->getName());
+
+		$name = $io->askQuestion($question);
+
+		return $name === '' ? null : strval($name);
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	private function askPort(Style\SymfonyStyle $io, Entities\HomeKitConnector|null $connector = null): int
+	{
+		$question = new Console\Question\Question(
+			'Provide server port',
+			$connector?->getPort() ?? HomeKit\Constants::DEFAULT_PORT,
+		);
+		$question->setValidator(static function (string|null $answer): string {
+			if ($answer === '' || $answer === null) {
+				throw new Exceptions\Runtime('You have to provide valid server port');
+			}
+
+			return $answer;
+		});
+
+		return intval($io->askQuestion($question));
 	}
 
 	/**

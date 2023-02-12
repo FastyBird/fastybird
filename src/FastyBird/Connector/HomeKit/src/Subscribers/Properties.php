@@ -43,6 +43,7 @@ final class Properties implements Common\EventSubscriber
 
 	public function __construct(
 		private readonly DevicesModels\Connectors\Properties\PropertiesManager $propertiesManager,
+		private readonly DevicesModels\Connectors\Controls\ControlsManager $controlsManager,
 	)
 	{
 	}
@@ -70,7 +71,7 @@ final class Properties implements Common\EventSubscriber
 
 			if ($macAddressProperty === null) {
 				$this->propertiesManager->create(Utils\ArrayHash::from([
-					'device' => $entity,
+					'connector' => $entity,
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_MAC_ADDRESS,
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
@@ -86,7 +87,7 @@ final class Properties implements Common\EventSubscriber
 
 			if ($setupIdProperty === null) {
 				$this->propertiesManager->create(Utils\ArrayHash::from([
-					'device' => $entity,
+					'connector' => $entity,
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_SETUP_ID,
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
@@ -102,7 +103,7 @@ final class Properties implements Common\EventSubscriber
 
 			if ($pinCodeProperty === null) {
 				$this->propertiesManager->create(Utils\ArrayHash::from([
-					'device' => $entity,
+					'connector' => $entity,
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_PIN_CODE,
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
@@ -118,7 +119,7 @@ final class Properties implements Common\EventSubscriber
 
 			if ($serverSecretProperty === null) {
 				$this->propertiesManager->create(Utils\ArrayHash::from([
-					'device' => $entity,
+					'connector' => $entity,
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_SERVER_SECRET,
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
@@ -127,6 +128,47 @@ final class Properties implements Common\EventSubscriber
 					'settable' => false,
 					'queryable' => false,
 					'value' => Helpers\Protocol::generateSignKey(),
+				]));
+			}
+
+			$versionProperty = $entity->getProperty(Types\ConnectorPropertyIdentifier::IDENTIFIER_CONFIG_VERSION);
+
+			if ($versionProperty === null) {
+				$this->propertiesManager->create(Utils\ArrayHash::from([
+					'connector' => $entity,
+					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
+					'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_CONFIG_VERSION,
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_USHORT),
+					'unit' => null,
+					'format' => null,
+					'settable' => false,
+					'queryable' => false,
+					'value' => 1,
+				]));
+			}
+
+			$pairedProperty = $entity->getProperty(Types\ConnectorPropertyIdentifier::IDENTIFIER_PAIRED);
+
+			if ($pairedProperty === null) {
+				$this->propertiesManager->create(Utils\ArrayHash::from([
+					'connector' => $entity,
+					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
+					'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_PAIRED,
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN),
+					'unit' => null,
+					'format' => null,
+					'settable' => false,
+					'queryable' => false,
+					'value' => false,
+				]));
+			}
+
+			$rebootControl = $entity->getProperty(Types\ConnectorControlName::NAME_REBOOT);
+
+			if ($rebootControl === null) {
+				$this->controlsManager->create(Utils\ArrayHash::from([
+					'name' => Types\ConnectorControlName::NAME_REBOOT,
+					'connector' => $entity,
 				]));
 			}
 		}
