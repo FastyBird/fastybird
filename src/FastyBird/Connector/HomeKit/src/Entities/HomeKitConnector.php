@@ -15,14 +15,17 @@
 
 namespace FastyBird\Connector\HomeKit\Entities;
 
+use Doctrine\Common;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Connector\HomeKit;
+use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
 use function is_bool;
 use function is_int;
 use function is_string;
@@ -34,6 +37,14 @@ class HomeKitConnector extends DevicesEntities\Connectors\Connector
 {
 
 	public const CONNECTOR_TYPE = 'homekit';
+
+	/**
+	 * @var Common\Collections\Collection<int, Entities\Client>
+	 *
+	 * @IPubDoctrine\Crud(is="writable")
+	 * @ORM\OneToMany(targetEntity="FastyBird\Connector\HomeKit\Entities\Client", mappedBy="connector", cascade={"persist", "remove"}, orphanRemoval=true)
+	 */
+	protected Common\Collections\Collection $clients;
 
 	public function getType(): string
 	{
@@ -48,6 +59,14 @@ class HomeKitConnector extends DevicesEntities\Connectors\Connector
 	public function getSource(): MetadataTypes\ConnectorSource
 	{
 		return MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT);
+	}
+
+	/**
+	 * @return array<Entities\Client>
+	 */
+	public function getClients(): array
+	{
+		return $this->clients->toArray();
 	}
 
 	/**

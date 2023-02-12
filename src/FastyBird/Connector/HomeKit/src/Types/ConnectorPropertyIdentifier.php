@@ -37,8 +37,6 @@ class ConnectorPropertyIdentifier extends Consistence\Enum\Enum
 
 	public const IDENTIFIER_PIN_CODE = 'pin_code';
 
-	public const IDENTIFIER_XHM_URI = 'xhm_uri';
-
 	public const IDENTIFIER_MAC_ADDRESS = 'mac_address';
 
 	public const IDENTIFIER_SETUP_ID = 'setup_id';

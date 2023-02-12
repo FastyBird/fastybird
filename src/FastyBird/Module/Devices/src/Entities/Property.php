@@ -35,6 +35,7 @@ use function implode;
 use function in_array;
 use function intval;
 use function is_array;
+use function is_bool;
 use function is_numeric;
 use function is_string;
 use function preg_match;
@@ -391,7 +392,7 @@ abstract class Property implements Entity,
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function setValue(string|null $value): void
+	public function setValue(string|int|float|bool|null $value): void
 	{
 		if (!$this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_VARIABLE)) {
 			throw new Exceptions\InvalidState(
@@ -399,7 +400,15 @@ abstract class Property implements Entity,
 			);
 		}
 
-		$this->value = $value;
+		if (is_bool($value)) {
+			$this->value = $value ? '1' : '0';
+
+		} elseif ($value !== null) {
+			$this->value = strval($value);
+
+		} else {
+			$this->value = null;
+		}
 	}
 
 	/**

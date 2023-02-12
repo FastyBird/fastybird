@@ -15,7 +15,11 @@
 
 namespace FastyBird\Connector\HomeKit\Commands;
 
+use Endroid\QrCode;
 use FastyBird\Connector\HomeKit\Entities;
+use FastyBird\Connector\HomeKit\Exceptions;
+use FastyBird\Connector\HomeKit\Helpers;
+use FastyBird\Connector\HomeKit\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Commands as DevicesCommands;
@@ -93,6 +97,7 @@ class Execute extends Console\Command\Command
 	 * @throws Console\Exception\ExceptionInterface
 	 * @throws Console\Exception\InvalidArgumentException
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
@@ -249,13 +254,39 @@ class Execute extends Console\Command\Command
 			}
 		}
 
+		assert($connector instanceof Entities\HomeKitConnector);
+
 		if (!$connector->isEnabled()) {
 			$io->warning('Connector is disabled. Disabled connector could not be executed');
 
 			return Console\Command\Command::SUCCESS;
 		}
 
+		$xhmUri = Helpers\Protocol::getXhmUri(
+			$connector->getPinCode(),
+			$connector->getSetupId(),
+			Types\AccessoryCategory::get(Types\AccessoryCategory::CATEGORY_BRIDGE),
+		);
+
+		$qrCode = QrCode\Builder\Builder::create()
+			->writer(new QrCode\Writer\ConsoleWriter())
+			->data($xhmUri)
+			->encoding(new QrCode\Encoding\Encoding('UTF-8'))
+			->errorCorrectionLevel(new QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelHigh())
+			->labelText($connector->getPinCode())
+			->labelAlignment(new QrCode\Label\Alignment\LabelAlignmentCenter())
+			->validateResult(false)
+			->build();
+
+		$io->note(sprintf('Setup payload: %s', $xhmUri));
+
+		$io->info('Scan this code with your HomeKit app on your iOS device:');
+
+		$io->writeln($qrCode->getString());
+
 		$serviceCmd = $symfonyApp->find(DevicesCommands\Connector::NAME);
+
+		$io->info(sprintf('Or enter this code in your HomeKit app on your iOS device: %s', $connector->getPinCode()));
 
 		$result = $serviceCmd->run(new Input\ArrayInput([
 			'--connector' => $connector->getPlainId(),
