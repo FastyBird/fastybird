@@ -15,12 +15,9 @@
 
 namespace FastyBird\Connector\HomeKit\Servers;
 
-use Doctrine\DBAL;
-use FastyBird\Connector\HomeKit;
 use FastyBird\Connector\HomeKit\Clients;
 use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Exceptions;
-use FastyBird\Connector\HomeKit\Helpers;
 use FastyBird\Connector\HomeKit\Middleware;
 use FastyBird\Connector\HomeKit\Protocol;
 use FastyBird\Connector\HomeKit\Types;
@@ -32,15 +29,11 @@ use Nette;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log;
-use Ramsey\Uuid;
 use React\EventLoop;
 use React\Http as ReactHttp;
 use React\Socket;
 use Throwable;
 use function assert;
-use function hex2bin;
-use function is_numeric;
-use function is_string;
 
 /**
  * HTTP connector communication server
@@ -69,7 +62,6 @@ final class Http implements Server
 
 	public function __construct(
 		private readonly Entities\HomeKitConnector $connector,
-		private readonly Helpers\Connector $connectorHelper,
 		private readonly Middleware\Router $routerMiddleware,
 		private readonly SecureServerFactory $secureServerFactory,
 		private readonly Clients\Subscriber $subscriber,
@@ -82,72 +74,10 @@ final class Http implements Server
 	)
 	{
 		$this->logger = $logger ?? new Log\NullLogger();
-
-		$this->connectorHelper->on(
-			'updated',
-			function (
-				Uuid\UuidInterface $connectorId,
-				HomeKit\Types\ConnectorPropertyIdentifier $type,
-				DevicesEntities\Connectors\Properties\Variable $property,
-			): void {
-				if (
-					$this->connector->getId()->equals($connectorId)
-					&& $type->equalsValue(HomeKit\Types\ConnectorPropertyIdentifier::IDENTIFIER_SHARED_KEY)
-				) {
-					$this->logger->debug(
-						'Shared key has been changed',
-						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
-							'type' => 'http-server',
-							'group' => 'server',
-							'connector' => [
-								'id' => $this->connector->getPlainId(),
-							],
-						],
-					);
-
-					$this->socket?->setSharedKey(
-						is_string($property->getValue()) ? (string) hex2bin($property->getValue()) : null,
-					);
-				}
-			},
-		);
-
-		$this->connectorHelper->on(
-			'created',
-			function (
-				Uuid\UuidInterface $connectorId,
-				HomeKit\Types\ConnectorPropertyIdentifier $type,
-				DevicesEntities\Connectors\Properties\Variable $property,
-			): void {
-				if (
-					$this->connector->getId()->equals($connectorId)
-					&& $type->equalsValue(HomeKit\Types\ConnectorPropertyIdentifier::IDENTIFIER_SHARED_KEY)
-				) {
-					$this->logger->debug(
-						'Shared key has been created',
-						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
-							'type' => 'http-server',
-							'group' => 'server',
-							'connector' => [
-								'id' => $this->connector->getPlainId(),
-							],
-						],
-					);
-
-					$this->socket?->setSharedKey(
-						is_string($property->getValue()) ? (string) hex2bin($property->getValue()) : null,
-					);
-				}
-			},
-		);
 	}
 
 	/**
-	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws DevicesExceptions\Runtime
 	 * @throws DevicesExceptions\Terminate
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
@@ -205,14 +135,6 @@ final class Http implements Server
 			$this->accessoriesDriver->addBridgedAccessory($accessory);
 		}
 
-		$port = $this->connectorHelper->getConfiguration(
-			$this->connector->getId(),
-			HomeKit\Types\ConnectorPropertyIdentifier::get(
-				HomeKit\Types\ConnectorPropertyIdentifier::IDENTIFIER_PORT,
-			),
-		);
-		assert(is_numeric($port));
-
 		try {
 			$this->logger->debug(
 				'Creating HAP web server',
@@ -225,14 +147,18 @@ final class Http implements Server
 					],
 					'server' => [
 						'address' => self::LISTENING_ADDRESS,
-						'port' => $port,
+						'port' => $this->connector->getPort(),
 					],
 				],
 			);
 
 			$this->socket = $this->secureServerFactory->create(
 				$this->connector,
-				new Socket\SocketServer(self::LISTENING_ADDRESS . ':' . $port, [], $this->eventLoop),
+				new Socket\SocketServer(
+					self::LISTENING_ADDRESS . ':' . $this->connector->getPort(),
+					[],
+					$this->eventLoop,
+				),
 			);
 		} catch (Throwable $ex) {
 			$this->logger->error(
@@ -388,6 +314,23 @@ final class Http implements Server
 		);
 
 		$this->socket?->close();
+	}
+
+	public function setSharedKey(string|null $sharedKey): void
+	{
+		$this->logger->debug(
+			'Shared key has been changed',
+			[
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+				'type' => 'http-server',
+				'group' => 'server',
+				'connector' => [
+					'id' => $this->connector->getPlainId(),
+				],
+			],
+		);
+
+		$this->socket?->setSharedKey($sharedKey);
 	}
 
 }

@@ -15,15 +15,24 @@
 
 namespace FastyBird\Connector\HomeKit\Connector;
 
+use Doctrine\Common;
+use Doctrine\ORM;
+use Doctrine\Persistence;
 use FastyBird\Connector\HomeKit\Entities;
+use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Servers;
+use FastyBird\Connector\HomeKit\Types;
 use FastyBird\Connector\HomeKit\Writers;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Connectors as DevicesConnectors;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
+use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Nette;
 use Psr\Log;
 use function assert;
+use function hex2bin;
+use function is_string;
 
 /**
  * Connector service executor
@@ -33,7 +42,7 @@ use function assert;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Connector implements DevicesConnectors\Connector
+final class Connector implements DevicesConnectors\Connector, Common\EventSubscriber
 {
 
 	use Nette\SmartObject;
@@ -54,6 +63,14 @@ final class Connector implements DevicesConnectors\Connector
 	)
 	{
 		$this->logger = $logger ?? new Log\NullLogger();
+	}
+
+	public function getSubscribedEvents(): array
+	{
+		return [
+			ORM\Events::postPersist,
+			ORM\Events::postUpdate,
+		];
 	}
 
 	public function execute(): void
@@ -120,6 +137,84 @@ final class Connector implements DevicesConnectors\Connector
 	public function hasUnfinishedTasks(): bool
 	{
 		return false;
+	}
+
+	/**
+	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
+	 *
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function postPersist(Persistence\Event\LifecycleEventArgs $eventArgs): void
+	{
+		// onFlush was executed before, everything already initialized
+		$entity = $eventArgs->getObject();
+
+		// Check for valid entity
+		if (
+			!$entity instanceof DevicesEntities\Connectors\Properties\Variable
+			|| !$entity->getConnector()->getId()->equals($this->connector->getId())
+		) {
+			return;
+		}
+
+		$this->processConfigurationUpdate($entity);
+	}
+
+	/**
+	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
+	 *
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function postUpdate(Persistence\Event\LifecycleEventArgs $eventArgs): void
+	{
+		// onFlush was executed before, everything already initialized
+		$entity = $eventArgs->getObject();
+
+		// Check for valid entity
+		if (
+			!$entity instanceof DevicesEntities\Connectors\Properties\Variable
+			|| !$entity->getConnector()->getId()->equals($this->connector->getId())
+		) {
+			return;
+		}
+
+		$this->processConfigurationUpdate($entity);
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	private function processConfigurationUpdate(DevicesEntities\Connectors\Properties\Variable $property): void
+	{
+		if (
+			$property->getIdentifier() === Types\ConnectorPropertyIdentifier::IDENTIFIER_PAIRED
+			|| $property->getIdentifier() === Types\ConnectorPropertyIdentifier::IDENTIFIER_CONFIG_VERSION
+		) {
+			foreach ($this->servers as $server) {
+				if ($server instanceof Servers\Mdns) {
+					$server->refresh();
+				}
+			}
+		}
+
+		if ($property->getIdentifier() === Types\ConnectorPropertyIdentifier::IDENTIFIER_SHARED_KEY) {
+			foreach ($this->servers as $server) {
+				if ($server instanceof Servers\Http) {
+					$server->setSharedKey(
+						is_string($property->getValue()) ? (string) hex2bin($property->getValue()) : null,
+					);
+				}
+			}
+		}
 	}
 
 }

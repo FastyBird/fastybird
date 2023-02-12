@@ -15,21 +15,23 @@
 
 namespace FastyBird\Connector\HomeKit\Controllers;
 
-use Doctrine\DBAL;
 use FastyBird\Connector\HomeKit\Exceptions;
-use FastyBird\Connector\HomeKit\Helpers;
 use FastyBird\Connector\HomeKit\Protocol;
 use FastyBird\Connector\HomeKit\Servers;
 use FastyBird\Connector\HomeKit\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Fig\Http\Message\StatusCodeInterface;
 use InvalidArgumentException;
 use IPub\SlimRouter;
 use Nette\Utils;
 use Psr\Http\Message;
 use Ramsey\Uuid;
+use function boolval;
 use function strval;
 
 /**
@@ -44,8 +46,8 @@ final class AccessoriesController extends BaseController
 {
 
 	public function __construct(
-		private readonly Helpers\Connector $connectorHelper,
 		private readonly Protocol\Driver $accessoriesDriver,
+		private readonly DevicesModels\Connectors\Properties\PropertiesRepository $propertiesRepository,
 	)
 	{
 	}
@@ -95,9 +97,7 @@ final class AccessoriesController extends BaseController
 	/**
 	 * Help user to locate accessory
 	 *
-	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws DevicesExceptions\Runtime
 	 * @throws Exceptions\HapRequestError
 	 * @throws Exceptions\InvalidState
 	 * @throws InvalidArgumentException
@@ -129,12 +129,16 @@ final class AccessoriesController extends BaseController
 
 		$connectorId = Uuid\Uuid::fromString($connectorId);
 
-		$paired = $this->connectorHelper->getConfiguration(
-			$connectorId,
-			Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::IDENTIFIER_PAIRED),
+		$findPropertyQuery = new DevicesQueries\FindConnectorProperties();
+		$findPropertyQuery->byConnectorId($connectorId);
+		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_PAIRED);
+
+		$pairedProperty = $this->propertiesRepository->findOneBy(
+			$findPropertyQuery,
+			DevicesEntities\Connectors\Properties\Variable::class,
 		);
 
-		if ((bool) $paired) {
+		if ($pairedProperty !== null && boolval($pairedProperty->getValue()) === true) {
 			$this->logger->error(
 				'Paired connector could not trigger identify routine',
 				[

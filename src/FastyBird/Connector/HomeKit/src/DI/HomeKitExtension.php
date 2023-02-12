@@ -29,6 +29,7 @@ use FastyBird\Connector\HomeKit\Protocol;
 use FastyBird\Connector\HomeKit\Router;
 use FastyBird\Connector\HomeKit\Schemas;
 use FastyBird\Connector\HomeKit\Servers;
+use FastyBird\Connector\HomeKit\Subscribers;
 use FastyBird\Connector\HomeKit\Writers;
 use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
 use FastyBird\Module\Devices\DI as DevicesDI;
@@ -119,6 +120,9 @@ class HomeKitExtension extends DI\CompilerExtension
 			->getResultDefinition()
 			->setType(Servers\SecureConnection::class);
 
+		$builder->addDefinition($this->prefix('subscribers.properties'), new DI\Definitions\ServiceDefinition())
+			->setType(Subscribers\Properties::class);
+
 		$builder->addDefinition($this->prefix('schemas.connector.homekit'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\HomeKitConnector::class);
 
@@ -130,9 +134,6 @@ class HomeKitExtension extends DI\CompilerExtension
 
 		$builder->addDefinition($this->prefix('hydrators.device.homekit'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\HomeKitDevice::class);
-
-		$builder->addDefinition($this->prefix('helpers.connector'), new DI\Definitions\ServiceDefinition())
-			->setType(Helpers\Connector::class);
 
 		$builder->addDefinition($this->prefix('helpers.loader'), new DI\Definitions\ServiceDefinition())
 			->setType(Helpers\Loader::class);
