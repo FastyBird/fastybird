@@ -18,8 +18,6 @@ namespace FastyBird\Connector\HomeKit\Commands;
 use Endroid\QrCode;
 use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Exceptions;
-use FastyBird\Connector\HomeKit\Helpers;
-use FastyBird\Connector\HomeKit\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Commands as DevicesCommands;
@@ -262,15 +260,9 @@ class Execute extends Console\Command\Command
 			return Console\Command\Command::SUCCESS;
 		}
 
-		$xhmUri = Helpers\Protocol::getXhmUri(
-			$connector->getPinCode(),
-			$connector->getSetupId(),
-			Types\AccessoryCategory::get(Types\AccessoryCategory::CATEGORY_BRIDGE),
-		);
-
 		$qrCode = QrCode\Builder\Builder::create()
 			->writer(new QrCode\Writer\ConsoleWriter())
-			->data($xhmUri)
+			->data($connector->getXhmUri())
 			->encoding(new QrCode\Encoding\Encoding('UTF-8'))
 			->errorCorrectionLevel(new QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelHigh())
 			->labelText($connector->getPinCode())
@@ -278,7 +270,7 @@ class Execute extends Console\Command\Command
 			->validateResult(false)
 			->build();
 
-		$io->note(sprintf('Setup payload: %s', $xhmUri));
+		$io->note(sprintf('Setup payload: %s', $connector->getXhmUri()));
 
 		$io->info('Scan this code with your HomeKit app on your iOS device:');
 

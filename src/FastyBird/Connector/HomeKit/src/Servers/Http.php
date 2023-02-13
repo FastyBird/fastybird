@@ -100,7 +100,7 @@ final class Http implements Server
 		foreach ($this->connector->getDevices() as $device) {
 			assert($device instanceof Entities\HomeKitDevice);
 
-			$accessory = $this->accessoryFactory->create($device);
+			$accessory = $this->accessoryFactory->create($device, null, $device->getCategory());
 			assert($accessory instanceof Entities\Protocol\Device);
 
 			foreach ($device->getChannels() as $channel) {

@@ -53,6 +53,8 @@ class ConnectorPropertyIdentifier extends Consistence\Enum\Enum
 
 	public const IDENTIFIER_HASHING_KEY = 'hashing_key';
 
+	public const IDENTIFIER_XHM_URI = 'xhm_uri';
+
 	public function __toString(): string
 	{
 		return strval(self::getValue());

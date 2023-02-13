@@ -22,11 +22,15 @@ use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Helpers;
 use FastyBird\Connector\HomeKit\Types;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
+use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
+use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
 use Nette;
 use Nette\Utils;
+use function assert;
 
 /**
  * Doctrine entities events
@@ -58,7 +62,11 @@ final class Properties implements Common\EventSubscriber
 	/**
 	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
 	 *
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function postPersist(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
@@ -163,6 +171,28 @@ final class Properties implements Common\EventSubscriber
 				]));
 			}
 
+			$xhmUriProperty = $entity->getProperty(Types\ConnectorPropertyIdentifier::IDENTIFIER_XHM_URI);
+
+			if ($xhmUriProperty === null) {
+				$xhmUri = Helpers\Protocol::getXhmUri(
+					$entity->getPinCode(),
+					$entity->getSetupId(),
+					Types\AccessoryCategory::get(Types\AccessoryCategory::CATEGORY_BRIDGE),
+				);
+
+				$this->propertiesManager->create(Utils\ArrayHash::from([
+					'connector' => $entity,
+					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
+					'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_XHM_URI,
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+					'unit' => null,
+					'format' => null,
+					'settable' => false,
+					'queryable' => false,
+					'value' => $xhmUri,
+				]));
+			}
+
 			$rebootControl = $entity->getProperty(Types\ConnectorControlName::NAME_REBOOT);
 
 			if ($rebootControl === null) {
@@ -170,6 +200,40 @@ final class Properties implements Common\EventSubscriber
 					'name' => Types\ConnectorControlName::NAME_REBOOT,
 					'connector' => $entity,
 				]));
+			}
+		} elseif ($entity instanceof DevicesEntities\Connectors\Properties\Variable) {
+			if (
+				$entity->getIdentifier() === Types\ConnectorPropertyIdentifier::IDENTIFIER_PIN_CODE
+				|| $entity->getIdentifier() === Types\ConnectorPropertyIdentifier::IDENTIFIER_SETUP_ID
+			) {
+				$connector = $entity->getConnector();
+				assert($connector instanceof Entities\HomeKitConnector);
+
+				$xhmUri = Helpers\Protocol::getXhmUri(
+					$connector->getPinCode(),
+					$connector->getSetupId(),
+					Types\AccessoryCategory::get(Types\AccessoryCategory::CATEGORY_BRIDGE),
+				);
+
+				$xhmUriProperty = $connector->getProperty(Types\ConnectorPropertyIdentifier::IDENTIFIER_XHM_URI);
+
+				if ($xhmUriProperty === null) {
+					$this->propertiesManager->create(Utils\ArrayHash::from([
+						'connector' => $entity,
+						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
+						'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_XHM_URI,
+						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+						'unit' => null,
+						'format' => null,
+						'settable' => false,
+						'queryable' => false,
+						'value' => $xhmUri,
+					]));
+				} else {
+					$this->propertiesManager->update($entity, Utils\ArrayHash::from([
+						'value' => $xhmUri,
+					]));
+				}
 			}
 		}
 	}
