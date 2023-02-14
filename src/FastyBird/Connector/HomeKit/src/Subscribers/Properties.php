@@ -56,6 +56,7 @@ final class Properties implements Common\EventSubscriber
 	{
 		return [
 			ORM\Events::postPersist,
+			ORM\Events::postUpdate,
 		];
 	}
 
@@ -63,14 +64,12 @@ final class Properties implements Common\EventSubscriber
 	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
 	 *
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function postPersist(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
-		// onFlush was executed before, everything already initialized
 		$entity = $eventArgs->getObject();
 
 		// Check for valid entity
@@ -201,7 +200,23 @@ final class Properties implements Common\EventSubscriber
 					'connector' => $entity,
 				]));
 			}
-		} elseif ($entity instanceof DevicesEntities\Connectors\Properties\Variable) {
+		}
+	}
+
+	/**
+	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
+	 *
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws DoctrineCrudExceptions\InvalidArgumentException
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function postUpdate(Persistence\Event\LifecycleEventArgs $eventArgs): void
+	{
+		$entity = $eventArgs->getObject();
+
+		if ($entity instanceof DevicesEntities\Connectors\Properties\Variable) {
 			if (
 				$entity->getIdentifier() === Types\ConnectorPropertyIdentifier::IDENTIFIER_PIN_CODE
 				|| $entity->getIdentifier() === Types\ConnectorPropertyIdentifier::IDENTIFIER_SETUP_ID

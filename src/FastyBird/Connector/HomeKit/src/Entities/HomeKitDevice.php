@@ -21,7 +21,7 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
-use function is_string;
+use function is_int;
 
 /**
  * @ORM\Entity
@@ -62,7 +62,7 @@ class HomeKitDevice extends DevicesEntities\Devices\Device
 
 		if (
 			$property instanceof DevicesEntities\Devices\Properties\Variable
-			&& is_string($property->getValue())
+			&& is_int($property->getValue())
 			&& Types\AccessoryCategory::isValidValue($property->getValue())
 		) {
 			return Types\AccessoryCategory::get($property->getValue());

@@ -27,6 +27,7 @@ use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use Nette\Localization;
 use Nette\Utils;
 use Psr\Log;
 use Symfony\Component\Console;
@@ -34,6 +35,7 @@ use Symfony\Component\Console\Input;
 use Symfony\Component\Console\Output;
 use Symfony\Component\Console\Style;
 use Throwable;
+use function array_key_exists;
 use function array_search;
 use function array_values;
 use function assert;
@@ -41,6 +43,7 @@ use function count;
 use function intval;
 use function sprintf;
 use function strval;
+use function usort;
 
 /**
  * Connector initialize command
@@ -55,19 +58,15 @@ class Initialize extends Console\Command\Command
 
 	public const NAME = 'fb:homekit-connector:initialize';
 
-	private const CHOICE_QUESTION_CREATE_CONNECTOR = 'Create new connector configuration';
-
-	private const CHOICE_QUESTION_EDIT_CONNECTOR = 'Edit existing connector configuration';
-
-	private const CHOICE_QUESTION_DELETE_CONNECTOR = 'Delete existing connector configuration';
-
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Connectors\ConnectorsManager $connectorsManager,
+		private readonly DevicesModels\Connectors\Properties\PropertiesRepository $propertiesRepository,
 		private readonly DevicesModels\Connectors\Properties\PropertiesManager $propertiesManager,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
+		private readonly Localization\Translator $translator,
 		Log\LoggerInterface|null $logger = null,
 		string|null $name = null,
 	)
@@ -109,13 +108,13 @@ class Initialize extends Console\Command\Command
 	{
 		$io = new Style\SymfonyStyle($input, $output);
 
-		$io->title('HomeKit connector - initialization');
+		$io->title($this->translator->translate('//homekit-connector.cmd.initialize.title'));
 
-		$io->note('This action will create|update|delete connector configuration.');
+		$io->note($this->translator->translate('//homekit-connector.cmd.initialize.subtitle'));
 
 		if ($input->getOption('no-confirm') === false) {
 			$question = new Console\Question\ConfirmationQuestion(
-				'Would you like to continue?',
+				$this->translator->translate('//homekit-connector.cmd.base.questions.continue'),
 				false,
 			);
 
@@ -127,25 +126,27 @@ class Initialize extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			'What would you like to do?',
+			$this->translator->translate('//homekit-connector.cmd.base.questions.whatToDo'),
 			[
-				0 => self::CHOICE_QUESTION_CREATE_CONNECTOR,
-				1 => self::CHOICE_QUESTION_EDIT_CONNECTOR,
-				2 => self::CHOICE_QUESTION_DELETE_CONNECTOR,
+				0 => $this->translator->translate('//homekit-connector.cmd.initialize.actions.create'),
+				1 => $this->translator->translate('//homekit-connector.cmd.initialize.actions.update'),
+				2 => $this->translator->translate('//homekit-connector.cmd.initialize.actions.remove'),
 			],
 		);
 
-		$question->setErrorMessage('Selected answer: "%s" is not valid.');
+		$question->setErrorMessage(
+			$this->translator->translate('//homekit-connector.cmd.base.messages.answerNotValid'),
+		);
 
 		$whatToDo = $io->askQuestion($question);
 
-		if ($whatToDo === self::CHOICE_QUESTION_CREATE_CONNECTOR) {
+		if ($whatToDo === $this->translator->translate('//homekit-connector.cmd.initialize.actions.create')) {
 			$this->createNewConfiguration($io);
 
-		} elseif ($whatToDo === self::CHOICE_QUESTION_EDIT_CONNECTOR) {
+		} elseif ($whatToDo === $this->translator->translate('//homekit-connector.cmd.initialize.actions.update')) {
 			$this->editExistingConfiguration($io);
 
-		} elseif ($whatToDo === self::CHOICE_QUESTION_DELETE_CONNECTOR) {
+		} elseif ($whatToDo === $this->translator->translate('//homekit-connector.cmd.initialize.actions.remove')) {
 			$this->deleteExistingConfiguration($io);
 		}
 
@@ -161,7 +162,9 @@ class Initialize extends Console\Command\Command
 	 */
 	private function createNewConfiguration(Style\SymfonyStyle $io): void
 	{
-		$question = new Console\Question\Question('Provide connector identifier');
+		$question = new Console\Question\Question(
+			$this->translator->translate('//homekit-connector.cmd.initialize.questions.provide.identifier'),
+		);
 
 		$question->setValidator(function ($answer) {
 			if ($answer !== null) {
@@ -172,7 +175,9 @@ class Initialize extends Console\Command\Command
 					$findConnectorQuery,
 					Entities\HomeKitConnector::class,
 				) !== null) {
-					throw new Exceptions\Runtime('This identifier is already used');
+					throw new Exceptions\Runtime(
+						$this->translator->translate('//homekit-connector.cmd.initialize.messages.identifier.used'),
+					);
 				}
 			}
 
@@ -200,7 +205,7 @@ class Initialize extends Console\Command\Command
 		}
 
 		if ($identifier === '') {
-			$io->error('Connector identifier have to provided');
+			$io->error($this->translator->translate('//homekit-connector.cmd.initialize.messages.identifier.missing'));
 
 			return;
 		}
@@ -230,10 +235,12 @@ class Initialize extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
-			$io->success(sprintf(
-				'New connector "%s" was successfully created',
-				$connector->getName() ?? $connector->getIdentifier(),
-			));
+			$io->success(
+				$this->translator->translate(
+					'//homekit-connector.cmd.initialize.messages.create.success',
+					['name' => $connector->getName() ?? $connector->getIdentifier()],
+				),
+			);
 		} catch (Throwable $ex) {
 			// Log caught exception
 			$this->logger->error(
@@ -249,7 +256,7 @@ class Initialize extends Console\Command\Command
 				],
 			);
 
-			$io->error('Something went wrong, connector could not be created. Error was logged.');
+			$io->error($this->translator->translate('//homekit-connector.cmd.initialize.messages.create.error'));
 		} finally {
 			// Revert all changes when error occur
 			if ($this->getOrmConnection()->isTransactionActive()) {
@@ -267,25 +274,13 @@ class Initialize extends Console\Command\Command
 	 */
 	private function editExistingConfiguration(Style\SymfonyStyle $io): void
 	{
-		$connectors = [];
+		$connector = $this->askWhichConnector($io);
 
-		$findConnectorsQuery = new DevicesQueries\FindConnectors();
-
-		foreach ($this->connectorsRepository->findAllBy(
-			$findConnectorsQuery,
-			Entities\HomeKitConnector::class,
-		) as $connector) {
-			assert($connector instanceof Entities\HomeKitConnector);
-
-			$connectors[$connector->getIdentifier()] = $connector->getIdentifier()
-				. ($connector->getName() !== null ? ' [' . $connector->getName() . ']' : '');
-		}
-
-		if (count($connectors) === 0) {
-			$io->warning('No HomeKit connectors registered in system');
+		if ($connector === null) {
+			$io->warning($this->translator->translate('//homekit-connector.cmd.initialize.messages.noConnectors'));
 
 			$question = new Console\Question\ConfirmationQuestion(
-				'Would you like to create new HomeKit connector configuration?',
+				$this->translator->translate('//homekit-connector.cmd.initialize.questions.create'),
 				false,
 			);
 
@@ -298,59 +293,13 @@ class Initialize extends Console\Command\Command
 			return;
 		}
 
-		$question = new Console\Question\ChoiceQuestion(
-			'Please select connector to configure',
-			array_values($connectors),
-		);
-
-		$question->setErrorMessage('Selected connector: "%s" is not valid.');
-
-		$connectorIdentifier = array_search($io->askQuestion($question), $connectors, true);
-
-		if ($connectorIdentifier === false) {
-			$io->error('Something went wrong, connector could not be loaded');
-
-			$this->logger->alert(
-				'Connector identifier was not able to get from answer',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
-					'type' => 'initialize-cmd',
-					'group' => 'cmd',
-				],
-			);
-
-			return;
-		}
-
-		$findConnectorQuery = new DevicesQueries\FindConnectors();
-		$findConnectorQuery->byIdentifier($connectorIdentifier);
-
-		$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\HomeKitConnector::class);
-
-		if ($connector === null) {
-			$io->error('Something went wrong, connector could not be loaded');
-
-			$this->logger->alert(
-				'Connector was not found',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
-					'type' => 'initialize-cmd',
-					'group' => 'cmd',
-				],
-			);
-
-			return;
-		}
-
-		assert($connector instanceof Entities\HomeKitConnector);
-
 		$name = $this->askName($io, $connector);
 
 		$enabled = $connector->isEnabled();
 
 		if ($connector->isEnabled()) {
 			$question = new Console\Question\ConfirmationQuestion(
-				'Do you want to disable connector?',
+				$this->translator->translate('//homekit-connector.cmd.initialize.questions.disable'),
 				false,
 			);
 
@@ -359,7 +308,7 @@ class Initialize extends Console\Command\Command
 			}
 		} else {
 			$question = new Console\Question\ConfirmationQuestion(
-				'Do you want to enable connector?',
+				$this->translator->translate('//homekit-connector.cmd.initialize.questions.enable'),
 				false,
 			);
 
@@ -398,10 +347,12 @@ class Initialize extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
-			$io->success(sprintf(
-				'Connector "%s" was successfully updated',
-				$connector->getName() ?? $connector->getIdentifier(),
-			));
+			$io->success(
+				$this->translator->translate(
+					'//homekit-connector.cmd.initialize.messages.update.success',
+					['name' => $connector->getName() ?? $connector->getIdentifier()],
+				),
+			);
 		} catch (Throwable $ex) {
 			// Log caught exception
 			$this->logger->error(
@@ -417,7 +368,7 @@ class Initialize extends Console\Command\Command
 				],
 			);
 
-			$io->error('Something went wrong, connector could not be updated. Error was logged.');
+			$io->error($this->translator->translate('//homekit-connector.cmd.initialize.messages.update.error'));
 		} finally {
 			// Revert all changes when error occur
 			if ($this->getOrmConnection()->isTransactionActive()) {
@@ -433,72 +384,16 @@ class Initialize extends Console\Command\Command
 	 */
 	private function deleteExistingConfiguration(Style\SymfonyStyle $io): void
 	{
-		$connectors = [];
-
-		$findConnectorsQuery = new DevicesQueries\FindConnectors();
-
-		foreach ($this->connectorsRepository->findAllBy(
-			$findConnectorsQuery,
-			Entities\HomeKitConnector::class,
-		) as $connector) {
-			assert($connector instanceof Entities\HomeKitConnector);
-
-			$connectors[$connector->getIdentifier()] = $connector->getIdentifier()
-				. ($connector->getName() !== null ? ' [' . $connector->getName() . ']' : '');
-		}
-
-		if (count($connectors) === 0) {
-			$io->info('No HomeKit connectors registered in system');
-
-			return;
-		}
-
-		$question = new Console\Question\ChoiceQuestion(
-			'Please select connector to remove',
-			array_values($connectors),
-		);
-
-		$question->setErrorMessage('Selected connector: "%s" is not valid.');
-
-		$connectorIdentifier = array_search($io->askQuestion($question), $connectors, true);
-
-		if ($connectorIdentifier === false) {
-			$io->error('Something went wrong, connector could not be loaded');
-
-			$this->logger->alert(
-				'Connector identifier was not able to get from answer',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
-					'type' => 'initialize-cmd',
-					'group' => 'cmd',
-				],
-			);
-
-			return;
-		}
-
-		$findConnectorQuery = new DevicesQueries\FindConnectors();
-		$findConnectorQuery->byIdentifier($connectorIdentifier);
-
-		$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\HomeKitConnector::class);
+		$connector = $this->askWhichConnector($io);
 
 		if ($connector === null) {
-			$io->error('Something went wrong, connector could not be loaded');
-
-			$this->logger->alert(
-				'Connector was not found',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
-					'type' => 'initialize-cmd',
-					'group' => 'cmd',
-				],
-			);
+			$io->info($this->translator->translate('//homekit-connector.cmd.initialize.messages.noConnectors'));
 
 			return;
 		}
 
 		$question = new Console\Question\ConfirmationQuestion(
-			'Would you like to continue?',
+			$this->translator->translate('//homekit-connector.cmd.base.questions.continue'),
 			false,
 		);
 
@@ -517,10 +412,12 @@ class Initialize extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
-			$io->success(sprintf(
-				'Connector "%s" was successfully removed',
-				$connector->getName() ?? $connector->getIdentifier(),
-			));
+			$io->success(
+				$this->translator->translate(
+					'//homekit-connector.cmd.initialize.messages.remove.success',
+					['name' => $connector->getName() ?? $connector->getIdentifier()],
+				),
+			);
 		} catch (Throwable $ex) {
 			// Log caught exception
 			$this->logger->error(
@@ -536,7 +433,7 @@ class Initialize extends Console\Command\Command
 				],
 			);
 
-			$io->error('Something went wrong, connector could not be removed. Error was logged.');
+			$io->error($this->translator->translate('//homekit-connector.cmd.initialize.messages.remove.error'));
 		} finally {
 			// Revert all changes when error occur
 			if ($this->getOrmConnection()->isTransactionActive()) {
@@ -547,11 +444,14 @@ class Initialize extends Console\Command\Command
 
 	private function askName(Style\SymfonyStyle $io, Entities\HomeKitConnector|null $connector = null): string|null
 	{
-		$question = new Console\Question\Question('Provide connector name', $connector?->getName());
+		$question = new Console\Question\Question(
+			$this->translator->translate('//homekit-connector.cmd.initialize.questions.provide.name'),
+			$connector?->getName(),
+		);
 
 		$name = $io->askQuestion($question);
 
-		return $name === '' ? null : strval($name);
+		return strval($name) === '' ? null : strval($name);
 	}
 
 	/**
@@ -562,18 +462,131 @@ class Initialize extends Console\Command\Command
 	private function askPort(Style\SymfonyStyle $io, Entities\HomeKitConnector|null $connector = null): int
 	{
 		$question = new Console\Question\Question(
-			'Provide server port',
+			$this->translator->translate('//homekit-connector.cmd.initialize.questions.provide.port'),
 			$connector?->getPort() ?? HomeKit\Constants::DEFAULT_PORT,
 		);
-		$question->setValidator(static function (string|null $answer): string {
+		$question->setValidator(function (string|null $answer) use ($connector): string {
 			if ($answer === '' || $answer === null) {
-				throw new Exceptions\Runtime('You have to provide valid server port');
+				throw new Exceptions\Runtime(
+					sprintf(
+						$this->translator->translate('//homekit-connector.cmd.base.messages.answerNotValid'),
+						$answer,
+					),
+				);
+			}
+
+			$findProperties = new DevicesQueries\FindConnectorProperties();
+			$findProperties->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_PORT);
+
+			$properties = $this->propertiesRepository->findAllBy(
+				$findProperties,
+				DevicesEntities\Connectors\Properties\Variable::class,
+			);
+
+			foreach ($properties as $property) {
+				if (
+					$property->getConnector() instanceof Entities\HomeKitConnector
+					&& $property->getValue() === intval($answer)
+					&& (
+						$connector === null || !$property->getConnector()->getId()->equals($connector->getId())
+					)
+				) {
+					throw new Exceptions\Runtime(
+						$this->translator->translate(
+							'//homekit-connector.cmd.initialize.messages.portUsed',
+							['connector' => $property->getConnector()->getIdentifier()],
+						),
+					);
+				}
 			}
 
 			return $answer;
 		});
 
 		return intval($io->askQuestion($question));
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 */
+	private function askWhichConnector(Style\SymfonyStyle $io): Entities\HomeKitConnector|null
+	{
+		$connectors = [];
+
+		$findConnectorsQuery = new DevicesQueries\FindConnectors();
+
+		$systemConnectors = $this->connectorsRepository->findAllBy(
+			$findConnectorsQuery,
+			Entities\HomeKitConnector::class,
+		);
+		usort(
+			$systemConnectors,
+			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+			static fn (DevicesEntities\Connectors\Connector $a, DevicesEntities\Connectors\Connector $b): int => $a->getIdentifier() <=> $b->getIdentifier()
+		);
+
+		foreach ($systemConnectors as $connector) {
+			assert($connector instanceof Entities\HomeKitConnector);
+
+			$connectors[$connector->getIdentifier()] = $connector->getIdentifier()
+				. ($connector->getName() !== null ? ' [' . $connector->getName() . ']' : '');
+		}
+
+		if (count($connectors) === 0) {
+			return null;
+		}
+
+		$question = new Console\Question\ChoiceQuestion(
+			$this->translator->translate('//homekit-connector.cmd.initialize.questions.select.connector'),
+			array_values($connectors),
+			count($connectors) === 1 ? 0 : null,
+		);
+		$question->setErrorMessage(
+			$this->translator->translate('//homekit-connector.cmd.base.messages.answerNotValid'),
+		);
+		$question->setValidator(function (string|int|null $answer) use ($connectors): Entities\HomeKitConnector {
+			if ($answer === null) {
+				throw new Exceptions\Runtime(
+					sprintf(
+						$this->translator->translate('//homekit-connector.cmd.base.messages.answerNotValid'),
+						$answer,
+					),
+				);
+			}
+
+			if (array_key_exists(intval($answer), array_values($connectors))) {
+				$answer = array_values($connectors)[intval($answer)];
+			}
+
+			$identifier = array_search($answer, $connectors, true);
+
+			if ($identifier !== false) {
+				$findConnectorQuery = new DevicesQueries\FindConnectors();
+				$findConnectorQuery->byIdentifier($identifier);
+
+				$connector = $this->connectorsRepository->findOneBy(
+					$findConnectorQuery,
+					Entities\HomeKitConnector::class,
+				);
+				assert($connector instanceof Entities\HomeKitConnector || $connector === null);
+
+				if ($connector !== null) {
+					return $connector;
+				}
+			}
+
+			throw new Exceptions\Runtime(
+				sprintf(
+					$this->translator->translate('//homekit-connector.cmd.base.messages.answerNotValid'),
+					$answer,
+				),
+			);
+		});
+
+		$connector = $io->askQuestion($question);
+		assert($connector instanceof Entities\HomeKitConnector);
+
+		return $connector;
 	}
 
 	/**

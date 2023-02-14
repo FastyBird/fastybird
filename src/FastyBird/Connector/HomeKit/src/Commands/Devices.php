@@ -26,6 +26,7 @@ use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use Nette\Localization;
 use Nette\Utils;
 use Psr\Log;
 use Symfony\Component\Console;
@@ -34,9 +35,12 @@ use Symfony\Component\Console\Output;
 use Symfony\Component\Console\Style;
 use Throwable;
 use function array_combine;
+use function array_filter;
 use function array_key_exists;
-use function array_keys;
+use function array_map;
+use function array_search;
 use function array_values;
+use function asort;
 use function assert;
 use function count;
 use function intval;
@@ -57,12 +61,6 @@ class Devices extends Console\Command\Command
 
 	public const NAME = 'fb:homekit-connector:devices';
 
-	private const CHOICE_QUESTION_CREATE_DEVICE = 'Create new connector device';
-
-	private const CHOICE_QUESTION_EDIT_DEVICE = 'Edit existing connector device';
-
-	private const CHOICE_QUESTION_DELETE_DEVICE = 'Delete existing connector device';
-
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
@@ -71,6 +69,7 @@ class Devices extends Console\Command\Command
 		private readonly DevicesModels\Devices\DevicesManager $devicesManager,
 		private readonly DevicesModels\Devices\Properties\PropertiesManager $devicesPropertiesManager,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
+		private readonly Localization\Translator $translator,
 		Log\LoggerInterface|null $logger = null,
 		string|null $name = null,
 	)
@@ -112,13 +111,13 @@ class Devices extends Console\Command\Command
 	{
 		$io = new Style\SymfonyStyle($input, $output);
 
-		$io->title('HomeKit connector - devices management');
+		$io->title($this->translator->translate('//homekit-connector.cmd.devices.title'));
 
-		$io->note('This action will create|update|delete connector device.');
+		$io->note($this->translator->translate('//homekit-connector.cmd.devices.subtitle'));
 
 		if ($input->getOption('no-confirm') === false) {
 			$question = new Console\Question\ConfirmationQuestion(
-				'Would you like to continue?',
+				$this->translator->translate('//homekit-connector.cmd.base.questions.continue'),
 				false,
 			);
 
@@ -132,31 +131,33 @@ class Devices extends Console\Command\Command
 		$connector = $this->askWhichConnector($io);
 
 		if ($connector === null) {
-			$io->warning('No HomeKit connectors registered in system');
+			$io->warning($this->translator->translate('//homekit-connector.cmd.base.messages.noConnectors'));
 
 			return Console\Command\Command::SUCCESS;
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			'What would you like to do?',
+			$this->translator->translate('//homekit-connector.cmd.base.questions.whatToDo'),
 			[
-				0 => self::CHOICE_QUESTION_CREATE_DEVICE,
-				1 => self::CHOICE_QUESTION_EDIT_DEVICE,
-				2 => self::CHOICE_QUESTION_DELETE_DEVICE,
+				0 => $this->translator->translate('//homekit-connector.cmd.devices.actions.create'),
+				1 => $this->translator->translate('//homekit-connector.cmd.devices.actions.update'),
+				2 => $this->translator->translate('//homekit-connector.cmd.devices.actions.remove'),
 			],
 		);
 
-		$question->setErrorMessage('Selected answer: "%s" is not valid.');
+		$question->setErrorMessage(
+			$this->translator->translate('//homekit-connector.cmd.base.messages.answerNotValid'),
+		);
 
 		$whatToDo = $io->askQuestion($question);
 
-		if ($whatToDo === self::CHOICE_QUESTION_CREATE_DEVICE) {
+		if ($whatToDo === $this->translator->translate('//homekit-connector.cmd.devices.actions.create')) {
 			$this->createNewDevice($io, $connector);
 
-		} elseif ($whatToDo === self::CHOICE_QUESTION_EDIT_DEVICE) {
+		} elseif ($whatToDo === $this->translator->translate('//homekit-connector.cmd.devices.actions.update')) {
 			$this->editExistingDevice($io, $connector);
 
-		} elseif ($whatToDo === self::CHOICE_QUESTION_DELETE_DEVICE) {
+		} elseif ($whatToDo === $this->translator->translate('//homekit-connector.cmd.devices.actions.remove')) {
 			$this->deleteExistingDevice($io, $connector);
 		}
 
@@ -172,7 +173,9 @@ class Devices extends Console\Command\Command
 	 */
 	private function createNewDevice(Style\SymfonyStyle $io, Entities\HomeKitConnector $connector): void
 	{
-		$question = new Console\Question\Question('Provide device identifier');
+		$question = new Console\Question\Question(
+			$this->translator->translate('//homekit-connector.cmd.devices.questions.provide.identifier'),
+		);
 
 		$question->setValidator(function (string|null $answer) {
 			if ($answer !== '' && $answer !== null) {
@@ -182,7 +185,9 @@ class Devices extends Console\Command\Command
 				if (
 					$this->devicesRepository->findOneBy($findDeviceQuery, Entities\HomeKitDevice::class) !== null
 				) {
-					throw new Exceptions\Runtime('This identifier is already used');
+					throw new Exceptions\Runtime(
+						$this->translator->translate('//homekit-connector.cmd.devices.messages.identifier.used'),
+					);
 				}
 			}
 
@@ -209,7 +214,7 @@ class Devices extends Console\Command\Command
 		}
 
 		if ($identifier === '') {
-			$io->error('Device identifier have to provided');
+			$io->error($this->translator->translate('//homekit-connector.cmd.devices.messages.identifier.missing'));
 
 			return;
 		}
@@ -241,10 +246,12 @@ class Devices extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
-			$io->success(sprintf(
-				'Device "%s" was successfully created',
-				$device->getName() ?? $device->getIdentifier(),
-			));
+			$io->success(
+				$this->translator->translate(
+					'//homekit-connector.cmd.devices.messages.create.success',
+					['name' => $device->getName() ?? $device->getIdentifier()],
+				),
+			);
 		} catch (Throwable $ex) {
 			// Log caught exception
 			$this->logger->error(
@@ -260,7 +267,7 @@ class Devices extends Console\Command\Command
 				],
 			);
 
-			$io->error('Something went wrong, device could not be created. Error was logged.');
+			$io->error($this->translator->translate('//homekit-connector.cmd.devices.messages.create.error'));
 
 			return;
 		} finally {
@@ -283,10 +290,10 @@ class Devices extends Console\Command\Command
 		$device = $this->askWhichDevice($io, $connector);
 
 		if ($device === null) {
-			$io->warning('No devices registered in HomeKit connector');
+			$io->warning($this->translator->translate('//homekit-connector.cmd.devices.messages.noDevices'));
 
 			$question = new Console\Question\ConfirmationQuestion(
-				'Would you like to create new device in connector?',
+				$this->translator->translate('//homekit-connector.cmd.devices.questions.create'),
 				false,
 			);
 
@@ -330,10 +337,12 @@ class Devices extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
-			$io->success(sprintf(
-				'Device "%s" was successfully updated',
-				$device->getName() ?? $device->getIdentifier(),
-			));
+			$io->success(
+				$this->translator->translate(
+					'//homekit-connector.cmd.devices.messages.update.success',
+					['name' => $device->getName() ?? $device->getIdentifier()],
+				),
+			);
 		} catch (Throwable $ex) {
 			// Log caught exception
 			$this->logger->error(
@@ -349,7 +358,7 @@ class Devices extends Console\Command\Command
 				],
 			);
 
-			$io->error('Something went wrong, device could not be updated. Error was logged.');
+			$io->error($this->translator->translate('//homekit-connector.cmd.devices.messages.update.error'));
 		} finally {
 			// Revert all changes when error occur
 			if ($this->getOrmConnection()->isTransactionActive()) {
@@ -368,13 +377,13 @@ class Devices extends Console\Command\Command
 		$device = $this->askWhichDevice($io, $connector);
 
 		if ($device === null) {
-			$io->info('No HomeKit devices registered in selected connector');
+			$io->info($this->translator->translate('//homekit-connector.cmd.devices.messages.noDevices'));
 
 			return;
 		}
 
 		$question = new Console\Question\ConfirmationQuestion(
-			'Would you like to continue?',
+			$this->translator->translate('//homekit-connector.cmd.base.questions.continue'),
 			false,
 		);
 
@@ -393,10 +402,12 @@ class Devices extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
-			$io->success(sprintf(
-				'Device "%s" was successfully removed',
-				$device->getName() ?? $device->getIdentifier(),
-			));
+			$io->success(
+				$this->translator->translate(
+					'//homekit-connector.cmd.devices.messages.remove.success',
+					['name' => $device->getName() ?? $device->getIdentifier()],
+				),
+			);
 		} catch (Throwable $ex) {
 			// Log caught exception
 			$this->logger->error(
@@ -412,7 +423,7 @@ class Devices extends Console\Command\Command
 				],
 			);
 
-			$io->error('Something went wrong, device could not be removed. Error was logged.');
+			$io->error($this->translator->translate('//homekit-connector.cmd.devices.messages.remove.error'));
 		} finally {
 			// Revert all changes when error occur
 			if ($this->getOrmConnection()->isTransactionActive()) {
@@ -423,11 +434,14 @@ class Devices extends Console\Command\Command
 
 	private function askDeviceName(Style\SymfonyStyle $io, Entities\HomeKitDevice|null $device = null): string|null
 	{
-		$question = new Console\Question\Question('Provide device name', $device?->getName());
+		$question = new Console\Question\Question(
+			$this->translator->translate('//homekit-connector.cmd.devices.questions.provide.name'),
+			$device?->getName(),
+		);
 
 		$name = $io->askQuestion($question);
 
-		return $name === '' ? null : strval($name);
+		return strval($name) === '' ? null : strval($name);
 	}
 
 	/**
@@ -440,29 +454,68 @@ class Devices extends Console\Command\Command
 		Entities\HomeKitDevice|null $device = null,
 	): Types\AccessoryCategory
 	{
-		$default = $device?->getCategory()->getValue() ?? Types\AccessoryCategory::CATEGORY_OTHER;
+		$categories = array_combine(
+			array_values(Types\AccessoryCategory::getValues()),
+			array_map(
+				fn (Types\AccessoryCategory $category): string => $this->translator->translate(
+					'//homekit-connector.cmd.base.category.' . $category->getValue(),
+				),
+				(array) Types\AccessoryCategory::getAvailableEnums(),
+			),
+		);
+		$categories = array_filter(
+			$categories,
+			fn (string $category): bool => $category !== $this->translator->translate(
+				'//homekit-connector.cmd.base.category.' . Types\AccessoryCategory::CATEGORY_BRIDGE,
+			)
+		);
+		asort($categories);
+
+		$default = $device !== null ? array_search(
+			$this->translator->translate(
+				'//homekit-connector.cmd.base.category.' . $device->getCategory()->getValue(),
+			),
+			array_values($categories),
+			true,
+		) : array_search(
+			$this->translator->translate(
+				'//homekit-connector.cmd.base.category.' . Types\AccessoryCategory::CATEGORY_OTHER,
+			),
+			array_values($categories),
+			true,
+		);
 
 		$question = new Console\Question\ChoiceQuestion(
-			'Provide device category?',
-			array_combine(
-				array_values(Types\AccessoryCategory::getValues()),
-				array_values(Types\AccessoryCategory::getValues()),
-			),
+			$this->translator->translate('//homekit-connector.cmd.devices.questions.select.category'),
+			array_values($categories),
 			$default,
 		);
-		$question->setErrorMessage('Selected answer: "%s" is not valid.');
-		$question->setValidator(static function (string|null $answer): Types\AccessoryCategory {
+		$question->setErrorMessage(
+			$this->translator->translate('//homekit-connector.cmd.base.messages.answerNotValid'),
+		);
+		$question->setValidator(function (string|int|null $answer) use ($categories): Types\AccessoryCategory {
 			if ($answer === null) {
-				throw new Exceptions\InvalidState('Selected answer is not valid');
+				throw new Exceptions\Runtime(
+					sprintf(
+						$this->translator->translate('//homekit-connector.cmd.base.messages.answerNotValid'),
+						$answer,
+					),
+				);
 			}
 
-			foreach ((array) Types\AccessoryCategory::getAvailableValues() as $value) {
-				if (intval($answer) === $value) {
-					return Types\AccessoryCategory::get(intval($value));
-				}
+			if (array_key_exists(intval($answer), array_values($categories))) {
+				$answer = array_values($categories)[intval($answer)];
 			}
 
-			throw new Exceptions\InvalidState('Selected answer is not valid');
+			$category = array_search($answer, $categories, true);
+
+			if ($category !== false && Types\AccessoryCategory::isValidValue($category)) {
+				return Types\AccessoryCategory::get(intval($category));
+			}
+
+			throw new Exceptions\Runtime(
+				sprintf($this->translator->translate('//homekit-connector.cmd.base.messages.answerNotValid'), $answer),
+			);
 		});
 
 		$answer = $io->askQuestion($question);
@@ -502,33 +555,50 @@ class Devices extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			'Please select connector under which you want to manage devices',
+			$this->translator->translate('//homekit-connector.cmd.devices.questions.select.connector'),
 			array_values($connectors),
 			count($connectors) === 1 ? 0 : null,
 		);
-		$question->setErrorMessage('Selected connector: "%s" is not valid.');
-		$question->setValidator(function (string|null $answer) use ($connectors): Entities\HomeKitConnector {
+		$question->setErrorMessage(
+			$this->translator->translate('//homekit-connector.cmd.base.messages.answerNotValid'),
+		);
+		$question->setValidator(function (string|int|null $answer) use ($connectors): Entities\HomeKitConnector {
 			if ($answer === null) {
-				throw new Exceptions\InvalidState('Selected answer is not valid');
+				throw new Exceptions\Runtime(
+					sprintf(
+						$this->translator->translate('//homekit-connector.cmd.base.messages.answerNotValid'),
+						$answer,
+					),
+				);
 			}
 
-			$connectorIdentifiers = array_keys($connectors);
-
-			if (!array_key_exists(intval($answer), $connectorIdentifiers)) {
-				throw new Exceptions\Runtime('You have to select connector from list');
+			if (array_key_exists(intval($answer), array_values($connectors))) {
+				$answer = array_values($connectors)[intval($answer)];
 			}
 
-			$findConnectorQuery = new DevicesQueries\FindConnectors();
-			$findConnectorQuery->byIdentifier($connectorIdentifiers[intval($answer)]);
+			$identifier = array_search($answer, $connectors, true);
 
-			$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\HomeKitConnector::class);
-			assert($connector instanceof Entities\HomeKitConnector || $connector === null);
+			if ($identifier !== false) {
+				$findConnectorQuery = new DevicesQueries\FindConnectors();
+				$findConnectorQuery->byIdentifier($identifier);
 
-			if ($connector === null) {
-				throw new Exceptions\Runtime('You have to select connector from list');
+				$connector = $this->connectorsRepository->findOneBy(
+					$findConnectorQuery,
+					Entities\HomeKitConnector::class,
+				);
+				assert($connector instanceof Entities\HomeKitConnector || $connector === null);
+
+				if ($connector !== null) {
+					return $connector;
+				}
 			}
 
-			return $connector;
+			throw new Exceptions\Runtime(
+				sprintf(
+					$this->translator->translate('//homekit-connector.cmd.base.messages.answerNotValid'),
+					$answer,
+				),
+			);
 		});
 
 		$connector = $io->askQuestion($question);
@@ -568,34 +638,48 @@ class Devices extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			'Please select device to manage',
+			$this->translator->translate('//homekit-connector.cmd.devices.questions.select.device'),
 			array_values($devices),
 			count($devices) === 1 ? 0 : null,
 		);
-		$question->setErrorMessage('Selected device: "%s" is not valid.');
-		$question->setValidator(function (string|null $answer) use ($connector, $devices): Entities\HomeKitDevice {
+		$question->setErrorMessage(
+			$this->translator->translate('//homekit-connector.cmd.base.messages.answerNotValid'),
+		);
+		$question->setValidator(function (string|int|null $answer) use ($connector, $devices): Entities\HomeKitDevice {
 			if ($answer === null) {
-				throw new Exceptions\InvalidState('Selected answer is not valid');
+				throw new Exceptions\Runtime(
+					sprintf(
+						$this->translator->translate('//homekit-connector.cmd.base.messages.answerNotValid'),
+						$answer,
+					),
+				);
 			}
 
-			$devicesIdentifiers = array_keys($devices);
-
-			if (!array_key_exists(intval($answer), $devicesIdentifiers)) {
-				throw new Exceptions\Runtime('You have to select device from list');
+			if (array_key_exists(intval($answer), array_values($devices))) {
+				$answer = array_values($devices)[intval($answer)];
 			}
 
-			$findDeviceQuery = new DevicesQueries\FindDevices();
-			$findDeviceQuery->byIdentifier($devicesIdentifiers[intval($answer)]);
-			$findDeviceQuery->forConnector($connector);
+			$identifier = array_search($answer, $devices, true);
 
-			$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\HomeKitDevice::class);
-			assert($device instanceof Entities\HomeKitDevice || $device === null);
+			if ($identifier !== false) {
+				$findDeviceQuery = new DevicesQueries\FindDevices();
+				$findDeviceQuery->byIdentifier($identifier);
+				$findDeviceQuery->forConnector($connector);
 
-			if ($device === null) {
-				throw new Exceptions\Runtime('You have to select device from list');
+				$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\HomeKitDevice::class);
+				assert($device instanceof Entities\HomeKitDevice || $device === null);
+
+				if ($device !== null) {
+					return $device;
+				}
 			}
 
-			return $device;
+			throw new Exceptions\Runtime(
+				sprintf(
+					$this->translator->translate('//homekit-connector.cmd.base.messages.answerNotValid'),
+					$answer,
+				),
+			);
 		});
 
 		$device = $io->askQuestion($question);
