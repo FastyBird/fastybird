@@ -33,6 +33,7 @@
         "contributte/monolog": "^0.5",
         "contributte/translation": "^2.0",
         "cweagans/composer-patches": "^1.7",
+        "endroid/qr-code": "4.5",
         "evenement/evenement": "^3.0",
         "fastybird/datetime-factory": "^0.6",
         "fastybird/json-api": "^0.13",
