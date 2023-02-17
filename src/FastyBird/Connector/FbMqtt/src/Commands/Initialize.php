@@ -34,7 +34,7 @@ use Symfony\Component\Console\Output;
 use Symfony\Component\Console\Style;
 use Throwable;
 use function array_key_exists;
-use function array_keys;
+use function array_search;
 use function array_values;
 use function assert;
 use function count;
@@ -70,7 +70,6 @@ class Initialize extends Console\Command\Command
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Connectors\ConnectorsManager $connectorsManager,
 		private readonly DevicesModels\Connectors\Properties\PropertiesManager $propertiesManager,
-		private readonly DevicesModels\Connectors\Controls\ControlsManager $controlsManager,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 		Log\LoggerInterface|null $logger = null,
 		string|null $name = null,
@@ -277,11 +276,6 @@ class Initialize extends Console\Command\Command
 				'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_PASSWORD,
 				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 				'value' => $password,
-				'connector' => $connector,
-			]));
-
-			$this->controlsManager->create(Utils\ArrayHash::from([
-				'name' => Types\ConnectorControlName::NAME_REBOOT,
 				'connector' => $connector,
 			]));
 
@@ -626,7 +620,7 @@ class Initialize extends Console\Command\Command
 
 		$name = $io->askQuestion($question);
 
-		return $name === '' ? null : strval($name);
+		return strval($name) === '' ? null : strval($name);
 	}
 
 	/**
@@ -706,7 +700,7 @@ class Initialize extends Console\Command\Command
 
 		$username = $io->askQuestion($question);
 
-		return $username === '' ? null : strval($username);
+		return strval($username) === '' ? null : strval($username);
 	}
 
 	/**
@@ -720,7 +714,7 @@ class Initialize extends Console\Command\Command
 
 		$password = $io->askQuestion($question);
 
-		return $password === '' ? null : strval($password);
+		return strval($password) === '' ? null : strval($password);
 	}
 
 	/**
@@ -754,38 +748,44 @@ class Initialize extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			'Please select connector to manage',
+			'Please select connector under which you want to manage devices',
 			array_values($connectors),
+			count($connectors) === 1 ? 0 : null,
 		);
-		$question->setErrorMessage('Selected answer: "%s" is not valid.');
+		$question->setErrorMessage('Selected connector: "%s" is not valid.');
 		$question->setValidator(function (string|null $answer) use ($connectors): Entities\FbMqttConnector {
 			if ($answer === null) {
 				throw new Exceptions\InvalidState('Selected answer is not valid');
 			}
 
-			$connectorIdentifiers = array_keys($connectors);
-
-			if (!array_key_exists(intval($answer), $connectorIdentifiers)) {
-				throw new Exceptions\Runtime('You have to select connector from list');
+			if (array_key_exists(intval($answer), array_values($connectors))) {
+				$answer = array_values($connectors)[intval($answer)];
 			}
 
-			$findConnectorQuery = new DevicesQueries\FindConnectors();
-			$findConnectorQuery->byIdentifier($connectorIdentifiers[intval($answer)]);
+			$identifier = array_search($answer, $connectors, true);
 
-			$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\FbMqttConnector::class);
-			assert($connector instanceof Entities\FbMqttConnector || $connector === null);
+			if ($identifier !== false) {
+				$findConnectorQuery = new DevicesQueries\FindConnectors();
+				$findConnectorQuery->byIdentifier($identifier);
 
-			if ($connector === null) {
-				throw new Exceptions\Runtime('You have to select connector from list');
+				$connector = $this->connectorsRepository->findOneBy(
+					$findConnectorQuery,
+					Entities\FbMqttConnector::class,
+				);
+				assert($connector instanceof Entities\FbMqttConnector || $connector === null);
+
+				if ($connector !== null) {
+					return $connector;
+				}
 			}
 
-			return $connector;
+			throw new Exceptions\InvalidState('Selected answer is not valid');
 		});
 
-		$answer = $io->askQuestion($question);
-		assert($answer instanceof Entities\FbMqttConnector);
+		$connector = $io->askQuestion($question);
+		assert($connector instanceof Entities\FbMqttConnector);
 
-		return $answer;
+		return $connector;
 	}
 
 	/**

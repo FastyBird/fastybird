@@ -32,7 +32,7 @@ use Symfony\Component\Console\Output;
 use Symfony\Component\Console\Style;
 use Throwable;
 use function array_key_exists;
-use function array_keys;
+use function array_search;
 use function array_values;
 use function assert;
 use function count;
@@ -389,7 +389,7 @@ class Devices extends Console\Command\Command
 
 		$name = $io->askQuestion($question);
 
-		return $name === '' ? null : strval($name);
+		return strval($name) === '' ? null : strval($name);
 	}
 
 	/**
@@ -433,23 +433,28 @@ class Devices extends Console\Command\Command
 				throw new Exceptions\InvalidState('Selected answer is not valid');
 			}
 
-			$connectorIdentifiers = array_keys($connectors);
-
-			if (!array_key_exists(intval($answer), $connectorIdentifiers)) {
-				throw new Exceptions\Runtime('You have to select connector from list');
+			if (array_key_exists(intval($answer), array_values($connectors))) {
+				$answer = array_values($connectors)[intval($answer)];
 			}
 
-			$findConnectorQuery = new DevicesQueries\FindConnectors();
-			$findConnectorQuery->byIdentifier($connectorIdentifiers[intval($answer)]);
+			$identifier = array_search($answer, $connectors, true);
 
-			$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\FbMqttConnector::class);
-			assert($connector instanceof Entities\FbMqttConnector || $connector === null);
+			if ($identifier !== false) {
+				$findConnectorQuery = new DevicesQueries\FindConnectors();
+				$findConnectorQuery->byIdentifier($identifier);
 
-			if ($connector === null) {
-				throw new Exceptions\Runtime('You have to select connector from list');
+				$connector = $this->connectorsRepository->findOneBy(
+					$findConnectorQuery,
+					Entities\FbMqttConnector::class,
+				);
+				assert($connector instanceof Entities\FbMqttConnector || $connector === null);
+
+				if ($connector !== null) {
+					return $connector;
+				}
 			}
 
-			return $connector;
+			throw new Exceptions\InvalidState('Selected answer is not valid');
 		});
 
 		$connector = $io->askQuestion($question);
@@ -496,27 +501,29 @@ class Devices extends Console\Command\Command
 		$question->setErrorMessage('Selected device: "%s" is not valid.');
 		$question->setValidator(function (string|null $answer) use ($connector, $devices): Entities\FbMqttDevice {
 			if ($answer === null) {
-				throw new Exceptions\InvalidState('Selected answer is not valid');
-			}
-
-			$devicesIdentifiers = array_keys($devices);
-
-			if (!array_key_exists(intval($answer), $devicesIdentifiers)) {
 				throw new Exceptions\Runtime('You have to select device from list');
 			}
 
-			$findDeviceQuery = new DevicesQueries\FindDevices();
-			$findDeviceQuery->byIdentifier($devicesIdentifiers[intval($answer)]);
-			$findDeviceQuery->forConnector($connector);
-
-			$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\FbMqttDevice::class);
-			assert($device instanceof Entities\FbMqttDevice || $device === null);
-
-			if ($device === null) {
-				throw new Exceptions\Runtime('You have to select device from list');
+			if (array_key_exists(intval($answer), array_values($devices))) {
+				$answer = array_values($devices)[intval($answer)];
 			}
 
-			return $device;
+			$identifier = array_search($answer, $devices, true);
+
+			if ($identifier !== false) {
+				$findDeviceQuery = new DevicesQueries\FindDevices();
+				$findDeviceQuery->byIdentifier($identifier);
+				$findDeviceQuery->forConnector($connector);
+
+				$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\FbMqttDevice::class);
+				assert($device instanceof Entities\FbMqttDevice || $device === null);
+
+				if ($device !== null) {
+					return $device;
+				}
+			}
+
+			throw new Exceptions\Runtime('You have to select device from list');
 		});
 
 		$device = $io->askQuestion($question);
