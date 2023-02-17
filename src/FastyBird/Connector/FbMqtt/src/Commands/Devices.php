@@ -36,7 +36,6 @@ use function array_search;
 use function array_values;
 use function assert;
 use function count;
-use function intval;
 use function sprintf;
 use function strval;
 use function usort;
@@ -433,8 +432,8 @@ class Devices extends Console\Command\Command
 				throw new Exceptions\InvalidState('Selected answer is not valid');
 			}
 
-			if (array_key_exists(intval($answer), array_values($connectors))) {
-				$answer = array_values($connectors)[intval($answer)];
+			if (array_key_exists($answer, array_values($connectors))) {
+				$answer = array_values($connectors)[$answer];
 			}
 
 			$identifier = array_search($answer, $connectors, true);
@@ -504,8 +503,8 @@ class Devices extends Console\Command\Command
 				throw new Exceptions\Runtime('You have to select device from list');
 			}
 
-			if (array_key_exists(intval($answer), array_values($devices))) {
-				$answer = array_values($devices)[intval($answer)];
+			if (array_key_exists($answer, array_values($devices))) {
+				$answer = array_values($devices)[$answer];
 			}
 
 			$identifier = array_search($answer, $devices, true);

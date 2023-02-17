@@ -38,7 +38,6 @@ use function array_search;
 use function array_values;
 use function assert;
 use function count;
-use function intval;
 use function sprintf;
 use function strval;
 use function usort;
@@ -578,15 +577,15 @@ class Initialize extends Console\Command\Command
 				throw new Exceptions\InvalidState('Selected answer is not valid');
 			}
 
-			if ($answer === self::CHOICE_QUESTION_LOCAL_MODE || intval($answer) === 0) {
+			if ($answer === self::CHOICE_QUESTION_LOCAL_MODE || $answer === '0') {
 				return Types\ClientMode::get(Types\ClientMode::MODE_LOCAL);
 			}
 
-			if ($answer === self::CHOICE_QUESTION_CLOUD_MODE || intval($answer) === 1) {
+			if ($answer === self::CHOICE_QUESTION_CLOUD_MODE || $answer === '1') {
 				return Types\ClientMode::get(Types\ClientMode::MODE_CLOUD);
 			}
 
-			if ($answer === self::CHOICE_QUESTION_MQTT_MODE || intval($answer) === 2) {
+			if ($answer === self::CHOICE_QUESTION_MQTT_MODE || $answer === '2') {
 				return Types\ClientMode::get(Types\ClientMode::MODE_MQTT);
 			}
 
@@ -687,8 +686,8 @@ class Initialize extends Console\Command\Command
 				throw new Exceptions\InvalidState('Selected answer is not valid');
 			}
 
-			if (array_key_exists(intval($answer), array_values($connectors))) {
-				$answer = array_values($connectors)[intval($answer)];
+			if (array_key_exists($answer, array_values($connectors))) {
+				$answer = array_values($connectors)[$answer];
 			}
 
 			$identifier = array_search($answer, $connectors, true);

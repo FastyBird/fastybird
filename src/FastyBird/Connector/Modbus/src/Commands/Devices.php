@@ -1273,19 +1273,19 @@ class Devices extends Console\Command\Command
 				throw new Exceptions\InvalidState('Selected answer is not valid');
 			}
 
-			if ($answer === Types\ByteOrder::BYTE_ORDER_BIG || intval($answer) === 0) {
+			if ($answer === Types\ByteOrder::BYTE_ORDER_BIG || $answer === '0') {
 				return Types\ByteOrder::get(Types\ByteOrder::BYTE_ORDER_BIG);
 			}
 
-			if ($answer === Types\ByteOrder::BYTE_ORDER_BIG_SWAP || intval($answer) === 1) {
+			if ($answer === Types\ByteOrder::BYTE_ORDER_BIG_SWAP || $answer === '1') {
 				return Types\ByteOrder::get(Types\ByteOrder::BYTE_ORDER_BIG_SWAP);
 			}
 
-			if ($answer === Types\ByteOrder::BYTE_ORDER_LITTLE || intval($answer) === 2) {
+			if ($answer === Types\ByteOrder::BYTE_ORDER_LITTLE || $answer === '2') {
 				return Types\ByteOrder::get(Types\ByteOrder::BYTE_ORDER_LITTLE);
 			}
 
-			if ($answer === Types\ByteOrder::BYTE_ORDER_LITTLE_SWAP || intval($answer) === 3) {
+			if ($answer === Types\ByteOrder::BYTE_ORDER_LITTLE_SWAP || $answer === '3') {
 				return Types\ByteOrder::get(Types\ByteOrder::BYTE_ORDER_LITTLE_SWAP);
 			}
 
@@ -1395,19 +1395,19 @@ class Devices extends Console\Command\Command
 				throw new Exceptions\InvalidState('Selected answer is not valid');
 			}
 
-			if ($answer === self::CHOICE_QUESTION_CHANNEL_DISCRETE_INPUT || intval($answer) === 0) {
+			if ($answer === self::CHOICE_QUESTION_CHANNEL_DISCRETE_INPUT || $answer === '0') {
 				return Types\ChannelType::get(Types\ChannelType::DISCRETE_INPUT);
 			}
 
-			if ($answer === self::CHOICE_QUESTION_CHANNEL_COIL || intval($answer) === 1) {
+			if ($answer === self::CHOICE_QUESTION_CHANNEL_COIL || $answer === '1') {
 				return Types\ChannelType::get(Types\ChannelType::COIL);
 			}
 
-			if ($answer === self::CHOICE_QUESTION_CHANNEL_INPUT_REGISTER || intval($answer) === 2) {
+			if ($answer === self::CHOICE_QUESTION_CHANNEL_INPUT_REGISTER || $answer === '2') {
 				return Types\ChannelType::get(Types\ChannelType::INPUT_REGISTER);
 			}
 
-			if ($answer === self::CHOICE_QUESTION_CHANNEL_HOLDING_REGISTER || intval($answer) === 3) {
+			if ($answer === self::CHOICE_QUESTION_CHANNEL_HOLDING_REGISTER || $answer === '3') {
 				return Types\ChannelType::get(Types\ChannelType::HOLDING_REGISTER);
 			}
 
@@ -2190,8 +2190,8 @@ class Devices extends Console\Command\Command
 				throw new Exceptions\InvalidState('Selected answer is not valid');
 			}
 
-			if (array_key_exists(intval($answer), array_values($connectors))) {
-				$answer = array_values($connectors)[intval($answer)];
+			if (array_key_exists($answer, array_values($connectors))) {
+				$answer = array_values($connectors)[$answer];
 			}
 
 			$identifier = array_search($answer, $connectors, true);
@@ -2261,8 +2261,8 @@ class Devices extends Console\Command\Command
 				throw new Exceptions\Runtime('You have to select device from list');
 			}
 
-			if (array_key_exists(intval($answer), array_values($devices))) {
-				$answer = array_values($devices)[intval($answer)];
+			if (array_key_exists($answer, array_values($devices))) {
+				$answer = array_values($devices)[$answer];
 			}
 
 			$identifier = array_search($answer, $devices, true);

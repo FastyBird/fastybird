@@ -663,11 +663,11 @@ class Initialize extends Console\Command\Command
 				throw new Exceptions\InvalidState('Selected answer is not valid');
 			}
 
-			if ($answer === self::CHOICE_QUESTION_RTU_MODE || intval($answer) === 0) {
+			if ($answer === self::CHOICE_QUESTION_RTU_MODE || $answer === '0') {
 				return Types\ClientMode::get(Types\ClientMode::MODE_RTU);
 			}
 
-			if ($answer === self::CHOICE_QUESTION_TCP_MODE || intval($answer) === 1) {
+			if ($answer === self::CHOICE_QUESTION_TCP_MODE || $answer === '1') {
 				return Types\ClientMode::get(Types\ClientMode::MODE_TCP);
 			}
 
@@ -736,8 +736,8 @@ class Initialize extends Console\Command\Command
 				throw new Exceptions\InvalidState('Selected answer is not valid');
 			}
 
-			if (array_key_exists(intval($answer), array_values($byteSizes))) {
-				$answer = array_values($byteSizes)[intval($answer)];
+			if (array_key_exists($answer, array_values($byteSizes))) {
+				$answer = array_values($byteSizes)[$answer];
 			}
 
 			$byteSize = array_search($answer, $byteSizes, true);
@@ -783,8 +783,8 @@ class Initialize extends Console\Command\Command
 				throw new Exceptions\InvalidState('Selected answer is not valid');
 			}
 
-			if (array_key_exists(intval($answer), array_values($baudRates))) {
-				$answer = array_values($baudRates)[intval($answer)];
+			if (array_key_exists($answer, array_values($baudRates))) {
+				$answer = array_values($baudRates)[$answer];
 			}
 
 			$baudRate = array_search($answer, $baudRates, true);
@@ -840,11 +840,11 @@ class Initialize extends Console\Command\Command
 				throw new Exceptions\InvalidState('Selected answer is not valid');
 			}
 
-			if ($answer === self::CHOICE_QUESTION_PARITY_NONE || intval($answer) === 0) {
+			if ($answer === self::CHOICE_QUESTION_PARITY_NONE || $answer === '0') {
 				return Types\Parity::get(Types\Parity::PARITY_NONE);
-			} elseif ($answer === self::CHOICE_QUESTION_PARITY_ODD || intval($answer) === 1) {
+			} elseif ($answer === self::CHOICE_QUESTION_PARITY_ODD || $answer === '1') {
 				return Types\Parity::get(Types\Parity::PARITY_ODD);
-			} elseif ($answer === self::CHOICE_QUESTION_PARITY_EVEN || intval($answer) === 2) {
+			} elseif ($answer === self::CHOICE_QUESTION_PARITY_EVEN || $answer === '2') {
 				return Types\Parity::get(Types\Parity::PARITY_EVEN);
 			}
 
@@ -885,8 +885,8 @@ class Initialize extends Console\Command\Command
 				throw new Exceptions\InvalidState('Selected answer is not valid');
 			}
 
-			if (array_key_exists(intval($answer), array_values($stopBits))) {
-				$answer = array_values($stopBits)[intval($answer)];
+			if (array_key_exists($answer, array_values($stopBits))) {
+				$answer = array_values($stopBits)[$answer];
 			}
 
 			$stopBit = array_search($answer, $stopBits, true);
@@ -945,8 +945,8 @@ class Initialize extends Console\Command\Command
 				throw new Exceptions\InvalidState('Selected answer is not valid');
 			}
 
-			if (array_key_exists(intval($answer), array_values($connectors))) {
-				$answer = array_values($connectors)[intval($answer)];
+			if (array_key_exists($answer, array_values($connectors))) {
+				$answer = array_values($connectors)[$answer];
 			}
 
 			$identifier = array_search($answer, $connectors, true);

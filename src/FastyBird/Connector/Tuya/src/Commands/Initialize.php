@@ -738,27 +738,27 @@ class Initialize extends Console\Command\Command
 				throw new Exceptions\InvalidState('Selected answer is not valid');
 			}
 
-			if ($answer === self::CHOICE_QUESTION_CENTRAL_EUROPE_DC || intval($answer) === 0) {
+			if ($answer === self::CHOICE_QUESTION_CENTRAL_EUROPE_DC || $answer === '0') {
 				return Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::ENDPOINT_EUROPE);
 			}
 
-			if ($answer === self::CHOICE_QUESTION_WESTERN_EUROPE_DC || intval($answer) === 1) {
+			if ($answer === self::CHOICE_QUESTION_WESTERN_EUROPE_DC || $answer === '1') {
 				return Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::ENDPOINT_EUROPE_MS);
 			}
 
-			if ($answer === self::CHOICE_QUESTION_WESTERN_AMERICA_DC || intval($answer) === 2) {
+			if ($answer === self::CHOICE_QUESTION_WESTERN_AMERICA_DC || $answer === '2') {
 				return Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::ENDPOINT_AMERICA);
 			}
 
-			if ($answer === self::CHOICE_QUESTION_EASTERN_AMERICA_DC || intval($answer) === 3) {
+			if ($answer === self::CHOICE_QUESTION_EASTERN_AMERICA_DC || $answer === '3') {
 				return Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::ENDPOINT_AMERICA_AZURE);
 			}
 
-			if ($answer === self::CHOICE_QUESTION_CHINA_DC || intval($answer) === 4) {
+			if ($answer === self::CHOICE_QUESTION_CHINA_DC || $answer === '4') {
 				return Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::ENDPOINT_CHINA);
 			}
 
-			if ($answer === self::CHOICE_QUESTION_INDIA_DC || intval($answer) === 5) {
+			if ($answer === self::CHOICE_QUESTION_INDIA_DC || $answer === '5') {
 				return Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::ENDPOINT_INDIA);
 			}
 
@@ -826,8 +826,8 @@ class Initialize extends Console\Command\Command
 				throw new Exceptions\InvalidState('Selected answer is not valid');
 			}
 
-			if (array_key_exists(intval($answer), array_values($connectors))) {
-				$answer = array_values($connectors)[intval($answer)];
+			if (array_key_exists($answer, array_values($connectors))) {
+				$answer = array_values($connectors)[$answer];
 			}
 
 			$identifier = array_search($answer, $connectors, true);

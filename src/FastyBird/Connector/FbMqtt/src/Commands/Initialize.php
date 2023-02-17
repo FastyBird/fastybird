@@ -325,7 +325,7 @@ class Initialize extends Console\Command\Command
 			$io->warning('No FB MQTT connectors registered in system');
 
 			$question = new Console\Question\ConfirmationQuestion(
-				'Would you like to create new FbMqtt connector configuration?',
+				'Would you like to create new FB MQTT connector configuration?',
 				false,
 			);
 
@@ -601,7 +601,7 @@ class Initialize extends Console\Command\Command
 				throw new Exceptions\InvalidState('Selected answer is not valid');
 			}
 
-			if ($answer === self::CHOICE_QUESTION_V1_MODE || intval($answer) === 0) {
+			if ($answer === self::CHOICE_QUESTION_V1_MODE || $answer === '0') {
 				return Types\ProtocolVersion::get(Types\ProtocolVersion::VERSION_1);
 			}
 
@@ -758,8 +758,8 @@ class Initialize extends Console\Command\Command
 				throw new Exceptions\InvalidState('Selected answer is not valid');
 			}
 
-			if (array_key_exists(intval($answer), array_values($connectors))) {
-				$answer = array_values($connectors)[intval($answer)];
+			if (array_key_exists($answer, array_values($connectors))) {
+				$answer = array_values($connectors)[$answer];
 			}
 
 			$identifier = array_search($answer, $connectors, true);
