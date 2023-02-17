@@ -34,7 +34,7 @@ use Symfony\Component\Console\Output;
 use Symfony\Component\Console\Style;
 use Throwable;
 use function array_key_exists;
-use function array_keys;
+use function array_search;
 use function array_values;
 use function assert;
 use function count;
@@ -84,7 +84,6 @@ class Initialize extends Console\Command\Command
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Connectors\ConnectorsManager $connectorsManager,
 		private readonly DevicesModels\Connectors\Properties\PropertiesManager $propertiesManager,
-		private readonly DevicesModels\Connectors\Controls\ControlsManager $controlsManager,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 		Log\LoggerInterface|null $logger = null,
 		string|null $name = null,
@@ -225,9 +224,7 @@ class Initialize extends Console\Command\Command
 			return;
 		}
 
-		$question = new Console\Question\Question('Provide connector name');
-
-		$name = $io->askQuestion($question);
+		$name = $this->askName($io);
 
 		$accessId = $this->askAccessId($io);
 
@@ -292,16 +289,6 @@ class Initialize extends Console\Command\Command
 					'connector' => $connector,
 				]));
 			}
-
-			$this->controlsManager->create(Utils\ArrayHash::from([
-				'name' => Types\ConnectorControlName::NAME_REBOOT,
-				'connector' => $connector,
-			]));
-
-			$this->controlsManager->create(Utils\ArrayHash::from([
-				'name' => Types\ConnectorControlName::NAME_DISCOVER,
-				'connector' => $connector,
-			]));
 
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
@@ -383,9 +370,7 @@ class Initialize extends Console\Command\Command
 			$mode = $this->askMode($io);
 		}
 
-		$question = new Console\Question\Question('Provide connector name', $connector->getName());
-
-		$name = $io->askQuestion($question);
+		$name = $this->askName($io, $connector);
 
 		$enabled = $connector->isEnabled();
 
@@ -685,20 +670,36 @@ class Initialize extends Console\Command\Command
 
 		$mode = $io->askQuestion($question);
 
-		if ($mode === self::CHOICE_QUESTION_LOCAL_MODE) {
+		if ($mode === self::CHOICE_QUESTION_LOCAL_MODE || intval($mode) === 0) {
 			return Types\ClientMode::get(Types\ClientMode::MODE_LOCAL);
 		}
 
-		if ($mode === self::CHOICE_QUESTION_CLOUD_MODE) {
+		if ($mode === self::CHOICE_QUESTION_CLOUD_MODE || intval($mode) === 1) {
 			return Types\ClientMode::get(Types\ClientMode::MODE_CLOUD);
 		}
 
 		throw new Exceptions\InvalidState('Unknown connector mode selected');
 	}
 
+	private function askName(Style\SymfonyStyle $io, Entities\TuyaConnector|null $connector = null): string|null
+	{
+		$question = new Console\Question\Question('Provide connector name', $connector?->getName());
+
+		$name = $io->askQuestion($question);
+
+		return strval($name) === '' ? null : strval($name);
+	}
+
 	private function askAccessId(Style\SymfonyStyle $io): string
 	{
 		$question = new Console\Question\Question('Provide cloud authentication Access ID');
+		$question->setValidator(static function (string|null $answer): string {
+			if ($answer === '' || $answer === null) {
+				throw new Exceptions\Runtime('You have to provide valid cloud authentication Access ID');
+			}
+
+			return $answer;
+		});
 
 		return strval($io->askQuestion($question));
 	}
@@ -706,6 +707,13 @@ class Initialize extends Console\Command\Command
 	private function askAccessSecret(Style\SymfonyStyle $io): string
 	{
 		$question = new Console\Question\Question('Provide cloud authentication Access Secret');
+		$question->setValidator(static function (string|null $answer): string {
+			if ($answer === '' || $answer === null) {
+				throw new Exceptions\Runtime('You have to provide valid cloud authentication Access Secret');
+			}
+
+			return $answer;
+		});
 
 		return strval($io->askQuestion($question));
 	}
@@ -730,27 +738,27 @@ class Initialize extends Console\Command\Command
 				throw new Exceptions\InvalidState('Selected answer is not valid');
 			}
 
-			if ($answer === self::CHOICE_QUESTION_CENTRAL_EUROPE_DC || intval($answer) === 0) {
+			if ($answer === self::CHOICE_QUESTION_CENTRAL_EUROPE_DC || $answer === '0') {
 				return Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::ENDPOINT_EUROPE);
 			}
 
-			if ($answer === self::CHOICE_QUESTION_WESTERN_EUROPE_DC || intval($answer) === 1) {
+			if ($answer === self::CHOICE_QUESTION_WESTERN_EUROPE_DC || $answer === '1') {
 				return Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::ENDPOINT_EUROPE_MS);
 			}
 
-			if ($answer === self::CHOICE_QUESTION_WESTERN_AMERICA_DC || intval($answer) === 2) {
+			if ($answer === self::CHOICE_QUESTION_WESTERN_AMERICA_DC || $answer === '2') {
 				return Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::ENDPOINT_AMERICA);
 			}
 
-			if ($answer === self::CHOICE_QUESTION_EASTERN_AMERICA_DC || intval($answer) === 3) {
+			if ($answer === self::CHOICE_QUESTION_EASTERN_AMERICA_DC || $answer === '3') {
 				return Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::ENDPOINT_AMERICA_AZURE);
 			}
 
-			if ($answer === self::CHOICE_QUESTION_CHINA_DC || intval($answer) === 4) {
+			if ($answer === self::CHOICE_QUESTION_CHINA_DC || $answer === '4') {
 				return Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::ENDPOINT_CHINA);
 			}
 
-			if ($answer === self::CHOICE_QUESTION_INDIA_DC || intval($answer) === 5) {
+			if ($answer === self::CHOICE_QUESTION_INDIA_DC || $answer === '5') {
 				return Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::ENDPOINT_INDIA);
 			}
 
@@ -766,6 +774,13 @@ class Initialize extends Console\Command\Command
 	private function askUid(Style\SymfonyStyle $io): string
 	{
 		$question = new Console\Question\Question('Provide cloud user identification');
+		$question->setValidator(static function (string|null $answer): string {
+			if ($answer === '' || $answer === null) {
+				throw new Exceptions\Runtime('You have to provide valid cloud user identification');
+			}
+
+			return $answer;
+		});
 
 		return strval($io->askQuestion($question));
 	}
@@ -801,38 +816,44 @@ class Initialize extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			'Please select connector to manage',
+			'Please select connector under which you want to manage devices',
 			array_values($connectors),
+			count($connectors) === 1 ? 0 : null,
 		);
-		$question->setErrorMessage('Selected answer: "%s" is not valid.');
+		$question->setErrorMessage('Selected connector: "%s" is not valid.');
 		$question->setValidator(function (string|null $answer) use ($connectors): Entities\TuyaConnector {
 			if ($answer === null) {
 				throw new Exceptions\InvalidState('Selected answer is not valid');
 			}
 
-			$connectorIdentifiers = array_keys($connectors);
-
-			if (!array_key_exists(intval($answer), $connectorIdentifiers)) {
-				throw new Exceptions\Runtime('You have to select connector from list');
+			if (array_key_exists($answer, array_values($connectors))) {
+				$answer = array_values($connectors)[$answer];
 			}
 
-			$findConnectorQuery = new DevicesQueries\FindConnectors();
-			$findConnectorQuery->byIdentifier($connectorIdentifiers[intval($answer)]);
+			$identifier = array_search($answer, $connectors, true);
 
-			$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\TuyaConnector::class);
-			assert($connector instanceof Entities\TuyaConnector || $connector === null);
+			if ($identifier !== false) {
+				$findConnectorQuery = new DevicesQueries\FindConnectors();
+				$findConnectorQuery->byIdentifier($identifier);
 
-			if ($connector === null) {
-				throw new Exceptions\Runtime('You have to select connector from list');
+				$connector = $this->connectorsRepository->findOneBy(
+					$findConnectorQuery,
+					Entities\TuyaConnector::class,
+				);
+				assert($connector instanceof Entities\TuyaConnector || $connector === null);
+
+				if ($connector !== null) {
+					return $connector;
+				}
 			}
 
-			return $connector;
+			throw new Exceptions\InvalidState('Selected answer is not valid');
 		});
 
-		$answer = $io->askQuestion($question);
-		assert($answer instanceof Entities\TuyaConnector);
+		$connector = $io->askQuestion($question);
+		assert($connector instanceof Entities\TuyaConnector);
 
-		return $answer;
+		return $connector;
 	}
 
 	/**

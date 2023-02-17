@@ -22,6 +22,7 @@ use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -42,6 +43,7 @@ use function intval;
 use function is_string;
 use function React\Async\async;
 use function sprintf;
+use function usort;
 use const SIGINT;
 
 /**
@@ -168,10 +170,17 @@ class Discovery extends Console\Command\Command
 
 			$findConnectorsQuery = new DevicesQueries\FindConnectors();
 
-			foreach ($this->connectorsRepository->findAllBy(
+			$systemConnectors = $this->connectorsRepository->findAllBy(
 				$findConnectorsQuery,
 				Entities\TuyaConnector::class,
-			) as $connector) {
+			);
+			usort(
+				$systemConnectors,
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Connectors\Connector $a, DevicesEntities\Connectors\Connector $b): int => $a->getIdentifier() <=> $b->getIdentifier()
+			);
+
+			foreach ($systemConnectors as $connector) {
 				assert($connector instanceof Entities\TuyaConnector);
 
 				$connectors[$connector->getIdentifier()] = $connector->getIdentifier()

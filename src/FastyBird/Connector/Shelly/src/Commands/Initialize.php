@@ -34,12 +34,12 @@ use Symfony\Component\Console\Output;
 use Symfony\Component\Console\Style;
 use Throwable;
 use function array_key_exists;
-use function array_keys;
+use function array_search;
 use function array_values;
 use function assert;
 use function count;
-use function intval;
 use function sprintf;
+use function strval;
 use function usort;
 
 /**
@@ -73,7 +73,6 @@ class Initialize extends Console\Command\Command
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Connectors\ConnectorsManager $connectorsManager,
 		private readonly DevicesModels\Connectors\Properties\PropertiesManager $propertiesManager,
-		private readonly DevicesModels\Connectors\Controls\ControlsManager $controlsManager,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 		Log\LoggerInterface|null $logger = null,
 		string|null $name = null,
@@ -212,21 +211,14 @@ class Initialize extends Console\Command\Command
 			return;
 		}
 
-		$question = new Console\Question\Question('Provide connector name');
-
-		$name = $io->askQuestion($question);
+		$name = $this->askName($io);
 
 		$cloudAuthKey = null;
 		$cloudServer = null;
 
 		if ($mode->getValue() === Types\ClientMode::MODE_CLOUD) {
-			$question = new Console\Question\Question('Provide cloud authentication key');
-
-			$cloudAuthKey = $io->askQuestion($question);
-
-			$question = new Console\Question\Question('Provide cloud server address');
-
-			$cloudServer = $io->askQuestion($question);
+			$cloudAuthKey = $this->askCloudAuthenticationKey($io);
+			$cloudServer = $this->askCloudServerAddress($io);
 		}
 
 		try {
@@ -264,16 +256,6 @@ class Initialize extends Console\Command\Command
 					'connector' => $connector,
 				]));
 			}
-
-			$this->controlsManager->create(Utils\ArrayHash::from([
-				'name' => Types\ConnectorControlName::NAME_REBOOT,
-				'connector' => $connector,
-			]));
-
-			$this->controlsManager->create(Utils\ArrayHash::from([
-				'name' => Types\ConnectorControlName::NAME_DISCOVER,
-				'connector' => $connector,
-			]));
 
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
@@ -354,9 +336,7 @@ class Initialize extends Console\Command\Command
 			$mode = $this->askMode($io);
 		}
 
-		$question = new Console\Question\Question('Provide connector name', $connector->getName());
-
-		$name = $io->askQuestion($question);
+		$name = $this->askName($io, $connector);
 
 		$cloudAuthKey = null;
 		$cloudAuthKeyProperty = null;
@@ -383,9 +363,7 @@ class Initialize extends Console\Command\Command
 			}
 
 			if ($cloudAuthKeyProperty === null || $changeCloudAuthKey) {
-				$question = new Console\Question\Question('Provide cloud authentication key');
-
-				$cloudAuthKey = $io->askQuestion($question);
+				$cloudAuthKey = $this->askCloudAuthenticationKey($io, $connector);
 			}
 
 			$cloudServerProperty = $connector->findProperty(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLOUD_SERVER);
@@ -402,9 +380,7 @@ class Initialize extends Console\Command\Command
 			}
 
 			if ($cloudServerProperty === null || $changeCloudServer) {
-				$question = new Console\Question\Question('Provide cloud server address');
-
-				$cloudServer = $io->askQuestion($question);
+				$cloudServer = $this->askCloudServerAddress($io, $connector);
 			}
 		}
 
@@ -601,15 +577,15 @@ class Initialize extends Console\Command\Command
 				throw new Exceptions\InvalidState('Selected answer is not valid');
 			}
 
-			if ($answer === self::CHOICE_QUESTION_LOCAL_MODE || intval($answer) === 0) {
+			if ($answer === self::CHOICE_QUESTION_LOCAL_MODE || $answer === '0') {
 				return Types\ClientMode::get(Types\ClientMode::MODE_LOCAL);
 			}
 
-			if ($answer === self::CHOICE_QUESTION_CLOUD_MODE || intval($answer) === 1) {
+			if ($answer === self::CHOICE_QUESTION_CLOUD_MODE || $answer === '1') {
 				return Types\ClientMode::get(Types\ClientMode::MODE_CLOUD);
 			}
 
-			if ($answer === self::CHOICE_QUESTION_MQTT_MODE || intval($answer) === 2) {
+			if ($answer === self::CHOICE_QUESTION_MQTT_MODE || $answer === '2') {
 				return Types\ClientMode::get(Types\ClientMode::MODE_MQTT);
 			}
 
@@ -620,6 +596,53 @@ class Initialize extends Console\Command\Command
 		assert($answer instanceof Types\ClientMode);
 
 		return $answer;
+	}
+
+	private function askName(Style\SymfonyStyle $io, Entities\ShellyConnector|null $connector = null): string|null
+	{
+		$question = new Console\Question\Question('Provide connector name', $connector?->getName());
+
+		$name = $io->askQuestion($question);
+
+		return strval($name) === '' ? null : strval($name);
+	}
+
+	private function askCloudAuthenticationKey(
+		Style\SymfonyStyle $io,
+		Entities\ShellyConnector|null $connector = null,
+	): string|null
+	{
+		$question = new Console\Question\Question('Provide cloud authentication key', $connector?->getName());
+		$question->setValidator(static function (string|null $answer): string {
+			if ($answer === '' || $answer === null) {
+				throw new Exceptions\Runtime('You have to provide valid authentication key');
+			}
+
+			return $answer;
+		});
+
+		$key = $io->askQuestion($question);
+
+		return strval($key) === '' ? null : strval($key);
+	}
+
+	private function askCloudServerAddress(
+		Style\SymfonyStyle $io,
+		Entities\ShellyConnector|null $connector = null,
+	): string|null
+	{
+		$question = new Console\Question\Question('Provide cloud server address', $connector?->getName());
+		$question->setValidator(static function (string|null $answer): string {
+			if ($answer === '' || $answer === null) {
+				throw new Exceptions\Runtime('You have to provide valid server address');
+			}
+
+			return $answer;
+		});
+
+		$key = $io->askQuestion($question);
+
+		return strval($key) === '' ? null : strval($key);
 	}
 
 	/**
@@ -653,38 +676,44 @@ class Initialize extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			'Please select connector to manage',
+			'Please select connector under which you want to manage devices',
 			array_values($connectors),
+			count($connectors) === 1 ? 0 : null,
 		);
-		$question->setErrorMessage('Selected answer: "%s" is not valid.');
+		$question->setErrorMessage('Selected connector: "%s" is not valid.');
 		$question->setValidator(function (string|null $answer) use ($connectors): Entities\ShellyConnector {
 			if ($answer === null) {
 				throw new Exceptions\InvalidState('Selected answer is not valid');
 			}
 
-			$connectorIdentifiers = array_keys($connectors);
-
-			if (!array_key_exists(intval($answer), $connectorIdentifiers)) {
-				throw new Exceptions\Runtime('You have to select connector from list');
+			if (array_key_exists($answer, array_values($connectors))) {
+				$answer = array_values($connectors)[$answer];
 			}
 
-			$findConnectorQuery = new DevicesQueries\FindConnectors();
-			$findConnectorQuery->byIdentifier($connectorIdentifiers[intval($answer)]);
+			$identifier = array_search($answer, $connectors, true);
 
-			$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\ShellyConnector::class);
-			assert($connector instanceof Entities\ShellyConnector || $connector === null);
+			if ($identifier !== false) {
+				$findConnectorQuery = new DevicesQueries\FindConnectors();
+				$findConnectorQuery->byIdentifier($identifier);
 
-			if ($connector === null) {
-				throw new Exceptions\Runtime('You have to select connector from list');
+				$connector = $this->connectorsRepository->findOneBy(
+					$findConnectorQuery,
+					Entities\ShellyConnector::class,
+				);
+				assert($connector instanceof Entities\ShellyConnector || $connector === null);
+
+				if ($connector !== null) {
+					return $connector;
+				}
 			}
 
-			return $connector;
+			throw new Exceptions\InvalidState('Selected answer is not valid');
 		});
 
-		$answer = $io->askQuestion($question);
-		assert($answer instanceof Entities\ShellyConnector);
+		$connector = $io->askQuestion($question);
+		assert($connector instanceof Entities\ShellyConnector);
 
-		return $answer;
+		return $connector;
 	}
 
 	/**

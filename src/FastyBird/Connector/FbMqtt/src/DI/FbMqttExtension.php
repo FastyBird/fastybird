@@ -25,6 +25,7 @@ use FastyBird\Connector\FbMqtt\Entities;
 use FastyBird\Connector\FbMqtt\Helpers;
 use FastyBird\Connector\FbMqtt\Hydrators;
 use FastyBird\Connector\FbMqtt\Schemas;
+use FastyBird\Connector\FbMqtt\Subscribers;
 use FastyBird\Connector\FbMqtt\Writers;
 use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
 use FastyBird\Module\Devices\DI as DevicesDI;
@@ -141,6 +142,9 @@ class FbMqttExtension extends DI\CompilerExtension
 			->setArguments([
 				'consumers' => $builder->findByType(Consumers\Consumer::class),
 			]);
+
+		$builder->addDefinition($this->prefix('subscribers.controls'), new DI\Definitions\ServiceDefinition())
+			->setType(Subscribers\Controls::class);
 
 		$builder->addDefinition($this->prefix('schemas.connector.fbMqtt'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\FbMqttConnector::class);
