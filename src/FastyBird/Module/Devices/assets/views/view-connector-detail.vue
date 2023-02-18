@@ -141,14 +141,12 @@ import {
 	useDeviceControls,
 	useDeviceProperties,
 	useDevices,
-	useDeviceAttributes,
 } from '@/models';
 import {
 	IChannelControl,
 	IChannelProperty,
 	IConnectorControl,
 	IConnectorProperty,
-	IDeviceAttribute,
 	IDeviceControl,
 	IDeviceProperty,
 } from '@/models/types';
@@ -180,7 +178,6 @@ const connectorPropertiesStore = useConnectorProperties();
 const devicesStore = useDevices();
 const deviceControlsStore = useDeviceControls();
 const devicePropertiesStore = useDeviceProperties();
-const deviceAttributesStore = useDeviceAttributes();
 const channelsStore = useChannels();
 const channelControlsStore = useChannelControls();
 const channelPropertiesStore = useChannelProperties();
@@ -240,11 +237,6 @@ const connectorData = computed<IConnectorData | null>((): IConnectorData | null 
 							),
 							properties: orderBy<IDeviceProperty>(
 								devicePropertiesStore.findForDevice(device.id).filter((property) => !property.draft),
-								[(v): string => v.name ?? v.identifier, (v): string => v.identifier],
-								['asc']
-							),
-							attributes: orderBy<IDeviceAttribute>(
-								deviceAttributesStore.findForDevice(device.id).filter((attribute) => !attribute.draft),
 								[(v): string => v.name ?? v.identifier, (v): string => v.identifier],
 								['asc']
 							),

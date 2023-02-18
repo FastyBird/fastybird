@@ -8,7 +8,6 @@ export * from './controls/types';
 export * from './devices/types';
 export * from './devices-controls/types';
 export * from './devices-properties/types';
-export * from './devices-attributes/types';
 export * from './properties/types';
 
 // STORE

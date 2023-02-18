@@ -96,9 +96,8 @@ import {
 	useDeviceControls,
 	useDeviceProperties,
 	useDevices,
-	useDeviceAttributes,
 } from '@/models';
-import { IConnector, IChannelControl, IChannelProperty, IDevice, IDeviceControl, IDeviceProperty, IDeviceAttribute } from '@/models/types';
+import { IConnector, IChannelControl, IChannelProperty, IDevice, IDeviceControl, IDeviceProperty } from '@/models/types';
 import { DeviceSettingsDeviceSettings } from '@/components';
 import { IChannelData, IDeviceData, IViewDeviceSettingsProps } from '@/types';
 
@@ -116,7 +115,6 @@ const connectorsStore = useConnectors();
 const devicesStore = useDevices();
 const deviceControlsStore = useDeviceControls();
 const devicePropertiesStore = useDeviceProperties();
-const deviceAttributesStore = useDeviceAttributes();
 const channelsStore = useChannels();
 const channelControlsStore = useChannelControls();
 const channelPropertiesStore = useChannelProperties();
@@ -187,11 +185,6 @@ const deviceData = computed<IDeviceData>((): IDeviceData => {
 		),
 		properties: orderBy<IDeviceProperty>(
 			devicePropertiesStore.findForDevice(device.value.id).filter((property) => (device.value?.draft ? true : !property.draft)),
-			[(v): string => v.name ?? v.identifier, (v): string => v.identifier],
-			['asc']
-		),
-		attributes: orderBy<IDeviceAttribute>(
-			deviceAttributesStore.findForDevice(device.value.id).filter((attribute) => !attribute.draft),
 			[(v): string => v.name ?? v.identifier, (v): string => v.identifier],
 			['asc']
 		),
