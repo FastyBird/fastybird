@@ -119,7 +119,7 @@ class Attribute implements Entities\Entity,
 		bool $plain = false,
 	): string|MetadataTypes\HardwareManufacturer|MetadataTypes\FirmwareManufacturer|MetadataTypes\DeviceModel|null
 	{
-		if ($this->getIdentifier() === MetadataTypes\DeviceAttributeIdentifier::IDENTIFIER_HARDWARE_MANUFACTURER) {
+		if ($this->getIdentifier() === MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MANUFACTURER) {
 			if ($this->content !== null && MetadataTypes\HardwareManufacturer::isValidValue($this->content)) {
 				return MetadataTypes\HardwareManufacturer::get($this->content);
 			}
@@ -133,7 +133,7 @@ class Attribute implements Entities\Entity,
 			);
 		}
 
-		if ($this->getIdentifier() === MetadataTypes\DeviceAttributeIdentifier::IDENTIFIER_HARDWARE_MODEL) {
+		if ($this->getIdentifier() === MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL) {
 			if ($this->content !== null && MetadataTypes\DeviceModel::isValidValue($this->content)) {
 				return MetadataTypes\DeviceModel::get($this->content);
 			}
@@ -145,7 +145,7 @@ class Attribute implements Entities\Entity,
 			return MetadataTypes\DeviceModel::get(MetadataTypes\DeviceModel::MODEL_CUSTOM);
 		}
 
-		if ($this->getIdentifier() === MetadataTypes\DeviceAttributeIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS) {
+		if ($this->getIdentifier() === MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS) {
 			if (
 				$this->content !== null
 				&& (
@@ -162,7 +162,7 @@ class Attribute implements Entities\Entity,
 			return null;
 		}
 
-		if ($this->getIdentifier() === MetadataTypes\DeviceAttributeIdentifier::IDENTIFIER_FIRMWARE_MANUFACTURER) {
+		if ($this->getIdentifier() === MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_MANUFACTURER) {
 			if ($this->content !== null && MetadataTypes\FirmwareManufacturer::isValidValue($this->content)) {
 				return MetadataTypes\FirmwareManufacturer::get($this->content);
 			}
@@ -186,19 +186,19 @@ class Attribute implements Entities\Entity,
 		string|MetadataTypes\HardwareManufacturer|MetadataTypes\FirmwareManufacturer|MetadataTypes\DeviceModel|null $content,
 	): void
 	{
-		if ($this->getIdentifier() === MetadataTypes\DeviceAttributeIdentifier::IDENTIFIER_HARDWARE_MANUFACTURER) {
+		if ($this->getIdentifier() === MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MANUFACTURER) {
 			if ($content instanceof MetadataTypes\HardwareManufacturer) {
 				$this->content = strval($content->getValue());
 			} else {
 				$this->content = $content !== null ? Utils\Strings::lower((string) $content) : null;
 			}
-		} elseif ($this->getIdentifier() === MetadataTypes\DeviceAttributeIdentifier::IDENTIFIER_HARDWARE_MODEL) {
+		} elseif ($this->getIdentifier() === MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL) {
 			if ($content instanceof MetadataTypes\DeviceModel) {
 				$this->content = strval($content->getValue());
 			} else {
 				$this->content = $content !== null ? Utils\Strings::lower((string) $content) : null;
 			}
-		} elseif ($this->getIdentifier() === MetadataTypes\DeviceAttributeIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS) {
+		} elseif ($this->getIdentifier() === MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS) {
 			if (
 				$content !== null
 				&& preg_match('/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/', (string) $content) === 0
@@ -211,7 +211,7 @@ class Attribute implements Entities\Entity,
 				':',
 				'-',
 			], '', (string) $content)) : null;
-		} elseif ($this->getIdentifier() === MetadataTypes\DeviceAttributeIdentifier::IDENTIFIER_FIRMWARE_MANUFACTURER) {
+		} elseif ($this->getIdentifier() === MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_MANUFACTURER) {
 			if ($content instanceof MetadataTypes\FirmwareManufacturer) {
 				$this->content = strval($content->getValue());
 			} else {

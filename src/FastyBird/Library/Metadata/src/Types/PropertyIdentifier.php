@@ -68,6 +68,20 @@ class PropertyIdentifier extends Consistence\Enum\Enum
 
 	public const IDENTIFIER_FREE_HEAP = 'free_heap';
 
+	public const IDENTIFIER_HARDWARE_MANUFACTURER = 'hardware_manufacturer';
+
+	public const IDENTIFIER_HARDWARE_MODEL = 'hardware_model';
+
+	public const IDENTIFIER_HARDWARE_VERSION = 'hardware_version';
+
+	public const IDENTIFIER_HARDWARE_MAC_ADDRESS = 'hardware_mac_address';
+
+	public const IDENTIFIER_FIRMWARE_MANUFACTURER = 'firmware_manufacturer';
+
+	public const IDENTIFIER_FIRMWARE_NAME = 'firmware_name';
+
+	public const IDENTIFIER_FIRMWARE_VERSION = 'firmware_version';
+
 	public function __toString(): string
 	{
 		return strval(self::getValue());

@@ -87,9 +87,6 @@ export enum DevicePropertyIdentifier {
 	IP_ADDRESS = 'ip_address',
 	STATUS_LED = 'status_led',
 	FREE_HEAP = 'free_heap',
-}
-
-export enum DeviceAttributeIdentifier {
 	HARDWARE_MANUFACTURER = 'hardware_manufacturer',
 	HARDWARE_MODEL = 'hardware_model',
 	HARDWARE_VERSION = 'hardware_version',
@@ -156,15 +153,6 @@ export interface DeviceEntity {
 	connector: string;
 	parents: string[];
 	children: string[];
-	owner: string | null;
-}
-
-export interface DeviceAttributeEntity {
-	id: string;
-	identifier: string;
-	name: string | null;
-	content: string | null;
-	device: string;
 	owner: string | null;
 }
 

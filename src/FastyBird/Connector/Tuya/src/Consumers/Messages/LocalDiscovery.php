@@ -242,17 +242,17 @@ final class LocalDiscovery implements Consumer
 		$this->setDeviceAttribute(
 			$device->getId(),
 			$entity->getModel(),
-			Types\DeviceAttributeIdentifier::IDENTIFIER_HARDWARE_MODEL,
+			Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL,
 		);
 		$this->setDeviceAttribute(
 			$device->getId(),
 			$entity->getMac(),
-			Types\DeviceAttributeIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS,
+			Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS,
 		);
 		$this->setDeviceAttribute(
 			$device->getId(),
 			$entity->getSn(),
-			Types\DeviceAttributeIdentifier::IDENTIFIER_SERIAL_NUMBER,
+			Types\DevicePropertyIdentifier::IDENTIFIER_SERIAL_NUMBER,
 		);
 
 		if (count($entity->getDataPoints()) > 0) {

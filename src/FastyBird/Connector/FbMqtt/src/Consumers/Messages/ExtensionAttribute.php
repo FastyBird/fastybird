@@ -93,44 +93,44 @@ final class ExtensionAttribute implements Consumers\Consumer
 			$entity->getExtension()->equalsValue(Types\ExtensionType::EXTENSION_TYPE_FASTYBIRD_HARDWARE)
 			&& $entity->getParameter() === Entities\Messages\ExtensionAttribute::MANUFACTURER
 		) {
-			$attributeIdentifier = Types\DeviceAttributeIdentifier::IDENTIFIER_HARDWARE_MANUFACTURER;
+			$attributeIdentifier = Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MANUFACTURER;
 
 		} elseif (
 			$entity->getExtension()->equalsValue(Types\ExtensionType::EXTENSION_TYPE_FASTYBIRD_HARDWARE)
 			&& $entity->getParameter() === Entities\Messages\ExtensionAttribute::MODEL
 		) {
-			$attributeIdentifier = Types\DeviceAttributeIdentifier::IDENTIFIER_HARDWARE_MODEL;
+			$attributeIdentifier = Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL;
 
 		} elseif (
 			$entity->getExtension()->equalsValue(Types\ExtensionType::EXTENSION_TYPE_FASTYBIRD_HARDWARE)
 			&& $entity->getParameter() === Entities\Messages\ExtensionAttribute::VERSION
 		) {
-			$attributeIdentifier = Types\DeviceAttributeIdentifier::IDENTIFIER_HARDWARE_VERSION;
+			$attributeIdentifier = Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_VERSION;
 
 		} elseif (
 			$entity->getExtension()->equalsValue(Types\ExtensionType::EXTENSION_TYPE_FASTYBIRD_HARDWARE)
 			&& $entity->getParameter() === Entities\Messages\ExtensionAttribute::MAC_ADDRESS
 		) {
-			$attributeIdentifier = Types\DeviceAttributeIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS;
+			$attributeIdentifier = Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS;
 
 			// FIRMWARE INFO
 		} elseif (
 			$entity->getExtension()->equalsValue(Types\ExtensionType::EXTENSION_TYPE_FASTYBIRD_FIRMWARE)
 			&& $entity->getParameter() === Entities\Messages\ExtensionAttribute::MANUFACTURER
 		) {
-			$attributeIdentifier = Types\DeviceAttributeIdentifier::IDENTIFIER_FIRMWARE_MANUFACTURER;
+			$attributeIdentifier = Types\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_MANUFACTURER;
 
 		} elseif (
 			$entity->getExtension()->equalsValue(Types\ExtensionType::EXTENSION_TYPE_FASTYBIRD_FIRMWARE)
 			&& $entity->getParameter() === Entities\Messages\ExtensionAttribute::NAME
 		) {
-			$attributeIdentifier = Types\DeviceAttributeIdentifier::IDENTIFIER_FIRMWARE_NAME;
+			$attributeIdentifier = Types\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_NAME;
 
 		} elseif (
 			$entity->getExtension()->equalsValue(Types\ExtensionType::EXTENSION_TYPE_FASTYBIRD_FIRMWARE)
 			&& $entity->getParameter() === Entities\Messages\ExtensionAttribute::VERSION
 		) {
-			$attributeIdentifier = Types\DeviceAttributeIdentifier::IDENTIFIER_FIRMWARE_VERSION;
+			$attributeIdentifier = Types\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_VERSION;
 		}
 
 		if ($attributeIdentifier === null) {

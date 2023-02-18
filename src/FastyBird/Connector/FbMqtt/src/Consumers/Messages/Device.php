@@ -242,10 +242,10 @@ final class Device implements Consumers\Consumer
 		foreach ($extensions as $extensionName) {
 			if ($extensionName === Types\ExtensionType::EXTENSION_TYPE_FASTYBIRD_HARDWARE) {
 				foreach ([
-					Types\DeviceAttributeIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS,
-					Types\DeviceAttributeIdentifier::IDENTIFIER_HARDWARE_MANUFACTURER,
-					Types\DeviceAttributeIdentifier::IDENTIFIER_HARDWARE_MODEL,
-					Types\DeviceAttributeIdentifier::IDENTIFIER_HARDWARE_VERSION,
+					Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS,
+					Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MANUFACTURER,
+					Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL,
+					Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_VERSION,
 				] as $attributeName) {
 					if ($device->findAttribute($attributeName) === null) {
 						$this->deviceAttributesManager->create(Utils\ArrayHash::from([
@@ -256,9 +256,9 @@ final class Device implements Consumers\Consumer
 				}
 			} elseif ($extensionName === Types\ExtensionType::EXTENSION_TYPE_FASTYBIRD_FIRMWARE) {
 				foreach ([
-					Types\DeviceAttributeIdentifier::IDENTIFIER_FIRMWARE_MANUFACTURER,
-					Types\DeviceAttributeIdentifier::IDENTIFIER_FIRMWARE_NAME,
-					Types\DeviceAttributeIdentifier::IDENTIFIER_FIRMWARE_VERSION,
+					Types\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_MANUFACTURER,
+					Types\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_NAME,
+					Types\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_VERSION,
 				] as $attributeName) {
 					if ($device->findAttribute($attributeName) === null) {
 						$this->deviceAttributesManager->create(Utils\ArrayHash::from([

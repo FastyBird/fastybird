@@ -156,17 +156,17 @@ final class LocalDiscovery implements Consumer
 		$this->setDeviceAttribute(
 			$device->getId(),
 			$entity->getModel(),
-			Types\DeviceAttributeIdentifier::IDENTIFIER_HARDWARE_MODEL,
+			Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL,
 		);
 		$this->setDeviceAttribute(
 			$device->getId(),
 			$entity->getMacAddress(),
-			Types\DeviceAttributeIdentifier::IDENTIFIER_MAC_ADDRESS,
+			Types\DevicePropertyIdentifier::IDENTIFIER_MAC_ADDRESS,
 		);
 		$this->setDeviceAttribute(
 			$device->getId(),
 			$entity->getFirmwareVersion(),
-			Types\DeviceAttributeIdentifier::IDENTIFIER_FIRMWARE_VERSION,
+			Types\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_VERSION,
 		);
 
 		foreach ($entity->getChannels() as $channelDescription) {

@@ -395,7 +395,7 @@ class Discovery extends Console\Command\Command
 					$ipAddress = $device->getIpAddress();
 
 					$hardwareModelAttribute = $device->findAttribute(
-						Types\DeviceAttributeIdentifier::IDENTIFIER_HARDWARE_MODEL,
+						Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL,
 					);
 
 					$table->addRow([
