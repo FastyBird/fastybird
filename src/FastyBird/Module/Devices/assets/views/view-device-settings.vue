@@ -88,15 +88,7 @@ import {
 } from '@fastybird/web-ui-library';
 
 import { useBreakpoints, useEntityTitle, useRoutesNames, useUuid } from '@/composables';
-import {
-	useChannelControls,
-	useChannelProperties,
-	useChannels,
-	useConnectors,
-	useDeviceControls,
-	useDeviceProperties,
-	useDevices,
-} from '@/models';
+import { useChannelControls, useChannelProperties, useChannels, useConnectors, useDeviceControls, useDeviceProperties, useDevices } from '@/models';
 import { IConnector, IChannelControl, IChannelProperty, IDevice, IDeviceControl, IDeviceProperty } from '@/models/types';
 import { DeviceSettingsDeviceSettings } from '@/components';
 import { IChannelData, IDeviceData, IViewDeviceSettingsProps } from '@/types';

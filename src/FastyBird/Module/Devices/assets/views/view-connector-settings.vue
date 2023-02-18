@@ -97,14 +97,7 @@ import {
 	useDeviceProperties,
 	useDevices,
 } from '@/models';
-import {
-	IChannelControl,
-	IChannelProperty,
-	IConnectorControl,
-	IConnectorProperty,
-	IDeviceControl,
-	IDeviceProperty,
-} from '@/models/types';
+import { IChannelControl, IChannelProperty, IConnectorControl, IConnectorProperty, IDeviceControl, IDeviceProperty } from '@/models/types';
 import { ConnectorSettingsConnectorSettings } from '@/components';
 import { IChannelData, IConnectorData, IDeviceData, IViewConnectorSettingsProps } from '@/types';
 

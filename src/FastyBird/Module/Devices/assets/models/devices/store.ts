@@ -16,13 +16,7 @@ import {
 import { ApiError } from '@/errors';
 import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '@/jsonapi';
 import { useConnectors, useChannels, useDeviceControls, useDeviceProperties } from '@/models';
-import {
-	IChannelResponseModel,
-	IDeviceControlResponseModel,
-	IDeviceProperty,
-	IDevicePropertyResponseModel,
-	IPlainRelation,
-} from '@/models/types';
+import { IChannelResponseModel, IDeviceControlResponseModel, IDeviceProperty, IDevicePropertyResponseModel, IPlainRelation } from '@/models/types';
 
 import {
 	IDevicesState,
@@ -308,9 +302,7 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 			const channelsStore = useChannels();
 
 			try {
-				const devicesResponse = await axios.get<IDevicesResponseJson>(
-					`/${ModulePrefix.MODULE_DEVICES}/v1/devices?include=properties,controls`
-				);
+				const devicesResponse = await axios.get<IDevicesResponseJson>(`/${ModulePrefix.MODULE_DEVICES}/v1/devices?include=properties,controls`);
 
 				const devicesResponseModel = jsonApiFormatter.deserialize(devicesResponse.data) as IDeviceResponseModel[];
 
