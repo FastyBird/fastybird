@@ -55,8 +55,6 @@ final class LocalDiscovery implements Consumer
 		private readonly DevicesModels\Devices\DevicesManager $devicesManager,
 		private readonly DevicesModels\Devices\Properties\PropertiesRepository $propertiesRepository,
 		private readonly DevicesModels\Devices\Properties\PropertiesManager $propertiesManager,
-		private readonly DevicesModels\Devices\Attributes\AttributesRepository $attributesRepository,
-		private readonly DevicesModels\Devices\Attributes\AttributesManager $attributesManager,
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		private readonly DevicesModels\Channels\ChannelsManager $channelsManager,
 		private readonly DevicesModels\Channels\Properties\PropertiesManager $channelsPropertiesManager,

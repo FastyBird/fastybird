@@ -17,6 +17,7 @@ namespace FastyBird\Connector\Shelly\Consumers\Messages;
 
 use Doctrine\DBAL;
 use FastyBird\Connector\Shelly\Entities;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -37,8 +38,8 @@ use function assert;
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *
  * @property-read DevicesModels\Devices\DevicesRepository $devicesRepository
- * @property-read DevicesModels\Devices\Attributes\AttributesRepository $attributesRepository
- * @property-read DevicesModels\Devices\Attributes\AttributesManager $attributesManager
+ * @property-read DevicesModels\Devices\Properties\PropertiesRepository $propertiesRepository
+ * @property-read DevicesModels\Devices\Properties\PropertiesManager $propertiesManager
  * @property-read DevicesUtilities\Database $databaseHelper
  * @property-read Log\LoggerInterface $logger
  */
@@ -49,6 +50,8 @@ trait ConsumeDeviceAttribute
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Runtime
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
 	 */
 	private function setDeviceAttribute(
 		Uuid\UuidInterface $deviceId,
@@ -56,16 +59,19 @@ trait ConsumeDeviceAttribute
 		string $identifier,
 	): void
 	{
-		$findAttributeQuery = new DevicesQueries\FindDeviceAttributes();
-		$findAttributeQuery->byDeviceId($deviceId);
-		$findAttributeQuery->byIdentifier($identifier);
+		$findPropertyQuery = new DevicesQueries\FindDeviceProperties();
+		$findPropertyQuery->byDeviceId($deviceId);
+		$findPropertyQuery->byIdentifier($identifier);
 
-		$attribute = $this->attributesRepository->findOneBy($findAttributeQuery);
+		$property = $this->propertiesRepository->findOneBy(
+			$findPropertyQuery,
+			DevicesEntities\Devices\Properties\Variable::class,
+		);
 
-		if ($attribute !== null && $value === null) {
+		if ($property !== null && $value === null) {
 			$this->databaseHelper->transaction(
-				function () use ($attribute): void {
-					$this->attributesManager->delete($attribute);
+				function () use ($property): void {
+					$this->propertiesManager->delete($property);
 				},
 			);
 
@@ -76,11 +82,11 @@ trait ConsumeDeviceAttribute
 			return;
 		}
 
-		if ($attribute !== null && $attribute->getContent() === $value) {
+		if ($property !== null && $property->getValue() === $value) {
 			return;
 		}
 
-		if ($attribute === null) {
+		if ($property === null) {
 			$findDeviceQuery = new DevicesQueries\FindDevices();
 			$findDeviceQuery->byId($deviceId);
 
@@ -94,18 +100,20 @@ trait ConsumeDeviceAttribute
 				return;
 			}
 
-			$attribute = $this->databaseHelper->transaction(
-				fn (): DevicesEntities\Devices\Attributes\Attribute => $this->attributesManager->create(
+			$property = $this->databaseHelper->transaction(
+				fn (): DevicesEntities\Devices\Properties\Property => $this->propertiesManager->create(
 					Utils\ArrayHash::from([
+						'entity' => DevicesEntities\Devices\Properties\Variable::class,
 						'device' => $device,
 						'identifier' => $identifier,
-						'content' => $value,
+						'value' => $value,
+						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 					]),
 				),
 			);
 
 			$this->logger->debug(
-				'Device attribute was created',
+				'Device property was created',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'message-consumer',
@@ -113,24 +121,24 @@ trait ConsumeDeviceAttribute
 					'device' => [
 						'id' => $deviceId->toString(),
 					],
-					'attribute' => [
-						'id' => $attribute->getPlainId(),
+					'property' => [
+						'id' => $property->getPlainId(),
 					],
 				],
 			);
 
 		} else {
-			$attribute = $this->databaseHelper->transaction(
-				fn (): DevicesEntities\Devices\Attributes\Attribute => $this->attributesManager->update(
-					$attribute,
+			$property = $this->databaseHelper->transaction(
+				fn (): DevicesEntities\Devices\Properties\Property => $this->propertiesManager->update(
+					$property,
 					Utils\ArrayHash::from([
-						'content' => $value,
+						'value' => $value,
 					]),
 				),
 			);
 
 			$this->logger->debug(
-				'Device attribute was updated',
+				'Device property was updated',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'message-consumer',
@@ -138,8 +146,8 @@ trait ConsumeDeviceAttribute
 					'device' => [
 						'id' => $deviceId->toString(),
 					],
-					'attribute' => [
-						'id' => $attribute->getPlainId(),
+					'property' => [
+						'id' => $property->getPlainId(),
 					],
 				],
 			);

@@ -24,24 +24,21 @@ IGNORE INTO `fb_devices_module_devices_properties` (`property_id`, `device_id`, 
 (_binary 0x28BC0D382F7C4A71AA7427B102F8DF4C, _binary 0x69786D15FD0C4D9F937833287C2009FA, 'dynamic', 'rssi', 'rssi', 0, 1, 'int', NULL, NULL, NULL, NULL, NULL, '2020-03-20 09:18:20', '2020-03-20 09:18:20'),
 (_binary 0x3FF0029F7FE3405EA3EFEDAAD08E2FFA, _binary 0x69786D15FD0C4D9F937833287C2009FA, 'variable', 'status_led', 'status_led', 0, 0, 'enum', NULL, 'on,off', NULL, NULL, 'on', '2020-03-20 09:18:20', '2020-03-20 09:18:20'),
 (_binary 0xC747CFDD654C4E5097156D14DBF20552, _binary 0x69786D15FD0C4D9F937833287C2009FA, 'variable', 'username', 'username', 0, 0, 'string', NULL, NULL, NULL, NULL, 'device-username', '2020-03-20 09:18:20', '2020-03-20 09:18:20'),
-(_binary 0x3134BA8EF1344BF29C80C977C4DEB0FB, _binary 0x69786D15FD0C4D9F937833287C2009FA, 'variable', 'password', 'password', 0, 0, 'string', NULL, NULL, NULL, NULL, 'device-password', '2020-03-20 09:18:20', '2020-03-20 09:18:20');
+(_binary 0x3134BA8EF1344BF29C80C977C4DEB0FB, _binary 0x69786D15FD0C4D9F937833287C2009FA, 'variable', 'password', 'password', 0, 0, 'string', NULL, NULL, NULL, NULL, 'device-password', '2020-03-20 09:18:20', '2020-03-20 09:18:20'),
+(_binary 0x03164A6D9628460C95CC90E6216332D9, _binary 0x69786D15FD0C4D9F937833287C2009FA, 'variable', 'hardware_manufacturer', NULL, 0, 0, 'string', 'itead', '2020-03-20 09:18:20', '2020-03-20 09:18:20'),
+(_binary 0x06599B7402364A9899C8C459A3CDB6A4, _binary 0x69786D15FD0C4D9F937833287C2009FA, 'variable', 'hardware_model', NULL, 0, 0, 'string', NULL, NULL, NULL, NULL, 'sonoff_basic', '2020-03-20 09:18:20', '2020-03-20 09:18:20'),
+(_binary 0x090DF4F25F234118A2BD6F0646CF2A70, _binary 0x69786D15FD0C4D9F937833287C2009FA, 'variable', 'hardware_version', NULL, 0, 0, 'string', NULL, NULL, NULL, NULL, 'rev1', '2020-03-20 09:18:20', '2020-03-20 09:18:20'),
+(_binary 0x0E771233FD5343DDBD24CDA3303F902E, _binary 0x69786D15FD0C4D9F937833287C2009FA, 'variable', 'hardware_mac_address', NULL, 0, 0, 'string', NULL, NULL, NULL, NULL, '807d3a3dbe6d', '2020-03-20 09:18:20', '2020-03-20 09:18:20'),
+(_binary 0x0EB39DAEEF884BB5A9EA94B0B788101F, _binary 0x69786D15FD0C4D9F937833287C2009FA, 'variable', 'firmware_manufacturer', NULL, 0, 0, 'string', NULL, NULL, NULL, NULL, 'fastybird', '2020-03-20 09:18:20', '2020-03-20 09:18:20'),
+(_binary 0x0F87EFBBCB1549CF8B2FF82FF5163C53, _binary 0xE36A27881EF84CDFAB094735F191A509, 'variable', 'hardware_manufacturer', NULL, 0, 0, 'string', NULL, NULL, NULL, NULL, 'fastybird', '2020-03-20 09:18:20', '2020-03-20 09:18:20'),
+(_binary 0x125EFCD0492B4F73B9BD42C07D92CCDF, _binary 0xE36A27881EF84CDFAB094735F191A509, 'variable', 'hardware_model', NULL, 0, 0, 'string', NULL, NULL, NULL, NULL, 'fastybird_wifi_gw', '2020-03-20 09:18:20', '2020-03-20 09:18:20'),
+(_binary 0x145595C21B1E4FC29A0E54D0FA23E230, _binary 0xE36A27881EF84CDFAB094735F191A509, 'variable', 'hardware_version', NULL, 0, 0, 'string', NULL, NULL, NULL, NULL, 'rev1', '2020-03-20 09:18:20', '2020-03-20 09:18:20'),
+(_binary 0x1FD2EB2C087E4400808B6209DFCC5FDA, _binary 0xE36A27881EF84CDFAB094735F191A509, 'variable', 'hardware_mac_address', NULL, 0, 0, 'string', NULL, NULL, NULL, NULL, '807d3a3dbe6d', '2020-03-20 09:18:20', '2020-03-20 09:18:20'),
+(_binary 0x21D9F0393A914015A824DD42A5537879, _binary 0xE36A27881EF84CDFAB094735F191A509, 'variable', 'firmware_manufacturer', NULL, 0, 0, 'string', NULL, NULL, NULL, NULL, 'fastybird', '2020-03-20 09:18:20', '2020-03-20 09:18:20');
 
 INSERT
 IGNORE INTO `fb_devices_module_devices_controls` (`control_id`, `device_id`, `control_name`, `created_at`, `updated_at`) VALUES
 (_binary 0x7C055B2B60C3401793DBE9478D8AA662, _binary 0x69786D15FD0C4D9F937833287C2009FA, 'configure', '2020-03-20 09:18:20', '2020-03-20 09:18:20');
-
-INSERT
-IGNORE INTO `fb_devices_module_devices_attributes` (`attribute_id`, `device_id`, `attribute_identifier`, `attribute_name`, `attribute_content`, `created_at`, `updated_at`) VALUES
-(_binary 0x03164A6D9628460C95CC90E6216332D9, _binary 0x69786D15FD0C4D9F937833287C2009FA, 'hardware_manufacturer', NULL, 'itead', '2020-03-20 09:18:20', '2020-03-20 09:18:20'),
-(_binary 0x06599B7402364A9899C8C459A3CDB6A4, _binary 0x69786D15FD0C4D9F937833287C2009FA, 'hardware_model', NULL, 'sonoff_basic', '2020-03-20 09:18:20', '2020-03-20 09:18:20'),
-(_binary 0x090DF4F25F234118A2BD6F0646CF2A70, _binary 0x69786D15FD0C4D9F937833287C2009FA, 'hardware_version', NULL, 'rev1', '2020-03-20 09:18:20', '2020-03-20 09:18:20'),
-(_binary 0x0E771233FD5343DDBD24CDA3303F902E, _binary 0x69786D15FD0C4D9F937833287C2009FA, 'hardware_mac_address', NULL, '807d3a3dbe6d', '2020-03-20 09:18:20', '2020-03-20 09:18:20'),
-(_binary 0x0EB39DAEEF884BB5A9EA94B0B788101F, _binary 0x69786D15FD0C4D9F937833287C2009FA, 'firmware_manufacturer', NULL, 'fastybird', '2020-03-20 09:18:20', '2020-03-20 09:18:20'),
-(_binary 0x0F87EFBBCB1549CF8B2FF82FF5163C53, _binary 0xE36A27881EF84CDFAB094735F191A509, 'hardware_manufacturer', NULL, 'fastybird', '2020-03-20 09:18:20', '2020-03-20 09:18:20'),
-(_binary 0x125EFCD0492B4F73B9BD42C07D92CCDF, _binary 0xE36A27881EF84CDFAB094735F191A509, 'hardware_model', NULL, 'fastybird_wifi_gw', '2020-03-20 09:18:20', '2020-03-20 09:18:20'),
-(_binary 0x145595C21B1E4FC29A0E54D0FA23E230, _binary 0xE36A27881EF84CDFAB094735F191A509, 'hardware_version', NULL, 'rev1', '2020-03-20 09:18:20', '2020-03-20 09:18:20'),
-(_binary 0x1FD2EB2C087E4400808B6209DFCC5FDA, _binary 0xE36A27881EF84CDFAB094735F191A509, 'hardware_mac_address', NULL, '807d3a3dbe6d', '2020-03-20 09:18:20', '2020-03-20 09:18:20'),
-(_binary 0x21D9F0393A914015A824DD42A5537879, _binary 0xE36A27881EF84CDFAB094735F191A509, 'firmware_manufacturer', NULL, 'fastybird', '2020-03-20 09:18:20', '2020-03-20 09:18:20');
 
 INSERT
 IGNORE INTO `fb_devices_module_channels` (`channel_id`, `device_id`, `channel_type`, `channel_name`, `channel_comment`, `channel_identifier`, `params`, `created_at`, `updated_at`) VALUES

@@ -109,12 +109,6 @@ class DevicesExtension extends DI\CompilerExtension
 		)
 			->setType(Models\Devices\Controls\ControlsRepository::class);
 
-		$builder->addDefinition(
-			$this->prefix('models.deviceAttributesRepository'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Models\Devices\Attributes\AttributesRepository::class);
-
 		$builder->addDefinition($this->prefix('models.channelsRepository'), new DI\Definitions\ServiceDefinition())
 			->setType(Models\Channels\ChannelsRepository::class);
 
@@ -158,13 +152,6 @@ class DevicesExtension extends DI\CompilerExtension
 
 		$builder->addDefinition($this->prefix('models.devicesControlsManager'), new DI\Definitions\ServiceDefinition())
 			->setType(Models\Devices\Controls\ControlsManager::class)
-			->setArgument('entityCrud', '__placeholder__');
-
-		$builder->addDefinition(
-			$this->prefix('models.devicesAttributesManager'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Models\Devices\Attributes\AttributesManager::class)
 			->setArgument('entityCrud', '__placeholder__');
 
 		$builder->addDefinition($this->prefix('models.channelsManager'), new DI\Definitions\ServiceDefinition())
@@ -233,10 +220,6 @@ class DevicesExtension extends DI\CompilerExtension
 			->setType(Controllers\DeviceControlsV1::class)
 			->addTag('nette.inject');
 
-		$builder->addDefinition($this->prefix('controllers.deviceAttributes'), new DI\Definitions\ServiceDefinition())
-			->setType(Controllers\DeviceAttributesV1::class)
-			->addTag('nette.inject');
-
 		$builder->addDefinition($this->prefix('controllers.channels'), new DI\Definitions\ServiceDefinition())
 			->setType(Controllers\ChannelsV1::class)
 			->addTag('nette.inject');
@@ -291,9 +274,6 @@ class DevicesExtension extends DI\CompilerExtension
 
 		$builder->addDefinition($this->prefix('schemas.device.control'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\Devices\Controls\Control::class);
-
-		$builder->addDefinition($this->prefix('schemas.device.attribute'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\Devices\Attributes\Attribute::class);
 
 		$builder->addDefinition($this->prefix('schemas.channel'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\Channels\Channel::class);
@@ -573,14 +553,6 @@ class DevicesExtension extends DI\CompilerExtension
 		$devicesControlsManagerService->setBody(
 			'return new ' . Models\Devices\Controls\ControlsManager::class
 			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Devices\Controls\Control::class . '\'));',
-		);
-
-		$devicesAttributesManagerService = $class->getMethod(
-			'createService' . ucfirst($this->name) . '__models__devicesAttributesManager',
-		);
-		$devicesAttributesManagerService->setBody(
-			'return new ' . Models\Devices\Attributes\AttributesManager::class
-			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Devices\Attributes\Attribute::class . '\'));',
 		);
 
 		$channelsManagerService = $class->getMethod(

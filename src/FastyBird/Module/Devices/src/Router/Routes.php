@@ -53,7 +53,6 @@ class Routes
 		private readonly Controllers\DevicePropertiesV1 $devicePropertiesV1Controller,
 		private readonly Controllers\DevicePropertyChildrenV1 $devicePropertyChildrenV1Controller,
 		private readonly Controllers\DeviceControlsV1 $deviceControlsV1Controller,
-		private readonly Controllers\DeviceAttributesV1 $deviceAttributesV1Controller,
 		private readonly Controllers\ChannelsV1 $channelsV1Controller,
 		private readonly Controllers\ChannelPropertiesV1 $channelPropertiesV1Controller,
 		private readonly Controllers\ChannelPropertyChildrenV1 $channelPropertyChildrenV1Controller,
@@ -185,29 +184,6 @@ class Routes
 							],
 						);
 						$route->setName(Devices\Constants::ROUTE_NAME_DEVICE_CONTROL_RELATIONSHIP);
-					});
-
-					/**
-					 * DEVICE ATTRIBUTES
-					 */
-					$group->group('/attributes', function (Routing\RouteCollector $group): void {
-						$route = $group->get('', [$this->deviceAttributesV1Controller, 'index']);
-						$route->setName(Devices\Constants::ROUTE_NAME_DEVICE_ATTRIBUTES);
-
-						$route = $group->get('/{' . self::URL_ITEM_ID . '}', [
-							$this->deviceAttributesV1Controller,
-							'read',
-						]);
-						$route->setName(Devices\Constants::ROUTE_NAME_DEVICE_ATTRIBUTE);
-
-						$route = $group->get(
-							'/{' . self::URL_ITEM_ID . '}/relationships/{' . self::RELATION_ENTITY . '}',
-							[
-								$this->deviceAttributesV1Controller,
-								'readRelationship',
-							],
-						);
-						$route->setName(Devices\Constants::ROUTE_NAME_DEVICE_ATTRIBUTE_RELATIONSHIP);
 					});
 
 					/**

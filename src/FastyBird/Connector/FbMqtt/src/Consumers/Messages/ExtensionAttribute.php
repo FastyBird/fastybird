@@ -46,7 +46,7 @@ final class ExtensionAttribute implements Consumers\Consumer
 
 	public function __construct(
 		private readonly DevicesModels\Devices\DevicesRepository $deviceRepository,
-		private readonly DevicesModels\Devices\Attributes\AttributesManager $attributesManager,
+		private readonly DevicesModels\Devices\Properties\PropertiesManager $propertiesManager,
 		private readonly DevicesUtilities\Database $databaseHelper,
 		Log\LoggerInterface|null $logger = null,
 	)
@@ -86,69 +86,69 @@ final class ExtensionAttribute implements Consumers\Consumer
 			return true;
 		}
 
-		$attributeIdentifier = null;
+		$propertyIdentifier = null;
 
 		// HARDWARE INFO
 		if (
 			$entity->getExtension()->equalsValue(Types\ExtensionType::EXTENSION_TYPE_FASTYBIRD_HARDWARE)
 			&& $entity->getParameter() === Entities\Messages\ExtensionAttribute::MANUFACTURER
 		) {
-			$attributeIdentifier = Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MANUFACTURER;
+			$propertyIdentifier = Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MANUFACTURER;
 
 		} elseif (
 			$entity->getExtension()->equalsValue(Types\ExtensionType::EXTENSION_TYPE_FASTYBIRD_HARDWARE)
 			&& $entity->getParameter() === Entities\Messages\ExtensionAttribute::MODEL
 		) {
-			$attributeIdentifier = Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL;
+			$propertyIdentifier = Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL;
 
 		} elseif (
 			$entity->getExtension()->equalsValue(Types\ExtensionType::EXTENSION_TYPE_FASTYBIRD_HARDWARE)
 			&& $entity->getParameter() === Entities\Messages\ExtensionAttribute::VERSION
 		) {
-			$attributeIdentifier = Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_VERSION;
+			$propertyIdentifier = Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_VERSION;
 
 		} elseif (
 			$entity->getExtension()->equalsValue(Types\ExtensionType::EXTENSION_TYPE_FASTYBIRD_HARDWARE)
 			&& $entity->getParameter() === Entities\Messages\ExtensionAttribute::MAC_ADDRESS
 		) {
-			$attributeIdentifier = Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS;
+			$propertyIdentifier = Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS;
 
 			// FIRMWARE INFO
 		} elseif (
 			$entity->getExtension()->equalsValue(Types\ExtensionType::EXTENSION_TYPE_FASTYBIRD_FIRMWARE)
 			&& $entity->getParameter() === Entities\Messages\ExtensionAttribute::MANUFACTURER
 		) {
-			$attributeIdentifier = Types\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_MANUFACTURER;
+			$propertyIdentifier = Types\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_MANUFACTURER;
 
 		} elseif (
 			$entity->getExtension()->equalsValue(Types\ExtensionType::EXTENSION_TYPE_FASTYBIRD_FIRMWARE)
 			&& $entity->getParameter() === Entities\Messages\ExtensionAttribute::NAME
 		) {
-			$attributeIdentifier = Types\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_NAME;
+			$propertyIdentifier = Types\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_NAME;
 
 		} elseif (
 			$entity->getExtension()->equalsValue(Types\ExtensionType::EXTENSION_TYPE_FASTYBIRD_FIRMWARE)
 			&& $entity->getParameter() === Entities\Messages\ExtensionAttribute::VERSION
 		) {
-			$attributeIdentifier = Types\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_VERSION;
+			$propertyIdentifier = Types\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_VERSION;
 		}
 
-		if ($attributeIdentifier === null) {
+		if ($propertyIdentifier === null) {
 			return true;
 		}
 
-		$attribute = $device->findAttribute($attributeIdentifier);
+		$property = $device->findProperty($propertyIdentifier);
 
-		if ($attribute === null) {
+		if ($property === null) {
 			$this->logger->error(
-				sprintf('Device attribute "%s" is not registered', $entity->getParameter()),
+				sprintf('Device property "%s" is not registered', $entity->getParameter()),
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 					'type' => 'extension-attribute-message-consumer',
 					'device' => [
 						'identifier' => $entity->getDevice(),
 					],
-					'attribute' => [
+					'property' => [
 						'identifier' => $entity->getParameter(),
 					],
 				],
@@ -157,16 +157,16 @@ final class ExtensionAttribute implements Consumers\Consumer
 			return true;
 		}
 
-		$this->databaseHelper->transaction(function () use ($entity, $attribute): void {
+		$this->databaseHelper->transaction(function () use ($entity, $property): void {
 			$toUpdate = [
-				'content' => $entity->getValue(),
+				'value' => $entity->getValue(),
 			];
 
-			$this->attributesManager->update($attribute, Utils\ArrayHash::from($toUpdate));
+			$this->propertiesManager->update($property, Utils\ArrayHash::from($toUpdate));
 		});
 
 		$this->logger->debug(
-			'Consumed extension attribute message',
+			'Consumed extension property message',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 				'type' => 'extension-attribute-message-consumer',
