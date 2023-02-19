@@ -1,35 +1,55 @@
 {
-  "meta" : {
-    "author" : "FastyBird team",
-    "copyright" : "FastyBird s.r.o"
+  "meta": {
+    "author": "FastyBird team",
+    "copyright": "FastyBird s.r.o"
   },
-  "jsonapi" : {
-    "version" : "1.1"
+  "jsonapi": {
+    "version": "1.1"
   },
-  "links" : {
-    "self" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/relationships/properties",
-    "related" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties"
+  "links": {
+    "self": "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/relationships/properties",
+    "related": "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties"
   },
-  "data" : [
+  "data": [
     {
-      "type" : "com.fastybird.devices-module/property/device/dynamic",
-      "id" : "28bc0d38-2f7c-4a71-aa74-27b102f8df4c"
+      "type": "com.fastybird.devices-module/property/device/variable",
+      "id": "03164a6d-9628-460c-95cc-90e6216332d9"
     },
     {
-      "type" : "com.fastybird.devices-module/property/device/variable",
-      "id" : "3134ba8e-f134-4bf2-9c80-c977c4deb0fb"
+      "type": "com.fastybird.devices-module/property/device/variable",
+      "id": "06599b74-0236-4a98-99c8-c459a3cdb6a4"
     },
     {
-      "type" : "com.fastybird.devices-module/property/device/variable",
-      "id" : "3ff0029f-7fe3-405e-a3ef-edaad08e2ffa"
+      "type": "com.fastybird.devices-module/property/device/variable",
+      "id": "090df4f2-5f23-4118-a2bd-6f0646cf2a70"
     },
     {
-      "type" : "com.fastybird.devices-module/property/device/dynamic",
-      "id" : "bbcccf8c-33ab-431b-a795-d7bb38b6b6db"
+      "type": "com.fastybird.devices-module/property/device/variable",
+      "id": "0e771233-fd53-43dd-bd24-cda3303f902e"
     },
     {
-      "type" : "com.fastybird.devices-module/property/device/variable",
-      "id" : "c747cfdd-654c-4e50-9715-6d14dbf20552"
+      "type": "com.fastybird.devices-module/property/device/variable",
+      "id": "0eb39dae-ef88-4bb5-a9ea-94b0b788101f"
+    },
+    {
+      "type": "com.fastybird.devices-module/property/device/dynamic",
+      "id": "28bc0d38-2f7c-4a71-aa74-27b102f8df4c"
+    },
+    {
+      "type": "com.fastybird.devices-module/property/device/variable",
+      "id": "3134ba8e-f134-4bf2-9c80-c977c4deb0fb"
+    },
+    {
+      "type": "com.fastybird.devices-module/property/device/variable",
+      "id": "3ff0029f-7fe3-405e-a3ef-edaad08e2ffa"
+    },
+    {
+      "type": "com.fastybird.devices-module/property/device/dynamic",
+      "id": "bbcccf8c-33ab-431b-a795-d7bb38b6b6db"
+    },
+    {
+      "type": "com.fastybird.devices-module/property/device/variable",
+      "id": "c747cfdd-654c-4e50-9715-6d14dbf20552"
     }
   ]
 }

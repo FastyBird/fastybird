@@ -50,8 +50,6 @@ abstract class Device extends JsonApiSchemas\JsonApi
 
 	public const RELATIONSHIPS_CONTROLS = 'controls';
 
-	public const RELATIONSHIPS_ATTRIBUTES = 'attributes';
-
 	public const RELATIONSHIPS_CONNECTOR = 'connector';
 
 	public const RELATIONSHIPS_PARENTS = 'parents';
@@ -132,11 +130,6 @@ abstract class Device extends JsonApiSchemas\JsonApi
 				self::RELATIONSHIP_LINKS_SELF => true,
 				self::RELATIONSHIP_LINKS_RELATED => true,
 			],
-			self::RELATIONSHIPS_ATTRIBUTES => [
-				self::RELATIONSHIP_DATA => $resource->getAttributes(),
-				self::RELATIONSHIP_LINKS_SELF => true,
-				self::RELATIONSHIP_LINKS_RELATED => true,
-			],
 			self::RELATIONSHIPS_CHANNELS => [
 				self::RELATIONSHIP_DATA => $this->getChannels($resource),
 				self::RELATIONSHIP_LINKS_SELF => true,
@@ -199,20 +192,6 @@ abstract class Device extends JsonApiSchemas\JsonApi
 				true,
 				[
 					'count' => count($resource->getControls()),
-				],
-			);
-		} elseif ($name === self::RELATIONSHIPS_ATTRIBUTES) {
-			return new JsonApi\Schema\Link(
-				false,
-				$this->router->urlFor(
-					Devices\Constants::ROUTE_NAME_DEVICE_ATTRIBUTES,
-					[
-						Router\Routes::URL_DEVICE_ID => $resource->getPlainId(),
-					],
-				),
-				true,
-				[
-					'count' => count($resource->getAttributes()),
 				],
 			);
 		} elseif ($name === self::RELATIONSHIPS_CHANNELS) {
@@ -286,7 +265,6 @@ abstract class Device extends JsonApiSchemas\JsonApi
 		if (
 			$name === self::RELATIONSHIPS_PROPERTIES
 			|| $name === self::RELATIONSHIPS_CONTROLS
-			|| $name === self::RELATIONSHIPS_ATTRIBUTES
 			|| $name === self::RELATIONSHIPS_CHANNELS
 			|| $name === self::RELATIONSHIPS_CHILDREN
 			|| $name === self::RELATIONSHIPS_PARENTS

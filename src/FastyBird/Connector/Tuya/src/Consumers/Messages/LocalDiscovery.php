@@ -44,8 +44,7 @@ final class LocalDiscovery implements Consumer
 {
 
 	use Nette\SmartObject;
-	use TConsumeDeviceProperty;
-	use TConsumeDeviceAttribute;
+	use ConsumeDeviceProperty;
 
 	private Log\LoggerInterface $logger;
 
@@ -237,17 +236,17 @@ final class LocalDiscovery implements Consumer
 			Types\DevicePropertyIdentifier::IDENTIFIER_ENCRYPTED,
 		);
 
-		$this->setDeviceAttribute(
+		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getModel(),
 			Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL,
 		);
-		$this->setDeviceAttribute(
+		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getMac(),
 			Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS,
 		);
-		$this->setDeviceAttribute(
+		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getSn(),
 			Types\DevicePropertyIdentifier::IDENTIFIER_SERIAL_NUMBER,

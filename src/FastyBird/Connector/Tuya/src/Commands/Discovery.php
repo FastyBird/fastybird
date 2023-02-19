@@ -394,7 +394,7 @@ class Discovery extends Console\Command\Command
 
 					$ipAddress = $device->getIpAddress();
 
-					$hardwareModelAttribute = $device->findAttribute(
+					$hardwareModelProperty = $device->findProperty(
 						Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL,
 					);
 
@@ -402,7 +402,7 @@ class Discovery extends Console\Command\Command
 						$foundDevices,
 						$device->getPlainId(),
 						$device->getName() ?? $device->getIdentifier(),
-						$hardwareModelAttribute?->getContent(true) ?? 'N/A',
+						$hardwareModelProperty?->getValue() ?? 'N/A',
 						$ipAddress ?? 'N/A',
 					]);
 				}

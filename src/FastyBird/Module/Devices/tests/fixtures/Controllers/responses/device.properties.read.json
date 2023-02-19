@@ -1,62 +1,62 @@
 {
-  "meta" : {
-    "author" : "FastyBird team",
-    "copyright" : "FastyBird s.r.o"
+  "meta": {
+    "author": "FastyBird team",
+    "copyright": "FastyBird s.r.o"
   },
-  "jsonapi" : {
-    "version" : "1.1"
+  "jsonapi": {
+    "version": "1.1"
   },
-  "links" : {
-    "self" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/28bc0d38-2f7c-4a71-aa74-27b102f8df4c"
+  "links": {
+    "self": "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/28bc0d38-2f7c-4a71-aa74-27b102f8df4c"
   },
-  "data" : {
-    "type" : "com.fastybird.devices-module/property/device/dynamic",
-    "id" : "28bc0d38-2f7c-4a71-aa74-27b102f8df4c",
-    "attributes" : {
-      "identifier" : "rssi",
-      "name" : "rssi",
-      "settable" : false,
-      "queryable" : true,
-      "data_type" : "int",
-      "unit" : null,
-      "format" : null,
-      "invalid" : null,
-      "number_of_decimals" : null,
-      "actual_value" : null,
-      "expected_value" : null,
-      "pending" : false
+  "data": {
+    "type": "com.fastybird.devices-module/property/device/dynamic",
+    "id": "28bc0d38-2f7c-4a71-aa74-27b102f8df4c",
+    "attributes": {
+      "identifier": "rssi",
+      "name": "rssi",
+      "settable": false,
+      "queryable": true,
+      "data_type": "int",
+      "unit": null,
+      "format": null,
+      "invalid": null,
+      "number_of_decimals": null,
+      "actual_value": null,
+      "expected_value": null,
+      "pending": false
     },
-    "relationships" : {
-      "device" : {
-        "links" : {
-          "related" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa"
+    "relationships": {
+      "device": {
+        "links": {
+          "related": "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa"
         },
-        "data" : {
-          "type" : "com.fastybird.devices-module/device/blank",
-          "id" : "69786d15-fd0c-4d9f-9378-33287c2009fa"
+        "data": {
+          "type": "com.fastybird.devices-module/device/blank",
+          "id": "69786d15-fd0c-4d9f-9378-33287c2009fa"
         }
       },
-      "parent" : {
-        "links" : {
-          "self" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/28bc0d38-2f7c-4a71-aa74-27b102f8df4c/relationships/parent"
+      "parent": {
+        "links": {
+          "self": "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/28bc0d38-2f7c-4a71-aa74-27b102f8df4c/relationships/parent"
         },
-        "data" : null
+        "data": null
       },
-      "children" : {
-        "links" : {
-          "self" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/28bc0d38-2f7c-4a71-aa74-27b102f8df4c/relationships/children",
-          "related" : {
-            "href" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/28bc0d38-2f7c-4a71-aa74-27b102f8df4c/children",
-            "meta" : {
-              "count" : 0
+      "children": {
+        "links": {
+          "self": "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/28bc0d38-2f7c-4a71-aa74-27b102f8df4c/relationships/children",
+          "related": {
+            "href": "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/28bc0d38-2f7c-4a71-aa74-27b102f8df4c/children",
+            "meta": {
+              "count": 0
             }
           }
         },
-        "data" : []
+        "data": []
       }
     },
-    "links" : {
-      "self" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/28bc0d38-2f7c-4a71-aa74-27b102f8df4c"
+    "links": {
+      "self": "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/28bc0d38-2f7c-4a71-aa74-27b102f8df4c"
     }
   }
 }

@@ -1,22 +1,22 @@
 <?php declare(strict_types = 1);
 
 /**
- * ConsumeDeviceAttribute.php
+ * ConsumeDeviceProperty.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:ShellyConnector!
+ * @package        FastyBird:TuyaConnector!
  * @subpackage     Consumers
  * @since          1.0.0
  *
  * @date           31.08.22
  */
 
-namespace FastyBird\Connector\Shelly\Consumers\Messages;
+namespace FastyBird\Connector\Tuya\Consumers\Messages;
 
 use Doctrine\DBAL;
-use FastyBird\Connector\Shelly\Entities;
+use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
@@ -30,9 +30,9 @@ use Ramsey\Uuid;
 use function assert;
 
 /**
- * Device type consumer trait
+ * Device ip address consumer trait
  *
- * @package        FastyBird:ShellyConnector!
+ * @package        FastyBird:TuyaConnector!
  * @subpackage     Consumers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
@@ -43,7 +43,7 @@ use function assert;
  * @property-read DevicesUtilities\Database $databaseHelper
  * @property-read Log\LoggerInterface $logger
  */
-trait ConsumeDeviceAttribute
+trait ConsumeDeviceProperty
 {
 
 	/**
@@ -53,9 +53,9 @@ trait ConsumeDeviceAttribute
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function setDeviceAttribute(
+	private function setDeviceProperty(
 		Uuid\UuidInterface $deviceId,
-		string|null $value,
+		string|bool|null $value,
 		string $identifier,
 	): void
 	{
@@ -63,10 +63,7 @@ trait ConsumeDeviceAttribute
 		$findPropertyQuery->byDeviceId($deviceId);
 		$findPropertyQuery->byIdentifier($identifier);
 
-		$property = $this->propertiesRepository->findOneBy(
-			$findPropertyQuery,
-			DevicesEntities\Devices\Properties\Variable::class,
-		);
+		$property = $this->propertiesRepository->findOneBy($findPropertyQuery);
 
 		if ($property !== null && $value === null) {
 			$this->databaseHelper->transaction(
@@ -82,8 +79,45 @@ trait ConsumeDeviceAttribute
 			return;
 		}
 
-		if ($property !== null && $property->getValue() === $value) {
+		if (
+			$property instanceof DevicesEntities\Devices\Properties\Variable
+			&& $property->getValue() === $value
+		) {
 			return;
+		}
+
+		if (
+			$property !== null
+			&& !$property instanceof DevicesEntities\Devices\Properties\Variable
+		) {
+			$findPropertyQuery = new DevicesQueries\FindDeviceProperties();
+			$findPropertyQuery->byId($property->getId());
+
+			$property = $this->propertiesRepository->findOneBy($findPropertyQuery);
+
+			if ($property !== null) {
+				$this->databaseHelper->transaction(function () use ($property): void {
+					$this->propertiesManager->delete($property);
+				});
+
+				$this->logger->warning(
+					'Device property is not valid type',
+					[
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+						'type' => 'message-consumer',
+						'group' => 'consumer',
+						'device' => [
+							'id' => $deviceId->toString(),
+						],
+						'property' => [
+							'id' => $property->getPlainId(),
+							'identifier' => $identifier,
+						],
+					],
+				);
+			}
+
+			$property = null;
 		}
 
 		if ($property === null) {
@@ -92,9 +126,9 @@ trait ConsumeDeviceAttribute
 
 			$device = $this->devicesRepository->findOneBy(
 				$findDeviceQuery,
-				Entities\ShellyDevice::class,
+				Entities\TuyaDevice::class,
 			);
-			assert($device instanceof Entities\ShellyDevice || $device === null);
+			assert($device instanceof Entities\TuyaDevice || $device === null);
 
 			if ($device === null) {
 				return;
@@ -106,16 +140,18 @@ trait ConsumeDeviceAttribute
 						'entity' => DevicesEntities\Devices\Properties\Variable::class,
 						'device' => $device,
 						'identifier' => $identifier,
-						'value' => $value,
 						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+						'settable' => false,
+						'queryable' => false,
+						'value' => $value,
 					]),
 				),
 			);
 
 			$this->logger->debug(
-				'Device property was created',
+				'Device ip address property was created',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'message-consumer',
 					'group' => 'consumer',
 					'device' => [
@@ -123,6 +159,7 @@ trait ConsumeDeviceAttribute
 					],
 					'property' => [
 						'id' => $property->getPlainId(),
+						'identifier' => $identifier,
 					],
 				],
 			);
@@ -138,9 +175,9 @@ trait ConsumeDeviceAttribute
 			);
 
 			$this->logger->debug(
-				'Device property was updated',
+				'Device ip address property was updated',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'message-consumer',
 					'group' => 'consumer',
 					'device' => [
@@ -148,6 +185,7 @@ trait ConsumeDeviceAttribute
 					],
 					'property' => [
 						'id' => $property->getPlainId(),
+						'identifier' => $identifier,
 					],
 				],
 			);
