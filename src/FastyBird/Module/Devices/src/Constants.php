@@ -108,7 +108,6 @@ final class Constants
 			Entities\Devices\Device::class => Metadata\Constants::MESSAGE_BUS_DEVICE_ENTITY_CREATED_ROUTING_KEY,
 			Entities\Devices\Properties\Property::class => Metadata\Constants::MESSAGE_BUS_DEVICE_PROPERTY_ENTITY_CREATED_ROUTING_KEY,
 			Entities\Devices\Controls\Control::class => Metadata\Constants::MESSAGE_BUS_DEVICE_CONTROL_ENTITY_CREATED_ROUTING_KEY,
-			Entities\Devices\Attributes\Attribute::class => Metadata\Constants::MESSAGE_BUS_DEVICE_ATTRIBUTE_ENTITY_CREATED_ROUTING_KEY,
 			Entities\Channels\Channel::class => Metadata\Constants::MESSAGE_BUS_CHANNEL_ENTITY_CREATED_ROUTING_KEY,
 			Entities\Channels\Properties\Property::class => Metadata\Constants::MESSAGE_BUS_CHANNEL_PROPERTY_ENTITY_CREATED_ROUTING_KEY,
 			Entities\Channels\Controls\Control::class => Metadata\Constants::MESSAGE_BUS_CHANNEL_CONTROL_ENTITY_CREATED_ROUTING_KEY,
@@ -122,7 +121,6 @@ final class Constants
 			Entities\Devices\Device::class => Metadata\Constants::MESSAGE_BUS_DEVICE_ENTITY_UPDATED_ROUTING_KEY,
 			Entities\Devices\Properties\Property::class => Metadata\Constants::MESSAGE_BUS_DEVICE_PROPERTY_ENTITY_UPDATED_ROUTING_KEY,
 			Entities\Devices\Controls\Control::class => Metadata\Constants::MESSAGE_BUS_DEVICE_CONTROL_ENTITY_UPDATED_ROUTING_KEY,
-			Entities\Devices\Attributes\Attribute::class => Metadata\Constants::MESSAGE_BUS_DEVICE_ATTRIBUTE_ENTITY_UPDATED_ROUTING_KEY,
 			Entities\Channels\Channel::class => Metadata\Constants::MESSAGE_BUS_CHANNEL_ENTITY_UPDATED_ROUTING_KEY,
 			Entities\Channels\Properties\Property::class => Metadata\Constants::MESSAGE_BUS_CHANNEL_PROPERTY_ENTITY_UPDATED_ROUTING_KEY,
 			Entities\Channels\Controls\Control::class => Metadata\Constants::MESSAGE_BUS_CHANNEL_CONTROL_ENTITY_UPDATED_ROUTING_KEY,
@@ -136,7 +134,6 @@ final class Constants
 			Entities\Devices\Device::class => Metadata\Constants::MESSAGE_BUS_DEVICE_ENTITY_DELETED_ROUTING_KEY,
 			Entities\Devices\Properties\Property::class => Metadata\Constants::MESSAGE_BUS_DEVICE_PROPERTY_ENTITY_DELETED_ROUTING_KEY,
 			Entities\Devices\Controls\Control::class => Metadata\Constants::MESSAGE_BUS_DEVICE_CONTROL_ENTITY_DELETED_ROUTING_KEY,
-			Entities\Devices\Attributes\Attribute::class => Metadata\Constants::MESSAGE_BUS_DEVICE_ATTRIBUTE_ENTITY_DELETED_ROUTING_KEY,
 			Entities\Channels\Channel::class => Metadata\Constants::MESSAGE_BUS_CHANNEL_ENTITY_DELETED_ROUTING_KEY,
 			Entities\Channels\Properties\Property::class => Metadata\Constants::MESSAGE_BUS_CHANNEL_PROPERTY_ENTITY_DELETED_ROUTING_KEY,
 			Entities\Channels\Controls\Control::class => Metadata\Constants::MESSAGE_BUS_CHANNEL_CONTROL_ENTITY_DELETED_ROUTING_KEY,
@@ -150,8 +147,6 @@ final class Constants
 	public const DATA_STORAGE_PROPERTIES_KEY = 'properties';
 
 	public const DATA_STORAGE_CONTROLS_KEY = 'controls';
-
-	public const DATA_STORAGE_ATTRIBUTES_KEY = 'attributes';
 
 	public const DATA_STORAGE_DEVICES_KEY = 'devices';
 

@@ -15,15 +15,8 @@ import {
 
 import { ApiError } from '@/errors';
 import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '@/jsonapi';
-import { useConnectors, useChannels, useDeviceControls, useDeviceProperties, useDeviceAttributes } from '@/models';
-import {
-	IChannelResponseModel,
-	IDeviceAttributeResponseModel,
-	IDeviceControlResponseModel,
-	IDeviceProperty,
-	IDevicePropertyResponseModel,
-	IPlainRelation,
-} from '@/models/types';
+import { useConnectors, useChannels, useDeviceControls, useDeviceProperties } from '@/models';
+import { IChannelResponseModel, IDeviceControlResponseModel, IDeviceProperty, IDevicePropertyResponseModel, IPlainRelation } from '@/models/types';
 
 import {
 	IDevicesState,
@@ -78,7 +71,7 @@ const recordFactory = async (data: IDeviceRecordFactoryPayload): Promise<IDevice
 		name: get(data, 'name', null),
 		comment: get(data, 'comment', null),
 
-		relationshipNames: ['channels', 'properties', 'controls', 'attributes', 'connector', 'parents', 'children'],
+		relationshipNames: ['channels', 'properties', 'controls', 'connector', 'parents', 'children'],
 
 		connector: {
 			id: connector.id,
@@ -90,7 +83,6 @@ const recordFactory = async (data: IDeviceRecordFactoryPayload): Promise<IDevice
 
 		channels: [],
 		controls: [],
-		attributes: [],
 		properties: [],
 
 		owner: get(data, 'owner', null),
@@ -117,7 +109,6 @@ const recordFactory = async (data: IDeviceRecordFactoryPayload): Promise<IDevice
 			relationName === 'channels' ||
 			relationName === 'properties' ||
 			relationName === 'controls' ||
-			relationName === 'attributes' ||
 			relationName === 'parents' ||
 			relationName === 'children'
 		) {
@@ -177,23 +168,6 @@ const addControlsRelations = (device: IDevice, controls: (IDeviceControlResponse
 			deviceControlsStore.set({
 				data: {
 					...control,
-					...{
-						deviceId: device.id,
-					},
-				},
-			});
-		}
-	});
-};
-
-const addAttributesRelations = (device: IDevice, attributes: (IDeviceAttributeResponseModel | IPlainRelation)[]): void => {
-	const deviceAttributesStore = useDeviceAttributes();
-
-	attributes.forEach((attribute) => {
-		if ('identifier' in attribute) {
-			deviceAttributesStore.set({
-				data: {
-					...attribute,
 					...{
 						deviceId: device.id,
 					},
@@ -269,10 +243,6 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 				addControlsRelations(record, payload.data.controls);
 			}
 
-			if ('attributes' in payload.data && Array.isArray(payload.data.attributes)) {
-				addAttributesRelations(record, payload.data.attributes);
-			}
-
 			return (this.data[record.id] = record);
 		},
 
@@ -290,7 +260,7 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 
 			try {
 				const deviceResponse = await axios.get<IDeviceResponseJson>(
-					`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${payload.id}?include=properties,controls,attributes`
+					`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${payload.id}?include=properties,controls`
 				);
 
 				const deviceResponseModel = jsonApiFormatter.deserialize(deviceResponse.data) as IDeviceResponseModel;
@@ -302,7 +272,6 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 
 				addControlsRelations(this.data[deviceResponseModel.id], deviceResponseModel.controls);
 				addPropertiesRelations(this.data[deviceResponseModel.id], deviceResponseModel.properties);
-				addAttributesRelations(this.data[deviceResponseModel.id], deviceResponseModel.attributes);
 
 				if (payload.withChannels) {
 					const channelsStore = useChannels();
@@ -333,9 +302,7 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 			const channelsStore = useChannels();
 
 			try {
-				const devicesResponse = await axios.get<IDevicesResponseJson>(
-					`/${ModulePrefix.MODULE_DEVICES}/v1/devices?include=properties,controls,attributes`
-				);
+				const devicesResponse = await axios.get<IDevicesResponseJson>(`/${ModulePrefix.MODULE_DEVICES}/v1/devices?include=properties,controls`);
 
 				const devicesResponseModel = jsonApiFormatter.deserialize(devicesResponse.data) as IDeviceResponseModel[];
 
@@ -347,7 +314,6 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 
 					addControlsRelations(this.data[device.id], device.controls);
 					addPropertiesRelations(this.data[device.id], device.properties);
-					addAttributesRelations(this.data[device.id], device.attributes);
 
 					if (payload.withChannels) {
 						await channelsStore.fetch({ device: this.data[device.id] });
@@ -392,7 +358,7 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 			} else {
 				try {
 					const createdDevice = await axios.post<IDeviceResponseJson>(
-						`/${ModulePrefix.MODULE_DEVICES}/v1/devices?include=properties,controls,attributes`,
+						`/${ModulePrefix.MODULE_DEVICES}/v1/devices?include=properties,controls`,
 						jsonApiFormatter.serialize({
 							stuff: newDevice,
 						})
@@ -407,7 +373,6 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 
 					addControlsRelations(this.data[createdDeviceModel.id], createdDeviceModel.controls);
 					addPropertiesRelations(this.data[createdDeviceModel.id], createdDeviceModel.properties);
-					addAttributesRelations(this.data[createdDeviceModel.id], createdDeviceModel.attributes);
 
 					return this.data[createdDeviceModel.id];
 				} catch (e: any) {
@@ -451,7 +416,7 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 			} else {
 				try {
 					const updatedDevice = await axios.patch<IDeviceResponseJson>(
-						`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${payload.id}?include=properties,controls,attributes`,
+						`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${payload.id}?include=properties,controls`,
 						jsonApiFormatter.serialize({
 							stuff: updatedRecord,
 						})
@@ -466,7 +431,6 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 
 					addControlsRelations(this.data[updatedDeviceModel.id], updatedDeviceModel.controls);
 					addPropertiesRelations(this.data[updatedDeviceModel.id], updatedDeviceModel.properties);
-					addAttributesRelations(this.data[updatedDeviceModel.id], updatedDeviceModel.attributes);
 
 					return this.data[updatedDeviceModel.id];
 				} catch (e: any) {
@@ -500,7 +464,7 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 
 			try {
 				const savedDevice = await axios.post<IDeviceResponseJson>(
-					`/${ModulePrefix.MODULE_DEVICES}/v1/devices?include=properties,controls,attributes`,
+					`/${ModulePrefix.MODULE_DEVICES}/v1/devices?include=properties,controls`,
 					jsonApiFormatter.serialize({
 						stuff: recordToSave,
 					})
@@ -515,7 +479,6 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 
 				addControlsRelations(this.data[savedDeviceModel.id], savedDeviceModel.controls);
 				addPropertiesRelations(this.data[savedDeviceModel.id], savedDeviceModel.properties);
-				addAttributesRelations(this.data[savedDeviceModel.id], savedDeviceModel.attributes);
 
 				return this.data[savedDeviceModel.id];
 			} catch (e: any) {
@@ -542,7 +505,6 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 			const channelsStore = useChannels();
 			const deviceControlsStore = useDeviceControls();
 			const devicePropertiesStore = useDeviceProperties();
-			const deviceAttributesStore = useDeviceAttributes();
 
 			this.semaphore.deleting.push(payload.id);
 
@@ -556,7 +518,6 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 				channelsStore.unset({ device: recordToDelete });
 				deviceControlsStore.unset({ device: recordToDelete });
 				devicePropertiesStore.unset({ device: recordToDelete });
-				deviceAttributesStore.unset({ device: recordToDelete });
 			} else {
 				try {
 					await axios.delete(`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${payload.id}`);
@@ -564,7 +525,6 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 					channelsStore.unset({ device: recordToDelete });
 					deviceControlsStore.unset({ device: recordToDelete });
 					devicePropertiesStore.unset({ device: recordToDelete });
-					deviceAttributesStore.unset({ device: recordToDelete });
 				} catch (e: any) {
 					// Deleting record on api failed, we need to refresh record
 					await this.get({ id: payload.id });
@@ -612,12 +572,10 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 					const channelsStore = useChannels();
 					const devicePropertiesStore = useDeviceProperties();
 					const deviceControlsStore = useDeviceControls();
-					const deviceAttributesStore = useDeviceAttributes();
 
 					channelsStore.unset({ device: recordToDelete });
 					devicePropertiesStore.unset({ device: recordToDelete });
 					deviceControlsStore.unset({ device: recordToDelete });
-					deviceAttributesStore.unset({ device: recordToDelete });
 				}
 			} else {
 				if (payload.routingKey === RoutingKeys.DEVICE_ENTITY_UPDATED && this.semaphore.updating.includes(body.id)) {

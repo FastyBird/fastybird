@@ -10,7 +10,6 @@ import {
 	IConnectorProperty,
 	IDevice,
 	IDeviceControl,
-	IDeviceAttribute,
 	IDeviceProperty,
 } from '@/models/types';
 
@@ -45,7 +44,6 @@ export interface IDeviceData {
 	device: IDevice;
 	properties: IDeviceProperty[];
 	controls: IDeviceControl[];
-	attributes: IDeviceAttribute[];
 	channels: IChannelData[];
 }
 

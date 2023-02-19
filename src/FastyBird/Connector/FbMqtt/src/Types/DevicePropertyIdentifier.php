@@ -49,6 +49,20 @@ class DevicePropertyIdentifier extends Consistence\Enum\Enum
 
 	public const IDENTIFIER_RSSI = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_RSSI;
 
+	public const IDENTIFIER_HARDWARE_MAC_ADDRESS = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS;
+
+	public const IDENTIFIER_HARDWARE_MANUFACTURER = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MANUFACTURER;
+
+	public const IDENTIFIER_HARDWARE_MODEL = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL;
+
+	public const IDENTIFIER_HARDWARE_VERSION = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_VERSION;
+
+	public const IDENTIFIER_FIRMWARE_MANUFACTURER = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_MANUFACTURER;
+
+	public const IDENTIFIER_FIRMWARE_NAME = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_NAME;
+
+	public const IDENTIFIER_FIRMWARE_VERSION = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_VERSION;
+
 	public const IDENTIFIER_USERNAME = 'username';
 
 	public const IDENTIFIER_PASSWORD = 'password';

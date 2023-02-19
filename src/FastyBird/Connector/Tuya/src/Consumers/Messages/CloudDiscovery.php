@@ -43,8 +43,7 @@ final class CloudDiscovery implements Consumer
 {
 
 	use Nette\SmartObject;
-	use TConsumeDeviceProperty;
-	use TConsumeDeviceAttribute;
+	use ConsumeDeviceProperty;
 
 	private Log\LoggerInterface $logger;
 
@@ -54,8 +53,6 @@ final class CloudDiscovery implements Consumer
 		private readonly DevicesModels\Devices\DevicesManager $devicesManager,
 		private readonly DevicesModels\Devices\Properties\PropertiesRepository $propertiesRepository,
 		private readonly DevicesModels\Devices\Properties\PropertiesManager $propertiesManager,
-		private readonly DevicesModels\Devices\Attributes\AttributesRepository $attributesRepository,
-		private readonly DevicesModels\Devices\Attributes\AttributesManager $attributesManager,
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		private readonly DevicesModels\Channels\ChannelsManager $channelsManager,
 		private readonly DevicesModels\Channels\Properties\PropertiesManager $channelsPropertiesManager,
@@ -193,20 +190,20 @@ final class CloudDiscovery implements Consumer
 			Types\DevicePropertyIdentifier::IDENTIFIER_PRODUCT_NAME,
 		);
 
-		$this->setDeviceAttribute(
+		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getModel(),
-			Types\DeviceAttributeIdentifier::IDENTIFIER_HARDWARE_MODEL,
+			Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL,
 		);
-		$this->setDeviceAttribute(
+		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getMac(),
-			Types\DeviceAttributeIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS,
+			Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS,
 		);
-		$this->setDeviceAttribute(
+		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getSn(),
-			Types\DeviceAttributeIdentifier::IDENTIFIER_SERIAL_NUMBER,
+			Types\DevicePropertyIdentifier::IDENTIFIER_SERIAL_NUMBER,
 		);
 
 		$this->databaseHelper->transaction(function () use ($entity, $device): bool {

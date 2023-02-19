@@ -6,7 +6,6 @@ import {
 	IChannelResponseModel,
 	IConnector,
 	IConnectorResponseModel,
-	IDeviceAttributeResponseModel,
 	IDeviceControlResponseData,
 	IDeviceControlResponseModel,
 	IDeviceProperty,
@@ -77,7 +76,6 @@ export interface IDevice {
 	channels: IPlainRelation[];
 	controls: IPlainRelation[];
 	properties: IPlainRelation[];
-	attributes: IPlainRelation[];
 
 	connector: IPlainRelation;
 
@@ -108,7 +106,6 @@ export interface IDeviceRecordFactoryPayload {
 	channels?: (IPlainRelation | IChannelResponseModel)[];
 	controls?: (IPlainRelation | IDeviceControlResponseModel)[];
 	properties?: (IPlainRelation | IDeviceControlResponseModel)[];
-	attributes?: (IPlainRelation | IDeviceAttributeResponseModel)[];
 
 	connectorId: string;
 
@@ -205,7 +202,6 @@ interface IDeviceResponseDataAttributes {
 interface IDeviceResponseDataRelationships extends TJsonApiRelationships {
 	properties: TJsonApiRelation;
 	controls: TJsonApiRelation;
-	attributes: TJsonApiRelation;
 	channels: TJsonApiRelation;
 	parents: TJsonApiRelation;
 	children: TJsonApiRelation;
@@ -230,7 +226,6 @@ export interface IDeviceResponseModel extends TJsonaModel {
 
 	properties: (IPlainRelation | IDevicePropertyResponseModel)[];
 	controls: (IPlainRelation | IDeviceControlResponseModel)[];
-	attributes: (IPlainRelation | IDeviceAttributeResponseModel)[];
 	channels: (IPlainRelation | IChannelResponseModel)[];
 	parents: (IPlainRelation | IDeviceResponseModel)[];
 	children: (IPlainRelation | IDeviceResponseModel)[];

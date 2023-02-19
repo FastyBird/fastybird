@@ -247,19 +247,6 @@ final class Constants
 	public const MESSAGE_BUS_DEVICE_CONTROL_ENTITY_DELETED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
 	. self::MESSAGE_BUS_ENTITY_DELETED_KEY . '.device.control';
 
-	// Devices attribute
-	public const MESSAGE_BUS_DEVICE_ATTRIBUTE_ENTITY_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_REPORTED_KEY . '.device.attribute';
-
-	public const MESSAGE_BUS_DEVICE_ATTRIBUTE_ENTITY_CREATED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_CREATED_KEY . '.device.attribute';
-
-	public const MESSAGE_BUS_DEVICE_ATTRIBUTE_ENTITY_UPDATED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_UPDATED_KEY . '.device.attribute';
-
-	public const MESSAGE_BUS_DEVICE_ATTRIBUTE_ENTITY_DELETED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_DELETED_KEY . '.device.attribute';
-
 	// Channels
 	public const MESSAGE_BUS_CHANNEL_ENTITY_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
 	. self::MESSAGE_BUS_ENTITY_REPORTED_KEY . '.channel';
@@ -489,15 +476,6 @@ final class Constants
 			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'entity.device.control.json',
 		self::MESSAGE_BUS_DEVICE_CONTROL_ENTITY_DELETED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
 			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'entity.device.control.json',
-
-		self::MESSAGE_BUS_DEVICE_ATTRIBUTE_ENTITY_REPORTED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'entity.device.attribute.json',
-		self::MESSAGE_BUS_DEVICE_ATTRIBUTE_ENTITY_CREATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'entity.device.attribute.json',
-		self::MESSAGE_BUS_DEVICE_ATTRIBUTE_ENTITY_UPDATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'entity.device.attribute.json',
-		self::MESSAGE_BUS_DEVICE_ATTRIBUTE_ENTITY_DELETED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'entity.device.attribute.json',
 
 		self::MESSAGE_BUS_CHANNEL_ENTITY_REPORTED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
 			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'entity.channel.json',

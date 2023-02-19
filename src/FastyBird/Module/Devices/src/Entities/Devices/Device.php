@@ -133,14 +133,6 @@ abstract class Device implements Entities\Entity,
 	protected Common\Collections\Collection $properties;
 
 	/**
-	 * @var Common\Collections\Collection<int, Entities\Devices\Attributes\Attribute>
-	 *
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\OneToMany(targetEntity="FastyBird\Module\Devices\Entities\Devices\Attributes\Attribute", mappedBy="device", cascade={"persist", "remove"}, orphanRemoval=true)
-	 */
-	protected Common\Collections\Collection $attributes;
-
-	/**
 	 * @IPubDoctrine\Crud(is="writable")
 	 * @ORM\ManyToOne(targetEntity="FastyBird\Module\Devices\Entities\Connectors\Connector", inversedBy="devices")
 	 * @ORM\JoinColumn(name="connector_id", referencedColumnName="connector_id", onDelete="CASCADE", nullable=false)
@@ -166,7 +158,6 @@ abstract class Device implements Entities\Entity,
 		$this->channels = new Common\Collections\ArrayCollection();
 		$this->controls = new Common\Collections\ArrayCollection();
 		$this->properties = new Common\Collections\ArrayCollection();
-		$this->attributes = new Common\Collections\ArrayCollection();
 	}
 
 	abstract public function getType(): string;
@@ -454,64 +445,6 @@ abstract class Device implements Entities\Entity,
 		if ($this->properties->contains($property)) {
 			// ...and remove it from collection
 			$this->properties->removeElement($property);
-		}
-	}
-
-	/**
-	 * @return array<Entities\Devices\Attributes\Attribute>
-	 */
-	public function getAttributes(): array
-	{
-		return $this->attributes->toArray();
-	}
-
-	/**
-	 * @param array<Entities\Devices\Attributes\Attribute> $attributes
-	 */
-	public function setAttributes(array $attributes = []): void
-	{
-		$this->attributes = new Common\Collections\ArrayCollection();
-
-		// Process all passed entities...
-		foreach ($attributes as $entity) {
-			// ...and assign them to collection
-			$this->attributes->add($entity);
-		}
-	}
-
-	public function addAttribute(Entities\Devices\Attributes\Attribute $attribute): void
-	{
-		// Check if collection does not contain inserting entity
-		if (!$this->attributes->contains($attribute)) {
-			// ...and assign it to collection
-			$this->attributes->add($attribute);
-		}
-	}
-
-	public function getAttribute(string $id): Entities\Devices\Attributes\Attribute|null
-	{
-		$found = $this->attributes
-			->filter(static fn (Entities\Devices\Attributes\Attribute $row): bool => $id === $row->getPlainId());
-
-		return $found->isEmpty() === true ? null : $found->first();
-	}
-
-	public function findAttribute(string $identifier): Entities\Devices\Attributes\Attribute|null
-	{
-		$found = $this->attributes
-			->filter(
-				static fn (Entities\Devices\Attributes\Attribute $row): bool => $identifier === $row->getIdentifier()
-			);
-
-		return $found->isEmpty() === true ? null : $found->first();
-	}
-
-	public function removeAttribute(Entities\Devices\Attributes\Attribute $attribute): void
-	{
-		// Check if collection contain removing entity...
-		if ($this->attributes->contains($attribute)) {
-			// ...and remove it from collection
-			$this->attributes->removeElement($attribute);
 		}
 	}
 

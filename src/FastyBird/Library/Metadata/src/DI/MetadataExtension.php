@@ -159,12 +159,6 @@ class MetadataExtension extends DI\CompilerExtension
 		)
 			->setType(Entities\DevicesModule\DevicePropertyEntityFactory::class);
 
-		$builder->addDefinition(
-			'entity.factory.modules.devicesModule.device.attribute',
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Entities\DevicesModule\DeviceAttributeEntityFactory::class);
-
 		$builder->addDefinition('entity.factory.modules.devicesModule.channel', new DI\Definitions\ServiceDefinition())
 			->setType(Entities\DevicesModule\ChannelEntityFactory::class);
 

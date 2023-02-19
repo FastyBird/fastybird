@@ -140,16 +140,8 @@ import {
 } from '@fastybird/web-ui-library';
 
 import { useBreakpoints, useEntityTitle, useFlashMessage, useRoutesNames, useUuid } from '@/composables';
-import {
-	useChannelControls,
-	useChannelProperties,
-	useChannels,
-	useDeviceControls,
-	useDeviceProperties,
-	useDevices,
-	useDeviceAttributes,
-} from '@/models';
-import { IChannelControl, IChannelProperty, IDeviceAttribute, IDeviceControl, IDeviceProperty } from '@/models/types';
+import { useChannelControls, useChannelProperties, useChannels, useDeviceControls, useDeviceProperties, useDevices } from '@/models';
+import { IChannelControl, IChannelProperty, IDeviceControl, IDeviceProperty } from '@/models/types';
 import { DeviceDefaultDeviceDetail, DevicesDeviceHeading, DevicesDeviceToolbar, DevicesDeviceIcon, DeviceSettingsDeviceRemove } from '@/components';
 import { ApplicationError } from '@/errors';
 import { IChannelData, IDeviceData, IViewDeviceDetailProps } from '@/types';
@@ -169,7 +161,6 @@ const flashMessage = useFlashMessage();
 const devicesStore = useDevices();
 const deviceControlsStore = useDeviceControls();
 const devicePropertiesStore = useDeviceProperties();
-const deviceAttributesStore = useDeviceAttributes();
 const channelsStore = useChannels();
 const channelControlsStore = useChannelControls();
 const channelPropertiesStore = useChannelProperties();
@@ -209,11 +200,6 @@ const deviceData = computed<IDeviceData | null>((): IDeviceData | null => {
 			),
 			properties: orderBy<IDeviceProperty>(
 				devicePropertiesStore.findForDevice(device.id).filter((property) => !property.draft),
-				[(v): string => v.name ?? v.identifier, (v): string => v.identifier],
-				['asc']
-			),
-			attributes: orderBy<IDeviceAttribute>(
-				deviceAttributesStore.findForDevice(device.id).filter((attribute) => !attribute.draft),
 				[(v): string => v.name ?? v.identifier, (v): string => v.identifier],
 				['asc']
 			),

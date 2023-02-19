@@ -55,7 +55,6 @@ final class EntityFactory
 		private readonly MetadataEntities\DevicesModule\DeviceEntityFactory $deviceEntityFactory,
 		private readonly MetadataEntities\DevicesModule\DeviceControlEntityFactory $deviceControlEntityFactory,
 		private readonly MetadataEntities\DevicesModule\DevicePropertyEntityFactory $devicePropertyEntityFactory,
-		private readonly MetadataEntities\DevicesModule\DeviceAttributeEntityFactory $deviceAttributeEntityFactory,
 		private readonly MetadataEntities\DevicesModule\ChannelEntityFactory $channelEntityFactory,
 		private readonly MetadataEntities\DevicesModule\ChannelControlEntityFactory $channelControlEntityFactory,
 		private readonly MetadataEntities\DevicesModule\ChannelPropertyEntityFactory $channelPropertyEntityFactory,
@@ -144,13 +143,6 @@ final class EntityFactory
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_DEVICE_CONTROL_ENTITY_DELETED)
 		) {
 			return $this->deviceControlEntityFactory->create($data);
-		} elseif (
-			$routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_DEVICE_ATTRIBUTE_ENTITY_REPORTED)
-			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_DEVICE_ATTRIBUTE_ENTITY_CREATED)
-			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_DEVICE_ATTRIBUTE_ENTITY_UPDATED)
-			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_DEVICE_ATTRIBUTE_ENTITY_DELETED)
-		) {
-			return $this->deviceAttributeEntityFactory->create($data);
 		} elseif (
 			$routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_CHANNEL_ENTITY_REPORTED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_CHANNEL_ENTITY_CREATED)

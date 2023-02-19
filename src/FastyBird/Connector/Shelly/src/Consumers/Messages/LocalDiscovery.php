@@ -44,7 +44,6 @@ final class LocalDiscovery implements Consumer
 {
 
 	use Nette\SmartObject;
-	use ConsumeDeviceAttribute;
 	use ConsumeDeviceProperty;
 
 	private Log\LoggerInterface $logger;
@@ -55,8 +54,6 @@ final class LocalDiscovery implements Consumer
 		private readonly DevicesModels\Devices\DevicesManager $devicesManager,
 		private readonly DevicesModels\Devices\Properties\PropertiesRepository $propertiesRepository,
 		private readonly DevicesModels\Devices\Properties\PropertiesManager $propertiesManager,
-		private readonly DevicesModels\Devices\Attributes\AttributesRepository $attributesRepository,
-		private readonly DevicesModels\Devices\Attributes\AttributesManager $attributesManager,
 		private readonly DevicesModels\Channels\ChannelsManager $channelsManager,
 		private readonly DevicesModels\Channels\Properties\PropertiesManager $channelsPropertiesManager,
 		private readonly DevicesUtilities\Database $databaseHelper,
@@ -153,20 +150,20 @@ final class LocalDiscovery implements Consumer
 			$entity->isAuthEnabled(),
 			Types\DevicePropertyIdentifier::IDENTIFIER_AUTH_ENABLED,
 		);
-		$this->setDeviceAttribute(
+		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getModel(),
-			Types\DeviceAttributeIdentifier::IDENTIFIER_HARDWARE_MODEL,
+			Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL,
 		);
-		$this->setDeviceAttribute(
+		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getMacAddress(),
-			Types\DeviceAttributeIdentifier::IDENTIFIER_MAC_ADDRESS,
+			Types\DevicePropertyIdentifier::IDENTIFIER_MAC_ADDRESS,
 		);
-		$this->setDeviceAttribute(
+		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getFirmwareVersion(),
-			Types\DeviceAttributeIdentifier::IDENTIFIER_FIRMWARE_VERSION,
+			Types\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_VERSION,
 		);
 
 		foreach ($entity->getChannels() as $channelDescription) {

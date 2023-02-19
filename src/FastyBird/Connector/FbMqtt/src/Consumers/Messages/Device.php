@@ -53,7 +53,6 @@ final class Device implements Consumers\Consumer
 		private readonly DevicesModels\Devices\DevicesManager $devicesManager,
 		private readonly DevicesModels\Devices\Properties\PropertiesManager $devicePropertiesManager,
 		private readonly DevicesModels\Devices\Controls\ControlsManager $deviceControlManager,
-		private readonly DevicesModels\Devices\Attributes\AttributesManager $deviceAttributesManager,
 		private readonly DevicesModels\Channels\ChannelsManager $channelsManager,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DevicesUtilities\Database $databaseHelper,
@@ -242,28 +241,32 @@ final class Device implements Consumers\Consumer
 		foreach ($extensions as $extensionName) {
 			if ($extensionName === Types\ExtensionType::EXTENSION_TYPE_FASTYBIRD_HARDWARE) {
 				foreach ([
-					Types\DeviceAttributeIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS,
-					Types\DeviceAttributeIdentifier::IDENTIFIER_HARDWARE_MANUFACTURER,
-					Types\DeviceAttributeIdentifier::IDENTIFIER_HARDWARE_MODEL,
-					Types\DeviceAttributeIdentifier::IDENTIFIER_HARDWARE_VERSION,
-				] as $attributeName) {
-					if ($device->findAttribute($attributeName) === null) {
-						$this->deviceAttributesManager->create(Utils\ArrayHash::from([
+					Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS,
+					Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MANUFACTURER,
+					Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL,
+					Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_VERSION,
+				] as $propertyName) {
+					if ($device->findProperty($propertyName) === null) {
+						$this->devicePropertiesManager->create(Utils\ArrayHash::from([
+							'entity' => DevicesEntities\Devices\Properties\Variable::class,
 							'device' => $device,
-							'identifier' => $attributeName,
+							'identifier' => $propertyName,
+							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 						]));
 					}
 				}
 			} elseif ($extensionName === Types\ExtensionType::EXTENSION_TYPE_FASTYBIRD_FIRMWARE) {
 				foreach ([
-					Types\DeviceAttributeIdentifier::IDENTIFIER_FIRMWARE_MANUFACTURER,
-					Types\DeviceAttributeIdentifier::IDENTIFIER_FIRMWARE_NAME,
-					Types\DeviceAttributeIdentifier::IDENTIFIER_FIRMWARE_VERSION,
+					Types\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_MANUFACTURER,
+					Types\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_NAME,
+					Types\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_VERSION,
 				] as $attributeName) {
-					if ($device->findAttribute($attributeName) === null) {
-						$this->deviceAttributesManager->create(Utils\ArrayHash::from([
+					if ($device->findProperty($attributeName) === null) {
+						$this->devicePropertiesManager->create(Utils\ArrayHash::from([
+							'entity' => DevicesEntities\Devices\Properties\Variable::class,
 							'device' => $device,
 							'identifier' => $attributeName,
+							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 						]));
 					}
 				}
