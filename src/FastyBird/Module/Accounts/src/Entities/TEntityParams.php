@@ -59,6 +59,7 @@ trait TEntityParams
 	public function setParams(array $params): void
 	{
 		$toUpdate = $this->params !== null ? array_merge($this->params, $params) : $params;
+		/** @var array<string, mixed>|false $toUpdate */
 		$toUpdate = Utils\Json::decode(Utils\Json::encode($toUpdate), Utils\Json::FORCE_ARRAY);
 
 		if (is_array($toUpdate)) {
