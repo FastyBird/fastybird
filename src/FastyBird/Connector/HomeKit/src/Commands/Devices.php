@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\HomeKit\Commands;
 
+use Brick\Math;
 use Doctrine\DBAL;
 use Doctrine\Persistence;
 use FastyBird\Connector\HomeKit\Entities;
@@ -53,6 +54,7 @@ use function floatval;
 use function implode;
 use function intval;
 use function is_bool;
+use function is_float;
 use function is_int;
 use function is_numeric;
 use function is_string;
@@ -508,7 +510,6 @@ class Devices extends Console\Command\Command
 	private function createService(Style\SymfonyStyle $io, Entities\HomeKitDevice $device, bool $editMode = false): void
 	{
 		$type = $this->askServiceType($io, $device);
-
 		$identifier = strtolower(strval(preg_replace('/(?<!^)[A-Z]/', '_$0', $type)));
 		$identifierPattern = $identifier . '_%d';
 
@@ -572,7 +573,7 @@ class Devices extends Console\Command\Command
 				$characteristic = $this->askCharacteristic($io, $type, true, $createdRequiredCharacteristics);
 
 				if ($characteristic === null) {
-					continue;
+					break;
 				}
 
 				$characteristicMetadata = $metadata->offsetGet($characteristic);
@@ -594,7 +595,7 @@ class Devices extends Console\Command\Command
 				}
 
 				if ($characteristicMetadata->offsetExists('MaxValue')) {
-					$format = ($format === null ? ':' : '') . $characteristicMetadata->offsetGet('MaxValue');
+					$format .= ($format === null ? ':' : '') . $characteristicMetadata->offsetGet('MaxValue');
 				}
 
 				$question = new Console\Question\ConfirmationQuestion(
@@ -617,7 +618,7 @@ class Devices extends Console\Command\Command
 							'format' => $format,
 						]));
 
-					} else {
+					} elseif ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
 						$this->channelsPropertiesManager->create(Utils\ArrayHash::from([
 							'entity' => DevicesEntities\Channels\Properties\Mapped::class,
 							'parent' => $property,
@@ -671,11 +672,7 @@ class Devices extends Console\Command\Command
 				}
 
 				if ($characteristicMetadata->offsetExists('MaxValue')) {
-					$format = ':' . $characteristicMetadata->offsetGet('MaxValue');
-				}
-
-				if ($format !== null) {
-					$format = str_replace('::', ':', $format);
+					$format .= ($format === null ? ':' : '') . $characteristicMetadata->offsetGet('MaxValue');
 				}
 
 				$question = new Console\Question\ConfirmationQuestion(
@@ -698,7 +695,7 @@ class Devices extends Console\Command\Command
 							'format' => $format,
 						]));
 
-					} else {
+					} elseif ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
 						$this->channelsPropertiesManager->create(Utils\ArrayHash::from([
 							'entity' => DevicesEntities\Channels\Properties\Mapped::class,
 							'parent' => $property,
@@ -725,15 +722,17 @@ class Devices extends Console\Command\Command
 
 				$createdOptionalCharacteristics[] = $characteristic;
 
-				$question = new Console\Question\ConfirmationQuestion(
-					$this->translator->translate('//homekit-connector.cmd.base.questions.continue'),
-					false,
-				);
+				if (count(array_diff($optionalCharacteristics, $createdOptionalCharacteristics)) > 0) {
+					$question = new Console\Question\ConfirmationQuestion(
+						$this->translator->translate('//homekit-connector.cmd.base.questions.continue'),
+						false,
+					);
 
-				$continue = (bool) $io->askQuestion($question);
+					$continue = (bool) $io->askQuestion($question);
 
-				if (!$continue) {
-					break;
+					if (!$continue) {
+						break;
+					}
 				}
 			}
 
@@ -1172,15 +1171,7 @@ class Devices extends Console\Command\Command
 				$answer = array_values($services)[$answer];
 			}
 
-			$service = array_search($answer, $services, true);
-
-			if ($service !== false) {
-				return strval($service);
-			}
-
-			throw new Exceptions\Runtime(
-				sprintf($this->translator->translate('//homekit-connector.cmd.base.messages.answerNotValid'), $answer),
-			);
+			return strval($answer);
 		});
 
 		return strval($io->askQuestion($question));
@@ -1237,10 +1228,16 @@ class Devices extends Console\Command\Command
 
 		$characteristics = array_diff($characteristics, $ignore);
 
-		$characteristics[] = $this->translator->translate('//homekit-connector.cmd.devices.answers.none');
+		if (!$required) {
+			$characteristics[] = $this->translator->translate('//homekit-connector.cmd.devices.answers.none');
+		}
 
-		$question = new Console\Question\ChoiceQuestion(
-			'What type of service characteristic you would like to add?',
+		$question = $required ? new Console\Question\ChoiceQuestion(
+			$this->translator->translate('//homekit-connector.cmd.devices.questions.select.requiredCharacteristic'),
+			$characteristics,
+			0,
+		) : new Console\Question\ChoiceQuestion(
+			$this->translator->translate('//homekit-connector.cmd.devices.questions.select.optionalCharacteristic'),
 			$characteristics,
 			0,
 		);
@@ -1248,7 +1245,7 @@ class Devices extends Console\Command\Command
 		$question->setErrorMessage(
 			$this->translator->translate('//homekit-connector.cmd.base.messages.answerNotValid'),
 		);
-		$question->setValidator(function (string|null $answer) use ($characteristics): string|null {
+		$question->setValidator(function (string|null $answer) use ($required, $characteristics): string|null {
 			if ($answer === null) {
 				throw new Exceptions\Runtime(
 					sprintf(
@@ -1262,22 +1259,17 @@ class Devices extends Console\Command\Command
 				$answer = array_values($characteristics)[$answer];
 			}
 
-			$service = array_search($answer, $characteristics, true);
-
-			if ($service !== false) {
-				return strval($service);
-			}
-
 			if (
-				$answer === $this->translator->translate('//homekit-connector.cmd.devices.answers.none')
-				|| $answer === strval(count($characteristics) - 1)
+				!$required
+				&& (
+					$answer === $this->translator->translate('//homekit-connector.cmd.devices.answers.none')
+					|| $answer === strval(count($characteristics) - 1)
+				)
 			) {
 				return null;
 			}
 
-			throw new Exceptions\Runtime(
-				sprintf($this->translator->translate('//homekit-connector.cmd.base.messages.answerNotValid'), $answer),
-			);
+			return strval($answer);
 		});
 
 		$characteristic = $io->askQuestion($question);
@@ -1314,6 +1306,8 @@ class Devices extends Console\Command\Command
 		}
 
 		if (count($devices) === 0) {
+			$io->warning($this->translator->translate('//homekit-connector.cmd.devices.messages.noHardwareDevices'));
+
 			return null;
 		}
 
@@ -1439,7 +1433,7 @@ class Devices extends Console\Command\Command
 				}
 
 				$properties[$property->getIdentifier()] = sprintf(
-					'%s %s',
+					'%s%s',
 					$property->getIdentifier(),
 					($property->getName() !== null ? ' [' . $property->getName() . ']' : ''),
 				);
@@ -1521,7 +1515,7 @@ class Devices extends Console\Command\Command
 
 			foreach ($deviceChannels as $channel) {
 				$channels[$channel->getIdentifier()] = sprintf(
-					'%s %s',
+					'%s%s',
 					$channel->getIdentifier(),
 					($channel->getName() !== null ? ' [' . $channel->getName() . ']' : ''),
 				);
@@ -1602,7 +1596,7 @@ class Devices extends Console\Command\Command
 				}
 
 				$properties[$property->getIdentifier()] = sprintf(
-					'%s %s',
+					'%s%s',
 					$property->getIdentifier(),
 					($property->getName() !== null ? ' [' . $property->getName() . ']' : ''),
 				);
@@ -1674,7 +1668,7 @@ class Devices extends Console\Command\Command
 	private function provideCharacteristicValue(
 		Style\SymfonyStyle $io,
 		string $characteristic,
-	): string|int|bool|float|null
+	): string|int|bool|float
 	{
 		$metadata = $this->loader->loadCharacteristics();
 
@@ -1830,7 +1824,12 @@ class Devices extends Console\Command\Command
 						);
 					}
 
-					if ($step !== null && floatval($answer) % $step !== 0) {
+					if (
+						$step !== null
+						&& Math\BigDecimal::of($answer)->remainder(
+							Math\BigDecimal::of(strval($step)),
+						)->toFloat() !== 0.0
+					) {
 						throw new Exceptions\Runtime(
 							sprintf(
 								$this->translator->translate('//homekit-connector.cmd.base.messages.answerNotValid'),
@@ -1889,7 +1888,10 @@ class Devices extends Console\Command\Command
 			},
 		);
 
-		return null;
+		$value = $io->askQuestion($question);
+		assert(is_string($value) || is_int($value) || is_float($value));
+
+		return $value;
 	}
 
 	/**
@@ -2142,7 +2144,7 @@ class Devices extends Console\Command\Command
 
 		foreach ($deviceChannels as $channel) {
 			$channels[$channel->getIdentifier()] = sprintf(
-				'%s %s',
+				'%s%s',
 				$channel->getIdentifier(),
 				($channel->getName() !== null ? ' [' . $channel->getName() . ']' : ''),
 			);

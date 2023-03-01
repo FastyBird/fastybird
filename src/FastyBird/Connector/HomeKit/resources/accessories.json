@@ -7,7 +7,6 @@
   "2": {
     "name": "Bridge",
     "services": [
-      "BatteryService"
     ]
   },
   "3": {
@@ -43,9 +42,7 @@
       "LightSensor",
       "Lightbulb",
       "MotionSensor",
-      "OccupancySensor",
-      "Outlet",
-      "Switch"
+      "OccupancySensor"
     ]
   },
   "6": {
@@ -61,9 +58,7 @@
   "7": {
     "name": "Outlet",
     "services": [
-      "BatteryService",
-      "Outlet",
-      "Switch"
+      "Outlet"
     ]
   },
   "8": {
@@ -133,7 +128,6 @@
     "services": [
       "BatteryService",
       "ContactSensor",
-      "SmokeSensor",
       "Window"
     ]
   },
@@ -142,7 +136,6 @@
     "services": [
       "BatteryService",
       "ContactSensor",
-      "SmokeSensor",
       "WindowCovering"
     ]
   },
@@ -265,7 +258,6 @@
     "name": "Speaker",
     "services": [
       "BatteryService",
-      "Microphone",
       "Speaker"
     ]
   },

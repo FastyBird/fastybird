@@ -116,14 +116,16 @@ cmd:
             select:
                 connector: "Please select connector under which you want to manage devices"
                 device: "Please select device to manage"
-                category: "Provide device category"
+                category: "Please select device category"
                 service: "Please select device's service"
-                value: "Select characteristic value"
+                value: "Please select characteristic value"
                 propertyType: "What type of property you want to map?"
                 mappedDevice: "Select device for mapping"
                 mappedDeviceProperty: "Select device property for mapping"
                 mappedDeviceChannel: "Select device channel for mapping"
                 mappedChannelProperty: "Select channel property for mapping"
+                requiredCharacteristic: "What type of service characteristic you would like to add?"
+                optionalCharacteristic: "What type of service characteristic you would like to add? (optional)"
             connectCharacteristic: "Connect characteristics with device?"
             createServices: "Would you like to configure new device service?"
             editServices: "Would you like to manage device services?"
@@ -163,6 +165,7 @@ cmd:
             noDevices: "No devices registered in HomeKit connector."
             noServices: "This device has not configured any service."
             serviceNotFound: "Something went wrong, service could not be loaded"
+            noHardwareDevices: "No devices registered in system"
 
     execute:
         title: "HomeKit connector - service"
