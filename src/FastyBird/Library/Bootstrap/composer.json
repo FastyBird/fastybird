@@ -38,7 +38,8 @@
     "nette/di": "^3.0",
     "nette/utils": "^3.2",
     "sentry/sdk": "^3.1",
-    "symfony/monolog-bridge": "^6.1"
+    "symfony/monolog-bridge": "^6.1",
+    "symplify/vendor-patches": "^11.2"
   },
   "require-dev": {
     "brianium/paratest": "^7.1",

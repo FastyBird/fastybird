@@ -8,6 +8,7 @@
          failOnWarning="true"
          stderr="true"
          cacheDirectory="../var/tools/PHPUnit/.phpunit.cache"
+         displayDetailsOnTestsThatTriggerDeprecations="true"
 >
     <testsuite name="all">
         <directory>../src/FastyBird/Automator/**/tests/cases/</directory>

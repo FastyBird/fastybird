@@ -55,6 +55,7 @@
     "react/datagram": "^1.8",
     "react/dns": "^1.10",
     "react/http": "^1.7",
+    "symplify/vendor-patches": "^11.2",
     "simplito/elliptic-php": "^1.0",
     "symfony/event-dispatcher": "^5.4"
   },
@@ -104,7 +105,10 @@
     },
     "patches": {
       "nettrine/orm": {
-        "Enable connection overrides": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/nettrine.orm.mangerRegistry.diff"
+        "Enable connection overrides": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/nettrine-orm-src-managerregistry-php.patch"
+      },
+      "react/event-loop": {
+        "Bug: Use native return type": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/react-event-loop-src-loop-php.patch"
       }
     }
   },
