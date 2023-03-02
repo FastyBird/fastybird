@@ -61,7 +61,7 @@ final class ConnectorsV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<string|int|null>>
 	 */
-	public function connectorsRead(): array
+	public static function connectorsRead(): array
 	{
 		return [
 			// Valid responses
@@ -195,7 +195,7 @@ final class ConnectorsV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<bool|string|int|null>>
 	 */
-	public function connectorsUpdate(): array
+	public static function connectorsUpdate(): array
 	{
 		return [
 			// Valid responses

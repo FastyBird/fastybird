@@ -64,7 +64,7 @@ final class TriggersV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<string|int|null>>
 	 */
-	public function triggersRead(): array
+	public static function triggersRead(): array
 	{
 		return [
 			// Valid responses
@@ -269,7 +269,7 @@ final class TriggersV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<bool|string|int|null>>
 	 */
-	public function triggersCreate(): array
+	public static function triggersCreate(): array
 	{
 		return [
 			// Valid responses
@@ -377,7 +377,7 @@ final class TriggersV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<bool|string|int|null>>
 	 */
-	public function triggersUpdate(): array
+	public static function triggersUpdate(): array
 	{
 		return [
 			// Valid responses
@@ -489,7 +489,7 @@ final class TriggersV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<string|int|null>>
 	 */
-	public function triggersDelete(): array
+	public static function triggersDelete(): array
 	{
 		return [
 			// Valid responses

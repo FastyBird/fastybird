@@ -64,7 +64,7 @@ final class AccountV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<string|int|null>>
 	 */
-	public function accountRead(): array
+	public static function accountRead(): array
 	{
 		return [
 			// Valid responses
@@ -205,7 +205,7 @@ final class AccountV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<(bool|string|int|null)>>
 	 */
-	public function accountUpdate(): array
+	public static function accountUpdate(): array
 	{
 		return [
 			// Valid responses

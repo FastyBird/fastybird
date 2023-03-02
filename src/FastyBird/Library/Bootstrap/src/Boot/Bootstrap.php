@@ -79,7 +79,7 @@ class Bootstrap
 		// Load parameters from environment
 		$config->addStaticParameters(self::loadEnvParameters($envPrefix));
 
-		if (!class_exists('\Tester\Environment') || getenv(Tester\Environment::RUNNER) === false) {
+		if (!class_exists('\Tester\Environment') || getenv(Tester\Environment::VariableRunner) === false) {
 			$config->enableTracy(FB_LOGS_DIR);
 		}
 

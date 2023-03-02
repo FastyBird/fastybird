@@ -61,7 +61,7 @@ final class DevicesV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<string|int|null>>
 	 */
-	public function devicesRead(): array
+	public static function devicesRead(): array
 	{
 		return [
 			// Valid responses
@@ -246,7 +246,7 @@ final class DevicesV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<bool|string|int|null>>
 	 */
-	public function devicesCreate(): array
+	public static function devicesCreate(): array
 	{
 		return [
 			// Valid responses
@@ -372,7 +372,7 @@ final class DevicesV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<bool|string|int|null>>
 	 */
-	public function devicesUpdate(): array
+	public static function devicesUpdate(): array
 	{
 		return [
 			// Valid responses
@@ -477,7 +477,7 @@ final class DevicesV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<string|int|null>>
 	 */
-	public function devicesDelete(): array
+	public static function devicesDelete(): array
 	{
 		return [
 			// Valid responses

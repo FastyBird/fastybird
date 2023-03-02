@@ -15,7 +15,9 @@
 
 namespace FastyBird\Library\Bootstrap\Exceptions;
 
-interface Exception
+use Throwable;
+
+interface Exception extends Throwable
 {
 
 }

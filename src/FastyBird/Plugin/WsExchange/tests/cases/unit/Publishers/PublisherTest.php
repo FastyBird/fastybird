@@ -278,7 +278,7 @@ final class PublisherTest extends BaseTestCase
 	/**
 	 * @return array<string, array<Utils\ArrayHash|MetadataTypes\RoutingKey|MetadataTypes\ModuleSource>>
 	 */
-	public function deviceSuccessfulMessage(): array
+	public static function deviceSuccessfulMessage(): array
 	{
 		return [
 			'create' => [
@@ -332,7 +332,7 @@ final class PublisherTest extends BaseTestCase
 	/**
 	 * @return array<string, array<Utils\ArrayHash|MetadataTypes\RoutingKey|MetadataTypes\ModuleSource>>
 	 */
-	public function devicePropertySuccessfulMessage(): array
+	public static function devicePropertySuccessfulMessage(): array
 	{
 		return [
 			'create' => [
@@ -398,7 +398,7 @@ final class PublisherTest extends BaseTestCase
 	/**
 	 * @return array<string, array<Utils\ArrayHash|MetadataTypes\RoutingKey|MetadataTypes\ModuleSource>>
 	 */
-	public function channelSuccessfulMessage(): array
+	public static function channelSuccessfulMessage(): array
 	{
 		return [
 			'create' => [
@@ -446,7 +446,7 @@ final class PublisherTest extends BaseTestCase
 	/**
 	 * @return array<string, array<Utils\ArrayHash|MetadataTypes\RoutingKey|MetadataTypes\ModuleSource>>
 	 */
-	public function channelPropertySuccessfulMessage(): array
+	public static function channelPropertySuccessfulMessage(): array
 	{
 		return [
 			'create' => [

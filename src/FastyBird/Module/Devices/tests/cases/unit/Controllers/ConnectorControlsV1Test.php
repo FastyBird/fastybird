@@ -60,7 +60,7 @@ final class ConnectorControlsV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<string|int|null>>
 	 */
-	public function connectorControlsRead(): array
+	public static function connectorControlsRead(): array
 	{
 		return [
 			// Valid responses

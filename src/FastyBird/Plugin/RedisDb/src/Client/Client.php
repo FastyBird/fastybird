@@ -84,8 +84,9 @@ class Client
 
 	public function publish(string $channel, string $content): bool
 	{
-		/** @var mixed $response */
-		$response = $this->getClient()->publish($channel, $content);
+		$client = $this->getClient();
+
+		$response = $client->executeCommand($client->createCommand('publish', [$channel, $content]));
 		assert(is_int($response) || $response instanceof PredisResponse\ResponseInterface);
 
 		return !$response instanceof PredisResponse\ErrorInterface;

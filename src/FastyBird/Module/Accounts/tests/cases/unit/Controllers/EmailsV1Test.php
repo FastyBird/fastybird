@@ -78,7 +78,7 @@ final class EmailsV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<string|int|null>>
 	 */
-	public function emailsRead(): array
+	public static function emailsRead(): array
 	{
 		return [
 			// Valid responses
@@ -226,7 +226,7 @@ final class EmailsV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<(bool|string|int|null)>>
 	 */
-	public function emailsCreate(): array
+	public static function emailsCreate(): array
 	{
 		return [
 			// Valid responses
@@ -380,7 +380,7 @@ final class EmailsV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<(bool|string|int|null)>>
 	 */
-	public function emailsUpdate(): array
+	public static function emailsUpdate(): array
 	{
 		return [
 			// Valid responses
@@ -515,7 +515,7 @@ final class EmailsV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<string|int|null>>
 	 */
-	public function emailsDelete(): array
+	public static function emailsDelete(): array
 	{
 		return [
 			// Valid responses

@@ -67,6 +67,7 @@ abstract class EntityFactory
 
 		try {
 			$decoded = $this->convertKeys($data);
+			/** @var array<string, mixed>|false $decoded */
 			$decoded = Utils\Json::decode(Utils\Json::encode($decoded), Utils\Json::FORCE_ARRAY);
 
 			if (is_array($decoded)) {

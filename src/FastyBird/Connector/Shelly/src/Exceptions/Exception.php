@@ -15,7 +15,9 @@
 
 namespace FastyBird\Connector\Shelly\Exceptions;
 
-interface Exception
+use Throwable;
+
+interface Exception extends Throwable
 {
 
 }

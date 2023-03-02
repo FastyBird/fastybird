@@ -81,8 +81,8 @@ final class ChannelsRepository
 		string $type = Entities\Channels\Channel::class,
 	): array
 	{
-		/** @var array<T> $result */
-		$result = $this->database->query(
+		// @phpstan-ignore-next-line
+		return $this->database->query(
 			function () use ($queryObject, $type): array {
 				/** @var array<T>|DoctrineOrmQuery\ResultSet<T> $result */
 				$result = $queryObject->fetch($this->getRepository($type));
@@ -97,8 +97,6 @@ final class ChannelsRepository
 				return $data;
 			},
 		);
-
-		return $result;
 	}
 
 	/**

@@ -136,7 +136,6 @@ class BootstrapExtension extends DI\CompilerExtension
 
 		} elseif (
 			getenv('FB_APP_PARAMETER__SENTRY_DSN') !== false
-			&& is_string(getenv('FB_APP_PARAMETER__SENTRY_DSN'))
 			&& getenv('FB_APP_PARAMETER__SENTRY_DSN') !== ''
 		) {
 			$sentryDSN = getenv('FB_APP_PARAMETER__SENTRY_DSN');

@@ -61,7 +61,7 @@ final class ActionsV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<string|int|null>>
 	 */
-	public function actionsRead(): array
+	public static function actionsRead(): array
 	{
 		return [
 			// Valid responses
@@ -231,7 +231,7 @@ final class ActionsV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<bool|string|int|null>>
 	 */
-	public function actionsCreate(): array
+	public static function actionsCreate(): array
 	{
 		return [
 			// Valid responses
@@ -348,7 +348,7 @@ final class ActionsV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<bool|string|int|null>>
 	 */
-	public function actionsUpdate(): array
+	public static function actionsUpdate(): array
 	{
 		return [
 			// Valid responses
@@ -467,7 +467,7 @@ final class ActionsV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<string|int|null>>
 	 */
-	public function actionsDelete(): array
+	public static function actionsDelete(): array
 	{
 		return [
 			// Valid responses

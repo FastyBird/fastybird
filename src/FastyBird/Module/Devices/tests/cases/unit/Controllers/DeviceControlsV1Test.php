@@ -60,7 +60,7 @@ final class DeviceControlsV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<string|int|null>>
 	 */
-	public function deviceControlsRead(): array
+	public static function deviceControlsRead(): array
 	{
 		return [
 			// Valid responses

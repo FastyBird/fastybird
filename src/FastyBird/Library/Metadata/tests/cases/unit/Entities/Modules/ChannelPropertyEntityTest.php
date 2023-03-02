@@ -65,7 +65,7 @@ final class ChannelPropertyEntityTest extends BaseTestCase
 	/**
 	 * @return array<string, array<string|bool|array<string, mixed>>>
 	 */
-	public function channelProperty(): array
+	public static function channelProperty(): array
 	{
 		return [
 			'dynamic' => [
@@ -245,7 +245,7 @@ final class ChannelPropertyEntityTest extends BaseTestCase
 	/**
 	 * @return array<string, array<string|bool>>
 	 */
-	public function channelPropertyInvalid(): array
+	public static function channelPropertyInvalid(): array
 	{
 		return [
 			'missing' => [

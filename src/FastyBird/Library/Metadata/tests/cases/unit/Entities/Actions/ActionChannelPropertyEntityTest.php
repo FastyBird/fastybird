@@ -54,7 +54,7 @@ final class ActionChannelPropertyEntityTest extends BaseTestCase
 	/**
 	 * @return array<string, array<string|bool>>
 	 */
-	public function channelProperty(): array
+	public static function channelProperty(): array
 	{
 		return [
 			'get' => [
@@ -71,7 +71,7 @@ final class ActionChannelPropertyEntityTest extends BaseTestCase
 	/**
 	 * @return array<string, array<string|bool>>
 	 */
-	public function channelPropertyInvalid(): array
+	public static function channelPropertyInvalid(): array
 	{
 		return [
 			'missing' => [

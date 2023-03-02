@@ -134,9 +134,9 @@ final class Exchange extends WebSockets\Application\Controller\Controller
 					MetadataTypes\RoutingKey::get($args['routing_key']),
 				);
 
-				$data = isset($args['data']) && is_array($args['data'])
-					? $this->parseData($args['data'], $schema)
-					: null;
+				/** @var array<string, mixed>|null $data */
+				$data = isset($args['data']) && is_array($args['data']) ? $args['data'] : null;
+				$data = $data !== null ? $this->parseData($data, $schema) : null;
 
 				$this->exchangePublisher->publish(
 					MetadataTypes\ModuleSource::get($args['source']),

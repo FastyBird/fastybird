@@ -70,7 +70,7 @@ final class AccountIdentitiesV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<string|int|null>>
 	 */
-	public function identitiesRead(): array
+	public static function identitiesRead(): array
 	{
 		return [
 			// Valid responses
@@ -247,7 +247,7 @@ final class AccountIdentitiesV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<(bool|string|int|null)>>
 	 */
-	public function identitiesUpdate(): array
+	public static function identitiesUpdate(): array
 	{
 		return [
 			// Valid responses
