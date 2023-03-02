@@ -67,7 +67,7 @@ final class SessionV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<string|int|null>>
 	 */
-	public function sessionRead(): array
+	public static function sessionRead(): array
 	{
 		return [
 			// Valid responses
@@ -221,7 +221,7 @@ final class SessionV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<bool|string|int|null>>
 	 */
-	public function sessionCreate(): array
+	public static function sessionCreate(): array
 	{
 		return [
 			// Valid responses
@@ -401,7 +401,7 @@ final class SessionV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<bool|string|int|null>>
 	 */
-	public function sessionUpdate(): array
+	public static function sessionUpdate(): array
 	{
 		return [
 			// Valid responses
@@ -504,7 +504,7 @@ final class SessionV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<string|int|null>>
 	 */
-	public function sessionDelete(): array
+	public static function sessionDelete(): array
 	{
 		return [
 			// Valid responses

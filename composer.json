@@ -84,7 +84,7 @@
         "vlucas/phpdotenv": "^5.4"
     },
     "require-dev": {
-        "brianium/paratest": "^6.6",
+        "brianium/paratest": "^7.1",
         "dg/bypass-finals": "^1.4",
         "doctrine/orm": "^2.8",
         "infection/infection": "^0.26",
@@ -101,7 +101,7 @@
         "phpstan/phpstan-nette": "^1.1",
         "phpstan/phpstan-phpunit": "^1.1",
         "phpstan/phpstan-strict-rules": "^1.4",
-        "phpunit/phpunit": "^9.5",
+        "phpunit/phpunit": "^10.0",
         "staabm/annotate-pull-request-from-checkstyle": "^1.8",
         "symplify/monorepo-builder": "^11.1",
         "tracy/tracy": "^2.9"

@@ -43,7 +43,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	/**
 	 * @return array<string, array<string|array<string, bool|float|int|string|array<string>>>>
 	 */
-	public function parseDeviceAttributesProvider(): array
+	public static function parseDeviceAttributesProvider(): array
 	{
 		return [
 			'attr-' . Entities\Messages\Attribute::NAME => [
@@ -115,7 +115,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	/**
 	 * @return array<string, array<string|array<string, bool|float|int|string|array<string>>>>
 	 */
-	public function parseDeviceHardwareInfoProvider(): array
+	public static function parseDeviceHardwareInfoProvider(): array
 	{
 		return [
 			'hw-' . Entities\Messages\ExtensionAttribute::MAC_ADDRESS => [
@@ -187,7 +187,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	/**
 	 * @return array<string, array<string|array<string, bool|float|int|string|array<string>>>>
 	 */
-	public function parseDeviceFirmwareInfoProvider(): array
+	public static function parseDeviceFirmwareInfoProvider(): array
 	{
 		return [
 			'fw-' . Entities\Messages\ExtensionAttribute::MANUFACTURER => [
@@ -241,7 +241,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	/**
 	 * @return array<string, array<string|array<string, bool|float|int|string|array<string>>>>
 	 */
-	public function parseDevicePropertiesProvider(): array
+	public static function parseDevicePropertiesProvider(): array
 	{
 		return [
 			'prop-property-name' => [
@@ -287,7 +287,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	/**
 	 * @return array<string, array<string|array<string, bool|float|int|string|array<string>>>>
 	 */
-	public function parseDevicePropertiesAttributesProvider(): array
+	public static function parseDevicePropertiesAttributesProvider(): array
 	{
 		return [
 			'attr-' . Entities\Messages\PropertyAttribute::NAME => [
@@ -353,7 +353,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	/**
 	 * @return array<string, array<string>>
 	 */
-	public function parseDeviceAttributesInvalidProvider(): array
+	public static function parseDeviceAttributesInvalidProvider(): array
 	{
 		return [
 			'attr-unknown' => [
@@ -394,7 +394,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	/**
 	 * @return array<string, array<string>>
 	 */
-	public function parseDeviceHardwareInfoInvalidProvider(): array
+	public static function parseDeviceHardwareInfoInvalidProvider(): array
 	{
 		return [
 			'hw-not-valid' => [
@@ -435,7 +435,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	/**
 	 * @return array<string, array<string>>
 	 */
-	public function parseDeviceFirmwareInfoInvalidProvider(): array
+	public static function parseDeviceFirmwareInfoInvalidProvider(): array
 	{
 		return [
 			'fw-not-valid' => [
@@ -476,7 +476,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	/**
 	 * @return array<string, array<string|array<string, bool|float|int|string|array<string>>>>
 	 */
-	public function parseChannelAttributesProvider(): array
+	public static function parseChannelAttributesProvider(): array
 	{
 		return [
 			'attr-' . Entities\Messages\Attribute::NAME => [
@@ -542,7 +542,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	/**
 	 * @return array<string, array<string|array<string, bool|float|int|string|array<string>>>>
 	 */
-	public function parseChannelPropertiesProvider(): array
+	public static function parseChannelPropertiesProvider(): array
 	{
 		return [
 			'prop-property-name' => [
@@ -589,7 +589,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	/**
 	 * @return array<string, array<string|array<string, bool|float|int|string|array<string>>>>
 	 */
-	public function parseChannelPropertiesAttributesProvider(): array
+	public static function parseChannelPropertiesAttributesProvider(): array
 	{
 		return [
 			'attr-' . Entities\Messages\PropertyAttribute::NAME => [
@@ -658,7 +658,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	/**
 	 * @return array<string, array<string>>
 	 */
-	public function parseChannelAttributesInvalidProvider(): array
+	public static function parseChannelAttributesInvalidProvider(): array
 	{
 		return [
 			'attr-' . Entities\Messages\Attribute::CHANNELS => [

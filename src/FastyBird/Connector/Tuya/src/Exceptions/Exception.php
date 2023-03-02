@@ -15,7 +15,9 @@
 
 namespace FastyBird\Connector\Tuya\Exceptions;
 
-interface Exception
+use Throwable;
+
+interface Exception extends Throwable
 {
 
 }

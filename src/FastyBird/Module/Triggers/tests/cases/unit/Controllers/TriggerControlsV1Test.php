@@ -29,7 +29,7 @@ final class TriggerControlsV1Test extends DbTestCase
 	 * @throws RuntimeException
 	 * @throws Utils\JsonException
 	 *
-	 * @dataProvider deviceControlsRead
+	 * @dataProvider triggerControlsRead
 	 */
 	public function testRead(string $url, string|null $token, int $statusCode, string $fixture): void
 	{
@@ -60,7 +60,7 @@ final class TriggerControlsV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<string|int|null>>
 	 */
-	public function deviceControlsRead(): array
+	public static function triggerControlsRead(): array
 	{
 		return [
 			// Valid responses

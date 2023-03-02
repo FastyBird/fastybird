@@ -75,7 +75,7 @@ final class AccountsV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<string|int|null>>
 	 */
-	public function accountsRead(): array
+	public static function accountsRead(): array
 	{
 		return [
 			// Valid responses
@@ -233,7 +233,7 @@ final class AccountsV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<(bool|string|int|null)>>
 	 */
-	public function accountsCreate(): array
+	public static function accountsCreate(): array
 	{
 		return [
 			// Valid responses
@@ -384,7 +384,7 @@ final class AccountsV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<(bool|string|int|null)>>
 	 */
-	public function accountsUpdate(): array
+	public static function accountsUpdate(): array
 	{
 		return [
 			// Valid responses
@@ -533,7 +533,7 @@ final class AccountsV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<string|int|null>>
 	 */
-	public function accountsDelete(): array
+	public static function accountsDelete(): array
 	{
 		return [
 			// Valid responses

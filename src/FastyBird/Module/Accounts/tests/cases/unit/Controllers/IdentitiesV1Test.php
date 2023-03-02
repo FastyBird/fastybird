@@ -72,7 +72,7 @@ final class IdentitiesV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<string|int|null>>
 	 */
-	public function identitiesRead(): array
+	public static function identitiesRead(): array
 	{
 		return [
 			// Valid responses
@@ -220,7 +220,7 @@ final class IdentitiesV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<bool|string|int|null>>
 	 */
-	public function identitiesCreate(): array
+	public static function identitiesCreate(): array
 	{
 		return [
 			// Valid responses

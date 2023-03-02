@@ -61,7 +61,7 @@ final class NotificationsV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<string|int|null>>
 	 */
-	public function notificationsRead(): array
+	public static function notificationsRead(): array
 	{
 		return [
 			// Valid responses
@@ -231,7 +231,7 @@ final class NotificationsV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<bool|string|int|null>>
 	 */
-	public function notificationsCreate(): array
+	public static function notificationsCreate(): array
 	{
 		return [
 			// Valid responses
@@ -373,7 +373,7 @@ final class NotificationsV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<bool|string|int|null>>
 	 */
-	public function notificationsUpdate(): array
+	public static function notificationsUpdate(): array
 	{
 		return [
 			// Valid responses
@@ -496,7 +496,7 @@ final class NotificationsV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<string|int|null>>
 	 */
-	public function notificationsDelete(): array
+	public static function notificationsDelete(): array
 	{
 		return [
 			// Valid responses

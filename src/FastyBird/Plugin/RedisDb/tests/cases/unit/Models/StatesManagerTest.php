@@ -140,7 +140,7 @@ final class StatesManagerTest extends TestCase
 	/**
 	 * @return array<string, array<Uuid\UuidInterface|array<string, mixed>>>
 	 */
-	public function createStateValue(): array
+	public static function createStateValue(): array
 	{
 		$id = Uuid\Uuid::uuid4();
 
@@ -190,7 +190,7 @@ final class StatesManagerTest extends TestCase
 	/**
 	 * @return array<string, array<Uuid\UuidInterface|array<string, mixed>>>
 	 */
-	public function updateStateValue(): array
+	public static function updateStateValue(): array
 	{
 		$id = Uuid\Uuid::uuid4();
 		$now = new DateTimeImmutable();

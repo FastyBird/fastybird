@@ -61,7 +61,7 @@ final class ConditionsV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<string|int|null>>
 	 */
-	public function conditionsRead(): array
+	public static function conditionsRead(): array
 	{
 		return [
 			// Valid responses
@@ -243,7 +243,7 @@ final class ConditionsV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<bool|string|int|null>>
 	 */
-	public function conditionsCreate(): array
+	public static function conditionsCreate(): array
 	{
 		return [
 			// Valid responses
@@ -374,7 +374,7 @@ final class ConditionsV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<bool|string|int|null>>
 	 */
-	public function conditionsUpdate(): array
+	public static function conditionsUpdate(): array
 	{
 		return [
 			// Valid responses
@@ -497,7 +497,7 @@ final class ConditionsV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<string|int|null>>
 	 */
-	public function conditionsDelete(): array
+	public static function conditionsDelete(): array
 	{
 		return [
 			// Valid responses

@@ -60,7 +60,7 @@ final class DeviceParentsV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<string|int|null>>
 	 */
-	public function deviceParentsRead(): array
+	public static function deviceParentsRead(): array
 	{
 		return [
 			// Valid responses

@@ -59,7 +59,7 @@ final class ValidatorTest extends BaseTestCase
 	 *
 	 * @throws Utils\JsonException
 	 */
-	public function validateValidData(): array
+	public static function validateValidData(): array
 	{
 		return [
 			'one' => [
@@ -113,7 +113,7 @@ final class ValidatorTest extends BaseTestCase
 	 *
 	 * @throws Utils\JsonException
 	 */
-	public function validateInvalidData(): array
+	public static function validateInvalidData(): array
 	{
 		return [
 			'one' => [

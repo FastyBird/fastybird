@@ -60,7 +60,7 @@ final class ChannelControlsV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<string|int|null>>
 	 */
-	public function channelControlsRead(): array
+	public static function channelControlsRead(): array
 	{
 		return [
 			// Valid responses

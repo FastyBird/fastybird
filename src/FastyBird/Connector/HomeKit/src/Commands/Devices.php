@@ -750,7 +750,7 @@ class Devices extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'devices-cmd',
 					'group' => 'cmd',
 					'exception' => [
@@ -796,9 +796,70 @@ class Devices extends Console\Command\Command
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws Nette\IOException
 	 */
 	private function editService(Style\SymfonyStyle $io, Entities\HomeKitDevice $device): void
 	{
+		$channels = $this->getServicesList($device);
+
+		if (count($channels) === 0) {
+			$io->warning('This device has not configured any service');
+
+			$question = new Console\Question\ConfirmationQuestion(
+				'Would you like to configure new device service?',
+				false,
+			);
+
+			$continue = (bool) $io->askQuestion($question);
+
+			if ($continue) {
+				$this->createService($io, $device, true);
+			}
+
+			return;
+		}
+
+		$channel = $this->askWhichService($io, $device, $channels);
+
+		if ($channel === null) {
+			return;
+		}
+
+		try {
+			// Start transaction connection to the database
+			$this->getOrmConnection()->beginTransaction();
+
+			// Commit all changes into database
+			$this->getOrmConnection()->commit();
+
+			$io->success(
+				$this->translator->translate(
+					'//homekit-connector.cmd.devices.messages.edit.service.success',
+					['name' => $channel->getName() ?? $channel->getIdentifier()],
+				),
+			);
+		} catch (Throwable $ex) {
+			// Log caught exception
+			$this->logger->error(
+				'An unhandled error occurred',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+					'type' => 'devices-cmd',
+					'group' => 'cmd',
+					'exception' => [
+						'message' => $ex->getMessage(),
+						'code' => $ex->getCode(),
+					],
+				],
+			);
+
+			$io->success($this->translator->translate('//homekit-connector.cmd.devices.messages.edit.service.error'));
+		} finally {
+			// Revert all changes when error occur
+			if ($this->getOrmConnection()->isTransactionActive()) {
+				$this->getOrmConnection()->rollBack();
+			}
+		}
 	}
 
 	/**
@@ -847,7 +908,7 @@ class Devices extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'devices-cmd',
 					'group' => 'cmd',
 					'exception' => [
@@ -2085,7 +2146,7 @@ class Devices extends Console\Command\Command
 			$this->logger->alert(
 				'Could not read service identifier from console answer',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'devices-cmd',
 					'group' => 'cmd',
 				],
@@ -2106,7 +2167,7 @@ class Devices extends Console\Command\Command
 			$this->logger->alert(
 				'Channel was not found',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'devices-cmd',
 					'group' => 'cmd',
 				],

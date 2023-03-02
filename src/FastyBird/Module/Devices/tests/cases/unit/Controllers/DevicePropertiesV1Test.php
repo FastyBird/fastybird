@@ -61,7 +61,7 @@ final class DevicePropertiesV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<string|int|null>>
 	 */
-	public function devicePropertiesRead(): array
+	public static function devicePropertiesRead(): array
 	{
 		return [
 			// Valid responses
@@ -207,7 +207,7 @@ final class DevicePropertiesV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<bool|string|int|null>>
 	 */
-	public function devicePropertiesCreate(): array
+	public static function devicePropertiesCreate(): array
 	{
 		return [
 			// Valid responses
@@ -326,7 +326,7 @@ final class DevicePropertiesV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<bool|string|int|null>>
 	 */
-	public function devicePropertiesUpdate(): array
+	public static function devicePropertiesUpdate(): array
 	{
 		return [
 			// Valid responses
@@ -435,7 +435,7 @@ final class DevicePropertiesV1Test extends DbTestCase
 	/**
 	 * @return array<string, array<string|int|null>>
 	 */
-	public function devicePropertiesDelete(): array
+	public static function devicePropertiesDelete(): array
 	{
 		return [
 			// Valid responses

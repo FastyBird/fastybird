@@ -62,7 +62,7 @@ final class AccessTest extends DbTestCase
 	/**
 	 * @return array<string, array<int|string>>
 	 */
-	public function permissionAnnotation(): array
+	public static function permissionAnnotation(): array
 	{
 		return [
 			'readAllowed' => [

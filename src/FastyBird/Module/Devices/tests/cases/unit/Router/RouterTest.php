@@ -59,7 +59,7 @@ final class RouterTest extends DbTestCase
 	/**
 	 * @return array<string, array<string|int>>
 	 */
-	public function prefixedRoutes(): array
+	public static function prefixedRoutes(): array
 	{
 		return [
 			'readAllValid' => [

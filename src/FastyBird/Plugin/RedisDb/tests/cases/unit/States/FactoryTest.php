@@ -71,7 +71,7 @@ final class FactoryTest extends TestCase
 	/**
 	 * @return array<string, array<string|array<string, mixed>>>
 	 */
-	public function createStateValidDocumentData(): array
+	public static function createStateValidDocumentData(): array
 	{
 		return [
 			'one' => [
@@ -92,7 +92,7 @@ final class FactoryTest extends TestCase
 	/**
 	 * @return array<string, array<string|array<string, mixed>>>
 	 */
-	public function createStateInvalidDocumentData(): array
+	public static function createStateInvalidDocumentData(): array
 	{
 		return [
 			'one' => [
