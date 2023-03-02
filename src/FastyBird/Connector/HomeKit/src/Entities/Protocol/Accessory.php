@@ -94,6 +94,10 @@ abstract class Accessory
 	{
 		$this->iidManager->assign($service);
 
+		foreach ($service->getCharacteristics() as $characteristic) {
+			$this->iidManager->assign($characteristic);
+		}
+
 		$this->services->attach($service);
 	}
 

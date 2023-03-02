@@ -127,8 +127,6 @@ class Service
 			));
 		}
 
-		$this->accessory->getIidManager()->assign($characteristic);
-
 		$this->characteristics->attach($characteristic);
 	}
 
