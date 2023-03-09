@@ -6,6 +6,10 @@
       "type" : "string",
       "description" : "Entity unique uuid v4 identifier"
     },
+    "type" : {
+      "type" : "string",
+      "description" : "Channel type, related to device"
+    },
     "identifier" : {
       "type" : "string",
       "description" : "Unique human readable identifier"

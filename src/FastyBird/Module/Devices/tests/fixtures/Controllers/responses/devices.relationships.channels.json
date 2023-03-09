@@ -12,11 +12,11 @@
   },
   "data": [
     {
-      "type": "com.fastybird.devices-module/channel",
+      "type": "com.fastybird.devices-module/channel/general",
       "id": "17c59dfa-2edd-438e-8c49-faa4e38e5a5e"
     },
     {
-      "type": "com.fastybird.devices-module/channel",
+      "type": "com.fastybird.devices-module/channel/general",
       "id": "6821f8e9-ae69-4d5c-9b7c-d2b213f1ae0a"
     }
   ]

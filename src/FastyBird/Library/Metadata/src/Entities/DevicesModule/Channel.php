@@ -37,6 +37,7 @@ final class Channel implements Entities\Entity, Entities\Owner
 
 	public function __construct(
 		string $id,
+		private readonly string $type,
 		private readonly string $identifier,
 		string $device,
 		private readonly string|null $name = null,
@@ -52,6 +53,11 @@ final class Channel implements Entities\Entity, Entities\Owner
 	public function getId(): Uuid\UuidInterface
 	{
 		return $this->id;
+	}
+
+	public function getType(): string
+	{
+		return $this->type;
 	}
 
 	public function getIdentifier(): string
@@ -78,6 +84,7 @@ final class Channel implements Entities\Entity, Entities\Owner
 	{
 		return [
 			'id' => $this->getId()->toString(),
+			'type' => $this->getType(),
 			'identifier' => $this->getIdentifier(),
 			'name' => $this->getName(),
 			'comment' => $this->getComment(),

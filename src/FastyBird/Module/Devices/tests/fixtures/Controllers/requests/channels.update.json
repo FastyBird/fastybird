@@ -1,7 +1,7 @@
 {
   "data" : {
     "id" : "17c59dfa-2edd-438e-8c49-faa4e38e5a5e",
-    "type" : "com.fastybird.devices-module/channel",
+    "type" : "com.fastybird.devices-module/channel/general",
     "attributes" : {
       "name" : "Updated name",
       "comment" : "With comment"

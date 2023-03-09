@@ -58,6 +58,8 @@ class Channel implements Entities\Entity,
 	use DoctrineTimestampable\Entities\TEntityCreated;
 	use DoctrineTimestampable\Entities\TEntityUpdated;
 
+	public const CHANNEL_TYPE = 'general';
+
 	/**
 	 * @ORM\Id
 	 * @ORM\Column(type="uuid_binary", name="channel_id")
@@ -127,6 +129,11 @@ class Channel implements Entities\Entity,
 	public function getIdentifier(): string
 	{
 		return $this->identifier;
+	}
+
+	public function getType(): string
+	{
+		return self::CHANNEL_TYPE;
 	}
 
 	public function setIdentifier(string $identifier): void
@@ -280,6 +287,7 @@ class Channel implements Entities\Entity,
 	{
 		return [
 			'id' => $this->getPlainId(),
+			'type' => $this->getType(),
 			'identifier' => $this->getIdentifier(),
 			'name' => $this->getName(),
 			'comment' => $this->getComment(),

@@ -10,7 +10,7 @@
     "self" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels"
   },
   "data" : {
-    "type" : "com.fastybird.devices-module/channel",
+    "type" : "com.fastybird.devices-module/channel/general",
     "id" : "e0f879e3-0e8f-4b72-bde4-7e3fbb89decc",
     "attributes" : {
       "identifier" : "custom-channel",
