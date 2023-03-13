@@ -24,23 +24,27 @@ final class ConstantsTest extends BaseTestCase
 			Metadata\Constants::VALUE_FORMAT_STRING_ENUM,
 			'one,two-v1,three',
 		));
+		self::assertSame(1, preg_match(
+			Metadata\Constants::VALUE_FORMAT_STRING_ENUM,
+			'1one,two,three',
+		));
+		self::assertSame(1, preg_match(
+			Metadata\Constants::VALUE_FORMAT_STRING_ENUM,
+			'one,1two,three',
+		));
+		self::assertSame(1, preg_match(
+			Metadata\Constants::VALUE_FORMAT_STRING_ENUM,
+			'1,two,three',
+		));
+		self::assertSame(1, preg_match(
+			Metadata\Constants::VALUE_FORMAT_STRING_ENUM,
+			'1,2,3',
+		));
 
 		// Invalid
 		self::assertSame(0, preg_match(
 			Metadata\Constants::VALUE_FORMAT_STRING_ENUM,
-			'1one,two,three',
-		));
-		self::assertSame(0, preg_match(
-			Metadata\Constants::VALUE_FORMAT_STRING_ENUM,
-			'one,1two,three',
-		));
-		self::assertSame(0, preg_match(
-			Metadata\Constants::VALUE_FORMAT_STRING_ENUM,
 			'one,two__,three',
-		));
-		self::assertSame(0, preg_match(
-			Metadata\Constants::VALUE_FORMAT_STRING_ENUM,
-			'1,two,three',
 		));
 	}
 
