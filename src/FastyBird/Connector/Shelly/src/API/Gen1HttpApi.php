@@ -863,7 +863,7 @@ final class Gen1HttpApi extends HttpApi
 	/**
 	 * @param array<string>|array<int>|array<float>|null $format
 	 *
-	 * @return array<string>|array<int>|array<float>|array<int, array<int, (string|null)>>|array<int, (int|null)>|array<int, (float|null)>|array<int, (MetadataTypes\SwitchPayload|string|Types\RelayPayload|null)>|null
+	 * @return array<string>|array<int>|array<float>|array<int, array<int, (string|array<int, string>|null)>>|array<int, (int|null)>|array<int, (float|null)>|array<int, (MetadataTypes\SwitchPayload|string|Types\RelayPayload|null)>|null
 	 */
 	private function adjustSensorFormat(
 		string $block,
@@ -876,9 +876,21 @@ final class Gen1HttpApi extends HttpApi
 			&& Utils\Strings::lower($description) === Types\SensorDescription::DESC_OUTPUT
 		) {
 			return [
-				[MetadataTypes\SwitchPayload::PAYLOAD_ON, '1', Types\RelayPayload::PAYLOAD_ON],
-				[MetadataTypes\SwitchPayload::PAYLOAD_OFF, '0', Types\RelayPayload::PAYLOAD_OFF],
-				[MetadataTypes\SwitchPayload::PAYLOAD_TOGGLE, null, Types\RelayPayload::PAYLOAD_TOGGLE],
+				[
+					[MetadataTypes\DataTypeShort::DATA_TYPE_SWITCH, MetadataTypes\SwitchPayload::PAYLOAD_ON],
+					[MetadataTypes\DataTypeShort::DATA_TYPE_UCHAR, '1'],
+					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\RelayPayload::PAYLOAD_ON],
+				],
+				[
+					[MetadataTypes\DataTypeShort::DATA_TYPE_SWITCH, MetadataTypes\SwitchPayload::PAYLOAD_OFF],
+					[MetadataTypes\DataTypeShort::DATA_TYPE_UCHAR, '0'],
+					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\RelayPayload::PAYLOAD_OFF],
+				],
+				[
+					[MetadataTypes\DataTypeShort::DATA_TYPE_SWITCH, MetadataTypes\SwitchPayload::PAYLOAD_TOGGLE],
+					null,
+					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\RelayPayload::PAYLOAD_TOGGLE],
+				],
 			];
 		}
 
@@ -887,11 +899,31 @@ final class Gen1HttpApi extends HttpApi
 			&& Utils\Strings::lower($description) === Types\SensorDescription::DESC_ROLLER
 		) {
 			return [
-				[MetadataTypes\CoverPayload::PAYLOAD_OPEN, Types\RollerPayload::PAYLOAD_OPEN, null],
-				[MetadataTypes\CoverPayload::PAYLOAD_OPENED, null, Types\RollerPayload::PAYLOAD_OPEN],
-				[MetadataTypes\CoverPayload::PAYLOAD_CLOSE, Types\RollerPayload::PAYLOAD_CLOSE, null],
-				[MetadataTypes\CoverPayload::PAYLOAD_CLOSED, null, Types\RollerPayload::PAYLOAD_CLOSE],
-				[MetadataTypes\CoverPayload::PAYLOAD_STOP, Types\RollerPayload::PAYLOAD_STOP, null],
+				[
+					[MetadataTypes\DataTypeShort::DATA_TYPE_COVER, MetadataTypes\CoverPayload::PAYLOAD_OPEN],
+					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\RollerPayload::PAYLOAD_OPEN],
+					null,
+				],
+				[
+					[MetadataTypes\DataTypeShort::DATA_TYPE_COVER, MetadataTypes\CoverPayload::PAYLOAD_OPENED],
+					null,
+					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\RollerPayload::PAYLOAD_OPEN],
+				],
+				[
+					[MetadataTypes\DataTypeShort::DATA_TYPE_COVER, MetadataTypes\CoverPayload::PAYLOAD_CLOSE],
+					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\RollerPayload::PAYLOAD_CLOSE],
+					null,
+				],
+				[
+					[MetadataTypes\DataTypeShort::DATA_TYPE_COVER, MetadataTypes\CoverPayload::PAYLOAD_CLOSED],
+					null,
+					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\RollerPayload::PAYLOAD_CLOSE],
+				],
+				[
+					[MetadataTypes\DataTypeShort::DATA_TYPE_COVER, MetadataTypes\CoverPayload::PAYLOAD_STOP],
+					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\RollerPayload::PAYLOAD_STOP],
+					null,
+				],
 			];
 		}
 
@@ -900,9 +932,21 @@ final class Gen1HttpApi extends HttpApi
 			&& Utils\Strings::lower($description) === Types\SensorDescription::DESC_OUTPUT
 		) {
 			return [
-				[MetadataTypes\SwitchPayload::PAYLOAD_ON, '1', Types\LightSwitchPayload::PAYLOAD_ON],
-				[MetadataTypes\SwitchPayload::PAYLOAD_OFF, '0', Types\LightSwitchPayload::PAYLOAD_OFF],
-				[MetadataTypes\SwitchPayload::PAYLOAD_TOGGLE, null, Types\LightSwitchPayload::PAYLOAD_TOGGLE],
+				[
+					[MetadataTypes\DataTypeShort::DATA_TYPE_SWITCH, MetadataTypes\SwitchPayload::PAYLOAD_ON],
+					[MetadataTypes\DataTypeShort::DATA_TYPE_UCHAR, '1'],
+					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\LightSwitchPayload::PAYLOAD_ON],
+				],
+				[
+					[MetadataTypes\DataTypeShort::DATA_TYPE_SWITCH, MetadataTypes\SwitchPayload::PAYLOAD_OFF],
+					[MetadataTypes\DataTypeShort::DATA_TYPE_UCHAR, '0'],
+					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\LightSwitchPayload::PAYLOAD_OFF],
+				],
+				[
+					[MetadataTypes\DataTypeShort::DATA_TYPE_SWITCH, MetadataTypes\SwitchPayload::PAYLOAD_TOGGLE],
+					null,
+					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\LightSwitchPayload::PAYLOAD_TOGGLE],
+				],
 			];
 		}
 
