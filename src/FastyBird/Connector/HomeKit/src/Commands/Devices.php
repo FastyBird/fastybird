@@ -56,6 +56,7 @@ use function floatval;
 use function implode;
 use function in_array;
 use function intval;
+use function is_array;
 use function is_bool;
 use function is_float;
 use function is_int;
@@ -2244,12 +2245,15 @@ class Devices extends Console\Command\Command
 					$options = $connectProperty->getFormat() instanceof MetadataValueObjects\StringEnumFormat ?
 						$connectProperty->getFormat()->toArray() :
 						array_map(
-							static function (array $items): string|null {
+							static function (array $items): array|null {
 								if ($items[0] === null) {
 									return null;
 								}
 
-								return strval($items[0]->getValue());
+								return [
+									$items[0]->getDataType(),
+									strval($items[0]->getValue()),
+								];
 							},
 							$connectProperty->getFormat()->getItems(),
 						);
@@ -2259,12 +2263,15 @@ class Devices extends Console\Command\Command
 							'//homekit-connector.cmd.devices.questions.select.valueMapping',
 							['value' => $name],
 						),
-						$options,
+						array_map(
+							static fn ($item): string|null => is_array($item) ? $item[1] : $item,
+							$options,
+						),
 					);
 					$question->setErrorMessage(
 						$this->translator->translate('//homekit-connector.cmd.base.messages.answerNotValid'),
 					);
-					$question->setValidator(function (string|null $answer) use ($options): string {
+					$question->setValidator(function (string|null $answer) use ($options): string|array {
 						if ($answer === null) {
 							throw new Exceptions\Runtime(
 								sprintf(
@@ -2276,12 +2283,24 @@ class Devices extends Console\Command\Command
 							);
 						}
 
-						if (array_key_exists($answer, array_values($options))) {
-							$answer = array_values($options)[$answer];
+						$remappedOptions = array_map(
+							static fn ($item): string|null => is_array($item) ? $item[1] : $item,
+							$options,
+						);
+
+						if (array_key_exists($answer, array_values($remappedOptions))) {
+							$answer = array_values($remappedOptions)[$answer];
 						}
 
-						if (in_array($answer, $options, true) && $answer !== null) {
-							return $answer;
+						if (in_array($answer, $remappedOptions, true) && $answer !== null) {
+							$options = array_values(array_filter(
+								$options,
+								static fn ($item): bool => is_array($item) ? $item[1] === $answer : $item === $answer
+							));
+
+							if (count($options) === 1 && $options[0] !== null) {
+								return $options[0];
+							}
 						}
 
 						throw new Exceptions\Runtime(
@@ -2293,9 +2312,10 @@ class Devices extends Console\Command\Command
 					});
 
 					$value = $io->askQuestion($question);
-					assert(is_string($value) || is_int($value));
+					assert(is_string($value) || is_int($value) || is_array($value));
 
-					$valueDataType = null;
+					$valueDataType = is_array($value) ? strval($value[0]) : null;
+					$value = is_array($value) ? $value[1] : $value;
 
 					if (MetadataTypes\SwitchPayload::isValidValue($value)) {
 						$valueDataType = MetadataTypes\DataTypeShort::DATA_TYPE_SWITCH;
