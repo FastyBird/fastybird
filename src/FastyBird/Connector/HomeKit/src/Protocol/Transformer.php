@@ -187,6 +187,24 @@ final class Transformer
 			}
 		}
 
+		if (
+			$property->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_SWITCH)
+			&& is_bool($transformedValue)
+		) {
+			$transformedValue = MetadataTypes\SwitchPayload::get(
+				$transformedValue ? MetadataTypes\SwitchPayload::PAYLOAD_ON : MetadataTypes\SwitchPayload::PAYLOAD_OFF,
+			);
+		}
+
+		if (
+			$property->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)
+			&& is_bool($transformedValue)
+		) {
+			$transformedValue = MetadataTypes\ButtonPayload::get(
+				$transformedValue ? MetadataTypes\ButtonPayload::PAYLOAD_PRESSED : MetadataTypes\ButtonPayload::PAYLOAD_RELEASED,
+			);
+		}
+
 		return $transformedValue;
 	}
 
@@ -270,6 +288,16 @@ final class Transformer
 		if ($dataType->equalsValue(Types\DataType::DATA_TYPE_BOOLEAN)) {
 			if ($transformedValue === null) {
 				$transformedValue = false;
+			} elseif (
+				!is_bool($transformedValue)
+				&& $transformedValue instanceof MetadataTypes\SwitchPayload
+			) {
+				$transformedValue = $transformedValue->equalsValue(MetadataTypes\SwitchPayload::PAYLOAD_ON);
+			} elseif (
+				!is_bool($transformedValue)
+				&& $transformedValue instanceof MetadataTypes\ButtonPayload
+			) {
+				$transformedValue = $transformedValue->equalsValue(MetadataTypes\ButtonPayload::PAYLOAD_RELEASED);
 			} elseif (!is_bool($transformedValue)) {
 				$transformedValue = in_array(Utils\Strings::lower(strval($transformedValue)), [
 					'true',

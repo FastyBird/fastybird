@@ -2222,8 +2222,11 @@ class Devices extends Console\Command\Command
 
 			if (
 				$connectProperty !== null
-				&& $connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_ENUM)
 				&& (
+					$connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_ENUM)
+					|| $connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_SWITCH)
+					|| $connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)
+				) && (
 					$connectProperty->getFormat() instanceof MetadataValueObjects\StringEnumFormat
 					|| $connectProperty->getFormat() instanceof MetadataValueObjects\CombinedEnumFormat
 				)

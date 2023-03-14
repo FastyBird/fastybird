@@ -25,6 +25,7 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use FastyBird\Module\Devices\Models as DevicesModels;
 use Nette;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -69,6 +70,7 @@ final class Http implements Server
 		private readonly Entities\Protocol\AccessoryFactory $accessoryFactory,
 		private readonly Entities\Protocol\ServiceFactory $serviceFactory,
 		private readonly Entities\Protocol\CharacteristicsFactory $characteristicsFactory,
+		private readonly DevicesModels\States\ChannelPropertiesRepository $channelPropertiesStatesRepository,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		Log\LoggerInterface|null $logger = null,
 	)
@@ -123,6 +125,16 @@ final class Http implements Server
 
 						if ($property instanceof DevicesEntities\Channels\Properties\Variable) {
 							$characteristic->setActualValue($property->getValue());
+						} else {
+							try {
+								$state = $this->channelPropertiesStatesRepository->findOne($property);
+
+								if ($state !== null) {
+									$characteristic->setActualValue($state->getActualValue());
+								}
+							} catch (DevicesExceptions\NotImplemented) {
+								// Ignore error
+							}
 						}
 
 						$service->addCharacteristic($characteristic);
