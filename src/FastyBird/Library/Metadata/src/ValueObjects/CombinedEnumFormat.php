@@ -46,7 +46,7 @@ final class CombinedEnumFormat implements IteratorAggregate
 	private array $items;
 
 	/**
-	 * @param string|array<int, array<int, string|array<int, string|int|float|bool>|null>> $items
+	 * @param string|array<int, array<int, string|array<int, string|int|float|bool|null>|null>> $items
 	 */
 	public function __construct(string|array $items)
 	{

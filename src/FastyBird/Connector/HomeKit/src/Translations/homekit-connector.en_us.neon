@@ -130,6 +130,7 @@ cmd:
                 mappedChannelProperty: "Select channel property for mapping"
                 requiredCharacteristic: "What type of service characteristic you would like to add?"
                 optionalCharacteristic: "What type of service characteristic you would like to add? (optional)"
+                valueMapping: "Select device value which will be mapped to: %value%"
             connectCharacteristic: "Connect characteristics with device?"
             createService: "Would you like to configure new device service?"
             createAnotherService: "Would you like to configure another device service?"

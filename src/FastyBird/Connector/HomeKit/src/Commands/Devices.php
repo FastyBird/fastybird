@@ -54,6 +54,7 @@ use function boolval;
 use function count;
 use function floatval;
 use function implode;
+use function in_array;
 use function intval;
 use function is_bool;
 use function is_float;
@@ -1102,6 +1103,7 @@ class Devices extends Console\Command\Command
 				) {
 					$this->channelsPropertiesManager->update($property, Utils\ArrayHash::from([
 						'parent' => $connectProperty,
+						'format' => $format,
 					]));
 				} else {
 					$this->channelsPropertiesManager->delete($property);
@@ -1137,6 +1139,7 @@ class Devices extends Console\Command\Command
 				if ($property instanceof DevicesEntities\Channels\Properties\Variable) {
 					$this->channelsPropertiesManager->update($property, Utils\ArrayHash::from([
 						'value' => $value,
+						'format' => $format,
 					]));
 				} else {
 					$this->channelsPropertiesManager->delete($property);
@@ -2212,7 +2215,11 @@ class Devices extends Console\Command\Command
 		}
 
 		if (
-			$dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_ENUM)
+			(
+				$dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_ENUM)
+				|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SWITCH)
+				|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)
+			)
 			&& $characteristicMetadata->offsetExists('ValidValues')
 			&& $characteristicMetadata->offsetGet('ValidValues') instanceof Utils\ArrayHash
 		) {
@@ -2233,31 +2240,31 @@ class Devices extends Console\Command\Command
 			) {
 				$mappedFormat = [];
 
-				foreach ($format as $item) {
+				foreach ($characteristicMetadata->offsetGet('ValidValues') as $name => $item) {
 					$options = $connectProperty->getFormat() instanceof MetadataValueObjects\StringEnumFormat ?
 						$connectProperty->getFormat()->toArray() :
 						array_map(
-							static function (array $items): array|null {
+							static function (array $items): string|null {
 								if ($items[0] === null) {
 									return null;
 								}
 
-								return [
-									$items[0]->getDataType(),
-									$items[0]->getValue(),
-								];
+								return strval($items[0]->getValue());
 							},
 							$connectProperty->getFormat()->getItems(),
 						);
 
 					$question = new Console\Question\ChoiceQuestion(
-						$this->translator->translate('Select device value which is equal to: ' . $item),
+						$this->translator->translate(
+							'//homekit-connector.cmd.devices.questions.select.valueMapping',
+							['value' => $name],
+						),
 						$options,
 					);
 					$question->setErrorMessage(
 						$this->translator->translate('//homekit-connector.cmd.base.messages.answerNotValid'),
 					);
-					$question->setValidator(function (string|null $answer) use ($options): string|int {
+					$question->setValidator(function (string|null $answer) use ($options): string {
 						if ($answer === null) {
 							throw new Exceptions\Runtime(
 								sprintf(
@@ -2273,10 +2280,8 @@ class Devices extends Console\Command\Command
 							$answer = array_values($options)[$answer];
 						}
 
-						$value = array_search($answer, $options, true);
-
-						if ($value !== false) {
-							return $value;
+						if (in_array($answer, $options, true) && $answer !== null) {
+							return $answer;
 						}
 
 						throw new Exceptions\Runtime(
@@ -2290,10 +2295,19 @@ class Devices extends Console\Command\Command
 					$value = $io->askQuestion($question);
 					assert(is_string($value) || is_int($value));
 
+					$valueDataType = null;
+
+					if (MetadataTypes\SwitchPayload::isValidValue($value)) {
+						$valueDataType = MetadataTypes\DataTypeShort::DATA_TYPE_SWITCH;
+
+					} elseif (MetadataTypes\ButtonPayload::isValidValue($value)) {
+						$valueDataType = MetadataTypes\DataTypeShort::DATA_TYPE_BUTTON;
+					}
+
 					$mappedFormat[] = [
-						strval($value),
-						[MetadataTypes\DataTypeShort::DATA_TYPE_UCHAR, $item],
-						[MetadataTypes\DataTypeShort::DATA_TYPE_UCHAR, $item],
+						[$valueDataType, strval($value)],
+						[MetadataTypes\DataTypeShort::DATA_TYPE_UCHAR, strval($item)],
+						[MetadataTypes\DataTypeShort::DATA_TYPE_UCHAR, strval($item)],
 					];
 				}
 
