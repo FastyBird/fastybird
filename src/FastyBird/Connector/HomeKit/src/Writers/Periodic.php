@@ -78,7 +78,7 @@ class Periodic implements Writer
 		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
-	public function connect(Entities\HomeKitConnector $connector): void
+	public function connect(Entities\HomeKitConnector $connector, array $servers): void
 	{
 		$this->connectors[$connector->getPlainId()] = $connector;
 
@@ -93,7 +93,7 @@ class Periodic implements Writer
 		);
 	}
 
-	public function disconnect(Entities\HomeKitConnector $connector): void
+	public function disconnect(Entities\HomeKitConnector $connector, array $servers): void
 	{
 		unset($this->connectors[$connector->getPlainId()]);
 

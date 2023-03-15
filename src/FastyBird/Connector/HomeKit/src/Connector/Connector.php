@@ -89,14 +89,14 @@ final class Connector implements DevicesConnectors\Connector, Common\EventSubscr
 			],
 		);
 
-		$this->writer->connect($this->connector);
-
 		foreach ($this->serversFactories as $serverFactory) {
 			$server = $serverFactory->create($this->connector);
 			$server->connect();
 
 			$this->servers[] = $server;
 		}
+
+		$this->writer->connect($this->connector, $this->servers);
 
 		$this->logger->debug(
 			'Connector has been started',
@@ -115,7 +115,7 @@ final class Connector implements DevicesConnectors\Connector, Common\EventSubscr
 	{
 		assert($this->connector instanceof Entities\HomeKitConnector);
 
-		$this->writer->disconnect($this->connector);
+		$this->writer->disconnect($this->connector, $this->servers);
 
 		foreach ($this->servers as $server) {
 			$server->disconnect();

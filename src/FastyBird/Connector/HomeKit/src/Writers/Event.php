@@ -18,6 +18,7 @@ namespace FastyBird\Connector\HomeKit\Writers;
 use FastyBird\Connector\HomeKit\Clients;
 use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Protocol;
+use FastyBird\Connector\HomeKit\Servers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
@@ -43,8 +44,8 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 
 	public const NAME = 'event';
 
-	/** @var array<string, Entities\HomeKitConnector> */
-	private array $connectors = [];
+	/** @var array<string, array<Servers\Server>> */
+	private array $servers = [];
 
 	private Log\LoggerInterface $logger;
 
@@ -65,14 +66,14 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 		];
 	}
 
-	public function connect(Entities\HomeKitConnector $connector): void
+	public function connect(Entities\HomeKitConnector $connector, array $servers): void
 	{
-		$this->connectors[$connector->getPlainId()] = $connector;
+		$this->servers[$connector->getPlainId()] = $servers;
 	}
 
-	public function disconnect(Entities\HomeKitConnector $connector): void
+	public function disconnect(Entities\HomeKitConnector $connector, array $servers): void
 	{
-		unset($this->connectors[$connector->getPlainId()]);
+		unset($this->servers[$connector->getPlainId()]);
 	}
 
 	/**
@@ -88,7 +89,7 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 			|| $property instanceof DevicesEntities\Channels\Properties\Mapped
 		) {
 			if ($property instanceof DevicesEntities\Devices\Properties\Mapped) {
-				if (!array_key_exists($property->getDevice()->getConnector()->getPlainId(), $this->connectors)) {
+				if (!array_key_exists($property->getDevice()->getConnector()->getPlainId(), $this->servers)) {
 					return;
 				}
 
@@ -96,7 +97,7 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 			} else {
 				if (!array_key_exists(
 					$property->getChannel()->getDevice()->getConnector()->getPlainId(),
-					$this->connectors,
+					$this->servers,
 				)) {
 					return;
 				}
