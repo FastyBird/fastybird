@@ -107,7 +107,7 @@ This can be accomplished either through a console command or through the user in
 
 ## Manual Console Command
 
-To manually trigger device discovery, use the following command:
+To manually trigger device configuration, use the following command:
 
 ```shell
 php bin/fb-console fb:modbus-connector:devices

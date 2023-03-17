@@ -131,7 +131,7 @@ cmd:
                 requiredCharacteristic: "What type of service characteristic you would like to add?"
                 optionalCharacteristic: "What type of service characteristic you would like to add? (optional)"
                 valueMapping: "Select device value which will be mapped to: %value%"
-            connectCharacteristic: "Connect characteristics with device?"
+            connectCharacteristic: "Connect characteristic with device?"
             createService: "Would you like to configure new device service?"
             createAnotherService: "Would you like to configure another device service?"
             editServices: "Would you like to manage device services?"
