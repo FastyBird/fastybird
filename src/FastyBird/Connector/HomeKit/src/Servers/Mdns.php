@@ -18,9 +18,13 @@ namespace FastyBird\Connector\HomeKit\Servers;
 use FastyBird\Connector\HomeKit;
 use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Helpers;
+use FastyBird\Connector\HomeKit\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Constants as DevicesConstants;
+use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use FastyBird\Module\Devices\Models as DevicesModels;
 use Nette;
 use Nette\Utils;
 use Psr\Log;
@@ -83,6 +87,7 @@ final class Mdns implements Server
 	public function __construct(
 		private readonly HomeKit\Entities\HomeKitConnector $connector,
 		private readonly EventLoop\LoopInterface $eventLoop,
+		private readonly DevicesModels\Connectors\Properties\PropertiesManager $connectorPropertiesManager,
 		Log\LoggerInterface|null $logger = null,
 	)
 	{
@@ -203,6 +208,21 @@ final class Mdns implements Server
 					],
 				);
 			});
+
+		$this->connectorPropertiesManager->on(
+			DevicesConstants::EVENT_ENTITY_CREATED,
+			[$this, 'refreshZone'],
+		);
+
+		$this->connectorPropertiesManager->on(
+			DevicesConstants::EVENT_ENTITY_UPDATED,
+			[$this, 'refreshZone'],
+		);
+
+		$this->connectorPropertiesManager->on(
+			DevicesConstants::EVENT_ENTITY_DELETED,
+			[$this, 'refreshZone'],
+		);
 	}
 
 	public function disconnect(): void
@@ -220,6 +240,21 @@ final class Mdns implements Server
 		);
 
 		$this->server?->close();
+
+		$this->connectorPropertiesManager->removeListener(
+			DevicesConstants::EVENT_ENTITY_CREATED,
+			[$this, 'refreshZone'],
+		);
+
+		$this->connectorPropertiesManager->removeListener(
+			DevicesConstants::EVENT_ENTITY_UPDATED,
+			[$this, 'refreshZone'],
+		);
+
+		$this->connectorPropertiesManager->removeListener(
+			DevicesConstants::EVENT_ENTITY_DELETED,
+			[$this, 'refreshZone'],
+		);
 	}
 
 	/**
@@ -244,6 +279,38 @@ final class Mdns implements Server
 
 		$this->createZone();
 		$this->broadcastZone();
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	private function refreshZone(DevicesEntities\Connectors\Properties\Property $property): void
+	{
+		if (
+			$property instanceof DevicesEntities\Connectors\Properties\Variable
+			&& $property->getConnector()->getId()->equals($this->connector->getId())
+			&& (
+				$property->getIdentifier() === Types\ConnectorPropertyIdentifier::IDENTIFIER_PAIRED
+				|| $property->getIdentifier() === Types\ConnectorPropertyIdentifier::IDENTIFIER_CONFIG_VERSION
+			)
+		) {
+			$this->logger->debug(
+				'Paired status has been changed',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+					'type' => 'mdns-server',
+					'connector' => [
+						'id' => $this->connector->getPlainId(),
+					],
+				],
+			);
+
+			$this->createZone();
+			$this->broadcastZone();
+		}
 	}
 
 	private function broadcastZone(): void

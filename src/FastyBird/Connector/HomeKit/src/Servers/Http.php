@@ -23,6 +23,7 @@ use FastyBird\Connector\HomeKit\Protocol;
 use FastyBird\Connector\HomeKit\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Constants as DevicesConstants;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -35,6 +36,8 @@ use React\Http as ReactHttp;
 use React\Socket;
 use Throwable;
 use function assert;
+use function hex2bin;
+use function is_string;
 
 /**
  * HTTP connector communication server
@@ -71,6 +74,7 @@ final class Http implements Server
 		private readonly Entities\Protocol\ServiceFactory $serviceFactory,
 		private readonly Entities\Protocol\CharacteristicsFactory $characteristicsFactory,
 		private readonly DevicesModels\States\ChannelPropertiesRepository $channelPropertiesStatesRepository,
+		private readonly DevicesModels\Connectors\Properties\PropertiesManager $connectorPropertiesManager,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		Log\LoggerInterface|null $logger = null,
 	)
@@ -309,6 +313,16 @@ final class Http implements Server
 				$ex,
 			);
 		});
+
+		$this->connectorPropertiesManager->on(
+			DevicesConstants::EVENT_ENTITY_CREATED,
+			[$this, 'updateSharedKey'],
+		);
+
+		$this->connectorPropertiesManager->on(
+			DevicesConstants::EVENT_ENTITY_UPDATED,
+			[$this, 'updateSharedKey'],
+		);
 	}
 
 	public function disconnect(): void
@@ -326,6 +340,16 @@ final class Http implements Server
 		);
 
 		$this->socket?->close();
+
+		$this->connectorPropertiesManager->removeListener(
+			DevicesConstants::EVENT_ENTITY_CREATED,
+			[$this, 'updateSharedKey'],
+		);
+
+		$this->connectorPropertiesManager->removeListener(
+			DevicesConstants::EVENT_ENTITY_UPDATED,
+			[$this, 'updateSharedKey'],
+		);
 	}
 
 	public function setSharedKey(string|null $sharedKey): void
@@ -343,6 +367,36 @@ final class Http implements Server
 		);
 
 		$this->socket?->setSharedKey($sharedKey);
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	private function updateSharedKey(DevicesEntities\Connectors\Properties\Property $property): void
+	{
+		if (
+			$property instanceof DevicesEntities\Connectors\Properties\Variable
+			&& $property->getConnector()->getId()->equals($this->connector->getId())
+			&& $property->getIdentifier() === Types\ConnectorPropertyIdentifier::IDENTIFIER_SHARED_KEY
+		) {
+			$this->logger->debug(
+				'Shared key has been changed',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+					'type' => 'http-server',
+					'group' => 'server',
+					'connector' => [
+						'id' => $this->connector->getPlainId(),
+					],
+				],
+			);
+
+			$this->socket?->setSharedKey(
+				is_string($property->getValue()) ? (string) hex2bin($property->getValue()) : null,
+			);
+		}
 	}
 
 }

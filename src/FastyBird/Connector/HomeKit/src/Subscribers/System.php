@@ -119,13 +119,7 @@ final class System implements Common\EventSubscriber
 
 		$connector = null;
 
-		if ($entity instanceof Entities\HomeKitConnector) {
-			$connector = $entity;
-		} elseif ($entity instanceof DevicesEntities\Connectors\Properties\Property) {
-			$connector = $entity->getConnector();
-		} elseif ($entity instanceof DevicesEntities\Connectors\Controls\Control) {
-			$connector = $entity->getConnector();
-		} elseif ($entity instanceof Entities\HomeKitDevice) {
+		if ($entity instanceof Entities\HomeKitDevice) {
 			$connector = $entity->getConnector();
 		} elseif ($entity instanceof DevicesEntities\Devices\Properties\Property) {
 			$connector = $entity->getDevice()->getConnector();
