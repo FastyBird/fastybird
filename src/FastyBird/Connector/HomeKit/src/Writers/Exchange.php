@@ -30,9 +30,7 @@ use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
 use Psr\Log;
 use function array_key_exists;
-use function hex2bin;
 use function intval;
-use function is_string;
 
 /**
  * Exchange based properties writer
@@ -198,7 +196,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 			) {
 				foreach ($this->servers[$entity->getConnector()->toString()] as $server) {
 					if ($server instanceof Servers\Mdns) {
-						$server->refresh();
+						$server->refresh($entity);
 					}
 				}
 			}
@@ -206,9 +204,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 			if ($entity->getIdentifier() === Types\ConnectorPropertyIdentifier::IDENTIFIER_SHARED_KEY) {
 				foreach ($this->servers[$entity->getConnector()->toString()] as $server) {
 					if ($server instanceof Servers\Http) {
-						$server->setSharedKey(
-							is_string($entity->getValue()) ? (string) hex2bin($entity->getValue()) : null,
-						);
+						$server->setSharedKey($entity);
 					}
 				}
 			}

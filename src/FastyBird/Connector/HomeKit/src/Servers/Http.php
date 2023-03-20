@@ -21,6 +21,7 @@ use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Middleware;
 use FastyBird\Connector\HomeKit\Protocol;
 use FastyBird\Connector\HomeKit\Types;
+use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Constants as DevicesConstants;
@@ -316,12 +317,12 @@ final class Http implements Server
 
 		$this->connectorPropertiesManager->on(
 			DevicesConstants::EVENT_ENTITY_CREATED,
-			[$this, 'updateSharedKey'],
+			[$this, 'setSharedKey'],
 		);
 
 		$this->connectorPropertiesManager->on(
 			DevicesConstants::EVENT_ENTITY_UPDATED,
-			[$this, 'updateSharedKey'],
+			[$this, 'setSharedKey'],
 		);
 	}
 
@@ -343,30 +344,13 @@ final class Http implements Server
 
 		$this->connectorPropertiesManager->removeListener(
 			DevicesConstants::EVENT_ENTITY_CREATED,
-			[$this, 'updateSharedKey'],
+			[$this, 'setSharedKey'],
 		);
 
 		$this->connectorPropertiesManager->removeListener(
 			DevicesConstants::EVENT_ENTITY_UPDATED,
-			[$this, 'updateSharedKey'],
+			[$this, 'setSharedKey'],
 		);
-	}
-
-	public function setSharedKey(string|null $sharedKey): void
-	{
-		$this->logger->debug(
-			'Shared key has been changed',
-			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
-				'type' => 'http-server',
-				'group' => 'server',
-				'connector' => [
-					'id' => $this->connector->getPlainId(),
-				],
-			],
-		);
-
-		$this->socket?->setSharedKey($sharedKey);
 	}
 
 	/**
@@ -374,15 +358,24 @@ final class Http implements Server
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function updateSharedKey(DevicesEntities\Connectors\Properties\Property $property): void
+	public function setSharedKey(
+		DevicesEntities\Connectors\Properties\Property|MetadataEntities\DevicesModule\ConnectorVariableProperty $property,
+	): void
 	{
 		if (
-			$property instanceof DevicesEntities\Connectors\Properties\Variable
-			&& $property->getConnector()->getId()->equals($this->connector->getId())
+			(
+				(
+					$property instanceof DevicesEntities\Connectors\Properties\Variable
+					&& $property->getConnector()->getId()->equals($this->connector->getId())
+				) || (
+					$property instanceof MetadataEntities\DevicesModule\ConnectorVariableProperty
+					&& $property->getConnector()->equals($this->connector->getId())
+				)
+			)
 			&& $property->getIdentifier() === Types\ConnectorPropertyIdentifier::IDENTIFIER_SHARED_KEY
 		) {
 			$this->logger->debug(
-				'Shared key has been changed',
+				'Shared key has been updated',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'http-server',

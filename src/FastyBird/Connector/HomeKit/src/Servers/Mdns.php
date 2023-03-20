@@ -19,6 +19,7 @@ use FastyBird\Connector\HomeKit;
 use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Helpers;
 use FastyBird\Connector\HomeKit\Types;
+use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Constants as DevicesConstants;
@@ -211,17 +212,17 @@ final class Mdns implements Server
 
 		$this->connectorPropertiesManager->on(
 			DevicesConstants::EVENT_ENTITY_CREATED,
-			[$this, 'refreshZone'],
+			[$this, 'refresh'],
 		);
 
 		$this->connectorPropertiesManager->on(
 			DevicesConstants::EVENT_ENTITY_UPDATED,
-			[$this, 'refreshZone'],
+			[$this, 'refresh'],
 		);
 
 		$this->connectorPropertiesManager->on(
 			DevicesConstants::EVENT_ENTITY_DELETED,
-			[$this, 'refreshZone'],
+			[$this, 'refresh'],
 		);
 	}
 
@@ -243,17 +244,17 @@ final class Mdns implements Server
 
 		$this->connectorPropertiesManager->removeListener(
 			DevicesConstants::EVENT_ENTITY_CREATED,
-			[$this, 'refreshZone'],
+			[$this, 'refresh'],
 		);
 
 		$this->connectorPropertiesManager->removeListener(
 			DevicesConstants::EVENT_ENTITY_UPDATED,
-			[$this, 'refreshZone'],
+			[$this, 'refresh'],
 		);
 
 		$this->connectorPropertiesManager->removeListener(
 			DevicesConstants::EVENT_ENTITY_DELETED,
-			[$this, 'refreshZone'],
+			[$this, 'refresh'],
 		);
 	}
 
@@ -263,45 +264,31 @@ final class Mdns implements Server
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function refresh(): void
-	{
-		$this->logger->debug(
-			'Connector configuration changes. Refreshing mDNS broadcast',
-			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
-				'type' => 'mdns-server',
-				'group' => 'server',
-				'connector' => [
-					'id' => $this->connector->getPlainId(),
-				],
-			],
-		);
-
-		$this->createZone();
-		$this->broadcastZone();
-	}
-
-	/**
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 */
-	private function refreshZone(DevicesEntities\Connectors\Properties\Property $property): void
+	public function refresh(
+		DevicesEntities\Connectors\Properties\Property|MetadataEntities\DevicesModule\ConnectorVariableProperty $property,
+	): void
 	{
 		if (
-			$property instanceof DevicesEntities\Connectors\Properties\Variable
-			&& $property->getConnector()->getId()->equals($this->connector->getId())
+			(
+				(
+					$property instanceof DevicesEntities\Connectors\Properties\Variable
+					&& $property->getConnector()->getId()->equals($this->connector->getId())
+				) || (
+					$property instanceof MetadataEntities\DevicesModule\ConnectorVariableProperty
+					&& $property->getConnector()->equals($this->connector->getId())
+				)
+			)
 			&& (
 				$property->getIdentifier() === Types\ConnectorPropertyIdentifier::IDENTIFIER_PAIRED
 				|| $property->getIdentifier() === Types\ConnectorPropertyIdentifier::IDENTIFIER_CONFIG_VERSION
 			)
 		) {
 			$this->logger->debug(
-				'Paired status has been changed',
+				'Connector configuration changed. Refreshing mDNS broadcast',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'mdns-server',
+					'group' => 'server',
 					'connector' => [
 						'id' => $this->connector->getPlainId(),
 					],
