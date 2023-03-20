@@ -33,6 +33,7 @@ use Psr\Http\Message;
 use Ramsey\Uuid;
 use function boolval;
 use function strval;
+use function var_dump;
 
 /**
  * Accessories controller
@@ -87,6 +88,7 @@ final class AccessoriesController extends BaseController
 
 		$result = $this->accessoriesDriver->toHap($connectorId);
 
+		var_dump(Utils\Json::encode($result));
 		$response = $response->withStatus(StatusCodeInterface::STATUS_OK);
 		$response = $response->withHeader('Content-Type', Servers\Http::JSON_CONTENT_TYPE);
 		$response = $response->withBody(SlimRouter\Http\Stream::fromBodyString(Utils\Json::encode($result)));
