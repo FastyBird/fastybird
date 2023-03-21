@@ -17,7 +17,6 @@ namespace FastyBird\Connector\HomeKit\Subscribers;
 
 use Doctrine\Common;
 use Doctrine\ORM;
-use Doctrine\Persistence;
 use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -29,7 +28,7 @@ use IPub\DoctrineCrud;
 use Nette;
 use Nette\Utils;
 use Ramsey\Uuid;
-use function array_key_exists;
+use function array_merge;
 use function array_unique;
 use function intval;
 
@@ -46,11 +45,8 @@ final class System implements Common\EventSubscriber
 
 	use Nette\SmartObject;
 
-	/** @var array<string> */
+	/** @var array<string>  */
 	private array $doUpdate = [];
-
-	/** @var array<string> */
-	private array $updateProcessed = [];
 
 	public function __construct(
 		private readonly DevicesModels\Connectors\Properties\PropertiesRepository $propertiesRepository,
@@ -62,113 +58,38 @@ final class System implements Common\EventSubscriber
 	public function getSubscribedEvents(): array
 	{
 		return [
-			ORM\Events::prePersist,
-			ORM\Events::postPersist,
-			ORM\Events::preUpdate,
-			ORM\Events::postUpdate,
-			ORM\Events::preRemove,
-			ORM\Events::postRemove,
+			ORM\Events::preFlush,
+			ORM\Events::postFlush,
 		];
 	}
 
-	/**
-	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
-	 */
-	public function prePersist(Persistence\Event\LifecycleEventArgs $eventArgs): void
+	public function preFlush(ORM\Event\PreFlushEventArgs $eventArgs): void
 	{
-		$this->checkVersionUpdate($eventArgs);
-	}
+		$manager = $eventArgs->getObjectManager();
+		$uow = $manager->getUnitOfWork();
 
-	/**
-	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
-	 *
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws DoctrineCrud\Exceptions\InvalidArgumentException
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 */
-	public function postPersist(Persistence\Event\LifecycleEventArgs $eventArgs): void
-	{
-		$this->processVersionUpdate();
-	}
+		$this->doUpdate = [];
 
-	/**
-	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
-	 */
-	public function preUpdate(Persistence\Event\LifecycleEventArgs $eventArgs): void
-	{
-		$this->checkVersionUpdate($eventArgs);
-	}
-
-	/**
-	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
-	 *
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws DoctrineCrud\Exceptions\InvalidArgumentException
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 */
-	public function postUpdate(Persistence\Event\LifecycleEventArgs $eventArgs): void
-	{
-		$this->processVersionUpdate();
-	}
-
-	/**
-	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
-	 */
-	public function preRemove(Persistence\Event\LifecycleEventArgs $eventArgs): void
-	{
-		$this->checkVersionUpdate($eventArgs);
-	}
-
-	/**
-	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
-	 *
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws DoctrineCrud\Exceptions\InvalidArgumentException
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 */
-	public function postRemove(Persistence\Event\LifecycleEventArgs $eventArgs): void
-	{
-		$this->processVersionUpdate();
-	}
-
-	/**
-	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
-	 */
-	private function checkVersionUpdate(Persistence\Event\LifecycleEventArgs $eventArgs): void
-	{
-		$entity = $eventArgs->getObject();
-
-		if (
-			$entity instanceof DevicesEntities\Connectors\Properties\Variable
-			&& $entity->getIdentifier() === Types\ConnectorPropertyIdentifier::IDENTIFIER_CONFIG_VERSION
-		) {
-			return;
+		// Check all scheduled updates
+		foreach (array_merge(
+			$uow->getScheduledEntityInsertions(),
+			$uow->getScheduledEntityUpdates(),
+			$uow->getScheduledEntityDeletions(),
+		) as $object) {
+			if ($object instanceof Entities\HomeKitDevice) {
+				$this->doUpdate[] = $object->getConnector()->getPlainId();
+			} elseif ($object instanceof DevicesEntities\Devices\Properties\Property) {
+				$this->doUpdate[] = $object->getDevice()->getConnector()->getPlainId();
+			} elseif ($object instanceof DevicesEntities\Devices\Controls\Control) {
+				$this->doUpdate[] = $object->getDevice()->getConnector()->getPlainId();
+			} elseif ($object instanceof Entities\HomeKitChannel) {
+				$this->doUpdate[] = $object->getDevice()->getConnector()->getPlainId();
+			} elseif ($object instanceof DevicesEntities\Channels\Properties\Property) {
+				$this->doUpdate[] = $object->getChannel()->getDevice()->getConnector()->getPlainId();
+			} elseif ($object instanceof DevicesEntities\Channels\Controls\Control) {
+				$this->doUpdate[] = $object->getChannel()->getDevice()->getConnector()->getPlainId();
+			}
 		}
-
-		$connector = null;
-
-		if ($entity instanceof Entities\HomeKitDevice) {
-			$connector = $entity->getConnector();
-		} elseif ($entity instanceof DevicesEntities\Devices\Properties\Property) {
-			$connector = $entity->getDevice()->getConnector();
-		} elseif ($entity instanceof DevicesEntities\Devices\Controls\Control) {
-			$connector = $entity->getDevice()->getConnector();
-		} elseif ($entity instanceof Entities\HomeKitChannel) {
-			$connector = $entity->getDevice()->getConnector();
-		} elseif ($entity instanceof DevicesEntities\Channels\Properties\Property) {
-			$connector = $entity->getChannel()->getDevice()->getConnector();
-		} elseif ($entity instanceof DevicesEntities\Channels\Controls\Control) {
-			$connector = $entity->getChannel()->getDevice()->getConnector();
-		}
-
-		if ($connector === null) {
-			return;
-		}
-
-		$this->doUpdate[] = $connector->getPlainId();
 
 		$this->doUpdate = array_unique($this->doUpdate);
 	}
@@ -179,13 +100,9 @@ final class System implements Common\EventSubscriber
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function processVersionUpdate(): void
+	public function postFlush(): void
 	{
 		foreach ($this->doUpdate as $connectorId) {
-			if (array_key_exists($connectorId, $this->updateProcessed)) {
-				return;
-			}
-
 			$findPropertyQuery = new DevicesQueries\FindConnectorProperties();
 			$findPropertyQuery->byConnectorId(Uuid\Uuid::fromString($connectorId));
 			$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_CONFIG_VERSION);
@@ -199,10 +116,10 @@ final class System implements Common\EventSubscriber
 				$this->propertiesManager->update($property, Utils\ArrayHash::from([
 					'value' => intval($property->getValue()) + 1,
 				]));
-
-				$this->updateProcessed[] = $connectorId;
 			}
 		}
+
+		$this->doUpdate = [];
 	}
 
 }
