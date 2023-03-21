@@ -377,10 +377,12 @@ final class Mdns implements Server
 
 		$shortMacAddress = str_replace(':', '', Utils\Strings::substring($macAddress, -8));
 
-		$setupHash = substr(
-			base64_encode(hash('sha512', $this->connector->getSetupId() . $macAddress, true)),
-			0,
-			4,
+		$setupHash = base64_encode(
+			substr(
+				hash('sha512', $this->connector->getSetupId() . $macAddress, true),
+				0,
+				4,
+			),
 		);
 
 		$resourceRecords = [];
