@@ -41,6 +41,7 @@ use function assert;
 use function hex2bin;
 use function intval;
 use function is_string;
+use function usort;
 
 /**
  * HTTP connector communication server
@@ -108,6 +109,8 @@ final class Http implements Server
 		$this->accessoriesDriver->reset();
 		$this->accessoriesDriver->addBridge($bridge);
 
+		$bridgedAccessories = [];
+
 		foreach ($this->connector->getDevices() as $device) {
 			assert($device instanceof Entities\HomeKitDevice);
 
@@ -168,7 +171,36 @@ final class Http implements Server
 				$accessory->addService($service);
 			}
 
+			$bridgedAccessories[] = $accessory;
+		}
+
+		usort($bridgedAccessories, static function (Entities\Protocol\Device $a, Entities\Protocol\Device $b) {
+			if ($a->getAid() === null) {
+				return 1;
+			}
+
+			if ($b->getAid() === null) {
+				return -1;
+			}
+
+			if ($a->getAid() === $b->getAid()) {
+				return 0;
+			}
+
+			return $a->getAid() <=> $b->getAid();
+		});
+
+		foreach ($bridgedAccessories as $accessory) {
 			$this->accessoriesDriver->addBridgedAccessory($accessory);
+
+			$findDeviceProperty = new DevicesQueries\FindDeviceProperties();
+			$findDeviceProperty->forDevice($accessory->getDevice());
+			$findDeviceProperty->byIdentifier(Types\DevicePropertyIdentifier::IDENTIFIER_AID);
+
+			$aidProperty = $this->devicesPropertiesRepository->findOneBy(
+				$findDeviceProperty,
+				DevicesEntities\Devices\Properties\Variable::class,
+			);
 
 			if ($aidProperty === null) {
 				$this->devicesPropertiesManager->create(Nette\Utils\ArrayHash::from([
@@ -176,7 +208,7 @@ final class Http implements Server
 					'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_AID,
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
 					'value' => $accessory->getAid(),
-					'device' => $device,
+					'device' => $accessory->getDevice(),
 				]));
 			}
 		}

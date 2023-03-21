@@ -28,6 +28,9 @@ use FastyBird\Module\Devices\Queries as DevicesQueries;
 use IPub\DoctrineCrud;
 use Nette;
 use Nette\Utils;
+use Ramsey\Uuid;
+use function array_key_exists;
+use function array_unique;
 use function intval;
 
 /**
@@ -43,7 +46,11 @@ final class System implements Common\EventSubscriber
 
 	use Nette\SmartObject;
 
-	private bool $updateProcessed = false;
+	/** @var array<string> */
+	private array $doUpdate = [];
+
+	/** @var array<string> */
+	private array $updateProcessed = [];
 
 	public function __construct(
 		private readonly DevicesModels\Connectors\Properties\PropertiesRepository $propertiesRepository,
@@ -55,10 +62,21 @@ final class System implements Common\EventSubscriber
 	public function getSubscribedEvents(): array
 	{
 		return [
+			ORM\Events::prePersist,
 			ORM\Events::postPersist,
+			ORM\Events::preUpdate,
 			ORM\Events::postUpdate,
+			ORM\Events::preRemove,
 			ORM\Events::postRemove,
 		];
+	}
+
+	/**
+	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
+	 */
+	public function prePersist(Persistence\Event\LifecycleEventArgs $eventArgs): void
+	{
+		$this->checkVersionUpdate($eventArgs);
 	}
 
 	/**
@@ -71,7 +89,15 @@ final class System implements Common\EventSubscriber
 	 */
 	public function postPersist(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
-		$this->processVersionUpdate($eventArgs);
+		$this->processVersionUpdate();
+	}
+
+	/**
+	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
+	 */
+	public function preUpdate(Persistence\Event\LifecycleEventArgs $eventArgs): void
+	{
+		$this->checkVersionUpdate($eventArgs);
 	}
 
 	/**
@@ -84,7 +110,15 @@ final class System implements Common\EventSubscriber
 	 */
 	public function postUpdate(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
-		$this->processVersionUpdate($eventArgs);
+		$this->processVersionUpdate();
+	}
+
+	/**
+	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
+	 */
+	public function preRemove(Persistence\Event\LifecycleEventArgs $eventArgs): void
+	{
+		$this->checkVersionUpdate($eventArgs);
 	}
 
 	/**
@@ -97,23 +131,14 @@ final class System implements Common\EventSubscriber
 	 */
 	public function postRemove(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
-		$this->processVersionUpdate($eventArgs);
+		$this->processVersionUpdate();
 	}
 
 	/**
 	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
-	 *
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws DoctrineCrud\Exceptions\InvalidArgumentException
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function processVersionUpdate(Persistence\Event\LifecycleEventArgs $eventArgs): void
+	private function checkVersionUpdate(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
-		if ($this->updateProcessed) {
-			return;
-		}
-
 		$entity = $eventArgs->getObject();
 
 		if (
@@ -143,21 +168,40 @@ final class System implements Common\EventSubscriber
 			return;
 		}
 
-		$findPropertyQuery = new DevicesQueries\FindConnectorProperties();
-		$findPropertyQuery->forConnector($connector);
-		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_CONFIG_VERSION);
+		$this->doUpdate[] = $connector->getPlainId();
 
-		$property = $this->propertiesRepository->findOneBy(
-			$findPropertyQuery,
-			DevicesEntities\Connectors\Properties\Variable::class,
-		);
+		$this->doUpdate = array_unique($this->doUpdate);
+	}
 
-		if ($property !== null) {
-			$this->propertiesManager->update($property, Utils\ArrayHash::from([
-				'value' => intval($property->getValue()) + 1,
-			]));
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws DoctrineCrud\Exceptions\InvalidArgumentException
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	private function processVersionUpdate(): void
+	{
+		foreach ($this->doUpdate as $connectorId) {
+			if (array_key_exists($connectorId, $this->updateProcessed)) {
+				return;
+			}
 
-			$this->updateProcessed = true;
+			$findPropertyQuery = new DevicesQueries\FindConnectorProperties();
+			$findPropertyQuery->byConnectorId(Uuid\Uuid::fromString($connectorId));
+			$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_CONFIG_VERSION);
+
+			$property = $this->propertiesRepository->findOneBy(
+				$findPropertyQuery,
+				DevicesEntities\Connectors\Properties\Variable::class,
+			);
+
+			if ($property !== null) {
+				$this->propertiesManager->update($property, Utils\ArrayHash::from([
+					'value' => intval($property->getValue()) + 1,
+				]));
+
+				$this->updateProcessed[] = $connectorId;
+			}
 		}
 	}
 
