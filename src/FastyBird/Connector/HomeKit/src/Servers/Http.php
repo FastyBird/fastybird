@@ -28,6 +28,7 @@ use FastyBird\Module\Devices\Constants as DevicesConstants;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -38,6 +39,7 @@ use React\Socket;
 use Throwable;
 use function assert;
 use function hex2bin;
+use function intval;
 use function is_string;
 
 /**
@@ -74,8 +76,10 @@ final class Http implements Server
 		private readonly Entities\Protocol\AccessoryFactory $accessoryFactory,
 		private readonly Entities\Protocol\ServiceFactory $serviceFactory,
 		private readonly Entities\Protocol\CharacteristicsFactory $characteristicsFactory,
-		private readonly DevicesModels\States\ChannelPropertiesRepository $channelPropertiesStatesRepository,
-		private readonly DevicesModels\Connectors\Properties\PropertiesManager $connectorPropertiesManager,
+		private readonly DevicesModels\States\ChannelPropertiesRepository $channelsPropertiesStatesRepository,
+		private readonly DevicesModels\Connectors\Properties\PropertiesManager $connectorsPropertiesManager,
+		private readonly DevicesModels\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
+		private readonly DevicesModels\Devices\Properties\PropertiesManager $devicesPropertiesManager,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		Log\LoggerInterface|null $logger = null,
 	)
@@ -107,7 +111,22 @@ final class Http implements Server
 		foreach ($this->connector->getDevices() as $device) {
 			assert($device instanceof Entities\HomeKitDevice);
 
-			$accessory = $this->accessoryFactory->create($device, null, $device->getCategory());
+			$findDeviceProperty = new DevicesQueries\FindDeviceProperties();
+			$findDeviceProperty->forDevice($device);
+			$findDeviceProperty->byIdentifier(Types\DevicePropertyIdentifier::IDENTIFIER_AID);
+
+			$aidProperty = $this->devicesPropertiesRepository->findOneBy(
+				$findDeviceProperty,
+				DevicesEntities\Devices\Properties\Variable::class,
+			);
+
+			$aid = $aidProperty?->getValue() ?? null;
+
+			if ($aid !== null) {
+				$aid = intval($aid);
+			}
+
+			$accessory = $this->accessoryFactory->create($device, $aid, $device->getCategory());
 			assert($accessory instanceof Entities\Protocol\Device);
 
 			foreach ($device->getChannels() as $channel) {
@@ -132,7 +151,7 @@ final class Http implements Server
 							$characteristic->setActualValue($property->getValue());
 						} else {
 							try {
-								$state = $this->channelPropertiesStatesRepository->findOne($property);
+								$state = $this->channelsPropertiesStatesRepository->findOne($property);
 
 								if ($state !== null) {
 									$characteristic->setActualValue($state->getActualValue());
@@ -150,6 +169,16 @@ final class Http implements Server
 			}
 
 			$this->accessoriesDriver->addBridgedAccessory($accessory);
+
+			if ($aidProperty === null) {
+				$this->devicesPropertiesManager->create(Nette\Utils\ArrayHash::from([
+					'entity' => DevicesEntities\Devices\Properties\Variable::class,
+					'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_AID,
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
+					'value' => $accessory->getAid(),
+					'device' => $device,
+				]));
+			}
 		}
 
 		try {
@@ -315,12 +344,12 @@ final class Http implements Server
 			);
 		});
 
-		$this->connectorPropertiesManager->on(
+		$this->connectorsPropertiesManager->on(
 			DevicesConstants::EVENT_ENTITY_CREATED,
 			[$this, 'setSharedKey'],
 		);
 
-		$this->connectorPropertiesManager->on(
+		$this->connectorsPropertiesManager->on(
 			DevicesConstants::EVENT_ENTITY_UPDATED,
 			[$this, 'setSharedKey'],
 		);
@@ -342,12 +371,12 @@ final class Http implements Server
 
 		$this->socket?->close();
 
-		$this->connectorPropertiesManager->removeListener(
+		$this->connectorsPropertiesManager->removeListener(
 			DevicesConstants::EVENT_ENTITY_CREATED,
 			[$this, 'setSharedKey'],
 		);
 
-		$this->connectorPropertiesManager->removeListener(
+		$this->connectorsPropertiesManager->removeListener(
 			DevicesConstants::EVENT_ENTITY_UPDATED,
 			[$this, 'setSharedKey'],
 		);

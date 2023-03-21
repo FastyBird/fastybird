@@ -88,7 +88,7 @@ final class Mdns implements Server
 	public function __construct(
 		private readonly HomeKit\Entities\HomeKitConnector $connector,
 		private readonly EventLoop\LoopInterface $eventLoop,
-		private readonly DevicesModels\Connectors\Properties\PropertiesManager $connectorPropertiesManager,
+		private readonly DevicesModels\Connectors\Properties\PropertiesManager $connectorsPropertiesManager,
 		Log\LoggerInterface|null $logger = null,
 	)
 	{
@@ -210,17 +210,17 @@ final class Mdns implements Server
 				);
 			});
 
-		$this->connectorPropertiesManager->on(
+		$this->connectorsPropertiesManager->on(
 			DevicesConstants::EVENT_ENTITY_CREATED,
 			[$this, 'refresh'],
 		);
 
-		$this->connectorPropertiesManager->on(
+		$this->connectorsPropertiesManager->on(
 			DevicesConstants::EVENT_ENTITY_UPDATED,
 			[$this, 'refresh'],
 		);
 
-		$this->connectorPropertiesManager->on(
+		$this->connectorsPropertiesManager->on(
 			DevicesConstants::EVENT_ENTITY_DELETED,
 			[$this, 'refresh'],
 		);
@@ -242,17 +242,17 @@ final class Mdns implements Server
 
 		$this->server?->close();
 
-		$this->connectorPropertiesManager->removeListener(
+		$this->connectorsPropertiesManager->removeListener(
 			DevicesConstants::EVENT_ENTITY_CREATED,
 			[$this, 'refresh'],
 		);
 
-		$this->connectorPropertiesManager->removeListener(
+		$this->connectorsPropertiesManager->removeListener(
 			DevicesConstants::EVENT_ENTITY_UPDATED,
 			[$this, 'refresh'],
 		);
 
-		$this->connectorPropertiesManager->removeListener(
+		$this->connectorsPropertiesManager->removeListener(
 			DevicesConstants::EVENT_ENTITY_DELETED,
 			[$this, 'refresh'],
 		);

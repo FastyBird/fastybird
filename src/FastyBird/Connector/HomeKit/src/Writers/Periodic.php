@@ -69,7 +69,7 @@ class Periodic implements Writer
 	public function __construct(
 		private readonly Protocol\Driver $accessoryDriver,
 		private readonly Clients\Subscriber $subscriber,
-		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
+		private readonly DevicesUtilities\ChannelPropertiesStates $channelsPropertiesStates,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		Log\LoggerInterface|null $logger = null,
@@ -169,7 +169,7 @@ class Periodic implements Writer
 
 						$this->processedProperties[$characteristic->getProperty()->getPlainId()] = $now;
 
-						$state = $this->channelPropertiesStates->getValue($characteristic->getProperty());
+						$state = $this->channelsPropertiesStates->getValue($characteristic->getProperty());
 
 						if ($state === null) {
 							continue;

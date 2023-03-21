@@ -43,6 +43,8 @@ final class System implements Common\EventSubscriber
 
 	use Nette\SmartObject;
 
+	private bool $updateProcessed = false;
+
 	public function __construct(
 		private readonly DevicesModels\Connectors\Properties\PropertiesRepository $propertiesRepository,
 		private readonly DevicesModels\Connectors\Properties\PropertiesManager $propertiesManager,
@@ -108,6 +110,10 @@ final class System implements Common\EventSubscriber
 	 */
 	private function processVersionUpdate(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
+		if ($this->updateProcessed) {
+			return;
+		}
+
 		$entity = $eventArgs->getObject();
 
 		if (
@@ -150,6 +156,8 @@ final class System implements Common\EventSubscriber
 			$this->propertiesManager->update($property, Utils\ArrayHash::from([
 				'value' => intval($property->getValue()) + 1,
 			]));
+
+			$this->updateProcessed = true;
 		}
 	}
 
