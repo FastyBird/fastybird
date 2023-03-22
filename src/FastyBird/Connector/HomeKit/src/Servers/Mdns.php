@@ -81,7 +81,7 @@ final class Mdns implements Server
 
 	private Dns\Protocol\BinaryDumper $dumper;
 
-	private Datagram\SocketInterface|null $server = null;
+	private Datagram\SocketInterface|null $socket = null;
 
 	private Log\LoggerInterface $logger;
 
@@ -123,10 +123,10 @@ final class Mdns implements Server
 		$factory = new Datagram\Factory($this->eventLoop);
 
 		$factory->createServer(self::DNS_ADDRESS . ':' . self::DNS_PORT)
-			->then(function (Datagram\Socket $server): void {
-				$this->server = $server;
+			->then(function (Datagram\Socket $socket): void {
+				$this->socket = $socket;
 
-				$this->server->on('message', function (string $message): void {
+				$this->socket->on('message', function (string $message): void {
 					$request = $this->parser->parseMessage($message);
 
 					$response = clone $request;
@@ -137,13 +137,13 @@ final class Mdns implements Server
 					$response->answers = $this->getAnswers($request->questions);
 					$response->additional = $this->getAdditional($response->answers);
 
-					$this->server?->send(
+					$this->socket?->send(
 						$this->dumper->toBinary($response),
 						self::DNS_ADDRESS . ':' . self::DNS_PORT,
 					);
 				});
 
-				$this->server->on('error', function (Throwable $ex): void {
+				$this->socket->on('error', function (Throwable $ex): void {
 					$this->logger->error(
 						'An error occurred during server handling',
 						[
@@ -167,7 +167,7 @@ final class Mdns implements Server
 					);
 				});
 
-				$this->server->on('close', function (): void {
+				$this->socket->on('close', function (): void {
 					$this->logger->info(
 						'Server was closed',
 						[
@@ -240,8 +240,6 @@ final class Mdns implements Server
 			],
 		);
 
-		$this->server?->close();
-
 		$this->connectorsPropertiesManager->removeListener(
 			DevicesConstants::EVENT_ENTITY_CREATED,
 			[$this, 'refresh'],
@@ -256,6 +254,10 @@ final class Mdns implements Server
 			DevicesConstants::EVENT_ENTITY_DELETED,
 			[$this, 'refresh'],
 		);
+
+		$this->socket?->close();
+
+		$this->socket = null;
 	}
 
 	/**
@@ -330,7 +332,7 @@ final class Mdns implements Server
 			return;
 		}
 
-		$this->server?->send(
+		$this->socket?->send(
 			$this->dumper->toBinary($message),
 			self::DNS_ADDRESS . ':' . self::DNS_PORT,
 		);

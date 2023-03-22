@@ -401,8 +401,6 @@ final class Http implements Server
 			],
 		);
 
-		$this->socket?->close();
-
 		$this->connectorsPropertiesManager->removeListener(
 			DevicesConstants::EVENT_ENTITY_CREATED,
 			[$this, 'setSharedKey'],
@@ -412,6 +410,10 @@ final class Http implements Server
 			DevicesConstants::EVENT_ENTITY_UPDATED,
 			[$this, 'setSharedKey'],
 		);
+
+		$this->socket?->close();
+
+		$this->socket = null;
 	}
 
 	/**
