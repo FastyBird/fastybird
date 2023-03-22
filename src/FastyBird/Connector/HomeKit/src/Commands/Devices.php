@@ -2349,6 +2349,9 @@ class Devices extends Console\Command\Command
 
 					} elseif (MetadataTypes\ButtonPayload::isValidValue($value)) {
 						$valueDataType = MetadataTypes\DataTypeShort::DATA_TYPE_BUTTON;
+
+					} elseif (MetadataTypes\CoverPayload::isValidValue($value)) {
+						$valueDataType = MetadataTypes\DataTypeShort::DATA_TYPE_COVER;
 					}
 
 					$mappedFormat[] = [
@@ -2373,7 +2376,7 @@ class Devices extends Console\Command\Command
 	private function provideCharacteristicValue(
 		Style\SymfonyStyle $io,
 		string $characteristic,
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|null $value = null,
+		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value = null,
 	): string|int|bool|float
 	{
 		$metadata = $this->loader->loadCharacteristics();

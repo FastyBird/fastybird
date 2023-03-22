@@ -331,7 +331,7 @@ abstract class Property extends Entities\Property
 		parent::setNumberOfDecimals($numberOfDecimals);
 	}
 
-	public function getDefault(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|null
+	public function getDefault(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
 	{
 		if (
 			$this->getParent() !== null && !$this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_MAPPED)

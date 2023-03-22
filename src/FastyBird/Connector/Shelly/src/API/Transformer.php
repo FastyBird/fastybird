@@ -181,7 +181,7 @@ final class Transformer
 	public function transformValueToDevice(
 		MetadataTypes\DataType $dataType,
 		MetadataValueObjects\StringEnumFormat|MetadataValueObjects\NumberRangeFormat|MetadataValueObjects\CombinedEnumFormat|null $format,
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|null $value,
+		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
 	): string|int|float|bool|null
 	{
 		if ($value === null) {

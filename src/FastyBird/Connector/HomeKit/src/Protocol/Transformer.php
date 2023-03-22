@@ -59,7 +59,7 @@ final class Transformer
 		DevicesEntities\Property|null $property,
 		Types\DataType $dataType,
 		bool|float|int|string|null $value,
-	): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|null
+	): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
 	{
 		$transformedValue = null;
 
@@ -147,6 +147,12 @@ final class Transformer
 								strval($transformedValue),
 							)
 							: null;
+					} elseif ($property->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_COVER)) {
+						return MetadataTypes\CoverPayload::isValidValue(strval($transformedValue))
+							? MetadataTypes\CoverPayload::get(
+								strval($transformedValue),
+							)
+							: null;
 					} else {
 						return strval($transformedValue);
 					}
@@ -178,6 +184,12 @@ final class Transformer
 								strval($filtered[0][0]->getValue()),
 							)
 							: null;
+					} elseif ($property->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_COVER)) {
+						return MetadataTypes\CoverPayload::isValidValue(strval($filtered[0][0]->getValue()))
+							? MetadataTypes\CoverPayload::get(
+								strval($filtered[0][0]->getValue()),
+							)
+							: null;
 					} else {
 						return strval($filtered[0][0]->getValue());
 					}
@@ -185,24 +197,6 @@ final class Transformer
 
 				return null;
 			}
-		}
-
-		if (
-			$property->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_SWITCH)
-			&& is_bool($transformedValue)
-		) {
-			$transformedValue = MetadataTypes\SwitchPayload::get(
-				$transformedValue ? MetadataTypes\SwitchPayload::PAYLOAD_ON : MetadataTypes\SwitchPayload::PAYLOAD_OFF,
-			);
-		}
-
-		if (
-			$property->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)
-			&& is_bool($transformedValue)
-		) {
-			$transformedValue = MetadataTypes\ButtonPayload::get(
-				$transformedValue ? MetadataTypes\ButtonPayload::PAYLOAD_PRESSED : MetadataTypes\ButtonPayload::PAYLOAD_RELEASED,
-			);
 		}
 
 		return $transformedValue;
@@ -222,7 +216,7 @@ final class Transformer
 		float|null $minValue,
 		float|null $maxValue,
 		float|null $minStep,
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|null $value,
+		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
 	): bool|float|int|string|null
 	{
 		$transformedValue = null;
@@ -272,6 +266,9 @@ final class Transformer
 					) || (
 						$property->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)
 						&& $value instanceof MetadataTypes\ButtonPayload
+					) || (
+						$property->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_COVER)
+						&& $value instanceof MetadataTypes\CoverPayload
 					)
 				) {
 					$transformedValue = strval($value->getValue());
@@ -288,16 +285,6 @@ final class Transformer
 		if ($dataType->equalsValue(Types\DataType::DATA_TYPE_BOOLEAN)) {
 			if ($transformedValue === null) {
 				$transformedValue = false;
-			} elseif (
-				!is_bool($transformedValue)
-				&& $transformedValue instanceof MetadataTypes\SwitchPayload
-			) {
-				$transformedValue = $transformedValue->equalsValue(MetadataTypes\SwitchPayload::PAYLOAD_ON);
-			} elseif (
-				!is_bool($transformedValue)
-				&& $transformedValue instanceof MetadataTypes\ButtonPayload
-			) {
-				$transformedValue = $transformedValue->equalsValue(MetadataTypes\ButtonPayload::PAYLOAD_RELEASED);
 			} elseif (!is_bool($transformedValue)) {
 				$transformedValue = in_array(Utils\Strings::lower(strval($transformedValue)), [
 					'true',

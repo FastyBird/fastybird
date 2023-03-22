@@ -369,7 +369,7 @@ abstract class Property implements Entity,
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|null
+	public function getValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
 	{
 		if (!$this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_VARIABLE)) {
 			throw new Exceptions\InvalidState(
@@ -416,7 +416,7 @@ abstract class Property implements Entity,
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getDefault(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|null
+	public function getDefault(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
 	{
 		if (!$this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_VARIABLE)) {
 			throw new Exceptions\InvalidState(

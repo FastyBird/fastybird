@@ -101,7 +101,7 @@ final class CombinedEnumFormatItem
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function getValue(): float|bool|int|string|Types\ButtonPayload|Types\SwitchPayload
+	public function getValue(): float|bool|int|string|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload
 	{
 		if ($this->dataType === null) {
 			return $this->value;
@@ -131,6 +131,12 @@ final class CombinedEnumFormatItem
 		} elseif ($this->dataType->equalsValue(Types\DataTypeShort::DATA_TYPE_SWITCH)) {
 			if (Types\SwitchPayload::isValidValue(Utils\Strings::lower(strval($this->value)))) {
 				return Types\SwitchPayload::get(Utils\Strings::lower(strval($this->value)));
+			}
+
+			throw new Exceptions\InvalidState('Combined enum value is not valid');
+		} elseif ($this->dataType->equalsValue(Types\DataTypeShort::DATA_TYPE_COVER)) {
+			if (Types\CoverPayload::isValidValue(Utils\Strings::lower(strval($this->value)))) {
+				return Types\CoverPayload::get(Utils\Strings::lower(strval($this->value)));
 			}
 
 			throw new Exceptions\InvalidState('Combined enum value is not valid');

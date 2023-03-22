@@ -30,8 +30,8 @@ class Variable extends Property
 	{
 		return MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::TYPE_VARIABLE);
 	}
-
-	public function getValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|null
+	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+	public function getValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
 	{
 		if ($this->getParent() !== null) {
 			return $this->getParent()->getValue();
