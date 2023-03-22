@@ -1583,7 +1583,7 @@ class Devices extends Console\Command\Command
 		if ($category->getValue() === Types\AccessoryCategory::CATEGORY_OTHER) {
 			$metadata = $this->loader->loadServices();
 
-			$services = array_keys((array) $metadata);
+			$services = array_values(array_keys((array) $metadata));
 		} else {
 			$metadata = $this->loader->loadAccessories();
 
@@ -1606,7 +1606,7 @@ class Devices extends Console\Command\Command
 				throw new Exceptions\InvalidState('Accessory definition is missing required attributes');
 			}
 
-			$services = (array) $accessoryMetadata->offsetGet('services');
+			$services = array_values((array) $accessoryMetadata->offsetGet('services'));
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
@@ -1663,7 +1663,7 @@ class Devices extends Console\Command\Command
 			));
 		}
 
-		$characteristics = array_diff($characteristics, $ignore);
+		$characteristics = array_values(array_diff($characteristics, $ignore));
 
 		if (!$required) {
 			$characteristics[] = $this->translator->translate('//homekit-connector.cmd.devices.answers.none');
@@ -1676,7 +1676,7 @@ class Devices extends Console\Command\Command
 		) : new Console\Question\ChoiceQuestion(
 			$this->translator->translate('//homekit-connector.cmd.devices.questions.select.optionalCharacteristic'),
 			$characteristics,
-			0,
+			(count($characteristics) - 1),
 		);
 
 		$question->setErrorMessage(
