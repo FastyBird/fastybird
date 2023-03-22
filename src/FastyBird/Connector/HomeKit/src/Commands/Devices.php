@@ -348,7 +348,11 @@ class Devices extends Console\Command\Command
 
 		$name = $this->askDeviceName($io, $device);
 
-		$categoryProperty = $device->findProperty(Types\DevicePropertyIdentifier::IDENTIFIER_CATEGORY);
+		$findPropertyQuery = new DevicesQueries\FindDeviceProperties();
+		$findPropertyQuery->forDevice($device);
+		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IDENTIFIER_CATEGORY);
+
+		$categoryProperty = $this->devicesPropertiesRepository->findOneBy($findPropertyQuery);
 
 		$category = $this->askCategory($io, $device);
 
@@ -523,7 +527,11 @@ class Devices extends Console\Command\Command
 		for ($i = 1; $i <= 100; $i++) {
 			$identifier = sprintf($identifierPattern, $i);
 
-			$channel = $device->findChannel($identifier);
+			$findChannelQuery = new DevicesQueries\FindChannels();
+			$findChannelQuery->forDevice($device);
+			$findChannelQuery->byIdentifier($identifier);
+
+			$channel = $this->channelsRepository->findOneBy($findChannelQuery);
 
 			if ($channel === null) {
 				break;
@@ -701,9 +709,15 @@ class Devices extends Console\Command\Command
 		$missingRequired = [];
 
 		foreach ($requiredCharacteristics as $requiredCharacteristic) {
-			if ($channel->findProperty(
+			$findPropertyQuery = new DevicesQueries\FindChannelProperties();
+			$findPropertyQuery->forChannel($channel);
+			$findPropertyQuery->byIdentifier(
 				strtolower(strval(preg_replace('/(?<!^)[A-Z]/', '_$0', $requiredCharacteristic))),
-			) === null) {
+			);
+
+			$property = $this->channelsPropertiesRepository->findOneBy($findPropertyQuery);
+
+			if ($property === null) {
 				$missingRequired[] = $requiredCharacteristic;
 			}
 		}
@@ -711,9 +725,15 @@ class Devices extends Console\Command\Command
 		$missingOptional = [];
 
 		foreach ($optionalCharacteristics as $optionalCharacteristic) {
-			if ($channel->findProperty(
+			$findPropertyQuery = new DevicesQueries\FindChannelProperties();
+			$findPropertyQuery->forChannel($channel);
+			$findPropertyQuery->byIdentifier(
 				strtolower(strval(preg_replace('/(?<!^)[A-Z]/', '_$0', $optionalCharacteristic))),
-			) === null) {
+			);
+
+			$property = $this->channelsPropertiesRepository->findOneBy($findPropertyQuery);
+
+			if ($property === null) {
 				$missingOptional[] = $optionalCharacteristic;
 			}
 		}
@@ -1574,7 +1594,14 @@ class Devices extends Console\Command\Command
 		Entities\HomeKitDevice $device,
 	): string
 	{
-		$category = $device->findProperty(Types\DevicePropertyIdentifier::IDENTIFIER_CATEGORY);
+		$findPropertyQuery = new DevicesQueries\FindDeviceProperties();
+		$findPropertyQuery->forDevice($device);
+		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IDENTIFIER_CATEGORY);
+
+		$category = $this->devicesPropertiesRepository->findOneBy(
+			$findPropertyQuery,
+			DevicesEntities\Devices\Properties\Variable::class,
+		);
 
 		if (!$category instanceof DevicesEntities\Devices\Properties\Variable) {
 			throw new Exceptions\InvalidState('Device category is not configured');
@@ -1676,7 +1703,7 @@ class Devices extends Console\Command\Command
 		) : new Console\Question\ChoiceQuestion(
 			$this->translator->translate('//homekit-connector.cmd.devices.questions.select.optionalCharacteristic'),
 			$characteristics,
-			(count($characteristics) - 1),
+			count($characteristics) - 1,
 		);
 
 		$question->setErrorMessage(
