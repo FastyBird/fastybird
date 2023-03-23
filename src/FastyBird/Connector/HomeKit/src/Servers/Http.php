@@ -157,7 +157,11 @@ final class Http implements Server
 								$state = $this->channelsPropertiesStatesRepository->findOne($property);
 
 								if ($state !== null) {
-									$characteristic->setActualValue($state->getActualValue());
+									$characteristic->setActualValue(Protocol\Transformer::fromMappedParent(
+										$property,
+										$property->getParent(),
+										$state->getActualValue(),
+									));
 								}
 							} catch (DevicesExceptions\NotImplemented) {
 								// Ignore error

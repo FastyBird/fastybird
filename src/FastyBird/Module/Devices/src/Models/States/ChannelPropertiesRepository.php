@@ -58,9 +58,9 @@ final class ChannelPropertiesRepository
 				$parent instanceof Entities\Channels\Properties\Dynamic
 				|| $parent instanceof Entities\Channels\Properties\Mapped
 			) {
-				return $this->repository->findOne($parent);
+				return $this->findOne($parent);
 			} elseif ($parent instanceof Uuid\UuidInterface) {
-				return $this->repository->findOneById($parent);
+				return $this->findOneById($parent);
 			} else {
 				return null;
 			}

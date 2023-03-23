@@ -25,6 +25,8 @@ use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Entities as DevicesEntities;
+use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
@@ -57,6 +59,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 		private readonly Clients\Subscriber $subscriber,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
+		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly ExchangeConsumers\Container $consumer,
 		Log\LoggerInterface|null $logger = null,
 	)
@@ -212,6 +215,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -227,10 +231,27 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 					&& $characteristic->getProperty()->getId()->equals($entity->getId())
 				) {
 					if (
-						$entity instanceof MetadataEntities\DevicesModule\DeviceMappedProperty
-						|| $entity instanceof MetadataEntities\DevicesModule\ChannelMappedProperty
+						(
+							$entity instanceof MetadataEntities\DevicesModule\DeviceMappedProperty
+							|| $entity instanceof MetadataEntities\DevicesModule\ChannelMappedProperty
+						)
+						&& $entity->getParent() !== null
 					) {
-						$characteristic->setActualValue($entity->getActualValue());
+						$findPropertyQuery = new DevicesQueries\FindChannelProperties();
+						$findPropertyQuery->byId($entity->getParent());
+
+						$parent = $this->channelsPropertiesRepository->findOneBy(
+							$findPropertyQuery,
+							DevicesEntities\Channels\Properties\Dynamic::class,
+						);
+
+						if ($parent instanceof DevicesEntities\Channels\Properties\Dynamic) {
+							$characteristic->setActualValue(Protocol\Transformer::fromMappedParent(
+								$entity,
+								$parent,
+								$entity->getActualValue(),
+							));
+						}
 					} elseif (
 						$entity instanceof MetadataEntities\DevicesModule\DeviceVariableProperty
 						|| $entity instanceof MetadataEntities\DevicesModule\ChannelVariableProperty

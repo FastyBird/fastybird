@@ -23,6 +23,7 @@ use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
+use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Psr\Log;
@@ -105,6 +106,7 @@ class Periodic implements Writer
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -138,6 +140,7 @@ class Periodic implements Writer
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -179,7 +182,11 @@ class Periodic implements Writer
 							continue;
 						}
 
-						$characteristic->setActualValue($state->getActualValue());
+						$characteristic->setActualValue(Protocol\Transformer::fromMappedParent(
+							$characteristic->getProperty(),
+							$characteristic->getProperty()->getParent(),
+							$state->getActualValue(),
+						));
 
 						$this->subscriber->publish(
 							intval($accessory->getAid()),

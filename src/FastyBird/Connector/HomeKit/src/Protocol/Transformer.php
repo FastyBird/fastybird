@@ -17,6 +17,7 @@ namespace FastyBird\Connector\HomeKit\Protocol;
 
 use DateTimeInterface;
 use FastyBird\Connector\HomeKit\Types;
+use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
@@ -344,6 +345,26 @@ final class Transformer
 		}
 
 		return $transformedValue;
+	}
+
+	public static function fromMappedParent(
+		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+		DevicesEntities\Devices\Properties\Mapped|DevicesEntities\Channels\Properties\Mapped|MetadataEntities\DevicesModule\DeviceMappedProperty|MetadataEntities\DevicesModule\ChannelMappedProperty $property,
+		DevicesEntities\Property|MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\ChannelDynamicProperty $parent,
+		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
+	): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
+	{
+		return $value;
+	}
+
+	public static function toMappedParent(
+		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+		DevicesEntities\Devices\Properties\Mapped|DevicesEntities\Channels\Properties\Mapped|MetadataEntities\DevicesModule\DeviceMappedProperty|MetadataEntities\DevicesModule\ChannelMappedProperty $property,
+		DevicesEntities\Property|MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\ChannelDynamicProperty $parent,
+		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
+	): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
+	{
+		return $value;
 	}
 
 }

@@ -695,7 +695,11 @@ final class CharacteristicsController extends BaseController
 									'action' => Metadata\Types\PropertyAction::ACTION_SET,
 									'device' => $characteristic->getProperty()->getDevice()->getPlainId(),
 									'property' => $characteristic->getProperty()->getPlainId(),
-									'expected_value' => $characteristic->getExpectedValue(),
+									'expected_value' => Protocol\Transformer::toMappedParent(
+										$characteristic->getProperty(),
+										$characteristic->getProperty()->getParent(),
+										$characteristic->getExpectedValue(),
+									),
 								]),
 								Metadata\Types\RoutingKey::get(
 									Metadata\Types\RoutingKey::ROUTE_DEVICE_PROPERTY_ACTION,
@@ -774,7 +778,11 @@ final class CharacteristicsController extends BaseController
 									'device' => $characteristic->getProperty()->getChannel()->getDevice()->getPlainId(),
 									'channel' => $characteristic->getProperty()->getChannel()->getPlainId(),
 									'property' => $characteristic->getProperty()->getPlainId(),
-									'expected_value' => $characteristic->getExpectedValue(),
+									'expected_value' => Protocol\Transformer::toMappedParent(
+										$characteristic->getProperty(),
+										$characteristic->getProperty()->getParent(),
+										$characteristic->getExpectedValue(),
+									),
 								]),
 								Metadata\Types\RoutingKey::get(
 									Metadata\Types\RoutingKey::ROUTE_CHANNEL_PROPERTY_ACTION,
