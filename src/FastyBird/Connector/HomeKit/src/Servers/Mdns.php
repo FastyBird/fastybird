@@ -70,12 +70,16 @@ final class Mdns implements Server
 
 	private const VALID_MDNS_REGEX = '/[^A-Za-z0-9\-]+/';
 
+	private const IP_ADDRESS_REGEX = '/^(\d[\d.]+):(\d+)\b/';
+
 	private const LEADING_TRAILING_SPACE_DASH = '/^[ -]+|[ -]+$/';
 
 	private const DASH_REGEX = '/[-]+/';
 
 	/** @var array<string, array<int, array<int, array<Dns\Model\Record>>>> */
 	private array $resourceRecords = [];
+
+	private string|null $localIpAddress = null;
 
 	private Dns\Protocol\Parser $parser;
 
@@ -126,7 +130,14 @@ final class Mdns implements Server
 			->then(function (Datagram\Socket $socket): void {
 				$this->socket = $socket;
 
-				$this->socket->on('message', function (string $message): void {
+				$this->socket->on('message', function (string $message, string $remoteAddress): void {
+					if (
+						preg_match(self::IP_ADDRESS_REGEX, $remoteAddress, $matches) === false
+						|| $matches[1] === $this->localIpAddress
+					) {
+						return;
+					}
+
 					$request = $this->parser->parseMessage($message);
 
 					$response = clone $request;
@@ -137,10 +148,12 @@ final class Mdns implements Server
 					$response->answers = $this->getAnswers($request->questions);
 					$response->additional = $this->getAdditional($response->answers);
 
-					$this->socket?->send(
-						$this->dumper->toBinary($response),
-						self::DNS_ADDRESS . ':' . self::DNS_PORT,
-					);
+					if ($response->answers !== []) {
+						$this->socket?->send(
+							$this->dumper->toBinary($response),
+							self::DNS_ADDRESS . ':' . self::DNS_PORT,
+						);
+					}
 				});
 
 				$this->socket->on('error', function (Throwable $ex): void {
@@ -397,15 +410,15 @@ final class Mdns implements Server
 			$name . ' ' . $shortMacAddress . '.' . self::HAP_SERVICE_TYPE,
 		);
 
-		$localIpAddress = Helpers\Protocol::getLocalAddress();
+		$this->localIpAddress = Helpers\Protocol::getLocalAddress();
 
-		if ($localIpAddress !== null) {
+		if ($this->localIpAddress !== null) {
 			$resourceRecords[] = new Dns\Model\Record(
 				$hostName . '-' . $shortMacAddress . '.local',
 				Dns\Model\Message::TYPE_A,
 				Dns\Model\Message::CLASS_IN,
 				120,
-				$localIpAddress,
+				$this->localIpAddress,
 			);
 		}
 
