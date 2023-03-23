@@ -134,6 +134,7 @@ final class Local implements Client
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument

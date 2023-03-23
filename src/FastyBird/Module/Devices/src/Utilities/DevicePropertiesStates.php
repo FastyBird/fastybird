@@ -54,6 +54,7 @@ final class DevicePropertiesStates
 	}
 
 	/**
+	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -62,7 +63,7 @@ final class DevicePropertiesStates
 	): States\DeviceProperty|null
 	{
 		try {
-			$state = $this->devicePropertyStateRepository->findOneById($property->getId());
+			$state = $this->devicePropertyStateRepository->findOne($property);
 
 			if ($state !== null) {
 				if ($state->getActualValue() !== null) {
@@ -136,7 +137,7 @@ final class DevicePropertiesStates
 		}
 
 		try {
-			$propertyState = $this->devicePropertyStateRepository->findOneById($property->getId());
+			$propertyState = $this->devicePropertyStateRepository->findOne($property);
 		} catch (Exceptions\NotImplemented) {
 			$this->logger->warning(
 				'Devices states repository is not configured. State could not be fetched',

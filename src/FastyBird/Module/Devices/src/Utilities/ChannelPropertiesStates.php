@@ -54,6 +54,7 @@ final class ChannelPropertiesStates
 	}
 
 	/**
+	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -62,7 +63,7 @@ final class ChannelPropertiesStates
 	): States\ChannelProperty|null
 	{
 		try {
-			$state = $this->channelPropertyStateRepository->findOneById($property->getId());
+			$state = $this->channelPropertyStateRepository->findOne($property);
 
 			if ($state !== null) {
 				if ($state->getActualValue() !== null) {
@@ -136,7 +137,7 @@ final class ChannelPropertiesStates
 		}
 
 		try {
-			$propertyState = $this->channelPropertyStateRepository->findOneById($property->getId());
+			$propertyState = $this->channelPropertyStateRepository->findOne($property);
 		} catch (Exceptions\NotImplemented) {
 			$this->logger->warning(
 				'Channels states repository is not configured. State could not be fetched',

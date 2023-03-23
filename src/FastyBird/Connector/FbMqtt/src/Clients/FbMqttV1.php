@@ -25,6 +25,7 @@ use FastyBird\Connector\FbMqtt\Writers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
+use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Psr\Log;
 use React\EventLoop;
@@ -90,6 +91,7 @@ final class FbMqttV1 extends Client
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -348,6 +350,7 @@ final class FbMqttV1 extends Client
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -372,6 +375,7 @@ final class FbMqttV1 extends Client
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */

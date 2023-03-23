@@ -60,7 +60,7 @@ final class ConnectorPropertiesStates
 	): States\ConnectorProperty|null
 	{
 		try {
-			$state = $this->connectorPropertyStateRepository->findOneById($property->getId());
+			$state = $this->connectorPropertyStateRepository->findOne($property);
 
 			if ($state !== null) {
 				if ($state->getActualValue() !== null) {
@@ -110,7 +110,7 @@ final class ConnectorPropertiesStates
 	): void
 	{
 		try {
-			$propertyState = $this->connectorPropertyStateRepository->findOneById($property->getId());
+			$propertyState = $this->connectorPropertyStateRepository->findOne($property);
 		} catch (Exceptions\NotImplemented) {
 			$this->logger->warning(
 				'Connectors states repository is not configured. State could not be fetched',

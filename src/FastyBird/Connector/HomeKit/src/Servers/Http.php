@@ -29,6 +29,7 @@ use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -42,6 +43,7 @@ use function hex2bin;
 use function intval;
 use function is_string;
 use function usort;
+use function var_dump;
 
 /**
  * HTTP connector communication server
@@ -77,7 +79,7 @@ final class Http implements Server
 		private readonly Entities\Protocol\AccessoryFactory $accessoryFactory,
 		private readonly Entities\Protocol\ServiceFactory $serviceFactory,
 		private readonly Entities\Protocol\CharacteristicsFactory $characteristicsFactory,
-		private readonly DevicesModels\States\ChannelPropertiesRepository $channelsPropertiesStatesRepository,
+		private readonly DevicesUtilities\ChannelPropertiesStates $channelsPropertiesStates,
 		private readonly DevicesModels\Connectors\Properties\PropertiesManager $connectorsPropertiesManager,
 		private readonly DevicesModels\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
 		private readonly DevicesModels\Devices\Properties\PropertiesManager $devicesPropertiesManager,
@@ -154,8 +156,11 @@ final class Http implements Server
 							$characteristic->setActualValue($property->getValue());
 						} else {
 							try {
-								$state = $this->channelsPropertiesStatesRepository->findOne($property);
+								$state = $this->channelsPropertiesStates->getValue($property);
 
+								var_dump($device->getIdentifier());
+								var_dump($channel->getIdentifier());
+								var_dump($state);
 								if ($state !== null) {
 									$characteristic->setActualValue(Protocol\Transformer::fromMappedParent(
 										$property,
