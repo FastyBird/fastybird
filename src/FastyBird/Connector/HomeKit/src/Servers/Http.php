@@ -43,7 +43,6 @@ use function hex2bin;
 use function intval;
 use function is_string;
 use function usort;
-use function var_dump;
 
 /**
  * HTTP connector communication server
@@ -158,9 +157,6 @@ final class Http implements Server
 							try {
 								$state = $this->channelsPropertiesStates->getValue($property);
 
-								var_dump($device->getIdentifier());
-								var_dump($channel->getIdentifier());
-								var_dump($state);
 								if ($state !== null) {
 									$characteristic->setActualValue(Protocol\Transformer::fromMappedParent(
 										$property,
