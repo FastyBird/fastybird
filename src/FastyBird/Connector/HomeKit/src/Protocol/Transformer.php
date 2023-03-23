@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\HomeKit\Protocol;
 
 use DateTimeInterface;
+use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Types;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -25,6 +26,7 @@ use FastyBird\Module\Devices\Entities as DevicesEntities;
 use Nette\Utils;
 use function array_filter;
 use function array_values;
+use function boolval;
 use function count;
 use function in_array;
 use function is_bool;
@@ -347,6 +349,9 @@ final class Transformer
 		return $transformedValue;
 	}
 
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
 	public static function fromMappedParent(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		DevicesEntities\Devices\Properties\Mapped|DevicesEntities\Channels\Properties\Mapped|MetadataEntities\DevicesModule\DeviceMappedProperty|MetadataEntities\DevicesModule\ChannelMappedProperty $property,
@@ -354,9 +359,30 @@ final class Transformer
 		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
 	): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
 	{
-		return $value;
+		if ($property->getDataType()->equals($parent->getDataType())) {
+			return $value;
+		}
+
+		if ($property->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_BOOLEAN)) {
+			if (
+				$parent->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_SWITCH)
+				&& $value instanceof MetadataTypes\SwitchPayload
+			) {
+				return $value->equalsValue(MetadataTypes\SwitchPayload::PAYLOAD_ON);
+			} elseif (
+				$parent->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)
+				&& $value instanceof MetadataTypes\ButtonPayload
+			) {
+				return $value->equalsValue(MetadataTypes\ButtonPayload::PAYLOAD_PRESSED);
+			}
+		}
+
+		throw new Exceptions\InvalidState('Value received from mapped property could not be transformed into client');
 	}
 
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
 	public static function toMappedParent(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		DevicesEntities\Devices\Properties\Mapped|DevicesEntities\Channels\Properties\Mapped|MetadataEntities\DevicesModule\DeviceMappedProperty|MetadataEntities\DevicesModule\ChannelMappedProperty $property,
@@ -364,7 +390,27 @@ final class Transformer
 		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
 	): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
 	{
-		return $value;
+		if ($property->getDataType()->equals($parent->getDataType())) {
+			return $value;
+		}
+
+		if ($property->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_BOOLEAN)) {
+			if ($parent->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_SWITCH)) {
+				return MetadataTypes\SwitchPayload::get(
+					boolval(
+						$value,
+					) ? MetadataTypes\SwitchPayload::PAYLOAD_ON : MetadataTypes\SwitchPayload::PAYLOAD_OFF,
+				);
+			} elseif ($parent->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)) {
+				return MetadataTypes\ButtonPayload::get(
+					boolval(
+						$value,
+					) ? MetadataTypes\ButtonPayload::PAYLOAD_PRESSED : MetadataTypes\ButtonPayload::PAYLOAD_RELEASED,
+				);
+			}
+		}
+
+		throw new Exceptions\InvalidState('Value received from client could not be transformed into mapped property');
 	}
 
 }

@@ -18,6 +18,7 @@ namespace FastyBird\Connector\HomeKit\Writers;
 use Exception;
 use FastyBird\Connector\HomeKit\Clients;
 use FastyBird\Connector\HomeKit\Entities;
+use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Protocol;
 use FastyBird\Connector\HomeKit\Servers;
 use FastyBird\Connector\HomeKit\Types;
@@ -84,6 +85,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 	}
 
 	/**
+	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
@@ -216,6 +218,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */

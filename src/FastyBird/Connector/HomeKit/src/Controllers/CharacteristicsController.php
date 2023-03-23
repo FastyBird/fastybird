@@ -515,6 +515,7 @@ final class CharacteristicsController extends BaseController
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Runtime
+	 * @throws Exceptions\InvalidState
 	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
