@@ -167,6 +167,9 @@ class HomeKitExtension extends DI\CompilerExtension
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Controllers\CharacteristicsController::class)
+			->setArguments([
+				'useExchange' => $configuration->writer === Writers\Exchange::NAME,
+			])
 			->addTag('nette.inject');
 
 		$builder->addDefinition($this->prefix('http.controllers.pairing'), new DI\Definitions\ServiceDefinition())

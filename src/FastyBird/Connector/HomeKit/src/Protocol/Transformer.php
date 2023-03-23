@@ -366,14 +366,20 @@ final class Transformer
 		if ($property->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_BOOLEAN)) {
 			if (
 				$parent->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_SWITCH)
-				&& $value instanceof MetadataTypes\SwitchPayload
+				&& (
+					$value instanceof MetadataTypes\SwitchPayload
+					|| $value === null
+				)
 			) {
-				return $value->equalsValue(MetadataTypes\SwitchPayload::PAYLOAD_ON);
+				return $value?->equalsValue(MetadataTypes\SwitchPayload::PAYLOAD_ON) ?? false;
 			} elseif (
 				$parent->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)
-				&& $value instanceof MetadataTypes\ButtonPayload
+				&& (
+					$value instanceof MetadataTypes\ButtonPayload
+					|| $value === null
+				)
 			) {
-				return $value->equalsValue(MetadataTypes\ButtonPayload::PAYLOAD_PRESSED);
+				return $value?->equalsValue(MetadataTypes\ButtonPayload::PAYLOAD_PRESSED) ?? false;
 			}
 		}
 

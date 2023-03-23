@@ -41,6 +41,7 @@ use function base64_encode;
 use function hash;
 use function is_array;
 use function mt_rand;
+use function preg_match;
 use function preg_replace;
 use function React\Async\async;
 use function str_replace;
