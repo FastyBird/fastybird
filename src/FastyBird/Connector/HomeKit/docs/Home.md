@@ -315,6 +315,14 @@ If you want to configure more device services you could repeat whole process:
  > 
 ```
 
-# Troubleshooting
+# Known Issues and Limitations
 
+## Supported devices count
 
+If you need to handle more devices than the maximum limit of 150 devices that can be handled by the connector and
+Apple HomeKit, you will need to create additional connectors using different ports.
+
+## Devices update
+
+It is recommended to make configuration changes in smaller increments to avoid potential failure of device refresh
+when making multiple changes.
