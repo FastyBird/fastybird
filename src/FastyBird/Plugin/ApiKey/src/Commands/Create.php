@@ -97,7 +97,8 @@ class Create extends Console\Command\Command
 		} catch (Throwable $ex) {
 			$this->logger->error('Api key could not be created', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_API_KEY,
-				'type' => 'command',
+				'type' => 'create-command',
+				'group' => 'cmd',
 				'exception' => [
 					'message' => $ex->getMessage(),
 					'code' => $ex->getCode(),

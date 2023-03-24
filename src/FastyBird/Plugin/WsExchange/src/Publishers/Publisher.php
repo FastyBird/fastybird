@@ -68,7 +68,8 @@ final class Publisher
 		if ($result) {
 			$this->logger->debug('Successfully published message', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_EXCHANGE,
-				'type' => 'publisher',
+				'type' => 'message-publisher',
+				'group' => 'publisher',
 				'message' => [
 					'routing_key' => $routingKey->getValue(),
 					'origin' => $source->getValue(),
@@ -79,7 +80,8 @@ final class Publisher
 		} else {
 			$this->logger->error('Message could not be published to exchange', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_EXCHANGE,
-				'type' => 'publisher',
+				'type' => 'message-publisher',
+				'group' => 'publisher',
 				'message' => [
 					'routing_key' => $routingKey->getValue(),
 					'origin' => $source->getValue(),
@@ -102,7 +104,8 @@ final class Publisher
 
 				$this->logger->debug('Broadcasting message to topic', [
 					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_EXCHANGE,
-					'type' => 'publisher',
+					'type' => 'message-publisher',
+					'group' => 'publisher',
 					'link' => $link,
 				]);
 
@@ -113,7 +116,8 @@ final class Publisher
 		} catch (Nette\Utils\JsonException $ex) {
 			$this->logger->error('Data could not be converted to message', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_EXCHANGE,
-				'type' => 'publisher',
+				'type' => 'message-publisher',
+				'group' => 'publisher',
 				'exception' => [
 					'message' => $ex->getMessage(),
 					'code' => $ex->getCode(),
@@ -123,7 +127,8 @@ final class Publisher
 		} catch (Throwable $ex) {
 			$this->logger->error('Data could not be broadcasts to clients', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_EXCHANGE,
-				'type' => 'publisher',
+				'type' => 'message-publisher',
+				'group' => 'publisher',
 				'exception' => [
 					'message' => $ex->getMessage(),
 					'code' => $ex->getCode(),

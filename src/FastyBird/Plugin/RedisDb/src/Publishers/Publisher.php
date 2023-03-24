@@ -87,7 +87,8 @@ final class Publisher implements ExchangePublisher\Publisher
 				'Data could not be converted to message',
 				[
 					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
-					'type' => 'publish',
+					'type' => 'messages-publisher',
+					'group' => 'publisher',
 					'message' => [
 						'routingKey' => $routingKey->getValue(),
 						'source' => $source->getValue(),
@@ -110,7 +111,8 @@ final class Publisher implements ExchangePublisher\Publisher
 						'Received message was pushed into data exchange',
 						[
 							'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
-							'type' => 'publish',
+							'type' => 'messages-publisher',
+							'group' => 'publisher',
 							'message' => [
 								'routingKey' => $routingKey->getValue(),
 								'source' => $source->getValue(),
@@ -124,7 +126,8 @@ final class Publisher implements ExchangePublisher\Publisher
 						'Received message could not be pushed into data exchange',
 						[
 							'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
-							'type' => 'publish',
+							'type' => 'messages-publisher',
+							'group' => 'publisher',
 							'message' => [
 								'routingKey' => $routingKey->getValue(),
 								'source' => $source->getValue(),
@@ -144,7 +147,8 @@ final class Publisher implements ExchangePublisher\Publisher
 					'Received message was pushed into data exchange',
 					[
 						'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
-						'type' => 'publish',
+						'type' => 'messages-publisher',
+						'group' => 'publisher',
 						'message' => [
 							'routingKey' => $routingKey->getValue(),
 							'source' => $source->getValue(),
@@ -157,7 +161,8 @@ final class Publisher implements ExchangePublisher\Publisher
 					'Received message could not be pushed into data exchange',
 					[
 						'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
-						'type' => 'publish',
+						'type' => 'messages-publisher',
+						'group' => 'publisher',
 						'message' => [
 							'routingKey' => $routingKey->getValue(),
 							'source' => $source->getValue(),

@@ -53,6 +53,7 @@ final class Consumer implements ExchangeConsumer\Consumer
 		$this->logger->debug('Received message from exchange was pushed to WS clients', [
 			'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_EXCHANGE,
 			'type' => 'consumer',
+			'group' => 'consumer',
 			'message' => [
 				'source' => $source->getValue(),
 				'routing_key' => $routingKey->getValue(),

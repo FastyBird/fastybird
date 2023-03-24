@@ -22,9 +22,7 @@ in [PHP](https://www.php.net) on top of the [Nette framework](https://nette.org)
 
 ### Features:
 
-- Redis DB database number configuration
-- All necessary models for devices states management
-- Automatic services registration
+- Redis DB async client exchange subscriber
 
 ## Requirements
 

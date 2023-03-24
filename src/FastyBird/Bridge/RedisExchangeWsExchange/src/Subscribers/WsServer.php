@@ -68,6 +68,7 @@ class WsServer implements EventDispatcher\EventSubscriberInterface
 						[
 							'source' => MetadataTypes\BridgeSource::SOURCE_BRIDGE_REDISDB_WS_EXCHANGE,
 							'type' => 'subscriber',
+							'group' => 'subscriber',
 						],
 					);
 				},
@@ -77,6 +78,7 @@ class WsServer implements EventDispatcher\EventSubscriberInterface
 						[
 							'source' => MetadataTypes\BridgeSource::SOURCE_BRIDGE_REDISDB_WS_EXCHANGE,
 							'type' => 'subscriber',
+							'group' => 'subscriber',
 							'exception' => [
 								'message' => $ex->getMessage(),
 								'code' => $ex->getCode(),

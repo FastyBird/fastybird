@@ -63,6 +63,7 @@ class RedisClient implements EventDispatcher\EventSubscriberInterface
 						[
 							'source' => MetadataTypes\BridgeSource::SOURCE_BRIDGE_REDISDB_TRIGGERS_MODULE,
 							'type' => 'subscriber',
+							'group' => 'subscriber',
 						],
 					);
 				},
@@ -72,6 +73,7 @@ class RedisClient implements EventDispatcher\EventSubscriberInterface
 						[
 							'source' => MetadataTypes\BridgeSource::SOURCE_BRIDGE_REDISDB_TRIGGERS_MODULE,
 							'type' => 'subscriber',
+							'group' => 'subscriber',
 							'exception' => [
 								'message' => $ex->getMessage(),
 								'code' => $ex->getCode(),
