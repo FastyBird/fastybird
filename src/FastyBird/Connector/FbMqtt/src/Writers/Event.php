@@ -100,6 +100,12 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 	{
 		$property = $event->getProperty();
 
+		$state = $event->getState();
+
+		if ($state->getExpectedValue() === null || $state->getPending() !== true) {
+			return;
+		}
+
 		if ($property instanceof DevicesEntities\Devices\Properties\Dynamic) {
 			if (!$property->getDevice()->getConnector()->getId()->equals($connectorId)) {
 				return;
