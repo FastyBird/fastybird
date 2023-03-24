@@ -55,18 +55,7 @@ class Initialize extends Console\Command\Command
 	{
 		$this
 			->setName(self::NAME)
-			->setDescription('Triggers module initialization')
-			->setDefinition(
-				new Input\InputDefinition([
-					new Input\InputOption(
-						'no-confirm',
-						null,
-						Input\InputOption::VALUE_NONE,
-						'Do not ask for any confirmation',
-					),
-					new Input\InputOption('quiet', 'q', Input\InputOption::VALUE_NONE, 'Do not output any message'),
-				]),
-			);
+			->setDescription('Triggers module initialization');
 	}
 
 	/**
@@ -88,7 +77,7 @@ class Initialize extends Console\Command\Command
 			$io->note('This action will create|update module database structure and build module configuration.');
 		}
 
-		if ($input->getOption('no-confirm') === false) {
+		if ($input->getOption('no-interaction') === false) {
 			$question = new Console\Question\ConfirmationQuestion(
 				'Would you like to continue?',
 				false,
