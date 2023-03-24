@@ -28,6 +28,7 @@ use FastyBird\Connector\FbMqtt\Schemas;
 use FastyBird\Connector\FbMqtt\Subscribers;
 use FastyBird\Connector\FbMqtt\Writers;
 use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
+use FastyBird\Library\Exchange\DI as ExchangeDI;
 use FastyBird\Module\Devices\DI as DevicesDI;
 use Nette;
 use Nette\DI;
@@ -82,21 +83,30 @@ class FbMqttExtension extends DI\CompilerExtension
 		$configuration = $this->getConfig();
 		assert($configuration instanceof stdClass);
 
+		$writer = null;
+
 		if ($configuration->writer === Writers\Event::NAME) {
-			$builder->addDefinition($this->prefix('writers.event'), new DI\Definitions\ServiceDefinition())
-				->setType(Writers\Event::class);
+			$writer = $builder->addDefinition($this->prefix('writers.event'), new DI\Definitions\ServiceDefinition())
+				->setType(Writers\Event::class)
+				->setAutowired(false);
 		} elseif ($configuration->writer === Writers\Exchange::NAME) {
-			$builder->addDefinition($this->prefix('writers.exchange'), new DI\Definitions\ServiceDefinition())
-				->setType(Writers\Exchange::class);
+			$writer = $builder->addDefinition($this->prefix('writers.exchange'), new DI\Definitions\ServiceDefinition())
+				->setType(Writers\Exchange::class)
+				->setAutowired(false)
+				->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATUS, false);
 		} elseif ($configuration->writer === Writers\Periodic::NAME) {
-			$builder->addDefinition($this->prefix('writers.periodic'), new DI\Definitions\ServiceDefinition())
-				->setType(Writers\Periodic::class);
+			$writer = $builder->addDefinition($this->prefix('writers.periodic'), new DI\Definitions\ServiceDefinition())
+				->setType(Writers\Periodic::class)
+				->setAutowired(false);
 		}
 
 		$builder->addFactoryDefinition($this->prefix('client.apiv1'))
 			->setImplement(Clients\FbMqttV1Factory::class)
 			->getResultDefinition()
-			->setType(Clients\FbMqttV1::class);
+			->setType(Clients\FbMqttV1::class)
+			->setArguments([
+				'writer' => $writer,
+			]);
 
 		$builder->addDefinition($this->prefix('api.v1parser'), new DI\Definitions\ServiceDefinition())
 			->setType(API\V1Parser::class);

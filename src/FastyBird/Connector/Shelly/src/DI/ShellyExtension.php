@@ -28,6 +28,7 @@ use FastyBird\Connector\Shelly\Schemas;
 use FastyBird\Connector\Shelly\Subscribers;
 use FastyBird\Connector\Shelly\Writers;
 use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
+use FastyBird\Library\Exchange\DI as ExchangeDI;
 use FastyBird\Module\Devices\DI as DevicesDI;
 use Nette\DI;
 use Nette\Schema;
@@ -81,21 +82,30 @@ class ShellyExtension extends DI\CompilerExtension
 		$configuration = $this->getConfig();
 		assert($configuration instanceof stdClass);
 
+		$writer = null;
+
 		if ($configuration->writer === Writers\Event::NAME) {
-			$builder->addDefinition($this->prefix('writers.event'), new DI\Definitions\ServiceDefinition())
-				->setType(Writers\Event::class);
+			$writer = $builder->addDefinition($this->prefix('writers.event'), new DI\Definitions\ServiceDefinition())
+				->setType(Writers\Event::class)
+				->setAutowired(false);
 		} elseif ($configuration->writer === Writers\Exchange::NAME) {
-			$builder->addDefinition($this->prefix('writers.exchange'), new DI\Definitions\ServiceDefinition())
-				->setType(Writers\Exchange::class);
+			$writer = $builder->addDefinition($this->prefix('writers.exchange'), new DI\Definitions\ServiceDefinition())
+				->setType(Writers\Exchange::class)
+				->setAutowired(false)
+				->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATUS, false);
 		} elseif ($configuration->writer === Writers\Periodic::NAME) {
-			$builder->addDefinition($this->prefix('writers.periodic'), new DI\Definitions\ServiceDefinition())
-				->setType(Writers\Periodic::class);
+			$writer = $builder->addDefinition($this->prefix('writers.periodic'), new DI\Definitions\ServiceDefinition())
+				->setType(Writers\Periodic::class)
+				->setAutowired(false);
 		}
 
 		$builder->addFactoryDefinition($this->prefix('clients.local'))
 			->setImplement(Clients\LocalFactory::class)
 			->getResultDefinition()
-			->setType(Clients\Local::class);
+			->setType(Clients\Local::class)
+			->setArguments([
+				'writer' => $writer,
+			]);
 
 		$builder->addFactoryDefinition($this->prefix('clients.local.coap'))
 			->setImplement(Clients\Local\CoapFactory::class)

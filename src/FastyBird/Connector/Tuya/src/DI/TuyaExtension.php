@@ -29,6 +29,7 @@ use FastyBird\Connector\Tuya\Schemas;
 use FastyBird\Connector\Tuya\Subscribers;
 use FastyBird\Connector\Tuya\Writers;
 use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
+use FastyBird\Library\Exchange\DI as ExchangeDI;
 use FastyBird\Module\Devices\DI as DevicesDI;
 use Nette;
 use Nette\DI;
@@ -107,15 +108,21 @@ class TuyaExtension extends DI\CompilerExtension
 				'consumers' => $builder->findByType(Consumers\Consumer::class),
 			]);
 
+		$writer = null;
+
 		if ($configuration->writer === Writers\Event::NAME) {
-			$builder->addDefinition($this->prefix('writers.event'), new DI\Definitions\ServiceDefinition())
-				->setType(Writers\Event::class);
+			$writer = $builder->addDefinition($this->prefix('writers.event'), new DI\Definitions\ServiceDefinition())
+				->setType(Writers\Event::class)
+				->setAutowired(false);
 		} elseif ($configuration->writer === Writers\Exchange::NAME) {
-			$builder->addDefinition($this->prefix('writers.exchange'), new DI\Definitions\ServiceDefinition())
-				->setType(Writers\Exchange::class);
+			$writer = $builder->addDefinition($this->prefix('writers.exchange'), new DI\Definitions\ServiceDefinition())
+				->setType(Writers\Exchange::class)
+				->setAutowired(false)
+				->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATUS, false);
 		} elseif ($configuration->writer === Writers\Periodic::NAME) {
-			$builder->addDefinition($this->prefix('writers.periodic'), new DI\Definitions\ServiceDefinition())
-				->setType(Writers\Periodic::class);
+			$writer = $builder->addDefinition($this->prefix('writers.periodic'), new DI\Definitions\ServiceDefinition())
+				->setType(Writers\Periodic::class)
+				->setAutowired(false);
 		}
 
 		$builder->addDefinition($this->prefix('api.entityFactory'), new DI\Definitions\ServiceDefinition())
@@ -139,12 +146,18 @@ class TuyaExtension extends DI\CompilerExtension
 		$builder->addFactoryDefinition($this->prefix('clients.local'))
 			->setImplement(Clients\LocalFactory::class)
 			->getResultDefinition()
-			->setType(Clients\Local::class);
+			->setType(Clients\Local::class)
+			->setArguments([
+				'writer' => $writer,
+			]);
 
 		$builder->addFactoryDefinition($this->prefix('clients.cloud'))
 			->setImplement(Clients\CloudFactory::class)
 			->getResultDefinition()
-			->setType(Clients\Cloud::class);
+			->setType(Clients\Cloud::class)
+			->setArguments([
+				'writer' => $writer,
+			]);
 
 		$builder->addFactoryDefinition($this->prefix('clients.discover'))
 			->setImplement(Clients\DiscoveryFactory::class)
