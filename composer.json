@@ -113,7 +113,9 @@
             "FastyBird\\Automator\\DevicesModule\\": "src/FastyBird/Automator/DevicesModule/src/",
             "FastyBird\\Bridge\\RedisDbDevicesModule\\": "src/FastyBird/Bridge/RedisDbDevicesModule/src/",
             "FastyBird\\Bridge\\RedisDbTriggersModule\\": "src/FastyBird/Bridge/RedisDbTriggersModule/src/",
-            "FastyBird\\Bridge\\RedisDbWsExchange\\": "src/FastyBird/Bridge/RedisDbWsExchange/src/",
+            "FastyBird\\Bridge\\RedisExchangeDevicesModule\\": "src/FastyBird/Bridge/RedisExchangeDevicesModule/src/",
+            "FastyBird\\Bridge\\RedisExchangeTriggersModule\\": "src/FastyBird/Bridge/RedisExchangeTriggersModule/src/",
+            "FastyBird\\Bridge\\RedisExchangeWsExchange\\": "src/FastyBird/Bridge/RedisExchangeWsExchange/src/",
             "FastyBird\\Bridge\\WsExchangeDevicesModule\\": "src/FastyBird/Bridge/WsExchangeDevicesModule/src/",
             "FastyBird\\Connector\\FbMqtt\\": "src/FastyBird/Connector/FbMqtt/src/",
             "FastyBird\\Connector\\HomeKit\\": "src/FastyBird/Connector/HomeKit/src/",
@@ -142,8 +144,11 @@
             "FastyBird\\Bridge\\RedisDbDevicesModule\\Tests\\Tools\\": "src/FastyBird/Bridge/RedisDbDevicesModule/tests/tools",
             "FastyBird\\Bridge\\RedisDbTriggersModule\\Tests\\Cases\\Unit\\": "src/FastyBird/Bridge/RedisDbTriggersModule/tests/cases/unit",
             "FastyBird\\Bridge\\RedisDbTriggersModule\\Tests\\Tools\\": "src/FastyBird/Bridge/RedisDbTriggersModule/tests/tools",
-            "FastyBird\\Bridge\\RedisDbWsExchange\\Tests\\Cases\\Unit\\": "src/FastyBird/Bridge/RedisDbWsExchange/tests/cases/unit",
-            "FastyBird\\Bridge\\RedisDbWsExchange\\Tests\\Tools\\": "src/FastyBird/Bridge/RedisDbWsExchange/tests/tools",
+            "FastyBird\\Bridge\\RedisExchangeDevicesModule\\Tests\\Cases\\Unit\\": "src/FastyBird/Bridge/RedisExchangeDevicesModule/tests/cases/unit",
+            "FastyBird\\Bridge\\RedisExchangeDevicesModule\\Tests\\Tools\\": "src/FastyBird/Bridge/RedisExchangeDevicesModule/tests/tools",
+            "FastyBird\\Bridge\\RedisExchangeTriggersModule\\Tests\\Cases\\Unit\\": "src/FastyBird/Bridge/RedisExchangeTriggersModule/tests/cases/unit",
+            "FastyBird\\Bridge\\RedisExchangeTriggersModule\\Tests\\Tools\\": "src/FastyBird/Bridge/RedisExchangeTriggersModule/tests/tools",
+            "FastyBird\\Bridge\\RedisExchangeWsExchange\\Tests\\Cases\\Unit\\": "src/FastyBird/Bridge/RedisExchangeWsExchange/tests/cases/unit",
             "FastyBird\\Bridge\\WsExchangeDevicesModule\\Tests\\Cases\\Unit\\": "src/FastyBird/Bridge/WsExchangeDevicesModule/tests/cases/unit",
             "FastyBird\\Connector\\FbMqtt\\Tests\\Cases\\Unit\\": "src/FastyBird/Connector/FbMqtt/tests/cases/unit",
             "FastyBird\\Connector\\FbMqtt\\Tests\\Tools\\": "src/FastyBird/Connector/FbMqtt/tests/tools",
@@ -179,9 +184,13 @@
         }
     },
     "extra": {
+        "enable-patching": false,
         "patches": {
             "nettrine/orm": {
                 "Enable connection overrides": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/nettrine-orm-src-managerregistry-php.patch"
+            },
+            "react/event-loop": {
+                "Bug: Use native return type": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/react-event-loop-src-loop-php.patch"
             },
             "doctrine/orm": {
                 "Bug: Ramsey uuid not working - Part 1": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/doctrine-orm-lib-doctrine-orm-persisters-entity-basicentitypersister-php.patch",
@@ -189,9 +198,6 @@
             },
             "ramsey/uuid-doctrine": {
                 "Bug: Ramsey uuid conversion fallback": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/ramsey-uuid-doctrine-src-uuidbinarytype-php.patch"
-            },
-            "react/event-loop": {
-                "Bug: Use native return type": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/react-event-loop-src-loop-php.patch"
             }
         }
     },
@@ -223,10 +229,12 @@
         "fastybird/homekit-connector": "self.version",
         "fastybird/metadata-library": "self.version",
         "fastybird/modbus-connector": "self.version",
+        "fastybird/redis-exchange-devices-module-bridge": "self.version",
+        "fastybird/redis-exchange-triggers-module-bridge": "self.version",
+        "fastybird/redis-exchange-ws-exchange-bridge": "self.version",
         "fastybird/redisdb-devices-module-bridge": "self.version",
         "fastybird/redisdb-plugin": "self.version",
         "fastybird/redisdb-triggers-module-bridge": "self.version",
-        "fastybird/redisdb-ws-exchange-bridge": "self.version",
         "fastybird/shelly-connector": "self.version",
         "fastybird/triggers-module": "self.version",
         "fastybird/tuya-connector": "self.version",
