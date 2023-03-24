@@ -181,15 +181,17 @@ class Periodic implements Writer
 							continue;
 						}
 
-						if ($characteristic->getActualValue() === $state->getActualValue()) {
-							continue;
-						}
-
-						$characteristic->setActualValue(Protocol\Transformer::fromMappedParent(
+						$characteristicValue = Protocol\Transformer::fromMappedParent(
 							$characteristic->getProperty(),
 							$characteristic->getProperty()->getParent(),
 							$state->getActualValue(),
-						));
+						);
+
+						if ($characteristic->getActualValue() === $characteristicValue) {
+							continue;
+						}
+
+						$characteristic->setActualValue($characteristicValue);
 
 						$this->subscriber->publish(
 							intval($accessory->getAid()),
