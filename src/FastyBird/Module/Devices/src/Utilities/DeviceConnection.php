@@ -97,6 +97,7 @@ final class DeviceConnection
 	}
 
 	/**
+	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */

@@ -58,9 +58,9 @@ final class DevicePropertiesRepository
 				$parent instanceof Entities\Devices\Properties\Dynamic
 				|| $parent instanceof Entities\Devices\Properties\Mapped
 			) {
-				return $this->repository->findOne($parent);
+				return $this->findOne($parent);
 			} elseif ($parent instanceof Uuid\UuidInterface) {
-				return $this->repository->findOneById($parent);
+				return $this->findOneById($parent);
 			} else {
 				return null;
 			}

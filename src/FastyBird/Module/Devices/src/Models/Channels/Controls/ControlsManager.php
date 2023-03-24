@@ -15,6 +15,8 @@
 
 namespace FastyBird\Module\Devices\Models\Channels\Controls;
 
+use Evenement;
+use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Models;
 use IPub\DoctrineCrud\Crud as DoctrineCrudCrud;
@@ -31,7 +33,7 @@ use function assert;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ControlsManager
+final class ControlsManager extends Evenement\EventEmitter implements Evenement\EventEmitterInterface
 {
 
 	use Nette\SmartObject;
@@ -51,6 +53,8 @@ final class ControlsManager
 		$entity = $this->entityCrud->getEntityCreator()->create($values);
 		assert($entity instanceof Entities\Channels\Controls\Control);
 
+		$this->emit(Devices\Constants::EVENT_ENTITY_CREATED, [$entity]);
+
 		return $entity;
 	}
 
@@ -65,6 +69,8 @@ final class ControlsManager
 		$entity = $this->entityCrud->getEntityUpdater()->update($values, $entity);
 		assert($entity instanceof Entities\Channels\Controls\Control);
 
+		$this->emit(Devices\Constants::EVENT_ENTITY_UPDATED, [$entity]);
+
 		return $entity;
 	}
 
@@ -74,7 +80,13 @@ final class ControlsManager
 	public function delete(Entities\Channels\Controls\Control $entity): bool
 	{
 		// Delete entity from database
-		return $this->entityCrud->getEntityDeleter()->delete($entity);
+		$result = $this->entityCrud->getEntityDeleter()->delete($entity);
+
+		if ($result) {
+			$this->emit(Devices\Constants::EVENT_ENTITY_DELETED, [$entity]);
+		}
+
+		return $result;
 	}
 
 }

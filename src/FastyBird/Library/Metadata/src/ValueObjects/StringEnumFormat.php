@@ -15,7 +15,10 @@
 
 namespace FastyBird\Library\Metadata\ValueObjects;
 
+use ArrayIterator;
+use IteratorAggregate;
 use Nette;
+use Traversable;
 use function array_filter;
 use function array_map;
 use function array_values;
@@ -28,12 +31,13 @@ use function trim;
 /**
  * String enum value format
  *
+ * @implements     IteratorAggregate<int, string>
+ *
  * @package        FastyBird:MetadataLibrary!
  * @subpackage     ValueObjects
- *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class StringEnumFormat
+final class StringEnumFormat implements IteratorAggregate
 {
 
 	use Nette\SmartObject;
@@ -72,9 +76,14 @@ final class StringEnumFormat
 		return $this->getItems();
 	}
 
+	public function getIterator(): Traversable
+	{
+		return new ArrayIterator($this->getItems());
+	}
+
 	public function __toString(): string
 	{
-		return implode(',', $this->toArray());
+		return implode(',', $this->getItems());
 	}
 
 }

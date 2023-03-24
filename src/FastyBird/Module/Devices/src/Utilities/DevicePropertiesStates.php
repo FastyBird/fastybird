@@ -54,6 +54,7 @@ final class DevicePropertiesStates
 	}
 
 	/**
+	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -61,8 +62,31 @@ final class DevicePropertiesStates
 		MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
 	): States\DeviceProperty|null
 	{
+		if ($property instanceof MetadataEntities\DevicesModule\DeviceMappedProperty) {
+			if ($property->getParent() === null) {
+				throw new Exceptions\InvalidState('Parent identifier for mapped property is missing');
+			}
+
+			$findPropertyQuery = new Queries\FindDeviceProperties();
+			$findPropertyQuery->byId($property->getParent());
+
+			$parent = $this->devicePropertiesRepository->findOneBy($findPropertyQuery);
+
+			if (!$parent instanceof Entities\Devices\Properties\Dynamic) {
+				throw new Exceptions\InvalidState('Mapped property parent could not be loaded');
+			}
+
+			$property = $parent;
+		} elseif ($property instanceof Entities\Devices\Properties\Mapped) {
+			$property = $property->getParent();
+
+			if (!$property instanceof Entities\Devices\Properties\Dynamic) {
+				throw new Exceptions\InvalidState('Mapped property parent is invalid type');
+			}
+		}
+
 		try {
-			$state = $this->devicePropertyStateRepository->findOneById($property->getId());
+			$state = $this->devicePropertyStateRepository->findOne($property);
 
 			if ($state !== null) {
 				if ($state->getActualValue() !== null) {
@@ -136,7 +160,7 @@ final class DevicePropertiesStates
 		}
 
 		try {
-			$propertyState = $this->devicePropertyStateRepository->findOneById($property->getId());
+			$propertyState = $this->devicePropertyStateRepository->findOne($property);
 		} catch (Exceptions\NotImplemented) {
 			$this->logger->warning(
 				'Devices states repository is not configured. State could not be fetched',

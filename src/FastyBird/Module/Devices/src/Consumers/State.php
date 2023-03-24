@@ -257,6 +257,7 @@ final class State implements ExchangeConsumers\Consumer
 	}
 
 	/**
+	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */

@@ -38,9 +38,10 @@ use function is_string;
 class Property extends RedisDbStates\State implements DevicesStates\Property
 {
 
-	private bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|null $actualValue = null;
-
-	private bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|null $expectedValue = null;
+	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+	private bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $actualValue = null;
+	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+	private bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $expectedValue = null;
 
 	private bool|string|null $pending = null;
 
@@ -76,26 +77,26 @@ class Property extends RedisDbStates\State implements DevicesStates\Property
 	{
 		$this->updatedAt = $updatedAt;
 	}
-
-	public function getActualValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|null
+	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+	public function getActualValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
 	{
 		return $this->actualValue;
 	}
 
 	public function setActualValue(
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|null $actual,
+		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $actual,
 	): void
 	{
 		$this->actualValue = $actual;
 	}
-
-	public function getExpectedValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|null
+	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+	public function getExpectedValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
 	{
 		return $this->expectedValue;
 	}
 
 	public function setExpectedValue(
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|null $expected,
+		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $expected,
 	): void
 	{
 		$this->expectedValue = $expected;

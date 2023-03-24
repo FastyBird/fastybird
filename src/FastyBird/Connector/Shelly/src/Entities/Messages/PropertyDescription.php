@@ -33,7 +33,7 @@ final class PropertyDescription implements Entity
 	use Nette\SmartObject;
 
 	/**
-	 * @param array<string>|array<int>|array<float>|array<int, array<int, (string|null)>>|array<int, (int|null)>|array<int, (float|null)>|array<int, (MetadataTypes\SwitchPayload|string|Types\RelayPayload|null)>|null $format
+	 * @param array<string>|array<int>|array<float>|array<int, array<int, (string|array<int, string>|null)>>|array<int, (int|null)>|array<int, (float|null)>|array<int, (MetadataTypes\SwitchPayload|string|Types\RelayPayload|null)>|null $format
 	 */
 	public function __construct(
 		private readonly string $identifier,
@@ -63,7 +63,7 @@ final class PropertyDescription implements Entity
 	}
 
 	/**
-	 * @return array<string>|array<int>|array<float>|array<int, array<int, (string|null)>>|array<int, (int|null)>|array<int, (float|null)>|array<int, (MetadataTypes\SwitchPayload|string|Types\RelayPayload|null)>|null
+	 * @return array<string>|array<int>|array<float>|array<int, array<int, (string|array<int, string>|null)>>|array<int, (int|null)>|array<int, (float|null)>|array<int, (MetadataTypes\SwitchPayload|string|Types\RelayPayload|null)>|null
 	 */
 	public function getFormat(): mixed
 	{

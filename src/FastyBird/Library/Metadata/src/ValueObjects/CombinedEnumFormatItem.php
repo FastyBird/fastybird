@@ -48,7 +48,7 @@ final class CombinedEnumFormatItem
 	private string|int|float|bool $value;
 
 	/**
-	 * @param string|array<int, string|int|float|bool> $item
+	 * @param string|array<int, string|int|float|bool|null> $item
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 */
@@ -70,11 +70,18 @@ final class CombinedEnumFormatItem
 				$this->value = trim($item);
 			}
 		} elseif (count($item) === 2) {
-			if (!is_string($item[0]) || !Types\DataTypeShort::isValidValue(Utils\Strings::lower($item[0]))) {
-				throw new Exceptions\InvalidArgument('Provided format is not valid for combined enum format');
+			if ($item[0] !== null) {
+				if (!is_string($item[0]) || !Types\DataTypeShort::isValidValue(Utils\Strings::lower($item[0]))) {
+					throw new Exceptions\InvalidArgument('Provided format is not valid for combined enum format');
+				}
+
+				$dataType = Types\DataTypeShort::get(Utils\Strings::lower($item[0]));
 			}
 
-			$dataType = Types\DataTypeShort::get(Utils\Strings::lower($item[0]));
+			if ($item[1] === null) {
+				throw new Exceptions\InvalidArgument('Provided value is not valid for combined enum format');
+			}
+
 			$this->value = is_string($item[1]) ? trim($item[1]) : $item[1];
 
 		} elseif (count($item) === 1) {
@@ -94,7 +101,7 @@ final class CombinedEnumFormatItem
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function getValue(): float|bool|int|string|Types\ButtonPayload|Types\SwitchPayload
+	public function getValue(): float|bool|int|string|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload
 	{
 		if ($this->dataType === null) {
 			return $this->value;
@@ -124,6 +131,12 @@ final class CombinedEnumFormatItem
 		} elseif ($this->dataType->equalsValue(Types\DataTypeShort::DATA_TYPE_SWITCH)) {
 			if (Types\SwitchPayload::isValidValue(Utils\Strings::lower(strval($this->value)))) {
 				return Types\SwitchPayload::get(Utils\Strings::lower(strval($this->value)));
+			}
+
+			throw new Exceptions\InvalidState('Combined enum value is not valid');
+		} elseif ($this->dataType->equalsValue(Types\DataTypeShort::DATA_TYPE_COVER)) {
+			if (Types\CoverPayload::isValidValue(Utils\Strings::lower(strval($this->value)))) {
+				return Types\CoverPayload::get(Utils\Strings::lower(strval($this->value)));
 			}
 
 			throw new Exceptions\InvalidState('Combined enum value is not valid');

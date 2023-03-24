@@ -54,6 +54,7 @@ final class ChannelPropertiesStates
 	}
 
 	/**
+	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -61,8 +62,31 @@ final class ChannelPropertiesStates
 		MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped $property,
 	): States\ChannelProperty|null
 	{
+		if ($property instanceof MetadataEntities\DevicesModule\ChannelMappedProperty) {
+			if ($property->getParent() === null) {
+				throw new Exceptions\InvalidState('Parent identifier for mapped property is missing');
+			}
+
+			$findPropertyQuery = new Queries\FindChannelProperties();
+			$findPropertyQuery->byId($property->getParent());
+
+			$parent = $this->channelPropertiesRepository->findOneBy($findPropertyQuery);
+
+			if (!$parent instanceof Entities\Channels\Properties\Dynamic) {
+				throw new Exceptions\InvalidState('Mapped property parent could not be loaded');
+			}
+
+			$property = $parent;
+		} elseif ($property instanceof Entities\Channels\Properties\Mapped) {
+			$property = $property->getParent();
+
+			if (!$property instanceof Entities\Channels\Properties\Dynamic) {
+				throw new Exceptions\InvalidState('Mapped property parent is invalid type');
+			}
+		}
+
 		try {
-			$state = $this->channelPropertyStateRepository->findOneById($property->getId());
+			$state = $this->channelPropertyStateRepository->findOne($property);
 
 			if ($state !== null) {
 				if ($state->getActualValue() !== null) {
@@ -136,7 +160,7 @@ final class ChannelPropertiesStates
 		}
 
 		try {
-			$propertyState = $this->channelPropertyStateRepository->findOneById($property->getId());
+			$propertyState = $this->channelPropertyStateRepository->findOne($property);
 		} catch (Exceptions\NotImplemented) {
 			$this->logger->warning(
 				'Channels states repository is not configured. State could not be fetched',

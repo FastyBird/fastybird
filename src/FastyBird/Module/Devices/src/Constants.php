@@ -152,4 +152,10 @@ final class Constants
 
 	public const DATA_STORAGE_CHANNELS_KEY = 'channels';
 
+	public const EVENT_ENTITY_CREATED = 'entity_created';
+
+	public const EVENT_ENTITY_UPDATED = 'entity_updated';
+
+	public const EVENT_ENTITY_DELETED = 'entity_deleted';
+
 }

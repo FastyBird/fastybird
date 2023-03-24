@@ -41,6 +41,7 @@
     "ext-bcmath": "*",
     "ext-pcntl": "*",
     "cweagans/composer-patches": "^1.7",
+    "evenement/evenement": "^3.0",
     "fastybird/bootstrap-library": "dev-main",
     "fastybird/exchange-library": "dev-main",
     "fastybird/json-api": "^0.13",

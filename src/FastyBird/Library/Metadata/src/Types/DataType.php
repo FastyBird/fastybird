@@ -64,6 +64,8 @@ class DataType extends Consistence\Enum\Enum
 
 	public const DATA_TYPE_SWITCH = 'switch';
 
+	public const DATA_TYPE_COVER = 'cover';
+
 	public const DATA_TYPE_UNKNOWN = 'unknown';
 
 	public function isInteger(): bool

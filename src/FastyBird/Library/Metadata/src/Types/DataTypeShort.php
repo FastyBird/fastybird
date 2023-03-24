@@ -62,6 +62,8 @@ class DataTypeShort extends Consistence\Enum\Enum
 
 	public const DATA_TYPE_SWITCH = 'sw';
 
+	public const DATA_TYPE_COVER = 'cvr';
+
 	public const DATA_TYPE_UNKNOWN = 'unk';
 
 	public function isInteger(): bool

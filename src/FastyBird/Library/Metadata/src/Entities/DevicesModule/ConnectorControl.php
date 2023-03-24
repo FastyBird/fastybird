@@ -51,7 +51,7 @@ final class ConnectorControl extends Control
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), [
-			'connector' => $this->getConnector(),
+			'connector' => $this->getConnector()->toString(),
 		]);
 	}
 

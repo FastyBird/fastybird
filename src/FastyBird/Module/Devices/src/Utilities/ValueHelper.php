@@ -47,10 +47,10 @@ final class ValueHelper
 	 */
 	public static function normalizeValue(
 		MetadataTypes\DataType $dataType,
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|null $value,
+		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
 		MetadataValueObjects\StringEnumFormat|MetadataValueObjects\NumberRangeFormat|MetadataValueObjects\CombinedEnumFormat|null $format = null,
 		float|int|string|null $invalid = null,
-	): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|null
+	): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
 	{
 		if ($value === null) {
 			return null;
@@ -143,6 +143,16 @@ final class ValueHelper
 			}
 
 			return null;
+		} elseif ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_COVER)) {
+			if ($value instanceof MetadataTypes\CoverPayload) {
+				return $value;
+			}
+
+			if (MetadataTypes\CoverPayload::isValidValue(strval($value))) {
+				return MetadataTypes\CoverPayload::get($value);
+			}
+
+			return null;
 		} elseif ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_ENUM)) {
 			if ($format instanceof MetadataValueObjects\StringEnumFormat) {
 				$filtered = array_filter(
@@ -188,7 +198,7 @@ final class ValueHelper
 	}
 
 	public static function flattenValue(
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|null $value,
+		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
 	): bool|float|int|string|null
 	{
 		if ($value instanceof DateTimeInterface) {

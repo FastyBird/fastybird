@@ -15,8 +15,11 @@
 
 namespace FastyBird\Library\Metadata\ValueObjects;
 
+use ArrayIterator;
 use FastyBird\Library\Metadata\Exceptions;
+use IteratorAggregate;
 use Nette;
+use Traversable;
 use function array_map;
 use function explode;
 use function implode;
@@ -27,12 +30,14 @@ use function trim;
 /**
  * Combined enum value format
  *
+ * @implements     IteratorAggregate<int, array<int, CombinedEnumFormatItem|null>>
+ *
  * @package        FastyBird:MetadataLibrary!
  * @subpackage     ValueObjects
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class CombinedEnumFormat
+final class CombinedEnumFormat implements IteratorAggregate
 {
 
 	use Nette\SmartObject;
@@ -41,7 +46,7 @@ final class CombinedEnumFormat
 	private array $items;
 
 	/**
-	 * @param string|array<int, array<int, string|array<int, string|int|float|bool>|null>> $items
+	 * @param string|array<int, array<int, string|array<int, string|int|float|bool|null>|null>> $items
 	 */
 	public function __construct(string|array $items)
 	{
@@ -104,6 +109,11 @@ final class CombinedEnumFormat
 			),
 			$this->getItems(),
 		);
+	}
+
+	public function getIterator(): Traversable
+	{
+		return new ArrayIterator($this->getItems());
 	}
 
 	public function __toString(): string
