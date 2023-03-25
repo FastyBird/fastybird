@@ -16,6 +16,8 @@
 namespace FastyBird\Plugin\CouchDb\States;
 
 use FastyBird\Plugin\CouchDb\Exceptions;
+use FastyBird\Plugin\CouchDb\States;
+use InvalidArgumentException;
 use phpDocumentor;
 use PHPOnCouch;
 use ReflectionClass;
@@ -28,11 +30,15 @@ use Reflector;
 use Throwable;
 use function array_merge;
 use function array_search;
+use function boolval;
 use function call_user_func_array;
 use function class_exists;
+use function floatval;
+use function intval;
 use function is_callable;
 use function method_exists;
 use function strtolower;
+use function strval;
 use function trim;
 use function ucfirst;
 
@@ -56,6 +62,7 @@ final class StateFactory
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
+	 * @throws InvalidArgumentException
 	 */
 	public static function create(string $stateClass, PHPOnCouch\CouchDocument $document): State
 	{
@@ -88,13 +95,13 @@ final class StateFactory
 				$methodName = 'set' . ucfirst($rp->getName());
 
 				if ($varAnnotation === 'int') {
-					$value = (int) $value;
+					$value = intval($value);
 				} elseif ($varAnnotation === 'float') {
-					$value = (float) $value;
+					$value = floatval($value);
 				} elseif ($varAnnotation === 'bool') {
-					$value = (bool) $value;
+					$value = boolval($value);
 				} elseif ($varAnnotation === 'string') {
-					$value = (string) $value;
+					$value = strval($value);
 				}
 
 				try {
@@ -124,6 +131,7 @@ final class StateFactory
 	 *
 	 * @return array<mixed>
 	 *
+	 * @throws InvalidArgumentException
 	 * @throws ReflectionException
 	 */
 	private static function autowireArguments(
@@ -223,7 +231,7 @@ final class StateFactory
 
 		foreach ($docblock->getTags() as $tag) {
 			if ($tag->getName() === $name) {
-				return trim((string) $tag);
+				return trim(strval($tag));
 			}
 		}
 

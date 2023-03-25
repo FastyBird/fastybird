@@ -6,8 +6,8 @@ use FastyBird\Plugin\CouchDb\Connections;
 use FastyBird\Plugin\CouchDb\Exceptions;
 use FastyBird\Plugin\CouchDb\Models;
 use FastyBird\Plugin\CouchDb\States;
+use InvalidArgumentException;
 use PHPOnCouch;
-use PHPUnit\Framework\MockObject;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid;
 
@@ -17,6 +17,7 @@ final class StatesRepositoryTest extends TestCase
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
+	 * @throws InvalidArgumentException
 	 */
 	public function testFetchEntity(): void
 	{
@@ -42,13 +43,13 @@ final class StatesRepositoryTest extends TestCase
 	private function mockCouchDbWithData(
 		Uuid\UuidInterface $id,
 		array $data,
-	): Connections\Connection&MockObject\MockObject
+	): Connections\Connection
 	{
 		$data['_id'] = $data['id'];
 
 		$couchClient = $this->createMock(PHPOnCouch\CouchClient::class);
 		$couchClient
-			->shouldReceive('asCouchDocuments');
+			->method('asCouchDocuments');
 		$couchClient
 			->expects(self::once())
 			->method('find')
@@ -71,7 +72,7 @@ final class StatesRepositoryTest extends TestCase
 	 * @phpstan-return Models\StatesRepository<States\State>
 	 */
 	private function createRepository(
-		Connections\Connection&MockObject\MockObject $couchClient,
+		Connections\Connection $couchClient,
 	): Models\StatesRepository
 	{
 		return new Models\StatesRepository($couchClient);

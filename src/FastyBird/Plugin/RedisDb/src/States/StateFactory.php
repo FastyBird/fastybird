@@ -120,13 +120,13 @@ final class StateFactory
 				$methodName = 'set' . ucfirst($rp->getName());
 
 				if ($varAnnotation === 'int') {
-					$value = (int) $value;
+					$value = intval($value);
 				} elseif ($varAnnotation === 'float') {
-					$value = (float) $value;
+					$value = floatval($value);
 				} elseif ($varAnnotation === 'bool') {
-					$value = (bool) $value;
+					$value = boolval($value);
 				} elseif ($varAnnotation === 'string') {
-					$value = (string) $value;
+					$value = strval($value);
 				}
 
 				try {

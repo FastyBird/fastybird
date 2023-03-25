@@ -5,6 +5,7 @@ namespace FastyBird\Plugin\CouchDb\Tests\Cases\Unit\States;
 use FastyBird\Plugin\CouchDb\Exceptions;
 use FastyBird\Plugin\CouchDb\States;
 use FastyBird\Plugin\CouchDb\Tests\Fixtures;
+use InvalidArgumentException;
 use PHPOnCouch;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
@@ -21,6 +22,7 @@ final class FactoryTest extends TestCase
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
+	 * @throws InvalidArgumentException
 	 *
 	 * @dataProvider createStateValidDocumentData
 	 */
@@ -55,6 +57,7 @@ final class FactoryTest extends TestCase
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
+	 * @throws InvalidArgumentException
 	 *
 	 * @dataProvider createStateInvalidDocumentData
 	 */
