@@ -78,14 +78,16 @@ final class Message extends Evenement\EventEmitter
 				// Log error action reason
 				$this->logger->warning('Received message is not in valid format', [
 					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
-					'type' => 'subscriber',
+					'type' => 'messages-handler',
+					'group' => 'handler',
 				]);
 			}
 		} catch (Nette\Utils\JsonException $ex) {
 			// Log error action reason
 			$this->logger->warning('Received message is not valid json', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
-				'type' => 'subscriber',
+				'type' => 'messages-handler',
+				'group' => 'handler',
 				'exception' => [
 					'message' => $ex->getMessage(),
 					'code' => $ex->getCode(),
@@ -106,7 +108,8 @@ final class Message extends Evenement\EventEmitter
 		if ($senderId === $this->identifier->getIdentifier()) {
 			$this->logger->debug('Received message published by itself', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
-				'type' => 'subscriber',
+				'type' => 'messages-handler',
+				'group' => 'handler',
 			]);
 
 			return;
@@ -124,7 +127,8 @@ final class Message extends Evenement\EventEmitter
 		} catch (Throwable $ex) {
 			$this->logger->error('Message could not be transformed into entity', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
-				'type' => 'subscriber',
+				'type' => 'messages-handler',
+				'group' => 'handler',
 				'exception' => [
 					'message' => $ex->getMessage(),
 					'code' => $ex->getCode(),
@@ -149,7 +153,8 @@ final class Message extends Evenement\EventEmitter
 			// Log error consume reason
 			$this->logger->error('Message could not be handled', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
-				'type' => 'subscriber',
+				'type' => 'messages-handler',
+				'group' => 'handler',
 				'exception' => [
 					'message' => $ex->getMessage(),
 					'code' => $ex->getCode(),

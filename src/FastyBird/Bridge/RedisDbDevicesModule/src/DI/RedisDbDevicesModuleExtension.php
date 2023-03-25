@@ -16,7 +16,6 @@
 namespace FastyBird\Bridge\RedisDbDevicesModule\DI;
 
 use FastyBird\Bridge\RedisDbDevicesModule\Models;
-use FastyBird\Bridge\RedisDbDevicesModule\Subscribers;
 use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
 use Nette\DI;
 use Nette\Schema;
@@ -104,12 +103,6 @@ class RedisDbDevicesModuleExtension extends DI\CompilerExtension
 		)
 			->setType(Models\ChannelPropertiesManager::class)
 			->setArguments(['database' => $configuration->database]);
-
-		$builder->addDefinition(
-			$this->prefix('subscribers.redisClient'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Subscribers\RedisClient::class);
 	}
 
 }

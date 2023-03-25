@@ -97,6 +97,7 @@ class StatesManager
 			$this->logger->error('Record could not be created', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
 				'type' => 'states-manager',
+				'group' => 'model',
 				'record' => [
 					'id' => $id->toString(),
 				],
@@ -138,6 +139,7 @@ class StatesManager
 			$this->logger->error('Record could not be updated', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
 				'type' => 'states-manager',
+				'group' => 'model',
 				'record' => [
 					'id' => $state->getId()->toString(),
 				],
@@ -252,6 +254,7 @@ class StatesManager
 			$this->logger->error('Record key could not be created', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
 				'type' => 'states-manager',
+				'group' => 'model',
 				'record' => [
 					'id' => $id->toString(),
 				],
@@ -350,6 +353,7 @@ class StatesManager
 			$this->logger->error('Record key could not be updated', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
 				'type' => 'states-manager',
+				'group' => 'model',
 				'record' => [
 					'id' => $state->getId()->toString(),
 				],
@@ -382,6 +386,7 @@ class StatesManager
 			$this->logger->error('Record could not be deleted', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
 				'type' => 'states-manager',
+				'group' => 'model',
 				'record' => [
 					'id' => $id->toString(),
 				],

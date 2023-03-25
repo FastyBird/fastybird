@@ -107,12 +107,6 @@ class Discovery extends Console\Command\Command
 						'Run devices module connector',
 						true,
 					),
-					new Input\InputOption(
-						'no-confirm',
-						null,
-						Input\InputOption::VALUE_NONE,
-						'Do not ask for any confirmation',
-					),
 				]),
 			);
 	}
@@ -129,7 +123,7 @@ class Discovery extends Console\Command\Command
 
 		$io->note('This action will run connector devices discovery.');
 
-		if ($input->getOption('no-confirm') === false) {
+		if ($input->getOption('no-interaction') === false) {
 			$question = new Console\Question\ConfirmationQuestion(
 				'Would you like to continue?',
 				false,
@@ -211,7 +205,7 @@ class Discovery extends Console\Command\Command
 					return Console\Command\Command::FAILURE;
 				}
 
-				if ($input->getOption('no-confirm') === false) {
+				if ($input->getOption('no-interaction') === false) {
 					$question = new Console\Question\ConfirmationQuestion(
 						sprintf(
 							'Would you like to discover devices with "%s" connector',

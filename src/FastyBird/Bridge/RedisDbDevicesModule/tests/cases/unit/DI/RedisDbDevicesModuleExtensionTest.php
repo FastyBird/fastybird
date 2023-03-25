@@ -3,7 +3,6 @@
 namespace FastyBird\Bridge\RedisDbDevicesModule\Tests\Cases\Unit\DI;
 
 use FastyBird\Bridge\RedisDbDevicesModule\Models;
-use FastyBird\Bridge\RedisDbDevicesModule\Subscribers;
 use FastyBird\Bridge\RedisDbDevicesModule\Tests\Cases\Unit\BaseTestCase;
 use Nette;
 
@@ -21,8 +20,6 @@ final class RedisDbDevicesModuleExtensionTest extends BaseTestCase
 		self::assertNotNull($this->container->getByType(Models\ConnectorPropertiesManager::class, false));
 		self::assertNotNull($this->container->getByType(Models\DevicePropertiesRepository::class, false));
 		self::assertNotNull($this->container->getByType(Models\DevicePropertiesManager::class, false));
-
-		self::assertNotNull($this->container->getByType(Subscribers\RedisClient::class, false));
 	}
 
 }

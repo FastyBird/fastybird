@@ -69,6 +69,7 @@ class Client implements EventDispatcher\EventSubscriberInterface
 			[
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
 				'type' => 'subscriber',
+				'group' => 'subscriber',
 			],
 		);
 	}

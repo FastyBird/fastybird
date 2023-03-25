@@ -50,9 +50,10 @@ final class Consumer implements ExchangeConsumer\Consumer
 	{
 		$this->publisher->publish($source, $routingKey, $entity);
 
-		$this->logger->warning('Received message from exchange was pushed to WS clients', [
+		$this->logger->debug('Received message from exchange was pushed to WS clients', [
 			'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_EXCHANGE,
 			'type' => 'consumer',
+			'group' => 'consumer',
 			'message' => [
 				'source' => $source->getValue(),
 				'routing_key' => $routingKey->getValue(),

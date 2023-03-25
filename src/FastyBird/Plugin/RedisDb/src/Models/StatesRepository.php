@@ -96,6 +96,7 @@ class StatesRepository
 			$this->logger->error('Content could not be loaded', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
 				'type' => 'state-repository',
+				'group' => 'model',
 				'record' => [
 					'id' => $id->toString(),
 				],

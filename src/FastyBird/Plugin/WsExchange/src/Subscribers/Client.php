@@ -115,6 +115,7 @@ class Client implements EventDispatcher\EventSubscriberInterface
 			$this->logger->warning('Client used invalid WS key', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_EXCHANGE,
 				'type' => 'subscriber',
+				'group' => 'subscriber',
 				'ws_key' => $wsKey,
 			]);
 
@@ -132,6 +133,7 @@ class Client implements EventDispatcher\EventSubscriberInterface
 			$this->logger->warning('Client is connecting from not allowed origin', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_EXCHANGE,
 				'type' => 'subscriber',
+				'group' => 'subscriber',
 				'origin' => $origin,
 			]);
 
@@ -147,6 +149,7 @@ class Client implements EventDispatcher\EventSubscriberInterface
 				$this->logger->warning('Client access token is missing', [
 					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_EXCHANGE,
 					'type' => 'subscriber',
+					'group' => 'subscriber',
 				]);
 
 				$this->closeSession($client);

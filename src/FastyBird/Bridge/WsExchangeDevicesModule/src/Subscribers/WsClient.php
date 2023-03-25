@@ -162,6 +162,7 @@ class WsClient implements EventDispatcher\EventSubscriberInterface
 			$this->logger->error('State could not be sent to subscriber', [
 				'source' => MetadataTypes\BridgeSource::SOURCE_BRIDGE_WS_EXCHANGE_DEVICES_MODULE,
 				'type' => 'subscribe',
+				'group' => 'subscriber',
 				'exception' => [
 					'message' => $ex->getMessage(),
 					'code' => $ex->getCode(),

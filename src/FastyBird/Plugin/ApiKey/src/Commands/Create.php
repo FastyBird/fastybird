@@ -64,17 +64,7 @@ class Create extends Console\Command\Command
 	{
 		$this
 			->setName(self::NAME)
-			->setDescription('Create API access key')
-			->setDefinition(
-				new Input\InputDefinition([
-					new Input\InputOption(
-						'no-confirm',
-						null,
-						Input\InputOption::VALUE_NONE,
-						'Do not ask for any confirmation',
-					),
-				]),
-			);
+			->setDescription('Create API access key');
 	}
 
 	protected function execute(Input\InputInterface $input, Output\OutputInterface $output)
@@ -107,7 +97,8 @@ class Create extends Console\Command\Command
 		} catch (Throwable $ex) {
 			$this->logger->error('Api key could not be created', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_API_KEY,
-				'type' => 'command',
+				'type' => 'create-command',
+				'group' => 'cmd',
 				'exception' => [
 					'message' => $ex->getMessage(),
 					'code' => $ex->getCode(),

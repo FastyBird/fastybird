@@ -33,8 +33,16 @@
                 <element key="src/FastyBird/Bridge/RedisDbTriggersModule/tests/cases/unit" value="FastyBird\Bridge\RedisDbTriggersModule\Tests\Cases\Unit"/>
                 <element key="src/FastyBird/Bridge/RedisDbTriggersModule/tests/tools" value="FastyBird\Bridge\RedisDbTriggersModule\Tests\Tools"/>
 
-                <element key="src/FastyBird/Bridge/RedisDbWsExchange/src" value="FastyBird\Bridge\RedisDbWsExchange"/>
-                <element key="src/FastyBird/Bridge/RedisDbWsExchange/tests/cases/unit" value="FastyBird\Bridge\RedisDbWsExchange\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Bridge/RedisExchangeDevicesModule/src" value="FastyBird\Bridge\RedisExchangeDevicesModule"/>
+                <element key="src/FastyBird/Bridge/RedisExchangeDevicesModule/tests/cases/unit" value="FastyBird\Bridge\RedisExchangeDevicesModule\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Bridge/RedisExchangeDevicesModule/tests/tools" value="FastyBird\Bridge\RedisExchangeDevicesModule\Tests\Tools"/>
+
+                <element key="src/FastyBird/Bridge/RedisExchangeTriggersModule/src" value="FastyBird\Bridge\RedisExchangeTriggersModule"/>
+                <element key="src/FastyBird/Bridge/RedisExchangeTriggersModule/tests/cases/unit" value="FastyBird\Bridge\RedisExchangeTriggersModule\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Bridge/RedisExchangeTriggersModule/tests/tools" value="FastyBird\Bridge\RedisExchangeTriggersModule\Tests\Tools"/>
+
+                <element key="src/FastyBird/Bridge/RedisExchangeWsExchange/src" value="FastyBird\Bridge\RedisExchangeWsExchange"/>
+                <element key="src/FastyBird/Bridge/RedisExchangeWsExchange/tests/cases/unit" value="FastyBird\Bridge\RedisExchangeWsExchange\Tests\Cases\Unit"/>
 
                 <element key="src/FastyBird/Bridge/WsExchangeDevicesModule/src" value="FastyBird\Bridge\WsExchangeDevicesModule"/>
                 <element key="src/FastyBird/Bridge/WsExchangeDevicesModule/tests/cases/unit" value="FastyBird\Bridge\WsExchangeDevicesModule\Tests\Cases\Unit"/>

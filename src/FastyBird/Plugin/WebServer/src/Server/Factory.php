@@ -65,6 +65,7 @@ final class Factory
 				[
 					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WEB_SERVER,
 					'type' => 'factory',
+					'group' => 'server',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -84,6 +85,7 @@ final class Factory
 					[
 						'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WEB_SERVER,
 						'type' => 'factory',
+						'group' => 'server',
 					],
 				);
 
@@ -93,6 +95,7 @@ final class Factory
 					[
 						'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WEB_SERVER,
 						'type' => 'factory',
+						'group' => 'server',
 					],
 				);
 			}

@@ -74,7 +74,8 @@ final class Exchange extends WebSockets\Application\Controller\Controller
 			'Client subscribed to topic',
 			[
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_EXCHANGE,
-				'type' => 'controller',
+				'type' => 'exchange-controller',
+				'group' => 'controller',
 				'client' => $client->getId(),
 				'topic' => $topic->getId(),
 			],
@@ -109,7 +110,8 @@ final class Exchange extends WebSockets\Application\Controller\Controller
 			'Received RPC call from client',
 			[
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_EXCHANGE,
-				'type' => 'controller',
+				'type' => 'exchange-controller',
+				'group' => 'controller',
 				'client' => $client->getId(),
 				'topic' => $topic->getId(),
 				'data' => $args,
@@ -169,7 +171,8 @@ final class Exchange extends WebSockets\Application\Controller\Controller
 		} catch (Utils\JsonException $ex) {
 			$this->logger->error('Received message could not be validated', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_EXCHANGE,
-				'type' => 'subscriber',
+				'type' => 'exchange-controller',
+				'group' => 'controller',
 				'exception' => [
 					'message' => $ex->getMessage(),
 					'code' => $ex->getCode(),
@@ -180,7 +183,8 @@ final class Exchange extends WebSockets\Application\Controller\Controller
 		} catch (MetadataExceptions\InvalidData $ex) {
 			$this->logger->debug('Received message is not valid', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_EXCHANGE,
-				'type' => 'subscriber',
+				'type' => 'exchange-controller',
+				'group' => 'controller',
 				'exception' => [
 					'message' => $ex->getMessage(),
 					'code' => $ex->getCode(),
@@ -191,7 +195,8 @@ final class Exchange extends WebSockets\Application\Controller\Controller
 		} catch (Throwable $ex) {
 			$this->logger->error('Received message is not valid', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_EXCHANGE,
-				'type' => 'subscriber',
+				'type' => 'exchange-controller',
+				'group' => 'controller',
 				'exception' => [
 					'message' => $ex->getMessage(),
 					'code' => $ex->getCode(),
