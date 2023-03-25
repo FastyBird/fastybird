@@ -5,7 +5,7 @@ namespace Tests\Fixtures;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Exception;
-use FastyBird\CouchDbStoragePlugin\States;
+use FastyBird\CouchDbPlugin\States;
 use function array_merge;
 use const DATE_ATOM;
 

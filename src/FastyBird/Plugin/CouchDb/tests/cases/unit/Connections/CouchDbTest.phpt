@@ -2,7 +2,7 @@
 
 namespace Tests\Cases;
 
-use FastyBird\CouchDbStoragePlugin\Connections;
+use FastyBird\CouchDbPlugin\Connections;
 use Mockery;
 use Ninjify\Nunjuck\TestCase\BaseMockeryTestCase;
 use Psr\Log;

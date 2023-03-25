@@ -61,6 +61,11 @@
   },
   {
     "organization": "FastyBird",
+    "name": "couchdb-plugin",
+    "local-path": "src/FastyBird/Plugin/CouchDb"
+  },
+  {
+    "organization": "FastyBird",
     "name": "redisdb-plugin",
     "local-path": "src/FastyBird/Plugin/RedisDb"
   },

@@ -6,24 +6,27 @@
  * @license        More in license.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:CouchDbStoragePlugin!
+ * @package        FastyBird:CouchDbPlugin!
  * @subpackage     Models
- * @since          0.1.0
+ * @since          1.0.0
  *
  * @date           03.03.20
  */
 
 namespace FastyBird\Plugin\CouchDb\Models;
 
-use Closure;
 use Consistence;
 use DateTimeInterface;
+use FastyBird\DateTimeFactory;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\CouchDb\Connections;
+use FastyBird\Plugin\CouchDb\Events;
 use FastyBird\Plugin\CouchDb\Exceptions;
 use FastyBird\Plugin\CouchDb\States;
 use Nette;
 use Nette\Utils;
 use PHPOnCouch;
+use Psr\EventDispatcher;
 use Psr\Log;
 use Ramsey\Uuid;
 use stdClass;
@@ -31,157 +34,181 @@ use Throwable;
 use function assert;
 use function is_numeric;
 use function is_object;
+use function is_string;
+use function property_exists;
 use function sprintf;
+use function strval;
 use const DATE_ATOM;
 
 /**
- * Base properties manager
+ * States manager
  *
- * @package        FastyBird:CouchDbStoragePlugin!
+ * @template T of States\State
+ *
+ * @package        FastyBird:CouchDbPlugin!
  * @subpackage     Models
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- *
- * @method onAfterCreate(States\IState $state)
- * @method onAfterUpdate(States\IState $state, States\IState $old)
- * @method onAfterDelete(States\IState $state)
  */
-class StatesManager implements IStatesManager
+class StatesManager
 {
 
 	use Nette\SmartObject;
 
 	private const MAX_RETRIES = 5;
 
-	/** @var array<Closure> */
-	public array $onAfterCreate = [];
-
-	/** @var array<Closure> */
-	public array $onAfterUpdate = [];
-
-	/** @var array<Closure> */
-	public array $onAfterDelete = [];
-
-	protected Log\LoggerInterface $logger;
+	private Log\LoggerInterface $logger;
 
 	/** @var array<int> */
 	private array $retries = [];
 
+	/**
+	 * @phpstan-param class-string<T> $entity
+	 */
 	public function __construct(
-		private Connections\ICouchDbConnection $dbClient,
+		private readonly Connections\CouchDbConnection $client,
+		private readonly DateTimeFactory\Factory $dateTimeFactory,
+		private readonly string $entity = States\State::class,
+		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 		Log\LoggerInterface|null $logger = null,
 	)
 	{
 		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
+	/**
+	 * @phpstan-return T
+	 *
+	 * @throws Exceptions\InvalidState
+	 */
 	public function create(
 		Uuid\UuidInterface $id,
 		Utils\ArrayHash $values,
-		string $class = States\State::class,
-	): States\IState
+	): States\State
 	{
-		$values->offsetSet('id', $id->toString());
-
 		try {
-			$doc = $this->createDoc($values, $class::CREATE_FIELDS);
+			$doc = $this->createDoc($id, $values, $this->entity::getCreateFields());
 
-			$state = States\StateFactory::create($class, $doc);
+			$state = States\StateFactory::create($this->entity, $doc);
 
 		} catch (Throwable $ex) {
-			$this->logger->error('[FB:PLUGIN:COUCHDB] Document could not be created', [
+			$this->logger->error('Document could not be created', [
+				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_COUCHDB,
+				'type' => 'states-manager',
+				'group' => 'model',
+				'document' => [
+					'id' => $id->toString(),
+				],
 				'exception' => [
 					'message' => $ex->getMessage(),
 					'code' => $ex->getCode(),
-				],
-				'data' => [
-					'state' => $id->toString(),
 				],
 			]);
 
 			throw new Exceptions\InvalidState('State could not be created', $ex->getCode(), $ex);
 		}
 
-		$this->onAfterCreate($state);
+		$this->dispatcher?->dispatch(new Events\StateCreated($state));
 
 		return $state;
 	}
 
+	/**
+	 * @phpstan-param T $state
+	 *
+	 * @phpstan-return T
+	 *
+	 * @throws Exceptions\InvalidState
+	 */
 	public function update(
-		States\IState $state,
+		States\State $state,
 		Utils\ArrayHash $values,
-	): States\IState
+	): States\State
 	{
 		try {
-			$doc = $this->updateDoc($state, $values, $state::UPDATE_FIELDS);
+			$doc = $this->updateDoc($state, $values, $state::getUpdateFields());
 
 			$updatedState = States\StateFactory::create($state::class, $doc);
 
 		} catch (Exceptions\NotUpdated) {
 			return $state;
 		} catch (Throwable $ex) {
-			$this->logger->error('[FB:PLUGIN:COUCHDB] Document could not be updated', [
+			$this->logger->error('Document could not be updated', [
+				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_COUCHDB,
+				'type' => 'states-manager',
+				'group' => 'model',
+				'document' => [
+					'id' => $state->getId()->toString(),
+				],
 				'exception' => [
 					'message' => $ex->getMessage(),
 					'code' => $ex->getCode(),
-				],
-				'data' => [
-					'state' => $state->getId()->toString(),
 				],
 			]);
 
 			throw new Exceptions\InvalidState('State could not be updated', $ex->getCode(), $ex);
 		}
 
-		$this->onAfterUpdate($updatedState, $state);
+		$this->dispatcher?->dispatch(new Events\StateUpdated($updatedState, $state));
 
 		return $updatedState;
 	}
 
-	public function delete(States\IState $state): bool
+	/**
+	 * @phpstan-param T $state
+	 */
+	public function delete(States\State $state): bool
 	{
-		$result = $this->deleteDoc($state->getId()
-			->toString());
+		$result = $this->deleteDoc($state->getId());
 
 		if ($result === false) {
 			return false;
 		}
 
-		$this->onAfterDelete($state);
+		$this->dispatcher?->dispatch(new Events\StateDeleted($state));
 
 		return true;
 	}
 
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
 	protected function loadDoc(string $id): PHPOnCouch\CouchDocument|null
 	{
 		try {
-			$this->dbClient->getClient()->asCouchDocuments();
+			$this->client->getClient()->asCouchDocuments();
 
-			$doc = $this->dbClient->getClient()->getDoc($id);
+			$doc = $this->client->getClient()->getDoc($id);
 			assert($doc instanceof PHPOnCouch\CouchDocument);
 
 			return $doc;
 		} catch (PHPOnCouch\Exceptions\CouchNotFoundException) {
 			return null;
 		} catch (Throwable $ex) {
-			$this->logger->error('[FB:PLUGIN:COUCHDB] Document could not be deleted', [
+			$this->logger->error('State could not be created', [
+				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_COUCHDB,
+				'type' => 'states-manager',
+				'group' => 'model',
+				'document' => [
+					'id' => $id,
+				],
 				'exception' => [
 					'message' => $ex->getMessage(),
 					'code' => $ex->getCode(),
 				],
-				'document' => [
-					'id' => $id,
-				],
 			]);
 
-			throw new Exceptions\InvalidState('Document could not found.');
+			throw new Exceptions\InvalidState('Document could not found.', $ex->getCode(), $ex);
 		}
 	}
 
 	/**
-	 * @param array<mixed> $fields
+	 * @phpstan-param array<string>|array<string, int|string|bool|null> $fields
+	 *
+	 * @throws Exceptions\InvalidState
 	 */
 	protected function createDoc(
+		Uuid\UuidInterface $id,
 		Utils\ArrayHash $values,
 		array $fields,
 	): PHPOnCouch\CouchDocument
@@ -190,6 +217,8 @@ class StatesManager implements IStatesManager
 			// Initialize structure
 			$data = new stdClass();
 
+			$values->offsetSet('id', $id->toString());
+
 			foreach ($fields as $field => $default) {
 				$value = $default;
 
@@ -197,30 +226,31 @@ class StatesManager implements IStatesManager
 					$field = $default;
 
 					// If default is not defined => field is required
-					if (!$values->offsetExists($field)) {
+					if (!is_string($field) || !property_exists($values, $field)) {
 						throw new Exceptions\InvalidArgument(sprintf('Value for key "%s" is required', $field));
 					}
 
 					$value = $values->offsetGet($field);
 
-				} elseif ($values->offsetExists($field)) {
+				} elseif (property_exists($values, $field)) {
 					if ($values->offsetGet($field) !== null) {
 						$value = $values->offsetGet($field);
 
 						if ($value instanceof DateTimeInterface) {
 							$value = $value->format(DATE_ATOM);
-
 						} elseif ($value instanceof Utils\ArrayHash) {
 							$value = (array) $value;
-
 						} elseif ($value instanceof Consistence\Enum\Enum) {
 							$value = $value->getValue();
-
 						} elseif (is_object($value)) {
-							$value = (string) $value;
+							$value = strval($value);
 						}
 					} else {
 						$value = null;
+					}
+				} else {
+					if ($field === States\State::CREATED_AT_FIELD) {
+						$value = $this->dateTimeFactory->getNow()->format(DATE_ATOM);
 					}
 				}
 
@@ -229,31 +259,40 @@ class StatesManager implements IStatesManager
 
 			$data->_id = $data->id;
 
-			$this->dbClient->getClient()->storeDoc($data);
+			$this->client->getClient()->storeDoc($data);
 
-			$this->dbClient->getClient()->asCouchDocuments();
+			$this->client->getClient()->asCouchDocuments();
 
-			$doc = $this->dbClient->getClient()->getDoc($data->id);
+			$doc = $this->client->getClient()->getDoc($data->id);
 			assert($doc instanceof PHPOnCouch\CouchDocument);
 
 			return $doc;
 		} catch (Throwable $ex) {
-			$this->logger->error('[FB:PLUGIN:COUCHDB] Document could not be created', [
+			$this->logger->error('Document key could not be created', [
+				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_COUCHDB,
+				'type' => 'states-manager',
+				'group' => 'model',
+				'document' => [
+					'id' => $id->toString(),
+				],
 				'exception' => [
 					'message' => $ex->getMessage(),
 					'code' => $ex->getCode(),
 				],
 			]);
 
-			throw new Exceptions\InvalidState('State document could not be created', $ex->getCode(), $ex);
+			throw new Exceptions\InvalidState('State could not be created', $ex->getCode(), $ex);
 		}
 	}
 
 	/**
-	 * @param array<string> $fields
+	 * @phpstan-param T $state
+	 * @phpstan-param array<string> $fields
+	 *
+	 * @throws Exceptions\InvalidState
 	 */
 	protected function updateDoc(
-		States\IState $state,
+		States\State $state,
 		Utils\ArrayHash $values,
 		array $fields,
 	): PHPOnCouch\CouchDocument
@@ -266,7 +305,7 @@ class StatesManager implements IStatesManager
 			$isUpdated = false;
 
 			foreach ($fields as $field) {
-				if ($values->offsetExists($field)) {
+				if (property_exists($values, $field)) {
 					$value = $values->offsetGet($field);
 
 					if ($value instanceof DateTimeInterface) {
@@ -279,13 +318,17 @@ class StatesManager implements IStatesManager
 						$value = $value->getValue();
 
 					} elseif (is_object($value)) {
-						$value = (string) $value;
+						$value = strval($value);
 					}
 
 					if ($doc->get($field) !== $value) {
 						$doc->set($field, $value);
 
 						$isUpdated = true;
+					}
+				} else {
+					if ($field === States\State::UPDATED_AT_FIELD) {
+						$doc->set($field, $this->dateTimeFactory->getNow()->format(DATE_ATOM));
 					}
 				}
 			}
@@ -315,55 +358,64 @@ class StatesManager implements IStatesManager
 				$this->updateDoc($state, $values, $fields);
 			}
 
-			$this->logger->error('[FB:PLUGIN:COUCHDB] Document could not be updated', [
+			$this->logger->error('Document key could not be updated', [
+				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_COUCHDB,
+				'type' => 'states-manager',
+				'group' => 'model',
+				'document' => [
+					'id' => $state->getId()->toString(),
+				],
 				'exception' => [
 					'message' => $ex->getMessage(),
 					'code' => $ex->getCode(),
 				],
-				'document' => [
-					'id' => $doc->id(),
-				],
 			]);
 
-			throw new Exceptions\InvalidState('State document could not be updated', $ex->getCode(), $ex);
+			throw new Exceptions\InvalidState('State could not be updated', $ex->getCode(), $ex);
 		} catch (Exceptions\NotUpdated $ex) {
 			throw $ex;
 		} catch (Throwable $ex) {
-			$this->logger->error('[FB:PLUGIN:COUCHDB] Document could not be updated', [
+			$this->logger->error('Document key could not be updated', [
+				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_COUCHDB,
+				'type' => 'states-manager',
+				'group' => 'model',
+				'document' => [
+					'id' => $state->getId()->toString(),
+				],
 				'exception' => [
 					'message' => $ex->getMessage(),
 					'code' => $ex->getCode(),
 				],
-				'document' => [
-					'id' => $doc->id(),
-				],
 			]);
 
-			throw new Exceptions\InvalidState('State document could not be updated', $ex->getCode(), $ex);
+			throw new Exceptions\InvalidState('State could not be updated', $ex->getCode(), $ex);
 		}
 	}
 
-	protected function deleteDoc(string $id): bool
+	protected function deleteDoc(Uuid\UuidInterface $id): bool
 	{
 		try {
-			$doc = $this->loadDoc($id);
+			$doc = $this->loadDoc($id->toString());
 
 			// Document is already deleted
 			if ($doc === null) {
 				return true;
 			}
 
-			$this->dbClient->getClient()->deleteDoc($doc);
+			$this->client->getClient()->deleteDoc($doc);
 
 			return true;
 		} catch (Throwable $ex) {
-			$this->logger->error('[FB:PLUGIN:COUCHDB] Document could not be deleted', [
+			$this->logger->error('Document could not be deleted', [
+				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
+				'type' => 'states-manager',
+				'group' => 'model',
+				'document' => [
+					'id' => $id->toString(),
+				],
 				'exception' => [
 					'message' => $ex->getMessage(),
 					'code' => $ex->getCode(),
-				],
-				'document' => [
-					'id' => $id,
 				],
 			]);
 		}

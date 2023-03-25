@@ -6,15 +6,16 @@
  * @license        More in license.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:CouchDbStoragePlugin!
+ * @package        FastyBird:CouchDbPlugin!
  * @subpackage     Connections
- * @since          0.1.0
+ * @since          1.0.0
  *
  * @date           03.03.20
  */
 
 namespace FastyBird\Plugin\CouchDb\Connections;
 
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\CouchDb\Exceptions;
 use Nette;
 use PHPOnCouch;
@@ -25,12 +26,12 @@ use function str_replace;
 /**
  * Couch DB connection configuration
  *
- * @package        FastyBird:CouchDbStoragePlugin!
+ * @package        FastyBird:CouchDbPlugin!
  * @subpackage     Connections
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class CouchDbConnection implements ICouchDbConnection
+final class CouchDbConnection
 {
 
 	use Nette\SmartObject;
@@ -40,11 +41,11 @@ final class CouchDbConnection implements ICouchDbConnection
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
-		private string $database,
-		private string $host = '127.0.0.1',
-		private int $port = 5984,
-		private string|null $username = null,
-		private string|null $password = null,
+		private readonly string $database,
+		private readonly string $host = '127.0.0.1',
+		private readonly int $port = 5984,
+		private readonly string|null $username = null,
+		private readonly string|null $password = null,
 		Log\LoggerInterface|null $logger = null,
 	)
 	{
@@ -77,9 +78,7 @@ final class CouchDbConnection implements ICouchDbConnection
 	}
 
 	/**
-	 * {@inheritDoc}
-	 *
-	 * @throws Throwable
+	 * @throws Exceptions\InvalidState
 	 */
 	public function getClient(): PHPOnCouch\CouchClient
 	{
@@ -97,7 +96,10 @@ final class CouchDbConnection implements ICouchDbConnection
 			return $this->client;
 		} catch (Throwable $ex) {
 			// Log error action reason
-			$this->logger->error('[FB:PLUGIN:COUCHDB] Could not connect do database', [
+			$this->logger->error('Could not connect do database', [
+				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_COUCHDB,
+				'type' => 'connection',
+				'group' => 'connection',
 				'exception' => [
 					'message' => $ex->getMessage(),
 					'code' => $ex->getCode(),

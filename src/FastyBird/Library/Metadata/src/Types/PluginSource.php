@@ -35,7 +35,7 @@ class PluginSource extends Consistence\Enum\Enum
 	 */
 	public const SOURCE_NOT_SPECIFIED = Metadata\Constants::NOT_SPECIFIED_SOURCE;
 
-	public const SOURCE_PLUGIN_STORAGE_COUCHDB = Metadata\Constants::PLUGIN_STORAGE_COUCHDB_SOURCE;
+	public const SOURCE_PLUGIN_COUCHDB = Metadata\Constants::PLUGIN_COUCHDB_SOURCE;
 
 	public const SOURCE_PLUGIN_RABBITMQ = Metadata\Constants::PLUGIN_RABBITMQ_SOURCE;
 

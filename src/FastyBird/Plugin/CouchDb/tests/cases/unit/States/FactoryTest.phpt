@@ -2,7 +2,7 @@
 
 namespace Tests\Cases;
 
-use FastyBird\CouchDbStoragePlugin\States;
+use FastyBird\CouchDbPlugin\States;
 use Mockery;
 use Ninjify\Nunjuck\TestCase\BaseMockeryTestCase;
 use PHPOnCouch;
@@ -57,7 +57,7 @@ final class FactoryTest extends BaseMockeryTestCase
 	 *
 	 * @dataProvider ./../../../fixtures/States/createStateInvalidDocumentData.php
 	 *
-	 * @throws FastyBird\CouchDbStoragePlugin\Exceptions\InvalidStateException
+	 * @throws FastyBird\CouchDbPlugin\Exceptions\InvalidStateException
 	 */
 	public function testCreateEntityFail(string $class, array $data): void
 	{

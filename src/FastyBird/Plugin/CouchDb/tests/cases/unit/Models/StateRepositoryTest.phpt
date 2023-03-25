@@ -2,9 +2,9 @@
 
 namespace Tests\Cases;
 
-use FastyBird\CouchDbStoragePlugin\Connections;
-use FastyBird\CouchDbStoragePlugin\Models;
-use FastyBird\CouchDbStoragePlugin\States;
+use FastyBird\CouchDbPlugin\Connections;
+use FastyBird\CouchDbPlugin\Models;
+use FastyBird\CouchDbPlugin\States;
 use Mockery;
 use Ninjify\Nunjuck\TestCase\BaseMockeryTestCase;
 use PHPOnCouch;

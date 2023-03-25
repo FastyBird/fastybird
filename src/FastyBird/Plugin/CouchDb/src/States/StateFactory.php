@@ -6,9 +6,9 @@
  * @license        More in license.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:CouchDbStoragePlugin!
+ * @package        FastyBird:CouchDbPlugin!
  * @subpackage     States
- * @since          0.1.0
+ * @since          1.0.0
  *
  * @date           03.03.20
  */
@@ -39,7 +39,7 @@ use function ucfirst;
 /**
  * State object factory
  *
- * @package        FastyBird:CouchDbStoragePlugin!
+ * @package        FastyBird:CouchDbPlugin!
  * @subpackage     States
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
@@ -47,10 +47,17 @@ use function ucfirst;
 final class StateFactory
 {
 
-	public static function create(
-		string $stateClass,
-		PHPOnCouch\CouchDocument $document,
-	): IState
+	/**
+	 * @template T of States\State
+	 *
+	 * @phpstan-param class-string<T> $stateClass
+	 *
+	 * @phpstan-return T
+	 *
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 */
+	public static function create(string $stateClass, PHPOnCouch\CouchDocument $document): State
 	{
 		if (!class_exists($stateClass)) {
 			throw new Exceptions\InvalidState('State could not be created');
@@ -82,13 +89,10 @@ final class StateFactory
 
 				if ($varAnnotation === 'int') {
 					$value = (int) $value;
-
 				} elseif ($varAnnotation === 'float') {
 					$value = (float) $value;
-
 				} elseif ($varAnnotation === 'bool') {
 					$value = (bool) $value;
-
 				} elseif ($varAnnotation === 'string') {
 					$value = (string) $value;
 				}
@@ -116,7 +120,7 @@ final class StateFactory
 	}
 
 	/**
-	 * This method was inspired with same method in Nette framework
+	 * This method was inspired by same method in Nette framework
 	 *
 	 * @return array<mixed>
 	 *
@@ -163,7 +167,7 @@ final class StateFactory
 	}
 
 	/**
-	 * @return string|NULL
+	 * @phpstan-return string|NULL
 	 */
 	private static function getParameterType(ReflectionParameter $param): string|null
 	{
@@ -206,7 +210,7 @@ final class StateFactory
 	}
 
 	/**
-	 * @return string|NULL
+	 * @phpstan-return string|NULL
 	 */
 	private static function parseAnnotation(ReflectionProperty $rp, string $name): string|null
 	{

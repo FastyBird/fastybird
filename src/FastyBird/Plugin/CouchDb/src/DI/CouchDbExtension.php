@@ -6,9 +6,9 @@
  * @license        More in license.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:CouchDbStoragePlugin!
+ * @package        FastyBird:CouchDbPlugin!
  * @subpackage     DI
- * @since          0.1.0
+ * @since          1.0.0
  *
  * @date           04.12.20
  */
@@ -26,7 +26,7 @@ use function assert;
 /**
  * CouchDB state storage extension container
  *
- * @package        FastyBird:CouchDbStoragePlugin!
+ * @package        FastyBird:CouchDbPlugin!
  * @subpackage     DI
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
@@ -83,7 +83,7 @@ class CouchDbExtension extends DI\CompilerExtension
 			->setType(Models\StatesManager::class);
 
 		$builder->addDefinition($this->prefix('model.stateRepository'))
-			->setType(Models\StateRepository::class);
+			->setType(Models\StatesRepository::class);
 	}
 
 }
