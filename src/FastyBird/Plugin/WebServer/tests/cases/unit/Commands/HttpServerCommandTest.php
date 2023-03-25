@@ -52,13 +52,15 @@ final class HttpServerCommandTest extends TestCase
 						[
 							[
 								'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WEB_SERVER,
-								'type' => 'command',
+								'type' => 'server-command',
+								'group' => 'cmd',
 							],
 						],
 						[
 							[
 								'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WEB_SERVER,
 								'type' => 'factory',
+								'group' => 'server',
 							],
 						],
 					];
