@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * CouchDbConnection.php
+ * Connection.php
  *
  * @license        More in license.md
  * @copyright      https://www.fastybird.com
@@ -31,7 +31,7 @@ use function str_replace;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class CouchDbConnection
+final class Connection
 {
 
 	use Nette\SmartObject;

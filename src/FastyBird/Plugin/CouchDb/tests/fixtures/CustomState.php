@@ -30,6 +30,16 @@ class CustomState extends States\State
 		$this->value = $value;
 	}
 
+	public function getCamelCased(): string|null
+	{
+		return $this->camelCased;
+	}
+
+	public function setCamelCased(string|null $camelCased): void
+	{
+		$this->camelCased = $camelCased;
+	}
+
 	/**
 	 * @throws Exception
 	 */
@@ -88,6 +98,7 @@ class CustomState extends States\State
 	{
 		return array_merge([
 			'value' => $this->getValue(),
+			'camelCased' => $this->getCamelCased(),
 			'created' => $this->getCreated()?->format(DATE_ATOM),
 			'updated' => $this->getUpdated()?->format(DATE_ATOM),
 		], parent::toArray());

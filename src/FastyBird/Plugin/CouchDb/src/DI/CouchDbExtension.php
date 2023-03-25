@@ -70,7 +70,7 @@ class CouchDbExtension extends DI\CompilerExtension
 		assert($configuration instanceof stdClass);
 
 		$builder->addDefinition($this->prefix('connection'))
-			->setType(Connections\CouchDbConnection::class)
+			->setType(Connections\Connection::class)
 			->setArguments([
 				'database' => $configuration->connection->database,
 				'host' => $configuration->connection->host,

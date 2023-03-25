@@ -66,7 +66,7 @@ class StatesManager
 	 * @phpstan-param class-string<T> $entity
 	 */
 	public function __construct(
-		private readonly Connections\CouchDbConnection $client,
+		private readonly Connections\Connection $client,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly string $entity = States\State::class,
 		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,

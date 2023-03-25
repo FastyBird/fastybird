@@ -11,7 +11,7 @@ use PHPUnit\Framework\MockObject;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid;
 
-final class StateRepositoryTest extends TestCase
+final class StatesRepositoryTest extends TestCase
 {
 
 	/**

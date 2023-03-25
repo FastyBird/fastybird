@@ -46,7 +46,7 @@ class StatesRepository
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
-		private readonly Connections\CouchDbConnection $client,
+		private readonly Connections\Connection $client,
 		private readonly string $entity = States\State::class,
 		Log\LoggerInterface|null $logger = null,
 	)
