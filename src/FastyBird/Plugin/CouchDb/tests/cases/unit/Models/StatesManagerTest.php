@@ -2,6 +2,7 @@
 
 namespace FastyBird\Plugin\CouchDb\Tests\Cases\Unit\Models;
 
+use Consistence;
 use DateTimeImmutable;
 use FastyBird\DateTimeFactory;
 use FastyBird\Plugin\CouchDb\Connections;
@@ -10,7 +11,6 @@ use FastyBird\Plugin\CouchDb\Models;
 use FastyBird\Plugin\CouchDb\States;
 use FastyBird\Plugin\CouchDb\Tests\Fixtures;
 use Nette\Utils;
-use Consistence;
 use PHPOnCouch;
 use PHPUnit\Framework\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -119,16 +119,18 @@ final class StatesManagerTest extends TestCase
 			});
 		$document
 			->method('set')
-			->willReturnCallback(static function (string $key, string|null $value = null) use ($data, &$originalData) {
-				if ($data[$key] instanceof Consistence\Enum\Enum) {
-					self::assertEquals((string) $data[$key], $value);
+			->willReturnCallback(
+				static function (string $key, string|null $value = null) use ($data, &$originalData): void {
+					if ($data[$key] instanceof Consistence\Enum\Enum) {
+						self::assertEquals((string) $data[$key], $value);
 
-				} else {
-					self::assertEquals($data[$key], $value);
-				}
+					} else {
+						self::assertEquals($data[$key], $value);
+					}
 
-				$originalData[$key] = $value;
-			});
+					$originalData[$key] = $value;
+				},
+			);
 		$document
 			->method('record');
 		$document
