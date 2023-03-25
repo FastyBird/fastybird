@@ -23,6 +23,7 @@ use Nette\Utils;
 use Psr\Log;
 use React\Promise;
 use Throwable;
+use function assert;
 
 /**
  * RabbitMQ exchange builder
@@ -41,72 +42,39 @@ final class Exchange
 	use Nette\SmartObject;
 
 	private const EXCHANGE_TYPE = 'topic';
+
 	private const MAX_CONSUMED_MESSAGES = 50;
 
-	/** @var Closure[] */
+	/** @var array<Closure> */
 	public array $onBeforeConsumeMessage = [];
 
-	/** @var Closure[] */
+	/** @var array<Closure> */
 	public array $onAfterConsumeMessage = [];
 
-	/** @var string[] */
-	private array $origins;
-
-	/** @var string[]|null */
-	private ?array $routingKeys;
-
-	/** @var int */
 	private int $consumedMessagesCnt = 0;
 
-	/** @var Connections\IRabbitMqConnection */
-	private Connections\IRabbitMqConnection $connection;
+	private Bunny\Client|null $client = null;
 
-	/** @var Consumer\IConsumer */
-	private Consumer\IConsumer $consumer;
+	private Bunny\Async\Client|null $asyncClient = null;
 
-	/** @var ModulesMetadataLoaders\IMetadataLoader */
-	private ModulesMetadataLoaders\IMetadataLoader $metadataLoader;
-
-	/** @var Bunny\Client|null */
-	private ?Bunny\Client $client = null;
-
-	/** @var Bunny\Async\Client|null */
-	private ?Bunny\Async\Client $asyncClient = null;
-
-	/** @var Log\LoggerInterface */
 	private Log\LoggerInterface $logger;
 
 	/**
-	 * @param string[] $origins
-	 * @param Connections\IRabbitMqConnection $connection
-	 * @param Consumer\IConsumer $consumer
-	 * @param ModulesMetadataLoaders\IMetadataLoader $metadataLoader
-	 * @param Log\LoggerInterface|null $logger
-	 * @param string[] $routingKeys
+	 * @param array<string> $origins
+	 * @param ?array<string> $routingKeys
 	 */
 	public function __construct(
-		array $origins,
-		Connections\IRabbitMqConnection $connection,
-		Consumer\IConsumer $consumer,
-		ModulesMetadataLoaders\IMetadataLoader $metadataLoader,
-		?Log\LoggerInterface $logger = null,
-		?array $routingKeys = null
-	) {
-		$this->origins = $origins;
-
-		$this->connection = $connection;
-		$this->consumer = $consumer;
-
-		$this->metadataLoader = $metadataLoader;
-
+		private array $origins,
+		private Connections\IRabbitMqConnection $connection,
+		private Consumer\IConsumer $consumer,
+		private ModulesMetadataLoaders\IMetadataLoader $metadataLoader,
+		Log\LoggerInterface|null $logger = null,
+		private array|null $routingKeys = null,
+	)
+	{
 		$this->logger = $logger ?? new Log\NullLogger();
-
-		$this->routingKeys = $routingKeys;
 	}
 
-	/**
-	 * @return void
-	 */
 	public function initialize(): void
 	{
 		$this->client = $this->connection->getClient();
@@ -119,8 +87,6 @@ final class Exchange
 	}
 
 	/**
-	 * @return void
-	 *
 	 * @throws Throwable
 	 */
 	public function initializeAsync(): void
@@ -129,9 +95,7 @@ final class Exchange
 
 		$promise = $this->asyncClient
 			->connect()
-			->then(function (Bunny\Async\Client $client) {
-				return $client->channel();
-			})
+			->then(static fn (Bunny\Async\Client $client) => $client->channel())
 			->then(function (Bunny\Channel $channel): Promise\PromiseInterface {
 				$this->connection->setChannel($channel);
 
@@ -139,9 +103,7 @@ final class Exchange
 
 				if ($qosResult instanceof Promise\ExtendedPromiseInterface) {
 					return $qosResult
-						->then(function () use ($channel): Bunny\Channel {
-							return $channel;
-						});
+						->then(static fn (): Bunny\Channel => $channel);
 				}
 
 				throw new Exceptions\InvalidStateException('RabbitMQ QoS could not be configured');
@@ -155,14 +117,8 @@ final class Exchange
 		}
 	}
 
-	/**
-	 * @param Bunny\Channel $channel
-	 *
-	 * @return void
-	 */
-	private function processChannel(
-		Bunny\Channel $channel
-	): void {
+	private function processChannel(Bunny\Channel $channel): void
+	{
 		$autoDeleteQueue = false;
 		$queueName = $this->consumer->getQueueName();
 
@@ -179,7 +135,7 @@ final class Exchange
 				Constants::RABBIT_MQ_MESSAGE_BUS_EXCHANGE_NAME,
 				self::EXCHANGE_TYPE,
 				false,
-				true
+				true,
 			);
 
 		// Create queue to connect to...
@@ -188,7 +144,7 @@ final class Exchange
 			false,
 			true,
 			false,
-			$autoDeleteQueue
+			$autoDeleteQueue,
 		);
 
 		// ...and bind it to the exchange
@@ -199,30 +155,29 @@ final class Exchange
 				if ($metadata->offsetExists($origin)) {
 					$moduleMetadata = $metadata->offsetGet($origin);
 
-					/** @var Utils\ArrayHash $moduleVersionMetadata */
 					foreach ($moduleMetadata as $moduleVersionMetadata) {
+						assert($moduleVersionMetadata instanceof Utils\ArrayHash);
 						if ($moduleVersionMetadata->offsetGet('version') === '*') {
-							/** @var Utils\ArrayHash $moduleGlobalMetadata */
 							$moduleGlobalMetadata = $moduleVersionMetadata->offsetGet('metadata');
+							assert($moduleGlobalMetadata instanceof Utils\ArrayHash);
 
 							foreach ($moduleGlobalMetadata->offsetGet('exchange') as $routingKey) {
 								$channel->queueBind(
 									$queueName,
 									Constants::RABBIT_MQ_MESSAGE_BUS_EXCHANGE_NAME,
-									$routingKey
+									$routingKey,
 								);
 							}
 						}
 					}
 				}
 			}
-
 		} else {
 			foreach ($this->routingKeys as $routingKey) {
 				$channel->queueBind(
 					$queueName,
 					Constants::RABBIT_MQ_MESSAGE_BUS_EXCHANGE_NAME,
-					$routingKey
+					$routingKey,
 				);
 			}
 		}
@@ -236,24 +191,24 @@ final class Exchange
 				switch ($result) {
 					case Consumer\IConsumer::MESSAGE_ACK:
 						$channel->ack($message); // Acknowledge message
-						break;
 
+						break;
 					case Consumer\IConsumer::MESSAGE_NACK:
 						$channel->nack($message); // Message will be re-queued
-						break;
 
+						break;
 					case Consumer\IConsumer::MESSAGE_REJECT:
 						$channel->reject($message, false); // Message will be discarded
-						break;
 
+						break;
 					case Consumer\IConsumer::MESSAGE_REJECT_AND_TERMINATE:
 						$channel->reject($message, false); // Message will be discarded
 
 						if ($client instanceof Bunny\Client || $client instanceof Bunny\Async\Client) {
 							$client->stop();
 						}
-						break;
 
+						break;
 					default:
 						throw new Exceptions\InvalidArgumentException('Unknown return value of message bus consumer');
 				}
@@ -267,13 +222,10 @@ final class Exchange
 
 				$this->onAfterConsumeMessage($message);
 			},
-			$queueName
+			$queueName,
 		);
 	}
 
-	/**
-	 * @return void
-	 */
 	public function run(): void
 	{
 		if ($this->client === null && $this->asyncClient === null) {
@@ -289,9 +241,6 @@ final class Exchange
 		}
 	}
 
-	/**
-	 * @return void
-	 */
 	public function stop(): void
 	{
 		if ($this->client !== null) {

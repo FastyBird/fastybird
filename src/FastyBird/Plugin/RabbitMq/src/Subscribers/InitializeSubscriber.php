@@ -16,7 +16,6 @@
 namespace FastyBird\Plugin\RabbitMq\Subscribers;
 
 use FastyBird\ApplicationEvents\Events as ApplicationEventsEvents;
-use FastyBird\Plugin\RabbitMq;
 use Symfony\Component\EventDispatcher;
 use Throwable;
 
@@ -31,28 +30,21 @@ use Throwable;
 class InitializeSubscriber implements EventDispatcher\EventSubscriberInterface
 {
 
-	/** @var RabbitMqPlugin\Exchange */
-	private RabbitMqPlugin\Exchange $exchange;
+	public function __construct(private RabbitMqPlugin\Exchange $exchange)
+	{
+	}
 
 	/**
-	 * @return string[]
+	 * @return array<string>
 	 */
 	public static function getSubscribedEvents(): array
 	{
 		return [
-			ApplicationEventsEvents\StartupEvent::class  => 'initialize',
+			ApplicationEventsEvents\StartupEvent::class => 'initialize',
 		];
 	}
 
-	public function __construct(
-		RabbitMqPlugin\Exchange $exchange
-	) {
-		$this->exchange = $exchange;
-	}
-
 	/**
-	 * @return void
-	 *
 	 * @throws Throwable
 	 */
 	public function initialize(): void

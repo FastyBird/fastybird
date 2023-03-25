@@ -30,34 +30,19 @@ interface IConsumer
 {
 
 	public const MESSAGE_ACK = 1;
+
 	public const MESSAGE_NACK = 2;
+
 	public const MESSAGE_REJECT = 3;
+
 	public const MESSAGE_REJECT_AND_TERMINATE = 4;
 
-	/**
-	 * @param string|null $queueName
-	 *
-	 * @return void
-	 */
-	public function setQueueName(?string $queueName): void;
+	public function setQueueName(string|null $queueName): void;
 
-	/**
-	 * @return string|null
-	 */
-	public function getQueueName(): ?string;
+	public function getQueueName(): string|null;
 
-	/**
-	 * @param ApplicationExchangeConsumer\IConsumer $consumer
-	 *
-	 * @return void
-	 */
 	public function registerConsumer(ApplicationExchangeConsumer\IConsumer $consumer): void;
 
-	/**
-	 * @param Bunny\Message $message
-	 *
-	 * @return int
-	 */
 	public function consume(Bunny\Message $message): int;
 
 }

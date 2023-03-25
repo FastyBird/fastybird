@@ -37,27 +37,19 @@ final class ConsumerCommand extends Console\Command\Command
 
 	use Nette\SmartObject;
 
-	/** @var RabbitMqPlugin\Exchange */
-	private RabbitMqPlugin\Exchange $exchange;
-
-	/** @var Log\LoggerInterface */
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
-		RabbitMqPlugin\Exchange $exchange,
-		?Log\LoggerInterface $logger = null,
-		?string $name = null
-	) {
+		private RabbitMq\Exchange $exchange,
+		Log\LoggerInterface|null $logger = null,
+		string|null $name = null,
+	)
+	{
 		parent::__construct($name);
-
-		$this->exchange = $exchange;
 
 		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	protected function configure(): void
 	{
 		parent::configure();
@@ -67,13 +59,11 @@ final class ConsumerCommand extends Console\Command\Command
 			->setDescription('Start exchange consumer.');
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	protected function execute(
 		Input\InputInterface $input,
-		Output\OutputInterface $output
-	): int {
+		Output\OutputInterface $output,
+	): int
+	{
 		$this->logger->info('[FB:PLUGIN:RABBITMQ] Starting exchange queue consumer');
 
 		try {
@@ -85,23 +75,22 @@ final class ConsumerCommand extends Console\Command\Command
 			$this->logger->warning('[FB:PLUGIN:RABBITMQ] Stopping exchange consumer', [
 				'exception' => [
 					'message' => $ex->getMessage(),
-					'code'    => $ex->getCode(),
+					'code' => $ex->getCode(),
 				],
-				'cmd'       => $this->getName(),
+				'cmd' => $this->getName(),
 			]);
 
 			$this->exchange->stop();
 
 			return $ex->getCode();
-
 		} catch (Throwable $ex) {
 			// Log error action reason
 			$this->logger->error('[FB:PLUGIN:RABBITMQ] Stopping exchange consumer', [
 				'exception' => [
 					'message' => $ex->getMessage(),
-					'code'    => $ex->getCode(),
+					'code' => $ex->getCode(),
 				],
-				'cmd'       => $this->getName(),
+				'cmd' => $this->getName(),
 			]);
 
 			$this->exchange->stop();

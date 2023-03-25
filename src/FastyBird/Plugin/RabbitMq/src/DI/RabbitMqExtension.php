@@ -16,7 +16,6 @@
 namespace FastyBird\Plugin\RabbitMq\DI;
 
 use FastyBird\ApplicationExchange\Consumer as ApplicationExchangeConsumer;
-use FastyBird\Plugin\RabbitMq;
 use FastyBird\Plugin\RabbitMq\Commands;
 use FastyBird\Plugin\RabbitMq\Connections;
 use FastyBird\Plugin\RabbitMq\Consumer;
@@ -26,6 +25,8 @@ use Nette;
 use Nette\DI;
 use Nette\Schema;
 use stdClass;
+use function assert;
+use function is_string;
 
 /**
  * Message exchange extension container
@@ -38,64 +39,53 @@ use stdClass;
 class RabbitMqExtension extends DI\CompilerExtension
 {
 
-	/**
-	 * @param Nette\Configurator $config
-	 * @param string $extensionName
-	 *
-	 * @return void
-	 */
 	public static function register(
 		Nette\Configurator $config,
-		string $extensionName = 'fbRabbitMqPlugin'
-	): void {
-		$config->onCompile[] = function (
+		string $extensionName = 'fbRabbitMqPlugin',
+	): void
+	{
+		$config->onCompile[] = static function (
 			Nette\Configurator $config,
-			DI\Compiler $compiler
+			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new RabbitMqExtension());
 		};
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function getConfigSchema(): Schema\Schema
 	{
 		return Schema\Expect::structure([
-			'origins'  => Schema\Expect::array([])->items(Schema\Expect::string())->default([]),
+			'origins' => Schema\Expect::array([])->items(Schema\Expect::string())->default([]),
 			'rabbitMQ' => Schema\Expect::structure([
 				'connection' => Schema\Expect::structure([
-					'host'     => Schema\Expect::string()->default('127.0.0.1'),
-					'port'     => Schema\Expect::int(5672),
-					'vhost'    => Schema\Expect::string('/'),
+					'host' => Schema\Expect::string()->default('127.0.0.1'),
+					'port' => Schema\Expect::int(5672),
+					'vhost' => Schema\Expect::string('/'),
 					'username' => Schema\Expect::string('guest'),
 					'password' => Schema\Expect::string('guest'),
 				]),
-				'queue'      => Schema\Expect::structure([
+				'queue' => Schema\Expect::structure([
 					'name' => Schema\Expect::string()->default(null),
 				]),
-				'routing'    => Schema\Expect::structure([
+				'routing' => Schema\Expect::structure([
 					'keys' => Schema\Expect::array([])->items(Schema\Expect::string())->default(null),
 				]),
 			]),
 		]);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function loadConfiguration(): void
 	{
 		$builder = $this->getContainerBuilder();
-		/** @var stdClass $configuration */
 		$configuration = $this->getConfig();
+		assert($configuration instanceof stdClass);
 
 		$builder->addDefinition($this->prefix('connection'))
 			->setType(Connections\RabbitMqConnection::class)
 			->setArguments([
-				'host'     => $configuration->rabbitMQ->connection->host,
-				'port'     => $configuration->rabbitMQ->connection->port,
-				'vhost'    => $configuration->rabbitMQ->connection->vhost,
+				'host' => $configuration->rabbitMQ->connection->host,
+				'port' => $configuration->rabbitMQ->connection->port,
+				'vhost' => $configuration->rabbitMQ->connection->vhost,
 				'username' => $configuration->rabbitMQ->connection->username,
 				'password' => $configuration->rabbitMQ->connection->password,
 			]);
@@ -117,7 +107,7 @@ class RabbitMqExtension extends DI\CompilerExtension
 		$builder->addDefinition($this->prefix('exchange'))
 			->setType(RabbitMqPlugin\Exchange::class)
 			->setArguments([
-				'origins'     => $configuration->origins,
+				'origins' => $configuration->origins,
 				'routingKeys' => $configuration->rabbitMQ->routing->keys,
 			]);
 
@@ -128,20 +118,17 @@ class RabbitMqExtension extends DI\CompilerExtension
 			->setType(Subscribers\InitializeSubscriber::class);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function beforeCompile(): void
 	{
 		parent::beforeCompile();
 
 		$builder = $this->getContainerBuilder();
 
-		/** @var string $consumerProxyServiceName */
 		$consumerProxyServiceName = $builder->getByType(Consumer\ConsumerProxy::class, true);
+		assert(is_string($consumerProxyServiceName));
 
-		/** @var DI\Definitions\ServiceDefinition $consumerProxyService */
 		$consumerProxyService = $builder->getDefinition($consumerProxyServiceName);
+		assert($consumerProxyService instanceof DI\Definitions\ServiceDefinition);
 
 		$consumerServices = $builder->findByType(ApplicationExchangeConsumer\IConsumer::class);
 

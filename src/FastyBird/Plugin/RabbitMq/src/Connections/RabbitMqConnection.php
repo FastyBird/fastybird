@@ -35,58 +35,27 @@ final class RabbitMqConnection implements IRabbitMqConnection
 
 	use Nette\SmartObject;
 
-	/** @var string */
-	private string $host;
+	private Bunny\Client|null $client = null;
 
-	/** @var int */
-	private int $port;
+	private Bunny\Channel|null $channel = null;
 
-	/** @var string */
-	private string $vhost;
+	private Bunny\Async\Client|null $asyncClient = null;
 
-	/** @var string */
-	private string $username;
-
-	/** @var string */
-	private string $password;
-
-	/** @var Bunny\Client|null */
-	private ?Bunny\Client $client = null;
-
-	/** @var Bunny\Channel|null */
-	private ?Bunny\Channel $channel = null;
-
-	/** @var Bunny\Async\Client|null */
-	private ?Bunny\Async\Client $asyncClient = null;
-
-	/** @var EventLoop\LoopInterface|null */
-	private ?EventLoop\LoopInterface $eventLoop;
-
-	/** @var Log\LoggerInterface */
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
-		?Log\LoggerInterface $logger = null,
-		?EventLoop\LoopInterface $eventLoop = null,
-		string $host = '127.0.0.1',
-		int $port = 5672,
-		string $vhost = '/',
-		string $username = 'guest',
-		string $password = 'guest'
-	) {
-		$this->host = $host;
-		$this->port = $port;
-		$this->vhost = $vhost;
-		$this->username = $username;
-		$this->password = $password;
-
-		$this->eventLoop = $eventLoop;
+		Log\LoggerInterface|null $logger = null,
+		private EventLoop\LoopInterface|null $eventLoop = null,
+		private string $host = '127.0.0.1',
+		private int $port = 5672,
+		private string $vhost = '/',
+		private string $username = 'guest',
+		private string $password = 'guest',
+	)
+	{
 		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function getAsyncClient(bool $force = false): Bunny\Async\Client
 	{
 		if ($this->eventLoop === null) {
@@ -98,20 +67,17 @@ final class RabbitMqConnection implements IRabbitMqConnection
 		}
 
 		$this->asyncClient = new Bunny\Async\Client($this->eventLoop, [
-			'host'      => $this->getHost(),
-			'port'      => $this->getPort(),
-			'vhost'     => $this->getVhost(),
-			'user'      => $this->getUsername(),
-			'password'  => $this->getPassword(),
+			'host' => $this->getHost(),
+			'port' => $this->getPort(),
+			'vhost' => $this->getVhost(),
+			'user' => $this->getUsername(),
+			'password' => $this->getPassword(),
 			'heartbeat' => 30,
 		]);
 
 		return $this->asyncClient;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function getChannel(): Bunny\Channel
 	{
 		if ($this->channel === null) {
@@ -121,17 +87,11 @@ final class RabbitMqConnection implements IRabbitMqConnection
 		return $this->channel;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function setChannel(Bunny\Channel $channel): void
 	{
 		$this->channel = $channel;
 	}
 
-	/**
-	 * @return Bunny\Channel
-	 */
 	private function createChannel(): Bunny\Channel
 	{
 		if ($this->channel !== null) {
@@ -148,7 +108,6 @@ final class RabbitMqConnection implements IRabbitMqConnection
 			if (!$channel instanceof Bunny\Channel) {
 				throw new Exceptions\InvalidStateException('Bunny channel could not be opened');
 			}
-
 		} catch (Bunny\Exception\ClientException $ex) {
 			if ($ex->getMessage() !== 'Broken pipe or closed connection.') {
 				throw new Exceptions\InvalidStateException($ex->getMessage(), $ex->getCode(), $ex);
@@ -169,9 +128,6 @@ final class RabbitMqConnection implements IRabbitMqConnection
 		return $channel;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function getClient(bool $force = false): Bunny\Client
 	{
 		if ($this->client !== null && !$force) {
@@ -180,11 +136,11 @@ final class RabbitMqConnection implements IRabbitMqConnection
 
 		// Create bunny
 		$this->client = new Bunny\Client([
-			'host'      => $this->getHost(),
-			'port'      => $this->getPort(),
-			'vhost'     => $this->getVhost(),
-			'user'      => $this->getUsername(),
-			'password'  => $this->getPassword(),
+			'host' => $this->getHost(),
+			'port' => $this->getPort(),
+			'vhost' => $this->getVhost(),
+			'user' => $this->getUsername(),
+			'password' => $this->getPassword(),
 			'heartbeat' => 30,
 		]);
 
@@ -192,13 +148,12 @@ final class RabbitMqConnection implements IRabbitMqConnection
 			$this->client->connect();
 
 			return $this->client;
-
 		} catch (Throwable $ex) {
 			// Log error action reason
 			$this->logger->error('[FB:PLUGIN:RABBITMQ] Could not connect to bunny', [
 				'exception' => [
 					'message' => $ex->getMessage(),
-					'code'    => $ex->getCode(),
+					'code' => $ex->getCode(),
 				],
 			]);
 
@@ -206,41 +161,26 @@ final class RabbitMqConnection implements IRabbitMqConnection
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function getHost(): string
 	{
 		return $this->host;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function getPort(): int
 	{
 		return $this->port;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function getVhost(): string
 	{
 		return $this->vhost;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function getUsername(): string
 	{
 		return $this->username;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function getPassword(): string
 	{
 		return $this->password;

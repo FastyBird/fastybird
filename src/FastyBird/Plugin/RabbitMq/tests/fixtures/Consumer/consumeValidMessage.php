@@ -3,10 +3,10 @@
 return [
 	'one' => [
 		[
-			'attributeOne'   => 'String value',
-			'attributeTwo'   => 20,
+			'attributeOne' => 'String value',
+			'attributeTwo' => 20,
 			'attributeThree' => false,
-			'attributeFour'  => null,
+			'attributeFour' => null,
 		],
 	],
 ];

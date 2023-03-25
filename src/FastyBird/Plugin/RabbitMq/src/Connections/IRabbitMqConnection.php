@@ -28,55 +28,22 @@ use Bunny;
 interface IRabbitMqConnection
 {
 
-	/**
-	 * @return string
-	 */
 	public function getHost(): string;
 
-	/**
-	 * @return int
-	 */
 	public function getPort(): int;
 
-	/**
-	 * @return string
-	 */
 	public function getVhost(): string;
 
-	/**
-	 * @return string
-	 */
 	public function getUsername(): string;
 
-	/**
-	 * @return string
-	 */
 	public function getPassword(): string;
 
-	/**
-	 * @param bool $force
-	 *
-	 * @return Bunny\Client
-	 */
 	public function getClient(bool $force = false): Bunny\Client;
 
-	/**
-	 * @param bool $force
-	 *
-	 * @return Bunny\Async\Client
-	 */
 	public function getAsyncClient(bool $force = false): Bunny\Async\Client;
 
-	/**
-	 * @param Bunny\Channel $channel
-	 *
-	 * @return void
-	 */
 	public function setChannel(Bunny\Channel $channel): void;
 
-	/**
-	 * @return Bunny\Channel
-	 */
 	public function getChannel(): Bunny\Channel;
 
 }

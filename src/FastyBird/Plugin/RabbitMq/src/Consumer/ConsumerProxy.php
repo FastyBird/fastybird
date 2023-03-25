@@ -28,6 +28,8 @@ use Psr\Log;
 use SplObjectStorage;
 use Symfony\Contracts\EventDispatcher;
 use Throwable;
+use function assert;
+use function is_string;
 
 /**
  * Exchange message consumer proxy
@@ -42,59 +44,35 @@ final class ConsumerProxy implements IConsumer
 
 	use Nette\SmartObject;
 
-	/** @var string|null */
-	private ?string $queueName = null;
+	private string|null $queueName = null;
 
 	/** @var SplObjectStorage<ApplicationExchangeConsumer\IConsumer, null> */
 	private SplObjectStorage $consumers;
 
-	/** @var ModulesMetadataLoaders\ISchemaLoader */
-	private ModulesMetadataLoaders\ISchemaLoader $schemaLoader;
-
-	/** @var ModulesMetadataSchemas\IValidator */
-	private ModulesMetadataSchemas\IValidator $validator;
-
-	/** @var EventDispatcher\EventDispatcherInterface */
-	private $dispatcher;
-
-	/** @var Log\LoggerInterface */
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
-		ModulesMetadataLoaders\ISchemaLoader $schemaLoader,
-		ModulesMetadataSchemas\IValidator $validator,
-		EventDispatcher\EventDispatcherInterface $dispatcher,
-		?Log\LoggerInterface $logger = null
-	) {
-		$this->schemaLoader = $schemaLoader;
-		$this->validator = $validator;
-
-		$this->dispatcher = $dispatcher;
-
+		private ModulesMetadataLoaders\ISchemaLoader $schemaLoader,
+		private ModulesMetadataSchemas\IValidator $validator,
+		private EventDispatcher\EventDispatcherInterface $dispatcher,
+		Log\LoggerInterface|null $logger = null,
+	)
+	{
 		$this->consumers = new SplObjectStorage();
 
 		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getQueueName(): ?string
+	public function getQueueName(): string|null
 	{
 		return $this->queueName;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function setQueueName(?string $queueName): void
+	public function setQueueName(string|null $queueName): void
 	{
 		$this->queueName = $queueName;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function registerConsumer(ApplicationExchangeConsumer\IConsumer $consumer): void
 	{
 		if (!$this->consumers->contains($consumer)) {
@@ -131,8 +109,8 @@ final class ConsumerProxy implements IConsumer
 			return self::MESSAGE_REJECT;
 		}
 
-		/** @var ApplicationExchangeConsumer\IConsumer $consumer */
 		foreach ($this->consumers as $consumer) {
+			assert($consumer instanceof ApplicationExchangeConsumer\IConsumer);
 			try {
 				$this->processMessage($origin, $routingKey, $data, $consumer);
 
@@ -141,7 +119,7 @@ final class ConsumerProxy implements IConsumer
 				$this->logger->error('[FB:PLUGIN:RABBITMQ] Message could not be consumed', [
 					'exception' => [
 						'message' => $ex->getMessage(),
-						'code'    => $ex->getCode(),
+						'code' => $ex->getCode(),
 					],
 				]);
 
@@ -155,32 +133,28 @@ final class ConsumerProxy implements IConsumer
 	}
 
 	/**
-	 * @param string $origin
-	 * @param string $routingKey
-	 * @param Utils\ArrayHash $data
-	 * @param ApplicationExchangeConsumer\IConsumer $consumer
-	 *
-	 * @return void
-	 *
 	 * @throws Exceptions\TerminateException
 	 */
 	private function processMessage(
 		string $origin,
 		string $routingKey,
 		Utils\ArrayHash $data,
-		ApplicationExchangeConsumer\IConsumer $consumer
-	): void {
+		ApplicationExchangeConsumer\IConsumer $consumer,
+	): void
+	{
 		try {
 			$consumer->consume($origin, $routingKey, $data);
 
 		} catch (Exceptions\TerminateException $ex) {
 			throw $ex;
-
 		} catch (Bunny\Exception\ClientException $ex) {
 			throw new Exceptions\TerminateException($ex->getMessage(), $ex->getCode(), $ex);
-
 		} catch (Throwable $ex) {
-			throw new Exceptions\UnprocessableMessageException('Received message could not be consumed', $ex->getCode(), $ex);
+			throw new Exceptions\UnprocessableMessageException(
+				'Received message could not be consumed',
+				$ex->getCode(),
+				$ex,
+			);
 		}
 	}
 

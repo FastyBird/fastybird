@@ -16,13 +16,14 @@
 namespace FastyBird\Plugin\RabbitMq\Publisher;
 
 use FastyBird\DateTimeFactory;
-use FastyBird\Plugin\RabbitMq;
 use FastyBird\Plugin\RabbitMq\Connections;
 use Nette;
 use Nette\Utils;
 use Psr\Log;
 use React\Promise;
 use Throwable;
+use function is_bool;
+use const DATE_ATOM;
 
 /**
  * RabbitMQ exchange publisher
@@ -37,22 +38,14 @@ final class Publisher implements IPublisher
 
 	use Nette\SmartObject;
 
-	/** @var Connections\IRabbitMqConnection */
-	private Connections\IRabbitMqConnection $connection;
-
-	/** @var DateTimeFactory\DateTimeFactory */
-	private DateTimeFactory\DateTimeFactory $dateTimeFactory;
-
-	/** @var Log\LoggerInterface */
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
-		Connections\IRabbitMqConnection $connection,
-		DateTimeFactory\DateTimeFactory $dateTimeFactory,
-		?Log\LoggerInterface $logger = null
-	) {
-		$this->connection = $connection;
-		$this->dateTimeFactory = $dateTimeFactory;
+		private Connections\IRabbitMqConnection $connection,
+		private DateTimeFactory\DateTimeFactory $dateTimeFactory,
+		Log\LoggerInterface|null $logger = null,
+	)
+	{
 		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
@@ -62,23 +55,24 @@ final class Publisher implements IPublisher
 	public function publish(
 		string $origin,
 		string $routingKey,
-		array $data
-	): void {
+		array $data,
+	): void
+	{
 		try {
 			// Compose message
 			$message = Utils\Json::encode($data);
 
 		} catch (Utils\JsonException $ex) {
 			$this->logger->error('[FB:PLUGIN:RABBITMQ] Data could not be converted to message', [
-				'message'   => [
+				'message' => [
 					'routingKey' => $routingKey,
-					'headers'    => [
+					'headers' => [
 						'origin' => $origin,
 					],
 				],
 				'exception' => [
 					'message' => $ex->getMessage(),
-					'code'    => $ex->getCode(),
+					'code' => $ex->getCode(),
 				],
 			]);
 
@@ -89,11 +83,11 @@ final class Publisher implements IPublisher
 			->publish(
 				$message,
 				[
-					'origin'  => $origin,
+					'origin' => $origin,
 					'created' => $this->dateTimeFactory->getNow()->format(DATE_ATOM),
 				],
 				RabbitMqPlugin\Constants::RABBIT_MQ_MESSAGE_BUS_EXCHANGE_NAME,
-				$routingKey
+				$routingKey,
 			);
 
 		if (is_bool($result)) {
@@ -101,28 +95,27 @@ final class Publisher implements IPublisher
 				$this->logger->info('[FB:PLUGIN:RABBITMQ] Received message was pushed into data exchange', [
 					'message' => [
 						'routingKey' => $routingKey,
-						'headers'    => [
-							'origin'  => $origin,
+						'headers' => [
+							'origin' => $origin,
 							'created' => $this->dateTimeFactory->getNow()
 								->format(DATE_ATOM),
 						],
-						'body'       => $message,
+						'body' => $message,
 					],
 				]);
 			} else {
 				$this->logger->error('[FB:PLUGIN:RABBITMQ] Received message could not be pushed into data exchange', [
 					'message' => [
 						'routingKey' => $routingKey,
-						'headers'    => [
-							'origin'  => $origin,
+						'headers' => [
+							'origin' => $origin,
 							'created' => $this->dateTimeFactory->getNow()
 								->format(DATE_ATOM),
 						],
-						'body'       => $message,
+						'body' => $message,
 					],
 				]);
 			}
-
 		} elseif ($result instanceof Promise\PromiseInterface) {
 			$result
 				->then(
@@ -130,32 +123,35 @@ final class Publisher implements IPublisher
 						$this->logger->info('[FB:PLUGIN:RABBITMQ] Received message was pushed into data exchange', [
 							'message' => [
 								'routingKey' => $routingKey,
-								'headers'    => [
-									'origin'  => $origin,
+								'headers' => [
+									'origin' => $origin,
 									'created' => $this->dateTimeFactory->getNow()
 										->format(DATE_ATOM),
 								],
-								'body'       => $message,
+								'body' => $message,
 							],
 						]);
 					},
 					function (Throwable $ex) use ($origin, $routingKey, $message): void {
-						$this->logger->error('[FB:PLUGIN:RABBITMQ] Received message could not be pushed into data exchange', [
-							'exception' => [
-								'message' => $ex->getMessage(),
-								'code'    => $ex->getCode(),
-							],
-							'message' => [
-								'routingKey' => $routingKey,
-								'headers'    => [
-									'origin'  => $origin,
-									'created' => $this->dateTimeFactory->getNow()
-										->format(DATE_ATOM),
+						$this->logger->error(
+							'[FB:PLUGIN:RABBITMQ] Received message could not be pushed into data exchange',
+							[
+								'exception' => [
+									'message' => $ex->getMessage(),
+									'code' => $ex->getCode(),
 								],
-								'body'       => $message,
+								'message' => [
+									'routingKey' => $routingKey,
+									'headers' => [
+										'origin' => $origin,
+										'created' => $this->dateTimeFactory->getNow()
+											->format(DATE_ATOM),
+									],
+									'body' => $message,
+								],
 							],
-						]);
-					}
+						);
+					},
 				);
 		}
 	}
