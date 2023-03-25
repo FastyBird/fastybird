@@ -75,7 +75,7 @@ class CustomState extends States\State
 			0 => 'id',
 			1 => 'value',
 			'camelCased' => null,
-			'created' => false,
+			'created' => null,
 		];
 	}
 

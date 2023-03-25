@@ -233,7 +233,7 @@ final class StatesManagerTest extends TestCase
 				[
 					'id' => $id->toString(),
 					'value' => 'keyValue',
-					'camel_cased' => null,
+					'camelCased' => null,
 					'created' => null,
 				],
 				[
