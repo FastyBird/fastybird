@@ -48,7 +48,7 @@ final class Constants
 
 	public const MODULE_WEB_UI_SOURCE = 'com.fastybird.web-ui-module';
 
-	public const PLUGIN_STORAGE_COUCHDB_SOURCE = 'com.fastybird.couchdb-storage-plugin';
+	public const PLUGIN_COUCHDB_SOURCE = 'com.fastybird.couchdb-plugin';
 
 	public const PLUGIN_RABBITMQ_SOURCE = 'com.fastybird.rabbitmq-plugin';
 

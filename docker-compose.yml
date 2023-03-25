@@ -89,6 +89,23 @@ services:
     networks:
       - fastybird
 
+  # COUCH DB STORAGE
+  couchdb:
+    container_name: fastybird-couchdb
+    image: couchdb
+    environment:
+      # Container specific environment variables
+      COUCHDB_USER: ${COUCHDB_USERNAME:-admin}
+      COUCHDB_PASSWORD: ${COUCHDB_PASSWORD:-admin}
+    volumes:
+      - couchdb-dev-data:/opt/couchdb/data:rw
+      # you may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
+      # - ./docker/couchdb/data:/opt/couchdb/data:rw,delegated
+    ports:
+      - "${COUCHDB_PORT:-5984}:5984"
+    networks:
+      - fastybird
+
   # MQTT
   mqtt:
     container_name: fastybird-mqtt

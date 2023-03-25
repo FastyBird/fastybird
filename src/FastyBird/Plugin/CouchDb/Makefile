@@ -15,14 +15,14 @@ qa: ## Check code quality - coding style and static analysis
 
 cs: ## Check PHP files coding style
 	mkdir -p var/tools/PHP_CodeSniffer
-	$(PRE_PHP) "vendor/bin/phpcs" src --standard=$(PHPCS_CONFIG) --parallel=$(LOGICAL_CORES) $(ARGS)
+	$(PRE_PHP) "vendor/bin/phpcs" src tests --standard=$(PHPCS_CONFIG) --parallel=$(LOGICAL_CORES) $(ARGS)
 
 csf: ## Fix PHP files coding style
 	mkdir -p var/tools/PHP_CodeSniffer
-	$(PRE_PHP) "vendor/bin/phpcbf" src --standard=$(PHPCS_CONFIG) --parallel=$(LOGICAL_CORES) $(ARGS)
+	$(PRE_PHP) "vendor/bin/phpcbf" src tests --standard=$(PHPCS_CONFIG) --parallel=$(LOGICAL_CORES) $(ARGS)
 
 lint:
-	$(PRE_PHP) "vendor/bin/parallel-lint" src --exclude .git --exclude vendor
+	$(PRE_PHP) "vendor/bin/parallel-lint" src tests --exclude .git --exclude vendor
 
 phpstan: ## Analyse code with PHPStan
 	mkdir -p var/tools

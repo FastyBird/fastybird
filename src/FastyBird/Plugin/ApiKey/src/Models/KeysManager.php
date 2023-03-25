@@ -35,16 +35,12 @@ final class KeysManager
 
 	use Nette\SmartObject;
 
-	/** @phpstan-var DoctrineCrudCrud\IEntityCrud<Entities\Key> */
-	private DoctrineCrudCrud\IEntityCrud $entityCrud;
-
 	/**
 	 * @phpstan-param DoctrineCrudCrud\IEntityCrud<Entities\Key> $entityCrud
 	 */
-	public function __construct(DoctrineCrudCrud\IEntityCrud $entityCrud)
+	public function __construct(private DoctrineCrudCrud\IEntityCrud $entityCrud)
 	{
 		// Entity CRUD for handling entities
-		$this->entityCrud = $entityCrud;
 	}
 
 	public function create(Utils\ArrayHash $values): Entities\Key
