@@ -1,29 +1,20 @@
 <?php declare(strict_types = 1);
 
-namespace Tests\Fixtures;
+namespace FastyBird\Plugin\CouchDb\Tests\Fixtures;
 
 use DateTimeImmutable;
 use DateTimeInterface;
 use Exception;
-use FastyBird\CouchDbPlugin\States;
+use FastyBird\Plugin\CouchDb\States;
 use function array_merge;
 use const DATE_ATOM;
 
 class CustomState extends States\State
 {
 
-	public const CREATE_FIELDS = [
-		0 => 'id',
-		1 => 'value',
-		'created' => false,
-	];
-
-	public const UPDATE_FIELDS = [
-		'value',
-		'updated',
-	];
-
 	private string|null $value = null;
+
+	private string|null $camelCased = null;
 
 	private string|null $created = null;
 
@@ -63,6 +54,31 @@ class CustomState extends States\State
 	public function setUpdated(string|null $updated): void
 	{
 		$this->updated = $updated;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public static function getCreateFields(): array
+	{
+		return [
+			0 => 'id',
+			1 => 'value',
+			'camelCased' => null,
+			'created' => false,
+		];
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public static function getUpdateFields(): array
+	{
+		return [
+			'value',
+			'camelCased',
+			'updated',
+		];
 	}
 
 	/**

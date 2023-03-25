@@ -43,7 +43,7 @@ final class CouchDbConnection
 	public function __construct(
 		private readonly string $database,
 		private readonly string $host = '127.0.0.1',
-		private readonly int $port = 5984,
+		private readonly int $port = 5_984,
 		private readonly string|null $username = null,
 		private readonly string|null $password = null,
 		Log\LoggerInterface|null $logger = null,
