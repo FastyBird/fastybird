@@ -32,17 +32,21 @@ use function array_keys;
 use function array_map;
 use function array_merge;
 use function array_search;
+use function boolval;
 use function call_user_func_array;
 use function class_exists;
 use function explode;
+use function floatval;
 use function get_object_vars;
 use function implode;
+use function intval;
 use function is_array;
 use function is_callable;
 use function lcfirst;
 use function method_exists;
 use function property_exists;
 use function strtolower;
+use function strval;
 use function trim;
 use function ucfirst;
 
@@ -120,13 +124,13 @@ final class StateFactory
 				$methodName = 'set' . ucfirst($rp->getName());
 
 				if ($varAnnotation === 'int') {
-					$value = (int) $value;
+					$value = intval($value);
 				} elseif ($varAnnotation === 'float') {
-					$value = (float) $value;
+					$value = floatval($value);
 				} elseif ($varAnnotation === 'bool') {
-					$value = (bool) $value;
+					$value = boolval($value);
 				} elseif ($varAnnotation === 'string') {
-					$value = (string) $value;
+					$value = strval($value);
 				}
 
 				try {

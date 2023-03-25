@@ -19,6 +19,7 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\CouchDb\Connections;
 use FastyBird\Plugin\CouchDb\Exceptions;
 use FastyBird\Plugin\CouchDb\States;
+use InvalidArgumentException;
 use Nette;
 use PHPOnCouch;
 use Psr\Log;
@@ -27,6 +28,7 @@ use stdClass;
 use Throwable;
 use function count;
 use function is_array;
+use function is_object;
 
 /**
  * State repository
@@ -45,6 +47,9 @@ class StatesRepository
 
 	private Log\LoggerInterface $logger;
 
+	/**
+	 * @param class-string<T> $entity
+	 */
 	public function __construct(
 		private readonly Connections\Connection $client,
 		private readonly string $entity = States\State::class,
@@ -59,6 +64,7 @@ class StatesRepository
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
+	 * @throws InvalidArgumentException
 	 */
 	public function findOne(Uuid\UuidInterface $id): States\State|null
 	{
@@ -89,7 +95,7 @@ class StatesRepository
 					],
 				]);
 
-			if (is_array($docs) && count($docs) >= 1) {
+			if (is_array($docs) && count($docs) >= 1 && is_object($docs[0])) {
 				$doc = new PHPOnCouch\CouchDocument($this->client->getClient());
 
 				return $doc->loadFromObject($docs[0]);

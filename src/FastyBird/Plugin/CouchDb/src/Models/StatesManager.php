@@ -407,7 +407,7 @@ class StatesManager
 			return true;
 		} catch (Throwable $ex) {
 			$this->logger->error('Document could not be deleted', [
-				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
+				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_COUCHDB,
 				'type' => 'states-manager',
 				'group' => 'model',
 				'document' => [

@@ -10,14 +10,13 @@ use FastyBird\Plugin\CouchDb\Exceptions;
 use FastyBird\Plugin\CouchDb\Models;
 use FastyBird\Plugin\CouchDb\States;
 use FastyBird\Plugin\CouchDb\Tests\Fixtures;
+use InvalidArgumentException;
 use Nette\Utils;
 use PHPOnCouch;
-use PHPUnit\Framework\MockObject;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid;
 use stdClass;
 use function array_keys;
-use function assert;
 use const DATE_ATOM;
 
 final class StatesManagerTest extends TestCase
@@ -56,7 +55,6 @@ final class StatesManagerTest extends TestCase
 				$dbData['id'] = $id->toString();
 
 				$document = $this->createMock(PHPOnCouch\CouchDocument::class);
-				assert($document instanceof MockObject\MockObject || $document instanceof PHPOnCouch\CouchDocument);
 
 				$document
 					->method('id')
@@ -96,6 +94,7 @@ final class StatesManagerTest extends TestCase
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
+	 * @throws InvalidArgumentException
 	 *
 	 * @dataProvider updateStateValue
 	 */
@@ -108,7 +107,6 @@ final class StatesManagerTest extends TestCase
 	): void
 	{
 		$document = $this->createMock(PHPOnCouch\CouchDocument::class);
-		assert($document instanceof MockObject\MockObject || $document instanceof PHPOnCouch\CouchDocument);
 
 		$document
 			->method('setAutocommit');
@@ -163,6 +161,7 @@ final class StatesManagerTest extends TestCase
 
 	/**
 	 * @throws Exceptions\InvalidState
+	 * @throws InvalidArgumentException
 	 */
 	public function testDeleteEntity(): void
 	{
@@ -175,7 +174,6 @@ final class StatesManagerTest extends TestCase
 		];
 
 		$document = $this->createMock(PHPOnCouch\CouchDocument::class);
-		assert($document instanceof MockObject\MockObject || $document instanceof PHPOnCouch\CouchDocument);
 
 		$document
 			->method('get')
