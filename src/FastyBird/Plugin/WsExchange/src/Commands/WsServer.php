@@ -81,7 +81,8 @@ final class WsServer extends Console\Command\Command
 			'Starting WS server',
 			[
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_EXCHANGE,
-				'type' => 'command',
+				'type' => 'server-command',
+				'group' => 'cmd',
 			],
 		);
 
@@ -108,7 +109,8 @@ final class WsServer extends Console\Command\Command
 				'WS server was forced to close',
 				[
 					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_EXCHANGE,
-					'type' => 'command',
+					'type' => 'server-command',
+					'group' => 'cmd',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -125,7 +127,8 @@ final class WsServer extends Console\Command\Command
 				'An unhandled error occurred. Stopping WS server',
 				[
 					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_EXCHANGE,
-					'type' => 'command',
+					'type' => 'server-command',
+					'group' => 'cmd',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),

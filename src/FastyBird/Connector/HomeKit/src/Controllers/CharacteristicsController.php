@@ -708,9 +708,7 @@ final class CharacteristicsController extends BaseController
 										'action' => Metadata\Types\PropertyAction::ACTION_SET,
 										'device' => $characteristic->getProperty()->getDevice()->getPlainId(),
 										'property' => $characteristic->getProperty()->getPlainId(),
-										'expected_value' => !is_scalar($propertyValue) ? strval(
-											$propertyValue,
-										) : $propertyValue,
+										'expected_value' => DevicesUtilities\ValueHelper::flattenValue($propertyValue),
 									]),
 									Metadata\Types\RoutingKey::get(
 										Metadata\Types\RoutingKey::ROUTE_DEVICE_PROPERTY_ACTION,
@@ -806,9 +804,7 @@ final class CharacteristicsController extends BaseController
 										'device' => $characteristic->getProperty()->getChannel()->getDevice()->getPlainId(),
 										'channel' => $characteristic->getProperty()->getChannel()->getPlainId(),
 										'property' => $characteristic->getProperty()->getPlainId(),
-										'expected_value' => !is_scalar($propertyValue) ? strval(
-											$propertyValue,
-										) : $propertyValue,
+										'expected_value' => DevicesUtilities\ValueHelper::flattenValue($propertyValue),
 									]),
 									Metadata\Types\RoutingKey::get(
 										Metadata\Types\RoutingKey::ROUTE_CHANNEL_PROPERTY_ACTION,

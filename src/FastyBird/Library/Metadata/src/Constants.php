@@ -88,7 +88,7 @@ final class Constants
 
 	public const BRIDGE_REDISDB_TRIGGERS_MODULE = 'com.fastybird.redisdb-triggers-module-bridge';
 
-	public const BRIDGE_REDISDB_WS_EXCHANGE = 'com.fastybird.redisdb-ws-exchange-bridge';
+	public const BRIDGE_REDISDB_WS_EXCHANGE = 'com.fastybird.redis-exchange-ws-exchange-bridge';
 
 	public const BRIDGE_WS_EXCHANGE_DEVICES_MODULE = 'com.fastybird.ws-exchange-devices-module-bridge';
 

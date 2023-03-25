@@ -69,6 +69,7 @@ final class Factory
 				[
 					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_EXCHANGE,
 					'type' => 'factory',
+					'group' => 'server',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -82,6 +83,7 @@ final class Factory
 			[
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_EXCHANGE,
 				'type' => 'factory',
+				'group' => 'server',
 				'server' => [
 					'address' => $this->configuration->getAddress(),
 					'port' => $this->configuration->getPort(),

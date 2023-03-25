@@ -82,17 +82,7 @@ class Devices extends Console\Command\Command
 	{
 		$this
 			->setName(self::NAME)
-			->setDescription('FB MQTT devices management')
-			->setDefinition(
-				new Input\InputDefinition([
-					new Input\InputOption(
-						'no-confirm',
-						null,
-						Input\InputOption::VALUE_NONE,
-						'Do not ask for any confirmation',
-					),
-				]),
-			);
+			->setDescription('FB MQTT devices management');
 	}
 
 	/**
@@ -109,7 +99,7 @@ class Devices extends Console\Command\Command
 
 		$io->note('This action will create|update|delete connector device.');
 
-		if ($input->getOption('no-confirm') === false) {
+		if ($input->getOption('no-interaction') === false) {
 			$question = new Console\Question\ConfirmationQuestion(
 				'Would you like to continue?',
 				false,

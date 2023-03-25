@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\FbMqtt\Writers;
 
 use DateTimeInterface;
+use Exception;
 use FastyBird\Connector\FbMqtt\Clients;
 use FastyBird\Connector\FbMqtt\Entities;
 use FastyBird\Connector\FbMqtt\Helpers;
@@ -91,6 +92,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exception
 	 */
 	public function consume(
 		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|MetadataTypes\AutomatorSource $source,
@@ -105,6 +107,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exception
 	 */
 	public function processClient(
 		Uuid\UuidInterface $connectorId,
@@ -114,6 +117,10 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 	): void
 	{
 		if ($entity instanceof MetadataEntities\DevicesModule\DeviceDynamicProperty) {
+			if ($entity->getExpectedValue() === null || $entity->getPending() !== true) {
+				return;
+			}
+
 			$findPropertyQuery = new DevicesQueries\FindDeviceProperties();
 			$findPropertyQuery->byId($entity->getId());
 
@@ -176,6 +183,10 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 					);
 				});
 		} elseif ($entity instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty) {
+			if ($entity->getExpectedValue() === null || $entity->getPending() !== true) {
+				return;
+			}
+
 			$findPropertyQuery = new DevicesQueries\FindChannelProperties();
 			$findPropertyQuery->byId($entity->getId());
 

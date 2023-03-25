@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Tuya\Writers;
 
 use DateTimeInterface;
+use Exception;
 use FastyBird\Connector\Tuya\Clients;
 use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Helpers;
@@ -90,6 +91,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exception
 	 */
 	public function consume(
 		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|MetadataTypes\AutomatorSource $source,
@@ -104,6 +106,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exception
 	 */
 	public function processClient(
 		Uuid\UuidInterface $connectorId,
@@ -113,6 +116,10 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 	): void
 	{
 		if ($entity instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty) {
+			if ($entity->getExpectedValue() === null || $entity->getPending() !== true) {
+				return;
+			}
+
 			$findPropertyQuery = new DevicesQueries\FindChannelProperties();
 			$findPropertyQuery->byId($entity->getId());
 

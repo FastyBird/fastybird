@@ -81,12 +81,6 @@ class Execute extends Console\Command\Command
 						'Run devices module connector',
 						true,
 					),
-					new Input\InputOption(
-						'no-confirm',
-						null,
-						Input\InputOption::VALUE_NONE,
-						'Do not ask for any confirmation',
-					),
 				]),
 			);
 	}
@@ -111,7 +105,7 @@ class Execute extends Console\Command\Command
 
 		$io->note('This action will run connector service.');
 
-		if ($input->getOption('no-confirm') === false) {
+		if ($input->getOption('no-interaction') === false) {
 			$question = new Console\Question\ConfirmationQuestion(
 				'Would you like to continue?',
 				false,
@@ -191,7 +185,7 @@ class Execute extends Console\Command\Command
 					return Console\Command\Command::FAILURE;
 				}
 
-				if ($input->getOption('no-confirm') === false) {
+				if ($input->getOption('no-interaction') === false) {
 					$question = new Console\Question\ConfirmationQuestion(
 						sprintf(
 							'Would you like to execute "%s" connector',
@@ -264,7 +258,7 @@ class Execute extends Console\Command\Command
 
 		$result = $serviceCmd->run(new Input\ArrayInput([
 			'--connector' => $connector->getPlainId(),
-			'--no-confirm' => true,
+			'--no-interaction' => true,
 			'--quiet' => true,
 		]), $output);
 

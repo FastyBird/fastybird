@@ -104,13 +104,6 @@ class Connector extends Console\Command\Command
 						Input\InputOption::VALUE_REQUIRED,
 						'Run devices module connector',
 					),
-					new Input\InputOption(
-						'no-confirm',
-						null,
-						Input\InputOption::VALUE_NONE,
-						'Do not ask for any confirmation',
-					),
-					new Input\InputOption('quiet', 'q', Input\InputOption::VALUE_NONE, 'Do not output any message'),
 				]),
 			);
 	}
@@ -128,7 +121,7 @@ class Connector extends Console\Command\Command
 			$io->note('This action will run module connector service');
 		}
 
-		if ($input->getOption('no-confirm') === false) {
+		if ($input->getOption('no-interaction') === false) {
 			$question = new Console\Question\ConfirmationQuestion(
 				'Would you like to continue?',
 				false,

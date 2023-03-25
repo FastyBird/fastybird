@@ -16,7 +16,6 @@
 namespace FastyBird\Bridge\RedisDbTriggersModule\DI;
 
 use FastyBird\Bridge\RedisDbTriggersModule\Models;
-use FastyBird\Bridge\RedisDbTriggersModule\Subscribers;
 use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
 use Nette\DI;
 use Nette\Schema;
@@ -90,12 +89,6 @@ class RedisDbTriggersModuleExtension extends DI\CompilerExtension
 		)
 			->setType(Models\ConditionsManager::class)
 			->setArguments(['database' => $configuration->database]);
-
-		$builder->addDefinition(
-			$this->prefix('subscribers.redisClient'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Subscribers\RedisClient::class);
 	}
 
 }

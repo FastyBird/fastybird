@@ -78,7 +78,8 @@ class RedisClient extends Console\Command\Command
 			'Launching Redis client',
 			[
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
-				'type' => 'command',
+				'type' => 'client-command',
+				'group' => 'cmd',
 			],
 		);
 
@@ -95,7 +96,8 @@ class RedisClient extends Console\Command\Command
 				'Redis client was forced to close',
 				[
 					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
-					'type' => 'command',
+					'type' => 'client-command',
+					'group' => 'cmd',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
@@ -112,7 +114,8 @@ class RedisClient extends Console\Command\Command
 				'An unhandled error occurred. Stopping Redis client',
 				[
 					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
-					'type' => 'command',
+					'type' => 'client-command',
+					'group' => 'cmd',
 					'exception' => [
 						'message' => $ex->getMessage(),
 						'code' => $ex->getCode(),
