@@ -4,8 +4,3 @@ includes:
 
 parameters:
     resultCachePath: %currentWorkingDirectory%/var/tools/PHPStan/resultCache.src.php
-
-    stubFiles:
-        - ../tests/stubs/PromiseInterface.stub
-        - ../tests/stubs/ExtendedPromiseInterface.stub
-        - ../tests/stubs/EventEmitterInterface.stub
