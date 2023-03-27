@@ -71,6 +71,11 @@
   },
   {
     "organization": "FastyBird",
+    "name": "rabbitmq-plugin",
+    "local-path": "src/FastyBird/Plugin/RabbitMq"
+  },
+  {
+    "organization": "FastyBird",
     "name": "web-server-plugin",
     "local-path": "src/FastyBird/Plugin/WebServer"
   },
