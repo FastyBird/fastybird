@@ -23,8 +23,8 @@ in [PHP](https://www.php.net) on top of the [Nette framework](https://nette.org)
 ### Features
 
 - Built-in server command for running standalone exchange client
-- Implemented async RabbitMQ client
-- RabbitMQ pub/sub exchange client
+- Implemented RabbitMQ client
+- RabbitMQ exchange client
 
 ## Installation
 
