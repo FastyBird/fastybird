@@ -67,11 +67,11 @@ class StatesManager
 	 * @phpstan-param class-string<T> $entity
 	 */
 	public function __construct(
-		private readonly Clients\Client|Redis\RedisClient              $client,
-		private readonly DateTimeFactory\Factory                       $dateTimeFactory,
-		private readonly string                                        $entity = States\State::class,
+		private readonly Clients\Client|Redis\RedisClient $client,
+		private readonly DateTimeFactory\Factory $dateTimeFactory,
+		private readonly string $entity = States\State::class,
 		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
-		Log\LoggerInterface|null                                       $logger = null,
+		Log\LoggerInterface|null $logger = null,
 	)
 	{
 		$this->logger = $logger ?? new Log\NullLogger();

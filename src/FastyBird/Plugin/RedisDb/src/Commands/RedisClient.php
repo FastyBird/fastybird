@@ -45,11 +45,11 @@ class RedisClient extends Console\Command\Command
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
-		private readonly Clients\Factory                               $clientFactory,
-		private readonly EventLoop\LoopInterface                       $eventLoop,
+		private readonly Clients\Factory $clientFactory,
+		private readonly EventLoop\LoopInterface $eventLoop,
 		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
-		Log\LoggerInterface|null                                       $logger = null,
-		string|null                                                    $name = null,
+		Log\LoggerInterface|null $logger = null,
+		string|null $name = null,
 	)
 	{
 		parent::__construct($name);

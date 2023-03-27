@@ -47,10 +47,10 @@ final class Publisher implements ExchangePublisher\Publisher
 
 	public function __construct(
 		private readonly Utilities\IdentifierGenerator $identifier,
-		private readonly string                        $channel,
-		private readonly Clients\Client                $client,
-		private readonly DateTimeFactory\Factory       $dateTimeFactory,
-		Log\LoggerInterface|null                       $logger = null,
+		private readonly string $channel,
+		private readonly Clients\Client $client,
+		private readonly DateTimeFactory\Factory $dateTimeFactory,
+		Log\LoggerInterface|null $logger = null,
 	)
 	{
 		$this->logger = $logger ?? new Log\NullLogger();

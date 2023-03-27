@@ -50,8 +50,8 @@ class StatesRepository
 	 */
 	public function __construct(
 		private readonly Clients\Client|Redis\RedisClient $client,
-		private readonly string                           $entity = States\State::class,
-		Log\LoggerInterface|null                          $logger = null,
+		private readonly string $entity = States\State::class,
+		Log\LoggerInterface|null $logger = null,
 	)
 	{
 		$this->logger = $logger ?? new Log\NullLogger();

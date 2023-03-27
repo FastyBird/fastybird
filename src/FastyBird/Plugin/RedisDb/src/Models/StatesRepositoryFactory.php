@@ -41,7 +41,7 @@ class StatesRepositoryFactory
 	private Redis\RedisClient|null $asyncClient = null;
 
 	public function __construct(
-		private readonly Clients\Client           $client,
+		private readonly Clients\Client $client,
 		private readonly Log\LoggerInterface|null $logger = null,
 	)
 	{

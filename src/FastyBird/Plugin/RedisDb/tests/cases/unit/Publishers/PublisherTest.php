@@ -10,6 +10,7 @@ use FastyBird\Plugin\RedisDb\Clients;
 use FastyBird\Plugin\RedisDb\Publishers;
 use FastyBird\Plugin\RedisDb\Utilities;
 use Nette;
+use Nette\Utils;
 use PHPUnit\Framework\TestCase;
 use const DATE_ATOM;
 
@@ -17,7 +18,7 @@ final class PublisherTest extends TestCase
 {
 
 	/**
-	 * @throws Nette\Utils\JsonException
+	 * @throws Utils\JsonException
 	 */
 	public function testPublish(): void
 	{

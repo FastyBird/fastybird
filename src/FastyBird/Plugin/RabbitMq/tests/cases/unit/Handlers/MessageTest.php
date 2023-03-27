@@ -1,26 +1,11 @@
 <?php declare(strict_types = 1);
 
-namespace Tests\Cases;
+namespace FastyBird\Plugin\RabbitMq\Tests\Cases\Unit\Connections;
 
-use Bunny;
-use FastyBird\ApplicationExchange\Consumer as ApplicationExchangeConsumer;
-use FastyBird\ModulesMetadata\Exceptions as ModulesMetadataExceptions;
-use FastyBird\ModulesMetadata\Loaders as ModulesMetadataLoaders;
-use FastyBird\ModulesMetadata\Schemas as ModulesMetadataSchemas;
-use FastyBird\Plugin\RabbitMq\Consumer;
-use FastyBird\Plugin\RabbitMq\Exceptions;
-use Mockery;
-use Nette\Utils;
-use Ninjify\Nunjuck\TestCase\BaseMockeryTestCase;
-use Symfony\Component\EventDispatcher;
-use Tester\Assert;
+use FastyBird\Plugin\RabbitMq\Connections;
+use PHPUnit\Framework\TestCase;
 
-require_once __DIR__ . '/../../../bootstrap.php';
-
-/**
- * @testCase
- */
-final class ConsumerTest extends BaseMockeryTestCase
+final class MessageTest extends TestCase
 {
 
 	public function testEmptyHandlers(): void
@@ -77,7 +62,7 @@ final class ConsumerTest extends BaseMockeryTestCase
 	/**
 	 * @param mixed[] $data
 	 *
-	 * @dataProvider ./../../../fixtures/Consumer/consumeValidMessage.php
+	 * @dataProvider ./../../../fixtures/Handlers/consumeValidMessage.php
 	 */
 	public function testConsumeNoOriginMessage(
 		array $data
@@ -117,7 +102,7 @@ final class ConsumerTest extends BaseMockeryTestCase
 	/**
 	 * @param mixed[] $data
 	 *
-	 * @dataProvider ./../../../fixtures/Consumer/consumeValidMessage.php
+	 * @dataProvider ./../../../fixtures/Handlers/consumeValidMessage.php
 	 */
 	public function testConsumeValidOriginMessage(
 		array $data
@@ -189,7 +174,7 @@ final class ConsumerTest extends BaseMockeryTestCase
 	/**
 	 * @param mixed[] $data
 	 *
-	 * @dataProvider ./../../../fixtures/Consumer/consumeValidMessage.php
+	 * @dataProvider ./../../../fixtures/Handlers/consumeValidMessage.php
 	 */
 	public function testConsumeInvalidMessage(
 		array $data
@@ -286,6 +271,3 @@ final class ConsumerTest extends BaseMockeryTestCase
 	}
 
 }
-
-$test_case = new ConsumerTest();
-$test_case->run();

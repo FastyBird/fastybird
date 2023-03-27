@@ -1,72 +1,93 @@
 <?php declare(strict_types = 1);
 
-namespace Tests\Cases;
+namespace FastyBird\Plugin\RabbitMq\Tests\Cases\Unit\Publishers;
 
-use Bunny;
-use DateTimeImmutable;
+use DateTime;
 use FastyBird\DateTimeFactory;
-use FastyBird\Plugin\RabbitMq;
-use FastyBird\Plugin\RabbitMq\Connections;
+use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Plugin\RabbitMq\Channels;
 use FastyBird\Plugin\RabbitMq\Publishers;
-use Mockery;
-use Ninjify\Nunjuck\TestCase\BaseMockeryTestCase;
+use FastyBird\Plugin\RabbitMq\Utilities;
+use Nette;
+use Nette\Utils;
+use PHPUnit\Framework\TestCase;
 use Psr\Log;
-use Tester\Assert;
+use const DATE_ATOM;
 
-require_once __DIR__ . '/../../../bootstrap.php';
-
-/**
- * @testCase
- */
-final class PublisherTest extends BaseMockeryTestCase
+final class PublisherTest extends TestCase
 {
 
+	/**
+	 * @throws Utils\JsonException
+	 */
 	public function testPublishMessage(): void
 	{
-		$rabbitMqChannel = Mockery::mock(Bunny\Channel::class);
-		$rabbitMqChannel
-			->shouldReceive('publish')
-			->withArgs(function ($message, $headers, $exchangeName): bool {
-				Assert::true(array_key_exists('origin', $headers));
-				Assert::same('origin.test', $headers['origin']);
-				Assert::same(RabbitMqPlugin\Constants::RABBIT_MQ_MESSAGE_BUS_EXCHANGE_NAME, $exchangeName);
+		$now = new DateTime();
 
-				return true;
-			})
-			->andReturn(true)
-			->times(1);
+		$channel = $this->createMock(Channels\Channel::class);
+		$channel
+			->expects(self::once())
+			->method('publish')
+			->with(
+				Nette\Utils\Json::encode([
+					'action' => MetadataTypes\PropertyAction::ACTION_SET,
+					'property' => '60d754c2-4590-4eff-af1e-5c45f4234c7b',
+					'expected_value' => 10,
+					'device' => '593397b2-fd40-4da2-a66a-3687ca50761b',
+					'channel' => '06a64596-ca03-478b-ad1e-4f53731e66a5',
+				]),
+				[
+					'sender_id' => 'rabbitmq_client_identifier',
+					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+					'created' => $now->format(DATE_ATOM),
+				],
+				'exchange_name',
+				MetadataTypes\RoutingKey::ROUTE_DEVICE_ENTITY_UPDATED,
+			)
+			->willReturn(true);
 
-		$rabbitMq = Mockery::mock(Connections\Connection::class);
-		$rabbitMq
-			->shouldReceive('getChannel')
-			->andReturn($rabbitMqChannel)
-			->times(1);
+		$dateTimeFactory = $this->createMock(DateTimeFactory\Factory::class);
+		$dateTimeFactory
+			->expects(self::exactly(2))
+			->method('getNow')
+			->willReturn($now);
 
-		$dateFactory = Mockery::mock(DateTimeFactory\DateTimeFactory::class);
-		$dateFactory
-			->shouldReceive('getNow')
-			->andReturn(new DateTimeImmutable())
-			->times(2);
-
-		$logger = Mockery::mock(Log\LoggerInterface::class);
+		$logger = $this->createMock(Log\LoggerInterface::class);
 		$logger
-			->shouldReceive('info')
-			->withArgs(function ($message): bool {
-				Assert::same('[FB:PLUGIN:RABBITMQ] Received message was pushed into data exchange', $message);
+			->expects(self::once())
+			->method('info')
+			->with(self::callback(static function ($message): bool {
+				self::assertSame('Received message was pushed into data exchange', $message);
 
 				return true;
-			})
-			->times(1);
+			}));
 
-		$publisher = new Publishers\Publisher($rabbitMq, $dateFactory, $logger);
+		$identifierGenerator = $this->createMock(Utilities\IdentifierGenerator::class);
+		$identifierGenerator
+			->expects(self::once())
+			->method('getIdentifier')
+			->willReturn('rabbitmq_client_identifier');
 
-		$publisher->publish('origin.test', 'routing.key.path', [
-			'key_one' => 'value_one',
-			'key_two' => 'value_two',
-		]);
+		$publisher = new Publishers\Publisher(
+			'exchange_name',
+			$channel,
+			$identifierGenerator,
+			$dateTimeFactory,
+			$logger,
+		);
+
+		$publisher->publish(
+			MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
+			MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::ROUTE_DEVICE_ENTITY_UPDATED),
+			new MetadataEntities\Actions\ActionChannelProperty(
+				MetadataTypes\PropertyAction::ACTION_SET,
+				'593397b2-fd40-4da2-a66a-3687ca50761b',
+				'06a64596-ca03-478b-ad1e-4f53731e66a5',
+				'60d754c2-4590-4eff-af1e-5c45f4234c7b',
+				10,
+			),
+		);
 	}
 
 }
-
-$test_case = new PublisherTest();
-$test_case->run();
