@@ -106,6 +106,24 @@ services:
     networks:
       - fastybird
 
+  # RABBIT MQ EXCHANGE
+  rabbitmq:
+    container_name: fastybird-rabbitmq
+    image: rabbitmq:management
+    environment:
+      # Container specific environment variables
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USERNAME:-admin}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-admin}
+    volumes:
+      - rabbitmq-dev-data:/var/lib/rabbitmq:rw
+      # you may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
+      # - ./docker/rabbitmq/data:/var/lib/rabbitmq:rw,delegated
+    ports:
+      - "${RABBITMQ_PORT:-5672}:5672"
+      - "${RABBITMQ_MANAGEMENT_PORT:-15672}:15672"
+    networks:
+      - fastybird
+
   # MQTT
   mqtt:
     container_name: fastybird-mqtt
