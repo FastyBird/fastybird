@@ -20,7 +20,7 @@ use FastyBird\DateTimeFactory;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Plugin\RedisDb\Client;
+use FastyBird\Plugin\RedisDb\Clients;
 use FastyBird\Plugin\RedisDb\Utilities;
 use Nette;
 use Psr\Log;
@@ -48,7 +48,7 @@ final class Publisher implements ExchangePublisher\Publisher
 	public function __construct(
 		private readonly Utilities\IdentifierGenerator $identifier,
 		private readonly string $channel,
-		private readonly Client\Client $client,
+		private readonly Clients\Client $client,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		Log\LoggerInterface|null $logger = null,
 	)
@@ -174,7 +174,7 @@ final class Publisher implements ExchangePublisher\Publisher
 		}
 	}
 
-	private function getClient(): Client\Client|Redis\RedisClient
+	private function getClient(): Clients\Client|Redis\RedisClient
 	{
 		if ($this->asyncClient !== null) {
 			return $this->asyncClient;

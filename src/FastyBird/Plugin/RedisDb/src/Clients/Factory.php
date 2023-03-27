@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * AsyncClient.php
+ * Factory.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,7 +13,7 @@
  * @date           09.10.22
  */
 
-namespace FastyBird\Plugin\RedisDb\Client;
+namespace FastyBird\Plugin\RedisDb\Clients;
 
 use Clue\React\Redis;
 use FastyBird\Plugin\RedisDb\Connections;

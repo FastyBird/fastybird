@@ -17,7 +17,7 @@ namespace FastyBird\Plugin\RedisDb\Models;
 
 use Clue\React\Redis;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Plugin\RedisDb\Client;
+use FastyBird\Plugin\RedisDb\Clients;
 use FastyBird\Plugin\RedisDb\Exceptions;
 use FastyBird\Plugin\RedisDb\States;
 use Nette;
@@ -49,7 +49,7 @@ class StatesRepository
 	 * @param class-string<T> $entity
 	 */
 	public function __construct(
-		private readonly Client\Client|Redis\RedisClient $client,
+		private readonly Clients\Client|Redis\RedisClient $client,
 		private readonly string $entity = States\State::class,
 		Log\LoggerInterface|null $logger = null,
 	)

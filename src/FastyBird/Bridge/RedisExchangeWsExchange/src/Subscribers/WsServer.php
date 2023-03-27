@@ -17,7 +17,7 @@ namespace FastyBird\Bridge\RedisExchangeWsExchange\Subscribers;
 
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Plugin\RedisDb\Client as RedisDbClient;
+use FastyBird\Plugin\RedisDb\Clients as RedisDbClient;
 use FastyBird\Plugin\WsExchange\Consumers as WsExchangeConsumers;
 use FastyBird\Plugin\WsExchange\Events as WsExchangeEvents;
 use IPub\WebSockets;

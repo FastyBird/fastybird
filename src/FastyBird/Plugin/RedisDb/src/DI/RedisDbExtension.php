@@ -17,7 +17,7 @@ namespace FastyBird\Plugin\RedisDb\DI;
 
 use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
 use FastyBird\Library\Metadata;
-use FastyBird\Plugin\RedisDb\Client;
+use FastyBird\Plugin\RedisDb\Clients;
 use FastyBird\Plugin\RedisDb\Commands;
 use FastyBird\Plugin\RedisDb\Connections;
 use FastyBird\Plugin\RedisDb\Handlers;
@@ -94,10 +94,10 @@ class RedisDbExtension extends DI\CompilerExtension
 			]);
 
 		$builder->addDefinition($this->prefix('clients.sync'), new DI\Definitions\ServiceDefinition())
-			->setType(Client\Client::class);
+			->setType(Clients\Client::class);
 
 		$builder->addDefinition($this->prefix('clients.async.factory'), new DI\Definitions\ServiceDefinition())
-			->setType(Client\Factory::class)
+			->setType(Clients\Factory::class)
 			->setArguments([
 				'channel' => $configuration->exchange->channel,
 			]);

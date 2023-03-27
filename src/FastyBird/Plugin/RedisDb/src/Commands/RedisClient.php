@@ -16,7 +16,7 @@
 namespace FastyBird\Plugin\RedisDb\Commands;
 
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Plugin\RedisDb\Client;
+use FastyBird\Plugin\RedisDb\Clients;
 use FastyBird\Plugin\RedisDb\Events;
 use FastyBird\Plugin\RedisDb\Exceptions;
 use Nette;
@@ -45,7 +45,7 @@ class RedisClient extends Console\Command\Command
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
-		private readonly Client\Factory $clientFactory,
+		private readonly Clients\Factory $clientFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 		Log\LoggerInterface|null $logger = null,
@@ -66,7 +66,7 @@ class RedisClient extends Console\Command\Command
 
 		$this
 			->setName(self::NAME)
-			->setDescription('Start redis client');
+			->setDescription('Start Redis client');
 	}
 
 	protected function execute(

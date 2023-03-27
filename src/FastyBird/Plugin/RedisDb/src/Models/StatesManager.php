@@ -20,7 +20,7 @@ use Consistence;
 use DateTimeInterface;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Plugin\RedisDb\Client;
+use FastyBird\Plugin\RedisDb\Clients;
 use FastyBird\Plugin\RedisDb\Events;
 use FastyBird\Plugin\RedisDb\Exceptions;
 use FastyBird\Plugin\RedisDb\States;
@@ -67,7 +67,7 @@ class StatesManager
 	 * @phpstan-param class-string<T> $entity
 	 */
 	public function __construct(
-		private readonly Client\Client|Redis\RedisClient $client,
+		private readonly Clients\Client|Redis\RedisClient $client,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly string $entity = States\State::class,
 		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,

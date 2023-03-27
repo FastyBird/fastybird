@@ -4,7 +4,7 @@ namespace FastyBird\Bridge\RedisExchangeWsExchange\Tests\Cases\Unit\Subscribers;
 
 use FastyBird\Bridge\RedisExchangeWsExchange\Subscribers;
 use FastyBird\Bridge\RedisExchangeWsExchange\Tests\Cases\Unit;
-use FastyBird\Plugin\RedisDb\Client as RedisDbClient;
+use FastyBird\Plugin\RedisDb\Clients as RedisDbClient;
 use FastyBird\Plugin\WsExchange\Commands as WsExchangeCommands;
 use FastyBird\Plugin\WsExchange\Server as WsExchangeServer;
 use IPub\WebSockets;

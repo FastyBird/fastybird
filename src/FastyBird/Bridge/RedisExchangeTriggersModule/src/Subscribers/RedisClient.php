@@ -18,7 +18,7 @@ namespace FastyBird\Bridge\RedisExchangeTriggersModule\Subscribers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Triggers\Events as TriggersEvents;
 use FastyBird\Module\Triggers\Exceptions as TriggersExceptions;
-use FastyBird\Plugin\RedisDb\Client as RedisDbClient;
+use FastyBird\Plugin\RedisDb\Clients as RedisDbClient;
 use Psr\Log;
 use React\EventLoop;
 use Symfony\Component\EventDispatcher;
