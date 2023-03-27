@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * TerminateException.php
+ * InvalidState.php
  *
  * @license        More in license.md
  * @copyright      https://www.fastybird.com
@@ -15,9 +15,9 @@
 
 namespace FastyBird\Plugin\RabbitMq\Exceptions;
 
-use Exception;
+use RuntimeException;
 
-class TerminateException extends Exception implements IException
+class InvalidState extends RuntimeException implements Exception
 {
 
 }

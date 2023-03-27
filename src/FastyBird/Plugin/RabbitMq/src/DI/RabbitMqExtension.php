@@ -19,7 +19,7 @@ use FastyBird\ApplicationExchange\Consumer as ApplicationExchangeConsumer;
 use FastyBird\Plugin\RabbitMq\Commands;
 use FastyBird\Plugin\RabbitMq\Connections;
 use FastyBird\Plugin\RabbitMq\Consumer;
-use FastyBird\Plugin\RabbitMq\Publisher;
+use FastyBird\Plugin\RabbitMq\Publishers;
 use FastyBird\Plugin\RabbitMq\Subscribers;
 use Nette;
 use Nette\DI;
@@ -38,6 +38,8 @@ use function is_string;
  */
 class RabbitMqExtension extends DI\CompilerExtension
 {
+
+	public const RABBIT_MQ_MESSAGE_BUS_EXCHANGE_NAME = 'fb.exchange.bus';
 
 	public static function register(
 		Nette\Configurator $config,
@@ -81,7 +83,7 @@ class RabbitMqExtension extends DI\CompilerExtension
 		assert($configuration instanceof stdClass);
 
 		$builder->addDefinition($this->prefix('connection'))
-			->setType(Connections\RabbitMqConnection::class)
+			->setType(Connections\Connection::class)
 			->setArguments([
 				'host' => $configuration->rabbitMQ->connection->host,
 				'port' => $configuration->rabbitMQ->connection->port,
@@ -101,7 +103,7 @@ class RabbitMqExtension extends DI\CompilerExtension
 		}
 
 		$builder->addDefinition($this->prefix('publisher'))
-			->setType(Publisher\Publisher::class)
+			->setType(Publishers\Publisher::class)
 			->setAutowired(false);
 
 		$builder->addDefinition($this->prefix('exchange'))

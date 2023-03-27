@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * IException.php
+ * Exception.php
  *
  * @license        More in license.md
  * @copyright      https://www.fastybird.com
@@ -15,7 +15,7 @@
 
 namespace FastyBird\Plugin\RabbitMq\Exceptions;
 
-interface IException
+interface Exception
 {
 
 }

@@ -16,8 +16,8 @@ final class RabbitMqConnectionTest extends BaseTestCase
 
 	public function testDefaultValues(): void
 	{
-		/** @var Connections\IRabbitMqConnection $connection */
-		$connection = $this->container->getByType(Connections\IRabbitMqConnection::class);
+		/** @var Connections\Connection $connection */
+		$connection = $this->container->getByType(Connections\Connection::class);
 
 		Assert::same('127.0.0.1', $connection->getHost());
 		Assert::same(5672, $connection->getPort());
@@ -30,8 +30,8 @@ final class RabbitMqConnectionTest extends BaseTestCase
 	{
 		$container = $this->createContainer(__DIR__ . '/../../../fixtures/Connections/customConnection.neon');
 
-		/** @var Connections\IRabbitMqConnection $connection */
-		$connection = $container->getByType(Connections\IRabbitMqConnection::class);
+		/** @var Connections\Connection $connection */
+		$connection = $container->getByType(Connections\Connection::class);
 
 		Assert::same('rabbitmq.loc', $connection->getHost());
 		Assert::same(1234, $connection->getPort());

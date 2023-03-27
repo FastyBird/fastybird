@@ -4,4 +4,4 @@
 
 #### TL;DR
 
-- Initial release after composition from previous Redis DB modules.
+- Initial release after composition from previous RabbitMQ module.

@@ -86,7 +86,7 @@ final class ConsumerTest extends BaseMockeryTestCase
 			$body = Utils\Json::encode($data);
 
 		} catch (Utils\JsonException $ex) {
-			throw new Exceptions\InvalidStateException('Test data could not be prepared');
+			throw new Exceptions\InvalidState('Test data could not be prepared');
 		}
 
 		$loader = Mockery::mock(ModulesMetadataLoaders\ISchemaLoader::class);
@@ -126,7 +126,7 @@ final class ConsumerTest extends BaseMockeryTestCase
 			$body = Utils\Json::encode($data);
 
 		} catch (Utils\JsonException $ex) {
-			throw new Exceptions\InvalidStateException('Test data could not be prepared');
+			throw new Exceptions\InvalidState('Test data could not be prepared');
 		}
 
 		$schema = '{key: value}';
@@ -198,7 +198,7 @@ final class ConsumerTest extends BaseMockeryTestCase
 			$body = Utils\Json::encode($data);
 
 		} catch (Utils\JsonException $ex) {
-			throw new Exceptions\InvalidStateException('Test data could not be prepared');
+			throw new Exceptions\InvalidState('Test data could not be prepared');
 		}
 
 		$message = new Bunny\Message(
@@ -244,7 +244,7 @@ final class ConsumerTest extends BaseMockeryTestCase
 
 				return true;
 			})
-			->andThrow(new Exceptions\InvalidStateException('Could not handle message'))
+			->andThrow(new Exceptions\InvalidState('Could not handle message'))
 			->times(1);
 
 		$consumerProxy->registerConsumer($consumer);

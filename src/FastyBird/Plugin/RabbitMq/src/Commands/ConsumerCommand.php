@@ -70,7 +70,7 @@ final class ConsumerCommand extends Console\Command\Command
 			$this->exchange->initialize();
 			$this->exchange->run();
 
-		} catch (Exceptions\TerminateException $ex) {
+		} catch (Exceptions\Terminate $ex) {
 			// Log error action reason
 			$this->logger->warning('[FB:PLUGIN:RABBITMQ] Stopping exchange consumer', [
 				'exception' => [

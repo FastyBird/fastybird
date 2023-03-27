@@ -112,29 +112,31 @@ final class Constants
 	 * Global
 	 */
 
-	public const MESSAGE_BUS_CONNECTOR_CONTROL_ACTION_ROUTING_KEY = 'fb.exchange.action.connector.control';
+	public const MESSAGE_BUS_PREFIX_KEY = 'fb.exchange';
 
-	public const MESSAGE_BUS_CONNECTOR_PROPERTY_ACTION_ROUTING_KEY = 'fb.exchange.action.connector.property';
+	public const MESSAGE_BUS_CONNECTOR_CONTROL_ACTION_ROUTING_KEY = self::MESSAGE_BUS_PREFIX_KEY . '.action.connector.control';
 
-	public const MESSAGE_BUS_DEVICE_CONTROL_ACTION_ROUTING_KEY = 'fb.exchange.action.device.control';
+	public const MESSAGE_BUS_CONNECTOR_PROPERTY_ACTION_ROUTING_KEY = self::MESSAGE_BUS_PREFIX_KEY . '.action.connector.property';
 
-	public const MESSAGE_BUS_DEVICE_PROPERTY_ACTION_ROUTING_KEY = 'fb.exchange.action.device.property';
+	public const MESSAGE_BUS_DEVICE_CONTROL_ACTION_ROUTING_KEY = self::MESSAGE_BUS_PREFIX_KEY . '.action.device.control';
 
-	public const MESSAGE_BUS_CHANNEL_CONTROL_ACTION_ROUTING_KEY = 'fb.exchange.action.channel.control';
+	public const MESSAGE_BUS_DEVICE_PROPERTY_ACTION_ROUTING_KEY = self::MESSAGE_BUS_PREFIX_KEY . '.action.device.property';
 
-	public const MESSAGE_BUS_CHANNEL_PROPERTY_ACTION_ROUTING_KEY = 'fb.exchange.action.channel.property';
+	public const MESSAGE_BUS_CHANNEL_CONTROL_ACTION_ROUTING_KEY = self::MESSAGE_BUS_PREFIX_KEY . '.action.channel.control';
 
-	public const MESSAGE_BUS_TRIGGER_CONTROL_ACTION_ROUTING_KEY = 'fb.exchange.action.trigger.control';
+	public const MESSAGE_BUS_CHANNEL_PROPERTY_ACTION_ROUTING_KEY = self::MESSAGE_BUS_PREFIX_KEY . '.action.channel.property';
 
-	public const MESSAGE_BUS_MODULE_MESSAGE_ROUTING_KEY = 'fb.exchange.message.module';
+	public const MESSAGE_BUS_TRIGGER_CONTROL_ACTION_ROUTING_KEY = self::MESSAGE_BUS_PREFIX_KEY . '.action.trigger.control';
 
-	public const MESSAGE_BUS_PLUGIN_MESSAGE_ROUTING_KEY = 'fb.exchange.message.plugin';
+	public const MESSAGE_BUS_MODULE_MESSAGE_ROUTING_KEY = self::MESSAGE_BUS_PREFIX_KEY . '.message.module';
 
-	public const MESSAGE_BUS_CONNECTOR_MESSAGE_ROUTING_KEY = 'fb.exchange.message.connector';
+	public const MESSAGE_BUS_PLUGIN_MESSAGE_ROUTING_KEY = self::MESSAGE_BUS_PREFIX_KEY . '.message.plugin';
 
-	public const MESSAGE_BUS_TRIGGER_MESSAGE_ROUTING_KEY = 'fb.exchange.message.trigger';
+	public const MESSAGE_BUS_CONNECTOR_MESSAGE_ROUTING_KEY = self::MESSAGE_BUS_PREFIX_KEY . '.message.connector';
 
-	public const MESSAGE_BUS_ENTITY_PREFIX_KEY = 'fb.exchange.module.entity';
+	public const MESSAGE_BUS_TRIGGER_MESSAGE_ROUTING_KEY = self::MESSAGE_BUS_PREFIX_KEY . '.message.trigger';
+
+	public const MESSAGE_BUS_ENTITY_PREFIX_KEY = self::MESSAGE_BUS_PREFIX_KEY . '.module.entity';
 
 	public const MESSAGE_BUS_ENTITY_REPORTED_KEY = 'reported';
 

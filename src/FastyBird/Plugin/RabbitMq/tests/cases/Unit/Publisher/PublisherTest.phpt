@@ -7,7 +7,7 @@ use DateTimeImmutable;
 use FastyBird\DateTimeFactory;
 use FastyBird\Plugin\RabbitMq;
 use FastyBird\Plugin\RabbitMq\Connections;
-use FastyBird\Plugin\RabbitMq\Publisher;
+use FastyBird\Plugin\RabbitMq\Publishers;
 use Mockery;
 use Ninjify\Nunjuck\TestCase\BaseMockeryTestCase;
 use Psr\Log;
@@ -36,7 +36,7 @@ final class PublisherTest extends BaseMockeryTestCase
 			->andReturn(true)
 			->times(1);
 
-		$rabbitMq = Mockery::mock(Connections\IRabbitMqConnection::class);
+		$rabbitMq = Mockery::mock(Connections\Connection::class);
 		$rabbitMq
 			->shouldReceive('getChannel')
 			->andReturn($rabbitMqChannel)
@@ -58,7 +58,7 @@ final class PublisherTest extends BaseMockeryTestCase
 			})
 			->times(1);
 
-		$publisher = new Publisher\Publisher($rabbitMq, $dateFactory, $logger);
+		$publisher = new Publishers\Publisher($rabbitMq, $dateFactory, $logger);
 
 		$publisher->publish('origin.test', 'routing.key.path', [
 			'key_one' => 'value_one',

@@ -1,34 +1,31 @@
 <?php declare(strict_types = 1);
 
 /**
- * Constants.php
+ * Startup.php
  *
- * @license        More in license.md
+ * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:RabbitMqPlugin!
- * @subpackage     common
+ * @subpackage     Events
  * @since          1.0.0
  *
- * @date           02.03.20
+ * @date           27.03.23
  */
 
-namespace FastyBird\Plugin\RabbitMq;
+namespace FastyBird\Plugin\RabbitMq\Events;
+
+use Symfony\Contracts\EventDispatcher;
 
 /**
- * Libs constants
+ * After message consumed event
  *
  * @package        FastyBird:RabbitMqPlugin!
- * @subpackage     common
+ * @subpackage     Events
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Constants
+class Startup extends EventDispatcher\Event
 {
-
-	/**
-	 * Message bus data exchange name
-	 */
-	public const RABBIT_MQ_MESSAGE_BUS_EXCHANGE_NAME = 'fb.exchange.bus';
 
 }

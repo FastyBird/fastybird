@@ -23,7 +23,7 @@ final class ExtensionTest extends BaseTestCase
 
 		Assert::notNull($container->getByType(RabbitMqPlugin\Exchange::class));
 
-		Assert::notNull($container->getByType(Connections\IRabbitMqConnection::class));
+		Assert::notNull($container->getByType(Connections\Connection::class));
 
 		Assert::notNull($container->getByType(Consumer\IConsumer::class));
 

@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * InvalidStateException.php
+ * UnprocessableMessage.php
  *
  * @license        More in license.md
  * @copyright      https://www.fastybird.com
@@ -10,14 +10,12 @@
  * @subpackage     Exceptions
  * @since          1.0.0
  *
- * @date           08.03.20
+ * @date           19.12.20
  */
 
 namespace FastyBird\Plugin\RabbitMq\Exceptions;
 
-use RuntimeException;
-
-class InvalidStateException extends RuntimeException implements IException
+class UnprocessableMessage extends InvalidState implements Exception
 {
 
 }
