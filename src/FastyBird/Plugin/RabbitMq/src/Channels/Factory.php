@@ -25,7 +25,6 @@ use Nette\Utils;
 use Psr\EventDispatcher;
 use React\EventLoop;
 use React\Promise;
-use React\Socket;
 use Throwable;
 
 /**
