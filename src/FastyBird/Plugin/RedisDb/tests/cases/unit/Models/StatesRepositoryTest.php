@@ -2,7 +2,7 @@
 
 namespace FastyBird\Plugin\RedisDb\Tests\Cases\Unit\Models;
 
-use FastyBird\Plugin\RedisDb\Client;
+use FastyBird\Plugin\RedisDb\Clients;
 use FastyBird\Plugin\RedisDb\Exceptions;
 use FastyBird\Plugin\RedisDb\Models;
 use FastyBird\Plugin\RedisDb\States;
@@ -40,7 +40,7 @@ final class StatesRepositoryTest extends TestCase
 	/**
 	 * @phpstan-param array<mixed> $data
 	 *
-	 * @phpstan-return Client\Client&MockObject\MockObject
+	 * @phpstan-return Clients\Client&MockObject\MockObject
 	 *
 	 * @throws Utils\JsonException
 	 */
@@ -51,7 +51,7 @@ final class StatesRepositoryTest extends TestCase
 	{
 		$data['_id'] = $data['id'];
 
-		$redisClient = $this->createMock(Client\Client::class);
+		$redisClient = $this->createMock(Clients\Client::class);
 		$redisClient
 			->expects(self::once())
 			->method('select')
@@ -69,7 +69,7 @@ final class StatesRepositoryTest extends TestCase
 	 * @phpstan-return Models\StatesRepository<States\State>
 	 */
 	private function createRepository(
-		Client\Client&MockObject\MockObject $redisClient,
+		Clients\Client&MockObject\MockObject $redisClient,
 	): Models\StatesRepository
 	{
 		return new Models\StatesRepository($redisClient);

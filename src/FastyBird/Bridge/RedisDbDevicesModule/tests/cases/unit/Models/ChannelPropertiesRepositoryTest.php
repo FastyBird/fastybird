@@ -6,7 +6,7 @@ use Exception;
 use FastyBird\Bridge\RedisDbDevicesModule\Models;
 use FastyBird\Bridge\RedisDbDevicesModule\Tests\Cases\Unit\BaseTestCase;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
-use FastyBird\Plugin\RedisDb\Client as RedisDbClient;
+use FastyBird\Plugin\RedisDb\Clients as RedisDbClient;
 use FastyBird\Plugin\RedisDb\Exceptions as RedisDbExceptions;
 use Nette;
 use Nette\Utils;

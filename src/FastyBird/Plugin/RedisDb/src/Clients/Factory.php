@@ -13,7 +13,7 @@
  * @date           09.10.22
  */
 
-namespace FastyBird\Plugin\RedisDb\Client;
+namespace FastyBird\Plugin\RedisDb\Clients;
 
 use Clue\React\Redis;
 use FastyBird\Plugin\RedisDb\Connections;

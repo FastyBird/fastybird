@@ -4,7 +4,7 @@ namespace FastyBird\Plugin\RedisDb\Tests\Cases\Unit\Models;
 
 use DateTimeImmutable;
 use FastyBird\DateTimeFactory;
-use FastyBird\Plugin\RedisDb\Client;
+use FastyBird\Plugin\RedisDb\Clients;
 use FastyBird\Plugin\RedisDb\Exceptions;
 use FastyBird\Plugin\RedisDb\Models;
 use FastyBird\Plugin\RedisDb\States;
@@ -29,7 +29,7 @@ final class StatesManagerTest extends TestCase
 	 */
 	public function testCreateEntity(Uuid\UuidInterface $id, array $data, array $dbData, array $expected): void
 	{
-		$redisClient = $this->createMock(Client\Client::class);
+		$redisClient = $this->createMock(Clients\Client::class);
 		$redisClient
 			->expects(self::once())
 			->method('select')
@@ -75,7 +75,7 @@ final class StatesManagerTest extends TestCase
 		array $expected,
 	): void
 	{
-		$redisClient = $this->createMock(Client\Client::class);
+		$redisClient = $this->createMock(Clients\Client::class);
 		$redisClient
 			->expects(self::once())
 			->method('select')
@@ -117,7 +117,7 @@ final class StatesManagerTest extends TestCase
 			'property' => 'property_name',
 		];
 
-		$redisClient = $this->createMock(Client\Client::class);
+		$redisClient = $this->createMock(Clients\Client::class);
 		$redisClient
 			->expects(self::once())
 			->method('select')

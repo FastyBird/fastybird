@@ -1,12 +1,12 @@
 <?php declare(strict_types = 1);
 
-namespace FastyBird\Plugin\RedisDb\Tests\Cases\Unit\Publisher;
+namespace FastyBird\Plugin\RedisDb\Tests\Cases\Unit\Publishers;
 
 use DateTime;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Plugin\RedisDb\Client;
+use FastyBird\Plugin\RedisDb\Clients;
 use FastyBird\Plugin\RedisDb\Publishers;
 use FastyBird\Plugin\RedisDb\Utilities;
 use Nette;
@@ -23,7 +23,7 @@ final class PublisherTest extends TestCase
 	{
 		$now = new DateTime();
 
-		$client = $this->createMock(Client\Client::class);
+		$client = $this->createMock(Clients\Client::class);
 		$client
 			->expects(self::once())
 			->method('publish')

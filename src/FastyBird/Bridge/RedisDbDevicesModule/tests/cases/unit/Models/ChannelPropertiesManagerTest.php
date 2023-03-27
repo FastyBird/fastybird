@@ -8,7 +8,7 @@ use FastyBird\Bridge\RedisDbDevicesModule\Tests\Cases\Unit\BaseTestCase;
 use FastyBird\Bridge\RedisDbDevicesModule\Tests\Tools\JsonAssert;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\States as DevicesStates;
-use FastyBird\Plugin\RedisDb\Client as RedisDbClient;
+use FastyBird\Plugin\RedisDb\Clients as RedisDbClient;
 use Nette\Utils;
 use Ramsey\Uuid\Uuid;
 

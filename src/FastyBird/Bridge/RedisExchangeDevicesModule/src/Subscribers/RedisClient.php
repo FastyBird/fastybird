@@ -20,7 +20,7 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Consumers as DevicesConsumers;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
-use FastyBird\Plugin\RedisDb\Client as RedisDbClient;
+use FastyBird\Plugin\RedisDb\Clients as RedisDbClient;
 use FastyBird\Plugin\RedisDb\Events as RedisDbEvents;
 use Psr\Log;
 use React\EventLoop;
