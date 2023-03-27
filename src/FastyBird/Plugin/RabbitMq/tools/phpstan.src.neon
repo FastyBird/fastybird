@@ -9,4 +9,3 @@ parameters:
         - ../tests/stubs/PromiseInterface.stub
         - ../tests/stubs/ExtendedPromiseInterface.stub
         - ../tests/stubs/EventEmitterInterface.stub
-        - ../tests/stubs/RedisClient.stub

@@ -1,18 +1,21 @@
 <?php declare(strict_types = 1);
 
-namespace Tests\Cases;
+namespace FastyBird\Plugin\RabbitMq\Tests\Cases\Unit;
 
 use DateTimeImmutable;
 use FastyBird\DateTimeFactory;
-use Mockery;
+use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
+use FastyBird\Plugin\RabbitMq;
 use Nette;
 use Nette\DI;
-use Ninjify\Nunjuck\TestCase\BaseMockeryTestCase;
+use PHPUnit\Framework\TestCase;
+use function constant;
+use function defined;
 use function file_exists;
 use function md5;
 use function time;
 
-abstract class BaseTestCase extends BaseMockeryTestCase
+abstract class BaseTestCase extends TestCase
 {
 
 	protected DI\Container $container;
@@ -23,34 +26,37 @@ abstract class BaseTestCase extends BaseMockeryTestCase
 
 		$this->container = $this->createContainer();
 
-		$dateTimeFactory = Mockery::mock(DateTimeFactory\DateTimeFactory::class);
+		$dateTimeFactory = $this->createMock(DateTimeFactory\Factory::class);
 		$dateTimeFactory
-			->shouldReceive('getNow')
-			->andReturn(new DateTimeImmutable('2020-04-01T12:00:00+00:00'));
+			->method('getNow')
+			->willReturn(new DateTimeImmutable('2020-04-01T12:00:00+00:00'));
 
 		$this->mockContainerService(
-			DateTimeFactory\DateTimeFactory::class,
+			DateTimeFactory\Factory::class,
 			$dateTimeFactory,
 		);
 	}
 
 	protected function createContainer(string|null $additionalConfig = null): Nette\DI\Container
 	{
-		$rootDir = __DIR__ . '/../../';
+		$rootDir = __DIR__ . '/../..';
+		$vendorDir = defined('FB_VENDOR_DIR') ? constant('FB_VENDOR_DIR') : $rootDir . '/../vendor';
 
-		$config = new Nette\Configurator();
-		$config->setTempDirectory(TEMP_DIR);
+		$config = new BootstrapBoot\Configurator();
+		$config->setTempDirectory(FB_TEMP_DIR);
 
-		$config->addParameters(['container' => ['class' => 'SystemContainer_' . md5((string) time())]]);
-		$config->addParameters(['appDir' => $rootDir, 'wwwDir' => $rootDir]);
+		$config->addStaticParameters(['container' => ['class' => 'SystemContainer_' . md5((string) time())]]);
+		$config->addStaticParameters(['appDir' => $rootDir, 'wwwDir' => $rootDir, 'vendorDir' => $vendorDir]);
 
 		$config->addConfig(__DIR__ . '/../../common.neon');
 
-		if ($additionalConfig && file_exists($additionalConfig)) {
+		if ($additionalConfig !== null && file_exists($additionalConfig)) {
 			$config->addConfig($additionalConfig);
 		}
 
-		RabbitMqPlugin\DI\RabbitMqPluginExtension::register($config);
+		$config->setTimeZone('Europe/Prague');
+
+		RabbitMq\DI\RabbitMqExtension::register($config);
 
 		return $config->createContainer();
 	}

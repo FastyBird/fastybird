@@ -31,7 +31,7 @@ use function is_array;
 use function strval;
 
 /**
- * Redis client message handler
+ * RabbitMQ message handler
  *
  * @package        FastyBird:RabbitMqPlugin!
  * @subpackage     Handlers
