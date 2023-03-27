@@ -25,7 +25,6 @@ use Nette\Utils;
 use Psr\EventDispatcher;
 use React\EventLoop;
 use React\Promise;
-use React\Socket;
 use Throwable;
 
 /**
@@ -52,7 +51,6 @@ final class Factory
 
 	public function create(
 		EventLoop\LoopInterface|null $eventLoop = null,
-		Socket\ConnectorInterface|null $connector = null,
 	): Promise\PromiseInterface
 	{
 		$client = new Bunny\Async\Client($eventLoop, [
