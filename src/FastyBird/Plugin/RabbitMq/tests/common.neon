@@ -27,8 +27,5 @@ services:
     }
 
 fbRabbitMqPlugin:
-    origins:
-        - com.fastybird.plugin
-    rabbitMQ:
-        queue:
-            name: testingQueueName
+    queue:
+        name: testingQueueName

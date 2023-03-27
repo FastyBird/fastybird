@@ -49,14 +49,14 @@ final class PublisherTest extends TestCase
 
 		$dateTimeFactory = $this->createMock(DateTimeFactory\Factory::class);
 		$dateTimeFactory
-			->expects(self::exactly(2))
+			->expects(self::once())
 			->method('getNow')
 			->willReturn($now);
 
 		$logger = $this->createMock(Log\LoggerInterface::class);
 		$logger
 			->expects(self::once())
-			->method('info')
+			->method('debug')
 			->with(self::callback(static function ($message): bool {
 				self::assertSame('Received message was pushed into data exchange', $message);
 
