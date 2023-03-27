@@ -36,7 +36,7 @@ final class ConsumerCommandTest extends BaseMockeryTestCase
 			->times(1);
 
 		$application = new Application();
-		$application->add(new Commands\ConsumerCommand(
+		$application->add(new Commands\RabbitMqClient(
 			$exchange,
 			$logger
 		));

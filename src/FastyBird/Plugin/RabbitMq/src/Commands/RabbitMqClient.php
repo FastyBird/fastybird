@@ -1,24 +1,24 @@
 <?php declare(strict_types = 1);
 
 /**
- * RedisClient.php
+ * RabbitMqClient.php
  *
- * @license        More in LICENSE.md
+ * @license        More in license.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:RedisDbPlugin!
+ * @package        FastyBird:RabbitMqPlugin!
  * @subpackage     Commands
- * @since          0.61.0
+ * @since          1.0.0
  *
- * @date           09.10.22
+ * @date           03.03.20
  */
 
-namespace FastyBird\Plugin\RedisDb\Commands;
+namespace FastyBird\Plugin\RabbitMq\Commands;
 
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Plugin\RedisDb\Client;
-use FastyBird\Plugin\RedisDb\Events;
-use FastyBird\Plugin\RedisDb\Exceptions;
+use FastyBird\Plugin\RabbitMq\Channels;
+use FastyBird\Plugin\RabbitMq\Events;
+use FastyBird\Plugin\RabbitMq\Exceptions;
 use Nette;
 use Psr\EventDispatcher;
 use Psr\Log;
@@ -29,23 +29,24 @@ use Symfony\Component\Console\Output;
 use Throwable;
 
 /**
- * Redis client command
+ * Exchange messages consumer console command
  *
- * @package        FastyBird:RedisDbPlugin!
+ * @package        FastyBird:RabbitMqPlugin!
  * @subpackage     Commands
+ *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class RedisClient extends Console\Command\Command
+final class RabbitMqClient extends Console\Command\Command
 {
 
 	use Nette\SmartObject;
 
-	public const NAME = 'fb:redis-client:start';
+	public const NAME = 'fb:rabbitmq-client:start';
 
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
-		private readonly Client\Factory $clientFactory,
+		private readonly Channels\Factory $channelFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 		Log\LoggerInterface|null $logger = null,
@@ -66,7 +67,7 @@ class RedisClient extends Console\Command\Command
 
 		$this
 			->setName(self::NAME)
-			->setDescription('Start Redis client');
+			->setDescription('Start RabbitMQ client');
 	}
 
 	protected function execute(
@@ -75,9 +76,9 @@ class RedisClient extends Console\Command\Command
 	): int
 	{
 		$this->logger->info(
-			'Launching Redis client',
+			'Launching RabbitMQ client',
 			[
-				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
+				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_RABBITMQ,
 				'type' => 'client-command',
 				'group' => 'cmd',
 			],
@@ -86,16 +87,16 @@ class RedisClient extends Console\Command\Command
 		try {
 			$this->dispatcher?->dispatch(new Events\Startup());
 
-			$this->clientFactory->create($this->eventLoop);
+			$this->channelFactory->create($this->eventLoop);
 
 			$this->eventLoop->run();
 
 		} catch (Exceptions\Terminate $ex) {
 			// Log error action reason
 			$this->logger->error(
-				'Redis client was forced to close',
+				'RabbitMQ client was forced to close',
 				[
-					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
+					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_RABBITMQ,
 					'type' => 'client-command',
 					'group' => 'cmd',
 					'exception' => [
@@ -111,9 +112,9 @@ class RedisClient extends Console\Command\Command
 		} catch (Throwable $ex) {
 			// Log error action reason
 			$this->logger->error(
-				'An unhandled error occurred. Stopping Redis client',
+				'An unhandled error occurred. Stopping RabbitMQ client',
 				[
-					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
+					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_RABBITMQ,
 					'type' => 'client-command',
 					'group' => 'cmd',
 					'exception' => [

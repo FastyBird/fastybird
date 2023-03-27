@@ -102,7 +102,7 @@
                 <element key="src/FastyBird/Plugin/CouchDb/tests/cases/unit" value="FastyBird\Plugin\CouchDb\Tests\Cases\Unit"/>
                 <element key="src/FastyBird/Plugin/CouchDb/tests/fixtures" value="FastyBird\Plugin\CouchDb\Tests\Fixtures"/>
 
-                <element key="src/FastyBird/Plugin/RabbitMq/src" value="FastyBird\Plugin\CouchDb"/>
+                <element key="src/FastyBird/Plugin/RabbitMq/src" value="FastyBird\Plugin\RabbitMq"/>
                 <element key="src/FastyBird/Plugin/RabbitMq/tests/cases/unit" value="FastyBird\Plugin\RabbitMq\Tests\Cases\Unit"/>
                 <element key="src/FastyBird/Plugin/RabbitMq/tests/fixtures" value="FastyBird\Plugin\RabbitMq\Tests\Fixtures"/>
 
