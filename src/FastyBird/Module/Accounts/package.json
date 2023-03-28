@@ -1,6 +1,6 @@
 {
   "name": "@fastybird/accounts-module",
-  "version": "1.0.0-dev.12",
+  "version": "1.0.0-dev.13",
   "type": "module",
   "description": "FastyBird IoT accounts module for application accounts & access management",
   "keywords": [
