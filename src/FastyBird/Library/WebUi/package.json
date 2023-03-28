@@ -1,6 +1,6 @@
 {
   "name": "@fastybird/web-ui-library",
-  "version": "1.0.0-dev.12",
+  "version": "1.0.0-dev.13",
   "type": "module",
   "description": "FastyBird IoT application theme & Vue components",
   "keywords": [
@@ -41,6 +41,7 @@
     "serve": "vite preview",
     "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
     "build": "yarn clean && vite build",
+    "build:only": "yarn clean && vite build",
     "lint:js": "eslint --ext .js,.ts,.vue --ignore-path .gitignore src",
     "lint:js:fix": "eslint --ext .js,.ts,.vue --ignore-path .gitignore src --fix",
     "lint:styles": "stylelint 'src/**/*.scss'",

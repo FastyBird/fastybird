@@ -45,7 +45,7 @@ class RedisDbTriggersModuleExtension extends DI\CompilerExtension
 			BootstrapBoot\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
-			$compiler->addExtension($extensionName, new RedisDbTriggersModuleExtension());
+			$compiler->addExtension($extensionName, new self());
 		};
 	}
 

@@ -53,7 +53,7 @@ class RedisDbExtension extends DI\CompilerExtension
 			BootstrapBoot\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
-			$compiler->addExtension($extensionName, new RedisDbExtension());
+			$compiler->addExtension($extensionName, new self());
 		};
 	}
 

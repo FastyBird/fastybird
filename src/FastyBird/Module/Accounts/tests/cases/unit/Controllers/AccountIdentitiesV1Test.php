@@ -3,6 +3,7 @@
 namespace FastyBird\Module\Accounts\Tests\Cases\Unit\Controllers;
 
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Metadata;
 use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\Module\Accounts\Schemas;
 use FastyBird\Module\Accounts\Tests\Cases\Unit\DbTestCase;
@@ -76,25 +77,26 @@ final class AccountIdentitiesV1Test extends DbTestCase
 			// Valid responses
 			//////////////////
 			'readAll' => [
-				'/v1/me/identities',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/me/identities',
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				StatusCodeInterface::STATUS_OK,
 				__DIR__ . '/../../../fixtures/Controllers/responses/account/identities/account.identities.index.json',
 			],
 			'readAllPaging' => [
-				'/v1/me/identities?page[offset]=1&page[limit]=1',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/me/identities?page[offset]=1&page[limit]=1',
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				StatusCodeInterface::STATUS_OK,
 				__DIR__ . '/../../../fixtures/Controllers/responses/account/identities/account.identities.index.paging.json',
 			],
 			'readOne' => [
-				'/v1/me/identities/' . self::ADMINISTRATOR_IDENTITY_ID,
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/me/identities/' . self::ADMINISTRATOR_IDENTITY_ID,
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				StatusCodeInterface::STATUS_OK,
 				__DIR__ . '/../../../fixtures/Controllers/responses/account/identities/account.identities.read.json',
 			],
 			'readRelationshipsAccount' => [
-				'/v1/me/identities/' . self::ADMINISTRATOR_IDENTITY_ID . '/relationships/' . Schemas\Identities\Identity::RELATIONSHIPS_ACCOUNT,
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/me/identities/' . self::ADMINISTRATOR_IDENTITY_ID . '/relationships/' . Schemas\Identities\Identity::RELATIONSHIPS_ACCOUNT,
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				StatusCodeInterface::STATUS_OK,
 				__DIR__ . '/../../../fixtures/Controllers/responses/account/identities/account.identities.relationships.account.json',
@@ -103,103 +105,110 @@ final class AccountIdentitiesV1Test extends DbTestCase
 			// Invalid responses
 			////////////////////
 			'readOneUnknown' => [
-				'/v1/me/identities/' . self::UNKNOWN_ID,
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/me/identities/' . self::UNKNOWN_ID,
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/notFound.json',
 			],
 			'readOneFromOtherUser' => [
-				'/v1/me/identities/' . self::USER_IDENTITY_ID,
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/me/identities/' . self::USER_IDENTITY_ID,
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/notFound.json',
 			],
 			'readRelationshipsUnknown' => [
-				'/v1/me/identities/' . self::ADMINISTRATOR_IDENTITY_ID . '/relationships/unknown',
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/me/identities/' . self::ADMINISTRATOR_IDENTITY_ID . '/relationships/unknown',
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/relation.unknown.json',
 			],
 			'readRelationshipsUnknownEntity' => [
-				'/v1/me/identities/' . self::UNKNOWN_ID . '/relationships/' . Schemas\Identities\Identity::RELATIONSHIPS_ACCOUNT,
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/me/identities/' . self::UNKNOWN_ID . '/relationships/' . Schemas\Identities\Identity::RELATIONSHIPS_ACCOUNT,
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/notFound.json',
 			],
 			'readRelationshipsFromOtherUserEntity' => [
-				'/v1/me/identities/' . self::USER_IDENTITY_ID . '/relationships/' . Schemas\Identities\Identity::RELATIONSHIPS_ACCOUNT,
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/me/identities/' . self::USER_IDENTITY_ID . '/relationships/' . Schemas\Identities\Identity::RELATIONSHIPS_ACCOUNT,
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/notFound.json',
 			],
 			'readAllNoToken' => [
-				'/v1/me/identities',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/me/identities',
 				null,
 				StatusCodeInterface::STATUS_FORBIDDEN,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
 			],
 			'readOneNoToken' => [
-				'/v1/me/identities/' . self::ADMINISTRATOR_IDENTITY_ID,
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/me/identities/' . self::ADMINISTRATOR_IDENTITY_ID,
 				null,
 				StatusCodeInterface::STATUS_FORBIDDEN,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
 			],
 			'readAllEmptyToken' => [
-				'/v1/me/identities',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/me/identities',
 				'',
 				StatusCodeInterface::STATUS_FORBIDDEN,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
 			],
 			'readOneEmptyToken' => [
-				'/v1/me/identities/' . self::ADMINISTRATOR_IDENTITY_ID,
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/me/identities/' . self::ADMINISTRATOR_IDENTITY_ID,
 				'',
 				StatusCodeInterface::STATUS_FORBIDDEN,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
 			],
 			'readOneExpiredToken' => [
-				'/v1/me/identities/' . self::ADMINISTRATOR_IDENTITY_ID,
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/me/identities/' . self::ADMINISTRATOR_IDENTITY_ID,
 				'Bearer ' . self::EXPIRED_TOKEN,
 				StatusCodeInterface::STATUS_UNAUTHORIZED,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/unauthorized.json',
 			],
 			'readAllInvalidToken' => [
-				'/v1/me/identities',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/me/identities',
 				'Bearer ' . self::INVALID_TOKEN,
 				StatusCodeInterface::STATUS_UNAUTHORIZED,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/unauthorized.json',
 			],
 			'readAllExpiredToken' => [
-				'/v1/me/identities',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/me/identities',
 				'Bearer ' . self::EXPIRED_TOKEN,
 				StatusCodeInterface::STATUS_UNAUTHORIZED,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/unauthorized.json',
 			],
 			'readOneInvalidToken' => [
-				'/v1/me/identities/' . self::ADMINISTRATOR_IDENTITY_ID,
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/me/identities/' . self::ADMINISTRATOR_IDENTITY_ID,
 				'Bearer ' . self::INVALID_TOKEN,
 				StatusCodeInterface::STATUS_UNAUTHORIZED,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/unauthorized.json',
 			],
 			'readRelationshipsNoToken' => [
-				'/v1/me/identities/' . self::ADMINISTRATOR_IDENTITY_ID . '/relationships/' . Schemas\Identities\Identity::RELATIONSHIPS_ACCOUNT,
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/me/identities/' . self::ADMINISTRATOR_IDENTITY_ID . '/relationships/' . Schemas\Identities\Identity::RELATIONSHIPS_ACCOUNT,
 				null,
 				StatusCodeInterface::STATUS_FORBIDDEN,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
 			],
 			'readRelationshipsEmptyToken' => [
-				'/v1/me/identities/' . self::ADMINISTRATOR_IDENTITY_ID . '/relationships/' . Schemas\Identities\Identity::RELATIONSHIPS_ACCOUNT,
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/me/identities/' . self::ADMINISTRATOR_IDENTITY_ID . '/relationships/' . Schemas\Identities\Identity::RELATIONSHIPS_ACCOUNT,
 				'',
 				StatusCodeInterface::STATUS_FORBIDDEN,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
 			],
 			'readRelationshipsInvalidToken' => [
-				'/v1/me/identities/' . self::ADMINISTRATOR_IDENTITY_ID . '/relationships/' . Schemas\Identities\Identity::RELATIONSHIPS_ACCOUNT,
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/me/identities/' . self::ADMINISTRATOR_IDENTITY_ID . '/relationships/' . Schemas\Identities\Identity::RELATIONSHIPS_ACCOUNT,
 				'Bearer ' . self::INVALID_TOKEN,
 				StatusCodeInterface::STATUS_UNAUTHORIZED,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/unauthorized.json',
 			],
 			'readRelationshipsExpiredToken' => [
-				'/v1/me/identities/' . self::ADMINISTRATOR_IDENTITY_ID . '/relationships/' . Schemas\Identities\Identity::RELATIONSHIPS_ACCOUNT,
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/me/identities/' . self::ADMINISTRATOR_IDENTITY_ID . '/relationships/' . Schemas\Identities\Identity::RELATIONSHIPS_ACCOUNT,
 				'Bearer ' . self::EXPIRED_TOKEN,
 				StatusCodeInterface::STATUS_UNAUTHORIZED,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/unauthorized.json',
@@ -253,7 +262,7 @@ final class AccountIdentitiesV1Test extends DbTestCase
 			// Valid responses
 			//////////////////
 			'update' => [
-				'/v1/me/identities/' . self::ADMINISTRATOR_IDENTITY_ID,
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/me/identities/' . self::ADMINISTRATOR_IDENTITY_ID,
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				file_get_contents(
 					__DIR__ . '/../../../fixtures/Controllers/requests/account/identities/account.identities.update.json',
@@ -265,7 +274,7 @@ final class AccountIdentitiesV1Test extends DbTestCase
 			// Invalid responses
 			////////////////////
 			'unknown' => [
-				'/v1/me/identities/' . self::UNKNOWN_ID,
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/me/identities/' . self::UNKNOWN_ID,
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				file_get_contents(
 					__DIR__ . '/../../../fixtures/Controllers/requests/account/identities/account.identities.update.invalid.id.json',
@@ -274,7 +283,7 @@ final class AccountIdentitiesV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/notFound.json',
 			],
 			'invalidPassword' => [
-				'/v1/me/identities/' . self::ADMINISTRATOR_IDENTITY_ID,
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/me/identities/' . self::ADMINISTRATOR_IDENTITY_ID,
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				file_get_contents(
 					__DIR__ . '/../../../fixtures/Controllers/requests/account/identities/account.identities.update.invalid.json',
@@ -283,7 +292,7 @@ final class AccountIdentitiesV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/account/identities/account.identities.update.invalid.json',
 			],
 			'missingRequired' => [
-				'/v1/me/identities/' . self::ADMINISTRATOR_IDENTITY_ID,
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/me/identities/' . self::ADMINISTRATOR_IDENTITY_ID,
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				file_get_contents(
 					__DIR__ . '/../../../fixtures/Controllers/requests/account/identities/account.identities.update.missing.required.json',
@@ -292,7 +301,7 @@ final class AccountIdentitiesV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/account/identities/account.identities.update.missing.required.json',
 			],
 			'fromOtherUser' => [
-				'/v1/me/identities/' . self::USER_IDENTITY_ID,
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/me/identities/' . self::USER_IDENTITY_ID,
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				file_get_contents(
 					__DIR__ . '/../../../fixtures/Controllers/requests/account/identities/account.identities.update.otherUser.json',
@@ -301,7 +310,7 @@ final class AccountIdentitiesV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/notFound.json',
 			],
 			'invalidType' => [
-				'/v1/me/identities/' . self::ADMINISTRATOR_IDENTITY_ID,
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/me/identities/' . self::ADMINISTRATOR_IDENTITY_ID,
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				file_get_contents(
 					__DIR__ . '/../../../fixtures/Controllers/requests/account/identities/account.identities.update.invalid.type.json',
@@ -310,7 +319,7 @@ final class AccountIdentitiesV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/invalid.type.json',
 			],
 			'idMismatch' => [
-				'/v1/me/identities/' . self::ADMINISTRATOR_IDENTITY_ID,
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/me/identities/' . self::ADMINISTRATOR_IDENTITY_ID,
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				file_get_contents(
 					__DIR__ . '/../../../fixtures/Controllers/requests/account/identities/account.identities.update.invalid.id.json',
@@ -319,7 +328,7 @@ final class AccountIdentitiesV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/invalid.identifier.json',
 			],
 			'noToken' => [
-				'/v1/me/identities/' . self::ADMINISTRATOR_IDENTITY_ID,
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/me/identities/' . self::ADMINISTRATOR_IDENTITY_ID,
 				null,
 				file_get_contents(
 					__DIR__ . '/../../../fixtures/Controllers/requests/account/identities/account.identities.update.json',
@@ -328,7 +337,7 @@ final class AccountIdentitiesV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
 			],
 			'emptyToken' => [
-				'/v1/me/identities/' . self::ADMINISTRATOR_IDENTITY_ID,
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/me/identities/' . self::ADMINISTRATOR_IDENTITY_ID,
 				'',
 				file_get_contents(
 					__DIR__ . '/../../../fixtures/Controllers/requests/account/identities/account.identities.update.json',
@@ -337,7 +346,7 @@ final class AccountIdentitiesV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
 			],
 			'invalidToken' => [
-				'/v1/me/identities/' . self::ADMINISTRATOR_IDENTITY_ID,
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/me/identities/' . self::ADMINISTRATOR_IDENTITY_ID,
 				'Bearer ' . self::INVALID_TOKEN,
 				file_get_contents(
 					__DIR__ . '/../../../fixtures/Controllers/requests/account/identities/account.identities.update.json',
@@ -346,7 +355,7 @@ final class AccountIdentitiesV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/unauthorized.json',
 			],
 			'expiredToken' => [
-				'/v1/me/identities/' . self::ADMINISTRATOR_IDENTITY_ID,
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/me/identities/' . self::ADMINISTRATOR_IDENTITY_ID,
 				'Bearer ' . self::EXPIRED_TOKEN,
 				file_get_contents(
 					__DIR__ . '/../../../fixtures/Controllers/requests/account/identities/account.identities.update.json',

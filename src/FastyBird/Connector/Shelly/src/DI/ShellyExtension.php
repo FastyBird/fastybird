@@ -59,7 +59,7 @@ class ShellyExtension extends DI\CompilerExtension
 			BootstrapBoot\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
-			$compiler->addExtension($extensionName, new ShellyExtension());
+			$compiler->addExtension($extensionName, new self());
 		};
 	}
 

@@ -8,10 +8,10 @@
     "version" : "1.1"
   },
   "links" : {
-    "self" : "/v1/connectors?page%5Boffset%5D=1&page%5Blimit%5D=1",
-    "first" : "/v1/connectors?page%5Boffset%5D=0&page%5Blimit%5D=1",
-    "prev" : "/v1/connectors?page%5Boffset%5D=0&page%5Blimit%5D=1",
-    "last" : "/v1/connectors?page%5Boffset%5D=1&page%5Blimit%5D=1"
+    "self" : "/devices-module/v1/connectors?page%5Boffset%5D=1&page%5Blimit%5D=1",
+    "first" : "/devices-module/v1/connectors?page%5Boffset%5D=0&page%5Blimit%5D=1",
+    "prev" : "/devices-module/v1/connectors?page%5Boffset%5D=0&page%5Blimit%5D=1",
+    "last" : "/devices-module/v1/connectors?page%5Boffset%5D=1&page%5Blimit%5D=1"
   },
   "data" : [
     {
@@ -29,9 +29,9 @@
         },
         "properties" : {
           "links" : {
-            "self" : "/v1/connectors/7a3dd94c-7294-46fd-8c61-1b375c313d4d/relationships/properties",
+            "self" : "/devices-module/v1/connectors/7a3dd94c-7294-46fd-8c61-1b375c313d4d/relationships/properties",
             "related" : {
-              "href" : "/v1/connectors/7a3dd94c-7294-46fd-8c61-1b375c313d4d/properties",
+              "href" : "/devices-module/v1/connectors/7a3dd94c-7294-46fd-8c61-1b375c313d4d/properties",
               "meta" : {
                 "count" : 0
               }
@@ -41,9 +41,9 @@
         },
         "controls" : {
           "links" : {
-            "self" : "/v1/connectors/7a3dd94c-7294-46fd-8c61-1b375c313d4d/relationships/controls",
+            "self" : "/devices-module/v1/connectors/7a3dd94c-7294-46fd-8c61-1b375c313d4d/relationships/controls",
             "related" : {
-              "href" : "/v1/connectors/7a3dd94c-7294-46fd-8c61-1b375c313d4d/controls",
+              "href" : "/devices-module/v1/connectors/7a3dd94c-7294-46fd-8c61-1b375c313d4d/controls",
               "meta" : {
                 "count" : 0
               }
@@ -53,7 +53,7 @@
         }
       },
       "links" : {
-        "self" : "/v1/connectors/7a3dd94c-7294-46fd-8c61-1b375c313d4d"
+        "self" : "/devices-module/v1/connectors/7a3dd94c-7294-46fd-8c61-1b375c313d4d"
       }
     }
   ]

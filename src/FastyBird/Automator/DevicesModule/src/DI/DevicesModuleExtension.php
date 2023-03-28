@@ -46,7 +46,7 @@ class DevicesModuleExtension extends DI\CompilerExtension
 			BootstrapBoot\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
-			$compiler->addExtension($extensionName, new DevicesModuleExtension());
+			$compiler->addExtension($extensionName, new self());
 		};
 	}
 

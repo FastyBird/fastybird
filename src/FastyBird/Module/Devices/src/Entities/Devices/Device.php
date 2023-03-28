@@ -224,7 +224,7 @@ abstract class Device implements Entities\Entity,
 		}
 	}
 
-	public function addParent(Device $device): void
+	public function addParent(self $device): void
 	{
 		// Check if collection does not contain inserting entity
 		if (!$this->parents->contains($device)) {
@@ -233,7 +233,7 @@ abstract class Device implements Entities\Entity,
 		}
 	}
 
-	public function removeParent(Device $parent): void
+	public function removeParent(self $parent): void
 	{
 		$this->parents->removeElement($parent);
 	}
@@ -260,7 +260,7 @@ abstract class Device implements Entities\Entity,
 		}
 	}
 
-	public function addChild(Device $child): void
+	public function addChild(self $child): void
 	{
 		// Check if collection does not contain inserting entity
 		if (!$this->children->contains($child)) {
@@ -269,7 +269,7 @@ abstract class Device implements Entities\Entity,
 		}
 	}
 
-	public function removeChild(Device $child): void
+	public function removeChild(self $child): void
 	{
 		// Check if collection contain removing entity...
 		if ($this->children->contains($child)) {

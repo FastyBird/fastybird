@@ -42,7 +42,7 @@ class RedisExchangeDevicesModuleExtension extends DI\CompilerExtension
 			BootstrapBoot\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
-			$compiler->addExtension($extensionName, new RedisExchangeDevicesModuleExtension());
+			$compiler->addExtension($extensionName, new self());
 		};
 	}
 

@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import axios from 'axios';
 import { useCookies } from 'vue3-cookies';
 import jwtDecode from 'jwt-decode';
-import JsonaService from 'jsona';
+import { Jsona } from 'jsona';
 import get from 'lodash/get';
 
 import { ModulePrefix } from '@fastybird/metadata-library';
@@ -24,7 +24,7 @@ import {
 export const ACCESS_TOKEN_COOKIE_NAME = 'token';
 export const REFRESH_TOKEN_COOKIE_NAME = 'refresh_token';
 
-const jsonApiFormatter = new JsonaService({
+const jsonApiFormatter = new Jsona({
 	modelPropertiesMapper: new JsonApiModelPropertiesMapper(),
 	jsonPropertiesMapper: new JsonApiJsonPropertiesMapper(),
 });
@@ -191,7 +191,7 @@ export const useSession = defineStore('accounts_module_session', {
 
 			const accountsStore = useAccounts();
 
-			const dataFormatter = new JsonaService();
+			const dataFormatter = new Jsona();
 
 			this.semaphore.creating = true;
 
@@ -241,7 +241,7 @@ export const useSession = defineStore('accounts_module_session', {
 				return false;
 			}
 
-			const dataFormatter = new JsonaService();
+			const dataFormatter = new Jsona();
 
 			this.semaphore.updating = true;
 

@@ -8,11 +8,11 @@
     "version" : "1.1"
   },
   "links" : {
-    "self" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions?page%5Boffset%5D=1&page%5Blimit%5D=1",
-    "first" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions?page%5Boffset%5D=0&page%5Blimit%5D=1",
-    "prev" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions?page%5Boffset%5D=0&page%5Blimit%5D=1",
-    "next" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions?page%5Boffset%5D=2&page%5Blimit%5D=1",
-    "last" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions?page%5Boffset%5D=2&page%5Blimit%5D=1"
+    "self" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions?page%5Boffset%5D=1&page%5Blimit%5D=1",
+    "first" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions?page%5Boffset%5D=0&page%5Blimit%5D=1",
+    "prev" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions?page%5Boffset%5D=0&page%5Blimit%5D=1",
+    "next" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions?page%5Boffset%5D=2&page%5Blimit%5D=1",
+    "last" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions?page%5Boffset%5D=2&page%5Blimit%5D=1"
   },
   "data" : [
     {
@@ -27,8 +27,8 @@
       "relationships" : {
         "trigger" : {
           "links" : {
-            "self" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions/827d61f7-5dcf-4cab-9662-f386f6fb0bce/relationships/trigger",
-            "related" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4"
+            "self" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions/827d61f7-5dcf-4cab-9662-f386f6fb0bce/relationships/trigger",
+            "related" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4"
           },
           "data" : {
             "type" : "com.fastybird.triggers-module/trigger/manual",
@@ -37,7 +37,7 @@
         }
       },
       "links" : {
-        "self" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions/827d61f7-5dcf-4cab-9662-f386f6fb0bce"
+        "self" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions/827d61f7-5dcf-4cab-9662-f386f6fb0bce"
       }
     }
   ]

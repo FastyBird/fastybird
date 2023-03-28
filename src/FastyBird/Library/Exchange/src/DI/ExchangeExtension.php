@@ -47,7 +47,7 @@ class ExchangeExtension extends DI\CompilerExtension
 			BootstrapBoot\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
-			$compiler->addExtension($extensionName, new ExchangeExtension());
+			$compiler->addExtension($extensionName, new self());
 		};
 	}
 

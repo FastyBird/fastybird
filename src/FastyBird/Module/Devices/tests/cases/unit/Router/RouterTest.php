@@ -63,12 +63,12 @@ final class RouterTest extends DbTestCase
 	{
 		return [
 			'readAllValid' => [
-				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices',
+				'/v1/devices',
 				'Bearer ' . VALID_TOKEN,
 				StatusCodeInterface::STATUS_OK,
 			],
 			'readAllInvalid' => [
-				'/v1/devices',
+				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices',
 				'Bearer ' . VALID_TOKEN,
 				StatusCodeInterface::STATUS_NOT_FOUND,
 			],

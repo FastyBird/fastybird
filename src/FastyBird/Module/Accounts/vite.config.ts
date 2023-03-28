@@ -109,7 +109,7 @@ export default defineConfig({
 					ajv: 'Ajv',
 					axios: 'Axios',
 					'date-fns': 'dateFns',
-					jsona: 'JsonaService',
+					jsona: 'Jsona',
 					'lodash.get': 'LodashGet',
 					uuid: 'uuid',
 					yup: 'Yup',

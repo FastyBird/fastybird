@@ -61,14 +61,14 @@ class AccountsExtension extends DI\CompilerExtension
 			BootstrapBoot\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
-			$compiler->addExtension($extensionName, new AccountsExtension());
+			$compiler->addExtension($extensionName, new self());
 		};
 	}
 
 	public function getConfigSchema(): Schema\Schema
 	{
 		return Schema\Expect::structure([
-			'apiPrefix' => Schema\Expect::bool(false),
+			'apiPrefix' => Schema\Expect::bool(true),
 		]);
 	}
 
@@ -83,6 +83,7 @@ class AccountsExtension extends DI\CompilerExtension
 
 		$builder->addDefinition($this->prefix('middlewares.urlFormat'), new DI\Definitions\ServiceDefinition())
 			->setType(Middleware\UrlFormat::class)
+			->setArguments(['usePrefix' => $configuration->apiPrefix])
 			->addTag('middleware');
 
 		$builder->addDefinition($this->prefix('router.routes'), new DI\Definitions\ServiceDefinition())

@@ -39,7 +39,7 @@ class TuyaDevice extends DevicesEntities\Devices\Device
 
 	private const STATUS_READING_DELAY = 120.0;
 
-	private TuyaDevice|false|null $gateway = null;
+	private self|false|null $gateway = null;
 
 	public function getType(): string
 	{
@@ -81,14 +81,14 @@ class TuyaDevice extends DevicesEntities\Devices\Device
 		throw new Exceptions\InvalidState('Device protocol version is not configured');
 	}
 
-	public function getGateway(): TuyaDevice|false
+	public function getGateway(): self|false
 	{
 		if ($this->gateway === null) {
 			$gateway = $this->parents
-				->filter(static fn (DevicesEntities\Devices\Device $row): bool => $row instanceof TuyaDevice)
+				->filter(static fn (DevicesEntities\Devices\Device $row): bool => $row instanceof self)
 				->first();
 
-			assert($gateway instanceof TuyaDevice || $gateway === false);
+			assert($gateway instanceof self || $gateway === false);
 
 			$this->gateway = $gateway;
 		}

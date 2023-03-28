@@ -54,7 +54,7 @@ class BootstrapExtension extends DI\CompilerExtension
 			Boot\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
-			$compiler->addExtension($extensionName, new BootstrapExtension());
+			$compiler->addExtension($extensionName, new self());
 		};
 	}
 

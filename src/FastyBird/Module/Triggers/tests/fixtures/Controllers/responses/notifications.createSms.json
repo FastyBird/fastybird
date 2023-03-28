@@ -6,7 +6,7 @@
     },
     "id" : "ef011ee6-82b9-4324-aeaf-33241d81b721",
     "links" : {
-      "self" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/notifications/ef011ee6-82b9-4324-aeaf-33241d81b721"
+      "self" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/notifications/ef011ee6-82b9-4324-aeaf-33241d81b721"
     },
     "relationships" : {
       "trigger" : {
@@ -15,8 +15,8 @@
           "type" : "com.fastybird.triggers-module/trigger/manual"
         },
         "links" : {
-          "related" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4",
-          "self" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/notifications/ef011ee6-82b9-4324-aeaf-33241d81b721/relationships/trigger"
+          "related" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4",
+          "self" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/notifications/ef011ee6-82b9-4324-aeaf-33241d81b721/relationships/trigger"
         }
       }
     },
@@ -26,7 +26,7 @@
     "version" : "1.1"
   },
   "links" : {
-    "self" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/notifications"
+    "self" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/notifications"
   },
   "meta" : {
     "author" : "FastyBird team",

@@ -3,6 +3,7 @@
 namespace FastyBird\Module\Accounts\Tests\Cases\Unit\Controllers;
 
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Metadata;
 use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\Module\Accounts\Schemas;
 use FastyBird\Module\Accounts\Tests\Cases\Unit\DbTestCase;
@@ -73,19 +74,19 @@ final class SessionV1Test extends DbTestCase
 			// Valid responses
 			//////////////////
 			'read' => [
-				'/v1/session',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/session',
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				StatusCodeInterface::STATUS_OK,
 				__DIR__ . '/../../../fixtures/Controllers/responses/session/session.read.json',
 			],
 			'readUser' => [
-				'/v1/session',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/session',
 				'Bearer ' . self::USER_TOKEN,
 				StatusCodeInterface::STATUS_OK,
 				__DIR__ . '/../../../fixtures/Controllers/responses/session/session.read.user.json',
 			],
 			'readRelationshipsAccount' => [
-				'/v1/session/relationships/' . Schemas\Sessions\Session::RELATIONSHIPS_ACCOUNT,
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/session/relationships/' . Schemas\Sessions\Session::RELATIONSHIPS_ACCOUNT,
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				StatusCodeInterface::STATUS_OK,
 				__DIR__ . '/../../../fixtures/Controllers/responses/session/session.relationship.account.json',
@@ -94,55 +95,55 @@ final class SessionV1Test extends DbTestCase
 			// Invalid responses
 			////////////////////
 			'readRelationshipsUnknown' => [
-				'/v1/session/relationships/unknown',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/session/relationships/unknown',
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/relation.unknown.json',
 			],
 			'readNoToken' => [
-				'/v1/session',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/session',
 				null,
 				StatusCodeInterface::STATUS_FORBIDDEN,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
 			],
 			'readEmptyToken' => [
-				'/v1/session',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/session',
 				'',
 				StatusCodeInterface::STATUS_FORBIDDEN,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
 			],
 			'readExpiredToken' => [
-				'/v1/session',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/session',
 				'Bearer ' . self::EXPIRED_TOKEN,
 				StatusCodeInterface::STATUS_UNAUTHORIZED,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/unauthorized.json',
 			],
 			'readInvalidToken' => [
-				'/v1/session',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/session',
 				'Bearer ' . self::INVALID_TOKEN,
 				StatusCodeInterface::STATUS_UNAUTHORIZED,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/unauthorized.json',
 			],
 			'readRelationshipsNoToken' => [
-				'/v1/session/relationships/' . Schemas\Sessions\Session::RELATIONSHIPS_ACCOUNT,
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/session/relationships/' . Schemas\Sessions\Session::RELATIONSHIPS_ACCOUNT,
 				null,
 				StatusCodeInterface::STATUS_FORBIDDEN,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
 			],
 			'readRelationshipsEmptyToken' => [
-				'/v1/session/relationships/' . Schemas\Sessions\Session::RELATIONSHIPS_ACCOUNT,
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/session/relationships/' . Schemas\Sessions\Session::RELATIONSHIPS_ACCOUNT,
 				'',
 				StatusCodeInterface::STATUS_FORBIDDEN,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
 			],
 			'readRelationshipsExpiredToken' => [
-				'/v1/session/relationships/' . Schemas\Sessions\Session::RELATIONSHIPS_ACCOUNT,
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/session/relationships/' . Schemas\Sessions\Session::RELATIONSHIPS_ACCOUNT,
 				'Bearer ' . self::EXPIRED_TOKEN,
 				StatusCodeInterface::STATUS_UNAUTHORIZED,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/unauthorized.json',
 			],
 			'readRelationshipsInvalidToken' => [
-				'/v1/session/relationships/' . Schemas\Sessions\Session::RELATIONSHIPS_ACCOUNT,
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/session/relationships/' . Schemas\Sessions\Session::RELATIONSHIPS_ACCOUNT,
 				'Bearer ' . self::INVALID_TOKEN,
 				StatusCodeInterface::STATUS_UNAUTHORIZED,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/unauthorized.json',
@@ -227,14 +228,14 @@ final class SessionV1Test extends DbTestCase
 			// Valid responses
 			//////////////////
 			'create' => [
-				'/v1/session',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/session',
 				null,
 				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/session/session.create.json'),
 				StatusCodeInterface::STATUS_CREATED,
 				__DIR__ . '/../../../fixtures/Controllers/responses/session/session.create.json',
 			],
 			'createWithEmptyToken' => [
-				'/v1/session',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/session',
 				'',
 				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/session/session.create.json'),
 				StatusCodeInterface::STATUS_CREATED,
@@ -244,28 +245,28 @@ final class SessionV1Test extends DbTestCase
 			// Invalid responses
 			////////////////////
 			'createWithToken' => [
-				'/v1/session',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/session',
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/session/session.create.json'),
 				StatusCodeInterface::STATUS_FORBIDDEN,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
 			],
 			'createWithExpiredToken' => [
-				'/v1/session',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/session',
 				'Bearer ' . self::EXPIRED_TOKEN,
 				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/session/session.create.json'),
 				StatusCodeInterface::STATUS_UNAUTHORIZED,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/unauthorized.json',
 			],
 			'createWithInvalidToken' => [
-				'/v1/session',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/session',
 				'Bearer ' . self::INVALID_TOKEN,
 				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/session/session.create.json'),
 				StatusCodeInterface::STATUS_UNAUTHORIZED,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/unauthorized.json',
 			],
 			'missingRequired' => [
-				'/v1/session',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/session',
 				null,
 				file_get_contents(
 					__DIR__ . '/../../../fixtures/Controllers/requests/session/session.create.missing.required.json',
@@ -274,7 +275,7 @@ final class SessionV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/session/session.create.missing.required.json',
 			],
 			'unknown' => [
-				'/v1/session',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/session',
 				null,
 				file_get_contents(
 					__DIR__ . '/../../../fixtures/Controllers/requests/session/session.create.unknown.json',
@@ -283,7 +284,7 @@ final class SessionV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/session/session.create.unknown.json',
 			],
 			'invalid' => [
-				'/v1/session',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/session',
 				null,
 				file_get_contents(
 					__DIR__ . '/../../../fixtures/Controllers/requests/session/session.create.invalid.json',
@@ -292,7 +293,7 @@ final class SessionV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/session/session.create.invalid.json',
 			],
 			'deleted' => [
-				'/v1/session',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/session',
 				null,
 				file_get_contents(
 					__DIR__ . '/../../../fixtures/Controllers/requests/session/session.create.deleted.json',
@@ -301,7 +302,7 @@ final class SessionV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/session/session.create.deleted.json',
 			],
 			'blocked' => [
-				'/v1/session',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/session',
 				null,
 				file_get_contents(
 					__DIR__ . '/../../../fixtures/Controllers/requests/session/session.create.blocked.json',
@@ -310,7 +311,7 @@ final class SessionV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/session/session.create.blocked.json',
 			],
 			'notActivated' => [
-				'/v1/session',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/session',
 				null,
 				file_get_contents(
 					__DIR__ . '/../../../fixtures/Controllers/requests/session/session.create.notActivated.json',
@@ -319,7 +320,7 @@ final class SessionV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/session/session.create.notActivated.json',
 			],
 			'approval_waiting' => [
-				'/v1/session',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/session',
 				null,
 				file_get_contents(
 					__DIR__ . '/../../../fixtures/Controllers/requests/session/session.create.approvalWaiting.json',
@@ -407,14 +408,14 @@ final class SessionV1Test extends DbTestCase
 			// Valid responses
 			//////////////////
 			'update' => [
-				'/v1/session',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/session',
 				null,
 				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/session/session.update.json'),
 				StatusCodeInterface::STATUS_CREATED,
 				__DIR__ . '/../../../fixtures/Controllers/responses/session/session.update.json',
 			],
 			'updateWithEmptyToken' => [
-				'/v1/session',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/session',
 				'',
 				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/session/session.update.json'),
 				StatusCodeInterface::STATUS_CREATED,
@@ -424,7 +425,7 @@ final class SessionV1Test extends DbTestCase
 			// Invalid responses
 			////////////////////
 			'missingRequired' => [
-				'/v1/session',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/session',
 				null,
 				file_get_contents(
 					__DIR__ . '/../../../fixtures/Controllers/requests/session/session.update.missing.required.json',
@@ -433,7 +434,7 @@ final class SessionV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/session/session.update.missing.required.json',
 			],
 			'unknownRefreshToken' => [
-				'/v1/session',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/session',
 				null,
 				file_get_contents(
 					__DIR__ . '/../../../fixtures/Controllers/requests/session/session.update.unknown.json',
@@ -442,21 +443,21 @@ final class SessionV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/session/session.update.unknown.json',
 			],
 			'updateWithToken' => [
-				'/v1/session',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/session',
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/session/session.update.json'),
 				StatusCodeInterface::STATUS_FORBIDDEN,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
 			],
 			'updateWithExpiredToken' => [
-				'/v1/session',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/session',
 				'Bearer ' . self::EXPIRED_TOKEN,
 				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/session/session.update.json'),
 				StatusCodeInterface::STATUS_UNAUTHORIZED,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/unauthorized.json',
 			],
 			'updateWithInvalidToken' => [
-				'/v1/session',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/session',
 				'Bearer ' . self::INVALID_TOKEN,
 				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/session/session.update.json'),
 				StatusCodeInterface::STATUS_UNAUTHORIZED,
@@ -510,7 +511,7 @@ final class SessionV1Test extends DbTestCase
 			// Valid responses
 			//////////////////
 			'delete' => [
-				'/v1/session',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/session',
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				StatusCodeInterface::STATUS_NO_CONTENT,
 				__DIR__ . '/../../../fixtures/Controllers/responses/session/session.delete.json',
@@ -519,25 +520,25 @@ final class SessionV1Test extends DbTestCase
 			// Invalid responses
 			////////////////////
 			'missingToken' => [
-				'/v1/session',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/session',
 				null,
 				StatusCodeInterface::STATUS_FORBIDDEN,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
 			],
 			'emptyToken' => [
-				'/v1/session',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/session',
 				'',
 				StatusCodeInterface::STATUS_FORBIDDEN,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
 			],
 			'invalidToken' => [
-				'/v1/session',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/session',
 				'Bearer ' . self::INVALID_TOKEN,
 				StatusCodeInterface::STATUS_UNAUTHORIZED,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/unauthorized.json',
 			],
 			'expiredToken' => [
-				'/v1/session',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/session',
 				'Bearer ' . self::EXPIRED_TOKEN,
 				StatusCodeInterface::STATUS_UNAUTHORIZED,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/unauthorized.json',

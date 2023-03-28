@@ -69,7 +69,7 @@ abstract class Property extends Entities\Property
 	 * @ORM\ManyToOne(targetEntity="FastyBird\Module\Devices\Entities\Devices\Properties\Property", inversedBy="children")
 	 * @ORM\JoinColumn(name="parent_id", referencedColumnName="property_id", nullable=true, onDelete="CASCADE")
 	 */
-	protected Property|null $parent = null;
+	protected self|null $parent = null;
 
 	/**
 	 * @var Common\Collections\Collection<int, Property>
@@ -93,12 +93,12 @@ abstract class Property extends Entities\Property
 		$this->children = new Common\Collections\ArrayCollection();
 	}
 
-	public function getParent(): Property|null
+	public function getParent(): self|null
 	{
 		return $this->parent;
 	}
 
-	public function setParent(Property $device): void
+	public function setParent(self $device): void
 	{
 		$this->parent = $device;
 	}
@@ -130,7 +130,7 @@ abstract class Property extends Entities\Property
 		}
 	}
 
-	public function addChild(Property $child): void
+	public function addChild(self $child): void
 	{
 		// Check if collection does not contain inserting entity
 		if (!$this->children->contains($child)) {
@@ -139,7 +139,7 @@ abstract class Property extends Entities\Property
 		}
 	}
 
-	public function removeChild(Property $child): void
+	public function removeChild(self $child): void
 	{
 		// Check if collection contain removing entity...
 		if ($this->children->contains($child)) {

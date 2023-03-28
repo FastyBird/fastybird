@@ -59,7 +59,7 @@ class WsExchangeExtension extends DI\CompilerExtension
 			BootstrapBoot\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
-			$compiler->addExtension($extensionName, new WsExchangeExtension());
+			$compiler->addExtension($extensionName, new self());
 		};
 	}
 

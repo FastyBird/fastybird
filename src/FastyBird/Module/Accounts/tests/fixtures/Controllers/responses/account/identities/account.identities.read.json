@@ -7,7 +7,7 @@
     "version" : "1.1"
   },
   "links" : {
-    "self" : "/v1/me/identities/77331268-efbf-bd34-49ef-bfbdefbfbd04"
+    "self" : "/accounts-module/v1/me/identities/77331268-efbf-bd34-49ef-bfbdefbfbd04"
   },
   "data" : {
     "type" : "com.fastybird.accounts-module/identity",
@@ -19,8 +19,8 @@
     "relationships" : {
       "account" : {
         "links" : {
-          "self" : "/v1/me/identities/77331268-efbf-bd34-49ef-bfbdefbfbd04/relationships/account",
-          "related" : "/v1/me"
+          "self" : "/accounts-module/v1/me/identities/77331268-efbf-bd34-49ef-bfbdefbfbd04/relationships/account",
+          "related" : "/accounts-module/v1/me"
         },
         "data" : {
           "type" : "com.fastybird.accounts-module/account",
@@ -29,7 +29,7 @@
       }
     },
     "links" : {
-      "self" : "/v1/me/identities/77331268-efbf-bd34-49ef-bfbdefbfbd04"
+      "self" : "/accounts-module/v1/me/identities/77331268-efbf-bd34-49ef-bfbdefbfbd04"
     }
   }
 }

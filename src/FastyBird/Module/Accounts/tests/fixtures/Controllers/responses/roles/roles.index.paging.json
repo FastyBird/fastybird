@@ -8,11 +8,11 @@
     "version" : "1.1"
   },
   "links" : {
-    "self" : "/v1/roles?page%5Boffset%5D=1&page%5Blimit%5D=1",
-    "first" : "/v1/roles?page%5Boffset%5D=0&page%5Blimit%5D=1",
-    "prev" : "/v1/roles?page%5Boffset%5D=0&page%5Blimit%5D=1",
-    "next" : "/v1/roles?page%5Boffset%5D=2&page%5Blimit%5D=1",
-    "last" : "/v1/roles?page%5Boffset%5D=3&page%5Blimit%5D=1"
+    "self" : "/accounts-module/v1/roles?page%5Boffset%5D=1&page%5Blimit%5D=1",
+    "first" : "/accounts-module/v1/roles?page%5Boffset%5D=0&page%5Blimit%5D=1",
+    "prev" : "/accounts-module/v1/roles?page%5Boffset%5D=0&page%5Blimit%5D=1",
+    "next" : "/accounts-module/v1/roles?page%5Boffset%5D=2&page%5Blimit%5D=1",
+    "last" : "/accounts-module/v1/roles?page%5Boffset%5D=3&page%5Blimit%5D=1"
   },
   "data" : [
     {
@@ -28,9 +28,9 @@
       "relationships" : {
         "children" : {
           "links" : {
-            "self" : "/v1/roles/337a0518-664b-40ef-bfbd-efbfbd7914ef/relationships/children",
+            "self" : "/accounts-module/v1/roles/337a0518-664b-40ef-bfbd-efbfbd7914ef/relationships/children",
             "related" : {
-              "href" : "/v1/roles/337a0518-664b-40ef-bfbd-efbfbd7914ef/children",
+              "href" : "/accounts-module/v1/roles/337a0518-664b-40ef-bfbd-efbfbd7914ef/children",
               "meta" : {
                 "count" : 0
               }
@@ -40,8 +40,8 @@
         },
         "parent" : {
           "links" : {
-            "self" : "/v1/roles/337a0518-664b-40ef-bfbd-efbfbd7914ef/relationships/parent",
-            "related" : "/v1/roles/337a0518-664b-40ef-bfbd-efbfbd7914ef"
+            "self" : "/accounts-module/v1/roles/337a0518-664b-40ef-bfbd-efbfbd7914ef/relationships/parent",
+            "related" : "/accounts-module/v1/roles/337a0518-664b-40ef-bfbd-efbfbd7914ef"
           },
           "data" : {
             "type" : "com.fastybird.accounts-module/role",
@@ -50,7 +50,7 @@
         }
       },
       "links" : {
-        "self" : "/v1/roles/337a0518-664b-40ef-bfbd-efbfbd7914ef"
+        "self" : "/accounts-module/v1/roles/337a0518-664b-40ef-bfbd-efbfbd7914ef"
       }
     }
   ]

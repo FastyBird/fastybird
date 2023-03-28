@@ -7,7 +7,7 @@
     "version" : "1.1"
   },
   "links" : {
-    "self" : "/v1/connectors/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/controls/7c055b2b-60c3-4017-93db-e9478d8aa662"
+    "self" : "/devices-module/v1/connectors/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/controls/7c055b2b-60c3-4017-93db-e9478d8aa662"
   },
   "data" : {
     "type" : "com.fastybird.devices-module/control/connector",
@@ -18,7 +18,7 @@
     "relationships" : {
       "connector" : {
         "links" : {
-          "related" : "/v1/connectors/17c59dfa-2edd-438e-8c49-faa4e38e5a5e"
+          "related" : "/devices-module/v1/connectors/17c59dfa-2edd-438e-8c49-faa4e38e5a5e"
         },
         "data" : {
           "type" : "com.fastybird.devices-module/connector/blank",
@@ -27,7 +27,7 @@
       }
     },
     "links" : {
-      "self" : "/v1/connectors/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/controls/7c055b2b-60c3-4017-93db-e9478d8aa662"
+      "self" : "/devices-module/v1/connectors/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/controls/7c055b2b-60c3-4017-93db-e9478d8aa662"
     }
   }
 }

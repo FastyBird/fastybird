@@ -16,6 +16,7 @@
 namespace FastyBird\Module\Accounts\Middleware;
 
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
+use FastyBird\Library\Metadata;
 use FastyBird\Module\Accounts\Security;
 use Fig\Http\Message\StatusCodeInterface;
 use InvalidArgumentException;
@@ -41,6 +42,7 @@ final class UrlFormat implements MiddlewareInterface
 {
 
 	public function __construct(
+		private readonly bool $usePrefix,
 		private readonly Security\User $user,
 		private readonly Localization\Translator $translator,
 	)
@@ -60,9 +62,9 @@ final class UrlFormat implements MiddlewareInterface
 			$this->user->isLoggedIn()
 			&& (
 				Utils\Strings::startsWith($request->getUri()
-					->getPath(), '/v1/session')
+					->getPath(), ($this->usePrefix ? '/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX : '') . '/v1/session')
 				|| Utils\Strings::startsWith($request->getUri()
-					->getPath(), '/v1/me')
+					->getPath(), ($this->usePrefix ? '/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX : '') . '/v1/me')
 			)
 		) {
 			if ($this->user->getAccount() === null) {
@@ -80,6 +82,21 @@ final class UrlFormat implements MiddlewareInterface
 			$content = str_replace('\/v1\/emails', '\/v1\/me\/emails', $content);
 			$content = str_replace('\/v1\/identities', '\/v1\/me\/identities', $content);
 			$content = str_replace('\/v1\/accounts\/' . $this->user->getAccount()->getPlainId(), '\/v1\/me', $content);
+			$content = str_replace(
+				'\/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '\/v1\/emails',
+				'\/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '\/v1\/me\/emails',
+				$content,
+			);
+			$content = str_replace(
+				'\/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '\/v1\/identities',
+				'\/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '\/v1\/me\/identities',
+				$content,
+			);
+			$content = str_replace(
+				'\/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '\/v1\/accounts\/' . $this->user->getAccount()->getPlainId(),
+				'\/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '\/v1\/me',
+				$content,
+			);
 
 			$response = $response->withBody(Http\Stream::fromBodyString($content));
 		}
