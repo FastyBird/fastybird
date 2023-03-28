@@ -132,9 +132,9 @@ class Identity implements Entities\Entity,
 	 */
 	public function getPassword(): Helpers\Password
 	{
-		return $this->plainPassword !== null ?
-			new Helpers\Password(null, $this->plainPassword, $this->getSalt()) :
-			new Helpers\Password($this->password, null, $this->getSalt());
+		return $this->plainPassword !== null
+			? new Helpers\Password(null, $this->plainPassword, $this->getSalt())
+			: new Helpers\Password($this->password, null, $this->getSalt());
 	}
 
 	/**

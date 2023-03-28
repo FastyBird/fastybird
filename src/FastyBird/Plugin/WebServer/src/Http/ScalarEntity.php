@@ -28,7 +28,7 @@ final class ScalarEntity extends Entity
 	 */
 	public static function from(mixed $value): self
 	{
-		return new ScalarEntity($value);
+		return new self($value);
 	}
 
 }

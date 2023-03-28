@@ -69,7 +69,7 @@ class Role implements Entities\Entity,
 	 * @ORM\ManyToOne(targetEntity="FastyBird\Module\Accounts\Entities\Roles\Role", inversedBy="children")
 	 * @ORM\JoinColumn(name="parent_id", referencedColumnName="role_id", nullable=true, onDelete="set null")
 	 */
-	private Role|null $parent = null;
+	private self|null $parent = null;
 
 	/**
 	 * @var Common\Collections\Collection<int, Role>
@@ -103,12 +103,12 @@ class Role implements Entities\Entity,
 		$this->comment = $comment;
 	}
 
-	public function getParent(): Role|null
+	public function getParent(): self|null
 	{
 		return $this->parent;
 	}
 
-	public function setParent(Role|null $parent = null): void
+	public function setParent(self|null $parent = null): void
 	{
 		if ($parent !== null) {
 			$parent->addChild($this);
@@ -117,7 +117,7 @@ class Role implements Entities\Entity,
 		$this->parent = $parent;
 	}
 
-	public function addChild(Role $child): void
+	public function addChild(self $child): void
 	{
 		// Check if collection does not contain inserting entity
 		if (!$this->children->contains($child)) {
@@ -194,7 +194,7 @@ class Role implements Entities\Entity,
 			'is_authenticated' => $this->isAuthenticated(),
 			'is_anonymous' => $this->isAnonymous(),
 			'parent' => $this->getParent()?->getPlainId(),
-			'children' => array_map(static fn (Role $role): string => $role->getPlainId(), $this->getChildren()),
+			'children' => array_map(static fn (self $role): string => $role->getPlainId(), $this->getChildren()),
 		];
 	}
 

@@ -63,7 +63,7 @@ class TriggersExtension extends DI\CompilerExtension
 			BootstrapBoot\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
-			$compiler->addExtension($extensionName, new TriggersExtension());
+			$compiler->addExtension($extensionName, new self());
 		};
 	}
 

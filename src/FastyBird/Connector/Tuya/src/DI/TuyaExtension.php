@@ -61,7 +61,7 @@ class TuyaExtension extends DI\CompilerExtension
 			BootstrapBoot\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
-			$compiler->addExtension($extensionName, new TuyaExtension());
+			$compiler->addExtension($extensionName, new self());
 		};
 	}
 

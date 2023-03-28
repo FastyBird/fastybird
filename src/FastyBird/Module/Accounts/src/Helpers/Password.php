@@ -75,7 +75,7 @@ final class Password
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public static function createRandom(int $length = 4): Password
+	public static function createRandom(int $length = 4): self
 	{
 		if ($length < 1) {
 			$length = 4;
@@ -87,7 +87,7 @@ final class Password
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public static function createFromString(string $password): Password
+	public static function createFromString(string $password): self
 	{
 		return new self(null, $password);
 	}

@@ -54,7 +54,7 @@ class WebServerExtension extends DI\CompilerExtension
 		) use (
 			$extensionName,
 		): void {
-			$compiler->addExtension($extensionName, new WebServerExtension());
+			$compiler->addExtension($extensionName, new self());
 		};
 	}
 

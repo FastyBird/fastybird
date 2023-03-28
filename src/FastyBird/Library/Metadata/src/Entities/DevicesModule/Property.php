@@ -209,8 +209,9 @@ abstract class Property implements Entities\Entity, Entities\Owner
 					return (is_array($item[0]) ? implode('|', $item[0]) : $item[0])
 						. ':' . (is_array($item[1]) ? implode('|', $item[1]) : ($item[1] ?? ''))
 						. (
-							isset($item[2]) ?
-								':' . (is_array($item[2]) ? implode('|', $item[2]) : $item[2]) : ''
+							isset($item[2])
+								? ':' . (is_array($item[2]) ? implode('|', $item[2]) : $item[2])
+								: ''
 						);
 				}
 

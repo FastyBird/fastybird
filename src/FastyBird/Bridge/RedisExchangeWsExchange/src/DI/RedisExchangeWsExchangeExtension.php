@@ -42,7 +42,7 @@ class RedisExchangeWsExchangeExtension extends DI\CompilerExtension
 			BootstrapBoot\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
-			$compiler->addExtension($extensionName, new RedisExchangeWsExchangeExtension());
+			$compiler->addExtension($extensionName, new self());
 		};
 	}
 
