@@ -49,6 +49,8 @@
     "serve": "vite preview",
     "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
     "build": "yarn clean && vue-tsc --noEmit && vite build",
+    "build:dev": "vue-tsc --noEmit && vite build --watch --mode development",
+    "build:only": "yarn clean && vite build",
     "types": "vue-tsc --noEmit",
     "lint:js": "eslint --ext .js,.ts,.vue --ignore-path .gitignore assets",
     "lint:js:fix": "eslint --ext .js,.ts,.vue --ignore-path .gitignore assets --fix",

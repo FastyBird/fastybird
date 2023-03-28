@@ -74,7 +74,7 @@ class DevicesExtension extends DI\CompilerExtension
 	public function getConfigSchema(): Schema\Schema
 	{
 		return Schema\Expect::structure([
-			'apiPrefix' => Schema\Expect::bool(false),
+			'apiPrefix' => Schema\Expect::bool(true),
 		]);
 	}
 

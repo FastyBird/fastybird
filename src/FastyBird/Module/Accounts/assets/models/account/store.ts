@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
-import JsonaService from 'jsona';
+import { Jsona } from 'jsona';
 
 import { ModulePrefix, ModuleSource } from '@fastybird/metadata-library';
 
@@ -27,7 +27,7 @@ import {
 	IAccountRequestResetActionPayload,
 } from './types';
 
-const jsonApiFormatter = new JsonaService({
+const jsonApiFormatter = new Jsona({
 	modelPropertiesMapper: new JsonApiModelPropertiesMapper(),
 	jsonPropertiesMapper: new JsonApiJsonPropertiesMapper(),
 });

@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
-import JsonaService from 'jsona';
+import { Jsona } from 'jsona';
 import Ajv from 'ajv';
 import { v4 as uuid } from 'uuid';
 import get from 'lodash/get';
@@ -40,7 +40,7 @@ import {
 
 const jsonSchemaValidator = new Ajv();
 
-const jsonApiFormatter = new JsonaService({
+const jsonApiFormatter = new Jsona({
 	modelPropertiesMapper: new JsonApiModelPropertiesMapper(),
 	jsonPropertiesMapper: new JsonApiJsonPropertiesMapper(),
 });

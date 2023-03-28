@@ -28,6 +28,7 @@ use function defined;
 use function explode;
 use function file_exists;
 use function getenv;
+use function getmypid;
 use function implode;
 use function in_array;
 use function is_array;
@@ -66,9 +67,16 @@ class Bootstrap
 
 		$config->setTimeZone('UTC');
 
+		$tempDir = strval(FB_TEMP_DIR) . DS . getmypid();
+
+		// Check for temporary dir
+		if (!is_dir($tempDir)) {
+			mkdir($tempDir, 0777, true);
+		}
+
 		// Define variables
 		$config->addStaticParameters([
-			'tempDir' => FB_TEMP_DIR,
+			'tempDir' => $tempDir,
 			'logsDir' => FB_LOGS_DIR,
 			'appDir' => FB_APP_DIR,
 			'wwwDir' => FB_PUBLIC_DIR,

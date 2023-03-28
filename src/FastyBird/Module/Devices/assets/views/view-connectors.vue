@@ -59,7 +59,10 @@
 			</fb-layout-header>
 		</template>
 
-		<template #content>
+		<template
+			v-if="isLoading || (!isLoading && isExtraSmallDevice && isPartialDetailRoute)"
+			#content
+		>
 			<div
 				v-if="isLoading"
 				class="fb-devices-module-view-connectors__loading"
