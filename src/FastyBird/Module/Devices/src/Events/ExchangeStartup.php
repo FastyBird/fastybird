@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * AfterConnectorStart.php
+ * ExchangeStartup.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,32 +10,22 @@
  * @subpackage     Events
  * @since          1.0.0
  *
- * @date           22.06.22
+ * @date           29.03.23
  */
 
 namespace FastyBird\Module\Devices\Events;
 
-use FastyBird\Module\Devices\Entities;
 use Symfony\Contracts\EventDispatcher;
 
 /**
- * Event fired after connector has been started
+ * When module exchange service started
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Events
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class AfterConnectorStart extends EventDispatcher\Event
+class ExchangeStartup extends EventDispatcher\Event
 {
-
-	public function __construct(private readonly Entities\Connectors\Connector $connector)
-	{
-	}
-
-	public function getConnector(): Entities\Connectors\Connector
-	{
-		return $this->connector;
-	}
 
 }

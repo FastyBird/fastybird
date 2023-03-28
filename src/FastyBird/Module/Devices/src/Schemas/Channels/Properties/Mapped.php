@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:DevicesModule!
  * @subpackage     Schemas
- * @since          0.47.0
+ * @since          1.0.0
  *
  * @date           02.04.22
  */

@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:DevicesModule!
  * @subpackage     Connectors
- * @since          0.67.0
+ * @since          1.0.0
  *
  * @date           03.07.22
  */
