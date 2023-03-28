@@ -22,7 +22,6 @@ use FastyBird\Plugin\RedisDb\Exceptions;
 use FastyBird\Plugin\RedisDb\Handlers;
 use Psr\EventDispatcher;
 use React\EventLoop;
-use React\Promise;
 use React\Socket;
 use Throwable;
 
@@ -48,43 +47,33 @@ final class Factory
 	public function create(
 		EventLoop\LoopInterface|null $eventLoop = null,
 		Socket\ConnectorInterface|null $connector = null,
-	): Promise\PromiseInterface
+	): void
 	{
-		$factory = new Redis\Io\Factory($eventLoop, $connector);
+		$redis = new Redis\RedisClient(
+			$this->connection->getHost() . ':' . $this->connection->getPort(),
+			$connector,
+			$eventLoop,
+		);
 
-		$deferred = new Promise\Deferred();
+		$this->dispatcher?->dispatch(new Events\ClientCreated($redis));
 
-		$factory->createClient($this->connection->getHost() . ':' . $this->connection->getPort())
-			->then(
-				function (Redis\RedisClient $redis) use ($deferred): void {
-					$this->dispatcher?->dispatch(new Events\ClientCreated($redis));
+		$redis->subscribe($this->channel);
 
-					$redis->subscribe($this->channel);
+		$redis->on('message', function (string $channel, string $payload) use ($redis): void {
+			try {
+				$this->messagesHandler->handle($payload);
+			} catch (Exceptions\Terminate) {
+				$redis->close();
+			}
+		});
 
-					$redis->on('message', function (string $channel, string $payload) use ($redis): void {
-						try {
-							$this->messagesHandler->handle($payload);
-						} catch (Exceptions\Terminate) {
-							$redis->close();
-						}
-					});
+		$redis->on('close', function () use ($redis): void {
+			$this->dispatcher?->dispatch(new Events\ConnectionClosed($redis));
+		});
 
-					$redis->on('close', function () use ($redis): void {
-						$this->dispatcher?->dispatch(new Events\ConnectionClosed($redis));
-					});
-
-					$redis->on('error', function (Throwable $ex) use ($redis): void {
-						$this->dispatcher?->dispatch(new Events\Error($ex, $redis));
-					});
-
-					$deferred->resolve($redis);
-				},
-				static function (Throwable $ex) use ($deferred): void {
-					$deferred->reject($ex);
-				},
-			);
-
-		return $deferred->promise();
+		$redis->on('error', function (Throwable $ex) use ($redis): void {
+			$this->dispatcher?->dispatch(new Events\Error($ex, $redis));
+		});
 	}
 
 }

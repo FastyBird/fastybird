@@ -20,11 +20,9 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\RedisDb\Clients as RedisDbClient;
 use FastyBird\Plugin\WsExchange\Consumers as WsExchangeConsumers;
 use FastyBird\Plugin\WsExchange\Events as WsExchangeEvents;
-use IPub\WebSockets;
 use Psr\Log;
 use React\EventLoop;
 use Symfony\Component\EventDispatcher;
-use Throwable;
 
 /**
  * WS server events subscriber
@@ -58,41 +56,18 @@ class WsServer implements EventDispatcher\EventSubscriberInterface
 
 	public function startup(): void
 	{
-		$this->clientFactory->create($this->eventLoop)
-			->then(
-				function (): void {
-					$this->consumer->enable(WsExchangeConsumers\Consumer::class);
+		$this->clientFactory->create($this->eventLoop);
 
-					$this->logger->debug(
-						'Redis client was successfully started with WS exchange server',
-						[
-							'source' => MetadataTypes\BridgeSource::SOURCE_BRIDGE_REDISDB_WS_EXCHANGE,
-							'type' => 'subscriber',
-							'group' => 'subscriber',
-						],
-					);
-				},
-				function (Throwable $ex): void {
-					$this->logger->error(
-						'Redis client could not be created',
-						[
-							'source' => MetadataTypes\BridgeSource::SOURCE_BRIDGE_REDISDB_WS_EXCHANGE,
-							'type' => 'subscriber',
-							'group' => 'subscriber',
-							'exception' => [
-								'message' => $ex->getMessage(),
-								'code' => $ex->getCode(),
-							],
-						],
-					);
+		$this->consumer->enable(WsExchangeConsumers\Consumer::class);
 
-					throw new WebSockets\Exceptions\TerminateException(
-						'Redis client could not be created',
-						$ex->getCode(),
-						$ex,
-					);
-				},
-			);
+		$this->logger->debug(
+			'Redis client was successfully started with WS exchange server',
+			[
+				'source' => MetadataTypes\BridgeSource::SOURCE_BRIDGE_REDISDB_WS_EXCHANGE,
+				'type' => 'subscriber',
+				'group' => 'subscriber',
+			],
+		);
 	}
 
 }
