@@ -7,7 +7,7 @@
     "version" : "1.1"
   },
   "links" : {
-    "self" : "/v1/triggers"
+    "self" : "/triggers-module/v1/triggers"
   },
   "data" : {
     "type" : "com.fastybird.triggers-module/trigger/manual",
@@ -21,9 +21,9 @@
     "relationships" : {
       "controls" : {
         "links" : {
-          "self" : "/v1/triggers/bbbf5caa-b30e-4558-b83a-699617958cea/relationships/controls",
+          "self" : "/triggers-module/v1/triggers/bbbf5caa-b30e-4558-b83a-699617958cea/relationships/controls",
           "related" : {
-            "href" : "/v1/triggers/bbbf5caa-b30e-4558-b83a-699617958cea/controls",
+            "href" : "/triggers-module/v1/triggers/bbbf5caa-b30e-4558-b83a-699617958cea/controls",
             "meta" : {
               "count" : 1
             }
@@ -38,9 +38,9 @@
       },
       "actions" : {
         "links" : {
-          "self" : "/v1/triggers/bbbf5caa-b30e-4558-b83a-699617958cea/relationships/actions",
+          "self" : "/triggers-module/v1/triggers/bbbf5caa-b30e-4558-b83a-699617958cea/relationships/actions",
           "related" : {
-            "href" : "/v1/triggers/bbbf5caa-b30e-4558-b83a-699617958cea/actions",
+            "href" : "/triggers-module/v1/triggers/bbbf5caa-b30e-4558-b83a-699617958cea/actions",
             "meta" : {
               "count" : 0
             }
@@ -50,9 +50,9 @@
       },
       "notifications" : {
         "links" : {
-          "self" : "/v1/triggers/bbbf5caa-b30e-4558-b83a-699617958cea/relationships/notifications",
+          "self" : "/triggers-module/v1/triggers/bbbf5caa-b30e-4558-b83a-699617958cea/relationships/notifications",
           "related" : {
-            "href" : "/v1/triggers/bbbf5caa-b30e-4558-b83a-699617958cea/notifications",
+            "href" : "/triggers-module/v1/triggers/bbbf5caa-b30e-4558-b83a-699617958cea/notifications",
             "meta" : {
               "count" : 0
             }
@@ -62,7 +62,7 @@
       }
     },
     "links" : {
-      "self" : "/v1/triggers/bbbf5caa-b30e-4558-b83a-699617958cea"
+      "self" : "/triggers-module/v1/triggers/bbbf5caa-b30e-4558-b83a-699617958cea"
     }
   }
 }

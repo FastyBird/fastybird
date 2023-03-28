@@ -7,7 +7,7 @@
     "version" : "1.1"
   },
   "links" : {
-    "self" : "/v1/triggers"
+    "self" : "/triggers-module/v1/triggers"
   },
   "data" : [
     {
@@ -23,9 +23,9 @@
       "relationships" : {
         "conditions" : {
           "links" : {
-            "self" : "/v1/triggers/0b48dfbc-fac2-4292-88dc-7981a121602d/relationships/conditions",
+            "self" : "/triggers-module/v1/triggers/0b48dfbc-fac2-4292-88dc-7981a121602d/relationships/conditions",
             "related" : {
-              "href" : "/v1/triggers/0b48dfbc-fac2-4292-88dc-7981a121602d/conditions",
+              "href" : "/triggers-module/v1/triggers/0b48dfbc-fac2-4292-88dc-7981a121602d/conditions",
               "meta" : {
                 "count" : 1
               }
@@ -40,9 +40,9 @@
         },
         "actions" : {
           "links" : {
-            "self" : "/v1/triggers/0b48dfbc-fac2-4292-88dc-7981a121602d/relationships/actions",
+            "self" : "/triggers-module/v1/triggers/0b48dfbc-fac2-4292-88dc-7981a121602d/relationships/actions",
             "related" : {
-              "href" : "/v1/triggers/0b48dfbc-fac2-4292-88dc-7981a121602d/actions",
+              "href" : "/triggers-module/v1/triggers/0b48dfbc-fac2-4292-88dc-7981a121602d/actions",
               "meta" : {
                 "count" : 2
               }
@@ -61,9 +61,9 @@
         },
         "notifications" : {
           "links" : {
-            "self" : "/v1/triggers/0b48dfbc-fac2-4292-88dc-7981a121602d/relationships/notifications",
+            "self" : "/triggers-module/v1/triggers/0b48dfbc-fac2-4292-88dc-7981a121602d/relationships/notifications",
             "related" : {
-              "href" : "/v1/triggers/0b48dfbc-fac2-4292-88dc-7981a121602d/notifications",
+              "href" : "/triggers-module/v1/triggers/0b48dfbc-fac2-4292-88dc-7981a121602d/notifications",
               "meta" : {
                 "count" : 0
               }
@@ -73,7 +73,7 @@
         }
       },
       "links" : {
-        "self" : "/v1/triggers/0b48dfbc-fac2-4292-88dc-7981a121602d"
+        "self" : "/triggers-module/v1/triggers/0b48dfbc-fac2-4292-88dc-7981a121602d"
       }
     },
     {
@@ -89,9 +89,9 @@
       "relationships" : {
         "conditions" : {
           "links" : {
-            "self" : "/v1/triggers/1b17bcaa-a19e-45f0-98b4-56211cc648ae/relationships/conditions",
+            "self" : "/triggers-module/v1/triggers/1b17bcaa-a19e-45f0-98b4-56211cc648ae/relationships/conditions",
             "related" : {
-              "href" : "/v1/triggers/1b17bcaa-a19e-45f0-98b4-56211cc648ae/conditions",
+              "href" : "/triggers-module/v1/triggers/1b17bcaa-a19e-45f0-98b4-56211cc648ae/conditions",
               "meta" : {
                 "count" : 1
               }
@@ -106,9 +106,9 @@
         },
         "actions" : {
           "links" : {
-            "self" : "/v1/triggers/1b17bcaa-a19e-45f0-98b4-56211cc648ae/relationships/actions",
+            "self" : "/triggers-module/v1/triggers/1b17bcaa-a19e-45f0-98b4-56211cc648ae/relationships/actions",
             "related" : {
-              "href" : "/v1/triggers/1b17bcaa-a19e-45f0-98b4-56211cc648ae/actions",
+              "href" : "/triggers-module/v1/triggers/1b17bcaa-a19e-45f0-98b4-56211cc648ae/actions",
               "meta" : {
                 "count" : 2
               }
@@ -127,9 +127,9 @@
         },
         "notifications" : {
           "links" : {
-            "self" : "/v1/triggers/1b17bcaa-a19e-45f0-98b4-56211cc648ae/relationships/notifications",
+            "self" : "/triggers-module/v1/triggers/1b17bcaa-a19e-45f0-98b4-56211cc648ae/relationships/notifications",
             "related" : {
-              "href" : "/v1/triggers/1b17bcaa-a19e-45f0-98b4-56211cc648ae/notifications",
+              "href" : "/triggers-module/v1/triggers/1b17bcaa-a19e-45f0-98b4-56211cc648ae/notifications",
               "meta" : {
                 "count" : 0
               }
@@ -139,7 +139,7 @@
         }
       },
       "links" : {
-        "self" : "/v1/triggers/1b17bcaa-a19e-45f0-98b4-56211cc648ae"
+        "self" : "/triggers-module/v1/triggers/1b17bcaa-a19e-45f0-98b4-56211cc648ae"
       }
     },
     {
@@ -155,9 +155,9 @@
       "relationships" : {
         "conditions" : {
           "links" : {
-            "self" : "/v1/triggers/2cea2c1b-4790-4d82-8a9f-902c7155ab36/relationships/conditions",
+            "self" : "/triggers-module/v1/triggers/2cea2c1b-4790-4d82-8a9f-902c7155ab36/relationships/conditions",
             "related" : {
-              "href" : "/v1/triggers/2cea2c1b-4790-4d82-8a9f-902c7155ab36/conditions",
+              "href" : "/triggers-module/v1/triggers/2cea2c1b-4790-4d82-8a9f-902c7155ab36/conditions",
               "meta" : {
                 "count" : 1
               }
@@ -172,9 +172,9 @@
         },
         "actions" : {
           "links" : {
-            "self" : "/v1/triggers/2cea2c1b-4790-4d82-8a9f-902c7155ab36/relationships/actions",
+            "self" : "/triggers-module/v1/triggers/2cea2c1b-4790-4d82-8a9f-902c7155ab36/relationships/actions",
             "related" : {
-              "href" : "/v1/triggers/2cea2c1b-4790-4d82-8a9f-902c7155ab36/actions",
+              "href" : "/triggers-module/v1/triggers/2cea2c1b-4790-4d82-8a9f-902c7155ab36/actions",
               "meta" : {
                 "count" : 1
               }
@@ -189,9 +189,9 @@
         },
         "notifications" : {
           "links" : {
-            "self" : "/v1/triggers/2cea2c1b-4790-4d82-8a9f-902c7155ab36/relationships/notifications",
+            "self" : "/triggers-module/v1/triggers/2cea2c1b-4790-4d82-8a9f-902c7155ab36/relationships/notifications",
             "related" : {
-              "href" : "/v1/triggers/2cea2c1b-4790-4d82-8a9f-902c7155ab36/notifications",
+              "href" : "/triggers-module/v1/triggers/2cea2c1b-4790-4d82-8a9f-902c7155ab36/notifications",
               "meta" : {
                 "count" : 0
               }
@@ -201,7 +201,7 @@
         }
       },
       "links" : {
-        "self" : "/v1/triggers/2cea2c1b-4790-4d82-8a9f-902c7155ab36"
+        "self" : "/triggers-module/v1/triggers/2cea2c1b-4790-4d82-8a9f-902c7155ab36"
       }
     },
     {
@@ -216,9 +216,9 @@
       "relationships" : {
         "controls" : {
           "links" : {
-            "self" : "/v1/triggers/421ca8e9-26c6-4630-89ba-c53aea9bcb1e/relationships/controls",
+            "self" : "/triggers-module/v1/triggers/421ca8e9-26c6-4630-89ba-c53aea9bcb1e/relationships/controls",
             "related" : {
-              "href" : "/v1/triggers/421ca8e9-26c6-4630-89ba-c53aea9bcb1e/controls",
+              "href" : "/triggers-module/v1/triggers/421ca8e9-26c6-4630-89ba-c53aea9bcb1e/controls",
               "meta" : {
                 "count" : 1
               }
@@ -233,9 +233,9 @@
         },
         "actions" : {
           "links" : {
-            "self" : "/v1/triggers/421ca8e9-26c6-4630-89ba-c53aea9bcb1e/relationships/actions",
+            "self" : "/triggers-module/v1/triggers/421ca8e9-26c6-4630-89ba-c53aea9bcb1e/relationships/actions",
             "related" : {
-              "href" : "/v1/triggers/421ca8e9-26c6-4630-89ba-c53aea9bcb1e/actions",
+              "href" : "/triggers-module/v1/triggers/421ca8e9-26c6-4630-89ba-c53aea9bcb1e/actions",
               "meta" : {
                 "count" : 2
               }
@@ -254,9 +254,9 @@
         },
         "notifications" : {
           "links" : {
-            "self" : "/v1/triggers/421ca8e9-26c6-4630-89ba-c53aea9bcb1e/relationships/notifications",
+            "self" : "/triggers-module/v1/triggers/421ca8e9-26c6-4630-89ba-c53aea9bcb1e/relationships/notifications",
             "related" : {
-              "href" : "/v1/triggers/421ca8e9-26c6-4630-89ba-c53aea9bcb1e/notifications",
+              "href" : "/triggers-module/v1/triggers/421ca8e9-26c6-4630-89ba-c53aea9bcb1e/notifications",
               "meta" : {
                 "count" : 0
               }
@@ -266,7 +266,7 @@
         }
       },
       "links" : {
-        "self" : "/v1/triggers/421ca8e9-26c6-4630-89ba-c53aea9bcb1e"
+        "self" : "/triggers-module/v1/triggers/421ca8e9-26c6-4630-89ba-c53aea9bcb1e"
       }
     },
     {
@@ -281,9 +281,9 @@
       "relationships" : {
         "controls" : {
           "links" : {
-            "self" : "/v1/triggers/b8bb82f3-31e2-406a-96ed-f99ebaf9947a/relationships/controls",
+            "self" : "/triggers-module/v1/triggers/b8bb82f3-31e2-406a-96ed-f99ebaf9947a/relationships/controls",
             "related" : {
-              "href" : "/v1/triggers/b8bb82f3-31e2-406a-96ed-f99ebaf9947a/controls",
+              "href" : "/triggers-module/v1/triggers/b8bb82f3-31e2-406a-96ed-f99ebaf9947a/controls",
               "meta" : {
                 "count" : 1
               }
@@ -298,9 +298,9 @@
         },
         "actions" : {
           "links" : {
-            "self" : "/v1/triggers/b8bb82f3-31e2-406a-96ed-f99ebaf9947a/relationships/actions",
+            "self" : "/triggers-module/v1/triggers/b8bb82f3-31e2-406a-96ed-f99ebaf9947a/relationships/actions",
             "related" : {
-              "href" : "/v1/triggers/b8bb82f3-31e2-406a-96ed-f99ebaf9947a/actions",
+              "href" : "/triggers-module/v1/triggers/b8bb82f3-31e2-406a-96ed-f99ebaf9947a/actions",
               "meta" : {
                 "count" : 3
               }
@@ -323,9 +323,9 @@
         },
         "notifications" : {
           "links" : {
-            "self" : "/v1/triggers/b8bb82f3-31e2-406a-96ed-f99ebaf9947a/relationships/notifications",
+            "self" : "/triggers-module/v1/triggers/b8bb82f3-31e2-406a-96ed-f99ebaf9947a/relationships/notifications",
             "related" : {
-              "href" : "/v1/triggers/b8bb82f3-31e2-406a-96ed-f99ebaf9947a/notifications",
+              "href" : "/triggers-module/v1/triggers/b8bb82f3-31e2-406a-96ed-f99ebaf9947a/notifications",
               "meta" : {
                 "count" : 0
               }
@@ -335,7 +335,7 @@
         }
       },
       "links" : {
-        "self" : "/v1/triggers/b8bb82f3-31e2-406a-96ed-f99ebaf9947a"
+        "self" : "/triggers-module/v1/triggers/b8bb82f3-31e2-406a-96ed-f99ebaf9947a"
       }
     },
     {
@@ -350,9 +350,9 @@
       "relationships" : {
         "controls" : {
           "links" : {
-            "self" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/relationships/controls",
+            "self" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/relationships/controls",
             "related" : {
-              "href" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/controls",
+              "href" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/controls",
               "meta" : {
                 "count" : 1
               }
@@ -367,9 +367,9 @@
         },
         "actions" : {
           "links" : {
-            "self" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/relationships/actions",
+            "self" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/relationships/actions",
             "related" : {
-              "href" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions",
+              "href" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions",
               "meta" : {
                 "count" : 3
               }
@@ -392,9 +392,9 @@
         },
         "notifications" : {
           "links" : {
-            "self" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/relationships/notifications",
+            "self" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/relationships/notifications",
             "related" : {
-              "href" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/notifications",
+              "href" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/notifications",
               "meta" : {
                 "count" : 2
               }
@@ -413,7 +413,7 @@
         }
       },
       "links" : {
-        "self" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4"
+        "self" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4"
       }
     }
   ]

@@ -8,11 +8,11 @@
     "version" : "1.1"
   },
   "links" : {
-    "self" : "/v1/accounts?page%5Boffset%5D=1&page%5Blimit%5D=1",
-    "first" : "/v1/accounts?page%5Boffset%5D=0&page%5Blimit%5D=1",
-    "prev" : "/v1/accounts?page%5Boffset%5D=0&page%5Blimit%5D=1",
-    "next" : "/v1/accounts?page%5Boffset%5D=2&page%5Blimit%5D=1",
-    "last" : "/v1/accounts?page%5Boffset%5D=5&page%5Blimit%5D=1"
+    "self" : "/accounts-module/v1/accounts?page%5Boffset%5D=1&page%5Blimit%5D=1",
+    "first" : "/accounts-module/v1/accounts?page%5Boffset%5D=0&page%5Blimit%5D=1",
+    "prev" : "/accounts-module/v1/accounts?page%5Boffset%5D=0&page%5Blimit%5D=1",
+    "next" : "/accounts-module/v1/accounts?page%5Boffset%5D=2&page%5Blimit%5D=1",
+    "last" : "/accounts-module/v1/accounts?page%5Boffset%5D=5&page%5Blimit%5D=1"
   },
   "data" : [
     {
@@ -39,9 +39,9 @@
       "relationships" : {
         "identities" : {
           "links" : {
-            "self" : "/v1/accounts/efbfbdef-bfbd-68ef-bfbd-770b40efbfbd/relationships/identities",
+            "self" : "/accounts-module/v1/accounts/efbfbdef-bfbd-68ef-bfbd-770b40efbfbd/relationships/identities",
             "related" : {
-              "href" : "/v1/accounts/efbfbdef-bfbd-68ef-bfbd-770b40efbfbd/identities",
+              "href" : "/accounts-module/v1/accounts/efbfbdef-bfbd-68ef-bfbd-770b40efbfbd/identities",
               "meta" : {
                 "count" : 1
               }
@@ -56,7 +56,7 @@
         },
         "roles" : {
           "links" : {
-            "self" : "/v1/accounts/efbfbdef-bfbd-68ef-bfbd-770b40efbfbd/relationships/roles"
+            "self" : "/accounts-module/v1/accounts/efbfbdef-bfbd-68ef-bfbd-770b40efbfbd/relationships/roles"
           },
           "data" : [
             {
@@ -67,9 +67,9 @@
         },
         "emails" : {
           "links" : {
-            "self" : "/v1/accounts/efbfbdef-bfbd-68ef-bfbd-770b40efbfbd/relationships/emails",
+            "self" : "/accounts-module/v1/accounts/efbfbdef-bfbd-68ef-bfbd-770b40efbfbd/relationships/emails",
             "related" : {
-              "href" : "/v1/accounts/efbfbdef-bfbd-68ef-bfbd-770b40efbfbd/emails",
+              "href" : "/accounts-module/v1/accounts/efbfbdef-bfbd-68ef-bfbd-770b40efbfbd/emails",
               "meta" : {
                 "count" : 1
               }
@@ -84,7 +84,7 @@
         }
       },
       "links" : {
-        "self" : "/v1/accounts/efbfbdef-bfbd-68ef-bfbd-770b40efbfbd"
+        "self" : "/accounts-module/v1/accounts/efbfbdef-bfbd-68ef-bfbd-770b40efbfbd"
       }
     }
   ]

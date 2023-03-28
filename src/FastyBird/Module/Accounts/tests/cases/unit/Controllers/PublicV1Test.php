@@ -64,7 +64,7 @@ final class PublicV1Test extends DbTestCase
 			// Valid responses
 			//////////////////
 			'request' => [
-				'/v1/reset-identity',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/reset-identity',
 				file_get_contents(
 					__DIR__ . '/../../../fixtures/Controllers/requests/public/account.identities.passwordRequest.json',
 				),
@@ -75,7 +75,7 @@ final class PublicV1Test extends DbTestCase
 			// Invalid responses
 			////////////////////
 			'missingRequired' => [
-				'/v1/reset-identity',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/reset-identity',
 				file_get_contents(
 					__DIR__ . '/../../../fixtures/Controllers/requests/public/account.identities.passwordRequest.missing.required.json',
 				),
@@ -83,7 +83,7 @@ final class PublicV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/public/account.identities.passwordRequest.missing.required.json',
 			],
 			'invalidType' => [
-				'/v1/reset-identity',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/reset-identity',
 				file_get_contents(
 					__DIR__ . '/../../../fixtures/Controllers/requests/public/account.identities.passwordRequest.invalidType.json',
 				),
@@ -91,7 +91,7 @@ final class PublicV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/invalid.type.json',
 			],
 			'unknown' => [
-				'/v1/reset-identity',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/reset-identity',
 				file_get_contents(
 					__DIR__ . '/../../../fixtures/Controllers/requests/public/account.identities.passwordRequest.invalid.json',
 				),
@@ -99,7 +99,7 @@ final class PublicV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/notFound.json',
 			],
 			'deleted' => [
-				'/v1/reset-identity',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/reset-identity',
 				file_get_contents(
 					__DIR__ . '/../../../fixtures/Controllers/requests/public/account.identities.passwordRequest.deleted.json',
 				),
@@ -107,7 +107,7 @@ final class PublicV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/notFound.json',
 			],
 			'blocked' => [
-				'/v1/reset-identity',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/reset-identity',
 				file_get_contents(
 					__DIR__ . '/../../../fixtures/Controllers/requests/public/account.identities.passwordRequest.blocked.json',
 				),
@@ -115,7 +115,7 @@ final class PublicV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/public/account.identities.passwordRequest.blocked.json',
 			],
 			'notActivated' => [
-				'/v1/reset-identity',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/reset-identity',
 				file_get_contents(
 					__DIR__ . '/../../../fixtures/Controllers/requests/public/account.identities.passwordRequest.notActivated.json',
 				),

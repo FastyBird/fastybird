@@ -83,6 +83,7 @@ class AccountsExtension extends DI\CompilerExtension
 
 		$builder->addDefinition($this->prefix('middlewares.urlFormat'), new DI\Definitions\ServiceDefinition())
 			->setType(Middleware\UrlFormat::class)
+			->setArguments(['usePrefix' => $configuration->apiPrefix])
 			->addTag('middleware');
 
 		$builder->addDefinition($this->prefix('router.routes'), new DI\Definitions\ServiceDefinition())

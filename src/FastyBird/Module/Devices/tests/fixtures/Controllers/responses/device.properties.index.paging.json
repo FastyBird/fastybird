@@ -8,11 +8,11 @@
     "version": "1.1"
   },
   "links": {
-    "self": "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties?page%5Boffset%5D=1&page%5Blimit%5D=1",
-    "first": "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties?page%5Boffset%5D=0&page%5Blimit%5D=1",
-    "prev": "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties?page%5Boffset%5D=0&page%5Blimit%5D=1",
-    "next": "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties?page%5Boffset%5D=2&page%5Blimit%5D=1",
-    "last": "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties?page%5Boffset%5D=9&page%5Blimit%5D=1"
+    "self": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties?page%5Boffset%5D=1&page%5Blimit%5D=1",
+    "first": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties?page%5Boffset%5D=0&page%5Blimit%5D=1",
+    "prev": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties?page%5Boffset%5D=0&page%5Blimit%5D=1",
+    "next": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties?page%5Boffset%5D=2&page%5Blimit%5D=1",
+    "last": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties?page%5Boffset%5D=9&page%5Blimit%5D=1"
   },
   "data": [
     {
@@ -34,7 +34,7 @@
       "relationships": {
         "device": {
           "links": {
-            "related": "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa"
+            "related": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa"
           },
           "data": {
             "type": "com.fastybird.devices-module/device/blank",
@@ -43,15 +43,15 @@
         },
         "parent": {
           "links": {
-            "self": "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/06599b74-0236-4a98-99c8-c459a3cdb6a4/relationships/parent"
+            "self": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/06599b74-0236-4a98-99c8-c459a3cdb6a4/relationships/parent"
           },
           "data": null
         },
         "children": {
           "links": {
-            "self": "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/06599b74-0236-4a98-99c8-c459a3cdb6a4/relationships/children",
+            "self": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/06599b74-0236-4a98-99c8-c459a3cdb6a4/relationships/children",
             "related": {
-              "href": "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/06599b74-0236-4a98-99c8-c459a3cdb6a4/children",
+              "href": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/06599b74-0236-4a98-99c8-c459a3cdb6a4/children",
               "meta": {
                 "count": 0
               }
@@ -61,7 +61,7 @@
         }
       },
       "links": {
-        "self": "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/06599b74-0236-4a98-99c8-c459a3cdb6a4"
+        "self": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/06599b74-0236-4a98-99c8-c459a3cdb6a4"
       }
     }
   ]

@@ -7,7 +7,7 @@
     "version" : "1.1"
   },
   "links" : {
-    "self" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions"
+    "self" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions"
   },
   "data" : [
     {
@@ -22,8 +22,8 @@
       "relationships" : {
         "trigger" : {
           "links" : {
-            "self" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions/4aa84028-d8b7-4128-95b2-295763634aa4/relationships/trigger",
-            "related" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4"
+            "self" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions/4aa84028-d8b7-4128-95b2-295763634aa4/relationships/trigger",
+            "related" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4"
           },
           "data" : {
             "type" : "com.fastybird.triggers-module/trigger/manual",
@@ -32,7 +32,7 @@
         }
       },
       "links" : {
-        "self" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions/4aa84028-d8b7-4128-95b2-295763634aa4"
+        "self" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions/4aa84028-d8b7-4128-95b2-295763634aa4"
       }
     },
     {
@@ -47,8 +47,8 @@
       "relationships" : {
         "trigger" : {
           "links" : {
-            "self" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions/827d61f7-5dcf-4cab-9662-f386f6fb0bce/relationships/trigger",
-            "related" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4"
+            "self" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions/827d61f7-5dcf-4cab-9662-f386f6fb0bce/relationships/trigger",
+            "related" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4"
           },
           "data" : {
             "type" : "com.fastybird.triggers-module/trigger/manual",
@@ -57,7 +57,7 @@
         }
       },
       "links" : {
-        "self" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions/827d61f7-5dcf-4cab-9662-f386f6fb0bce"
+        "self" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions/827d61f7-5dcf-4cab-9662-f386f6fb0bce"
       }
     },
     {
@@ -72,8 +72,8 @@
       "relationships" : {
         "trigger" : {
           "links" : {
-            "self" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions/d062ce8b-9543-4b9b-b6ca-51907ec0246a/relationships/trigger",
-            "related" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4"
+            "self" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions/d062ce8b-9543-4b9b-b6ca-51907ec0246a/relationships/trigger",
+            "related" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4"
           },
           "data" : {
             "type" : "com.fastybird.triggers-module/trigger/manual",
@@ -82,7 +82,7 @@
         }
       },
       "links" : {
-        "self" : "/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions/d062ce8b-9543-4b9b-b6ca-51907ec0246a"
+        "self" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions/d062ce8b-9543-4b9b-b6ca-51907ec0246a"
       }
     }
   ]

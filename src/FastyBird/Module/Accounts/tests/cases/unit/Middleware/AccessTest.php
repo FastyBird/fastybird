@@ -66,7 +66,7 @@ final class AccessTest extends DbTestCase
 	{
 		return [
 			'readAllowed' => [
-				'/v1/roles',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/roles',
 				RequestMethodInterface::METHOD_GET,
 				'',
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
@@ -74,7 +74,7 @@ final class AccessTest extends DbTestCase
 				__DIR__ . '/../../../fixtures/Middleware/responses/roles.index.json',
 			],
 			'updateForbidden' => [
-				'/v1/roles/efbfbdef-bfbd-efbf-bd0f-efbfbd5c4f61',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/roles/efbfbdef-bfbd-efbf-bd0f-efbfbd5c4f61',
 				RequestMethodInterface::METHOD_PATCH,
 				__DIR__ . '/../../../fixtures/requests/roles.update.json',
 				'Bearer ' . self::USER_TOKEN,

@@ -74,61 +74,61 @@ final class RolesV1Test extends DbTestCase
 			// Valid responses
 			//////////////////
 			'readAll' => [
-				'/v1/roles',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/roles',
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				StatusCodeInterface::STATUS_OK,
 				__DIR__ . '/../../../fixtures/Controllers/responses/roles/roles.index.json',
 			],
 			'readAllPaging' => [
-				'/v1/roles?page[offset]=1&page[limit]=1',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/roles?page[offset]=1&page[limit]=1',
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				StatusCodeInterface::STATUS_OK,
 				__DIR__ . '/../../../fixtures/Controllers/responses/roles/roles.index.paging.json',
 			],
 			'readAllUser' => [
-				'/v1/roles',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/roles',
 				'Bearer ' . self::USER_TOKEN,
 				StatusCodeInterface::STATUS_OK,
 				__DIR__ . '/../../../fixtures/Controllers/responses/roles/roles.index.json',
 			],
 			'readOne' => [
-				'/v1/roles/' . self::ROLE_ID,
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/roles/' . self::ROLE_ID,
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				StatusCodeInterface::STATUS_OK,
 				__DIR__ . '/../../../fixtures/Controllers/responses/roles/roles.read.json',
 			],
 			'readOneUser' => [
-				'/v1/roles/' . self::ROLE_ID,
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/roles/' . self::ROLE_ID,
 				'Bearer ' . self::USER_TOKEN,
 				StatusCodeInterface::STATUS_OK,
 				__DIR__ . '/../../../fixtures/Controllers/responses/roles/roles.read.json',
 			],
 			'readChildren' => [
-				'/v1/roles/efbfbd04-0158-efbf-bdef-bfbd4defbfbd/children',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/roles/efbfbd04-0158-efbf-bdef-bfbd4defbfbd/children',
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				StatusCodeInterface::STATUS_OK,
 				__DIR__ . '/../../../fixtures/Controllers/responses/roles/roles.read.children.json',
 			],
 			'readChildrenUser' => [
-				'/v1/roles/efbfbd04-0158-efbf-bdef-bfbd4defbfbd/children',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/roles/efbfbd04-0158-efbf-bdef-bfbd4defbfbd/children',
 				'Bearer ' . self::USER_TOKEN,
 				StatusCodeInterface::STATUS_OK,
 				__DIR__ . '/../../../fixtures/Controllers/responses/roles/roles.read.children.json',
 			],
 			'readRelationshipsChildren' => [
-				'/v1/roles/efbfbd04-0158-efbf-bdef-bfbd4defbfbd/relationships/' . Schemas\Roles\Role::RELATIONSHIPS_CHILDREN,
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/roles/efbfbd04-0158-efbf-bdef-bfbd4defbfbd/relationships/' . Schemas\Roles\Role::RELATIONSHIPS_CHILDREN,
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				StatusCodeInterface::STATUS_OK,
 				__DIR__ . '/../../../fixtures/Controllers/responses/roles/roles.relationships.children.json',
 			],
 			'readRelationshipsParent' => [
-				'/v1/roles/' . self::ROLE_ID . '/relationships/' . Schemas\Roles\Role::RELATIONSHIPS_PARENT,
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/roles/' . self::ROLE_ID . '/relationships/' . Schemas\Roles\Role::RELATIONSHIPS_PARENT,
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				StatusCodeInterface::STATUS_OK,
 				__DIR__ . '/../../../fixtures/Controllers/responses/roles/roles.relationships.parent.json',
 			],
 			'readRelationshipsParentUser' => [
-				'/v1/roles/' . self::ROLE_ID . '/relationships/' . Schemas\Roles\Role::RELATIONSHIPS_PARENT,
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/roles/' . self::ROLE_ID . '/relationships/' . Schemas\Roles\Role::RELATIONSHIPS_PARENT,
 				'Bearer ' . self::USER_TOKEN,
 				StatusCodeInterface::STATUS_OK,
 				__DIR__ . '/../../../fixtures/Controllers/responses/roles/roles.relationships.parent.json',
@@ -137,67 +137,67 @@ final class RolesV1Test extends DbTestCase
 			// Invalid responses
 			////////////////////
 			'readOneUnknown' => [
-				'/v1/roles/' . self::UNKNOWN_ID,
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/roles/' . self::UNKNOWN_ID,
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/notFound.json',
 			],
 			'readRelationshipsUnknown' => [
-				'/v1/roles/' . self::ROLE_ID . '/relationships/unknown',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/roles/' . self::ROLE_ID . '/relationships/unknown',
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/relation.unknown.json',
 			],
 			'readRelationshipsUnknownEntity' => [
-				'/v1/roles/' . self::UNKNOWN_ID . '/relationships/' . Schemas\Roles\Role::RELATIONSHIPS_CHILDREN,
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/roles/' . self::UNKNOWN_ID . '/relationships/' . Schemas\Roles\Role::RELATIONSHIPS_CHILDREN,
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/notFound.json',
 			],
 			'readAllNoToken' => [
-				'/v1/roles',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/roles',
 				null,
 				StatusCodeInterface::STATUS_FORBIDDEN,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
 			],
 			'readOneNoToken' => [
-				'/v1/roles/' . self::ROLE_ID,
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/roles/' . self::ROLE_ID,
 				null,
 				StatusCodeInterface::STATUS_FORBIDDEN,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
 			],
 			'readAllEmptyToken' => [
-				'/v1/roles',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/roles',
 				'',
 				StatusCodeInterface::STATUS_FORBIDDEN,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
 			],
 			'readOneEmptyToken' => [
-				'/v1/roles/' . self::ROLE_ID,
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/roles/' . self::ROLE_ID,
 				'',
 				StatusCodeInterface::STATUS_FORBIDDEN,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
 			],
 			'readAllExpiredToken' => [
-				'/v1/roles',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/roles',
 				'Bearer ' . self::EXPIRED_TOKEN,
 				StatusCodeInterface::STATUS_UNAUTHORIZED,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/unauthorized.json',
 			],
 			'readOneExpiredToken' => [
-				'/v1/roles/' . self::ROLE_ID,
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/roles/' . self::ROLE_ID,
 				'Bearer ' . self::EXPIRED_TOKEN,
 				StatusCodeInterface::STATUS_UNAUTHORIZED,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/unauthorized.json',
 			],
 			'readAllInvalidToken' => [
-				'/v1/roles',
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/roles',
 				'Bearer ' . self::INVALID_TOKEN,
 				StatusCodeInterface::STATUS_UNAUTHORIZED,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/unauthorized.json',
 			],
 			'readOneInvalidToken' => [
-				'/v1/roles/' . self::ROLE_ID,
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/roles/' . self::ROLE_ID,
 				'Bearer ' . self::INVALID_TOKEN,
 				StatusCodeInterface::STATUS_UNAUTHORIZED,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/unauthorized.json',
@@ -251,7 +251,7 @@ final class RolesV1Test extends DbTestCase
 			// Valid responses
 			//////////////////
 			'update' => [
-				'/v1/roles/' . self::ROLE_ID,
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/roles/' . self::ROLE_ID,
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/roles/roles.update.json'),
 				StatusCodeInterface::STATUS_OK,
@@ -261,7 +261,7 @@ final class RolesV1Test extends DbTestCase
 			// Invalid responses
 			////////////////////
 			'unknown' => [
-				'/v1/roles/' . self::UNKNOWN_ID,
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/roles/' . self::UNKNOWN_ID,
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				file_get_contents(
 					__DIR__ . '/../../../fixtures/Controllers/requests/roles/roles.update.invalid.id.json',
@@ -270,7 +270,7 @@ final class RolesV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/notFound.json',
 			],
 			'invalidType' => [
-				'/v1/roles/' . self::ROLE_ID,
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/roles/' . self::ROLE_ID,
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				file_get_contents(
 					__DIR__ . '/../../../fixtures/Controllers/requests/roles/roles.update.invalid.type.json',
@@ -279,7 +279,7 @@ final class RolesV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/invalid.type.json',
 			],
 			'idMismatch' => [
-				'/v1/roles/' . self::ROLE_ID,
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/roles/' . self::ROLE_ID,
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				file_get_contents(
 					__DIR__ . '/../../../fixtures/Controllers/requests/roles/roles.update.invalid.id.json',
@@ -288,35 +288,35 @@ final class RolesV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/invalid.identifier.json',
 			],
 			'noToken' => [
-				'/v1/roles/' . self::ROLE_ID,
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/roles/' . self::ROLE_ID,
 				null,
 				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/roles/roles.update.json'),
 				StatusCodeInterface::STATUS_FORBIDDEN,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
 			],
 			'emptyToken' => [
-				'/v1/roles/' . self::ROLE_ID,
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/roles/' . self::ROLE_ID,
 				'',
 				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/roles/roles.update.json'),
 				StatusCodeInterface::STATUS_FORBIDDEN,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
 			],
 			'userToken' => [
-				'/v1/roles/' . self::USER_TOKEN,
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/roles/' . self::USER_TOKEN,
 				null,
 				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/roles/roles.update.json'),
 				StatusCodeInterface::STATUS_FORBIDDEN,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
 			],
 			'invalidToken' => [
-				'/v1/roles/' . self::ROLE_ID,
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/roles/' . self::ROLE_ID,
 				'Bearer ' . self::INVALID_TOKEN,
 				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/roles/roles.update.json'),
 				StatusCodeInterface::STATUS_UNAUTHORIZED,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/unauthorized.json',
 			],
 			'expiredToken' => [
-				'/v1/roles/' . self::ROLE_ID,
+				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/roles/' . self::ROLE_ID,
 				'Bearer ' . self::EXPIRED_TOKEN,
 				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/roles/roles.update.json'),
 				StatusCodeInterface::STATUS_UNAUTHORIZED,

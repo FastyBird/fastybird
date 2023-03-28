@@ -11,4 +11,4 @@
 # @date         26.04.21
 
 fbDevicesModule:
-    apiPrefix: true
+    apiPrefix: false

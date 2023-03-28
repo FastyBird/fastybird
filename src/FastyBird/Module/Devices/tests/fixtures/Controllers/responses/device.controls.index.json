@@ -7,7 +7,7 @@
     "version" : "1.1"
   },
   "links" : {
-    "self" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/controls"
+    "self" : "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/controls"
   },
   "data" : [
     {
@@ -19,7 +19,7 @@
       "relationships" : {
         "device" : {
           "links" : {
-            "related" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa"
+            "related" : "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa"
           },
           "data" : {
             "type" : "com.fastybird.devices-module/device/blank",
@@ -28,7 +28,7 @@
         }
       },
       "links" : {
-        "self" : "/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/controls/7c055b2b-60c3-4017-93db-e9478d8aa662"
+        "self" : "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/controls/7c055b2b-60c3-4017-93db-e9478d8aa662"
       }
     }
   ]
