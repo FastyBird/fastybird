@@ -3,6 +3,7 @@
 namespace FastyBird\Module\Accounts\Tests\Cases\Unit\Controllers;
 
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Metadata;
 use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\Module\Accounts\Schemas;
 use FastyBird\Module\Accounts\Tests\Cases\Unit\DbTestCase;
@@ -96,6 +97,7 @@ final class AccountEmailsV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/account/emails/account.emails.read.json',
 			],
 			'readRelationshipsAccount' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/me/emails/' . self::ADMINISTRATOR_EMAIL_ID . '/relationships/' . Schemas\Emails\Email::RELATIONSHIPS_ACCOUNT,
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				StatusCodeInterface::STATUS_OK,
@@ -123,12 +125,14 @@ final class AccountEmailsV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/relation.unknown.json',
 			],
 			'readRelationshipsUnknownEntity' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/me/emails/' . self::UNKNOWN_ID . '/relationships/' . Schemas\Emails\Email::RELATIONSHIPS_ACCOUNT,
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/notFound.json',
 			],
 			'readRelationshipsFromOtherUserEntity' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/me/emails/' . self::USER_EMAIL_ID . '/relationships/' . Schemas\Emails\Email::RELATIONSHIPS_ACCOUNT,
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				StatusCodeInterface::STATUS_NOT_FOUND,
@@ -183,24 +187,28 @@ final class AccountEmailsV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/unauthorized.json',
 			],
 			'readRelationshipsNoToken' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/me/emails/' . self::ADMINISTRATOR_EMAIL_ID . '/relationships/' . Schemas\Emails\Email::RELATIONSHIPS_ACCOUNT,
 				null,
 				StatusCodeInterface::STATUS_FORBIDDEN,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
 			],
 			'readRelationshipsEmptyToken' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/me/emails/' . self::ADMINISTRATOR_EMAIL_ID . '/relationships/' . Schemas\Emails\Email::RELATIONSHIPS_ACCOUNT,
 				'',
 				StatusCodeInterface::STATUS_FORBIDDEN,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
 			],
 			'readRelationshipsInvalidToken' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/me/emails/' . self::ADMINISTRATOR_EMAIL_ID . '/relationships/' . Schemas\Emails\Email::RELATIONSHIPS_ACCOUNT,
 				'Bearer ' . self::INVALID_TOKEN,
 				StatusCodeInterface::STATUS_UNAUTHORIZED,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/unauthorized.json',
 			],
 			'readRelationshipsExpiredToken' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/me/emails/' . self::ADMINISTRATOR_EMAIL_ID . '/relationships/' . Schemas\Emails\Email::RELATIONSHIPS_ACCOUNT,
 				'Bearer ' . self::EXPIRED_TOKEN,
 				StatusCodeInterface::STATUS_UNAUTHORIZED,

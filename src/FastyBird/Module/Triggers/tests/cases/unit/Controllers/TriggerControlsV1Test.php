@@ -3,6 +3,7 @@
 namespace FastyBird\Module\Triggers\Tests\Cases\Unit\Controllers;
 
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Metadata;
 use FastyBird\Module\Triggers\Tests\Cases\Unit\DbTestCase;
 use FastyBird\Module\Triggers\Tests\Tools;
 use Fig\Http\Message\RequestMethodInterface;
@@ -72,18 +73,21 @@ final class TriggerControlsV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/trigger.controls.index.json',
 			],
 			'readAllPaging' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_TRIGGERS_PREFIX . '/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/controls?page[offset]=1&page[limit]=1',
 				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_OK,
 				__DIR__ . '/../../../fixtures/Controllers/responses/trigger.controls.index.paging.json',
 			],
 			'readOne' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_TRIGGERS_PREFIX . '/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/controls/177d6fc7-1905-4fd9-b847-e2da8189dd6a',
 				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_OK,
 				__DIR__ . '/../../../fixtures/Controllers/responses/trigger.controls.read.json',
 			],
 			'readRelationshipsTrigger' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_TRIGGERS_PREFIX . '/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/controls/177d6fc7-1905-4fd9-b847-e2da8189dd6a/relationships/trigger',
 				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_OK,
@@ -99,24 +103,28 @@ final class TriggerControlsV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/notFound.json',
 			],
 			'readOneUnknown' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_TRIGGERS_PREFIX . '/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/controls/28bc0d38-2f7c-4a71-aa74-27b102f8dfc4',
 				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/notFound.json',
 			],
 			'readRelationshipsTriggerUnknownControl' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_TRIGGERS_PREFIX . '/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/controls/28bc0d38-2f7c-4a71-aa74-27b102f8dfc4/relationships/trigger',
 				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/notFound.json',
 			],
 			'readRelationshipsUnknownTrigger' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_TRIGGERS_PREFIX . '/v1/triggers/69786d15-fd0c-4d9f-9378-33287c2009af/controls/177d6fc7-1905-4fd9-b847-e2da8189dd6a/relationships/trigger',
 				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/notFound.json',
 			],
 			'readRelationshipsUnknown' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_TRIGGERS_PREFIX . '/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/controls/177d6fc7-1905-4fd9-b847-e2da8189dd6a/relationships/unknown',
 				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_NOT_FOUND,
@@ -129,6 +137,7 @@ final class TriggerControlsV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
 			],
 			'readOneMissingToken' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_TRIGGERS_PREFIX . '/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/controls/177d6fc7-1905-4fd9-b847-e2da8189dd6a',
 				null,
 				StatusCodeInterface::STATUS_FORBIDDEN,
@@ -141,6 +150,7 @@ final class TriggerControlsV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
 			],
 			'readOneEmptyToken' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_TRIGGERS_PREFIX . '/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/controls/177d6fc7-1905-4fd9-b847-e2da8189dd6a',
 				'',
 				StatusCodeInterface::STATUS_FORBIDDEN,
@@ -153,6 +163,7 @@ final class TriggerControlsV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/unauthorized.json',
 			],
 			'readOneInvalidToken' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_TRIGGERS_PREFIX . '/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/controls/177d6fc7-1905-4fd9-b847-e2da8189dd6a',
 				'Bearer ' . self::INVALID_TOKEN,
 				StatusCodeInterface::STATUS_UNAUTHORIZED,
@@ -165,6 +176,7 @@ final class TriggerControlsV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/unauthorized.json',
 			],
 			'readOneExpiredToken' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_TRIGGERS_PREFIX . '/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/controls/177d6fc7-1905-4fd9-b847-e2da8189dd6a',
 				'Bearer ' . self::EXPIRED_TOKEN,
 				StatusCodeInterface::STATUS_UNAUTHORIZED,

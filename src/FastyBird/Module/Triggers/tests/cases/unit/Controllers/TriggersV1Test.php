@@ -3,6 +3,7 @@
 namespace FastyBird\Module\Triggers\Tests\Cases\Unit\Controllers;
 
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Metadata;
 use FastyBird\Module\Triggers\Tests\Cases\Unit\DbTestCase;
 use FastyBird\Module\Triggers\Tests\Tools;
 use Fig\Http\Message\RequestMethodInterface;

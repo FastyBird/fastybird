@@ -3,6 +3,7 @@
 namespace FastyBird\Module\Accounts\Tests\Cases\Unit\Controllers;
 
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Metadata;
 use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\Module\Accounts\Schemas;
 use FastyBird\Module\Accounts\Tests\Cases\Unit\DbTestCase;

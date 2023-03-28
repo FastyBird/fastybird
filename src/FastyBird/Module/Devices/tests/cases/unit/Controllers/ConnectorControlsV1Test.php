@@ -3,6 +3,7 @@
 namespace FastyBird\Module\Devices\Tests\Cases\Unit\Controllers;
 
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Metadata;
 use FastyBird\Module\Devices\Tests\Cases\Unit\DbTestCase;
 use FastyBird\Module\Devices\Tests\Tools;
 use Fig\Http\Message\RequestMethodInterface;
@@ -72,18 +73,21 @@ final class ConnectorControlsV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/connector.controls.index.json',
 			],
 			'readAllPaging' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/connectors/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/controls?page[offset]=1&page[limit]=1',
 				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_OK,
 				__DIR__ . '/../../../fixtures/Controllers/responses/connector.controls.index.paging.json',
 			],
 			'readOne' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/connectors/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/controls/7c055b2b-60c3-4017-93db-e9478d8aa662',
 				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_OK,
 				__DIR__ . '/../../../fixtures/Controllers/responses/connector.controls.read.json',
 			],
 			'readRelationshipsConnector' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/connectors/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/controls/7c055b2b-60c3-4017-93db-e9478d8aa662/relationships/connector',
 				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_OK,
@@ -93,24 +97,28 @@ final class ConnectorControlsV1Test extends DbTestCase
 			// Invalid responses
 			////////////////////
 			'readOneUnknown' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/connectors/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/controls/28bc0d38-2f7c-4a71-aa74-27b102f8dfc4',
 				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/notFound.json',
 			],
 			'readRelationshipsConnectorUnknownControl' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/connectors/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/controls/28bc0d38-2f7c-4a71-aa74-27b102f8dfc4/relationships/connector',
 				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/notFound.json',
 			],
 			'readRelationshipsUnknownConnector' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/connectors/69786d15-fd0c-4d9f-9378-33287c2009af/controls/7c055b2b-60c3-4017-93db-e9478d8aa662/relationships/connector',
 				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/notFound.json',
 			],
 			'readRelationshipsUnknown' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/connectors/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/controls/7c055b2b-60c3-4017-93db-e9478d8aa662/relationships/unknown',
 				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_NOT_FOUND,
@@ -123,6 +131,7 @@ final class ConnectorControlsV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
 			],
 			'readOneMissingToken' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/connectors/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/controls/7c055b2b-60c3-4017-93db-e9478d8aa662',
 				null,
 				StatusCodeInterface::STATUS_FORBIDDEN,
@@ -135,6 +144,7 @@ final class ConnectorControlsV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
 			],
 			'readOneEmptyToken' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/connectors/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/controls/7c055b2b-60c3-4017-93db-e9478d8aa662',
 				'',
 				StatusCodeInterface::STATUS_FORBIDDEN,
@@ -147,6 +157,7 @@ final class ConnectorControlsV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/unauthorized.json',
 			],
 			'readOneInvalidToken' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/connectors/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/controls/7c055b2b-60c3-4017-93db-e9478d8aa662',
 				'Bearer ' . self::INVALID_TOKEN,
 				StatusCodeInterface::STATUS_UNAUTHORIZED,
@@ -159,6 +170,7 @@ final class ConnectorControlsV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/unauthorized.json',
 			],
 			'readOneExpiredToken' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/connectors/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/controls/7c055b2b-60c3-4017-93db-e9478d8aa662',
 				'Bearer ' . self::EXPIRED_TOKEN,
 				StatusCodeInterface::STATUS_UNAUTHORIZED,

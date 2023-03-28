@@ -3,6 +3,7 @@
 namespace FastyBird\Module\Devices\Tests\Cases\Unit\Controllers;
 
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Metadata;
 use FastyBird\Module\Devices\Tests\Cases\Unit\DbTestCase;
 use FastyBird\Module\Devices\Tests\Tools;
 use Fig\Http\Message\RequestMethodInterface;
@@ -73,18 +74,21 @@ final class DevicePropertiesV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/device.properties.index.json',
 			],
 			'readAllPaging' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties?page[offset]=1&page[limit]=1',
 				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_OK,
 				__DIR__ . '/../../../fixtures/Controllers/responses/device.properties.index.paging.json',
 			],
 			'readOne' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/28bc0d38-2f7c-4a71-aa74-27b102f8df4c',
 				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_OK,
 				__DIR__ . '/../../../fixtures/Controllers/responses/device.properties.read.json',
 			],
 			'readRelationshipsDevice' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/28bc0d38-2f7c-4a71-aa74-27b102f8df4c/relationships/device',
 				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_OK,
@@ -94,24 +98,28 @@ final class DevicePropertiesV1Test extends DbTestCase
 			// Invalid responses
 			////////////////////
 			'readOneUnknown' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/28bc0d38-2f7c-4a71-aa74-27b102f8dfc4',
 				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/notFound.json',
 			],
 			'readRelationshipsDeviceUnknownProperty' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/28bc0d38-2f7c-4a71-aa74-27b102f8dfc4/relationships/device',
 				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/notFound.json',
 			],
 			'readRelationshipsUnknown' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/28bc0d38-2f7c-4a71-aa74-27b102f8df4c/relationships/unknown',
 				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/relation.unknown.json',
 			],
 			'readRelationshipsUnknownDevice' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/28bc0d38-2f7c-4a71-aa74-27b102f8dfc4/properties/28bc0d38-2f7c-4a71-aa74-27b102f8df4c/relationships/device',
 				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_NOT_FOUND,
@@ -124,6 +132,7 @@ final class DevicePropertiesV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
 			],
 			'readOneMissingToken' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/28bc0d38-2f7c-4a71-aa74-27b102f8df4c',
 				null,
 				StatusCodeInterface::STATUS_FORBIDDEN,
@@ -136,6 +145,7 @@ final class DevicePropertiesV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
 			],
 			'readOneEmptyToken' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/28bc0d38-2f7c-4a71-aa74-27b102f8df4c',
 				'',
 				StatusCodeInterface::STATUS_FORBIDDEN,
@@ -148,6 +158,7 @@ final class DevicePropertiesV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/unauthorized.json',
 			],
 			'readOneInvalidToken' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/28bc0d38-2f7c-4a71-aa74-27b102f8df4c',
 				'Bearer ' . self::INVALID_TOKEN,
 				StatusCodeInterface::STATUS_UNAUTHORIZED,
@@ -160,6 +171,7 @@ final class DevicePropertiesV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/unauthorized.json',
 			],
 			'readOneExpiredToken' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/28bc0d38-2f7c-4a71-aa74-27b102f8df4c',
 				'Bearer ' . self::EXPIRED_TOKEN,
 				StatusCodeInterface::STATUS_UNAUTHORIZED,
@@ -332,6 +344,7 @@ final class DevicePropertiesV1Test extends DbTestCase
 			// Valid responses
 			//////////////////
 			'update' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/28bc0d38-2f7c-4a71-aa74-27b102f8df4c',
 				'Bearer ' . self::VALID_TOKEN,
 				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/device.properties.update.json'),
@@ -342,6 +355,7 @@ final class DevicePropertiesV1Test extends DbTestCase
 			// Invalid responses
 			////////////////////
 			'invalidType' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/28bc0d38-2f7c-4a71-aa74-27b102f8df4c',
 				'Bearer ' . self::VALID_TOKEN,
 				file_get_contents(
@@ -351,6 +365,7 @@ final class DevicePropertiesV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/invalid.type.json',
 			],
 			'idMismatch' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/28bc0d38-2f7c-4a71-aa74-27b102f8df4c',
 				'Bearer ' . self::VALID_TOKEN,
 				file_get_contents(
@@ -360,6 +375,7 @@ final class DevicePropertiesV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/invalid.identifier.json',
 			],
 			'missingToken' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/28bc0d38-2f7c-4a71-aa74-27b102f8df4c',
 				null,
 				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/device.properties.update.json'),
@@ -367,6 +383,7 @@ final class DevicePropertiesV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
 			],
 			'invalidToken' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/28bc0d38-2f7c-4a71-aa74-27b102f8df4c',
 				'Bearer ' . self::INVALID_TOKEN,
 				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/device.properties.update.json'),
@@ -374,6 +391,7 @@ final class DevicePropertiesV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/unauthorized.json',
 			],
 			'emptyToken' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/28bc0d38-2f7c-4a71-aa74-27b102f8df4c',
 				'',
 				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/device.properties.update.json'),
@@ -381,6 +399,7 @@ final class DevicePropertiesV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
 			],
 			'expiredToken' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/28bc0d38-2f7c-4a71-aa74-27b102f8df4c',
 				'Bearer ' . self::EXPIRED_TOKEN,
 				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/device.properties.update.json'),
@@ -388,6 +407,7 @@ final class DevicePropertiesV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/unauthorized.json',
 			],
 			'notAllowed' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/28bc0d38-2f7c-4a71-aa74-27b102f8df4c',
 				'Bearer ' . self::VALID_TOKEN_USER,
 				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/device.properties.update.json'),
@@ -441,6 +461,7 @@ final class DevicePropertiesV1Test extends DbTestCase
 			// Valid responses
 			//////////////////
 			'delete' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/28bc0d38-2f7c-4a71-aa74-27b102f8df4c',
 				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_NO_CONTENT,
@@ -450,36 +471,42 @@ final class DevicePropertiesV1Test extends DbTestCase
 			// Invalid responses
 			////////////////////
 			'unknown' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/9f5e5560-72f2-487a-a382-d73d842ba538',
 				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/notFound.json',
 			],
 			'missingToken' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/28bc0d38-2f7c-4a71-aa74-27b102f8df4c',
 				null,
 				StatusCodeInterface::STATUS_FORBIDDEN,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
 			],
 			'invalidToken' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/28bc0d38-2f7c-4a71-aa74-27b102f8df4c',
 				'Bearer ' . self::INVALID_TOKEN,
 				StatusCodeInterface::STATUS_UNAUTHORIZED,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/unauthorized.json',
 			],
 			'emptyToken' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/28bc0d38-2f7c-4a71-aa74-27b102f8df4c',
 				'',
 				StatusCodeInterface::STATUS_FORBIDDEN,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
 			],
 			'expiredToken' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/28bc0d38-2f7c-4a71-aa74-27b102f8df4c',
 				'Bearer ' . self::EXPIRED_TOKEN,
 				StatusCodeInterface::STATUS_UNAUTHORIZED,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/unauthorized.json',
 			],
 			'notAllowed' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/28bc0d38-2f7c-4a71-aa74-27b102f8df4c',
 				'Bearer ' . self::VALID_TOKEN_USER,
 				StatusCodeInterface::STATUS_FORBIDDEN,

@@ -3,6 +3,7 @@
 namespace FastyBird\Module\Devices\Tests\Cases\Unit\Controllers;
 
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Metadata;
 use FastyBird\Module\Devices\Tests\Cases\Unit\DbTestCase;
 use FastyBird\Module\Devices\Tests\Tools;
 use Fig\Http\Message\RequestMethodInterface;
@@ -67,6 +68,7 @@ final class ChannelPropertiesV1Test extends DbTestCase
 			// Valid responses
 			//////////////////
 			'readAll' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/properties',
 				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_OK,
@@ -132,6 +134,7 @@ final class ChannelPropertiesV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/relation.unknown.json',
 			],
 			'readAllMissingToken' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/properties',
 				null,
 				StatusCodeInterface::STATUS_FORBIDDEN,
@@ -145,6 +148,7 @@ final class ChannelPropertiesV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
 			],
 			'readAllEmptyToken' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/properties',
 				'',
 				StatusCodeInterface::STATUS_FORBIDDEN,
@@ -158,6 +162,7 @@ final class ChannelPropertiesV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
 			],
 			'readAllInvalidToken' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/properties',
 				'Bearer ' . self::INVALID_TOKEN,
 				StatusCodeInterface::STATUS_UNAUTHORIZED,
@@ -171,6 +176,7 @@ final class ChannelPropertiesV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/unauthorized.json',
 			],
 			'readAllExpiredToken' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/properties',
 				'Bearer ' . self::EXPIRED_TOKEN,
 				StatusCodeInterface::STATUS_UNAUTHORIZED,
@@ -231,6 +237,7 @@ final class ChannelPropertiesV1Test extends DbTestCase
 			// Valid responses
 			//////////////////
 			'create' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/properties',
 				'Bearer ' . self::VALID_TOKEN,
 				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/channel.properties.create.json'),
@@ -238,6 +245,7 @@ final class ChannelPropertiesV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/channel.properties.create.json',
 			],
 			'createComposedEnum' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/properties',
 				'Bearer ' . self::VALID_TOKEN,
 				file_get_contents(
@@ -250,6 +258,7 @@ final class ChannelPropertiesV1Test extends DbTestCase
 			// Invalid responses
 			////////////////////
 			'missingRequired' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/properties',
 				'Bearer ' . self::VALID_TOKEN,
 				file_get_contents(
@@ -259,6 +268,7 @@ final class ChannelPropertiesV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/channel.properties.create.missing.required.json',
 			],
 			'notUnique' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/properties',
 				'Bearer ' . self::VALID_TOKEN,
 				file_get_contents(
@@ -268,6 +278,7 @@ final class ChannelPropertiesV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/channel.properties.create.notUnique.json',
 			],
 			'invalidType' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/properties',
 				'Bearer ' . self::VALID_TOKEN,
 				file_get_contents(
@@ -277,6 +288,7 @@ final class ChannelPropertiesV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/invalid.type.json',
 			],
 			'missingToken' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/properties',
 				null,
 				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/channel.properties.create.json'),
@@ -284,6 +296,7 @@ final class ChannelPropertiesV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
 			],
 			'invalidToken' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/properties',
 				'Bearer ' . self::INVALID_TOKEN,
 				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/channel.properties.create.json'),
@@ -291,6 +304,7 @@ final class ChannelPropertiesV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/unauthorized.json',
 			],
 			'emptyToken' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/properties',
 				'',
 				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/channel.properties.create.json'),
@@ -298,6 +312,7 @@ final class ChannelPropertiesV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
 			],
 			'expiredToken' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/properties',
 				'Bearer ' . self::EXPIRED_TOKEN,
 				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/channel.properties.create.json'),
@@ -305,6 +320,7 @@ final class ChannelPropertiesV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/unauthorized.json',
 			],
 			'notAllowed' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/properties',
 				'Bearer ' . self::VALID_TOKEN_USER,
 				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/channel.properties.create.json'),

@@ -3,6 +3,7 @@
 namespace FastyBird\Module\Devices\Tests\Cases\Unit\Controllers;
 
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Metadata;
 use FastyBird\Module\Devices\Tests\Cases\Unit\DbTestCase;
 use FastyBird\Module\Devices\Tests\Tools;
 use Fig\Http\Message\RequestMethodInterface;
@@ -72,6 +73,7 @@ final class DeviceParentsV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/device.parents.index.json',
 			],
 			'readAllPaging' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/a1036ff8-6ee8-4405-aaed-58bae0814596/parents?page[offset]=1&page[limit]=1',
 				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_OK,

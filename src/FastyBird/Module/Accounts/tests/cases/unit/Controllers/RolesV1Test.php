@@ -3,6 +3,7 @@
 namespace FastyBird\Module\Accounts\Tests\Cases\Unit\Controllers;
 
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Metadata;
 use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\Module\Accounts\Schemas;
 use FastyBird\Module\Accounts\Tests\Cases\Unit\DbTestCase;
@@ -116,18 +117,21 @@ final class RolesV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/roles/roles.read.children.json',
 			],
 			'readRelationshipsChildren' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/roles/efbfbd04-0158-efbf-bdef-bfbd4defbfbd/relationships/' . Schemas\Roles\Role::RELATIONSHIPS_CHILDREN,
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				StatusCodeInterface::STATUS_OK,
 				__DIR__ . '/../../../fixtures/Controllers/responses/roles/roles.relationships.children.json',
 			],
 			'readRelationshipsParent' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/roles/' . self::ROLE_ID . '/relationships/' . Schemas\Roles\Role::RELATIONSHIPS_PARENT,
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				StatusCodeInterface::STATUS_OK,
 				__DIR__ . '/../../../fixtures/Controllers/responses/roles/roles.relationships.parent.json',
 			],
 			'readRelationshipsParentUser' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/roles/' . self::ROLE_ID . '/relationships/' . Schemas\Roles\Role::RELATIONSHIPS_PARENT,
 				'Bearer ' . self::USER_TOKEN,
 				StatusCodeInterface::STATUS_OK,
@@ -149,6 +153,7 @@ final class RolesV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/relation.unknown.json',
 			],
 			'readRelationshipsUnknownEntity' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/roles/' . self::UNKNOWN_ID . '/relationships/' . Schemas\Roles\Role::RELATIONSHIPS_CHILDREN,
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				StatusCodeInterface::STATUS_NOT_FOUND,

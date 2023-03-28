@@ -3,6 +3,7 @@
 namespace FastyBird\Module\Accounts\Tests\Cases\Unit\Controllers;
 
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Metadata;
 use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\Module\Accounts\Schemas;
 use FastyBird\Module\Accounts\Tests\Cases\Unit\DbTestCase;
@@ -99,18 +100,21 @@ final class AccountsV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/accounts/accounts.read.user.json',
 			],
 			'readRelationshipsIdentities' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/accounts/' . self::ADMINISTRATOR_ACCOUNT_ID . '/relationships/' . Schemas\Accounts\Account::RELATIONSHIPS_IDENTITIES,
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				StatusCodeInterface::STATUS_OK,
 				__DIR__ . '/../../../fixtures/Controllers/responses/accounts/accounts.relationships.identities.json',
 			],
 			'readRelationshipsRoles' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/accounts/' . self::ADMINISTRATOR_ACCOUNT_ID . '/relationships/' . Schemas\Accounts\Account::RELATIONSHIPS_ROLES,
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				StatusCodeInterface::STATUS_OK,
 				__DIR__ . '/../../../fixtures/Controllers/responses/accounts/accounts.relationships.roles.json',
 			],
 			'readRelationshipsEmails' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/accounts/' . self::ADMINISTRATOR_ACCOUNT_ID . '/relationships/' . Schemas\Accounts\Account::RELATIONSHIPS_EMAILS,
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				StatusCodeInterface::STATUS_OK,
@@ -132,6 +136,7 @@ final class AccountsV1Test extends DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/relation.unknown.json',
 			],
 			'readRelationshipsUnknownEntity' => [
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '/v1/accounts/' . self::UNKNOWN_ID . '/relationships/' . Schemas\Accounts\Account::RELATIONSHIPS_EMAILS,
 				'Bearer ' . self::ADMINISTRATOR_TOKEN,
 				StatusCodeInterface::STATUS_NOT_FOUND,
