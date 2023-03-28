@@ -86,7 +86,7 @@ class RedisClient extends Console\Command\Command
 		try {
 			$this->dispatcher?->dispatch(new Events\Startup());
 
-			$this->clientFactory->create($this->eventLoop);
+			$this->clientFactory->create();
 
 			$this->eventLoop->run();
 

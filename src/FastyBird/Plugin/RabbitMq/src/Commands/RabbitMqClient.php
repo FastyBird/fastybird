@@ -87,7 +87,7 @@ final class RabbitMqClient extends Console\Command\Command
 		try {
 			$this->dispatcher?->dispatch(new Events\Startup());
 
-			$this->channelFactory->create($this->eventLoop);
+			$this->channelFactory->create();
 
 			$this->eventLoop->run();
 

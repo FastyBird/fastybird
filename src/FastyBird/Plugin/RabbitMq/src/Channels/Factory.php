@@ -16,6 +16,7 @@
 namespace FastyBird\Plugin\RabbitMq\Channels;
 
 use Bunny;
+use FastyBird\Library\Exchange\Exchange as ExchangeExchange;
 use FastyBird\Library\Metadata\Constants as MetadataConstants;
 use FastyBird\Plugin\RabbitMq\Connections;
 use FastyBird\Plugin\RabbitMq\Events;
@@ -25,7 +26,6 @@ use Nette\Utils;
 use Psr\EventDispatcher;
 use React\EventLoop;
 use React\Promise;
-use Throwable;
 
 /**
  * RabbitMQ async client factory
@@ -34,7 +34,7 @@ use Throwable;
  * @subpackage     Channel
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Factory
+final class Factory implements ExchangeExchange\Factory
 {
 
 	private const EXCHANGE_TYPE = 'topic';
@@ -44,16 +44,15 @@ final class Factory
 		private readonly Connections\Connection $connection,
 		private readonly Handlers\Message $messagesHandler,
 		private readonly string|null $queueName = null,
+		private readonly EventLoop\LoopInterface|null $eventLoop = null,
 		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
 	}
 
-	public function create(
-		EventLoop\LoopInterface|null $eventLoop = null,
-	): Promise\PromiseInterface
+	public function create(): void
 	{
-		$client = new Bunny\Async\Client($eventLoop, [
+		$client = new Bunny\Async\Client($this->eventLoop, [
 			'host' => $this->connection->getHost(),
 			'port' => $this->connection->getPort(),
 			'vhost' => $this->connection->getVhost(),
@@ -62,16 +61,9 @@ final class Factory
 			'heartbeat' => 30,
 		]);
 
-		$deferred = new Promise\Deferred();
-
 		$client
 			->connect()
-			->then(
-				static fn (Bunny\Async\Client $client) => $client->channel(),
-				static function (Throwable $ex) use ($deferred): void {
-					$deferred->reject($ex);
-				},
-			)
+			->then(static fn (Bunny\Async\Client $client) => $client->channel())
 			->then(
 				static function (Bunny\Channel $channel): Promise\PromiseInterface {
 					$qosResult = $channel->qos(0, 5);
@@ -83,12 +75,9 @@ final class Factory
 
 					throw new Exceptions\InvalidState('RabbitMQ QoS could not be configured');
 				},
-				static function (Throwable $ex) use ($deferred): void {
-					$deferred->reject($ex);
-				},
 			)
 			->then(
-				function (Bunny\Channel $channel) use ($deferred): void {
+				function (Bunny\Channel $channel): void {
 					$this->dispatcher?->dispatch(new Events\ChannelCreated($channel));
 
 					$autoDeleteQueue = false;
@@ -164,15 +153,8 @@ final class Factory
 						},
 						$queueName,
 					);
-
-					$deferred->resolve($channel);
-				},
-				static function (Throwable $ex) use ($deferred): void {
-					$deferred->reject($ex);
 				},
 			);
-
-		return $deferred->promise();
 	}
 
 }

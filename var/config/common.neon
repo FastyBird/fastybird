@@ -61,7 +61,6 @@ extensions:
     # FastyBird bridges
     fbRedisDbDevicesModuleBridge        : FastyBird\Bridge\RedisDbDevicesModule\DI\RedisDbDevicesModuleExtension
     fbRedisDbTriggersModuleBridge       : FastyBird\Bridge\RedisDbTriggersModule\DI\RedisDbTriggersModuleExtension
-    fbRedisExchangeWsExchangeBridge     : FastyBird\Bridge\RedisExchangeWsExchange\DI\RedisExchangeWsExchangeExtension
     fbWsExchangeDevicesModuleBridge     : FastyBird\Bridge\WsExchangeDevicesModule\DI\WsExchangeDevicesModuleExtension
 
 decorator:
@@ -150,7 +149,7 @@ ipubWebsockets:
 
 contributteConsole:
     name: "FastyBird:MiniServer!"
-    version: "0.1.0"
+    version: "1.0.0"
     catchExceptions: true
     autoExit: true
     url: https://www.fastybird.com
