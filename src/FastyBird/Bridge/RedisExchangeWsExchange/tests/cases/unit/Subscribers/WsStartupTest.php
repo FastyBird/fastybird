@@ -37,6 +37,8 @@ final class WsStartupTest extends Unit\BaseTestCase
 
 		$this->mockContainerService(RedisDbClient\Factory::class, $redisFactory);
 
+		$this->expectOutputString("DEBUG: Launching WebSockets Server\r\n");
+
 		$dispatcher = $this->container->getByType(EventDispatcher\EventDispatcherInterface::class);
 
 		if (method_exists($dispatcher, 'addSubscriber')) {
