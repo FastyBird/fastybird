@@ -10,6 +10,7 @@ use FastyBird\Plugin\WsExchange\Server as WsExchangeServer;
 use IPub\WebSockets;
 use Nette;
 use Psr\EventDispatcher;
+use Psr\Log;
 use React\EventLoop;
 use Symfony\Component\Console;
 use Symfony\Component\Console\Application;
@@ -30,14 +31,16 @@ final class WsStartupTest extends Unit\BaseTestCase
 
 		$this->mockContainerService(EventLoop\LoopInterface::class, $eventLoop);
 
+		$logger = $this->createMock(WebSockets\Logger\Console::class);
+
+		$this->mockContainerService(Log\LoggerInterface::class, $logger);
+
 		$redisFactory = $this->createMock(RedisDbClient\Factory::class);
 		$redisFactory
 			->expects(self::once())
 			->method('create');
 
 		$this->mockContainerService(RedisDbClient\Factory::class, $redisFactory);
-
-		$this->expectOutputString("DEBUG: Launching WebSockets Server\r\n");
 
 		$dispatcher = $this->container->getByType(EventDispatcher\EventDispatcherInterface::class);
 
