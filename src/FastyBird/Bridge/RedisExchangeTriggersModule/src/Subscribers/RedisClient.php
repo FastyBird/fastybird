@@ -17,12 +17,10 @@ namespace FastyBird\Bridge\RedisExchangeTriggersModule\Subscribers;
 
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Triggers\Events as TriggersEvents;
-use FastyBird\Module\Triggers\Exceptions as TriggersExceptions;
 use FastyBird\Plugin\RedisDb\Clients as RedisDbClient;
 use Psr\Log;
 use React\EventLoop;
 use Symfony\Component\EventDispatcher;
-use Throwable;
 
 /**
  * Triggers module subscriber
@@ -55,39 +53,16 @@ class RedisClient implements EventDispatcher\EventSubscriberInterface
 
 	public function automatorStartup(): void
 	{
-		$this->clientFactory->create($this->eventLoop)
-			->then(
-				function (): void {
-					$this->logger->debug(
-						'Redis client was successfully started with devices service',
-						[
-							'source' => MetadataTypes\BridgeSource::SOURCE_BRIDGE_REDISDB_TRIGGERS_MODULE,
-							'type' => 'subscriber',
-							'group' => 'subscriber',
-						],
-					);
-				},
-				function (Throwable $ex): void {
-					$this->logger->error(
-						'Redis client could not be created',
-						[
-							'source' => MetadataTypes\BridgeSource::SOURCE_BRIDGE_REDISDB_TRIGGERS_MODULE,
-							'type' => 'subscriber',
-							'group' => 'subscriber',
-							'exception' => [
-								'message' => $ex->getMessage(),
-								'code' => $ex->getCode(),
-							],
-						],
-					);
+		$this->clientFactory->create($this->eventLoop);
 
-					throw new TriggersExceptions\Terminate(
-						'Redis client could not be created',
-						$ex->getCode(),
-						$ex,
-					);
-				},
-			);
+		$this->logger->debug(
+			'Redis client was successfully started with devices service',
+			[
+				'source' => MetadataTypes\BridgeSource::SOURCE_BRIDGE_REDISDB_TRIGGERS_MODULE,
+				'type' => 'subscriber',
+				'group' => 'subscriber',
+			],
+		);
 	}
 
 }

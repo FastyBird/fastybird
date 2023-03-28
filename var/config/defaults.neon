@@ -1,6 +1,6 @@
 parameters:
     logger:
-        level: 300
+        level: 100
         rotatingFile: app.log
         stdOut: true
 
