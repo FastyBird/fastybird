@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:DevicesModule!
  * @subpackage     DI
- * @since          0.1.0
+ * @since          1.0.0
  *
  * @date           25.11.20
  */
@@ -18,6 +18,7 @@ namespace FastyBird\Module\Devices\DI;
 use Doctrine\Persistence;
 use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
 use FastyBird\Library\Exchange\DI as ExchangeDI;
+use FastyBird\Library\Exchange\Exchange as ExchangeExchange;
 use FastyBird\Module\Devices\Commands;
 use FastyBird\Module\Devices\Connectors;
 use FastyBird\Module\Devices\Consumers;
@@ -454,7 +455,16 @@ class DevicesExtension extends DI\CompilerExtension
 			->setType(Commands\Initialize::class);
 
 		$builder->addDefinition($this->prefix('commands.connector'), new DI\Definitions\ServiceDefinition())
-			->setType(Commands\Connector::class);
+			->setType(Commands\Connector::class)
+			->setArguments([
+				'exchangeFactories' => $builder->findByType(ExchangeExchange\Factory::class),
+			]);
+
+		$builder->addDefinition($this->prefix('commands.exchange'), new DI\Definitions\ServiceDefinition())
+			->setType(Commands\Exchange::class)
+			->setArguments([
+				'exchangeFactories' => $builder->findByType(ExchangeExchange\Factory::class),
+			]);
 	}
 
 	/**

@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:DevicesModule!
  * @subpackage     Commands
- * @since          0.60.0
+ * @since          1.0.0
  *
  * @date           31.05.22
  */
@@ -17,6 +17,7 @@ namespace FastyBird\Module\Devices\Commands;
 
 use BadMethodCallException;
 use FastyBird\DateTimeFactory;
+use FastyBird\Library\Exchange\Exchange as ExchangeExchange;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Connectors;
@@ -62,6 +63,9 @@ class Connector extends Console\Command\Command
 
 	private Log\LoggerInterface $logger;
 
+	/**
+	 * @param array<ExchangeExchange\Factory> $exchangeFactories
+	 */
 	public function __construct(
 		private readonly Models\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly Models\Devices\DevicesRepository $devicesRepository,
@@ -71,6 +75,7 @@ class Connector extends Console\Command\Command
 		private readonly Utilities\ChannelPropertiesStates $channelPropertiesStateManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
+		private readonly array $exchangeFactories = [],
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 		Log\LoggerInterface|null $logger = null,
 		string|null $name = null,
@@ -319,6 +324,10 @@ class Connector extends Console\Command\Command
 			}
 
 			$this->dispatcher?->dispatch(new Events\AfterConnectorStart($connector));
+
+			foreach ($this->exchangeFactories as $exchangeFactory) {
+				$exchangeFactory->create();
+			}
 		});
 
 		$this->eventLoop->addSignal(SIGINT, function () use ($connector, $service): void {

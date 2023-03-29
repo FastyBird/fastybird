@@ -15,7 +15,10 @@
 
 namespace FastyBird\Plugin\WsExchange\Commands;
 
+use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
+use FastyBird\Library\Exchange\Exchange as ExchangeExchange;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Plugin\WsExchange\Consumers;
 use FastyBird\Plugin\WsExchange\Events;
 use FastyBird\Plugin\WsExchange\Server;
 use IPub\WebSockets;
@@ -46,10 +49,15 @@ final class WsServer extends Console\Command\Command
 
 	private Log\LoggerInterface $logger;
 
+	/**
+	 * @param array<ExchangeExchange\Factory> $exchangeFactories
+	 */
 	public function __construct(
 		private readonly WebSockets\Server\Configuration $configuration,
 		private readonly Server\Factory $serverFactory,
+		private readonly ExchangeConsumers\Container $consumer,
 		private readonly EventLoop\LoopInterface $eventLoop,
+		private readonly array $exchangeFactories = [],
 		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 		Log\LoggerInterface|null $logger = null,
 		string|null $name = null,
@@ -99,7 +107,13 @@ final class WsServer extends Console\Command\Command
 				$this->dispatcher?->dispatch(new Events\Error($ex));
 			});
 
+			$this->consumer->enable(Consumers\Consumer::class);
+
 			$this->serverFactory->create($socketServer);
+
+			foreach ($this->exchangeFactories as $exchangeFactory) {
+				$exchangeFactory->create();
+			}
 
 			$this->eventLoop->run();
 

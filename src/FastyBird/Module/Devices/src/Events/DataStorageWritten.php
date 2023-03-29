@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:DevicesModule!
  * @subpackage     Events
- * @since          0.65.0
+ * @since          1.0.0
  *
  * @date           29.06.22
  */

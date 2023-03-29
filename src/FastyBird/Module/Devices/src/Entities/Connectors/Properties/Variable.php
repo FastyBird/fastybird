@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:DevicesModule!
  * @subpackage     Entities
- * @since          0.31.0
+ * @since          1.0.0
  *
  * @date           08.02.22
  */

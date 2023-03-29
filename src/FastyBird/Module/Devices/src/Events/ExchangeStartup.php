@@ -1,31 +1,31 @@
 <?php declare(strict_types = 1);
 
 /**
- * Startup.php
+ * ExchangeStartup.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:RabbitMqPlugin!
+ * @package        FastyBird:DevicesModule!
  * @subpackage     Events
  * @since          1.0.0
  *
- * @date           27.03.23
+ * @date           29.03.23
  */
 
-namespace FastyBird\Plugin\RabbitMq\Events;
+namespace FastyBird\Module\Devices\Events;
 
 use Symfony\Contracts\EventDispatcher;
 
 /**
- * After message consumed event
+ * When module exchange service started
  *
- * @package        FastyBird:RabbitMqPlugin!
+ * @package        FastyBird:DevicesModule!
  * @subpackage     Events
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Startup extends EventDispatcher\Event
+class ExchangeStartup extends EventDispatcher\Event
 {
 
 }

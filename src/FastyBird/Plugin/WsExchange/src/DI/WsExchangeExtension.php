@@ -17,6 +17,7 @@ namespace FastyBird\Plugin\WsExchange\DI;
 
 use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
 use FastyBird\Library\Exchange\DI as ExchangeDI;
+use FastyBird\Library\Exchange\Exchange as ExchangeExchange;
 use FastyBird\Plugin\WsExchange\Commands;
 use FastyBird\Plugin\WsExchange\Consumers;
 use FastyBird\Plugin\WsExchange\Controllers;
@@ -91,7 +92,10 @@ class WsExchangeExtension extends DI\CompilerExtension
 			->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATUS, false);
 
 		$builder->addDefinition($this->prefix('commands.server'), new DI\Definitions\ServiceDefinition())
-			->setType(Commands\WsServer::class);
+			->setType(Commands\WsServer::class)
+			->setArguments([
+				'exchangeFactories' => $builder->findByType(ExchangeExchange\Factory::class),
+			]);
 
 		$builder->addDefinition($this->prefix('server.factory'), new DI\Definitions\ServiceDefinition())
 			->setType(Server\Factory::class);

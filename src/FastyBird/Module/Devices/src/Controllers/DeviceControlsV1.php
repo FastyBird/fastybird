@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:DevicesModule!
  * @subpackage     Controllers
- * @since          0.4.0
+ * @since          1.0.0
  *
  * @date           29.09.21
  */

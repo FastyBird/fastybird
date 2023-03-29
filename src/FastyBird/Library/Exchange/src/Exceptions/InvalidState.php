@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ExchangeLibrary!
  * @subpackage     Exceptions
- * @since          0.44.0
+ * @since          1.0.0
  *
  * @date           13.06.22
  */

@@ -3,7 +3,6 @@
 namespace FastyBird\Plugin\RedisDb\Tests\Cases\Unit\DI;
 
 use FastyBird\Plugin\RedisDb\Clients;
-use FastyBird\Plugin\RedisDb\Commands;
 use FastyBird\Plugin\RedisDb\Connections;
 use FastyBird\Plugin\RedisDb\Handlers;
 use FastyBird\Plugin\RedisDb\Models;
@@ -29,8 +28,6 @@ final class RedisDbExtensionTest extends BaseTestCase
 		self::assertNotNull($this->container->getByType(Models\StatesRepositoryFactory::class, false));
 
 		self::assertNotNull($this->container->getByType(Handlers\Message::class, false));
-
-		self::assertNotNull($this->container->getByType(Commands\RedisClient::class, false));
 
 		self::assertNotNull($this->container->getByType(Subscribers\Client::class, false));
 
