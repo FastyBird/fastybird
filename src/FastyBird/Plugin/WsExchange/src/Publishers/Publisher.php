@@ -60,7 +60,7 @@ final class Publisher
 			'Exchange:',
 			[
 				'routing_key' => $routingKey->getValue(),
-				'origin' => $source->getValue(),
+				'source' => $source->getValue(),
 				'data' => $entity?->toArray(),
 			],
 		);
@@ -72,7 +72,7 @@ final class Publisher
 				'group' => 'publisher',
 				'message' => [
 					'routing_key' => $routingKey->getValue(),
-					'origin' => $source->getValue(),
+					'source' => $source->getValue(),
 					'data' => $entity?->toArray(),
 				],
 			]);
@@ -84,7 +84,7 @@ final class Publisher
 				'group' => 'publisher',
 				'message' => [
 					'routing_key' => $routingKey->getValue(),
-					'origin' => $source->getValue(),
+					'source' => $source->getValue(),
 					'data' => $entity?->toArray(),
 				],
 			]);

@@ -51,7 +51,7 @@ final class PublisherTest extends BaseTestCase
 				): bool {
 					$mockedData = [
 						'routing_key' => $routingKey->getValue(),
-						'origin' => $source->getValue(),
+						'source' => $source->getValue(),
 						'data' => $entity->toArray(),
 					];
 
@@ -117,7 +117,7 @@ final class PublisherTest extends BaseTestCase
 				): bool {
 					$mockedData = [
 						'routing_key' => $routingKey->getValue(),
-						'origin' => $source->getValue(),
+						'source' => $source->getValue(),
 						'data' => $entity->toArray(),
 					];
 
@@ -182,7 +182,7 @@ final class PublisherTest extends BaseTestCase
 				): bool {
 					$mockedData = [
 						'routing_key' => $routingKey->getValue(),
-						'origin' => $source->getValue(),
+						'source' => $source->getValue(),
 						'data' => $entity->toArray(),
 					];
 
@@ -247,7 +247,7 @@ final class PublisherTest extends BaseTestCase
 				): bool {
 					$mockedData = [
 						'routing_key' => $routingKey->getValue(),
-						'origin' => $source->getValue(),
+						'source' => $source->getValue(),
 						'data' => $entity->toArray(),
 					];
 
