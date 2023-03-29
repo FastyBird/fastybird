@@ -116,8 +116,6 @@ final class Factory implements ExchangeExchange\Factory
 
 					$channel->consume(
 						function (Bunny\Message $message, Bunny\Channel $channel, Bunny\Async\Client $client): void {
-							$this->dispatcher?->dispatch(new Events\BeforeMessageConsumed($message));
-
 							try {
 								$result = $this->messagesHandler->handle($message);
 							} catch (Exceptions\Terminate) {
@@ -148,8 +146,6 @@ final class Factory implements ExchangeExchange\Factory
 								default:
 									throw new Exceptions\InvalidArgument('Unknown return value of message handler');
 							}
-
-							$this->dispatcher?->dispatch(new Events\AfterMessageConsumed($message));
 						},
 						$queueName,
 					);

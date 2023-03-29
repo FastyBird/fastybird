@@ -18,7 +18,6 @@ namespace FastyBird\Plugin\RedisDb\DI;
 use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
 use FastyBird\Library\Metadata;
 use FastyBird\Plugin\RedisDb\Clients;
-use FastyBird\Plugin\RedisDb\Commands;
 use FastyBird\Plugin\RedisDb\Connections;
 use FastyBird\Plugin\RedisDb\Handlers;
 use FastyBird\Plugin\RedisDb\Models;
@@ -110,9 +109,6 @@ class RedisDbExtension extends DI\CompilerExtension
 
 		$builder->addDefinition($this->prefix('handlers.message'), new DI\Definitions\ServiceDefinition())
 			->setType(Handlers\Message::class);
-
-		$builder->addDefinition($this->prefix('commands.client'), new DI\Definitions\ServiceDefinition())
-			->setType(Commands\RedisClient::class);
 
 		$builder->addDefinition($this->prefix('utilities.identifier'), new DI\Definitions\ServiceDefinition())
 			->setType(Utilities\IdentifierGenerator::class);

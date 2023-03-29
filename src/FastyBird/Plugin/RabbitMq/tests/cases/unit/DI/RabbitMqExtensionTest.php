@@ -3,7 +3,6 @@
 namespace FastyBird\Plugin\RabbitMq\Tests\Cases\Unit\DI;
 
 use FastyBird\Plugin\RabbitMq\Channels;
-use FastyBird\Plugin\RabbitMq\Commands;
 use FastyBird\Plugin\RabbitMq\Connections;
 use FastyBird\Plugin\RabbitMq\Handlers;
 use FastyBird\Plugin\RabbitMq\Subscribers;
@@ -25,8 +24,6 @@ final class RabbitMqExtensionTest extends BaseTestCase
 		self::assertNotNull($this->container->getByType(Channels\Factory::class, false));
 
 		self::assertNotNull($this->container->getByType(Handlers\Message::class, false));
-
-		self::assertNotNull($this->container->getByType(Commands\RabbitMqClient::class, false));
 
 		self::assertNotNull($this->container->getByType(Subscribers\Channel::class, false));
 

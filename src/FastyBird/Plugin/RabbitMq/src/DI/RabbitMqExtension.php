@@ -17,7 +17,6 @@ namespace FastyBird\Plugin\RabbitMq\DI;
 
 use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
 use FastyBird\Plugin\RabbitMq\Channels;
-use FastyBird\Plugin\RabbitMq\Commands;
 use FastyBird\Plugin\RabbitMq\Connections;
 use FastyBird\Plugin\RabbitMq\Handlers;
 use FastyBird\Plugin\RabbitMq\Publishers;
@@ -110,9 +109,6 @@ class RabbitMqExtension extends DI\CompilerExtension
 
 		$builder->addDefinition($this->prefix('handlers.message'), new DI\Definitions\ServiceDefinition())
 			->setType(Handlers\Message::class);
-
-		$builder->addDefinition($this->prefix('commands.client'), new DI\Definitions\ServiceDefinition())
-			->setType(Commands\RabbitMqClient::class);
 
 		$builder->addDefinition($this->prefix('utilities.identifier'), new DI\Definitions\ServiceDefinition())
 			->setType(Utilities\IdentifierGenerator::class);
