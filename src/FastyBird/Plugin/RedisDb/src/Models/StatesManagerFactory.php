@@ -15,7 +15,6 @@
 
 namespace FastyBird\Plugin\RedisDb\Models;
 
-use Clue\React\Redis;
 use FastyBird\DateTimeFactory;
 use FastyBird\Plugin\RedisDb\Clients;
 use FastyBird\Plugin\RedisDb\Exceptions;
@@ -40,8 +39,6 @@ class StatesManagerFactory
 
 	use Nette\SmartObject;
 
-	private Redis\RedisClient|null $asyncClient = null;
-
 	public function __construct(
 		private readonly Clients\Client $client,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
@@ -64,24 +61,7 @@ class StatesManagerFactory
 			throw new Exceptions\InvalidArgument(sprintf('Provided entity class %s does not exists', $entity));
 		}
 
-		return new StatesManager($this->getClient(), $this->dateTimeFactory, $entity, $this->dispatcher, $this->logger);
-	}
-
-	/**
-	 * @internal
-	 */
-	public function setAsyncClient(Redis\RedisClient $client): void
-	{
-		$this->asyncClient = $client;
-	}
-
-	private function getClient(): Clients\Client|Redis\RedisClient
-	{
-		if ($this->asyncClient !== null) {
-			return $this->asyncClient;
-		}
-
-		return $this->client;
+		return new StatesManager($this->client, $this->dateTimeFactory, $entity, $this->dispatcher, $this->logger);
 	}
 
 }

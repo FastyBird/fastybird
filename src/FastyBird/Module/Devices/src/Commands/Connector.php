@@ -42,6 +42,7 @@ use function array_values;
 use function count;
 use function is_string;
 use const SIGINT;
+use const SIGTERM;
 
 /**
  * Module connector command
@@ -330,63 +331,75 @@ class Connector extends Console\Command\Command
 			}
 		});
 
+		$this->eventLoop->addSignal(SIGTERM, function () use ($connector, $service): void {
+			$this->terminate($service, $connector);
+		});
+
 		$this->eventLoop->addSignal(SIGINT, function () use ($connector, $service): void {
-			$this->logger->info('Stopping connector...', [
+			$this->terminate($service, $connector);
+		});
+	}
+
+	/**
+	 * @throws Exceptions\Terminate
+	 */
+	private function terminate(Connectors\Connector $service, Entities\Connectors\Connector $connector): void
+	{
+		$this->logger->info('Stopping connector...', [
+			'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+			'type' => 'command',
+		]);
+
+		try {
+			$this->dispatcher?->dispatch(new Events\BeforeConnectorTerminate($service));
+
+			$service->terminate();
+
+			$this->resetConnectorDevices(
+				$connector,
+				MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_DISCONNECTED),
+			);
+
+			$now = $this->dateTimeFactory->getNow();
+
+			$waitingForClosing = true;
+
+			// Wait until connector is fully terminated
+			while (
+				$waitingForClosing
+				&& (
+					$this->dateTimeFactory->getNow()->getTimestamp() - $now->getTimestamp()
+				) < self::SHUTDOWN_WAITING_DELAY
+			) {
+				if (!$service->hasUnfinishedTasks()) {
+					$waitingForClosing = false;
+				}
+			}
+
+			$this->dispatcher?->dispatch(new Events\AfterConnectorTerminate($service));
+
+			$this->connectorConnectionManager->setState(
+				$connector,
+				MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_STOPPED),
+			);
+
+			$this->eventLoop->stop();
+		} catch (Throwable $ex) {
+			$this->logger->error('Connector could not be stopped. An unexpected error occurred', [
 				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
 				'type' => 'command',
+				'exception' => [
+					'message' => $ex->getMessage(),
+					'code' => $ex->getCode(),
+				],
 			]);
 
-			try {
-				$this->dispatcher?->dispatch(new Events\BeforeConnectorTerminate($service));
-
-				$service->terminate();
-
-				$this->resetConnectorDevices(
-					$connector,
-					MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_DISCONNECTED),
-				);
-
-				$now = $this->dateTimeFactory->getNow();
-
-				$waitingForClosing = true;
-
-				// Wait until connector is fully terminated
-				while (
-					$waitingForClosing
-					&& (
-						$this->dateTimeFactory->getNow()->getTimestamp() - $now->getTimestamp()
-					) < self::SHUTDOWN_WAITING_DELAY
-				) {
-					if (!$service->hasUnfinishedTasks()) {
-						$waitingForClosing = false;
-					}
-				}
-
-				$this->dispatcher?->dispatch(new Events\AfterConnectorTerminate($service));
-
-				$this->connectorConnectionManager->setState(
-					$connector,
-					MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_STOPPED),
-				);
-
-				$this->eventLoop->stop();
-			} catch (Throwable $ex) {
-				$this->logger->error('Connector could not be stopped. An unexpected error occurred', [
-					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
-					'type' => 'command',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
-				]);
-
-				throw new Exceptions\Terminate(
-					'Error during connector termination process',
-					$ex->getCode(),
-					$ex,
-				);
-			}
-		});
+			throw new Exceptions\Terminate(
+				'Error during connector termination process',
+				$ex->getCode(),
+				$ex,
+			);
+		}
 	}
 
 	/**

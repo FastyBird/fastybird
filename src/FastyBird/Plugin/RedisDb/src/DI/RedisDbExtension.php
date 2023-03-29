@@ -22,7 +22,6 @@ use FastyBird\Plugin\RedisDb\Connections;
 use FastyBird\Plugin\RedisDb\Handlers;
 use FastyBird\Plugin\RedisDb\Models;
 use FastyBird\Plugin\RedisDb\Publishers;
-use FastyBird\Plugin\RedisDb\Subscribers;
 use FastyBird\Plugin\RedisDb\Utilities;
 use Nette\DI;
 use Nette\Schema;
@@ -77,7 +76,7 @@ class RedisDbExtension extends DI\CompilerExtension
 		$configuration = $this->getConfig();
 		assert($configuration instanceof stdClass);
 
-		$publisher = $builder->addDefinition($this->prefix('publisher'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition($this->prefix('publisher'), new DI\Definitions\ServiceDefinition())
 			->setType(Publishers\Publisher::class)
 			->setArguments([
 				'channel' => $configuration->exchange->channel,
@@ -112,12 +111,6 @@ class RedisDbExtension extends DI\CompilerExtension
 
 		$builder->addDefinition($this->prefix('utilities.identifier'), new DI\Definitions\ServiceDefinition())
 			->setType(Utilities\IdentifierGenerator::class);
-
-		$builder->addDefinition($this->prefix('subscribers.client'), new DI\Definitions\ServiceDefinition())
-			->setType(Subscribers\Client::class)
-			->setArguments([
-				'publisher' => $publisher,
-			]);
 	}
 
 }

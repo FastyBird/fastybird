@@ -6,7 +6,6 @@ use FastyBird\Plugin\RedisDb\Clients;
 use FastyBird\Plugin\RedisDb\Connections;
 use FastyBird\Plugin\RedisDb\Handlers;
 use FastyBird\Plugin\RedisDb\Models;
-use FastyBird\Plugin\RedisDb\Subscribers;
 use FastyBird\Plugin\RedisDb\Tests\Cases\Unit\BaseTestCase;
 use FastyBird\Plugin\RedisDb\Utilities;
 use Nette;
@@ -28,8 +27,6 @@ final class RedisDbExtensionTest extends BaseTestCase
 		self::assertNotNull($this->container->getByType(Models\StatesRepositoryFactory::class, false));
 
 		self::assertNotNull($this->container->getByType(Handlers\Message::class, false));
-
-		self::assertNotNull($this->container->getByType(Subscribers\Client::class, false));
 
 		self::assertNotNull($this->container->getByType(Utilities\IdentifierGenerator::class, false));
 	}
