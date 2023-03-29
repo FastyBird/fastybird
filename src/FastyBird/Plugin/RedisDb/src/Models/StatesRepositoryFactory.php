@@ -15,7 +15,6 @@
 
 namespace FastyBird\Plugin\RedisDb\Models;
 
-use Clue\React\Redis;
 use FastyBird\Plugin\RedisDb\Clients;
 use FastyBird\Plugin\RedisDb\Exceptions;
 use FastyBird\Plugin\RedisDb\States;
@@ -38,8 +37,6 @@ class StatesRepositoryFactory
 
 	use Nette\SmartObject;
 
-	private Redis\RedisClient|null $asyncClient = null;
-
 	public function __construct(
 		private readonly Clients\Client $client,
 		private readonly Log\LoggerInterface|null $logger = null,
@@ -60,24 +57,7 @@ class StatesRepositoryFactory
 			throw new Exceptions\InvalidArgument(sprintf('Provided entity class %s does not exists', $entity));
 		}
 
-		return new StatesRepository($this->getClient(), $entity, $this->logger);
-	}
-
-	/**
-	 * @internal
-	 */
-	public function setAsyncClient(Redis\RedisClient $client): void
-	{
-		$this->asyncClient = $client;
-	}
-
-	private function getClient(): Clients\Client|Redis\RedisClient
-	{
-		if ($this->asyncClient !== null) {
-			return $this->asyncClient;
-		}
-
-		return $this->client;
+		return new StatesRepository($this->client, $entity, $this->logger);
 	}
 
 }

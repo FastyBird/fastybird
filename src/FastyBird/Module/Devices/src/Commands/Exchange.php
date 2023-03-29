@@ -29,6 +29,8 @@ use Symfony\Component\Console\Input;
 use Symfony\Component\Console\Output;
 use Symfony\Component\Console\Style;
 use Throwable;
+use const SIGINT;
+use const SIGTERM;
 
 /**
  * Module exchange command
@@ -112,6 +114,14 @@ final class Exchange extends Console\Command\Command
 
 			$this->consumer->enable(Consumers\State::class);
 
+			$this->eventLoop->addSignal(SIGTERM, function (): void {
+				$this->terminate();
+			});
+
+			$this->eventLoop->addSignal(SIGINT, function (): void {
+				$this->terminate();
+			});
+
 			$this->eventLoop->run();
 
 		} catch (Throwable $ex) {
@@ -133,6 +143,16 @@ final class Exchange extends Console\Command\Command
 		}
 
 		return self::SUCCESS;
+	}
+
+	private function terminate(): void
+	{
+		$this->logger->info('Stopping exchange...', [
+			'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+			'type' => 'command',
+		]);
+
+		$this->eventLoop->stop();
 	}
 
 }
