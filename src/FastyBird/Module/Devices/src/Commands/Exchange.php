@@ -18,8 +18,8 @@ namespace FastyBird\Module\Devices\Commands;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
 use FastyBird\Library\Exchange\Exchange as ExchangeExchange;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Consumers;
+use FastyBird\Module\Devices\Events;
 use Nette;
 use Psr\EventDispatcher;
 use Psr\Log;
@@ -74,6 +74,9 @@ final class Exchange extends Console\Command\Command
 			->setDescription('Devices module exchange');
 	}
 
+	/**
+	 * @throws Console\Exception\InvalidArgumentException
+	 */
 	protected function execute(
 		Input\InputInterface $input,
 		Output\OutputInterface $output,
