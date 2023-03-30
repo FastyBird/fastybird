@@ -110,9 +110,9 @@ final class Publisher
 				]);
 
 				$topic->broadcast(Nette\Utils\Json::encode($data));
-
-				return true;
 			}
+
+			return true;
 		} catch (Nette\Utils\JsonException $ex) {
 			$this->logger->error('Data could not be converted to message', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_EXCHANGE,

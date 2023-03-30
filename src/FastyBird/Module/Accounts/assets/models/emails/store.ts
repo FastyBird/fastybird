@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 import { Jsona } from 'jsona';
-import Ajv from 'ajv';
+import Ajv from 'ajv/dist/2020';
 import { v4 as uuid } from 'uuid';
 import get from 'lodash/get';
 
@@ -440,7 +440,11 @@ export const useEmails = defineStore('accounts_module_emails', {
 
 			const isValid = jsonSchemaValidator.compile<ExchangeEntity>(exchangeEntitySchema);
 
-			if (!isValid(body)) {
+			try {
+				if (!isValid(body)) {
+					return false;
+				}
+			} catch {
 				return false;
 			}
 

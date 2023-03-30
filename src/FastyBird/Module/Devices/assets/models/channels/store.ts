@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 import { Jsona } from 'jsona';
-import Ajv from 'ajv';
+import Ajv from 'ajv/dist/2020';
 import { v4 as uuid } from 'uuid';
 import get from 'lodash/get';
 
@@ -542,7 +542,11 @@ export const useChannels = defineStore<string, IChannelsState, IChannelsGetters,
 
 			const isValid = jsonSchemaValidator.compile<ExchangeEntity>(exchangeEntitySchema);
 
-			if (!isValid(body)) {
+			try {
+				if (!isValid(body)) {
+					return false;
+				}
+			} catch {
 				return false;
 			}
 
@@ -578,12 +582,20 @@ export const useChannels = defineStore<string, IChannelsState, IChannelsGetters,
 					const device = devicesStore.findById(body.device);
 
 					if (device !== null) {
-						this.get({
-							device,
-							id: body.id,
-						});
+						try {
+							await this.get({
+								device,
+								id: body.id,
+							});
+						} catch {
+							return false;
+						}
 					} else {
-						devicesStore.get({ id: body.device, withChannels: true });
+						try {
+							devicesStore.get({ id: body.device, withChannels: true });
+						} catch {
+							return false;
+						}
 					}
 				}
 			}
