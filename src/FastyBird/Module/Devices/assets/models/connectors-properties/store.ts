@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 import { Jsona } from 'jsona';
-import Ajv from 'ajv';
+import Ajv from 'ajv/dist/2020';
 import { v4 as uuid } from 'uuid';
 import get from 'lodash/get';
 
@@ -528,7 +528,11 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 
 				const isValid = jsonSchemaValidator.compile<ExchangeEntity>(exchangeEntitySchema);
 
-				if (!isValid(body)) {
+				try {
+					if (!isValid(body)) {
+						return false;
+					}
+				} catch {
 					return false;
 				}
 
@@ -566,12 +570,20 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 						const connector = connectorsStore.findById(body.connector);
 
 						if (connector !== null) {
-							await this.get({
-								connector,
-								id: body.id,
-							});
+							try {
+								await this.get({
+									connector,
+									id: body.id,
+								});
+							} catch {
+								return false;
+							}
 						} else {
-							await connectorsStore.get({ id: body.connector });
+							try {
+								await connectorsStore.get({ id: body.connector });
+							} catch {
+								return false;
+							}
 						}
 					}
 				}

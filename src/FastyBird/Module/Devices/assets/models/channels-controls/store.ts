@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 import { Jsona } from 'jsona';
-import Ajv from 'ajv';
+import Ajv from 'ajv/dist/2020';
 import { v4 as uuid } from 'uuid';
 import get from 'lodash/get';
 
@@ -75,7 +75,7 @@ const recordFactory = async (data: IChannelControlRecordFactoryPayload): Promise
 };
 
 export const useChannelControls = defineStore<string, IChannelControlsState, IChannelControlsGetters, IChannelControlsActions>(
-	'channels_module_channels_controls',
+	'devices_module_channels_controls',
 	{
 		state: (): IChannelControlsState => {
 			return {
@@ -503,7 +503,11 @@ export const useChannelControls = defineStore<string, IChannelControlsState, ICh
 
 				const isValid = jsonSchemaValidator.compile<ExchangeEntity>(exchangeEntitySchema);
 
-				if (!isValid(body)) {
+				try {
+					if (!isValid(body)) {
+						return false;
+					}
+				} catch {
 					return false;
 				}
 
@@ -526,10 +530,14 @@ export const useChannelControls = defineStore<string, IChannelControlsState, ICh
 						const channel = channelsStore.findById(body.channel);
 
 						if (channel !== null) {
-							await this.get({
-								channel,
-								id: body.id,
-							});
+							try {
+								await this.get({
+									channel,
+									id: body.id,
+								});
+							} catch {
+								return false;
+							}
 						}
 					}
 				}

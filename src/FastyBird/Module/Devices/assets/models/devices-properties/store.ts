@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 import { Jsona } from 'jsona';
-import Ajv from 'ajv';
+import Ajv from 'ajv/dist/2020';
 import { v4 as uuid } from 'uuid';
 import get from 'lodash/get';
 
@@ -574,7 +574,11 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 
 				const isValid = jsonSchemaValidator.compile<ExchangeEntity>(exchangeEntitySchema);
 
-				if (!isValid(body)) {
+				try {
+					if (!isValid(body)) {
+						return false;
+					}
+				} catch {
 					return false;
 				}
 
@@ -612,12 +616,20 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 						const device = devicesStore.findById(body.device);
 
 						if (device !== null) {
-							await this.get({
-								device,
-								id: body.id,
-							});
+							try {
+								await this.get({
+									device,
+									id: body.id,
+								});
+							} catch {
+								return false;
+							}
 						} else {
-							await devicesStore.get({ id: body.device });
+							try {
+								await devicesStore.get({ id: body.device });
+							} catch {
+								return false;
+							}
 						}
 					}
 				}

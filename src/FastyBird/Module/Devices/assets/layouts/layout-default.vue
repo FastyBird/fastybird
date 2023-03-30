@@ -31,21 +31,19 @@ const connectorsStore = useConnectors();
 
 const isLoading = computed<boolean>((): boolean => connectorsStore.fetching);
 
-const stores = computed(() => {
-	return [
-		useChannels(),
-		useChannelControls(),
-		useChannelProperties(),
-		useConnectors(),
-		useConnectorControls(),
-		useConnectorProperties(),
-		useDevices(),
-		useDeviceControls(),
-		useDeviceProperties(),
-	];
-});
+const stores = [
+	useConnectors(),
+	useConnectorControls(),
+	useConnectorProperties(),
+	useDevices(),
+	useDeviceControls(),
+	useDeviceProperties(),
+	useChannels(),
+	useChannelControls(),
+	useChannelProperties(),
+];
 
-const onWsMessage = (data: string): void => {
+const onWsMessage = async (data: string): Promise<void> => {
 	const body = JSON.parse(data);
 
 	if (
@@ -53,15 +51,15 @@ const onWsMessage = (data: string): void => {
 		Object.prototype.hasOwnProperty.call(body, 'source') &&
 		Object.prototype.hasOwnProperty.call(body, 'data')
 	) {
-		stores.value.forEach((store) => {
+		for (const store of stores) {
 			if (Object.prototype.hasOwnProperty.call(store, 'socketData')) {
-				store.socketData({
+				await store.socketData({
 					source: get(body, 'source'),
 					routingKey: get(body, 'routing_key'),
 					data: JSON.stringify(get(body, 'data')),
 				});
 			}
-		});
+		}
 	}
 };
 

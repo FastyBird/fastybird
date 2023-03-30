@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 import { Jsona } from 'jsona';
-import Ajv from 'ajv';
+import Ajv from 'ajv/dist/2020';
 import { v4 as uuid } from 'uuid';
 import get from 'lodash/get';
 
@@ -593,7 +593,11 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 						},
 					});
 				} else {
-					await this.get({ id: body.id });
+					try {
+						await this.get({ id: body.id });
+					} catch {
+						return false;
+					}
 				}
 			}
 
