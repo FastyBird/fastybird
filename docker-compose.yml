@@ -31,13 +31,10 @@ services:
     ports:
       - "${HTTP_PORT:-80}:80"
       - "${WORKER_STATUS_PORT:-9001}:9001"
-      - "6666:6666/udp"
-      - "6667:6667/udp"
-      - "6668:6668/udp"
-      - "5683:5683/udp"
-      - "51827:51827/udp"
     networks:
-      - fastybird
+      fastybird:
+      local_network:
+        ipv4_address: ${LOCAL_NETWORK_APPLICATION_IP_ADDRESS:-192.168.0.10}
     #devices:
     #  - "/dev/tty.usbserial-31420:/dev/ttyUSB0"
 
@@ -45,7 +42,6 @@ services:
   database:
     container_name: fastybird-database
     image: mariadb
-    platform: linux/amd64
     environment:
       # Container specific environment variables
       TZ: ${APP_TZ:-UTC}
@@ -54,7 +50,7 @@ services:
       MYSQL_PASSWORD: ${DATABASE_PASSWORD:-fastybird}
       MYSQL_DATABASE: ${DATABASE_DBNAME:-fastybird_dev}
     volumes:
-      - mysql-data:/var/lib/mysql:rw
+      - mysql-dev-data:/var/lib/mysql:rw
       # you may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
       # - ./docker/mysql/data:/var/lib/mysql:rw,delegated
     ports:
@@ -67,8 +63,8 @@ services:
     container_name: fastybird-redis
     image: redis
     volumes:
-      - redis-other:/var/lib/redis:rw
-      - redis-data:/data:rw
+      - redis-dev-other:/var/lib/redis:rw
+      - redis-dev-data:/data:rw
       # you may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
       # - ./docker/redis/other:/var/lib/redis:rw,delegated
       # - ./docker/redis/data:/data:rw,delegated
@@ -129,8 +125,8 @@ services:
     container_name: fastybird-mqtt
     image: eclipse-mosquitto
     volumes:
-      - mqtt-data:/mosquitto/data:rw
-      - mqtt-log:/mosquitto/log:rw
+      - mqtt-dev-data:/mosquitto/data:rw
+      - mqtt-dev-log:/mosquitto/log:rw
       # you may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
       # - ./docker/mqtt/data:/mosquitto/data:rw,delegated
     ports:
@@ -142,9 +138,23 @@ networks:
   fastybird:
     driver: bridge
 
+  local_network:
+    name: local_network
+    driver: ipvlan
+    driver_opts:
+      parent: ${LOCAL_NETWORK_DRIVER:-eth0}
+      ipvlan_mode: l2
+    ipam:
+      config:
+        - subnet: ${LOCAL_NETWORK_SUBNET:-192.168.0.0/24}
+          gateway: ${LOCAL_NETWORK_GATEWAY:-192.168.0.1}
+          ip_range: ${LOCAL_NETWORK_IP_RANGE:-192.168.0.6/24}
+
 volumes:
-  mysql-data:
-  redis-other:
-  redis-data:
-  mqtt-data:
-  mqtt-log:
+  mysql-dev-data:
+  redis-dev-other:
+  redis-dev-data:
+  couchdb-dev-data:
+  mqtt-dev-data:
+  mqtt-dev-log:
+  rabbitmq-dev-data:
