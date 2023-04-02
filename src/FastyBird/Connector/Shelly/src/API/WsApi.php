@@ -34,6 +34,7 @@ use React\Promise;
 use stdClass;
 use Throwable;
 use function array_key_exists;
+use function gethostbyname;
 use function hash;
 use function implode;
 use function intval;
@@ -138,7 +139,7 @@ final class WsApi implements Evenement\EventEmitterInterface
 
 		try {
 			if ($this->domain !== null) {
-				$address = $this->domain;
+				$address = gethostbyname($this->domain);
 			} elseif ($this->ipAddress !== null) {
 				$address = $this->ipAddress;
 			}

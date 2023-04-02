@@ -386,7 +386,7 @@ final class Coap implements Clients\Client
 	{
 		$findDeviceQuery = new DevicesQueries\FindDevices();
 		$findDeviceQuery->forConnector($this->connector);
-		$findDeviceQuery->byIdentifier($deviceIdentifier);
+		$findDeviceQuery->startWithIdentifier($deviceIdentifier);
 
 		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\ShellyDevice::class);
 
