@@ -297,7 +297,7 @@ final class Http
 		$domain = $device->getDomain();
 
 		if ($domain !== null) {
-			return $domain;
+			return gethostbyname($domain);
 		}
 
 		$ipAddress = $device->getIpAddress();

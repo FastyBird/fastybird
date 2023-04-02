@@ -26,6 +26,7 @@ use Psr\Log;
 use React\EventLoop;
 use React\Http;
 use React\Promise;
+use React\Socket\Connector;
 use Throwable;
 use function array_key_exists;
 use function array_merge;
@@ -52,6 +53,8 @@ abstract class HttpApi
 {
 
 	use Nette\SmartObject;
+
+	private const CONNECTION_TIMEOUT = 0.2;
 
 	private const REQUEST_AUTHORIZATION_HEADER = 'Authorization';
 
@@ -180,7 +183,16 @@ abstract class HttpApi
 
 		try {
 			if ($this->asyncClient === null) {
-				$this->asyncClient = new Http\Browser(null, $this->eventLoop);
+				$this->asyncClient = new Http\Browser(
+					new Connector(
+						[
+							'dns' => false,
+							'timeout' => self::CONNECTION_TIMEOUT,
+						],
+						$this->eventLoop
+					),
+					$this->eventLoop,
+				);
 			}
 
 			$this->asyncClient->request($method, $path, $headers, $body ?? '')

@@ -138,7 +138,7 @@ final class WsApi implements Evenement\EventEmitterInterface
 
 		try {
 			if ($this->domain !== null) {
-				$address = $this->domain;
+				$address = gethostbyname($this->domain);
 			} elseif ($this->ipAddress !== null) {
 				$address = $this->ipAddress;
 			}

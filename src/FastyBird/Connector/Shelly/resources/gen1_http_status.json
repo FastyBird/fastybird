@@ -86,7 +86,18 @@
             "default": false
           },
           "is_valid": {
-            "type": "boolean",
+            "oneOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "string",
+                "enum": [
+                  "true",
+                  "false"
+                ]
+              }
+            ],
             "description": "Whether the associated power meter is functioning correctly",
             "default": true
           },
@@ -129,7 +140,18 @@
             "description": "Current power consumption in Watts"
           },
           "is_valid": {
-            "type": "boolean",
+            "oneOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "string",
+                "enum": [
+                  "true",
+                  "false"
+                ]
+              }
+            ],
             "description": "If the power meter functions properly",
             "default": true
           },
@@ -384,7 +406,18 @@
             "default": 0
           },
           "is_valid": {
-            "type": "boolean",
+            "oneOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "string",
+                "enum": [
+                  "true",
+                  "false"
+                ]
+              }
+            ],
             "description": "Whether power metering self-checks OK",
             "default": false
           },
@@ -447,7 +480,18 @@
             "default": 0
           },
           "is_valid": {
-            "type": "boolean",
+            "oneOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "string",
+                "enum": [
+                  "true",
+                  "false"
+                ]
+              }
+            ],
             "description": "Whether the associated meter is functioning properly",
             "default": false
           },
