@@ -34,6 +34,7 @@ use React\Promise;
 use stdClass;
 use Throwable;
 use function array_key_exists;
+use function gethostbyname;
 use function hash;
 use function implode;
 use function intval;

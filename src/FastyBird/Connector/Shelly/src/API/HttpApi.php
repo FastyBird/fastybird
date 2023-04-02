@@ -189,7 +189,7 @@ abstract class HttpApi
 							'dns' => false,
 							'timeout' => self::CONNECTION_TIMEOUT,
 						],
-						$this->eventLoop
+						$this->eventLoop,
 					),
 					$this->eventLoop,
 				);

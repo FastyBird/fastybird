@@ -60,7 +60,7 @@ class FindDevices extends DoctrineOrmQuery\QueryObject
 	public function startWithIdentifier(string $identifier): void
 	{
 		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($identifier): void {
-			$qb->andWhere('d.identifier LIKE :identifier')->setParameter('identifier', $identifier .'%');
+			$qb->andWhere('d.identifier LIKE :identifier')->setParameter('identifier', $identifier . '%');
 		};
 	}
 

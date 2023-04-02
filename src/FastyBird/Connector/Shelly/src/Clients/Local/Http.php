@@ -34,6 +34,7 @@ use RuntimeException;
 use Throwable;
 use function assert;
 use function count;
+use function gethostbyname;
 use function is_bool;
 use function is_numeric;
 
