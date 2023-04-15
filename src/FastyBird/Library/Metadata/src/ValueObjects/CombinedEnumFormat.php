@@ -99,9 +99,9 @@ final class CombinedEnumFormat implements IteratorAggregate
 		return array_map(
 			static fn (array $item): array => array_map(
 				static function (CombinedEnumFormatItem|null $part): array|string|null {
-						if ($part instanceof CombinedEnumFormatItem) {
-							return $part->getDataType() !== null ? $part->toArray() : strval($part->getValue());
-						}
+					if ($part instanceof CombinedEnumFormatItem) {
+						return $part->getDataType() !== null ? $part->toArray() : strval($part->getValue());
+					}
 
 					return $part;
 				},

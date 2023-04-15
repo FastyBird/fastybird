@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.0/phpunit.xsd"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.1/phpunit.xsd"
          bootstrap="./phpunit-bootstrap.php"
          beStrictAboutOutputDuringTests="true"
          colors="true"
@@ -18,7 +18,8 @@
         <directory>../src/FastyBird/Module/**/tests/cases/</directory>
         <directory>../src/FastyBird/Plugin/**/tests/cases/</directory>
     </testsuite>
-    <coverage cacheDirectory="../var/tools/PHPUnit/coverage">
+    <coverage cacheDirectory="../var/tools/PHPUnit/coverage"/>
+    <source>
         <include>
             <directory suffix=".php">../src/FastyBird/Automator/**/tests/cases/</directory>
             <directory suffix=".php">../src/FastyBird/Bridge/**/tests/cases/</directory>
@@ -35,5 +36,5 @@
             <directory>./src/FastyBird/Module/**/tests</directory>
             <directory>./src/FastyBird/Plugin/**/tests</directory>
         </exclude>
-    </coverage>
+    </source>
 </phpunit>

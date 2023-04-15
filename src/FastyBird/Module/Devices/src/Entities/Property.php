@@ -564,10 +564,10 @@ abstract class Property implements Entity,
 				MetadataTypes\DataType::DATA_TYPE_SWITCH,
 			], true)
 		) {
-			if (preg_match(Metadata\Constants::VALUE_FORMAT_STRING_ENUM, $format) === 1) {
-				return new MetadataValueObjects\StringEnumFormat($format);
-			} elseif (preg_match(Metadata\Constants::VALUE_FORMAT_COMBINED_ENUM, $format) === 1) {
+			if (preg_match(Metadata\Constants::VALUE_FORMAT_COMBINED_ENUM, $format) === 1) {
 				return new MetadataValueObjects\CombinedEnumFormat($format);
+			} elseif (preg_match(Metadata\Constants::VALUE_FORMAT_STRING_ENUM, $format) === 1) {
+				return new MetadataValueObjects\StringEnumFormat($format);
 			}
 		}
 
