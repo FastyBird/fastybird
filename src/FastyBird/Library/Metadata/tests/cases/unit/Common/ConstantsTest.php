@@ -44,7 +44,7 @@ final class ConstantsTest extends BaseTestCase
 		// Invalid
 		self::assertSame(0, preg_match(
 			Metadata\Constants::VALUE_FORMAT_STRING_ENUM,
-			'one,two__,three',
+			'one,_two,three',
 		));
 	}
 

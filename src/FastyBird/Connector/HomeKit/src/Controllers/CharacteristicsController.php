@@ -720,10 +720,31 @@ final class CharacteristicsController extends BaseController
 							foreach ($characteristic->getService()->getCharacteristics() as $serviceCharacteristic) {
 								$serviceCharacteristicProperty = $serviceCharacteristic->getProperty();
 
-								if (
-									$serviceCharacteristicProperty instanceof DevicesEntities\Channels\Properties\Dynamic
-									|| $serviceCharacteristicProperty instanceof DevicesEntities\Channels\Properties\Mapped
-								) {
+								if ($serviceCharacteristicProperty instanceof DevicesEntities\Channels\Properties\Dynamic) {
+									$this->publisher->publish(
+										Metadata\Types\ModuleSource::get(
+											Metadata\Types\ModuleSource::SOURCE_MODULE_DEVICES,
+										),
+										Metadata\Types\RoutingKey::get(
+											Metadata\Types\RoutingKey::ROUTE_CHANNEL_PROPERTY_ACTION,
+										),
+										$this->entityFactory->create(
+											Utils\Json::encode([
+												'action' => Metadata\Types\PropertyAction::ACTION_SET,
+												'device' => $serviceCharacteristicProperty->getChannel()->getDevice()->getPlainId(),
+												'channel' => $serviceCharacteristicProperty->getChannel()->getPlainId(),
+												'property' => $serviceCharacteristicProperty->getPlainId(),
+												'actual_value' => DevicesUtilities\ValueHelper::flattenValue(
+													$propertyValue,
+												),
+											]),
+											Metadata\Types\RoutingKey::get(
+												Metadata\Types\RoutingKey::ROUTE_CHANNEL_PROPERTY_ACTION,
+											),
+										),
+									);
+
+								} elseif ($serviceCharacteristicProperty instanceof DevicesEntities\Channels\Properties\Mapped) {
 									$this->publisher->publish(
 										Metadata\Types\ModuleSource::get(
 											Metadata\Types\ModuleSource::SOURCE_MODULE_DEVICES,
@@ -763,10 +784,17 @@ final class CharacteristicsController extends BaseController
 							foreach ($characteristic->getService()->getCharacteristics() as $serviceCharacteristic) {
 								$serviceCharacteristicProperty = $serviceCharacteristic->getProperty();
 
-								if (
-									$serviceCharacteristicProperty instanceof DevicesEntities\Channels\Properties\Dynamic
-									|| $serviceCharacteristicProperty instanceof DevicesEntities\Channels\Properties\Mapped
-								) {
+								if ($serviceCharacteristicProperty instanceof DevicesEntities\Channels\Properties\Dynamic) {
+									$this->channelPropertiesStateManager->writeValue(
+										$serviceCharacteristicProperty,
+										Utils\ArrayHash::from([
+											DevicesStates\Property::VALID_KEY => true,
+											DevicesStates\Property::ACTUAL_VALUE_KEY => $propertyValue,
+											DevicesStates\Property::PENDING_KEY => true,
+										]),
+									);
+
+								} elseif ($serviceCharacteristicProperty instanceof DevicesEntities\Channels\Properties\Mapped) {
 									$this->channelPropertiesStateManager->writeValue(
 										$serviceCharacteristicProperty,
 										Utils\ArrayHash::from([
