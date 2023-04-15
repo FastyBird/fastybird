@@ -53,6 +53,7 @@ final class Status implements Consumer
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		private readonly DevicesModels\Devices\Properties\PropertiesRepository $propertiesRepository,
 		private readonly DevicesModels\Devices\Properties\PropertiesManager $propertiesManager,
+		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
 		private readonly DevicesModels\Channels\Properties\PropertiesManager $channelsPropertiesManager,
 		private readonly DevicesUtilities\Database $databaseHelper,
 		private readonly Helpers\Property $propertyStateHelper,
@@ -107,7 +108,11 @@ final class Status implements Consumer
 					$channels = $this->channelsRepository->findAllBy($findChannelsQuery);
 
 					foreach ($channels as $channel) {
-						$property = $channel->findProperty($status->getIdentifier());
+						$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+						$findChannelPropertyQuery->forChannel($channel);
+						$findChannelPropertyQuery->byIdentifier($status->getIdentifier());
+
+						$property = $this->channelPropertiesRepository->findOneBy($findChannelPropertyQuery);
 
 						if ($property !== null) {
 							break;
@@ -133,7 +138,11 @@ final class Status implements Consumer
 
 				if ($channel !== null) {
 					foreach ($status->getSensors() as $sensor) {
-						$property = $channel->findProperty($sensor->getIdentifier());
+						$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+						$findChannelPropertyQuery->forChannel($channel);
+						$findChannelPropertyQuery->byIdentifier($sensor->getIdentifier());
+
+						$property = $this->channelPropertiesRepository->findOneBy($findChannelPropertyQuery);
 
 						if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
 							$this->propertyStateHelper->setValue($property, Utils\ArrayHash::from([

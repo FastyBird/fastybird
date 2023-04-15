@@ -57,6 +57,7 @@ final class LocalDiscovery implements Consumer
 		private readonly DevicesModels\Devices\Properties\PropertiesRepository $propertiesRepository,
 		private readonly DevicesModels\Devices\Properties\PropertiesManager $propertiesManager,
 		private readonly DevicesModels\Channels\ChannelsManager $channelsManager,
+		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
 		private readonly DevicesModels\Channels\Properties\PropertiesManager $channelsPropertiesManager,
 		private readonly DevicesUtilities\Database $databaseHelper,
 		Log\LoggerInterface|null $logger = null,
@@ -206,7 +207,11 @@ final class LocalDiscovery implements Consumer
 			);
 
 			foreach ($channelDescription->getProperties() as $propertyDescription) {
-				$channelProperty = $channel->findProperty($propertyDescription->getIdentifier());
+				$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+				$findChannelPropertyQuery->forChannel($channel);
+				$findChannelPropertyQuery->byIdentifier($propertyDescription->getIdentifier());
+
+				$channelProperty = $this->channelPropertiesRepository->findOneBy($findChannelPropertyQuery);
 
 				if ($channelProperty === null) {
 					$channelProperty = $this->databaseHelper->transaction(

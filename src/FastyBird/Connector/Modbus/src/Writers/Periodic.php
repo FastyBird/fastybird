@@ -79,6 +79,7 @@ class Periodic implements Writer
 		private readonly Helpers\Property $propertyStateHelper,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
+		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
@@ -177,7 +178,10 @@ class Periodic implements Writer
 		foreach ($channels as $channel) {
 			assert($channel instanceof Entities\ModbusChannel);
 
-			foreach ($channel->getProperties() as $property) {
+			$findChannelPropertiesQuery = new DevicesQueries\FindChannelProperties();
+			$findChannelPropertiesQuery->forChannel($channel);
+
+			foreach ($this->channelPropertiesRepository->findAllBy($findChannelPropertiesQuery) as $property) {
 				if (!$property instanceof DevicesEntities\Channels\Properties\Dynamic) {
 					continue;
 				}

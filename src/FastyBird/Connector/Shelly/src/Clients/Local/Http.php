@@ -68,6 +68,7 @@ final class Http
 		private readonly Consumers\Messages $consumer,
 		protected readonly DevicesModels\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
 		protected readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
+		protected readonly DevicesModels\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
 		Log\LoggerInterface|null $logger = null,
 	)
 	{

@@ -899,6 +899,9 @@ class Devices extends Console\Command\Command
 		foreach ($deviceChannels as $index => $channel) {
 			assert($channel instanceof Entities\HomeKitChannel);
 
+			$findChannelPropertiesQuery = new DevicesQueries\FindChannelProperties();
+			$findChannelPropertiesQuery->forChannel($channel);
+
 			$table->addRow([
 				$index + 1,
 				$channel->getName() ?? $channel->getIdentifier(),
@@ -911,7 +914,7 @@ class Devices extends Console\Command\Command
 							'',
 							ucwords(str_replace('_', ' ', $property->getIdentifier())),
 						),
-						$channel->getProperties(),
+						$this->channelsPropertiesRepository->findAllBy($findChannelPropertiesQuery),
 					),
 				),
 			]);
@@ -1277,7 +1280,10 @@ class Devices extends Console\Command\Command
 			}
 		}
 
-		if (count($channel->getProperties()) > 0) {
+		$findChannelPropertiesQuery = new DevicesQueries\FindChannelProperties();
+		$findChannelPropertiesQuery->forChannel($channel);
+
+		if (count($this->channelsPropertiesRepository->findAllBy($findChannelPropertiesQuery)) > 0) {
 			$this->askCharacteristicAction($io, $channel);
 		}
 	}
@@ -1354,7 +1360,10 @@ class Devices extends Console\Command\Command
 
 		$io->newLine();
 
-		if (count($channel->getProperties()) > 0) {
+		$findChannelPropertiesQuery = new DevicesQueries\FindChannelProperties();
+		$findChannelPropertiesQuery->forChannel($channel);
+
+		if (count($this->channelsPropertiesRepository->findAllBy($findChannelPropertiesQuery)) > 0) {
 			$this->askCharacteristicAction($io, $channel);
 		}
 	}

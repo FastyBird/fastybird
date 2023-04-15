@@ -458,7 +458,11 @@ trait Gen2
 		$channels = $this->channelsRepository->findAllBy($findChannelsQuery);
 
 		foreach ($channels as $channel) {
-			$property = $channel->findProperty($propertyIdentifier);
+			$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+			$findChannelPropertyQuery->forChannel($channel);
+			$findChannelPropertyQuery->byIdentifier($propertyIdentifier);
+
+			$property = $this->channelPropertiesRepository->findOneBy($findChannelPropertyQuery);
 
 			if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
 				return $property;

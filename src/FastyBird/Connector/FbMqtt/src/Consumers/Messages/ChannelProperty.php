@@ -53,6 +53,7 @@ final class ChannelProperty implements Consumers\Consumer
 	public function __construct(
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
+		private readonly DevicesModels\Channels\Properties\PropertiesRepository $propertiesRepository,
 		private readonly DevicesModels\Channels\Properties\PropertiesManager $propertiesManager,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly DevicesUtilities\Database $databaseHelper,
@@ -125,7 +126,11 @@ final class ChannelProperty implements Consumers\Consumer
 			return true;
 		}
 
-		$property = $channel->findProperty($entity->getProperty());
+		$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+		$findChannelPropertyQuery->forChannel($channel);
+		$findChannelPropertyQuery->byIdentifier($entity->getProperty());
+
+		$property = $this->propertiesRepository->findOneBy($findChannelPropertyQuery);
 
 		if ($property === null) {
 			$this->logger->error(

@@ -221,33 +221,6 @@ class Channel implements Entities\Entity,
 		}
 	}
 
-	public function getProperty(string $id): Entities\Channels\Properties\Property|null
-	{
-		$found = $this->properties
-			->filter(static fn (Entities\Channels\Properties\Property $row): bool => $id === $row->getPlainId());
-
-		return $found->isEmpty() === true ? null : $found->first();
-	}
-
-	public function findProperty(string $identifier): Entities\Channels\Properties\Property|null
-	{
-		$found = $this->properties
-			->filter(
-				static fn (Entities\Channels\Properties\Property $row): bool => $identifier === $row->getIdentifier()
-			);
-
-		return $found->isEmpty() === true ? null : $found->first();
-	}
-
-	public function removeProperty(Entities\Channels\Properties\Property $property): void
-	{
-		// Check if collection contain removing entity...
-		if ($this->properties->contains($property)) {
-			// ...and remove it from collection
-			$this->properties->removeElement($property);
-		}
-	}
-
 	/**
 	 * @return array<Entities\Channels\Controls\Control>
 	 */
@@ -276,31 +249,6 @@ class Channel implements Entities\Entity,
 		if (!$this->controls->contains($control)) {
 			// ...and assign it to collection
 			$this->controls->add($control);
-		}
-	}
-
-	public function getControl(string $id): Entities\Channels\Controls\Control|null
-	{
-		$found = $this->controls
-			->filter(static fn (Entities\Channels\Controls\Control $row): bool => $id === $row->getPlainId());
-
-		return $found->isEmpty() === true ? null : $found->first();
-	}
-
-	public function findControl(string $name): Entities\Channels\Controls\Control|null
-	{
-		$found = $this->controls
-			->filter(static fn (Entities\Channels\Controls\Control $row): bool => $name === $row->getName());
-
-		return $found->isEmpty() === true ? null : $found->first();
-	}
-
-	public function removeControl(Entities\Channels\Controls\Control $control): void
-	{
-		// Check if collection contain removing entity...
-		if ($this->controls->contains($control)) {
-			// ...and remove it from collection
-			$this->controls->removeElement($control);
 		}
 	}
 

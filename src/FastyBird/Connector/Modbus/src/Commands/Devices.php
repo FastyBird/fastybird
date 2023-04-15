@@ -100,6 +100,7 @@ class Devices extends Console\Command\Command
 		private readonly DevicesModels\Channels\ChannelsManager $channelsManager,
 		private readonly DevicesModels\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
 		private readonly DevicesModels\Devices\Properties\PropertiesManager $devicesPropertiesManager,
+		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
 		private readonly DevicesModels\Channels\Properties\PropertiesManager $channelsPropertiesManager,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 		Log\LoggerInterface|null $logger = null,
@@ -870,13 +871,29 @@ class Devices extends Console\Command\Command
 			$format = $this->askRegisterFormat($io, $dataType, $channel);
 		}
 
-		$addressProperty = $channel->findProperty(Types\ChannelPropertyIdentifier::IDENTIFIER_ADDRESS);
+		$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+		$findChannelPropertyQuery->forChannel($channel);
+		$findChannelPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::IDENTIFIER_ADDRESS);
 
-		$typeProperty = $channel->findProperty(Types\ChannelPropertyIdentifier::IDENTIFIER_TYPE);
+		$addressProperty = $this->channelPropertiesRepository->findOneBy($findChannelPropertyQuery);
 
-		$readingDelayProperty = $channel->findProperty(Types\ChannelPropertyIdentifier::IDENTIFIER_READING_DELAY);
+		$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+		$findChannelPropertyQuery->forChannel($channel);
+		$findChannelPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::IDENTIFIER_TYPE);
 
-		$valueProperty = $channel->findProperty(Types\ChannelPropertyIdentifier::IDENTIFIER_VALUE);
+		$typeProperty = $this->channelPropertiesRepository->findOneBy($findChannelPropertyQuery);
+
+		$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+		$findChannelPropertyQuery->forChannel($channel);
+		$findChannelPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::IDENTIFIER_READING_DELAY);
+
+		$readingDelayProperty = $this->channelPropertiesRepository->findOneBy($findChannelPropertyQuery);
+
+		$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+		$findChannelPropertyQuery->forChannel($channel);
+		$findChannelPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::IDENTIFIER_VALUE);
+
+		$valueProperty = $this->channelPropertiesRepository->findOneBy($findChannelPropertyQuery);
 
 		try {
 			// Start transaction connection to the database
@@ -1105,12 +1122,18 @@ class Devices extends Console\Command\Command
 		foreach ($deviceChannels as $index => $channel) {
 			assert($channel instanceof Entities\ModbusChannel);
 
+			$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+			$findChannelPropertyQuery->forChannel($channel);
+			$findChannelPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::IDENTIFIER_VALUE);
+
+			$valueProperty = $this->channelPropertiesRepository->findOneBy($findChannelPropertyQuery);
+
 			$table->addRow([
 				$index + 1,
 				$channel->getName() ?? $channel->getIdentifier(),
 				strval($channel->getRegisterType()?->getValue()),
 				$channel->getAddress(),
-				$channel->findProperty(Types\ChannelPropertyIdentifier::IDENTIFIER_VALUE)?->getDataType()->getValue(),
+				$valueProperty?->getDataType()->getValue(),
 			]);
 		}
 
@@ -1582,6 +1605,7 @@ class Devices extends Console\Command\Command
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 */
 	private function askRegisterDataType(
@@ -1616,49 +1640,55 @@ class Devices extends Console\Command\Command
 				? MetadataTypes\DataType::DATA_TYPE_SWITCH
 				: MetadataTypes\DataType::DATA_TYPE_BUTTON;
 
-			switch ($channel?->findProperty(
-				Types\ChannelPropertyIdentifier::IDENTIFIER_VALUE,
-			)?->getDataType()->getValue()) {
-				case MetadataTypes\DataType::DATA_TYPE_CHAR:
-					$default = 0;
+			if ($channel !== null) {
+				$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+				$findChannelPropertyQuery->forChannel($channel);
+				$findChannelPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::IDENTIFIER_VALUE);
 
-					break;
-				case MetadataTypes\DataType::DATA_TYPE_UCHAR:
-					$default = 1;
+				$valueProperty = $this->channelPropertiesRepository->findOneBy($findChannelPropertyQuery);
 
-					break;
-				case MetadataTypes\DataType::DATA_TYPE_SHORT:
-					$default = 2;
+				switch ($valueProperty?->getDataType()->getValue()) {
+					case MetadataTypes\DataType::DATA_TYPE_CHAR:
+						$default = 0;
 
-					break;
-				case MetadataTypes\DataType::DATA_TYPE_USHORT:
-					$default = 3;
+						break;
+					case MetadataTypes\DataType::DATA_TYPE_UCHAR:
+						$default = 1;
 
-					break;
-				case MetadataTypes\DataType::DATA_TYPE_INT:
-					$default = 4;
+						break;
+					case MetadataTypes\DataType::DATA_TYPE_SHORT:
+						$default = 2;
 
-					break;
-				case MetadataTypes\DataType::DATA_TYPE_UINT:
-					$default = 5;
+						break;
+					case MetadataTypes\DataType::DATA_TYPE_USHORT:
+						$default = 3;
 
-					break;
-				case MetadataTypes\DataType::DATA_TYPE_FLOAT:
-					$default = 6;
+						break;
+					case MetadataTypes\DataType::DATA_TYPE_INT:
+						$default = 4;
 
-					break;
-				case MetadataTypes\DataType::DATA_TYPE_STRING:
-					$default = 7;
+						break;
+					case MetadataTypes\DataType::DATA_TYPE_UINT:
+						$default = 5;
 
-					break;
-				case MetadataTypes\DataType::DATA_TYPE_SWITCH:
-					$default = 8;
+						break;
+					case MetadataTypes\DataType::DATA_TYPE_FLOAT:
+						$default = 6;
 
-					break;
-				case MetadataTypes\DataType::DATA_TYPE_BUTTON:
-					$default = 9;
+						break;
+					case MetadataTypes\DataType::DATA_TYPE_STRING:
+						$default = 7;
 
-					break;
+						break;
+					case MetadataTypes\DataType::DATA_TYPE_SWITCH:
+						$default = 8;
+
+						break;
+					case MetadataTypes\DataType::DATA_TYPE_BUTTON:
+						$default = 9;
+
+						break;
+				}
 			}
 		} else {
 			throw new Exceptions\InvalidArgument('Unknown register type');
@@ -1698,6 +1728,7 @@ class Devices extends Console\Command\Command
 	/**
 	 * @return array<int, array<int, array<int, string>>>|null
 	 *
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -1750,6 +1781,7 @@ class Devices extends Console\Command\Command
 	/**
 	 * @return array<int, array<int, string>>|null
 	 *
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -1762,7 +1794,15 @@ class Devices extends Console\Command\Command
 	{
 		$defaultReading = $defaultWriting = null;
 
-		$existingProperty = $channel?->findProperty(Types\ChannelPropertyIdentifier::IDENTIFIER_VALUE);
+		$existingProperty = null;
+
+		if ($channel !== null) {
+			$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+			$findChannelPropertyQuery->forChannel($channel);
+			$findChannelPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::IDENTIFIER_VALUE);
+
+			$existingProperty = $this->channelPropertiesRepository->findOneBy($findChannelPropertyQuery);
+		}
 
 		$hasSupport = false;
 
@@ -1962,6 +2002,7 @@ class Devices extends Console\Command\Command
 	/**
 	 * @return array<int, array<int, string>>|null
 	 *
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -1974,7 +2015,15 @@ class Devices extends Console\Command\Command
 	{
 		$defaultReading = $defaultWriting = null;
 
-		$existingProperty = $channel?->findProperty(Types\ChannelPropertyIdentifier::IDENTIFIER_VALUE);
+		$existingProperty = null;
+
+		if ($channel !== null) {
+			$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+			$findChannelPropertyQuery->forChannel($channel);
+			$findChannelPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::IDENTIFIER_VALUE);
+
+			$existingProperty = $this->channelPropertiesRepository->findOneBy($findChannelPropertyQuery);
+		}
 
 		$hasSupport = false;
 

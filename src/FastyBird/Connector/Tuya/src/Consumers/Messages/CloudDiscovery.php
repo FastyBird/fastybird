@@ -56,6 +56,7 @@ final class CloudDiscovery implements Consumer
 		private readonly DevicesModels\Devices\Properties\PropertiesManager $propertiesManager,
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		private readonly DevicesModels\Channels\ChannelsManager $channelsManager,
+		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
 		private readonly DevicesModels\Channels\Properties\PropertiesManager $channelsPropertiesManager,
 		private readonly DevicesUtilities\Database $databaseHelper,
 		Log\LoggerInterface|null $logger = null,
@@ -256,7 +257,11 @@ final class CloudDiscovery implements Consumer
 			}
 
 			foreach ($entity->getDataPoints() as $dataPoint) {
-				$property = $channel->findProperty($dataPoint->getCode());
+				$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+				$findChannelPropertyQuery->forChannel($channel);
+				$findChannelPropertyQuery->byIdentifier($dataPoint->getCode());
+
+				$property = $this->channelPropertiesRepository->findOneBy($findChannelPropertyQuery);
 
 				if ($property === null) {
 					$this->channelsPropertiesManager->create(Utils\ArrayHash::from([

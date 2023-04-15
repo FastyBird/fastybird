@@ -87,6 +87,7 @@ final class Http implements Server
 		private readonly DevicesModels\Connectors\Properties\PropertiesManager $connectorsPropertiesManager,
 		private readonly DevicesModels\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
 		private readonly DevicesModels\Devices\Properties\PropertiesManager $devicesPropertiesManager,
+		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		Log\LoggerInterface|null $logger = null,
 	)
@@ -156,7 +157,10 @@ final class Http implements Server
 					$channel,
 				);
 
-				foreach ($channel->getProperties() as $property) {
+				$findChannelPropertiesQuery = new DevicesQueries\FindChannelProperties();
+				$findChannelPropertiesQuery->forChannel($channel);
+
+				foreach ($this->channelPropertiesRepository->findAllBy($findChannelPropertiesQuery) as $property) {
 					assert(
 						$property instanceof DevicesEntities\Channels\Properties\Variable
 						|| $property instanceof DevicesEntities\Channels\Properties\Dynamic

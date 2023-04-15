@@ -51,8 +51,10 @@ final class Channel implements Consumers\Consumer
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		private readonly DevicesModels\Channels\ChannelsManager $channelsManager,
+		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
 		private readonly DevicesModels\Channels\Properties\PropertiesManager $channelPropertiesManager,
-		private readonly DevicesModels\Channels\Controls\ControlsManager $channelControlManager,
+		private readonly DevicesModels\Channels\Controls\ControlsRepository $channelControlsRepository,
+		private readonly DevicesModels\Channels\Controls\ControlsManager $channelControlsManager,
 		private readonly DevicesUtilities\Database $databaseHelper,
 		Log\LoggerInterface|null $logger = null,
 	)
@@ -153,6 +155,7 @@ final class Channel implements Consumers\Consumer
 	/**
 	 * @phpstan-param Utils\ArrayHash<string> $properties
 	 *
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 */
 	private function setChannelProperties(
@@ -161,7 +164,11 @@ final class Channel implements Consumers\Consumer
 	): void
 	{
 		foreach ($properties as $propertyName) {
-			if ($channel->findProperty($propertyName) === null) {
+			$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+			$findChannelPropertyQuery->forChannel($channel);
+			$findChannelPropertyQuery->byIdentifier($propertyName);
+
+			if ($this->channelPropertiesRepository->findOneBy($findChannelPropertyQuery) === null) {
 				$this->channelPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 					'channel' => $channel,
@@ -173,8 +180,11 @@ final class Channel implements Consumers\Consumer
 			}
 		}
 
+		$findChannelPropertiesQuery = new DevicesQueries\FindChannelProperties();
+		$findChannelPropertiesQuery->forChannel($channel);
+
 		// Cleanup for unused properties
-		foreach ($channel->getProperties() as $property) {
+		foreach ($this->channelPropertiesRepository->findAllBy($findChannelPropertiesQuery) as $property) {
 			if (!in_array($property->getIdentifier(), (array) $properties, true)) {
 				$this->channelPropertiesManager->delete($property);
 			}
@@ -184,6 +194,7 @@ final class Channel implements Consumers\Consumer
 	/**
 	 * @phpstan-param Utils\ArrayHash<string> $controls
 	 *
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 */
 	private function setChannelControls(
@@ -192,18 +203,25 @@ final class Channel implements Consumers\Consumer
 	): void
 	{
 		foreach ($controls as $controlName) {
-			if ($channel->findControl($controlName) === null) {
-				$this->channelControlManager->create(Utils\ArrayHash::from([
+			$findChannelControlQuery = new DevicesQueries\FindChannelControls();
+			$findChannelControlQuery->forChannel($channel);
+			$findChannelControlQuery->byName($controlName);
+
+			if ($this->channelControlsRepository->findOneBy($findChannelControlQuery) === null) {
+				$this->channelControlsManager->create(Utils\ArrayHash::from([
 					'channel' => $channel,
 					'name' => $controlName,
 				]));
 			}
 		}
 
+		$findChannelControlQuery = new DevicesQueries\FindChannelControls();
+		$findChannelControlQuery->forChannel($channel);
+
 		// Cleanup for unused control
-		foreach ($channel->getControls() as $control) {
+		foreach ($this->channelControlsRepository->findAllBy($findChannelControlQuery) as $control) {
 			if (!in_array($control->getName(), (array) $controls, true)) {
-				$this->channelControlManager->delete($control);
+				$this->channelControlsManager->delete($control);
 			}
 		}
 	}

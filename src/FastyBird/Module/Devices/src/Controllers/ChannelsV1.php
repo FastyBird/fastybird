@@ -58,6 +58,8 @@ final class ChannelsV1 extends BaseV1
 		protected readonly Models\Devices\DevicesRepository $devicesRepository,
 		protected readonly Models\Channels\ChannelsRepository $channelsRepository,
 		protected readonly Models\Channels\ChannelsManager $channelsManager,
+		protected readonly Models\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
+		protected readonly Models\Channels\Controls\ControlsRepository $channelControlsRepository,
 	)
 	{
 	}
@@ -362,9 +364,23 @@ final class ChannelsV1 extends BaseV1
 		$relationEntity = Utils\Strings::lower(strval($request->getAttribute(Router\Routes::RELATION_ENTITY)));
 
 		if ($relationEntity === Schemas\Channels\Channel::RELATIONSHIPS_PROPERTIES) {
-			return $this->buildResponse($request, $response, $channel->getProperties());
+			$findChannelPropertiesQuery = new Queries\FindChannelProperties();
+			$findChannelPropertiesQuery->forChannel($channel);
+
+			return $this->buildResponse(
+				$request,
+				$response,
+				$this->channelPropertiesRepository->findAllBy($findChannelPropertiesQuery),
+			);
 		} elseif ($relationEntity === Schemas\Channels\Channel::RELATIONSHIPS_CONTROLS) {
-			return $this->buildResponse($request, $response, $channel->getControls());
+			$findChannelControlsQuery = new Queries\FindChannelControls();
+			$findChannelControlsQuery->forChannel($channel);
+
+			return $this->buildResponse(
+				$request,
+				$response,
+				$this->channelControlsRepository->findAllBy($findChannelControlsQuery),
+			);
 		}
 
 		return parent::readRelationship($request, $response);

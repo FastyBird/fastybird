@@ -101,6 +101,7 @@ class Tcp implements Client
 		private readonly Writers\Writer $writer,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
+		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
@@ -448,7 +449,10 @@ class Tcp implements Client
 			$address = $channel->getAddress();
 
 			if (!is_int($address)) {
-				foreach ($channel->getProperties() as $property) {
+				$findChannelPropertiesQuery = new DevicesQueries\FindChannelProperties();
+				$findChannelPropertiesQuery->forChannel($channel);
+
+				foreach ($this->channelPropertiesRepository->findAllBy($findChannelPropertiesQuery) as $property) {
 					if (!$property instanceof DevicesEntities\Channels\Properties\Dynamic) {
 						continue;
 					}
@@ -634,7 +638,13 @@ class Tcp implements Client
 							if ($channel !== null) {
 								$this->processedReadRegister[$channel->getIdentifier()] = $now;
 
-								$property = $channel->findProperty(Types\ChannelPropertyIdentifier::IDENTIFIER_VALUE);
+								$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+								$findChannelPropertyQuery->forChannel($channel);
+								$findChannelPropertyQuery->byIdentifier(
+									Types\ChannelPropertyIdentifier::IDENTIFIER_VALUE,
+								);
+
+								$property = $this->channelPropertiesRepository->findOneBy($findChannelPropertyQuery);
 
 								if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
 									$this->propertyStateHelper->setValue(
@@ -687,7 +697,13 @@ class Tcp implements Client
 							if ($channel !== null) {
 								$this->processedReadRegister[$channel->getIdentifier()] = $now;
 
-								$property = $channel->findProperty(Types\ChannelPropertyIdentifier::IDENTIFIER_VALUE);
+								$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+								$findChannelPropertyQuery->forChannel($channel);
+								$findChannelPropertyQuery->byIdentifier(
+									Types\ChannelPropertyIdentifier::IDENTIFIER_VALUE,
+								);
+
+								$property = $this->channelPropertiesRepository->findOneBy($findChannelPropertyQuery);
 
 								if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
 									$this->propertyStateHelper->setValue(
@@ -757,7 +773,11 @@ class Tcp implements Client
 	{
 		$now = $this->dateTimeFactory->getNow();
 
-		$property = $channel->findProperty(Types\ChannelPropertyIdentifier::IDENTIFIER_VALUE);
+		$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+		$findChannelPropertyQuery->forChannel($channel);
+		$findChannelPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::IDENTIFIER_VALUE);
+
+		$property = $this->channelPropertiesRepository->findOneBy($findChannelPropertyQuery);
 
 		if (
 			!$property instanceof DevicesEntities\Channels\Properties\Dynamic
