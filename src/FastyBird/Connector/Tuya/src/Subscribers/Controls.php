@@ -64,11 +64,11 @@ final class Controls implements Common\EventSubscriber
 
 		// Check for valid entity
 		if ($entity instanceof Entities\TuyaConnector) {
-			$findControlQuery = new DevicesQueries\FindConnectorControls();
-			$findControlQuery->forConnector($entity);
-			$findControlQuery->byName(Types\ConnectorControlName::NAME_REBOOT);
+			$findConnectorControlQuery = new DevicesQueries\FindConnectorControls();
+			$findConnectorControlQuery->forConnector($entity);
+			$findConnectorControlQuery->byName(Types\ConnectorControlName::NAME_REBOOT);
 
-			$rebootControl = $this->controlsRepository->findOneBy($findControlQuery);
+			$rebootControl = $this->controlsRepository->findOneBy($findConnectorControlQuery);
 
 			if ($rebootControl === null) {
 				$this->controlsManager->create(Utils\ArrayHash::from([
@@ -77,11 +77,11 @@ final class Controls implements Common\EventSubscriber
 				]));
 			}
 
-			$findControlQuery = new DevicesQueries\FindConnectorControls();
-			$findControlQuery->forConnector($entity);
-			$findControlQuery->byName(Types\ConnectorControlName::NAME_DISCOVER);
+			$findConnectorControlQuery = new DevicesQueries\FindConnectorControls();
+			$findConnectorControlQuery->forConnector($entity);
+			$findConnectorControlQuery->byName(Types\ConnectorControlName::NAME_DISCOVER);
 
-			$discoverControl = $this->controlsRepository->findOneBy($findControlQuery);
+			$discoverControl = $this->controlsRepository->findOneBy($findConnectorControlQuery);
 
 			if ($discoverControl === null) {
 				$this->controlsManager->create(Utils\ArrayHash::from([

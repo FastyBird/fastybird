@@ -336,11 +336,11 @@ class Devices extends Console\Command\Command
 
 		$name = $this->askDeviceName($io, $device);
 
-		$findPropertyQuery = new DevicesQueries\FindDeviceProperties();
-		$findPropertyQuery->forDevice($device);
-		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IDENTIFIER_CATEGORY);
+		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+		$findDevicePropertyQuery->forDevice($device);
+		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IDENTIFIER_CATEGORY);
 
-		$categoryProperty = $this->devicesPropertiesRepository->findOneBy($findPropertyQuery);
+		$categoryProperty = $this->devicesPropertiesRepository->findOneBy($findDevicePropertyQuery);
 
 		$category = $this->askCategory($io, $device);
 
@@ -1900,11 +1900,11 @@ class Devices extends Console\Command\Command
 		if ($type === 0) {
 			$properties = [];
 
-			$findPropertiesQuery = new DevicesQueries\FindDeviceProperties();
-			$findPropertiesQuery->forDevice($device);
+			$findDevicePropertiesQuery = new DevicesQueries\FindDeviceProperties();
+			$findDevicePropertiesQuery->forDevice($device);
 
 			$deviceProperties = $this->devicesPropertiesRepository->findAllBy(
-				$findPropertiesQuery,
+				$findDevicePropertiesQuery,
 				DevicesEntities\Devices\Properties\Dynamic::class,
 			);
 			usort(
@@ -2087,11 +2087,11 @@ class Devices extends Console\Command\Command
 
 			$properties = [];
 
-			$findPropertiesQuery = new DevicesQueries\FindChannelProperties();
-			$findPropertiesQuery->forChannel($channel);
+			$findDevicePropertiesQuery = new DevicesQueries\FindChannelProperties();
+			$findDevicePropertiesQuery->forChannel($channel);
 
 			$channelProperties = $this->channelsPropertiesRepository->findAllBy(
-				$findPropertiesQuery,
+				$findDevicePropertiesQuery,
 				DevicesEntities\Channels\Properties\Dynamic::class,
 			);
 			usort(

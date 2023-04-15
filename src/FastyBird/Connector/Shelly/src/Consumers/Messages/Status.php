@@ -94,7 +94,11 @@ final class Status implements Consumer
 
 		foreach ($entity->getStatuses() as $status) {
 			if ($status instanceof Entities\Messages\PropertyStatus) {
-				$property = $device->findProperty($status->getIdentifier());
+				$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+				$findDevicePropertyQuery->forDevice($device);
+				$findDevicePropertyQuery->byIdentifier($status->getIdentifier());
+
+				$property = $this->propertiesRepository->findOneBy($findDevicePropertyQuery);
 
 				if ($property === null) {
 					$findChannelsQuery = new DevicesQueries\FindChannels();

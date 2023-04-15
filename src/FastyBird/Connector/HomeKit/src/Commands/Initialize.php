@@ -306,11 +306,11 @@ class Initialize extends Console\Command\Command
 
 		$port = $this->askPort($io, $connector);
 
-		$findPropertyQuery = new DevicesQueries\FindConnectorProperties();
-		$findPropertyQuery->forConnector($connector);
-		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_PORT);
+		$findConnectorPropertyQuery = new DevicesQueries\FindConnectorProperties();
+		$findConnectorPropertyQuery->forConnector($connector);
+		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_PORT);
 
-		$portProperty = $this->propertiesRepository->findOneBy($findPropertyQuery);
+		$portProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
 		try {
 			// Start transaction connection to the database
@@ -458,11 +458,11 @@ class Initialize extends Console\Command\Command
 				);
 			}
 
-			$findProperties = new DevicesQueries\FindConnectorProperties();
-			$findProperties->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_PORT);
+			$findConnectorPropertiesQuery = new DevicesQueries\FindConnectorProperties();
+			$findConnectorPropertiesQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_PORT);
 
 			$properties = $this->propertiesRepository->findAllBy(
-				$findProperties,
+				$findConnectorPropertiesQuery,
 				DevicesEntities\Connectors\Properties\Variable::class,
 			);
 

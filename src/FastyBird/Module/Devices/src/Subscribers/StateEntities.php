@@ -251,22 +251,22 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 			$property instanceof MetadataEntities\DevicesModule\DeviceDynamicProperty
 			|| $property instanceof Entities\Devices\Properties\Dynamic
 		) {
-			$findPropertyQuery = new Queries\FindDeviceProperties();
-			$findPropertyQuery->byParentId($property->getId());
+			$findDevicePropertiesQuery = new Queries\FindDeviceProperties();
+			$findDevicePropertiesQuery->byParentId($property->getId());
 
 			return $this->devicePropertiesRepository->findAllBy(
-				$findPropertyQuery,
+				$findDevicePropertiesQuery,
 				Entities\Devices\Properties\Mapped::class,
 			);
 		} elseif (
 			$property instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty
 			|| $property instanceof Entities\Channels\Properties\Dynamic
 		) {
-			$findPropertyQuery = new Queries\FindChannelProperties();
-			$findPropertyQuery->byParentId($property->getId());
+			$findDevicePropertiesQuery = new Queries\FindChannelProperties();
+			$findDevicePropertiesQuery->byParentId($property->getId());
 
 			return $this->channelPropertiesRepository->findAllBy(
-				$findPropertyQuery,
+				$findDevicePropertiesQuery,
 				Entities\Channels\Properties\Mapped::class,
 			);
 		}

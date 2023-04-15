@@ -64,11 +64,11 @@ trait ConsumeDeviceProperty
 		array|string|null $format = null,
 	): void
 	{
-		$findPropertyQuery = new DevicesQueries\FindDeviceProperties();
-		$findPropertyQuery->byDeviceId($deviceId);
-		$findPropertyQuery->byIdentifier($identifier);
+		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+		$findDevicePropertyQuery->byDeviceId($deviceId);
+		$findDevicePropertyQuery->byIdentifier($identifier);
 
-		$property = $this->propertiesRepository->findOneBy($findPropertyQuery);
+		$property = $this->propertiesRepository->findOneBy($findDevicePropertyQuery);
 
 		if ($property !== null && $value === null) {
 			$this->databaseHelper->transaction(

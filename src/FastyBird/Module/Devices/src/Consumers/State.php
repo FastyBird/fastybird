@@ -89,10 +89,10 @@ final class State implements ExchangeConsumers\Consumer
 		if (in_array($routingKey->getValue(), self::PROPERTIES_ACTIONS_ROUTING_KEYS, true)) {
 			if ($entity instanceof MetadataEntities\Actions\ActionConnectorProperty) {
 				if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_SET)) {
-					$findPropertyQuery = new Queries\FindConnectorProperties();
-					$findPropertyQuery->byId($entity->getProperty());
+					$findConnectorPropertyQuery = new Queries\FindConnectorProperties();
+					$findConnectorPropertyQuery->byId($entity->getProperty());
 
-					$property = $this->connectorPropertiesRepository->findOneBy($findPropertyQuery);
+					$property = $this->connectorPropertiesRepository->findOneBy($findConnectorPropertyQuery);
 
 					if (!$property instanceof Entities\Connectors\Properties\Dynamic) {
 						return;
@@ -106,10 +106,10 @@ final class State implements ExchangeConsumers\Consumer
 						]),
 					);
 				} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
-					$findPropertyQuery = new Queries\FindConnectorProperties();
-					$findPropertyQuery->byId($entity->getProperty());
+					$findConnectorPropertyQuery = new Queries\FindConnectorProperties();
+					$findConnectorPropertyQuery->byId($entity->getProperty());
 
-					$property = $this->connectorPropertiesRepository->findOneBy($findPropertyQuery);
+					$property = $this->connectorPropertiesRepository->findOneBy($findConnectorPropertyQuery);
 
 					if ($property === null) {
 						return;
@@ -139,10 +139,10 @@ final class State implements ExchangeConsumers\Consumer
 				}
 			} elseif ($entity instanceof MetadataEntities\Actions\ActionDeviceProperty) {
 				if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_SET)) {
-					$findPropertyQuery = new Queries\FindDeviceProperties();
-					$findPropertyQuery->byId($entity->getProperty());
+					$findConnectorPropertyQuery = new Queries\FindDeviceProperties();
+					$findConnectorPropertyQuery->byId($entity->getProperty());
 
-					$property = $this->devicePropertiesRepository->findOneBy($findPropertyQuery);
+					$property = $this->devicePropertiesRepository->findOneBy($findConnectorPropertyQuery);
 
 					if (
 						!$property instanceof Entities\Devices\Properties\Dynamic
@@ -159,10 +159,10 @@ final class State implements ExchangeConsumers\Consumer
 						]),
 					);
 				} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
-					$findPropertyQuery = new Queries\FindDeviceProperties();
-					$findPropertyQuery->byId($entity->getProperty());
+					$findConnectorPropertyQuery = new Queries\FindDeviceProperties();
+					$findConnectorPropertyQuery->byId($entity->getProperty());
 
-					$property = $this->devicePropertiesRepository->findOneBy($findPropertyQuery);
+					$property = $this->devicePropertiesRepository->findOneBy($findConnectorPropertyQuery);
 
 					if ($property === null) {
 						return;
@@ -192,10 +192,10 @@ final class State implements ExchangeConsumers\Consumer
 				}
 			} elseif ($entity instanceof MetadataEntities\Actions\ActionChannelProperty) {
 				if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_SET)) {
-					$findPropertyQuery = new Queries\FindChannelProperties();
-					$findPropertyQuery->byId($entity->getProperty());
+					$findConnectorPropertyQuery = new Queries\FindChannelProperties();
+					$findConnectorPropertyQuery->byId($entity->getProperty());
 
-					$property = $this->channelPropertiesRepository->findOneBy($findPropertyQuery);
+					$property = $this->channelPropertiesRepository->findOneBy($findConnectorPropertyQuery);
 
 					if (
 						!$property instanceof Entities\Channels\Properties\Dynamic
@@ -212,10 +212,10 @@ final class State implements ExchangeConsumers\Consumer
 						]),
 					);
 				} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
-					$findPropertyQuery = new Queries\FindChannelProperties();
-					$findPropertyQuery->byId($entity->getProperty());
+					$findConnectorPropertyQuery = new Queries\FindChannelProperties();
+					$findConnectorPropertyQuery->byId($entity->getProperty());
 
-					$property = $this->channelPropertiesRepository->findOneBy($findPropertyQuery);
+					$property = $this->channelPropertiesRepository->findOneBy($findConnectorPropertyQuery);
 
 					if ($property === null) {
 						return;

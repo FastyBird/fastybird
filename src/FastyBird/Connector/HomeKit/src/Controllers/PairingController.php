@@ -1889,12 +1889,12 @@ final class PairingController extends BaseController
 		string|int|float|bool|null $value = null,
 	): void
 	{
-		$findConnectorProperty = new DevicesQueries\FindConnectorProperties();
-		$findConnectorProperty->forConnector($connector);
-		$findConnectorProperty->byIdentifier(strval($type->getValue()));
+		$findConnectorPropertyQuery = new DevicesQueries\FindConnectorProperties();
+		$findConnectorPropertyQuery->forConnector($connector);
+		$findConnectorPropertyQuery->byIdentifier(strval($type->getValue()));
 
 		$property = $this->propertiesRepository->findOneBy(
-			$findConnectorProperty,
+			$findConnectorPropertyQuery,
 			DevicesEntities\Connectors\Properties\Variable::class,
 		);
 		assert(

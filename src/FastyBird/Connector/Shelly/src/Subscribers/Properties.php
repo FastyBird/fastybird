@@ -23,7 +23,10 @@ use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
+use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
+use IPub\DoctrineCrud;
 use Nette;
 use Nette\Utils;
 
@@ -41,6 +44,7 @@ final class Properties implements Common\EventSubscriber
 	use Nette\SmartObject;
 
 	public function __construct(
+		private readonly DevicesModels\Devices\Properties\PropertiesRepository $propertiesRepository,
 		private readonly DevicesModels\Devices\Properties\PropertiesManager $propertiesManager,
 	)
 	{
@@ -55,6 +59,9 @@ final class Properties implements Common\EventSubscriber
 
 	/**
 	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
+	 *
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws DoctrineCrud\Exceptions\InvalidArgumentException
 	 */
 	public function postPersist(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
@@ -66,10 +73,14 @@ final class Properties implements Common\EventSubscriber
 			return;
 		}
 
-		$property = $entity->getProperty(Types\DevicePropertyIdentifier::IDENTIFIER_STATE);
+		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+		$findDevicePropertyQuery->forDevice($entity);
+		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IDENTIFIER_STATE);
 
-		if ($property !== null) {
-			$entity->removeProperty($property);
+		$stateProperty = $this->propertiesRepository->findOneBy($findDevicePropertyQuery);
+
+		if ($stateProperty !== null) {
+			$this->propertiesManager->delete($stateProperty);
 		}
 
 		$this->propertiesManager->create(Utils\ArrayHash::from([

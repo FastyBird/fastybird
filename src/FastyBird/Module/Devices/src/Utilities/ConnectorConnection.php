@@ -57,11 +57,11 @@ final class ConnectorConnection
 		MetadataTypes\ConnectionState $state,
 	): bool
 	{
-		$findPropertyQuery = new Queries\FindConnectorProperties();
-		$findPropertyQuery->forConnector($connector);
-		$findPropertyQuery->byIdentifier(MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_STATE);
+		$findConnectorPropertyQuery = new Queries\FindConnectorProperties();
+		$findConnectorPropertyQuery->forConnector($connector);
+		$findConnectorPropertyQuery->byIdentifier(MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_STATE);
 
-		$property = $this->repository->findOneBy($findPropertyQuery);
+		$property = $this->repository->findOneBy($findConnectorPropertyQuery);
 
 		if ($property === null) {
 			$property = $this->manager->create(Utils\ArrayHash::from([

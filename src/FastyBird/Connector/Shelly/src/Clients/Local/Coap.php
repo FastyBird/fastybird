@@ -80,6 +80,7 @@ final class Coap implements Clients\Client
 		private readonly Entities\ShellyConnector $connector,
 		private readonly Consumers\Messages $consumer,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		private readonly MetadataSchemas\Validator $schemaValidator,
 		private readonly EventLoop\LoopInterface $eventLoop,
@@ -409,7 +410,10 @@ final class Coap implements Clients\Client
 			}
 		}
 
-		foreach ($device->getProperties() as $property) {
+		$findDevicePropertiesQuery = new DevicesQueries\FindDeviceProperties();
+		$findDevicePropertiesQuery->forDevice($device);
+
+		foreach ($this->devicePropertiesRepository->findAllBy($findDevicePropertiesQuery) as $property) {
 			if (
 				$property instanceof DevicesEntities\Devices\Properties\Dynamic
 				&& Utils\Strings::startsWith($property->getIdentifier(), strval($sensorIdentifier))

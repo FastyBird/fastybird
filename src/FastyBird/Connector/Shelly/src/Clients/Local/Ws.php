@@ -59,6 +59,7 @@ final class Ws
 		private readonly API\WsApiFactory $wsApiFactory,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		protected readonly Consumers\Messages $consumer,
+		protected readonly DevicesModels\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
 		protected readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		Log\LoggerInterface|null $logger = null,
 	)

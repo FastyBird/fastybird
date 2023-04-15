@@ -349,11 +349,11 @@ class Initialize extends Console\Command\Command
 			return;
 		}
 
-		$findPropertyQuery = new DevicesQueries\FindConnectorProperties();
-		$findPropertyQuery->forConnector($connector);
-		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE);
+		$findConnectorPropertyQuery = new DevicesQueries\FindConnectorProperties();
+		$findConnectorPropertyQuery->forConnector($connector);
+		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE);
 
-		$modeProperty = $this->propertiesRepository->findOneBy($findPropertyQuery);
+		$modeProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
 		if ($modeProperty === null) {
 			$changeMode = true;
@@ -399,11 +399,11 @@ class Initialize extends Console\Command\Command
 
 		$accessId = $accessSecret = null;
 
-		$findPropertyQuery = new DevicesQueries\FindConnectorProperties();
-		$findPropertyQuery->forConnector($connector);
-		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_ACCESS_ID);
+		$findConnectorPropertyQuery = new DevicesQueries\FindConnectorProperties();
+		$findConnectorPropertyQuery->forConnector($connector);
+		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_ACCESS_ID);
 
-		$accessIdProperty = $this->propertiesRepository->findOneBy($findPropertyQuery);
+		$accessIdProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
 		if ($accessIdProperty === null) {
 			$changeAccessId = true;
@@ -421,11 +421,11 @@ class Initialize extends Console\Command\Command
 			$accessId = $this->askAccessId($io);
 		}
 
-		$findPropertyQuery = new DevicesQueries\FindConnectorProperties();
-		$findPropertyQuery->forConnector($connector);
-		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_ACCESS_SECRET);
+		$findConnectorPropertyQuery = new DevicesQueries\FindConnectorProperties();
+		$findConnectorPropertyQuery->forConnector($connector);
+		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_ACCESS_SECRET);
 
-		$accessSecretProperty = $this->propertiesRepository->findOneBy($findPropertyQuery);
+		$accessSecretProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
 		if ($accessSecretProperty === null) {
 			$changeAccessSecret = true;
@@ -455,11 +455,11 @@ class Initialize extends Console\Command\Command
 				&& $mode->equalsValue(Types\ClientMode::MODE_CLOUD)
 			)
 		) {
-			$findPropertyQuery = new DevicesQueries\FindConnectorProperties();
-			$findPropertyQuery->forConnector($connector);
-			$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_UID);
+			$findConnectorPropertyQuery = new DevicesQueries\FindConnectorProperties();
+			$findConnectorPropertyQuery->forConnector($connector);
+			$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_UID);
 
-			$uidProperty = $this->propertiesRepository->findOneBy($findPropertyQuery);
+			$uidProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
 			if ($uidProperty === null) {
 				$changeUid = true;

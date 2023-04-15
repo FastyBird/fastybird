@@ -78,6 +78,7 @@ class Periodic implements Writer
 	public function __construct(
 		private readonly Helpers\Property $propertyStateHelper,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DevicesUtilities\DevicePropertiesStates $devicesPropertiesStates,
@@ -176,7 +177,10 @@ class Periodic implements Writer
 	{
 		$now = $this->dateTimeFactory->getNow();
 
-		foreach ($device->getProperties() as $property) {
+		$findDevicePropertiesQuery = new DevicesQueries\FindDeviceProperties();
+		$findDevicePropertiesQuery->forDevice($device);
+
+		foreach ($this->devicePropertiesRepository->findAllBy($findDevicePropertiesQuery) as $property) {
 			if (!$property instanceof DevicesEntities\Devices\Properties\Dynamic) {
 				continue;
 			}

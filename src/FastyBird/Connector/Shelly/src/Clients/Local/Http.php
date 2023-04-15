@@ -66,6 +66,7 @@ final class Http
 		private readonly API\Gen1HttpApiFactory $gen1HttpApiFactory,
 		private readonly API\Gen2HttpApiFactory $gen2HttpApiFactory,
 		private readonly Consumers\Messages $consumer,
+		protected readonly DevicesModels\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
 		protected readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		Log\LoggerInterface|null $logger = null,
 	)

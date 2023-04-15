@@ -122,10 +122,10 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 				return;
 			}
 
-			$findPropertyQuery = new DevicesQueries\FindDeviceProperties();
-			$findPropertyQuery->byId($entity->getId());
+			$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+			$findDevicePropertyQuery->byId($entity->getId());
 
-			$property = $this->devicePropertiesRepository->findOneBy($findPropertyQuery);
+			$property = $this->devicePropertiesRepository->findOneBy($findDevicePropertyQuery);
 
 			if ($property === null) {
 				return;
@@ -184,10 +184,10 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 				return;
 			}
 
-			$findPropertyQuery = new DevicesQueries\FindChannelProperties();
-			$findPropertyQuery->byId($entity->getId());
+			$findDevicePropertyQuery = new DevicesQueries\FindChannelProperties();
+			$findDevicePropertyQuery->byId($entity->getId());
 
-			$property = $this->channelPropertiesRepository->findOneBy($findPropertyQuery);
+			$property = $this->channelPropertiesRepository->findOneBy($findDevicePropertyQuery);
 
 			if ($property === null) {
 				return;

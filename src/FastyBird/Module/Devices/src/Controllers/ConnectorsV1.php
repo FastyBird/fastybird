@@ -171,23 +171,25 @@ class ConnectorsV1 extends BaseV1
 			$findDevicesQuery = new Queries\FindDevices();
 			$findDevicesQuery->forConnector($connector);
 
-			$devices = $this->devicesRepository->findAllBy($findDevicesQuery);
-
-			return $this->buildResponse($request, $response, $devices);
+			return $this->buildResponse($request, $response, $this->devicesRepository->findAllBy($findDevicesQuery));
 		} elseif ($relationEntity === Schemas\Connectors\Connector::RELATIONSHIPS_PROPERTIES) {
-			$findPropertiesQuery = new Queries\FindConnectorProperties();
-			$findPropertiesQuery->forConnector($connector);
+			$findConnectorPropertiesQuery = new Queries\FindConnectorProperties();
+			$findConnectorPropertiesQuery->forConnector($connector);
 
-			$properties = $this->propertiesRepository->findAllBy($findPropertiesQuery);
-
-			return $this->buildResponse($request, $response, $properties);
+			return $this->buildResponse(
+				$request,
+				$response,
+				$this->propertiesRepository->findAllBy($findConnectorPropertiesQuery),
+			);
 		} elseif ($relationEntity === Schemas\Connectors\Connector::RELATIONSHIPS_CONTROLS) {
-			$findControlsQuery = new Queries\FindConnectorControls();
-			$findControlsQuery->forConnector($connector);
+			$findConnectorControlsQuery = new Queries\FindConnectorControls();
+			$findConnectorControlsQuery->forConnector($connector);
 
-			$controls = $this->controlsRepository->findAllBy($findControlsQuery);
-
-			return $this->buildResponse($request, $response, $controls);
+			return $this->buildResponse(
+				$request,
+				$response,
+				$this->controlsRepository->findAllBy($findConnectorControlsQuery),
+			);
 		}
 
 		return parent::readRelationship($request, $response);

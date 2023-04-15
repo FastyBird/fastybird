@@ -38,6 +38,7 @@ use function strval;
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *
  * @property-read Consumers\Messages $consumer
+ * @property-read DevicesModels\Devices\Properties\PropertiesRepository $devicePropertiesRepository
  * @property-read DevicesModels\Channels\ChannelsRepository $channelsRepository
  */
 trait Gen2
@@ -441,7 +442,11 @@ trait Gen2
 		string $propertyIdentifier,
 	): DevicesEntities\Devices\Properties\Dynamic|DevicesEntities\Channels\Properties\Dynamic|null
 	{
-		$property = $device->findProperty($propertyIdentifier);
+		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+		$findDevicePropertyQuery->forDevice($device);
+		$findDevicePropertyQuery->byIdentifier($propertyIdentifier);
+
+		$property = $this->devicePropertiesRepository->findOneBy($findDevicePropertyQuery);
 
 		if ($property instanceof DevicesEntities\Devices\Properties\Dynamic) {
 			return $property;

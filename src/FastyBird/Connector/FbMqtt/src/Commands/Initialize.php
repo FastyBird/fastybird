@@ -326,11 +326,11 @@ class Initialize extends Console\Command\Command
 			return;
 		}
 
-		$findPropertyQuery = new DevicesQueries\FindConnectorProperties();
-		$findPropertyQuery->forConnector($connector);
-		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_PROTOCOL_VERSION);
+		$findConnectorPropertyQuery = new DevicesQueries\FindConnectorProperties();
+		$findConnectorPropertyQuery->forConnector($connector);
+		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_PROTOCOL_VERSION);
 
-		$protocolProperty = $this->propertiesRepository->findOneBy($findPropertyQuery);
+		$protocolProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
 		if ($protocolProperty === null) {
 			$changeProtocol = true;
@@ -380,35 +380,35 @@ class Initialize extends Console\Command\Command
 		$username = $this->askUsername($io, $connector);
 		$password = $this->askPassword($io, $connector);
 
-		$findPropertyQuery = new DevicesQueries\FindConnectorProperties();
-		$findPropertyQuery->forConnector($connector);
-		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_SERVER);
+		$findConnectorPropertyQuery = new DevicesQueries\FindConnectorProperties();
+		$findConnectorPropertyQuery->forConnector($connector);
+		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_SERVER);
 
-		$serverAddressProperty = $this->propertiesRepository->findOneBy($findPropertyQuery);
+		$serverAddressProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
-		$findPropertyQuery = new DevicesQueries\FindConnectorProperties();
-		$findPropertyQuery->forConnector($connector);
-		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_PORT);
+		$findConnectorPropertyQuery = new DevicesQueries\FindConnectorProperties();
+		$findConnectorPropertyQuery->forConnector($connector);
+		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_PORT);
 
-		$serverPortProperty = $this->propertiesRepository->findOneBy($findPropertyQuery);
+		$serverPortProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
-		$findPropertyQuery = new DevicesQueries\FindConnectorProperties();
-		$findPropertyQuery->forConnector($connector);
-		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_SECURED_PORT);
+		$findConnectorPropertyQuery = new DevicesQueries\FindConnectorProperties();
+		$findConnectorPropertyQuery->forConnector($connector);
+		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_SECURED_PORT);
 
-		$serverSecuredProperty = $this->propertiesRepository->findOneBy($findPropertyQuery);
+		$serverSecuredProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
-		$findPropertyQuery = new DevicesQueries\FindConnectorProperties();
-		$findPropertyQuery->forConnector($connector);
-		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_USERNAME);
+		$findConnectorPropertyQuery = new DevicesQueries\FindConnectorProperties();
+		$findConnectorPropertyQuery->forConnector($connector);
+		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_USERNAME);
 
-		$usernameProperty = $this->propertiesRepository->findOneBy($findPropertyQuery);
+		$usernameProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
-		$findPropertyQuery = new DevicesQueries\FindConnectorProperties();
-		$findPropertyQuery->forConnector($connector);
-		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_PASSWORD);
+		$findConnectorPropertyQuery = new DevicesQueries\FindConnectorProperties();
+		$findConnectorPropertyQuery->forConnector($connector);
+		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_PASSWORD);
 
-		$passwordProperty = $this->propertiesRepository->findOneBy($findPropertyQuery);
+		$passwordProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
 		try {
 			// Start transaction connection to the database

@@ -381,33 +381,6 @@ abstract class Device implements Entities\Entity,
 		}
 	}
 
-	public function getProperty(string $id): Entities\Devices\Properties\Property|null
-	{
-		$found = $this->properties
-			->filter(static fn (Entities\Devices\Properties\Property $row): bool => $id === $row->getPlainId());
-
-		return $found->isEmpty() === true ? null : $found->first();
-	}
-
-	public function findProperty(string $identifier): Entities\Devices\Properties\Property|null
-	{
-		$found = $this->properties
-			->filter(
-				static fn (Entities\Devices\Properties\Property $row): bool => $identifier === $row->getIdentifier()
-			);
-
-		return $found->isEmpty() === true ? null : $found->first();
-	}
-
-	public function removeProperty(Entities\Devices\Properties\Property $property): void
-	{
-		// Check if collection contain removing entity...
-		if ($this->properties->contains($property)) {
-			// ...and remove it from collection
-			$this->properties->removeElement($property);
-		}
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */

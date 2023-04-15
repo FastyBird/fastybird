@@ -58,6 +58,7 @@ class DevicesV1 extends BaseV1
 	public function __construct(
 		protected readonly Models\Devices\DevicesRepository $devicesRepository,
 		protected readonly Models\Devices\DevicesManager $devicesManager,
+		protected readonly Models\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
 		protected readonly Models\Devices\Controls\ControlsRepository $deviceControlsRepository,
 		protected readonly Models\Channels\ChannelsRepository $channelsRepository,
 		protected readonly Models\Channels\ChannelsManager $channelsManager,
@@ -380,7 +381,14 @@ class DevicesV1 extends BaseV1
 		if ($relationEntity === Schemas\Devices\Device::RELATIONSHIPS_CONNECTOR) {
 			return $this->buildResponse($request, $response, $device->getConnector());
 		} elseif ($relationEntity === Schemas\Devices\Device::RELATIONSHIPS_PROPERTIES) {
-			return $this->buildResponse($request, $response, $device->getProperties());
+			$findDevicePropertiesQuery = new Queries\FindDeviceProperties();
+			$findDevicePropertiesQuery->forDevice($device);
+
+			return $this->buildResponse(
+				$request,
+				$response,
+				$this->devicePropertiesRepository->findAllBy($findDevicePropertiesQuery),
+			);
 		} elseif ($relationEntity === Schemas\Devices\Device::RELATIONSHIPS_CONTROLS) {
 			$findDeviceControlsQuery = new Queries\FindDeviceControls();
 			$findDeviceControlsQuery->forDevice($device);

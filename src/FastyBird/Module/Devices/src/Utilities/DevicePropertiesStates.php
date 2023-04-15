@@ -144,10 +144,10 @@ final class DevicePropertiesStates
 				throw new Exceptions\InvalidState('Parent identifier for mapped property is missing');
 			}
 
-			$findPropertyQuery = new Queries\FindDeviceProperties();
-			$findPropertyQuery->byId($property->getParent());
+			$findDevicePropertyQuery = new Queries\FindDeviceProperties();
+			$findDevicePropertyQuery->byId($property->getParent());
 
-			$parent = $this->devicePropertiesRepository->findOneBy($findPropertyQuery);
+			$parent = $this->devicePropertiesRepository->findOneBy($findDevicePropertyQuery);
 
 			if (!$parent instanceof Entities\Devices\Properties\Dynamic) {
 				throw new Exceptions\InvalidState('Mapped property parent could not be loaded');

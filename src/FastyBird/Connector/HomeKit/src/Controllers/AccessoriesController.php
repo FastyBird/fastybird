@@ -127,12 +127,12 @@ final class AccessoriesController extends BaseController
 
 		$connectorId = Uuid\Uuid::fromString($connectorId);
 
-		$findPropertyQuery = new DevicesQueries\FindConnectorProperties();
-		$findPropertyQuery->byConnectorId($connectorId);
-		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_PAIRED);
+		$findConnectorPropertyQuery = new DevicesQueries\FindConnectorProperties();
+		$findConnectorPropertyQuery->byConnectorId($connectorId);
+		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_PAIRED);
 
 		$pairedProperty = $this->propertiesRepository->findOneBy(
-			$findPropertyQuery,
+			$findConnectorPropertyQuery,
 			DevicesEntities\Connectors\Properties\Variable::class,
 		);
 

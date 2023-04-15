@@ -81,6 +81,7 @@ class Discover extends Console\Command\Command
 		private readonly Consumers\Messages $consumer,
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		Log\LoggerInterface|null $logger = null,
@@ -386,9 +387,11 @@ class Discover extends Console\Command\Command
 
 					$ipAddress = $device->getIpAddress();
 
-					$hardwareModelProperty = $device->findProperty(
-						Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL,
-					);
+					$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+					$findDevicePropertyQuery->forDevice($device);
+					$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL);
+
+					$hardwareModelProperty = $this->devicePropertiesRepository->findOneBy($findDevicePropertyQuery);
 
 					$table->addRow([
 						$foundDevices,

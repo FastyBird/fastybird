@@ -98,6 +98,7 @@ class Devices extends Console\Command\Command
 		private readonly DevicesModels\Devices\DevicesManager $devicesManager,
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		private readonly DevicesModels\Channels\ChannelsManager $channelsManager,
+		private readonly DevicesModels\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
 		private readonly DevicesModels\Devices\Properties\PropertiesManager $devicesPropertiesManager,
 		private readonly DevicesModels\Channels\Properties\PropertiesManager $channelsPropertiesManager,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
@@ -405,11 +406,35 @@ class Devices extends Console\Command\Command
 
 		$address = $ipAddress = $port = $unitId = null;
 
-		$addressProperty = $device->findProperty(Types\DevicePropertyIdentifier::IDENTIFIER_ADDRESS);
-		$ipAddressProperty = $device->findProperty(Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS);
-		$portProperty = $device->findProperty(Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS_PORT);
-		$unitIdProperty = $device->findProperty(Types\DevicePropertyIdentifier::IDENTIFIER_UNIT_ID);
-		$byteOrderProperty = $device->findProperty(Types\DevicePropertyIdentifier::IDENTIFIER_BYTE_ORDER);
+		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+		$findDevicePropertyQuery->forDevice($device);
+		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IDENTIFIER_ADDRESS);
+
+		$addressProperty = $this->devicePropertiesRepository->findOneBy($findDevicePropertyQuery);
+
+		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+		$findDevicePropertyQuery->forDevice($device);
+		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS);
+
+		$ipAddressProperty = $this->devicePropertiesRepository->findOneBy($findDevicePropertyQuery);
+
+		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+		$findDevicePropertyQuery->forDevice($device);
+		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS_PORT);
+
+		$portProperty = $this->devicePropertiesRepository->findOneBy($findDevicePropertyQuery);
+
+		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+		$findDevicePropertyQuery->forDevice($device);
+		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IDENTIFIER_UNIT_ID);
+
+		$unitIdProperty = $this->devicePropertiesRepository->findOneBy($findDevicePropertyQuery);
+
+		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+		$findDevicePropertyQuery->forDevice($device);
+		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IDENTIFIER_BYTE_ORDER);
+
+		$byteOrderProperty = $this->devicePropertiesRepository->findOneBy($findDevicePropertyQuery);
 
 		if ($connector->getClientMode()->equalsValue(Types\ClientMode::MODE_RTU)) {
 			$address = $this->askDeviceAddress($io, $connector, $device);

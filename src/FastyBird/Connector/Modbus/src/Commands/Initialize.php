@@ -349,11 +349,11 @@ class Initialize extends Console\Command\Command
 			return;
 		}
 
-		$findPropertyQuery = new DevicesQueries\FindConnectorProperties();
-		$findPropertyQuery->forConnector($connector);
-		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE);
+		$findConnectorPropertyQuery = new DevicesQueries\FindConnectorProperties();
+		$findConnectorPropertyQuery->forConnector($connector);
+		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE);
 
-		$modeProperty = $this->propertiesRepository->findOneBy($findPropertyQuery);
+		$modeProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
 		if ($modeProperty === null) {
 			$changeMode = true;
@@ -413,35 +413,35 @@ class Initialize extends Console\Command\Command
 			$stopBits = $this->askRtuStopBits($io, $connector);
 		}
 
-		$findPropertyQuery = new DevicesQueries\FindConnectorProperties();
-		$findPropertyQuery->forConnector($connector);
-		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_RTU_INTERFACE);
+		$findConnectorPropertyQuery = new DevicesQueries\FindConnectorProperties();
+		$findConnectorPropertyQuery->forConnector($connector);
+		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_RTU_INTERFACE);
 
-		$interfaceProperty = $this->propertiesRepository->findOneBy($findPropertyQuery);
+		$interfaceProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
-		$findPropertyQuery = new DevicesQueries\FindConnectorProperties();
-		$findPropertyQuery->forConnector($connector);
-		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_RTU_BAUD_RATE);
+		$findConnectorPropertyQuery = new DevicesQueries\FindConnectorProperties();
+		$findConnectorPropertyQuery->forConnector($connector);
+		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_RTU_BAUD_RATE);
 
-		$baudRateProperty = $this->propertiesRepository->findOneBy($findPropertyQuery);
+		$baudRateProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
-		$findPropertyQuery = new DevicesQueries\FindConnectorProperties();
-		$findPropertyQuery->forConnector($connector);
-		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_RTU_BYTE_SIZE);
+		$findConnectorPropertyQuery = new DevicesQueries\FindConnectorProperties();
+		$findConnectorPropertyQuery->forConnector($connector);
+		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_RTU_BYTE_SIZE);
 
-		$byteSizeProperty = $this->propertiesRepository->findOneBy($findPropertyQuery);
+		$byteSizeProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
-		$findPropertyQuery = new DevicesQueries\FindConnectorProperties();
-		$findPropertyQuery->forConnector($connector);
-		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_RTU_PARITY);
+		$findConnectorPropertyQuery = new DevicesQueries\FindConnectorProperties();
+		$findConnectorPropertyQuery->forConnector($connector);
+		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_RTU_PARITY);
 
-		$dataParityProperty = $this->propertiesRepository->findOneBy($findPropertyQuery);
+		$dataParityProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
-		$findPropertyQuery = new DevicesQueries\FindConnectorProperties();
-		$findPropertyQuery->forConnector($connector);
-		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_RTU_STOP_BITS);
+		$findConnectorPropertyQuery = new DevicesQueries\FindConnectorProperties();
+		$findConnectorPropertyQuery->forConnector($connector);
+		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_RTU_STOP_BITS);
 
-		$stopBitsProperty = $this->propertiesRepository->findOneBy($findPropertyQuery);
+		$stopBitsProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
 		try {
 			// Start transaction connection to the database

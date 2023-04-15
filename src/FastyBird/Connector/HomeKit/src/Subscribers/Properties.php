@@ -75,11 +75,11 @@ final class Properties implements Common\EventSubscriber
 
 		// Check for valid entity
 		if ($entity instanceof Entities\HomeKitConnector) {
-			$findPropertyQuery = new Queries\FindConnectorProperties();
-			$findPropertyQuery->forConnector($entity);
-			$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_MAC_ADDRESS);
+			$findConnectorPropertyQuery = new Queries\FindConnectorProperties();
+			$findConnectorPropertyQuery->forConnector($entity);
+			$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_MAC_ADDRESS);
 
-			$macAddressProperty = $this->propertiesRepository->findOneBy($findPropertyQuery);
+			$macAddressProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
 			if ($macAddressProperty === null) {
 				$this->propertiesManager->create(Utils\ArrayHash::from([
@@ -95,11 +95,11 @@ final class Properties implements Common\EventSubscriber
 				]));
 			}
 
-			$findPropertyQuery = new Queries\FindConnectorProperties();
-			$findPropertyQuery->forConnector($entity);
-			$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_SETUP_ID);
+			$findConnectorPropertyQuery = new Queries\FindConnectorProperties();
+			$findConnectorPropertyQuery->forConnector($entity);
+			$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_SETUP_ID);
 
-			$setupIdProperty = $this->propertiesRepository->findOneBy($findPropertyQuery);
+			$setupIdProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
 			if ($setupIdProperty === null) {
 				$this->propertiesManager->create(Utils\ArrayHash::from([
@@ -115,11 +115,11 @@ final class Properties implements Common\EventSubscriber
 				]));
 			}
 
-			$findPropertyQuery = new Queries\FindConnectorProperties();
-			$findPropertyQuery->forConnector($entity);
-			$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_PIN_CODE);
+			$findConnectorPropertyQuery = new Queries\FindConnectorProperties();
+			$findConnectorPropertyQuery->forConnector($entity);
+			$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_PIN_CODE);
 
-			$pinCodeProperty = $this->propertiesRepository->findOneBy($findPropertyQuery);
+			$pinCodeProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
 			if ($pinCodeProperty === null) {
 				$this->propertiesManager->create(Utils\ArrayHash::from([
@@ -135,11 +135,11 @@ final class Properties implements Common\EventSubscriber
 				]));
 			}
 
-			$findPropertyQuery = new Queries\FindConnectorProperties();
-			$findPropertyQuery->forConnector($entity);
-			$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_SERVER_SECRET);
+			$findConnectorPropertyQuery = new Queries\FindConnectorProperties();
+			$findConnectorPropertyQuery->forConnector($entity);
+			$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_SERVER_SECRET);
 
-			$serverSecretProperty = $this->propertiesRepository->findOneBy($findPropertyQuery);
+			$serverSecretProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
 			if ($serverSecretProperty === null) {
 				$this->propertiesManager->create(Utils\ArrayHash::from([
@@ -155,11 +155,11 @@ final class Properties implements Common\EventSubscriber
 				]));
 			}
 
-			$findPropertyQuery = new Queries\FindConnectorProperties();
-			$findPropertyQuery->forConnector($entity);
-			$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_CONFIG_VERSION);
+			$findConnectorPropertyQuery = new Queries\FindConnectorProperties();
+			$findConnectorPropertyQuery->forConnector($entity);
+			$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_CONFIG_VERSION);
 
-			$versionProperty = $this->propertiesRepository->findOneBy($findPropertyQuery);
+			$versionProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
 			if ($versionProperty === null) {
 				$this->propertiesManager->create(Utils\ArrayHash::from([
@@ -175,11 +175,11 @@ final class Properties implements Common\EventSubscriber
 				]));
 			}
 
-			$findPropertyQuery = new Queries\FindConnectorProperties();
-			$findPropertyQuery->forConnector($entity);
-			$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_PAIRED);
+			$findConnectorPropertyQuery = new Queries\FindConnectorProperties();
+			$findConnectorPropertyQuery->forConnector($entity);
+			$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_PAIRED);
 
-			$pairedProperty = $this->propertiesRepository->findOneBy($findPropertyQuery);
+			$pairedProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
 			if ($pairedProperty === null) {
 				$this->propertiesManager->create(Utils\ArrayHash::from([
@@ -195,11 +195,11 @@ final class Properties implements Common\EventSubscriber
 				]));
 			}
 
-			$findPropertyQuery = new Queries\FindConnectorProperties();
-			$findPropertyQuery->forConnector($entity);
-			$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_XHM_URI);
+			$findConnectorPropertyQuery = new Queries\FindConnectorProperties();
+			$findConnectorPropertyQuery->forConnector($entity);
+			$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_XHM_URI);
 
-			$xhmUriProperty = $this->propertiesRepository->findOneBy($findPropertyQuery);
+			$xhmUriProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
 			if ($xhmUriProperty === null) {
 				$xhmUri = Helpers\Protocol::getXhmUri(
@@ -250,11 +250,11 @@ final class Properties implements Common\EventSubscriber
 					Types\AccessoryCategory::get(Types\AccessoryCategory::CATEGORY_BRIDGE),
 				);
 
-				$findPropertyQuery = new Queries\FindConnectorProperties();
-				$findPropertyQuery->forConnector($connector);
-				$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_XHM_URI);
+				$findConnectorPropertyQuery = new Queries\FindConnectorProperties();
+				$findConnectorPropertyQuery->forConnector($connector);
+				$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_XHM_URI);
 
-				$xhmUriProperty = $this->propertiesRepository->findOneBy($findPropertyQuery);
+				$xhmUriProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
 				if ($xhmUriProperty === null) {
 					$this->propertiesManager->create(Utils\ArrayHash::from([

@@ -314,11 +314,11 @@ class Initialize extends Console\Command\Command
 			return;
 		}
 
-		$findPropertyQuery = new DevicesQueries\FindConnectorProperties();
-		$findPropertyQuery->forConnector($connector);
-		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE);
+		$findConnectorPropertyQuery = new DevicesQueries\FindConnectorProperties();
+		$findConnectorPropertyQuery->forConnector($connector);
+		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE);
 
-		$modeProperty = $this->propertiesRepository->findOneBy($findPropertyQuery);
+		$modeProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
 		$mode = null;
 
@@ -349,11 +349,11 @@ class Initialize extends Console\Command\Command
 			$modeProperty?->getValue() === Types\ClientMode::MODE_CLOUD
 			|| $mode?->getValue() === Types\ClientMode::MODE_CLOUD
 		) {
-			$findPropertyQuery = new DevicesQueries\FindConnectorProperties();
-			$findPropertyQuery->forConnector($connector);
-			$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLOUD_AUTH_KEY);
+			$findConnectorPropertyQuery = new DevicesQueries\FindConnectorProperties();
+			$findConnectorPropertyQuery->forConnector($connector);
+			$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLOUD_AUTH_KEY);
 
-			$cloudAuthKeyProperty = $this->propertiesRepository->findOneBy($findPropertyQuery);
+			$cloudAuthKeyProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
 			$changeCloudAuthKey = false;
 
@@ -370,11 +370,11 @@ class Initialize extends Console\Command\Command
 				$cloudAuthKey = $this->askCloudAuthenticationKey($io, $connector);
 			}
 
-			$findPropertyQuery = new DevicesQueries\FindConnectorProperties();
-			$findPropertyQuery->forConnector($connector);
-			$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLOUD_SERVER);
+			$findConnectorPropertyQuery = new DevicesQueries\FindConnectorProperties();
+			$findConnectorPropertyQuery->forConnector($connector);
+			$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLOUD_SERVER);
 
-			$cloudServerProperty = $this->propertiesRepository->findOneBy($findPropertyQuery);
+			$cloudServerProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
 			$changeCloudServer = false;
 

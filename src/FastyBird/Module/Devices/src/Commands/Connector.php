@@ -422,10 +422,10 @@ class Connector extends Console\Command\Command
 		MetadataTypes\ConnectionState $state,
 	): void
 	{
-		$findPropertiesQuery = new Queries\FindConnectorProperties();
-		$findPropertiesQuery->forConnector($connector);
+		$findConnectorPropertiesQuery = new Queries\FindConnectorProperties();
+		$findConnectorPropertiesQuery->forConnector($connector);
 
-		foreach ($this->connectorPropertiesRepository->findAllBy($findPropertiesQuery) as $property) {
+		foreach ($this->connectorPropertiesRepository->findAllBy($findConnectorPropertiesQuery) as $property) {
 			if ($property instanceof Entities\Connectors\Properties\Dynamic) {
 				$this->connectorPropertiesStateManager->setValidState($property, false);
 			}
