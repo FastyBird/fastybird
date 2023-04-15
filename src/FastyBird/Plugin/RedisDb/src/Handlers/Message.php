@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:RedisDbPlugin!
  * @subpackage     Handlers
- * @since          0.2.0
+ * @since          1.0.0
  *
  * @date           09.10.21
  */
@@ -16,6 +16,7 @@
 namespace FastyBird\Plugin\RedisDb\Handlers;
 
 use Evenement;
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumer;
 use FastyBird\Library\Exchange\Entities as ExchangeEntities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -79,7 +80,6 @@ final class Message extends Evenement\EventEmitter
 				$this->logger->warning('Received message is not in valid format', [
 					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
 					'type' => 'messages-handler',
-					'group' => 'handler',
 				]);
 			}
 		} catch (Nette\Utils\JsonException $ex) {
@@ -87,11 +87,7 @@ final class Message extends Evenement\EventEmitter
 			$this->logger->warning('Received message is not valid json', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
 				'type' => 'messages-handler',
-				'group' => 'handler',
-				'exception' => [
-					'message' => $ex->getMessage(),
-					'code' => $ex->getCode(),
-				],
+				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
 		}
 
@@ -106,12 +102,6 @@ final class Message extends Evenement\EventEmitter
 	): void
 	{
 		if ($senderId === $this->identifier->getIdentifier()) {
-			$this->logger->debug('Received message published by itself', [
-				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
-				'type' => 'messages-handler',
-				'group' => 'handler',
-			]);
-
 			return;
 		}
 
@@ -128,11 +118,7 @@ final class Message extends Evenement\EventEmitter
 			$this->logger->error('Message could not be transformed into entity', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
 				'type' => 'messages-handler',
-				'group' => 'handler',
-				'exception' => [
-					'message' => $ex->getMessage(),
-					'code' => $ex->getCode(),
-				],
+				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
 
 			return;
@@ -154,11 +140,7 @@ final class Message extends Evenement\EventEmitter
 			$this->logger->error('Message could not be handled', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
 				'type' => 'messages-handler',
-				'group' => 'handler',
-				'exception' => [
-					'message' => $ex->getMessage(),
-					'code' => $ex->getCode(),
-				],
+				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
 
 			return;

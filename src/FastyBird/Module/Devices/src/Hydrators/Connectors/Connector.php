@@ -37,6 +37,7 @@ abstract class Connector extends JsonApiHydrators\Hydrator
 	/** @var array<int|string, string> */
 	protected array $attributes
 		= [
+			'category',
 			'identifier',
 			'name',
 			'comment',

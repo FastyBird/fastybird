@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:AccountsModule!
  * @subpackage     Commands
- * @since          0.1.0
+ * @since          1.0.0
  *
  * @date           31.03.20
  */
@@ -176,10 +176,10 @@ class Create extends Console\Command\Command
 			SimpleAuth\Constants::ROLE_MANAGER,
 			SimpleAuth\Constants::ROLE_ADMINISTRATOR,
 		], true)) {
-			$findRole = new Queries\FindRoles();
-			$findRole->byName($input->getArgument('role'));
+			$findRoleQuery = new Queries\FindRoles();
+			$findRoleQuery->byName($input->getArgument('role'));
 
-			$role = $this->rolesRepository->findOneBy($findRole);
+			$role = $this->rolesRepository->findOneBy($findRoleQuery);
 
 			if ($role === null) {
 				$io->error('Entered unknown role name.');
@@ -215,10 +215,10 @@ class Create extends Console\Command\Command
 						break;
 				}
 
-				$findRole = new Queries\FindRoles();
-				$findRole->byName(strval($roleName));
+				$findRoleQuery = new Queries\FindRoles();
+				$findRoleQuery->byName(strval($roleName));
 
-				$role = $this->rolesRepository->findOneBy($findRole);
+				$role = $this->rolesRepository->findOneBy($findRoleQuery);
 
 				if ($role !== null) {
 					$repeat = false;
@@ -339,7 +339,7 @@ class Create extends Console\Command\Command
 			return $connection;
 		}
 
-		throw new Exceptions\Runtime('Entity manager could not be loaded');
+		throw new Exceptions\Runtime('Transformer manager could not be loaded');
 	}
 
 }

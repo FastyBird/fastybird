@@ -1,109 +1,109 @@
 #
 # Triggers module example configuration
 #
-# @license      More in LICENSE.md
-# @copyright    https://www.fastybird.com
-# @author       Adam Kadlec <adam.kadlec@fastybird.com>
-# @package      FastyBird:TriggersModule!
-# @subpackage   config
-# @since        0.1.0
+# @license        More in LICENSE.md
+# @copyright      https://www.fastybird.com
+# @author         Adam Kadlec <adam.kadlec@fastybird.com>
+# @package        FastyBird:TriggersModule!
+# @subpackage     config
+# @since          1.0.0
 #
-# @date         25.11.20
+# @date           25.11.20
 
 php:
-	date.timezone: Europe/Prague
+    date.timezone: Europe/Prague
 
 extensions:
-	contributteConsole					: Contributte\Console\DI\ConsoleExtension(%consoleMode%)
-	contributteTranslation				: Contributte\Translation\DI\TranslationExtension
-	contributteEvents					: Contributte\EventDispatcher\DI\EventDispatcherExtension
-	nettrineAnnotations					: Nettrine\Annotations\DI\AnnotationsExtension
-	nettrineCache						: Nettrine\Cache\DI\CacheExtension
-	nettrineDbal						: Nettrine\DBAL\DI\DbalExtension
-	nettrineOrm							: Nettrine\ORM\DI\OrmExtension
-	nettrineOrmAnnotations				: Nettrine\ORM\DI\OrmAnnotationsExtension
-	nettrineOrmConsole					: Nettrine\ORM\DI\OrmConsoleExtension
-	nettrineOrmCache					: Nettrine\ORM\DI\OrmCacheExtension
-	ipubDoctrineConsistence				: IPub\DoctrineConsistence\DI\DoctrineConsistenceExtension
-	ipubDoctrineCrud					: IPub\DoctrineCrud\DI\DoctrineCrudExtension
-	ipubDoctrineTimestampable			: IPub\DoctrineTimestampable\DI\DoctrineTimestampableExtension
-	ipubDoctrineDynamicDiscriminatorMap	: IPub\DoctrineDynamicDiscriminatorMap\DI\DoctrineDynamicDiscriminatorMapExtension
-	ipubDoctrinePhone					: IPub\DoctrinePhone\DI\DoctrinePhoneExtension
-	ipubPhone							: IPub\Phone\DI\PhoneExtension
-	fbApplicationExchange				: FastyBird\ApplicationExchange\DI\ApplicationExchangeExtension
-	fbDatabase							: FastyBird\Database\DI\DatabaseExtension
-	fbDateTimeFactory					: FastyBird\DateTimeFactory\DI\DateTimeFactoryExtension
-	fbJsonApi							: FastyBird\JsonApi\DI\JsonApiExtension
-	fbSimpleAuth						: FastyBird\SimpleAuth\DI\SimpleAuthExtension
-	fbWebServer							: FastyBird\WebServer\DI\WebServerExtension
+    contributteConsole					: Contributte\Console\DI\ConsoleExtension(%consoleMode%)
+    contributteTranslation				: Contributte\Translation\DI\TranslationExtension
+    contributteEvents					: Contributte\EventDispatcher\DI\EventDispatcherExtension
+    nettrineAnnotations					: Nettrine\Annotations\DI\AnnotationsExtension
+    nettrineCache						: Nettrine\Cache\DI\CacheExtension
+    nettrineDbal						: Nettrine\DBAL\DI\DbalExtension
+    nettrineOrm							: Nettrine\ORM\DI\OrmExtension
+    nettrineOrmAnnotations				: Nettrine\ORM\DI\OrmAnnotationsExtension
+    nettrineOrmConsole					: Nettrine\ORM\DI\OrmConsoleExtension
+    nettrineOrmCache					: Nettrine\ORM\DI\OrmCacheExtension
+    ipubDoctrineConsistence				: IPub\DoctrineConsistence\DI\DoctrineConsistenceExtension
+    ipubDoctrineCrud					: IPub\DoctrineCrud\DI\DoctrineCrudExtension
+    ipubDoctrineTimestampable			: IPub\DoctrineTimestampable\DI\DoctrineTimestampableExtension
+    ipubDoctrineDynamicDiscriminatorMap	: IPub\DoctrineDynamicDiscriminatorMap\DI\DoctrineDynamicDiscriminatorMapExtension
+    ipubDoctrinePhone					: IPub\DoctrinePhone\DI\DoctrinePhoneExtension
+    ipubPhone							: IPub\Phone\DI\PhoneExtension
+    fbApplicationExchange				: FastyBird\ApplicationExchange\DI\ApplicationExchangeExtension
+    fbDatabase							: FastyBird\Database\DI\DatabaseExtension
+    fbDateTimeFactory					: FastyBird\DateTimeFactory\DI\DateTimeFactoryExtension
+    fbJsonApi							: FastyBird\JsonApi\DI\JsonApiExtension
+    fbSimpleAuth						: FastyBird\SimpleAuth\DI\SimpleAuthExtension
+    fbWebServer							: FastyBird\WebServer\DI\WebServerExtension
 
 contributteConsole:
-	name: FastyBird:TriggersModule!
-	version: '1.0'
-	catchExceptions: true
-	autoExit: true
-	url: http://triggers-module.fastybird.com
-	lazy: false
-	helperSet: \Symfony\Component\Console\Helper\HelperSet
-	helpers: []
+    name: FastyBird:TriggersModule!
+    version: '1.0'
+    catchExceptions: true
+    autoExit: true
+    url: http://triggers-module.fastybird.com
+    lazy: false
+    helperSet: \Symfony\Component\Console\Helper\HelperSet
+    helpers: []
 
 contributteTranslation:
-	locales:
-		default: en_US
-		fallback: [en_US, en]
-	localeResolvers: []
-	dirs:
-		- %appDir%/../src/Translations
+    locales:
+        default: en_US
+        fallback: [en_US, en]
+    localeResolvers: []
+    dirs:
+        - %appDir%/../src/Translations
 
 nettrineDbal:
-	connection:
-		serverVersion: 5.7
-		host: 127.0.0.1
-		port: 3306
-		driver: pdo_mysql
-		memory: false
-		dbname: triggers_module
-		user: root
-		password:
-		charset: utf8
-		wrapperClass: \Tests\Tools\ConnectionWrapper
+    connection:
+        serverVersion: 5.7
+        host: 127.0.0.1
+        port: 3306
+        driver: pdo_mysql
+        memory: false
+        dbname: triggers_module
+        user: root
+        password:
+        charset: utf8
+        wrapperClass: \Tests\Tools\ConnectionWrapper
 
-		types:
-			uuid_binary:
-				class: Ramsey\Uuid\Doctrine\UuidBinaryType
-				commented: false
-			utcdatetime:
-				class: IPub\DoctrineTimestampable\Types\UTCDateTime
-				commented: false
+        types:
+            uuid_binary:
+                class: Ramsey\Uuid\Doctrine\UuidBinaryType
+                commented: false
+            utcdatetime:
+                class: IPub\DoctrineTimestampable\Types\UTCDateTime
+                commented: false
 
-		typesMapping:
-			uuid_binary: binary
+        typesMapping:
+            uuid_binary: binary
 
 nettrineAnnotations:
-	debug: %debugMode%
-	ignore:
-		- writable
-		- required
-		- module
-		- author
-		- subpackage
-		- package
-		- phpcsSuppress
+    debug: %debugMode%
+    ignore:
+        - writable
+        - required
+        - module
+        - author
+        - subpackage
+        - package
+        - phpcsSuppress
 
 nettrineOrm:
-	configuration:
-		proxyDir	: %tempDir%/cache/doctrine.proxies
+    configuration:
+        proxyDir	: %tempDir%/cache/doctrine.proxies
 
 nettrineOrmAnnotations:
-	mapping: []
+    mapping: []
 
 fbSimpleAuth:
-	token:
-		issuer: com.fastybird.auth-module
-		signature: 'g3xHbkELpMD9LRqW4WmJkHL7kz2bdNYAQJyEuFVzR3k='
-	enable:
-		middleware: true
-		doctrine:
-			mapping: true
-	services:
-		identity: true
+    token:
+        issuer: com.fastybird.auth-module
+        signature: 'g3xHbkELpMD9LRqW4WmJkHL7kz2bdNYAQJyEuFVzR3k='
+    enable:
+        middleware: true
+        doctrine:
+            mapping: true
+    services:
+        identity: true

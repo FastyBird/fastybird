@@ -50,10 +50,12 @@ final class Status implements Consumer
 
 	public function __construct(
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		private readonly DevicesModels\Devices\Properties\PropertiesRepository $propertiesRepository,
 		private readonly DevicesModels\Devices\Properties\PropertiesManager $propertiesManager,
+		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
 		private readonly DevicesModels\Channels\Properties\PropertiesManager $channelsPropertiesManager,
-		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
+		private readonly DevicesUtilities\Database $databaseHelper,
 		private readonly Helpers\Property $propertyStateHelper,
 		Log\LoggerInterface|null $logger = null,
 	)
@@ -76,7 +78,7 @@ final class Status implements Consumer
 
 		$findDeviceQuery = new DevicesQueries\FindDevices();
 		$findDeviceQuery->byConnectorId($entity->getConnector());
-		$findDeviceQuery->byIdentifier($entity->getIdentifier());
+		$findDeviceQuery->startWithIdentifier($entity->getIdentifier());
 
 		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\ShellyDevice::class);
 
@@ -84,33 +86,33 @@ final class Status implements Consumer
 			return true;
 		}
 
-		// Check device state...
-		if (
-			!$this->deviceConnectionManager->getState($device)
-				->equalsValue(MetadataTypes\ConnectionState::STATE_CONNECTED)
-		) {
-			// ... and if it is not ready, set it to ready
-			$this->deviceConnectionManager->setState(
-				$device,
-				MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_CONNECTED),
-			);
-		}
-
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getIpAddress(),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 			Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS,
 		);
 
 		foreach ($entity->getStatuses() as $status) {
 			if ($status instanceof Entities\Messages\PropertyStatus) {
-				$property = null;
+				$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+				$findDevicePropertyQuery->forDevice($device);
+				$findDevicePropertyQuery->byIdentifier($status->getIdentifier());
 
-				$property = $device->findProperty($status->getIdentifier());
+				$property = $this->propertiesRepository->findOneBy($findDevicePropertyQuery);
 
 				if ($property === null) {
-					foreach ($device->getChannels() as $channel) {
-						$property = $channel->findProperty($status->getIdentifier());
+					$findChannelsQuery = new DevicesQueries\FindChannels();
+					$findChannelsQuery->forDevice($device);
+
+					$channels = $this->channelsRepository->findAllBy($findChannelsQuery);
+
+					foreach ($channels as $channel) {
+						$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+						$findChannelPropertyQuery->forChannel($channel);
+						$findChannelPropertyQuery->byIdentifier($status->getIdentifier());
+
+						$property = $this->channelPropertiesRepository->findOneBy($findChannelPropertyQuery);
 
 						if ($property !== null) {
 							break;
@@ -122,39 +124,29 @@ final class Status implements Consumer
 					$property instanceof DevicesEntities\Devices\Properties\Dynamic
 					|| $property instanceof DevicesEntities\Channels\Properties\Dynamic
 				) {
-					$actualValue = DevicesUtilities\ValueHelper::flattenValue(
-						DevicesUtilities\ValueHelper::normalizeValue(
-							$property->getDataType(),
-							$status->getValue(),
-							$property->getFormat(),
-							$property->getInvalid(),
-						),
-					);
-
 					$this->propertyStateHelper->setValue($property, Utils\ArrayHash::from([
-						DevicesStates\Property::ACTUAL_VALUE_KEY => $actualValue,
+						DevicesStates\Property::ACTUAL_VALUE_KEY => $status->getValue(),
 						DevicesStates\Property::VALID_KEY => true,
 					]));
 				}
 			} else {
-				$channel = $device->findChannel($status->getIdentifier());
+				$findChannelQuery = new DevicesQueries\FindChannels();
+				$findChannelQuery->forDevice($device);
+				$findChannelQuery->byIdentifier($status->getIdentifier());
+
+				$channel = $this->channelsRepository->findOneBy($findChannelQuery);
 
 				if ($channel !== null) {
 					foreach ($status->getSensors() as $sensor) {
-						$property = $channel->findProperty($sensor->getIdentifier());
+						$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+						$findChannelPropertyQuery->forChannel($channel);
+						$findChannelPropertyQuery->byIdentifier($sensor->getIdentifier());
+
+						$property = $this->channelPropertiesRepository->findOneBy($findChannelPropertyQuery);
 
 						if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
-							$actualValue = DevicesUtilities\ValueHelper::flattenValue(
-								DevicesUtilities\ValueHelper::normalizeValue(
-									$property->getDataType(),
-									$sensor->getValue(),
-									$property->getFormat(),
-									$property->getInvalid(),
-								),
-							);
-
 							$this->propertyStateHelper->setValue($property, Utils\ArrayHash::from([
-								DevicesStates\Property::ACTUAL_VALUE_KEY => $actualValue,
+								DevicesStates\Property::ACTUAL_VALUE_KEY => $sensor->getValue(),
 								DevicesStates\Property::VALID_KEY => true,
 							]));
 						} elseif ($property instanceof DevicesEntities\Channels\Properties\Variable) {
@@ -179,7 +171,6 @@ final class Status implements Consumer
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 				'type' => 'status-message-consumer',
-				'group' => 'consumer',
 				'device' => [
 					'id' => $device->getPlainId(),
 				],

@@ -21,6 +21,7 @@ use FastyBird\Connector\Shelly\Clients;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\DateTimeFactory;
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -157,11 +158,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 							'type' => 'exchange-writer',
-							'group' => 'writer',
-							'exception' => [
-								'message' => $ex->getMessage(),
-								'code' => $ex->getCode(),
-							],
+							'exception' => BootstrapHelpers\Logger::buildException($ex),
 							'connector' => [
 								'id' => $connectorId->toString(),
 							],

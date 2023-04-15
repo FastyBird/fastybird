@@ -62,10 +62,7 @@ final class Gen2HttpApi extends HttpApi
 
 	private const DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME = 'gen2_http_status.json';
 
-	private const PROPERTY_COMPONENT = '/^(?P<component>[a-zA-Z]+)_(?P<identifier>[0-9]+)(_(?P<attribute>[a-zA-Z0-9]+))?$/';
-
 	public function __construct(
-		protected readonly EntityFactory $entityFactory,
 		protected readonly MetadataSchemas\Validator $schemaValidator,
 		EventLoop\LoopInterface $eventLoop,
 		Log\LoggerInterface|null $logger = null,
@@ -261,7 +258,7 @@ final class Gen2HttpApi extends HttpApi
 	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|bool
 	{
 		if (
-			preg_match(self::PROPERTY_COMPONENT, $component, $propertyMatches) !== 1
+			preg_match(self::$PROPERTY_COMPONENT, $component, $propertyMatches) !== 1
 			|| !array_key_exists('component', $propertyMatches)
 			|| !array_key_exists('identifier', $propertyMatches)
 			|| !array_key_exists('attribute', $propertyMatches)

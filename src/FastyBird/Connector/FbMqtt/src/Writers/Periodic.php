@@ -20,6 +20,7 @@ use FastyBird\Connector\FbMqtt\Clients;
 use FastyBird\Connector\FbMqtt\Entities;
 use FastyBird\Connector\FbMqtt\Helpers;
 use FastyBird\DateTimeFactory;
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
@@ -77,6 +78,8 @@ class Periodic implements Writer
 	public function __construct(
 		private readonly Helpers\Property $propertyStateHelper,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
+		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DevicesUtilities\DevicePropertiesStates $devicesPropertiesStates,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
@@ -174,7 +177,10 @@ class Periodic implements Writer
 	{
 		$now = $this->dateTimeFactory->getNow();
 
-		foreach ($device->getProperties() as $property) {
+		$findDevicePropertiesQuery = new DevicesQueries\FindDeviceProperties();
+		$findDevicePropertiesQuery->forDevice($device);
+
+		foreach ($this->devicePropertiesRepository->findAllBy($findDevicePropertiesQuery) as $property) {
 			if (!$property instanceof DevicesEntities\Devices\Properties\Dynamic) {
 				continue;
 			}
@@ -240,11 +246,7 @@ class Periodic implements Writer
 								[
 									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 									'type' => 'periodic-writer',
-									'group' => 'writer',
-									'exception' => [
-										'message' => $ex->getMessage(),
-										'code' => $ex->getCode(),
-									],
+									'exception' => BootstrapHelpers\Logger::buildException($ex),
 									'connector' => [
 										'id' => $device->getConnector()->getPlainId(),
 									],
@@ -286,7 +288,10 @@ class Periodic implements Writer
 	{
 		$now = $this->dateTimeFactory->getNow();
 
-		foreach ($device->getChannels() as $channel) {
+		$findChannelsQuery = new DevicesQueries\FindChannels();
+		$findChannelsQuery->forDevice($device);
+
+		foreach ($this->channelsRepository->findAllBy($findChannelsQuery) as $channel) {
 			foreach ($channel->getProperties() as $property) {
 				if (!$property instanceof DevicesEntities\Channels\Properties\Dynamic) {
 					continue;
@@ -353,11 +358,7 @@ class Periodic implements Writer
 									[
 										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 										'type' => 'periodic-writer',
-										'group' => 'writer',
-										'exception' => [
-											'message' => $ex->getMessage(),
-											'code' => $ex->getCode(),
-										],
+										'exception' => BootstrapHelpers\Logger::buildException($ex),
 										'connector' => [
 											'id' => $device->getConnector()->getPlainId(),
 										],

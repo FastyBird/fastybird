@@ -19,6 +19,7 @@ use Doctrine\DBAL;
 use Doctrine\Persistence;
 use FastyBird\Connector\FbMqtt\Entities;
 use FastyBird\Connector\FbMqtt\Exceptions;
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -223,11 +224,7 @@ class Devices extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 					'type' => 'devices-cmd',
-					'group' => 'cmd',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -292,11 +289,7 @@ class Devices extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 					'type' => 'devices-cmd',
-					'group' => 'cmd',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -355,11 +348,7 @@ class Devices extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 					'type' => 'devices-cmd',
-					'group' => 'cmd',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -532,7 +521,7 @@ class Devices extends Console\Command\Command
 			return $connection;
 		}
 
-		throw new Exceptions\Runtime('Entity manager could not be loaded');
+		throw new Exceptions\Runtime('Transformer manager could not be loaded');
 	}
 
 }

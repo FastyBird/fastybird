@@ -8,13 +8,14 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:AccountsModule!
  * @subpackage     Commands
- * @since          0.1.0
+ * @since          1.0.0
  *
  * @date           08.08.20
  */
 
 namespace FastyBird\Module\Accounts\Commands;
 
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Psr\Log;
 use RuntimeException;
@@ -127,10 +128,7 @@ class Initialize extends Console\Command\Command
 			$this->logger->error('An unhandled error occurred', [
 				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_ACCOUNTS,
 				'type' => 'command',
-				'exception' => [
-					'message' => $ex->getMessage(),
-					'code' => $ex->getCode(),
-				],
+				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
 
 			$io->error('Something went wrong, initialization could not be finished. Error was logged.');

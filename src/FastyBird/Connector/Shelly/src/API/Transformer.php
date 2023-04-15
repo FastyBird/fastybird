@@ -47,7 +47,7 @@ final class Transformer
 	/**
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function transformValueFromDevice(
+	public static function transformValueFromDevice(
 		MetadataTypes\DataType $dataType,
 		MetadataValueObjects\StringEnumFormat|MetadataValueObjects\NumberRangeFormat|MetadataValueObjects\CombinedEnumFormat|null $format,
 		string|int|float|bool|null $value,
@@ -65,11 +65,11 @@ final class Transformer
 			$floatValue = floatval($value);
 
 			if ($format instanceof MetadataValueObjects\NumberRangeFormat) {
-				if ($format->getMin() !== null && $format->getMin() >= $floatValue) {
+				if ($format->getMin() !== null && $format->getMin() > $floatValue) {
 					return null;
 				}
 
-				if ($format->getMax() !== null && $format->getMax() <= $floatValue) {
+				if ($format->getMax() !== null && $format->getMax() < $floatValue) {
 					return null;
 				}
 			}
@@ -88,11 +88,11 @@ final class Transformer
 			$intValue = intval($value);
 
 			if ($format instanceof MetadataValueObjects\NumberRangeFormat) {
-				if ($format->getMin() !== null && $format->getMin() >= $intValue) {
+				if ($format->getMin() !== null && $format->getMin() > $intValue) {
 					return null;
 				}
 
-				if ($format->getMax() !== null && $format->getMax() <= $intValue) {
+				if ($format->getMax() !== null && $format->getMax() < $intValue) {
 					return null;
 				}
 			}
@@ -178,7 +178,7 @@ final class Transformer
 	/**
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function transformValueToDevice(
+	public static function transformValueToDevice(
 		MetadataTypes\DataType $dataType,
 		MetadataValueObjects\StringEnumFormat|MetadataValueObjects\NumberRangeFormat|MetadataValueObjects\CombinedEnumFormat|null $format,
 		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
@@ -190,7 +190,7 @@ final class Transformer
 
 		if ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BOOLEAN)) {
 			if (is_bool($value)) {
-				return $value ? 1 : 0;
+				return $value;
 			}
 
 			return null;

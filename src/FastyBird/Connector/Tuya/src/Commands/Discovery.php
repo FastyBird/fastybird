@@ -21,6 +21,7 @@ use FastyBird\Connector\Tuya\Consumers;
 use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\DateTimeFactory;
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -61,7 +62,7 @@ class Discovery extends Console\Command\Command
 
 	private const DISCOVERY_WAITING_INTERVAL = 5.0;
 
-	private const DISCOVERY_MAX_PROCESSING_INTERVAL = 30.0;
+	private const DISCOVERY_MAX_PROCESSING_INTERVAL = 60.0;
 
 	private const QUEUE_PROCESSING_INTERVAL = 0.01;
 
@@ -79,6 +80,8 @@ class Discovery extends Console\Command\Command
 		private readonly Clients\DiscoveryFactory $clientFactory,
 		private readonly Consumers\Messages $consumer,
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
+		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		Log\LoggerInterface|null $logger = null,
@@ -236,7 +239,6 @@ class Discovery extends Console\Command\Command
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 							'type' => 'discovery-cmd',
-							'group' => 'cmd',
 						],
 					);
 
@@ -261,7 +263,6 @@ class Discovery extends Console\Command\Command
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'discovery-cmd',
-						'group' => 'cmd',
 					],
 				);
 
@@ -291,7 +292,6 @@ class Discovery extends Console\Command\Command
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'discovery-cmd',
-						'group' => 'cmd',
 					],
 				);
 
@@ -309,7 +309,6 @@ class Discovery extends Console\Command\Command
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 							'type' => 'discovery-cmd',
-							'group' => 'cmd',
 						],
 					);
 
@@ -361,7 +360,7 @@ class Discovery extends Console\Command\Command
 			$findDevicesQuery = new DevicesQueries\FindDevices();
 			$findDevicesQuery->byConnectorId($connector->getId());
 
-			$devices = $connector->getDevices();
+			$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\TuyaDevice::class);
 
 			$table = new Console\Helper\Table($output);
 			$table->setHeaders([
@@ -388,9 +387,11 @@ class Discovery extends Console\Command\Command
 
 					$ipAddress = $device->getIpAddress();
 
-					$hardwareModelProperty = $device->findProperty(
-						Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL,
-					);
+					$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+					$findDevicePropertyQuery->forDevice($device);
+					$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL);
+
+					$hardwareModelProperty = $this->devicePropertiesRepository->findOneBy($findDevicePropertyQuery);
 
 					$table->addRow([
 						$foundDevices,
@@ -424,11 +425,7 @@ class Discovery extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'discovery-cmd',
-					'group' => 'cmd',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -445,11 +442,7 @@ class Discovery extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'discovery-cmd',
-					'group' => 'cmd',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -486,7 +479,6 @@ class Discovery extends Console\Command\Command
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'discovery-cmd',
-						'group' => 'cmd',
 					],
 				);
 

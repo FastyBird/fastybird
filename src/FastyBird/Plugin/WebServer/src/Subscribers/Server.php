@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:WebServerPlugin!
  * @subpackage     Subscribers
- * @since          0.1.0
+ * @since          1.0.0
  *
  * @date           15.04.20
  */
@@ -21,7 +21,6 @@ use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Plugin\WebServer\Events;
 use FastyBird\Plugin\WebServer\Exceptions;
 use Symfony\Component\EventDispatcher;
-use function gc_collect_cycles;
 
 /**
  * Database check subscriber
@@ -72,9 +71,7 @@ class Server implements EventDispatcher\EventSubscriberInterface
 	 */
 	public function request(): void
 	{
-		if (!$this->database->ping()) {
-			$this->database->reconnect();
-		}
+		$this->database->reconnect();
 
 		// Make sure we don't work with outdated entities
 		$this->database->clear();
@@ -88,11 +85,6 @@ class Server implements EventDispatcher\EventSubscriberInterface
 		// Clearing Doctrine's entity manager allows
 		// for more memory to be released by PHP
 		$this->database->clear();
-
-		// Just in case PHP would choose not to run garbage collection,
-		// we run it manually at the end of each batch so that memory is
-		// regularly released
-		gc_collect_cycles();
 	}
 
 }

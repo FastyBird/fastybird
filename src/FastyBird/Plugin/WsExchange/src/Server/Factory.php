@@ -8,13 +8,14 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:WsExchangePlugin!
  * @subpackage     Server
- * @since          0.1.0
+ * @since          1.0.0
  *
  * @date           21.12.20
  */
 
 namespace FastyBird\Plugin\WsExchange\Server;
 
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use IPub\WebSockets;
 use Nette\Utils;
@@ -69,11 +70,7 @@ final class Factory
 				[
 					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_EXCHANGE,
 					'type' => 'factory',
-					'group' => 'server',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 		});
@@ -83,7 +80,6 @@ final class Factory
 			[
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_EXCHANGE,
 				'type' => 'factory',
-				'group' => 'server',
 				'server' => [
 					'address' => $this->configuration->getAddress(),
 					'port' => $this->configuration->getPort(),

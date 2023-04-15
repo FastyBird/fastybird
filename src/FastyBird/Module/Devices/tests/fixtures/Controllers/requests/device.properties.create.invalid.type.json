@@ -1,27 +1,27 @@
 {
-  "data" : {
-    "type" : "com.fastybird.devices-module/other-device-property",
-    "id" : "50b0fd41-0a6e-44f0-b513-c536208afccf",
-    "attributes" : {
-      "type" : "variable",
-      "identifier" : "battery",
-      "name" : "battery",
-      "settable" : false,
-      "queryable" : false,
-      "data_type" : "enum",
-      "unit" : null,
-      "format" : [
+  "data": {
+    "type": "com.fastybird.devices-module/other-device-property",
+    "id": "50b0fd41-0a6e-44f0-b513-c536208afccf",
+    "attributes": {
+      "type": "variable",
+      "identifier": "battery",
+      "name": "battery",
+      "settable": false,
+      "queryable": false,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
         "low",
         "medium",
         "full"
       ],
-      "invalid" : null
+      "invalid": null
     },
-    "relationships" : {
-      "device" : {
-        "data" : {
-          "type" : "com.fastybird.devices-module/device",
-          "id" : "69786d15-fd0c-4d9f-9378-33287c2009fa"
+    "relationships": {
+      "device": {
+        "data": {
+          "type": "com.fastybird.devices-module/device",
+          "id": "69786d15-fd0c-4d9f-9378-33287c2009fa"
         }
       }
     }

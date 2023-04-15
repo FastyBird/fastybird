@@ -14,6 +14,7 @@
       "type": "com.fastybird.devices-module/device/blank",
       "id": "69786d15-fd0c-4d9f-9378-33287c2009fa",
       "attributes": {
+        "category": "generic",
         "identifier": "first-device",
         "name": "First device",
         "comment": null,

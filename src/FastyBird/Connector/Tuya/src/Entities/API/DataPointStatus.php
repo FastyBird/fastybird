@@ -34,20 +34,31 @@ final class DataPointStatus implements Entity
 	use Nette\SmartObject;
 
 	public function __construct(
-		private readonly string $identifier,
+		private readonly string $code,
 		private readonly float|int|string|bool|MetadataTypes\SwitchPayload|null $value,
+		private string|null $dps,
 	)
 	{
 	}
 
-	public function getIdentifier(): string
+	public function getCode(): string
 	{
-		return $this->identifier;
+		return $this->code;
 	}
 
 	public function getValue(): float|int|string|bool|MetadataTypes\SwitchPayload|null
 	{
 		return $this->value;
+	}
+
+	public function getDps(): string|null
+	{
+		return $this->dps;
+	}
+
+	public function setDps(string|null $dps): void
+	{
+		$this->dps = $dps;
 	}
 
 	/**
@@ -56,8 +67,9 @@ final class DataPointStatus implements Entity
 	public function toArray(): array
 	{
 		return [
-			'identifier' => $this->getIdentifier(),
+			'code' => $this->getCode(),
 			'value' => is_scalar($this->getValue()) ? $this->getValue() : strval($this->getValue()),
+			'dps' => $this->getDps(),
 		];
 	}
 

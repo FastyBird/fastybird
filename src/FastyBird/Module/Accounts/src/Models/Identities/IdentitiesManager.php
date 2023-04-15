@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:AccountsModule!
  * @subpackage     Models
- * @since          0.1.0
+ * @since          1.0.0
  *
  * @date           30.03.20
  */
@@ -41,7 +41,7 @@ class IdentitiesManager
 	 */
 	public function __construct(private readonly DoctrineCrudCrud\IEntityCrud $entityCrud)
 	{
-		// Entity CRUD for handling entities
+		// Transformer CRUD for handling entities
 	}
 
 	public function create(

@@ -1,6 +1,8 @@
 import { TJsonaModel, TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships } from 'jsona/lib/JsonaTypes';
 import { _GettersTree } from 'pinia';
 
+import { DeviceCategory } from '@fastybird/metadata-library';
+
 import {
 	IChannelResponseData,
 	IChannelResponseModel,
@@ -63,6 +65,7 @@ export interface IDevice {
 
 	draft: boolean;
 
+	category: DeviceCategory;
 	identifier: string;
 	name: string | null;
 	comment: string | null;
@@ -81,7 +84,7 @@ export interface IDevice {
 
 	owner: string | null;
 
-	// Entity transformers
+	// Transformer transformers
 	stateProperty: IDeviceProperty | null;
 	hasComment: boolean;
 }
@@ -93,6 +96,7 @@ export interface IDeviceRecordFactoryPayload {
 	id?: string;
 	type: { source: string; type: string; entity?: string };
 
+	category: DeviceCategory;
 	identifier: string;
 	name?: string | null;
 	comment?: string | null;
@@ -192,6 +196,7 @@ export interface IDeviceResponseData extends TJsonApiData {
 }
 
 interface IDeviceResponseDataAttributes {
+	category: DeviceCategory;
 	identifier: string;
 	name: string | null;
 	comment: string | null;
@@ -215,6 +220,7 @@ export interface IDeviceResponseModel extends TJsonaModel {
 	id: string;
 	type: { source: string; type: string; entity: string };
 
+	category: DeviceCategory;
 	identifier: string;
 	name: string | null;
 	comment: string | null;

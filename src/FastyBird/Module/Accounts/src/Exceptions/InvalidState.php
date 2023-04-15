@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:AccountsModule!
  * @subpackage     Exceptions
- * @since          0.1.0
+ * @since          1.0.0
  *
  * @date           30.03.20
  */

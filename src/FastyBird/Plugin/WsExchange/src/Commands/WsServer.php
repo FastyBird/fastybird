@@ -8,13 +8,14 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:WsExchangePlugin!
  * @subpackage     Commands
- * @since          0.13.0
+ * @since          1.0.0
  *
  * @date           09.06.22
  */
 
 namespace FastyBird\Plugin\WsExchange\Commands;
 
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
 use FastyBird\Library\Exchange\Exchange as ExchangeExchange;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -90,7 +91,6 @@ final class WsServer extends Console\Command\Command
 			[
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_EXCHANGE,
 				'type' => 'server-command',
-				'group' => 'cmd',
 			],
 		);
 
@@ -124,11 +124,7 @@ final class WsServer extends Console\Command\Command
 				[
 					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_EXCHANGE,
 					'type' => 'server-command',
-					'group' => 'cmd',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'cmd' => $this->getName(),
 				],
 			);
@@ -142,11 +138,7 @@ final class WsServer extends Console\Command\Command
 				[
 					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_EXCHANGE,
 					'type' => 'server-command',
-					'group' => 'cmd',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'cmd' => $this->getName(),
 				],
 			);

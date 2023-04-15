@@ -18,6 +18,7 @@ namespace FastyBird\Module\Devices\Controllers;
 use Doctrine;
 use Exception;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
@@ -48,6 +49,9 @@ class ConnectorsV1 extends BaseV1
 
 	public function __construct(
 		private readonly Models\Connectors\ConnectorsRepository $connectorsRepository,
+		private readonly Models\Connectors\Properties\PropertiesRepository $propertiesRepository,
+		private readonly Models\Connectors\Controls\ControlsRepository $controlsRepository,
+		private readonly Models\Devices\DevicesRepository $devicesRepository,
 		private readonly Models\Connectors\ConnectorsManager $connectorsManager,
 	)
 	{
@@ -122,10 +126,7 @@ class ConnectorsV1 extends BaseV1
 				$this->logger->error('An unhandled error occurred', [
 					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
 					'type' => 'connectors-controller',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				]);
 
 				throw new JsonApiExceptions\JsonApiError(
@@ -167,11 +168,28 @@ class ConnectorsV1 extends BaseV1
 		$relationEntity = Utils\Strings::lower(strval($request->getAttribute(Router\Routes::RELATION_ENTITY)));
 
 		if ($relationEntity === Schemas\Connectors\Connector::RELATIONSHIPS_DEVICES) {
-			return $this->buildResponse($request, $response, $connector->getDevices());
+			$findDevicesQuery = new Queries\FindDevices();
+			$findDevicesQuery->forConnector($connector);
+
+			return $this->buildResponse($request, $response, $this->devicesRepository->findAllBy($findDevicesQuery));
 		} elseif ($relationEntity === Schemas\Connectors\Connector::RELATIONSHIPS_PROPERTIES) {
-			return $this->buildResponse($request, $response, $connector->getProperties());
+			$findConnectorPropertiesQuery = new Queries\FindConnectorProperties();
+			$findConnectorPropertiesQuery->forConnector($connector);
+
+			return $this->buildResponse(
+				$request,
+				$response,
+				$this->propertiesRepository->findAllBy($findConnectorPropertiesQuery),
+			);
 		} elseif ($relationEntity === Schemas\Connectors\Connector::RELATIONSHIPS_CONTROLS) {
-			return $this->buildResponse($request, $response, $connector->getControls());
+			$findConnectorControlsQuery = new Queries\FindConnectorControls();
+			$findConnectorControlsQuery->forConnector($connector);
+
+			return $this->buildResponse(
+				$request,
+				$response,
+				$this->controlsRepository->findAllBy($findConnectorControlsQuery),
+			);
 		}
 
 		return parent::readRelationship($request, $response);

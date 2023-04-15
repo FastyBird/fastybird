@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:WebServerPlugin!
  * @subpackage     Exceptions
- * @since          0.1.1
+ * @since          1.0.0
  *
  * @date           24.07.21
  */

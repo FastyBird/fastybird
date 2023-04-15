@@ -23,6 +23,7 @@ use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\DateTimeFactory;
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -228,7 +229,6 @@ final class LocalApi implements Evenement\EventEmitterInterface
 									[
 										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 										'type' => 'local-api',
-										'group' => 'api',
 										'device' => [
 											'identifier' => $this->identifier,
 										],
@@ -261,7 +261,6 @@ final class LocalApi implements Evenement\EventEmitterInterface
 									[
 										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 										'type' => 'local-api',
-										'group' => 'api',
 										'device' => [
 											'identifier' => $this->identifier,
 										],
@@ -275,7 +274,6 @@ final class LocalApi implements Evenement\EventEmitterInterface
 									[
 										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 										'type' => 'local-api',
-										'group' => 'api',
 										'device' => [
 											'identifier' => $this->identifier,
 										],
@@ -296,11 +294,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 							[
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 								'type' => 'local-api',
-								'group' => 'api',
-								'exception' => [
-									'message' => $ex->getMessage(),
-									'code' => $ex->getCode(),
-								],
+								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'device' => [
 									'identifier' => $this->identifier,
 								],
@@ -316,7 +310,6 @@ final class LocalApi implements Evenement\EventEmitterInterface
 							[
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 								'type' => 'local-api',
-								'group' => 'api',
 								'device' => [
 									'identifier' => $this->identifier,
 								],
@@ -345,7 +338,6 @@ final class LocalApi implements Evenement\EventEmitterInterface
 									[
 										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 										'type' => 'local-api',
-										'group' => 'api',
 										'device' => [
 											'identifier' => $this->identifier,
 										],
@@ -394,11 +386,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'local-api',
-					'group' => 'api',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'device' => [
 						'identifier' => $this->identifier,
 					],
@@ -617,11 +605,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'local-api',
-						'group' => 'api',
-						'exception' => [
-							'message' => $ex->getMessage(),
-							'code' => $ex->getCode(),
-						],
+						'exception' => BootstrapHelpers\Logger::buildException($ex),
 						'device' => [
 							'identifier' => $this->identifier,
 						],
@@ -651,7 +635,6 @@ final class LocalApi implements Evenement\EventEmitterInterface
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 				'type' => 'local-api',
-				'group' => 'api',
 				'device' => [
 					'identifier' => $this->identifier,
 				],
@@ -714,7 +697,6 @@ final class LocalApi implements Evenement\EventEmitterInterface
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 				'type' => 'local-api',
-				'group' => 'api',
 				'device' => [
 					'identifier' => $this->identifier,
 				],
@@ -914,11 +896,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'local-api',
-					'group' => 'api',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'device' => [
 						'identifier' => $this->identifier,
 					],
@@ -934,7 +912,6 @@ final class LocalApi implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'local-api',
-					'group' => 'api',
 					'device' => [
 						'identifier' => $this->identifier,
 					],
@@ -954,7 +931,6 @@ final class LocalApi implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'local-api',
-					'group' => 'api',
 					'device' => [
 						'identifier' => $this->identifier,
 					],
@@ -973,7 +949,6 @@ final class LocalApi implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'local-api',
-					'group' => 'api',
 					'device' => [
 						'identifier' => $this->identifier,
 					],
@@ -995,7 +970,6 @@ final class LocalApi implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'local-api',
-					'group' => 'api',
 					'device' => [
 						'identifier' => $this->identifier,
 					],
@@ -1026,11 +1000,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'local-api',
-					'group' => 'api',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'device' => [
 						'identifier' => $this->identifier,
 					],
@@ -1054,7 +1024,6 @@ final class LocalApi implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'local-api',
-					'group' => 'api',
 					'device' => [
 						'identifier' => $this->identifier,
 					],
@@ -1074,7 +1043,6 @@ final class LocalApi implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'local-api',
-					'group' => 'api',
 					'device' => [
 						'identifier' => $this->identifier,
 					],
@@ -1104,7 +1072,6 @@ final class LocalApi implements Evenement\EventEmitterInterface
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'local-api',
-						'group' => 'api',
 						'device' => [
 							'identifier' => $this->identifier,
 						],
@@ -1134,7 +1101,6 @@ final class LocalApi implements Evenement\EventEmitterInterface
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'local-api',
-						'group' => 'api',
 						'device' => [
 							'identifier' => $this->identifier,
 						],
@@ -1159,7 +1125,6 @@ final class LocalApi implements Evenement\EventEmitterInterface
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 							'type' => 'local-api',
-							'group' => 'api',
 							'device' => [
 								'identifier' => $this->identifier,
 							],
@@ -1214,7 +1179,6 @@ final class LocalApi implements Evenement\EventEmitterInterface
 							[
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 								'type' => 'local-api',
-								'group' => 'api',
 								'device' => [
 									'identifier' => $this->identifier,
 								],
@@ -1245,7 +1209,6 @@ final class LocalApi implements Evenement\EventEmitterInterface
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 							'type' => 'local-api',
-							'group' => 'api',
 							'device' => [
 								'identifier' => $this->identifier,
 							],
@@ -1275,7 +1238,6 @@ final class LocalApi implements Evenement\EventEmitterInterface
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'local-api',
-						'group' => 'api',
 						'device' => [
 							'identifier' => $this->identifier,
 							'payload' => $payload,
@@ -1298,7 +1260,6 @@ final class LocalApi implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'local-api',
-					'group' => 'api',
 					'device' => [
 						'identifier' => $this->identifier,
 					],
@@ -1318,7 +1279,6 @@ final class LocalApi implements Evenement\EventEmitterInterface
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 				'type' => 'local-api',
-				'group' => 'api',
 				'device' => [
 					'identifier' => $this->identifier,
 				],
@@ -1354,11 +1314,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'local-api',
-						'group' => 'api',
-						'exception' => [
-							'message' => $ex->getMessage(),
-							'code' => $ex->getCode(),
-						],
+						'exception' => BootstrapHelpers\Logger::buildException($ex),
 						'device' => [
 							'identifier' => $this->identifier,
 						],
@@ -1404,11 +1360,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'local-api',
-						'group' => 'api',
-						'exception' => [
-							'message' => $ex->getMessage(),
-							'code' => $ex->getCode(),
-						],
+						'exception' => BootstrapHelpers\Logger::buildException($ex),
 						'device' => [
 							'identifier' => $this->identifier,
 						],
@@ -1641,11 +1593,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'local-api',
-					'group' => 'api',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'device' => [
 						'identifier' => $deviceId,
 					],

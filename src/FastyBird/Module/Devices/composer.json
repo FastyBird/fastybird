@@ -50,6 +50,7 @@
     "ipub/doctrine-dynamic-discriminator-map": "^1.4",
     "ipub/doctrine-timestampable": "^1.5",
     "ipub/slim-router": "^0.2",
+    "mathsolver/mathsolver": "@dev",
     "nettrine/orm": "^0.8",
     "psr/event-dispatcher": "^1.0",
     "react/event-loop": "^1.3",
@@ -66,7 +67,7 @@
     "pds/skeleton": "^1.0",
     "php-parallel-lint/php-parallel-lint": "^1.3",
     "phpstan/extension-installer": "^1.1",
-    "phpstan/phpstan": "^1.9",
+    "phpstan/phpstan": "1.10.11",
     "phpstan/phpstan-deprecation-rules": "^1.0",
     "phpstan/phpstan-doctrine": "^1.3",
     "phpstan/phpstan-nette": "^1.1",
@@ -120,6 +121,12 @@
       }
     }
   },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/mathsolver/mathsolver.git"
+    }
+  ],
   "minimum-stability": "dev",
   "prefer-stable": true
 }

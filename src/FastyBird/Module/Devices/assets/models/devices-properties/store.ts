@@ -6,12 +6,18 @@ import { v4 as uuid } from 'uuid';
 import get from 'lodash/get';
 
 import exchangeEntitySchema from '@fastybird/metadata-library/resources/schemas/modules/devices-module/entity.device.property.json';
-import { DevicePropertyEntity as ExchangeEntity, DevicesModuleRoutes as RoutingKeys, ModulePrefix, PropertyType } from '@fastybird/metadata-library';
+import {
+	DevicePropertyEntity as ExchangeEntity,
+	DevicesModuleRoutes as RoutingKeys,
+	ModulePrefix,
+	PropertyCategory,
+	PropertyType,
+} from '@fastybird/metadata-library';
 
 import { ApiError } from '@/errors';
 import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '@/jsonapi';
 import { useDevices } from '@/models';
-import { IDevice, IPlainRelation } from '@/models/types';
+import { IDevice, IDevicePropertiesSetStateActionPayload, IPlainRelation } from '@/models/types';
 
 import {
 	IDevicePropertiesState,
@@ -63,6 +69,7 @@ const recordFactory = async (data: IDevicePropertyRecordFactoryPayload): Promise
 
 		draft: get(data, 'draft', false),
 
+		category: data.category,
 		identifier: data.identifier,
 		name: get(data, 'name', null),
 		settable: get(data, 'settable', false),
@@ -71,7 +78,8 @@ const recordFactory = async (data: IDevicePropertyRecordFactoryPayload): Promise
 		unit: get(data, 'unit', null),
 		format: get(data, 'format', null),
 		invalid: get(data, 'invalid', null),
-		numberOfDecimals: get(data, 'numberOfDecimals', null),
+		scale: get(data, 'scale', null),
+		step: get(data, 'scale', null),
 
 		value: get(data, 'value', null),
 		actualValue: get(data, 'actualValue', null),
@@ -79,7 +87,7 @@ const recordFactory = async (data: IDevicePropertyRecordFactoryPayload): Promise
 		pending: get(data, 'pending', false),
 		command: get(data, 'command', null),
 		lastResult: get(data, 'lastResult', null),
-		backup: get(data, 'backup', null),
+		backupValue: get(data, 'backup', null),
 
 		// Relations
 		relationshipNames: ['device', 'parent', 'children'],
@@ -299,6 +307,7 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 					...{
 						id: payload?.id,
 						type: payload?.type,
+						category: PropertyCategory.GENERIC,
 						draft: payload?.draft,
 						deviceId: payload.device.id,
 					},
@@ -348,7 +357,7 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 
 						return this.data[createdPropertyModel.id];
 					} catch (e: any) {
-						// Entity could not be created on api, we have to remove it from database
+						// Transformer could not be created on api, we have to remove it from database
 						delete this.data[newProperty.id];
 
 						throw new ApiError('devices-module.device-properties.create.failed', e, 'Create new property failed.');
@@ -449,6 +458,36 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 						this.semaphore.updating = this.semaphore.updating.filter((item) => item !== payload.id);
 					}
 				}
+			},
+
+			/**
+			 * Save property state record
+			 *
+			 * @param {IDevicePropertiesSetStateActionPayload} payload
+			 */
+			async setState(payload: IDevicePropertiesSetStateActionPayload): Promise<IDeviceProperty> {
+				if (this.semaphore.updating.includes(payload.id)) {
+					throw new Error('devices-module.device-properties.update.inProgress');
+				}
+
+				if (!Object.keys(this.data).includes(payload.id)) {
+					throw new Error('devices-module.device-properties.update.failed');
+				}
+
+				this.semaphore.updating.push(payload.id);
+
+				// Get record stored in database
+				const existingRecord = this.data[payload.id];
+				// Update with new values
+				this.data[payload.id] = {
+					...existingRecord,
+					...payload.data,
+					...{ parent: payload.parent ? { id: payload.parent.id, type: payload.parent.type } : existingRecord.parent },
+				} as IDeviceProperty;
+
+				this.semaphore.updating = this.semaphore.updating.filter((item) => item !== payload.id);
+
+				return this.data[payload.id];
 			},
 
 			/**
@@ -595,6 +634,7 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 						this.data[body.id] = await recordFactory({
 							...this.data[body.id],
 							...{
+								category: body.category,
 								name: body.name,
 								settable: body.settable,
 								queryable: body.queryable,
@@ -602,7 +642,8 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 								unit: body.unit,
 								format: body.format,
 								invalid: body.invalid,
-								numberOfDecimals: body.number_of_decimals,
+								scale: body.scale,
+								step: body.step,
 								actualValue: body.actual_value,
 								expectedValue: body.expected_value,
 								value: body.value,

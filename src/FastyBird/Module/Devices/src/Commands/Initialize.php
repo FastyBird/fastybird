@@ -15,6 +15,7 @@
 
 namespace FastyBird\Module\Devices\Commands;
 
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Psr\Log;
 use Symfony\Component\Console;
@@ -103,10 +104,7 @@ class Initialize extends Console\Command\Command
 			$this->logger->error('An unhandled error occurred', [
 				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
 				'type' => 'command',
-				'exception' => [
-					'message' => $ex->getMessage(),
-					'code' => $ex->getCode(),
-				],
+				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
 
 			if ($input->getOption('quiet') === false) {

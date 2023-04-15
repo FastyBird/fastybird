@@ -27,6 +27,7 @@ use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\States;
+use FastyBird\Module\Devices\Utilities;
 use IPub\Phone\Exceptions as PhoneExceptions;
 use Nette;
 use Nette\Utils;
@@ -49,6 +50,9 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	public function __construct(
 		private readonly Models\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
 		private readonly Models\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
+		private readonly Utilities\ConnectorPropertiesStates $connectorPropertiesStates,
+		private readonly Utilities\DevicePropertiesStates $devicePropertiesStates,
+		private readonly Utilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly ExchangeEntities\EntityFactory $entityFactory,
 		private readonly ExchangePublisher\Publisher $publisher,
 	)
@@ -79,13 +83,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	 */
 	public function stateCreated(Events\StateEntityCreated $event): void
 	{
-		$this->publishEntity($event->getProperty(), $event->getState());
-
-		$parent = $this->findParent($event->getProperty());
-
-		if ($parent !== null) {
-			$this->publishEntity($parent, $event->getState());
-		}
+		$this->processEntity($event->getProperty());
 	}
 
 	/**
@@ -103,13 +101,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	 */
 	public function stateUpdated(Events\StateEntityUpdated $event): void
 	{
-		$this->publishEntity($event->getProperty(), $event->getState());
-
-		$parent = $this->findParent($event->getProperty());
-
-		if ($parent !== null) {
-			$this->publishEntity($parent, $event->getState());
-		}
+		$this->processEntity($event->getProperty());
 	}
 
 	/**
@@ -129,10 +121,53 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	{
 		$this->publishEntity($event->getProperty());
 
-		$parent = $this->findParent($event->getProperty());
+		foreach ($this->findChildren($event->getProperty()) as $child) {
+			$this->publishEntity($child);
+		}
+	}
 
-		if ($parent !== null) {
-			$this->publishEntity($parent);
+	/**
+	 * @throws Exception
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\FileNotFound
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws Utils\JsonException
+	 * @throws PhoneExceptions\NoValidCountryException
+	 * @throws PhoneExceptions\NoValidPhoneException
+	 */
+	private function processEntity(
+		MetadataEntities\DevicesModule\DynamicProperty|Entities\Connectors\Properties\Dynamic|Entities\Devices\Properties\Dynamic|Entities\Channels\Properties\Dynamic $property,
+	): void
+	{
+		$state = null;
+
+		if (
+			$property instanceof MetadataEntities\DevicesModule\ConnectorDynamicProperty
+			|| $property instanceof Entities\Connectors\Properties\Dynamic
+		) {
+			$state = $this->connectorPropertiesStates->readValue($property);
+
+		} elseif (
+			$property instanceof MetadataEntities\DevicesModule\DeviceDynamicProperty
+			|| $property instanceof Entities\Devices\Properties\Dynamic
+		) {
+			$state = $this->devicePropertiesStates->readValue($property);
+
+		} elseif (
+			$property instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty
+			|| $property instanceof Entities\Channels\Properties\Dynamic
+		) {
+			$state = $this->channelPropertiesStates->readValue($property);
+		}
+
+		$this->publishEntity($property, $state);
+
+		foreach ($this->findChildren($property) as $child) {
+			$this->publishEntity($child, $state);
 		}
 	}
 
@@ -199,57 +234,44 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	}
 
 	/**
-	 * @throws Exception
+	 * @return array<Entities\Devices\Properties\Property|Entities\Channels\Properties\Property>
+	 *
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
-	private function findParent(
-		MetadataEntities\DevicesModule\DynamicProperty|MetadataEntities\DevicesModule\VariableProperty|MetadataEntities\DevicesModule\MappedProperty|Entities\Property $property,
-	): Entities\Property|null
+	private function findChildren(
+		MetadataEntities\DevicesModule\DynamicProperty|Entities\Connectors\Properties\Dynamic|Entities\Devices\Properties\Dynamic|Entities\Channels\Properties\Dynamic $property,
+	): array
 	{
 		if (
 			$property instanceof MetadataEntities\DevicesModule\ConnectorDynamicProperty
 			|| $property instanceof Entities\Connectors\Properties\Dynamic
 		) {
-			return null;
+			return [];
 		} elseif (
 			$property instanceof MetadataEntities\DevicesModule\DeviceDynamicProperty
-			|| $property instanceof MetadataEntities\DevicesModule\DeviceMappedProperty
+			|| $property instanceof Entities\Devices\Properties\Dynamic
 		) {
-			if ($property->getParent() !== null) {
-				$findPropertyQuery = new Queries\FindDeviceProperties();
-				$findPropertyQuery->byId($property->getParent());
+			$findDevicePropertiesQuery = new Queries\FindDeviceProperties();
+			$findDevicePropertiesQuery->byParentId($property->getId());
 
-				return $this->devicePropertiesRepository->findOneBy($findPropertyQuery);
-			}
+			return $this->devicePropertiesRepository->findAllBy(
+				$findDevicePropertiesQuery,
+				Entities\Devices\Properties\Mapped::class,
+			);
 		} elseif (
 			$property instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty
-			|| $property instanceof MetadataEntities\DevicesModule\ChannelMappedProperty
+			|| $property instanceof Entities\Channels\Properties\Dynamic
 		) {
-			if ($property->getParent() !== null) {
-				$findPropertyQuery = new Queries\FindChannelProperties();
-				$findPropertyQuery->byId($property->getParent());
+			$findDevicePropertiesQuery = new Queries\FindChannelProperties();
+			$findDevicePropertiesQuery->byParentId($property->getId());
 
-				return $this->channelPropertiesRepository->findOneBy($findPropertyQuery);
-			}
-		} elseif (
-			$property instanceof Entities\Devices\Properties\Dynamic
-			|| $property instanceof Entities\Devices\Properties\Mapped
-		) {
-			return $property->getParent();
-		} elseif (
-			$property instanceof Entities\Channels\Properties\Dynamic
-			|| $property instanceof Entities\Channels\Properties\Mapped
-		) {
-			return $property->getParent();
+			return $this->channelPropertiesRepository->findAllBy(
+				$findDevicePropertiesQuery,
+				Entities\Channels\Properties\Mapped::class,
+			);
 		}
 
-		return null;
+		return [];
 	}
 
 }

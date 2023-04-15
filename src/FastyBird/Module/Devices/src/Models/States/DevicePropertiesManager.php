@@ -16,18 +16,15 @@
 namespace FastyBird\Module\Devices\Models\States;
 
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\States;
-use FastyBird\Module\Devices\Utilities;
 use Nette;
 use Nette\Utils;
 use Psr\EventDispatcher as PsrEventDispatcher;
 use function property_exists;
-use function strval;
 
 /**
  * Device property states manager
@@ -44,6 +41,7 @@ final class DevicePropertiesManager
 
 	public function __construct(
 		protected readonly IDevicePropertiesManager|null $manager = null,
+		protected readonly IDevicePropertiesRepository|null $repository = null,
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
@@ -52,8 +50,6 @@ final class DevicePropertiesManager
 	/**
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\NotImplemented
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 *
 	 * @interal
 	 */
@@ -73,25 +69,12 @@ final class DevicePropertiesManager
 		if (
 			property_exists($values, States\Property::ACTUAL_VALUE_KEY)
 			&& property_exists($values, States\Property::EXPECTED_VALUE_KEY)
+			&& $values->offsetGet(States\Property::ACTUAL_VALUE_KEY) === $values->offsetGet(
+				States\Property::EXPECTED_VALUE_KEY,
+			)
 		) {
-			$actualValue = Utilities\ValueHelper::normalizeValue(
-				$property->getDataType(),
-				strval($values->offsetGet(States\Property::ACTUAL_VALUE_KEY)),
-				$property->getFormat(),
-				$property->getInvalid(),
-			);
-
-			$expectedValue = Utilities\ValueHelper::normalizeValue(
-				$property->getDataType(),
-				strval($values->offsetGet(States\Property::EXPECTED_VALUE_KEY)),
-				$property->getFormat(),
-				$property->getInvalid(),
-			);
-
-			if ($expectedValue === $actualValue) {
-				$values->offsetSet(States\Property::EXPECTED_VALUE_KEY, null);
-				$values->offsetSet(States\Property::PENDING_KEY, null);
-			}
+			$values->offsetSet(States\Property::EXPECTED_VALUE_KEY, null);
+			$values->offsetSet(States\Property::PENDING_KEY, null);
 		}
 
 		$createdState = $this->manager->create($property->getId(), $values);
@@ -104,8 +87,6 @@ final class DevicePropertiesManager
 	/**
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\NotImplemented
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 *
 	 * @interal
 	 */
@@ -125,21 +106,7 @@ final class DevicePropertiesManager
 
 		$updatedState = $this->manager->update($state, $values);
 
-		$actualValue = Utilities\ValueHelper::normalizeValue(
-			$property->getDataType(),
-			$updatedState->getActualValue(),
-			$property->getFormat(),
-			$property->getInvalid(),
-		);
-
-		$expectedValue = Utilities\ValueHelper::normalizeValue(
-			$property->getDataType(),
-			$updatedState->getExpectedValue(),
-			$property->getFormat(),
-			$property->getInvalid(),
-		);
-
-		if ($expectedValue === $actualValue) {
+		if ($updatedState->getActualValue() === $updatedState->getExpectedValue()) {
 			$updatedState = $this->manager->update(
 				$updatedState,
 				Utils\ArrayHash::from([
@@ -162,15 +129,20 @@ final class DevicePropertiesManager
 	 */
 	public function delete(
 		MetadataEntities\DevicesModule\DeviceDynamicProperty|Entities\Devices\Properties\Dynamic $property,
-		States\DeviceProperty $state,
 	): bool
 	{
-		if ($this->manager === null) {
+		if ($this->manager === null || $this->repository === null) {
 			throw new Exceptions\NotImplemented('Device properties state manager is not registered');
 		}
 
 		if ($property->getParent() !== null) {
 			throw new Exceptions\InvalidState('Child property can\'t have state');
+		}
+
+		$state = $this->repository->findOne($property);
+
+		if ($state === null) {
+			return true;
 		}
 
 		$result = $this->manager->delete($state);

@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:MetadataLibrary!
  * @subpackage     Entities
- * @since          0.57.0
+ * @since          1.0.0
  *
  * @date           04.06.22
  */
@@ -16,6 +16,7 @@
 namespace FastyBird\Library\Metadata\Entities\DevicesModule;
 
 use FastyBird\Library\Metadata\Entities;
+use FastyBird\Library\Metadata\Types;
 use Ramsey\Uuid;
 
 /**
@@ -33,11 +34,14 @@ final class Channel implements Entities\Entity, Entities\Owner
 
 	private Uuid\UuidInterface $id;
 
+	private Types\ChannelCategory $category;
+
 	private Uuid\UuidInterface $device;
 
 	public function __construct(
 		string $id,
 		private readonly string $type,
+		string $category,
 		private readonly string $identifier,
 		string $device,
 		private readonly string|null $name = null,
@@ -46,6 +50,7 @@ final class Channel implements Entities\Entity, Entities\Owner
 	)
 	{
 		$this->id = Uuid\Uuid::fromString($id);
+		$this->category = Types\ChannelCategory::get($category);
 		$this->device = Uuid\Uuid::fromString($device);
 		$this->owner = $owner !== null ? Uuid\Uuid::fromString($owner) : null;
 	}
@@ -58,6 +63,11 @@ final class Channel implements Entities\Entity, Entities\Owner
 	public function getType(): string
 	{
 		return $this->type;
+	}
+
+	public function getCategory(): Types\ChannelCategory
+	{
+		return $this->category;
 	}
 
 	public function getIdentifier(): string
@@ -85,6 +95,7 @@ final class Channel implements Entities\Entity, Entities\Owner
 		return [
 			'id' => $this->getId()->toString(),
 			'type' => $this->getType(),
+			'category' => $this->getCategory()->getValue(),
 			'identifier' => $this->getIdentifier(),
 			'name' => $this->getName(),
 			'comment' => $this->getComment(),

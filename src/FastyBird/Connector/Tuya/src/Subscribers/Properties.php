@@ -19,10 +19,14 @@ use Doctrine\Common;
 use Doctrine\ORM;
 use Doctrine\Persistence;
 use FastyBird\Connector\Tuya\Entities;
+use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
+use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
+use IPub\DoctrineCrud;
 use Nette;
 use Nette\Utils;
 
@@ -40,6 +44,7 @@ final class Properties implements Common\EventSubscriber
 	use Nette\SmartObject;
 
 	public function __construct(
+		private readonly DevicesModels\Devices\Properties\PropertiesRepository $propertiesRepository,
 		private readonly DevicesModels\Devices\Properties\PropertiesManager $propertiesManager,
 	)
 	{
@@ -54,6 +59,9 @@ final class Properties implements Common\EventSubscriber
 
 	/**
 	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
+	 *
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws DoctrineCrud\Exceptions\InvalidArgumentException
 	 */
 	public function postPersist(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
@@ -65,16 +73,21 @@ final class Properties implements Common\EventSubscriber
 			return;
 		}
 
-		$stateProperty = $entity->getProperty(Types\DevicePropertyIdentifier::IDENTIFIER_STATE);
+		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+		$findDevicePropertyQuery->forDevice($entity);
+		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IDENTIFIER_STATE);
+
+		$stateProperty = $this->propertiesRepository->findOneBy($findDevicePropertyQuery);
 
 		if ($stateProperty !== null) {
-			$entity->removeProperty($stateProperty);
+			$this->propertiesManager->delete($stateProperty);
 		}
 
 		$this->propertiesManager->create(Utils\ArrayHash::from([
 			'device' => $entity,
 			'entity' => DevicesEntities\Devices\Properties\Dynamic::class,
 			'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_STATE,
+			'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_STATE),
 			'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
 			'unit' => null,
 			'format' => [

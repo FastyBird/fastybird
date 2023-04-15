@@ -224,7 +224,7 @@ final class EntityFactory
 			return $this->triggerConditionEntityFactory->create($data);
 		}
 
-		throw new Exceptions\InvalidState('Entity could not be created');
+		throw new Exceptions\InvalidState('Transformer could not be created');
 	}
 
 }

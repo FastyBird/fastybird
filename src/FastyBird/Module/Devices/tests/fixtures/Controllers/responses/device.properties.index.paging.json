@@ -19,6 +19,7 @@
       "type": "com.fastybird.devices-module/property/device/variable",
       "id": "06599b74-0236-4a98-99c8-c459a3cdb6a4",
       "attributes": {
+        "category": "generic",
         "identifier": "hardware_model",
         "name": null,
         "settable": false,
@@ -27,7 +28,8 @@
         "unit": null,
         "format": null,
         "invalid": null,
-        "number_of_decimals": null,
+        "scale": null,
+        "step": null,
         "value": "sonoff_basic",
         "default": null
       },

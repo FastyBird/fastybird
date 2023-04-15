@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:WsExchangePlugin!
  * @subpackage     Exceptions
- * @since          0.1.0
+ * @since          1.0.0
  *
  * @date           15.01.22
  */

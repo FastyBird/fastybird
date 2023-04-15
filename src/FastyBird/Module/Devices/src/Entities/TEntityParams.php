@@ -28,7 +28,7 @@ use function is_string;
 use function trim;
 
 /**
- * Entity params field trait
+ * Transformer params field trait
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Devices

@@ -89,37 +89,34 @@ final class State implements ExchangeConsumers\Consumer
 		if (in_array($routingKey->getValue(), self::PROPERTIES_ACTIONS_ROUTING_KEYS, true)) {
 			if ($entity instanceof MetadataEntities\Actions\ActionConnectorProperty) {
 				if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_SET)) {
-					$findPropertyQuery = new Queries\FindConnectorProperties();
-					$findPropertyQuery->byId($entity->getProperty());
+					$findConnectorPropertyQuery = new Queries\FindConnectorProperties();
+					$findConnectorPropertyQuery->byId($entity->getProperty());
 
-					$property = $this->connectorPropertiesRepository->findOneBy($findPropertyQuery);
+					$property = $this->connectorPropertiesRepository->findOneBy($findConnectorPropertyQuery);
 
 					if (!$property instanceof Entities\Connectors\Properties\Dynamic) {
 						return;
 					}
 
-					$this->connectorPropertiesStates->setValue(
+					$this->connectorPropertiesStates->writeValue(
 						$property,
 						Utils\ArrayHash::from([
-							States\Property::EXPECTED_VALUE_KEY => $this->normalizeValue(
-								$property,
-								$entity->getExpectedValue(),
-							),
+							States\Property::EXPECTED_VALUE_KEY => $entity->getExpectedValue(),
 							States\Property::PENDING_KEY => true,
 						]),
 					);
 				} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
-					$findPropertyQuery = new Queries\FindConnectorProperties();
-					$findPropertyQuery->byId($entity->getProperty());
+					$findConnectorPropertyQuery = new Queries\FindConnectorProperties();
+					$findConnectorPropertyQuery->byId($entity->getProperty());
 
-					$property = $this->connectorPropertiesRepository->findOneBy($findPropertyQuery);
+					$property = $this->connectorPropertiesRepository->findOneBy($findConnectorPropertyQuery);
 
 					if ($property === null) {
 						return;
 					}
 
 					$state = $property instanceof Entities\Connectors\Properties\Dynamic
-						? $this->connectorPropertiesStates->getValue($property)
+						? $this->connectorPropertiesStates->readValue($property)
 						: null;
 
 					$publishRoutingKey = MetadataTypes\RoutingKey::get(
@@ -142,10 +139,10 @@ final class State implements ExchangeConsumers\Consumer
 				}
 			} elseif ($entity instanceof MetadataEntities\Actions\ActionDeviceProperty) {
 				if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_SET)) {
-					$findPropertyQuery = new Queries\FindDeviceProperties();
-					$findPropertyQuery->byId($entity->getProperty());
+					$findConnectorPropertyQuery = new Queries\FindDeviceProperties();
+					$findConnectorPropertyQuery->byId($entity->getProperty());
 
-					$property = $this->devicePropertiesRepository->findOneBy($findPropertyQuery);
+					$property = $this->devicePropertiesRepository->findOneBy($findConnectorPropertyQuery);
 
 					if (
 						!$property instanceof Entities\Devices\Properties\Dynamic
@@ -154,21 +151,18 @@ final class State implements ExchangeConsumers\Consumer
 						return;
 					}
 
-					$this->devicePropertiesStates->setValue(
+					$this->devicePropertiesStates->writeValue(
 						$property,
 						Utils\ArrayHash::from([
-							States\Property::EXPECTED_VALUE_KEY => $this->normalizeValue(
-								$property,
-								$entity->getExpectedValue(),
-							),
+							States\Property::EXPECTED_VALUE_KEY => $entity->getExpectedValue(),
 							States\Property::PENDING_KEY => true,
 						]),
 					);
 				} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
-					$findPropertyQuery = new Queries\FindDeviceProperties();
-					$findPropertyQuery->byId($entity->getProperty());
+					$findConnectorPropertyQuery = new Queries\FindDeviceProperties();
+					$findConnectorPropertyQuery->byId($entity->getProperty());
 
-					$property = $this->devicePropertiesRepository->findOneBy($findPropertyQuery);
+					$property = $this->devicePropertiesRepository->findOneBy($findConnectorPropertyQuery);
 
 					if ($property === null) {
 						return;
@@ -176,7 +170,7 @@ final class State implements ExchangeConsumers\Consumer
 
 					$state = $property instanceof Entities\Devices\Properties\Dynamic
 						|| $property instanceof Entities\Devices\Properties\Mapped
-					 ? $this->devicePropertiesStates->getValue($property) : null;
+					 ? $this->devicePropertiesStates->readValue($property) : null;
 
 					$publishRoutingKey = MetadataTypes\RoutingKey::get(
 						MetadataTypes\RoutingKey::ROUTE_DEVICE_PROPERTY_ENTITY_REPORTED,
@@ -198,10 +192,10 @@ final class State implements ExchangeConsumers\Consumer
 				}
 			} elseif ($entity instanceof MetadataEntities\Actions\ActionChannelProperty) {
 				if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_SET)) {
-					$findPropertyQuery = new Queries\FindChannelProperties();
-					$findPropertyQuery->byId($entity->getProperty());
+					$findConnectorPropertyQuery = new Queries\FindChannelProperties();
+					$findConnectorPropertyQuery->byId($entity->getProperty());
 
-					$property = $this->channelPropertiesRepository->findOneBy($findPropertyQuery);
+					$property = $this->channelPropertiesRepository->findOneBy($findConnectorPropertyQuery);
 
 					if (
 						!$property instanceof Entities\Channels\Properties\Dynamic
@@ -210,21 +204,18 @@ final class State implements ExchangeConsumers\Consumer
 						return;
 					}
 
-					$this->channelPropertiesStates->setValue(
+					$this->channelPropertiesStates->writeValue(
 						$property,
 						Utils\ArrayHash::from([
-							States\Property::EXPECTED_VALUE_KEY => $this->normalizeValue(
-								$property,
-								$entity->getExpectedValue(),
-							),
+							States\Property::EXPECTED_VALUE_KEY => $entity->getExpectedValue(),
 							States\Property::PENDING_KEY => true,
 						]),
 					);
 				} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
-					$findPropertyQuery = new Queries\FindChannelProperties();
-					$findPropertyQuery->byId($entity->getProperty());
+					$findConnectorPropertyQuery = new Queries\FindChannelProperties();
+					$findConnectorPropertyQuery->byId($entity->getProperty());
 
-					$property = $this->channelPropertiesRepository->findOneBy($findPropertyQuery);
+					$property = $this->channelPropertiesRepository->findOneBy($findConnectorPropertyQuery);
 
 					if ($property === null) {
 						return;
@@ -232,7 +223,7 @@ final class State implements ExchangeConsumers\Consumer
 
 					$state = $property instanceof Entities\Channels\Properties\Dynamic
 						|| $property instanceof Entities\Channels\Properties\Mapped
-					 ? $this->channelPropertiesStates->getValue($property) : null;
+					 ? $this->channelPropertiesStates->readValue($property) : null;
 
 					$publishRoutingKey = MetadataTypes\RoutingKey::get(
 						MetadataTypes\RoutingKey::ROUTE_CHANNEL_PROPERTY_ENTITY_REPORTED,
@@ -254,58 +245,6 @@ final class State implements ExchangeConsumers\Consumer
 				}
 			}
 		}
-	}
-
-	/**
-	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 */
-	private function normalizeValue(
-		Entities\Property $property,
-		float|bool|int|string|null $expectedValue,
-	): float|bool|int|string|null
-	{
-		$valueToWrite = Utilities\ValueHelper::normalizeValue(
-			$property->getDataType(),
-			$expectedValue,
-			$property->getFormat(),
-			$property->getInvalid(),
-		);
-
-		if (
-			$valueToWrite instanceof MetadataTypes\SwitchPayload
-			&& $property->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_SWITCH)
-			&& $valueToWrite->equalsValue(MetadataTypes\SwitchPayload::PAYLOAD_TOGGLE)
-			&& (
-				$property instanceof Entities\Devices\Properties\Dynamic
-				|| $property instanceof Entities\Devices\Properties\Mapped
-				|| $property instanceof Entities\Channels\Properties\Dynamic
-				|| $property instanceof Entities\Channels\Properties\Mapped
-				|| $property instanceof Entities\Connectors\Properties\Dynamic
-			)
-		) {
-			if ($property instanceof Entities\Connectors\Properties\Dynamic) {
-				$state = $this->connectorPropertiesStates->getValue($property);
-			} elseif (
-				$property instanceof Entities\Devices\Properties\Dynamic
-				|| $property instanceof Entities\Devices\Properties\Mapped
-			) {
-				$state = $this->devicePropertiesStates->getValue($property);
-			} else {
-				$state = $this->channelPropertiesStates->getValue($property);
-			}
-
-			if ($state !== null) {
-				$valueToWrite = $state->getActualValue() === MetadataTypes\SwitchPayload::PAYLOAD_ON
-					? MetadataTypes\SwitchPayload::get(MetadataTypes\SwitchPayload::PAYLOAD_OFF)
-					: MetadataTypes\SwitchPayload::get(
-						MetadataTypes\SwitchPayload::PAYLOAD_ON,
-					);
-			}
-		}
-
-		return Utilities\ValueHelper::flattenValue($valueToWrite);
 	}
 
 }

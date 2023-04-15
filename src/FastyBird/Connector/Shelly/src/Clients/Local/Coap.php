@@ -23,6 +23,7 @@ use FastyBird\Connector\Shelly\Clients;
 use FastyBird\Connector\Shelly\Consumers;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -77,9 +78,10 @@ final class Coap implements Clients\Client
 
 	public function __construct(
 		private readonly Entities\ShellyConnector $connector,
-		private readonly API\Transformer $transformer,
 		private readonly Consumers\Messages $consumer,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
+		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		private readonly MetadataSchemas\Validator $schemaValidator,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		Log\LoggerInterface|null $logger = null,
@@ -108,11 +110,7 @@ final class Coap implements Clients\Client
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'coap-client',
-					'group' => 'client',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'connector' => [
 						'id' => $this->connector->getPlainId(),
 					],
@@ -132,7 +130,6 @@ final class Coap implements Clients\Client
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'coap-client',
-					'group' => 'client',
 					'connector' => [
 						'id' => $this->connector->getPlainId(),
 					],
@@ -254,7 +251,6 @@ final class Coap implements Clients\Client
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'coap-client',
-					'group' => 'client',
 					'connector' => [
 						'id' => $this->connector->getPlainId(),
 					],
@@ -274,11 +270,7 @@ final class Coap implements Clients\Client
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 							'type' => 'coap-client',
-							'group' => 'client',
-							'exception' => [
-								'message' => $ex->getMessage(),
-								'code' => $ex->getCode(),
-							],
+							'exception' => BootstrapHelpers\Logger::buildException($ex),
 							'connector' => [
 								'id' => $this->connector->getPlainId(),
 							],
@@ -356,7 +348,7 @@ final class Coap implements Clients\Client
 				if ($property !== null) {
 					$statuses[] = new Entities\Messages\PropertyStatus(
 						$property->getIdentifier(),
-						$this->transformer->transformValueFromDevice(
+						API\Transformer::transformValueFromDevice(
 							$property->getDataType(),
 							$property->getFormat(),
 							strval($sensorValue),
@@ -365,6 +357,14 @@ final class Coap implements Clients\Client
 				}
 			}
 		}
+
+		$this->consumer->append(
+			new Entities\Messages\DeviceState(
+				$this->connector->getId(),
+				$deviceIdentifier,
+				MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_CONNECTED),
+			),
+		);
 
 		$this->consumer->append(
 			new Entities\Messages\DeviceStatus(
@@ -394,7 +394,12 @@ final class Coap implements Clients\Client
 			return null;
 		}
 
-		foreach ($device->getChannels() as $channel) {
+		$findChannelsQuery = new DevicesQueries\FindChannels();
+		$findChannelsQuery->forDevice($device);
+
+		$channels = $this->channelsRepository->findAllBy($findChannelsQuery);
+
+		foreach ($channels as $channel) {
 			foreach ($channel->getProperties() as $property) {
 				if (
 					$property instanceof DevicesEntities\Channels\Properties\Dynamic
@@ -405,7 +410,10 @@ final class Coap implements Clients\Client
 			}
 		}
 
-		foreach ($device->getProperties() as $property) {
+		$findDevicePropertiesQuery = new DevicesQueries\FindDeviceProperties();
+		$findDevicePropertiesQuery->forDevice($device);
+
+		foreach ($this->devicePropertiesRepository->findAllBy($findDevicePropertiesQuery) as $property) {
 			if (
 				$property instanceof DevicesEntities\Devices\Properties\Dynamic
 				&& Utils\Strings::startsWith($property->getIdentifier(), strval($sensorIdentifier))

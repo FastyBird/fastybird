@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:DevicesModuleAutomator!
  * @subpackage     Hydrators
- * @since          0.6.0
+ * @since          1.0.0
  *
  * @date           08.01.22
  */

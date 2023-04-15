@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:WebServerPlugin!
  * @subpackage     Utils
- * @since          0.1.2
+ * @since          1.0.0
  *
  * @date           28.09.21
  */

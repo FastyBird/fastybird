@@ -27,6 +27,7 @@ use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use IPub\SlimRouter\Routing;
 use Neomerx\JsonApi;
 use function count;
+use function strval;
 
 /**
  * Device entity schema
@@ -77,6 +78,7 @@ abstract class Device extends JsonApiSchemas\JsonApi
 	): iterable
 	{
 		return [
+			'category' => strval($resource->getCategory()->getValue()),
 			'identifier' => $resource->getIdentifier(),
 			'name' => $resource->getName(),
 			'comment' => $resource->getComment(),

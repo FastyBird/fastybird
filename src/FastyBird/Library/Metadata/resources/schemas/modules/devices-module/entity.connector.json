@@ -8,7 +8,12 @@
     },
     "type" : {
       "type" : "string",
-      "description" : "Connector type identifier"
+      "description" : "Connector type"
+    },
+    "category" : {
+      "type" : "string",
+      "enum": ["generic"],
+      "description" : "Connector category"
     },
     "identifier" : {
       "type" : "string",
@@ -55,6 +60,7 @@
   "required" : [
     "id",
     "type",
+    "category",
     "identifier",
     "name",
     "comment",

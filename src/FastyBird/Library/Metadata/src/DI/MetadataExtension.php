@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:MetadataLibrary!
  * @subpackage     DI
- * @since          0.1.0
+ * @since          1.0.0
  *
  * @date           24.06.20
  */
@@ -59,7 +59,7 @@ class MetadataExtension extends DI\CompilerExtension
 		$builder->addDefinition('loaders.schema', new DI\Definitions\ServiceDefinition())
 			->setType(Loaders\SchemaLoader::class);
 
-		// Entity factories
+		// Transformer factories
 		$builder->addDefinition('entity.factory.actions.connector.action', new DI\Definitions\ServiceDefinition())
 			->setType(Entities\Actions\ActionConnectorControlEntityFactory::class);
 

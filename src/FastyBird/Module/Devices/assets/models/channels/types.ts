@@ -1,6 +1,8 @@
 import { TJsonaModel, TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships } from 'jsona/lib/JsonaTypes';
 import { _GettersTree } from 'pinia';
 
+import { ChannelCategory } from '@fastybird/metadata-library';
+
 import {
 	IChannelControlResponseData,
 	IChannelControlResponseModel,
@@ -62,6 +64,7 @@ export interface IChannel {
 
 	draft: boolean;
 
+	category: ChannelCategory;
 	identifier: string;
 	name: string | null;
 	comment: string | null;
@@ -74,7 +77,7 @@ export interface IChannel {
 
 	device: IPlainRelation;
 
-	// Entity transformers
+	// Transformer transformers
 	hasComment: boolean;
 }
 
@@ -85,6 +88,7 @@ export interface IChannelRecordFactoryPayload {
 	id?: string;
 	type: { source: string; entity?: string };
 
+	category: ChannelCategory;
 	identifier: string;
 	name?: string | null;
 	comment?: string | null;
@@ -179,6 +183,7 @@ export interface IChannelResponseData extends TJsonApiData {
 }
 
 interface IChannelResponseDataAttributes {
+	category: ChannelCategory;
 	identifier: string;
 	name: string | null;
 	comment: string | null;
@@ -197,6 +202,7 @@ export interface IChannelResponseModel extends TJsonaModel {
 	id: string;
 	type: { source: string; entity: string };
 
+	category: ChannelCategory;
 	identifier: string;
 	name: string | null;
 	comment: string | null;

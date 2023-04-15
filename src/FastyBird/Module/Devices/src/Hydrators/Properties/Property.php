@@ -15,16 +15,21 @@
 
 namespace FastyBird\Module\Devices\Hydrators\Properties;
 
+use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
 use FastyBird\JsonApi\Hydrators as JsonApiHydrators;
+use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities;
+use Fig\Http\Message\StatusCodeInterface;
 use IPub\JsonAPIDocument;
+use Nette\Utils;
 use function array_map;
 use function boolval;
-use function count;
 use function implode;
+use function in_array;
 use function is_array;
 use function is_scalar;
+use function preg_match;
 use function strval;
 
 /**
@@ -43,17 +48,18 @@ abstract class Property extends JsonApiHydrators\Hydrator
 	/** @var array<int|string, string> */
 	protected array $attributes
 		= [
-			0 => 'identifier',
-			1 => 'name',
-			2 => 'settable',
-			3 => 'queryable',
-			4 => 'unit',
-			5 => 'format',
-			6 => 'invalid',
-			7 => 'value',
+			0 => 'category',
+			1 => 'identifier',
+			2 => 'name',
+			3 => 'settable',
+			4 => 'queryable',
+			5 => 'unit',
+			6 => 'format',
+			7 => 'invalid',
+			8 => 'value',
 
 			'data_type' => 'dataType',
-			'number_of_decimals' => 'numberOfDecimals',
+			'scale' => 'scale',
 		];
 
 	protected function hydrateNameAttribute(JsonAPIDocument\Objects\IStandardObject $attributes): string|null
@@ -105,6 +111,9 @@ abstract class Property extends JsonApiHydrators\Hydrator
 		return (string) $attributes->get('unit');
 	}
 
+	/**
+	 * @throws JsonApiExceptions\JsonApiError
+	 */
 	protected function hydrateFormatAttribute(JsonAPIDocument\Objects\IStandardObject $attributes): string|null
 	{
 		$rawFormat = $attributes->get('format');
@@ -121,18 +130,80 @@ abstract class Property extends JsonApiHydrators\Hydrator
 					$dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_ENUM)
 					|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)
 					|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SWITCH)
+					|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_COVER)
 				) {
-					return implode(
-						',',
-						array_map(
-							static fn ($item): string => is_array($item) ? implode(':', $item) : strval($item),
-							$rawFormat,
-						),
-					);
-				}
+					$plainFormat = implode(',', array_map(static function ($item): string {
+						if (is_array($item) || $item instanceof Utils\ArrayHash) {
+							return implode(
+								':',
+								array_map(
+									static fn (string|array|int|float|bool|Utils\ArrayHash|null $part): string => is_array(
+										$part,
+									) || $part instanceof Utils\ArrayHash
+										? implode('|', (array) $part)
+										: ($part !== null ? strval(
+											$part,
+										) : ''),
+									(array) $item,
+								),
+							);
+						}
 
-				if (count($rawFormat) === 2) {
-					return implode(':', $rawFormat);
+						return strval($item);
+					}, $rawFormat));
+
+					if (
+						preg_match(Metadata\Constants::VALUE_FORMAT_STRING_ENUM, $plainFormat) === 1
+						|| preg_match(Metadata\Constants::VALUE_FORMAT_COMBINED_ENUM, $plainFormat) === 1
+					) {
+						return $plainFormat;
+					}
+
+					throw new JsonApiExceptions\JsonApiError(
+						StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
+						$this->translator->translate('//devices-module.base.messages.invalidAttribute.heading'),
+						$this->translator->translate('//devices-module.base.messages.invalidAttribute.message'),
+						[
+							'pointer' => '/data/attributes/format',
+						],
+					);
+				} elseif (
+					in_array($dataType->getValue(), [
+						MetadataTypes\DataType::DATA_TYPE_CHAR,
+						MetadataTypes\DataType::DATA_TYPE_UCHAR,
+						MetadataTypes\DataType::DATA_TYPE_SHORT,
+						MetadataTypes\DataType::DATA_TYPE_USHORT,
+						MetadataTypes\DataType::DATA_TYPE_INT,
+						MetadataTypes\DataType::DATA_TYPE_UINT,
+						MetadataTypes\DataType::DATA_TYPE_FLOAT,
+					], true)
+				) {
+					$plainFormat = implode(':', array_map(static function ($item): string {
+						if (is_array($item) || $item instanceof Utils\ArrayHash) {
+							return implode(
+								'|',
+								array_map(
+									static fn ($part): string|int|float => is_array($part) ? strval($part) : $part,
+									(array) $item,
+								),
+							);
+						}
+
+						return strval($item);
+					}, $rawFormat));
+
+					if (preg_match(Metadata\Constants::VALUE_FORMAT_NUMBER_RANGE, $plainFormat) === 1) {
+						return $plainFormat;
+					}
+
+					throw new JsonApiExceptions\JsonApiError(
+						StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
+						$this->translator->translate('//devices-module.base.messages.invalidAttribute.heading'),
+						$this->translator->translate('//devices-module.base.messages.invalidAttribute.message'),
+						[
+							'pointer' => '/data/attributes/format',
+						],
+					);
 				}
 			}
 
@@ -156,16 +227,16 @@ abstract class Property extends JsonApiHydrators\Hydrator
 		return (string) $attributes->get('invalid');
 	}
 
-	protected function hydrateNumberOfDecimalsAttribute(JsonAPIDocument\Objects\IStandardObject $attributes): int|null
+	protected function hydrateScaleAttribute(JsonAPIDocument\Objects\IStandardObject $attributes): int|null
 	{
 		if (
-			!is_scalar($attributes->get('number_of_decimals'))
-			|| (string) $attributes->get('number_of_decimals') === ''
+			!is_scalar($attributes->get('scale'))
+			|| (string) $attributes->get('scale') === ''
 		) {
 			return null;
 		}
 
-		return (int) $attributes->get('number_of_decimals');
+		return (int) $attributes->get('scale');
 	}
 
 	protected function hydrateValueAttribute(JsonAPIDocument\Objects\IStandardObject $attributes): string|null

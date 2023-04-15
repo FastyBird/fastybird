@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:AccountsModule!
  * @subpackage     Middleware
- * @since          0.1.0
+ * @since          1.0.0
  *
  * @date           01.04.20
  */

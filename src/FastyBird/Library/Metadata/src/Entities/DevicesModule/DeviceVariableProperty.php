@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:MetadataLibrary!
  * @subpackage     Entities
- * @since          0.57.0
+ * @since          1.0.0
  *
  * @date           02.06.22
  */
@@ -41,6 +41,7 @@ final class DeviceVariableProperty extends VariableProperty
 		string $id,
 		string $device,
 		string $type,
+		string $category,
 		string $identifier,
 		string|null $name,
 		bool $settable,
@@ -49,7 +50,8 @@ final class DeviceVariableProperty extends VariableProperty
 		string|null $unit = null,
 		array|null $format = null,
 		string|int|float|null $invalid = null,
-		int|null $numberOfDecimals = null,
+		int|null $scale = null,
+		int|null $step = null,
 		float|bool|int|string|null $value = null,
 		float|bool|int|string|null $default = null,
 		string|null $parent = null,
@@ -60,6 +62,7 @@ final class DeviceVariableProperty extends VariableProperty
 		parent::__construct(
 			$id,
 			$type,
+			$category,
 			$identifier,
 			$name,
 			$settable,
@@ -68,7 +71,8 @@ final class DeviceVariableProperty extends VariableProperty
 			$unit,
 			$format,
 			$invalid,
-			$numberOfDecimals,
+			$scale,
+			$step,
 			$value,
 			$default,
 			$owner,

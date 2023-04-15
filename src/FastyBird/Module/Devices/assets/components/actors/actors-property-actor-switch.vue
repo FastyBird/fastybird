@@ -4,7 +4,7 @@
 		class="fb-devices-module-actors-property-actor-switch__container"
 	>
 		<fb-ui-switch-element
-			v-if="command === null"
+			v-if="property.command === null"
 			:status="value"
 			:disabled="!isDeviceReady || !wsStatus"
 			:variant="FbUiVariantTypes.PRIMARY"
@@ -13,23 +13,23 @@
 		/>
 
 		<div
-			v-show="command === true || command === false"
+			v-show="property.command === PropertyCommandState.COMPLETED"
 			class="fb-devices-module-actors-property-actor-switch__result"
 		>
 			<font-awesome-icon
-				v-show="command === false"
+				v-show="property.lastResult === PropertyCommandResult.ERR"
 				icon="ban"
 				class="fb-devices-module-actors-property-actor-switch__result-err"
 			/>
 			<font-awesome-icon
-				v-show="command === true"
+				v-show="property.lastResult === PropertyCommandResult.OK"
 				icon="check"
 				class="fb-devices-module-actors-property-actor-switch__result-ok"
 			/>
 		</div>
 
 		<div
-			v-show="command !== null && command !== true && command !== false"
+			v-show="property.command === PropertyCommandState.SENDING"
 			class="fb-devices-module-actors-property-actor-switch__loading"
 		>
 			<fb-ui-spinner
@@ -41,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import get from 'lodash/get';
 
@@ -51,7 +51,9 @@ import { ActionRoutes, DataType, PropertyAction, SwitchPayload } from '@fastybir
 import { useWsExchangeClient } from '@fastybird/ws-exchange-plugin';
 
 import { useDeviceState, useEntityTitle, useFlashMessage, useNormalizeValue } from '@/composables';
+import { useChannelProperties, useDeviceProperties } from '@/models';
 import { IPropertyActorProps } from '@/components/actors/actors-property-actor-switch.types';
+import { PropertyCommandResult, PropertyCommandState } from '@/models/properties/types';
 
 const props = defineProps<IPropertyActorProps>();
 
@@ -62,11 +64,12 @@ const emit = defineEmits<{
 const { t } = useI18n();
 const flashMessage = useFlashMessage();
 
+const devicePropertiesStore = useDeviceProperties();
+const channelPropertiesStore = useChannelProperties();
+
 const wampV1Client = useWsExchangeClient();
 
 const { isReady: isDeviceReady } = props.device ? useDeviceState(props.device) : { isReady: computed<boolean>((): boolean => false) };
-
-const command = ref<boolean | string | null>(null);
 
 const value = computed<boolean>((): boolean => {
 	if (props.property.dataType === DataType.BOOLEAN) {
@@ -84,18 +87,30 @@ const { status: wsStatus } = useWsExchangeClient();
 
 let timer: number;
 
-const resetCommand = (): void => {
-	command.value = null;
+const resetCommand = async (): Promise<void> => {
+	if (props.channel !== undefined) {
+		await channelPropertiesStore.setState({
+			id: props.property.id,
+			data: {
+				command: null,
+				lastResult: null,
+			},
+		});
+	} else {
+		await devicePropertiesStore.setState({
+			id: props.property.id,
+			data: {
+				command: null,
+				lastResult: null,
+			},
+		});
+	}
 
 	window.clearTimeout(timer);
 };
 
 const onToggleState = async (): Promise<void> => {
-	if (props.property === null) {
-		return;
-	}
-
-	if (command.value !== null) {
+	if (props.property.command !== null) {
 		return;
 	}
 
@@ -109,52 +124,114 @@ const onToggleState = async (): Promise<void> => {
 		return;
 	}
 
-	let actualValue = false;
+	let expectedValue: boolean | string | null = null;
 
 	if (props.property.dataType === DataType.BOOLEAN) {
-		actualValue = props.property.pending ? !!props.property.expectedValue : !!props.property.actualValue;
+		expectedValue = !value.value;
 	} else if (props.property.dataType === DataType.SWITCH) {
-		actualValue = props.property.pending ? props.property.expectedValue === SwitchPayload.ON : props.property.actualValue === SwitchPayload.ON;
+		expectedValue = value.value ? SwitchPayload.OFF : SwitchPayload.ON;
 	}
 
-	let newValue: boolean | string | null = null;
+	emit('value', useNormalizeValue(props.property.dataType, `${expectedValue}`, props.property.format, props.property.scale));
 
-	if (props.property.dataType === DataType.BOOLEAN) {
-		newValue = !actualValue;
-	} else if (props.property.dataType === DataType.SWITCH) {
-		newValue = actualValue ? SwitchPayload.OFF : SwitchPayload.ON;
+	if (props.channel !== undefined) {
+		await channelPropertiesStore.setState({
+			id: props.property.id,
+			data: {
+				expectedValue,
+				command: PropertyCommandState.SENDING,
+				backupValue: props.property.expectedValue,
+			},
+		});
+	} else {
+		await devicePropertiesStore.setState({
+			id: props.property.id,
+			data: {
+				expectedValue,
+				command: PropertyCommandState.SENDING,
+				backupValue: props.property.expectedValue,
+			},
+		});
 	}
-
-	command.value = 'working';
-
-	const backupValue = props.property.actualValue;
-
-	emit('value', useNormalizeValue(props.property.dataType, `${newValue}`, props.property.format));
 
 	try {
 		const result = await wampV1Client.call('/io/exchange', {
-			routing_key: ActionRoutes.CHANNEL_PROPERTY,
+			routing_key: props.channel !== undefined ? ActionRoutes.CHANNEL_PROPERTY : ActionRoutes.DEVICE_PROPERTY,
 			source: props.property.type.source,
 			data: {
 				action: PropertyAction.SET,
 				device: props.device?.id,
 				channel: props.channel?.id,
 				property: props.property.id,
-				expected_value: props.property.actualValue,
+				expected_value: props.property.expectedValue,
 			},
 		});
 
 		if (get(result.data, 'response') !== 'accepted') {
-			emit('value', backupValue);
-		}
+			emit('value', props.property.backupValue);
 
-		command.value = true;
+			if (props.channel !== undefined) {
+				await channelPropertiesStore.setState({
+					id: props.property.id,
+					data: {
+						expectedValue: props.property.backupValue,
+						command: PropertyCommandState.COMPLETED,
+						lastResult: PropertyCommandResult.ERR,
+					},
+				});
+			} else {
+				await devicePropertiesStore.setState({
+					id: props.property.id,
+					data: {
+						expectedValue: props.property.backupValue,
+						command: PropertyCommandState.COMPLETED,
+						lastResult: PropertyCommandResult.ERR,
+					},
+				});
+			}
+		} else {
+			if (props.channel !== undefined) {
+				await channelPropertiesStore.setState({
+					id: props.property.id,
+					data: {
+						command: PropertyCommandState.COMPLETED,
+						lastResult: PropertyCommandResult.OK,
+					},
+				});
+			} else {
+				await devicePropertiesStore.setState({
+					id: props.property.id,
+					data: {
+						command: PropertyCommandState.COMPLETED,
+						lastResult: PropertyCommandResult.OK,
+					},
+				});
+			}
+		}
 
 		timer = window.setTimeout(resetCommand, 500);
 	} catch (e) {
-		emit('value', backupValue);
+		emit('value', props.property.backupValue);
 
-		command.value = false;
+		if (props.channel !== undefined) {
+			await channelPropertiesStore.setState({
+				id: props.property.id,
+				data: {
+					expectedValue: props.property.backupValue,
+					command: PropertyCommandState.COMPLETED,
+					lastResult: PropertyCommandResult.ERR,
+				},
+			});
+		} else {
+			await devicePropertiesStore.setState({
+				id: props.property.id,
+				data: {
+					expectedValue: props.property.backupValue,
+					command: PropertyCommandState.COMPLETED,
+					lastResult: PropertyCommandResult.ERR,
+				},
+			});
+		}
 
 		flashMessage.error(
 			t('messages.commandNotAccepted', {

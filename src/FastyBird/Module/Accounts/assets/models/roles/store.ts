@@ -184,7 +184,7 @@ export const useRoles = defineStore('accounts_module_roles', {
 
 					return this.data[createdRoleModel.id];
 				} catch (e: any) {
-					// Entity could not be created on api, we have to remove it from database
+					// Transformer could not be created on api, we have to remove it from database
 					delete this.data[newRole.id];
 
 					throw new ApiError('accounts-module.roles.create.failed', e, 'Create new role failed.');

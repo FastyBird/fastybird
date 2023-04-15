@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:AccountsModule!
  * @subpackage     Entities
- * @since          0.1.0
+ * @since          1.0.0
  *
  * @date           30.03.20
  */
@@ -86,6 +86,11 @@ class Details implements Entities\Entity,
 
 		$this->setFirstName($firstName);
 		$this->setLastName($lastName);
+	}
+
+	public function getAccount(): Entities\Accounts\Account
+	{
+		return $this->account;
 	}
 
 	public function getFirstName(): string

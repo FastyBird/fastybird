@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:TriggersModule!
  * @subpackage     Entities
- * @since          0.1.0
+ * @since          1.0.0
  *
  * @date           25.05.20
  */
@@ -19,7 +19,7 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Ramsey\Uuid;
 
 /**
- * Entity base trait
+ * Transformer base trait
  *
  * @package        FastyBird:TriggersModule!
  * @subpackage     Entities

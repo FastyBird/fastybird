@@ -22,6 +22,7 @@ use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\DateTimeFactory;
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -35,6 +36,7 @@ use React\EventLoop;
 use React\Promise;
 use React\Socket;
 use Throwable;
+use function array_keys;
 use function base64_decode;
 use function is_bool;
 use function is_numeric;
@@ -90,7 +92,6 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 		private readonly string $accessSecret,
 		private readonly Types\OpenPulsarTopic $topic,
 		private readonly Types\OpenPulsarEndpoint $endpoint,
-		private readonly EntityFactory $entityFactory,
 		private readonly MetadataSchemas\Validator $schemaValidator,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
@@ -153,7 +154,6 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'openpulsar-api',
-						'group' => 'api',
 						'connector' => [
 							'identifier' => $this->identifier,
 						],
@@ -170,11 +170,7 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 							'type' => 'openpulsar-api',
-							'group' => 'api',
-							'exception' => [
-								'message' => $ex->getMessage(),
-								'code' => $ex->getCode(),
-							],
+							'exception' => BootstrapHelpers\Logger::buildException($ex),
 							'connector' => [
 								'identifier' => $this->identifier,
 							],
@@ -192,7 +188,6 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 							'type' => 'openpulsar-api',
-							'group' => 'api',
 							'connection' => [
 								'code' => $code,
 								'reason' => $reason,
@@ -229,11 +224,7 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'openpulsar-api',
-						'group' => 'api',
-						'exception' => [
-							'message' => $ex->getMessage(),
-							'code' => $ex->getCode(),
-						],
+						'exception' => BootstrapHelpers\Logger::buildException($ex),
 						'connector' => [
 							'identifier' => $this->identifier,
 						],
@@ -260,11 +251,7 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'ws-api',
-					'group' => 'api',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'device' => [
 						'identifier' => $this->identifier,
 					],
@@ -347,11 +334,7 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'openpulsar-api',
-					'group' => 'api',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'data' => [
 						'message' => $message,
 					],
@@ -378,11 +361,7 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'openpulsar-api',
-						'group' => 'api',
-						'exception' => [
-							'message' => $ex->getMessage(),
-							'code' => $ex->getCode(),
-						],
+						'exception' => BootstrapHelpers\Logger::buildException($ex),
 						'data' => [
 							'message' => $message,
 						],
@@ -400,7 +379,6 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'openpulsar-api',
-					'group' => 'api',
 					'connector' => [
 						'identifier' => $this->identifier,
 					],
@@ -418,7 +396,6 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'openpulsar-api',
-					'group' => 'api',
 					'connector' => [
 						'identifier' => $this->identifier,
 					],
@@ -433,7 +410,6 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 				'type' => 'openpulsar-api',
-				'group' => 'api',
 				'data' => [
 					'payload' => $payload,
 				],
@@ -455,11 +431,7 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'openpulsar-api',
-					'group' => 'api',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'data' => [
 						'payload' => $payload,
 					],
@@ -478,7 +450,6 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'openpulsar-api',
-					'group' => 'api',
 					'connector' => [
 						'identifier' => $this->identifier,
 					],
@@ -496,7 +467,6 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'openpulsar-api',
-					'group' => 'api',
 					'connector' => [
 						'identifier' => $this->identifier,
 					],
@@ -521,7 +491,6 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'openpulsar-api',
-					'group' => 'api',
 					'connector' => [
 						'identifier' => $this->identifier,
 					],
@@ -536,7 +505,6 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 				'type' => 'openpulsar-api',
-				'group' => 'api',
 				'data' => $decryptedData,
 				'connector' => [
 					'identifier' => $this->identifier,
@@ -556,11 +524,7 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'openpulsar-api',
-					'group' => 'api',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'data' => [
 						'data' => $decryptedData,
 					],
@@ -590,10 +554,18 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 				}
 
 				if (is_string($status->value) || is_bool($status->value) || is_numeric($status->value)) {
-					$dataPointsStatuses[] = $this->entityFactory->build(
+					$dataPointsStatus = EntityFactory::build(
 						Entities\API\DataPointStatus::class,
 						$status,
 					);
+
+					foreach (array_keys((array) $status) as $key) {
+						if (is_numeric($key)) {
+							$dataPointsStatus->setDps(strval($key));
+						}
+					}
+
+					$dataPointsStatuses[] = $dataPointsStatus;
 				}
 			}
 

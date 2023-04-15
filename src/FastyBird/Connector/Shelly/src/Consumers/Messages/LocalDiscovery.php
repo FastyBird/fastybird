@@ -18,6 +18,7 @@ namespace FastyBird\Connector\Shelly\Consumers\Messages;
 use Doctrine\DBAL;
 use FastyBird\Connector\Shelly\Consumers\Consumer;
 use FastyBird\Connector\Shelly\Entities;
+use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -52,9 +53,11 @@ final class LocalDiscovery implements Consumer
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Devices\DevicesManager $devicesManager,
+		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		private readonly DevicesModels\Devices\Properties\PropertiesRepository $propertiesRepository,
 		private readonly DevicesModels\Devices\Properties\PropertiesManager $propertiesManager,
 		private readonly DevicesModels\Channels\ChannelsManager $channelsManager,
+		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
 		private readonly DevicesModels\Channels\Properties\PropertiesManager $channelsPropertiesManager,
 		private readonly DevicesUtilities\Database $databaseHelper,
 		Log\LoggerInterface|null $logger = null,
@@ -78,7 +81,7 @@ final class LocalDiscovery implements Consumer
 
 		$findDeviceQuery = new DevicesQueries\FindDevices();
 		$findDeviceQuery->byConnectorId($entity->getConnector());
-		$findDeviceQuery->byIdentifier($entity->getIdentifier());
+		$findDeviceQuery->startWithIdentifier($entity->getIdentifier());
 
 		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\ShellyDevice::class);
 
@@ -94,7 +97,6 @@ final class LocalDiscovery implements Consumer
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'local-discovery-message-consumer',
-						'group' => 'consumer',
 						'connector' => [
 							'id' => $entity->getConnector()->toString(),
 						],
@@ -122,7 +124,6 @@ final class LocalDiscovery implements Consumer
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'local-discovery-message-consumer',
-					'group' => 'consumer',
 					'device' => [
 						'id' => $device->getPlainId(),
 					],
@@ -133,41 +134,60 @@ final class LocalDiscovery implements Consumer
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getIpAddress(),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 			Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS,
+			Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getDomain(),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 			Types\DevicePropertyIdentifier::IDENTIFIER_DOMAIN,
+			Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_DOMAIN),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			strval($entity->getGeneration()->getValue()),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
 			Types\DevicePropertyIdentifier::IDENTIFIER_GENERATION,
+			Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_GENERATION),
+			[Types\DeviceGeneration::GENERATION_1, Types\DeviceGeneration::GENERATION_2],
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->isAuthEnabled(),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN),
 			Types\DevicePropertyIdentifier::IDENTIFIER_AUTH_ENABLED,
+			Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_AUTH_ENABLED),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getModel(),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 			Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL,
+			Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getMacAddress(),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 			Types\DevicePropertyIdentifier::IDENTIFIER_MAC_ADDRESS,
+			Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_MAC_ADDRESS),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getFirmwareVersion(),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 			Types\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_VERSION,
+			Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_VERSION),
 		);
 
 		foreach ($entity->getChannels() as $channelDescription) {
-			$channel = $device->findChannel($channelDescription->getIdentifier());
+			$findChannelQuery = new DevicesQueries\FindChannels();
+			$findChannelQuery->forDevice($device);
+			$findChannelQuery->byIdentifier($channelDescription->getIdentifier());
+
+			$channel = $this->channelsRepository->findOneBy($findChannelQuery);
 
 			$channel = $channel === null ? $this->databaseHelper->transaction(
 				fn (): DevicesEntities\Channels\Channel => $this->channelsManager->create(Utils\ArrayHash::from([
@@ -187,7 +207,11 @@ final class LocalDiscovery implements Consumer
 			);
 
 			foreach ($channelDescription->getProperties() as $propertyDescription) {
-				$channelProperty = $channel->findProperty($propertyDescription->getIdentifier());
+				$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+				$findChannelPropertyQuery->forChannel($channel);
+				$findChannelPropertyQuery->byIdentifier($propertyDescription->getIdentifier());
+
+				$channelProperty = $this->channelPropertiesRepository->findOneBy($findChannelPropertyQuery);
 
 				if ($channelProperty === null) {
 					$channelProperty = $this->databaseHelper->transaction(
@@ -196,6 +220,7 @@ final class LocalDiscovery implements Consumer
 								'channel' => $channel,
 								'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 								'identifier' => $propertyDescription->getIdentifier(),
+								'name' => $propertyDescription->getName(),
 								'unit' => $propertyDescription->getUnit(),
 								'dataType' => $propertyDescription->getDataType(),
 								'format' => $propertyDescription->getFormat(),
@@ -211,7 +236,6 @@ final class LocalDiscovery implements Consumer
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 							'type' => 'local-discovery-message-consumer',
-							'group' => 'consumer',
 							'device' => [
 								'id' => $device->getPlainId(),
 							],
@@ -244,7 +268,6 @@ final class LocalDiscovery implements Consumer
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 							'type' => 'local-discovery-message-consumer',
-							'group' => 'consumer',
 							'device' => [
 								'id' => $device->getPlainId(),
 							],
@@ -265,7 +288,6 @@ final class LocalDiscovery implements Consumer
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 				'type' => 'local-discovery-message-consumer',
-				'group' => 'consumer',
 				'device' => [
 					'id' => $device->getPlainId(),
 				],

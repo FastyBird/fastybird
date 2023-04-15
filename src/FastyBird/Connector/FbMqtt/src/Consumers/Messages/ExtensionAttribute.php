@@ -46,6 +46,7 @@ final class ExtensionAttribute implements Consumers\Consumer
 
 	public function __construct(
 		private readonly DevicesModels\Devices\DevicesRepository $deviceRepository,
+		private readonly DevicesModels\Devices\Properties\PropertiesRepository $propertiesRepository,
 		private readonly DevicesModels\Devices\Properties\PropertiesManager $propertiesManager,
 		private readonly DevicesUtilities\Database $databaseHelper,
 		Log\LoggerInterface|null $logger = null,
@@ -137,7 +138,11 @@ final class ExtensionAttribute implements Consumers\Consumer
 			return true;
 		}
 
-		$property = $device->findProperty($propertyIdentifier);
+		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+		$findDevicePropertyQuery->forDevice($device);
+		$findDevicePropertyQuery->byIdentifier($propertyIdentifier);
+
+		$property = $this->propertiesRepository->findOneBy($findDevicePropertyQuery);
 
 		if ($property === null) {
 			$this->logger->error(

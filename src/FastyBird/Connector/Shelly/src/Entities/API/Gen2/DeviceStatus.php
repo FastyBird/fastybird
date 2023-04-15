@@ -61,12 +61,34 @@ final class DeviceStatus implements Entities\API\Entity
 		return $this->switches;
 	}
 
+	public function findSwitch(int $id): DeviceSwitchStatus|null
+	{
+		foreach ($this->switches as $switch) {
+			if ($switch->getId() === $id) {
+				return $switch;
+			}
+		}
+
+		return null;
+	}
+
 	/**
 	 * @return array<DeviceCoverStatus>
 	 */
 	public function getCovers(): array
 	{
 		return $this->covers;
+	}
+
+	public function findCover(int $id): DeviceCoverStatus|null
+	{
+		foreach ($this->covers as $cover) {
+			if ($cover->getId() === $id) {
+				return $cover;
+			}
+		}
+
+		return null;
 	}
 
 	/**
@@ -77,12 +99,34 @@ final class DeviceStatus implements Entities\API\Entity
 		return $this->inputs;
 	}
 
+	public function findInput(int $id): DeviceInputStatus|null
+	{
+		foreach ($this->inputs as $input) {
+			if ($input->getId() === $id) {
+				return $input;
+			}
+		}
+
+		return null;
+	}
+
 	/**
 	 * @return array<DeviceLightStatus>
 	 */
 	public function getLights(): array
 	{
 		return $this->lights;
+	}
+
+	public function findLight(int $id): DeviceLightStatus|null
+	{
+		foreach ($this->lights as $light) {
+			if ($light->getId() === $id) {
+				return $light;
+			}
+		}
+
+		return null;
 	}
 
 	/**
@@ -93,12 +137,34 @@ final class DeviceStatus implements Entities\API\Entity
 		return $this->temperature;
 	}
 
+	public function findTemperature(int $id): DeviceTemperatureStatus|null
+	{
+		foreach ($this->temperature as $temperature) {
+			if ($temperature->getId() === $id) {
+				return $temperature;
+			}
+		}
+
+		return null;
+	}
+
 	/**
 	 * @return array<DeviceHumidityStatus>
 	 */
 	public function getHumidity(): array
 	{
 		return $this->humidity;
+	}
+
+	public function findHumidity(int $id): DeviceHumidityStatus|null
+	{
+		foreach ($this->humidity as $humidity) {
+			if ($humidity->getId() === $id) {
+				return $humidity;
+			}
+		}
+
+		return null;
 	}
 
 	public function getEthernet(): EthernetStatus|null

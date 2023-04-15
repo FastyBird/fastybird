@@ -80,6 +80,13 @@ class FindChannelProperties extends DoctrineOrmQuery\QueryObject
 		};
 	}
 
+	public function byParentId(Uuid\UuidInterface $parentId): void
+	{
+		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($parentId): void {
+			$qb->andWhere('p.parent = :parent')->setParameter('parent', $parentId, Uuid\Doctrine\UuidBinaryType::NAME);
+		};
+	}
+
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 */

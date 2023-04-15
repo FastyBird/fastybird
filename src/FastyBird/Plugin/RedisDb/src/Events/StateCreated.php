@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:RedisDbPlugin!
  * @subpackage     Events
- * @since          0.61.0
+ * @since          1.0.0
  *
  * @date           13.10.22
  */

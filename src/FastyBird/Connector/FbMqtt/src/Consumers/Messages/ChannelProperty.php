@@ -51,7 +51,9 @@ final class ChannelProperty implements Consumers\Consumer
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
-		private readonly DevicesModels\Devices\DevicesRepository $deviceRepository,
+		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
+		private readonly DevicesModels\Channels\Properties\PropertiesRepository $propertiesRepository,
 		private readonly DevicesModels\Channels\Properties\PropertiesManager $propertiesManager,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly DevicesUtilities\Database $databaseHelper,
@@ -83,7 +85,7 @@ final class ChannelProperty implements Consumers\Consumer
 		$findDeviceQuery->byConnectorId($entity->getConnector());
 		$findDeviceQuery->byIdentifier($entity->getDevice());
 
-		$device = $this->deviceRepository->findOneBy($findDeviceQuery, Entities\FbMqttDevice::class);
+		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\FbMqttDevice::class);
 
 		if ($device === null) {
 			$this->logger->error(
@@ -100,7 +102,11 @@ final class ChannelProperty implements Consumers\Consumer
 			return true;
 		}
 
-		$channel = $device->findChannel($entity->getChannel());
+		$findChannelQuery = new DevicesQueries\FindChannels();
+		$findChannelQuery->forDevice($device);
+		$findChannelQuery->byIdentifier($entity->getChannel());
+
+		$channel = $this->channelsRepository->findOneBy($findChannelQuery);
 
 		if ($channel === null) {
 			$this->logger->error(
@@ -120,7 +126,11 @@ final class ChannelProperty implements Consumers\Consumer
 			return true;
 		}
 
-		$property = $channel->findProperty($entity->getProperty());
+		$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+		$findChannelPropertyQuery->forChannel($channel);
+		$findChannelPropertyQuery->byIdentifier($entity->getProperty());
+
+		$property = $this->propertiesRepository->findOneBy($findChannelPropertyQuery);
 
 		if ($property === null) {
 			$this->logger->error(
@@ -154,19 +164,10 @@ final class ChannelProperty implements Consumers\Consumer
 					),
 				);
 			} elseif ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
-				$actualValue = DevicesUtilities\ValueHelper::flattenValue(
-					DevicesUtilities\ValueHelper::normalizeValue(
-						$property->getDataType(),
-						$entity->getValue(),
-						$property->getFormat(),
-						$property->getInvalid(),
-					),
-				);
-
 				$this->channelPropertiesStates->setValue(
 					$property,
 					Utils\ArrayHash::from([
-						DevicesStates\Property::ACTUAL_VALUE_KEY => $actualValue,
+						DevicesStates\Property::ACTUAL_VALUE_KEY => $entity->getValue(),
 						DevicesStates\Property::VALID_KEY => true,
 					]),
 				);

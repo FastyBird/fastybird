@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:MetadataLibrary!
  * @subpackage     Entities
- * @since          0.57.0
+ * @since          1.0.0
  *
  * @date           02.06.22
  */
@@ -38,7 +38,7 @@ final class SmsNotification extends Notification
 	public function getPhone(): PhoneEntities\Phone
 	{
 		if ($this->phone === null) {
-			throw new Exceptions\InvalidState('Entity was not properly created');
+			throw new Exceptions\InvalidState('Transformer was not properly created');
 		}
 
 		return $this->phone;

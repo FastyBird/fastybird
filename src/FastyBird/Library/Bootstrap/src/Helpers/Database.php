@@ -1,14 +1,14 @@
 <?php declare(strict_types = 1);
 
 /**
- * RequestHandler.php
+ * Database.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:Bootstrap!
- * @subpackage     Events
- * @since          0.1.0
+ * @subpackage     Helpers
+ * @since          1.0.0
  *
  * @date           15.04.20
  */
@@ -19,7 +19,10 @@ use Doctrine\DBAL;
 use Doctrine\ORM;
 use Doctrine\Persistence;
 use FastyBird\Library\Bootstrap\Exceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette;
+use Psr\Log;
+use Throwable;
 use function gc_collect_cycles;
 
 /**
@@ -35,10 +38,14 @@ class Database
 
 	use Nette\SmartObject;
 
+	private Log\LoggerInterface $logger;
+
 	public function __construct(
 		private readonly Persistence\ManagerRegistry|null $managerRegistry = null,
+		Log\LoggerInterface|null $logger = null,
 	)
 	{
+		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	/**
@@ -64,20 +71,6 @@ class Database
 	}
 
 	/**
-	 * @throws Exceptions\InvalidState
-	 */
-	private function getConnection(): DBAL\Connection|null
-	{
-		$em = $this->getEntityManager();
-
-		if ($em instanceof ORM\EntityManagerInterface) {
-			return $em->getConnection();
-		}
-
-		return null;
-	}
-
-	/**
 	 * @throws DBAL\Exception
 	 * @throws Exceptions\InvalidState
 	 */
@@ -100,23 +93,73 @@ class Database
 	 */
 	public function clear(): void
 	{
+		if ($this->managerRegistry === null) {
+			throw new Exceptions\InvalidState('Doctrine Manager registry service is missing');
+		}
+
+		foreach ($this->managerRegistry->getManagers() as $name => $manager) {
+			if (!$manager instanceof ORM\EntityManagerInterface) {
+				continue;
+			}
+
+			// Flushing and then clearing Doctrine's entity manager allows
+			// for more memory to be released by PHP
+			try {
+				$manager->flush();
+			} catch (Throwable $ex) {
+				// Log caught exception
+				$this->logger->error('An unhandled error occurred during flushing entity manager', [
+					'source' => MetadataTypes\ModuleSource::SOURCE_NOT_SPECIFIED,
+					'type' => 'helper',
+					'exception' => Logger::buildException($ex),
+				]);
+			}
+
+			try {
+				$manager->getConnection()->close();
+			} catch (Throwable $ex) {
+				// Log caught exception
+				$this->logger->error('An unhandled error occurred during closing entity manager', [
+					'source' => MetadataTypes\ModuleSource::SOURCE_NOT_SPECIFIED,
+					'type' => 'helper',
+					'exception' => Logger::buildException($ex),
+				]);
+			}
+
+			try {
+				$manager->clear();
+			} catch (Throwable $ex) {
+				// Log caught exception
+				$this->logger->error('An unhandled error occurred during clearing entity manager', [
+					'source' => MetadataTypes\ModuleSource::SOURCE_NOT_SPECIFIED,
+					'type' => 'helper',
+					'exception' => Logger::buildException($ex),
+				]);
+			}
+
+			if (!$manager->isOpen()) {
+				$this->managerRegistry->resetManager($name);
+			}
+		}
+
+		// Just in case PHP would choose not to run garbage collection,
+		// we run it manually at the end of each batch so that memory is
+		// regularly released
+		gc_collect_cycles();
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
+	private function getConnection(): DBAL\Connection|null
+	{
 		$em = $this->getEntityManager();
 
 		if ($em instanceof ORM\EntityManagerInterface) {
-			// Flushing and then clearing Doctrine's entity manager allows
-			// for more memory to be released by PHP
-			$em->flush();
-			$em->clear();
-
-			// Just in case PHP would choose not to run garbage collection,
-			// we run it manually at the end of each batch so that memory is
-			// regularly released
-			gc_collect_cycles();
-
-			return;
+			return $em->getConnection();
 		}
 
-		throw new Exceptions\InvalidState('Invalid entity manager');
+		return null;
 	}
 
 	/**

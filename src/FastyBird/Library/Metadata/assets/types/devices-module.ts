@@ -106,9 +106,26 @@ export enum ConnectorPropertyIdentifier {
 	ADDRESS = 'address',
 }
 
+export enum ConnectorCategory {
+	GENERIC = 'generic',
+}
+
+export enum DeviceCategory {
+	GENERIC = 'generic',
+}
+
+export enum ChannelCategory {
+	GENERIC = 'generic',
+}
+
+export enum PropertyCategory {
+	GENERIC = 'generic',
+}
+
 export interface ConnectorEntity {
 	id: string;
 	type: string;
+	category: ConnectorCategory;
 	identifier: string;
 	name: string;
 	comment: string | null;
@@ -119,6 +136,7 @@ export interface ConnectorEntity {
 export interface ConnectorPropertyEntity {
 	id: string;
 	type: PropertyType;
+	category: PropertyCategory;
 	identifier: string;
 	name: string | null;
 	settable: boolean;
@@ -127,11 +145,11 @@ export interface ConnectorPropertyEntity {
 	unit: string | null;
 	format: string[] | (string | null)[][] | (number | null)[] | null;
 	invalid: string | number | null;
-	number_of_decimals: number | null;
+	scale: number | null;
+	step: number | null;
 	value?: string | number | boolean | null;
 	actual_value?: string | number | boolean | ButtonPayload | SwitchPayload | null;
 	expected_value?: string | number | boolean | ButtonPayload | SwitchPayload | null;
-	previous_value?: string | number | boolean | ButtonPayload | SwitchPayload | null;
 	pending?: boolean;
 	connector: string;
 	owner: string | null;
@@ -147,6 +165,7 @@ export interface ConnectorControlEntity {
 export interface DeviceEntity {
 	id: string;
 	type: string;
+	category: DeviceCategory;
 	identifier: string;
 	name: string | null;
 	comment: string | null;
@@ -159,6 +178,7 @@ export interface DeviceEntity {
 export interface DevicePropertyEntity {
 	id: string;
 	type: PropertyType;
+	category: PropertyCategory;
 	identifier: string;
 	name: string | null;
 	settable: boolean;
@@ -167,11 +187,11 @@ export interface DevicePropertyEntity {
 	unit: string | null;
 	format: string[] | (string | null)[][] | (number | null)[] | null;
 	invalid: string | number | null;
-	number_of_decimals: number | null;
+	scale: number | null;
+	step: number | null;
 	value?: string | number | boolean | null;
 	actual_value?: string | number | boolean | ButtonPayload | SwitchPayload | null;
 	expected_value?: string | number | boolean | ButtonPayload | SwitchPayload | null;
-	previous_value?: string | number | boolean | ButtonPayload | SwitchPayload | null;
 	pending?: boolean;
 	device: string;
 	children: string[];
@@ -187,6 +207,8 @@ export interface DeviceControlEntity {
 
 export interface ChannelEntity {
 	id: string;
+	type: string;
+	category: ChannelCategory;
 	identifier: string;
 	name: string | null;
 	comment: string | null;
@@ -197,6 +219,7 @@ export interface ChannelEntity {
 export interface ChannelPropertyEntity {
 	id: string;
 	type: PropertyType;
+	category: PropertyCategory;
 	identifier: string;
 	name: string | null;
 	settable: boolean;
@@ -205,11 +228,11 @@ export interface ChannelPropertyEntity {
 	unit: string | null;
 	format: string[] | (string | null)[][] | (number | null)[] | null;
 	invalid: string | number | null;
-	number_of_decimals: number | null;
+	scale: number | null;
+	step: number | null;
 	value?: string | number | boolean | null;
 	actual_value?: string | number | boolean | ButtonPayload | SwitchPayload | null;
 	expected_value?: string | number | boolean | ButtonPayload | SwitchPayload | null;
-	previous_value?: string | number | boolean | ButtonPayload | SwitchPayload | null;
 	pending?: boolean;
 	channel: string;
 	children: string[];

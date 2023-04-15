@@ -20,7 +20,9 @@ use Doctrine\ORM;
 use Doctrine\Persistence;
 use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Types;
+use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
 use Nette\Utils;
 
@@ -38,6 +40,7 @@ final class Controls implements Common\EventSubscriber
 	use Nette\SmartObject;
 
 	public function __construct(
+		private readonly DevicesModels\Connectors\Controls\ControlsRepository $controlsRepository,
 		private readonly DevicesModels\Connectors\Controls\ControlsManager $controlsManager,
 	)
 	{
@@ -52,6 +55,8 @@ final class Controls implements Common\EventSubscriber
 
 	/**
 	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
+	 *
+	 * @throws DevicesExceptions\InvalidState
 	 */
 	public function postPersist(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
@@ -59,7 +64,11 @@ final class Controls implements Common\EventSubscriber
 
 		// Check for valid entity
 		if ($entity instanceof Entities\TuyaConnector) {
-			$rebootControl = $entity->getProperty(Types\ConnectorControlName::NAME_REBOOT);
+			$findConnectorControlQuery = new DevicesQueries\FindConnectorControls();
+			$findConnectorControlQuery->forConnector($entity);
+			$findConnectorControlQuery->byName(Types\ConnectorControlName::NAME_REBOOT);
+
+			$rebootControl = $this->controlsRepository->findOneBy($findConnectorControlQuery);
 
 			if ($rebootControl === null) {
 				$this->controlsManager->create(Utils\ArrayHash::from([
@@ -68,7 +77,11 @@ final class Controls implements Common\EventSubscriber
 				]));
 			}
 
-			$discoverControl = $entity->getProperty(Types\ConnectorControlName::NAME_DISCOVER);
+			$findConnectorControlQuery = new DevicesQueries\FindConnectorControls();
+			$findConnectorControlQuery->forConnector($entity);
+			$findConnectorControlQuery->byName(Types\ConnectorControlName::NAME_DISCOVER);
+
+			$discoverControl = $this->controlsRepository->findOneBy($findConnectorControlQuery);
 
 			if ($discoverControl === null) {
 				$this->controlsManager->create(Utils\ArrayHash::from([

@@ -24,10 +24,13 @@ use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\Connector\Tuya\Writers;
 use FastyBird\DateTimeFactory;
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Psr\Log;
@@ -80,6 +83,7 @@ final class Local implements Client
 		private readonly Consumers\Messages $consumer,
 		private readonly API\LocalApiFactory $localApiFactory,
 		private readonly Writers\Writer $writer,
+		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
@@ -100,7 +104,10 @@ final class Local implements Client
 	{
 		$this->processedDevices = [];
 
-		foreach ($this->connector->getDevices() as $device) {
+		$findDevicesQuery = new DevicesQueries\FindDevices();
+		$findDevicesQuery->forConnector($this->connector);
+
+		foreach ($this->devicesRepository->findAllBy($findDevicesQuery, Entities\TuyaDevice::class) as $device) {
 			assert($device instanceof Entities\TuyaDevice);
 
 			if ($device->getGateway() === false) {
@@ -191,7 +198,10 @@ final class Local implements Client
 	 */
 	private function handleCommunication(): void
 	{
-		foreach ($this->connector->getDevices() as $device) {
+		$findDevicesQuery = new DevicesQueries\FindDevices();
+		$findDevicesQuery->forConnector($this->connector);
+
+		foreach ($this->devicesRepository->findAllBy($findDevicesQuery, Entities\TuyaDevice::class) as $device) {
 			assert($device instanceof Entities\TuyaDevice);
 
 			if (
@@ -321,11 +331,7 @@ final class Local implements Client
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 							'type' => 'local-client',
-							'group' => 'client',
-							'exception' => [
-								'message' => $ex->getMessage(),
-								'code' => $ex->getCode(),
-							],
+							'exception' => BootstrapHelpers\Logger::buildException($ex),
 							'connector' => [
 								'id' => $this->connector->getPlainId(),
 							],
@@ -362,6 +368,11 @@ final class Local implements Client
 			return;
 		}
 
+		$findChildrenDevicesQuery = new DevicesQueries\FindDevices();
+		$findChildrenDevicesQuery->forParent($device);
+
+		$children = $this->devicesRepository->findAllBy($findChildrenDevicesQuery);
+
 		assert(is_string($device->getLocalKey()));
 		assert(is_string($device->getIpAddress()));
 
@@ -381,7 +392,7 @@ final class Local implements Client
 					$child->getNodeId(),
 					Types\LocalDeviceType::get(Types\LocalDeviceType::ZIGBEE),
 				);
-			}, $device->getChildren()),
+			}, $children),
 		);
 
 		$client->on(
@@ -420,7 +431,6 @@ final class Local implements Client
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'local-client',
-						'group' => 'client',
 						'connector' => [
 							'id' => $this->connector->getPlainId(),
 						],
@@ -448,11 +458,7 @@ final class Local implements Client
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'local-client',
-						'group' => 'client',
-						'exception' => [
-							'message' => $ex->getMessage(),
-							'code' => $ex->getCode(),
-						],
+						'exception' => BootstrapHelpers\Logger::buildException($ex),
 						'connector' => [
 							'id' => $this->connector->getPlainId(),
 						],

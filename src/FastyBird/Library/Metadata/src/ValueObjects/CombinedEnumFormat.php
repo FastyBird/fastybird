@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:MetadataLibrary!
  * @subpackage     ValueObjects
- * @since          0.73.0
+ * @since          1.0.0
  *
  * @date           05.08.22
  */
@@ -99,9 +99,9 @@ final class CombinedEnumFormat implements IteratorAggregate
 		return array_map(
 			static fn (array $item): array => array_map(
 				static function (CombinedEnumFormatItem|null $part): array|string|null {
-						if ($part instanceof CombinedEnumFormatItem) {
-							return $part->getDataType() !== null ? $part->toArray() : strval($part->getValue());
-						}
+					if ($part instanceof CombinedEnumFormatItem) {
+						return $part->getDataType() !== null ? $part->toArray() : strval($part->getValue());
+					}
 
 					return $part;
 				},

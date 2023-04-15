@@ -125,9 +125,6 @@ class TuyaExtension extends DI\CompilerExtension
 				->setAutowired(false);
 		}
 
-		$builder->addDefinition($this->prefix('api.entityFactory'), new DI\Definitions\ServiceDefinition())
-			->setType(API\EntityFactory::class);
-
 		$builder->addFactoryDefinition($this->prefix('api.openApi'))
 			->setImplement(API\OpenApiFactory::class)
 			->getResultDefinition()

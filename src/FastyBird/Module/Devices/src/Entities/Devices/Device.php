@@ -15,6 +15,7 @@
 
 namespace FastyBird\Module\Devices\Entities\Devices;
 
+use Consistence\Doctrine\Enum\EnumAnnotation as Enum;
 use Doctrine\Common;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -69,6 +70,17 @@ abstract class Device implements Entities\Entity,
 	 * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
 	 */
 	protected Uuid\UuidInterface $id;
+
+	/**
+	 * @var MetadataTypes\DeviceCategory
+	 *
+	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
+	 *
+	 * @Enum(class=MetadataTypes\DeviceCategory::class)
+	 * @IPubDoctrine\Crud(is="writable")
+	 * @ORM\Column(type="string_enum", name="device_category", length=100, nullable=true, options={"default": "generic"})
+	 */
+	protected $category;
 
 	/**
 	 * @IPubDoctrine\Crud(is="required")
@@ -151,6 +163,8 @@ abstract class Device implements Entities\Entity,
 		$this->identifier = $identifier;
 		$this->name = $name;
 
+		$this->category = MetadataTypes\DeviceCategory::get(MetadataTypes\DeviceCategory::CATEGORY_GENERIC);
+
 		$this->connector = $connector;
 
 		$this->parents = new Common\Collections\ArrayCollection();
@@ -161,6 +175,16 @@ abstract class Device implements Entities\Entity,
 	}
 
 	abstract public function getType(): string;
+
+	public function getCategory(): MetadataTypes\DeviceCategory
+	{
+		return $this->category;
+	}
+
+	public function setCategory(MetadataTypes\DeviceCategory $category): void
+	{
+		$this->category = $category;
+	}
 
 	public function getIdentifier(): string
 	{
@@ -233,11 +257,6 @@ abstract class Device implements Entities\Entity,
 		}
 	}
 
-	public function removeParent(self $parent): void
-	{
-		$this->parents->removeElement($parent);
-	}
-
 	/**
 	 * @return array<Device>
 	 */
@@ -266,15 +285,6 @@ abstract class Device implements Entities\Entity,
 		if (!$this->children->contains($child)) {
 			// ...and assign it to collection
 			$this->children->add($child);
-		}
-	}
-
-	public function removeChild(self $child): void
-	{
-		// Check if collection contain removing entity...
-		if ($this->children->contains($child)) {
-			// ...and remove it from collection
-			$this->children->removeElement($child);
 		}
 	}
 
@@ -309,31 +319,6 @@ abstract class Device implements Entities\Entity,
 		}
 	}
 
-	public function getChannel(string $id): Entities\Channels\Channel|null
-	{
-		$found = $this->channels
-			->filter(static fn (Entities\Channels\Channel $row): bool => $id === $row->getPlainId());
-
-		return $found->isEmpty() === true ? null : $found->first();
-	}
-
-	public function findChannel(string $identifier): Entities\Channels\Channel|null
-	{
-		$found = $this->channels
-			->filter(static fn (Entities\Channels\Channel $row): bool => $identifier === $row->getIdentifier());
-
-		return $found->isEmpty() === true ? null : $found->first();
-	}
-
-	public function removeChannel(Entities\Channels\Channel $channel): void
-	{
-		// Check if collection contain removing entity...
-		if ($this->channels->contains($channel)) {
-			// ...and remove it from collection
-			$this->channels->removeElement($channel);
-		}
-	}
-
 	/**
 	 * @return array<Entities\Devices\Controls\Control>
 	 */
@@ -362,31 +347,6 @@ abstract class Device implements Entities\Entity,
 		if (!$this->controls->contains($control)) {
 			// ...and assign it to collection
 			$this->controls->add($control);
-		}
-	}
-
-	public function getControl(string $id): Entities\Devices\Controls\Control|null
-	{
-		$found = $this->controls
-			->filter(static fn (Entities\Devices\Controls\Control $row): bool => $id === $row->getPlainId());
-
-		return $found->isEmpty() === true ? null : $found->first();
-	}
-
-	public function findControl(string $name): Entities\Devices\Controls\Control|null
-	{
-		$found = $this->controls
-			->filter(static fn (Entities\Devices\Controls\Control $row): bool => $name === $row->getName());
-
-		return $found->isEmpty() === true ? null : $found->first();
-	}
-
-	public function removeControl(Entities\Devices\Controls\Control $control): void
-	{
-		// Check if collection contain removing entity...
-		if ($this->controls->contains($control)) {
-			// ...and remove it from collection
-			$this->controls->removeElement($control);
 		}
 	}
 
@@ -421,33 +381,6 @@ abstract class Device implements Entities\Entity,
 		}
 	}
 
-	public function getProperty(string $id): Entities\Devices\Properties\Property|null
-	{
-		$found = $this->properties
-			->filter(static fn (Entities\Devices\Properties\Property $row): bool => $id === $row->getPlainId());
-
-		return $found->isEmpty() === true ? null : $found->first();
-	}
-
-	public function findProperty(string $identifier): Entities\Devices\Properties\Property|null
-	{
-		$found = $this->properties
-			->filter(
-				static fn (Entities\Devices\Properties\Property $row): bool => $identifier === $row->getIdentifier()
-			);
-
-		return $found->isEmpty() === true ? null : $found->first();
-	}
-
-	public function removeProperty(Entities\Devices\Properties\Property $property): void
-	{
-		// Check if collection contain removing entity...
-		if ($this->properties->contains($property)) {
-			// ...and remove it from collection
-			$this->properties->removeElement($property);
-		}
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -468,6 +401,7 @@ abstract class Device implements Entities\Entity,
 		return [
 			'id' => $this->getPlainId(),
 			'type' => $this->getType(),
+			'category' => $this->getCategory()->getValue(),
 			'identifier' => $this->getIdentifier(),
 			'name' => $this->getName(),
 			'comment' => $this->getComment(),

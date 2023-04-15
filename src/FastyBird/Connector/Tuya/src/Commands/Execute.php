@@ -216,7 +216,6 @@ class Execute extends Console\Command\Command
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 							'type' => 'execute-cmd',
-							'group' => 'cmd',
 						],
 					);
 
@@ -240,7 +239,6 @@ class Execute extends Console\Command\Command
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'execute-cmd',
-						'group' => 'cmd',
 					],
 				);
 

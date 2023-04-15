@@ -50,9 +50,12 @@ final class Device implements Consumers\Consumer
 
 	public function __construct(
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
+		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		private readonly DevicesModels\Devices\DevicesManager $devicesManager,
 		private readonly DevicesModels\Devices\Properties\PropertiesManager $devicePropertiesManager,
-		private readonly DevicesModels\Devices\Controls\ControlsManager $deviceControlManager,
+		private readonly DevicesModels\Devices\Controls\ControlsRepository $deviceControlsRepository,
+		private readonly DevicesModels\Devices\Controls\ControlsManager $deviceControlsManager,
 		private readonly DevicesModels\Channels\ChannelsManager $channelsManager,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DevicesUtilities\Database $databaseHelper,
@@ -176,7 +179,11 @@ final class Device implements Consumers\Consumer
 					MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_UNKNOWN),
 				);
 			} else {
-				if ($device->findProperty($propertyName) === null) {
+				$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+				$findDevicePropertyQuery->forDevice($device);
+				$findDevicePropertyQuery->byIdentifier($propertyName);
+
+				if ($this->devicePropertiesRepository->findOneBy($findDevicePropertyQuery) === null) {
 					if (in_array($propertyName, [
 						Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS,
 						Types\DevicePropertyIdentifier::IDENTIFIER_STATUS_LED,
@@ -222,8 +229,11 @@ final class Device implements Consumers\Consumer
 			}
 		}
 
+		$findDevicePropertiesQuery = new DevicesQueries\FindDeviceProperties();
+		$findDevicePropertiesQuery->forDevice($device);
+
 		// Cleanup for unused properties
-		foreach ($device->getProperties() as $property) {
+		foreach ($this->devicePropertiesRepository->findAllBy($findDevicePropertiesQuery) as $property) {
 			if (!in_array($property->getIdentifier(), (array) $properties, true)) {
 				$this->devicePropertiesManager->delete($property);
 			}
@@ -232,6 +242,8 @@ final class Device implements Consumers\Consumer
 
 	/**
 	 * @phpstan-param Utils\ArrayHash<string> $extensions
+	 *
+	 * @throws DevicesExceptions\InvalidState
 	 */
 	private function setDeviceExtensions(
 		DevicesEntities\Devices\Device $device,
@@ -246,7 +258,11 @@ final class Device implements Consumers\Consumer
 					Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL,
 					Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_VERSION,
 				] as $propertyName) {
-					if ($device->findProperty($propertyName) === null) {
+					$findPropertyQuery = new DevicesQueries\FindDeviceProperties();
+					$findPropertyQuery->forDevice($device);
+					$findPropertyQuery->byIdentifier($propertyName);
+
+					if ($this->devicePropertiesRepository->findOneBy($findPropertyQuery) === null) {
 						$this->devicePropertiesManager->create(Utils\ArrayHash::from([
 							'entity' => DevicesEntities\Devices\Properties\Variable::class,
 							'device' => $device,
@@ -260,12 +276,16 @@ final class Device implements Consumers\Consumer
 					Types\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_MANUFACTURER,
 					Types\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_NAME,
 					Types\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_VERSION,
-				] as $attributeName) {
-					if ($device->findProperty($attributeName) === null) {
+				] as $propertyName) {
+					$findPropertyQuery = new DevicesQueries\FindDeviceProperties();
+					$findPropertyQuery->forDevice($device);
+					$findPropertyQuery->byIdentifier($propertyName);
+
+					if ($this->devicePropertiesRepository->findOneBy($findPropertyQuery) === null) {
 						$this->devicePropertiesManager->create(Utils\ArrayHash::from([
 							'entity' => DevicesEntities\Devices\Properties\Variable::class,
 							'device' => $device,
-							'identifier' => $attributeName,
+							'identifier' => $propertyName,
 							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 						]));
 					}
@@ -277,6 +297,7 @@ final class Device implements Consumers\Consumer
 	/**
 	 * @phpstan-param Utils\ArrayHash<string> $controls
 	 *
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 */
 	private function setDeviceControls(
@@ -285,18 +306,27 @@ final class Device implements Consumers\Consumer
 	): void
 	{
 		foreach ($controls as $controlName) {
-			if ($device->findControl($controlName) === null) {
-				$this->deviceControlManager->create(Utils\ArrayHash::from([
+			$findDeviceControlQuery = new DevicesQueries\FindDeviceControls();
+			$findDeviceControlQuery->forDevice($device);
+			$findDeviceControlQuery->byName($controlName);
+
+			$control = $this->deviceControlsRepository->findOneBy($findDeviceControlQuery);
+
+			if ($control === null) {
+				$this->deviceControlsManager->create(Utils\ArrayHash::from([
 					'device' => $device,
 					'name' => $controlName,
 				]));
 			}
 		}
 
+		$findDeviceControlsQuery = new DevicesQueries\FindDeviceControls();
+		$findDeviceControlsQuery->forDevice($device);
+
 		// Cleanup for unused control
-		foreach ($device->getControls() as $control) {
+		foreach ($this->deviceControlsRepository->findAllBy($findDeviceControlsQuery) as $control) {
 			if (!in_array($control->getName(), (array) $controls, true)) {
-				$this->deviceControlManager->delete($control);
+				$this->deviceControlsManager->delete($control);
 			}
 		}
 	}
@@ -304,6 +334,7 @@ final class Device implements Consumers\Consumer
 	/**
 	 * @phpstan-param Utils\ArrayHash<string> $channels
 	 *
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 */
 	private function setDeviceChannels(
@@ -312,7 +343,13 @@ final class Device implements Consumers\Consumer
 	): void
 	{
 		foreach ($channels as $channelName) {
-			if ($device->findChannel($channelName) === null) {
+			$findChannelQuery = new DevicesQueries\FindChannels();
+			$findChannelQuery->forDevice($device);
+			$findChannelQuery->byIdentifier($channelName);
+
+			$channel = $this->channelsRepository->findOneBy($findChannelQuery);
+
+			if ($channel === null) {
 				$this->channelsManager->create(Utils\ArrayHash::from([
 					'device' => $device,
 					'identifier' => $channelName,
@@ -320,8 +357,11 @@ final class Device implements Consumers\Consumer
 			}
 		}
 
+		$findChannelsQuery = new DevicesQueries\FindChannels();
+		$findChannelsQuery->forDevice($device);
+
 		// Cleanup for unused channels
-		foreach ($device->getChannels() as $channel) {
+		foreach ($this->channelsRepository->findAllBy($findChannelsQuery) as $channel) {
 			if (!in_array($channel->getIdentifier(), (array) $channels, true)) {
 				$this->channelsManager->delete($channel);
 			}

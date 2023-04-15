@@ -187,31 +187,19 @@ final class ModuleEntities implements Common\EventSubscriber
 		// Property states cleanup
 		if ($entity instanceof Entities\Connectors\Properties\Dynamic) {
 			try {
-				$state = $this->connectorPropertiesStates->getValue($entity);
-
-				if ($state !== null) {
-					$this->connectorPropertiesStatesManager->delete($entity, $state);
-				}
+				$this->connectorPropertiesStatesManager->delete($entity);
 			} catch (Exceptions\NotImplemented) {
 				return;
 			}
 		} elseif ($entity instanceof Entities\Devices\Properties\Dynamic) {
 			try {
-				$state = $this->devicePropertiesStates->getValue($entity);
-
-				if ($state !== null) {
-					$this->devicePropertiesStatesManager->delete($entity, $state);
-				}
+				$this->devicePropertiesStatesManager->delete($entity);
 			} catch (Exceptions\NotImplemented) {
 				return;
 			}
 		} elseif ($entity instanceof Entities\Channels\Properties\Dynamic) {
 			try {
-				$state = $this->channelPropertiesStates->getValue($entity);
-
-				if ($state !== null) {
-					$this->channelPropertiesStatesManager->delete($entity, $state);
-				}
+				$this->channelPropertiesStatesManager->delete($entity);
 			} catch (Exceptions\NotImplemented) {
 				return;
 			}
@@ -265,7 +253,7 @@ final class ModuleEntities implements Common\EventSubscriber
 		if ($publishRoutingKey !== null) {
 			if ($entity instanceof Entities\Devices\Properties\Dynamic) {
 				try {
-					$state = $this->devicePropertiesStates->getValue($entity);
+					$state = $this->devicePropertiesStates->readValue($entity);
 
 					$this->publisher->publish(
 						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
@@ -290,7 +278,7 @@ final class ModuleEntities implements Common\EventSubscriber
 				}
 			} elseif ($entity instanceof Entities\Channels\Properties\Dynamic) {
 				try {
-					$state = $this->channelPropertiesStates->getValue($entity);
+					$state = $this->channelPropertiesStates->readValue($entity);
 
 					$this->publisher->publish(
 						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
@@ -315,7 +303,7 @@ final class ModuleEntities implements Common\EventSubscriber
 				}
 			} elseif ($entity instanceof Entities\Connectors\Properties\Dynamic) {
 				try {
-					$state = $this->connectorPropertiesStates->getValue($entity);
+					$state = $this->connectorPropertiesStates->readValue($entity);
 
 					$this->publisher->publish(
 						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),

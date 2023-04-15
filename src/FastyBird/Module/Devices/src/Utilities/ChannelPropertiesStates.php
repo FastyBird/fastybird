@@ -15,6 +15,7 @@
 
 namespace FastyBird\Module\Devices\Utilities;
 
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -58,8 +59,84 @@ final class ChannelPropertiesStates
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
+	public function readValue(
+		MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped $property,
+	): States\ChannelProperty|null
+	{
+		return $this->loadValue($property, true);
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
 	public function getValue(
 		MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped $property,
+	): States\ChannelProperty|null
+	{
+		return $this->loadValue($property, false);
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function writeValue(
+		MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped $property,
+		Utils\ArrayHash $data,
+	): void
+	{
+		$this->saveValue($property, $data, true);
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function setValue(
+		MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped $property,
+		Utils\ArrayHash $data,
+	): void
+	{
+		$this->saveValue($property, $data, false);
+	}
+
+	/**
+	 * @param MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelMappedProperty|array<MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelMappedProperty>|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped|array<Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped> $property
+	 *
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function setValidState(
+		MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped|array $property,
+		bool $state,
+	): void
+	{
+		if (is_array($property)) {
+			foreach ($property as $item) {
+				$this->writeValue($item, Utils\ArrayHash::from([
+					States\Property::VALID_KEY => $state,
+				]));
+			}
+		} else {
+			$this->writeValue($property, Utils\ArrayHash::from([
+				States\Property::VALID_KEY => $state,
+			]));
+		}
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	private function loadValue(
+		MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped $property,
+		bool $forReading,
 	): States\ChannelProperty|null
 	{
 		if ($property instanceof MetadataEntities\DevicesModule\ChannelMappedProperty) {
@@ -89,26 +166,88 @@ final class ChannelPropertiesStates
 			$state = $this->channelPropertyStateRepository->findOne($property);
 
 			if ($state !== null) {
-				if ($state->getActualValue() !== null) {
-					$state->setActualValue(
-						ValueHelper::normalizeValue(
-							$property->getDataType(),
-							$state->getActualValue(),
-							$property->getFormat(),
-							$property->getInvalid(),
-						),
+				try {
+					if ($state->getActualValue() !== null) {
+						if ($forReading) {
+							$state->setActualValue(
+								ValueHelper::normalizeReadValue(
+									$property->getDataType(),
+									$state->getActualValue(),
+									$property->getFormat(),
+									$property->getScale(),
+									$property->getInvalid(),
+								),
+							);
+
+						} else {
+							$state->setActualValue(
+								ValueHelper::normalizeValue(
+									$property->getDataType(),
+									$state->getActualValue(),
+									$property->getFormat(),
+									$property->getInvalid(),
+								),
+							);
+						}
+					}
+				} catch (Exceptions\InvalidState $ex) {
+					$this->channelPropertiesStatesManager->update($property, $state, Utils\ArrayHash::from([
+						States\Property::ACTUAL_VALUE_KEY => null,
+						States\Property::VALID_KEY => false,
+					]));
+
+					$this->logger->error(
+						'Property stored actual value was not valid',
+						[
+							'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+							'type' => 'channel-properties-states',
+							'exception' => BootstrapHelpers\Logger::buildException($ex),
+						],
 					);
+
+					return $this->loadValue($property, $forReading);
 				}
 
-				if ($state->getExpectedValue() !== null) {
-					$state->setActualValue(
-						ValueHelper::normalizeValue(
-							$property->getDataType(),
-							$state->getExpectedValue(),
-							$property->getFormat(),
-							$property->getInvalid(),
-						),
+				try {
+					if ($state->getExpectedValue() !== null) {
+						if ($forReading) {
+							$state->setExpectedValue(
+								ValueHelper::normalizeReadValue(
+									$property->getDataType(),
+									$state->getExpectedValue(),
+									$property->getFormat(),
+									$property->getScale(),
+									$property->getInvalid(),
+								),
+							);
+
+						} else {
+							$state->setExpectedValue(
+								ValueHelper::normalizeValue(
+									$property->getDataType(),
+									$state->getExpectedValue(),
+									$property->getFormat(),
+									$property->getInvalid(),
+								),
+							);
+						}
+					}
+				} catch (Exceptions\InvalidState $ex) {
+					$this->channelPropertiesStatesManager->update($property, $state, Utils\ArrayHash::from([
+						States\Property::EXPECTED_VALUE_KEY => null,
+						States\Property::PENDING_KEY => false,
+					]));
+
+					$this->logger->error(
+						'Property stored expected value was not valid',
+						[
+							'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+							'type' => 'channel-properties-states',
+							'exception' => BootstrapHelpers\Logger::buildException($ex),
+						],
 					);
+
+					return $this->loadValue($property, $forReading);
 				}
 			}
 
@@ -131,9 +270,10 @@ final class ChannelPropertiesStates
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function setValue(
+	private function saveValue(
 		MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped $property,
 		Utils\ArrayHash $data,
+		bool $forWriting,
 	): void
 	{
 		if ($property instanceof MetadataEntities\DevicesModule\ChannelMappedProperty) {
@@ -159,55 +299,131 @@ final class ChannelPropertiesStates
 			}
 		}
 
-		try {
-			$propertyState = $this->channelPropertyStateRepository->findOne($property);
-		} catch (Exceptions\NotImplemented) {
-			$this->logger->warning(
-				'Channels states repository is not configured. State could not be fetched',
-				[
-					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
-					'type' => 'channel-properties-states',
-				],
-			);
-
-			return;
-		}
+		$state = $this->loadValue($property, $forWriting);
 
 		if ($data->offsetExists(States\Property::ACTUAL_VALUE_KEY)) {
-			$data->offsetSet(
-				States\Property::ACTUAL_VALUE_KEY,
-				ValueHelper::flattenValue(
-					ValueHelper::normalizeValue(
-						$property->getDataType(),
-						/** @phpstan-ignore-next-line */
-						$data->offsetGet(States\Property::ACTUAL_VALUE_KEY),
-						$property->getFormat(),
-						$property->getInvalid(),
-					),
-				),
-			);
+			if ($forWriting) {
+				try {
+					$data->offsetSet(
+						States\Property::ACTUAL_VALUE_KEY,
+						ValueHelper::flattenValue(
+							ValueHelper::normalizeWriteValue(
+								$property->getDataType(),
+								/** @phpstan-ignore-next-line */
+								$data->offsetGet(States\Property::ACTUAL_VALUE_KEY),
+								$property->getFormat(),
+								$property->getScale(),
+								$property->getInvalid(),
+							),
+						),
+					);
+				} catch (Exceptions\InvalidState $ex) {
+					$data->offsetSet(States\Property::ACTUAL_VALUE_KEY, null);
+					$data->offsetSet(States\Property::VALID_KEY, false);
+
+					$this->logger->error(
+						'Provided property actual value was not valid',
+						[
+							'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+							'type' => 'channel-properties-states',
+							'exception' => BootstrapHelpers\Logger::buildException($ex),
+						],
+					);
+				}
+			} else {
+				try {
+					$data->offsetSet(
+						States\Property::ACTUAL_VALUE_KEY,
+						ValueHelper::flattenValue(
+							ValueHelper::normalizeValue(
+								$property->getDataType(),
+								/** @phpstan-ignore-next-line */
+								$data->offsetGet(States\Property::ACTUAL_VALUE_KEY),
+								$property->getFormat(),
+								$property->getInvalid(),
+							),
+						),
+					);
+				} catch (Exceptions\InvalidState $ex) {
+					$data->offsetSet(States\Property::ACTUAL_VALUE_KEY, null);
+					$data->offsetSet(States\Property::VALID_KEY, false);
+
+					$this->logger->error(
+						'Provided property actual value was not valid',
+						[
+							'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+							'type' => 'channel-properties-states',
+							'exception' => BootstrapHelpers\Logger::buildException($ex),
+						],
+					);
+				}
+			}
 		}
 
 		if ($data->offsetExists(States\Property::EXPECTED_VALUE_KEY)) {
-			$data->offsetSet(
-				States\Property::EXPECTED_VALUE_KEY,
-				ValueHelper::flattenValue(
-					ValueHelper::normalizeValue(
-						$property->getDataType(),
-						/** @phpstan-ignore-next-line */
-						$data->offsetGet(States\Property::EXPECTED_VALUE_KEY),
-						$property->getFormat(),
-						$property->getInvalid(),
-					),
-				),
-			);
+			if ($forWriting) {
+				try {
+					$data->offsetSet(
+						States\Property::EXPECTED_VALUE_KEY,
+						ValueHelper::flattenValue(
+							ValueHelper::normalizeWriteValue(
+								$property->getDataType(),
+								/** @phpstan-ignore-next-line */
+								$data->offsetGet(States\Property::EXPECTED_VALUE_KEY),
+								$property->getFormat(),
+								$property->getScale(),
+								$property->getInvalid(),
+							),
+						),
+					);
+				} catch (Exceptions\InvalidState $ex) {
+					$data->offsetSet(States\Property::EXPECTED_VALUE_KEY, null);
+					$data->offsetSet(States\Property::PENDING_KEY, false);
+
+					$this->logger->error(
+						'Provided property expected value was not valid',
+						[
+							'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+							'type' => 'channel-properties-states',
+							'exception' => BootstrapHelpers\Logger::buildException($ex),
+						],
+					);
+				}
+			} else {
+				try {
+					$data->offsetSet(
+						States\Property::EXPECTED_VALUE_KEY,
+						ValueHelper::flattenValue(
+							ValueHelper::normalizeValue(
+								$property->getDataType(),
+								/** @phpstan-ignore-next-line */
+								$data->offsetGet(States\Property::EXPECTED_VALUE_KEY),
+								$property->getFormat(),
+								$property->getInvalid(),
+							),
+						),
+					);
+				} catch (Exceptions\InvalidState $ex) {
+					$data->offsetSet(States\Property::EXPECTED_VALUE_KEY, null);
+					$data->offsetSet(States\Property::PENDING_KEY, false);
+
+					$this->logger->error(
+						'Provided property expected value was not valid',
+						[
+							'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+							'type' => 'channel-properties-states',
+							'exception' => BootstrapHelpers\Logger::buildException($ex),
+						],
+					);
+				}
+			}
 		}
 
 		try {
 			// In case synchronization failed...
-			if ($propertyState === null) {
+			if ($state === null) {
 				// ...create state in storage
-				$propertyState = $this->channelPropertiesStatesManager->create(
+				$state = $this->channelPropertiesStatesManager->create(
 					$property,
 					$data,
 				);
@@ -219,14 +435,14 @@ final class ChannelPropertiesStates
 						'type' => 'channel-properties-states',
 						'property' => [
 							'id' => $property->getId()->toString(),
-							'state' => $propertyState->toArray(),
+							'state' => $state->toArray(),
 						],
 					],
 				);
 			} else {
-				$propertyState = $this->channelPropertiesStatesManager->update(
+				$state = $this->channelPropertiesStatesManager->update(
 					$property,
-					$propertyState,
+					$state,
 					$data,
 				);
 
@@ -237,7 +453,7 @@ final class ChannelPropertiesStates
 						'type' => 'channel-properties-states',
 						'property' => [
 							'id' => $property->getId()->toString(),
-							'state' => $propertyState->toArray(),
+							'state' => $state->toArray(),
 						],
 					],
 				);
@@ -250,31 +466,6 @@ final class ChannelPropertiesStates
 					'type' => 'channel-properties-states',
 				],
 			);
-		}
-	}
-
-	/**
-	 * @param MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelMappedProperty|array<MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelMappedProperty>|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped|array<Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped> $property
-	 *
-	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 */
-	public function setValidState(
-		MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped|array $property,
-		bool $state,
-	): void
-	{
-		if (is_array($property)) {
-			foreach ($property as $item) {
-				$this->setValue($item, Utils\ArrayHash::from([
-					States\Property::VALID_KEY => $state,
-				]));
-			}
-		} else {
-			$this->setValue($property, Utils\ArrayHash::from([
-				States\Property::VALID_KEY => $state,
-			]));
 		}
 	}
 

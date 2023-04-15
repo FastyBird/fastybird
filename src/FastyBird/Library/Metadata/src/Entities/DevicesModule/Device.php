@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:MetadataLibrary!
  * @subpackage     Entities
- * @since          0.57.0
+ * @since          1.0.0
  *
  * @date           04.06.22
  */
@@ -16,6 +16,7 @@
 namespace FastyBird\Library\Metadata\Entities\DevicesModule;
 
 use FastyBird\Library\Metadata\Entities;
+use FastyBird\Library\Metadata\Types;
 use Nette\Utils;
 use Ramsey\Uuid;
 use function array_map;
@@ -35,6 +36,8 @@ final class Device implements Entities\Entity, Entities\Owner
 
 	private Uuid\UuidInterface $id;
 
+	private Types\DeviceCategory $category;
+
 	private Uuid\UuidInterface $connector;
 
 	/** @var array<Uuid\UuidInterface> */
@@ -50,6 +53,7 @@ final class Device implements Entities\Entity, Entities\Owner
 	public function __construct(
 		string $id,
 		private readonly string $type,
+		string $category,
 		private readonly string $identifier,
 		string $connector,
 		array|Utils\ArrayHash $parents,
@@ -60,6 +64,7 @@ final class Device implements Entities\Entity, Entities\Owner
 	)
 	{
 		$this->id = Uuid\Uuid::fromString($id);
+		$this->category = Types\DeviceCategory::get($category);
 		$this->connector = Uuid\Uuid::fromString($connector);
 		$this->parents = array_map(
 			static fn (string $item): Uuid\UuidInterface => Uuid\Uuid::fromString($item),
@@ -80,6 +85,11 @@ final class Device implements Entities\Entity, Entities\Owner
 	public function getType(): string
 	{
 		return $this->type;
+	}
+
+	public function getCategory(): Types\DeviceCategory
+	{
+		return $this->category;
 	}
 
 	public function getIdentifier(): string
@@ -123,6 +133,7 @@ final class Device implements Entities\Entity, Entities\Owner
 		return [
 			'id' => $this->getId()->toString(),
 			'type' => $this->getType(),
+			'category' => $this->getCategory()->getValue(),
 			'identifier' => $this->getIdentifier(),
 			'name' => $this->getName(),
 			'comment' => $this->getComment(),

@@ -19,7 +19,7 @@
         "unit": null,
         "format": null,
         "invalid": null,
-        "number_of_decimals": null,
+        "scale": null,
         "default": "v1",
         "value": "v1",
         "connector": "4af1972f-dead-49a6-95a7-06b03c78ddb2",

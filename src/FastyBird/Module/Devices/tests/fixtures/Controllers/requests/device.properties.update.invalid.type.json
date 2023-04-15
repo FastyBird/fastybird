@@ -1,16 +1,16 @@
 {
-  "data" : {
-    "type" : "com.fastybird.devices-module/property/device/dynamic-wrong",
-    "id" : "28bc0d38-2f7c-4a71-aa74-27b102f8df4c",
-    "attributes" : {
-      "identifier" : "rssi",
-      "name" : "rssi",
-      "settable" : false,
-      "queryable" : true,
-      "data_type" : "int",
-      "unit" : "%",
-      "format" : "0:150",
-      "invalid" : "999"
+  "data": {
+    "type": "com.fastybird.devices-module/property/device/dynamic-wrong",
+    "id": "28bc0d38-2f7c-4a71-aa74-27b102f8df4c",
+    "attributes": {
+      "identifier": "rssi",
+      "name": "rssi",
+      "settable": false,
+      "queryable": true,
+      "data_type": "int",
+      "unit": "%",
+      "format": "0:150",
+      "invalid": "999"
     }
   }
 }

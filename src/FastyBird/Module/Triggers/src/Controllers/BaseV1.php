@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:TriggersModule!
  * @subpackage     Controllers
- * @since          0.1.0
+ * @since          1.0.0
  *
  * @date           13.04.19
  */
@@ -199,7 +199,7 @@ abstract class BaseV1
 			return $connection;
 		}
 
-		throw new Exceptions\Runtime('Entity manager could not be loaded');
+		throw new Exceptions\Runtime('Transformer manager could not be loaded');
 	}
 
 	/**

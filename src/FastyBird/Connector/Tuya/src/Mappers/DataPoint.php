@@ -42,6 +42,7 @@ final class DataPoint
 
 	public function __construct(
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
 	)
 	{
@@ -100,7 +101,12 @@ final class DataPoint
 			return null;
 		}
 
-		foreach ($device->getChannels() as $channel) {
+		$findChannelsQuery = new DevicesQueries\FindChannels();
+		$findChannelsQuery->forDevice($device);
+
+		$channels = $this->channelsRepository->findAllBy($findChannelsQuery);
+
+		foreach ($channels as $channel) {
 			foreach ($channel->getProperties() as $property) {
 				if ($property->getIdentifier() === $dataPointIdentifier) {
 					if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {

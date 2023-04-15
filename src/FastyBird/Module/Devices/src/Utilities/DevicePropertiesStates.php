@@ -15,6 +15,7 @@
 
 namespace FastyBird\Module\Devices\Utilities;
 
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -58,8 +59,84 @@ final class DevicePropertiesStates
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
+	public function readValue(
+		MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
+	): States\DeviceProperty|null
+	{
+		return $this->loadValue($property, true);
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
 	public function getValue(
 		MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
+	): States\DeviceProperty|null
+	{
+		return $this->loadValue($property, false);
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function writeValue(
+		MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
+		Utils\ArrayHash $data,
+	): void
+	{
+		$this->saveValue($property, $data, true);
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function setValue(
+		MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
+		Utils\ArrayHash $data,
+	): void
+	{
+		$this->saveValue($property, $data, false);
+	}
+
+	/**
+	 * @param MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty|array<MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty>|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped|array<Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped> $property
+	 *
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function setValidState(
+		MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped|array $property,
+		bool $state,
+	): void
+	{
+		if (is_array($property)) {
+			foreach ($property as $item) {
+				$this->writeValue($item, Utils\ArrayHash::from([
+					States\Property::VALID_KEY => $state,
+				]));
+			}
+		} else {
+			$this->writeValue($property, Utils\ArrayHash::from([
+				States\Property::VALID_KEY => $state,
+			]));
+		}
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	private function loadValue(
+		MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
+		bool $forReading,
 	): States\DeviceProperty|null
 	{
 		if ($property instanceof MetadataEntities\DevicesModule\DeviceMappedProperty) {
@@ -67,10 +144,10 @@ final class DevicePropertiesStates
 				throw new Exceptions\InvalidState('Parent identifier for mapped property is missing');
 			}
 
-			$findPropertyQuery = new Queries\FindDeviceProperties();
-			$findPropertyQuery->byId($property->getParent());
+			$findDevicePropertyQuery = new Queries\FindDeviceProperties();
+			$findDevicePropertyQuery->byId($property->getParent());
 
-			$parent = $this->devicePropertiesRepository->findOneBy($findPropertyQuery);
+			$parent = $this->devicePropertiesRepository->findOneBy($findDevicePropertyQuery);
 
 			if (!$parent instanceof Entities\Devices\Properties\Dynamic) {
 				throw new Exceptions\InvalidState('Mapped property parent could not be loaded');
@@ -89,26 +166,88 @@ final class DevicePropertiesStates
 			$state = $this->devicePropertyStateRepository->findOne($property);
 
 			if ($state !== null) {
-				if ($state->getActualValue() !== null) {
-					$state->setActualValue(
-						ValueHelper::normalizeValue(
-							$property->getDataType(),
-							$state->getActualValue(),
-							$property->getFormat(),
-							$property->getInvalid(),
-						),
+				try {
+					if ($state->getActualValue() !== null) {
+						if ($forReading) {
+							$state->setActualValue(
+								ValueHelper::normalizeReadValue(
+									$property->getDataType(),
+									$state->getActualValue(),
+									$property->getFormat(),
+									$property->getScale(),
+									$property->getInvalid(),
+								),
+							);
+
+						} else {
+							$state->setActualValue(
+								ValueHelper::normalizeValue(
+									$property->getDataType(),
+									$state->getActualValue(),
+									$property->getFormat(),
+									$property->getInvalid(),
+								),
+							);
+						}
+					}
+				} catch (Exceptions\InvalidState $ex) {
+					$this->devicePropertiesStatesManager->update($property, $state, Utils\ArrayHash::from([
+						States\Property::ACTUAL_VALUE_KEY => null,
+						States\Property::VALID_KEY => false,
+					]));
+
+					$this->logger->error(
+						'Property stored actual value was not valid',
+						[
+							'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+							'type' => 'device-properties-states',
+							'exception' => BootstrapHelpers\Logger::buildException($ex),
+						],
 					);
+
+					return $this->loadValue($property, $forReading);
 				}
 
-				if ($state->getExpectedValue() !== null) {
-					$state->setActualValue(
-						ValueHelper::normalizeValue(
-							$property->getDataType(),
-							$state->getExpectedValue(),
-							$property->getFormat(),
-							$property->getInvalid(),
-						),
+				try {
+					if ($state->getExpectedValue() !== null) {
+						if ($forReading) {
+							$state->setExpectedValue(
+								ValueHelper::normalizeReadValue(
+									$property->getDataType(),
+									$state->getExpectedValue(),
+									$property->getFormat(),
+									$property->getScale(),
+									$property->getInvalid(),
+								),
+							);
+
+						} else {
+							$state->setExpectedValue(
+								ValueHelper::normalizeValue(
+									$property->getDataType(),
+									$state->getExpectedValue(),
+									$property->getFormat(),
+									$property->getInvalid(),
+								),
+							);
+						}
+					}
+				} catch (Exceptions\InvalidState $ex) {
+					$this->devicePropertiesStatesManager->update($property, $state, Utils\ArrayHash::from([
+						States\Property::EXPECTED_VALUE_KEY => null,
+						States\Property::PENDING_KEY => false,
+					]));
+
+					$this->logger->error(
+						'Property stored expected value was not valid',
+						[
+							'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+							'type' => 'device-properties-states',
+							'exception' => BootstrapHelpers\Logger::buildException($ex),
+						],
 					);
+
+					return $this->loadValue($property, $forReading);
 				}
 			}
 
@@ -131,9 +270,10 @@ final class DevicePropertiesStates
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function setValue(
+	private function saveValue(
 		MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
 		Utils\ArrayHash $data,
+		bool $forWriting,
 	): void
 	{
 		if ($property instanceof MetadataEntities\DevicesModule\DeviceMappedProperty) {
@@ -159,55 +299,131 @@ final class DevicePropertiesStates
 			}
 		}
 
-		try {
-			$propertyState = $this->devicePropertyStateRepository->findOne($property);
-		} catch (Exceptions\NotImplemented) {
-			$this->logger->warning(
-				'Devices states repository is not configured. State could not be fetched',
-				[
-					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
-					'type' => 'device-properties-states',
-				],
-			);
-
-			return;
-		}
+		$state = $this->loadValue($property, $forWriting);
 
 		if ($data->offsetExists(States\Property::ACTUAL_VALUE_KEY)) {
-			$data->offsetSet(
-				States\Property::ACTUAL_VALUE_KEY,
-				ValueHelper::flattenValue(
-					ValueHelper::normalizeValue(
-						$property->getDataType(),
-						/** @phpstan-ignore-next-line */
-						$data->offsetGet(States\Property::ACTUAL_VALUE_KEY),
-						$property->getFormat(),
-						$property->getInvalid(),
-					),
-				),
-			);
+			if ($forWriting) {
+				try {
+					$data->offsetSet(
+						States\Property::ACTUAL_VALUE_KEY,
+						ValueHelper::flattenValue(
+							ValueHelper::normalizeWriteValue(
+								$property->getDataType(),
+								/** @phpstan-ignore-next-line */
+								$data->offsetGet(States\Property::ACTUAL_VALUE_KEY),
+								$property->getFormat(),
+								$property->getScale(),
+								$property->getInvalid(),
+							),
+						),
+					);
+				} catch (Exceptions\InvalidState $ex) {
+					$data->offsetSet(States\Property::ACTUAL_VALUE_KEY, null);
+					$data->offsetSet(States\Property::VALID_KEY, false);
+
+					$this->logger->error(
+						'Provided property actual value was not valid',
+						[
+							'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+							'type' => 'device-properties-states',
+							'exception' => BootstrapHelpers\Logger::buildException($ex),
+						],
+					);
+				}
+			} else {
+				try {
+					$data->offsetSet(
+						States\Property::ACTUAL_VALUE_KEY,
+						ValueHelper::flattenValue(
+							ValueHelper::normalizeValue(
+								$property->getDataType(),
+								/** @phpstan-ignore-next-line */
+								$data->offsetGet(States\Property::ACTUAL_VALUE_KEY),
+								$property->getFormat(),
+								$property->getInvalid(),
+							),
+						),
+					);
+				} catch (Exceptions\InvalidState $ex) {
+					$data->offsetSet(States\Property::ACTUAL_VALUE_KEY, null);
+					$data->offsetSet(States\Property::VALID_KEY, false);
+
+					$this->logger->error(
+						'Provided property actual value was not valid',
+						[
+							'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+							'type' => 'device-properties-states',
+							'exception' => BootstrapHelpers\Logger::buildException($ex),
+						],
+					);
+				}
+			}
 		}
 
 		if ($data->offsetExists(States\Property::EXPECTED_VALUE_KEY)) {
-			$data->offsetSet(
-				States\Property::EXPECTED_VALUE_KEY,
-				ValueHelper::flattenValue(
-					ValueHelper::normalizeValue(
-						$property->getDataType(),
-						/** @phpstan-ignore-next-line */
-						$data->offsetGet(States\Property::EXPECTED_VALUE_KEY),
-						$property->getFormat(),
-						$property->getInvalid(),
-					),
-				),
-			);
+			if ($forWriting) {
+				try {
+					$data->offsetSet(
+						States\Property::EXPECTED_VALUE_KEY,
+						ValueHelper::flattenValue(
+							ValueHelper::normalizeWriteValue(
+								$property->getDataType(),
+								/** @phpstan-ignore-next-line */
+								$data->offsetGet(States\Property::EXPECTED_VALUE_KEY),
+								$property->getFormat(),
+								$property->getScale(),
+								$property->getInvalid(),
+							),
+						),
+					);
+				} catch (Exceptions\InvalidState $ex) {
+					$data->offsetSet(States\Property::EXPECTED_VALUE_KEY, null);
+					$data->offsetSet(States\Property::PENDING_KEY, false);
+
+					$this->logger->error(
+						'Provided property expected value was not valid',
+						[
+							'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+							'type' => 'device-properties-states',
+							'exception' => BootstrapHelpers\Logger::buildException($ex),
+						],
+					);
+				}
+			} else {
+				try {
+					$data->offsetSet(
+						States\Property::EXPECTED_VALUE_KEY,
+						ValueHelper::flattenValue(
+							ValueHelper::normalizeValue(
+								$property->getDataType(),
+								/** @phpstan-ignore-next-line */
+								$data->offsetGet(States\Property::EXPECTED_VALUE_KEY),
+								$property->getFormat(),
+								$property->getInvalid(),
+							),
+						),
+					);
+				} catch (Exceptions\InvalidState $ex) {
+					$data->offsetSet(States\Property::EXPECTED_VALUE_KEY, null);
+					$data->offsetSet(States\Property::PENDING_KEY, false);
+
+					$this->logger->error(
+						'Provided property expected value was not valid',
+						[
+							'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+							'type' => 'device-properties-states',
+							'exception' => BootstrapHelpers\Logger::buildException($ex),
+						],
+					);
+				}
+			}
 		}
 
 		try {
 			// In case synchronization failed...
-			if ($propertyState === null) {
+			if ($state === null) {
 				// ...create state in storage
-				$propertyState = $this->devicePropertiesStatesManager->create(
+				$state = $this->devicePropertiesStatesManager->create(
 					$property,
 					$data,
 				);
@@ -219,14 +435,14 @@ final class DevicePropertiesStates
 						'type' => 'device-properties-states',
 						'property' => [
 							'id' => $property->getId()->toString(),
-							'state' => $propertyState->toArray(),
+							'state' => $state->toArray(),
 						],
 					],
 				);
 			} else {
-				$propertyState = $this->devicePropertiesStatesManager->update(
+				$state = $this->devicePropertiesStatesManager->update(
 					$property,
-					$propertyState,
+					$state,
 					$data,
 				);
 
@@ -237,7 +453,7 @@ final class DevicePropertiesStates
 						'type' => 'device-properties-states',
 						'property' => [
 							'id' => $property->getId()->toString(),
-							'state' => $propertyState->toArray(),
+							'state' => $state->toArray(),
 						],
 					],
 				);
@@ -250,31 +466,6 @@ final class DevicePropertiesStates
 					'type' => 'device-properties-states',
 				],
 			);
-		}
-	}
-
-	/**
-	 * @param MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty|array<MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty>|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped|array<Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped> $property
-	 *
-	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 */
-	public function setValidState(
-		MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped|array $property,
-		bool $state,
-	): void
-	{
-		if (is_array($property)) {
-			foreach ($property as $item) {
-				$this->setValue($item, Utils\ArrayHash::from([
-					States\Property::VALID_KEY => $state,
-				]));
-			}
-		} else {
-			$this->setValue($property, Utils\ArrayHash::from([
-				States\Property::VALID_KEY => $state,
-			]));
 		}
 	}
 

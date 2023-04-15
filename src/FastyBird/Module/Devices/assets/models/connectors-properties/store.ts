@@ -10,6 +10,7 @@ import {
 	ConnectorPropertyEntity as ExchangeEntity,
 	DevicesModuleRoutes as RoutingKeys,
 	ModulePrefix,
+	PropertyCategory,
 	PropertyType,
 } from '@fastybird/metadata-library';
 
@@ -68,6 +69,7 @@ const recordFactory = async (data: IConnectorPropertyRecordFactoryPayload): Prom
 
 		draft: get(data, 'draft', false),
 
+		category: data.category,
 		identifier: data.identifier,
 		name: get(data, 'name', null),
 		settable: get(data, 'settable', false),
@@ -76,7 +78,8 @@ const recordFactory = async (data: IConnectorPropertyRecordFactoryPayload): Prom
 		unit: get(data, 'unit', null),
 		format: get(data, 'format', null),
 		invalid: get(data, 'invalid', null),
-		numberOfDecimals: get(data, 'numberOfDecimals', null),
+		scale: get(data, 'scale', null),
+		step: get(data, 'step', null),
 
 		value: get(data, 'value', null),
 		actualValue: get(data, 'actualValue', null),
@@ -84,7 +87,7 @@ const recordFactory = async (data: IConnectorPropertyRecordFactoryPayload): Prom
 		pending: get(data, 'pending', false),
 		command: get(data, 'command', null),
 		lastResult: get(data, 'lastResult', null),
-		backup: get(data, 'backup', null),
+		backupValue: get(data, 'backup', null),
 
 		// Relations
 		relationshipNames: ['connector'],
@@ -280,6 +283,7 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 					...{
 						id: payload?.id,
 						type: payload?.type,
+						category: PropertyCategory.GENERIC,
 						draft: payload?.draft,
 						connectorId: payload.connector.id,
 					},
@@ -325,7 +329,7 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 
 						return this.data[createdPropertyModel.id];
 					} catch (e: any) {
-						// Entity could not be created on api, we have to remove it from database
+						// Transformer could not be created on api, we have to remove it from database
 						delete this.data[newProperty.id];
 
 						throw new ApiError('devices-module.connector-properties.create.failed', e, 'Create new property failed.');
@@ -549,6 +553,7 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 						this.data[body.id] = await recordFactory({
 							...this.data[body.id],
 							...{
+								category: body.category,
 								name: body.name,
 								settable: body.settable,
 								queryable: body.queryable,
@@ -556,7 +561,8 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 								unit: body.unit,
 								format: body.format,
 								invalid: body.invalid,
-								numberOfDecimals: body.number_of_decimals,
+								scale: body.scale,
+								step: body.step,
 								actualValue: body.actual_value,
 								expectedValue: body.expected_value,
 								value: body.value,

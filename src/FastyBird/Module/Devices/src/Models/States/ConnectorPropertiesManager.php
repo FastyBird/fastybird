@@ -25,7 +25,6 @@ use Nette;
 use Nette\Utils;
 use Psr\EventDispatcher as PsrEventDispatcher;
 use function property_exists;
-use function strval;
 
 /**
  * Connector property states manager
@@ -42,6 +41,7 @@ final class ConnectorPropertiesManager
 
 	public function __construct(
 		protected readonly IConnectorPropertiesManager|null $manager = null,
+		protected readonly IConnectorPropertiesRepository|null $repository = null,
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
@@ -64,13 +64,12 @@ final class ConnectorPropertiesManager
 		if (
 			property_exists($values, States\Property::ACTUAL_VALUE_KEY)
 			&& property_exists($values, States\Property::EXPECTED_VALUE_KEY)
+			&& $values->offsetGet(States\Property::ACTUAL_VALUE_KEY) === $values->offsetGet(
+				States\Property::EXPECTED_VALUE_KEY,
+			)
 		) {
-			if (strval($values->offsetGet(States\Property::ACTUAL_VALUE_KEY)) === strval(
-				$values->offsetGet(States\Property::EXPECTED_VALUE_KEY),
-			)) {
-				$values->offsetSet(States\Property::EXPECTED_VALUE_KEY, null);
-				$values->offsetSet(States\Property::PENDING_KEY, null);
-			}
+			$values->offsetSet(States\Property::EXPECTED_VALUE_KEY, null);
+			$values->offsetSet(States\Property::PENDING_KEY, null);
 		}
 
 		$createdState = $this->manager->create($property->getId(), $values);
@@ -97,7 +96,7 @@ final class ConnectorPropertiesManager
 
 		$updatedState = $this->manager->update($state, $values);
 
-		if (strval($updatedState->getActualValue()) === strval($updatedState->getExpectedValue())) {
+		if ($updatedState->getActualValue() === $updatedState->getExpectedValue()) {
 			$updatedState = $this->manager->update(
 				$updatedState,
 				Utils\ArrayHash::from([
@@ -119,11 +118,16 @@ final class ConnectorPropertiesManager
 	 */
 	public function delete(
 		MetadataEntities\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
-		States\ConnectorProperty $state,
 	): bool
 	{
-		if ($this->manager === null) {
+		if ($this->manager === null || $this->repository === null) {
 			throw new Exceptions\NotImplemented('Connector properties state manager is not registered');
+		}
+
+		$state = $this->repository->findOne($property);
+
+		if ($state === null) {
+			return true;
 		}
 
 		$result = $this->manager->delete($state);

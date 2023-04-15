@@ -19,7 +19,9 @@ use Doctrine\DBAL;
 use Doctrine\Persistence;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
+use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Types;
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
@@ -72,6 +74,7 @@ class Initialize extends Console\Command\Command
 	public function __construct(
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Connectors\ConnectorsManager $connectorsManager,
+		private readonly DevicesModels\Connectors\Properties\PropertiesRepository $propertiesRepository,
 		private readonly DevicesModels\Connectors\Properties\PropertiesManager $propertiesManager,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 		Log\LoggerInterface|null $logger = null,
@@ -224,8 +227,15 @@ class Initialize extends Console\Command\Command
 			$this->propertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 				'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+				'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE),
+				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
 				'value' => $mode->getValue(),
+				'format' => [
+					Types\ClientMode::MODE_LOCAL,
+					Types\ClientMode::MODE_CLOUD,
+					Types\ClientMode::MODE_MQTT,
+					Types\ClientMode::MODE_INTEGRATOR,
+				],
 				'connector' => $connector,
 			]));
 
@@ -233,6 +243,7 @@ class Initialize extends Console\Command\Command
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_CLOUD_AUTH_KEY,
+					'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLOUD_AUTH_KEY),
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 					'value' => $cloudAuthKey,
 					'connector' => $connector,
@@ -241,6 +252,7 @@ class Initialize extends Console\Command\Command
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_CLOUD_SERVER,
+					'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLOUD_SERVER),
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 					'value' => $cloudServer,
 					'connector' => $connector,
@@ -261,11 +273,7 @@ class Initialize extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'initialize-cmd',
-					'group' => 'cmd',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -306,7 +314,11 @@ class Initialize extends Console\Command\Command
 			return;
 		}
 
-		$modeProperty = $connector->findProperty(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE);
+		$findConnectorPropertyQuery = new DevicesQueries\FindConnectorProperties();
+		$findConnectorPropertyQuery->forConnector($connector);
+		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE);
+
+		$modeProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
 		$mode = null;
 
@@ -337,9 +349,11 @@ class Initialize extends Console\Command\Command
 			$modeProperty?->getValue() === Types\ClientMode::MODE_CLOUD
 			|| $mode?->getValue() === Types\ClientMode::MODE_CLOUD
 		) {
-			$cloudAuthKeyProperty = $connector->findProperty(
-				Types\ConnectorPropertyIdentifier::IDENTIFIER_CLOUD_AUTH_KEY,
-			);
+			$findConnectorPropertyQuery = new DevicesQueries\FindConnectorProperties();
+			$findConnectorPropertyQuery->forConnector($connector);
+			$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLOUD_AUTH_KEY);
+
+			$cloudAuthKeyProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
 			$changeCloudAuthKey = false;
 
@@ -356,7 +370,11 @@ class Initialize extends Console\Command\Command
 				$cloudAuthKey = $this->askCloudAuthenticationKey($io, $connector);
 			}
 
-			$cloudServerProperty = $connector->findProperty(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLOUD_SERVER);
+			$findConnectorPropertyQuery = new DevicesQueries\FindConnectorProperties();
+			$findConnectorPropertyQuery->forConnector($connector);
+			$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLOUD_SERVER);
+
+			$cloudServerProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
 			$changeCloudServer = false;
 
@@ -413,8 +431,15 @@ class Initialize extends Console\Command\Command
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+					'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
 					'value' => $mode->getValue(),
+					'format' => [
+						Types\ClientMode::MODE_LOCAL,
+						Types\ClientMode::MODE_CLOUD,
+						Types\ClientMode::MODE_MQTT,
+						Types\ClientMode::MODE_INTEGRATOR,
+					],
 					'connector' => $connector,
 				]));
 			} elseif ($mode !== null) {
@@ -435,6 +460,9 @@ class Initialize extends Console\Command\Command
 					$this->propertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 						'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_CLOUD_AUTH_KEY,
+						'name' => Helpers\Name::createName(
+							Types\ConnectorPropertyIdentifier::IDENTIFIER_CLOUD_AUTH_KEY,
+						),
 						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 						'value' => $cloudAuthKey,
 						'connector' => $connector,
@@ -449,6 +477,7 @@ class Initialize extends Console\Command\Command
 					$this->propertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 						'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_CLOUD_SERVER,
+						'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLOUD_SERVER),
 						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 						'value' => $cloudServer,
 						'connector' => $connector,
@@ -470,11 +499,7 @@ class Initialize extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'initialize-cmd',
-					'group' => 'cmd',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -533,11 +558,7 @@ class Initialize extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'initialize-cmd',
-					'group' => 'cmd',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -717,7 +738,7 @@ class Initialize extends Console\Command\Command
 			return $connection;
 		}
 
-		throw new Exceptions\Runtime('Entity manager could not be loaded');
+		throw new Exceptions\Runtime('Transformer manager could not be loaded');
 	}
 
 }

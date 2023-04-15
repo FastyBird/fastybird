@@ -20,6 +20,7 @@ use FastyBird\Connector\Shelly\Clients;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\DateTimeFactory;
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Events as DevicesEvents;
@@ -136,11 +137,7 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'event-writer',
-						'group' => 'writer',
-						'exception' => [
-							'message' => $ex->getMessage(),
-							'code' => $ex->getCode(),
-						],
+						'exception' => BootstrapHelpers\Logger::buildException($ex),
 						'connector' => [
 							'id' => $connectorId->toString(),
 						],

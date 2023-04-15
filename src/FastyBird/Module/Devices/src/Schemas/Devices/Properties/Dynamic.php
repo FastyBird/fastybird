@@ -46,7 +46,7 @@ final class Dynamic extends Property
 	public function __construct(
 		Routing\IRouter $router,
 		Models\Devices\Properties\PropertiesRepository $propertiesRepository,
-		private readonly Models\States\DevicePropertiesRepository $propertiesStatesRepository,
+		private readonly Utilities\DevicePropertiesStates $devicePropertiesStates,
 	)
 	{
 		parent::__construct($router, $propertiesRepository);
@@ -78,33 +78,11 @@ final class Dynamic extends Property
 		JsonApi\Contracts\Schema\ContextInterface $context,
 	): iterable
 	{
-		try {
-			$state = $this->propertiesStatesRepository->findOne($resource);
-
-		} catch (Exceptions\NotImplemented) {
-			$state = null;
-		}
-
-		$actualValue = $state !== null
-			? Utilities\ValueHelper::normalizeValue(
-				$resource->getDataType(),
-				$state->getActualValue(),
-				$resource->getFormat(),
-				$resource->getInvalid(),
-			)
-			: null;
-		$expectedValue = $state !== null
-			? Utilities\ValueHelper::normalizeValue(
-				$resource->getDataType(),
-				$state->getExpectedValue(),
-				$resource->getFormat(),
-				$resource->getInvalid(),
-			)
-			: null;
+		$state = $this->devicePropertiesStates->readValue($resource);
 
 		return array_merge((array) parent::getAttributes($resource, $context), [
-			'actual_value' => Utilities\ValueHelper::flattenValue($actualValue),
-			'expected_value' => Utilities\ValueHelper::flattenValue($expectedValue),
+			'actual_value' => Utilities\ValueHelper::flattenValue($state?->getActualValue()),
+			'expected_value' => Utilities\ValueHelper::flattenValue($state?->getExpectedValue()),
 			'pending' => $state !== null && $state->isPending(),
 		]);
 	}

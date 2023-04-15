@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:AccountsModule!
  * @subpackage     Entities
- * @since          0.1.0
+ * @since          1.0.0
  *
  * @date           25.05.20
  */
@@ -18,7 +18,7 @@ namespace FastyBird\Module\Accounts\Entities;
 use Nette\Utils;
 
 /**
- * Entity params field interface
+ * Transformer params field interface
  *
  * @package        FastyBird:AccountsModule!
  * @subpackage     Entities

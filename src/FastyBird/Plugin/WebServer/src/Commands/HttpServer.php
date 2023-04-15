@@ -8,13 +8,14 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:WebServerPlugin!
  * @subpackage     Commands
- * @since          0.1.0
+ * @since          1.0.0
  *
  * @date           15.03.20
  */
 
 namespace FastyBird\Plugin\WebServer\Commands;
 
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\WebServer\Events;
 use FastyBird\Plugin\WebServer\Exceptions;
@@ -86,7 +87,6 @@ class HttpServer extends Console\Command\Command
 			[
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WEB_SERVER,
 				'type' => 'server-command',
-				'group' => 'cmd',
 			],
 		);
 
@@ -128,11 +128,7 @@ class HttpServer extends Console\Command\Command
 				[
 					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WEB_SERVER,
 					'type' => 'server-command',
-					'group' => 'cmd',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'cmd' => $this->getName(),
 				],
 			);
@@ -146,11 +142,7 @@ class HttpServer extends Console\Command\Command
 				[
 					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WEB_SERVER,
 					'type' => 'server-command',
-					'group' => 'cmd',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'cmd' => $this->getName(),
 				],
 			);

@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:MetadataLibrary!
  * @subpackage     Entities
- * @since          0.57.0
+ * @since          1.0.0
  *
  * @date           04.06.22
  */
@@ -67,7 +67,7 @@ final class DeviceEntityFactory extends Entities\EntityFactory
 			return $entity;
 		}
 
-		throw new Exceptions\InvalidState('Entity could not be created');
+		throw new Exceptions\InvalidState('Transformer could not be created');
 	}
 
 }

@@ -75,10 +75,10 @@ final class CreateAccountTest extends DbTestCase
 
 		self::assertSame(0, $result);
 
-		$findEmail = new Queries\FindEmails();
-		$findEmail->byAddress('rocky@balboa.com');
+		$findEmailQuery = new Queries\FindEmails();
+		$findEmailQuery->byAddress('rocky@balboa.com');
 
-		$email = $emailsRepository->findOneBy($findEmail);
+		$email = $emailsRepository->findOneBy($findEmailQuery);
 
 		self::assertNotNull($email);
 		self::assertSame('Balboa Rocky', $email->getAccount()->getName());

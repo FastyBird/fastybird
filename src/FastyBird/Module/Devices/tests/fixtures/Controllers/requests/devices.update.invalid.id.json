@@ -1,10 +1,10 @@
 {
-  "data" : {
-    "id" : "a1036ff8-6ee8-4405-aaed-58bae0814596",
-    "type" : "com.fastybird.devices-module/device/blank",
-    "attributes" : {
-      "identifier" : "updated-device",
-      "name" : "With name"
+  "data": {
+    "id": "a1036ff8-6ee8-4405-aaed-58bae0814596",
+    "type": "com.fastybird.devices-module/device/blank",
+    "attributes": {
+      "identifier": "updated-device",
+      "name": "With name"
     }
   }
 }

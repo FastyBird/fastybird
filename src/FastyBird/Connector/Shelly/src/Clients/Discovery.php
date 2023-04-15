@@ -17,12 +17,15 @@ namespace FastyBird\Connector\Shelly\Clients;
 
 use Clue\React\Multicast;
 use Evenement;
+use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\API;
 use FastyBird\Connector\Shelly\Consumers;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
+use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Storages;
 use FastyBird\Connector\Shelly\Types;
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -138,11 +141,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'discovery-client',
-					'group' => 'client',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'connector' => [
 						'id' => $this->connector->getPlainId(),
 					],
@@ -162,7 +161,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'discovery-client',
-						'group' => 'client',
 						'connector' => [
 							'id' => $this->connector->getPlainId(),
 						],
@@ -178,7 +176,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'discovery-client',
-						'group' => 'client',
 						'connector' => [
 							'id' => $this->connector->getPlainId(),
 						],
@@ -331,11 +328,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'discovery-client',
-						'group' => 'client',
-						'exception' => [
-							'message' => $ex->getMessage(),
-							'code' => $ex->getCode(),
-						],
+						'exception' => BootstrapHelpers\Logger::buildException($ex),
 						'connector' => [
 							'id' => $this->connector->getPlainId(),
 						],
@@ -351,7 +344,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				continue;
 			}
 
-			$deviceDescription = $deviceConfiguration = null;
+			$deviceDescription = $deviceConfiguration = $deviceStatus = null;
 
 			try {
 				if ($device->getGeneration()->equalsValue(Types\DeviceGeneration::GENERATION_1)) {
@@ -370,6 +363,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 						false,
 					);
 					assert($deviceConfiguration instanceof Entities\API\Gen2\DeviceConfiguration);
+					$deviceStatus = $gen2HttpApi->getDeviceStatus($device->getIpAddress(), null, null, false);
+					assert($deviceStatus instanceof Entities\API\Gen2\DeviceStatus);
 				} else {
 					continue;
 				}
@@ -383,11 +378,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 							'type' => 'discovery-client',
-							'group' => 'client',
-							'exception' => [
-								'message' => $ex->getMessage(),
-								'code' => $ex->getCode(),
-							],
+							'exception' => BootstrapHelpers\Logger::buildException($ex),
 							'connector' => [
 								'id' => $this->connector->getPlainId(),
 							],
@@ -405,11 +396,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 							'type' => 'discovery-client',
-							'group' => 'client',
-							'exception' => [
-								'message' => $ex->getMessage(),
-								'code' => $ex->getCode(),
-							],
+							'exception' => BootstrapHelpers\Logger::buildException($ex),
 							'connector' => [
 								'id' => $this->connector->getPlainId(),
 							],
@@ -445,7 +432,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 							static function (Entities\API\Gen1\DeviceBlockDescription $block): Entities\Messages\ChannelDescription {
 								$channel = new Entities\Messages\ChannelDescription(
 									$block->getIdentifier() . '_' . $block->getDescription(),
-									null,
+									Helpers\Name::createName($block->getDescription()),
 								);
 
 								foreach ($block->getSensors() as $sensor) {
@@ -457,6 +444,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 											. '_'
 											. $sensor->getDescription()
 										),
+										Helpers\Name::createName($sensor->getDescription()),
 										$sensor->getDataType(),
 										$sensor->getUnit(),
 										$sensor->getFormat(),
@@ -488,147 +476,207 @@ final class Discovery implements Evenement\EventEmitterInterface
 						$deviceInformation->hasAuthentication(),
 						$deviceInformation->getFirmware(),
 						array_map(
-							static function ($component): Entities\Messages\ChannelDescription {
+							static function ($component) use ($deviceStatus): Entities\Messages\ChannelDescription {
 								$channel = new Entities\Messages\ChannelDescription(
 									$component->getType()->getValue() . '_' . $component->getId(),
-									$component->getName(),
+									$component->getName() ?? Helpers\Name::createName(
+										strval($component->getType()->getValue()),
+									),
 								);
 
 								if ($component instanceof Entities\API\Gen2\DeviceSwitchConfiguration) {
-									$channel->addProperty(new Entities\Messages\PropertyDescription(
-										(
-											$component->getType()->getValue()
-											. '_'
-											. $component->getId()
-											. '_'
-											. Types\ComponentAttributeType::ATTRIBUTE_ON
-										),
-										MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN),
-										null,
-										null,
-										null,
-										true,
-										true,
-									));
+									$status = $deviceStatus?->findSwitch($component->getId());
 
-									$channel->addProperty(new Entities\Messages\PropertyDescription(
-										(
-											$component->getType()->getValue()
-											. '_'
-											. $component->getId()
-											. '_'
-											. Types\ComponentAttributeType::ATTRIBUTE_ACTIVE_POWER
-										),
-										MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
-										'W',
-										null,
-										null,
-										true,
-										false,
-									));
+									if (
+										$status === null
+										|| $status->getOutput() !== Shelly\Constants::VALUE_NOT_AVAILABLE
+									) {
+										$channel->addProperty(new Entities\Messages\PropertyDescription(
+											(
+												$component->getType()->getValue()
+												. '_'
+												. $component->getId()
+												. '_'
+												. Types\ComponentAttributeType::ATTRIBUTE_ON
+											),
+											Helpers\Name::createName(Types\ComponentAttributeType::ATTRIBUTE_ON),
+											MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN),
+											null,
+											null,
+											null,
+											true,
+											true,
+										));
+									}
 
-									$channel->addProperty(new Entities\Messages\PropertyDescription(
-										(
-											$component->getType()->getValue()
-											. '_'
-											. $component->getId()
-											. '_'
-											. Types\ComponentAttributeType::ATTRIBUTE_POWER_FACTOR
-										),
-										MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
-										null,
-										null,
-										null,
-										true,
-										false,
-									));
+									if (
+										$status === null
+										|| $status->getActivePower() !== Shelly\Constants::VALUE_NOT_AVAILABLE
+									) {
+										$channel->addProperty(new Entities\Messages\PropertyDescription(
+											(
+												$component->getType()->getValue()
+												. '_'
+												. $component->getId()
+												. '_'
+												. Types\ComponentAttributeType::ATTRIBUTE_ACTIVE_POWER
+											),
+											Helpers\Name::createName(
+												Types\ComponentAttributeType::ATTRIBUTE_ACTIVE_POWER,
+											),
+											MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+											'W',
+											null,
+											null,
+											true,
+											false,
+										));
+									}
 
-									$channel->addProperty(new Entities\Messages\PropertyDescription(
-										(
-											$component->getType()->getValue()
-											. '_'
-											. $component->getId()
-											. '_'
-											. Types\ComponentAttributeType::ATTRIBUTE_ACTIVE_ENERGY
-										),
-										MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
-										'Wh',
-										null,
-										null,
-										true,
-										false,
-									));
+									if (
+										$status === null
+										|| $status->getPowerFactor() !== Shelly\Constants::VALUE_NOT_AVAILABLE
+									) {
+										$channel->addProperty(new Entities\Messages\PropertyDescription(
+											(
+												$component->getType()->getValue()
+												. '_'
+												. $component->getId()
+												. '_'
+												. Types\ComponentAttributeType::ATTRIBUTE_POWER_FACTOR
+											),
+											Helpers\Name::createName(
+												Types\ComponentAttributeType::ATTRIBUTE_POWER_FACTOR,
+											),
+											MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+											null,
+											null,
+											null,
+											true,
+											false,
+										));
+									}
 
-									$channel->addProperty(new Entities\Messages\PropertyDescription(
-										(
-											$component->getType()->getValue()
-											. '_'
-											. $component->getId()
-											. '_'
-											. Types\ComponentAttributeType::ATTRIBUTE_CURRENT
-										),
-										MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
-										'A',
-										null,
-										null,
-										true,
-										false,
-									));
+									if (
+										$status === null
+										|| $status->getActiveEnergy() !== Shelly\Constants::VALUE_NOT_AVAILABLE
+									) {
+										$channel->addProperty(new Entities\Messages\PropertyDescription(
+											(
+												$component->getType()->getValue()
+												. '_'
+												. $component->getId()
+												. '_'
+												. Types\ComponentAttributeType::ATTRIBUTE_ACTIVE_ENERGY
+											),
+											Helpers\Name::createName(
+												Types\ComponentAttributeType::ATTRIBUTE_ACTIVE_ENERGY,
+											),
+											MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+											'Wh',
+											null,
+											null,
+											true,
+											false,
+										));
+									}
 
-									$channel->addProperty(new Entities\Messages\PropertyDescription(
-										(
-											$component->getType()->getValue()
-											. '_'
-											. $component->getId()
-											. '_'
-											. Types\ComponentAttributeType::ATTRIBUTE_VOLTAGE
-										),
-										MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
-										'V',
-										null,
-										null,
-										true,
-										false,
-									));
+									if (
+										$status === null
+										|| $status->getCurrent() !== Shelly\Constants::VALUE_NOT_AVAILABLE
+									) {
+										$channel->addProperty(new Entities\Messages\PropertyDescription(
+											(
+												$component->getType()->getValue()
+												. '_'
+												. $component->getId()
+												. '_'
+												. Types\ComponentAttributeType::ATTRIBUTE_CURRENT
+											),
+											Helpers\Name::createName(Types\ComponentAttributeType::ATTRIBUTE_CURRENT),
+											MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+											'A',
+											null,
+											null,
+											true,
+											false,
+										));
+									}
 
-									$channel->addProperty(new Entities\Messages\PropertyDescription(
-										(
-											$component->getType()->getValue()
-											. '_'
-											. $component->getId()
-											. '_'
-											. Types\ComponentAttributeType::ATTRIBUTE_CELSIUS
-										),
-										MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
-										'°C',
-										null,
-										null,
-										true,
-										false,
-									));
+									if (
+										$status === null
+										|| $status->getVoltage() !== Shelly\Constants::VALUE_NOT_AVAILABLE
+									) {
+										$channel->addProperty(new Entities\Messages\PropertyDescription(
+											(
+												$component->getType()->getValue()
+												. '_'
+												. $component->getId()
+												. '_'
+												. Types\ComponentAttributeType::ATTRIBUTE_VOLTAGE
+											),
+											Helpers\Name::createName(Types\ComponentAttributeType::ATTRIBUTE_VOLTAGE),
+											MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+											'V',
+											null,
+											null,
+											true,
+											false,
+										));
+									}
+
+									if (
+										$status === null
+										|| $status->getTemperature() !== Shelly\Constants::VALUE_NOT_AVAILABLE
+									) {
+										$channel->addProperty(new Entities\Messages\PropertyDescription(
+											(
+												$component->getType()->getValue()
+												. '_'
+												. $component->getId()
+												. '_'
+												. Types\ComponentAttributeType::ATTRIBUTE_CELSIUS
+											),
+											Helpers\Name::createName(Types\ComponentAttributeType::ATTRIBUTE_CELSIUS),
+											MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+											'°C',
+											null,
+											null,
+											true,
+											false,
+										));
+									}
 								} elseif ($component instanceof Entities\API\Gen2\DeviceCoverConfiguration) {
-									$channel->addProperty(new Entities\Messages\PropertyDescription(
-										(
-											$component->getType()->getValue()
-											. '_'
-											. $component->getId()
-											. '_'
-											. Types\ComponentAttributeType::ATTRIBUTE_STATE
-										),
-										MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
-										null,
-										[
-											Types\CoverPayload::PAYLOAD_OPEN,
-											Types\CoverPayload::PAYLOAD_CLOSED,
-											Types\CoverPayload::PAYLOAD_OPENING,
-											Types\CoverPayload::PAYLOAD_CLOSING,
-											Types\CoverPayload::PAYLOAD_STOPPED,
-											Types\CoverPayload::PAYLOAD_CALIBRATING,
-										],
-										null,
-										true,
-										false,
-									));
+									$status = $deviceStatus?->findCover($component->getId());
+
+									if (
+										$status === null
+										|| $status->getState() !== Shelly\Constants::VALUE_NOT_AVAILABLE
+									) {
+										$channel->addProperty(new Entities\Messages\PropertyDescription(
+											(
+												$component->getType()->getValue()
+												. '_'
+												. $component->getId()
+												. '_'
+												. Types\ComponentAttributeType::ATTRIBUTE_STATE
+											),
+											Helpers\Name::createName(Types\ComponentAttributeType::ATTRIBUTE_STATE),
+											MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
+											null,
+											[
+												Types\CoverPayload::PAYLOAD_OPEN,
+												Types\CoverPayload::PAYLOAD_CLOSED,
+												Types\CoverPayload::PAYLOAD_OPENING,
+												Types\CoverPayload::PAYLOAD_CLOSING,
+												Types\CoverPayload::PAYLOAD_STOPPED,
+												Types\CoverPayload::PAYLOAD_CALIBRATING,
+											],
+											null,
+											true,
+											false,
+										));
+									}
 
 									$channel->addProperty(new Entities\Messages\PropertyDescription(
 										(
@@ -638,6 +686,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 											. '_'
 											. Types\ComponentAttributeType::ATTRIBUTE_POSITION
 										),
+										Helpers\Name::createName(Types\ComponentAttributeType::ATTRIBUTE_POSITION),
 										MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
 										null,
 										[0, 100],
@@ -646,133 +695,191 @@ final class Discovery implements Evenement\EventEmitterInterface
 										true,
 									));
 
-									$channel->addProperty(new Entities\Messages\PropertyDescription(
-										(
-											$component->getType()->getValue()
-											. '_'
-											. $component->getId()
-											. '_'
-											. Types\ComponentAttributeType::ATTRIBUTE_ACTIVE_POWER
-										),
-										MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
-										'W',
-										null,
-										null,
-										true,
-										false,
-									));
+									if (
+										$status === null
+										|| $status->getActivePower() !== Shelly\Constants::VALUE_NOT_AVAILABLE
+									) {
+										$channel->addProperty(new Entities\Messages\PropertyDescription(
+											(
+												$component->getType()->getValue()
+												. '_'
+												. $component->getId()
+												. '_'
+												. Types\ComponentAttributeType::ATTRIBUTE_ACTIVE_POWER
+											),
+											Helpers\Name::createName(
+												Types\ComponentAttributeType::ATTRIBUTE_ACTIVE_POWER,
+											),
+											MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+											'W',
+											null,
+											null,
+											true,
+											false,
+										));
+									}
 
-									$channel->addProperty(new Entities\Messages\PropertyDescription(
-										(
-											$component->getType()->getValue()
-											. '_'
-											. $component->getId()
-											. '_'
-											. Types\ComponentAttributeType::ATTRIBUTE_POWER_FACTOR
-										),
-										MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
-										null,
-										null,
-										null,
-										true,
-										false,
-									));
+									if (
+										$status === null
+										|| $status->getPowerFactor() !== Shelly\Constants::VALUE_NOT_AVAILABLE
+									) {
+										$channel->addProperty(new Entities\Messages\PropertyDescription(
+											(
+												$component->getType()->getValue()
+												. '_'
+												. $component->getId()
+												. '_'
+												. Types\ComponentAttributeType::ATTRIBUTE_POWER_FACTOR
+											),
+											Helpers\Name::createName(
+												Types\ComponentAttributeType::ATTRIBUTE_POWER_FACTOR,
+											),
+											MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+											null,
+											null,
+											null,
+											true,
+											false,
+										));
+									}
 
-									$channel->addProperty(new Entities\Messages\PropertyDescription(
-										(
-											$component->getType()->getValue()
-											. '_'
-											. $component->getId()
-											. '_'
-											. Types\ComponentAttributeType::ATTRIBUTE_ACTIVE_ENERGY
-										),
-										MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
-										'Wh',
-										null,
-										null,
-										true,
-										false,
-									));
+									if (
+										$status === null
+										|| $status->getActiveEnergy() !== Shelly\Constants::VALUE_NOT_AVAILABLE
+									) {
+										$channel->addProperty(new Entities\Messages\PropertyDescription(
+											(
+												$component->getType()->getValue()
+												. '_'
+												. $component->getId()
+												. '_'
+												. Types\ComponentAttributeType::ATTRIBUTE_ACTIVE_ENERGY
+											),
+											Helpers\Name::createName(
+												Types\ComponentAttributeType::ATTRIBUTE_ACTIVE_ENERGY,
+											),
+											MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+											'Wh',
+											null,
+											null,
+											true,
+											false,
+										));
+									}
 
-									$channel->addProperty(new Entities\Messages\PropertyDescription(
-										(
-											$component->getType()->getValue()
-											. '_'
-											. $component->getId()
-											. '_'
-											. Types\ComponentAttributeType::ATTRIBUTE_CURRENT
-										),
-										MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
-										'A',
-										null,
-										null,
-										true,
-										false,
-									));
+									if (
+										$status === null
+										|| $status->getCurrent() !== Shelly\Constants::VALUE_NOT_AVAILABLE
+									) {
+										$channel->addProperty(new Entities\Messages\PropertyDescription(
+											(
+												$component->getType()->getValue()
+												. '_'
+												. $component->getId()
+												. '_'
+												. Types\ComponentAttributeType::ATTRIBUTE_CURRENT
+											),
+											Helpers\Name::createName(Types\ComponentAttributeType::ATTRIBUTE_CURRENT),
+											MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+											'A',
+											null,
+											null,
+											true,
+											false,
+										));
+									}
 
-									$channel->addProperty(new Entities\Messages\PropertyDescription(
-										(
-											$component->getType()->getValue()
-											. '_'
-											. $component->getId()
-											. '_'
-											. Types\ComponentAttributeType::ATTRIBUTE_VOLTAGE
-										),
-										MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
-										'V',
-										null,
-										null,
-										true,
-										false,
-									));
+									if (
+										$status === null
+										|| $status->getVoltage() !== Shelly\Constants::VALUE_NOT_AVAILABLE
+									) {
+										$channel->addProperty(new Entities\Messages\PropertyDescription(
+											(
+												$component->getType()->getValue()
+												. '_'
+												. $component->getId()
+												. '_'
+												. Types\ComponentAttributeType::ATTRIBUTE_VOLTAGE
+											),
+											Helpers\Name::createName(Types\ComponentAttributeType::ATTRIBUTE_VOLTAGE),
+											MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+											'V',
+											null,
+											null,
+											true,
+											false,
+										));
+									}
 
-									$channel->addProperty(new Entities\Messages\PropertyDescription(
-										(
-											$component->getType()->getValue()
-											. '_'
-											. $component->getId()
-											. '_'
-											. Types\ComponentAttributeType::ATTRIBUTE_CELSIUS
-										),
-										MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
-										'°C',
-										null,
-										null,
-										true,
-										false,
-									));
+									if (
+										$status === null
+										|| $status->getTemperature() !== Shelly\Constants::VALUE_NOT_AVAILABLE
+									) {
+										$channel->addProperty(new Entities\Messages\PropertyDescription(
+											(
+												$component->getType()->getValue()
+												. '_'
+												. $component->getId()
+												. '_'
+												. Types\ComponentAttributeType::ATTRIBUTE_CELSIUS
+											),
+											Helpers\Name::createName(Types\ComponentAttributeType::ATTRIBUTE_CELSIUS),
+											MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+											'°C',
+											null,
+											null,
+											true,
+											false,
+										));
+									}
 								} elseif ($component instanceof Entities\API\Gen2\DeviceLightConfiguration) {
-									$channel->addProperty(new Entities\Messages\PropertyDescription(
-										(
-											$component->getType()->getValue()
-											. '_'
-											. $component->getId()
-											. '_'
-											. Types\ComponentAttributeType::ATTRIBUTE_ON
-										),
-										MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN),
-										null,
-										null,
-										null,
-										true,
-										true,
-									));
+									$status = $deviceStatus?->findLight($component->getId());
 
-									$channel->addProperty(new Entities\Messages\PropertyDescription(
-										(
-											$component->getType()->getValue()
-											. '_'
-											. $component->getId()
-											. '_'
-											. Types\ComponentAttributeType::ATTRIBUTE_BRIGHTNESS
-										),
-										MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
-										null,
-										[0, 100],
-										null,
-										true,
-										true,
-									));
+									if (
+										$status === null
+										|| $status->getOutput() !== Shelly\Constants::VALUE_NOT_AVAILABLE
+									) {
+										$channel->addProperty(new Entities\Messages\PropertyDescription(
+											(
+												$component->getType()->getValue()
+												. '_'
+												. $component->getId()
+												. '_'
+												. Types\ComponentAttributeType::ATTRIBUTE_ON
+											),
+											Helpers\Name::createName(Types\ComponentAttributeType::ATTRIBUTE_ON),
+											MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN),
+											null,
+											null,
+											null,
+											true,
+											true,
+										));
+									}
+
+									if (
+										$status === null
+										|| $status->getBrightness() !== Shelly\Constants::VALUE_NOT_AVAILABLE
+									) {
+										$channel->addProperty(new Entities\Messages\PropertyDescription(
+											(
+												$component->getType()->getValue()
+												. '_'
+												. $component->getId()
+												. '_'
+												. Types\ComponentAttributeType::ATTRIBUTE_BRIGHTNESS
+											),
+											Helpers\Name::createName(
+												Types\ComponentAttributeType::ATTRIBUTE_BRIGHTNESS,
+											),
+											MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
+											null,
+											[0, 100],
+											null,
+											true,
+											true,
+										));
+									}
 								} elseif ($component instanceof Entities\API\Gen2\DeviceInputConfiguration) {
 									if ($component->getInputType()->equalsValue(Types\InputType::TYPE_SWITCH)) {
 										$channel->addProperty(new Entities\Messages\PropertyDescription(
@@ -781,6 +888,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 												. '_'
 												. $component->getId()
 											),
+											null,
 											MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN),
 											null,
 											null,
@@ -795,6 +903,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 												. '_'
 												. $component->getId()
 											),
+											null,
 											MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
 											null,
 											[
@@ -815,6 +924,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 												. '_'
 												. $component->getId()
 											),
+											null,
 											MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
 											null,
 											[0, 100],
@@ -824,51 +934,75 @@ final class Discovery implements Evenement\EventEmitterInterface
 										));
 									}
 								} elseif ($component instanceof Entities\API\Gen2\DeviceTemperatureConfiguration) {
-									$channel->addProperty(new Entities\Messages\PropertyDescription(
-										(
-											$component->getType()->getValue()
-											. '_'
-											. $component->getId()
-											. '_'
-											. Types\ComponentAttributeType::ATTRIBUTE_CELSIUS
-										),
-										MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
-										'°C',
-										null,
-										null,
-										true,
-										false,
-									));
+									$status = $deviceStatus?->findTemperature($component->getId());
 
-									$channel->addProperty(new Entities\Messages\PropertyDescription(
-										(
-											$component->getType()->getValue()
-											. '_'
-											. $component->getId()
-											. '_'
-											. Types\ComponentAttributeType::ATTRIBUTE_FAHRENHEIT
-										),
-										MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
-										'°F',
-										null,
-										null,
-										true,
-										false,
-									));
+									if (
+										$status === null
+										|| $status->getTemperatureCelsius() !== Shelly\Constants::VALUE_NOT_AVAILABLE
+									) {
+										$channel->addProperty(new Entities\Messages\PropertyDescription(
+											(
+												$component->getType()->getValue()
+												. '_'
+												. $component->getId()
+												. '_'
+												. Types\ComponentAttributeType::ATTRIBUTE_CELSIUS
+											),
+											Helpers\Name::createName(Types\ComponentAttributeType::ATTRIBUTE_CELSIUS),
+											MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+											'°C',
+											null,
+											null,
+											true,
+											false,
+										));
+									}
+
+									if (
+										$status === null
+										|| $status->getTemperatureFahrenheit() !== Shelly\Constants::VALUE_NOT_AVAILABLE
+									) {
+										$channel->addProperty(new Entities\Messages\PropertyDescription(
+											(
+												$component->getType()->getValue()
+												. '_'
+												. $component->getId()
+												. '_'
+												. Types\ComponentAttributeType::ATTRIBUTE_FAHRENHEIT
+											),
+											Helpers\Name::createName(
+												Types\ComponentAttributeType::ATTRIBUTE_FAHRENHEIT,
+											),
+											MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+											'°F',
+											null,
+											null,
+											true,
+											false,
+										));
+									}
 								} else {
-									$channel->addProperty(new Entities\Messages\PropertyDescription(
-										(
-											$component->getType()->getValue()
-											. '_'
-											. $component->getId()
-										),
-										MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
-										'%',
-										null,
-										null,
-										true,
-										false,
-									));
+									$status = $deviceStatus?->findHumidity($component->getId());
+
+									if (
+										$status === null
+										|| $status->getRelativeHumidity() !== Shelly\Constants::VALUE_NOT_AVAILABLE
+									) {
+										$channel->addProperty(new Entities\Messages\PropertyDescription(
+											(
+												$component->getType()->getValue()
+												. '_'
+												. $component->getId()
+											),
+											null,
+											MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+											'%',
+											null,
+											null,
+											true,
+											false,
+										));
+									}
 								}
 
 								return $channel;
@@ -896,11 +1030,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'discovery-client',
-						'group' => 'client',
-						'exception' => [
-							'message' => $ex->getMessage(),
-							'code' => $ex->getCode(),
-						],
+						'exception' => BootstrapHelpers\Logger::buildException($ex),
 						'connector' => [
 							'id' => $this->connector->getPlainId(),
 						],

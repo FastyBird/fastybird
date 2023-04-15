@@ -37,7 +37,6 @@ use const DIRECTORY_SEPARATOR;
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *
  * @property-read MetadataSchemas\Validator $schemaValidator
- * @property-read EntityFactory $entityFactory
  */
 trait Gen2
 {
@@ -58,7 +57,7 @@ trait Gen2
 	private function buildComponentMethod(string $component): string
 	{
 		if (
-			preg_match(self::PROPERTY_COMPONENT, $component, $componentMatches) !== 1
+			preg_match(self::$PROPERTY_COMPONENT, $component, $componentMatches) !== 1
 			|| !array_key_exists('component', $componentMatches)
 			|| !array_key_exists('identifier', $componentMatches)
 			|| !array_key_exists('attribute', $componentMatches)
@@ -68,14 +67,14 @@ trait Gen2
 
 		if (
 			$componentMatches['component'] === Types\ComponentType::TYPE_SWITCH
-			&& $componentMatches['description'] === Types\ComponentAttributeType::ATTRIBUTE_ON
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::ATTRIBUTE_ON
 		) {
 			return self::$SWITCH_SET_METHOD;
 		}
 
 		if (
 			$componentMatches['component'] === Types\ComponentType::TYPE_COVER
-			&& $componentMatches['description'] === Types\ComponentAttributeType::ATTRIBUTE_POSITION
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::ATTRIBUTE_POSITION
 		) {
 			return self::$COVER_GO_TO_POSITION_METHOD;
 		}
@@ -84,7 +83,7 @@ trait Gen2
 			$componentMatches['component'] === Types\ComponentType::TYPE_LIGHT
 			&& (
 				$componentMatches['description'] === Types\ComponentAttributeType::ATTRIBUTE_ON
-				|| $componentMatches['description'] === Types\ComponentAttributeType::ATTRIBUTE_BRIGHTNESS
+				|| $componentMatches['attribute'] === Types\ComponentAttributeType::ATTRIBUTE_BRIGHTNESS
 			)
 		) {
 			return self::$LIGHT_SET_METHOD;
@@ -120,42 +119,42 @@ trait Gen2
 				&& Types\ComponentType::isValidValue($componentMatches['component'])
 			) {
 				if ($componentMatches['component'] === Types\ComponentType::TYPE_SWITCH) {
-					$switches[] = $this->entityFactory->build(
+					$switches[] = EntityFactory::build(
 						Entities\API\Gen2\DeviceSwitchStatus::class,
 						$status,
 					);
 				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_COVER) {
-					$covers[] = $this->entityFactory->build(
+					$covers[] = EntityFactory::build(
 						Entities\API\Gen2\DeviceCoverStatus::class,
 						$status,
 					);
 				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_LIGHT) {
-					$lights[] = $this->entityFactory->build(
+					$lights[] = EntityFactory::build(
 						Entities\API\Gen2\DeviceLightStatus::class,
 						$status,
 					);
 				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_INPUT) {
-					$inputs[] = $this->entityFactory->build(
+					$inputs[] = EntityFactory::build(
 						Entities\API\Gen2\DeviceInputStatus::class,
 						$status,
 					);
 				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_TEMPERATURE) {
-					$temperature[] = $this->entityFactory->build(
+					$temperature[] = EntityFactory::build(
 						Entities\API\Gen2\DeviceTemperatureStatus::class,
 						$status,
 					);
 				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_HUMIDITY) {
-					$humidity[] = $this->entityFactory->build(
+					$humidity[] = EntityFactory::build(
 						Entities\API\Gen2\DeviceHumidityStatus::class,
 						$status,
 					);
 				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_ETHERNET) {
-					$ethernet = $this->entityFactory->build(
+					$ethernet = EntityFactory::build(
 						Entities\API\Gen2\EthernetStatus::class,
 						$status,
 					);
 				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_WIFI) {
-					$wifi = $this->entityFactory->build(
+					$wifi = EntityFactory::build(
 						Entities\API\Gen2\WifiStatus::class,
 						$status,
 					);
@@ -201,32 +200,32 @@ trait Gen2
 				&& Types\ComponentType::isValidValue($componentMatches['component'])
 			) {
 				if ($componentMatches['component'] === Types\ComponentType::TYPE_SWITCH) {
-					$switches[] = $this->entityFactory->build(
+					$switches[] = EntityFactory::build(
 						Entities\API\Gen2\DeviceSwitchConfiguration::class,
 						$configuration,
 					);
 				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_COVER) {
-					$covers[] = $this->entityFactory->build(
+					$covers[] = EntityFactory::build(
 						Entities\API\Gen2\DeviceCoverConfiguration::class,
 						$configuration,
 					);
 				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_LIGHT) {
-					$lights[] = $this->entityFactory->build(
+					$lights[] = EntityFactory::build(
 						Entities\API\Gen2\DeviceLightConfiguration::class,
 						$configuration,
 					);
 				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_INPUT) {
-					$inputs[] = $this->entityFactory->build(
+					$inputs[] = EntityFactory::build(
 						Entities\API\Gen2\DeviceInputConfiguration::class,
 						$configuration,
 					);
 				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_TEMPERATURE) {
-					$temperature[] = $this->entityFactory->build(
+					$temperature[] = EntityFactory::build(
 						Entities\API\Gen2\DeviceTemperatureConfiguration::class,
 						$configuration,
 					);
 				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_HUMIDITY) {
-					$humidity[] = $this->entityFactory->build(
+					$humidity[] = EntityFactory::build(
 						Entities\API\Gen2\DeviceHumidityConfiguration::class,
 						$configuration,
 					);
@@ -260,7 +259,7 @@ trait Gen2
 			$this->getSchemaFilePath($schemaFilename),
 		);
 
-		return $this->entityFactory->build(
+		return EntityFactory::build(
 			Entities\API\Gen2\DeviceInformation::class,
 			$parsedMessage,
 		);
@@ -286,7 +285,7 @@ trait Gen2
 
 		foreach ((array) $parsedMessage->offsetGet('events') as $event) {
 			if ($event instanceof Utils\ArrayHash) {
-				$events[] = $this->entityFactory->build(
+				$events[] = EntityFactory::build(
 					Entities\API\Gen2\ComponentEvent::class,
 					$event,
 				);

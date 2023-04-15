@@ -23,10 +23,13 @@ use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\Connector\Shelly\Writers;
 use FastyBird\DateTimeFactory;
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Psr\Log;
@@ -76,11 +79,11 @@ final class Local implements Client
 
 	public function __construct(
 		private readonly Entities\ShellyConnector $connector,
-		private readonly API\Transformer $transformer,
 		private readonly Clients\Local\CoapFactory $coapClientFactory,
 		private readonly Clients\Local\HttpFactory $httpClientFactory,
 		private readonly Clients\Local\WsFactory $wsClientFactory,
 		private readonly Writers\Writer $writer,
+		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
@@ -113,11 +116,7 @@ final class Local implements Client
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'local-client',
-					'group' => 'client',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'connector' => [
 						'id' => $this->connector->getPlainId(),
 					],
@@ -139,11 +138,7 @@ final class Local implements Client
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'local-client',
-					'group' => 'client',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'connector' => [
 						'id' => $this->connector->getPlainId(),
 					],
@@ -158,9 +153,12 @@ final class Local implements Client
 		}
 
 		try {
+			$findDevicesQuery = new DevicesQueries\FindDevices();
+			$findDevicesQuery->forConnector($this->connector);
+
 			$this->wsClient->connect(
 				array_filter(
-					$this->connector->getDevices(),
+					$this->devicesRepository->findAllBy($findDevicesQuery, Entities\ShellyDevice::class),
 					static function (DevicesEntities\Devices\Device $device): bool {
 						assert($device instanceof Entities\ShellyDevice);
 
@@ -174,11 +172,7 @@ final class Local implements Client
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'local-client',
-					'group' => 'client',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'connector' => [
 						'id' => $this->connector->getPlainId(),
 					],
@@ -212,11 +206,7 @@ final class Local implements Client
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'local-client',
-					'group' => 'client',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'connector' => [
 						'id' => $this->connector->getPlainId(),
 					],
@@ -232,11 +222,7 @@ final class Local implements Client
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'local-client',
-					'group' => 'client',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'connector' => [
 						'id' => $this->connector->getPlainId(),
 					],
@@ -274,19 +260,17 @@ final class Local implements Client
 			);
 		}
 
-		$expectedValue = DevicesUtilities\ValueHelper::flattenValue($state->getExpectedValue());
-
 		if (!$property->isSettable()) {
 			return Promise\reject(new Exceptions\InvalidArgument('Provided property is not writable'));
 		}
 
-		if ($expectedValue === null) {
+		if ($state->getExpectedValue() === null) {
 			return Promise\reject(
 				new Exceptions\InvalidArgument('Property expected value is not set. Nothing to write'),
 			);
 		}
 
-		$valueToWrite = $this->transformer->transformValueToDevice(
+		$valueToWrite = API\Transformer::transformValueToDevice(
 			$property->getDataType(),
 			$property->getFormat(),
 			$state->getExpectedValue(),
@@ -331,7 +315,10 @@ final class Local implements Client
 	 */
 	private function handleCommunication(): void
 	{
-		foreach ($this->connector->getDevices() as $device) {
+		$findDevicesQuery = new DevicesQueries\FindDevices();
+		$findDevicesQuery->forConnector($this->connector);
+
+		foreach ($this->devicesRepository->findAllBy($findDevicesQuery, Entities\ShellyDevice::class) as $device) {
 			assert($device instanceof Entities\ShellyDevice);
 
 			if (
@@ -399,11 +386,7 @@ final class Local implements Client
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 							'type' => 'local-client',
-							'group' => 'client',
-							'exception' => [
-								'message' => $ex->getMessage(),
-								'code' => $ex->getCode(),
-							],
+							'exception' => BootstrapHelpers\Logger::buildException($ex),
 							'device' => [
 								'id' => $device->getPlainId(),
 							],
@@ -427,11 +410,7 @@ final class Local implements Client
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 							'type' => 'local-client',
-							'group' => 'client',
-							'exception' => [
-								'message' => $ex->getMessage(),
-								'code' => $ex->getCode(),
-							],
+							'exception' => BootstrapHelpers\Logger::buildException($ex),
 							'device' => [
 								'id' => $device->getPlainId(),
 							],

@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ApiKeyPlugin!
  * @subpackage     Models
- * @since          0.1.0
+ * @since          1.0.0
  *
  * @date           21.10.22
  */
@@ -40,7 +40,7 @@ final class KeysManager
 	 */
 	public function __construct(private DoctrineCrudCrud\IEntityCrud $entityCrud)
 	{
-		// Entity CRUD for handling entities
+		// Transformer CRUD for handling entities
 	}
 
 	public function create(Utils\ArrayHash $values): Entities\Key

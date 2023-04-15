@@ -20,6 +20,7 @@ use Evenement;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\DateTimeFactory;
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -80,8 +81,6 @@ final class WsApi implements Evenement\EventEmitterInterface
 
 	private const DEVICE_EVENT_MESSAGE_SCHEMA_FILENAME = 'gen2_ws_event.json';
 
-	private const PROPERTY_COMPONENT = '/^(?P<component>[a-zA-Z]+)_(?P<identifier>[0-9]+)(_(?P<attribute>[a-zA-Z0-9]+))?$/';
-
 	private const WAIT_FOR_REPLY_TIMEOUT = 5.0;
 
 	private bool $connecting = false;
@@ -111,7 +110,6 @@ final class WsApi implements Evenement\EventEmitterInterface
 		private readonly string|null $password,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
-		protected readonly EntityFactory $entityFactory,
 		protected readonly MetadataSchemas\Validator $schemaValidator,
 		Log\LoggerInterface|null $logger = null,
 	)
@@ -170,7 +168,6 @@ final class WsApi implements Evenement\EventEmitterInterface
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 							'type' => 'ws-api',
-							'group' => 'api',
 							'device' => [
 								'identifier' => $this->identifier,
 							],
@@ -189,11 +186,7 @@ final class WsApi implements Evenement\EventEmitterInterface
 									[
 										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 										'type' => 'ws-api',
-										'group' => 'api',
-										'exception' => [
-											'message' => $ex->getMessage(),
-											'code' => $ex->getCode(),
-										],
+										'exception' => BootstrapHelpers\Logger::buildException($ex),
 										'device' => [
 											'identifier' => $this->identifier,
 										],
@@ -236,7 +229,6 @@ final class WsApi implements Evenement\EventEmitterInterface
 										[
 											'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 											'type' => 'ws-api',
-											'group' => 'api',
 											'device' => [
 												'identifier' => $this->identifier,
 											],
@@ -359,7 +351,6 @@ final class WsApi implements Evenement\EventEmitterInterface
 									[
 										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 										'type' => 'ws-api',
-										'group' => 'api',
 										'device' => [
 											'identifier' => $this->identifier,
 										],
@@ -395,11 +386,7 @@ final class WsApi implements Evenement\EventEmitterInterface
 							[
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 								'type' => 'ws-api',
-								'group' => 'api',
-								'exception' => [
-									'message' => $ex->getMessage(),
-									'code' => $ex->getCode(),
-								],
+								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'device' => [
 									'identifier' => $this->identifier,
 								],
@@ -417,7 +404,6 @@ final class WsApi implements Evenement\EventEmitterInterface
 							[
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 								'type' => 'ws-api',
-								'group' => 'api',
 								'connection' => [
 									'code' => $code,
 									'reason' => $reason,
@@ -443,11 +429,7 @@ final class WsApi implements Evenement\EventEmitterInterface
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 							'type' => 'ws-api',
-							'group' => 'api',
-							'exception' => [
-								'message' => $ex->getMessage(),
-								'code' => $ex->getCode(),
-							],
+							'exception' => BootstrapHelpers\Logger::buildException($ex),
 							'device' => [
 								'identifier' => $this->identifier,
 							],
@@ -474,11 +456,7 @@ final class WsApi implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'ws-api',
-					'group' => 'api',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'device' => [
 						'identifier' => $this->identifier,
 					],
@@ -572,7 +550,7 @@ final class WsApi implements Evenement\EventEmitterInterface
 		}
 
 		if (
-			preg_match(self::PROPERTY_COMPONENT, $component, $propertyMatches) !== 1
+			preg_match(self::$PROPERTY_COMPONENT, $component, $propertyMatches) !== 1
 			|| !array_key_exists('component', $propertyMatches)
 			|| !array_key_exists('identifier', $propertyMatches)
 			|| !array_key_exists('attribute', $propertyMatches)

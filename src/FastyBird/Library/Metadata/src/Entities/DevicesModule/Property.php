@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:MetadataLibrary!
  * @subpackage     Entities
- * @since          0.57.0
+ * @since          1.0.0
  *
  * @date           02.06.22
  */
@@ -45,6 +45,8 @@ abstract class Property implements Entities\Entity, Entities\Owner
 
 	private Types\PropertyType $type;
 
+	private Types\PropertyCategory $category;
+
 	private Types\DataType $dataType;
 
 	private ValueObjects\StringEnumFormat|ValueObjects\NumberRangeFormat|ValueObjects\CombinedEnumFormat|null $format;
@@ -59,6 +61,7 @@ abstract class Property implements Entities\Entity, Entities\Owner
 	public function __construct(
 		string $id,
 		string $type,
+		string $category,
 		private readonly string $identifier,
 		private readonly string|null $name,
 		private readonly bool $settable,
@@ -67,12 +70,14 @@ abstract class Property implements Entities\Entity, Entities\Owner
 		private readonly string|null $unit = null,
 		array|null $format = null,
 		float|int|string|null $invalid = null,
-		private readonly int|null $numberOfDecimals = null,
+		private readonly int|null $scale = null,
+		private readonly int|null $step = null,
 		string|null $owner = null,
 	)
 	{
 		$this->id = Uuid\Uuid::fromString($id);
 		$this->type = Types\PropertyType::get($type);
+		$this->category = Types\PropertyCategory::get($category);
 		$this->dataType = Types\DataType::get($dataType);
 		$this->invalid = $invalid;
 		$this->owner = $owner !== null ? Uuid\Uuid::fromString($owner) : null;
@@ -88,6 +93,11 @@ abstract class Property implements Entities\Entity, Entities\Owner
 	public function getType(): Types\PropertyType
 	{
 		return $this->type;
+	}
+
+	public function getCategory(): Types\PropertyCategory
+	{
+		return $this->category;
 	}
 
 	public function getIdentifier(): string
@@ -130,9 +140,14 @@ abstract class Property implements Entities\Entity, Entities\Owner
 		return $this->invalid;
 	}
 
-	public function getNumberOfDecimals(): int|null
+	public function getScale(): int|null
 	{
-		return $this->numberOfDecimals;
+		return $this->scale;
+	}
+
+	public function getStep(): int|null
+	{
+		return $this->step;
 	}
 
 	/**
@@ -143,6 +158,7 @@ abstract class Property implements Entities\Entity, Entities\Owner
 		return [
 			'id' => $this->getId()->toString(),
 			'type' => $this->getType()->getValue(),
+			'category' => $this->getCategory()->getValue(),
 			'identifier' => $this->getIdentifier(),
 			'name' => $this->getName(),
 			'queryable' => $this->isQueryable(),
@@ -151,7 +167,8 @@ abstract class Property implements Entities\Entity, Entities\Owner
 			'unit' => $this->getUnit(),
 			'format' => $this->getFormat()?->toArray(),
 			'invalid' => $this->getInvalid(),
-			'number_of_decimals' => $this->getNumberOfDecimals(),
+			'scale' => $this->getScale(),
+			'step' => $this->getStep(),
 			'owner' => $this->getOwner()?->toString(),
 		];
 	}

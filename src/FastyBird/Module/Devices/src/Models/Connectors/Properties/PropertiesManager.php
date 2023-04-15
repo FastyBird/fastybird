@@ -43,7 +43,7 @@ final class PropertiesManager extends Evenement\EventEmitter implements Evenemen
 	 */
 	public function __construct(private readonly DoctrineCrudCrud\IEntityCrud $entityCrud)
 	{
-		// Entity CRUD for handling entities
+		// Transformer CRUD for handling entities
 	}
 
 	public function create(

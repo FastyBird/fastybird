@@ -306,21 +306,21 @@ abstract class Property extends Entities\Property
 		parent::setInvalid($invalid);
 	}
 
-	public function getNumberOfDecimals(): int|null
+	public function getScale(): int|null
 	{
 		if (
 			$this->getParent() !== null && !$this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_MAPPED)
 		) {
-			return $this->getParent()->getNumberOfDecimals();
+			return $this->getParent()->getScale();
 		}
 
-		return parent::getNumberOfDecimals();
+		return parent::getScale();
 	}
 
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function setNumberOfDecimals(int|null $numberOfDecimals): void
+	public function setScale(int|null $scale): void
 	{
 		if (
 			$this->getParent() !== null && !$this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_MAPPED)
@@ -328,7 +328,7 @@ abstract class Property extends Entities\Property
 			throw new Exceptions\InvalidState('Number of decimals setter is allowed only for parent');
 		}
 
-		parent::setNumberOfDecimals($numberOfDecimals);
+		parent::setScale($scale);
 	}
 
 	public function getDefault(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null

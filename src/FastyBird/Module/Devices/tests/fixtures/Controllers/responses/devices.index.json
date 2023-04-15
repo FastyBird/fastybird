@@ -14,6 +14,7 @@
       "type": "com.fastybird.devices-module/device/blank",
       "id": "69786d15-fd0c-4d9f-9378-33287c2009fa",
       "attributes": {
+        "category": "generic",
         "identifier": "first-device",
         "name": "First device",
         "comment": null,
@@ -159,6 +160,7 @@
       "type": "com.fastybird.devices-module/device/blank",
       "id": "a1036ff8-6ee8-4405-aaed-58bae0814596",
       "attributes": {
+        "category": "generic",
         "identifier": "child-device",
         "name": "Child device",
         "comment": "This is child",
@@ -249,6 +251,7 @@
       "type": "com.fastybird.devices-module/device/blank",
       "id": "bf4cd870-2aac-45f0-a85e-e1cefd2d6d9a",
       "attributes": {
+        "category": "generic",
         "identifier": "second-device",
         "name": null,
         "comment": null,
@@ -339,6 +342,7 @@
       "type": "com.fastybird.devices-module/device/blank",
       "id": "e36a2788-1ef8-4cdf-ab09-4735f191a509",
       "attributes": {
+        "category": "generic",
         "identifier": "third-device",
         "name": "Third device",
         "comment": "Custom comment",

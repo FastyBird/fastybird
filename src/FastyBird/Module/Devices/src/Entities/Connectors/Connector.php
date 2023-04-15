@@ -15,6 +15,7 @@
 
 namespace FastyBird\Module\Devices\Entities\Connectors;
 
+use Consistence\Doctrine\Enum\EnumAnnotation as Enum;
 use Doctrine\Common;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -69,6 +70,17 @@ abstract class Connector implements Entities\Entity,
 	 * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
 	 */
 	protected Uuid\UuidInterface $id;
+
+	/**
+	 * @var MetadataTypes\ConnectorCategory
+	 *
+	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
+	 *
+	 * @Enum(class=MetadataTypes\ConnectorCategory::class)
+	 * @IPubDoctrine\Crud(is="writable")
+	 * @ORM\Column(type="string_enum", name="connector_category", length=100, nullable=true, options={"default": "generic"})
+	 */
+	protected $category;
 
 	/**
 	 * @IPubDoctrine\Crud(is="required")
@@ -127,12 +139,24 @@ abstract class Connector implements Entities\Entity,
 
 		$this->identifier = $identifier;
 
+		$this->category = MetadataTypes\ConnectorCategory::get(MetadataTypes\ConnectorCategory::CATEGORY_GENERIC);
+
 		$this->devices = new Common\Collections\ArrayCollection();
 		$this->properties = new Common\Collections\ArrayCollection();
 		$this->controls = new Common\Collections\ArrayCollection();
 	}
 
 	abstract public function getType(): string;
+
+	public function getCategory(): MetadataTypes\ConnectorCategory
+	{
+		return $this->category;
+	}
+
+	public function setCategory(MetadataTypes\ConnectorCategory $category): void
+	{
+		$this->category = $category;
+	}
 
 	public function getIdentifier(): string
 	{
@@ -178,6 +202,29 @@ abstract class Connector implements Entities\Entity,
 	}
 
 	/**
+	 * @param array<Entities\Devices\Device> $devices
+	 */
+	public function setDevices(array $devices = []): void
+	{
+		$this->devices = new Common\Collections\ArrayCollection();
+
+		// Process all passed entities...
+		foreach ($devices as $entity) {
+			// ...and assign them to collection
+			$this->devices->add($entity);
+		}
+	}
+
+	public function addDevice(Entities\Devices\Device $device): void
+	{
+		// Check if collection does not contain inserting entity
+		if (!$this->devices->contains($device)) {
+			// ...and assign it to collection
+			$this->devices->add($device);
+		}
+	}
+
+	/**
 	 * @return array<Entities\Connectors\Properties\Property>
 	 */
 	public function getProperties(): array
@@ -206,38 +253,6 @@ abstract class Connector implements Entities\Entity,
 			// ...and assign it to collection
 			$this->properties->add($property);
 		}
-	}
-
-	public function getProperty(string $id): Entities\Connectors\Properties\Property|null
-	{
-		$found = $this->properties
-			->filter(static fn (Entities\Connectors\Properties\Property $row): bool => $id === $row->getPlainId());
-
-		return $found->isEmpty() === true ? null : $found->first();
-	}
-
-	public function removeProperty(Entities\Connectors\Properties\Property $property): void
-	{
-		// Check if collection contain removing entity...
-		if ($this->properties->contains($property)) {
-			// ...and remove it from collection
-			$this->properties->removeElement($property);
-		}
-	}
-
-	public function hasProperty(string $property): bool
-	{
-		return $this->findProperty($property) !== null;
-	}
-
-	public function findProperty(string $property): Entities\Connectors\Properties\Property|null
-	{
-		$found = $this->properties
-			->filter(
-				static fn (Entities\Connectors\Properties\Property $row): bool => $property === $row->getIdentifier()
-			);
-
-		return $found->isEmpty() === true ? null : $found->first();
 	}
 
 	/**
@@ -271,36 +286,6 @@ abstract class Connector implements Entities\Entity,
 		}
 	}
 
-	public function getControl(string $name): Entities\Connectors\Controls\Control|null
-	{
-		$found = $this->controls
-			->filter(static fn (Entities\Connectors\Controls\Control $row): bool => $name === $row->getName());
-
-		return $found->isEmpty() === true ? null : $found->first();
-	}
-
-	public function removeControl(Entities\Connectors\Controls\Control $control): void
-	{
-		// Check if collection contain removing entity...
-		if ($this->controls->contains($control)) {
-			// ...and remove it from collection
-			$this->controls->removeElement($control);
-		}
-	}
-
-	public function hasControl(string $name): bool
-	{
-		return $this->findControl($name) !== null;
-	}
-
-	public function findControl(string $name): Entities\Connectors\Controls\Control|null
-	{
-		$found = $this->controls
-			->filter(static fn (Entities\Connectors\Controls\Control $row): bool => $name === $row->getName());
-
-		return $found->isEmpty() === true ? null : $found->first();
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -309,6 +294,7 @@ abstract class Connector implements Entities\Entity,
 		return [
 			'id' => $this->getPlainId(),
 			'type' => $this->getType(),
+			'category' => $this->getCategory()->getValue(),
 			'identifier' => $this->getIdentifier(),
 			'name' => $this->getName(),
 			'comment' => $this->getComment(),

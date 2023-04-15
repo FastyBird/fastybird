@@ -108,7 +108,6 @@ final class Gen1HttpApi extends HttpApi
 	];
 
 	public function __construct(
-		private readonly EntityFactory $entityFactory,
 		private readonly MetadataSchemas\Validator $schemaValidator,
 		EventLoop\LoopInterface $eventLoop,
 		Log\LoggerInterface|null $logger = null,
@@ -366,7 +365,7 @@ final class Gen1HttpApi extends HttpApi
 			$this->getSchemaFilePath(self::DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME),
 		);
 
-		return $this->entityFactory->build(
+		return EntityFactory::build(
 			Entities\API\Gen1\DeviceInformation::class,
 			$parsedMessage,
 		);
@@ -408,7 +407,6 @@ final class Gen1HttpApi extends HttpApi
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 							'type' => 'gen1-http-api',
-							'group' => 'api',
 							'description' => (array) $block,
 						],
 					);
@@ -434,7 +432,6 @@ final class Gen1HttpApi extends HttpApi
 							[
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 								'type' => 'gen1-http-api',
-								'group' => 'api',
 								'description' => (array) $sensor,
 							],
 						);
@@ -525,7 +522,7 @@ final class Gen1HttpApi extends HttpApi
 			foreach ($parsedMessage->offsetGet('relays') as $relayStatus) {
 				assert($relayStatus instanceof Utils\ArrayHash);
 
-				$relays[] = $this->entityFactory->build(
+				$relays[] = EntityFactory::build(
 					Entities\API\Gen1\DeviceRelayStatus::class,
 					$relayStatus,
 				);
@@ -544,7 +541,7 @@ final class Gen1HttpApi extends HttpApi
 			foreach ($parsedMessage->offsetGet('rollers') as $rollerStatus) {
 				assert($rollerStatus instanceof Utils\ArrayHash);
 
-				$rollers[] = $this->entityFactory->build(
+				$rollers[] = EntityFactory::build(
 					Entities\API\Gen1\DeviceRollerStatus::class,
 					$rollerStatus,
 				);
@@ -563,7 +560,7 @@ final class Gen1HttpApi extends HttpApi
 			foreach ($parsedMessage->offsetGet('inputs') as $inputStatus) {
 				assert($inputStatus instanceof Utils\ArrayHash);
 
-				$inputs[] = $this->entityFactory->build(
+				$inputs[] = EntityFactory::build(
 					Entities\API\Gen1\DeviceInputStatus::class,
 					$inputStatus,
 				);
@@ -582,7 +579,7 @@ final class Gen1HttpApi extends HttpApi
 			foreach ($parsedMessage->offsetGet('lights') as $lightStatus) {
 				assert($lightStatus instanceof Utils\ArrayHash);
 
-				$lights[] = $this->entityFactory->build(
+				$lights[] = EntityFactory::build(
 					Entities\API\Gen1\DeviceLightStatus::class,
 					$lightStatus,
 				);
@@ -601,7 +598,7 @@ final class Gen1HttpApi extends HttpApi
 			foreach ($parsedMessage->offsetGet('meters') as $meterStatus) {
 				assert($meterStatus instanceof Utils\ArrayHash);
 
-				$meters[] = $this->entityFactory->build(
+				$meters[] = EntityFactory::build(
 					Entities\API\Gen1\DeviceMeterStatus::class,
 					$meterStatus,
 				);
@@ -620,7 +617,7 @@ final class Gen1HttpApi extends HttpApi
 			foreach ($parsedMessage->offsetGet('emeters') as $emeterStatus) {
 				assert($emeterStatus instanceof Utils\ArrayHash);
 
-				$emeters[] = $this->entityFactory->build(
+				$emeters[] = EntityFactory::build(
 					Entities\API\Gen1\DeviceEmeterStatus::class,
 					$emeterStatus,
 				);
@@ -633,7 +630,7 @@ final class Gen1HttpApi extends HttpApi
 			$parsedMessage->offsetExists('wifi_sta')
 			&& $parsedMessage->offsetGet('wifi_sta') instanceof Utils\ArrayHash
 		) {
-			$wifi = $this->entityFactory->build(
+			$wifi = EntityFactory::build(
 				Entities\API\Gen1\WifiStaStatus::class,
 				$parsedMessage->offsetGet('wifi_sta'),
 			);

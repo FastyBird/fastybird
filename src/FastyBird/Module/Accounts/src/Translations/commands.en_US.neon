@@ -8,7 +8,7 @@
 # @author         Adam Kadlec <adam.kadlec@fastybird.com>
 # @package        FastyBird:AccountsModule!
 # @subpackage     Translations
-# @since          0.1.0
+# @since          1.0.0
 #
 # @date           25.01.17
 #
@@ -18,30 +18,30 @@
 #
 
 accountCreate:
-	inputs:
-		firstName:
-			title	: "User first name?"
-		lastName:
-			title	: "User last name?"
-		email:
-			title	: "User primary email address?"
-		password:
-			title	: "User default password?"
-		role:
-			title	: "User access role?"
-			values:
-				user			: "Regular user"
-				manager			: "System manager"
-				administrator	: "System administrator"
+    inputs:
+        firstName:
+            title	: "User first name?"
+        lastName:
+            title	: "User last name?"
+        email:
+            title	: "User primary email address?"
+        password:
+            title	: "User default password?"
+        role:
+            title	: "User access role?"
+            values:
+                user			: "Regular user"
+                manager			: "System manager"
+                administrator	: "System administrator"
 
-	validation:
-		email:
-			taken	: "User with email \"%email%\" already exists."
-			invalid	: "Address \"%email%\" is not a valid email. Please read it again, correct any typos you may have done and then try it again."
-		account:
-			wasNotCreated	: "Account could not be created. Error was logged."
-		identity:
-			wasNotCreated	: "Account identity could not be created. Error was logged."
-			noEmail	: "Account identity could not be created because this account is withnout email address."
+    validation:
+        email:
+            taken	: "User with email \"%email%\" already exists."
+            invalid	: "Address \"%email%\" is not a valid email. Please read it again, correct any typos you may have done and then try it again."
+        account:
+            wasNotCreated	: "Account could not be created. Error was logged."
+        identity:
+            wasNotCreated	: "Account identity could not be created. Error was logged."
+            noEmail	: "Account identity could not be created because this account is withnout email address."
 
-	success: "Account \"%name%\" was successfully saved."
+    success: "Account \"%name%\" was successfully saved."

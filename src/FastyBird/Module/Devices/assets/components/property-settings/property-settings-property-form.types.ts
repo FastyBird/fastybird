@@ -11,7 +11,7 @@ export interface IPropertySettingsPropertyFormForm {
 	dataType: DataType;
 	unit: string | null;
 	invalid: string | null;
-	numberOfDecimals: number | null;
+	scale: number | null;
 	format: string | null;
 }
 

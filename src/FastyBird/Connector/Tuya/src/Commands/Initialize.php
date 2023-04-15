@@ -19,7 +19,9 @@ use Doctrine\DBAL;
 use Doctrine\Persistence;
 use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Exceptions;
+use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Types;
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
@@ -38,7 +40,6 @@ use function array_search;
 use function array_values;
 use function assert;
 use function count;
-use function intval;
 use function sprintf;
 use function strval;
 use function usort;
@@ -83,6 +84,7 @@ class Initialize extends Console\Command\Command
 	public function __construct(
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Connectors\ConnectorsManager $connectorsManager,
+		private readonly DevicesModels\Connectors\Properties\PropertiesRepository $propertiesRepository,
 		private readonly DevicesModels\Connectors\Properties\PropertiesManager $propertiesManager,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 		Log\LoggerInterface|null $logger = null,
@@ -108,7 +110,6 @@ class Initialize extends Console\Command\Command
 	 * @throws Console\Exception\InvalidArgumentException
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -163,7 +164,6 @@ class Initialize extends Console\Command\Command
 	/**
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 */
 	private function createNewConfiguration(Style\SymfonyStyle $io): void
@@ -241,14 +241,17 @@ class Initialize extends Console\Command\Command
 			$this->propertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 				'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+				'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE),
+				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
 				'value' => $mode->getValue(),
+				'format' => [Types\ClientMode::MODE_LOCAL, Types\ClientMode::MODE_CLOUD],
 				'connector' => $connector,
 			]));
 
 			$this->propertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 				'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_ACCESS_ID,
+				'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::IDENTIFIER_ACCESS_ID),
 				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 				'value' => $accessId,
 				'connector' => $connector,
@@ -257,6 +260,7 @@ class Initialize extends Console\Command\Command
 			$this->propertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 				'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_ACCESS_SECRET,
+				'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::IDENTIFIER_ACCESS_SECRET),
 				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 				'value' => $accessSecret,
 				'connector' => $connector,
@@ -265,8 +269,17 @@ class Initialize extends Console\Command\Command
 			$this->propertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 				'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_OPENAPI_ENDPOINT,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+				'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::IDENTIFIER_OPENAPI_ENDPOINT),
+				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
 				'value' => $dataCentre->getValue(),
+				'format' => [
+					Types\OpenApiEndpoint::ENDPOINT_EUROPE,
+					Types\OpenApiEndpoint::ENDPOINT_EUROPE_MS,
+					Types\OpenApiEndpoint::ENDPOINT_AMERICA,
+					Types\OpenApiEndpoint::ENDPOINT_AMERICA_AZURE,
+					Types\OpenApiEndpoint::ENDPOINT_CHINA,
+					Types\OpenApiEndpoint::ENDPOINT_INDIA,
+				],
 				'connector' => $connector,
 			]));
 
@@ -274,6 +287,7 @@ class Initialize extends Console\Command\Command
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_UID,
+					'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::IDENTIFIER_UID),
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 					'value' => $uid,
 					'connector' => $connector,
@@ -294,11 +308,7 @@ class Initialize extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'initialize-cmd',
-					'group' => 'cmd',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -314,7 +324,6 @@ class Initialize extends Console\Command\Command
 	/**
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -340,7 +349,11 @@ class Initialize extends Console\Command\Command
 			return;
 		}
 
-		$modeProperty = $connector->findProperty(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE);
+		$findConnectorPropertyQuery = new DevicesQueries\FindConnectorProperties();
+		$findConnectorPropertyQuery->forConnector($connector);
+		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE);
+
+		$modeProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
 		if ($modeProperty === null) {
 			$changeMode = true;
@@ -386,7 +399,11 @@ class Initialize extends Console\Command\Command
 
 		$accessId = $accessSecret = null;
 
-		$accessIdProperty = $connector->findProperty(Types\ConnectorPropertyIdentifier::IDENTIFIER_ACCESS_ID);
+		$findConnectorPropertyQuery = new DevicesQueries\FindConnectorProperties();
+		$findConnectorPropertyQuery->forConnector($connector);
+		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_ACCESS_ID);
+
+		$accessIdProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
 		if ($accessIdProperty === null) {
 			$changeAccessId = true;
@@ -404,7 +421,11 @@ class Initialize extends Console\Command\Command
 			$accessId = $this->askAccessId($io);
 		}
 
-		$accessSecretProperty = $connector->findProperty(Types\ConnectorPropertyIdentifier::IDENTIFIER_ACCESS_SECRET);
+		$findConnectorPropertyQuery = new DevicesQueries\FindConnectorProperties();
+		$findConnectorPropertyQuery->forConnector($connector);
+		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_ACCESS_SECRET);
+
+		$accessSecretProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
 		if ($accessSecretProperty === null) {
 			$changeAccessSecret = true;
@@ -434,7 +455,11 @@ class Initialize extends Console\Command\Command
 				&& $mode->equalsValue(Types\ClientMode::MODE_CLOUD)
 			)
 		) {
-			$uidProperty = $connector->findProperty(Types\ConnectorPropertyIdentifier::IDENTIFIER_UID);
+			$findConnectorPropertyQuery = new DevicesQueries\FindConnectorProperties();
+			$findConnectorPropertyQuery->forConnector($connector);
+			$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_UID);
+
+			$uidProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
 			if ($uidProperty === null) {
 				$changeUid = true;
@@ -470,8 +495,10 @@ class Initialize extends Console\Command\Command
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+					'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
 					'value' => $mode->getValue(),
+					'format' => [Types\ClientMode::MODE_LOCAL, Types\ClientMode::MODE_CLOUD],
 					'connector' => $connector,
 				]));
 			} elseif ($mode !== null) {
@@ -488,6 +515,7 @@ class Initialize extends Console\Command\Command
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_ACCESS_ID,
+					'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::IDENTIFIER_ACCESS_ID),
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 					'value' => $accessId,
 					'connector' => $connector,
@@ -506,6 +534,7 @@ class Initialize extends Console\Command\Command
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_ACCESS_SECRET,
+					'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::IDENTIFIER_ACCESS_SECRET),
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 					'value' => $accessSecret,
 					'connector' => $connector,
@@ -533,6 +562,7 @@ class Initialize extends Console\Command\Command
 					$this->propertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 						'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_UID,
+						'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::IDENTIFIER_UID),
 						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 						'value' => $uid,
 						'connector' => $connector,
@@ -562,11 +592,7 @@ class Initialize extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'initialize-cmd',
-					'group' => 'cmd',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -625,11 +651,7 @@ class Initialize extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'initialize-cmd',
-					'group' => 'cmd',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -642,9 +664,6 @@ class Initialize extends Console\Command\Command
 		}
 	}
 
-	/**
-	 * @throws Exceptions\InvalidState
-	 */
 	private function askMode(Style\SymfonyStyle $io): Types\ClientMode
 	{
 		$question = new Console\Question\ChoiceQuestion(
@@ -657,18 +676,26 @@ class Initialize extends Console\Command\Command
 		);
 
 		$question->setErrorMessage('Selected answer: "%s" is not valid.');
+		$question->setValidator(static function (string|null $answer): Types\ClientMode {
+			if ($answer === null) {
+				throw new Exceptions\InvalidState('Selected answer is not valid');
+			}
 
-		$mode = $io->askQuestion($question);
+			if ($answer === self::CHOICE_QUESTION_LOCAL_MODE || $answer === '0') {
+				return Types\ClientMode::get(Types\ClientMode::MODE_LOCAL);
+			}
 
-		if ($mode === self::CHOICE_QUESTION_LOCAL_MODE || intval($mode) === 0) {
-			return Types\ClientMode::get(Types\ClientMode::MODE_LOCAL);
-		}
+			if ($answer === self::CHOICE_QUESTION_CLOUD_MODE || $answer === '1') {
+				return Types\ClientMode::get(Types\ClientMode::MODE_CLOUD);
+			}
 
-		if ($mode === self::CHOICE_QUESTION_CLOUD_MODE || intval($mode) === 1) {
-			return Types\ClientMode::get(Types\ClientMode::MODE_CLOUD);
-		}
+			throw new Exceptions\InvalidState('Selected answer is not valid');
+		});
 
-		throw new Exceptions\InvalidState('Unknown connector mode selected');
+		$answer = $io->askQuestion($question);
+		assert($answer instanceof Types\ClientMode);
+
+		return $answer;
 	}
 
 	private function askName(Style\SymfonyStyle $io, Entities\TuyaConnector|null $connector = null): string|null
@@ -857,7 +884,7 @@ class Initialize extends Console\Command\Command
 			return $connection;
 		}
 
-		throw new Exceptions\Runtime('Entity manager could not be loaded');
+		throw new Exceptions\Runtime('Transformer manager could not be loaded');
 	}
 
 }

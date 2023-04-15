@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:AccountsModule!
  * @subpackage     Entities
- * @since          0.1.0
+ * @since          1.0.0
  *
  * @date           25.05.20
  */
@@ -28,7 +28,7 @@ use function is_string;
 use function trim;
 
 /**
- * Entity params field trait
+ * Transformer params field trait
  *
  * @package        FastyBird:Database!
  * @subpackage     AccountsModule

@@ -102,7 +102,11 @@ final class DeviceProperty implements Consumers\Consumer
 			return true;
 		}
 
-		$property = $device->findProperty($entity->getProperty());
+		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+		$findDevicePropertyQuery->forDevice($device);
+		$findDevicePropertyQuery->byIdentifier($entity->getProperty());
+
+		$property = $this->propertiesRepository->findOneBy($findDevicePropertyQuery);
 
 		if ($property === null) {
 			$this->logger->error(
@@ -124,10 +128,10 @@ final class DeviceProperty implements Consumers\Consumer
 
 		if ($entity->getValue() !== FbMqtt\Constants::VALUE_NOT_SET) {
 			if ($property instanceof DevicesEntities\Devices\Properties\Variable) {
-				$findPropertyQuery = new DevicesQueries\FindDeviceProperties();
-				$findPropertyQuery->byId($property->getId());
+				$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+				$findDevicePropertyQuery->byId($property->getId());
 
-				$property = $this->propertiesRepository->findOneBy($findPropertyQuery);
+				$property = $this->propertiesRepository->findOneBy($findDevicePropertyQuery);
 
 				assert($property instanceof DevicesEntities\Devices\Properties\Property);
 
@@ -139,19 +143,10 @@ final class DeviceProperty implements Consumers\Consumer
 					});
 				}
 			} elseif ($property instanceof DevicesEntities\Devices\Properties\Dynamic) {
-				$actualValue = DevicesUtilities\ValueHelper::flattenValue(
-					DevicesUtilities\ValueHelper::normalizeValue(
-						$property->getDataType(),
-						$entity->getValue(),
-						$property->getFormat(),
-						$property->getInvalid(),
-					),
-				);
-
 				$this->devicePropertiesStates->setValue(
 					$property,
 					Utils\ArrayHash::from([
-						DevicesStates\Property::ACTUAL_VALUE_KEY => $actualValue,
+						DevicesStates\Property::ACTUAL_VALUE_KEY => $entity->getValue(),
 						DevicesStates\Property::VALID_KEY => true,
 					]),
 				);

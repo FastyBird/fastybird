@@ -20,6 +20,7 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
+use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\States;
 use Nette;
 use Nette\Utils;
@@ -39,6 +40,7 @@ final class DeviceConnection
 	use Nette\SmartObject;
 
 	public function __construct(
+		private readonly Models\Devices\Properties\PropertiesRepository $repository,
 		private readonly Models\Devices\Properties\PropertiesManager $manager,
 		private readonly DevicePropertiesStates $propertiesStates,
 	)
@@ -55,7 +57,11 @@ final class DeviceConnection
 		MetadataTypes\ConnectionState $state,
 	): bool
 	{
-		$property = $device->findProperty(MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_STATE);
+		$findDevicePropertyQuery = new Queries\FindDeviceProperties();
+		$findDevicePropertyQuery->forDevice($device);
+		$findDevicePropertyQuery->byIdentifier(MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_STATE);
+
+		$property = $this->repository->findOneBy($findDevicePropertyQuery);
 
 		if ($property === null) {
 			$property = $this->manager->create(Utils\ArrayHash::from([
@@ -83,7 +89,7 @@ final class DeviceConnection
 
 		assert($property instanceof Entities\Devices\Properties\Dynamic);
 
-		$this->propertiesStates->setValue(
+		$this->propertiesStates->writeValue(
 			$property,
 			Utils\ArrayHash::from([
 				States\Property::ACTUAL_VALUE_KEY => $state->getValue(),
@@ -105,10 +111,14 @@ final class DeviceConnection
 		Entities\Devices\Device $device,
 	): MetadataTypes\ConnectionState
 	{
-		$property = $device->findProperty(MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_STATE);
+		$findDevicePropertyQuery = new Queries\FindDeviceProperties();
+		$findDevicePropertyQuery->forDevice($device);
+		$findDevicePropertyQuery->byIdentifier(MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_STATE);
+
+		$property = $this->repository->findOneBy($findDevicePropertyQuery);
 
 		if ($property instanceof Entities\Devices\Properties\Dynamic) {
-			$state = $this->propertiesStates->getValue($property);
+			$state = $this->propertiesStates->readValue($property);
 
 			if (
 				$state?->getActualValue() !== null

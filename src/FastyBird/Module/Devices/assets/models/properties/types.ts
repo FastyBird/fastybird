@@ -1,6 +1,6 @@
 import { TJsonaModel } from 'jsona/lib/JsonaTypes';
 
-import { DataType } from '@fastybird/metadata-library';
+import { DataType, PropertyCategory } from '@fastybird/metadata-library';
 
 // COMMANDS
 // ========
@@ -24,6 +24,7 @@ export interface IProperty {
 
 	draft: boolean;
 
+	category: PropertyCategory;
 	identifier: string;
 	name: string | null;
 	settable: boolean;
@@ -32,7 +33,8 @@ export interface IProperty {
 	unit: string | null;
 	format: string[] | (string | null)[][] | (number | null)[] | null;
 	invalid: string | number | null;
-	numberOfDecimals: number | null;
+	scale: number | null;
+	step: number | null;
 
 	// Static property
 	value: string | number | boolean | Date | null;
@@ -44,7 +46,7 @@ export interface IProperty {
 
 	command: PropertyCommandState | null;
 	lastResult: PropertyCommandResult | null;
-	backup: string | null;
+	backupValue: string | null;
 	/* Dynamic property end */
 
 	// Relations
@@ -60,6 +62,7 @@ export interface IPropertyRecordFactoryPayload {
 
 	draft?: boolean;
 
+	category: PropertyCategory;
 	identifier: string;
 	name?: string | null;
 	settable?: boolean;
@@ -68,7 +71,8 @@ export interface IPropertyRecordFactoryPayload {
 	unit?: string | null;
 	format?: string[] | (string | null)[][] | (number | null)[] | null;
 	invalid?: string | number | null;
-	numberOfDecimals?: number | null;
+	scale?: number | null;
+	step?: number | null;
 
 	// Static property
 	value?: string | number | boolean | Date | null;
@@ -80,7 +84,7 @@ export interface IPropertyRecordFactoryPayload {
 
 	command?: PropertyCommandState | null;
 	lastResult?: PropertyCommandResult | null;
-	backup?: string | null;
+	backupValue?: string | null;
 	/* Dynamic property end */
 
 	// Relations
@@ -105,7 +109,8 @@ export interface IPropertiesAddActionPayload {
 		unit?: string | null;
 		format?: string[] | (string | null)[][] | (number | null)[] | null;
 		invalid?: string | number | null;
-		numberOfDecimals?: number | null;
+		scale?: number | null;
+		step?: number | null;
 
 		// Static property
 		value?: string | number | boolean | Date | null;
@@ -124,7 +129,8 @@ export interface IPropertiesEditActionPayload {
 		unit?: string | null;
 		format?: string[] | (string | null)[][] | (number | null)[] | null;
 		invalid?: string | number | null;
-		numberOfDecimals?: number | null;
+		scale?: number | null;
+		step?: number | null;
 
 		// Static property
 		value?: string | number | boolean | Date | null;
@@ -136,8 +142,22 @@ export interface IPropertiesEditActionPayload {
 
 		command?: PropertyCommandState | null;
 		lastResult?: PropertyCommandResult | null;
-		backup?: string | null;
+		backupValue?: string | null;
 		/* Dynamic property end */
+	};
+}
+
+export interface IPropertiesSetStateActionPayload {
+	id: string;
+
+	data: {
+		actualValue?: string | number | boolean | Date | null;
+		expectedValue?: string | number | boolean | Date | null;
+		pending?: boolean;
+
+		command?: PropertyCommandState | null;
+		lastResult?: PropertyCommandResult | null;
+		backupValue?: string | number | boolean | Date | null;
 	};
 }
 
@@ -148,6 +168,7 @@ export interface IPropertyResponseModel extends TJsonaModel {
 	id: string;
 	type: { source: string; type: string; parent: string; entity: string };
 
+	category: PropertyCategory;
 	identifier: string;
 	name: string | null;
 	settable: boolean;
@@ -156,7 +177,8 @@ export interface IPropertyResponseModel extends TJsonaModel {
 	unit: string | null;
 	format: string[] | (string | null)[][] | (number | null)[] | null;
 	invalid: string | number | null;
-	numberOfDecimals: number | null;
+	scale: number | null;
+	step: number | null;
 
 	value: string | number | boolean | Date | null;
 

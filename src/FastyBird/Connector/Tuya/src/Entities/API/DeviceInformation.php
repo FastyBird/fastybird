@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Tuya\Entities\API;
 
 use Nette;
+use Nette\Utils;
 
 /**
  * OpenAPI device information entity
@@ -90,7 +91,7 @@ final class DeviceInformation implements Entity
 
 	public function getName(): string|null
 	{
-		return $this->name !== '' ? $this->name : null;
+		return $this->name !== '' && $this->name !== null ? Utils\Strings::trim($this->name) : null;
 	}
 
 	public function getProductId(): string|null

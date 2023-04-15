@@ -46,7 +46,7 @@ final class Mapped extends Property
 	public function __construct(
 		Routing\IRouter $router,
 		Models\Devices\Properties\PropertiesRepository $propertiesRepository,
-		private readonly Models\States\DevicePropertiesRepository $propertiesStatesRepository,
+		private readonly Utilities\DevicePropertiesStates $devicePropertiesStates,
 	)
 	{
 		parent::__construct($router, $propertiesRepository);
@@ -78,42 +78,19 @@ final class Mapped extends Property
 		JsonApi\Contracts\Schema\ContextInterface $context,
 	): iterable
 	{
-		try {
-			$state = $this->propertiesStatesRepository->findOne($resource);
+		$state = $this->devicePropertiesStates->readValue($resource);
 
-		} catch (Exceptions\NotImplemented) {
-			$state = null;
-		}
-
-		if ($resource->getParent() instanceof Entities\Devices\Properties\Dynamic) {
-			$actualValue = $state !== null
-				? Utilities\ValueHelper::normalizeValue(
-					$resource->getDataType(),
-					$state->getActualValue(),
-					$resource->getFormat(),
-					$resource->getInvalid(),
-				)
-				: null;
-			$expectedValue = $state !== null
-				? Utilities\ValueHelper::normalizeValue(
-					$resource->getDataType(),
-					$state->getExpectedValue(),
-					$resource->getFormat(),
-					$resource->getInvalid(),
-				)
-				: null;
-
-			return array_merge((array) parent::getAttributes($resource, $context), [
-				'actual_value' => Utilities\ValueHelper::flattenValue($actualValue),
-				'expected_value' => Utilities\ValueHelper::flattenValue($expectedValue),
+		return $resource->getParent() instanceof Entities\Devices\Properties\Dynamic ? array_merge(
+			(array) parent::getAttributes($resource, $context),
+			[
+				'actual_value' => Utilities\ValueHelper::flattenValue($state?->getActualValue()),
+				'expected_value' => Utilities\ValueHelper::flattenValue($state?->getExpectedValue()),
 				'pending' => $state !== null && $state->isPending(),
-			]);
-		} else {
-			return array_merge((array) parent::getAttributes($resource, $context), [
-				'value' => Utilities\ValueHelper::flattenValue($resource->getValue()),
-				'default' => Utilities\ValueHelper::flattenValue($resource->getDefault()),
-			]);
-		}
+			],
+		) : array_merge((array) parent::getAttributes($resource, $context), [
+			'value' => Utilities\ValueHelper::flattenValue($resource->getValue()),
+			'default' => Utilities\ValueHelper::flattenValue($resource->getDefault()),
+		]);
 	}
 
 }

@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:MetadataLibrary!
  * @subpackage     Entities
- * @since          0.57.0
+ * @since          1.0.0
  *
  * @date           02.06.22
  */
@@ -52,6 +52,7 @@ abstract class MappedProperty extends Property
 	public function __construct(
 		string $id,
 		string $type,
+		string $category,
 		string $identifier,
 		string|null $name,
 		bool $settable,
@@ -60,7 +61,8 @@ abstract class MappedProperty extends Property
 		string|null $unit = null,
 		array|null $format = null,
 		string|int|float|null $invalid = null,
-		int|null $numberOfDecimals = null,
+		int|null $scale = null,
+		int|null $step = null,
 		float|bool|int|string|null $actualValue = null,
 		float|bool|int|string|null $previousValue = null,
 		float|bool|int|string|null $expectedValue = null,
@@ -74,6 +76,7 @@ abstract class MappedProperty extends Property
 		parent::__construct(
 			$id,
 			$type,
+			$category,
 			$identifier,
 			$name,
 			$settable,
@@ -82,7 +85,8 @@ abstract class MappedProperty extends Property
 			$unit,
 			$format,
 			$invalid,
-			$numberOfDecimals,
+			$scale,
+			$step,
 			$owner,
 		);
 
@@ -152,7 +156,6 @@ abstract class MappedProperty extends Property
 	{
 		return array_merge(parent::toArray(), [
 			'actual_value' => $this->getActualValue(),
-			'previous_value' => $this->getPreviousValue(),
 			'expected_value' => $this->getExpectedValue(),
 			'pending' => $this->getPending(),
 			'valid' => $this->isValid(),

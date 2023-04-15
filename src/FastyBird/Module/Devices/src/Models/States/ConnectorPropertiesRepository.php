@@ -41,6 +41,8 @@ final class ConnectorPropertiesRepository
 
 	/**
 	 * @throws Exceptions\NotImplemented
+	 *
+	 * @interal
 	 */
 	public function findOne(
 		MetadataEntities\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
@@ -55,6 +57,8 @@ final class ConnectorPropertiesRepository
 
 	/**
 	 * @throws Exceptions\NotImplemented
+	 *
+	 * @interal
 	 */
 	public function findOneById(
 		Uuid\UuidInterface $id,

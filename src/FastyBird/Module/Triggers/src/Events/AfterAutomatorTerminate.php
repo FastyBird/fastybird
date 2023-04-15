@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:TriggersModule!
  * @subpackage     Events
- * @since          0.65.0
+ * @since          1.0.0
  *
  * @date           22.06.22
  */

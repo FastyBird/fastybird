@@ -1,6 +1,7 @@
 {
   "id" : "176984ad-7cf7-465d-9e53-71668a74a688",
   "type" : "mapped",
+  "category": "generic",
   "identifier" : "property-identifier",
   "name" : null,
   "settable" : true,
@@ -43,10 +44,10 @@
     ]
   ],
   "invalid" : 99,
-  "number_of_decimals" : null,
+  "scale" : null,
+  "step": null,
   "channel" : "247fd6b5-8466-4323-81de-cec3e315015a",
   "actual_value" : "switch_on",
-  "previous_value" : "switch_off",
   "expected_value" : null,
   "pending" : false,
   "valid" : true,

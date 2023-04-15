@@ -41,15 +41,15 @@ final class DeviceSwitchStatus implements Entities\API\Entity
 	public function __construct(
 		private readonly int $id,
 		private readonly string|null $source,
-		private readonly bool|null $output,
+		private readonly bool|string $output,
 		private readonly int|null $timerStartedAt,
 		private readonly int|null $timerDuration,
-		private readonly float|null $apower,
-		private readonly float|null $voltage,
-		private readonly float|null $current,
-		private readonly float|null $pf,
-		private readonly ActiveEnergyStatusBlock|null $aenergy,
-		private readonly TemperatureBlockStatus|null $temperature,
+		private readonly float|string $apower,
+		private readonly float|string $voltage,
+		private readonly float|string $current,
+		private readonly float|string $pf,
+		private readonly ActiveEnergyStatusBlock|string $aenergy,
+		private readonly TemperatureBlockStatus|string $temperature,
 		private readonly array|Utils\ArrayHash $errors = [],
 	)
 	{
@@ -70,7 +70,7 @@ final class DeviceSwitchStatus implements Entities\API\Entity
 		return $this->source;
 	}
 
-	public function getOutput(): bool|null
+	public function getOutput(): bool|string
 	{
 		return $this->output;
 	}
@@ -92,32 +92,32 @@ final class DeviceSwitchStatus implements Entities\API\Entity
 		return $this->timerDuration;
 	}
 
-	public function getActivePower(): float|null
+	public function getActivePower(): float|string
 	{
 		return $this->apower;
 	}
 
-	public function getVoltage(): float|null
+	public function getVoltage(): float|string
 	{
 		return $this->voltage;
 	}
 
-	public function getCurrent(): float|null
+	public function getCurrent(): float|string
 	{
 		return $this->current;
 	}
 
-	public function getPowerFactor(): float|null
+	public function getPowerFactor(): float|string
 	{
 		return $this->pf;
 	}
 
-	public function getActiveEnergy(): ActiveEnergyStatusBlock|null
+	public function getActiveEnergy(): ActiveEnergyStatusBlock|string
 	{
 		return $this->aenergy;
 	}
 
-	public function getTemperature(): TemperatureBlockStatus|null
+	public function getTemperature(): TemperatureBlockStatus|string
 	{
 		return $this->temperature;
 	}
@@ -148,8 +148,8 @@ final class DeviceSwitchStatus implements Entities\API\Entity
 			'voltage' => $this->getVoltage(),
 			'current' => $this->getCurrent(),
 			'power_factor' => $this->getPowerFactor(),
-			'active_energy' => $this->getActiveEnergy()?->toArray(),
-			'temperature' => $this->getTemperature()?->toArray(),
+			'active_energy' => $this->getActiveEnergy() instanceof ActiveEnergyStatusBlock ? $this->getActiveEnergy()->toArray() : null,
+			'temperature' => $this->getTemperature() instanceof TemperatureBlockStatus ? $this->getTemperature()->toArray() : null,
 			'errors' => $this->getErrors(),
 		];
 	}

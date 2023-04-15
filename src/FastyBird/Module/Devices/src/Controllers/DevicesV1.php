@@ -18,6 +18,7 @@ namespace FastyBird\Module\Devices\Controllers;
 use Doctrine;
 use Exception;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Controllers;
 use FastyBird\Module\Devices\Exceptions;
@@ -57,6 +58,8 @@ class DevicesV1 extends BaseV1
 	public function __construct(
 		protected readonly Models\Devices\DevicesRepository $devicesRepository,
 		protected readonly Models\Devices\DevicesManager $devicesManager,
+		protected readonly Models\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
+		protected readonly Models\Devices\Controls\ControlsRepository $deviceControlsRepository,
 		protected readonly Models\Channels\ChannelsRepository $channelsRepository,
 		protected readonly Models\Channels\ChannelsManager $channelsManager,
 	)
@@ -179,10 +182,7 @@ class DevicesV1 extends BaseV1
 				$this->logger->error('An unhandled error occurred', [
 					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
 					'type' => 'devices-controller',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				]);
 
 				throw new JsonApiExceptions\JsonApiError(
@@ -275,10 +275,7 @@ class DevicesV1 extends BaseV1
 				$this->logger->error('An unhandled error occurred', [
 					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
 					'type' => 'devices-controller',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				]);
 
 				throw new JsonApiExceptions\JsonApiError(
@@ -330,8 +327,10 @@ class DevicesV1 extends BaseV1
 			// Start transaction connection to the database
 			$this->getOrmConnection()->beginTransaction();
 
-			foreach ($device->getChannels() as $channel) {
-				// Remove channels. Newly connected device will be reinitialized with all channels
+			$findChannelsQuery = new Queries\FindChannels();
+			$findChannelsQuery->forDevice($device);
+
+			foreach ($this->channelsRepository->findAllBy($findChannelsQuery) as $channel) {
 				$this->channelsManager->delete($channel);
 			}
 
@@ -346,10 +345,7 @@ class DevicesV1 extends BaseV1
 			$this->logger->error('An unhandled error occurred', [
 				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
 				'type' => 'devices-controller',
-				'exception' => [
-					'message' => $ex->getMessage(),
-					'code' => $ex->getCode(),
-				],
+				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
 
 			throw new JsonApiExceptions\JsonApiError(
@@ -385,18 +381,46 @@ class DevicesV1 extends BaseV1
 		if ($relationEntity === Schemas\Devices\Device::RELATIONSHIPS_CONNECTOR) {
 			return $this->buildResponse($request, $response, $device->getConnector());
 		} elseif ($relationEntity === Schemas\Devices\Device::RELATIONSHIPS_PROPERTIES) {
-			return $this->buildResponse($request, $response, $device->getProperties());
-		} elseif ($relationEntity === Schemas\Devices\Device::RELATIONSHIPS_CONTROLS) {
-			return $this->buildResponse($request, $response, $device->getControls());
-		} elseif ($relationEntity === Schemas\Devices\Device::RELATIONSHIPS_PARENTS) {
-			return $this->buildResponse($request, $response, $device->getParents());
-		} elseif ($relationEntity === Schemas\Devices\Device::RELATIONSHIPS_CHILDREN) {
-			return $this->buildResponse($request, $response, $device->getChildren());
-		} elseif ($relationEntity === Schemas\Devices\Device::RELATIONSHIPS_CHANNELS) {
-			$findQuery = new Queries\FindChannels();
-			$findQuery->forDevice($device);
+			$findDevicePropertiesQuery = new Queries\FindDeviceProperties();
+			$findDevicePropertiesQuery->forDevice($device);
 
-			return $this->buildResponse($request, $response, $this->channelsRepository->findAllBy($findQuery));
+			return $this->buildResponse(
+				$request,
+				$response,
+				$this->devicePropertiesRepository->findAllBy($findDevicePropertiesQuery),
+			);
+		} elseif ($relationEntity === Schemas\Devices\Device::RELATIONSHIPS_CONTROLS) {
+			$findDeviceControlsQuery = new Queries\FindDeviceControls();
+			$findDeviceControlsQuery->forDevice($device);
+
+			return $this->buildResponse(
+				$request,
+				$response,
+				$this->deviceControlsRepository->findAllBy($findDeviceControlsQuery),
+			);
+		} elseif ($relationEntity === Schemas\Devices\Device::RELATIONSHIPS_PARENTS) {
+			$findParentsDevicesQuery = new Queries\FindDevices();
+			$findParentsDevicesQuery->forChild($device);
+
+			return $this->buildResponse(
+				$request,
+				$response,
+				$this->devicesRepository->findAllBy($findParentsDevicesQuery),
+			);
+		} elseif ($relationEntity === Schemas\Devices\Device::RELATIONSHIPS_CHILDREN) {
+			$findChildrenDevicesQuery = new Queries\FindDevices();
+			$findChildrenDevicesQuery->forParent($device);
+
+			return $this->buildResponse(
+				$request,
+				$response,
+				$this->devicesRepository->findAllBy($findChildrenDevicesQuery),
+			);
+		} elseif ($relationEntity === Schemas\Devices\Device::RELATIONSHIPS_CHANNELS) {
+			$findChannelsQuery = new Queries\FindChannels();
+			$findChannelsQuery->forDevice($device);
+
+			return $this->buildResponse($request, $response, $this->channelsRepository->findAllBy($findChannelsQuery));
 		}
 
 		return parent::readRelationship($request, $response);
