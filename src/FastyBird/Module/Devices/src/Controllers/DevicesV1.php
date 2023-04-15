@@ -58,6 +58,7 @@ class DevicesV1 extends BaseV1
 	public function __construct(
 		protected readonly Models\Devices\DevicesRepository $devicesRepository,
 		protected readonly Models\Devices\DevicesManager $devicesManager,
+		protected readonly Models\Devices\Controls\ControlsRepository $deviceControlsRepository,
 		protected readonly Models\Channels\ChannelsRepository $channelsRepository,
 		protected readonly Models\Channels\ChannelsManager $channelsManager,
 	)
@@ -381,16 +382,37 @@ class DevicesV1 extends BaseV1
 		} elseif ($relationEntity === Schemas\Devices\Device::RELATIONSHIPS_PROPERTIES) {
 			return $this->buildResponse($request, $response, $device->getProperties());
 		} elseif ($relationEntity === Schemas\Devices\Device::RELATIONSHIPS_CONTROLS) {
-			return $this->buildResponse($request, $response, $device->getControls());
-		} elseif ($relationEntity === Schemas\Devices\Device::RELATIONSHIPS_PARENTS) {
-			return $this->buildResponse($request, $response, $device->getParents());
-		} elseif ($relationEntity === Schemas\Devices\Device::RELATIONSHIPS_CHILDREN) {
-			return $this->buildResponse($request, $response, $device->getChildren());
-		} elseif ($relationEntity === Schemas\Devices\Device::RELATIONSHIPS_CHANNELS) {
-			$findQuery = new Queries\FindChannels();
-			$findQuery->forDevice($device);
+			$findDeviceControlsQuery = new Queries\FindDeviceControls();
+			$findDeviceControlsQuery->forDevice($device);
 
-			return $this->buildResponse($request, $response, $this->channelsRepository->findAllBy($findQuery));
+			return $this->buildResponse(
+				$request,
+				$response,
+				$this->deviceControlsRepository->findAllBy($findDeviceControlsQuery),
+			);
+		} elseif ($relationEntity === Schemas\Devices\Device::RELATIONSHIPS_PARENTS) {
+			$findParentsDevicesQuery = new Queries\FindDevices();
+			$findParentsDevicesQuery->forChild($device);
+
+			return $this->buildResponse(
+				$request,
+				$response,
+				$this->devicesRepository->findAllBy($findParentsDevicesQuery),
+			);
+		} elseif ($relationEntity === Schemas\Devices\Device::RELATIONSHIPS_CHILDREN) {
+			$findChildrenDevicesQuery = new Queries\FindDevices();
+			$findChildrenDevicesQuery->forParent($device);
+
+			return $this->buildResponse(
+				$request,
+				$response,
+				$this->devicesRepository->findAllBy($findChildrenDevicesQuery),
+			);
+		} elseif ($relationEntity === Schemas\Devices\Device::RELATIONSHIPS_CHANNELS) {
+			$findChannelsQuery = new Queries\FindChannels();
+			$findChannelsQuery->forDevice($device);
+
+			return $this->buildResponse($request, $response, $this->channelsRepository->findAllBy($findChannelsQuery));
 		}
 
 		return parent::readRelationship($request, $response);

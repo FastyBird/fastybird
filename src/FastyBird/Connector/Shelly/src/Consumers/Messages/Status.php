@@ -50,6 +50,7 @@ final class Status implements Consumer
 
 	public function __construct(
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		private readonly DevicesModels\Devices\Properties\PropertiesRepository $propertiesRepository,
 		private readonly DevicesModels\Devices\Properties\PropertiesManager $propertiesManager,
 		private readonly DevicesModels\Channels\Properties\PropertiesManager $channelsPropertiesManager,
@@ -96,7 +97,12 @@ final class Status implements Consumer
 				$property = $device->findProperty($status->getIdentifier());
 
 				if ($property === null) {
-					foreach ($device->getChannels() as $channel) {
+					$findChannelsQuery = new DevicesQueries\FindChannels();
+					$findChannelsQuery->forDevice($device);
+
+					$channels = $this->channelsRepository->findAllBy($findChannelsQuery);
+
+					foreach ($channels as $channel) {
 						$property = $channel->findProperty($status->getIdentifier());
 
 						if ($property !== null) {
@@ -115,7 +121,11 @@ final class Status implements Consumer
 					]));
 				}
 			} else {
-				$channel = $device->findChannel($status->getIdentifier());
+				$findChannelQuery = new DevicesQueries\FindChannels();
+				$findChannelQuery->forDevice($device);
+				$findChannelQuery->byIdentifier($status->getIdentifier());
+
+				$channel = $this->channelsRepository->findOneBy($findChannelQuery);
 
 				if ($channel !== null) {
 					foreach ($status->getSensors() as $sensor) {

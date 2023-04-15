@@ -368,6 +368,11 @@ final class Local implements Client
 			return;
 		}
 
+		$findChildrenDevicesQuery = new DevicesQueries\FindDevices();
+		$findChildrenDevicesQuery->forParent($device);
+
+		$children = $this->devicesRepository->findAllBy($findChildrenDevicesQuery);
+
 		assert(is_string($device->getLocalKey()));
 		assert(is_string($device->getIpAddress()));
 
@@ -387,7 +392,7 @@ final class Local implements Client
 					$child->getNodeId(),
 					Types\LocalDeviceType::get(Types\LocalDeviceType::ZIGBEE),
 				);
-			}, $device->getChildren()),
+			}, $children),
 		);
 
 		$client->on(

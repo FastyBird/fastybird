@@ -21,6 +21,9 @@ use FastyBird\Connector\Shelly\Consumers;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
+use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use function array_filter;
 use function array_map;
 use function array_merge;
@@ -35,6 +38,7 @@ use function strval;
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *
  * @property-read Consumers\Messages $consumer
+ * @property-read DevicesModels\Channels\ChannelsRepository $channelsRepository
  */
 trait Gen2
 {
@@ -429,6 +433,9 @@ trait Gen2
 		);
 	}
 
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 */
 	private function findProperty(
 		Entities\ShellyDevice $device,
 		string $propertyIdentifier,
@@ -440,7 +447,12 @@ trait Gen2
 			return $property;
 		}
 
-		foreach ($device->getChannels() as $channel) {
+		$findChannelsQuery = new DevicesQueries\FindChannels();
+		$findChannelsQuery->forDevice($device);
+
+		$channels = $this->channelsRepository->findAllBy($findChannelsQuery);
+
+		foreach ($channels as $channel) {
 			$property = $channel->findProperty($propertyIdentifier);
 
 			if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {

@@ -569,7 +569,12 @@ class Devices extends Console\Command\Command
 			return;
 		}
 
-		if (count($device->getChannels()) > 0) {
+		$findChannelsQuery = new DevicesQueries\FindChannels();
+		$findChannelsQuery->forDevice($device);
+
+		$channels = $this->channelsRepository->findAllBy($findChannelsQuery, Entities\ModbusChannel::class);
+
+		if (count($channels) > 0) {
 			$this->askRegisterAction($io, $device, true);
 
 			return;
@@ -944,7 +949,12 @@ class Devices extends Console\Command\Command
 			}
 		}
 
-		if (count($device->getChannels()) > 1) {
+		$findChannelsQuery = new DevicesQueries\FindChannels();
+		$findChannelsQuery->forDevice($device);
+
+		$channels = $this->channelsRepository->findAllBy($findChannelsQuery, Entities\ModbusChannel::class);
+
+		if (count($channels) > 1) {
 			$this->askRegisterAction($io, $device, true);
 
 			return;
@@ -1019,7 +1029,12 @@ class Devices extends Console\Command\Command
 			}
 		}
 
-		if (count($device->getChannels()) > 0) {
+		$findChannelsQuery = new DevicesQueries\FindChannels();
+		$findChannelsQuery->forDevice($device);
+
+		$channels = $this->channelsRepository->findAllBy($findChannelsQuery, Entities\ModbusChannel::class);
+
+		if (count($channels) > 0) {
 			$this->askRegisterAction($io, $device, true);
 		}
 	}
@@ -1078,7 +1093,12 @@ class Devices extends Console\Command\Command
 
 		$io->newLine();
 
-		if (count($device->getChannels()) > 0) {
+		$findChannelsQuery = new DevicesQueries\FindChannels();
+		$findChannelsQuery->forDevice($device);
+
+		$channels = $this->channelsRepository->findAllBy($findChannelsQuery, Entities\ModbusChannel::class);
+
+		if (count($channels) > 0) {
 			$this->askRegisterAction($io, $device, true);
 		}
 	}
@@ -1432,9 +1452,16 @@ class Devices extends Console\Command\Command
 			),
 			$address,
 		);
-		$question->setValidator(static function (string|null $answer) use ($device, $channel) {
+		$question->setValidator(function (string|null $answer) use ($device, $channel) {
 			if (strval(intval($answer)) === strval($answer)) {
-				foreach ($device->getChannels() as $deviceChannel) {
+				$findChannelsQuery = new DevicesQueries\FindChannels();
+				$findChannelsQuery->forDevice($device);
+
+				$channels = $this->channelsRepository->findAllBy($findChannelsQuery, Entities\ModbusChannel::class);
+
+				foreach ($channels as $deviceChannel) {
+					assert($deviceChannel instanceof Entities\ModbusChannel);
+
 					$address = $deviceChannel->getAddress();
 
 					if (
@@ -1460,7 +1487,17 @@ class Devices extends Console\Command\Command
 					$end = intval($matches[2]);
 
 					if ($start < $end) {
-						foreach ($device->getChannels() as $deviceChannel) {
+						$findChannelsQuery = new DevicesQueries\FindChannels();
+						$findChannelsQuery->forDevice($device);
+
+						$channels = $this->channelsRepository->findAllBy(
+							$findChannelsQuery,
+							Entities\ModbusChannel::class,
+						);
+
+						foreach ($channels as $deviceChannel) {
+							assert($deviceChannel instanceof Entities\ModbusChannel);
+
 							$address = $deviceChannel->getAddress();
 
 							if (intval($address) >= $start && intval($address) <= $end) {

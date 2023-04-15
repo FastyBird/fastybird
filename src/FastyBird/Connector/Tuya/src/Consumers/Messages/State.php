@@ -48,6 +48,7 @@ final class State implements Consumer
 	public function __construct(
 		private readonly Helpers\Property $propertyStateHelper,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		Log\LoggerInterface|null $logger = null,
 	)
@@ -105,7 +106,12 @@ final class State implements Consumer
 					);
 				}
 
-				foreach ($device->getChannels() as $channel) {
+				$findChannelsQuery = new DevicesQueries\FindChannels();
+				$findChannelsQuery->forDevice($device);
+
+				$channels = $this->channelsRepository->findAllBy($findChannelsQuery);
+
+				foreach ($channels as $channel) {
 					foreach ($channel->getProperties() as $property) {
 						if (!$property instanceof DevicesEntities\Channels\Properties\Dynamic) {
 							continue;
@@ -121,7 +127,12 @@ final class State implements Consumer
 				}
 			}
 
-			foreach ($device->getChildren() as $child) {
+			$findChildrenDevicesQuery = new DevicesQueries\FindDevices();
+			$findChildrenDevicesQuery->forParent($device);
+
+			$children = $this->devicesRepository->findAllBy($findChildrenDevicesQuery);
+
+			foreach ($children as $child) {
 				$this->deviceConnectionManager->setState(
 					$child,
 					$entity->getState(),

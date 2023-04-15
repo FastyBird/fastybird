@@ -407,7 +407,12 @@ class Devices extends Console\Command\Command
 			return;
 		}
 
-		if (count($device->getChannels()) > 0) {
+		$findChannelsQuery = new DevicesQueries\FindChannels();
+		$findChannelsQuery->forDevice($device);
+
+		$channels = $this->channelsRepository->findAllBy($findChannelsQuery, Entities\HomeKitChannel::class);
+
+		if (count($channels) > 0) {
 			$this->askServiceAction($io, $device, true);
 
 			return;
@@ -511,7 +516,7 @@ class Devices extends Console\Command\Command
 			$findChannelQuery->forDevice($device);
 			$findChannelQuery->byIdentifier($identifier);
 
-			$channel = $this->channelsRepository->findOneBy($findChannelQuery);
+			$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\HomeKitChannel::class);
 
 			if ($channel === null) {
 				break;
@@ -846,7 +851,12 @@ class Devices extends Console\Command\Command
 			}
 		}
 
-		if (count($device->getChannels()) > 0) {
+		$findChannelsQuery = new DevicesQueries\FindChannels();
+		$findChannelsQuery->forDevice($device);
+
+		$channels = $this->channelsRepository->findAllBy($findChannelsQuery, Entities\HomeKitChannel::class);
+
+		if (count($channels) > 0) {
 			$this->askServiceAction($io, $device, true);
 		}
 	}
@@ -911,7 +921,12 @@ class Devices extends Console\Command\Command
 
 		$io->newLine();
 
-		if (count($device->getChannels()) > 0) {
+		$findChannelsQuery = new DevicesQueries\FindChannels();
+		$findChannelsQuery->forDevice($device);
+
+		$channels = $this->channelsRepository->findAllBy($findChannelsQuery, Entities\HomeKitChannel::class);
+
+		if (count($channels) > 0) {
 			$this->askServiceAction($io, $device, true);
 		}
 	}
@@ -2886,7 +2901,7 @@ class Devices extends Console\Command\Command
 		$findChannelsQuery = new DevicesQueries\FindChannels();
 		$findChannelsQuery->forDevice($device);
 
-		$deviceChannels = $this->channelsRepository->findAllBy($findChannelsQuery);
+		$deviceChannels = $this->channelsRepository->findAllBy($findChannelsQuery, Entities\HomeKitChannel::class);
 		usort(
 			$deviceChannels,
 			static function (DevicesEntities\Channels\Channel $a, DevicesEntities\Channels\Channel $b): int {

@@ -51,7 +51,8 @@ final class ChannelProperty implements Consumers\Consumer
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
-		private readonly DevicesModels\Devices\DevicesRepository $deviceRepository,
+		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		private readonly DevicesModels\Channels\Properties\PropertiesManager $propertiesManager,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly DevicesUtilities\Database $databaseHelper,
@@ -83,7 +84,7 @@ final class ChannelProperty implements Consumers\Consumer
 		$findDeviceQuery->byConnectorId($entity->getConnector());
 		$findDeviceQuery->byIdentifier($entity->getDevice());
 
-		$device = $this->deviceRepository->findOneBy($findDeviceQuery, Entities\FbMqttDevice::class);
+		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\FbMqttDevice::class);
 
 		if ($device === null) {
 			$this->logger->error(
@@ -100,7 +101,11 @@ final class ChannelProperty implements Consumers\Consumer
 			return true;
 		}
 
-		$channel = $device->findChannel($entity->getChannel());
+		$findChannelQuery = new DevicesQueries\FindChannels();
+		$findChannelQuery->forDevice($device);
+		$findChannelQuery->byIdentifier($entity->getChannel());
+
+		$channel = $this->channelsRepository->findOneBy($findChannelQuery);
 
 		if ($channel === null) {
 			$this->logger->error(

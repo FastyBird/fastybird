@@ -257,11 +257,6 @@ abstract class Device implements Entities\Entity,
 		}
 	}
 
-	public function removeParent(self $parent): void
-	{
-		$this->parents->removeElement($parent);
-	}
-
 	/**
 	 * @return array<Device>
 	 */
@@ -290,15 +285,6 @@ abstract class Device implements Entities\Entity,
 		if (!$this->children->contains($child)) {
 			// ...and assign it to collection
 			$this->children->add($child);
-		}
-	}
-
-	public function removeChild(self $child): void
-	{
-		// Check if collection contain removing entity...
-		if ($this->children->contains($child)) {
-			// ...and remove it from collection
-			$this->children->removeElement($child);
 		}
 	}
 
@@ -333,31 +319,6 @@ abstract class Device implements Entities\Entity,
 		}
 	}
 
-	public function getChannel(string $id): Entities\Channels\Channel|null
-	{
-		$found = $this->channels
-			->filter(static fn (Entities\Channels\Channel $row): bool => $id === $row->getPlainId());
-
-		return $found->isEmpty() === true ? null : $found->first();
-	}
-
-	public function findChannel(string $identifier): Entities\Channels\Channel|null
-	{
-		$found = $this->channels
-			->filter(static fn (Entities\Channels\Channel $row): bool => $identifier === $row->getIdentifier());
-
-		return $found->isEmpty() === true ? null : $found->first();
-	}
-
-	public function removeChannel(Entities\Channels\Channel $channel): void
-	{
-		// Check if collection contain removing entity...
-		if ($this->channels->contains($channel)) {
-			// ...and remove it from collection
-			$this->channels->removeElement($channel);
-		}
-	}
-
 	/**
 	 * @return array<Entities\Devices\Controls\Control>
 	 */
@@ -386,31 +347,6 @@ abstract class Device implements Entities\Entity,
 		if (!$this->controls->contains($control)) {
 			// ...and assign it to collection
 			$this->controls->add($control);
-		}
-	}
-
-	public function getControl(string $id): Entities\Devices\Controls\Control|null
-	{
-		$found = $this->controls
-			->filter(static fn (Entities\Devices\Controls\Control $row): bool => $id === $row->getPlainId());
-
-		return $found->isEmpty() === true ? null : $found->first();
-	}
-
-	public function findControl(string $name): Entities\Devices\Controls\Control|null
-	{
-		$found = $this->controls
-			->filter(static fn (Entities\Devices\Controls\Control $row): bool => $name === $row->getName());
-
-		return $found->isEmpty() === true ? null : $found->first();
-	}
-
-	public function removeControl(Entities\Devices\Controls\Control $control): void
-	{
-		// Check if collection contain removing entity...
-		if ($this->controls->contains($control)) {
-			// ...and remove it from collection
-			$this->controls->removeElement($control);
 		}
 	}
 

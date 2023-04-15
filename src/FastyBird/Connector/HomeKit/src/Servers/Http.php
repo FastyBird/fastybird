@@ -83,6 +83,7 @@ final class Http implements Server
 		private readonly Entities\Protocol\CharacteristicsFactory $characteristicsFactory,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelsPropertiesStates,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		private readonly DevicesModels\Connectors\Properties\PropertiesManager $connectorsPropertiesManager,
 		private readonly DevicesModels\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
 		private readonly DevicesModels\Devices\Properties\PropertiesManager $devicesPropertiesManager,
@@ -140,7 +141,15 @@ final class Http implements Server
 			$accessory = $this->accessoryFactory->create($device, $aid, $device->getAccessoryCategory());
 			assert($accessory instanceof Entities\Protocol\Device);
 
-			foreach ($device->getChannels() as $channel) {
+			$findChannelsQuery = new DevicesQueries\FindChannels();
+			$findChannelsQuery->forDevice($device);
+
+			foreach ($this->channelsRepository->findAllBy(
+				$findChannelsQuery,
+				Entities\HomeKitChannel::class,
+			) as $channel) {
+				assert($channel instanceof Entities\HomeKitChannel);
+
 				$service = $this->serviceFactory->create(
 					$channel->getServiceType(),
 					$accessory,

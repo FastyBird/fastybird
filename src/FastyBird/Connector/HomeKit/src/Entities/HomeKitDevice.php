@@ -125,20 +125,6 @@ class HomeKitDevice extends DevicesEntities\Devices\Device
 		parent::addChannel($channel);
 	}
 
-	public function getChannel(string $id): HomeKitChannel|null
-	{
-		$channel = parent::getChannel($id);
-
-		return $channel instanceof HomeKitChannel ? $channel : null;
-	}
-
-	public function findChannel(string $identifier): HomeKitChannel|null
-	{
-		$channel = parent::findChannel($identifier);
-
-		return $channel instanceof HomeKitChannel ? $channel : null;
-	}
-
 	/**
 	 * @return array<HomeKitChannel>
 	 *

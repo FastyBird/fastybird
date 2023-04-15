@@ -26,6 +26,7 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use FastyBird\Module\Devices\Models as DevicesModels;
 use Nette;
 use Psr\Log;
 use React\Promise;
@@ -58,6 +59,7 @@ final class Ws
 		private readonly API\WsApiFactory $wsApiFactory,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		protected readonly Consumers\Messages $consumer,
+		protected readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		Log\LoggerInterface|null $logger = null,
 	)
 	{

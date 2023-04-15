@@ -142,7 +142,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 				$findChannelQuery = new DevicesQueries\FindChannels();
 				$findChannelQuery->byId($entity->getChannel());
 
-				$channel = $this->channelsRepository->findOneBy($findChannelQuery);
+				$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\HomeKitChannel::class);
 
 				if ($channel === null) {
 					$this->logger->error(

@@ -80,6 +80,7 @@ final class Coap implements Clients\Client
 		private readonly Entities\ShellyConnector $connector,
 		private readonly Consumers\Messages $consumer,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		private readonly MetadataSchemas\Validator $schemaValidator,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		Log\LoggerInterface|null $logger = null,
@@ -392,7 +393,12 @@ final class Coap implements Clients\Client
 			return null;
 		}
 
-		foreach ($device->getChannels() as $channel) {
+		$findChannelsQuery = new DevicesQueries\FindChannels();
+		$findChannelsQuery->forDevice($device);
+
+		$channels = $this->channelsRepository->findAllBy($findChannelsQuery);
+
+		foreach ($channels as $channel) {
 			foreach ($channel->getProperties() as $property) {
 				if (
 					$property instanceof DevicesEntities\Channels\Properties\Dynamic

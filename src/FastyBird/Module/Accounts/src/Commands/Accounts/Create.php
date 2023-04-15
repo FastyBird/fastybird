@@ -176,10 +176,10 @@ class Create extends Console\Command\Command
 			SimpleAuth\Constants::ROLE_MANAGER,
 			SimpleAuth\Constants::ROLE_ADMINISTRATOR,
 		], true)) {
-			$findRole = new Queries\FindRoles();
-			$findRole->byName($input->getArgument('role'));
+			$findRoleQuery = new Queries\FindRoles();
+			$findRoleQuery->byName($input->getArgument('role'));
 
-			$role = $this->rolesRepository->findOneBy($findRole);
+			$role = $this->rolesRepository->findOneBy($findRoleQuery);
 
 			if ($role === null) {
 				$io->error('Entered unknown role name.');
@@ -215,10 +215,10 @@ class Create extends Console\Command\Command
 						break;
 				}
 
-				$findRole = new Queries\FindRoles();
-				$findRole->byName(strval($roleName));
+				$findRoleQuery = new Queries\FindRoles();
+				$findRoleQuery->byName(strval($roleName));
 
-				$role = $this->rolesRepository->findOneBy($findRole);
+				$role = $this->rolesRepository->findOneBy($findRoleQuery);
 
 				if ($role !== null) {
 					$repeat = false;

@@ -24,6 +24,8 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Fig\Http\Message\StatusCodeInterface;
 use Nette;
 use Nette\Utils;
@@ -64,6 +66,7 @@ final class Http
 		private readonly API\Gen1HttpApiFactory $gen1HttpApiFactory,
 		private readonly API\Gen2HttpApiFactory $gen2HttpApiFactory,
 		private readonly Consumers\Messages $consumer,
+		protected readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		Log\LoggerInterface|null $logger = null,
 	)
 	{
@@ -329,6 +332,7 @@ final class Http
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 */
@@ -340,7 +344,12 @@ final class Http
 		$statuses = [];
 
 		foreach ($status->getInputs() as $index => $input) {
-			foreach ($device->getChannels() as $channel) {
+			$findChannelsQuery = new DevicesQueries\FindChannels();
+			$findChannelsQuery->forDevice($device);
+
+			$channels = $this->channelsRepository->findAllBy($findChannelsQuery);
+
+			foreach ($channels as $channel) {
 				if (Utils\Strings::endsWith($channel->getIdentifier(), '_' . $index)) {
 					$result = [];
 
@@ -397,7 +406,12 @@ final class Http
 		}
 
 		foreach ($status->getMeters() as $index => $meter) {
-			foreach ($device->getChannels() as $channel) {
+			$findChannelsQuery = new DevicesQueries\FindChannels();
+			$findChannelsQuery->forDevice($device);
+
+			$channels = $this->channelsRepository->findAllBy($findChannelsQuery);
+
+			foreach ($channels as $channel) {
 				if (Utils\Strings::endsWith($channel->getIdentifier(), '_' . $index)) {
 					$result = [];
 
@@ -484,7 +498,12 @@ final class Http
 		}
 
 		foreach ($status->getRelays() as $index => $relay) {
-			foreach ($device->getChannels() as $channel) {
+			$findChannelsQuery = new DevicesQueries\FindChannels();
+			$findChannelsQuery->forDevice($device);
+
+			$channels = $this->channelsRepository->findAllBy($findChannelsQuery);
+
+			foreach ($channels as $channel) {
 				if (Utils\Strings::endsWith(
 					$channel->getIdentifier(),
 					Types\BlockDescription::DESC_RELAY . '_' . $index,
@@ -555,7 +574,12 @@ final class Http
 		}
 
 		foreach ($status->getRollers() as $index => $roller) {
-			foreach ($device->getChannels() as $channel) {
+			$findChannelsQuery = new DevicesQueries\FindChannels();
+			$findChannelsQuery->forDevice($device);
+
+			$channels = $this->channelsRepository->findAllBy($findChannelsQuery);
+
+			foreach ($channels as $channel) {
 				if (Utils\Strings::endsWith(
 					$channel->getIdentifier(),
 					Types\BlockDescription::DESC_ROLLER . '_' . $index,
@@ -640,7 +664,12 @@ final class Http
 		}
 
 		foreach ($status->getLights() as $index => $light) {
-			foreach ($device->getChannels() as $channel) {
+			$findChannelsQuery = new DevicesQueries\FindChannels();
+			$findChannelsQuery->forDevice($device);
+
+			$channels = $this->channelsRepository->findAllBy($findChannelsQuery);
+
+			foreach ($channels as $channel) {
 				if (Utils\Strings::endsWith(
 					$channel->getIdentifier(),
 					Types\BlockDescription::DESC_LIGHT . '_' . $index,
@@ -767,7 +796,12 @@ final class Http
 		}
 
 		foreach ($status->getEmeters() as $index => $emeter) {
-			foreach ($device->getChannels() as $channel) {
+			$findChannelsQuery = new DevicesQueries\FindChannels();
+			$findChannelsQuery->forDevice($device);
+
+			$channels = $this->channelsRepository->findAllBy($findChannelsQuery);
+
+			foreach ($channels as $channel) {
 				if (Utils\Strings::endsWith(
 					$channel->getIdentifier(),
 					Types\BlockDescription::DESC_EMETER . '_' . $index,

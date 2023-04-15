@@ -53,6 +53,7 @@ final class LocalDiscovery implements Consumer
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Devices\DevicesManager $devicesManager,
+		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		private readonly DevicesModels\Devices\Properties\PropertiesRepository $propertiesRepository,
 		private readonly DevicesModels\Devices\Properties\PropertiesManager $propertiesManager,
 		private readonly DevicesModels\Channels\ChannelsManager $channelsManager,
@@ -181,7 +182,11 @@ final class LocalDiscovery implements Consumer
 		);
 
 		foreach ($entity->getChannels() as $channelDescription) {
-			$channel = $device->findChannel($channelDescription->getIdentifier());
+			$findChannelQuery = new DevicesQueries\FindChannels();
+			$findChannelQuery->forDevice($device);
+			$findChannelQuery->byIdentifier($channelDescription->getIdentifier());
+
+			$channel = $this->channelsRepository->findOneBy($findChannelQuery);
 
 			$channel = $channel === null ? $this->databaseHelper->transaction(
 				fn (): DevicesEntities\Channels\Channel => $this->channelsManager->create(Utils\ArrayHash::from([

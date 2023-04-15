@@ -100,6 +100,7 @@ class Tcp implements Client
 		private readonly Consumers\Messages $consumer,
 		private readonly Writers\Writer $writer,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
@@ -438,7 +439,12 @@ class Tcp implements Client
 
 		$coilsAddresses = $discreteInputsAddresses = $holdingAddresses = $inputsAddresses = [];
 
-		foreach ($device->getChannels() as $channel) {
+		$findChannelsQuery = new DevicesQueries\FindChannels();
+		$findChannelsQuery->forDevice($device);
+
+		foreach ($this->channelsRepository->findAllBy($findChannelsQuery, Entities\ModbusChannel::class) as $channel) {
+			assert($channel instanceof Entities\ModbusChannel);
+
 			$address = $channel->getAddress();
 
 			if (!is_int($address)) {

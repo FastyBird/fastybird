@@ -50,9 +50,11 @@ final class Device implements Consumers\Consumer
 
 	public function __construct(
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		private readonly DevicesModels\Devices\DevicesManager $devicesManager,
 		private readonly DevicesModels\Devices\Properties\PropertiesManager $devicePropertiesManager,
-		private readonly DevicesModels\Devices\Controls\ControlsManager $deviceControlManager,
+		private readonly DevicesModels\Devices\Controls\ControlsRepository $deviceControlsRepository,
+		private readonly DevicesModels\Devices\Controls\ControlsManager $deviceControlsManager,
 		private readonly DevicesModels\Channels\ChannelsManager $channelsManager,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DevicesUtilities\Database $databaseHelper,
@@ -277,6 +279,7 @@ final class Device implements Consumers\Consumer
 	/**
 	 * @phpstan-param Utils\ArrayHash<string> $controls
 	 *
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 */
 	private function setDeviceControls(
@@ -285,18 +288,27 @@ final class Device implements Consumers\Consumer
 	): void
 	{
 		foreach ($controls as $controlName) {
-			if ($device->findControl($controlName) === null) {
-				$this->deviceControlManager->create(Utils\ArrayHash::from([
+			$findControlQuery = new DevicesQueries\FindDeviceControls();
+			$findControlQuery->forDevice($device);
+			$findControlQuery->byName($controlName);
+
+			$control = $this->deviceControlsRepository->findOneBy($findControlQuery);
+
+			if ($control === null) {
+				$this->deviceControlsManager->create(Utils\ArrayHash::from([
 					'device' => $device,
 					'name' => $controlName,
 				]));
 			}
 		}
 
+		$findControlsQuery = new DevicesQueries\FindDeviceControls();
+		$findControlsQuery->forDevice($device);
+
 		// Cleanup for unused control
-		foreach ($device->getControls() as $control) {
+		foreach ($this->deviceControlsRepository->findAllBy($findControlsQuery) as $control) {
 			if (!in_array($control->getName(), (array) $controls, true)) {
-				$this->deviceControlManager->delete($control);
+				$this->deviceControlsManager->delete($control);
 			}
 		}
 	}
@@ -304,6 +316,7 @@ final class Device implements Consumers\Consumer
 	/**
 	 * @phpstan-param Utils\ArrayHash<string> $channels
 	 *
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 */
 	private function setDeviceChannels(
@@ -312,7 +325,13 @@ final class Device implements Consumers\Consumer
 	): void
 	{
 		foreach ($channels as $channelName) {
-			if ($device->findChannel($channelName) === null) {
+			$findChannelQuery = new DevicesQueries\FindChannels();
+			$findChannelQuery->forDevice($device);
+			$findChannelQuery->byIdentifier($channelName);
+
+			$channel = $this->channelsRepository->findOneBy($findChannelQuery);
+
+			if ($channel === null) {
 				$this->channelsManager->create(Utils\ArrayHash::from([
 					'device' => $device,
 					'identifier' => $channelName,
@@ -320,8 +339,11 @@ final class Device implements Consumers\Consumer
 			}
 		}
 
+		$findChannelsQuery = new DevicesQueries\FindChannels();
+		$findChannelsQuery->forDevice($device);
+
 		// Cleanup for unused channels
-		foreach ($device->getChannels() as $channel) {
+		foreach ($this->channelsRepository->findAllBy($findChannelsQuery) as $channel) {
 			if (!in_array($channel->getIdentifier(), (array) $channels, true)) {
 				$this->channelsManager->delete($channel);
 			}
