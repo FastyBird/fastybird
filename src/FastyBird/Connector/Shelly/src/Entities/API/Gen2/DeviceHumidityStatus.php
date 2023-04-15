@@ -38,7 +38,7 @@ final class DeviceHumidityStatus implements Entities\API\Entity
 	 */
 	public function __construct(
 		private readonly int $id,
-		private readonly float|null $rh,
+		private readonly float|string|null $rh,
 		private readonly array|Utils\ArrayHash $errors = [],
 	)
 	{
@@ -54,7 +54,7 @@ final class DeviceHumidityStatus implements Entities\API\Entity
 		return Types\ComponentType::get(Types\ComponentType::TYPE_HUMIDITY);
 	}
 
-	public function getRelativeHumidity(): float|null
+	public function getRelativeHumidity(): float|string|null
 	{
 		return $this->rh;
 	}

@@ -61,7 +61,6 @@ final class Http
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
-		private readonly API\Transformer $transformer,
 		private readonly API\Gen1HttpApiFactory $gen1HttpApiFactory,
 		private readonly API\Gen2HttpApiFactory $gen2HttpApiFactory,
 		private readonly Consumers\Messages $consumer,
@@ -219,6 +218,14 @@ final class Http
 		$result
 			->then(
 				function (Entities\API\Gen1\DeviceStatus|Entities\API\Gen2\DeviceStatus $status) use ($device, $onFulfilled): void {
+					$this->consumer->append(
+						new Entities\Messages\DeviceState(
+							$device->getConnector()->getId(),
+							$device->getIdentifier(),
+							MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_CONNECTED),
+						),
+					);
+
 					if ($status instanceof Entities\API\Gen1\DeviceStatus) {
 						$this->processGen1DeviceStatus($device, $status);
 					} else {
@@ -312,7 +319,6 @@ final class Http
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 				'type' => 'http-client',
-				'group' => 'client',
 				'device' => [
 					'id' => $device->getPlainId(),
 				],
@@ -345,7 +351,7 @@ final class Http
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								$this->transformer->transformValueFromDevice(
+								API\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$input->getInput(),
@@ -357,7 +363,7 @@ final class Http
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								$this->transformer->transformValueFromDevice(
+								API\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$input->getEvent(),
@@ -369,7 +375,7 @@ final class Http
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								$this->transformer->transformValueFromDevice(
+								API\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$input->getEventCnt(),
@@ -408,7 +414,7 @@ final class Http
 						) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								$this->transformer->transformValueFromDevice(
+								API\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$meter->getPower(),
@@ -437,7 +443,7 @@ final class Http
 							) {
 								$result[] = new Entities\Messages\PropertyStatus(
 									$property->getIdentifier(),
-									$this->transformer->transformValueFromDevice(
+									API\Transformer::transformValueFromDevice(
 										$property->getDataType(),
 										$property->getFormat(),
 										$meter->getOverpower(),
@@ -456,7 +462,7 @@ final class Http
 						) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								$this->transformer->transformValueFromDevice(
+								API\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$meter->getTotal(),
@@ -492,7 +498,7 @@ final class Http
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								$this->transformer->transformValueFromDevice(
+								API\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$relay->getState(),
@@ -504,7 +510,7 @@ final class Http
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								$this->transformer->transformValueFromDevice(
+								API\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$relay->hasOverpower(),
@@ -529,7 +535,7 @@ final class Http
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								$this->transformer->transformValueFromDevice(
+								API\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$relay->hasOvertemperature(),
@@ -563,7 +569,7 @@ final class Http
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								$this->transformer->transformValueFromDevice(
+								API\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$roller->getState(),
@@ -576,7 +582,7 @@ final class Http
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								$this->transformer->transformValueFromDevice(
+								API\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$roller->getCurrentPosition(),
@@ -589,7 +595,7 @@ final class Http
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								$this->transformer->transformValueFromDevice(
+								API\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$roller->getStopReason(),
@@ -614,7 +620,7 @@ final class Http
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								$this->transformer->transformValueFromDevice(
+								API\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$roller->hasOvertemperature(),
@@ -648,7 +654,7 @@ final class Http
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								$this->transformer->transformValueFromDevice(
+								API\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$light->getRed(),
@@ -661,7 +667,7 @@ final class Http
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								$this->transformer->transformValueFromDevice(
+								API\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$light->getGreen(),
@@ -673,7 +679,7 @@ final class Http
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								$this->transformer->transformValueFromDevice(
+								API\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$light->getBlue(),
@@ -685,7 +691,7 @@ final class Http
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								$this->transformer->transformValueFromDevice(
+								API\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$light->getGain(),
@@ -703,7 +709,7 @@ final class Http
 						) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								$this->transformer->transformValueFromDevice(
+								API\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$light->getWhite(),
@@ -715,7 +721,7 @@ final class Http
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								$this->transformer->transformValueFromDevice(
+								API\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$light->getEffect(),
@@ -727,7 +733,7 @@ final class Http
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								$this->transformer->transformValueFromDevice(
+								API\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$light->getBrightness(),
@@ -739,7 +745,7 @@ final class Http
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								$this->transformer->transformValueFromDevice(
+								API\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$light->getState(),
@@ -775,7 +781,7 @@ final class Http
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								$this->transformer->transformValueFromDevice(
+								API\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$emeter->getActivePower(),
@@ -788,7 +794,7 @@ final class Http
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								$this->transformer->transformValueFromDevice(
+								API\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$emeter->getReactivePower(),
@@ -801,7 +807,7 @@ final class Http
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								$this->transformer->transformValueFromDevice(
+								API\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$emeter->getPowerFactor(),
@@ -814,7 +820,7 @@ final class Http
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								$this->transformer->transformValueFromDevice(
+								API\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$emeter->getCurrent(),
@@ -827,7 +833,7 @@ final class Http
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								$this->transformer->transformValueFromDevice(
+								API\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$emeter->getVoltage(),
@@ -840,7 +846,7 @@ final class Http
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								$this->transformer->transformValueFromDevice(
+								API\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$emeter->getTotal(),
@@ -853,7 +859,7 @@ final class Http
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								$this->transformer->transformValueFromDevice(
+								API\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$emeter->getTotalReturned(),

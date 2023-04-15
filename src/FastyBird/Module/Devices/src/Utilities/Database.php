@@ -109,7 +109,7 @@ final class Database
 			return $em->getConnection();
 		}
 
-		throw new Exceptions\Runtime('Entity manager could not be loaded');
+		throw new Exceptions\Runtime('Transformer manager could not be loaded');
 	}
 
 	/**

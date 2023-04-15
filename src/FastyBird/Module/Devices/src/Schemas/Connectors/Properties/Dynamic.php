@@ -19,7 +19,6 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
-use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Schemas;
 use FastyBird\Module\Devices\Utilities;
 use IPub\SlimRouter\Routing;
@@ -45,7 +44,7 @@ final class Dynamic extends Property
 
 	public function __construct(
 		Routing\IRouter $router,
-		private readonly Models\States\ConnectorPropertiesRepository $propertiesStatesRepository,
+		private readonly Utilities\ConnectorPropertiesStates $connectorPropertiesStates,
 	)
 	{
 		parent::__construct($router);
@@ -66,6 +65,7 @@ final class Dynamic extends Property
 	 *
 	 * @phpstan-return iterable<string, (string|bool|int|float|array<string>|array<int, (int|float|array<int, (string|int|float|null)>|null)>|array<int, array<int, (string|array<int, (string|int|float|bool)>|null)>>|null)>
 	 *
+	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 *
@@ -76,33 +76,11 @@ final class Dynamic extends Property
 		JsonApi\Contracts\Schema\ContextInterface $context,
 	): iterable
 	{
-		try {
-			$state = $this->propertiesStatesRepository->findOne($resource);
-
-		} catch (Exceptions\NotImplemented) {
-			$state = null;
-		}
-
-		$actualValue = $state !== null
-			? Utilities\ValueHelper::normalizeValue(
-				$resource->getDataType(),
-				$state->getActualValue(),
-				$resource->getFormat(),
-				$resource->getInvalid(),
-			)
-			: null;
-		$expectedValue = $state !== null
-			? Utilities\ValueHelper::normalizeValue(
-				$resource->getDataType(),
-				$state->getExpectedValue(),
-				$resource->getFormat(),
-				$resource->getInvalid(),
-			)
-			: null;
+		$state = $this->connectorPropertiesStates->readValue($resource);
 
 		return array_merge((array) parent::getAttributes($resource, $context), [
-			'actual_value' => Utilities\ValueHelper::flattenValue($actualValue),
-			'expected_value' => Utilities\ValueHelper::flattenValue($expectedValue),
+			'actual_value' => Utilities\ValueHelper::flattenValue($state?->getActualValue()),
+			'expected_value' => Utilities\ValueHelper::flattenValue($state?->getExpectedValue()),
 			'pending' => $state !== null && $state->isPending(),
 		]);
 	}

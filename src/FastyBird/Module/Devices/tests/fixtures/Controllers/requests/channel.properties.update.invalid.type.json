@@ -1,19 +1,19 @@
 {
-  "data" : {
-    "type" : "com.fastybird.devices-module/property/channel/dynamic-wrong",
-    "id" : "bbcccf8c-33ab-431b-a795-d7bb38b6b6db",
-    "attributes" : {
-      "identifier" : "switch",
-      "name" : "switch",
-      "settable" : true,
-      "queryable" : true,
-      "data_type" : "bool",
-      "unit" : null,
-      "format" : null,
-      "invalid" : null,
-      "actual_value" : null,
-      "expected_value" : null,
-      "pending" : false
+  "data": {
+    "type": "com.fastybird.devices-module/property/channel/dynamic-wrong",
+    "id": "bbcccf8c-33ab-431b-a795-d7bb38b6b6db",
+    "attributes": {
+      "identifier": "switch",
+      "name": "switch",
+      "settable": true,
+      "queryable": true,
+      "data_type": "bool",
+      "unit": null,
+      "format": null,
+      "invalid": null,
+      "actual_value": null,
+      "expected_value": null,
+      "pending": false
     }
   }
 }

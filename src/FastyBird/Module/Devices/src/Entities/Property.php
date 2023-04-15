@@ -60,6 +60,17 @@ abstract class Property implements Entity,
 	protected Uuid\UuidInterface $id;
 
 	/**
+	 * @var MetadataTypes\PropertyCategory
+	 *
+	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
+	 *
+	 * @Enum(class=MetadataTypes\PropertyCategory::class)
+	 * @IPubDoctrine\Crud(is="writable")
+	 * @ORM\Column(type="string_enum", name="property_category", length=100, nullable=true, options={"default": "generic"})
+	 */
+	protected $category;
+
+	/**
 	 * @IPubDoctrine\Crud(is="required")
 	 * @ORM\Column(type="string", name="property_identifier", length=50, nullable=false)
 	 */
@@ -114,9 +125,15 @@ abstract class Property implements Entity,
 
 	/**
 	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="integer", name="property_number_of_decimals", nullable=true, options={"default": null})
+	 * @ORM\Column(type="integer", name="property_scale", nullable=true, options={"default": null})
 	 */
-	protected int|null $numberOfDecimals = null;
+	protected int|null $scale = null;
+
+	/**
+	 * @IPubDoctrine\Crud(is="writable")
+	 * @ORM\Column(type="integer", name="property_step", nullable=true, options={"default": null})
+	 */
+	protected float|null $step = null;
 
 	/**
 	 * @IPubDoctrine\Crud(is="writable")
@@ -139,6 +156,7 @@ abstract class Property implements Entity,
 
 		$this->identifier = $identifier;
 
+		$this->category = MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::CATEGORY_GENERIC);
 		$this->dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UNKNOWN);
 
 		// Static property can not be set or read from device/channel property
@@ -149,6 +167,16 @@ abstract class Property implements Entity,
 	}
 
 	abstract public function getType(): MetadataTypes\PropertyType;
+
+	public function getCategory(): MetadataTypes\PropertyCategory
+	{
+		return $this->category;
+	}
+
+	public function setCategory(MetadataTypes\PropertyCategory $category): void
+	{
+		$this->category = $category;
+	}
 
 	public function getIdentifier(): string
 	{
@@ -281,6 +309,7 @@ abstract class Property implements Entity,
 					MetadataTypes\DataType::DATA_TYPE_ENUM,
 					MetadataTypes\DataType::DATA_TYPE_BUTTON,
 					MetadataTypes\DataType::DATA_TYPE_SWITCH,
+					MetadataTypes\DataType::DATA_TYPE_COVER,
 				], true)
 			) {
 				$plainFormat = implode(',', array_map(static function ($item): string {
@@ -354,14 +383,24 @@ abstract class Property implements Entity,
 		$this->invalid = $invalid;
 	}
 
-	public function getNumberOfDecimals(): int|null
+	public function getScale(): int|null
 	{
-		return $this->numberOfDecimals;
+		return $this->scale;
 	}
 
-	public function setNumberOfDecimals(int|null $numberOfDecimals): void
+	public function setScale(int|null $scale): void
 	{
-		$this->numberOfDecimals = $numberOfDecimals;
+		$this->scale = $scale;
+	}
+
+	public function getStep(): float|null
+	{
+		return $this->step;
+	}
+
+	public function setStep(float|null $step): void
+	{
+		$this->step = $step;
 	}
 
 	/**
@@ -381,12 +420,16 @@ abstract class Property implements Entity,
 			return null;
 		}
 
-		return Utilities\ValueHelper::normalizeValue(
-			$this->getDataType(),
-			$this->value,
-			$this->getFormat(),
-			$this->getInvalid(),
-		);
+		try {
+			return Utilities\ValueHelper::normalizeValue(
+				$this->getDataType(),
+				$this->value,
+				$this->getFormat(),
+				$this->getInvalid(),
+			);
+		} catch (Exceptions\InvalidState) {
+			return null;
+		}
 	}
 
 	/**
@@ -428,12 +471,16 @@ abstract class Property implements Entity,
 			return null;
 		}
 
-		return Utilities\ValueHelper::normalizeValue(
-			$this->getDataType(),
-			$this->default,
-			$this->getFormat(),
-			$this->getInvalid(),
-		);
+		try {
+			return Utilities\ValueHelper::normalizeValue(
+				$this->getDataType(),
+				$this->default,
+				$this->getFormat(),
+				$this->getInvalid(),
+			);
+		} catch (Exceptions\InvalidState) {
+			return null;
+		}
 	}
 
 	/**
@@ -462,6 +509,7 @@ abstract class Property implements Entity,
 		$data = [
 			'id' => $this->getPlainId(),
 			'type' => $this->getType()->getValue(),
+			'category' => $this->getCategory()->getValue(),
 			'identifier' => $this->getIdentifier(),
 			'name' => $this->getName(),
 			'settable' => $this->isSettable(),
@@ -470,7 +518,8 @@ abstract class Property implements Entity,
 			'unit' => $this->getUnit(),
 			'format' => $this->getFormat()?->toArray(),
 			'invalid' => $this->getInvalid(),
-			'number_of_decimals' => $this->getNumberOfDecimals(),
+			'scale' => $this->getScale(),
+			'step' => $this->getStep(),
 		];
 
 		if ($this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_VARIABLE)) {

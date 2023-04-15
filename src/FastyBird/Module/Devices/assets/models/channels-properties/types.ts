@@ -1,7 +1,7 @@
 import { TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships } from 'jsona/lib/JsonaTypes';
 import { _GettersTree } from 'pinia';
 
-import { DataType } from '@fastybird/metadata-library';
+import { DataType, PropertyCategory } from '@fastybird/metadata-library';
 
 import {
 	IChannel,
@@ -10,6 +10,7 @@ import {
 	IPlainRelation,
 	IPropertiesAddActionPayload,
 	IPropertiesEditActionPayload,
+	IPropertiesSetStateActionPayload,
 	IProperty,
 	IPropertyRecordFactoryPayload,
 	IPropertyResponseModel,
@@ -41,6 +42,7 @@ export interface IChannelPropertiesActions {
 	add: (payload: IChannelPropertiesAddActionPayload) => Promise<IChannelProperty>;
 	edit: (payload: IChannelPropertiesEditActionPayload) => Promise<IChannelProperty>;
 	save: (payload: IChannelPropertiesSaveActionPayload) => Promise<IChannelProperty>;
+	setState: (payload: IChannelPropertiesSetStateActionPayload) => Promise<IChannelProperty>;
 	remove: (payload: IChannelPropertiesRemoveActionPayload) => Promise<boolean>;
 	socketData: (payload: IChannelPropertiesSocketDataActionPayload) => Promise<boolean>;
 }
@@ -110,6 +112,10 @@ export interface IChannelPropertiesEditActionPayload extends IPropertiesEditActi
 	parent?: IChannelProperty | null;
 }
 
+export interface IChannelPropertiesSetStateActionPayload extends IPropertiesSetStateActionPayload {
+	parent?: IChannelProperty | null;
+}
+
 export interface IChannelPropertiesSaveActionPayload {
 	id: string;
 }
@@ -145,6 +151,7 @@ export interface IChannelPropertyResponseData extends TJsonApiData {
 }
 
 interface IChannelPropertyResponseDataAttributes {
+	category: PropertyCategory;
 	identifier: string;
 	name: string | null;
 	settable: boolean;
@@ -153,7 +160,8 @@ interface IChannelPropertyResponseDataAttributes {
 	unit: string | null;
 	format: string[] | (string | null)[][] | (number | null)[] | null;
 	invalid: string | number | null;
-	number_of_decimals: number | null;
+	scale: number | null;
+	step: number | null;
 
 	value: string | number | boolean | null;
 

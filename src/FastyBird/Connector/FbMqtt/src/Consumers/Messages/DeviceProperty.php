@@ -139,19 +139,10 @@ final class DeviceProperty implements Consumers\Consumer
 					});
 				}
 			} elseif ($property instanceof DevicesEntities\Devices\Properties\Dynamic) {
-				$actualValue = DevicesUtilities\ValueHelper::flattenValue(
-					DevicesUtilities\ValueHelper::normalizeValue(
-						$property->getDataType(),
-						$entity->getValue(),
-						$property->getFormat(),
-						$property->getInvalid(),
-					),
-				);
-
 				$this->devicePropertiesStates->setValue(
 					$property,
 					Utils\ArrayHash::from([
-						DevicesStates\Property::ACTUAL_VALUE_KEY => $actualValue,
+						DevicesStates\Property::ACTUAL_VALUE_KEY => $entity->getValue(),
 						DevicesStates\Property::VALID_KEY => true,
 					]),
 				);

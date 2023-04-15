@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:Bootstrap!
  * @subpackage     DI
- * @since          0.1.0
+ * @since          1.0.0
  *
  * @date           08.03.20
  */
@@ -28,6 +28,7 @@ use Symfony\Bridge\Monolog as SymfonyMonolog;
 use function assert;
 use function class_exists;
 use function getenv;
+use function interface_exists;
 use function is_string;
 use const DIRECTORY_SEPARATOR;
 
@@ -125,6 +126,11 @@ class BootstrapExtension extends DI\CompilerExtension
 		if (class_exists('\Doctrine\DBAL\Connection') && class_exists('\Doctrine\ORM\EntityManager')) {
 			$builder->addDefinition($this->prefix('helpers.database'), new DI\Definitions\ServiceDefinition())
 				->setType(Helpers\Database::class);
+		}
+
+		if (interface_exists('\Sentry\ClientInterface')) {
+			$builder->addDefinition($this->prefix('helpers.sentry'), new DI\Definitions\ServiceDefinition())
+				->setType(Helpers\Sentry::class);
 		}
 
 		if (

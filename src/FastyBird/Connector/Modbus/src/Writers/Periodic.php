@@ -20,6 +20,7 @@ use FastyBird\Connector\Modbus\Clients;
 use FastyBird\Connector\Modbus\Entities;
 use FastyBird\Connector\Modbus\Helpers;
 use FastyBird\DateTimeFactory;
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
@@ -234,11 +235,7 @@ class Periodic implements Writer
 									[
 										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
 										'type' => 'periodic-writer',
-										'group' => 'writer',
-										'exception' => [
-											'message' => $ex->getMessage(),
-											'code' => $ex->getCode(),
-										],
+										'exception' => BootstrapHelpers\Logger::buildException($ex),
 										'connector' => [
 											'id' => $device->getConnector()->getPlainId(),
 										],

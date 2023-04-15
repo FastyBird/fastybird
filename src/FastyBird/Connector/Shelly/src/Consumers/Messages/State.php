@@ -68,7 +68,7 @@ final class State implements Consumer
 
 		$findDeviceQuery = new DevicesQueries\FindDevices();
 		$findDeviceQuery->byConnectorId($entity->getConnector());
-		$findDeviceQuery->byIdentifier($entity->getIdentifier());
+		$findDeviceQuery->startWithIdentifier($entity->getIdentifier());
 
 		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\ShellyDevice::class);
 
@@ -127,7 +127,6 @@ final class State implements Consumer
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 				'type' => 'state-message-consumer',
-				'group' => 'consumer',
 				'device' => [
 					'id' => $device->getPlainId(),
 				],

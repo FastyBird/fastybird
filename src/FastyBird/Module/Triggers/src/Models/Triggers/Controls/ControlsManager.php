@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:TriggersModule!
  * @subpackage     Models
- * @since          0.4.0
+ * @since          1.0.0
  *
  * @date           01.10.21
  */
@@ -41,7 +41,7 @@ final class ControlsManager
 	 */
 	public function __construct(private readonly DoctrineCrudCrud\IEntityCrud $entityCrud)
 	{
-		// Entity CRUD for handling entities
+		// Transformer CRUD for handling entities
 	}
 
 	public function create(

@@ -1,5 +1,11 @@
 {
     "name": "fastybird/fastybird",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/mathsolver/mathsolver.git"
+        }
+    ],
     "description": "Repository for FastyBird packages development",
     "type": "application",
     "homepage": "https://www.fastybird.com",
@@ -52,6 +58,7 @@
         "ipub/websockets-wamp": "^1.4",
         "leigh/curve25519": "^0.1",
         "mangoweb/monolog-tracy-handler": "^1.0",
+        "mathsolver/mathsolver": "@dev",
         "nette/bootstrap": "^3.1",
         "nette/di": "^3.0",
         "nette/utils": "^3.2",
@@ -98,7 +105,7 @@
         "pds/skeleton": "^1.0",
         "php-parallel-lint/php-parallel-lint": "^1.3",
         "phpstan/extension-installer": "^1.1",
-        "phpstan/phpstan": "^1.9",
+        "phpstan/phpstan": "1.10.11",
         "phpstan/phpstan-deprecation-rules": "^1.0",
         "phpstan/phpstan-doctrine": "^1.3",
         "phpstan/phpstan-nette": "^1.1",

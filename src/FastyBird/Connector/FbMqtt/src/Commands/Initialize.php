@@ -20,6 +20,7 @@ use Doctrine\Persistence;
 use FastyBird\Connector\FbMqtt\Entities;
 use FastyBird\Connector\FbMqtt\Exceptions;
 use FastyBird\Connector\FbMqtt\Types;
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
@@ -69,6 +70,7 @@ class Initialize extends Console\Command\Command
 	public function __construct(
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Connectors\ConnectorsManager $connectorsManager,
+		private readonly DevicesModels\Connectors\Properties\PropertiesRepository $propertiesRepository,
 		private readonly DevicesModels\Connectors\Properties\PropertiesManager $propertiesManager,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 		Log\LoggerInterface|null $logger = null,
@@ -283,11 +285,7 @@ class Initialize extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 					'type' => 'initialize-cmd',
-					'group' => 'cmd',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -328,7 +326,11 @@ class Initialize extends Console\Command\Command
 			return;
 		}
 
-		$protocolProperty = $connector->findProperty(Types\ConnectorPropertyIdentifier::IDENTIFIER_PROTOCOL_VERSION);
+		$findPropertyQuery = new DevicesQueries\FindConnectorProperties();
+		$findPropertyQuery->forConnector($connector);
+		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_PROTOCOL_VERSION);
+
+		$protocolProperty = $this->propertiesRepository->findOneBy($findPropertyQuery);
 
 		if ($protocolProperty === null) {
 			$changeProtocol = true;
@@ -378,11 +380,35 @@ class Initialize extends Console\Command\Command
 		$username = $this->askUsername($io, $connector);
 		$password = $this->askPassword($io, $connector);
 
-		$serverAddressProperty = $connector->findProperty(Types\ConnectorPropertyIdentifier::IDENTIFIER_SERVER);
-		$serverPortProperty = $connector->findProperty(Types\ConnectorPropertyIdentifier::IDENTIFIER_PORT);
-		$serverSecuredProperty = $connector->findProperty(Types\ConnectorPropertyIdentifier::IDENTIFIER_SECURED_PORT);
-		$usernameProperty = $connector->findProperty(Types\ConnectorPropertyIdentifier::IDENTIFIER_USERNAME);
-		$passwordProperty = $connector->findProperty(Types\ConnectorPropertyIdentifier::IDENTIFIER_PASSWORD);
+		$findPropertyQuery = new DevicesQueries\FindConnectorProperties();
+		$findPropertyQuery->forConnector($connector);
+		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_SERVER);
+
+		$serverAddressProperty = $this->propertiesRepository->findOneBy($findPropertyQuery);
+
+		$findPropertyQuery = new DevicesQueries\FindConnectorProperties();
+		$findPropertyQuery->forConnector($connector);
+		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_PORT);
+
+		$serverPortProperty = $this->propertiesRepository->findOneBy($findPropertyQuery);
+
+		$findPropertyQuery = new DevicesQueries\FindConnectorProperties();
+		$findPropertyQuery->forConnector($connector);
+		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_SECURED_PORT);
+
+		$serverSecuredProperty = $this->propertiesRepository->findOneBy($findPropertyQuery);
+
+		$findPropertyQuery = new DevicesQueries\FindConnectorProperties();
+		$findPropertyQuery->forConnector($connector);
+		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_USERNAME);
+
+		$usernameProperty = $this->propertiesRepository->findOneBy($findPropertyQuery);
+
+		$findPropertyQuery = new DevicesQueries\FindConnectorProperties();
+		$findPropertyQuery->forConnector($connector);
+		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_PASSWORD);
+
+		$passwordProperty = $this->propertiesRepository->findOneBy($findPropertyQuery);
 
 		try {
 			// Start transaction connection to the database
@@ -496,11 +522,7 @@ class Initialize extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 					'type' => 'initialize-cmd',
-					'group' => 'cmd',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -559,11 +581,7 @@ class Initialize extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 					'type' => 'initialize-cmd',
-					'group' => 'cmd',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -789,7 +807,7 @@ class Initialize extends Console\Command\Command
 			return $connection;
 		}
 
-		throw new Exceptions\Runtime('Entity manager could not be loaded');
+		throw new Exceptions\Runtime('Transformer manager could not be loaded');
 	}
 
 }

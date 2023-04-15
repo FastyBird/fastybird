@@ -20,6 +20,7 @@ use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\DateTimeFactory;
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -136,7 +137,6 @@ final class OpenApi
 		private readonly string $accessSecret,
 		private readonly string $lang,
 		private readonly Types\OpenApiEndpoint $endpoint,
-		private readonly EntityFactory $entityFactory,
 		private readonly MetadataSchemas\Validator $schemaValidator,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
@@ -190,7 +190,7 @@ final class OpenApi
 			)) * 1_000,
 		);
 
-		$this->tokenInfo = $this->entityFactory->build(
+		$this->tokenInfo = EntityFactory::build(
 			Entities\API\TuyaTokenInfo::class,
 			$result,
 		);
@@ -266,7 +266,7 @@ final class OpenApi
 							continue;
 						}
 
-						$devices[] = $this->entityFactory->build(
+						$devices[] = EntityFactory::build(
 							Entities\API\UserDeviceDetail::class,
 							$deviceData,
 						);
@@ -330,7 +330,7 @@ final class OpenApi
 							continue;
 						}
 
-						$factoryInfos[] = $this->entityFactory->build(
+						$factoryInfos[] = EntityFactory::build(
 							Entities\API\UserDeviceFactoryInfos::class,
 							$deviceData,
 						);
@@ -394,7 +394,7 @@ final class OpenApi
 						foreach ($result->offsetGet('status') as $item) {
 							assert($item instanceof Utils\ArrayHash);
 
-							$deviceStatus[] = $this->entityFactory->build(
+							$deviceStatus[] = EntityFactory::build(
 								Entities\API\UserDeviceDataPointStatus::class,
 								$item,
 							);
@@ -403,7 +403,7 @@ final class OpenApi
 
 					$result->offsetSet('status', $deviceStatus);
 
-					$promise->resolve($this->entityFactory->build(
+					$promise->resolve(EntityFactory::build(
 						Entities\API\UserDeviceDetail::class,
 						$result,
 					));
@@ -464,7 +464,7 @@ final class OpenApi
 						foreach ($result->offsetGet('functions') as $item) {
 							assert($item instanceof Utils\ArrayHash);
 
-							$deviceFunctions[] = $this->entityFactory->build(
+							$deviceFunctions[] = EntityFactory::build(
 								Entities\API\UserDeviceSpecificationsFunction::class,
 								$item,
 							);
@@ -485,7 +485,7 @@ final class OpenApi
 						foreach ($result->offsetGet('status') as $item) {
 							assert($item instanceof Utils\ArrayHash);
 
-							$deviceStatus[] = $this->entityFactory->build(
+							$deviceStatus[] = EntityFactory::build(
 								Entities\API\UserDeviceSpecificationsStatus::class,
 								$item,
 							);
@@ -494,7 +494,7 @@ final class OpenApi
 
 					$result->offsetSet('status', $deviceStatus);
 
-					$promise->resolve($this->entityFactory->build(
+					$promise->resolve(EntityFactory::build(
 						Entities\API\UserDeviceSpecifications::class,
 						$result,
 					));
@@ -550,7 +550,7 @@ final class OpenApi
 							continue;
 						}
 
-						$statuses[] = $this->entityFactory->build(
+						$statuses[] = EntityFactory::build(
 							Entities\API\UserDeviceDataPointStatus::class,
 							$statusData,
 						);
@@ -609,7 +609,7 @@ final class OpenApi
 							continue;
 						}
 
-						$children[] = $this->entityFactory->build(
+						$children[] = EntityFactory::build(
 							Entities\API\UserDeviceChild::class,
 							$childrenData,
 						);
@@ -677,7 +677,7 @@ final class OpenApi
 							continue;
 						}
 
-						$devices[] = $this->entityFactory->build(
+						$devices[] = EntityFactory::build(
 							Entities\API\DeviceInformation::class,
 							$deviceData,
 						);
@@ -741,7 +741,7 @@ final class OpenApi
 							continue;
 						}
 
-						$factoryInfos[] = $this->entityFactory->build(
+						$factoryInfos[] = EntityFactory::build(
 							Entities\API\DeviceFactoryInfos::class,
 							$deviceData,
 						);
@@ -793,7 +793,7 @@ final class OpenApi
 						throw new Exceptions\OpenApiCall('Received response is not valid');
 					}
 
-					$promise->resolve($this->entityFactory->build(
+					$promise->resolve(EntityFactory::build(
 						Entities\API\DeviceInformation::class,
 						$result,
 					));
@@ -854,7 +854,7 @@ final class OpenApi
 						foreach ($result->offsetGet('functions') as $item) {
 							assert($item instanceof Utils\ArrayHash);
 
-							$deviceFunctions[] = $this->entityFactory->build(
+							$deviceFunctions[] = EntityFactory::build(
 								Entities\API\DeviceSpecificationFunction::class,
 								$item,
 							);
@@ -875,7 +875,7 @@ final class OpenApi
 						foreach ($result->offsetGet('status') as $item) {
 							assert($item instanceof Utils\ArrayHash);
 
-							$deviceStatus[] = $this->entityFactory->build(
+							$deviceStatus[] = EntityFactory::build(
 								Entities\API\DeviceSpecificationStatus::class,
 								$item,
 							);
@@ -884,7 +884,7 @@ final class OpenApi
 
 					$result->offsetSet('status', $deviceStatus);
 
-					$promise->resolve($this->entityFactory->build(
+					$promise->resolve(EntityFactory::build(
 						Entities\API\DeviceSpecification::class,
 						$result,
 					));
@@ -940,7 +940,7 @@ final class OpenApi
 							continue;
 						}
 
-						$statuses[] = $this->entityFactory->build(
+						$statuses[] = EntityFactory::build(
 							Entities\API\DeviceDataPointStatus::class,
 							$statusData,
 						);
@@ -1044,7 +1044,6 @@ final class OpenApi
 		), [
 			'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 			'type' => 'openapi-api',
-			'group' => 'api',
 			'request' => [
 				'method' => $method,
 				'url' => $this->endpoint->getValue() . $path,
@@ -1081,11 +1080,7 @@ final class OpenApi
 								$this->logger->error('Received payload is not valid', [
 									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 									'type' => 'openapi-api',
-									'group' => 'api',
-									'exception' => [
-										'message' => $ex->getMessage(),
-										'code' => $ex->getCode(),
-									],
+									'exception' => BootstrapHelpers\Logger::buildException($ex),
 									'request' => [
 										'method' => $method,
 										'url' => $this->endpoint->getValue() . $path,
@@ -1105,11 +1100,7 @@ final class OpenApi
 							$this->logger->error('Calling api endpoint failed', [
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 								'type' => 'openapi-api',
-								'group' => 'api',
-								'exception' => [
-									'message' => $ex->getMessage(),
-									'code' => $ex->getCode(),
-								],
+								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'request' => [
 									'method' => $method,
 									'url' => $this->endpoint->getValue() . $path,
@@ -1145,11 +1136,7 @@ final class OpenApi
 				$this->logger->error('Calling api endpoint failed', [
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'openapi-api',
-					'group' => 'api',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'request' => [
 						'method' => $method,
 						'url' => $this->endpoint->getValue() . $path,
@@ -1163,11 +1150,7 @@ final class OpenApi
 				$this->logger->error('Received payload is not valid', [
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'openapi-api',
-					'group' => 'api',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'request' => [
 						'method' => $method,
 						'url' => $this->endpoint->getValue() . $path,
@@ -1287,7 +1270,7 @@ final class OpenApi
 				)) * 1_000,
 			);
 
-			$this->tokenInfo = $this->entityFactory->build(
+			$this->tokenInfo = EntityFactory::build(
 				Entities\API\TuyaTokenInfo::class,
 				$result,
 			);
@@ -1297,11 +1280,7 @@ final class OpenApi
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'openapi-api',
-					'group' => 'api',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 		}

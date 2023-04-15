@@ -21,6 +21,7 @@ use FastyBird\Connector\Shelly\Consumers;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\DateTimeFactory;
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -79,6 +80,7 @@ class Discover extends Console\Command\Command
 		private readonly Clients\DiscoveryFactory $clientFactory,
 		private readonly Consumers\Messages $consumer,
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
+		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		Log\LoggerInterface|null $logger = null,
@@ -236,7 +238,6 @@ class Discover extends Console\Command\Command
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 							'type' => 'discovery-cmd',
-							'group' => 'cmd',
 						],
 					);
 
@@ -261,7 +262,6 @@ class Discover extends Console\Command\Command
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'discovery-cmd',
-						'group' => 'cmd',
 					],
 				);
 
@@ -291,7 +291,6 @@ class Discover extends Console\Command\Command
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'discovery-cmd',
-						'group' => 'cmd',
 					],
 				);
 
@@ -309,7 +308,6 @@ class Discover extends Console\Command\Command
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 							'type' => 'discovery-cmd',
-							'group' => 'cmd',
 						],
 					);
 
@@ -361,7 +359,7 @@ class Discover extends Console\Command\Command
 			$findDevicesQuery = new DevicesQueries\FindDevices();
 			$findDevicesQuery->byConnectorId($connector->getId());
 
-			$devices = $connector->getDevices();
+			$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\ShellyDevice::class);
 
 			$table = new Console\Helper\Table($output);
 			$table->setHeaders([
@@ -424,11 +422,7 @@ class Discover extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'discovery-cmd',
-					'group' => 'cmd',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -445,11 +439,7 @@ class Discover extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'discovery-cmd',
-					'group' => 'cmd',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -486,7 +476,6 @@ class Discover extends Console\Command\Command
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'discovery-cmd',
-						'group' => 'cmd',
 					],
 				);
 

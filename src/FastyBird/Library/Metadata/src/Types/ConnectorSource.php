@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:MetadataLibrary!
  * @subpackage     Types
- * @since          0.30.0
+ * @since          1.0.0
  *
  * @date           19.01.22
  */

@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:RabbitMqPlugin!
  * @subpackage     Subscribers
- * @since          0.1.0
+ * @since          1.0.0
  *
  * @date           21.10.22
  */
@@ -58,7 +58,6 @@ class Channel implements EventDispatcher\EventSubscriberInterface
 			[
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_RABBITMQ,
 				'type' => 'subscriber',
-				'group' => 'subscriber',
 			],
 		);
 	}

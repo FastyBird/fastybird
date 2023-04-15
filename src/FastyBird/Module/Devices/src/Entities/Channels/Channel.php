@@ -15,6 +15,7 @@
 
 namespace FastyBird\Module\Devices\Entities\Channels;
 
+use Consistence\Doctrine\Enum\EnumAnnotation as Enum;
 use Doctrine\Common;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -66,6 +67,17 @@ class Channel implements Entities\Entity,
 	 * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
 	 */
 	protected Uuid\UuidInterface $id;
+
+	/**
+	 * @var MetadataTypes\ChannelCategory
+	 *
+	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
+	 *
+	 * @Enum(class=MetadataTypes\ChannelCategory::class)
+	 * @IPubDoctrine\Crud(is="writable")
+	 * @ORM\Column(type="string_enum", name="channel_category", length=100, nullable=true, options={"default": "generic"})
+	 */
+	protected $category;
 
 	/**
 	 * @IPubDoctrine\Crud(is="required")
@@ -122,18 +134,30 @@ class Channel implements Entities\Entity,
 
 		$this->name = $name;
 
+		$this->category = MetadataTypes\ChannelCategory::get(MetadataTypes\ChannelCategory::CATEGORY_GENERIC);
+
 		$this->properties = new Common\Collections\ArrayCollection();
 		$this->controls = new Common\Collections\ArrayCollection();
-	}
-
-	public function getIdentifier(): string
-	{
-		return $this->identifier;
 	}
 
 	public function getType(): string
 	{
 		return self::CHANNEL_TYPE;
+	}
+
+	public function getCategory(): MetadataTypes\ChannelCategory
+	{
+		return $this->category;
+	}
+
+	public function setCategory(MetadataTypes\ChannelCategory $category): void
+	{
+		$this->category = $category;
+	}
+
+	public function getIdentifier(): string
+	{
+		return $this->identifier;
 	}
 
 	public function setIdentifier(string $identifier): void
@@ -288,6 +312,7 @@ class Channel implements Entities\Entity,
 		return [
 			'id' => $this->getPlainId(),
 			'type' => $this->getType(),
+			'category' => $this->getCategory()->getValue(),
 			'identifier' => $this->getIdentifier(),
 			'name' => $this->getName(),
 			'comment' => $this->getComment(),

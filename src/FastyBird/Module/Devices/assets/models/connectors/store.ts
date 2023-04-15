@@ -7,6 +7,7 @@ import get from 'lodash/get';
 
 import exchangeEntitySchema from '@fastybird/metadata-library/resources/schemas/modules/devices-module/entity.connector.json';
 import {
+	ConnectorCategory,
 	ConnectorEntity as ExchangeEntity,
 	DevicePropertyIdentifier,
 	DevicesModuleRoutes as RoutingKeys,
@@ -51,6 +52,7 @@ const recordFactory = (data: IConnectorRecordFactoryPayload): IConnector => {
 
 		draft: get(data, 'draft', false),
 
+		category: data.category,
 		identifier: data.identifier,
 		name: get(data, 'name', null),
 		comment: get(data, 'commend', null),
@@ -282,7 +284,7 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 		async add(payload: IConnectorsAddActionPayload): Promise<IConnector> {
 			const newConnector = recordFactory({
 				...payload.data,
-				...{ id: payload?.id, type: payload?.type, draft: payload?.draft },
+				...{ id: payload?.id, type: payload?.type, category: ConnectorCategory.GENERIC, draft: payload?.draft },
 			});
 
 			this.semaphore.creating.push(newConnector.id);
@@ -514,6 +516,7 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 					this.data[body.id] = recordFactory({
 						...this.data[body.id],
 						...{
+							category: body.category,
 							name: body.name,
 							comment: body.comment,
 							enabled: body.enabled,

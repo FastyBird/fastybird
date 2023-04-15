@@ -18,6 +18,7 @@ namespace FastyBird\Plugin\CouchDb\Models;
 use Consistence;
 use DateTimeInterface;
 use FastyBird\DateTimeFactory;
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\CouchDb\Connections;
 use FastyBird\Plugin\CouchDb\Events;
@@ -95,14 +96,10 @@ class StatesManager
 			$this->logger->error('Document could not be created', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_COUCHDB,
 				'type' => 'states-manager',
-				'group' => 'model',
 				'document' => [
 					'id' => $id->toString(),
 				],
-				'exception' => [
-					'message' => $ex->getMessage(),
-					'code' => $ex->getCode(),
-				],
+				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
 
 			throw new Exceptions\InvalidState('State could not be created', $ex->getCode(), $ex);
@@ -136,14 +133,10 @@ class StatesManager
 			$this->logger->error('Document could not be updated', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_COUCHDB,
 				'type' => 'states-manager',
-				'group' => 'model',
 				'document' => [
 					'id' => $state->getId()->toString(),
 				],
-				'exception' => [
-					'message' => $ex->getMessage(),
-					'code' => $ex->getCode(),
-				],
+				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
 
 			throw new Exceptions\InvalidState('State could not be updated', $ex->getCode(), $ex);
@@ -188,14 +181,10 @@ class StatesManager
 			$this->logger->error('State could not be created', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_COUCHDB,
 				'type' => 'states-manager',
-				'group' => 'model',
 				'document' => [
 					'id' => $id,
 				],
-				'exception' => [
-					'message' => $ex->getMessage(),
-					'code' => $ex->getCode(),
-				],
+				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
 
 			throw new Exceptions\InvalidState('Document could not found.', $ex->getCode(), $ex);
@@ -271,14 +260,10 @@ class StatesManager
 			$this->logger->error('Document key could not be created', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_COUCHDB,
 				'type' => 'states-manager',
-				'group' => 'model',
 				'document' => [
 					'id' => $id->toString(),
 				],
-				'exception' => [
-					'message' => $ex->getMessage(),
-					'code' => $ex->getCode(),
-				],
+				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
 
 			throw new Exceptions\InvalidState('State could not be created', $ex->getCode(), $ex);
@@ -361,14 +346,10 @@ class StatesManager
 			$this->logger->error('Document key could not be updated', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_COUCHDB,
 				'type' => 'states-manager',
-				'group' => 'model',
 				'document' => [
 					'id' => $state->getId()->toString(),
 				],
-				'exception' => [
-					'message' => $ex->getMessage(),
-					'code' => $ex->getCode(),
-				],
+				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
 
 			throw new Exceptions\InvalidState('State could not be updated', $ex->getCode(), $ex);
@@ -378,14 +359,10 @@ class StatesManager
 			$this->logger->error('Document key could not be updated', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_COUCHDB,
 				'type' => 'states-manager',
-				'group' => 'model',
 				'document' => [
 					'id' => $state->getId()->toString(),
 				],
-				'exception' => [
-					'message' => $ex->getMessage(),
-					'code' => $ex->getCode(),
-				],
+				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
 
 			throw new Exceptions\InvalidState('State could not be updated', $ex->getCode(), $ex);
@@ -409,14 +386,10 @@ class StatesManager
 			$this->logger->error('Document could not be deleted', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_COUCHDB,
 				'type' => 'states-manager',
-				'group' => 'model',
 				'document' => [
 					'id' => $id->toString(),
 				],
-				'exception' => [
-					'message' => $ex->getMessage(),
-					'code' => $ex->getCode(),
-				],
+				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
 		}
 

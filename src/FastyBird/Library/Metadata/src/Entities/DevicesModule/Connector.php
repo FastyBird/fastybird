@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:MetadataLibrary!
  * @subpackage     Entities
- * @since          0.57.0
+ * @since          1.0.0
  *
  * @date           04.06.22
  */
@@ -16,6 +16,7 @@
 namespace FastyBird\Library\Metadata\Entities\DevicesModule;
 
 use FastyBird\Library\Metadata\Entities;
+use FastyBird\Library\Metadata\Types;
 use Ramsey\Uuid;
 
 /**
@@ -31,11 +32,14 @@ final class Connector implements Entities\Entity, Entities\Owner
 
 	use Entities\TOwner;
 
+	private Types\ConnectorCategory $category;
+
 	private Uuid\UuidInterface $id;
 
 	public function __construct(
 		string $id,
 		private readonly string $type,
+		string $category,
 		private readonly string $identifier,
 		private readonly string|null $name = null,
 		private readonly string|null $comment = null,
@@ -44,6 +48,7 @@ final class Connector implements Entities\Entity, Entities\Owner
 	)
 	{
 		$this->id = Uuid\Uuid::fromString($id);
+		$this->category = Types\ConnectorCategory::get($category);
 		$this->owner = $owner !== null ? Uuid\Uuid::fromString($owner) : null;
 	}
 
@@ -55,6 +60,11 @@ final class Connector implements Entities\Entity, Entities\Owner
 	public function getType(): string
 	{
 		return $this->type;
+	}
+
+	public function getCategory(): Types\ConnectorCategory
+	{
+		return $this->category;
 	}
 
 	public function getIdentifier(): string
@@ -82,6 +92,7 @@ final class Connector implements Entities\Entity, Entities\Owner
 		return [
 			'id' => $this->getId()->toString(),
 			'type' => $this->getType(),
+			'category' => $this->getCategory()->getValue(),
 			'identifier' => $this->getIdentifier(),
 			'name' => $this->getName(),
 			'comment' => $this->getComment(),

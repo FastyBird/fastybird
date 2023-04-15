@@ -20,6 +20,7 @@ use FastyBird\Connector\FbMqtt\Clients;
 use FastyBird\Connector\FbMqtt\Entities;
 use FastyBird\Connector\FbMqtt\Helpers;
 use FastyBird\DateTimeFactory;
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
@@ -240,11 +241,7 @@ class Periodic implements Writer
 								[
 									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 									'type' => 'periodic-writer',
-									'group' => 'writer',
-									'exception' => [
-										'message' => $ex->getMessage(),
-										'code' => $ex->getCode(),
-									],
+									'exception' => BootstrapHelpers\Logger::buildException($ex),
 									'connector' => [
 										'id' => $device->getConnector()->getPlainId(),
 									],
@@ -353,11 +350,7 @@ class Periodic implements Writer
 									[
 										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 										'type' => 'periodic-writer',
-										'group' => 'writer',
-										'exception' => [
-											'message' => $ex->getMessage(),
-											'code' => $ex->getCode(),
-										],
+										'exception' => BootstrapHelpers\Logger::buildException($ex),
 										'connector' => [
 											'id' => $device->getConnector()->getPlainId(),
 										],

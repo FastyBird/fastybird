@@ -15,6 +15,7 @@
 
 namespace FastyBird\Plugin\CouchDb\Models;
 
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\CouchDb\Connections;
 use FastyBird\Plugin\CouchDb\Exceptions;
@@ -108,14 +109,10 @@ class StatesRepository
 			$this->logger->error('Content could not be loaded', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_COUCHDB,
 				'type' => 'state-repository',
-				'group' => 'model',
 				'record' => [
 					'id' => $id->toString(),
 				],
-				'exception' => [
-					'message' => $ex->getMessage(),
-					'code' => $ex->getCode(),
-				],
+				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
 
 			throw new Exceptions\InvalidState('Content could not be loaded from database' . $ex->getMessage(), 0, $ex);

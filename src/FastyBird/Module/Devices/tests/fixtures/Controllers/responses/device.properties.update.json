@@ -13,6 +13,7 @@
     "type": "com.fastybird.devices-module/property/device/dynamic",
     "id": "28bc0d38-2f7c-4a71-aa74-27b102f8df4c",
     "attributes": {
+      "category": "generic",
       "identifier": "rssi",
       "name": "rssi",
       "settable": false,
@@ -24,7 +25,8 @@
         150
       ],
       "invalid": 999,
-      "number_of_decimals": null,
+      "scale": null,
+      "step": null,
       "actual_value": null,
       "expected_value": null,
       "pending": false

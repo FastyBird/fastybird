@@ -52,7 +52,7 @@ class HomeKitDevice extends DevicesEntities\Devices\Device
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getCategory(): Types\AccessoryCategory
+	public function getAccessoryCategory(): Types\AccessoryCategory
 	{
 		$property = $this->properties
 			->filter(
@@ -70,6 +70,31 @@ class HomeKitDevice extends DevicesEntities\Devices\Device
 		}
 
 		return Types\AccessoryCategory::get(Types\AccessoryCategory::CATEGORY_OTHER);
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function getAccessoryType(): Types\AccessoryType
+	{
+		$property = $this->properties
+			->filter(
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::IDENTIFIER_TYPE
+			)
+			->first();
+
+		if (
+			$property instanceof DevicesEntities\Devices\Properties\Variable
+			&& is_int($property->getValue())
+			&& Types\AccessoryType::isValidValue($property->getValue())
+		) {
+			return Types\AccessoryType::get($property->getValue());
+		}
+
+		return Types\AccessoryType::get(Types\AccessoryType::TYPE_GENERIC);
 	}
 
 	/**

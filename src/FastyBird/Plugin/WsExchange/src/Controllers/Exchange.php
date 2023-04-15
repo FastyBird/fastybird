@@ -8,13 +8,14 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:WsExchangePlugin!
  * @subpackage     Controllers
- * @since          0.2.0
+ * @since          1.0.0
  *
  * @date           15.01.22
  */
 
 namespace FastyBird\Plugin\WsExchange\Controllers;
 
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Exchange\Entities as ExchangeEntities;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
@@ -75,7 +76,6 @@ final class Exchange extends WebSockets\Application\Controller\Controller
 			[
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_EXCHANGE,
 				'type' => 'exchange-controller',
-				'group' => 'controller',
 				'client' => $client->getId(),
 				'topic' => $topic->getId(),
 			],
@@ -111,7 +111,6 @@ final class Exchange extends WebSockets\Application\Controller\Controller
 			[
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_EXCHANGE,
 				'type' => 'exchange-controller',
-				'group' => 'controller',
 				'client' => $client->getId(),
 				'topic' => $topic->getId(),
 				'data' => $args,
@@ -172,11 +171,7 @@ final class Exchange extends WebSockets\Application\Controller\Controller
 			$this->logger->error('Received message could not be validated', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_EXCHANGE,
 				'type' => 'exchange-controller',
-				'group' => 'controller',
-				'exception' => [
-					'message' => $ex->getMessage(),
-					'code' => $ex->getCode(),
-				],
+				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
 
 			throw new Exceptions\InvalidArgument('Provided data are not valid json format', 0, $ex);
@@ -184,11 +179,7 @@ final class Exchange extends WebSockets\Application\Controller\Controller
 			$this->logger->debug('Received message is not valid', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_EXCHANGE,
 				'type' => 'exchange-controller',
-				'group' => 'controller',
-				'exception' => [
-					'message' => $ex->getMessage(),
-					'code' => $ex->getCode(),
-				],
+				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
 
 			throw new Exceptions\InvalidArgument('Provided data are not in valid structure', 0, $ex);
@@ -196,11 +187,7 @@ final class Exchange extends WebSockets\Application\Controller\Controller
 			$this->logger->error('Received message is not valid', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_EXCHANGE,
 				'type' => 'exchange-controller',
-				'group' => 'controller',
-				'exception' => [
-					'message' => $ex->getMessage(),
-					'code' => $ex->getCode(),
-				],
+				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
 
 			throw new Exceptions\InvalidArgument('Provided data could not be validated', 0, $ex);

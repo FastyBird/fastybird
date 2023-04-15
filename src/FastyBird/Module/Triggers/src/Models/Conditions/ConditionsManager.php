@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:TriggersModule!
  * @subpackage     Models
- * @since          0.1.0
+ * @since          1.0.0
  *
  * @date           04.04.20
  */
@@ -41,7 +41,7 @@ final class ConditionsManager
 	 */
 	public function __construct(private readonly DoctrineCrudCrud\IEntityCrud $entityCrud)
 	{
-		// Entity CRUD for handling entities
+		// Transformer CRUD for handling entities
 	}
 
 	public function create(Utils\ArrayHash $values): Entities\Conditions\Condition

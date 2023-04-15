@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:WsExchangePlugin!
  * @subpackage     Consumers
- * @since          0.2.0
+ * @since          1.0.0
  *
  * @date           27.10.22
  */
@@ -53,7 +53,6 @@ final class Consumer implements ExchangeConsumer\Consumer
 		$this->logger->debug('Received message from exchange was pushed to WS clients', [
 			'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_EXCHANGE,
 			'type' => 'consumer',
-			'group' => 'consumer',
 			'message' => [
 				'source' => $source->getValue(),
 				'routing_key' => $routingKey->getValue(),

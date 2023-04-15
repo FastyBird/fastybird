@@ -55,12 +55,29 @@
           "description": "Id of the Switch component instance"
         },
         "source": {
-          "type": "string",
-          "description": "Source of the last command, for example: init, WS_in, http, ..."
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "Source of the last command, for example: init, WS_in, http, ...",
+          "default": null
         },
         "output": {
-          "type": "boolean",
-          "description": "true if the output channel is currently on, false otherwise"
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            },
+            {
+              "type": "boolean"
+            }
+          ],
+          "description": "true if the output channel is currently on, false otherwise",
+          "default": "n/a"
         },
         "timer_started_at": {
           "oneOf": [
@@ -89,55 +106,60 @@
         "apower": {
           "oneOf": [
             {
-              "type": "null"
+              "type": "string",
+              "enum": ["n/a"]
             },
             {
               "type": "number"
             }
           ],
           "description": "Last measured instantaneous active power (in Watts) delivered to the attached load (shown if applicable)",
-          "default": null
+          "default": "n/a"
         },
         "voltage": {
           "oneOf": [
             {
-              "type": "null"
+              "type": "string",
+              "enum": ["n/a"]
             },
             {
               "type": "number"
             }
           ],
           "description": "Last measured voltage in Volts (shown if applicable)",
-          "default": null
+          "default": "n/a"
         },
         "current": {
           "oneOf": [
             {
-              "type": "null"
+              "type": "string",
+              "enum": ["n/a"]
             },
             {
               "type": "number"
             }
           ],
           "description": "Last measured current in Amperes (shown if applicable)",
-          "default": null
+          "default": "n/a"
         },
         "pf": {
           "oneOf": [
             {
-              "type": "null"
+              "type": "string",
+              "enum": ["n/a"]
             },
             {
               "type": "number"
             }
           ],
           "description": "Last measured power factor (shown if applicable)",
-          "default": null
+          "default": "n/a"
         },
         "aenergy": {
           "oneOf": [
             {
-              "type": "null"
+              "type": "string",
+              "enum": ["n/a"]
             },
             {
               "type": "object"
@@ -160,10 +182,18 @@
               "description": "Unix timestamp of the first second of the last minute (in UTC)"
             }
           },
-          "default": null
+          "default": "n/a"
         },
         "temperature": {
-          "type": "object",
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            },
+            {
+              "type": "object"
+            }
+          ],
           "properties": {
             "tC": {
               "oneOf": [
@@ -189,7 +219,8 @@
               "description": "Temperature in Fahrenheit (null if temperature is out of the measurement",
               "default": null
             }
-          }
+          },
+          "default": "n/a"
         },
         "errors": {
           "type": "array",
@@ -227,26 +258,67 @@
           ]
         },
         "apower": {
-          "type": "number",
-          "description": "Active power in Watts"
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "description": "Active power in Watts",
+          "default": "n/a"
         },
         "voltage": {
-          "type": "number",
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            },
+            {
+              "type": "number"
+            }
+          ],
           "description": "Last measured voltage in Volts (shown if applicable)",
-          "default": 0
+          "default": "n/a"
         },
         "current": {
-          "type": "number",
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            },
+            {
+              "type": "number"
+            }
+          ],
           "description": "Last measured current in Amperes (shown if applicable)",
-          "default": 0
+          "default": "n/a"
         },
         "pf": {
-          "type": "number",
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            },
+            {
+              "type": "number"
+            }
+          ],
           "description": "Last measured power factor (shown if applicable)",
-          "default": 0
+          "default": "n/a"
         },
         "aenergy": {
-          "type": "object",
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            },
+            {
+              "type": "object"
+            }
+          ],
           "properties": {
             "total": {
               "type": "number",
@@ -263,7 +335,8 @@
               "type": "number",
               "description": "Unix timestamp of the first second of the last minute (in UTC)"
             }
-          }
+          },
+          "default": "n/a"
         },
         "current_pos": {
           "oneOf": [
@@ -302,7 +375,15 @@
           "description": "False if Cover is not calibrated and only discrete open/close is possible; true if Cover is calibrated and can be commanded to go to arbitrary positions between fully open and fully closed"
         },
         "temperature": {
-          "type": "object",
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            },
+            {
+              "type": "object"
+            }
+          ],
           "properties": {
             "tC": {
               "oneOf": [
@@ -328,7 +409,8 @@
               "description": "Temperature in Fahrenheit (null if temperature is out of the measurement",
               "default": null
             }
-          }
+          },
+          "default": "n/a"
         },
         "errors": {
           "type": "array",
@@ -354,12 +436,30 @@
           "description": "Source of the last command, for example: init, WS_in, http, ..."
         },
         "output": {
-          "type": "boolean",
-          "description": "True if the output channel is currently on, false otherwise"
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            },
+            {
+              "type": "boolean"
+            }
+          ],
+          "description": "True if the output channel is currently on, false otherwise",
+          "default": "n/a"
         },
         "brightness": {
-          "type": "number",
-          "description": "Current brightness level (in percent)"
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            },
+            {
+              "type": "object"
+            }
+          ],
+          "description": "Current brightness level (in percent)",
+          "default": "n/a"
         },
         "timer_started_at": {
           "oneOf": [
@@ -405,10 +505,14 @@
             },
             {
               "type": "number"
+            },
+            {
+              "type": "string",
+              "enum": ["n/a"]
             }
           ],
           "description": "Temperature in Celsius (null if valid value could not be obtained)",
-          "default": null
+          "default": "n/a"
         },
         "tF": {
           "oneOf": [
@@ -417,10 +521,14 @@
             },
             {
               "type": "number"
+            },
+            {
+              "type": "string",
+              "enum": ["n/a"]
             }
           ],
           "description": "Temperature in Fahrenheit (null if valid value could not be obtained)",
-          "default": null
+          "default": "n/a"
         },
         "errors": {
           "type": "array",
@@ -448,10 +556,14 @@
             },
             {
               "type": "number"
+            },
+            {
+              "type": "string",
+              "enum": ["n/a"]
             }
           ],
           "description": "Relative humidity in % (null if valid value could not be obtained)",
-          "default": null
+          "default": "n/a"
         },
         "errors": {
           "type": "array",

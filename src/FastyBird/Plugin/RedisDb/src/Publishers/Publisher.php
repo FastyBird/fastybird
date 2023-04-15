@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:RedisDbPlugin!
  * @subpackage     Publishers
- * @since          0.1.0
+ * @since          1.0.0
  *
  * @date           17.09.21
  */
@@ -16,6 +16,7 @@
 namespace FastyBird\Plugin\RedisDb\Publishers;
 
 use FastyBird\DateTimeFactory;
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -75,16 +76,12 @@ final class Publisher implements ExchangePublisher\Publisher
 				[
 					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
 					'type' => 'messages-publisher',
-					'group' => 'publisher',
 					'message' => [
 						'routingKey' => $routingKey->getValue(),
 						'source' => $source->getValue(),
 						'data' => $entity?->toArray(),
 					],
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -97,7 +94,6 @@ final class Publisher implements ExchangePublisher\Publisher
 				[
 					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
 					'type' => 'messages-publisher',
-					'group' => 'publisher',
 					'message' => [
 						'routingKey' => $routingKey->getValue(),
 						'source' => $source->getValue(),
@@ -111,7 +107,6 @@ final class Publisher implements ExchangePublisher\Publisher
 				[
 					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
 					'type' => 'messages-publisher',
-					'group' => 'publisher',
 					'message' => [
 						'routingKey' => $routingKey->getValue(),
 						'source' => $source->getValue(),

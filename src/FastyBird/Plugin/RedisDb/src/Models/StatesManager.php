@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:RedisDbPlugin!
  * @subpackage     Models
- * @since          0.1.0
+ * @since          1.0.0
  *
  * @date           03.03.20
  */
@@ -19,6 +19,7 @@ use Clue\React\Redis;
 use Consistence;
 use DateTimeInterface;
 use FastyBird\DateTimeFactory;
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\RedisDb\Clients;
 use FastyBird\Plugin\RedisDb\Events;
@@ -97,14 +98,10 @@ class StatesManager
 			$this->logger->error('Record could not be created', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
 				'type' => 'states-manager',
-				'group' => 'model',
 				'record' => [
 					'id' => $id->toString(),
 				],
-				'exception' => [
-					'message' => $ex->getMessage(),
-					'code' => $ex->getCode(),
-				],
+				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
 
 			throw new Exceptions\InvalidState('State could not be created', $ex->getCode(), $ex);
@@ -139,14 +136,10 @@ class StatesManager
 			$this->logger->error('Record could not be updated', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
 				'type' => 'states-manager',
-				'group' => 'model',
 				'record' => [
 					'id' => $state->getId()->toString(),
 				],
-				'exception' => [
-					'message' => $ex->getMessage(),
-					'code' => $ex->getCode(),
-				],
+				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
 
 			throw new Exceptions\InvalidState('State could not be updated', $ex->getCode(), $ex);
@@ -254,14 +247,10 @@ class StatesManager
 			$this->logger->error('Record key could not be created', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
 				'type' => 'states-manager',
-				'group' => 'model',
 				'record' => [
 					'id' => $id->toString(),
 				],
-				'exception' => [
-					'message' => $ex->getMessage(),
-					'code' => $ex->getCode(),
-				],
+				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
 
 			throw new Exceptions\InvalidState('State could not be created', $ex->getCode(), $ex);
@@ -353,14 +342,10 @@ class StatesManager
 			$this->logger->error('Record key could not be updated', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
 				'type' => 'states-manager',
-				'group' => 'model',
 				'record' => [
 					'id' => $state->getId()->toString(),
 				],
-				'exception' => [
-					'message' => $ex->getMessage(),
-					'code' => $ex->getCode(),
-				],
+				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
 
 			throw new Exceptions\InvalidState('State could not be updated', $ex->getCode(), $ex);
@@ -386,14 +371,10 @@ class StatesManager
 			$this->logger->error('Record could not be deleted', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
 				'type' => 'states-manager',
-				'group' => 'model',
 				'record' => [
 					'id' => $id->toString(),
 				],
-				'exception' => [
-					'message' => $ex->getMessage(),
-					'code' => $ex->getCode(),
-				],
+				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
 		}
 

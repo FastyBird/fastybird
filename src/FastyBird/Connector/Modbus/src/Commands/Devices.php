@@ -20,6 +20,7 @@ use Doctrine\Persistence;
 use FastyBird\Connector\Modbus\Entities;
 use FastyBird\Connector\Modbus\Exceptions;
 use FastyBird\Connector\Modbus\Types;
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
@@ -344,11 +345,7 @@ class Devices extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
 					'type' => 'devices-cmd',
-					'group' => 'cmd',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -547,11 +544,7 @@ class Devices extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
 					'type' => 'devices-cmd',
-					'group' => 'cmd',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -640,11 +633,7 @@ class Devices extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
 					'type' => 'devices-cmd',
-					'group' => 'cmd',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -756,11 +745,7 @@ class Devices extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
 					'type' => 'devices-cmd',
-					'group' => 'cmd',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -947,11 +932,7 @@ class Devices extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
 					'type' => 'devices-cmd',
-					'group' => 'cmd',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -1026,11 +1007,7 @@ class Devices extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
 					'type' => 'devices-cmd',
-					'group' => 'cmd',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -1127,12 +1104,18 @@ class Devices extends Console\Command\Command
 	): int
 	{
 		$question = new Console\Question\Question('Provide device hardware address', $device?->getAddress());
-		$question->setValidator(static function (string|null $answer) use ($connector, $device) {
+		$question->setValidator(function (string|null $answer) use ($connector, $device) {
 			if (strval(intval($answer)) !== strval($answer)) {
 				throw new Exceptions\Runtime('Device hardware address have to be numeric');
 			}
 
-			foreach ($connector->getDevices() as $connectorDevice) {
+			$findDevicesQuery = new DevicesQueries\FindDevices();
+			$findDevicesQuery->forConnector($connector);
+
+			foreach ($this->devicesRepository->findAllBy(
+				$findDevicesQuery,
+				Entities\ModbusDevice::class,
+			) as $connectorDevice) {
 				assert($connectorDevice instanceof Entities\ModbusDevice);
 
 				if (
@@ -1212,12 +1195,18 @@ class Devices extends Console\Command\Command
 	): int
 	{
 		$question = new Console\Question\Question('Provide device unit identifier', $device?->getUnitId());
-		$question->setValidator(static function (string|null $answer) use ($connector, $device) {
+		$question->setValidator(function (string|null $answer) use ($connector, $device) {
 			if (strval(intval($answer)) !== strval($answer)) {
 				throw new Exceptions\Runtime('Device unit identifier have to be numeric');
 			}
 
-			foreach ($connector->getDevices() as $connectorDevice) {
+			$findDevicesQuery = new DevicesQueries\FindDevices();
+			$findDevicesQuery->forConnector($connector);
+
+			foreach ($this->devicesRepository->findAllBy(
+				$findDevicesQuery,
+				Entities\ModbusDevice::class,
+			) as $connectorDevice) {
 				assert($connectorDevice instanceof Entities\ModbusDevice);
 
 				if (
@@ -2317,7 +2306,6 @@ class Devices extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
 					'type' => 'devices-cmd',
-					'group' => 'cmd',
 				],
 			);
 
@@ -2339,7 +2327,6 @@ class Devices extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
 					'type' => 'devices-cmd',
-					'group' => 'cmd',
 				],
 			);
 
@@ -2409,7 +2396,7 @@ class Devices extends Console\Command\Command
 			return $connection;
 		}
 
-		throw new Exceptions\Runtime('Entity manager could not be loaded');
+		throw new Exceptions\Runtime('Transformer manager could not be loaded');
 	}
 
 }

@@ -23,6 +23,7 @@ use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Helpers;
 use FastyBird\Connector\HomeKit\Types;
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
@@ -46,6 +47,7 @@ use function array_filter;
 use function array_key_exists;
 use function array_keys;
 use function array_map;
+use function array_merge;
 use function array_search;
 use function array_values;
 use function asort;
@@ -284,11 +286,7 @@ class Devices extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'devices-cmd',
-					'group' => 'cmd',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -384,11 +382,7 @@ class Devices extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'devices-cmd',
-					'group' => 'cmd',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -479,11 +473,7 @@ class Devices extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'devices-cmd',
-					'group' => 'cmd',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -550,13 +540,20 @@ class Devices extends Console\Command\Command
 		}
 
 		$requiredCharacteristics = (array) $serviceMetadata->offsetGet('RequiredCharacteristics');
-		$optionalCharacteristics = [];
+		$optionalCharacteristics = $virtualCharacteristics = [];
 
 		if (
 			$serviceMetadata->offsetExists('OptionalCharacteristics')
 			&& $serviceMetadata->offsetGet('OptionalCharacteristics') instanceof Utils\ArrayHash
 		) {
 			$optionalCharacteristics = (array) $serviceMetadata->offsetGet('OptionalCharacteristics');
+		}
+
+		if (
+			$serviceMetadata->offsetExists('VirtualCharacteristics')
+			&& $serviceMetadata->offsetGet('VirtualCharacteristics') instanceof Utils\ArrayHash
+		) {
+			$virtualCharacteristics = (array) $serviceMetadata->offsetGet('VirtualCharacteristics');
 		}
 
 		try {
@@ -572,7 +569,13 @@ class Devices extends Console\Command\Command
 
 			$this->createCharacteristics($io, $device, $channel, $requiredCharacteristics, true);
 
-			$this->createCharacteristics($io, $device, $channel, $optionalCharacteristics, false);
+			$this->createCharacteristics(
+				$io,
+				$device,
+				$channel,
+				array_merge($optionalCharacteristics, $virtualCharacteristics),
+				false,
+			);
 
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
@@ -590,11 +593,7 @@ class Devices extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'devices-cmd',
-					'group' => 'cmd',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -687,13 +686,20 @@ class Devices extends Console\Command\Command
 		}
 
 		$requiredCharacteristics = (array) $serviceMetadata->offsetGet('RequiredCharacteristics');
-		$optionalCharacteristics = [];
+		$optionalCharacteristics = $virtualCharacteristics = [];
 
 		if (
 			$serviceMetadata->offsetExists('OptionalCharacteristics')
 			&& $serviceMetadata->offsetGet('OptionalCharacteristics') instanceof Utils\ArrayHash
 		) {
 			$optionalCharacteristics = (array) $serviceMetadata->offsetGet('OptionalCharacteristics');
+		}
+
+		if (
+			$serviceMetadata->offsetExists('VirtualCharacteristics')
+			&& $serviceMetadata->offsetGet('VirtualCharacteristics') instanceof Utils\ArrayHash
+		) {
+			$virtualCharacteristics = (array) $serviceMetadata->offsetGet('VirtualCharacteristics');
 		}
 
 		$missingRequired = [];
@@ -714,7 +720,7 @@ class Devices extends Console\Command\Command
 
 		$missingOptional = [];
 
-		foreach ($optionalCharacteristics as $optionalCharacteristic) {
+		foreach (array_merge($optionalCharacteristics, $virtualCharacteristics) as $optionalCharacteristic) {
 			$findPropertyQuery = new DevicesQueries\FindChannelProperties();
 			$findPropertyQuery->forChannel($channel);
 			$findPropertyQuery->byIdentifier(
@@ -765,11 +771,7 @@ class Devices extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'devices-cmd',
-					'group' => 'cmd',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -832,11 +834,7 @@ class Devices extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'devices-cmd',
-					'group' => 'cmd',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -1185,11 +1183,7 @@ class Devices extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'devices-cmd',
-					'group' => 'cmd',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -1254,11 +1248,7 @@ class Devices extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'devices-cmd',
-					'group' => 'cmd',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -1395,7 +1385,7 @@ class Devices extends Console\Command\Command
 
 		$default = $device !== null ? array_search(
 			$this->translator->translate(
-				'//homekit-connector.cmd.base.category.' . $device->getCategory()->getValue(),
+				'//homekit-connector.cmd.base.category.' . $device->getAccessoryCategory()->getValue(),
 			),
 			array_values($categories),
 			true,
@@ -2791,7 +2781,6 @@ class Devices extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'devices-cmd',
-					'group' => 'cmd',
 				],
 			);
 
@@ -2812,7 +2801,6 @@ class Devices extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'devices-cmd',
-					'group' => 'cmd',
 				],
 			);
 
@@ -2853,7 +2841,6 @@ class Devices extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'devices-cmd',
-					'group' => 'cmd',
 				],
 			);
 
@@ -2874,7 +2861,6 @@ class Devices extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'devices-cmd',
-					'group' => 'cmd',
 				],
 			);
 
@@ -2969,7 +2955,7 @@ class Devices extends Console\Command\Command
 			return $connection;
 		}
 
-		throw new Exceptions\Runtime('Entity manager could not be loaded');
+		throw new Exceptions\Runtime('Transformer manager could not be loaded');
 	}
 
 }

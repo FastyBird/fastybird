@@ -14,6 +14,7 @@
       "type": "com.fastybird.devices-module/property/device/variable",
       "id": "03164a6d-9628-460c-95cc-90e6216332d9",
       "attributes": {
+        "category": "generic",
         "identifier": "hardware_manufacturer",
         "name": null,
         "settable": false,
@@ -22,7 +23,8 @@
         "unit": null,
         "format": null,
         "invalid": null,
-        "number_of_decimals": null,
+        "scale": null,
+        "step": null,
         "value": "itead",
         "default": null
       },
@@ -63,6 +65,7 @@
       "type": "com.fastybird.devices-module/property/device/variable",
       "id": "06599b74-0236-4a98-99c8-c459a3cdb6a4",
       "attributes": {
+        "category": "generic",
         "identifier": "hardware_model",
         "name": null,
         "settable": false,
@@ -71,7 +74,8 @@
         "unit": null,
         "format": null,
         "invalid": null,
-        "number_of_decimals": null,
+        "scale": null,
+        "step": null,
         "value": "sonoff_basic",
         "default": null
       },
@@ -112,6 +116,7 @@
       "type": "com.fastybird.devices-module/property/device/variable",
       "id": "090df4f2-5f23-4118-a2bd-6f0646cf2a70",
       "attributes": {
+        "category": "generic",
         "identifier": "hardware_version",
         "name": null,
         "settable": false,
@@ -120,7 +125,8 @@
         "unit": null,
         "format": null,
         "invalid": null,
-        "number_of_decimals": null,
+        "scale": null,
+        "step": null,
         "value": "rev1",
         "default": null
       },
@@ -161,6 +167,7 @@
       "type": "com.fastybird.devices-module/property/device/variable",
       "id": "0e771233-fd53-43dd-bd24-cda3303f902e",
       "attributes": {
+        "category": "generic",
         "identifier": "hardware_mac_address",
         "name": null,
         "settable": false,
@@ -169,7 +176,8 @@
         "unit": null,
         "format": null,
         "invalid": null,
-        "number_of_decimals": null,
+        "scale": null,
+        "step": null,
         "value": "807d3a3dbe6d",
         "default": null
       },
@@ -210,6 +218,7 @@
       "type": "com.fastybird.devices-module/property/device/variable",
       "id": "0eb39dae-ef88-4bb5-a9ea-94b0b788101f",
       "attributes": {
+        "category": "generic",
         "identifier": "firmware_manufacturer",
         "name": null,
         "settable": false,
@@ -218,7 +227,8 @@
         "unit": null,
         "format": null,
         "invalid": null,
-        "number_of_decimals": null,
+        "scale": null,
+        "step": null,
         "value": "fastybird",
         "default": null
       },
@@ -259,6 +269,7 @@
       "type": "com.fastybird.devices-module/property/device/dynamic",
       "id": "28bc0d38-2f7c-4a71-aa74-27b102f8df4c",
       "attributes": {
+        "category": "generic",
         "identifier": "rssi",
         "name": "rssi",
         "settable": false,
@@ -267,7 +278,8 @@
         "unit": null,
         "format": null,
         "invalid": null,
-        "number_of_decimals": null,
+        "scale": null,
+        "step": null,
         "actual_value": null,
         "expected_value": null,
         "pending": false
@@ -309,6 +321,7 @@
       "type": "com.fastybird.devices-module/property/device/variable",
       "id": "3134ba8e-f134-4bf2-9c80-c977c4deb0fb",
       "attributes": {
+        "category": "generic",
         "identifier": "password",
         "name": "password",
         "settable": false,
@@ -317,7 +330,8 @@
         "unit": null,
         "format": null,
         "invalid": null,
-        "number_of_decimals": null,
+        "scale": null,
+        "step": null,
         "value": "device-password",
         "default": null
       },
@@ -358,6 +372,7 @@
       "type": "com.fastybird.devices-module/property/device/variable",
       "id": "3ff0029f-7fe3-405e-a3ef-edaad08e2ffa",
       "attributes": {
+        "category": "generic",
         "identifier": "status_led",
         "name": "status_led",
         "settable": false,
@@ -369,7 +384,8 @@
           "off"
         ],
         "invalid": null,
-        "number_of_decimals": null,
+        "scale": null,
+        "step": null,
         "value": "on",
         "default": null
       },
@@ -410,6 +426,7 @@
       "type": "com.fastybird.devices-module/property/device/dynamic",
       "id": "bbcccf8c-33ab-431b-a795-d7bb38b6b6db",
       "attributes": {
+        "category": "generic",
         "identifier": "uptime",
         "name": "uptime",
         "settable": false,
@@ -418,7 +435,8 @@
         "unit": null,
         "format": null,
         "invalid": null,
-        "number_of_decimals": null,
+        "scale": null,
+        "step": null,
         "actual_value": null,
         "expected_value": null,
         "pending": false
@@ -460,6 +478,7 @@
       "type": "com.fastybird.devices-module/property/device/variable",
       "id": "c747cfdd-654c-4e50-9715-6d14dbf20552",
       "attributes": {
+        "category": "generic",
         "identifier": "username",
         "name": "username",
         "settable": false,
@@ -468,7 +487,8 @@
         "unit": null,
         "format": null,
         "invalid": null,
-        "number_of_decimals": null,
+        "scale": null,
+        "step": null,
         "value": "device-username",
         "default": null
       },

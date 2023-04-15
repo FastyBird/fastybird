@@ -127,7 +127,6 @@ final class State implements Consumer
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
 				'type' => 'state-message-consumer',
-				'group' => 'consumer',
 				'device' => [
 					'id' => $device->getPlainId(),
 				],

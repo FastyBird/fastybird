@@ -6,12 +6,18 @@ import { v4 as uuid } from 'uuid';
 import get from 'lodash/get';
 
 import exchangeEntitySchema from '@fastybird/metadata-library/resources/schemas/modules/devices-module/entity.channel.property.json';
-import { ChannelPropertyEntity as ExchangeEntity, DevicesModuleRoutes as RoutingKeys, ModulePrefix, PropertyType } from '@fastybird/metadata-library';
+import {
+	ChannelPropertyEntity as ExchangeEntity,
+	DevicesModuleRoutes as RoutingKeys,
+	ModulePrefix,
+	PropertyCategory,
+	PropertyType,
+} from '@fastybird/metadata-library';
 
 import { ApiError } from '@/errors';
 import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '@/jsonapi';
 import { useChannels } from '@/models';
-import { IChannel, IPlainRelation } from '@/models/types';
+import { IChannel, IChannelPropertiesSetStateActionPayload, IPlainRelation } from '@/models/types';
 
 import {
 	IChannelPropertiesState,
@@ -55,6 +61,7 @@ const recordFactory = async (data: IChannelPropertyRecordFactoryPayload): Promis
 
 		draft: get(data, 'draft', false),
 
+		category: data.category,
 		identifier: data.identifier,
 		name: get(data, 'name', null),
 		settable: get(data, 'settable', false),
@@ -63,7 +70,8 @@ const recordFactory = async (data: IChannelPropertyRecordFactoryPayload): Promis
 		unit: get(data, 'unit', null),
 		format: get(data, 'format', null),
 		invalid: get(data, 'invalid', null),
-		numberOfDecimals: get(data, 'numberOfDecimals', null),
+		scale: get(data, 'scale', null),
+		step: get(data, 'step', null),
 
 		value: get(data, 'value', null),
 		actualValue: get(data, 'actualValue', null),
@@ -71,7 +79,7 @@ const recordFactory = async (data: IChannelPropertyRecordFactoryPayload): Promis
 		pending: get(data, 'pending', false),
 		command: get(data, 'command', null),
 		lastResult: get(data, 'lastResult', null),
-		backup: get(data, 'backup', null),
+		backupValue: get(data, 'backup', null),
 
 		// Relations
 		relationshipNames: ['channel', 'parent', 'children'],
@@ -307,6 +315,7 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 					...{
 						id: payload?.id,
 						type: payload?.type,
+						category: PropertyCategory.GENERIC,
 						draft: payload?.draft,
 						channelId: payload.channel.id,
 					},
@@ -366,7 +375,7 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 
 						return this.data[createdPropertyModel.id];
 					} catch (e: any) {
-						// Entity could not be created on api, we have to remove it from database
+						// Transformer could not be created on api, we have to remove it from database
 						delete this.data[newProperty.id];
 
 						throw new ApiError('devices-module.channel-properties.create.failed', e, 'Create new property failed.');
@@ -466,6 +475,36 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 						this.semaphore.updating = this.semaphore.updating.filter((item) => item !== payload.id);
 					}
 				}
+			},
+
+			/**
+			 * Save property state record
+			 *
+			 * @param {IChannelPropertiesSetStateActionPayload} payload
+			 */
+			async setState(payload: IChannelPropertiesSetStateActionPayload): Promise<IChannelProperty> {
+				if (this.semaphore.updating.includes(payload.id)) {
+					throw new Error('devices-module.channel-properties.update.inProgress');
+				}
+
+				if (!Object.keys(this.data).includes(payload.id)) {
+					throw new Error('devices-module.channel-properties.update.failed');
+				}
+
+				this.semaphore.updating.push(payload.id);
+
+				// Get record stored in database
+				const existingRecord = this.data[payload.id];
+				// Update with new values
+				this.data[payload.id] = {
+					...existingRecord,
+					...payload.data,
+					...{ parent: payload.parent ? { id: payload.parent.id, type: payload.parent.type } : existingRecord.parent },
+				} as IChannelProperty;
+
+				this.semaphore.updating = this.semaphore.updating.filter((item) => item !== payload.id);
+
+				return this.data[payload.id];
 			},
 
 			/**
@@ -634,6 +673,7 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 						this.data[body.id] = await recordFactory({
 							...this.data[body.id],
 							...{
+								category: body.category,
 								name: body.name,
 								settable: body.settable,
 								queryable: body.queryable,
@@ -641,7 +681,8 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 								unit: body.unit,
 								format: body.format,
 								invalid: body.invalid,
-								numberOfDecimals: body.number_of_decimals,
+								scale: body.scale,
+								step: body.step,
 								actualValue: body.actual_value,
 								expectedValue: body.expected_value,
 								value: body.value,

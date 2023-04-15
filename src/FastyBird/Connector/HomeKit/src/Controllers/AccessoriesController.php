@@ -69,7 +69,6 @@ final class AccessoriesController extends BaseController
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 				'type' => 'accessories-controller',
-				'group' => 'controller',
 				'request' => [
 					'address' => $request->getServerParams()['REMOTE_ADDR'],
 					'path' => $request->getUri()->getPath(),
@@ -113,7 +112,6 @@ final class AccessoriesController extends BaseController
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 				'type' => 'accessories-controller',
-				'group' => 'controller',
 				'request' => [
 					'address' => $request->getServerParams()['REMOTE_ADDR'],
 					'path' => $request->getUri()->getPath(),
@@ -144,7 +142,6 @@ final class AccessoriesController extends BaseController
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 					'type' => 'accessories-controller',
-					'group' => 'controller',
 					'request' => [
 						'address' => $request->getServerParams()['REMOTE_ADDR'],
 						'path' => $request->getUri()->getPath(),
@@ -182,7 +179,6 @@ final class AccessoriesController extends BaseController
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 				'type' => 'accessories-controller',
-				'group' => 'controller',
 				'request' => [
 					'address' => $request->getServerParams()['REMOTE_ADDR'],
 					'path' => $request->getUri()->getPath(),

@@ -151,7 +151,7 @@ export const useAccount = defineStore('accounts_module_account', {
 						},
 					});
 				} catch (e: any) {
-					// Entity could not be created on api, we have to remove it from database
+					// Transformer could not be created on api, we have to remove it from database
 					emailsStore.unset({
 						id: newEmail.id,
 					});

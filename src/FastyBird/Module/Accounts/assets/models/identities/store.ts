@@ -250,7 +250,7 @@ export const useIdentities = defineStore('accounts_module_identities', {
 
 					return this.data[createdIdentityModel.id];
 				} catch (e: any) {
-					// Entity could not be created on api, we have to remove it from database
+					// Transformer could not be created on api, we have to remove it from database
 					delete this.data[newIdentity.id];
 
 					throw new ApiError('accounts-module.identities.create.failed', e, 'Create new identity failed.');

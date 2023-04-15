@@ -6,7 +6,7 @@ import { v4 as uuid } from 'uuid';
 import get from 'lodash/get';
 
 import exchangeEntitySchema from '@fastybird/metadata-library/resources/schemas/modules/devices-module/entity.channel.json';
-import { ChannelEntity as ExchangeEntity, DevicesModuleRoutes as RoutingKeys, ModulePrefix } from '@fastybird/metadata-library';
+import { ChannelCategory, ChannelEntity as ExchangeEntity, DevicesModuleRoutes as RoutingKeys, ModulePrefix } from '@fastybird/metadata-library';
 
 import { ApiError } from '@/errors';
 import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '@/jsonapi';
@@ -63,6 +63,7 @@ const recordFactory = async (data: IChannelRecordFactoryPayload): Promise<IChann
 
 		draft: get(data, 'draft', false),
 
+		category: data.category,
 		identifier: data.identifier,
 		name: get(data, 'name', null),
 		comment: get(data, 'comment', null),
@@ -78,7 +79,7 @@ const recordFactory = async (data: IChannelRecordFactoryPayload): Promise<IChann
 			type: device.type,
 		},
 
-		// Entity transformers
+		// Transformer transformers
 		get hasComment(): boolean {
 			return this.comment !== null && this.comment !== '';
 		},
@@ -325,6 +326,7 @@ export const useChannels = defineStore<string, IChannelsState, IChannelsGetters,
 				...{
 					id: payload?.id,
 					type: payload?.type,
+					category: ChannelCategory.GENERIC,
 					draft: payload?.draft,
 					deviceId: payload.device.id,
 				},
@@ -359,7 +361,7 @@ export const useChannels = defineStore<string, IChannelsState, IChannelsGetters,
 
 					return this.data[createdChannelModel.id];
 				} catch (e: any) {
-					// Entity could not be created on api, we have to remove it from database
+					// Transformer could not be created on api, we have to remove it from database
 					delete this.data[newChannel.id];
 
 					throw new ApiError('devices-module.channels.create.failed', e, 'Create new channel failed.');
@@ -571,6 +573,7 @@ export const useChannels = defineStore<string, IChannelsState, IChannelsGetters,
 					this.data[body.id] = await recordFactory({
 						...this.data[body.id],
 						...{
+							category: body.category,
 							name: body.name,
 							comment: body.comment,
 							deviceId: body.device,

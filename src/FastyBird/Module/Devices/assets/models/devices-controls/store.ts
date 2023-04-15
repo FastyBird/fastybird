@@ -286,7 +286,7 @@ export const useDeviceControls = defineStore<string, IDeviceControlsState, IDevi
 
 						return this.data[createdControlModel.id];
 					} catch (e: any) {
-						// Entity could not be created on api, we have to remove it from database
+						// Transformer could not be created on api, we have to remove it from database
 						delete this.data[newControl.id];
 
 						throw new ApiError('devices-module.device-controls.create.failed', e, 'Create new control failed.');

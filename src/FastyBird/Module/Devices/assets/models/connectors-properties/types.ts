@@ -1,7 +1,7 @@
 import { TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships } from 'jsona/lib/JsonaTypes';
 import { _GettersTree } from 'pinia';
 
-import { DataType } from '@fastybird/metadata-library';
+import { DataType, PropertyCategory } from '@fastybird/metadata-library';
 
 import {
 	IConnector,
@@ -138,6 +138,7 @@ export interface IConnectorPropertyResponseData extends TJsonApiData {
 }
 
 interface IConnectorPropertyResponseDataAttributes {
+	category: PropertyCategory;
 	identifier: string;
 	name: string | null;
 	settable: boolean;
@@ -146,7 +147,8 @@ interface IConnectorPropertyResponseDataAttributes {
 	unit: string | null;
 	format: string[] | (string | null)[][] | (number | null)[] | null;
 	invalid: string | number | null;
-	number_of_decimals: number | null;
+	scale: number | null;
+	step: number | null;
 
 	value: string | number | boolean | null;
 

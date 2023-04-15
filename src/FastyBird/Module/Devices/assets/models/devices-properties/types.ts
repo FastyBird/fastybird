@@ -1,7 +1,7 @@
 import { TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships } from 'jsona/lib/JsonaTypes';
 import { _GettersTree } from 'pinia';
 
-import { DataType } from '@fastybird/metadata-library';
+import { DataType, PropertyCategory } from '@fastybird/metadata-library';
 
 import {
 	IDevice,
@@ -10,6 +10,7 @@ import {
 	IPlainRelation,
 	IPropertiesAddActionPayload,
 	IPropertiesEditActionPayload,
+	IPropertiesSetStateActionPayload,
 	IProperty,
 	IPropertyRecordFactoryPayload,
 	IPropertyResponseModel,
@@ -40,6 +41,7 @@ export interface IDevicePropertiesActions {
 	fetch: (payload: IDevicePropertiesFetchActionPayload) => Promise<boolean>;
 	add: (payload: IDevicePropertiesAddActionPayload) => Promise<IDeviceProperty>;
 	edit: (payload: IDevicePropertiesEditActionPayload) => Promise<IDeviceProperty>;
+	setState: (payload: IDevicePropertiesSetStateActionPayload) => Promise<IDeviceProperty>;
 	save: (payload: IDevicePropertiesSaveActionPayload) => Promise<IDeviceProperty>;
 	remove: (payload: IDevicePropertiesRemoveActionPayload) => Promise<boolean>;
 	socketData: (payload: IDevicePropertiesSocketDataActionPayload) => Promise<boolean>;
@@ -110,6 +112,10 @@ export interface IDevicePropertiesEditActionPayload extends IPropertiesEditActio
 	parent?: IDeviceProperty | null;
 }
 
+export interface IDevicePropertiesSetStateActionPayload extends IPropertiesSetStateActionPayload {
+	parent?: IDeviceProperty | null;
+}
+
 export interface IDevicePropertiesSaveActionPayload {
 	id: string;
 }
@@ -145,6 +151,7 @@ export interface IDevicePropertyResponseData extends TJsonApiData {
 }
 
 interface IDevicePropertyResponseDataAttributes {
+	category: PropertyCategory;
 	identifier: string;
 	name: string | null;
 	settable: boolean;
@@ -153,7 +160,8 @@ interface IDevicePropertyResponseDataAttributes {
 	unit: string | null;
 	format: string[] | (string | null)[][] | (number | null)[] | null;
 	invalid: string | number | null;
-	number_of_decimals: number | null;
+	scale: number | null;
+	step: number | null;
 
 	value: string | number | boolean | null;
 

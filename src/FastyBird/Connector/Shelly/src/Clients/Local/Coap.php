@@ -23,6 +23,7 @@ use FastyBird\Connector\Shelly\Clients;
 use FastyBird\Connector\Shelly\Consumers;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -77,7 +78,6 @@ final class Coap implements Clients\Client
 
 	public function __construct(
 		private readonly Entities\ShellyConnector $connector,
-		private readonly API\Transformer $transformer,
 		private readonly Consumers\Messages $consumer,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly MetadataSchemas\Validator $schemaValidator,
@@ -108,11 +108,7 @@ final class Coap implements Clients\Client
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'coap-client',
-					'group' => 'client',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'connector' => [
 						'id' => $this->connector->getPlainId(),
 					],
@@ -132,7 +128,6 @@ final class Coap implements Clients\Client
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'coap-client',
-					'group' => 'client',
 					'connector' => [
 						'id' => $this->connector->getPlainId(),
 					],
@@ -254,7 +249,6 @@ final class Coap implements Clients\Client
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'coap-client',
-					'group' => 'client',
 					'connector' => [
 						'id' => $this->connector->getPlainId(),
 					],
@@ -274,11 +268,7 @@ final class Coap implements Clients\Client
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 							'type' => 'coap-client',
-							'group' => 'client',
-							'exception' => [
-								'message' => $ex->getMessage(),
-								'code' => $ex->getCode(),
-							],
+							'exception' => BootstrapHelpers\Logger::buildException($ex),
 							'connector' => [
 								'id' => $this->connector->getPlainId(),
 							],
@@ -356,7 +346,7 @@ final class Coap implements Clients\Client
 				if ($property !== null) {
 					$statuses[] = new Entities\Messages\PropertyStatus(
 						$property->getIdentifier(),
-						$this->transformer->transformValueFromDevice(
+						API\Transformer::transformValueFromDevice(
 							$property->getDataType(),
 							$property->getFormat(),
 							strval($sensorValue),
@@ -365,6 +355,14 @@ final class Coap implements Clients\Client
 				}
 			}
 		}
+
+		$this->consumer->append(
+			new Entities\Messages\DeviceState(
+				$this->connector->getId(),
+				$deviceIdentifier,
+				MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_CONNECTED),
+			),
+		);
 
 		$this->consumer->append(
 			new Entities\Messages\DeviceStatus(

@@ -76,11 +76,11 @@
 
 		<fb-ui-content :mb="FbSizeTypes.LARGE">
 			<fb-form-input
-				v-model="numberOfDecimalsField"
-				:error="numberOfDecimalsError"
-				:label="t('fields.numberOfDecimals.title')"
-				:placeholder="t('fields.numberOfDecimals.placeholder')"
-				name="numberOfDecimals"
+				v-model="scaleField"
+				:error="scaleError"
+				:label="t('fields.scale.title')"
+				:placeholder="t('fields.scale.placeholder')"
+				name="scale"
 			/>
 		</fb-ui-content>
 
@@ -150,7 +150,7 @@ const { validate } = useForm<IPropertySettingsPropertyFormForm>({
 		dataType: yMixed().oneOf(Object.values(DataType)).default(DataType.UNKNOWN),
 		unit: yString().nullable().default(null),
 		invalid: yString().nullable().default(null),
-		numberOfDecimals: yNumber().nullable().default(null),
+		scale: yNumber().nullable().default(null),
 		format: yString().nullable().default(null),
 	}),
 	initialValues: {
@@ -161,7 +161,7 @@ const { validate } = useForm<IPropertySettingsPropertyFormForm>({
 		dataType: props.property.dataType,
 		unit: props.property.unit,
 		invalid: props.property.invalid as string,
-		numberOfDecimals: props.property.numberOfDecimals,
+		scale: props.property.scale,
 		format: props.property.format ? JSON.stringify(props.property.format) : null,
 	},
 });
@@ -173,11 +173,7 @@ const { value: queryableField, setValue: setQueryable } = useField<boolean>('que
 const { value: dataTypeField, errorMessage: dataTypeError, setValue: setDataType } = useField<DataType>('dataType');
 const { value: unitField, errorMessage: unitError, setValue: setUnit } = useField<string | undefined>('unit');
 const { value: invalidField, errorMessage: invalidError, setValue: setInvalid } = useField<string | undefined>('invalid');
-const {
-	value: numberOfDecimalsField,
-	errorMessage: numberOfDecimalsError,
-	setValue: setNumberOfDecimals,
-} = useField<number | undefined>('numberOfDecimals');
+const { value: scaleField, errorMessage: scaleError, setValue: setScale } = useField<number | undefined>('scale');
 const { value: formatField, errorMessage: formatError, setValue: setFormat } = useField<string | undefined>('format');
 
 const dataTypeOptions: IFbFormSelectItem[] = [
@@ -276,7 +272,7 @@ watch(
 					dataType: dataTypeField.value,
 					unit: unitField.value,
 					invalid: invalidField.value,
-					numberOfDecimals: numberOfDecimalsField.value,
+					scale: scaleField.value,
 					format: formatField.value ? JSON.parse(formatField.value) : null,
 				};
 
@@ -394,7 +390,7 @@ watch(
 			setDataType(props.property.dataType);
 			setUnit(props.property.unit ?? undefined);
 			setInvalid(props.property.invalid as string);
-			setNumberOfDecimals(props.property.numberOfDecimals ?? undefined);
+			setScale(props.property.scale ?? undefined);
 			setFormat(props.property.format ? JSON.stringify(props.property.format) : undefined);
 		}
 	}
@@ -449,7 +445,7 @@ watch(
         "title": "Invalid value",
         "placeholder": "Enter parameter invalid value"
       },
-      "numberOfDecimals": {
+      "scale": {
         "title": "Number of decimal places",
         "placeholder": "Enter parameter number of decimal places"
       },

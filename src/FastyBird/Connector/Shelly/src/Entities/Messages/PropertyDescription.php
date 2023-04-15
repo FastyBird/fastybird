@@ -37,6 +37,7 @@ final class PropertyDescription implements Entity
 	 */
 	public function __construct(
 		private readonly string $identifier,
+		private readonly string|null $name,
 		private readonly MetadataTypes\DataType $dataType,
 		private readonly string|null $unit = null,
 		private readonly array|null $format = null,
@@ -50,6 +51,11 @@ final class PropertyDescription implements Entity
 	public function getIdentifier(): string
 	{
 		return $this->identifier;
+	}
+
+	public function getName(): string|null
+	{
+		return $this->name;
 	}
 
 	public function getDataType(): MetadataTypes\DataType

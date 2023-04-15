@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:MetadataLibrary!
  * @subpackage     Entities
- * @since          0.57.0
+ * @since          1.0.0
  *
  * @date           02.06.22
  */
@@ -62,7 +62,7 @@ abstract class EntityFactory
 	protected function build(string $entityClass, Utils\ArrayHash $data): Entity
 	{
 		if (!class_exists($entityClass)) {
-			throw new Exceptions\InvalidState('Entity could not be created');
+			throw new Exceptions\InvalidState('Transformer could not be created');
 		}
 
 		try {
@@ -92,7 +92,7 @@ abstract class EntityFactory
 				)
 				: new $entityClass();
 		} catch (Throwable $ex) {
-			throw new Exceptions\InvalidState('Entity could not be created', 0, $ex);
+			throw new Exceptions\InvalidState('Transformer could not be created', 0, $ex);
 		}
 
 		$properties = $this->getProperties($rc);
@@ -132,7 +132,7 @@ abstract class EntityFactory
 				} catch (ReflectionException) {
 					continue;
 				} catch (Throwable $ex) {
-					throw new Exceptions\InvalidState('Entity could not be created', 0, $ex);
+					throw new Exceptions\InvalidState('Transformer could not be created', 0, $ex);
 				}
 			}
 		}
@@ -141,7 +141,7 @@ abstract class EntityFactory
 			return $entity;
 		}
 
-		throw new Exceptions\InvalidState('Entity could not be created');
+		throw new Exceptions\InvalidState('Transformer could not be created');
 	}
 
 	/**

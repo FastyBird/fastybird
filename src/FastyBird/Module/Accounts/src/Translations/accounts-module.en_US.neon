@@ -8,112 +8,112 @@
 # @author         Adam Kadlec <adam.kadlec@fastybird.com>
 # @package        FastyBird:AccountsModule!
 # @subpackage     Translations
-# @since          0.1.0
+# @since          1.0.0
 #
 # @date           01.04.20
 #
 
 base:
-	messages:
-		notValidJson:
-			heading	: "Not valid content"
-			message	: "Provided request content is not valid JSON content"
-		notValidJsonApi:
-			heading	: "Not valid content"
-			message	: "Provided request content is not valid {JSON:API} content"
-		failed:
-			heading	: "Request failed"
-			message	: "Provided request failed and can't be finished"
-		forbidden:
-			heading	: "Not allowed"
-			message	: "You are not allowed to perform this action"
-		unauthorized:
-			heading	: "Not authorized"
-			message	: "You are not authorized to perform this action"
-		notFound:
-			heading	: "Not found"
-			message	: "Requested entity was not found"
-		notCreated:
-			heading	: "System error"
-			message	: "Something went wrong, entity could not be created"
-		notUpdated:
-			heading	: "System error"
-			message	: "Something went wrong, entity could not be updated"
-		notDeleted:
-			heading	: "System error"
-			message	: "Something went wrong, entity could not be deleted"
-		invalidIdentifier:
-			heading	: "Invalid identifier"
-			message	: "Provided entity identifier is not valid"
-		invalidType:
-			heading	: "Invalid type"
-			message	: "Provided entity type is not valid"
-		invalidAttribute:
-			heading	: "Invalid attribute"
-			message	: "Provided entity attribute is not valid"
-		invalidRelation:
-			heading	: "Invalid relation"
-			message	: "Provided relation is not valid"
-		unknownRelation:
-			heading	: "Relation not found"
-			message	: "Requested unknown relation"
-		relationNotFound:
-			heading	: "Relation not found"
-			message	: "Requested relation %relation% was not found"
-		missingAttribute:
-			heading	: "Missing attribute"
-			message	: "Provided request is missing required attribute"
-		missingRelation:
-			heading	: "Missing required relation"
-			message	: "Provided request is missing required relation"
-		uniqueIdentifier:
-			heading	: "Identifier not unique"
-			message	: "Provided identifier is not unique"
-		uniqueAttribute:
-			heading	: "Attribute not unique"
-			message	: "Provided attribute is not unique"
+    messages:
+        notValidJson:
+            heading	: "Not valid content"
+            message	: "Provided request content is not valid JSON content"
+        notValidJsonApi:
+            heading	: "Not valid content"
+            message	: "Provided request content is not valid {JSON:API} content"
+        failed:
+            heading	: "Request failed"
+            message	: "Provided request failed and can't be finished"
+        forbidden:
+            heading	: "Not allowed"
+            message	: "You are not allowed to perform this action"
+        unauthorized:
+            heading	: "Not authorized"
+            message	: "You are not authorized to perform this action"
+        notFound:
+            heading	: "Not found"
+            message	: "Requested entity was not found"
+        notCreated:
+            heading	: "System error"
+            message	: "Something went wrong, entity could not be created"
+        notUpdated:
+            heading	: "System error"
+            message	: "Something went wrong, entity could not be updated"
+        notDeleted:
+            heading	: "System error"
+            message	: "Something went wrong, entity could not be deleted"
+        invalidIdentifier:
+            heading	: "Invalid identifier"
+            message	: "Provided entity identifier is not valid"
+        invalidType:
+            heading	: "Invalid type"
+            message	: "Provided entity type is not valid"
+        invalidAttribute:
+            heading	: "Invalid attribute"
+            message	: "Provided entity attribute is not valid"
+        invalidRelation:
+            heading	: "Invalid relation"
+            message	: "Provided relation is not valid"
+        unknownRelation:
+            heading	: "Relation not found"
+            message	: "Requested unknown relation"
+        relationNotFound:
+            heading	: "Relation not found"
+            message	: "Requested relation %relation% was not found"
+        missingAttribute:
+            heading	: "Missing attribute"
+            message	: "Provided request is missing required attribute"
+        missingRelation:
+            heading	: "Missing required relation"
+            message	: "Provided request is missing required relation"
+        uniqueIdentifier:
+            heading	: "Identifier not unique"
+            message	: "Provided identifier is not unique"
+        uniqueAttribute:
+            heading	: "Attribute not unique"
+            message	: "Provided attribute is not unique"
 
 public:
-	messages:
-		notActivated:
-			heading	: "Not processed"
-			message	: "Account is not activated yet. Activation email was resend"
-		blocked:
-			heading	: "Not processed"
-			message	: "This account is blocked"
-		requestNotSent:
-			heading	: "System error"
-			message	: "Something went wrong, password reset request could not be processed"
+    messages:
+        notActivated:
+            heading	: "Not processed"
+            message	: "Account is not activated yet. Activation email was resend"
+        blocked:
+            heading	: "Not processed"
+            message	: "This account is blocked"
+        requestNotSent:
+            heading	: "System error"
+            message	: "Something went wrong, password reset request could not be processed"
 
 session:
-	messages:
-		unknownAccount:
-			heading	: "Invalid attribute"
-			message	: "Provided account credentials could not be found in our system"
-		invalidRefreshToken:
-			heading	: "Not found"
-			message	: "Provided refresh token is invalid"
-		refreshTokenExpired:
-			heading	: "Not found"
-			message	: "Provided refresh token is expired"
-		refreshingTokenFailed:
-			heading	: "System error"
-			message	: "Something went wrong, token could not be refreshed"
-		destroyingSessionFailed:
-			heading	: "System error"
-			message	: "Something went wrong, session could not be destroyed"
+    messages:
+        unknownAccount:
+            heading	: "Invalid attribute"
+            message	: "Provided account credentials could not be found in our system"
+        invalidRefreshToken:
+            heading	: "Not found"
+            message	: "Provided refresh token is invalid"
+        refreshTokenExpired:
+            heading	: "Not found"
+            message	: "Provided refresh token is expired"
+        refreshingTokenFailed:
+            heading	: "System error"
+            message	: "Something went wrong, token could not be refreshed"
+        destroyingSessionFailed:
+            heading	: "System error"
+            message	: "Something went wrong, session could not be destroyed"
 
 accounts:
-	messages:
-		selfNotDeletable:
-			heading	: "Self account"
-			message	: "You can't delete your account"
+    messages:
+        selfNotDeletable:
+            heading	: "Self account"
+            message	: "You can't delete your account"
 
 emails:
-	messages:
-		taken:
-			heading	: "Not processed"
-			message	: "Provided email address is already in use"
-		defaultNotDeletable:
-			heading	: "Email is default"
-			message	: "Default email address could not be deleted"
+    messages:
+        taken:
+            heading	: "Not processed"
+            message	: "Provided email address is already in use"
+        defaultNotDeletable:
+            heading	: "Email is default"
+            message	: "Default email address could not be deleted"

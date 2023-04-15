@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\Shelly\API;
 
+use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
 use Nette\Utils;
@@ -22,9 +23,10 @@ use phpDocumentor;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
+use ReflectionNamedType;
 use ReflectionParameter;
 use ReflectionProperty;
-use ReflectionType;
+use ReflectionUnionType;
 use Reflector;
 use stdClass;
 use Throwable;
@@ -33,12 +35,12 @@ use function array_keys;
 use function array_merge;
 use function call_user_func_array;
 use function class_exists;
+use function count;
 use function get_object_vars;
 use function in_array;
+use function is_array;
 use function is_callable;
-use function is_string;
 use function is_subclass_of;
-use function method_exists;
 use function preg_replace_callback;
 use function property_exists;
 use function strtolower;
@@ -66,17 +68,17 @@ final class EntityFactory
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
-	public function build(
+	public static function build(
 		string $entityClass,
 		Utils\ArrayHash $data,
 	): Entities\API\Entity
 	{
 		if (!class_exists($entityClass)) {
-			throw new Exceptions\InvalidState('Entity could not be created. Class could not be found');
+			throw new Exceptions\InvalidState('Transformer could not be created. Class could not be found');
 		}
 
-		$decoded = $this->convertKeys($data);
-		$decoded = $this->convertToObject($decoded);
+		$decoded = self::convertKeys($data);
+		$decoded = self::convertToObject($decoded);
 
 		try {
 			$rc = new ReflectionClass($entityClass);
@@ -85,17 +87,17 @@ final class EntityFactory
 
 			$entity = $constructor !== null
 				? $rc->newInstanceArgs(
-					$this->autowireArguments($constructor, $decoded),
+					self::autowireArguments($constructor, $decoded),
 				)
 				: new $entityClass();
 		} catch (Throwable $ex) {
-			throw new Exceptions\InvalidState('Entity could not be created: ' . $ex->getMessage(), 0, $ex);
+			throw new Exceptions\InvalidState('Transformer could not be created: ' . $ex->getMessage(), 0, $ex);
 		}
 
-		$properties = $this->getProperties($rc);
+		$properties = self::getProperties($rc);
 
 		foreach ($properties as $rp) {
-			$varAnnotation = $this->parseVarAnnotation($rp);
+			$varAnnotation = self::parseVarAnnotation($rp);
 
 			if (
 				in_array($rp->getName(), array_keys(get_object_vars($decoded)), true) === true
@@ -129,7 +131,7 @@ final class EntityFactory
 				} catch (ReflectionException) {
 					continue;
 				} catch (Throwable $ex) {
-					throw new Exceptions\InvalidState('Entity could not be created: ' . $ex->getMessage(), 0, $ex);
+					throw new Exceptions\InvalidState('Transformer could not be created: ' . $ex->getMessage(), 0, $ex);
 				}
 			}
 		}
@@ -140,7 +142,7 @@ final class EntityFactory
 	/**
 	 * @return array<string, mixed>
 	 */
-	protected function convertKeys(Utils\ArrayHash $data): array
+	private static function convertKeys(Utils\ArrayHash $data): array
 	{
 		$keys = preg_replace_callback(
 			'/_(.)/',
@@ -163,7 +165,7 @@ final class EntityFactory
 	 * @throws Exceptions\InvalidState
 	 * @throws ReflectionException
 	 */
-	private function autowireArguments(
+	private static function autowireArguments(
 		ReflectionMethod $method,
 		stdClass $decoded,
 	): array
@@ -172,25 +174,40 @@ final class EntityFactory
 
 		foreach ($method->getParameters() as $num => $parameter) {
 			$parameterName = $parameter->getName();
-			$parameterType = $this->getParameterType($parameter);
+			$parameterTypes = self::getParameterTypes($parameter);
 
 			if (
 				!$parameter->isVariadic()
 				&& in_array($parameterName, array_keys(get_object_vars($decoded)), true) === true
 			) {
-				$res[$num] = (
-					is_string($parameterType)
-					&& class_exists($parameterType, false)
-					&& is_subclass_of($parameterType, Entities\API\Entity::class)
-				)
-					? $this->build($parameterType, $decoded->{$parameterName})
-					: $decoded->{$parameterName};
+				$parameterValue = $decoded->{$parameterName};
+
+				foreach ($parameterTypes as $parameterType) {
+					if (
+						class_exists($parameterType, false)
+						&& is_subclass_of($parameterType, Entities\API\Entity::class)
+						&& (
+							$parameterValue instanceof Utils\ArrayHash
+							|| is_array($parameterValue)
+						)
+					) {
+						$parameterValue = is_array($parameterValue)
+							? Utils\ArrayHash::from($parameterValue)
+							: $parameterValue;
+
+						$res[$num] = self::build($parameterType, $parameterValue);
+
+						break;
+					}
+
+					$res[$num] = $parameterValue;
+				}
 			} elseif ($parameterName === 'id' && property_exists($decoded, 'id')) {
 				$res[$num] = $decoded->id;
 
 			} elseif (
 				(
-					$parameterType !== null
+					$parameterTypes !== []
 					&& $parameter->allowsNull()
 				)
 				|| $parameter->isOptional()
@@ -199,34 +216,55 @@ final class EntityFactory
 				// !optional + defaultAvailable = func($a = NULL, $b) since 5.4.7
 				// optional + !defaultAvailable = i.e. Exception::__construct, mysqli::mysqli, ...
 				$res[$num] = $parameter->isDefaultValueAvailable() ? $parameter->getDefaultValue() : null;
+
+			} elseif (in_array('string', $parameterTypes, true) && count($parameterTypes) >= 2) {
+				$res[$num] = Shelly\Constants::VALUE_NOT_AVAILABLE;
 			}
 		}
 
 		return $res;
 	}
 
-	private function getParameterType(ReflectionParameter $param): string|null
+	/**
+	 * @return array<string>
+	 */
+	private static function getParameterTypes(ReflectionParameter $param): array
 	{
 		if ($param->hasType()) {
 			$rt = $param->getType();
 
-			if ($rt instanceof ReflectionType && method_exists($rt, 'getName')) {
+			if ($rt instanceof ReflectionNamedType) {
 				$type = $rt->getName();
 
-				return strtolower(
+				return [strtolower(
 					$type,
 				) === 'self' && $param->getDeclaringClass() !== null ? $param->getDeclaringClass()
-					->getName() : $type;
+					->getName() : $type];
+			} elseif ($rt instanceof ReflectionUnionType) {
+				$types = [];
+
+				foreach ($rt->getTypes() as $subType) {
+					if ($subType instanceof ReflectionNamedType) {
+						$type = $subType->getName();
+
+						$types[] = strtolower(
+							$type,
+						) === 'self' && $param->getDeclaringClass() !== null ? $param->getDeclaringClass()
+							->getName() : $type;
+					}
+				}
+
+				return $types;
 			}
 		}
 
-		return null;
+		return [];
 	}
 
 	/**
 	 * @return array<ReflectionProperty>
 	 */
-	private function getProperties(Reflector $rc): array
+	private static function getProperties(Reflector $rc): array
 	{
 		if (!$rc instanceof ReflectionClass) {
 			return [];
@@ -239,13 +277,13 @@ final class EntityFactory
 		}
 
 		if ($rc->getParentClass() !== false) {
-			$properties = array_merge($properties, $this->getProperties($rc->getParentClass()));
+			$properties = array_merge($properties, self::getProperties($rc->getParentClass()));
 		}
 
 		return $properties;
 	}
 
-	private function parseVarAnnotation(ReflectionProperty $rp): string|null
+	private static function parseVarAnnotation(ReflectionProperty $rp): string|null
 	{
 		if ($rp->getDocComment() === false) {
 			return null;
@@ -266,7 +304,7 @@ final class EntityFactory
 	/**
 	 * @param array<string, mixed> $array
 	 */
-	private function convertToObject(array $array): stdClass
+	private static function convertToObject(array $array): stdClass
 	{
 		$converted = new stdClass();
 

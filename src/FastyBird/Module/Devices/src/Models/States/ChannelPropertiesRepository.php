@@ -42,6 +42,8 @@ final class ChannelPropertiesRepository
 	/**
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\NotImplemented
+	 *
+	 * @interal
 	 */
 	public function findOne(
 		MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped $property,
@@ -71,6 +73,8 @@ final class ChannelPropertiesRepository
 
 	/**
 	 * @throws Exceptions\NotImplemented
+	 *
+	 * @interal
 	 */
 	public function findOneById(Uuid\UuidInterface $id): States\ChannelProperty|null
 	{

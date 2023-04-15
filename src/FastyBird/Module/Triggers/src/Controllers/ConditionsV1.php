@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:TriggersModule!
  * @subpackage     Controllers
- * @since          0.1.0
+ * @since          1.0.0
  *
  * @date           04.04.20
  */
@@ -18,6 +18,7 @@ namespace FastyBird\Module\Triggers\Controllers;
 use Doctrine;
 use Exception;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Module\Triggers\Controllers;
 use FastyBird\Module\Triggers\Entities;
 use FastyBird\Module\Triggers\Exceptions;
@@ -211,10 +212,7 @@ final class ConditionsV1 extends BaseV1
 					$this->logger->error('An unhandled error occurred', [
 						'source' => 'triggers-module-conditions-controller',
 						'type' => 'create',
-						'exception' => [
-							'message' => $ex->getMessage(),
-							'code' => $ex->getCode(),
-						],
+						'exception' => BootstrapHelpers\Logger::buildException($ex),
 					]);
 
 					throw new JsonApiExceptions\JsonApiError(
@@ -304,10 +302,7 @@ final class ConditionsV1 extends BaseV1
 				$this->logger->error('An unhandled error occurred', [
 					'source' => 'triggers-module-conditions-controller',
 					'type' => 'update',
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				]);
 
 				throw new JsonApiExceptions\JsonApiError(
@@ -379,10 +374,7 @@ final class ConditionsV1 extends BaseV1
 			$this->logger->error('An unhandled error occurred', [
 				'source' => 'triggers-module-conditions-controller',
 				'type' => 'delete',
-				'exception' => [
-					'message' => $ex->getMessage(),
-					'code' => $ex->getCode(),
-				],
+				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
 
 			throw new JsonApiExceptions\JsonApiError(

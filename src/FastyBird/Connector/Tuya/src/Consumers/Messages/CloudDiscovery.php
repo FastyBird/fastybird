@@ -18,6 +18,7 @@ namespace FastyBird\Connector\Tuya\Consumers\Messages;
 use Doctrine\DBAL;
 use FastyBird\Connector\Tuya\Consumers\Consumer;
 use FastyBird\Connector\Tuya\Entities;
+use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -115,7 +116,6 @@ final class CloudDiscovery implements Consumer
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'cloud-discovery-message-consumer',
-					'group' => 'consumer',
 					'device' => [
 						'id' => $device->getPlainId(),
 						'identifier' => $entity->getId(),
@@ -141,7 +141,6 @@ final class CloudDiscovery implements Consumer
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'cloud-discovery-message-consumer',
-					'group' => 'consumer',
 					'device' => [
 						'id' => $device->getPlainId(),
 					],
@@ -152,58 +151,80 @@ final class CloudDiscovery implements Consumer
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getLocalKey(),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 			Types\DevicePropertyIdentifier::IDENTIFIER_LOCAL_KEY,
+			Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_LOCAL_KEY),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getIpAddress(),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 			Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS,
+			Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getCategory(),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 			Types\DevicePropertyIdentifier::IDENTIFIER_CATEGORY,
+			Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_CATEGORY),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getIcon(),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 			Types\DevicePropertyIdentifier::IDENTIFIER_ICON,
+			Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_ICON),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getLatitude(),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 			Types\DevicePropertyIdentifier::IDENTIFIER_LATITUDE,
+			Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_LATITUDE),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getLongitude(),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 			Types\DevicePropertyIdentifier::IDENTIFIER_LONGITUDE,
+			Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_LONGITUDE),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getProductId(),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 			Types\DevicePropertyIdentifier::IDENTIFIER_PRODUCT_ID,
+			Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_PRODUCT_ID),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getProductName(),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 			Types\DevicePropertyIdentifier::IDENTIFIER_PRODUCT_NAME,
+			Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_PRODUCT_NAME),
 		);
 
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getModel(),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 			Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL,
+			Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getMac(),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 			Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS,
+			Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getSn(),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 			Types\DevicePropertyIdentifier::IDENTIFIER_SERIAL_NUMBER,
+			Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_SERIAL_NUMBER),
 		);
 
 		$this->databaseHelper->transaction(function () use ($entity, $device): bool {
@@ -224,7 +245,6 @@ final class CloudDiscovery implements Consumer
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'cloud-discovery-message-consumer',
-						'group' => 'consumer',
 						'device' => [
 							'id' => $device->getPlainId(),
 						],
@@ -243,20 +263,23 @@ final class CloudDiscovery implements Consumer
 						'channel' => $channel,
 						'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 						'identifier' => $dataPoint->getCode(),
-						'name' => $dataPoint->getCode(),
+						'name' => Helpers\Name::createName($dataPoint->getCode()),
 						'dataType' => $dataPoint->getDataType(),
 						'unit' => $dataPoint->getUnit(),
 						'format' => $dataPoint->getFormat(),
+						'scale' => $dataPoint->getScale(),
+						'step' => $dataPoint->getStep(),
 						'queryable' => $dataPoint->isQueryable(),
 						'settable' => $dataPoint->isSettable(),
 					]));
 
 				} else {
 					$this->channelsPropertiesManager->update($property, Utils\ArrayHash::from([
-						'name' => $property->getName() ?? $dataPoint->getCode(),
 						'dataType' => $dataPoint->getDataType(),
 						'unit' => $dataPoint->getUnit(),
 						'format' => $dataPoint->getFormat(),
+						'scale' => $dataPoint->getScale(),
+						'step' => $dataPoint->getStep(),
 						'queryable' => $dataPoint->isQueryable(),
 						'settable' => $dataPoint->isSettable(),
 					]));
@@ -271,7 +294,6 @@ final class CloudDiscovery implements Consumer
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 				'type' => 'cloud-discovery-message-consumer',
-				'group' => 'consumer',
 				'device' => [
 					'id' => $device->getPlainId(),
 				],

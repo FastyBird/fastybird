@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:MetadataLibrary!
  * @subpackage     common
- * @since          0.1.0
+ * @since          1.0.0
  *
  * @date           04.05.20
  */
@@ -585,8 +585,8 @@ final class Constants
 
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 	public const VALUE_FORMAT_NUMBER_RANGE = '/^(?:(?:(?:i8|u8|i16|u16|i32|u32|f){1}\|)?(?:(?:\-)?(?:\d)*(?:.(?:\d)+)?))?(?:\:(?:(?:(?:i8|u8|i16|u16|i32|u32|f){1}\|)?(?:\d)*(?:.(?:\d)+)?)){1}$/';
-
-	public const VALUE_FORMAT_STRING_ENUM = '/^(?:[a-zA-Z0-9](?:[a-zA-Z0-9]-?_?)*)(?:\,(?:[a-zA-Z0-9](?:[a-zA-Z0-9]-?_?)*))*(?:,)?$/';
+	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+	public const VALUE_FORMAT_STRING_ENUM = '/^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-?_?:?.?\+?\/?])*)(?:\,(?:[a-zA-Z0-9](?:[a-zA-Z0-9-?_?:?.?\+?\/?])*))*(?:,)?$/';
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 	public const VALUE_FORMAT_COMBINED_ENUM = '/^(?:(?:(?:i8|u8|i16|u16|i32|u32|f|b|s|btn|sw){1}\|)?(?:[a-zA-Z0-9]-?_?)*)(?:\:(?:(?:i8|u8|i16|u16|i32|u32|f|b|s|btn|sw){1}\|)?(?:[a-zA-Z0-9]-?_?)*){2}(?:,(?:(?:(?:i8|u8|i16|u16|i32|u32|f|b|s|btn|sw){1}\|)?(?:[a-zA-Z0-9]-?_?)*)(?:\:(?:(?:i8|u8|i16|u16|i32|u32|f|b|s|btn|sw){1}\|)?(?:[a-zA-Z0-9]-?_?)*){2})*$/';
 

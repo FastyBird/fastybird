@@ -102,7 +102,6 @@ abstract class HttpApi
 		), [
 			'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 			'type' => 'http-api',
-			'group' => 'api',
 			'request' => [
 				'method' => $method,
 				'url' => $path,
@@ -163,7 +162,6 @@ abstract class HttpApi
 		), [
 			'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 			'type' => 'http-api',
-			'group' => 'api',
 			'request' => [
 				'method' => $method,
 				'url' => $path,

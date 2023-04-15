@@ -83,7 +83,7 @@ final class DeviceConnection
 
 		assert($property instanceof Entities\Devices\Properties\Dynamic);
 
-		$this->propertiesStates->setValue(
+		$this->propertiesStates->writeValue(
 			$property,
 			Utils\ArrayHash::from([
 				States\Property::ACTUAL_VALUE_KEY => $state->getValue(),
@@ -108,7 +108,7 @@ final class DeviceConnection
 		$property = $device->findProperty(MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_STATE);
 
 		if ($property instanceof Entities\Devices\Properties\Dynamic) {
-			$state = $this->propertiesStates->getValue($property);
+			$state = $this->propertiesStates->readValue($property);
 
 			if (
 				$state?->getActualValue() !== null

@@ -21,18 +21,23 @@ use DateTimeInterface;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
+use FastyBird\Module\Devices\Exceptions;
 use Nette\Utils;
 use function array_filter;
 use function count;
 use function floatval;
+use function implode;
 use function in_array;
 use function intval;
+use function is_float;
+use function is_int;
 use function is_numeric;
+use function sprintf;
 use function strval;
 use const DATE_ATOM;
 
 /**
- * Value helpersphpstan-param
+ * Value helpers
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Helpers
@@ -43,6 +48,7 @@ final class ValueHelper
 {
 
 	/**
+	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	public static function normalizeValue(
@@ -64,33 +70,33 @@ final class ValueHelper
 			|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_INT)
 			|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_UINT)
 		) {
-			if ($invalid === intval($value)) {
+			if ($invalid !== null && intval($invalid) === intval($value)) {
 				return $invalid;
 			}
 
 			if ($format instanceof MetadataValueObjects\NumberRangeFormat) {
 				if ($format->getMin() !== null && intval($format->getMin()) > intval($value)) {
-					return null;
+					return intval($format->getMin());
 				}
 
 				if ($format->getMax() !== null && intval($format->getMax()) < intval($value)) {
-					return null;
+					return intval($format->getMax());
 				}
 			}
 
 			return intval($value);
 		} elseif ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_FLOAT)) {
-			if ($invalid === floatval($value)) {
+			if ($invalid !== null && floatval($invalid) === floatval($value)) {
 				return $invalid;
 			}
 
 			if ($format instanceof MetadataValueObjects\NumberRangeFormat) {
-				if ($format->getMin() !== null && intval($format->getMin()) > intval($value)) {
-					return null;
+				if ($format->getMin() !== null && floatval($format->getMin()) > floatval($value)) {
+					return floatval($format->getMin());
 				}
 
-				if ($format->getMax() !== null && intval($format->getMax()) < intval($value)) {
-					return null;
+				if ($format->getMax() !== null && floatval($format->getMax()) < floatval($value)) {
+					return floatval($format->getMax());
 				}
 			}
 
@@ -132,7 +138,13 @@ final class ValueHelper
 				return MetadataTypes\ButtonPayload::get($value);
 			}
 
-			return null;
+			throw new Exceptions\InvalidState(
+				sprintf(
+					'Provided value "%s" is not in valid rage: %s',
+					strval($value),
+					implode(', ', (array) MetadataTypes\ButtonPayload::getAvailableValues()),
+				),
+			);
 		} elseif ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SWITCH)) {
 			if ($value instanceof MetadataTypes\SwitchPayload) {
 				return $value;
@@ -142,7 +154,13 @@ final class ValueHelper
 				return MetadataTypes\SwitchPayload::get($value);
 			}
 
-			return null;
+			throw new Exceptions\InvalidState(
+				sprintf(
+					'Provided value "%s" is not in valid rage: %s',
+					strval($value),
+					implode(', ', (array) MetadataTypes\SwitchPayload::getAvailableValues()),
+				),
+			);
 		} elseif ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_COVER)) {
 			if ($value instanceof MetadataTypes\CoverPayload) {
 				return $value;
@@ -152,7 +170,13 @@ final class ValueHelper
 				return MetadataTypes\CoverPayload::get($value);
 			}
 
-			return null;
+			throw new Exceptions\InvalidState(
+				sprintf(
+					'Provided value "%s" is not in valid rage: %s',
+					strval($value),
+					implode(', ', (array) MetadataTypes\CoverPayload::getAvailableValues()),
+				),
+			);
 		} elseif ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_ENUM)) {
 			if ($format instanceof MetadataValueObjects\StringEnumFormat) {
 				$filtered = array_filter(
@@ -164,7 +188,9 @@ final class ValueHelper
 					return $value;
 				}
 
-				return null;
+				throw new Exceptions\InvalidState(
+					sprintf('Provided value "%s" is not in valid rage: %s', strval($value), strval($format)),
+				);
 			} elseif ($format instanceof MetadataValueObjects\CombinedEnumFormat) {
 				$filtered = array_filter(
 					$format->getItems(),
@@ -188,10 +214,104 @@ final class ValueHelper
 					return $value;
 				}
 
-				return null;
+				throw new Exceptions\InvalidState(
+					sprintf('Provided value "%s" is not in valid rage: %s', strval($value), strval($format)),
+				);
 			}
 
 			return null;
+		}
+
+		return $value;
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public static function normalizeReadValue(
+		MetadataTypes\DataType $dataType,
+		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
+		MetadataValueObjects\StringEnumFormat|MetadataValueObjects\NumberRangeFormat|MetadataValueObjects\CombinedEnumFormat|null $format = null,
+		int|null $scale,
+		float|int|string|null $invalid = null,
+	): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
+	{
+		if ($value === null) {
+			return null;
+		}
+
+		$value = self::normalizeValue($dataType, $value, $format, $invalid);
+
+		if (
+			$scale !== null
+			&& in_array($dataType->getValue(), [
+				MetadataTypes\DataType::DATA_TYPE_CHAR,
+				MetadataTypes\DataType::DATA_TYPE_UCHAR,
+				MetadataTypes\DataType::DATA_TYPE_SHORT,
+				MetadataTypes\DataType::DATA_TYPE_USHORT,
+				MetadataTypes\DataType::DATA_TYPE_INT,
+				MetadataTypes\DataType::DATA_TYPE_UINT,
+				MetadataTypes\DataType::DATA_TYPE_FLOAT,
+			], true)
+			&& (
+				is_int($value)
+				|| is_float($value)
+			)
+		) {
+			$value = intval($value);
+
+			for ($i = 0; $i < $scale; $i++) {
+				$value /= 10;
+			}
+
+			$value = floatval($value);
+		}
+
+		return $value;
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public static function normalizeWriteValue(
+		MetadataTypes\DataType $dataType,
+		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
+		MetadataValueObjects\StringEnumFormat|MetadataValueObjects\NumberRangeFormat|MetadataValueObjects\CombinedEnumFormat|null $format = null,
+		int|null $scale,
+		float|int|string|null $invalid = null,
+	): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
+	{
+		if ($value === null) {
+			return null;
+		}
+
+		$value = self::normalizeValue($dataType, $value, $format, $invalid);
+
+		if (
+			$scale !== null
+			&& in_array($dataType->getValue(), [
+				MetadataTypes\DataType::DATA_TYPE_CHAR,
+				MetadataTypes\DataType::DATA_TYPE_UCHAR,
+				MetadataTypes\DataType::DATA_TYPE_SHORT,
+				MetadataTypes\DataType::DATA_TYPE_USHORT,
+				MetadataTypes\DataType::DATA_TYPE_INT,
+				MetadataTypes\DataType::DATA_TYPE_UINT,
+				MetadataTypes\DataType::DATA_TYPE_FLOAT,
+			], true)
+			&& (
+				is_int($value)
+				|| is_float($value)
+			)
+		) {
+			$value = floatval($value);
+
+			for ($i = 0; $i < $scale; $i++) {
+				$value *= 10;
+			}
+
+			$value = intval($value);
 		}
 
 		return $value;

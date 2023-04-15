@@ -8,13 +8,14 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:WsExchangePlugin!
  * @subpackage     Publishers
- * @since          0.2.0
+ * @since          1.0.0
  *
  * @date           08.10.21
  */
 
 namespace FastyBird\Plugin\WsExchange\Publishers;
 
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use IPub\WebSockets;
@@ -69,7 +70,6 @@ final class Publisher
 			$this->logger->debug('Successfully published message', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_EXCHANGE,
 				'type' => 'message-publisher',
-				'group' => 'publisher',
 				'message' => [
 					'routing_key' => $routingKey->getValue(),
 					'source' => $source->getValue(),
@@ -81,7 +81,6 @@ final class Publisher
 			$this->logger->error('Message could not be published to exchange', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_EXCHANGE,
 				'type' => 'message-publisher',
-				'group' => 'publisher',
 				'message' => [
 					'routing_key' => $routingKey->getValue(),
 					'source' => $source->getValue(),
@@ -105,7 +104,6 @@ final class Publisher
 				$this->logger->debug('Broadcasting message to topic', [
 					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_EXCHANGE,
 					'type' => 'message-publisher',
-					'group' => 'publisher',
 					'link' => $link,
 				]);
 
@@ -117,22 +115,14 @@ final class Publisher
 			$this->logger->error('Data could not be converted to message', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_EXCHANGE,
 				'type' => 'message-publisher',
-				'group' => 'publisher',
-				'exception' => [
-					'message' => $ex->getMessage(),
-					'code' => $ex->getCode(),
-				],
+				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
 
 		} catch (Throwable $ex) {
 			$this->logger->error('Data could not be broadcasts to clients', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_EXCHANGE,
 				'type' => 'message-publisher',
-				'group' => 'publisher',
-				'exception' => [
-					'message' => $ex->getMessage(),
-					'code' => $ex->getCode(),
-				],
+				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
 		}
 

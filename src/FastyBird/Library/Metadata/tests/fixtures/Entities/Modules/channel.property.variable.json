@@ -1,6 +1,7 @@
 {
   "id": "176984ad-7cf7-465d-9e53-71668a74a688",
   "type": "variable",
+  "category": "generic",
   "identifier": "property-identifier",
   "name": null,
   "settable": true,
@@ -9,7 +10,8 @@
   "unit": null,
   "format": ["one", "two", "three"],
   "invalid": 99,
-  "number_of_decimals": 0,
+  "scale": 0,
+  "step": null,
   "channel": "247fd6b5-8466-4323-81de-cec3e315015a",
   "value" : 50,
   "default" : null

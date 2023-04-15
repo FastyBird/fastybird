@@ -63,6 +63,7 @@ abstract class Property extends JsonApiSchemas\JsonApi
 	): iterable
 	{
 		return [
+			'category' => strval($resource->getCategory()->getValue()),
 			'identifier' => $resource->getIdentifier(),
 			'name' => $resource->getName(),
 			'settable' => $resource->isSettable(),
@@ -71,7 +72,8 @@ abstract class Property extends JsonApiSchemas\JsonApi
 			'unit' => $resource->getUnit(),
 			'format' => $resource->getFormat()?->toArray(),
 			'invalid' => $resource->getInvalid(),
-			'number_of_decimals' => $resource->getNumberOfDecimals(),
+			'scale' => $resource->getScale(),
+			'step' => $resource->getStep(),
 		];
 	}
 

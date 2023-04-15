@@ -1,14 +1,14 @@
 <?php declare(strict_types = 1);
 
 /**
- * Entity.php
+ * Transformer.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:WebServerPlugin!
  * @subpackage     Http
- * @since          0.1.0
+ * @since          1.0.0
  *
  * @date           17.03.20
  */

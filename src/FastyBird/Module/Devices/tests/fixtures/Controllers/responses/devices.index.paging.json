@@ -19,6 +19,7 @@
       "type": "com.fastybird.devices-module/device/blank",
       "id": "a1036ff8-6ee8-4405-aaed-58bae0814596",
       "attributes": {
+        "category": "generic",
         "identifier": "child-device",
         "name": "Child device",
         "comment": "This is child",

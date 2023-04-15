@@ -21,6 +21,7 @@ use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\DateTimeFactory;
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
@@ -56,7 +57,6 @@ final class Ws
 	public function __construct(
 		private readonly API\WsApiFactory $wsApiFactory,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
-		protected readonly API\Transformer $transformer,
 		protected readonly Consumers\Messages $consumer,
 		Log\LoggerInterface|null $logger = null,
 	)
@@ -214,13 +214,12 @@ final class Ws
 
 		$client->on(
 			'connected',
-			function () use ($device): void {
+			function () use ($client, $device): void {
 				$this->logger->debug(
 					'Connected to device',
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'ws-client',
-						'group' => 'client',
 						'device' => [
 							'id' => $device->getPlainId(),
 						],
@@ -234,6 +233,32 @@ final class Ws
 						MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_CONNECTED),
 					),
 				);
+
+				$client->readStates()
+					->then(function (Entities\API\Gen2\DeviceStatus $status) use ($device): void {
+						$this->processDeviceStatus($device, $status);
+					})
+					->otherwise(function (Throwable $ex) use ($device): void {
+						$this->consumer->append(
+							new Entities\Messages\DeviceState(
+								$device->getConnector()->getId(),
+								$device->getIdentifier(),
+								MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_DISCONNECTED),
+							),
+						);
+
+						$this->logger->error(
+							'An error occurred on initial device state reading',
+							[
+								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+								'type' => 'ws-api',
+								'exception' => BootstrapHelpers\Logger::buildException($ex),
+								'device' => [
+									'identifier' => $device->getIdentifier(),
+								],
+							],
+						);
+					});
 			},
 		);
 
@@ -245,7 +270,6 @@ final class Ws
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'ws-client',
-						'group' => 'client',
 						'device' => [
 							'id' => $device->getPlainId(),
 						],
@@ -270,11 +294,7 @@ final class Ws
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'ws-client',
-						'group' => 'client',
-						'exception' => [
-							'message' => $ex->getMessage(),
-							'code' => $ex->getCode(),
-						],
+						'exception' => BootstrapHelpers\Logger::buildException($ex),
 						'device' => [
 							'id' => $device->getPlainId(),
 						],

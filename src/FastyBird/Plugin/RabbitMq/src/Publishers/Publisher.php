@@ -17,6 +17,7 @@ namespace FastyBird\Plugin\RabbitMq\Publishers;
 
 use Bunny;
 use FastyBird\DateTimeFactory;
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -83,16 +84,12 @@ final class Publisher implements ExchangePublisher\Publisher
 				[
 					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_RABBITMQ,
 					'type' => 'messages-publisher',
-					'group' => 'publisher',
 					'message' => [
 						'routingKey' => $routingKey->getValue(),
 						'source' => $source->getValue(),
 						'data' => $entity?->toArray(),
 					],
-					'exception' => [
-						'message' => $ex->getMessage(),
-						'code' => $ex->getCode(),
-					],
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -117,7 +114,6 @@ final class Publisher implements ExchangePublisher\Publisher
 					[
 						'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_RABBITMQ,
 						'type' => 'messages-publisher',
-						'group' => 'publisher',
 						'message' => [
 							'routingKey' => $routingKey->getValue(),
 							'source' => $source->getValue(),
@@ -132,7 +128,6 @@ final class Publisher implements ExchangePublisher\Publisher
 					[
 						'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_RABBITMQ,
 						'type' => 'messages-publisher',
-						'group' => 'publisher',
 						'message' => [
 							'routingKey' => $routingKey->getValue(),
 							'source' => $source->getValue(),
@@ -151,7 +146,6 @@ final class Publisher implements ExchangePublisher\Publisher
 							[
 								'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_RABBITMQ,
 								'type' => 'messages-publisher',
-								'group' => 'publisher',
 								'message' => [
 									'routingKey' => $routingKey->getValue(),
 									'source' => $source->getValue(),
@@ -167,17 +161,13 @@ final class Publisher implements ExchangePublisher\Publisher
 							[
 								'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_RABBITMQ,
 								'type' => 'messages-publisher',
-								'group' => 'publisher',
 								'message' => [
 									'routingKey' => $routingKey->getValue(),
 									'source' => $source->getValue(),
 									'data' => $entity?->toArray(),
 									'body' => $body,
 								],
-								'exception' => [
-									'message' => $ex->getMessage(),
-									'code' => $ex->getCode(),
-								],
+								'exception' => BootstrapHelpers\Logger::buildException($ex),
 							],
 						);
 					},

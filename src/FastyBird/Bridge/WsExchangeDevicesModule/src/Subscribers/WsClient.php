@@ -8,18 +8,20 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:WsExchangeDevicesModuleBridge!
  * @subpackage     Subscribers
- * @since          0.1.0
+ * @since          1.0.0
  *
  * @date           15.01.22
  */
 
 namespace FastyBird\Bridge\WsExchangeDevicesModule\Subscribers;
 
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\States as DevicesStates;
+use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use FastyBird\Plugin\WsExchange\Events as WsExchangeEvents;
 use IPub\WebSocketsWAMP;
 use Nette\Utils;
@@ -45,9 +47,9 @@ class WsClient implements EventDispatcher\EventSubscriberInterface
 		private readonly DevicesModels\Connectors\Properties\PropertiesRepository $connectorPropertiesRepository,
 		private readonly DevicesModels\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
 		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
-		private readonly DevicesModels\States\ConnectorPropertiesRepository $connectorPropertiesStatesRepository,
-		private readonly DevicesModels\States\DevicePropertiesRepository $devicePropertiesStatesRepository,
-		private readonly DevicesModels\States\ChannelPropertiesRepository $channelPropertiesStatesRepository,
+		private readonly DevicesUtilities\ConnectorPropertiesStates $connectorPropertiesStates,
+		private readonly DevicesUtilities\DevicePropertiesStates $devicePropertiesStates,
+		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		Log\LoggerInterface|null $logger = null,
 	)
 	{
@@ -77,7 +79,7 @@ class WsClient implements EventDispatcher\EventSubscriberInterface
 					$deviceProperty instanceof DevicesEntities\Devices\Properties\Dynamic
 					|| $deviceProperty instanceof DevicesEntities\Devices\Properties\Mapped
 				) {
-					$state = $this->devicePropertiesStatesRepository->findOne($deviceProperty);
+					$state = $this->devicePropertiesStates->readValue($deviceProperty);
 
 					if ($state instanceof DevicesStates\DeviceProperty) {
 						$dynamicData = $state->toArray();
@@ -109,7 +111,7 @@ class WsClient implements EventDispatcher\EventSubscriberInterface
 					$channelProperty instanceof DevicesEntities\Channels\Properties\Dynamic
 					|| $channelProperty instanceof DevicesEntities\Channels\Properties\Mapped
 				) {
-					$state = $this->channelPropertiesStatesRepository->findOne($channelProperty);
+					$state = $this->channelPropertiesStates->readValue($channelProperty);
 
 					if ($state instanceof DevicesStates\ChannelProperty) {
 						$dynamicData = $state->toArray();
@@ -138,7 +140,7 @@ class WsClient implements EventDispatcher\EventSubscriberInterface
 				$dynamicData = [];
 
 				if ($connectorProperty instanceof DevicesEntities\Connectors\Properties\Dynamic) {
-					$state = $this->connectorPropertiesStatesRepository->findOne($connectorProperty);
+					$state = $this->connectorPropertiesStates->readValue($connectorProperty);
 
 					if ($state instanceof DevicesStates\ConnectorProperty) {
 						$dynamicData = $state->toArray();
@@ -161,12 +163,8 @@ class WsClient implements EventDispatcher\EventSubscriberInterface
 		} catch (Throwable $ex) {
 			$this->logger->error('State could not be sent to subscriber', [
 				'source' => MetadataTypes\BridgeSource::SOURCE_BRIDGE_WS_EXCHANGE_DEVICES_MODULE,
-				'type' => 'subscribe',
-				'group' => 'subscriber',
-				'exception' => [
-					'message' => $ex->getMessage(),
-					'code' => $ex->getCode(),
-				],
+				'type' => 'subscriber',
+				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
 		}
 	}

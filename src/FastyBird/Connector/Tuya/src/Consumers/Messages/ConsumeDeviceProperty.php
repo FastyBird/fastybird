@@ -47,6 +47,8 @@ trait ConsumeDeviceProperty
 {
 
 	/**
+	 * @param string|array<int, string>|array<int, string|int|float|array<int, string|int|float>|Utils\ArrayHash|null>|array<int, array<int, string|array<int, string|int|float|bool>|Utils\ArrayHash|null>>|null $format
+	 *
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Runtime
@@ -56,7 +58,10 @@ trait ConsumeDeviceProperty
 	private function setDeviceProperty(
 		Uuid\UuidInterface $deviceId,
 		string|bool|null $value,
+		MetadataTypes\DataType $dataType,
 		string $identifier,
+		string|null $name = null,
+		array|string|null $format = null,
 	): void
 	{
 		$findPropertyQuery = new DevicesQueries\FindDeviceProperties();
@@ -105,7 +110,6 @@ trait ConsumeDeviceProperty
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'message-consumer',
-						'group' => 'consumer',
 						'device' => [
 							'id' => $deviceId->toString(),
 						],
@@ -140,10 +144,12 @@ trait ConsumeDeviceProperty
 						'entity' => DevicesEntities\Devices\Properties\Variable::class,
 						'device' => $device,
 						'identifier' => $identifier,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+						'name' => $name,
+						'dataType' => $dataType,
 						'settable' => false,
 						'queryable' => false,
 						'value' => $value,
+						'format' => $format,
 					]),
 				),
 			);
@@ -153,7 +159,6 @@ trait ConsumeDeviceProperty
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'message-consumer',
-					'group' => 'consumer',
 					'device' => [
 						'id' => $deviceId->toString(),
 					],
@@ -169,7 +174,9 @@ trait ConsumeDeviceProperty
 				fn (): DevicesEntities\Devices\Properties\Property => $this->propertiesManager->update(
 					$property,
 					Utils\ArrayHash::from([
+						'dataType' => $dataType,
 						'value' => $value,
+						'format' => $format,
 					]),
 				),
 			);
@@ -179,7 +186,6 @@ trait ConsumeDeviceProperty
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'message-consumer',
-					'group' => 'consumer',
 					'device' => [
 						'id' => $deviceId->toString(),
 					],

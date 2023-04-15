@@ -18,7 +18,9 @@ namespace FastyBird\Module\Devices\Utilities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities;
+use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
+use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\States;
 use Nette;
 use Nette\Utils;
@@ -38,6 +40,7 @@ final class ConnectorConnection
 	use Nette\SmartObject;
 
 	public function __construct(
+		private readonly Models\Connectors\Properties\PropertiesRepository $repository,
 		private readonly Models\Connectors\Properties\PropertiesManager $manager,
 		private readonly ConnectorPropertiesStates $propertiesStates,
 	)
@@ -45,6 +48,7 @@ final class ConnectorConnection
 	}
 
 	/**
+	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -53,7 +57,11 @@ final class ConnectorConnection
 		MetadataTypes\ConnectionState $state,
 	): bool
 	{
-		$property = $connector->findProperty(MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_STATE);
+		$findPropertyQuery = new Queries\FindConnectorProperties();
+		$findPropertyQuery->forConnector($connector);
+		$findPropertyQuery->byIdentifier(MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_STATE);
+
+		$property = $this->repository->findOneBy($findPropertyQuery);
 
 		if ($property === null) {
 			$property = $this->manager->create(Utils\ArrayHash::from([
@@ -76,7 +84,7 @@ final class ConnectorConnection
 
 		assert($property instanceof Entities\Connectors\Properties\Dynamic);
 
-		$this->propertiesStates->setValue(
+		$this->propertiesStates->writeValue(
 			$property,
 			Utils\ArrayHash::from([
 				States\Property::ACTUAL_VALUE_KEY => $state->getValue(),
@@ -90,6 +98,7 @@ final class ConnectorConnection
 	}
 
 	/**
+	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -97,10 +106,14 @@ final class ConnectorConnection
 		Entities\Connectors\Connector $connector,
 	): MetadataTypes\ConnectionState
 	{
-		$property = $connector->findProperty(MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_STATE);
+		$findPropertyQuery = new Queries\FindConnectorProperties();
+		$findPropertyQuery->forConnector($connector);
+		$findPropertyQuery->byIdentifier(MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_STATE);
+
+		$property = $this->repository->findOneBy($findPropertyQuery);
 
 		if ($property instanceof Entities\Connectors\Properties\Dynamic) {
-			$state = $this->propertiesStates->getValue($property);
+			$state = $this->propertiesStates->readValue($property);
 
 			if (
 				$state?->getActualValue() !== null

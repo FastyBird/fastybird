@@ -18,7 +18,7 @@ namespace FastyBird\Module\Devices\Entities;
 use Ramsey\Uuid;
 
 /**
- * Entity base trait
+ * Transformer base trait
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Entities

@@ -17,6 +17,7 @@ namespace FastyBird\Module\Devices\Commands;
 
 use BadMethodCallException;
 use FastyBird\DateTimeFactory;
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Exchange\Exchange as ExchangeExchange;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -59,21 +60,28 @@ class Connector extends Console\Command\Command
 
 	private const SHUTDOWN_WAITING_DELAY = 3;
 
+	private const DATABASE_REFRESH_INTERVAL = 5;
+
 	/** @var SplObjectStorage<Connectors\ConnectorFactory, string> */
 	private SplObjectStorage $factories;
 
 	private Log\LoggerInterface $logger;
+
+	private EventLoop\TimerInterface|null $databaseRefreshTimer = null;
 
 	/**
 	 * @param array<ExchangeExchange\Factory> $exchangeFactories
 	 */
 	public function __construct(
 		private readonly Models\Connectors\ConnectorsRepository $connectorsRepository,
+		private readonly Models\Connectors\Properties\PropertiesRepository $connectorPropertiesRepository,
 		private readonly Models\Devices\DevicesRepository $devicesRepository,
 		private readonly Utilities\ConnectorConnection $connectorConnectionManager,
 		private readonly Utilities\DeviceConnection $deviceConnectionManager,
+		private readonly Utilities\ConnectorPropertiesStates $connectorPropertiesStateManager,
 		private readonly Utilities\DevicePropertiesStates $devicePropertiesStateManager,
 		private readonly Utilities\ChannelPropertiesStates $channelPropertiesStateManager,
+		private readonly BootstrapHelpers\Database $database,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		private readonly array $exchangeFactories = [],
@@ -150,10 +158,7 @@ class Connector extends Console\Command\Command
 			$this->logger->debug('Stopping connector', [
 				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
 				'type' => 'command',
-				'exception' => [
-					'message' => $ex->getMessage(),
-					'code' => $ex->getCode(),
-				],
+				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
 
 			$this->eventLoop->stop();
@@ -164,10 +169,7 @@ class Connector extends Console\Command\Command
 			$this->logger->error('An unhandled error occurred', [
 				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
 				'type' => 'command',
-				'exception' => [
-					'message' => $ex->getMessage(),
-					'code' => $ex->getCode(),
-				],
+				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
 
 			if ($input->getOption('quiet') === false) {
@@ -308,7 +310,7 @@ class Connector extends Console\Command\Command
 			]);
 
 			try {
-				$this->resetConnectorDevices(
+				$this->resetConnector(
 					$connector,
 					MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_UNKNOWN),
 				);
@@ -338,6 +340,13 @@ class Connector extends Console\Command\Command
 		$this->eventLoop->addSignal(SIGINT, function () use ($connector, $service): void {
 			$this->terminate($service, $connector);
 		});
+
+		$this->databaseRefreshTimer = $this->eventLoop->addPeriodicTimer(
+			self::DATABASE_REFRESH_INTERVAL,
+			function (): void {
+				$this->database->clear();
+			},
+		);
 	}
 
 	/**
@@ -355,7 +364,7 @@ class Connector extends Console\Command\Command
 
 			$service->terminate();
 
-			$this->resetConnectorDevices(
+			$this->resetConnector(
 				$connector,
 				MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_DISCONNECTED),
 			);
@@ -383,15 +392,16 @@ class Connector extends Console\Command\Command
 				MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_STOPPED),
 			);
 
+			if ($this->databaseRefreshTimer !== null) {
+				$this->eventLoop->cancelTimer($this->databaseRefreshTimer);
+			}
+
 			$this->eventLoop->stop();
 		} catch (Throwable $ex) {
 			$this->logger->error('Connector could not be stopped. An unexpected error occurred', [
 				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
 				'type' => 'command',
-				'exception' => [
-					'message' => $ex->getMessage(),
-					'code' => $ex->getCode(),
-				],
+				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
 
 			throw new Exceptions\Terminate(
@@ -407,11 +417,20 @@ class Connector extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function resetConnectorDevices(
+	private function resetConnector(
 		Entities\Connectors\Connector $connector,
 		MetadataTypes\ConnectionState $state,
 	): void
 	{
+		$findPropertiesQuery = new Queries\FindConnectorProperties();
+		$findPropertiesQuery->forConnector($connector);
+
+		foreach ($this->connectorPropertiesRepository->findAllBy($findPropertiesQuery) as $property) {
+			if ($property instanceof Entities\Connectors\Properties\Dynamic) {
+				$this->connectorPropertiesStateManager->setValidState($property, false);
+			}
+		}
+
 		$findDevicesQuery = new Queries\FindDevices();
 		$findDevicesQuery->byConnectorId($connector->getId());
 

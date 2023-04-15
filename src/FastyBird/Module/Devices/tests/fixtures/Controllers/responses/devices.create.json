@@ -13,6 +13,7 @@
     "type": "com.fastybird.devices-module/device/blank",
     "id": "bbbf5caa-b30e-4558-b83a-699617958cea",
     "attributes": {
+      "category": "generic",
       "identifier": "new-device",
       "name": "Newly created device",
       "comment": null,

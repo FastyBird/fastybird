@@ -19,6 +19,7 @@ use Doctrine\Common;
 use Doctrine\ORM;
 use Doctrine\Persistence;
 use FastyBird\Connector\Tuya\Entities;
+use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
@@ -75,6 +76,7 @@ final class Properties implements Common\EventSubscriber
 			'device' => $entity,
 			'entity' => DevicesEntities\Devices\Properties\Dynamic::class,
 			'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_STATE,
+			'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_STATE),
 			'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
 			'unit' => null,
 			'format' => [

@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:MetadataLibrary!
  * @subpackage     Entities
- * @since          0.57.0
+ * @since          1.0.0
  *
  * @date           02.06.22
  */
@@ -39,6 +39,7 @@ abstract class VariableProperty extends Property
 	public function __construct(
 		string $id,
 		string $type,
+		string $category,
 		string $identifier,
 		string|null $name,
 		bool $settable,
@@ -47,7 +48,8 @@ abstract class VariableProperty extends Property
 		string|null $unit = null,
 		array|null $format = null,
 		string|int|float|null $invalid = null,
-		int|null $numberOfDecimals = null,
+		int|null $scale = null,
+		int|null $step = null,
 		float|bool|int|string|null $value = null,
 		float|bool|int|string|null $default = null,
 		string|null $owner = null,
@@ -56,6 +58,7 @@ abstract class VariableProperty extends Property
 		parent::__construct(
 			$id,
 			$type,
+			$category,
 			$identifier,
 			$name,
 			$settable,
@@ -64,7 +67,8 @@ abstract class VariableProperty extends Property
 			$unit,
 			$format,
 			$invalid,
-			$numberOfDecimals,
+			$scale,
+			$step,
 			$owner,
 		);
 

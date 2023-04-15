@@ -1,6 +1,8 @@
 import { TJsonaModel, TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships } from 'jsona/lib/JsonaTypes';
 import { _GettersTree } from 'pinia';
 
+import { ConnectorCategory } from '@fastybird/metadata-library';
+
 import {
 	IConnectorControlResponseData,
 	IConnectorControlResponseModel,
@@ -60,6 +62,7 @@ export interface IConnector {
 
 	draft: boolean;
 
+	category: ConnectorCategory;
 	identifier: string;
 	name: string | null;
 	comment: string | null;
@@ -74,7 +77,7 @@ export interface IConnector {
 
 	owner: string | null;
 
-	// Entity transformers
+	// Transformer transformers
 	isEnabled: boolean;
 	stateProperty: IConnectorProperty | null;
 	hasComment: boolean;
@@ -87,6 +90,7 @@ export interface IConnectorRecordFactoryPayload {
 	id?: string;
 	type: { source: string; type: string; entity?: string };
 
+	category: ConnectorCategory;
 	identifier: string;
 	name?: string | null;
 	comment?: string | null;
@@ -177,6 +181,7 @@ export interface IConnectorResponseData extends TJsonApiData {
 }
 
 interface IConnectorResponseDataAttributes {
+	category: ConnectorCategory;
 	identifier: string;
 	name: string | null;
 	comment: string | null;
@@ -199,6 +204,7 @@ export interface IConnectorResponseModel extends TJsonaModel {
 	id: string;
 	type: { source: string; type: string; entity: string };
 
+	category: ConnectorCategory;
 	identifier: string;
 	name: string | null;
 	comment: string | null;

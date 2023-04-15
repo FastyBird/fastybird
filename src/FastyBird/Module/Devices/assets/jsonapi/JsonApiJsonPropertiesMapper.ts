@@ -129,12 +129,12 @@ class JsonApiJsonPropertiesMapper extends JsonPropertiesMapper implements IJsonP
 		}
 
 		if (get(attributes, 'type.type') === PropertyType.DYNAMIC) {
-			attributes.actualValue = useNormalizeValue(attributes.dataType, String(attributes.actualValue), attributes.format);
-			attributes.expectedValue = useNormalizeValue(attributes.dataType, String(attributes.expectedValue), attributes.format);
+			attributes.actualValue = useNormalizeValue(attributes.dataType, attributes.actualValue, attributes.format, attributes.scale);
+			attributes.expectedValue = useNormalizeValue(attributes.dataType, attributes.expectedValue, attributes.format, attributes.scale);
 		}
 
 		if (get(attributes, 'type.type') === PropertyType.VARIABLE) {
-			attributes.value = useNormalizeValue(attributes.dataType, String(attributes.value), attributes.format);
+			attributes.value = useNormalizeValue(attributes.dataType, attributes.value, attributes.format, attributes.scale);
 		}
 
 		return attributes;

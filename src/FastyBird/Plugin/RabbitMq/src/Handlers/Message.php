@@ -17,6 +17,7 @@ namespace FastyBird\Plugin\RabbitMq\Handlers;
 
 use Bunny;
 use Evenement;
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumer;
 use FastyBird\Library\Exchange\Entities as ExchangeEntities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -81,7 +82,6 @@ final class Message extends Evenement\EventEmitter
 				$this->logger->warning('Received message is not in valid format', [
 					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_RABBITMQ,
 					'type' => 'messages-handler',
-					'group' => 'handler',
 				]);
 
 				return self::MESSAGE_REJECT;
@@ -91,11 +91,7 @@ final class Message extends Evenement\EventEmitter
 			$this->logger->warning('Received message is not valid json', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_RABBITMQ,
 				'type' => 'messages-handler',
-				'group' => 'handler',
-				'exception' => [
-					'message' => $ex->getMessage(),
-					'code' => $ex->getCode(),
-				],
+				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
 		}
 
@@ -112,12 +108,6 @@ final class Message extends Evenement\EventEmitter
 	): int
 	{
 		if ($senderId === $this->identifier->getIdentifier()) {
-			$this->logger->debug('Received message published by itself', [
-				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_RABBITMQ,
-				'type' => 'messages-handler',
-				'group' => 'handler',
-			]);
-
 			return self::MESSAGE_NACK;
 		}
 
@@ -134,11 +124,7 @@ final class Message extends Evenement\EventEmitter
 			$this->logger->error('Message could not be transformed into entity', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_RABBITMQ,
 				'type' => 'messages-handler',
-				'group' => 'handler',
-				'exception' => [
-					'message' => $ex->getMessage(),
-					'code' => $ex->getCode(),
-				],
+				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
 
 			return self::MESSAGE_REJECT;
@@ -160,11 +146,7 @@ final class Message extends Evenement\EventEmitter
 			$this->logger->error('Message could not be handled', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_RABBITMQ,
 				'type' => 'messages-handler',
-				'group' => 'handler',
-				'exception' => [
-					'message' => $ex->getMessage(),
-					'code' => $ex->getCode(),
-				],
+				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
 
 			return self::MESSAGE_REJECT;

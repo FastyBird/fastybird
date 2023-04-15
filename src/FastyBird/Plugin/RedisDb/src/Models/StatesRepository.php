@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:RedisDbPlugin!
  * @subpackage     Models
- * @since          0.1.0
+ * @since          1.0.0
  *
  * @date           02.03.20
  */
@@ -16,6 +16,7 @@
 namespace FastyBird\Plugin\RedisDb\Models;
 
 use Clue\React\Redis;
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\RedisDb\Clients;
 use FastyBird\Plugin\RedisDb\Exceptions;
@@ -96,14 +97,10 @@ class StatesRepository
 			$this->logger->error('Content could not be loaded', [
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
 				'type' => 'state-repository',
-				'group' => 'model',
 				'record' => [
 					'id' => $id->toString(),
 				],
-				'exception' => [
-					'message' => $ex->getMessage(),
-					'code' => $ex->getCode(),
-				],
+				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
 
 			throw new Exceptions\InvalidState('Content could not be loaded from database' . $ex->getMessage(), 0, $ex);

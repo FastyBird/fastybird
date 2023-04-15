@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:TriggersModule!
  * @subpackage     Router
- * @since          0.6.0
+ * @since          1.0.0
  *
  * @date           11.01.22
  */

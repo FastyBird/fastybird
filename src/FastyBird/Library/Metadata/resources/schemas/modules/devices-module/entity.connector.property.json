@@ -26,6 +26,11 @@
         "mapped"
       ]
     },
+    "category" : {
+      "type" : "string",
+      "enum": ["generic"],
+      "description" : "Property category"
+    },
     "identifier" : {
       "type" : "string",
       "description" : "Unique human readable identifier"
@@ -201,7 +206,18 @@
       ],
       "default" : null
     },
-    "number_of_decimals" : {
+    "scale" : {
+      "oneOf" : [
+        {
+          "type" : "null"
+        },
+        {
+          "type" : "number"
+        }
+      ],
+      "default" : null
+    },
+    "step" : {
       "oneOf" : [
         {
           "type" : "null"
@@ -262,22 +278,6 @@
           }
         ]
       },
-      "previous_value" : {
-        "oneOf" : [
-          {
-            "type" : "string"
-          },
-          {
-            "type" : "number"
-          },
-          {
-            "type" : "boolean"
-          },
-          {
-            "type" : "null"
-          }
-        ]
-      },
       "expected_value" : {
         "oneOf" : [
           {
@@ -321,6 +321,7 @@
     "required" : [
       "id",
       "type",
+      "category",
       "identifier",
       "settable",
       "queryable",
@@ -328,7 +329,8 @@
       "unit",
       "format",
       "invalid",
-      "number_of_decimals",
+      "scale",
+      "step",
       "connector"
     ]
   },
@@ -378,6 +380,7 @@
       "required" : [
         "id",
         "type",
+        "category",
         "identifier",
         "settable",
         "queryable",
@@ -385,7 +388,8 @@
         "unit",
         "format",
         "invalid",
-        "number_of_decimals",
+        "scale",
+        "step",
         "value",
         "default",
         "connector"
@@ -394,22 +398,6 @@
     "else" : {
       "properties" : {
         "actual_value" : {
-          "oneOf" : [
-            {
-              "type" : "string"
-            },
-            {
-              "type" : "number"
-            },
-            {
-              "type" : "boolean"
-            },
-            {
-              "type" : "null"
-            }
-          ]
-        },
-        "previous_value" : {
           "oneOf" : [
             {
               "type" : "string"
@@ -500,6 +488,7 @@
       "required" : [
         "id",
         "type",
+        "category",
         "identifier",
         "settable",
         "queryable",
@@ -507,7 +496,8 @@
         "unit",
         "format",
         "invalid",
-        "number_of_decimals",
+        "scale",
+        "step",
         "connector"
       ]
     }

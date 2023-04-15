@@ -7,6 +7,7 @@ import get from 'lodash/get';
 
 import exchangeEntitySchema from '@fastybird/metadata-library/resources/schemas/modules/devices-module/entity.device.json';
 import {
+	DeviceCategory,
 	DeviceEntity as ExchangeEntity,
 	DevicePropertyIdentifier,
 	DevicesModuleRoutes as RoutingKeys,
@@ -67,6 +68,7 @@ const recordFactory = async (data: IDeviceRecordFactoryPayload): Promise<IDevice
 
 		draft: get(data, 'draft', false),
 
+		category: data.category,
 		identifier: data.identifier,
 		name: get(data, 'name', null),
 		comment: get(data, 'comment', null),
@@ -340,6 +342,7 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 				...{
 					id: payload?.id,
 					type: payload?.type,
+					category: DeviceCategory.GENERIC,
 					draft: payload?.draft,
 					connectorId: payload.connector.id,
 					parents: payload.parents,
@@ -586,6 +589,7 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 					this.data[body.id] = await recordFactory({
 						...this.data[body.id],
 						...{
+							category: body.category,
 							name: body.name,
 							comment: body.comment,
 							connectorId: body.connector,

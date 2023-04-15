@@ -4,7 +4,8 @@ import { parse } from 'date-fns';
 export function useNormalizeValue(
 	dataType: DataType,
 	value: string | number | boolean | Date | null,
-	format?: string[] | (string | null)[][] | (number | null)[] | null
+	format?: string[] | (string | null)[][] | (number | null)[] | null,
+	scale?: number | null
 ): string | number | boolean | Date | null {
 	if (value === null) {
 		return null;
@@ -36,19 +37,51 @@ export function useNormalizeValue(
 		case DataType.USHORT:
 		case DataType.INT:
 		case DataType.UINT: {
-			const intValue = parseInt(String(value), 10);
+			if (scale) {
+				const floatValue = parseFloat(String(value));
 
-			if (Array.isArray(format) && format.length === 2) {
-				if (format[0] !== null && format[0] > intValue) {
-					return null;
+				if (Array.isArray(format) && format.length === 2) {
+					if (format[0] !== null) {
+						let minValue = parseFloat(String(format[0]));
+
+						for (let i = 0; i < scale; i++) {
+							minValue = minValue / 10;
+						}
+
+						if (minValue > floatValue) {
+							return null;
+						}
+					}
+
+					if (format[1] !== null) {
+						let minValue = parseFloat(String(format[1]));
+
+						for (let i = 0; i < scale; i++) {
+							minValue = minValue / 10;
+						}
+
+						if (minValue < floatValue) {
+							return null;
+						}
+					}
 				}
 
-				if (format[1] !== null && format[1] < intValue) {
-					return null;
+				return floatValue;
+			} else {
+				const intValue = parseInt(String(value), 10);
+
+				if (Array.isArray(format) && format.length === 2) {
+					if (format[0] !== null && format[0] > intValue) {
+						return null;
+					}
+
+					if (format[1] !== null && format[1] < intValue) {
+						return null;
+					}
 				}
+
+				return intValue;
 			}
-
-			return intValue;
 		}
 
 		case DataType.STRING:
@@ -81,9 +114,6 @@ export function useNormalizeValue(
 
 		case DataType.DATETIME:
 			return parse(String(value), "yyyy-MM-DD'T'HH:mm:ssxxx", new Date());
-
-		case DataType.COLOR:
-			break;
 
 		case DataType.BUTTON:
 			if (Object.values<string>(ButtonPayload).includes(String(value).toLowerCase())) {

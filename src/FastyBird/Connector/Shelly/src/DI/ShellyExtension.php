@@ -137,9 +137,6 @@ class ShellyExtension extends DI\CompilerExtension
 			->getResultDefinition()
 			->setType(Clients\Discovery::class);
 
-		$builder->addDefinition($this->prefix('api.entityFactory'), new DI\Definitions\ServiceDefinition())
-			->setType(API\EntityFactory::class);
-
 		$builder->addFactoryDefinition($this->prefix('api.gen1HttpApi'))
 			->setImplement(API\Gen1HttpApiFactory::class)
 			->getResultDefinition()
@@ -154,9 +151,6 @@ class ShellyExtension extends DI\CompilerExtension
 			->setImplement(API\WsApiFactory::class)
 			->getResultDefinition()
 			->setType(API\WsApi::class);
-
-		$builder->addDefinition($this->prefix('api.transformer'), new DI\Definitions\ServiceDefinition())
-			->setType(API\Transformer::class);
 
 		$builder->addDefinition(
 			$this->prefix('consumers.messages.device.status'),

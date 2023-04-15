@@ -17,6 +17,7 @@ namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
 use DateTimeInterface;
 use Exception;
+use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Types;
 use Nette;
@@ -41,18 +42,18 @@ final class DeviceCoverStatus implements Entities\API\Entity
 	public function __construct(
 		private readonly int $id,
 		private readonly string $source,
-		private readonly string|null $state,
-		private readonly float|null $apower,
-		private readonly float|null $voltage,
-		private readonly float|null $current,
-		private readonly float|null $pf,
+		private readonly string $state,
+		private readonly float|string $apower,
+		private readonly float|string $voltage,
+		private readonly float|string $current,
+		private readonly float|string $pf,
 		private readonly int|null $currentPos,
 		private readonly int|null $targetPos,
 		private readonly int|null $moveTimeout,
 		private readonly int|null $moveStartedAt,
 		private readonly bool $posControl,
-		private readonly ActiveEnergyStatusBlock|null $aenergy,
-		private readonly TemperatureBlockStatus|null $temperature,
+		private readonly ActiveEnergyStatusBlock|string $aenergy,
+		private readonly TemperatureBlockStatus|string $temperature,
 		private readonly array|Utils\ArrayHash $errors = [],
 	)
 	{
@@ -73,31 +74,31 @@ final class DeviceCoverStatus implements Entities\API\Entity
 		return $this->source;
 	}
 
-	public function getState(): Types\CoverPayload|null
+	public function getState(): Types\CoverPayload|string
 	{
-		if ($this->state !== null && Types\CoverPayload::isValidValue($this->state)) {
+		if (Types\CoverPayload::isValidValue($this->state)) {
 			return Types\CoverPayload::get($this->state);
 		}
 
-		return null;
+		return Shelly\Constants::VALUE_NOT_AVAILABLE;
 	}
 
-	public function getActivePower(): float|null
+	public function getActivePower(): float|string
 	{
 		return $this->apower;
 	}
 
-	public function getVoltage(): float|null
+	public function getVoltage(): float|string
 	{
 		return $this->voltage;
 	}
 
-	public function getCurrent(): float|null
+	public function getCurrent(): float|string
 	{
 		return $this->current;
 	}
 
-	public function getPowerFactor(): float|null
+	public function getPowerFactor(): float|string
 	{
 		return $this->pf;
 	}
@@ -134,12 +135,12 @@ final class DeviceCoverStatus implements Entities\API\Entity
 		return $this->posControl;
 	}
 
-	public function getActiveEnergy(): ActiveEnergyStatusBlock|null
+	public function getActiveEnergy(): ActiveEnergyStatusBlock|string
 	{
 		return $this->aenergy;
 	}
 
-	public function getTemperature(): TemperatureBlockStatus|null
+	public function getTemperature(): TemperatureBlockStatus|string
 	{
 		return $this->temperature;
 	}
@@ -163,7 +164,7 @@ final class DeviceCoverStatus implements Entities\API\Entity
 			'id' => $this->getId(),
 			'type' => $this->getType()->getValue(),
 			'source' => $this->getSource(),
-			'state' => $this->getState()?->getValue(),
+			'state' => $this->getState() instanceof Types\CoverPayload ? $this->getState()->getValue() : null,
 			'active_power' => $this->getActivePower(),
 			'voltage' => $this->getVoltage(),
 			'current' => $this->getCurrent(),
@@ -173,8 +174,8 @@ final class DeviceCoverStatus implements Entities\API\Entity
 			'move_timeout' => $this->getMoveTimeout(),
 			'move_started_at' => $this->getMoveStartedAt()?->format(DateTimeInterface::ATOM),
 			'has_position_control' => $this->hasPositionControl(),
-			'active_energy' => $this->getActiveEnergy()?->toArray(),
-			'temperature' => $this->getTemperature()?->toArray(),
+			'active_energy' => $this->getActiveEnergy() instanceof ActiveEnergyStatusBlock ? $this->getActiveEnergy()->toArray() : null,
+			'temperature' => $this->getTemperature() instanceof TemperatureBlockStatus ? $this->getTemperature()->toArray() : null,
 			'errors' => $this->getErrors(),
 		];
 	}

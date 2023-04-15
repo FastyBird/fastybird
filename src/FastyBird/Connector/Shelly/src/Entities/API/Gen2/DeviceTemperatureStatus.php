@@ -38,8 +38,8 @@ final class DeviceTemperatureStatus implements Entities\API\Entity
 	 */
 	public function __construct(
 		private readonly int $id,
-		private readonly float|null $tC,
-		private readonly float|null $tF,
+		private readonly float|string|null $tC,
+		private readonly float|string|null $tF,
 		private readonly array|Utils\ArrayHash $errors = [],
 	)
 	{
@@ -55,12 +55,12 @@ final class DeviceTemperatureStatus implements Entities\API\Entity
 		return Types\ComponentType::get(Types\ComponentType::TYPE_TEMPERATURE);
 	}
 
-	public function getTemperatureCelsius(): float|null
+	public function getTemperatureCelsius(): float|string|null
 	{
 		return $this->tC;
 	}
 
-	public function getTemperatureFahrenheit(): float|null
+	public function getTemperatureFahrenheit(): float|string|null
 	{
 		return $this->tF;
 	}

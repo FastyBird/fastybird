@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:RedisDbDevicesModuleBridge!
  * @subpackage     States
- * @since          0.1.0
+ * @since          1.0.0
  *
  * @date           20.10.22
  */
@@ -21,6 +21,7 @@ use DateTimeInterface;
 use Exception;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\States as DevicesStates;
+use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use FastyBird\Plugin\RedisDb\States as RedisDbStates;
 use Nette\Utils;
 use function array_merge;
@@ -161,8 +162,8 @@ class Property extends RedisDbStates\State implements DevicesStates\Property
 	public function toArray(): array
 	{
 		return array_merge([
-			'actual_value' => $this->getActualValue(),
-			'expected_value' => $this->getExpectedValue(),
+			'actual_value' => DevicesUtilities\ValueHelper::flattenValue($this->getActualValue()),
+			'expected_value' => DevicesUtilities\ValueHelper::flattenValue($this->getExpectedValue()),
 			'pending' => $this->getPending() instanceof DateTimeInterface ? $this->getPending()->format(
 				DateTimeInterface::ATOM,
 			) : $this->getPending(),

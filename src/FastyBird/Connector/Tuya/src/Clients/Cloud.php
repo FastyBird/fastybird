@@ -23,10 +23,13 @@ use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Writers;
 use FastyBird\DateTimeFactory;
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use InvalidArgumentException;
 use Nette;
@@ -89,6 +92,7 @@ final class Cloud implements Client
 		API\OpenApiFactory $openApiApiFactory,
 		API\OpenPulsarFactory $openPulsarApiFactory,
 		private readonly Writers\Writer $writer,
+		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
@@ -131,7 +135,7 @@ final class Cloud implements Client
 						$message->getIdentifier(),
 						array_map(
 							static fn (Entities\API\DataPointStatus $dps): Entities\Messages\DataPointStatus => new Entities\Messages\DataPointStatus(
-								$dps->getIdentifier(),
+								$dps->getCode(),
 								$dps->getValue(),
 							),
 							$message->getDataPoints(),
@@ -242,7 +246,10 @@ final class Cloud implements Client
 			$this->openApiApi->connect();
 		}
 
-		foreach ($this->connector->getDevices() as $device) {
+		$findDevicesQuery = new DevicesQueries\FindDevices();
+		$findDevicesQuery->forConnector($this->connector);
+
+		foreach ($this->devicesRepository->findAllBy($findDevicesQuery, Entities\TuyaDevice::class) as $device) {
 			assert($device instanceof Entities\TuyaDevice);
 
 			if (
@@ -332,11 +339,7 @@ final class Cloud implements Client
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'cloud-client',
-						'group' => 'client',
-						'exception' => [
-							'message' => $ex->getMessage(),
-							'code' => $ex->getCode(),
-						],
+						'exception' => BootstrapHelpers\Logger::buildException($ex),
 						'connector' => [
 							'id' => $this->connector->getPlainId(),
 						],
@@ -410,11 +413,7 @@ final class Cloud implements Client
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 							'type' => 'cloud-client',
-							'group' => 'client',
-							'exception' => [
-								'message' => $ex->getMessage(),
-								'code' => $ex->getCode(),
-							],
+							'exception' => BootstrapHelpers\Logger::buildException($ex),
 							'connector' => [
 								'id' => $this->connector->getPlainId(),
 							],

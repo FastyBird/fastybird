@@ -8,7 +8,7 @@
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:MetadataLibrary!
  * @subpackage     Entities
- * @since          0.57.0
+ * @since          1.0.0
  *
  * @date           02.06.22
  */
@@ -42,6 +42,7 @@ final class ChannelDynamicProperty extends DynamicProperty
 		string $id,
 		string $channel,
 		string $type,
+		string $category,
 		string $identifier,
 		string|null $name,
 		bool $settable,
@@ -50,7 +51,8 @@ final class ChannelDynamicProperty extends DynamicProperty
 		string|null $unit = null,
 		array|null $format = null,
 		string|int|float|null $invalid = null,
-		int|null $numberOfDecimals = null,
+		int|null $scale = null,
+		int|null $step = null,
 		float|bool|int|string|null $actualValue = null,
 		float|bool|int|string|null $previousValue = null,
 		float|bool|int|string|null $expectedValue = null,
@@ -64,6 +66,7 @@ final class ChannelDynamicProperty extends DynamicProperty
 		parent::__construct(
 			$id,
 			$type,
+			$category,
 			$identifier,
 			$name,
 			$settable,
@@ -72,7 +75,8 @@ final class ChannelDynamicProperty extends DynamicProperty
 			$unit,
 			$format,
 			$invalid,
-			$numberOfDecimals,
+			$scale,
+			$step,
 			$actualValue,
 			$previousValue,
 			$expectedValue,

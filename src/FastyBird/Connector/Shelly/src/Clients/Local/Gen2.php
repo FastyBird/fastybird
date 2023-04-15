@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\Shelly\Clients\Local;
 
+use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\API;
 use FastyBird\Connector\Shelly\Consumers;
 use FastyBird\Connector\Shelly\Entities;
@@ -33,7 +34,6 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *
- * @property-read API\Transformer $transformer
  * @property-read Consumers\Messages $consumer
  */
 trait Gen2
@@ -60,10 +60,10 @@ trait Gen2
 						),
 					);
 
-					if ($property !== null && $component->getOutput() !== null) {
+					if ($property !== null && $component->getOutput() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
 						$result[] = new Entities\Messages\PropertyStatus(
 							$property->getIdentifier(),
-							$this->transformer->transformValueFromDevice(
+							API\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$component->getOutput(),
@@ -82,10 +82,10 @@ trait Gen2
 						),
 					);
 
-					if ($property !== null && $component->getState() !== null) {
+					if ($property !== null && $component->getState() instanceof Types\CoverPayload) {
 						$result[] = new Entities\Messages\PropertyStatus(
 							$property->getIdentifier(),
-							$this->transformer->transformValueFromDevice(
+							API\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								strval($component->getState()->getValue()),
@@ -107,7 +107,7 @@ trait Gen2
 					if ($property !== null) {
 						$result[] = new Entities\Messages\PropertyStatus(
 							$property->getIdentifier(),
-							$this->transformer->transformValueFromDevice(
+							API\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$component->getCurrentPosition(),
@@ -126,10 +126,10 @@ trait Gen2
 						),
 					);
 
-					if ($property !== null && $component->getOutput() !== null) {
+					if ($property !== null && $component->getOutput() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
 						$result[] = new Entities\Messages\PropertyStatus(
 							$property->getIdentifier(),
-							$this->transformer->transformValueFromDevice(
+							API\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$component->getOutput(),
@@ -148,10 +148,10 @@ trait Gen2
 						),
 					);
 
-					if ($property !== null) {
+					if ($property !== null && $component->getBrightness() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
 						$result[] = new Entities\Messages\PropertyStatus(
 							$property->getIdentifier(),
-							$this->transformer->transformValueFromDevice(
+							API\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$component->getBrightness(),
@@ -179,7 +179,7 @@ trait Gen2
 
 						$result[] = new Entities\Messages\PropertyStatus(
 							$property->getIdentifier(),
-							$this->transformer->transformValueFromDevice(
+							API\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$value,
@@ -198,10 +198,13 @@ trait Gen2
 						),
 					);
 
-					if ($property !== null) {
+					if (
+						$property !== null
+						&& $component->getTemperatureCelsius() !== Shelly\Constants::VALUE_NOT_AVAILABLE
+					) {
 						$result[] = new Entities\Messages\PropertyStatus(
 							$property->getIdentifier(),
-							$this->transformer->transformValueFromDevice(
+							API\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$component->getTemperatureCelsius(),
@@ -220,10 +223,13 @@ trait Gen2
 						),
 					);
 
-					if ($property !== null) {
+					if (
+						$property !== null
+						&& $component->getTemperatureFahrenheit() !== Shelly\Constants::VALUE_NOT_AVAILABLE
+					) {
 						$result[] = new Entities\Messages\PropertyStatus(
 							$property->getIdentifier(),
-							$this->transformer->transformValueFromDevice(
+							API\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$component->getTemperatureFahrenheit(),
@@ -240,10 +246,13 @@ trait Gen2
 						),
 					);
 
-					if ($property !== null) {
+					if (
+						$property !== null
+						&& $component->getRelativeHumidity() !== Shelly\Constants::VALUE_NOT_AVAILABLE
+					) {
 						$result[] = new Entities\Messages\PropertyStatus(
 							$property->getIdentifier(),
-							$this->transformer->transformValueFromDevice(
+							API\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$component->getRelativeHumidity(),
@@ -267,10 +276,10 @@ trait Gen2
 						),
 					);
 
-					if ($property !== null) {
+					if ($property !== null && $component->getActivePower() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
 						$result[] = new Entities\Messages\PropertyStatus(
 							$property->getIdentifier(),
-							$this->transformer->transformValueFromDevice(
+							API\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$component->getActivePower(),
@@ -289,10 +298,10 @@ trait Gen2
 						),
 					);
 
-					if ($property !== null) {
+					if ($property !== null && $component->getPowerFactor() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
 						$result[] = new Entities\Messages\PropertyStatus(
 							$property->getIdentifier(),
-							$this->transformer->transformValueFromDevice(
+							API\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$component->getPowerFactor(),
@@ -311,13 +320,16 @@ trait Gen2
 						),
 					);
 
-					if ($property !== null) {
+					if (
+						$property !== null
+						&& $component->getActiveEnergy() instanceof Entities\API\Gen2\ActiveEnergyStatusBlock
+					) {
 						$result[] = new Entities\Messages\PropertyStatus(
 							$property->getIdentifier(),
-							$this->transformer->transformValueFromDevice(
+							API\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
-								$component->getActiveEnergy()?->getTotal(),
+								$component->getActiveEnergy()->getTotal(),
 							),
 						);
 					}
@@ -333,10 +345,10 @@ trait Gen2
 						),
 					);
 
-					if ($property !== null) {
+					if ($property !== null && $component->getCurrent() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
 						$result[] = new Entities\Messages\PropertyStatus(
 							$property->getIdentifier(),
-							$this->transformer->transformValueFromDevice(
+							API\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$component->getCurrent(),
@@ -355,10 +367,10 @@ trait Gen2
 						),
 					);
 
-					if ($property !== null) {
+					if ($property !== null && $component->getVoltage() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
 						$result[] = new Entities\Messages\PropertyStatus(
 							$property->getIdentifier(),
-							$this->transformer->transformValueFromDevice(
+							API\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$component->getVoltage(),
@@ -377,13 +389,16 @@ trait Gen2
 						),
 					);
 
-					if ($property !== null) {
+					if (
+						$property !== null
+						&& $component->getTemperature() instanceof Entities\API\Gen2\TemperatureBlockStatus
+					) {
 						$result[] = new Entities\Messages\PropertyStatus(
 							$property->getIdentifier(),
-							$this->transformer->transformValueFromDevice(
+							API\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
-								$component->getTemperature()?->getTemperatureCelsius(),
+								$component->getTemperature()->getTemperatureCelsius(),
 							),
 						);
 					}
