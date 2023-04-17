@@ -227,7 +227,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 				Utils\Json::encode(
 					array_merge(
 						$state?->toArray() ?? [],
-							$property->toArray(),
+						$property->toArray(),
 					),
 				),
 				$routingKey,
