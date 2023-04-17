@@ -261,8 +261,8 @@ final class ModuleEntities implements Common\EventSubscriber
 						$this->entityFactory->create(
 							Utils\Json::encode(
 								array_merge(
-									$entity->toArray(),
 									$state?->toArray() ?? [],
+									$entity->toArray(),
 								),
 							),
 							$publishRoutingKey,
@@ -286,8 +286,8 @@ final class ModuleEntities implements Common\EventSubscriber
 						$this->entityFactory->create(
 							Utils\Json::encode(
 								array_merge(
-									$entity->toArray(),
 									$state?->toArray() ?? [],
+									$entity->toArray(),
 								),
 							),
 							$publishRoutingKey,
@@ -311,8 +311,8 @@ final class ModuleEntities implements Common\EventSubscriber
 						$this->entityFactory->create(
 							Utils\Json::encode(
 								array_merge(
-									$entity->toArray(),
 									$state?->toArray() ?? [],
+									$entity->toArray(),
 								),
 							),
 							$publishRoutingKey,

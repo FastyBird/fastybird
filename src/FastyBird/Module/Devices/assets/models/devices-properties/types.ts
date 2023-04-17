@@ -167,7 +167,7 @@ interface IDevicePropertyResponseDataAttributes {
 
 	actual_value: string | number | boolean | null;
 	expected_value: string | number | boolean | null;
-	pending: boolean;
+	pending: boolean | Date | null;
 }
 
 interface IDevicePropertyResponseDataRelationships extends TJsonApiRelationships {

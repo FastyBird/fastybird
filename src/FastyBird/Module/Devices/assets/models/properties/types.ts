@@ -42,7 +42,7 @@ export interface IProperty {
 	/* Dynamic property start */
 	actualValue: string | number | boolean | Date | null;
 	expectedValue: string | number | boolean | Date | null;
-	pending: boolean;
+	pending: boolean | Date | null;
 
 	command: PropertyCommandState | null;
 	lastResult: PropertyCommandResult | null;
@@ -80,7 +80,7 @@ export interface IPropertyRecordFactoryPayload {
 	/* Dynamic property start */
 	actualValue?: string | number | boolean | Date | null;
 	expectedValue?: string | number | boolean | Date | null;
-	pending?: boolean;
+	pending?: boolean | Date | null;
 
 	command?: PropertyCommandState | null;
 	lastResult?: PropertyCommandResult | null;
@@ -138,7 +138,7 @@ export interface IPropertiesEditActionPayload {
 		/* Dynamic property start */
 		actualValue?: string | number | boolean | Date | null;
 		expectedValue?: string | number | boolean | Date | null;
-		pending?: boolean;
+		pending?: boolean | Date | null;
 
 		command?: PropertyCommandState | null;
 		lastResult?: PropertyCommandResult | null;
@@ -153,7 +153,7 @@ export interface IPropertiesSetStateActionPayload {
 	data: {
 		actualValue?: string | number | boolean | Date | null;
 		expectedValue?: string | number | boolean | Date | null;
-		pending?: boolean;
+		pending?: boolean | Date | null;
 
 		command?: PropertyCommandState | null;
 		lastResult?: PropertyCommandResult | null;
@@ -184,7 +184,7 @@ export interface IPropertyResponseModel extends TJsonaModel {
 
 	actualValue: string | number | boolean | Date | null;
 	expectedValue: string | number | boolean | Date | null;
-	pending: boolean;
+	pending: boolean | Date | null;
 
 	// Relations
 	relationshipNames: string[];

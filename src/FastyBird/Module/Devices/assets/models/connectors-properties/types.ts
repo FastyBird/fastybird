@@ -154,7 +154,7 @@ interface IConnectorPropertyResponseDataAttributes {
 
 	actual_value: string | number | boolean | null;
 	expected_value: string | number | boolean | null;
-	pending: boolean;
+	pending: boolean | Date | null;
 }
 
 interface IConnectorPropertyResponseDataRelationships extends TJsonApiRelationships {

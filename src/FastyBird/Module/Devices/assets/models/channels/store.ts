@@ -4,6 +4,7 @@ import { Jsona } from 'jsona';
 import Ajv from 'ajv/dist/2020';
 import { v4 as uuid } from 'uuid';
 import get from 'lodash/get';
+import isEqual from 'lodash/isEqual';
 
 import exchangeEntitySchema from '@fastybird/metadata-library/resources/schemas/modules/devices-module/entity.channel.json';
 import { ChannelCategory, ChannelEntity as ExchangeEntity, DevicesModuleRoutes as RoutingKeys, ModulePrefix } from '@fastybird/metadata-library';
@@ -570,7 +571,7 @@ export const useChannels = defineStore<string, IChannelsState, IChannelsGetters,
 				}
 
 				if (body.id in this.data) {
-					this.data[body.id] = await recordFactory({
+					const record = await recordFactory({
 						...this.data[body.id],
 						...{
 							category: body.category,
@@ -579,6 +580,10 @@ export const useChannels = defineStore<string, IChannelsState, IChannelsGetters,
 							deviceId: body.device,
 						},
 					});
+
+					if (!isEqual(JSON.parse(JSON.stringify(this.data[body.id])), JSON.parse(JSON.stringify(record)))) {
+						this.data[body.id] = record;
+					}
 				} else {
 					const devicesStore = useDevices();
 

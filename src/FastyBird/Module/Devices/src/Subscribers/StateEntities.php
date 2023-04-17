@@ -190,7 +190,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	{
 		if (
 			$property instanceof MetadataEntities\DevicesModule\ConnectorDynamicProperty
-			|| $property instanceof Entities\Connectors\Properties\Property
+			|| $property instanceof Entities\Connectors\Properties\Dynamic
 		) {
 			$routingKey = MetadataTypes\RoutingKey::get(
 				MetadataTypes\RoutingKey::ROUTE_CONNECTOR_PROPERTY_ENTITY_REPORTED,
@@ -199,7 +199,8 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 		} elseif (
 			$property instanceof MetadataEntities\DevicesModule\DeviceDynamicProperty
 			|| $property instanceof MetadataEntities\DevicesModule\DeviceMappedProperty
-			|| $property instanceof Entities\Devices\Properties\Property
+			|| $property instanceof Entities\Devices\Properties\Dynamic
+			|| $property instanceof Entities\Devices\Properties\Mapped
 		) {
 			$routingKey = MetadataTypes\RoutingKey::get(
 				MetadataTypes\RoutingKey::ROUTE_DEVICE_PROPERTY_ENTITY_REPORTED,
@@ -208,7 +209,8 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 		} elseif (
 			$property instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty
 			|| $property instanceof MetadataEntities\DevicesModule\ChannelMappedProperty
-			|| $property instanceof Entities\Channels\Properties\Property
+			|| $property instanceof Entities\Channels\Properties\Dynamic
+			|| $property instanceof Entities\Channels\Properties\Mapped
 		) {
 			$routingKey = MetadataTypes\RoutingKey::get(
 				MetadataTypes\RoutingKey::ROUTE_CHANNEL_PROPERTY_ENTITY_REPORTED,
@@ -224,8 +226,8 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 			$this->entityFactory->create(
 				Utils\Json::encode(
 					array_merge(
-						$property->toArray(),
 						$state?->toArray() ?? [],
+						$property->toArray(),
 					),
 				),
 				$routingKey,
