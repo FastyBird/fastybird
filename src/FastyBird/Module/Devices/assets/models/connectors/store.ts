@@ -4,6 +4,7 @@ import { Jsona } from 'jsona';
 import Ajv from 'ajv/dist/2020';
 import { v4 as uuid } from 'uuid';
 import get from 'lodash/get';
+import isEqual from 'lodash/isEqual';
 
 import exchangeEntitySchema from '@fastybird/metadata-library/resources/schemas/modules/devices-module/entity.connector.json';
 import {
@@ -513,7 +514,7 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 				}
 
 				if (body.id in this.data) {
-					this.data[body.id] = recordFactory({
+					const record = recordFactory({
 						...this.data[body.id],
 						...{
 							category: body.category,
@@ -523,6 +524,10 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 							owner: body.owner,
 						},
 					});
+
+					if (!isEqual(JSON.parse(JSON.stringify(this.data[body.id])), JSON.parse(JSON.stringify(record)))) {
+						this.data[body.id] = record;
+					}
 				} else {
 					try {
 						await this.get({ id: body.id });

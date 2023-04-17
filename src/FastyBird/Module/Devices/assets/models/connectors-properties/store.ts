@@ -4,6 +4,7 @@ import { Jsona } from 'jsona';
 import Ajv from 'ajv/dist/2020';
 import { v4 as uuid } from 'uuid';
 import get from 'lodash/get';
+import isEqual from 'lodash/isEqual';
 
 import exchangeEntitySchema from '@fastybird/metadata-library/resources/schemas/modules/devices-module/entity.connector.property.json';
 import {
@@ -84,7 +85,7 @@ const recordFactory = async (data: IConnectorPropertyRecordFactoryPayload): Prom
 		value: get(data, 'value', null),
 		actualValue: get(data, 'actualValue', null),
 		expectedValue: get(data, 'expectedValue', null),
-		pending: get(data, 'pending', false),
+		pending: get(data, 'pending', null),
 		command: get(data, 'command', null),
 		lastResult: get(data, 'lastResult', null),
 		backupValue: get(data, 'backup', null),
@@ -550,7 +551,7 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 					}
 
 					if (body.id in this.data) {
-						this.data[body.id] = await recordFactory({
+						const record = await recordFactory({
 							...this.data[body.id],
 							...{
 								category: body.category,
@@ -570,6 +571,10 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 								connectorId: body.connector,
 							},
 						});
+
+						if (!isEqual(JSON.parse(JSON.stringify(this.data[body.id])), JSON.parse(JSON.stringify(record)))) {
+							this.data[body.id] = record;
+						}
 					} else {
 						const connectorsStore = useConnectors();
 

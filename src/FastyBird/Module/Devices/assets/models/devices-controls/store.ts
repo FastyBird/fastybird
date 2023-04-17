@@ -4,6 +4,7 @@ import { Jsona } from 'jsona';
 import Ajv from 'ajv/dist/2020';
 import { v4 as uuid } from 'uuid';
 import get from 'lodash/get';
+import isEqual from 'lodash/isEqual';
 
 import exchangeEntitySchema from '@fastybird/metadata-library/resources/schemas/modules/devices-module/entity.device.control.json';
 import { DeviceControlEntity as ExchangeEntity, DevicesModuleRoutes as RoutingKeys, ModulePrefix } from '@fastybird/metadata-library';
@@ -416,7 +417,7 @@ export const useDeviceControls = defineStore<string, IDeviceControlsState, IDevi
 					}
 				} else {
 					if (body.id in this.data) {
-						this.data[body.id] = await recordFactory({
+						const record = await recordFactory({
 							...this.data[body.id],
 							...{
 								id: body.id,
@@ -424,6 +425,10 @@ export const useDeviceControls = defineStore<string, IDeviceControlsState, IDevi
 								deviceId: body.device,
 							},
 						});
+
+						if (!isEqual(JSON.parse(JSON.stringify(this.data[body.id])), JSON.parse(JSON.stringify(record)))) {
+							this.data[body.id] = record;
+						}
 					} else {
 						const devicesStore = useDevices();
 
