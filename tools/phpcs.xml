@@ -33,9 +33,6 @@
                 <element key="src/FastyBird/Bridge/RedisDbTriggersModule/tests/cases/unit" value="FastyBird\Bridge\RedisDbTriggersModule\Tests\Cases\Unit"/>
                 <element key="src/FastyBird/Bridge/RedisDbTriggersModule/tests/tools" value="FastyBird\Bridge\RedisDbTriggersModule\Tests\Tools"/>
 
-                <element key="src/FastyBird/Bridge/WsExchangeDevicesModule/src" value="FastyBird\Bridge\WsExchangeDevicesModule"/>
-                <element key="src/FastyBird/Bridge/WsExchangeDevicesModule/tests/cases/unit" value="FastyBird\Bridge\WsExchangeDevicesModule\Tests\Cases\Unit"/>
-
                 <element key="src/FastyBird/Connector/FbMqtt/src" value="FastyBird\Connector\FbMqtt"/>
                 <element key="src/FastyBird/Connector/FbMqtt/tests/cases/unit" value="FastyBird\Connector\FbMqtt\Tests\Cases\Unit"/>
                 <element key="src/FastyBird/Connector/FbMqtt/tests/tools" value="FastyBird\Connector\FbMqtt\Tests\Tools"/>

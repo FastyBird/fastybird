@@ -19,6 +19,7 @@ use Doctrine\Persistence;
 use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
 use FastyBird\Library\Exchange\DI as ExchangeDI;
 use FastyBird\Library\Exchange\Exchange as ExchangeExchange;
+use FastyBird\Library\Metadata;
 use FastyBird\Module\Devices\Commands;
 use FastyBird\Module\Devices\Connectors;
 use FastyBird\Module\Devices\Consumers;
@@ -39,6 +40,7 @@ use Nette\PhpGenerator;
 use Nette\Schema;
 use stdClass;
 use function assert;
+use function class_exists;
 use function is_string;
 use function ucfirst;
 use const DIRECTORY_SEPARATOR;
@@ -208,6 +210,10 @@ class DevicesExtension extends DI\CompilerExtension
 
 		$builder->addDefinition($this->prefix('controllers.deviceProperties'), new DI\Definitions\ServiceDefinition())
 			->setType(Controllers\DevicePropertiesV1::class)
+			->addTag('nette.inject');
+
+		$builder->addDefinition($this->prefix('controllers.exchange'), new DI\Definitions\ServiceDefinition())
+			->setType(Controllers\ExchangeV1::class)
 			->addTag('nette.inject');
 
 		$builder->addDefinition(
@@ -530,6 +536,48 @@ class DevicesExtension extends DI\CompilerExtension
 						$connectorExecutorFactoryService->getTag(self::CONNECTOR_TYPE_TAG),
 					]);
 				}
+			}
+		}
+
+		/**
+		 * WebSockets
+		 */
+
+		if (class_exists('IPub\WebSockets\Application\Controller\ControllerFactory')) {
+			try {
+				$wsControllerFactory = $builder->getDefinitionByType(
+					'IPub\WebSockets\Application\Controller\ControllerFactory',
+				);
+
+				if ($wsControllerFactory instanceof DI\Definitions\ServiceDefinition) {
+					$wsControllerFactory->addSetup(
+						'setMapping',
+						[
+							[
+								'DevicesModule' => 'FastyBird\\Module\\Devices\\Controllers\\*V1',
+							],
+						],
+					);
+				}
+			} catch (DI\MissingServiceException) {
+				// WS service is not registered
+			}
+		}
+
+		if (class_exists('IPub\WebSockets\Router\RouteList')) {
+			try {
+				$wsRouteList = $builder->getDefinitionByType('IPub\WebSockets\Router\RouteList');
+
+				if ($wsRouteList instanceof DI\Definitions\ServiceDefinition) {
+					$wsRouteList->addSetup(
+						'$service[] = new IPub\WebSockets\Router\Route(?, ?);',
+						[
+							'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/exchange', 'Exchange:',
+						],
+					);
+				}
+			} catch (DI\MissingServiceException) {
+				// WS service is not registered
 			}
 		}
 	}
