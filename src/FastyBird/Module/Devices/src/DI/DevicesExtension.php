@@ -463,9 +463,14 @@ class DevicesExtension extends DI\CompilerExtension
 			->setType(Consumers\State::class)
 			->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATUS, false);
 
-		$builder->addDefinition($this->prefix('exchange.consumer.sockets'), new DI\Definitions\ServiceDefinition())
-			->setType(Consumers\Sockets::class)
-			->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATUS, false);
+		if (
+			$builder->findByType('IPub\WebSockets\Router\LinkGenerator') !== []
+			&& $builder->findByType('IPub\WebSocketsWAMP\Topics\IStorage') !== []
+		) {
+			$builder->addDefinition($this->prefix('exchange.consumer.sockets'), new DI\Definitions\ServiceDefinition())
+				->setType(Consumers\Sockets::class)
+				->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATUS, false);
+		}
 
 		$builder->addDefinition($this->prefix('commands.initialize'), new DI\Definitions\ServiceDefinition())
 			->setType(Commands\Initialize::class);
