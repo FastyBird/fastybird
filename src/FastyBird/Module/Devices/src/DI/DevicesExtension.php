@@ -554,34 +554,39 @@ class DevicesExtension extends DI\CompilerExtension
 		 */
 
 		if (class_exists('IPub\WebSockets\DI\WebSocketsExtension')) {
-			$wsControllerFactoryService = $builder->getDefinitionByType(
-				'IPub\WebSockets\Application\Controller\IControllerFactory',
-			);
-			assert($wsControllerFactoryService instanceof DI\Definitions\ServiceDefinition);
+			try {
+				$wsControllerFactoryService = $builder->getDefinitionByType(
+					'IPub\WebSockets\Application\Controller\IControllerFactory',
+				);
+				assert($wsControllerFactoryService instanceof DI\Definitions\ServiceDefinition);
 
-			$wsControllerFactoryService->addSetup(
-				'setMapping',
-				[
+				$wsControllerFactoryService->addSetup(
+					'setMapping',
 					[
-						'DevicesModule' => ['FastyBird\\Module\\Devices\\Controllers', '*', '*V1'],
+						[
+							'DevicesModule' => ['FastyBird\\Module\\Devices\\Controllers', '*', '*V1'],
+						],
 					],
-				],
-			);
+				);
 
-			$consumerService = $builder->getDefinitionByType(ExchangeConsumers\Container::class);
-			assert($consumerService instanceof DI\Definitions\ServiceDefinition);
+				$consumerService = $builder->getDefinitionByType(ExchangeConsumers\Container::class);
+				assert($consumerService instanceof DI\Definitions\ServiceDefinition);
 
-			$wsServerService = $builder->getDefinitionByType('IPub\WebSockets\Server\Server');
-			assert($wsServerService instanceof DI\Definitions\ServiceDefinition);
+				$wsServerService = $builder->getDefinitionByType('IPub\WebSockets\Server\Server');
+				assert($wsServerService instanceof DI\Definitions\ServiceDefinition);
 
-			$wsServerService->addSetup(
-				'?->onCreate[] = function() {?->enable(?);}',
-				[
-					'@self',
-					$consumerService,
-					Consumers\Sockets::class,
-				],
-			);
+				$wsServerService->addSetup(
+					'?->onCreate[] = function() {?->enable(?);}',
+					[
+						'@self',
+						$consumerService,
+						Consumers\Sockets::class,
+					],
+				);
+
+			} catch (DI\MissingServiceException) {
+				// Extension is not registered
+			}
 		}
 	}
 
