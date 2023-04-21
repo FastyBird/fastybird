@@ -99,8 +99,8 @@ class Channel extends JsonApiSchemas\JsonApi
 			$this->router->urlFor(
 				Devices\Constants::ROUTE_NAME_CHANNEL,
 				[
-					Router\Routes::URL_DEVICE_ID => $resource->getDevice()->getPlainId(),
-					Router\Routes::URL_ITEM_ID => $resource->getPlainId(),
+					Router\ApiRoutes::URL_DEVICE_ID => $resource->getDevice()->getPlainId(),
+					Router\ApiRoutes::URL_ITEM_ID => $resource->getPlainId(),
 				],
 			),
 			false,
@@ -154,8 +154,8 @@ class Channel extends JsonApiSchemas\JsonApi
 				$this->router->urlFor(
 					Devices\Constants::ROUTE_NAME_CHANNEL_PROPERTIES,
 					[
-						Router\Routes::URL_DEVICE_ID => $resource->getDevice()->getPlainId(),
-						Router\Routes::URL_CHANNEL_ID => $resource->getPlainId(),
+						Router\ApiRoutes::URL_DEVICE_ID => $resource->getDevice()->getPlainId(),
+						Router\ApiRoutes::URL_CHANNEL_ID => $resource->getPlainId(),
 					],
 				),
 				true,
@@ -169,8 +169,8 @@ class Channel extends JsonApiSchemas\JsonApi
 				$this->router->urlFor(
 					Devices\Constants::ROUTE_NAME_CHANNEL_CONTROLS,
 					[
-						Router\Routes::URL_DEVICE_ID => $resource->getDevice()->getPlainId(),
-						Router\Routes::URL_CHANNEL_ID => $resource->getPlainId(),
+						Router\ApiRoutes::URL_DEVICE_ID => $resource->getDevice()->getPlainId(),
+						Router\ApiRoutes::URL_CHANNEL_ID => $resource->getPlainId(),
 					],
 				),
 				true,
@@ -184,7 +184,7 @@ class Channel extends JsonApiSchemas\JsonApi
 				$this->router->urlFor(
 					Devices\Constants::ROUTE_NAME_DEVICE,
 					[
-						Router\Routes::URL_ITEM_ID => $resource->getDevice()->getPlainId(),
+						Router\ApiRoutes::URL_ITEM_ID => $resource->getDevice()->getPlainId(),
 					],
 				),
 				false,
@@ -213,9 +213,9 @@ class Channel extends JsonApiSchemas\JsonApi
 				$this->router->urlFor(
 					Devices\Constants::ROUTE_NAME_CHANNEL_RELATIONSHIP,
 					[
-						Router\Routes::URL_DEVICE_ID => $resource->getDevice()->getPlainId(),
-						Router\Routes::URL_ITEM_ID => $resource->getPlainId(),
-						Router\Routes::RELATION_ENTITY => $name,
+						Router\ApiRoutes::URL_DEVICE_ID => $resource->getDevice()->getPlainId(),
+						Router\ApiRoutes::URL_ITEM_ID => $resource->getPlainId(),
+						Router\ApiRoutes::RELATION_ENTITY => $name,
 					],
 				),
 				false,

@@ -139,7 +139,7 @@
             "FastyBird\\Plugin\\RabbitMq\\": "src/FastyBird/Plugin/RabbitMq/src/",
             "FastyBird\\Plugin\\RedisDb\\": "src/FastyBird/Plugin/RedisDb/src/",
             "FastyBird\\Plugin\\WebServer\\": "src/FastyBird/Plugin/WebServer/src/",
-            "FastyBird\\Plugin\\WsExchange\\": "src/FastyBird/Plugin/WsExchange/src/"
+            "FastyBird\\Plugin\\WsServer\\": "src/FastyBird/Plugin/WsServer/src/"
         }
     },
     "autoload-dev": {
@@ -186,7 +186,7 @@
             "FastyBird\\Plugin\\RedisDb\\Tests\\Cases\\Unit\\": "src/FastyBird/Plugin/RedisDb/tests/cases/unit",
             "FastyBird\\Plugin\\RedisDb\\Tests\\Fixtures\\": "src/FastyBird/Plugin/RedisDb/tests/fixtures",
             "FastyBird\\Plugin\\WebServer\\Tests\\Cases\\Unit\\": "src/FastyBird/Plugin/WebServer/tests/cases/unit",
-            "FastyBird\\Plugin\\WsExchange\\Tests\\Cases\\Unit\\": "src/FastyBird/Plugin/WsExchange/tests/cases/unit"
+            "FastyBird\\Plugin\\WsServer\\Tests\\Cases\\Unit\\": "src/FastyBird/Plugin/WsServer/tests/cases/unit"
         }
     },
     "extra": {
@@ -239,7 +239,7 @@
         "fastybird/rabbitmq-plugin": "self.version",
         "fastybird/redis-exchange-devices-module-bridge": "self.version",
         "fastybird/redis-exchange-triggers-module-bridge": "self.version",
-        "fastybird/redis-exchange-ws-exchange-bridge": "self.version",
+        "fastybird/redis-exchange-ws-server-bridge": "self.version",
         "fastybird/redisdb-devices-module-bridge": "self.version",
         "fastybird/redisdb-plugin": "self.version",
         "fastybird/redisdb-triggers-module-bridge": "self.version",
@@ -247,7 +247,7 @@
         "fastybird/triggers-module": "self.version",
         "fastybird/tuya-connector": "self.version",
         "fastybird/web-server-plugin": "self.version",
-        "fastybird/ws-exchange-plugin": "self.version"
+        "fastybird/ws-server-plugin": "self.version"
     },
     "minimum-stability": "dev",
     "prefer-stable": true

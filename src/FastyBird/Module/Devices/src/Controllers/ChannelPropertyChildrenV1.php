@@ -59,11 +59,11 @@ final class ChannelPropertyChildrenV1 extends BaseV1
 	): Message\ResponseInterface
 	{
 		// At first, try to load device
-		$device = $this->findDevice(strval($request->getAttribute(Router\Routes::URL_DEVICE_ID)));
+		$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
 		// & channel
-		$channel = $this->findChannel(strval($request->getAttribute(Router\Routes::URL_CHANNEL_ID)), $device);
+		$channel = $this->findChannel(strval($request->getAttribute(Router\ApiRoutes::URL_CHANNEL_ID)), $device);
 		// & property
-		$property = $this->findProperty(strval($request->getAttribute(Router\Routes::URL_PROPERTY_ID)), $channel);
+		$property = $this->findProperty(strval($request->getAttribute(Router\ApiRoutes::URL_PROPERTY_ID)), $channel);
 
 		$findQuery = new Queries\FindChannelProperties();
 		$findQuery->forParent($property);

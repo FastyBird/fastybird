@@ -39,7 +39,7 @@ import {
 	IChannelControlsSetActionPayload,
 	IChannelControlsTransmitCommandActionPayload,
 } from './types';
-import { useWsExchangeClient } from '@fastybird/ws-exchange-plugin';
+import { useWampV1Client } from '@fastybird/vue-wamp-v1';
 
 const jsonSchemaValidator = new Ajv();
 
@@ -458,7 +458,7 @@ export const useChannelControls = defineStore<string, IChannelControlsState, ICh
 					throw new Error('devices-module.channel-controls.transmit.failed');
 				}
 
-				const { call } = useWsExchangeClient<{ data: string }>();
+				const { call } = useWampV1Client<{ data: string }>();
 
 				try {
 					const response = await call('', {

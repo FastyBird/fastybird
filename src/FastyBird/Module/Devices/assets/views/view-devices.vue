@@ -74,8 +74,13 @@
 
 			<router-view
 				v-if="!isLoading && isExtraSmallDevice && isPartialDetailRoute"
-				:devices="items"
-			/>
+				v-slot="{ Component }"
+			>
+				<component
+					:is="Component"
+					:devices="items"
+				/>
+			</router-view>
 		</template>
 
 		<template
@@ -95,8 +100,13 @@
 		>
 			<router-view
 				v-if="isPartialDetailRoute"
-				:devices="items"
-			/>
+				v-slot="{ Component }"
+			>
+				<component
+					:is="Component"
+					:devices="items"
+				/>
+			</router-view>
 
 			<devices-preview-info
 				v-else

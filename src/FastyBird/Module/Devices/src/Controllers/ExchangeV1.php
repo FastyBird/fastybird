@@ -18,8 +18,8 @@ namespace FastyBird\Module\Devices\Controllers;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Exchange\Entities as ExchangeEntities;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
-use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata;
+use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Loaders as MetadataLoaders;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
@@ -63,7 +63,6 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 		private readonly MetadataLoaders\SchemaLoader $schemaLoader,
 		private readonly MetadataSchemas\Validator $jsonValidator,
 		private readonly ExchangeEntities\EntityFactory $entityFactory,
-		private readonly ExchangePublisher\Publisher $exchangePublisher,
 		Log\LoggerInterface|null $logger = null,
 	)
 	{
@@ -197,6 +196,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	 * @phpstan-param WebSocketsWAMP\Entities\Topics\ITopic<mixed> $topic
 	 *
 	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
 	 * @throws ExchangeExceptions\InvalidState
 	 * @throws PhoneExceptions\NoValidCountryException
 	 * @throws PhoneExceptions\NoValidPhoneException
@@ -206,6 +206,8 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\Logic
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws PhoneExceptions\NoValidCountryException
+	 * @throws PhoneExceptions\NoValidPhoneException
 	 * @throws Utils\JsonException
 	 */
 	public function actionCall(
@@ -244,14 +246,18 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				$data = isset($args['data']) && is_array($args['data']) ? $args['data'] : null;
 				$data = $data !== null ? $this->parseData($data, $schema) : null;
 
-				$this->exchangePublisher->publish(
-					MetadataTypes\ModuleSource::get($args['source']),
+				$entity = $this->entityFactory->create(
+					Utils\Json::encode($data),
 					MetadataTypes\RoutingKey::get($args['routing_key']),
-					$this->entityFactory->create(
-						Utils\Json::encode($data),
-						MetadataTypes\RoutingKey::get($args['routing_key']),
-					),
 				);
+
+				if ($entity instanceof MetadataEntities\Actions\ActionConnectorProperty) {
+					$this->handleConnectorAction($client, $topic, $entity);
+				} elseif ($entity instanceof MetadataEntities\Actions\ActionDeviceProperty) {
+					$this->handleDeviceAction($client, $topic, $entity);
+				} elseif ($entity instanceof MetadataEntities\Actions\ActionChannelProperty) {
+					$this->handleChannelAction($client, $topic, $entity);
+				}
 
 				break;
 			default:
@@ -296,6 +302,240 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 			]);
 
 			throw new Exceptions\InvalidArgument('Provided data could not be validated', 0, $ex);
+		}
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 * @throws ExchangeExceptions\InvalidState
+	 * @throws MetadataExceptions\FileNotFound
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws PhoneExceptions\NoValidCountryException
+	 * @throws PhoneExceptions\NoValidPhoneException
+	 * @throws Utils\JsonException
+	 */
+	private function handleConnectorAction(
+		WebSocketsWAMP\Entities\Clients\IClient $client,
+		WebSocketsWAMP\Entities\Topics\ITopic $topic,
+		MetadataEntities\Actions\ActionConnectorProperty $entity,
+	): void
+	{
+		if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_SET)) {
+			$findConnectorPropertyQuery = new Queries\FindConnectorProperties();
+			$findConnectorPropertyQuery->byId($entity->getProperty());
+
+			$property = $this->connectorPropertiesRepository->findOneBy($findConnectorPropertyQuery);
+
+			if (!$property instanceof Entities\Connectors\Properties\Dynamic) {
+				return;
+			}
+
+			$this->connectorPropertiesStates->writeValue(
+				$property,
+				Utils\ArrayHash::from([
+					States\Property::EXPECTED_VALUE_KEY => $entity->getExpectedValue(),
+					States\Property::PENDING_KEY => true,
+				]),
+			);
+		} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
+			$findConnectorPropertyQuery = new Queries\FindConnectorProperties();
+			$findConnectorPropertyQuery->byId($entity->getProperty());
+
+			$property = $this->connectorPropertiesRepository->findOneBy($findConnectorPropertyQuery);
+
+			if ($property === null) {
+				return;
+			}
+
+			$state = $property instanceof Entities\Connectors\Properties\Dynamic
+				? $this->connectorPropertiesStates->readValue($property)
+				: null;
+
+			$publishRoutingKey = MetadataTypes\RoutingKey::get(
+				MetadataTypes\RoutingKey::ROUTE_CONNECTOR_PROPERTY_ENTITY_REPORTED,
+			);
+
+			$responseEntity = $this->entityFactory->create(
+				Utils\Json::encode(
+					array_merge(
+						$state?->toArray() ?? [],
+						$property->toArray(),
+					),
+				),
+				$publishRoutingKey,
+			);
+
+			$client->send(Utils\Json::encode([
+				WebSocketsWAMP\Application\Application::MSG_EVENT,
+				$topic->getId(),
+				Utils\Json::encode([
+					'routing_key' => MetadataTypes\RoutingKey::ROUTE_CONNECTOR_PROPERTY_ENTITY_REPORTED,
+					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+					'data' => $responseEntity->toArray(),
+				]),
+			]));
+		}
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 * @throws ExchangeExceptions\InvalidState
+	 * @throws MetadataExceptions\FileNotFound
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws PhoneExceptions\NoValidCountryException
+	 * @throws PhoneExceptions\NoValidPhoneException
+	 * @throws Utils\JsonException
+	 */
+	private function handleDeviceAction(
+		WebSocketsWAMP\Entities\Clients\IClient $client,
+		WebSocketsWAMP\Entities\Topics\ITopic $topic,
+		MetadataEntities\Actions\ActionDeviceProperty $entity,
+	): void
+	{
+		if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_SET)) {
+			$findConnectorPropertyQuery = new Queries\FindDeviceProperties();
+			$findConnectorPropertyQuery->byId($entity->getProperty());
+
+			$property = $this->devicePropertiesRepository->findOneBy($findConnectorPropertyQuery);
+
+			if (
+				!$property instanceof Entities\Devices\Properties\Dynamic
+				&& !$property instanceof Entities\Devices\Properties\Mapped
+			) {
+				return;
+			}
+
+			$this->devicePropertiesStates->writeValue(
+				$property,
+				Utils\ArrayHash::from([
+					States\Property::EXPECTED_VALUE_KEY => $entity->getExpectedValue(),
+					States\Property::PENDING_KEY => true,
+				]),
+			);
+		} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
+			$findConnectorPropertyQuery = new Queries\FindDeviceProperties();
+			$findConnectorPropertyQuery->byId($entity->getProperty());
+
+			$property = $this->devicePropertiesRepository->findOneBy($findConnectorPropertyQuery);
+
+			if ($property === null) {
+				return;
+			}
+
+			$state = $property instanceof Entities\Devices\Properties\Dynamic
+			|| $property instanceof Entities\Devices\Properties\Mapped
+				? $this->devicePropertiesStates->readValue($property) : null;
+
+			$publishRoutingKey = MetadataTypes\RoutingKey::get(
+				MetadataTypes\RoutingKey::ROUTE_DEVICE_PROPERTY_ENTITY_REPORTED,
+			);
+
+			$responseEntity = $this->entityFactory->create(
+				Utils\Json::encode(
+					array_merge(
+						$state?->toArray() ?? [],
+						$property->toArray(),
+					),
+				),
+				$publishRoutingKey,
+			);
+
+			$client->send(Utils\Json::encode([
+				WebSocketsWAMP\Application\Application::MSG_EVENT,
+				$topic->getId(),
+				Utils\Json::encode([
+					'routing_key' => MetadataTypes\RoutingKey::ROUTE_CONNECTOR_PROPERTY_ENTITY_REPORTED,
+					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+					'data' => $responseEntity->toArray(),
+				]),
+			]));
+		}
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 * @throws ExchangeExceptions\InvalidState
+	 * @throws MetadataExceptions\FileNotFound
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws PhoneExceptions\NoValidCountryException
+	 * @throws PhoneExceptions\NoValidPhoneException
+	 * @throws Utils\JsonException
+	 */
+	private function handleChannelAction(
+		WebSocketsWAMP\Entities\Clients\IClient $client,
+		WebSocketsWAMP\Entities\Topics\ITopic $topic,
+		MetadataEntities\Actions\ActionChannelProperty $entity,
+	): void
+	{
+		if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_SET)) {
+			$findConnectorPropertyQuery = new Queries\FindChannelProperties();
+			$findConnectorPropertyQuery->byId($entity->getProperty());
+
+			$property = $this->channelPropertiesRepository->findOneBy($findConnectorPropertyQuery);
+
+			if (
+				!$property instanceof Entities\Channels\Properties\Dynamic
+				&& !$property instanceof Entities\Channels\Properties\Mapped
+			) {
+				return;
+			}
+
+			$this->channelPropertiesStates->writeValue(
+				$property,
+				Utils\ArrayHash::from([
+					States\Property::EXPECTED_VALUE_KEY => $entity->getExpectedValue(),
+					States\Property::PENDING_KEY => true,
+				]),
+			);
+		} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
+			$findConnectorPropertyQuery = new Queries\FindChannelProperties();
+			$findConnectorPropertyQuery->byId($entity->getProperty());
+
+			$property = $this->channelPropertiesRepository->findOneBy($findConnectorPropertyQuery);
+
+			if ($property === null) {
+				return;
+			}
+
+			$state = $property instanceof Entities\Channels\Properties\Dynamic
+			|| $property instanceof Entities\Channels\Properties\Mapped
+				? $this->channelPropertiesStates->readValue($property) : null;
+
+			$publishRoutingKey = MetadataTypes\RoutingKey::get(
+				MetadataTypes\RoutingKey::ROUTE_CHANNEL_PROPERTY_ENTITY_REPORTED,
+			);
+
+			$responseEntity = $this->entityFactory->create(
+				Utils\Json::encode(
+					array_merge(
+						$state?->toArray() ?? [],
+						$property->toArray(),
+					),
+				),
+				$publishRoutingKey,
+			);
+
+			$client->send(Utils\Json::encode([
+				WebSocketsWAMP\Application\Application::MSG_EVENT,
+				$topic->getId(),
+				Utils\Json::encode([
+					'routing_key' => MetadataTypes\RoutingKey::ROUTE_CONNECTOR_PROPERTY_ENTITY_REPORTED,
+					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+					'data' => $responseEntity->toArray(),
+				]),
+			]));
 		}
 	}
 

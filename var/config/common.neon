@@ -47,7 +47,7 @@ extensions:
     # FastyBird plugins
     fbRedisDbPlugin                     : FastyBird\Plugin\RedisDb\DI\RedisDbExtension
     fbWebServerPlugin                   : FastyBird\Plugin\WebServer\DI\WebServerExtension
-    fbWsExchangePlugin                  : FastyBird\Plugin\WsExchange\DI\WsExchangeExtension
+    fbWsServerPlugin                    : FastyBird\Plugin\WsServer\DI\WsServerExtension
     # FastyBird modules
     fbAccountsModule                    : FastyBird\Module\Accounts\DI\AccountsExtension
     fbDevicesModule                     : FastyBird\Module\Devices\DI\DevicesExtension
@@ -138,10 +138,6 @@ ipubWebsockets:
     server:
         address: %sockets.address%
         port: %sockets.port%
-    routes:
-        /io/exchange: 'Exchange:'
-    mapping:
-        *: FastyBird\Plugin\WsExchange\Controllers\*
 
 # Application
 #############

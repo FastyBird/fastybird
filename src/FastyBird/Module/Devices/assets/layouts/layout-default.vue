@@ -3,65 +3,18 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeMount, onMounted, onUnmounted } from 'vue';
-import get from 'lodash/get';
+import { computed, onBeforeMount } from 'vue';
 
-import { useWsExchangeClient } from '@fastybird/ws-exchange-plugin';
-
-import {
-	useChannelControls,
-	useChannelProperties,
-	useChannels,
-	useConnectorControls,
-	useConnectorProperties,
-	useConnectors,
-	useDeviceControls,
-	useDeviceProperties,
-	useDevices,
-} from '@/models';
+import { useConnectors } from '@/models';
 import { ApplicationError } from '@/errors';
 
 const emit = defineEmits<{
 	(e: 'toggleMenu', event: Event): void;
 }>();
 
-const wampV1Client = useWsExchangeClient();
-
 const connectorsStore = useConnectors();
 
 const isLoading = computed<boolean>((): boolean => connectorsStore.fetching);
-
-const stores = [
-	useConnectors(),
-	useConnectorControls(),
-	useConnectorProperties(),
-	useDevices(),
-	useDeviceControls(),
-	useDeviceProperties(),
-	useChannels(),
-	useChannelControls(),
-	useChannelProperties(),
-];
-
-const onWsMessage = async (data: string): Promise<void> => {
-	const body = JSON.parse(data);
-
-	if (
-		Object.prototype.hasOwnProperty.call(body, 'routing_key') &&
-		Object.prototype.hasOwnProperty.call(body, 'source') &&
-		Object.prototype.hasOwnProperty.call(body, 'data')
-	) {
-		for (const store of stores) {
-			if (Object.prototype.hasOwnProperty.call(store, 'socketData')) {
-				await store.socketData({
-					source: get(body, 'source'),
-					routingKey: get(body, 'routing_key'),
-					data: JSON.stringify(get(body, 'data')),
-				});
-			}
-		}
-	}
-};
 
 onBeforeMount(async (): Promise<void> => {
 	if (!isLoading.value && !connectorsStore.firstLoadFinished) {
@@ -71,13 +24,5 @@ onBeforeMount(async (): Promise<void> => {
 			throw new ApplicationError('Something went wrong', e, { statusCode: 503, message: 'Something went wrong' });
 		}
 	}
-});
-
-onMounted((): void => {
-	wampV1Client.client.subscribe('/io/exchange', onWsMessage);
-});
-
-onUnmounted((): void => {
-	wampV1Client.client.unsubscribe('/io/exchange', onWsMessage);
 });
 </script>

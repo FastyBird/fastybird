@@ -1,5 +1,6 @@
 import { Plugin } from 'vue';
 import { Router } from 'vue-router';
+import { Client } from '@fastybird/vue-wamp-v1';
 
 import {
 	IChannel,
@@ -24,6 +25,7 @@ export interface IDevicesModuleOptions {
 	router?: Router;
 	meta: IDevicesModuleMeta;
 	configuration: IDevicesModuleConfiguration;
+	wsClient?: Client;
 }
 
 export interface IDevicesModuleMeta {

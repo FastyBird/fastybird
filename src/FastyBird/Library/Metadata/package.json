@@ -41,8 +41,8 @@
     "dev": "vite",
     "serve": "vite preview",
     "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
-    "build": "yarn clean && vue-tsc --noEmit && vite build",
-    "types": "vue-tsc --noEmit",
+    "build": "yarn clean && vue-tsc --noEmit --composite false && vite build",
+    "types": "vue-tsc --noEmit --composite false",
     "lint:js": "eslint --ext .js,.ts,.vue --ignore-path .gitignore assets",
     "lint:js:fix": "eslint --ext .js,.ts,.vue --ignore-path .gitignore assets --fix",
     "pretty": "yarn pretty:write && yarn pretty:check",
@@ -78,7 +78,7 @@
     "vite-plugin-eslint": "^1.8",
     "vue": "^3.2",
     "vue-loader": "^17.0",
-    "vue-tsc": "^1.0"
+    "vue-tsc": "^1.4"
   },
   "engines": {
     "node": ">=14"

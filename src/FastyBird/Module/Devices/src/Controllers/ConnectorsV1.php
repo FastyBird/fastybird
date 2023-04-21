@@ -82,7 +82,7 @@ class ConnectorsV1 extends BaseV1
 		Message\ResponseInterface $response,
 	): Message\ResponseInterface
 	{
-		$connector = $this->findConnector(strval($request->getAttribute(Router\Routes::URL_ITEM_ID)));
+		$connector = $this->findConnector(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)));
 
 		return $this->buildResponse($request, $response, $connector);
 	}
@@ -101,7 +101,7 @@ class ConnectorsV1 extends BaseV1
 		Message\ResponseInterface $response,
 	): Message\ResponseInterface
 	{
-		$connector = $this->findConnector(strval($request->getAttribute(Router\Routes::URL_ITEM_ID)));
+		$connector = $this->findConnector(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)));
 
 		$document = $this->createDocument($request);
 
@@ -163,9 +163,9 @@ class ConnectorsV1 extends BaseV1
 		Message\ResponseInterface $response,
 	): Message\ResponseInterface
 	{
-		$connector = $this->findConnector(strval($request->getAttribute(Router\Routes::URL_ITEM_ID)));
+		$connector = $this->findConnector(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)));
 
-		$relationEntity = Utils\Strings::lower(strval($request->getAttribute(Router\Routes::RELATION_ENTITY)));
+		$relationEntity = Utils\Strings::lower(strval($request->getAttribute(Router\ApiRoutes::RELATION_ENTITY)));
 
 		if ($relationEntity === Schemas\Connectors\Connector::RELATIONSHIPS_DEVICES) {
 			$findDevicesQuery = new Queries\FindDevices();

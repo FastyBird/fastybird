@@ -19,7 +19,7 @@ export enum PluginSource {
 	COUCHDB_STORAGE_PLUGIN = 'com.fastybird.couchdb-storage-plugin',
 	RABBITMQ_PLUGIN = 'com.fastybird.rabbitmq-plugin',
 	REDISDB_PLUGIN = 'com.fastybird.redisdb-plugin',
-	WS_EXCHANGE_PLUGIN = 'com.fastybird.ws-exchange-plugin',
+	WS_EXCHANGE_PLUGIN = 'com.fastybird.ws-server-plugin',
 	WEB_SERVER_PLUGIN = 'com.fastybird.web-server-plugin',
 }
 

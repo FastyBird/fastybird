@@ -61,7 +61,7 @@ final class ConnectorControlsV1 extends BaseV1
 	): Message\ResponseInterface
 	{
 		// At first, try to load connector
-		$connector = $this->findConnector(strval($request->getAttribute(Router\Routes::URL_CONNECTOR_ID)));
+		$connector = $this->findConnector(strval($request->getAttribute(Router\ApiRoutes::URL_CONNECTOR_ID)));
 
 		$findQuery = new Queries\FindConnectorControls();
 		$findQuery->forConnector($connector);
@@ -82,12 +82,12 @@ final class ConnectorControlsV1 extends BaseV1
 	): Message\ResponseInterface
 	{
 		// At first, try to load connector
-		$connector = $this->findConnector(strval($request->getAttribute(Router\Routes::URL_CONNECTOR_ID)));
+		$connector = $this->findConnector(strval($request->getAttribute(Router\ApiRoutes::URL_CONNECTOR_ID)));
 
-		if (Uuid\Uuid::isValid(strval($request->getAttribute(Router\Routes::URL_ITEM_ID)))) {
+		if (Uuid\Uuid::isValid(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)))) {
 			$findQuery = new Queries\FindConnectorControls();
 			$findQuery->forConnector($connector);
-			$findQuery->byId(Uuid\Uuid::fromString(strval($request->getAttribute(Router\Routes::URL_ITEM_ID))));
+			$findQuery->byId(Uuid\Uuid::fromString(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID))));
 
 			// & control
 			$control = $this->connectorControlsRepository->findOneBy($findQuery);
@@ -114,15 +114,15 @@ final class ConnectorControlsV1 extends BaseV1
 	): Message\ResponseInterface
 	{
 		// At first, try to load connector
-		$connector = $this->findConnector(strval($request->getAttribute(Router\Routes::URL_CONNECTOR_ID)));
+		$connector = $this->findConnector(strval($request->getAttribute(Router\ApiRoutes::URL_CONNECTOR_ID)));
 
 		// & relation entity name
-		$relationEntity = Utils\Strings::lower(strval($request->getAttribute(Router\Routes::RELATION_ENTITY)));
+		$relationEntity = Utils\Strings::lower(strval($request->getAttribute(Router\ApiRoutes::RELATION_ENTITY)));
 
-		if (Uuid\Uuid::isValid(strval($request->getAttribute(Router\Routes::URL_ITEM_ID)))) {
+		if (Uuid\Uuid::isValid(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)))) {
 			$findQuery = new Queries\FindConnectorControls();
 			$findQuery->forConnector($connector);
-			$findQuery->byId(Uuid\Uuid::fromString(strval($request->getAttribute(Router\Routes::URL_ITEM_ID))));
+			$findQuery->byId(Uuid\Uuid::fromString(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID))));
 
 			// & control
 			$control = $this->connectorControlsRepository->findOneBy($findQuery);

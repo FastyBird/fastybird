@@ -57,7 +57,7 @@ import { useI18n } from 'vue-i18n';
 
 import { FbUiItem, FbUiItemVariantTypes } from '@fastybird/web-ui-library';
 import { DataType, PropertyType } from '@fastybird/metadata-library';
-import { useWsExchangeClient } from '@fastybird/ws-exchange-plugin';
+import { useWampV1Client } from '@fastybird/vue-wamp-v1';
 
 import { useBreakpoints, useConnectorState, useEntityTitle, useDeviceState } from '@/composables';
 import { ActorsPropertyActorSwitch, PropertiesPropertyIcon } from '@/components';
@@ -91,7 +91,7 @@ const value = computed<any>((): any => {
 	return props.property.actualValue;
 });
 
-const { status: wsStatus } = useWsExchangeClient();
+const { status: wsStatus } = useWampV1Client();
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>

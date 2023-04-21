@@ -99,8 +99,8 @@
                 <element key="src/FastyBird/Plugin/WebServer/src" value="FastyBird\Plugin\WebServer"/>
                 <element key="src/FastyBird/Plugin/WebServer/tests/cases/unit" value="FastyBird\Plugin\WebServer\Tests\Cases\Unit"/>
 
-                <element key="src/FastyBird/Plugin/WsExchange/src" value="FastyBird\Plugin\WsExchange"/>
-                <element key="src/FastyBird/Plugin/WsExchange/tests/cases/unit" value="FastyBird\Plugin\WsExchange\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Plugin/WsServer/src" value="FastyBird\Plugin\WsServer"/>
+                <element key="src/FastyBird/Plugin/WsServer/tests/cases/unit" value="FastyBird\Plugin\WsServer\Tests\Cases\Unit"/>
             </property>
         </properties>
     </rule>

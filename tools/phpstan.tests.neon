@@ -26,7 +26,7 @@ includes:
     - ../src/FastyBird/Plugin/RabbitMq/tools/phpstan.config.tests.neon
     - ../src/FastyBird/Plugin/RedisDb/tools/phpstan.config.tests.neon
     - ../src/FastyBird/Plugin/WebServer/tools/phpstan.config.tests.neon
-    - ../src/FastyBird/Plugin/WsExchange/tools/phpstan.config.tests.neon
+    - ../src/FastyBird/Plugin/WsServer/tools/phpstan.config.tests.neon
 
 parameters:
     level: max

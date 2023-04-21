@@ -47,8 +47,8 @@ import get from 'lodash/get';
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { FbUiSwitchElement, FbUiSpinner, FbSizeTypes, FbUiVariantTypes } from '@fastybird/web-ui-library';
-import { ActionRoutes, DataType, PropertyAction, SwitchPayload } from '@fastybird/metadata-library';
-import { useWsExchangeClient } from '@fastybird/ws-exchange-plugin';
+import { ActionRoutes, DataType, ModulePrefix, PropertyAction, SwitchPayload } from '@fastybird/metadata-library';
+import { useWampV1Client } from '@fastybird/vue-wamp-v1';
 
 import { useDeviceState, useEntityTitle, useFlashMessage, useNormalizeValue } from '@/composables';
 import { useChannelProperties, useDeviceProperties } from '@/models';
@@ -67,7 +67,7 @@ const flashMessage = useFlashMessage();
 const devicePropertiesStore = useDeviceProperties();
 const channelPropertiesStore = useChannelProperties();
 
-const wampV1Client = useWsExchangeClient();
+const wampV1Client = useWampV1Client();
 
 const { isReady: isDeviceReady } = props.device ? useDeviceState(props.device) : { isReady: computed<boolean>((): boolean => false) };
 
@@ -83,7 +83,7 @@ const value = computed<boolean>((): boolean => {
 	return false;
 });
 
-const { status: wsStatus } = useWsExchangeClient();
+const { status: wsStatus } = useWampV1Client();
 
 let timer: number;
 
@@ -155,7 +155,7 @@ const onToggleState = async (): Promise<void> => {
 	}
 
 	try {
-		const result = await wampV1Client.call('/io/exchange', {
+		const result = await wampV1Client.call(`/${ModulePrefix.MODULE_DEVICES}/v1/exchange`, {
 			routing_key: props.channel !== undefined ? ActionRoutes.CHANNEL_PROPERTY : ActionRoutes.DEVICE_PROPERTY,
 			source: props.property.type.source,
 			data: {

@@ -75,7 +75,7 @@ final class DevicePropertiesV1 extends BaseV1
 	): Message\ResponseInterface
 	{
 		// At first, try to load device
-		$device = $this->findDevice(strval($request->getAttribute(Router\Routes::URL_DEVICE_ID)));
+		$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
 
 		$findQuery = new Queries\FindDeviceProperties();
 		$findQuery->forDevice($device);
@@ -96,9 +96,9 @@ final class DevicePropertiesV1 extends BaseV1
 	): Message\ResponseInterface
 	{
 		// At first, try to load device
-		$device = $this->findDevice(strval($request->getAttribute(Router\Routes::URL_DEVICE_ID)));
+		$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
 		// & property
-		$property = $this->findProperty(strval($request->getAttribute(Router\Routes::URL_ITEM_ID)), $device);
+		$property = $this->findProperty(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)), $device);
 
 		return $this->buildResponse($request, $response, $property);
 	}
@@ -118,7 +118,7 @@ final class DevicePropertiesV1 extends BaseV1
 	): Message\ResponseInterface
 	{
 		// At first, try to load device
-		$this->findDevice(strval($request->getAttribute(Router\Routes::URL_DEVICE_ID)));
+		$this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
 
 		$document = $this->createDocument($request);
 
@@ -237,9 +237,9 @@ final class DevicePropertiesV1 extends BaseV1
 	): Message\ResponseInterface
 	{
 		// At first, try to load device
-		$device = $this->findDevice(strval($request->getAttribute(Router\Routes::URL_DEVICE_ID)));
+		$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
 		// & property
-		$property = $this->findProperty(strval($request->getAttribute(Router\Routes::URL_ITEM_ID)), $device);
+		$property = $this->findProperty(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)), $device);
 
 		$document = $this->createDocument($request);
 
@@ -311,9 +311,9 @@ final class DevicePropertiesV1 extends BaseV1
 	): Message\ResponseInterface
 	{
 		// At first, try to load device
-		$device = $this->findDevice(strval($request->getAttribute(Router\Routes::URL_DEVICE_ID)));
+		$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
 		// & property
-		$property = $this->findProperty(strval($request->getAttribute(Router\Routes::URL_ITEM_ID)), $device);
+		$property = $this->findProperty(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)), $device);
 
 		try {
 			// Start transaction connection to the database
@@ -358,14 +358,14 @@ final class DevicePropertiesV1 extends BaseV1
 	): Message\ResponseInterface
 	{
 		// At first, try to load device
-		$device = $this->findDevice(strval($request->getAttribute(Router\Routes::URL_DEVICE_ID)));
+		$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
 
 		// & relation entity name
-		$relationEntity = Utils\Strings::lower(strval($request->getAttribute(Router\Routes::RELATION_ENTITY)));
+		$relationEntity = Utils\Strings::lower(strval($request->getAttribute(Router\ApiRoutes::RELATION_ENTITY)));
 
-		if (Uuid\Uuid::isValid(strval($request->getAttribute(Router\Routes::URL_ITEM_ID)))) {
+		if (Uuid\Uuid::isValid(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)))) {
 			// & property
-			$property = $this->findProperty(strval($request->getAttribute(Router\Routes::URL_ITEM_ID)), $device);
+			$property = $this->findProperty(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)), $device);
 
 			if ($relationEntity === Schemas\Devices\Properties\Property::RELATIONSHIPS_DEVICE) {
 				return $this->buildResponse($request, $response, $property->getDevice());
