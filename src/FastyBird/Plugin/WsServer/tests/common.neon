@@ -24,7 +24,3 @@ extensions:
 services:
     - {factory: Symfony\Component\Console\Application}
     - {factory: Symfony\Component\EventDispatcher\EventDispatcher}
-
-ipubWebSockets:
-    routes:
-        '/io/exchange' : 'Exchange:'
