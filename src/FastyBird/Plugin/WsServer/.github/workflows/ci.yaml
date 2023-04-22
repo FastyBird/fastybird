@@ -27,7 +27,6 @@ jobs:
       fail-fast: false
       matrix:
         php-version: [ "8.1" ]
-        node-version: [ "16" ]
         operating-system: [ "ubuntu-latest" ]
 
     steps:
@@ -77,29 +76,6 @@ jobs:
       - name: "Install dependencies"
         run: "${{ env.composer-install }}"
 
-      - name: "Setup node"
-        uses: "actions/setup-node@v3"
-        with:
-          node-version: "${{ matrix.node-version }}"
-
-      - name: "Get Yarn cache directory"
-        id: "yarn-cache-dir-path"
-        run: 'echo "::set-output name=dir::$(yarn cache dir)"'
-
-      - name: "Cache JS dependencies"
-        uses: "actions/cache@v3"
-        with:
-          path: "${{ steps.yarn-cache-dir-path.outputs.dir }}"
-          key: "${{ runner.os }}-node-modules-${{ hashFiles('yarn.lock') }}"
-          restore-keys: "${{ runner.os }}-node-modules-"
-
-      - name: "Install dependencies"
-        if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: "yarn install"
-
-      - name: "Check Prettier with eslint"
-        run: "yarn pretty:check"
-
       - name: "Coding Standard"
         run: "make cs"
 
@@ -111,7 +87,6 @@ jobs:
       fail-fast: false
       matrix:
         php-version: [ "8.1" ]
-        node-version: [ "16" ]
         operating-system: [ "ubuntu-latest" ]
 
     steps:
@@ -158,31 +133,8 @@ jobs:
       - name: "Install dependencies"
         run: "${{ env.composer-install }}"
 
-      - name: "Setup node"
-        uses: "actions/setup-node@v3"
-        with:
-          node-version: "${{ matrix.node-version }}"
-
-      - name: "Get Yarn cache directory"
-        id: "yarn-cache-dir-path"
-        run: 'echo "::set-output name=dir::$(yarn cache dir)"'
-
-      - name: "Cache JS dependencies"
-        uses: "actions/cache@v3"
-        with:
-          path: "${{ steps.yarn-cache-dir-path.outputs.dir }}"
-          key: "${{ runner.os }}-node-modules-${{ hashFiles('yarn.lock') }}"
-          restore-keys: "${{ runner.os }}-node-modules-"
-
-      - name: "Install dependencies"
-        if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: "yarn install"
-
       - name: "PHPStan"
         run: "make phpstan"
-
-      - name: "Check typescript"
-        run: "yarn types"
 
   tests:
     name: "Code tests"
@@ -408,7 +360,6 @@ jobs:
     strategy:
       matrix:
         php-version: [ "8.1" ]
-        node-version: [ "16" ]
         operating-system: [ "ubuntu-latest" ]
       fail-fast: false
 
@@ -456,163 +407,5 @@ jobs:
       - name: "Install dependencies"
         run: "${{ env.composer-install }}"
 
-      - name: "Setup node"
-        uses: "actions/setup-node@v3"
-        with:
-          node-version: "${{ matrix.node-version }}"
-
-      - name: "Get Yarn cache directory"
-        id: "yarn-cache-dir-path"
-        run: 'echo "::set-output name=dir::$(yarn cache dir)"'
-
-      - name: "Cache JS dependencies"
-        uses: "actions/cache@v3"
-        with:
-          path: "${{ steps.yarn-cache-dir-path.outputs.dir }}"
-          key: "${{ runner.os }}-node-modules-${{ hashFiles('yarn.lock') }}"
-          restore-keys: "${{ runner.os }}-node-modules-"
-
-      - name: "Install dependencies"
-        if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: "yarn install"
-
-      - name: "Check js linter"
-        run: "yarn lint:js"
-
       - name: "Check php linter"
         run: "make lint"
-
-  build:
-    name: "Build code for distribution"
-    runs-on: "${{ matrix.operating-system }}"
-    needs: "lint"
-
-    strategy:
-      matrix:
-        operating-system: [ "ubuntu-latest" ]
-
-    steps:
-      - name: "Checkout"
-        uses: "actions/checkout@v3"
-
-      - name: "Install node"
-        uses: "actions/setup-node@v3"
-        with:
-          node-version: "16"
-          registry-url: "https://registry.npmjs.org"
-
-      - name: "Install package dependencies"
-        run: "yarn install"
-
-      - name: "Build the project"
-        run: "yarn build"
-
-      - name: "Upload build result"
-        uses: "actions/upload-artifact@v2"
-        with:
-          name: js-dist
-          path: dist
-
-  publish-npmjs:
-    name: "Publish code distribution to NPM"
-    runs-on: "${{ matrix.operating-system }}"
-    needs: [ "build" ]
-
-    strategy:
-      matrix:
-        operating-system: [ "ubuntu-latest" ]
-
-    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
-
-    steps:
-      - name: "Checkout"
-        uses: "actions/checkout@v3"
-
-      - name: "Install node"
-        uses: "actions/setup-node@v3"
-        with:
-          node-version: "16"
-          registry-url: "https://registry.npmjs.org"
-
-      - name: "Extract version"
-        uses: "battila7/get-version-action@v2"
-        id: "get_version"
-
-      - name: "Set up git since we will later push to the repo"
-        run: |
-          git config --global user.name "GitHub CD bot"
-          git config --global user.email "code@fastybird.com"
-
-      - name: "Upgrade npm version in package.json to the tag used in the release"
-        if: contains(github.ref, 'refs/tags/')
-        run: npm version ${{ steps.get_version.outputs.version-without-v }} --allow-same-version
-
-      - name: "Download build result"
-        uses: "actions/download-artifact@v1"
-        with:
-          name: js-dist
-          path: dist
-
-      - name: "Publish to NPM"
-        if: contains(github.ref, 'refs/tags/')
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPMJS_TOKEN }}
-        run: "npm publish --access public"
-
-      - name: "Publish to NPM"
-        if: contains(github.ref, 'refs/tags/') == false
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPMJS_TOKEN }}
-        run: "npm publish --access public --tag dev"
-
-  publish-github:
-    name: "Publish code distribution to Github packages"
-    runs-on: "${{ matrix.operating-system }}"
-    needs: [ "build" ]
-
-    strategy:
-      matrix:
-        operating-system: [ "ubuntu-latest" ]
-
-    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
-
-    steps:
-      - name: "Checkout"
-        uses: "actions/checkout@v3"
-
-      - name: "Install node"
-        uses: "actions/setup-node@v3"
-        with:
-          node-version: "16"
-          registry-url: "https://npm.pkg.github.com"
-
-      - name: "Extract version"
-        uses: "battila7/get-version-action@v2"
-        id: "get_version"
-
-      - name: "Set up git since we will later push to the repo"
-        run: |
-          git config --global user.name "GitHub CD bot"
-          git config --global user.email "code@fastybird.com"
-
-      - name: "Upgrade npm version in package.json to the tag used in the release"
-        if: contains(github.ref, 'refs/tags/')
-        run: npm version ${{ steps.get_version.outputs.version-without-v }} --allow-same-version
-
-      - name: "Download build result"
-        uses: "actions/download-artifact@v1"
-        with:
-          name: js-dist
-          path: dist
-
-      - name: "Publish to NPM"
-        if: contains(github.ref, 'refs/tags/')
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: "npm publish --access public"
-
-      - name: "Publish to NPM"
-        if: contains(github.ref, 'refs/tags/') == false
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: "npm publish --access public --tag dev"
