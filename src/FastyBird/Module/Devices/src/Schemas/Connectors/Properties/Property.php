@@ -91,8 +91,8 @@ abstract class Property extends JsonApiSchemas\JsonApi
 			$this->router->urlFor(
 				Devices\Constants::ROUTE_NAME_CONNECTOR_PROPERTY,
 				[
-					Router\Routes::URL_CONNECTOR_ID => $resource->getConnector()->getPlainId(),
-					Router\Routes::URL_ITEM_ID => $resource->getPlainId(),
+					Router\ApiRoutes::URL_CONNECTOR_ID => $resource->getConnector()->getPlainId(),
+					Router\ApiRoutes::URL_ITEM_ID => $resource->getPlainId(),
 				],
 			),
 			false,
@@ -136,7 +136,7 @@ abstract class Property extends JsonApiSchemas\JsonApi
 				$this->router->urlFor(
 					Devices\Constants::ROUTE_NAME_CONNECTOR,
 					[
-						Router\Routes::URL_ITEM_ID => $resource->getConnector()->getPlainId(),
+						Router\ApiRoutes::URL_ITEM_ID => $resource->getConnector()->getPlainId(),
 					],
 				),
 				false,

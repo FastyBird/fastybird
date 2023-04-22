@@ -6,7 +6,6 @@ includes:
 
     - ../src/FastyBird/Bridge/RedisDbDevicesModule/tools/phpstan.config.tests.neon
     - ../src/FastyBird/Bridge/RedisDbTriggersModule/tools/phpstan.config.tests.neon
-    - ../src/FastyBird/Bridge/WsExchangeDevicesModule/tools/phpstan.config.tests.neon
 
     - ../src/FastyBird/Connector/FbMqtt/tools/phpstan.config.tests.neon
     - ../src/FastyBird/Connector/HomeKit/tools/phpstan.config.tests.neon
@@ -27,7 +26,7 @@ includes:
     - ../src/FastyBird/Plugin/RabbitMq/tools/phpstan.config.tests.neon
     - ../src/FastyBird/Plugin/RedisDb/tools/phpstan.config.tests.neon
     - ../src/FastyBird/Plugin/WebServer/tools/phpstan.config.tests.neon
-    - ../src/FastyBird/Plugin/WsExchange/tools/phpstan.config.tests.neon
+    - ../src/FastyBird/Plugin/WsServer/tools/phpstan.config.tests.neon
 
 parameters:
     level: max

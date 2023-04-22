@@ -39,10 +39,6 @@ class BridgeSource extends Consistence\Enum\Enum
 
 	public const SOURCE_BRIDGE_REDISDB_TRIGGERS_MODULE = Metadata\Constants::BRIDGE_REDISDB_TRIGGERS_MODULE;
 
-	public const SOURCE_BRIDGE_REDISDB_WS_EXCHANGE = Metadata\Constants::BRIDGE_REDISDB_WS_EXCHANGE;
-
-	public const SOURCE_BRIDGE_WS_EXCHANGE_DEVICES_MODULE = Metadata\Constants::BRIDGE_WS_EXCHANGE_DEVICES_MODULE;
-
 	public function __toString(): string
 	{
 		return strval(self::getValue());

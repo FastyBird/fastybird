@@ -46,15 +46,13 @@ final class Constants
 
 	public const MODULE_UI_SOURCE = 'com.fastybird.ui-module';
 
-	public const MODULE_WEB_UI_SOURCE = 'com.fastybird.web-ui-module';
-
 	public const PLUGIN_COUCHDB_SOURCE = 'com.fastybird.couchdb-plugin';
 
 	public const PLUGIN_RABBITMQ_SOURCE = 'com.fastybird.rabbitmq-plugin';
 
 	public const PLUGIN_REDISDB_SOURCE = 'com.fastybird.redisdb-plugin';
 
-	public const PLUGIN_WS_EXCHANGE_SOURCE = 'com.fastybird.ws-exchange-plugin';
+	public const PLUGIN_WS_SERVER_SOURCE = 'com.fastybird.ws-server-plugin';
 
 	public const PLUGIN_WEB_SERVER_SOURCE = 'com.fastybird.web-server-plugin';
 
@@ -87,10 +85,6 @@ final class Constants
 	public const BRIDGE_REDISDB_DEVICES_MODULE = 'com.fastybird.redisdb-devices-module-bridge';
 
 	public const BRIDGE_REDISDB_TRIGGERS_MODULE = 'com.fastybird.redisdb-triggers-module-bridge';
-
-	public const BRIDGE_REDISDB_WS_EXCHANGE = 'com.fastybird.redis-exchange-ws-exchange-bridge';
-
-	public const BRIDGE_WS_EXCHANGE_DEVICES_MODULE = 'com.fastybird.ws-exchange-devices-module-bridge';
 
 	/**
 	 * Modules prefixes

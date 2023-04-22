@@ -48,10 +48,10 @@
     "dev": "vite",
     "serve": "vite preview",
     "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
-    "build": "yarn clean && vue-tsc --noEmit && vite build",
-    "build:dev": "vue-tsc --noEmit && vite build --watch --mode development",
+    "build": "yarn clean && vue-tsc --noEmit --composite false && vite build",
+    "build:dev": "vue-tsc --noEmit --composite false && vite build --watch --mode development",
     "build:only": "yarn clean && vite build",
-    "types": "vue-tsc --noEmit",
+    "types": "vue-tsc --noEmit --composite false",
     "lint:js": "eslint --ext .js,.ts,.vue --ignore-path .gitignore assets",
     "lint:js:fix": "eslint --ext .js,.ts,.vue --ignore-path .gitignore assets --fix",
     "lint:styles": "stylelint 'assets/**/*.scss'",
@@ -129,7 +129,7 @@
     "vue-meta": "^3.0.0-alpha.9",
     "vue-router": "^4.1",
     "vue-toastification": "^2.0.0-rc.5",
-    "vue-tsc": "^1.0"
+    "vue-tsc": "^1.4"
   },
   "peerDependencies": {
     "pinia": "^2.0",

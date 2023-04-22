@@ -35,7 +35,12 @@
 
 			<fb-layout-expandable-box :show="!isDetailRoute">
 				<suspense>
-					<router-view :connector-id="deviceData?.device.connector.id" />
+					<router-view v-slot="{ Component }">
+						<component
+							:is="Component"
+							:connector-id="deviceData?.device.connector.id"
+						/>
+					</router-view>
 
 					<template #fallback>
 						<fb-ui-component-loading />

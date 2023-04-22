@@ -106,7 +106,7 @@ abstract class BaseV1
 	): ResponseInterface
 	{
 		// & relation entity name
-		$relationEntity = Utils\Strings::lower(strval($request->getAttribute(Router\Routes::RELATION_ENTITY)));
+		$relationEntity = Utils\Strings::lower(strval($request->getAttribute(Router\ApiRoutes::RELATION_ENTITY)));
 
 		if ($relationEntity !== '') {
 			throw new JsonApiExceptions\JsonApiError(
@@ -175,8 +175,8 @@ abstract class BaseV1
 				RequestMethodInterface::METHOD_POST,
 				RequestMethodInterface::METHOD_PATCH,
 			], true)
-			&& $request->getAttribute(Router\Routes::URL_ITEM_ID) !== null
-			&& $request->getAttribute(Router\Routes::URL_ITEM_ID) !== $document->getResource()->getId()
+			&& $request->getAttribute(Router\ApiRoutes::URL_ITEM_ID) !== null
+			&& $request->getAttribute(Router\ApiRoutes::URL_ITEM_ID) !== $document->getResource()->getId()
 		) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_BAD_REQUEST,

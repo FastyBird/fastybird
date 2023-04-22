@@ -19,7 +19,7 @@
     "types": [
       "@fastybird/metadata-library",
       "@fastybird/web-ui-library",
-      "@fastybird/ws-exchange-plugin",
+      "@fastybird/vue-wamp-v1",
       "@types/lodash.get",
       "@types/lodash.capitalize",
       "@types/uuid",

@@ -63,10 +63,10 @@ final class ChannelControlsV1 extends BaseV1
 	): Message\ResponseInterface
 	{
 		// At first, try to load device
-		$device = $this->findDevice(strval($request->getAttribute(Router\Routes::URL_DEVICE_ID)));
+		$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
 
 		// & channel
-		$channel = $this->findChannel(strval($request->getAttribute(Router\Routes::URL_CHANNEL_ID)), $device);
+		$channel = $this->findChannel(strval($request->getAttribute(Router\ApiRoutes::URL_CHANNEL_ID)), $device);
 
 		$findQuery = new Queries\FindChannelControls();
 		$findQuery->forChannel($channel);
@@ -87,15 +87,15 @@ final class ChannelControlsV1 extends BaseV1
 	): Message\ResponseInterface
 	{
 		// At first, try to load device
-		$device = $this->findDevice(strval($request->getAttribute(Router\Routes::URL_DEVICE_ID)));
+		$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
 
 		// & channel
-		$channel = $this->findChannel(strval($request->getAttribute(Router\Routes::URL_CHANNEL_ID)), $device);
+		$channel = $this->findChannel(strval($request->getAttribute(Router\ApiRoutes::URL_CHANNEL_ID)), $device);
 
-		if (Uuid\Uuid::isValid(strval($request->getAttribute(Router\Routes::URL_ITEM_ID)))) {
+		if (Uuid\Uuid::isValid(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)))) {
 			$findQuery = new Queries\FindChannelControls();
 			$findQuery->forChannel($channel);
-			$findQuery->byId(Uuid\Uuid::fromString(strval($request->getAttribute(Router\Routes::URL_ITEM_ID))));
+			$findQuery->byId(Uuid\Uuid::fromString(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID))));
 
 			// & control
 			$control = $this->channelControlsRepository->findOneBy($findQuery);
@@ -122,18 +122,18 @@ final class ChannelControlsV1 extends BaseV1
 	): Message\ResponseInterface
 	{
 		// At first, try to load device
-		$device = $this->findDevice(strval($request->getAttribute(Router\Routes::URL_DEVICE_ID)));
+		$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
 
 		// & channel
-		$channel = $this->findChannel(strval($request->getAttribute(Router\Routes::URL_CHANNEL_ID)), $device);
+		$channel = $this->findChannel(strval($request->getAttribute(Router\ApiRoutes::URL_CHANNEL_ID)), $device);
 
 		// & relation entity name
-		$relationEntity = Utils\Strings::lower(strval($request->getAttribute(Router\Routes::RELATION_ENTITY)));
+		$relationEntity = Utils\Strings::lower(strval($request->getAttribute(Router\ApiRoutes::RELATION_ENTITY)));
 
-		if (Uuid\Uuid::isValid(strval($request->getAttribute(Router\Routes::URL_ITEM_ID)))) {
+		if (Uuid\Uuid::isValid(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)))) {
 			$findQuery = new Queries\FindChannelControls();
 			$findQuery->forChannel($channel);
-			$findQuery->byId(Uuid\Uuid::fromString(strval($request->getAttribute(Router\Routes::URL_ITEM_ID))));
+			$findQuery->byId(Uuid\Uuid::fromString(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID))));
 
 			// & control
 			$control = $this->channelControlsRepository->findOneBy($findQuery);

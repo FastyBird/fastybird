@@ -33,9 +33,6 @@
                 <element key="src/FastyBird/Bridge/RedisDbTriggersModule/tests/cases/unit" value="FastyBird\Bridge\RedisDbTriggersModule\Tests\Cases\Unit"/>
                 <element key="src/FastyBird/Bridge/RedisDbTriggersModule/tests/tools" value="FastyBird\Bridge\RedisDbTriggersModule\Tests\Tools"/>
 
-                <element key="src/FastyBird/Bridge/WsExchangeDevicesModule/src" value="FastyBird\Bridge\WsExchangeDevicesModule"/>
-                <element key="src/FastyBird/Bridge/WsExchangeDevicesModule/tests/cases/unit" value="FastyBird\Bridge\WsExchangeDevicesModule\Tests\Cases\Unit"/>
-
                 <element key="src/FastyBird/Connector/FbMqtt/src" value="FastyBird\Connector\FbMqtt"/>
                 <element key="src/FastyBird/Connector/FbMqtt/tests/cases/unit" value="FastyBird\Connector\FbMqtt\Tests\Cases\Unit"/>
                 <element key="src/FastyBird/Connector/FbMqtt/tests/tools" value="FastyBird\Connector\FbMqtt\Tests\Tools"/>
@@ -102,8 +99,8 @@
                 <element key="src/FastyBird/Plugin/WebServer/src" value="FastyBird\Plugin\WebServer"/>
                 <element key="src/FastyBird/Plugin/WebServer/tests/cases/unit" value="FastyBird\Plugin\WebServer\Tests\Cases\Unit"/>
 
-                <element key="src/FastyBird/Plugin/WsExchange/src" value="FastyBird\Plugin\WsExchange"/>
-                <element key="src/FastyBird/Plugin/WsExchange/tests/cases/unit" value="FastyBird\Plugin\WsExchange\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Plugin/WsServer/src" value="FastyBird\Plugin\WsServer"/>
+                <element key="src/FastyBird/Plugin/WsServer/tests/cases/unit" value="FastyBird\Plugin\WsServer\Tests\Cases\Unit"/>
             </property>
         </properties>
     </rule>

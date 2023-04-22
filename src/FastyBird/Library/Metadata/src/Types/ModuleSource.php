@@ -43,8 +43,6 @@ class ModuleSource extends Consistence\Enum\Enum
 
 	public const SOURCE_MODULE_UI = Metadata\Constants::MODULE_UI_SOURCE;
 
-	public const SOURCE_MODULE_WEB_UI = Metadata\Constants::MODULE_WEB_UI_SOURCE;
-
 	public function __toString(): string
 	{
 		return strval(self::getValue());

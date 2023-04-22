@@ -17,6 +17,7 @@ namespace FastyBird\Module\Devices\DI;
 
 use Doctrine\Persistence;
 use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
+use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
 use FastyBird\Library\Exchange\DI as ExchangeDI;
 use FastyBird\Library\Exchange\Exchange as ExchangeExchange;
 use FastyBird\Module\Devices\Commands;
@@ -39,6 +40,7 @@ use Nette\PhpGenerator;
 use Nette\Schema;
 use stdClass;
 use function assert;
+use function class_exists;
 use function is_string;
 use function ucfirst;
 use const DIRECTORY_SEPARATOR;
@@ -88,9 +90,15 @@ class DevicesExtension extends DI\CompilerExtension
 		$builder->addDefinition($this->prefix('middlewares.access'), new DI\Definitions\ServiceDefinition())
 			->setType(Middleware\Access::class);
 
-		$builder->addDefinition($this->prefix('router.routes'), new DI\Definitions\ServiceDefinition())
-			->setType(Router\Routes::class)
+		$builder->addDefinition($this->prefix('router.api.routes'), new DI\Definitions\ServiceDefinition())
+			->setType(Router\ApiRoutes::class)
 			->setArguments(['usePrefix' => $configuration->apiPrefix]);
+
+		if (class_exists('IPub\WebSockets\DI\WebSocketsExtension')) {
+			$builder->addDefinition($this->prefix('router.sockets.routes'), new DI\Definitions\ServiceDefinition())
+				->setType(Router\SocketRoutes::class)
+				->addTag('ipub.websockets.routes');
+		}
 
 		$builder->addDefinition($this->prefix('router.validator'), new DI\Definitions\ServiceDefinition())
 			->setType(Router\Validator::class);
@@ -208,6 +216,10 @@ class DevicesExtension extends DI\CompilerExtension
 
 		$builder->addDefinition($this->prefix('controllers.deviceProperties'), new DI\Definitions\ServiceDefinition())
 			->setType(Controllers\DevicePropertiesV1::class)
+			->addTag('nette.inject');
+
+		$builder->addDefinition($this->prefix('controllers.exchange'), new DI\Definitions\ServiceDefinition())
+			->setType(Controllers\ExchangeV1::class)
 			->addTag('nette.inject');
 
 		$builder->addDefinition(
@@ -451,6 +463,15 @@ class DevicesExtension extends DI\CompilerExtension
 			->setType(Consumers\State::class)
 			->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATUS, false);
 
+		if (
+			$builder->findByType('IPub\WebSockets\Router\LinkGenerator') !== []
+			&& $builder->findByType('IPub\WebSocketsWAMP\Topics\IStorage') !== []
+		) {
+			$builder->addDefinition($this->prefix('exchange.consumer.sockets'), new DI\Definitions\ServiceDefinition())
+				->setType(Consumers\Sockets::class)
+				->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATUS, false);
+		}
+
 		$builder->addDefinition($this->prefix('commands.initialize'), new DI\Definitions\ServiceDefinition())
 			->setType(Commands\Initialize::class);
 
@@ -501,14 +522,14 @@ class DevicesExtension extends DI\CompilerExtension
 		}
 
 		/**
-		 * Routes
+		 * ApiRoutes
 		 */
 
 		$routerService = $builder->getDefinitionByType(SlimRouterRouting\Router::class);
 
 		if ($routerService instanceof DI\Definitions\ServiceDefinition) {
 			$routerService->addSetup('?->registerRoutes(?)', [
-				$builder->getDefinitionByType(Router\Routes::class),
+				$builder->getDefinitionByType(Router\ApiRoutes::class),
 				$routerService,
 			]);
 		}
@@ -530,6 +551,46 @@ class DevicesExtension extends DI\CompilerExtension
 						$connectorExecutorFactoryService->getTag(self::CONNECTOR_TYPE_TAG),
 					]);
 				}
+			}
+		}
+
+		/**
+		 * WebSockets
+		 */
+
+		if (class_exists('IPub\WebSockets\DI\WebSocketsExtension')) {
+			try {
+				$wsControllerFactoryService = $builder->getDefinitionByType(
+					'IPub\WebSockets\Application\Controller\IControllerFactory',
+				);
+				assert($wsControllerFactoryService instanceof DI\Definitions\ServiceDefinition);
+
+				$wsControllerFactoryService->addSetup(
+					'setMapping',
+					[
+						[
+							'DevicesModule' => ['FastyBird\\Module\\Devices\\Controllers', '*', '*V1'],
+						],
+					],
+				);
+
+				$consumerService = $builder->getDefinitionByType(ExchangeConsumers\Container::class);
+				assert($consumerService instanceof DI\Definitions\ServiceDefinition);
+
+				$wsServerService = $builder->getDefinitionByType('IPub\WebSockets\Server\Server');
+				assert($wsServerService instanceof DI\Definitions\ServiceDefinition);
+
+				$wsServerService->addSetup(
+					'?->onCreate[] = function() {?->enable(?);}',
+					[
+						'@self',
+						$consumerService,
+						Consumers\Sockets::class,
+					],
+				);
+
+			} catch (DI\MissingServiceException) {
+				// Extension is not registered
 			}
 		}
 	}

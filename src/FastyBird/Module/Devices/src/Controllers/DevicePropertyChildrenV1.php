@@ -58,9 +58,9 @@ final class DevicePropertyChildrenV1 extends BaseV1
 	): Message\ResponseInterface
 	{
 		// At first, try to load device
-		$device = $this->findDevice(strval($request->getAttribute(Router\Routes::URL_DEVICE_ID)));
+		$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
 		// & property
-		$property = $this->findProperty(strval($request->getAttribute(Router\Routes::URL_PROPERTY_ID)), $device);
+		$property = $this->findProperty(strval($request->getAttribute(Router\ApiRoutes::URL_PROPERTY_ID)), $device);
 
 		$findQuery = new Queries\FindDeviceProperties();
 		$findQuery->forParent($property);
