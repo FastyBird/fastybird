@@ -31,9 +31,11 @@
 				<suspense>
 					<router-view />
 
+					<!---
 					<template #fallback>
 						<fb-ui-component-loading />
 					</template>
+					//-->
 				</suspense>
 			</fb-layout-expandable-box>
 		</template>
@@ -59,9 +61,11 @@
 					<suspense>
 						<component :is="Component" />
 
+						<!---
 						<template #fallback>
 							<fb-ui-component-loading />
 						</template>
+						//-->
 					</suspense>
 				</div>
 			</fb-layout-off-canvas>
@@ -126,7 +130,6 @@ import {
 	FbLayoutHeaderHeading,
 	FbLayoutHeaderIcon,
 	FbLayoutOffCanvas,
-	FbUiComponentLoading,
 	FbMenuItemTypes,
 } from '@fastybird/web-ui-library';
 

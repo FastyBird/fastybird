@@ -63,6 +63,7 @@
     "contributte/translation": "^2.0",
     "dg/bypass-finals": "^1.4",
     "ipub/websockets": "^1.5",
+    "ipub/websockets-wamp": "^1.4",
     "infection/infection": "^0.26",
     "orisai/coding-standard": "^3.2",
     "pds/skeleton": "^1.0",
