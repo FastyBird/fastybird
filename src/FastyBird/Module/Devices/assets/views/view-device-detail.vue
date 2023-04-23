@@ -42,9 +42,11 @@
 						/>
 					</router-view>
 
+					<!---
 					<template #fallback>
 						<fb-ui-component-loading />
 					</template>
+					//-->
 				</suspense>
 			</fb-layout-expandable-box>
 		</template>
@@ -73,9 +75,11 @@
 							:connector-id="deviceData?.device.connector.id"
 						/>
 
+						<!---
 						<template #fallback>
 							<fb-ui-component-loading />
 						</template>
+						//-->
 					</suspense>
 				</div>
 			</fb-layout-off-canvas>
@@ -140,7 +144,6 @@ import {
 	FbLayoutHeaderHeading,
 	FbLayoutHeaderIcon,
 	FbLayoutOffCanvas,
-	FbUiComponentLoading,
 	FbMenuItemTypes,
 } from '@fastybird/web-ui-library';
 
