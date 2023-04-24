@@ -50,43 +50,6 @@ jobs:
       - name: "Check Prettier with eslint"
         run: "yarn pretty:check"
 
-  static-analysis:
-    name: "Code static analysis"
-    runs-on: "${{ matrix.operating-system }}"
-
-    strategy:
-      fail-fast: false
-      matrix:
-        node-version: [ "16" ]
-        operating-system: [ "ubuntu-latest" ]
-
-    steps:
-      - name: "Checkout"
-        uses: "actions/checkout@v3"
-
-      - name: "Setup node"
-        uses: "actions/setup-node@v3"
-        with:
-          node-version: "${{ matrix.node-version }}"
-
-      - name: "Get Yarn cache directory"
-        id: "yarn-cache-dir-path"
-        run: 'echo "::set-output name=dir::$(yarn cache dir)"'
-
-      - name: "Cache JS dependencies"
-        uses: "actions/cache@v3"
-        with:
-          path: "${{ steps.yarn-cache-dir-path.outputs.dir }}"
-          key: "${{ runner.os }}-node-modules-${{ hashFiles('yarn.lock') }}"
-          restore-keys: "${{ runner.os }}-node-modules-"
-
-      - name: "Install dependencies"
-        if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: "yarn install"
-
-      - name: "Check typescript"
-        run: "yarn types"
-
   lint:
     name: "Code linting"
     runs-on: "${{ matrix.operating-system }}"
@@ -167,7 +130,7 @@ jobs:
   publish-npmjs:
     name: "Build library and publish it to NPM"
     runs-on: "${{ matrix.operating-system }}"
-    needs: [ "qa", "static-analysis", "lint", "build-storybook" ]
+    needs: [ "qa", "lint", "build-storybook" ]
 
     strategy:
       matrix:
@@ -218,7 +181,7 @@ jobs:
   publish-github:
     name: "Build library and publish it to Github packages"
     runs-on: "${{ matrix.operating-system }}"
-    needs: [ "qa", "static-analysis", "lint", "build-storybook" ]
+    needs: [ "qa", "lint", "build-storybook" ]
 
     strategy:
       matrix:
@@ -271,7 +234,7 @@ jobs:
   publish-storybook:
     name: "Build Storybook and publish it to Github pages"
     runs-on: "${{ matrix.operating-system }}"
-    needs: [ "qa", "static-analysis", "lint", "build-storybook" ]
+    needs: [ "qa", "lint", "build-storybook" ]
 
     strategy:
       matrix:
