@@ -53,8 +53,8 @@ export default defineConfig({
 	build: {
 		lib: {
 			entry: resolve(__dirname, './assets/entry.ts'),
-			name: 'devices-module',
-			fileName: (format) => `devices-module.${format}.js`,
+			name: 'triggers-module',
+			fileName: (format) => `triggers-module.${format}.js`,
 		},
 		rollupOptions: {
 			plugins: [
@@ -123,7 +123,7 @@ export default defineConfig({
 					'vue-toastification': 'VueToastification',
 				},
 				assetFileNames: (chunkInfo) => {
-					if (chunkInfo.name == 'style.css') return 'devices-module.css';
+					if (chunkInfo.name == 'style.css') return 'triggers-module.css';
 
 					return chunkInfo.name as string;
 				},

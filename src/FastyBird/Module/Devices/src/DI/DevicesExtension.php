@@ -218,10 +218,6 @@ class DevicesExtension extends DI\CompilerExtension
 			->setType(Controllers\DevicePropertiesV1::class)
 			->addTag('nette.inject');
 
-		$builder->addDefinition($this->prefix('controllers.exchange'), new DI\Definitions\ServiceDefinition())
-			->setType(Controllers\ExchangeV1::class)
-			->addTag('nette.inject');
-
 		$builder->addDefinition(
 			$this->prefix('controllers.devicePropertyChildren'),
 			new DI\Definitions\ServiceDefinition(),
@@ -266,6 +262,12 @@ class DevicesExtension extends DI\CompilerExtension
 		$builder->addDefinition($this->prefix('controllers.connectorsControls'), new DI\Definitions\ServiceDefinition())
 			->setType(Controllers\ConnectorControlsV1::class)
 			->addTag('nette.inject');
+
+		if (class_exists('IPub\WebSockets\DI\WebSocketsExtension')) {
+			$builder->addDefinition($this->prefix('controllers.exchange'), new DI\Definitions\ServiceDefinition())
+				->setType(Controllers\ExchangeV1::class)
+				->addTag('nette.inject');
+		}
 
 		$builder->addDefinition($this->prefix('schemas.device.blank'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\Devices\Blank::class);
