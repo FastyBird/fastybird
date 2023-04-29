@@ -82,7 +82,7 @@ abstract class Property extends JsonApiSchemas\JsonApi
 			'queryable' => $resource->isQueryable(),
 			'data_type' => strval($resource->getDataType()->getValue()),
 			'unit' => $resource->getUnit(),
-			'format' => $resource->getFormat()?->toArray(),
+			'format' => $resource->getFormat()?->getValue(),
 			'invalid' => $resource->getInvalid(),
 			'scale' => $resource->getScale(),
 			'step' => $resource->getStep(),

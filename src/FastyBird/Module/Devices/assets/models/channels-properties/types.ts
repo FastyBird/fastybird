@@ -158,7 +158,7 @@ interface IChannelPropertyResponseDataAttributes {
 	queryable: boolean;
 	data_type: DataType | null;
 	unit: string | null;
-	format: string[] | (string | null)[][] | (number | null)[] | null;
+	format: string[] | (string | null)[][] | (number | null)[] | string | null;
 	invalid: string | number | null;
 	scale: number | null;
 	step: number | null;

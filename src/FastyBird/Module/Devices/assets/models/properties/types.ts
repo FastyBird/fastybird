@@ -31,7 +31,7 @@ export interface IProperty {
 	queryable: boolean;
 	dataType: DataType;
 	unit: string | null;
-	format: string[] | (string | null)[][] | (number | null)[] | null;
+	format: string[] | (string | null)[][] | (number | null)[] | string | null;
 	invalid: string | number | null;
 	scale: number | null;
 	step: number | null;
@@ -69,7 +69,7 @@ export interface IPropertyRecordFactoryPayload {
 	queryable?: boolean;
 	dataType: DataType;
 	unit?: string | null;
-	format?: string[] | (string | null)[][] | (number | null)[] | null;
+	format?: string[] | (string | null)[][] | (number | null)[] | string | null;
 	invalid?: string | number | null;
 	scale?: number | null;
 	step?: number | null;
@@ -107,7 +107,7 @@ export interface IPropertiesAddActionPayload {
 		queryable?: boolean;
 		dataType: DataType;
 		unit?: string | null;
-		format?: string[] | (string | null)[][] | (number | null)[] | null;
+		format?: string[] | (string | null)[][] | (number | null)[] | string | null;
 		invalid?: string | number | null;
 		scale?: number | null;
 		step?: number | null;
@@ -127,7 +127,7 @@ export interface IPropertiesEditActionPayload {
 		queryable?: boolean;
 		dataType?: DataType;
 		unit?: string | null;
-		format?: string[] | (string | null)[][] | (number | null)[] | null;
+		format?: string[] | (string | null)[][] | (number | null)[] | string | null;
 		invalid?: string | number | null;
 		scale?: number | null;
 		step?: number | null;
@@ -175,7 +175,7 @@ export interface IPropertyResponseModel extends TJsonaModel {
 	queryable: boolean;
 	dataType: DataType;
 	unit: string | null;
-	format: string[] | (string | null)[][] | (number | null)[] | null;
+	format: string[] | (string | null)[][] | (number | null)[] | string | null;
 	invalid: string | number | null;
 	scale: number | null;
 	step: number | null;

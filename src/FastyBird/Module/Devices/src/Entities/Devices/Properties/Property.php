@@ -255,7 +255,7 @@ abstract class Property extends Entities\Property
 		parent::setUnit($unit);
 	}
 
-	public function getFormat(): MetadataValueObjects\StringEnumFormat|MetadataValueObjects\NumberRangeFormat|MetadataValueObjects\CombinedEnumFormat|null
+	public function getFormat(): MetadataValueObjects\StringEnumFormat|MetadataValueObjects\NumberRangeFormat|MetadataValueObjects\CombinedEnumFormat|MetadataValueObjects\EquationFormat|null
 	{
 		if (
 			$this->getParent() !== null && !$this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_MAPPED)

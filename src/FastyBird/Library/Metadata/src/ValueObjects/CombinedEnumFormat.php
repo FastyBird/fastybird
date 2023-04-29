@@ -116,6 +116,14 @@ final class CombinedEnumFormat implements IteratorAggregate
 		return new ArrayIterator($this->getItems());
 	}
 
+	/**
+	 * @return array<int, array<int, string|array<int, string|int|float|bool>|null>>
+	 */
+	public function getValue(): array
+	{
+		return $this->toArray();
+	}
+
 	public function __toString(): string
 	{
 		return implode(',', array_map(static fn (array $item) =>

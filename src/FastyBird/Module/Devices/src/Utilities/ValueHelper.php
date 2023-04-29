@@ -32,6 +32,7 @@ use function intval;
 use function is_float;
 use function is_int;
 use function is_numeric;
+use function round;
 use function sprintf;
 use function strval;
 use const DATE_ATOM;
@@ -54,7 +55,8 @@ final class ValueHelper
 	public static function normalizeValue(
 		MetadataTypes\DataType $dataType,
 		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
-		MetadataValueObjects\StringEnumFormat|MetadataValueObjects\NumberRangeFormat|MetadataValueObjects\CombinedEnumFormat|null $format = null,
+		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+		MetadataValueObjects\StringEnumFormat|MetadataValueObjects\NumberRangeFormat|MetadataValueObjects\CombinedEnumFormat|MetadataValueObjects\EquationFormat|null $format = null,
 		float|int|string|null $invalid = null,
 	): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
 	{
@@ -232,7 +234,8 @@ final class ValueHelper
 	public static function normalizeReadValue(
 		MetadataTypes\DataType $dataType,
 		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
-		MetadataValueObjects\StringEnumFormat|MetadataValueObjects\NumberRangeFormat|MetadataValueObjects\CombinedEnumFormat|null $format = null,
+		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+		MetadataValueObjects\StringEnumFormat|MetadataValueObjects\NumberRangeFormat|MetadataValueObjects\CombinedEnumFormat|MetadataValueObjects\EquationFormat|null $format = null,
 		int|null $scale,
 		float|int|string|null $invalid = null,
 	): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
@@ -244,8 +247,7 @@ final class ValueHelper
 		$value = self::normalizeValue($dataType, $value, $format, $invalid);
 
 		if (
-			$scale !== null
-			&& in_array($dataType->getValue(), [
+			in_array($dataType->getValue(), [
 				MetadataTypes\DataType::DATA_TYPE_CHAR,
 				MetadataTypes\DataType::DATA_TYPE_UCHAR,
 				MetadataTypes\DataType::DATA_TYPE_SHORT,
@@ -259,13 +261,23 @@ final class ValueHelper
 				|| is_float($value)
 			)
 		) {
-			$value = intval($value);
+			if ($format instanceof MetadataValueObjects\EquationFormat) {
+				$value = $format->getEquationFrom()->substitute(['y' => $value])->simplify()->string();
 
-			for ($i = 0; $i < $scale; $i++) {
-				$value /= 10;
+				$value = $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_FLOAT)
+					? floatval($value)
+					: intval($value);
 			}
 
-			$value = floatval($value);
+			if ($scale !== null) {
+				$value = intval($value);
+
+				for ($i = 0; $i < $scale; $i++) {
+					$value /= 10;
+				}
+
+				$value = round(floatval($value), $scale);
+			}
 		}
 
 		return $value;
@@ -278,7 +290,8 @@ final class ValueHelper
 	public static function normalizeWriteValue(
 		MetadataTypes\DataType $dataType,
 		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
-		MetadataValueObjects\StringEnumFormat|MetadataValueObjects\NumberRangeFormat|MetadataValueObjects\CombinedEnumFormat|null $format = null,
+		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+		MetadataValueObjects\StringEnumFormat|MetadataValueObjects\NumberRangeFormat|MetadataValueObjects\CombinedEnumFormat|MetadataValueObjects\EquationFormat|null $format = null,
 		int|null $scale,
 		float|int|string|null $invalid = null,
 	): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
@@ -287,11 +300,8 @@ final class ValueHelper
 			return null;
 		}
 
-		$value = self::normalizeValue($dataType, $value, $format, $invalid);
-
 		if (
-			$scale !== null
-			&& in_array($dataType->getValue(), [
+			in_array($dataType->getValue(), [
 				MetadataTypes\DataType::DATA_TYPE_CHAR,
 				MetadataTypes\DataType::DATA_TYPE_UCHAR,
 				MetadataTypes\DataType::DATA_TYPE_SHORT,
@@ -305,16 +315,26 @@ final class ValueHelper
 				|| is_float($value)
 			)
 		) {
-			$value = floatval($value);
+			if ($format instanceof MetadataValueObjects\EquationFormat && $format->getEquationTo() !== null) {
+				$value = $format->getEquationTo()->substitute(['x' => $value])->simplify()->string();
 
-			for ($i = 0; $i < $scale; $i++) {
-				$value *= 10;
+				$value = $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_FLOAT)
+					? floatval($value)
+					: intval($value);
 			}
 
-			$value = intval($value);
+			if ($scale !== null) {
+				$value = floatval($value);
+
+				for ($i = 0; $i < $scale; $i++) {
+					$value *= 10;
+				}
+
+				$value = intval($value);
+			}
 		}
 
-		return $value;
+		return self::normalizeValue($dataType, $value, $format, $invalid);
 	}
 
 	public static function flattenValue(

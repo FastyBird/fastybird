@@ -250,7 +250,7 @@ abstract class Property implements Entity,
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 */
-	public function getFormat(): MetadataValueObjects\StringEnumFormat|MetadataValueObjects\NumberRangeFormat|MetadataValueObjects\CombinedEnumFormat|null
+	public function getFormat(): MetadataValueObjects\StringEnumFormat|MetadataValueObjects\NumberRangeFormat|MetadataValueObjects\CombinedEnumFormat|MetadataValueObjects\EquationFormat|null
 	{
 		return $this->buildFormat($this->format);
 	}
@@ -516,7 +516,7 @@ abstract class Property implements Entity,
 			'queryable' => $this->isQueryable(),
 			'data_type' => $this->getDataType()->getValue(),
 			'unit' => $this->getUnit(),
-			'format' => $this->getFormat()?->toArray(),
+			'format' => $this->getFormat()?->getValue(),
 			'invalid' => $this->getInvalid(),
 			'scale' => $this->getScale(),
 			'step' => $this->getStep(),
@@ -537,7 +537,7 @@ abstract class Property implements Entity,
 	 */
 	private function buildFormat(
 		string|null $format,
-	): MetadataValueObjects\StringEnumFormat|MetadataValueObjects\NumberRangeFormat|MetadataValueObjects\CombinedEnumFormat|null
+	): MetadataValueObjects\StringEnumFormat|MetadataValueObjects\NumberRangeFormat|MetadataValueObjects\CombinedEnumFormat|MetadataValueObjects\EquationFormat|null
 	{
 		if ($format === null) {
 			return null;
@@ -556,6 +556,8 @@ abstract class Property implements Entity,
 		) {
 			if (preg_match(Metadata\Constants::VALUE_FORMAT_NUMBER_RANGE, $format) === 1) {
 				return new MetadataValueObjects\NumberRangeFormat($format);
+			} elseif (preg_match(Metadata\Constants::VALUE_FORMAT_EQUATION, $format) === 1) {
+				return new MetadataValueObjects\EquationFormat($format);
 			}
 		} elseif (
 			in_array($this->dataType->getValue(), [

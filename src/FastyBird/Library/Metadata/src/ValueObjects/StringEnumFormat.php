@@ -76,6 +76,14 @@ final class StringEnumFormat implements IteratorAggregate
 		return $this->getItems();
 	}
 
+	/**
+	 * @return array<string>
+	 */
+	public function getValue(): array
+	{
+		return $this->toArray();
+	}
+
 	public function getIterator(): Traversable
 	{
 		return new ArrayIterator($this->getItems());

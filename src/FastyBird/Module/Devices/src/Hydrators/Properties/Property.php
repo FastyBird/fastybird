@@ -29,6 +29,7 @@ use function implode;
 use function in_array;
 use function is_array;
 use function is_scalar;
+use function is_string;
 use function preg_match;
 use function strval;
 
@@ -119,97 +120,117 @@ abstract class Property extends JsonApiHydrators\Hydrator
 		$rawFormat = $attributes->get('format');
 		$rawDataType = $attributes->get('data_type');
 
+		if (
+			!is_scalar($rawDataType)
+			|| !MetadataTypes\DataType::isValidValue((string) $rawDataType)
+		) {
+			return null;
+		}
+
+		$dataType = MetadataTypes\DataType::get((string) $rawDataType);
+
 		if (is_array($rawFormat)) {
 			if (
-				is_scalar($rawDataType)
-				&& MetadataTypes\DataType::isValidValue((string) $rawDataType)
+				$dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_ENUM)
+				|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)
+				|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SWITCH)
+				|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_COVER)
 			) {
-				$dataType = MetadataTypes\DataType::get((string) $rawDataType);
+				$plainFormat = implode(',', array_map(static function ($item): string {
+					if (is_array($item) || $item instanceof Utils\ArrayHash) {
+						return implode(
+							':',
+							array_map(
+								static fn (string|array|int|float|bool|Utils\ArrayHash|null $part): string => is_array(
+									$part,
+								) || $part instanceof Utils\ArrayHash
+									? implode('|', (array) $part)
+									: ($part !== null ? strval(
+										$part,
+									) : ''),
+								(array) $item,
+							),
+						);
+					}
+
+					return strval($item);
+				}, $rawFormat));
 
 				if (
-					$dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_ENUM)
-					|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)
-					|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SWITCH)
-					|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_COVER)
+					preg_match(Metadata\Constants::VALUE_FORMAT_STRING_ENUM, $plainFormat) === 1
+					|| preg_match(Metadata\Constants::VALUE_FORMAT_COMBINED_ENUM, $plainFormat) === 1
 				) {
-					$plainFormat = implode(',', array_map(static function ($item): string {
-						if (is_array($item) || $item instanceof Utils\ArrayHash) {
-							return implode(
-								':',
-								array_map(
-									static fn (string|array|int|float|bool|Utils\ArrayHash|null $part): string => is_array(
-										$part,
-									) || $part instanceof Utils\ArrayHash
-										? implode('|', (array) $part)
-										: ($part !== null ? strval(
-											$part,
-										) : ''),
-									(array) $item,
-								),
-							);
-						}
-
-						return strval($item);
-					}, $rawFormat));
-
-					if (
-						preg_match(Metadata\Constants::VALUE_FORMAT_STRING_ENUM, $plainFormat) === 1
-						|| preg_match(Metadata\Constants::VALUE_FORMAT_COMBINED_ENUM, $plainFormat) === 1
-					) {
-						return $plainFormat;
-					}
-
-					throw new JsonApiExceptions\JsonApiError(
-						StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-						$this->translator->translate('//devices-module.base.messages.invalidAttribute.heading'),
-						$this->translator->translate('//devices-module.base.messages.invalidAttribute.message'),
-						[
-							'pointer' => '/data/attributes/format',
-						],
-					);
-				} elseif (
-					in_array($dataType->getValue(), [
-						MetadataTypes\DataType::DATA_TYPE_CHAR,
-						MetadataTypes\DataType::DATA_TYPE_UCHAR,
-						MetadataTypes\DataType::DATA_TYPE_SHORT,
-						MetadataTypes\DataType::DATA_TYPE_USHORT,
-						MetadataTypes\DataType::DATA_TYPE_INT,
-						MetadataTypes\DataType::DATA_TYPE_UINT,
-						MetadataTypes\DataType::DATA_TYPE_FLOAT,
-					], true)
-				) {
-					$plainFormat = implode(':', array_map(static function ($item): string {
-						if (is_array($item) || $item instanceof Utils\ArrayHash) {
-							return implode(
-								'|',
-								array_map(
-									static fn ($part): string|int|float => is_array($part) ? strval($part) : $part,
-									(array) $item,
-								),
-							);
-						}
-
-						return strval($item);
-					}, $rawFormat));
-
-					if (preg_match(Metadata\Constants::VALUE_FORMAT_NUMBER_RANGE, $plainFormat) === 1) {
-						return $plainFormat;
-					}
-
-					throw new JsonApiExceptions\JsonApiError(
-						StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-						$this->translator->translate('//devices-module.base.messages.invalidAttribute.heading'),
-						$this->translator->translate('//devices-module.base.messages.invalidAttribute.message'),
-						[
-							'pointer' => '/data/attributes/format',
-						],
-					);
+					return $plainFormat;
 				}
+
+				throw new JsonApiExceptions\JsonApiError(
+					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
+					$this->translator->translate('//devices-module.base.messages.invalidAttribute.heading'),
+					$this->translator->translate('//devices-module.base.messages.invalidAttribute.message'),
+					[
+						'pointer' => '/data/attributes/format',
+					],
+				);
+			} elseif (
+				in_array($dataType->getValue(), [
+					MetadataTypes\DataType::DATA_TYPE_CHAR,
+					MetadataTypes\DataType::DATA_TYPE_UCHAR,
+					MetadataTypes\DataType::DATA_TYPE_SHORT,
+					MetadataTypes\DataType::DATA_TYPE_USHORT,
+					MetadataTypes\DataType::DATA_TYPE_INT,
+					MetadataTypes\DataType::DATA_TYPE_UINT,
+					MetadataTypes\DataType::DATA_TYPE_FLOAT,
+				], true)
+			) {
+				$plainFormat = implode(':', array_map(static function ($item): string {
+					if (is_array($item) || $item instanceof Utils\ArrayHash) {
+						return implode(
+							'|',
+							array_map(
+								static fn ($part): string|int|float => is_array($part) ? strval($part) : $part,
+								(array) $item,
+							),
+						);
+					}
+
+					return strval($item);
+				}, $rawFormat));
+
+				if (preg_match(Metadata\Constants::VALUE_FORMAT_NUMBER_RANGE, $plainFormat) === 1) {
+					return $plainFormat;
+				}
+
+				throw new JsonApiExceptions\JsonApiError(
+					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
+					$this->translator->translate('//devices-module.base.messages.invalidAttribute.heading'),
+					$this->translator->translate('//devices-module.base.messages.invalidAttribute.message'),
+					[
+						'pointer' => '/data/attributes/format',
+					],
+				);
 			}
 
 			return null;
 		} elseif (!is_scalar($rawFormat) || (string) $rawFormat === '') {
 			return null;
+		}
+
+		if (is_string($rawFormat)) {
+			if (
+				in_array($dataType->getValue(), [
+					MetadataTypes\DataType::DATA_TYPE_CHAR,
+					MetadataTypes\DataType::DATA_TYPE_UCHAR,
+					MetadataTypes\DataType::DATA_TYPE_SHORT,
+					MetadataTypes\DataType::DATA_TYPE_USHORT,
+					MetadataTypes\DataType::DATA_TYPE_INT,
+					MetadataTypes\DataType::DATA_TYPE_UINT,
+					MetadataTypes\DataType::DATA_TYPE_FLOAT,
+				], true)
+			) {
+				if (preg_match(Metadata\Constants::VALUE_FORMAT_EQUATION, $rawFormat) === 1) {
+					return $rawFormat;
+				}
+			}
 		}
 
 		return (string) $rawFormat;
