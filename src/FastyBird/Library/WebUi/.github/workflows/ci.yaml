@@ -167,16 +167,19 @@ jobs:
         run: yarn build
 
       - name: "Publish to NPM"
+        uses: "JS-DevTools/npm-publish@v1"
         if: contains(github.ref, 'refs/tags/')
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPMJS_TOKEN }}
-        run: "npm publish --access public"
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          access: "public"
 
       - name: "Publish to NPM"
+        uses: "JS-DevTools/npm-publish@v1"
         if: contains(github.ref, 'refs/tags/') == false
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPMJS_TOKEN }}
-        run: "npm publish --access public --tag dev"
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          access: "public"
+          tag: "dev"
 
   publish-github:
     name: "Build library and publish it to Github packages"
@@ -220,16 +223,21 @@ jobs:
         run: yarn build
 
       - name: "Publish to NPM"
+        uses: "JS-DevTools/npm-publish@v1"
         if: contains(github.ref, 'refs/tags/')
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: "npm publish --access public"
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          access: "public"
+          registry: "https://npm.pkg.github.com"
 
       - name: "Publish to NPM"
+        uses: "JS-DevTools/npm-publish@v1"
         if: contains(github.ref, 'refs/tags/') == false
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: "npm publish --access public --tag dev"
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          access: "public"
+          tag: "dev"
+          registry: "https://npm.pkg.github.com"
 
   publish-storybook:
     name: "Build Storybook and publish it to Github pages"
