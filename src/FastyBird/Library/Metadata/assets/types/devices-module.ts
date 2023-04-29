@@ -143,7 +143,7 @@ export interface ConnectorPropertyEntity {
 	queryable: boolean;
 	data_type: DataType;
 	unit: string | null;
-	format: string[] | (string | null)[][] | (number | null)[] | null;
+	format: string[] | (string | null)[][] | (number | null)[] | string | null;
 	invalid: string | number | null;
 	scale: number | null;
 	step: number | null;
@@ -185,7 +185,7 @@ export interface DevicePropertyEntity {
 	queryable: boolean;
 	data_type: DataType;
 	unit: string | null;
-	format: string[] | (string | null)[][] | (number | null)[] | null;
+	format: string[] | (string | null)[][] | (number | null)[] | string | null;
 	invalid: string | number | null;
 	scale: number | null;
 	step: number | null;
@@ -226,7 +226,7 @@ export interface ChannelPropertyEntity {
 	queryable: boolean;
 	data_type: DataType;
 	unit: string | null;
-	format: string[] | (string | null)[][] | (number | null)[] | null;
+	format: string[] | (string | null)[][] | (number | null)[] | string | null;
 	invalid: string | number | null;
 	scale: number | null;
 	step: number | null;

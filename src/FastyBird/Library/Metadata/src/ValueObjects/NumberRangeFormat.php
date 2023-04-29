@@ -216,6 +216,16 @@ final class NumberRangeFormat
 	}
 
 	/**
+	 * @return array<int, int|float|array<int, string|int|float|null>|null>
+	 *
+	 * @throws Exceptions\InvalidState
+	 */
+	public function getValue(): array
+	{
+		return $this->toArray();
+	}
+
+	/**
 	 * @param int|float|array<int, string|int|float>|null $item
 	 */
 	private function checkItem(string|int|float|array|null $item): bool
