@@ -333,7 +333,7 @@ jobs:
           CI: true
           COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          wget https://github.com/php-coveralls/php-coveralls/releases/download/v2.1.0/php-coveralls.phar
+          wget https://github.com/php-coveralls/php-coveralls/releases/download/v2.5.3/php-coveralls.phar
           php php-coveralls.phar --verbose --config tools/.coveralls.yml
 
   tests-mutations:
@@ -575,16 +575,26 @@ jobs:
           path: dist
 
       - name: "Publish to NPM"
+        uses: "JS-DevTools/npm-publish@v1"
+        id: "npm_publish"
         if: contains(github.ref, 'refs/tags/')
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPMJS_TOKEN }}
-        run: "npm publish --access public"
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          access: "public"
 
       - name: "Publish to NPM"
+        uses: "JS-DevTools/npm-publish@v1"
+        id: "npm_publish"
         if: contains(github.ref, 'refs/tags/') == false
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPMJS_TOKEN }}
-        run: "npm publish --access public --tag dev"
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          access: "public"
+          tag: "dev"
+
+      - name: "Publish to NPM result"
+        if: steps.npm_publish.outputs.type != 'none'
+        run: |
+          echo "Version changed: ${{ steps.publish.outputs.old-version }} => ${{ steps.publish.outputs.version }}"
 
   publish-github:
     name: "Publish code distribution to Github packages"
@@ -626,13 +636,25 @@ jobs:
           path: dist
 
       - name: "Publish to NPM"
+        uses: "JS-DevTools/npm-publish@v1"
+        id: "npm_publish"
         if: contains(github.ref, 'refs/tags/')
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: "npm publish --access public"
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          access: "public"
+          registry: "https://npm.pkg.github.com"
 
       - name: "Publish to NPM"
+        uses: "JS-DevTools/npm-publish@v1"
+        id: "npm_publish"
         if: contains(github.ref, 'refs/tags/') == false
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: "npm publish --access public --tag dev"
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          access: "public"
+          tag: "dev"
+          registry: "https://npm.pkg.github.com"
+
+      - name: "Publish to NPM result"
+        if: steps.npm_publish.outputs.type != 'none'
+        run: |
+          echo "Version changed: ${{ steps.publish.outputs.old-version }} => ${{ steps.publish.outputs.version }}"
