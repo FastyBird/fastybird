@@ -168,6 +168,7 @@ jobs:
 
       - name: "Publish to NPM"
         uses: "JS-DevTools/npm-publish@v1"
+        id: "npm_publish"
         if: contains(github.ref, 'refs/tags/')
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -175,11 +176,17 @@ jobs:
 
       - name: "Publish to NPM"
         uses: "JS-DevTools/npm-publish@v1"
+        id: "npm_publish"
         if: contains(github.ref, 'refs/tags/') == false
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           access: "public"
           tag: "dev"
+
+      - name: "Publish to NPM result"
+        if: steps.npm_publish.outputs.type != 'none'
+        run: |
+          echo "Version changed: ${{ steps.publish.outputs.old-version }} => ${{ steps.publish.outputs.version }}"
 
   publish-github:
     name: "Build library and publish it to Github packages"
@@ -224,6 +231,7 @@ jobs:
 
       - name: "Publish to NPM"
         uses: "JS-DevTools/npm-publish@v1"
+        id: "npm_publish"
         if: contains(github.ref, 'refs/tags/')
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -232,12 +240,18 @@ jobs:
 
       - name: "Publish to NPM"
         uses: "JS-DevTools/npm-publish@v1"
+        id: "npm_publish"
         if: contains(github.ref, 'refs/tags/') == false
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           access: "public"
           tag: "dev"
           registry: "https://npm.pkg.github.com"
+
+      - name: "Publish to NPM result"
+        if: steps.npm_publish.outputs.type != 'none'
+        run: |
+          echo "Version changed: ${{ steps.publish.outputs.old-version }} => ${{ steps.publish.outputs.version }}"
 
   publish-storybook:
     name: "Build Storybook and publish it to Github pages"
