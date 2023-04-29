@@ -91,6 +91,12 @@
       "dev-main": "1.0-dev"
     }
   },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/mathsolver/mathsolver.git"
+    }
+  ],
   "prefer-stable": true,
   "minimum-stability": "stable"
 }

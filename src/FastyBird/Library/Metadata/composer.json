@@ -35,6 +35,7 @@
     "fastybird/bootstrap-library": "dev-main",
     "ipub/doctrine-consistence": "^0.4",
     "ipub/phone": "^2.3",
+    "mathsolver/mathsolver": "@dev",
     "nette/bootstrap": "^3.1",
     "nette/di": "^3.0",
     "nette/utils": "^3.2",
@@ -81,6 +82,12 @@
       "php-http/discovery": false
     }
   },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/mathsolver/mathsolver.git"
+    }
+  ],
   "minimum-stability": "dev",
   "prefer-stable": true
 }
