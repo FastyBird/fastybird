@@ -97,6 +97,6 @@
       "url": "https://github.com/mathsolver/mathsolver.git"
     }
   ],
-  "prefer-stable": true,
-  "minimum-stability": "stable"
+  "minimum-stability": "dev",
+  "prefer-stable": true
 }
