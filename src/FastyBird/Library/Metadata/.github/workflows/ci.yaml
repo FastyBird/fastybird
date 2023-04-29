@@ -561,9 +561,14 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           access: "public"
 
+      - name: "Publish to NPM result"
+        if: contains(github.ref, 'refs/tags/') && steps.npm_publish.outputs.type != 'none'
+        run: |
+          echo "Version changed: ${{ steps.publish.outputs.old-version }} => ${{ steps.publish.outputs.version }}"
+
       - name: "Publish to NPM"
         uses: "JS-DevTools/npm-publish@v1"
-        id: "npm_publish"
+        id: "npm_publish_dev"
         if: contains(github.ref, 'refs/tags/') == false
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -571,7 +576,7 @@ jobs:
           tag: "dev"
 
       - name: "Publish to NPM result"
-        if: steps.npm_publish.outputs.type != 'none'
+        if: contains(github.ref, 'refs/tags/') == false && steps.npm_publish_dev.outputs.type != 'none'
         run: |
           echo "Version changed: ${{ steps.publish.outputs.old-version }} => ${{ steps.publish.outputs.version }}"
 
@@ -623,9 +628,14 @@ jobs:
           access: "public"
           registry: "https://npm.pkg.github.com"
 
+      - name: "Publish to NPM result"
+        if: contains(github.ref, 'refs/tags/') && steps.npm_publish.outputs.type != 'none'
+        run: |
+          echo "Version changed: ${{ steps.publish.outputs.old-version }} => ${{ steps.publish.outputs.version }}"
+
       - name: "Publish to NPM"
         uses: "JS-DevTools/npm-publish@v1"
-        id: "npm_publish"
+        id: "npm_publish_dev"
         if: contains(github.ref, 'refs/tags/') == false
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -634,6 +644,6 @@ jobs:
           registry: "https://npm.pkg.github.com"
 
       - name: "Publish to NPM result"
-        if: steps.npm_publish.outputs.type != 'none'
+        if: contains(github.ref, 'refs/tags/') == false && steps.npm_publish_dev.outputs.type != 'none'
         run: |
           echo "Version changed: ${{ steps.publish.outputs.old-version }} => ${{ steps.publish.outputs.version }}"
