@@ -4,7 +4,7 @@ import { parse } from 'date-fns';
 export function useNormalizeValue(
 	dataType: DataType,
 	value: string | number | boolean | Date | null,
-	format?: string[] | (string | null)[][] | (number | null)[] | null,
+	format?: string[] | (string | null)[][] | (number | null)[] | string | null,
 	scale?: number | null
 ): string | number | boolean | Date | null {
 	if (value === null) {
