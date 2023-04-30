@@ -26,7 +26,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: [ "8.1" ]
+        php-version: [ "8.1", "8.2" ]
         node-version: [ "16" ]
         operating-system: [ "ubuntu-latest" ]
 
@@ -110,7 +110,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: [ "8.1" ]
+        php-version: [ "8.1", "8.2" ]
         node-version: [ "16" ]
         operating-system: [ "ubuntu-latest" ]
 
@@ -207,11 +207,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: [ "8.1" ]
+        php-version: [ "8.1", "8.2" ]
         operating-system: [ "ubuntu-latest" ]
         include:
           - operating-system: "ubuntu-latest"
-            php-version: "8.1"
             composer-flags: "--prefer-lowest"
 
     steps:
@@ -282,7 +281,7 @@ jobs:
 
     strategy:
       matrix:
-        php-version: [ "8.1" ]
+        php-version: [ "8.1", "8.2" ]
         operating-system: [ "ubuntu-latest" ]
       fail-fast: false
 
@@ -348,7 +347,7 @@ jobs:
           CI: true
           COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          wget https://github.com/php-coveralls/php-coveralls/releases/download/v2.1.0/php-coveralls.phar
+          wget https://github.com/php-coveralls/php-coveralls/releases/download/v2.5.3/php-coveralls.phar
           php php-coveralls.phar --verbose --config tools/.coveralls.yml
 
   tests-mutations:
@@ -357,7 +356,7 @@ jobs:
 
     strategy:
       matrix:
-        php-version: [ "8.1" ]
+        php-version: [ "8.1", "8.2" ]
         operating-system: [ "ubuntu-latest" ]
       fail-fast: false
 
@@ -443,7 +442,7 @@ jobs:
 
     strategy:
       matrix:
-        php-version: [ "8.1" ]
+        php-version: [ "8.1", "8.2" ]
         node-version: [ "16" ]
         operating-system: [ "ubuntu-latest" ]
       fail-fast: false
