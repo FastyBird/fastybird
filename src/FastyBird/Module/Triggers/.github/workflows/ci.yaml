@@ -26,7 +26,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: [ "8.1" ]
+        php-version: [ "8.1", "8.2" ]
         node-version: [ "16" ]
         operating-system: [ "ubuntu-latest" ]
 
@@ -110,7 +110,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: [ "8.1" ]
+        php-version: [ "8.1", "8.2" ]
         node-version: [ "16" ]
         operating-system: [ "ubuntu-latest" ]
 
@@ -192,11 +192,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: [ "8.1" ]
+        php-version: [ "8.1", "8.2" ]
         operating-system: [ "ubuntu-latest" ]
         include:
           - operating-system: "ubuntu-latest"
-            php-version: "8.1"
             composer-flags: "--prefer-lowest"
 
     steps:
@@ -267,7 +266,7 @@ jobs:
 
     strategy:
       matrix:
-        php-version: [ "8.1" ]
+        php-version: [ "8.1", "8.2" ]
         operating-system: [ "ubuntu-latest" ]
       fail-fast: false
 
@@ -342,7 +341,7 @@ jobs:
 
     strategy:
       matrix:
-        php-version: [ "8.1" ]
+        php-version: [ "8.1", "8.2" ]
         operating-system: [ "ubuntu-latest" ]
       fail-fast: false
 
@@ -428,7 +427,7 @@ jobs:
 
     strategy:
       matrix:
-        php-version: [ "8.1" ]
+        php-version: [ "8.1", "8.2" ]
         node-version: [ "16" ]
         operating-system: [ "ubuntu-latest" ]
       fail-fast: false
