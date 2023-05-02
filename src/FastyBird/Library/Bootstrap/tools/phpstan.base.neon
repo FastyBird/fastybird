@@ -1,5 +1,5 @@
 includes:
-    - ../vendor/phpstan/phpstan/conf/bleedingEdge.neon
+    - ../tests/PHPStan/conditional.config.php
 
 parameters:
     phpVersion: 80100
