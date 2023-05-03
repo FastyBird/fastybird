@@ -170,10 +170,27 @@ final class OpenApi
 			throw new Exceptions\InvalidState('Calling get access token returned invalid response');
 		}
 
-		$parsedMessage = $this->schemaValidator->validate(
-			$response->getBody()->getContents(),
-			$this->getSchemaFilePath(self::ACCESS_TOKEN_MESSAGE_SCHEMA_FILENAME),
-		);
+		try {
+			$parsedMessage = $this->schemaValidator->validate(
+				$response->getBody()->getContents(),
+				$this->getSchemaFilePath(self::ACCESS_TOKEN_MESSAGE_SCHEMA_FILENAME),
+			);
+		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+			$this->logger->error(
+				'Could not decode received access token response payload',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'type' => 'openapi-api',
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'response' => [
+						'body' => $response->getBody()->rewind()->getContents(),
+						'schema' => self::ACCESS_TOKEN_MESSAGE_SCHEMA_FILENAME,
+					],
+				],
+			);
+
+			throw new Exceptions\OpenApiCall('Could not decode received access token response payload');
+		}
 
 		$result = $parsedMessage->offsetGet('result');
 
@@ -248,15 +265,36 @@ final class OpenApi
 		if ($result instanceof Promise\PromiseInterface) {
 			$result
 				->then(function (Message\ResponseInterface $response) use ($promise): void {
-					$parsedMessage = $this->schemaValidator->validate(
-						$response->getBody()->getContents(),
-						$this->getSchemaFilePath(self::USER_DEVICES_MESSAGE_SCHEMA_FILENAME),
-					);
+					try {
+						$parsedMessage = $this->schemaValidator->validate(
+							$response->getBody()->getContents(),
+							$this->getSchemaFilePath(self::USER_DEVICES_MESSAGE_SCHEMA_FILENAME),
+						);
+					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+						$this->logger->error(
+							'Could not decode received response payload',
+							[
+								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+								'type' => 'openapi-api',
+								'exception' => BootstrapHelpers\Logger::buildException($ex),
+								'response' => [
+									'body' => $response->getBody()->rewind()->getContents(),
+									'schema' => self::USER_DEVICES_MESSAGE_SCHEMA_FILENAME,
+								],
+							],
+						);
+
+						$promise->reject(new Exceptions\OpenApiCall('Could not decode received response payload'));
+
+						return;
+					}
 
 					$result = $parsedMessage->offsetGet('result');
 
 					if (!$result instanceof Utils\ArrayHash) {
-						throw new Exceptions\OpenApiCall('Received response is not valid');
+						$promise->reject(new Exceptions\OpenApiCall('Received response is not valid'));
+
+						return;
 					}
 
 					$devices = [];
@@ -312,15 +350,36 @@ final class OpenApi
 		if ($result instanceof Promise\PromiseInterface) {
 			$result
 				->then(function (Message\ResponseInterface $response) use ($promise): void {
-					$parsedMessage = $this->schemaValidator->validate(
-						$response->getBody()->getContents(),
-						$this->getSchemaFilePath(self::USER_DEVICES_FACTORY_INFOS_MESSAGE_SCHEMA_FILENAME),
-					);
+					try {
+						$parsedMessage = $this->schemaValidator->validate(
+							$response->getBody()->getContents(),
+							$this->getSchemaFilePath(self::USER_DEVICES_FACTORY_INFOS_MESSAGE_SCHEMA_FILENAME),
+						);
+					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+						$this->logger->error(
+							'Could not decode received response payload',
+							[
+								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+								'type' => 'openapi-api',
+								'exception' => BootstrapHelpers\Logger::buildException($ex),
+								'response' => [
+									'body' => $response->getBody()->rewind()->getContents(),
+									'schema' => self::USER_DEVICES_FACTORY_INFOS_MESSAGE_SCHEMA_FILENAME,
+								],
+							],
+						);
+
+						$promise->reject(new Exceptions\OpenApiCall('Could not decode received response payload'));
+
+						return;
+					}
 
 					$result = $parsedMessage->offsetGet('result');
 
 					if (!$result instanceof Utils\ArrayHash) {
-						throw new Exceptions\OpenApiCall('Received response is not valid');
+						$promise->reject(new Exceptions\OpenApiCall('Received response is not valid'));
+
+						return;
 					}
 
 					$factoryInfos = [];
@@ -371,15 +430,36 @@ final class OpenApi
 		if ($result instanceof Promise\PromiseInterface) {
 			$result
 				->then(function (Message\ResponseInterface $response) use ($promise): void {
-					$parsedMessage = $this->schemaValidator->validate(
-						$response->getBody()->getContents(),
-						$this->getSchemaFilePath(self::USER_DEVICE_DETAIL_MESSAGE_SCHEMA_FILENAME),
-					);
+					try {
+						$parsedMessage = $this->schemaValidator->validate(
+							$response->getBody()->getContents(),
+							$this->getSchemaFilePath(self::USER_DEVICE_DETAIL_MESSAGE_SCHEMA_FILENAME),
+						);
+					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+						$this->logger->error(
+							'Could not decode received response payload',
+							[
+								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+								'type' => 'openapi-api',
+								'exception' => BootstrapHelpers\Logger::buildException($ex),
+								'response' => [
+									'body' => $response->getBody()->rewind()->getContents(),
+									'schema' => self::USER_DEVICE_DETAIL_MESSAGE_SCHEMA_FILENAME,
+								],
+							],
+						);
+
+						$promise->reject(new Exceptions\OpenApiCall('Could not decode received response payload'));
+
+						return;
+					}
 
 					$result = $parsedMessage->offsetGet('result');
 
 					if (!$result instanceof Utils\ArrayHash) {
-						throw new Exceptions\OpenApiCall('Received response is not valid');
+						$promise->reject(new Exceptions\OpenApiCall('Received response is not valid'));
+
+						return;
 					}
 
 					$deviceStatus = [];
@@ -441,15 +521,36 @@ final class OpenApi
 		if ($result instanceof Promise\PromiseInterface) {
 			$result
 				->then(function (Message\ResponseInterface $response) use ($promise): void {
-					$parsedMessage = $this->schemaValidator->validate(
-						$response->getBody()->getContents(),
-						$this->getSchemaFilePath(self::USER_DEVICE_SPECIFICATIONS_MESSAGE_SCHEMA_FILENAME),
-					);
+					try {
+						$parsedMessage = $this->schemaValidator->validate(
+							$response->getBody()->getContents(),
+							$this->getSchemaFilePath(self::USER_DEVICE_SPECIFICATIONS_MESSAGE_SCHEMA_FILENAME),
+						);
+					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+						$this->logger->error(
+							'Could not decode received response payload',
+							[
+								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+								'type' => 'openapi-api',
+								'exception' => BootstrapHelpers\Logger::buildException($ex),
+								'response' => [
+									'body' => $response->getBody()->rewind()->getContents(),
+									'schema' => self::USER_DEVICE_SPECIFICATIONS_MESSAGE_SCHEMA_FILENAME,
+								],
+							],
+						);
+
+						$promise->reject(new Exceptions\OpenApiCall('Could not decode received response payload'));
+
+						return;
+					}
 
 					$result = $parsedMessage->offsetGet('result');
 
 					if (!$result instanceof Utils\ArrayHash) {
-						throw new Exceptions\OpenApiCall('Received response is not valid');
+						$promise->reject(new Exceptions\OpenApiCall('Received response is not valid'));
+
+						return;
 					}
 
 					$deviceFunctions = [];
@@ -532,15 +633,36 @@ final class OpenApi
 		if ($result instanceof Promise\PromiseInterface) {
 			$result
 				->then(function (Message\ResponseInterface $response) use ($promise): void {
-					$parsedMessage = $this->schemaValidator->validate(
-						$response->getBody()->getContents(),
-						$this->getSchemaFilePath(self::USER_DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME),
-					);
+					try {
+						$parsedMessage = $this->schemaValidator->validate(
+							$response->getBody()->getContents(),
+							$this->getSchemaFilePath(self::USER_DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME),
+						);
+					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+						$this->logger->error(
+							'Could not decode received response payload',
+							[
+								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+								'type' => 'openapi-api',
+								'exception' => BootstrapHelpers\Logger::buildException($ex),
+								'response' => [
+									'body' => $response->getBody()->rewind()->getContents(),
+									'schema' => self::USER_DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME,
+								],
+							],
+						);
+
+						$promise->reject(new Exceptions\OpenApiCall('Could not decode received response payload'));
+
+						return;
+					}
 
 					$result = $parsedMessage->offsetGet('result');
 
 					if (!$result instanceof Utils\ArrayHash) {
-						throw new Exceptions\OpenApiCall('Received response is not valid');
+						$promise->reject(new Exceptions\OpenApiCall('Received response is not valid'));
+
+						return;
 					}
 
 					$statuses = [];
@@ -591,15 +713,36 @@ final class OpenApi
 		if ($result instanceof Promise\PromiseInterface) {
 			$result
 				->then(function (Message\ResponseInterface $response) use ($promise): void {
-					$parsedMessage = $this->schemaValidator->validate(
-						$response->getBody()->getContents(),
-						$this->getSchemaFilePath(self::USER_DEVICE_CHILDREN_DEVICES_MESSAGE_SCHEMA_FILENAME),
-					);
+					try {
+						$parsedMessage = $this->schemaValidator->validate(
+							$response->getBody()->getContents(),
+							$this->getSchemaFilePath(self::USER_DEVICE_CHILDREN_DEVICES_MESSAGE_SCHEMA_FILENAME),
+						);
+					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+						$this->logger->error(
+							'Could not decode received response payload',
+							[
+								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+								'type' => 'openapi-api',
+								'exception' => BootstrapHelpers\Logger::buildException($ex),
+								'response' => [
+									'body' => $response->getBody()->rewind()->getContents(),
+									'schema' => self::USER_DEVICE_CHILDREN_DEVICES_MESSAGE_SCHEMA_FILENAME,
+								],
+							],
+						);
+
+						$promise->reject(new Exceptions\OpenApiCall('Could not decode received response payload'));
+
+						return;
+					}
 
 					$result = $parsedMessage->offsetGet('result');
 
 					if (!$result instanceof Utils\ArrayHash) {
-						throw new Exceptions\OpenApiCall('Received response is not valid');
+						$promise->reject(new Exceptions\OpenApiCall('Received response is not valid'));
+
+						return;
 					}
 
 					$children = [];
@@ -653,21 +796,44 @@ final class OpenApi
 		if ($result instanceof Promise\PromiseInterface) {
 			$result
 				->then(function (Message\ResponseInterface $response) use ($promise): void {
-					$parsedMessage = $this->schemaValidator->validate(
-						$response->getBody()->getContents(),
-						$this->getSchemaFilePath(self::DEVICES_MESSAGE_SCHEMA_FILENAME),
-					);
+					try {
+						$parsedMessage = $this->schemaValidator->validate(
+							$response->getBody()->getContents(),
+							$this->getSchemaFilePath(self::DEVICES_MESSAGE_SCHEMA_FILENAME),
+						);
+					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+						$this->logger->error(
+							'Could not decode received response payload',
+							[
+								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+								'type' => 'openapi-api',
+								'exception' => BootstrapHelpers\Logger::buildException($ex),
+								'response' => [
+									'body' => $response->getBody()->rewind()->getContents(),
+									'schema' => self::DEVICES_MESSAGE_SCHEMA_FILENAME,
+								],
+							],
+						);
+
+						$promise->reject(new Exceptions\OpenApiCall('Could not decode received response payload'));
+
+						return;
+					}
 
 					$result = $parsedMessage->offsetGet('result');
 
 					if (!$result instanceof Utils\ArrayHash) {
-						throw new Exceptions\OpenApiCall('Received response is not valid');
+						$promise->reject(new Exceptions\OpenApiCall('Received response is not valid'));
+
+						return;
 					}
 
 					$list = $result->offsetGet('list');
 
 					if (!$list instanceof Utils\ArrayHash) {
-						throw new Exceptions\OpenApiCall('Received response is not valid');
+						$promise->reject(new Exceptions\OpenApiCall('Received response is not valid'));
+
+						return;
 					}
 
 					$devices = [];
@@ -723,15 +889,36 @@ final class OpenApi
 		if ($result instanceof Promise\PromiseInterface) {
 			$result
 				->then(function (Message\ResponseInterface $response) use ($promise): void {
-					$parsedMessage = $this->schemaValidator->validate(
-						$response->getBody()->getContents(),
-						$this->getSchemaFilePath(self::DEVICES_FACTORY_INFOS_MESSAGE_SCHEMA_FILENAME),
-					);
+					try {
+						$parsedMessage = $this->schemaValidator->validate(
+							$response->getBody()->getContents(),
+							$this->getSchemaFilePath(self::DEVICES_FACTORY_INFOS_MESSAGE_SCHEMA_FILENAME),
+						);
+					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+						$this->logger->error(
+							'Could not decode received response payload',
+							[
+								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+								'type' => 'openapi-api',
+								'exception' => BootstrapHelpers\Logger::buildException($ex),
+								'response' => [
+									'body' => $response->getBody()->rewind()->getContents(),
+									'schema' => self::DEVICES_FACTORY_INFOS_MESSAGE_SCHEMA_FILENAME,
+								],
+							],
+						);
+
+						$promise->reject(new Exceptions\OpenApiCall('Could not decode received response payload'));
+
+						return;
+					}
 
 					$result = $parsedMessage->offsetGet('result');
 
 					if (!$result instanceof Utils\ArrayHash) {
-						throw new Exceptions\OpenApiCall('Received response is not valid');
+						$promise->reject(new Exceptions\OpenApiCall('Received response is not valid'));
+
+						return;
 					}
 
 					$factoryInfos = [];
@@ -782,15 +969,36 @@ final class OpenApi
 		if ($result instanceof Promise\PromiseInterface) {
 			$result
 				->then(function (Message\ResponseInterface $response) use ($promise): void {
-					$parsedMessage = $this->schemaValidator->validate(
-						$response->getBody()->getContents(),
-						$this->getSchemaFilePath(self::DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME),
-					);
+					try {
+						$parsedMessage = $this->schemaValidator->validate(
+							$response->getBody()->getContents(),
+							$this->getSchemaFilePath(self::DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME),
+						);
+					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+						$this->logger->error(
+							'Could not decode received response payload',
+							[
+								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+								'type' => 'openapi-api',
+								'exception' => BootstrapHelpers\Logger::buildException($ex),
+								'response' => [
+									'body' => $response->getBody()->rewind()->getContents(),
+									'schema' => self::DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME,
+								],
+							],
+						);
+
+						$promise->reject(new Exceptions\OpenApiCall('Could not decode received response payload'));
+
+						return;
+					}
 
 					$result = $parsedMessage->offsetGet('result');
 
 					if (!$result instanceof Utils\ArrayHash) {
-						throw new Exceptions\OpenApiCall('Received response is not valid');
+						$promise->reject(new Exceptions\OpenApiCall('Received response is not valid'));
+
+						return;
 					}
 
 					$promise->resolve(EntityFactory::build(
@@ -831,15 +1039,36 @@ final class OpenApi
 		if ($result instanceof Promise\PromiseInterface) {
 			$result
 				->then(function (Message\ResponseInterface $response) use ($promise): void {
-					$parsedMessage = $this->schemaValidator->validate(
-						$response->getBody()->getContents(),
-						$this->getSchemaFilePath(self::DEVICE_SPECIFICATION_MESSAGE_SCHEMA_FILENAME),
-					);
+					try {
+						$parsedMessage = $this->schemaValidator->validate(
+							$response->getBody()->getContents(),
+							$this->getSchemaFilePath(self::DEVICE_SPECIFICATION_MESSAGE_SCHEMA_FILENAME),
+						);
+					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+						$this->logger->error(
+							'Could not decode received response payload',
+							[
+								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+								'type' => 'openapi-api',
+								'exception' => BootstrapHelpers\Logger::buildException($ex),
+								'response' => [
+									'body' => $response->getBody()->rewind()->getContents(),
+									'schema' => self::DEVICE_SPECIFICATION_MESSAGE_SCHEMA_FILENAME,
+								],
+							],
+						);
+
+						$promise->reject(new Exceptions\OpenApiCall('Could not decode received response payload'));
+
+						return;
+					}
 
 					$result = $parsedMessage->offsetGet('result');
 
 					if (!$result instanceof Utils\ArrayHash) {
-						throw new Exceptions\OpenApiCall('Received response is not valid');
+						$promise->reject(new Exceptions\OpenApiCall('Received response is not valid'));
+
+						return;
 					}
 
 					$deviceFunctions = [];
@@ -922,15 +1151,36 @@ final class OpenApi
 		if ($result instanceof Promise\PromiseInterface) {
 			$result
 				->then(function (Message\ResponseInterface $response) use ($promise): void {
-					$parsedMessage = $this->schemaValidator->validate(
-						$response->getBody()->getContents(),
-						$this->getSchemaFilePath(self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME),
-					);
+					try {
+						$parsedMessage = $this->schemaValidator->validate(
+							$response->getBody()->getContents(),
+							$this->getSchemaFilePath(self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME),
+						);
+					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+						$this->logger->error(
+							'Could not decode received response payload',
+							[
+								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+								'type' => 'openapi-api',
+								'exception' => BootstrapHelpers\Logger::buildException($ex),
+								'response' => [
+									'body' => $response->getBody()->rewind()->getContents(),
+									'schema' => self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME,
+								],
+							],
+						);
+
+						$promise->reject(new Exceptions\OpenApiCall('Could not decode received response payload'));
+
+						return;
+					}
 
 					$result = $parsedMessage->offsetGet('result');
 
 					if (!$result instanceof Utils\ArrayHash) {
-						throw new Exceptions\OpenApiCall('Received response is not valid');
+						$promise->reject(new Exceptions\OpenApiCall('Received response is not valid'));
+
+						return;
 					}
 
 					$statuses = [];
@@ -1002,10 +1252,29 @@ final class OpenApi
 		if ($result instanceof Promise\PromiseInterface) {
 			$result
 				->then(function (Message\ResponseInterface $response) use ($promise): void {
-					$parsedMessage = $this->schemaValidator->validate(
-						$response->getBody()->getContents(),
-						$this->getSchemaFilePath(self::DEVICE_SEND_COMMAND_MESSAGE_SCHEMA_FILENAME),
-					);
+					try {
+						$parsedMessage = $this->schemaValidator->validate(
+							$response->getBody()->getContents(),
+							$this->getSchemaFilePath(self::DEVICE_SEND_COMMAND_MESSAGE_SCHEMA_FILENAME),
+						);
+					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+						$this->logger->error(
+							'Could not decode received response payload',
+							[
+								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+								'type' => 'openapi-api',
+								'exception' => BootstrapHelpers\Logger::buildException($ex),
+								'response' => [
+									'body' => $response->getBody()->rewind()->getContents(),
+									'schema' => self::DEVICE_SEND_COMMAND_MESSAGE_SCHEMA_FILENAME,
+								],
+							],
+						);
+
+						$promise->reject(new Exceptions\OpenApiCall('Could not decode received response payload'));
+
+						return;
+					}
 
 					$promise->resolve(boolval($parsedMessage->offsetGet('result')));
 				})
@@ -1221,7 +1490,6 @@ final class OpenApi
 	/**
 	 * @throws Exceptions\OpenApiCall
 	 * @throws RuntimeException
-	 * @throws MetadataExceptions\Logic
 	 */
 	private function refreshAccessToken(string $path): void
 	{
@@ -1250,10 +1518,27 @@ final class OpenApi
 
 			assert($response instanceof Message\ResponseInterface);
 
-			$parsedMessage = $this->schemaValidator->validate(
-				$response->getBody()->getContents(),
-				$this->getSchemaFilePath(self::REFRESH_TOKEN_MESSAGE_SCHEMA_FILENAME),
-			);
+			try {
+				$parsedMessage = $this->schemaValidator->validate(
+					$response->getBody()->getContents(),
+					$this->getSchemaFilePath(self::REFRESH_TOKEN_MESSAGE_SCHEMA_FILENAME),
+				);
+			} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+				$this->logger->error(
+					'Could not decode received refresh token response payload',
+					[
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+						'type' => 'openapi-api',
+						'exception' => BootstrapHelpers\Logger::buildException($ex),
+						'response' => [
+							'body' => $response->getBody()->rewind()->getContents(),
+							'schema' => self::REFRESH_TOKEN_MESSAGE_SCHEMA_FILENAME,
+						],
+					],
+				);
+
+				throw new Exceptions\OpenApiCall('Could not decode received refresh token response payload');
+			}
 
 			$result = $parsedMessage->offsetGet('result');
 

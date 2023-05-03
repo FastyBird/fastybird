@@ -19,6 +19,7 @@ use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Types;
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -119,9 +120,6 @@ final class Gen1HttpApi extends HttpApi
 	/**
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\HttpApiCall
-	 * @throws MetadataExceptions\InvalidData
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 * @throws RuntimeException
 	 */
 	public function getDeviceInformation(
@@ -139,8 +137,21 @@ final class Gen1HttpApi extends HttpApi
 				->then(function (Message\ResponseInterface $response) use ($deferred): void {
 					try {
 						$deferred->resolve($this->parseDeviceInformationResponse($response));
-					} catch (Throwable $ex) {
-						$deferred->reject($ex);
+					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+						$this->logger->error(
+							'Could not decode received payload',
+							[
+								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+								'type' => 'gen1-api',
+								'exception' => BootstrapHelpers\Logger::buildException($ex),
+								'response' => [
+									'body' => $response->getBody()->rewind()->getContents(),
+									'schema' => self::DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME,
+								],
+							],
+						);
+
+						$deferred->reject(new Exceptions\HttpApiCall('Could not decode received response payload'));
 					}
 				})
 				->otherwise(static function (Throwable $ex) use ($deferred): void {
@@ -150,20 +161,34 @@ final class Gen1HttpApi extends HttpApi
 			return $deferred->promise();
 		}
 
-		return $this->parseDeviceInformationResponse(
-			$this->callRequest(
-				'GET',
-				sprintf(self::DEVICE_INFORMATION, $address),
-			),
+		$response = $this->callRequest(
+			'GET',
+			sprintf(self::DEVICE_INFORMATION, $address),
 		);
+
+		try {
+			return $this->parseDeviceInformationResponse($response);
+		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+			$this->logger->error(
+				'Could not decode received payload',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+					'type' => 'gen1-api',
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'response' => [
+						'body' => $response->getBody()->rewind()->getContents(),
+						'schema' => self::DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME,
+					],
+				],
+			);
+
+			throw new Exceptions\HttpApiCall('Could not decode received response payload');
+		}
 	}
 
 	/**
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\HttpApiCall
-	 * @throws MetadataExceptions\InvalidData
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 * @throws RuntimeException
 	 */
 	public function getDeviceDescription(
@@ -189,8 +214,21 @@ final class Gen1HttpApi extends HttpApi
 				->then(function (Message\ResponseInterface $response) use ($deferred): void {
 					try {
 						$deferred->resolve($this->parseDeviceDescriptionResponse($response));
-					} catch (Throwable $ex) {
-						$deferred->reject($ex);
+					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+						$this->logger->error(
+							'Could not decode received payload',
+							[
+								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+								'type' => 'gen1-api',
+								'exception' => BootstrapHelpers\Logger::buildException($ex),
+								'response' => [
+									'body' => $response->getBody()->rewind()->getContents(),
+									'schema' => self::DEVICE_DESCRIPTION_MESSAGE_SCHEMA_FILENAME,
+								],
+							],
+						);
+
+						$deferred->reject(new Exceptions\HttpApiCall('Could not decode received response payload'));
 					}
 				})
 				->otherwise(static function (Throwable $ex) use ($deferred): void {
@@ -200,26 +238,40 @@ final class Gen1HttpApi extends HttpApi
 			return $deferred->promise();
 		}
 
-		return $this->parseDeviceDescriptionResponse(
-			$this->callRequest(
-				'GET',
-				sprintf(self::DEVICE_DESCRIPTION, $address),
-				[],
-				[],
-				null,
-				self::AUTHORIZATION_BASIC,
-				$username,
-				$password,
-			),
+		$response = $this->callRequest(
+			'GET',
+			sprintf(self::DEVICE_DESCRIPTION, $address),
+			[],
+			[],
+			null,
+			self::AUTHORIZATION_BASIC,
+			$username,
+			$password,
 		);
+
+		try {
+			return $this->parseDeviceDescriptionResponse($response);
+		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+			$this->logger->error(
+				'Could not decode received payload',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+					'type' => 'gen1-api',
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'response' => [
+						'body' => $response->getBody()->rewind()->getContents(),
+						'schema' => self::DEVICE_DESCRIPTION_MESSAGE_SCHEMA_FILENAME,
+					],
+				],
+			);
+
+			throw new Exceptions\HttpApiCall('Could not decode received response payload');
+		}
 	}
 
 	/**
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\HttpApiCall
-	 * @throws MetadataExceptions\InvalidData
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 * @throws RuntimeException
 	 */
 	public function getDeviceStatus(
@@ -245,8 +297,21 @@ final class Gen1HttpApi extends HttpApi
 				->then(function (Message\ResponseInterface $response) use ($deferred): void {
 					try {
 						$deferred->resolve($this->parseDeviceStatusResponse($response));
-					} catch (Throwable $ex) {
-						$deferred->reject($ex);
+					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+						$this->logger->error(
+							'Could not decode received payload',
+							[
+								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+								'type' => 'gen1-api',
+								'exception' => BootstrapHelpers\Logger::buildException($ex),
+								'response' => [
+									'body' => $response->getBody()->rewind()->getContents(),
+									'schema' => self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME,
+								],
+							],
+						);
+
+						$deferred->reject(new Exceptions\HttpApiCall('Could not decode received response payload'));
 					}
 				})
 				->otherwise(static function (Throwable $ex) use ($deferred): void {
@@ -256,18 +321,35 @@ final class Gen1HttpApi extends HttpApi
 			return $deferred->promise();
 		}
 
-		return $this->parseDeviceStatusResponse(
-			$this->callRequest(
-				'GET',
-				sprintf(self::DEVICE_STATUS, $address),
-				[],
-				[],
-				null,
-				self::AUTHORIZATION_BASIC,
-				$username,
-				$password,
-			),
+		$response = $this->callRequest(
+			'GET',
+			sprintf(self::DEVICE_STATUS, $address),
+			[],
+			[],
+			null,
+			self::AUTHORIZATION_BASIC,
+			$username,
+			$password,
 		);
+
+		try {
+			return $this->parseDeviceStatusResponse($response);
+		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+			$this->logger->error(
+				'Could not decode received payload',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+					'type' => 'gen1-api',
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'response' => [
+						'body' => $response->getBody()->rewind()->getContents(),
+						'schema' => self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME,
+					],
+				],
+			);
+
+			throw new Exceptions\HttpApiCall('Could not decode received response payload');
+		}
 	}
 
 	/**

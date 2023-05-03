@@ -175,7 +175,6 @@ final class Http
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
 	 * @throws RuntimeException
 	 */
 	public function readDeviceStates(

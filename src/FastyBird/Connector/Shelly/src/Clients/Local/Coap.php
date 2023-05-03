@@ -155,10 +155,7 @@ final class Coap implements Clients\Client
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function handlePacket(string $packet, string $remote): void
 	{
@@ -305,10 +302,7 @@ final class Coap implements Clients\Client
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\ParseMessage
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function handleStatusMessage(
 		string $deviceIdentifier,
@@ -325,7 +319,24 @@ final class Coap implements Clients\Client
 			throw new Exceptions\ParseMessage('Validation schema for message could not be loaded');
 		}
 
-		$parsedMessage = $this->schemaValidator->validate($message, $schema);
+		try {
+			$parsedMessage = $this->schemaValidator->validate($message, $schema);
+		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+			$this->logger->error(
+				'Could not decode received access token response payload',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+					'type' => 'openapi-api',
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'message' => [
+						'payload' => $message,
+						'schema' => self::STATUS_MESSAGE_SCHEMA_FILENAME,
+					],
+				],
+			);
+
+			throw new Exceptions\ParseMessage('Message could not be validated');
+		}
 
 		if (
 			!$parsedMessage->offsetExists('G')
