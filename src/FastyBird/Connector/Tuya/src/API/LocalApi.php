@@ -1321,6 +1321,9 @@ final class LocalApi implements Evenement\EventEmitterInterface
 						'message' => [
 							'command' => $command->getValue(),
 							'payload' => $payload,
+							'schema' => $command->equalsValue(
+								Types\LocalDeviceCommand::CMD_STATUS,
+							) ? self::WIFI_QUERY_MESSAGE_SCHEMA_FILENAME : self::DP_QUERY_MESSAGE_SCHEMA_FILENAME,
 						],
 					],
 				);
@@ -1367,6 +1370,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 						'message' => [
 							'command' => $command->getValue(),
 							'payload' => $payload,
+							'schema' => self::WIFI_QUERY_MESSAGE_SCHEMA_FILENAME,
 						],
 					],
 				);

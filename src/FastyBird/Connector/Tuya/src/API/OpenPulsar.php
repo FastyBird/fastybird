@@ -337,6 +337,7 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'data' => [
 						'message' => $message,
+						'schema' => self::WS_MESSAGE_SCHEMA_FILENAME,
 					],
 					'connector' => [
 						'identifier' => $this->identifier,
@@ -434,6 +435,7 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'data' => [
 						'payload' => $payload,
+						'schema' => self::WS_MESSAGE_PAYLOAD_SCHEMA_FILENAME,
 					],
 					'connector' => [
 						'identifier' => $this->identifier,
@@ -527,6 +529,7 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'data' => [
 						'data' => $decryptedData,
+						'schema' => self::WS_MESSAGE_PAYLOAD_DATA_SCHEMA_FILENAME,
 					],
 					'connector' => [
 						'identifier' => $this->identifier,

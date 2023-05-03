@@ -21,6 +21,7 @@ use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -210,19 +211,49 @@ final class WsApi implements Evenement\EventEmitterInterface
 									$payload->method === self::NOTIFY_STATUS_METHOD
 									|| $payload->method === self::NOTIFY_FULL_STATUS_METHOD
 								) {
-									$entity = $this->parseDeviceStatusResponse(
-										Utils\Json::encode($payload->params),
-										self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME,
-									);
+									try {
+										$entity = $this->parseDeviceStatusResponse(
+											Utils\Json::encode($payload->params),
+											self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME,
+										);
 
-									$this->emit('message', [$entity]);
+										$this->emit('message', [$entity]);
+									} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+										$this->logger->error(
+											'Could not decode received payload',
+											[
+												'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+												'type' => 'ws-api',
+												'exception' => BootstrapHelpers\Logger::buildException($ex),
+												'response' => [
+													'body' => Utils\Json::encode($payload->params),
+													'schema' => self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME,
+												],
+											],
+										);
+									}
 								} elseif ($payload->method === self::NOTIFY_EVENT_METHOD) {
-									$entity = $this->parseDeviceEventResponse(
-										Utils\Json::encode($payload->params),
-										self::DEVICE_EVENT_MESSAGE_SCHEMA_FILENAME,
-									);
+									try {
+										$entity = $this->parseDeviceEventResponse(
+											Utils\Json::encode($payload->params),
+											self::DEVICE_EVENT_MESSAGE_SCHEMA_FILENAME,
+										);
 
-									$this->emit('message', [$entity]);
+										$this->emit('message', [$entity]);
+									} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+										$this->logger->error(
+											'Could not decode received payload',
+											[
+												'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+												'type' => 'ws-api',
+												'exception' => BootstrapHelpers\Logger::buildException($ex),
+												'response' => [
+													'body' => Utils\Json::encode($payload->params),
+													'schema' => self::DEVICE_EVENT_MESSAGE_SCHEMA_FILENAME,
+												],
+											],
+										);
+									}
 								} else {
 									$this->logger->warning(
 										'Device respond with unsupported method',
@@ -250,12 +281,31 @@ final class WsApi implements Evenement\EventEmitterInterface
 
 							if (property_exists($payload, 'result')) {
 								if ($this->messages[$payload->id]->getFrame()->getMethod() === self::DEVICE_STATUS_METHOD) {
-									$entity = $this->parseDeviceStatusResponse(
-										Utils\Json::encode($payload->result),
-										self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME,
-									);
+									try {
+										$entity = $this->parseDeviceStatusResponse(
+											Utils\Json::encode($payload->result),
+											self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME,
+										);
 
-									$this->messages[$payload->id]->getDeferred()?->resolve($entity);
+										$this->messages[$payload->id]->getDeferred()?->resolve($entity);
+									} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+										$this->logger->error(
+											'Could not decode received payload',
+											[
+												'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+												'type' => 'ws-api',
+												'exception' => BootstrapHelpers\Logger::buildException($ex),
+												'response' => [
+													'body' => Utils\Json::encode($payload->result),
+													'schema' => self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME,
+												],
+											],
+										);
+
+										$this->messages[$payload->id]->getDeferred()?->reject(
+											new Exceptions\WsCall('Could not decode received payload'),
+										);
+									}
 								} elseif (
 									$this->messages[$payload->id]->getFrame()->getMethod() === self::SWITCH_SET_METHOD
 									|| $this->messages[$payload->id]->getFrame()->getMethod() === self::COVER_GO_TO_POSITION_METHOD

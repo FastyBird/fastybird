@@ -310,7 +310,6 @@ final class Local implements Client
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
 	 * @throws RuntimeException
 	 */
 	private function handleCommunication(): void
@@ -347,7 +346,6 @@ final class Local implements Client
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
 	 * @throws RuntimeException
 	 */
 	private function readDeviceStatus(Entities\ShellyDevice $device): bool
