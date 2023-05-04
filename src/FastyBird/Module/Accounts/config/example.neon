@@ -35,9 +35,6 @@ extensions:
     fbSimpleAuth                        : FastyBird\SimpleAuth\DI\SimpleAuthExtension
     fbWebServer                         : FastyBird\WebServer\DI\WebServerExtension
 
-services:
-    - {factory: Symfony\Component\Console\Application}
-
 contributteTranslation:
     locales:
         default: en_US

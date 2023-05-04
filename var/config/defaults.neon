@@ -1,8 +1,13 @@
 parameters:
     logger:
-        level: 100
-        rotatingFile: app.log
-        stdOut: true
+        rotatingFile:
+            enabled: true
+            level: 100
+        stdOut:
+            enabled: true
+            level: 100
+        console:
+            level: 100
 
     database:
         version: 5.7

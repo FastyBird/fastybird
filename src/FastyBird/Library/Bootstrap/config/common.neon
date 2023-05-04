@@ -50,12 +50,17 @@ contributteMonolog:
 #################################
 fbBootstrapLibrary:
     logging:
-        level:  %logger.level%
-        rotatingFile:  %logger.rotatingFile%
-        stdOut:  %logger.stdOut%
+        rotatingFile:
+            enabled: %logger.rotatingFile.enabled%
+            level: %logger.rotatingFile.level%
+            filename: %logger.rotatingFile.filename%
+        stdOut:
+            enabled: %logger.stdOut.enabled%
+            level: %logger.stdOut.level%
         console:
             enabled: %logger.console.enabled%
             level: %logger.console.level%
 
     sentry:
         dsn: %sentry.dsn%
+        level: %sentry.level%

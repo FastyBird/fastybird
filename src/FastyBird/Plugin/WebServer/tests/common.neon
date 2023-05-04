@@ -13,9 +13,6 @@
 php:
     date.timezone: Europe/Prague
 
-extensions:
-    fbBootstrapLibrary  : FastyBird\Library\Bootstrap\DI\BootstrapExtension
-
 services:
     - {
       create: React\EventLoop\Factory::create()

@@ -5,12 +5,14 @@ namespace FastyBird\Connector\FbMqtt\Tests\Cases\Unit\DI;
 use FastyBird\Connector\FbMqtt\API;
 use FastyBird\Connector\FbMqtt\Consumers;
 use FastyBird\Connector\FbMqtt\Tests\Cases\Unit\BaseTestCase;
+use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
 use Nette;
 
 final class FbMqttExtensionTest extends BaseTestCase
 {
 
 	/**
+	 * @throws BootstrapExceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 */
 	public function testServicesRegistration(): void

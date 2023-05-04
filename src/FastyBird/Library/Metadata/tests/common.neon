@@ -15,4 +15,3 @@ php:
 
 extensions:
     ipubPhone           : IPub\Phone\DI\PhoneExtension
-    fbBootstrapLibrary  : FastyBird\Library\Bootstrap\DI\BootstrapExtension

@@ -36,11 +36,11 @@ class Console implements EventDispatcher\EventSubscriberInterface
 {
 
 	/**
-	 * @param array<Monolog\Handler\AbstractProcessingHandler> $loggerHandlers
 	 * @param Level|LevelName|LogLevel::* $level
 	 */
 	public function __construct(
-		private readonly array $loggerHandlers,
+		private readonly Monolog\Logger $logger,
+		private readonly SymfonyMonolog\Handler\ConsoleHandler $handler,
 		private readonly int|string $level,
 	)
 	{
@@ -55,13 +55,8 @@ class Console implements EventDispatcher\EventSubscriberInterface
 
 	public function command(): void
 	{
-		foreach ($this->loggerHandlers as $handler) {
-			if (!$handler instanceof SymfonyMonolog\Handler\ConsoleHandler) {
-				if ($handler->getLevel() < $this->level) {
-					$handler->setLevel($this->level);
-				}
-			}
-		}
+		$this->handler->setLevel($this->level);
+		$this->logger->pushHandler($this->handler);
 	}
 
 }

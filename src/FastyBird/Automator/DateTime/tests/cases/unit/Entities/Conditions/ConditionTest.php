@@ -6,6 +6,7 @@ use DateTime;
 use FastyBird\Automator\DateTime\Entities;
 use FastyBird\Automator\DateTime\Exceptions;
 use FastyBird\Automator\DateTime\Tests\Cases\Unit\DbTestCase;
+use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
 use FastyBird\Module\Triggers\Models as TriggersModels;
 use FastyBird\Module\Triggers\Queries as TriggersQueries;
 use Nette;
@@ -20,6 +21,7 @@ final class ConditionTest extends DbTestCase
 {
 
 	/**
+	 * @throws BootstrapExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
