@@ -29,7 +29,8 @@ abstract class BaseTestCase extends TestCase
 		$rootDir = __DIR__ . '/../..';
 		$vendorDir = defined('FB_VENDOR_DIR') ? constant('FB_VENDOR_DIR') : $rootDir . '/../vendor';
 
-		$config = new BootstrapBoot\Configurator();
+		$config = BootstrapBoot\Bootstrap::boot();
+		$config->setForceReloadContainer();
 		$config->setTempDirectory(FB_TEMP_DIR);
 
 		$config->addStaticParameters(['container' => ['class' => 'SystemContainer_' . md5((string) time())]]);

@@ -16,7 +16,6 @@ php:
 extensions:
     ipubPhone               : IPub\Phone\DI\PhoneExtension
     fbDateTimeFactory       : FastyBird\DateTimeFactory\DI\DateTimeFactoryExtension
-    fbBootstrapLibrary      : FastyBird\Library\Bootstrap\DI\BootstrapExtension
     fbMetadataLibrary       : FastyBird\Library\Metadata\DI\MetadataExtension
     fbExchangeLibrary       : FastyBird\Library\Exchange\DI\ExchangeExtension
 

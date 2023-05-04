@@ -30,14 +30,12 @@ extensions:
     fbDateTimeFactory                   : FastyBird\DateTimeFactory\DI\DateTimeFactoryExtension
     fbJsonApi                           : FastyBird\JsonApi\DI\JsonApiExtension
     fbSimpleAuth                        : FastyBird\SimpleAuth\DI\SimpleAuthExtension
-    fbBootstrapLibrary                  : FastyBird\Library\Bootstrap\DI\BootstrapExtension
     fbMetadataLibrary                   : FastyBird\Library\Metadata\DI\MetadataExtension
     fbExchangeLibrary                   : FastyBird\Library\Exchange\DI\ExchangeExtension
     fbTriggersModule                    : FastyBird\Module\Triggers\DI\TriggersExtension
     fbRedisDbPlugin                     : FastyBird\Plugin\RedisDb\DI\RedisDbExtension
 
 services:
-    - {factory: Symfony\Component\Console\Application}
     - {factory: IPub\SlimRouter\Http\ResponseFactory}
     -
         factory: IPub\SlimRouter\Routing\Router
