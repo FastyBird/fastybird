@@ -65,7 +65,7 @@ jobs:
         uses: "ramsey/composer-install@v2"
         with:
           dependency-versions: "highest"
-          composer-options: "{{ env.composer-options }}"
+          composer-options: "${{ env.composer-options }}"
           custom-cache-key: "${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}"
 
       - name: "Setup node"
@@ -139,7 +139,7 @@ jobs:
         uses: "ramsey/composer-install@v2"
         with:
           dependency-versions: "highest"
-          composer-options: "{{ env.composer-options }}"
+          composer-options: "${{ env.composer-options }}"
           custom-cache-key: "${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}"
 
       - name: "Setup node"
@@ -235,7 +235,7 @@ jobs:
         uses: "ramsey/composer-install@v2"
         with:
           dependency-versions: "highest"
-          composer-options: "{{ env.composer-options }}"
+          composer-options: "${{ env.composer-options }}"
           custom-cache-key: "${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}"
 
       - name: "Tests"
@@ -302,7 +302,7 @@ jobs:
         uses: "ramsey/composer-install@v2"
         with:
           dependency-versions: "highest"
-          composer-options: "{{ env.composer-options }}"
+          composer-options: "${{ env.composer-options }}"
           custom-cache-key: "${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}"
 
       - name: "Tests"
@@ -370,7 +370,7 @@ jobs:
         uses: "ramsey/composer-install@v2"
         with:
           dependency-versions: "highest"
-          composer-options: "{{ env.composer-options }}"
+          composer-options: "${{ env.composer-options }}"
           custom-cache-key: "${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}"
 
       - name: "Mutation tests"
@@ -441,7 +441,7 @@ jobs:
         uses: "ramsey/composer-install@v2"
         with:
           dependency-versions: "highest"
-          composer-options: "{{ env.composer-options }}"
+          composer-options: "${{ env.composer-options }}"
           custom-cache-key: "${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}"
 
       - name: "Setup node"
