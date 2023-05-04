@@ -68,7 +68,7 @@ class BootstrapExtension extends DI\CompilerExtension
 						[
 							'enabled' => Schema\Expect::bool(true),
 							'level' => Schema\Expect::int(Monolog\Logger::INFO),
-							'filename' => Schema\Expect::string('app.log'),
+							'filename' => Schema\Expect::string('app.log')->nullable(),
 						],
 					),
 					'stdOut' => Schema\Expect::structure(
