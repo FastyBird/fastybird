@@ -3,7 +3,6 @@ parameters:
         rotatingFile:
             enabled: true
             level: 100
-            filename: app.log
         stdOut:
             enabled: true
             level: 100

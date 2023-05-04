@@ -15,7 +15,7 @@ parameters:
         rotatingFile:
             enabled: false
             level: 200
-            filename:
+            filename: app.log
         stdOut:
             enabled: false
             level: 200
