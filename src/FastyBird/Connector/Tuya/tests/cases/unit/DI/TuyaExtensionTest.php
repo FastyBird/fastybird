@@ -5,12 +5,14 @@ namespace FastyBird\Connector\Tuya\Tests\Cases\Unit\DI;
 use FastyBird\Connector\Tuya\Hydrators;
 use FastyBird\Connector\Tuya\Schemas;
 use FastyBird\Connector\Tuya\Tests\Cases\Unit\BaseTestCase;
+use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
 use Nette;
 
 final class TuyaExtensionTest extends BaseTestCase
 {
 
 	/**
+	 * @throws BootstrapExceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 */
 	public function testServicesRegistration(): void

@@ -6,6 +6,7 @@ use FastyBird\Automator\DevicesModule\Entities;
 use FastyBird\Automator\DevicesModule\Exceptions;
 use FastyBird\Automator\DevicesModule\Queries;
 use FastyBird\Automator\DevicesModule\Tests\Cases\Unit\DbTestCase;
+use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
 use FastyBird\Module\Triggers\Models as TriggersModels;
 use Nette;
 use Ramsey\Uuid;
@@ -19,6 +20,7 @@ final class ActionTest extends DbTestCase
 {
 
 	/**
+	 * @throws BootstrapExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Nette\DI\MissingServiceException

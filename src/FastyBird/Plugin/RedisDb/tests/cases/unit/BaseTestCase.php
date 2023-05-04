@@ -5,6 +5,7 @@ namespace FastyBird\Plugin\RedisDb\Tests\Cases\Unit;
 use DateTimeImmutable;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
+use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
 use FastyBird\Plugin\RedisDb;
 use Nette;
 use Nette\DI;
@@ -20,6 +21,9 @@ abstract class BaseTestCase extends TestCase
 
 	protected DI\Container $container;
 
+	/**
+	 * @throws BootstrapExceptions\InvalidArgument
+	 */
 	protected function setUp(): void
 	{
 		parent::setUp();
@@ -37,6 +41,9 @@ abstract class BaseTestCase extends TestCase
 		);
 	}
 
+	/**
+	 * @throws BootstrapExceptions\InvalidArgument
+	 */
 	protected function createContainer(string|null $additionalConfig = null): Nette\DI\Container
 	{
 		$rootDir = __DIR__ . '/../..';

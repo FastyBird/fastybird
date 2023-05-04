@@ -3,6 +3,7 @@
 namespace FastyBird\Library\Exchange\Tests\Cases\Unit;
 
 use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
+use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
 use FastyBird\Library\Exchange;
 use Nette;
 use Nette\DI;
@@ -18,6 +19,9 @@ abstract class BaseTestCase extends TestCase
 
 	protected DI\Container $container;
 
+	/**
+	 * @throws BootstrapExceptions\InvalidArgument
+	 */
 	protected function setUp(): void
 	{
 		parent::setUp();
@@ -25,6 +29,9 @@ abstract class BaseTestCase extends TestCase
 		$this->container = $this->createContainer();
 	}
 
+	/**
+	 * @throws BootstrapExceptions\InvalidArgument
+	 */
 	protected function createContainer(string|null $additionalConfig = null): Nette\DI\Container
 	{
 		$rootDir = __DIR__ . '/../..';

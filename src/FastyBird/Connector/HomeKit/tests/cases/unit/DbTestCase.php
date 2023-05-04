@@ -9,6 +9,7 @@ use FastyBird\Connector\HomeKit\DI;
 use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
+use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
 use IPub\DoctrineCrud;
 use Nette;
 use Nettrine\ORM as NettrineORM;
@@ -46,6 +47,7 @@ abstract class DbTestCase extends TestCase
 	private array $neonFiles = [];
 
 	/**
+	 * @throws BootstrapExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
@@ -75,6 +77,7 @@ abstract class DbTestCase extends TestCase
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
@@ -93,6 +96,7 @@ abstract class DbTestCase extends TestCase
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
@@ -107,6 +111,7 @@ abstract class DbTestCase extends TestCase
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
@@ -143,6 +148,7 @@ abstract class DbTestCase extends TestCase
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
@@ -175,6 +181,7 @@ abstract class DbTestCase extends TestCase
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
@@ -185,6 +192,7 @@ abstract class DbTestCase extends TestCase
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
@@ -245,6 +253,7 @@ abstract class DbTestCase extends TestCase
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
@@ -265,6 +274,7 @@ abstract class DbTestCase extends TestCase
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws RuntimeException
 	 */
