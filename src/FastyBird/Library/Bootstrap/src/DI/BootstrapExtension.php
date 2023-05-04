@@ -64,9 +64,19 @@ class BootstrapExtension extends DI\CompilerExtension
 		return Schema\Expect::structure([
 			'logging' => Schema\Expect::structure(
 				[
-					'level' => Schema\Expect::int(Monolog\Logger::ERROR),
-					'rotatingFile' => Schema\Expect::string(null)->nullable(),
-					'stdOut' => Schema\Expect::bool(false),
+					'rotatingFile' => Schema\Expect::structure(
+						[
+							'enabled' => Schema\Expect::bool(true),
+							'level' => Schema\Expect::int(Monolog\Logger::INFO),
+							'filename' => Schema\Expect::string('app.log'),
+						],
+					),
+					'stdOut' => Schema\Expect::structure(
+						[
+							'enabled' => Schema\Expect::bool(false),
+							'level' => Schema\Expect::int(Monolog\Logger::INFO),
+						],
+					),
 					'console' => Schema\Expect::structure(
 						[
 							'enabled' => Schema\Expect::bool(false),
@@ -78,6 +88,7 @@ class BootstrapExtension extends DI\CompilerExtension
 			'sentry' => Schema\Expect::structure(
 				[
 					'dsn' => Schema\Expect::string(null)->nullable(),
+					'level' => Schema\Expect::int(Monolog\Logger::WARNING),
 				],
 			),
 		]);
@@ -90,35 +101,39 @@ class BootstrapExtension extends DI\CompilerExtension
 		assert($configuration instanceof stdClass);
 
 		// Logger handlers
-		if ($configuration->logging->rotatingFile !== null) {
+		if ($configuration->logging->rotatingFile->enabled === true) {
 			$builder->addDefinition(
 				$this->prefix('logger.handler.rotatingFile'),
 				new DI\Definitions\ServiceDefinition(),
 			)
 				->setType(Monolog\Handler\RotatingFileHandler::class)
 				->setArguments([
-					'filename' => FB_LOGS_DIR . DIRECTORY_SEPARATOR . $configuration->logging->rotatingFile,
+					'filename' => FB_LOGS_DIR . DIRECTORY_SEPARATOR . $configuration->logging->rotatingFile->filename,
 					'maxFiles' => 10,
-					'level' => $configuration->logging->level,
+					'level' => $configuration->logging->rotatingFile->level,
 				]);
 		}
 
-		if ($configuration->logging->stdOut) {
+		if ($configuration->logging->stdOut->enabled === true) {
 			$builder->addDefinition($this->prefix('logger.handler.stdOut'), new DI\Definitions\ServiceDefinition())
 				->setType(Monolog\Handler\StreamHandler::class)
 				->setArguments([
 					'stream' => 'php://stdout',
-					'level' => $configuration->logging->level,
+					'level' => $configuration->logging->stdOut->level,
 				]);
 		}
 
 		if ($configuration->logging->console->enabled) {
-			$builder->addDefinition($this->prefix('logger.handler.console'), new DI\Definitions\ServiceDefinition())
+			$consoleHandler = $builder->addDefinition(
+				$this->prefix('logger.handler.console'),
+				new DI\Definitions\ServiceDefinition(),
+			)
 				->setType(SymfonyMonolog\Handler\ConsoleHandler::class);
 
 			$builder->addDefinition($this->prefix('subscribers.console'), new DI\Definitions\ServiceDefinition())
 				->setType(Subscribers\Console::class)
 				->setArguments([
+					'handler' => $consoleHandler,
 					'level' => $configuration->logging->console->level,
 				]);
 		}
@@ -157,7 +172,7 @@ class BootstrapExtension extends DI\CompilerExtension
 		if (is_string($sentryDSN) && $sentryDSN !== '') {
 			$builder->addDefinition($this->prefix('sentry.handler'), new DI\Definitions\ServiceDefinition())
 				->setType(Sentry\Monolog\Handler::class)
-				->setArgument('level', $configuration->logging->level);
+				->setArgument('level', $configuration->logging->sentry->level);
 
 			$sentryClientBuilderService = $builder->addDefinition(
 				$this->prefix('sentry.clientBuilder'),
@@ -189,8 +204,8 @@ class BootstrapExtension extends DI\CompilerExtension
 		$sentryHandlerServiceName = $builder->getByType(Sentry\Monolog\Handler::class);
 
 		if (
-			$configuration->logging->rotatingFile !== null
-			|| $configuration->logging->stdOut
+			$configuration->logging->rotatingFile->enabled === true
+			|| $configuration->logging->stdOut->enabled === true
 			|| $sentryHandlerServiceName !== null
 		) {
 			$monologLoggerServiceName = $builder->getByType(Monolog\Logger::class);
@@ -199,22 +214,16 @@ class BootstrapExtension extends DI\CompilerExtension
 			$monologLoggerService = $builder->getDefinition($monologLoggerServiceName);
 			assert($monologLoggerService instanceof DI\Definitions\ServiceDefinition);
 
-			if ($configuration->logging->rotatingFile) {
+			if ($configuration->logging->rotatingFile->enabled === true) {
 				$rotatingFileHandler = $builder->getDefinition($this->prefix('logger.handler.rotatingFile'));
 
 				$monologLoggerService->addSetup('?->pushHandler(?)', ['@self', $rotatingFileHandler]);
 			}
 
-			if ($configuration->logging->stdOut) {
+			if ($configuration->logging->stdOut->enabled === true) {
 				$stdOutHandler = $builder->getDefinition($this->prefix('logger.handler.stdOut'));
 
 				$monologLoggerService->addSetup('?->pushHandler(?)', ['@self', $stdOutHandler]);
-			}
-
-			if ($configuration->logging->console->enabled) {
-				$consoleHandler = $builder->getDefinition($this->prefix('logger.handler.console'));
-
-				$monologLoggerService->addSetup('?->pushHandler(?)', ['@self', $consoleHandler]);
 			}
 
 			if ($sentryHandlerServiceName !== null) {

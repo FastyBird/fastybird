@@ -12,12 +12,17 @@
 
 parameters:
     logger:
-        level: 400
         rotatingFile:
-        stdOut: false
+            enabled: false
+            level: 200
+            filename:
+        stdOut:
+            enabled: false
+            level: 200
         console:
             enabled: false
             level: 200
 
     sentry:
         dsn:
+        level: 300
