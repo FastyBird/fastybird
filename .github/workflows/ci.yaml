@@ -368,26 +368,26 @@ jobs:
 
       - name: "Setup composer & install dependencies"
         uses: "ramsey/composer-install@v2"
-        timeout-minutes: 10
+        timeout-minutes: 120
         with:
           dependency-versions: "highest"
           composer-options: "${{ env.composer-options }}"
           custom-cache-key: "${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}"
 
       - name: "Mutation tests"
-        timeout-minutes: 10
+        timeout-minutes: 120
         run: "make mutations-tests"
 
       - name: "Cache Infection data"
         uses: "actions/cache@v3"
-        timeout-minutes: 10
+        timeout-minutes: 120
         with:
           path: "var/tools/Infection"
           key: "php-infection-${{ runner.os }}"
           restore-keys: "php-infection-${{ runner.os }}"
 
       - name: "Mutation tests with report"
-        timeout-minutes: 10
+        timeout-minutes: 120
         env:
           STRYKER_DASHBOARD_API_KEY: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}
         shell: "bash"
@@ -395,7 +395,7 @@ jobs:
 
       - name: "Upload logs"
         uses: "actions/upload-artifact@v2"
-        timeout-minutes: 10
+        timeout-minutes: 120
         with:
           name: "Logs - Mutations"
           path: "var/coverage/mutations/infection.log"
