@@ -3,3 +3,9 @@ parameters:
 
     paths:
         - ../src/
+
+    ignoreErrors:
+        -
+            message: '#^Instanceof between string\|null and Predis\\Response\\ResponseInterface will always evaluate to false.#'
+            path: ../src/Clients/Client.php
+            count: 1

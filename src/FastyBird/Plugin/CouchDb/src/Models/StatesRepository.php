@@ -115,7 +115,11 @@ class StatesRepository
 				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
 
-			throw new Exceptions\InvalidState('Content could not be loaded from database' . $ex->getMessage(), 0, $ex);
+			throw new Exceptions\InvalidState(
+				'Content could not be loaded from database: ' . $ex->getMessage(),
+				0,
+				$ex,
+			);
 		}
 	}
 
