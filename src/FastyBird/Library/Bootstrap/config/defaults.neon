@@ -13,7 +13,7 @@
 parameters:
     logger:
         rotatingFile:
-            enabled: false
+            enabled: true
             level: 200
             filename: app.log
         stdOut:
