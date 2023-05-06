@@ -15,10 +15,21 @@
 
 namespace FastyBird\Library\Bootstrap\Helpers;
 
+use DirectoryIterator;
 use Nette;
+use RuntimeException;
 use Throwable;
 use Tracy;
+use UnexpectedValueException;
+use function array_map;
 use function array_merge;
+use function date;
+use function md5;
+use function serialize;
+use function str_contains;
+use function strtr;
+use function substr;
+use const DIRECTORY_SEPARATOR;
 
 /**
  * Logger helpers
@@ -38,7 +49,12 @@ class Logger
 	 */
 	public static function buildException(Throwable $ex): array
 	{
-		Tracy\Debugger::log($ex, Tracy\Debugger::ERROR);
+		try {
+			$blueScreen = new Tracy\BlueScreen();
+			$blueScreen->renderToFile($ex, self::getExceptionFile($ex));
+		} catch (Throwable) {
+			// Blue scree could not be saved
+		}
 
 		return self::processAllExceptions($ex);
 	}
@@ -60,6 +76,37 @@ class Logger
 		}
 
 		return $result;
+	}
+
+	/**
+	 * @throws UnexpectedValueException
+	 * @throws RuntimeException
+	 */
+	private static function getExceptionFile(Throwable $ex): string
+	{
+		$data = [];
+
+		foreach (Tracy\Helpers::getExceptionChain($ex) as $exception) {
+			$data[] = [
+				$exception::class, $exception->getMessage(), $exception->getCode(), $exception->getFile(), $exception->getLine(),
+				array_map(static function (array $item): array {
+					unset($item['args']);
+
+					return $item;
+				}, $exception->getTrace()),
+			];
+		}
+
+		$hash = substr(md5(serialize($data)), 0, 10);
+		$dir = strtr(FB_LOGS_DIR . '/', '\\/', DIRECTORY_SEPARATOR . DIRECTORY_SEPARATOR);
+
+		foreach (new DirectoryIterator(FB_LOGS_DIR) as $file) {
+			if (str_contains($file->getBasename(), $hash)) {
+				return $dir . $file;
+			}
+		}
+
+		return $dir . 'exception--' . date('Y-m-d--H-i') . "--$hash.html";
 	}
 
 }
