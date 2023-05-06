@@ -68,7 +68,13 @@ class Client
 
 	public function get(string $key): string|null
 	{
-		return $this->getClient()->get($key);
+		$response = $this->getClient()->get($key);
+
+		if ($response instanceof PredisResponse\ResponseInterface) {
+			return null;
+		}
+
+		return $response;
 	}
 
 	public function del(string $key): bool
