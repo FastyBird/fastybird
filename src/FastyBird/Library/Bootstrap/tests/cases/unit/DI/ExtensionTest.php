@@ -23,9 +23,8 @@ final class ExtensionTest extends TestCase
 
 		$container = $configurator->createContainer();
 
-		self::assertNull($container->getByType(Monolog\Handler\RotatingFileHandler::class, false));
+		self::assertNotNull($container->getByType(Monolog\Handler\RotatingFileHandler::class, false));
 		self::assertNull($container->getByType(Monolog\Handler\StreamHandler::class, false));
-
 		self::assertNull($container->getByType(SymfonyMonolog\Handler\ConsoleHandler::class, false));
 
 		self::assertNotNull($container->getByType(Helpers\Database::class, false));
