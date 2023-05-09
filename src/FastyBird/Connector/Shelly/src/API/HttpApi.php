@@ -54,7 +54,7 @@ abstract class HttpApi
 
 	use Nette\SmartObject;
 
-	private const CONNECTION_TIMEOUT = 0.2;
+	private const CONNECTION_TIMEOUT = 1;
 
 	private const REQUEST_AUTHORIZATION_HEADER = 'Authorization';
 

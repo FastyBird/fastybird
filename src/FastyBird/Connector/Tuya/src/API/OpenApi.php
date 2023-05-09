@@ -33,6 +33,7 @@ use Psr\Log;
 use React\EventLoop;
 use React\Http;
 use React\Promise;
+use React\Socket\Connector;
 use RuntimeException;
 use Throwable;
 use function assert;
@@ -61,6 +62,8 @@ final class OpenApi
 {
 
 	use Nette\SmartObject;
+
+	private const CONNECTION_TIMEOUT = 1;
 
 	private const VERSION = '0.1.0';
 
@@ -133,6 +136,7 @@ final class OpenApi
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
+		private readonly string $identifier,
 		private readonly string $accessId,
 		private readonly string $accessSecret,
 		private readonly string $lang,
@@ -176,6 +180,8 @@ final class OpenApi
 				$this->getSchemaFilePath(self::ACCESS_TOKEN_MESSAGE_SCHEMA_FILENAME),
 			);
 		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+			$response->getBody()->rewind();
+
 			$this->logger->error(
 				'Could not decode received access token response payload',
 				[
@@ -183,8 +189,11 @@ final class OpenApi
 					'type' => 'openapi-api',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'response' => [
-						'body' => $response->getBody()->rewind()->getContents(),
+						'body' => $response->getBody()->getContents(),
 						'schema' => self::ACCESS_TOKEN_MESSAGE_SCHEMA_FILENAME,
+					],
+					'connector' => [
+						'identifier' => $this->identifier,
 					],
 				],
 			);
@@ -216,6 +225,8 @@ final class OpenApi
 	public function disconnect(): void
 	{
 		$this->client = null;
+		$this->asyncClient = null;
+
 		$this->tokenInfo = null;
 	}
 
@@ -271,6 +282,8 @@ final class OpenApi
 							$this->getSchemaFilePath(self::USER_DEVICES_MESSAGE_SCHEMA_FILENAME),
 						);
 					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+						$response->getBody()->rewind();
+
 						$this->logger->error(
 							'Could not decode received response payload',
 							[
@@ -278,8 +291,11 @@ final class OpenApi
 								'type' => 'openapi-api',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'response' => [
-									'body' => $response->getBody()->rewind()->getContents(),
+									'body' => $response->getBody()->getContents(),
 									'schema' => self::USER_DEVICES_MESSAGE_SCHEMA_FILENAME,
+								],
+								'connector' => [
+									'identifier' => $this->identifier,
 								],
 							],
 						);
@@ -356,6 +372,8 @@ final class OpenApi
 							$this->getSchemaFilePath(self::USER_DEVICES_FACTORY_INFOS_MESSAGE_SCHEMA_FILENAME),
 						);
 					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+						$response->getBody()->rewind();
+
 						$this->logger->error(
 							'Could not decode received response payload',
 							[
@@ -363,8 +381,11 @@ final class OpenApi
 								'type' => 'openapi-api',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'response' => [
-									'body' => $response->getBody()->rewind()->getContents(),
+									'body' => $response->getBody()->getContents(),
 									'schema' => self::USER_DEVICES_FACTORY_INFOS_MESSAGE_SCHEMA_FILENAME,
+								],
+								'connector' => [
+									'identifier' => $this->identifier,
 								],
 							],
 						);
@@ -436,6 +457,8 @@ final class OpenApi
 							$this->getSchemaFilePath(self::USER_DEVICE_DETAIL_MESSAGE_SCHEMA_FILENAME),
 						);
 					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+						$response->getBody()->rewind();
+
 						$this->logger->error(
 							'Could not decode received response payload',
 							[
@@ -443,8 +466,11 @@ final class OpenApi
 								'type' => 'openapi-api',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'response' => [
-									'body' => $response->getBody()->rewind()->getContents(),
+									'body' => $response->getBody()->getContents(),
 									'schema' => self::USER_DEVICE_DETAIL_MESSAGE_SCHEMA_FILENAME,
+								],
+								'connector' => [
+									'identifier' => $this->identifier,
 								],
 							],
 						);
@@ -527,6 +553,8 @@ final class OpenApi
 							$this->getSchemaFilePath(self::USER_DEVICE_SPECIFICATIONS_MESSAGE_SCHEMA_FILENAME),
 						);
 					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+						$response->getBody()->rewind();
+
 						$this->logger->error(
 							'Could not decode received response payload',
 							[
@@ -534,8 +562,11 @@ final class OpenApi
 								'type' => 'openapi-api',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'response' => [
-									'body' => $response->getBody()->rewind()->getContents(),
+									'body' => $response->getBody()->getContents(),
 									'schema' => self::USER_DEVICE_SPECIFICATIONS_MESSAGE_SCHEMA_FILENAME,
+								],
+								'connector' => [
+									'identifier' => $this->identifier,
 								],
 							],
 						);
@@ -639,6 +670,8 @@ final class OpenApi
 							$this->getSchemaFilePath(self::USER_DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME),
 						);
 					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+						$response->getBody()->rewind();
+
 						$this->logger->error(
 							'Could not decode received response payload',
 							[
@@ -646,8 +679,11 @@ final class OpenApi
 								'type' => 'openapi-api',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'response' => [
-									'body' => $response->getBody()->rewind()->getContents(),
+									'body' => $response->getBody()->getContents(),
 									'schema' => self::USER_DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME,
+								],
+								'connector' => [
+									'identifier' => $this->identifier,
 								],
 							],
 						);
@@ -719,6 +755,8 @@ final class OpenApi
 							$this->getSchemaFilePath(self::USER_DEVICE_CHILDREN_DEVICES_MESSAGE_SCHEMA_FILENAME),
 						);
 					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+						$response->getBody()->rewind();
+
 						$this->logger->error(
 							'Could not decode received response payload',
 							[
@@ -726,8 +764,11 @@ final class OpenApi
 								'type' => 'openapi-api',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'response' => [
-									'body' => $response->getBody()->rewind()->getContents(),
+									'body' => $response->getBody()->getContents(),
 									'schema' => self::USER_DEVICE_CHILDREN_DEVICES_MESSAGE_SCHEMA_FILENAME,
+								],
+								'connector' => [
+									'identifier' => $this->identifier,
 								],
 							],
 						);
@@ -802,6 +843,8 @@ final class OpenApi
 							$this->getSchemaFilePath(self::DEVICES_MESSAGE_SCHEMA_FILENAME),
 						);
 					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+						$response->getBody()->rewind();
+
 						$this->logger->error(
 							'Could not decode received response payload',
 							[
@@ -809,8 +852,11 @@ final class OpenApi
 								'type' => 'openapi-api',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'response' => [
-									'body' => $response->getBody()->rewind()->getContents(),
+									'body' => $response->getBody()->getContents(),
 									'schema' => self::DEVICES_MESSAGE_SCHEMA_FILENAME,
+								],
+								'connector' => [
+									'identifier' => $this->identifier,
 								],
 							],
 						);
@@ -895,6 +941,8 @@ final class OpenApi
 							$this->getSchemaFilePath(self::DEVICES_FACTORY_INFOS_MESSAGE_SCHEMA_FILENAME),
 						);
 					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+						$response->getBody()->rewind();
+
 						$this->logger->error(
 							'Could not decode received response payload',
 							[
@@ -902,8 +950,11 @@ final class OpenApi
 								'type' => 'openapi-api',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'response' => [
-									'body' => $response->getBody()->rewind()->getContents(),
+									'body' => $response->getBody()->getContents(),
 									'schema' => self::DEVICES_FACTORY_INFOS_MESSAGE_SCHEMA_FILENAME,
+								],
+								'connector' => [
+									'identifier' => $this->identifier,
 								],
 							],
 						);
@@ -975,6 +1026,8 @@ final class OpenApi
 							$this->getSchemaFilePath(self::DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME),
 						);
 					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+						$response->getBody()->rewind();
+
 						$this->logger->error(
 							'Could not decode received response payload',
 							[
@@ -982,8 +1035,11 @@ final class OpenApi
 								'type' => 'openapi-api',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'response' => [
-									'body' => $response->getBody()->rewind()->getContents(),
+									'body' => $response->getBody()->getContents(),
 									'schema' => self::DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME,
+								],
+								'connector' => [
+									'identifier' => $this->identifier,
 								],
 							],
 						);
@@ -1045,6 +1101,8 @@ final class OpenApi
 							$this->getSchemaFilePath(self::DEVICE_SPECIFICATION_MESSAGE_SCHEMA_FILENAME),
 						);
 					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+						$response->getBody()->rewind();
+
 						$this->logger->error(
 							'Could not decode received response payload',
 							[
@@ -1052,8 +1110,11 @@ final class OpenApi
 								'type' => 'openapi-api',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'response' => [
-									'body' => $response->getBody()->rewind()->getContents(),
+									'body' => $response->getBody()->getContents(),
 									'schema' => self::DEVICE_SPECIFICATION_MESSAGE_SCHEMA_FILENAME,
+								],
+								'connector' => [
+									'identifier' => $this->identifier,
 								],
 							],
 						);
@@ -1157,6 +1218,8 @@ final class OpenApi
 							$this->getSchemaFilePath(self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME),
 						);
 					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+						$response->getBody()->rewind();
+
 						$this->logger->error(
 							'Could not decode received response payload',
 							[
@@ -1164,8 +1227,11 @@ final class OpenApi
 								'type' => 'openapi-api',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'response' => [
-									'body' => $response->getBody()->rewind()->getContents(),
+									'body' => $response->getBody()->getContents(),
 									'schema' => self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME,
+								],
+								'connector' => [
+									'identifier' => $this->identifier,
 								],
 							],
 						);
@@ -1258,6 +1324,8 @@ final class OpenApi
 							$this->getSchemaFilePath(self::DEVICE_SEND_COMMAND_MESSAGE_SCHEMA_FILENAME),
 						);
 					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+						$response->getBody()->rewind();
+
 						$this->logger->error(
 							'Could not decode received response payload',
 							[
@@ -1265,8 +1333,11 @@ final class OpenApi
 								'type' => 'openapi-api',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'response' => [
-									'body' => $response->getBody()->rewind()->getContents(),
+									'body' => $response->getBody()->getContents(),
 									'schema' => self::DEVICE_SEND_COMMAND_MESSAGE_SCHEMA_FILENAME,
+								],
+								'connector' => [
+									'identifier' => $this->identifier,
 								],
 							],
 						);
@@ -1319,6 +1390,9 @@ final class OpenApi
 				'params' => $params,
 				'body' => $body,
 			],
+			'connector' => [
+				'identifier' => $this->identifier,
+			],
 		]);
 
 		$requestPath = $this->endpoint->getValue() . $path;
@@ -1356,6 +1430,9 @@ final class OpenApi
 										'params' => $params,
 										'body' => $body,
 									],
+									'connector' => [
+										'identifier' => $this->identifier,
+									],
 								]);
 
 								$deferred->reject($ex);
@@ -1375,6 +1452,9 @@ final class OpenApi
 									'url' => $this->endpoint->getValue() . $path,
 									'params' => $params,
 									'body' => $body,
+								],
+								'connector' => [
+									'identifier' => $this->identifier,
 								],
 							]);
 
@@ -1412,6 +1492,9 @@ final class OpenApi
 						'params' => $params,
 						'body' => $body,
 					],
+					'connector' => [
+						'identifier' => $this->identifier,
+					],
 				]);
 
 				return false;
@@ -1425,6 +1508,9 @@ final class OpenApi
 						'url' => $this->endpoint->getValue() . $path,
 						'params' => $params,
 						'body' => $body,
+					],
+					'connector' => [
+						'identifier' => $this->identifier,
 					],
 				]);
 
@@ -1524,6 +1610,8 @@ final class OpenApi
 					$this->getSchemaFilePath(self::REFRESH_TOKEN_MESSAGE_SCHEMA_FILENAME),
 				);
 			} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+				$response->getBody()->rewind();
+
 				$this->logger->error(
 					'Could not decode received refresh token response payload',
 					[
@@ -1531,8 +1619,11 @@ final class OpenApi
 						'type' => 'openapi-api',
 						'exception' => BootstrapHelpers\Logger::buildException($ex),
 						'response' => [
-							'body' => $response->getBody()->rewind()->getContents(),
+							'body' => $response->getBody()->getContents(),
 							'schema' => self::REFRESH_TOKEN_MESSAGE_SCHEMA_FILENAME,
+						],
+						'connector' => [
+							'identifier' => $this->identifier,
 						],
 					],
 				);
@@ -1566,6 +1657,9 @@ final class OpenApi
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'openapi-api',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'connector' => [
+						'identifier' => $this->identifier,
+					],
 				],
 			);
 		}
@@ -1653,7 +1747,16 @@ final class OpenApi
 	{
 		if ($async) {
 			if ($this->asyncClient === null) {
-				$this->asyncClient = new Http\Browser(null, $this->eventLoop);
+				$this->asyncClient = new Http\Browser(
+					new Connector(
+						[
+							'dns' => false,
+							'timeout' => self::CONNECTION_TIMEOUT,
+						],
+						$this->eventLoop,
+					),
+					$this->eventLoop,
+				);
 			}
 
 			return $this->asyncClient;

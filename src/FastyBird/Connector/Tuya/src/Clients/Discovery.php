@@ -259,6 +259,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 		assert(is_string($this->connector->getAccessSecret()));
 
 		$this->openApiApi = $this->openApiApiFactory->create(
+			$this->connector->getIdentifier(),
 			$this->connector->getAccessId(),
 			$this->connector->getAccessSecret(),
 			$this->connector->getOpenApiEndpoint(),
@@ -419,6 +420,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 		assert(is_string($this->connector->getAccessSecret()));
 
 		$this->openApiApi = $this->openApiApiFactory->create(
+			$this->connector->getIdentifier(),
 			$this->connector->getAccessId(),
 			$this->connector->getAccessSecret(),
 			$this->connector->getOpenApiEndpoint(),

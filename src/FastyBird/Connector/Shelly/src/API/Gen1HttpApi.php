@@ -138,6 +138,8 @@ final class Gen1HttpApi extends HttpApi
 					try {
 						$deferred->resolve($this->parseDeviceInformationResponse($response));
 					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+						$response->getBody()->rewind();
+
 						$this->logger->error(
 							'Could not decode received payload',
 							[
@@ -145,7 +147,7 @@ final class Gen1HttpApi extends HttpApi
 								'type' => 'gen1-api',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'response' => [
-									'body' => $response->getBody()->rewind()->getContents(),
+									'body' => $response->getBody()->getContents(),
 									'schema' => self::DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME,
 								],
 							],
@@ -169,6 +171,8 @@ final class Gen1HttpApi extends HttpApi
 		try {
 			return $this->parseDeviceInformationResponse($response);
 		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+			$response->getBody()->rewind();
+
 			$this->logger->error(
 				'Could not decode received payload',
 				[
@@ -176,7 +180,7 @@ final class Gen1HttpApi extends HttpApi
 					'type' => 'gen1-api',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'response' => [
-						'body' => $response->getBody()->rewind()->getContents(),
+						'body' => $response->getBody()->getContents(),
 						'schema' => self::DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME,
 					],
 				],
@@ -215,6 +219,8 @@ final class Gen1HttpApi extends HttpApi
 					try {
 						$deferred->resolve($this->parseDeviceDescriptionResponse($response));
 					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+						$response->getBody()->rewind();
+
 						$this->logger->error(
 							'Could not decode received payload',
 							[
@@ -222,7 +228,7 @@ final class Gen1HttpApi extends HttpApi
 								'type' => 'gen1-api',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'response' => [
-									'body' => $response->getBody()->rewind()->getContents(),
+									'body' => $response->getBody()->getContents(),
 									'schema' => self::DEVICE_DESCRIPTION_MESSAGE_SCHEMA_FILENAME,
 								],
 							],
@@ -252,6 +258,8 @@ final class Gen1HttpApi extends HttpApi
 		try {
 			return $this->parseDeviceDescriptionResponse($response);
 		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+			$response->getBody()->rewind();
+
 			$this->logger->error(
 				'Could not decode received payload',
 				[
@@ -259,7 +267,7 @@ final class Gen1HttpApi extends HttpApi
 					'type' => 'gen1-api',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'response' => [
-						'body' => $response->getBody()->rewind()->getContents(),
+						'body' => $response->getBody()->getContents(),
 						'schema' => self::DEVICE_DESCRIPTION_MESSAGE_SCHEMA_FILENAME,
 					],
 				],
@@ -298,6 +306,8 @@ final class Gen1HttpApi extends HttpApi
 					try {
 						$deferred->resolve($this->parseDeviceStatusResponse($response));
 					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+						$response->getBody()->rewind();
+
 						$this->logger->error(
 							'Could not decode received payload',
 							[
@@ -305,7 +315,7 @@ final class Gen1HttpApi extends HttpApi
 								'type' => 'gen1-api',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'response' => [
-									'body' => $response->getBody()->rewind()->getContents(),
+									'body' => $response->getBody()->getContents(),
 									'schema' => self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME,
 								],
 							],
@@ -335,6 +345,8 @@ final class Gen1HttpApi extends HttpApi
 		try {
 			return $this->parseDeviceStatusResponse($response);
 		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+			$response->getBody()->rewind();
+
 			$this->logger->error(
 				'Could not decode received payload',
 				[
@@ -342,7 +354,7 @@ final class Gen1HttpApi extends HttpApi
 					'type' => 'gen1-api',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'response' => [
-						'body' => $response->getBody()->rewind()->getContents(),
+						'body' => $response->getBody()->getContents(),
 						'schema' => self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME,
 					],
 				],
