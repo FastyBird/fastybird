@@ -106,6 +106,7 @@ final class Cloud implements Client
 		assert(is_string($this->connector->getAccessSecret()));
 
 		$this->openApiApi = $openApiApiFactory->create(
+			$this->connector->getIdentifier(),
 			$this->connector->getAccessId(),
 			$this->connector->getAccessSecret(),
 			$this->connector->getOpenApiEndpoint(),

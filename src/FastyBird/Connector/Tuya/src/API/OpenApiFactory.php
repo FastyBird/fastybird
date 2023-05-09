@@ -29,6 +29,7 @@ interface OpenApiFactory
 {
 
 	public function create(
+		string $identifier,
 		string $accessId,
 		string $accessSecret,
 		Types\OpenApiEndpoint $endpoint,

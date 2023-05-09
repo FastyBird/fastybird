@@ -252,7 +252,7 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'ws-api',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
-					'device' => [
+					'connector' => [
 						'identifier' => $this->identifier,
 					],
 				],

@@ -99,6 +99,8 @@ final class Gen2HttpApi extends HttpApi
 
 						$deferred->resolve($entity);
 					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+						$response->getBody()->rewind();
+
 						$this->logger->error(
 							'Could not decode received payload',
 							[
@@ -106,7 +108,7 @@ final class Gen2HttpApi extends HttpApi
 								'type' => 'gen2-api',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'response' => [
-									'body' => $response->getBody()->rewind()->getContents(),
+									'body' => $response->getBody()->getContents(),
 									'schema' => self::DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME,
 								],
 							],
@@ -133,6 +135,8 @@ final class Gen2HttpApi extends HttpApi
 				self::DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME,
 			);
 		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+			$response->getBody()->rewind();
+
 			$this->logger->error(
 				'Could not decode received payload',
 				[
@@ -140,7 +144,7 @@ final class Gen2HttpApi extends HttpApi
 					'type' => 'gen2-api',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'response' => [
-						'body' => $response->getBody()->rewind()->getContents(),
+						'body' => $response->getBody()->getContents(),
 						'schema' => self::DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME,
 					],
 				],
@@ -184,6 +188,8 @@ final class Gen2HttpApi extends HttpApi
 
 						$deferred->resolve($entity);
 					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+						$response->getBody()->rewind();
+
 						$this->logger->error(
 							'Could not decode received payload',
 							[
@@ -191,7 +197,7 @@ final class Gen2HttpApi extends HttpApi
 								'type' => 'gen2-api',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'response' => [
-									'body' => $response->getBody()->rewind()->getContents(),
+									'body' => $response->getBody()->getContents(),
 									'schema' => self::DEVICE_CONFIG_MESSAGE_SCHEMA_FILENAME,
 								],
 							],
@@ -224,6 +230,8 @@ final class Gen2HttpApi extends HttpApi
 				self::DEVICE_CONFIG_MESSAGE_SCHEMA_FILENAME,
 			);
 		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+			$response->getBody()->rewind();
+
 			$this->logger->error(
 				'Could not decode received payload',
 				[
@@ -231,7 +239,7 @@ final class Gen2HttpApi extends HttpApi
 					'type' => 'gen2-api',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'response' => [
-						'body' => $response->getBody()->rewind()->getContents(),
+						'body' => $response->getBody()->getContents(),
 						'schema' => self::DEVICE_CONFIG_MESSAGE_SCHEMA_FILENAME,
 					],
 				],
@@ -277,6 +285,8 @@ final class Gen2HttpApi extends HttpApi
 
 						$deferred->resolve($entity);
 					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+						$response->getBody()->rewind();
+
 						$this->logger->error(
 							'Could not decode received payload',
 							[
@@ -284,7 +294,7 @@ final class Gen2HttpApi extends HttpApi
 								'type' => 'gen2-api',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'response' => [
-									'body' => $response->getBody()->rewind()->getContents(),
+									'body' => $response->getBody()->getContents(),
 									'schema' => self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME,
 								],
 							],
@@ -317,6 +327,8 @@ final class Gen2HttpApi extends HttpApi
 				self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME,
 			);
 		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+			$response->getBody()->rewind();
+
 			$this->logger->error(
 				'Could not decode received payload',
 				[
@@ -324,7 +336,7 @@ final class Gen2HttpApi extends HttpApi
 					'type' => 'gen2-api',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'response' => [
-						'body' => $response->getBody()->rewind()->getContents(),
+						'body' => $response->getBody()->getContents(),
 						'schema' => self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME,
 					],
 				],
