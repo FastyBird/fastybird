@@ -344,7 +344,13 @@ class Connector extends Console\Command\Command
 		$this->databaseRefreshTimer = $this->eventLoop->addPeriodicTimer(
 			self::DATABASE_REFRESH_INTERVAL,
 			function (): void {
-				$this->database->clear();
+				$this->eventLoop->futureTick(function (): void {
+					try {
+						$this->database->clear();
+					} catch (Throwable $ex) {
+						throw new Exceptions\Terminate('Failed to refresh database connection', $ex->getCode(), $ex);
+					}
+				});
 			},
 		);
 	}
