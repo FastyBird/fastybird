@@ -82,7 +82,7 @@ final class WsApi implements Evenement\EventEmitterInterface
 
 	private const DEVICE_EVENT_MESSAGE_SCHEMA_FILENAME = 'gen2_ws_event.json';
 
-	private const WAIT_FOR_REPLY_TIMEOUT = 5.0;
+	private const WAIT_FOR_REPLY_TIMEOUT = 10.0;
 
 	private bool $connecting = false;
 
