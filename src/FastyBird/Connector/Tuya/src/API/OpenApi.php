@@ -63,7 +63,7 @@ final class OpenApi
 
 	use Nette\SmartObject;
 
-	private const CONNECTION_TIMEOUT = 1;
+	private const CONNECTION_TIMEOUT = 30;
 
 	private const VERSION = '0.1.0';
 
@@ -1599,10 +1599,42 @@ final class OpenApi
 					self::REFRESH_TOKEN_API_ENDPOINT,
 					$this->tokenInfo->getRefreshToken(),
 				),
-				$this->buildRequestHeaders('get', self::REFRESH_TOKEN_API_ENDPOINT),
+				$this->buildRequestHeaders(
+					'get',
+					sprintf(
+						self::REFRESH_TOKEN_API_ENDPOINT,
+						$this->tokenInfo->getRefreshToken(),
+					),
+				),
 			);
 
 			assert($response instanceof Message\ResponseInterface);
+
+			$body = $response->getBody()->getContents();
+
+			try {
+				$decodedResponse = Utils\Json::decode($body, Utils\Json::FORCE_ARRAY);
+
+			} catch (Utils\JsonException) {
+				throw new Exceptions\OpenApiCall('Received response body is not valid JSON');
+			}
+
+			if (!is_array($decodedResponse)) {
+				throw new Exceptions\OpenApiCall('Received response body is not valid JSON');
+			}
+
+			$data = Utils\ArrayHash::from($decodedResponse);
+
+			if (
+				$data->offsetExists('success')
+				&& boolval($data->offsetGet('success')) !== true
+			) {
+				if ($data->offsetExists('msg')) {
+					throw new Exceptions\OpenApiCall(strval($data->offsetGet('msg')));
+				}
+
+				throw new Exceptions\OpenApiCall('Received response is not success');
+			}
 
 			try {
 				$parsedMessage = $this->schemaValidator->validate(
