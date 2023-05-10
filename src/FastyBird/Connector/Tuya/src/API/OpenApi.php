@@ -1750,7 +1750,6 @@ final class OpenApi
 				$this->asyncClient = new Http\Browser(
 					new Connector(
 						[
-							'dns' => false,
 							'timeout' => self::CONNECTION_TIMEOUT,
 						],
 						$this->eventLoop,
