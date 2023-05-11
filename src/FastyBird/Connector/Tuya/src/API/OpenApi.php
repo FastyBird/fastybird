@@ -30,6 +30,7 @@ use Nette;
 use Nette\Utils;
 use Psr\Http\Message;
 use Psr\Log;
+use Ramsey\Uuid;
 use React\EventLoop;
 use React\Http;
 use React\Promise;
@@ -68,6 +69,8 @@ final class OpenApi
 	private const VERSION = '0.1.0';
 
 	private const TUYA_ERROR_CODE_TOKEN_INVALID = 1_010;
+
+	private const TUYA_ERROR_CODE_API_ACCESS_NOT_ALLOWED = 1_114;
 
 	private const ACCESS_TOKEN_API_ENDPOINT = '/v1.0/token';
 
@@ -127,6 +130,8 @@ final class OpenApi
 
 	private string $devChannel = 'fastybird_iot';
 
+	private Uuid\UuidInterface $nonce;
+
 	private Entities\API\TuyaTokenInfo|null $tokenInfo = null;
 
 	private GuzzleHttp\Client|null $client = null;
@@ -148,6 +153,8 @@ final class OpenApi
 	)
 	{
 		$this->logger = $logger ?? new Log\NullLogger();
+
+		$this->nonce = Uuid\Uuid::uuid1();
 	}
 
 	/**
@@ -188,6 +195,12 @@ final class OpenApi
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'openapi-api',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'request' => [
+						'path' => self::ACCESS_TOKEN_API_ENDPOINT,
+						'params' => [
+							'grant_type' => 1,
+						],
+					],
 					'response' => [
 						'body' => $response->getBody()->getContents(),
 						'schema' => self::ACCESS_TOKEN_MESSAGE_SCHEMA_FILENAME,
@@ -1377,6 +1390,15 @@ final class OpenApi
 
 		$deferred = new Promise\Deferred();
 
+		$requestPath = $this->endpoint->getValue() . $path;
+
+		if (count($params) > 0) {
+			$requestPath .= '?';
+			$requestPath .= http_build_query($params);
+		}
+
+		$headers = $this->buildRequestHeaders($method, $path, $params, $body);
+
 		$this->logger->debug(sprintf(
 			'Request: method = %s url = %s',
 			$method,
@@ -1386,7 +1408,8 @@ final class OpenApi
 			'type' => 'openapi-api',
 			'request' => [
 				'method' => $method,
-				'url' => $this->endpoint->getValue() . $path,
+				'path' => $path,
+				'headers' => $headers,
 				'params' => $params,
 				'body' => $body,
 			],
@@ -1395,19 +1418,12 @@ final class OpenApi
 			],
 		]);
 
-		$requestPath = $this->endpoint->getValue() . $path;
-
-		if (count($params) > 0) {
-			$requestPath .= '?';
-			$requestPath .= http_build_query($params);
-		}
-
 		if ($async) {
 			try {
 				$request = $this->getClient()->request(
 					$method,
 					$requestPath,
-					$this->buildRequestHeaders($method, $path, $params, $body),
+					$headers,
 					$body ?? '',
 				);
 
@@ -1415,7 +1431,28 @@ final class OpenApi
 
 				$request
 					->then(
-						function (Message\ResponseInterface $response) use ($deferred, $method, $path, $params, $body): void {
+						function (Message\ResponseInterface $response) use ($deferred, $method, $path, $headers, $params, $body): void {
+							$this->logger->debug('Received response', [
+								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+								'type' => 'openapi-api',
+								'request' => [
+									'method' => $method,
+									'path' => $path,
+									'headers' => $headers,
+									'params' => $params,
+									'body' => $body,
+								],
+								'response' => [
+									'status_code' => $response->getStatusCode(),
+									'body' => $response->getBody()->getContents(),
+								],
+								'connector' => [
+									'identifier' => $this->identifier,
+								],
+							]);
+
+							$response->getBody()->rewind();
+
 							try {
 								$response = $this->checkResponse($path, $response);
 
@@ -1426,7 +1463,8 @@ final class OpenApi
 									'exception' => BootstrapHelpers\Logger::buildException($ex),
 									'request' => [
 										'method' => $method,
-										'url' => $this->endpoint->getValue() . $path,
+										'path' => $path,
+										'headers' => $headers,
 										'params' => $params,
 										'body' => $body,
 									],
@@ -1442,14 +1480,15 @@ final class OpenApi
 
 							$deferred->resolve($response);
 						},
-						function (Throwable $ex) use ($deferred, $method, $path, $params, $body): void {
+						function (Throwable $ex) use ($deferred, $method, $path, $headers, $params, $body): void {
 							$this->logger->error('Calling api endpoint failed', [
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 								'type' => 'openapi-api',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'request' => [
 									'method' => $method,
-									'url' => $this->endpoint->getValue() . $path,
+									'path' => $path,
+									'headers' => $headers,
 									'params' => $params,
 									'body' => $body,
 								],
@@ -1472,12 +1511,33 @@ final class OpenApi
 					$method,
 					$requestPath,
 					[
-						'headers' => $this->buildRequestHeaders($method, $path, $params, $body),
+						'headers' => $headers,
 						'body' => $body ?? '',
 					],
 				);
 
 				assert($response instanceof Message\ResponseInterface);
+
+				$this->logger->debug('Received response', [
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'type' => 'openapi-api',
+					'request' => [
+						'method' => $method,
+						'path' => $path,
+						'headers' => $headers,
+						'params' => $params,
+						'body' => $body,
+					],
+					'response' => [
+						'status_code' => $response->getStatusCode(),
+						'body' => $response->getBody()->getContents(),
+					],
+					'connector' => [
+						'identifier' => $this->identifier,
+					],
+				]);
+
+				$response->getBody()->rewind();
 
 				$response = $this->checkResponse($path, $response);
 
@@ -1488,7 +1548,8 @@ final class OpenApi
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'request' => [
 						'method' => $method,
-						'url' => $this->endpoint->getValue() . $path,
+						'path' => $path,
+						'headers' => $headers,
 						'params' => $params,
 						'body' => $body,
 					],
@@ -1505,7 +1566,8 @@ final class OpenApi
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'request' => [
 						'method' => $method,
-						'url' => $this->endpoint->getValue() . $path,
+						'path' => $path,
+						'headers' => $headers,
 						'params' => $params,
 						'body' => $body,
 					],
@@ -1574,7 +1636,11 @@ final class OpenApi
 	}
 
 	/**
+	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\OpenApiCall
+	 * @throws MetadataExceptions\InvalidData
+	 * @throws MetadataExceptions\Logic
+	 * @throws MetadataExceptions\MalformedInput
 	 * @throws RuntimeException
 	 */
 	private function refreshAccessToken(string $path): void
@@ -1587,28 +1653,56 @@ final class OpenApi
 			return;
 		}
 
-		$tokenExpireTime = $this->tokenInfo->getExpireTime();
-
-		if (($tokenExpireTime - 60 * 1_000) > intval($this->dateTimeFactory->getNow()->format('Uv'))) { // 1min
+		if (!$this->tokenInfo->isExpired($this->dateTimeFactory->getNow())) {
 			return;
 		}
 
+		$path = sprintf(self::REFRESH_TOKEN_API_ENDPOINT, $this->tokenInfo->getRefreshToken());
+		$headers = $this->buildRequestHeaders('get', $path);
+
 		try {
+			$this->logger->debug(sprintf(
+				'Request: method = %s url = %s',
+				'get',
+				$this->endpoint->getValue() . $path,
+			), [
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+				'type' => 'openapi-api',
+				'request' => [
+					'method' => 'get',
+					'path' => $path,
+					'headers' => $headers,
+				],
+				'connector' => [
+					'identifier' => $this->identifier,
+				],
+			]);
+
 			$response = $this->getClient(false)->get(
-				$this->endpoint->getValue() . sprintf(
-					self::REFRESH_TOKEN_API_ENDPOINT,
-					$this->tokenInfo->getRefreshToken(),
-				),
-				$this->buildRequestHeaders(
-					'get',
-					sprintf(
-						self::REFRESH_TOKEN_API_ENDPOINT,
-						$this->tokenInfo->getRefreshToken(),
-					),
-				),
+				$this->endpoint->getValue() . $path,
+				$headers,
 			);
 
 			assert($response instanceof Message\ResponseInterface);
+
+			$this->logger->debug('Received response', [
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+				'type' => 'openapi-api',
+				'request' => [
+					'method' => 'get',
+					'path' => $path,
+					'headers' => $headers,
+				],
+				'response' => [
+					'status_code' => $response->getStatusCode(),
+					'body' => $response->getBody()->getContents(),
+				],
+				'connector' => [
+					'identifier' => $this->identifier,
+				],
+			]);
+
+			$response->getBody()->rewind();
 
 			$body = $response->getBody()->getContents();
 
@@ -1629,11 +1723,25 @@ final class OpenApi
 				$data->offsetExists('success')
 				&& boolval($data->offsetGet('success')) !== true
 			) {
-				if ($data->offsetExists('msg')) {
-					throw new Exceptions\OpenApiCall(strval($data->offsetGet('msg')));
-				}
+				// TUYA api has something wrong and refreshing toke is not allowed
+				// According to response, /v1.0/token/{refresh_token} is not allowed to access
+				// Workaround is to reconnect to obtain new tokens pair
+				if (
+					$data->offsetExists('code')
+					&& intval($data->offsetGet('code')) === self::TUYA_ERROR_CODE_API_ACCESS_NOT_ALLOWED
+				) {
+					$this->tokenInfo = null;
 
-				throw new Exceptions\OpenApiCall('Received response is not success');
+					$this->connect();
+
+					return;
+				} else {
+					if ($data->offsetExists('msg')) {
+						throw new Exceptions\OpenApiCall(strval($data->offsetGet('msg')));
+					}
+
+					throw new Exceptions\OpenApiCall('Received response is not success');
+				}
 			}
 
 			try {
@@ -1650,6 +1758,11 @@ final class OpenApi
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 						'type' => 'openapi-api',
 						'exception' => BootstrapHelpers\Logger::buildException($ex),
+						'request' => [
+							'method' => 'get',
+							'path' => $path,
+							'headers' => $headers,
+						],
 						'response' => [
 							'body' => $response->getBody()->getContents(),
 							'schema' => self::REFRESH_TOKEN_MESSAGE_SCHEMA_FILENAME,
@@ -1689,6 +1802,11 @@ final class OpenApi
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 					'type' => 'openapi-api',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'request' => [
+						'method' => 'get',
+						'path' => $path,
+						'headers' => $headers,
+					],
 					'connector' => [
 						'identifier' => $this->identifier,
 					],
@@ -1709,15 +1827,23 @@ final class OpenApi
 		string|null $body = null,
 	): array
 	{
-		$accessToken = $this->tokenInfo?->getAccessToken();
+		$accessToken = $this->tokenInfo?->getAccessToken() ?? '';
 
-		$sign = $this->calculateSign($method, $path, $params, $body);
+		$sign = $this->calculateSign(
+			Utils\Strings::startsWith($path, self::ACCESS_TOKEN_API_ENDPOINT) ? '' : $accessToken,
+			$method,
+			$path,
+			$params,
+			$body,
+		);
 
 		return [
 			'client_id' => $this->accessId,
+			'nonce' => $this->nonce->toString(),
+			'Signature-Headers' => 'client_id',
 			'sign' => $sign->getSign(),
 			'sign_method' => 'HMAC-SHA256',
-			'access_token' => $accessToken ?? '',
+			'access_token' => Utils\Strings::startsWith($path, self::ACCESS_TOKEN_API_ENDPOINT) ? '' : $accessToken,
 			't' => $sign->getTimestamp(),
 			'lang' => $this->lang,
 			'dev_lang' => 'php',
@@ -1730,13 +1856,14 @@ final class OpenApi
 	 * @param array<string, mixed> $params
 	 */
 	private function calculateSign(
+		string $accessToken,
 		string $method,
 		string $path,
 		array $params = [],
 		string|null $body = null,
 	): Entities\API\Sign
 	{
-		$strToSign = $method;
+		$strToSign = Utils\Strings::upper($method);
 		$strToSign .= "\n";
 
 		// Content-SHA256
@@ -1746,6 +1873,8 @@ final class OpenApi
 		$strToSign .= "\n";
 
 		// Header
+		$strToSign .= 'client_id:' . $this->accessId;
+		$strToSign .= "\n";
 		$strToSign .= "\n";
 
 		// URL
@@ -1759,13 +1888,7 @@ final class OpenApi
 		// Sign
 		$timestamp = intval($this->dateTimeFactory->getNow()->format('Uv'));
 
-		$message = $this->accessId;
-
-		if ($this->tokenInfo !== null) {
-			$message .= $this->tokenInfo->getAccessToken();
-		}
-
-		$message .= $timestamp . $strToSign;
+		$message = $this->accessId . $accessToken . $timestamp . $this->nonce->toString() . $strToSign;
 
 		$sign = Utils\Strings::upper(hash_hmac('sha256', $message, $this->accessSecret));
 

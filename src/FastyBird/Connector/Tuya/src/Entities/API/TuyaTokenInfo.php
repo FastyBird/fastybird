@@ -15,7 +15,9 @@
 
 namespace FastyBird\Connector\Tuya\Entities\API;
 
+use DateTimeInterface;
 use Nette;
+use function intval;
 
 /**
  * OpenAPI token entity
@@ -57,6 +59,11 @@ final class TuyaTokenInfo implements Entity
 	public function getExpireTime(): int
 	{
 		return $this->expireTime;
+	}
+
+	public function isExpired(DateTimeInterface $now): bool
+	{
+		return !(($this->getExpireTime() - 60 * 1_000) > intval($now->format('Uv')));
 	}
 
 	/**
