@@ -23,6 +23,7 @@ use FastyBird\Module\Devices\Entities;
 use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
 use IPub\DoctrineDynamicDiscriminatorMap\Entities as DoctrineDynamicDiscriminatorMapEntities;
 use IPub\DoctrineTimestampable;
+use Nette\Utils;
 use Ramsey\Uuid;
 
 /**
@@ -280,6 +281,14 @@ class Channel implements Entities\Entity,
 	public function getDiscriminatorName(): string
 	{
 		return 'channel';
+	}
+
+	/**
+	 * @throws Utils\JsonException
+	 */
+	public function __toString(): string
+	{
+		return Utils\Json::encode($this->toArray());
 	}
 
 }

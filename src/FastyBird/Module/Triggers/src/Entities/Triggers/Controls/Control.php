@@ -19,6 +19,7 @@ use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Module\Triggers\Entities;
 use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
 use IPub\DoctrineTimestampable;
+use Nette\Utils;
 use Ramsey\Uuid;
 
 /**
@@ -96,6 +97,14 @@ class Control implements Entities\Entity,
 			'name' => $this->getName(),
 			'trigger' => $this->getTrigger()->getPlainId(),
 		];
+	}
+
+	/**
+	 * @throws Utils\JsonException
+	 */
+	public function __toString(): string
+	{
+		return Utils\Json::encode($this->toArray());
 	}
 
 }

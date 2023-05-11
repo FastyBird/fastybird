@@ -16,8 +16,11 @@
 namespace FastyBird\Module\Devices\Entities\Connectors\Properties;
 
 use Doctrine\ORM\Mapping as ORM;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Entities;
+use FastyBird\Module\Devices\Exceptions;
 use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
+use Nette\Utils;
 use Ramsey\Uuid;
 use function array_merge;
 
@@ -85,6 +88,17 @@ abstract class Property extends Entities\Property
 
 			'owner' => $this->getConnector()->getOwnerId(),
 		]);
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws Utils\JsonException
+	 */
+	public function __toString(): string
+	{
+		return Utils\Json::encode($this->toArray());
 	}
 
 }

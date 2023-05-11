@@ -248,4 +248,12 @@ class Identity implements Entities\Entity,
 		$this->state = MetadataTypes\IdentityState::get(MetadataTypes\IdentityState::STATE_ACTIVE);
 	}
 
+	/**
+	 * @throws Utils\JsonException
+	 */
+	public function __toString(): string
+	{
+		return Utils\Json::encode($this->toArray());
+	}
+
 }
