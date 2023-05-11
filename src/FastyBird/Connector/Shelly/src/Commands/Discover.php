@@ -68,7 +68,7 @@ class Discover extends Console\Command\Command
 
 	private DateTimeInterface|null $executedTime = null;
 
-	private EventLoop\TimerInterface|null $consumerTimer;
+	private EventLoop\TimerInterface|null $consumerTimer = null;
 
 	private EventLoop\TimerInterface|null $progressBarTimer;
 
