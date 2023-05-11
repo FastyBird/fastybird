@@ -16,7 +16,7 @@
 
 			<fb-layout-sign-footer>
 				<template #info>
-					<p v-if="$route.name === routeNames.signUp">
+					<p v-if="route.name === routeNames.signUp">
 						Already have an account?
 						<router-link :to="{ name: routeNames.signIn }"> Sign in </router-link>
 					</p>
@@ -58,6 +58,7 @@
 
 <script setup lang="ts">
 import { inject } from 'vue';
+import { useRoute } from 'vue-router';
 
 import { FbLayoutSignBox, FbLayoutSignFooter, FbLayoutSignFooterItem } from '@fastybird/web-ui-library';
 
@@ -70,6 +71,8 @@ import Logo from '@/assets/images/fastybird_bird.svg?component';
 const { routeNames } = useRoutesNames();
 
 const moduleMeta = inject(metaKey);
+
+const route = useRoute();
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
