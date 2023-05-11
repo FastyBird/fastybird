@@ -22,6 +22,7 @@ use FastyBird\Module\Triggers\Entities;
 use FastyBird\SimpleAuth\Entities as SimpleAuthEntities;
 use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
 use IPub\DoctrineTimestampable;
+use Nette\Utils;
 use Ramsey\Uuid;
 
 /**
@@ -311,6 +312,14 @@ abstract class Trigger implements Entities\Entity,
 
 			'owner' => $this->getOwnerId(),
 		];
+	}
+
+	/**
+	 * @throws Utils\JsonException
+	 */
+	public function __toString(): string
+	{
+		return Utils\Json::encode($this->toArray());
 	}
 
 }

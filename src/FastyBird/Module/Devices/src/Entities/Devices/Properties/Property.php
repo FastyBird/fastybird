@@ -24,6 +24,7 @@ use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
+use Nette\Utils;
 use Ramsey\Uuid;
 use function array_merge;
 
@@ -372,6 +373,17 @@ abstract class Property extends Entities\Property
 
 			'owner' => $this->getDevice()->getOwnerId(),
 		]);
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws Utils\JsonException
+	 */
+	public function __toString(): string
+	{
+		return Utils\Json::encode($this->toArray());
 	}
 
 }
