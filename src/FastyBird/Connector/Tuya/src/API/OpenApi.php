@@ -46,6 +46,7 @@ use function http_build_query;
 use function implode;
 use function intval;
 use function is_array;
+use function React\Async\await;
 use function sprintf;
 use function strval;
 use function urldecode;
@@ -137,6 +138,8 @@ final class OpenApi
 	private GuzzleHttp\Client|null $client = null;
 
 	private Http\Browser|null $asyncClient = null;
+
+	private Promise\Deferred|null $refreshTokenPromise = null;
 
 	private Log\LoggerInterface $logger;
 
@@ -1386,7 +1389,22 @@ final class OpenApi
 		bool $async = true,
 	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Message\ResponseInterface|false
 	{
-		$this->refreshAccessToken($path);
+		$refreshTokenResult = $this->refreshAccessToken($path);
+
+		if ($refreshTokenResult instanceof Promise\PromiseInterface) {
+			try {
+				await($refreshTokenResult);
+			} catch (Throwable $ex) {
+				$this->logger->error('Awaiting for refresh token promise failed', [
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'type' => 'openapi-api',
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'connector' => [
+						'identifier' => $this->identifier,
+					],
+				]);
+			}
+		}
 
 		$deferred = new Promise\Deferred();
 
@@ -1643,19 +1661,25 @@ final class OpenApi
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws RuntimeException
 	 */
-	private function refreshAccessToken(string $path): void
+	private function refreshAccessToken(string $path): Promise\PromiseInterface|false
 	{
 		if (Utils\Strings::startsWith($path, self::ACCESS_TOKEN_API_ENDPOINT)) {
-			return;
+			return false;
 		}
 
 		if ($this->tokenInfo === null) {
-			return;
+			return false;
 		}
 
 		if (!$this->tokenInfo->isExpired($this->dateTimeFactory->getNow())) {
-			return;
+			return false;
 		}
+
+		if ($this->refreshTokenPromise !== null) {
+			return $this->refreshTokenPromise->promise();
+		}
+
+		$this->refreshTokenPromise = new Promise\Deferred();
 
 		$path = sprintf(self::REFRESH_TOKEN_API_ENDPOINT, $this->tokenInfo->getRefreshToken());
 		$headers = $this->buildRequestHeaders('get', $path);
@@ -1706,15 +1730,27 @@ final class OpenApi
 
 			$body = $response->getBody()->getContents();
 
+			$response->getBody()->rewind();
+
 			try {
 				$decodedResponse = Utils\Json::decode($body, Utils\Json::FORCE_ARRAY);
 
 			} catch (Utils\JsonException) {
-				throw new Exceptions\OpenApiCall('Received response body is not valid JSON');
+				$error = new Exceptions\OpenApiCall('Received response body is not valid JSON');
+
+				$this->refreshTokenPromise->reject($error);
+				$this->refreshTokenPromise = null;
+
+				return Promise\reject($error);
 			}
 
 			if (!is_array($decodedResponse)) {
-				throw new Exceptions\OpenApiCall('Received response body is not valid JSON');
+				$error = new Exceptions\OpenApiCall('Received response body is not valid JSON');
+
+				$this->refreshTokenPromise->reject($error);
+				$this->refreshTokenPromise = null;
+
+				return Promise\reject($error);
 			}
 
 			$data = Utils\ArrayHash::from($decodedResponse);
@@ -1754,13 +1790,26 @@ final class OpenApi
 
 					$this->connect();
 
-					return;
+					$this->refreshTokenPromise?->resolve();
+					$this->refreshTokenPromise = null;
+
+					return Promise\resolve();
 				} else {
 					if ($data->offsetExists('msg')) {
-						throw new Exceptions\OpenApiCall(strval($data->offsetGet('msg')));
+						$error = new Exceptions\OpenApiCall(strval($data->offsetGet('msg')));
+
+						$this->refreshTokenPromise->reject($error);
+						$this->refreshTokenPromise = null;
+
+						return Promise\reject($error);
 					}
 
-					throw new Exceptions\OpenApiCall('Received response is not success');
+					$error = new Exceptions\OpenApiCall('Received response is not success');
+
+					$this->refreshTokenPromise->reject($error);
+					$this->refreshTokenPromise = null;
+
+					return Promise\reject($error);
 				}
 			}
 
@@ -1793,13 +1842,23 @@ final class OpenApi
 					],
 				);
 
-				throw new Exceptions\OpenApiCall('Could not decode received refresh token response payload');
+				$error = new Exceptions\OpenApiCall('Could not decode received refresh token response payload');
+
+				$this->refreshTokenPromise->reject($error);
+				$this->refreshTokenPromise = null;
+
+				return Promise\reject($error);
 			}
 
 			$result = $parsedMessage->offsetGet('result');
 
 			if (!$result instanceof Utils\ArrayHash) {
-				throw new Exceptions\OpenApiCall('Received response is not valid');
+				$error = new Exceptions\OpenApiCall('Received response is not valid');
+
+				$this->refreshTokenPromise->reject($error);
+				$this->refreshTokenPromise = null;
+
+				return Promise\reject($error);
 			}
 
 			$result->offsetSet(
@@ -1815,6 +1874,11 @@ final class OpenApi
 				Entities\API\TuyaTokenInfo::class,
 				$result,
 			);
+
+			$this->refreshTokenPromise->resolve();
+			$this->refreshTokenPromise = null;
+
+			return Promise\resolve();
 		} catch (GuzzleHttp\Exception\GuzzleException | InvalidArgumentException $ex) {
 			$this->logger->error(
 				'Could not refresh access token',
@@ -1832,6 +1896,13 @@ final class OpenApi
 					],
 				],
 			);
+
+			$error = new Exceptions\OpenApiCall('Could not refresh access token');
+
+			$this->refreshTokenPromise->reject($error);
+			$this->refreshTokenPromise = null;
+
+			return Promise\reject($error);
 		}
 	}
 
