@@ -1730,6 +1730,26 @@ final class OpenApi
 					$data->offsetExists('code')
 					&& intval($data->offsetGet('code')) === self::TUYA_ERROR_CODE_API_ACCESS_NOT_ALLOWED
 				) {
+					$this->logger->warning(
+						'Refresh token api endpoint is not allowed to access',
+						[
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+							'type' => 'openapi-api',
+							'request' => [
+								'method' => 'get',
+								'path' => $path,
+								'headers' => $headers,
+							],
+							'response' => [
+								'body' => $response->getBody()->getContents(),
+								'schema' => self::REFRESH_TOKEN_MESSAGE_SCHEMA_FILENAME,
+							],
+							'connector' => [
+								'identifier' => $this->identifier,
+							],
+						],
+					);
+
 					$this->tokenInfo = null;
 
 					$this->connect();
