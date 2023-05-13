@@ -90,7 +90,9 @@ class Client implements EventDispatcher\EventSubscriberInterface
 
 			// ...and ping again
 			if (!$this->database->ping()) {
-				throw new WebSockets\Exceptions\TerminateException('Connection to database could not be re-established');
+				throw new WebSockets\Exceptions\TerminateException(
+					'Connection to database could not be re-established',
+				);
 			}
 		}
 
