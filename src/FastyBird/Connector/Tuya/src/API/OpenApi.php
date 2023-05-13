@@ -1704,7 +1704,9 @@ final class OpenApi
 
 			$response = $this->getClient(false)->get(
 				$this->endpoint->getValue() . $path,
-				$headers,
+				[
+					'headers' => $headers,
+				],
 			);
 
 			assert($response instanceof Message\ResponseInterface);
