@@ -345,10 +345,15 @@ class Connector extends Console\Command\Command
 			self::DATABASE_REFRESH_INTERVAL,
 			function (): void {
 				$this->eventLoop->futureTick(function (): void {
-					try {
-						$this->database->clear();
-					} catch (Throwable $ex) {
-						throw new Exceptions\Terminate('Failed to refresh database connection', $ex->getCode(), $ex);
+					// Check if ping to DB is possible...
+					if (!$this->database->ping()) {
+						// ...if not, try to reconnect
+						$this->database->reconnect();
+
+						// ...and ping again
+						if (!$this->database->ping()) {
+							throw new Exceptions\Terminate('Connection to database could not be re-established');
+						}
 					}
 				});
 			},

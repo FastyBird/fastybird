@@ -125,14 +125,12 @@ final class Database
 
 				// ...and ping again
 				if (!$this->database->ping()) {
-					throw new Exceptions\Runtime('Connection to database could not be established');
+					throw new Exceptions\Runtime('Connection to database could not be re-established');
 				}
-
-				$this->database->clear();
 			}
 		} catch (Throwable $ex) {
 			throw new Exceptions\Runtime(
-				'Connection to database could not be reestablished',
+				'Connection to database could not be re-established',
 				$ex->getCode(),
 				$ex,
 			);

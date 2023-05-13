@@ -47,7 +47,7 @@ class Client implements EventDispatcher\EventSubscriberInterface
 	private array $allowedOrigins;
 
 	public function __construct(
-		private readonly BootstrapHelpers\Database|null $database = null,
+		private readonly BootstrapHelpers\Database $database,
 		Log\LoggerInterface|null $logger = null,
 		string|null $wsKeys = null,
 		string|null $allowedOrigins = null,
@@ -79,14 +79,22 @@ class Client implements EventDispatcher\EventSubscriberInterface
 	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws WebSockets\Exceptions\InvalidArgumentException
+	 * @throws WebSockets\Exceptions\TerminateException
 	 */
 	public function incomingMessage(Events\IncomingMessage $event): void
 	{
-		if ($this->database !== null && !$this->database->ping()) {
+		// Check if ping to DB is possible...
+		if (!$this->database->ping()) {
+			// ...if not, try to reconnect
 			$this->database->reconnect();
-		}
 
-		$this->database?->clear();
+			// ...and ping again
+			if (!$this->database->ping()) {
+				throw new WebSockets\Exceptions\TerminateException(
+					'Connection to database could not be re-established',
+				);
+			}
+		}
 
 		$this->checkSecurity($event->getClient(), $event->getHttpRequest(), $this->wsKeys, $this->allowedOrigins);
 	}
