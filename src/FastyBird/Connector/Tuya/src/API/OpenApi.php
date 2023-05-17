@@ -161,12 +161,7 @@ final class OpenApi
 	}
 
 	/**
-	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\OpenApiCall
-	 * @throws MetadataExceptions\InvalidData
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws RuntimeException
 	 */
 	public function connect(): void
 	{
@@ -180,18 +175,22 @@ final class OpenApi
 			false,
 		);
 
-		if (!$response instanceof Message\ResponseInterface) {
-			throw new Exceptions\InvalidState('Calling get access token returned invalid response');
+		if ($response === false) {
+			throw new Exceptions\OpenApiCall('Could not connect to cloud server');
+		}
+
+		try {
+			$responseBody = $response->getBody()->getContents();
+		} catch (RuntimeException $ex) {
+			throw new Exceptions\OpenApiCall('Could not get content from response body', $ex->getCode(), $ex);
 		}
 
 		try {
 			$parsedMessage = $this->schemaValidator->validate(
-				$response->getBody()->getContents(),
-				$this->getSchemaFilePath(self::ACCESS_TOKEN_MESSAGE_SCHEMA_FILENAME),
+				$responseBody,
+				$this->getSchema(self::ACCESS_TOKEN_MESSAGE_SCHEMA_FILENAME),
 			);
 		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
-			$response->getBody()->rewind();
-
 			$this->logger->error(
 				'Could not decode received access token response payload',
 				[
@@ -205,7 +204,7 @@ final class OpenApi
 						],
 					],
 					'response' => [
-						'body' => $response->getBody()->getContents(),
+						'body' => $responseBody,
 						'schema' => self::ACCESS_TOKEN_MESSAGE_SCHEMA_FILENAME,
 					],
 					'connector' => [
@@ -232,10 +231,14 @@ final class OpenApi
 			)) * 1_000,
 		);
 
-		$this->tokenInfo = EntityFactory::build(
-			Entities\API\TuyaTokenInfo::class,
-			$result,
-		);
+		try {
+			$this->tokenInfo = EntityFactory::build(
+				Entities\API\TuyaTokenInfo::class,
+				$result,
+			);
+		} catch (Exceptions\InvalidState $ex) {
+			throw new Exceptions\OpenApiCall('Could not create entity from response', $ex->getCode(), $ex);
+		}
 	}
 
 	public function disconnect(): void
@@ -253,8 +256,6 @@ final class OpenApi
 
 	/**
 	 * @throws Exceptions\OpenApiCall
-	 * @throws MetadataExceptions\Logic
-	 * @throws RuntimeException
 	 */
 	public function getUid(): string
 	{
@@ -270,36 +271,52 @@ final class OpenApi
 	}
 
 	/**
-	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws RuntimeException
+	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : array<Entities\API\UserDeviceDetail>)
+	 *
+	 * @throws Exceptions\OpenApiCall
 	 */
 	public function getUserDevices(
 		string $userId,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface
+		bool $async = true,
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|array
 	{
 		if (!$this->isConnected()) {
 			$this->connect();
 		}
 
-		$promise = new Promise\Deferred();
+		$deferred = new Promise\Deferred();
 
 		$result = $this->callRequest(
 			'GET',
 			sprintf(self::USER_DEVICES_API_ENDPOINT, $userId),
+			[],
+			null,
+			$async,
 		);
 
 		if ($result instanceof Promise\PromiseInterface) {
 			$result
-				->then(function (Message\ResponseInterface $response) use ($promise): void {
+				->then(function (Message\ResponseInterface $response) use ($deferred): void {
+					try {
+						$responseBody = $response->getBody()->getContents();
+					} catch (RuntimeException $ex) {
+						$deferred->reject(
+							new Exceptions\OpenApiCall(
+								'Could not get content from response body',
+								$ex->getCode(),
+								$ex,
+							),
+						);
+
+						return;
+					}
+
 					try {
 						$parsedMessage = $this->schemaValidator->validate(
-							$response->getBody()->getContents(),
-							$this->getSchemaFilePath(self::USER_DEVICES_MESSAGE_SCHEMA_FILENAME),
+							$responseBody,
+							$this->getSchema(self::USER_DEVICES_MESSAGE_SCHEMA_FILENAME),
 						);
 					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
-						$response->getBody()->rewind();
-
 						$this->logger->error(
 							'Could not decode received response payload',
 							[
@@ -307,7 +324,7 @@ final class OpenApi
 								'type' => 'openapi-api',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'response' => [
-									'body' => $response->getBody()->getContents(),
+									'body' => $responseBody,
 									'schema' => self::USER_DEVICES_MESSAGE_SCHEMA_FILENAME,
 								],
 								'connector' => [
@@ -316,7 +333,7 @@ final class OpenApi
 							],
 						);
 
-						$promise->reject(new Exceptions\OpenApiCall('Could not decode received response payload'));
+						$deferred->reject(new Exceptions\OpenApiCall('Could not decode received response payload'));
 
 						return;
 					}
@@ -324,7 +341,7 @@ final class OpenApi
 					$result = $parsedMessage->offsetGet('result');
 
 					if (!$result instanceof Utils\ArrayHash) {
-						$promise->reject(new Exceptions\OpenApiCall('Received response is not valid'));
+						$deferred->reject(new Exceptions\OpenApiCall('Received response is not valid'));
 
 						return;
 					}
@@ -336,40 +353,111 @@ final class OpenApi
 							continue;
 						}
 
-						$devices[] = EntityFactory::build(
-							Entities\API\UserDeviceDetail::class,
-							$deviceData,
-						);
+						try {
+							$devices[] = EntityFactory::build(
+								Entities\API\UserDeviceDetail::class,
+								$deviceData,
+							);
+						} catch (Exceptions\InvalidState $ex) {
+							$deferred->reject(
+								new Exceptions\OpenApiCall(
+									'Could not create entity from response',
+									$ex->getCode(),
+									$ex,
+								),
+							);
+
+							return;
+						}
 					}
 
-					$promise->resolve($devices);
+					$deferred->resolve($devices);
 				})
-				->otherwise(static function (Throwable $ex) use ($promise): void {
-					$promise->reject($ex);
+				->otherwise(static function (Throwable $ex) use ($deferred): void {
+					$deferred->reject($ex);
 				});
-		} else {
-			throw new Exceptions\InvalidState('Request promise could not be created');
+
+			return $deferred->promise();
 		}
 
-		return $promise->promise();
+		if ($result === false) {
+			throw new Exceptions\OpenApiCall('Could load data from cloud server');
+		}
+
+		try {
+			$responseBody = $result->getBody()->getContents();
+		} catch (RuntimeException $ex) {
+			throw new Exceptions\OpenApiCall('Could not get content from response body', $ex->getCode(), $ex);
+		}
+
+		try {
+			$parsedMessage = $this->schemaValidator->validate(
+				$responseBody,
+				$this->getSchema(self::USER_DEVICES_MESSAGE_SCHEMA_FILENAME),
+			);
+		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+			$this->logger->error(
+				'Could not decode received response payload',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'type' => 'openapi-api',
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'response' => [
+						'body' => $responseBody,
+						'schema' => self::USER_DEVICES_MESSAGE_SCHEMA_FILENAME,
+					],
+					'connector' => [
+						'identifier' => $this->identifier,
+					],
+				],
+			);
+
+			throw new Exceptions\OpenApiCall('Could not decode received response payload');
+		}
+
+		$result = $parsedMessage->offsetGet('result');
+
+		if (!$result instanceof Utils\ArrayHash) {
+			throw new Exceptions\OpenApiCall('Received response is not valid');
+		}
+
+		$devices = [];
+
+		foreach ($result as $deviceData) {
+			if (!$deviceData instanceof Utils\ArrayHash) {
+				continue;
+			}
+
+			try {
+				$devices[] = EntityFactory::build(
+					Entities\API\UserDeviceDetail::class,
+					$deviceData,
+				);
+			} catch (Exceptions\InvalidState $ex) {
+				throw new Exceptions\OpenApiCall('Could not create entity from response', $ex->getCode(), $ex);
+			}
+		}
+
+		return $devices;
 	}
 
 	/**
 	 * @param array<string> $deviceIds
 	 *
-	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws RuntimeException
+	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : array<Entities\API\UserDeviceFactoryInfos>)
+	 *
+	 * @throws Exceptions\OpenApiCall
 	 */
 	public function getUserDevicesFactoryInfos(
 		array $deviceIds,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface
+		bool $async = true,
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|array
 	{
 		if (!$this->isConnected()) {
 			$this->connect();
 		}
 
-		$promise = new Promise\Deferred();
+		$deferred = new Promise\Deferred();
 
 		$result = $this->callRequest(
 			'GET',
@@ -377,19 +465,33 @@ final class OpenApi
 			[
 				'device_ids' => implode(',', $deviceIds),
 			],
+			null,
+			$async,
 		);
 
 		if ($result instanceof Promise\PromiseInterface) {
 			$result
-				->then(function (Message\ResponseInterface $response) use ($promise): void {
+				->then(function (Message\ResponseInterface $response) use ($deferred): void {
+					try {
+						$responseBody = $response->getBody()->getContents();
+					} catch (RuntimeException $ex) {
+						$deferred->reject(
+							new Exceptions\OpenApiCall(
+								'Could not get content from response body',
+								$ex->getCode(),
+								$ex,
+							),
+						);
+
+						return;
+					}
+
 					try {
 						$parsedMessage = $this->schemaValidator->validate(
-							$response->getBody()->getContents(),
-							$this->getSchemaFilePath(self::USER_DEVICES_FACTORY_INFOS_MESSAGE_SCHEMA_FILENAME),
+							$responseBody,
+							$this->getSchema(self::USER_DEVICES_FACTORY_INFOS_MESSAGE_SCHEMA_FILENAME),
 						);
 					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
-						$response->getBody()->rewind();
-
 						$this->logger->error(
 							'Could not decode received response payload',
 							[
@@ -397,7 +499,7 @@ final class OpenApi
 								'type' => 'openapi-api',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'response' => [
-									'body' => $response->getBody()->getContents(),
+									'body' => $responseBody,
 									'schema' => self::USER_DEVICES_FACTORY_INFOS_MESSAGE_SCHEMA_FILENAME,
 								],
 								'connector' => [
@@ -406,7 +508,7 @@ final class OpenApi
 							],
 						);
 
-						$promise->reject(new Exceptions\OpenApiCall('Could not decode received response payload'));
+						$deferred->reject(new Exceptions\OpenApiCall('Could not decode received response payload'));
 
 						return;
 					}
@@ -414,7 +516,7 @@ final class OpenApi
 					$result = $parsedMessage->offsetGet('result');
 
 					if (!$result instanceof Utils\ArrayHash) {
-						$promise->reject(new Exceptions\OpenApiCall('Received response is not valid'));
+						$deferred->reject(new Exceptions\OpenApiCall('Received response is not valid'));
 
 						return;
 					}
@@ -426,55 +528,141 @@ final class OpenApi
 							continue;
 						}
 
-						$factoryInfos[] = EntityFactory::build(
-							Entities\API\UserDeviceFactoryInfos::class,
-							$deviceData,
-						);
+						try {
+							$factoryInfos[] = EntityFactory::build(
+								Entities\API\UserDeviceFactoryInfos::class,
+								$deviceData,
+							);
+						} catch (Exceptions\InvalidState $ex) {
+							$deferred->reject(
+								new Exceptions\OpenApiCall(
+									'Could not create entity from response',
+									$ex->getCode(),
+									$ex,
+								),
+							);
+
+							return;
+						}
 					}
 
-					$promise->resolve($factoryInfos);
+					$deferred->resolve($factoryInfos);
 				})
-				->otherwise(static function (Throwable $ex) use ($promise): void {
-					$promise->reject($ex);
+				->otherwise(static function (Throwable $ex) use ($deferred): void {
+					$deferred->reject($ex);
 				});
-		} else {
-			throw new Exceptions\InvalidState('Request promise could not be created');
+
+			return $deferred->promise();
 		}
 
-		return $promise->promise();
+		if ($result === false) {
+			throw new Exceptions\OpenApiCall('Could load data from cloud server');
+		}
+
+		try {
+			$responseBody = $result->getBody()->getContents();
+		} catch (RuntimeException $ex) {
+			throw new Exceptions\OpenApiCall('Could not get content from response body', $ex->getCode(), $ex);
+		}
+
+		try {
+			$parsedMessage = $this->schemaValidator->validate(
+				$responseBody,
+				$this->getSchema(self::USER_DEVICES_FACTORY_INFOS_MESSAGE_SCHEMA_FILENAME),
+			);
+		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+			$this->logger->error(
+				'Could not decode received response payload',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'type' => 'openapi-api',
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'response' => [
+						'body' => $responseBody,
+						'schema' => self::USER_DEVICES_FACTORY_INFOS_MESSAGE_SCHEMA_FILENAME,
+					],
+					'connector' => [
+						'identifier' => $this->identifier,
+					],
+				],
+			);
+
+			throw new Exceptions\OpenApiCall('Could not decode received response payload');
+		}
+
+		$result = $parsedMessage->offsetGet('result');
+
+		if (!$result instanceof Utils\ArrayHash) {
+			throw new Exceptions\OpenApiCall('Received response is not valid');
+		}
+
+		$factoryInfos = [];
+
+		foreach ($result as $deviceData) {
+			if (!$deviceData instanceof Utils\ArrayHash) {
+				continue;
+			}
+
+			try {
+				$factoryInfos[] = EntityFactory::build(
+					Entities\API\UserDeviceFactoryInfos::class,
+					$deviceData,
+				);
+			} catch (Exceptions\InvalidState $ex) {
+				throw new Exceptions\OpenApiCall('Could not create entity from response', $ex->getCode(), $ex);
+			}
+		}
+
+		return $factoryInfos;
 	}
 
 	/**
-	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws RuntimeException
+	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\UserDeviceDetail)
+	 *
+	 * @throws Exceptions\OpenApiCall
 	 */
 	public function getUserDeviceDetail(
 		string $deviceId,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface
+		bool $async = true,
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\UserDeviceDetail
 	{
 		if (!$this->isConnected()) {
 			$this->connect();
 		}
 
-		$promise = new Promise\Deferred();
+		$deferred = new Promise\Deferred();
 
 		$result = $this->callRequest(
 			'GET',
 			sprintf(self::USER_DEVICE_DETAIL_API_ENDPOINT, $deviceId),
+			[],
+			null,
+			$async,
 		);
 
 		if ($result instanceof Promise\PromiseInterface) {
 			$result
-				->then(function (Message\ResponseInterface $response) use ($promise): void {
+				->then(function (Message\ResponseInterface $response) use ($deferred): void {
+					try {
+						$responseBody = $response->getBody()->getContents();
+					} catch (RuntimeException $ex) {
+						$deferred->reject(
+							new Exceptions\OpenApiCall(
+								'Could not get content from response body',
+								$ex->getCode(),
+								$ex,
+							),
+						);
+
+						return;
+					}
+
 					try {
 						$parsedMessage = $this->schemaValidator->validate(
-							$response->getBody()->getContents(),
-							$this->getSchemaFilePath(self::USER_DEVICE_DETAIL_MESSAGE_SCHEMA_FILENAME),
+							$responseBody,
+							$this->getSchema(self::USER_DEVICE_DETAIL_MESSAGE_SCHEMA_FILENAME),
 						);
 					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
-						$response->getBody()->rewind();
-
 						$this->logger->error(
 							'Could not decode received response payload',
 							[
@@ -482,7 +670,7 @@ final class OpenApi
 								'type' => 'openapi-api',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'response' => [
-									'body' => $response->getBody()->getContents(),
+									'body' => $responseBody,
 									'schema' => self::USER_DEVICE_DETAIL_MESSAGE_SCHEMA_FILENAME,
 								],
 								'connector' => [
@@ -491,7 +679,7 @@ final class OpenApi
 							],
 						);
 
-						$promise->reject(new Exceptions\OpenApiCall('Could not decode received response payload'));
+						$deferred->reject(new Exceptions\OpenApiCall('Could not decode received response payload'));
 
 						return;
 					}
@@ -499,78 +687,127 @@ final class OpenApi
 					$result = $parsedMessage->offsetGet('result');
 
 					if (!$result instanceof Utils\ArrayHash) {
-						$promise->reject(new Exceptions\OpenApiCall('Received response is not valid'));
+						$deferred->reject(new Exceptions\OpenApiCall('Received response is not valid'));
 
 						return;
 					}
 
-					$deviceStatus = [];
-
-					if (
-						$result->offsetExists('status')
-						&& (
-							is_array($result->offsetGet('status'))
-							|| $result->offsetGet('status') instanceof Utils\ArrayHash
-						)
-					) {
-						foreach ($result->offsetGet('status') as $item) {
-							assert($item instanceof Utils\ArrayHash);
-
-							$deviceStatus[] = EntityFactory::build(
-								Entities\API\UserDeviceDataPointStatus::class,
-								$item,
-							);
-						}
+					try {
+						$deferred->resolve(EntityFactory::build(
+							Entities\API\UserDeviceDetail::class,
+							$result,
+						));
+					} catch (Exceptions\InvalidState $ex) {
+						$deferred->reject(
+							new Exceptions\OpenApiCall('Could not create entity from response', $ex->getCode(), $ex),
+						);
 					}
-
-					$result->offsetSet('status', $deviceStatus);
-
-					$promise->resolve(EntityFactory::build(
-						Entities\API\UserDeviceDetail::class,
-						$result,
-					));
 				})
-				->otherwise(static function (Throwable $ex) use ($promise): void {
-					$promise->reject($ex);
+				->otherwise(static function (Throwable $ex) use ($deferred): void {
+					$deferred->reject($ex);
 				});
-		} else {
-			throw new Exceptions\InvalidState('Request promise could not be created');
+
+			return $deferred->promise();
 		}
 
-		return $promise->promise();
+		if ($result === false) {
+			throw new Exceptions\OpenApiCall('Could load data from cloud server');
+		}
+
+		try {
+			$responseBody = $result->getBody()->getContents();
+		} catch (RuntimeException $ex) {
+			throw new Exceptions\OpenApiCall('Could not get content from response body', $ex->getCode(), $ex);
+		}
+
+		try {
+			$parsedMessage = $this->schemaValidator->validate(
+				$responseBody,
+				$this->getSchema(self::USER_DEVICE_DETAIL_MESSAGE_SCHEMA_FILENAME),
+			);
+		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+			$this->logger->error(
+				'Could not decode received response payload',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'type' => 'openapi-api',
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'response' => [
+						'body' => $responseBody,
+						'schema' => self::USER_DEVICE_DETAIL_MESSAGE_SCHEMA_FILENAME,
+					],
+					'connector' => [
+						'identifier' => $this->identifier,
+					],
+				],
+			);
+
+			throw new Exceptions\OpenApiCall('Could not decode received response payload');
+		}
+
+		$result = $parsedMessage->offsetGet('result');
+
+		if (!$result instanceof Utils\ArrayHash) {
+			throw new Exceptions\OpenApiCall('Received response is not valid');
+		}
+
+		try {
+			return EntityFactory::build(
+				Entities\API\UserDeviceDetail::class,
+				$result,
+			);
+		} catch (Exceptions\InvalidState $ex) {
+			throw new Exceptions\OpenApiCall('Could not create entity from response', $ex->getCode(), $ex);
+		}
 	}
 
 	/**
-	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws RuntimeException
+	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\UserDeviceSpecifications)
+	 *
+	 * @throws Exceptions\OpenApiCall
 	 */
 	public function getUserDeviceSpecifications(
 		string $deviceId,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface
+		bool $async = true,
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\UserDeviceSpecifications
 	{
 		if (!$this->isConnected()) {
 			$this->connect();
 		}
 
-		$promise = new Promise\Deferred();
+		$deferred = new Promise\Deferred();
 
 		$result = $this->callRequest(
 			'GET',
 			sprintf(self::USER_DEVICE_SPECIFICATIONS_API_ENDPOINT, $deviceId),
+			[],
+			null,
+			$async,
 		);
 
 		if ($result instanceof Promise\PromiseInterface) {
 			$result
-				->then(function (Message\ResponseInterface $response) use ($promise): void {
+				->then(function (Message\ResponseInterface $response) use ($deferred): void {
+					try {
+						$responseBody = $response->getBody()->getContents();
+					} catch (RuntimeException $ex) {
+						$deferred->reject(
+							new Exceptions\OpenApiCall(
+								'Could not get content from response body',
+								$ex->getCode(),
+								$ex,
+							),
+						);
+
+						return;
+					}
+
 					try {
 						$parsedMessage = $this->schemaValidator->validate(
-							$response->getBody()->getContents(),
-							$this->getSchemaFilePath(self::USER_DEVICE_SPECIFICATIONS_MESSAGE_SCHEMA_FILENAME),
+							$responseBody,
+							$this->getSchema(self::USER_DEVICE_SPECIFICATIONS_MESSAGE_SCHEMA_FILENAME),
 						);
 					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
-						$response->getBody()->rewind();
-
 						$this->logger->error(
 							'Could not decode received response payload',
 							[
@@ -578,7 +815,7 @@ final class OpenApi
 								'type' => 'openapi-api',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'response' => [
-									'body' => $response->getBody()->getContents(),
+									'body' => $responseBody,
 									'schema' => self::USER_DEVICE_SPECIFICATIONS_MESSAGE_SCHEMA_FILENAME,
 								],
 								'connector' => [
@@ -587,7 +824,7 @@ final class OpenApi
 							],
 						);
 
-						$promise->reject(new Exceptions\OpenApiCall('Could not decode received response payload'));
+						$deferred->reject(new Exceptions\OpenApiCall('Could not decode received response payload'));
 
 						return;
 					}
@@ -595,99 +832,127 @@ final class OpenApi
 					$result = $parsedMessage->offsetGet('result');
 
 					if (!$result instanceof Utils\ArrayHash) {
-						$promise->reject(new Exceptions\OpenApiCall('Received response is not valid'));
+						$deferred->reject(new Exceptions\OpenApiCall('Received response is not valid'));
 
 						return;
 					}
 
-					$deviceFunctions = [];
-
-					if (
-						$result->offsetExists('functions')
-						&& (
-							is_array($result->offsetGet('functions'))
-							|| $result->offsetGet('functions') instanceof Utils\ArrayHash
-						)
-					) {
-						foreach ($result->offsetGet('functions') as $item) {
-							assert($item instanceof Utils\ArrayHash);
-
-							$deviceFunctions[] = EntityFactory::build(
-								Entities\API\UserDeviceSpecificationsFunction::class,
-								$item,
-							);
-						}
+					try {
+						$deferred->resolve(EntityFactory::build(
+							Entities\API\UserDeviceSpecifications::class,
+							$result,
+						));
+					} catch (Exceptions\InvalidState $ex) {
+						$deferred->reject(
+							new Exceptions\OpenApiCall('Could not create entity from response', $ex->getCode(), $ex),
+						);
 					}
-
-					$result->offsetSet('functions', $deviceFunctions);
-
-					$deviceStatus = [];
-
-					if (
-						$result->offsetExists('status')
-						&& (
-							is_array($result->offsetGet('status'))
-							|| $result->offsetGet('status') instanceof Utils\ArrayHash
-						)
-					) {
-						foreach ($result->offsetGet('status') as $item) {
-							assert($item instanceof Utils\ArrayHash);
-
-							$deviceStatus[] = EntityFactory::build(
-								Entities\API\UserDeviceSpecificationsStatus::class,
-								$item,
-							);
-						}
-					}
-
-					$result->offsetSet('status', $deviceStatus);
-
-					$promise->resolve(EntityFactory::build(
-						Entities\API\UserDeviceSpecifications::class,
-						$result,
-					));
 				})
-				->otherwise(static function (Throwable $ex) use ($promise): void {
-					$promise->reject($ex);
+				->otherwise(static function (Throwable $ex) use ($deferred): void {
+					$deferred->reject($ex);
 				});
-		} else {
-			throw new Exceptions\InvalidState('Request promise could not be created');
+
+			return $deferred->promise();
 		}
 
-		return $promise->promise();
+		if ($result === false) {
+			throw new Exceptions\OpenApiCall('Could load data from cloud server');
+		}
+
+		try {
+			$responseBody = $result->getBody()->getContents();
+		} catch (RuntimeException $ex) {
+			throw new Exceptions\OpenApiCall('Could not get content from response body', $ex->getCode(), $ex);
+		}
+
+		try {
+			$parsedMessage = $this->schemaValidator->validate(
+				$responseBody,
+				$this->getSchema(self::USER_DEVICE_SPECIFICATIONS_MESSAGE_SCHEMA_FILENAME),
+			);
+		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+			$this->logger->error(
+				'Could not decode received response payload',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'type' => 'openapi-api',
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'response' => [
+						'body' => $responseBody,
+						'schema' => self::USER_DEVICE_SPECIFICATIONS_MESSAGE_SCHEMA_FILENAME,
+					],
+					'connector' => [
+						'identifier' => $this->identifier,
+					],
+				],
+			);
+
+			throw new Exceptions\OpenApiCall('Could not decode received response payload');
+		}
+
+		$result = $parsedMessage->offsetGet('result');
+
+		if (!$result instanceof Utils\ArrayHash) {
+			throw new Exceptions\OpenApiCall('Received response is not valid');
+		}
+
+		try {
+			return EntityFactory::build(
+				Entities\API\UserDeviceSpecifications::class,
+				$result,
+			);
+		} catch (Exceptions\InvalidState $ex) {
+			throw new Exceptions\OpenApiCall('Could not create entity from response', $ex->getCode(), $ex);
+		}
 	}
 
 	/**
-	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws RuntimeException
+	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : array<Entities\API\UserDeviceDataPointStatus>)
+	 *
+	 * @throws Exceptions\OpenApiCall
 	 */
 	public function getUserDeviceStatus(
 		string $deviceId,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface
+		bool $async = true,
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|array
 	{
 		if (!$this->isConnected()) {
 			$this->connect();
 		}
 
-		$promise = new Promise\Deferred();
+		$deferred = new Promise\Deferred();
 
 		$result = $this->callRequest(
 			'GET',
 			sprintf(self::USER_DEVICE_STATUS_API_ENDPOINT, $deviceId),
+			[],
+			null,
+			$async,
 		);
 
 		if ($result instanceof Promise\PromiseInterface) {
 			$result
-				->then(function (Message\ResponseInterface $response) use ($promise): void {
+				->then(function (Message\ResponseInterface $response) use ($deferred): void {
+					try {
+						$responseBody = $response->getBody()->getContents();
+					} catch (RuntimeException $ex) {
+						$deferred->reject(
+							new Exceptions\OpenApiCall(
+								'Could not get content from response body',
+								$ex->getCode(),
+								$ex,
+							),
+						);
+
+						return;
+					}
+
 					try {
 						$parsedMessage = $this->schemaValidator->validate(
-							$response->getBody()->getContents(),
-							$this->getSchemaFilePath(self::USER_DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME),
+							$responseBody,
+							$this->getSchema(self::USER_DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME),
 						);
 					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
-						$response->getBody()->rewind();
-
 						$this->logger->error(
 							'Could not decode received response payload',
 							[
@@ -695,7 +960,7 @@ final class OpenApi
 								'type' => 'openapi-api',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'response' => [
-									'body' => $response->getBody()->getContents(),
+									'body' => $responseBody,
 									'schema' => self::USER_DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME,
 								],
 								'connector' => [
@@ -704,7 +969,7 @@ final class OpenApi
 							],
 						);
 
-						$promise->reject(new Exceptions\OpenApiCall('Could not decode received response payload'));
+						$deferred->reject(new Exceptions\OpenApiCall('Could not decode received response payload'));
 
 						return;
 					}
@@ -712,7 +977,7 @@ final class OpenApi
 					$result = $parsedMessage->offsetGet('result');
 
 					if (!$result instanceof Utils\ArrayHash) {
-						$promise->reject(new Exceptions\OpenApiCall('Received response is not valid'));
+						$deferred->reject(new Exceptions\OpenApiCall('Received response is not valid'));
 
 						return;
 					}
@@ -724,55 +989,141 @@ final class OpenApi
 							continue;
 						}
 
-						$statuses[] = EntityFactory::build(
-							Entities\API\UserDeviceDataPointStatus::class,
-							$statusData,
-						);
+						try {
+							$statuses[] = EntityFactory::build(
+								Entities\API\UserDeviceDataPointStatus::class,
+								$statusData,
+							);
+						} catch (Exceptions\InvalidState $ex) {
+							$deferred->reject(
+								new Exceptions\OpenApiCall(
+									'Could not create entity from response',
+									$ex->getCode(),
+									$ex,
+								),
+							);
+
+							return;
+						}
 					}
 
-					$promise->resolve($statuses);
+					$deferred->resolve($statuses);
 				})
-				->otherwise(static function (Throwable $ex) use ($promise): void {
-					$promise->reject($ex);
+				->otherwise(static function (Throwable $ex) use ($deferred): void {
+					$deferred->reject($ex);
 				});
-		} else {
-			throw new Exceptions\InvalidState('Request promise could not be created');
+
+			return $deferred->promise();
 		}
 
-		return $promise->promise();
+		if ($result === false) {
+			throw new Exceptions\OpenApiCall('Could load data from cloud server');
+		}
+
+		try {
+			$responseBody = $result->getBody()->getContents();
+		} catch (RuntimeException $ex) {
+			throw new Exceptions\OpenApiCall('Could not get content from response body', $ex->getCode(), $ex);
+		}
+
+		try {
+			$parsedMessage = $this->schemaValidator->validate(
+				$responseBody,
+				$this->getSchema(self::USER_DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME),
+			);
+		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+			$this->logger->error(
+				'Could not decode received response payload',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'type' => 'openapi-api',
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'response' => [
+						'body' => $responseBody,
+						'schema' => self::USER_DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME,
+					],
+					'connector' => [
+						'identifier' => $this->identifier,
+					],
+				],
+			);
+
+			throw new Exceptions\OpenApiCall('Could not decode received response payload');
+		}
+
+		$result = $parsedMessage->offsetGet('result');
+
+		if (!$result instanceof Utils\ArrayHash) {
+			throw new Exceptions\OpenApiCall('Received response is not valid');
+		}
+
+		$statuses = [];
+
+		foreach ($result as $statusData) {
+			if (!$statusData instanceof Utils\ArrayHash) {
+				continue;
+			}
+
+			try {
+				$statuses[] = EntityFactory::build(
+					Entities\API\UserDeviceDataPointStatus::class,
+					$statusData,
+				);
+			} catch (Exceptions\InvalidState $ex) {
+				throw new Exceptions\OpenApiCall('Could not create entity from response', $ex->getCode(), $ex);
+			}
+		}
+
+		return $statuses;
 	}
 
 	/**
-	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws RuntimeException
+	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : array<Entities\API\UserDeviceChild>)
+	 *
+	 * @throws Exceptions\OpenApiCall
 	 */
 	public function getUserDeviceChildren(
 		string $deviceId,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface
+		bool $async = true,
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|array
 	{
 		if (!$this->isConnected()) {
 			$this->connect();
 		}
 
-		$promise = new Promise\Deferred();
+		$deferred = new Promise\Deferred();
 
 		$result = $this->callRequest(
 			'GET',
 			sprintf(self::USER_DEVICE_CHILDREN_DEVICES_API_ENDPOINT, $deviceId),
+			[],
+			null,
+			$async,
 		);
 
 		if ($result instanceof Promise\PromiseInterface) {
 			$result
-				->then(function (Message\ResponseInterface $response) use ($promise): void {
+				->then(function (Message\ResponseInterface $response) use ($deferred): void {
+					try {
+						$responseBody = $response->getBody()->getContents();
+					} catch (RuntimeException $ex) {
+						$deferred->reject(
+							new Exceptions\OpenApiCall(
+								'Could not get content from response body',
+								$ex->getCode(),
+								$ex,
+							),
+						);
+
+						return;
+					}
+
 					try {
 						$parsedMessage = $this->schemaValidator->validate(
-							$response->getBody()->getContents(),
-							$this->getSchemaFilePath(self::USER_DEVICE_CHILDREN_DEVICES_MESSAGE_SCHEMA_FILENAME),
+							$responseBody,
+							$this->getSchema(self::USER_DEVICE_CHILDREN_DEVICES_MESSAGE_SCHEMA_FILENAME),
 						);
 					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
-						$response->getBody()->rewind();
-
 						$this->logger->error(
 							'Could not decode received response payload',
 							[
@@ -780,7 +1131,7 @@ final class OpenApi
 								'type' => 'openapi-api',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'response' => [
-									'body' => $response->getBody()->getContents(),
+									'body' => $responseBody,
 									'schema' => self::USER_DEVICE_CHILDREN_DEVICES_MESSAGE_SCHEMA_FILENAME,
 								],
 								'connector' => [
@@ -789,7 +1140,7 @@ final class OpenApi
 							],
 						);
 
-						$promise->reject(new Exceptions\OpenApiCall('Could not decode received response payload'));
+						$deferred->reject(new Exceptions\OpenApiCall('Could not decode received response payload'));
 
 						return;
 					}
@@ -797,7 +1148,7 @@ final class OpenApi
 					$result = $parsedMessage->offsetGet('result');
 
 					if (!$result instanceof Utils\ArrayHash) {
-						$promise->reject(new Exceptions\OpenApiCall('Received response is not valid'));
+						$deferred->reject(new Exceptions\OpenApiCall('Received response is not valid'));
 
 						return;
 					}
@@ -809,58 +1160,143 @@ final class OpenApi
 							continue;
 						}
 
-						$children[] = EntityFactory::build(
-							Entities\API\UserDeviceChild::class,
-							$childrenData,
-						);
+						try {
+							$children[] = EntityFactory::build(
+								Entities\API\UserDeviceChild::class,
+								$childrenData,
+							);
+						} catch (Exceptions\InvalidState $ex) {
+							$deferred->reject(
+								new Exceptions\OpenApiCall(
+									'Could not create entity from response',
+									$ex->getCode(),
+									$ex,
+								),
+							);
+
+							return;
+						}
 					}
 
-					$promise->resolve($children);
+					$deferred->resolve($children);
 				})
-				->otherwise(static function (Throwable $ex) use ($promise): void {
-					$promise->reject($ex);
+				->otherwise(static function (Throwable $ex) use ($deferred): void {
+					$deferred->reject($ex);
 				});
-		} else {
-			throw new Exceptions\InvalidState('Request promise could not be created');
+
+			return $deferred->promise();
 		}
 
-		return $promise->promise();
+		if ($result === false) {
+			throw new Exceptions\OpenApiCall('Could load data from cloud server');
+		}
+
+		try {
+			$responseBody = $result->getBody()->getContents();
+		} catch (RuntimeException $ex) {
+			throw new Exceptions\OpenApiCall('Could not get content from response body', $ex->getCode(), $ex);
+		}
+
+		try {
+			$parsedMessage = $this->schemaValidator->validate(
+				$responseBody,
+				$this->getSchema(self::USER_DEVICE_CHILDREN_DEVICES_MESSAGE_SCHEMA_FILENAME),
+			);
+		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+			$this->logger->error(
+				'Could not decode received response payload',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'type' => 'openapi-api',
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'response' => [
+						'body' => $responseBody,
+						'schema' => self::USER_DEVICE_CHILDREN_DEVICES_MESSAGE_SCHEMA_FILENAME,
+					],
+					'connector' => [
+						'identifier' => $this->identifier,
+					],
+				],
+			);
+
+			throw new Exceptions\OpenApiCall('Could not decode received response payload');
+		}
+
+		$result = $parsedMessage->offsetGet('result');
+
+		if (!$result instanceof Utils\ArrayHash) {
+			throw new Exceptions\OpenApiCall('Received response is not valid');
+		}
+
+		$children = [];
+
+		foreach ($result as $childrenData) {
+			if (!$childrenData instanceof Utils\ArrayHash) {
+				continue;
+			}
+
+			try {
+				$children[] = EntityFactory::build(
+					Entities\API\UserDeviceChild::class,
+					$childrenData,
+				);
+			} catch (Exceptions\InvalidState $ex) {
+				throw new Exceptions\OpenApiCall('Could not create entity from response', $ex->getCode(), $ex);
+			}
+		}
+
+		return $children;
 	}
 
 	/**
 	 * @param array<string, mixed> $params
 	 *
-	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws RuntimeException
+	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : array<Entities\API\DeviceInformation>)
+	 *
+	 * @throws Exceptions\OpenApiCall
 	 */
 	public function getDevices(
 		array $params = [],
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface
+		bool $async = true,
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|array
 	{
 		if (!$this->isConnected()) {
 			$this->connect();
 		}
 
-		$promise = new Promise\Deferred();
+		$deferred = new Promise\Deferred();
 
 		$result = $this->callRequest(
 			'GET',
 			self::DEVICES_API_ENDPOINT,
 			$params,
+			null,
+			$async,
 		);
 
 		if ($result instanceof Promise\PromiseInterface) {
 			$result
-				->then(function (Message\ResponseInterface $response) use ($promise): void {
+				->then(function (Message\ResponseInterface $response) use ($deferred): void {
+					try {
+						$responseBody = $response->getBody()->getContents();
+					} catch (RuntimeException $ex) {
+						$deferred->reject(
+							new Exceptions\OpenApiCall(
+								'Could not get content from response body',
+								$ex->getCode(),
+								$ex,
+							),
+						);
+
+						return;
+					}
+
 					try {
 						$parsedMessage = $this->schemaValidator->validate(
-							$response->getBody()->getContents(),
-							$this->getSchemaFilePath(self::DEVICES_MESSAGE_SCHEMA_FILENAME),
+							$responseBody,
+							$this->getSchema(self::DEVICES_MESSAGE_SCHEMA_FILENAME),
 						);
 					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
-						$response->getBody()->rewind();
-
 						$this->logger->error(
 							'Could not decode received response payload',
 							[
@@ -868,7 +1304,7 @@ final class OpenApi
 								'type' => 'openapi-api',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'response' => [
-									'body' => $response->getBody()->getContents(),
+									'body' => $responseBody,
 									'schema' => self::DEVICES_MESSAGE_SCHEMA_FILENAME,
 								],
 								'connector' => [
@@ -877,7 +1313,7 @@ final class OpenApi
 							],
 						);
 
-						$promise->reject(new Exceptions\OpenApiCall('Could not decode received response payload'));
+						$deferred->reject(new Exceptions\OpenApiCall('Could not decode received response payload'));
 
 						return;
 					}
@@ -885,7 +1321,7 @@ final class OpenApi
 					$result = $parsedMessage->offsetGet('result');
 
 					if (!$result instanceof Utils\ArrayHash) {
-						$promise->reject(new Exceptions\OpenApiCall('Received response is not valid'));
+						$deferred->reject(new Exceptions\OpenApiCall('Received response is not valid'));
 
 						return;
 					}
@@ -893,7 +1329,7 @@ final class OpenApi
 					$list = $result->offsetGet('list');
 
 					if (!$list instanceof Utils\ArrayHash) {
-						$promise->reject(new Exceptions\OpenApiCall('Received response is not valid'));
+						$deferred->reject(new Exceptions\OpenApiCall('Received response is not valid'));
 
 						return;
 					}
@@ -905,40 +1341,117 @@ final class OpenApi
 							continue;
 						}
 
-						$devices[] = EntityFactory::build(
-							Entities\API\DeviceInformation::class,
-							$deviceData,
-						);
+						try {
+							$devices[] = EntityFactory::build(
+								Entities\API\DeviceInformation::class,
+								$deviceData,
+							);
+						} catch (Exceptions\InvalidState $ex) {
+							$deferred->reject(
+								new Exceptions\OpenApiCall(
+									'Could not create entity from response',
+									$ex->getCode(),
+									$ex,
+								),
+							);
+
+							return;
+						}
 					}
 
-					$promise->resolve($devices);
+					$deferred->resolve($devices);
 				})
-				->otherwise(static function (Throwable $ex) use ($promise): void {
-					$promise->reject($ex);
+				->otherwise(static function (Throwable $ex) use ($deferred): void {
+					$deferred->reject($ex);
 				});
-		} else {
-			throw new Exceptions\InvalidState('Request promise could not be created');
+
+			return $deferred->promise();
 		}
 
-		return $promise->promise();
+		if ($result === false) {
+			throw new Exceptions\OpenApiCall('Could load data from cloud server');
+		}
+
+		try {
+			$responseBody = $result->getBody()->getContents();
+		} catch (RuntimeException $ex) {
+			throw new Exceptions\OpenApiCall('Could not get content from response body', $ex->getCode(), $ex);
+		}
+
+		try {
+			$parsedMessage = $this->schemaValidator->validate(
+				$responseBody,
+				$this->getSchema(self::DEVICES_MESSAGE_SCHEMA_FILENAME),
+			);
+		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+			$this->logger->error(
+				'Could not decode received response payload',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'type' => 'openapi-api',
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'response' => [
+						'body' => $responseBody,
+						'schema' => self::DEVICES_MESSAGE_SCHEMA_FILENAME,
+					],
+					'connector' => [
+						'identifier' => $this->identifier,
+					],
+				],
+			);
+
+			throw new Exceptions\OpenApiCall('Could not decode received response payload');
+		}
+
+		$result = $parsedMessage->offsetGet('result');
+
+		if (!$result instanceof Utils\ArrayHash) {
+			throw new Exceptions\OpenApiCall('Received response is not valid');
+		}
+
+		$list = $result->offsetGet('list');
+
+		if (!$list instanceof Utils\ArrayHash) {
+			throw new Exceptions\OpenApiCall('Received response is not valid');
+		}
+
+		$devices = [];
+
+		foreach ($list as $deviceData) {
+			if (!$deviceData instanceof Utils\ArrayHash) {
+				continue;
+			}
+
+			try {
+				$devices[] = EntityFactory::build(
+					Entities\API\DeviceInformation::class,
+					$deviceData,
+				);
+			} catch (Exceptions\InvalidState $ex) {
+				throw new Exceptions\OpenApiCall('Could not create entity from response', $ex->getCode(), $ex);
+			}
+		}
+
+		return $devices;
 	}
 
 	/**
 	 * @param array<string> $deviceIds
 	 *
-	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws RuntimeException
+	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : array<Entities\API\DeviceFactoryInfos>)
+	 *
+	 * @throws Exceptions\OpenApiCall
 	 */
 	public function getDevicesFactoryInfos(
 		array $deviceIds,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface
+		bool $async = true,
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|array
 	{
 		if (!$this->isConnected()) {
 			$this->connect();
 		}
 
-		$promise = new Promise\Deferred();
+		$deferred = new Promise\Deferred();
 
 		$result = $this->callRequest(
 			'GET',
@@ -946,19 +1459,33 @@ final class OpenApi
 			[
 				'device_ids' => implode(',', $deviceIds),
 			],
+			null,
+			$async,
 		);
 
 		if ($result instanceof Promise\PromiseInterface) {
 			$result
-				->then(function (Message\ResponseInterface $response) use ($promise): void {
+				->then(function (Message\ResponseInterface $response) use ($deferred): void {
+					try {
+						$responseBody = $response->getBody()->getContents();
+					} catch (RuntimeException $ex) {
+						$deferred->reject(
+							new Exceptions\OpenApiCall(
+								'Could not get content from response body',
+								$ex->getCode(),
+								$ex,
+							),
+						);
+
+						return;
+					}
+
 					try {
 						$parsedMessage = $this->schemaValidator->validate(
-							$response->getBody()->getContents(),
-							$this->getSchemaFilePath(self::DEVICES_FACTORY_INFOS_MESSAGE_SCHEMA_FILENAME),
+							$responseBody,
+							$this->getSchema(self::DEVICES_FACTORY_INFOS_MESSAGE_SCHEMA_FILENAME),
 						);
 					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
-						$response->getBody()->rewind();
-
 						$this->logger->error(
 							'Could not decode received response payload',
 							[
@@ -966,7 +1493,7 @@ final class OpenApi
 								'type' => 'openapi-api',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'response' => [
-									'body' => $response->getBody()->getContents(),
+									'body' => $responseBody,
 									'schema' => self::DEVICES_FACTORY_INFOS_MESSAGE_SCHEMA_FILENAME,
 								],
 								'connector' => [
@@ -975,7 +1502,7 @@ final class OpenApi
 							],
 						);
 
-						$promise->reject(new Exceptions\OpenApiCall('Could not decode received response payload'));
+						$deferred->reject(new Exceptions\OpenApiCall('Could not decode received response payload'));
 
 						return;
 					}
@@ -983,7 +1510,7 @@ final class OpenApi
 					$result = $parsedMessage->offsetGet('result');
 
 					if (!$result instanceof Utils\ArrayHash) {
-						$promise->reject(new Exceptions\OpenApiCall('Received response is not valid'));
+						$deferred->reject(new Exceptions\OpenApiCall('Received response is not valid'));
 
 						return;
 					}
@@ -995,55 +1522,141 @@ final class OpenApi
 							continue;
 						}
 
-						$factoryInfos[] = EntityFactory::build(
-							Entities\API\DeviceFactoryInfos::class,
-							$deviceData,
-						);
+						try {
+							$factoryInfos[] = EntityFactory::build(
+								Entities\API\DeviceFactoryInfos::class,
+								$deviceData,
+							);
+						} catch (Exceptions\InvalidState $ex) {
+							$deferred->reject(
+								new Exceptions\OpenApiCall(
+									'Could not create entity from response',
+									$ex->getCode(),
+									$ex,
+								),
+							);
+
+							return;
+						}
 					}
 
-					$promise->resolve($factoryInfos);
+					$deferred->resolve($factoryInfos);
 				})
-				->otherwise(static function (Throwable $ex) use ($promise): void {
-					$promise->reject($ex);
+				->otherwise(static function (Throwable $ex) use ($deferred): void {
+					$deferred->reject($ex);
 				});
-		} else {
-			throw new Exceptions\InvalidState('Request promise could not be created');
+
+			return $deferred->promise();
 		}
 
-		return $promise->promise();
+		if ($result === false) {
+			throw new Exceptions\OpenApiCall('Could load data from cloud server');
+		}
+
+		try {
+			$responseBody = $result->getBody()->getContents();
+		} catch (RuntimeException $ex) {
+			throw new Exceptions\OpenApiCall('Could not get content from response body', $ex->getCode(), $ex);
+		}
+
+		try {
+			$parsedMessage = $this->schemaValidator->validate(
+				$responseBody,
+				$this->getSchema(self::DEVICES_FACTORY_INFOS_MESSAGE_SCHEMA_FILENAME),
+			);
+		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+			$this->logger->error(
+				'Could not decode received response payload',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'type' => 'openapi-api',
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'response' => [
+						'body' => $responseBody,
+						'schema' => self::DEVICES_FACTORY_INFOS_MESSAGE_SCHEMA_FILENAME,
+					],
+					'connector' => [
+						'identifier' => $this->identifier,
+					],
+				],
+			);
+
+			throw new Exceptions\OpenApiCall('Could not decode received response payload');
+		}
+
+		$result = $parsedMessage->offsetGet('result');
+
+		if (!$result instanceof Utils\ArrayHash) {
+			throw new Exceptions\OpenApiCall('Received response is not valid');
+		}
+
+		$factoryInfos = [];
+
+		foreach ($result as $deviceData) {
+			if (!$deviceData instanceof Utils\ArrayHash) {
+				continue;
+			}
+
+			try {
+				$factoryInfos[] = EntityFactory::build(
+					Entities\API\DeviceFactoryInfos::class,
+					$deviceData,
+				);
+			} catch (Exceptions\InvalidState $ex) {
+				throw new Exceptions\OpenApiCall('Could not create entity from response', $ex->getCode(), $ex);
+			}
+		}
+
+		return $factoryInfos;
 	}
 
 	/**
-	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws RuntimeException
+	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\DeviceInformation)
+	 *
+	 * @throws Exceptions\OpenApiCall
 	 */
 	public function getDeviceInformation(
 		string $deviceId,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface
+		bool $async = true,
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\DeviceInformation
 	{
 		if (!$this->isConnected()) {
 			$this->connect();
 		}
 
-		$promise = new Promise\Deferred();
+		$deferred = new Promise\Deferred();
 
 		$result = $this->callRequest(
 			'GET',
 			sprintf(self::DEVICE_INFORMATION_API_ENDPOINT, $deviceId),
+			[],
+			null,
+			$async,
 		);
 
 		if ($result instanceof Promise\PromiseInterface) {
 			$result
-				->then(function (Message\ResponseInterface $response) use ($promise): void {
+				->then(function (Message\ResponseInterface $response) use ($deferred): void {
+					try {
+						$responseBody = $response->getBody()->getContents();
+					} catch (RuntimeException $ex) {
+						$deferred->reject(
+							new Exceptions\OpenApiCall(
+								'Could not get content from response body',
+								$ex->getCode(),
+								$ex,
+							),
+						);
+
+						return;
+					}
+
 					try {
 						$parsedMessage = $this->schemaValidator->validate(
-							$response->getBody()->getContents(),
-							$this->getSchemaFilePath(self::DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME),
+							$responseBody,
+							$this->getSchema(self::DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME),
 						);
 					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
-						$response->getBody()->rewind();
-
 						$this->logger->error(
 							'Could not decode received response payload',
 							[
@@ -1051,7 +1664,7 @@ final class OpenApi
 								'type' => 'openapi-api',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'response' => [
-									'body' => $response->getBody()->getContents(),
+									'body' => $responseBody,
 									'schema' => self::DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME,
 								],
 								'connector' => [
@@ -1060,7 +1673,7 @@ final class OpenApi
 							],
 						);
 
-						$promise->reject(new Exceptions\OpenApiCall('Could not decode received response payload'));
+						$deferred->reject(new Exceptions\OpenApiCall('Could not decode received response payload'));
 
 						return;
 					}
@@ -1068,57 +1681,127 @@ final class OpenApi
 					$result = $parsedMessage->offsetGet('result');
 
 					if (!$result instanceof Utils\ArrayHash) {
-						$promise->reject(new Exceptions\OpenApiCall('Received response is not valid'));
+						$deferred->reject(new Exceptions\OpenApiCall('Received response is not valid'));
 
 						return;
 					}
 
-					$promise->resolve(EntityFactory::build(
-						Entities\API\DeviceInformation::class,
-						$result,
-					));
+					try {
+						$deferred->resolve(EntityFactory::build(
+							Entities\API\DeviceInformation::class,
+							$result,
+						));
+					} catch (Exceptions\InvalidState $ex) {
+						$deferred->reject(
+							new Exceptions\OpenApiCall('Could not create entity from response', $ex->getCode(), $ex),
+						);
+					}
 				})
-				->otherwise(static function (Throwable $ex) use ($promise): void {
-					$promise->reject($ex);
+				->otherwise(static function (Throwable $ex) use ($deferred): void {
+					$deferred->reject($ex);
 				});
-		} else {
-			throw new Exceptions\InvalidState('Request promise could not be created');
+
+			return $deferred->promise();
 		}
 
-		return $promise->promise();
+		if ($result === false) {
+			throw new Exceptions\OpenApiCall('Could load data from cloud server');
+		}
+
+		try {
+			$responseBody = $result->getBody()->getContents();
+		} catch (RuntimeException $ex) {
+			throw new Exceptions\OpenApiCall('Could not get content from response body', $ex->getCode(), $ex);
+		}
+
+		try {
+			$parsedMessage = $this->schemaValidator->validate(
+				$responseBody,
+				$this->getSchema(self::DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME),
+			);
+		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+			$this->logger->error(
+				'Could not decode received response payload',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'type' => 'openapi-api',
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'response' => [
+						'body' => $responseBody,
+						'schema' => self::DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME,
+					],
+					'connector' => [
+						'identifier' => $this->identifier,
+					],
+				],
+			);
+
+			throw new Exceptions\OpenApiCall('Could not decode received response payload');
+		}
+
+		$result = $parsedMessage->offsetGet('result');
+
+		if (!$result instanceof Utils\ArrayHash) {
+			throw new Exceptions\OpenApiCall('Received response is not valid');
+		}
+
+		try {
+			return EntityFactory::build(
+				Entities\API\DeviceInformation::class,
+				$result,
+			);
+		} catch (Exceptions\InvalidState $ex) {
+			throw new Exceptions\OpenApiCall('Could not create entity from response', $ex->getCode(), $ex);
+		}
 	}
 
 	/**
-	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws RuntimeException
+	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\DeviceSpecification)
+	 *
+	 * @throws Exceptions\OpenApiCall
 	 */
 	public function getDeviceSpecification(
 		string $deviceId,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface
+		bool $async = true,
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\DeviceSpecification
 	{
 		if (!$this->isConnected()) {
 			$this->connect();
 		}
 
-		$promise = new Promise\Deferred();
+		$deferred = new Promise\Deferred();
 
 		$result = $this->callRequest(
 			'GET',
 			sprintf(self::DEVICE_SPECIFICATION_API_ENDPOINT, $deviceId),
+			[],
+			null,
+			$async,
 		);
 
 		if ($result instanceof Promise\PromiseInterface) {
 			$result
-				->then(function (Message\ResponseInterface $response) use ($promise): void {
+				->then(function (Message\ResponseInterface $response) use ($deferred): void {
+					try {
+						$responseBody = $response->getBody()->getContents();
+					} catch (RuntimeException $ex) {
+						$deferred->reject(
+							new Exceptions\OpenApiCall(
+								'Could not get content from response body',
+								$ex->getCode(),
+								$ex,
+							),
+						);
+
+						return;
+					}
+
 					try {
 						$parsedMessage = $this->schemaValidator->validate(
-							$response->getBody()->getContents(),
-							$this->getSchemaFilePath(self::DEVICE_SPECIFICATION_MESSAGE_SCHEMA_FILENAME),
+							$responseBody,
+							$this->getSchema(self::DEVICE_SPECIFICATION_MESSAGE_SCHEMA_FILENAME),
 						);
 					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
-						$response->getBody()->rewind();
-
 						$this->logger->error(
 							'Could not decode received response payload',
 							[
@@ -1126,7 +1809,7 @@ final class OpenApi
 								'type' => 'openapi-api',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'response' => [
-									'body' => $response->getBody()->getContents(),
+									'body' => $responseBody,
 									'schema' => self::DEVICE_SPECIFICATION_MESSAGE_SCHEMA_FILENAME,
 								],
 								'connector' => [
@@ -1135,7 +1818,7 @@ final class OpenApi
 							],
 						);
 
-						$promise->reject(new Exceptions\OpenApiCall('Could not decode received response payload'));
+						$deferred->reject(new Exceptions\OpenApiCall('Could not decode received response payload'));
 
 						return;
 					}
@@ -1143,99 +1826,127 @@ final class OpenApi
 					$result = $parsedMessage->offsetGet('result');
 
 					if (!$result instanceof Utils\ArrayHash) {
-						$promise->reject(new Exceptions\OpenApiCall('Received response is not valid'));
+						$deferred->reject(new Exceptions\OpenApiCall('Received response is not valid'));
 
 						return;
 					}
 
-					$deviceFunctions = [];
-
-					if (
-						$result->offsetExists('functions')
-						&& (
-							is_array($result->offsetGet('functions'))
-							|| $result->offsetGet('functions') instanceof Utils\ArrayHash
-						)
-					) {
-						foreach ($result->offsetGet('functions') as $item) {
-							assert($item instanceof Utils\ArrayHash);
-
-							$deviceFunctions[] = EntityFactory::build(
-								Entities\API\DeviceSpecificationFunction::class,
-								$item,
-							);
-						}
+					try {
+						$deferred->resolve(EntityFactory::build(
+							Entities\API\DeviceSpecification::class,
+							$result,
+						));
+					} catch (Exceptions\InvalidState $ex) {
+						$deferred->reject(
+							new Exceptions\OpenApiCall('Could not create entity from response', $ex->getCode(), $ex),
+						);
 					}
-
-					$result->offsetSet('functions', $deviceFunctions);
-
-					$deviceStatus = [];
-
-					if (
-						$result->offsetExists('status')
-						&& (
-							is_array($result->offsetGet('status'))
-							|| $result->offsetGet('status') instanceof Utils\ArrayHash
-						)
-					) {
-						foreach ($result->offsetGet('status') as $item) {
-							assert($item instanceof Utils\ArrayHash);
-
-							$deviceStatus[] = EntityFactory::build(
-								Entities\API\DeviceSpecificationStatus::class,
-								$item,
-							);
-						}
-					}
-
-					$result->offsetSet('status', $deviceStatus);
-
-					$promise->resolve(EntityFactory::build(
-						Entities\API\DeviceSpecification::class,
-						$result,
-					));
 				})
-				->otherwise(static function (Throwable $ex) use ($promise): void {
-					$promise->reject($ex);
+				->otherwise(static function (Throwable $ex) use ($deferred): void {
+					$deferred->reject($ex);
 				});
-		} else {
-			throw new Exceptions\InvalidState('Request promise could not be created');
+
+			return $deferred->promise();
 		}
 
-		return $promise->promise();
+		if ($result === false) {
+			throw new Exceptions\OpenApiCall('Could load data from cloud server');
+		}
+
+		try {
+			$responseBody = $result->getBody()->getContents();
+		} catch (RuntimeException $ex) {
+			throw new Exceptions\OpenApiCall('Could not get content from response body', $ex->getCode(), $ex);
+		}
+
+		try {
+			$parsedMessage = $this->schemaValidator->validate(
+				$responseBody,
+				$this->getSchema(self::DEVICE_SPECIFICATION_MESSAGE_SCHEMA_FILENAME),
+			);
+		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+			$this->logger->error(
+				'Could not decode received response payload',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'type' => 'openapi-api',
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'response' => [
+						'body' => $responseBody,
+						'schema' => self::DEVICE_SPECIFICATION_MESSAGE_SCHEMA_FILENAME,
+					],
+					'connector' => [
+						'identifier' => $this->identifier,
+					],
+				],
+			);
+
+			throw new Exceptions\OpenApiCall('Could not decode received response payload');
+		}
+
+		$result = $parsedMessage->offsetGet('result');
+
+		if (!$result instanceof Utils\ArrayHash) {
+			throw new Exceptions\OpenApiCall('Received response is not valid');
+		}
+
+		try {
+			return EntityFactory::build(
+				Entities\API\DeviceSpecification::class,
+				$result,
+			);
+		} catch (Exceptions\InvalidState $ex) {
+			throw new Exceptions\OpenApiCall('Could not create entity from response', $ex->getCode(), $ex);
+		}
 	}
 
 	/**
-	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws RuntimeException
+	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : array<Entities\API\DeviceDataPointStatus>)
+	 *
+	 * @throws Exceptions\OpenApiCall
 	 */
 	public function getDeviceStatus(
 		string $deviceId,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface
+		bool $async = true,
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|array
 	{
 		if (!$this->isConnected()) {
 			$this->connect();
 		}
 
-		$promise = new Promise\Deferred();
+		$deferred = new Promise\Deferred();
 
 		$result = $this->callRequest(
 			'GET',
 			sprintf(self::DEVICE_STATUS_API_ENDPOINT, $deviceId),
+			[],
+			null,
+			$async,
 		);
 
 		if ($result instanceof Promise\PromiseInterface) {
 			$result
-				->then(function (Message\ResponseInterface $response) use ($promise): void {
+				->then(function (Message\ResponseInterface $response) use ($deferred): void {
+					try {
+						$responseBody = $response->getBody()->getContents();
+					} catch (RuntimeException $ex) {
+						$deferred->reject(
+							new Exceptions\OpenApiCall(
+								'Could not get content from response body',
+								$ex->getCode(),
+								$ex,
+							),
+						);
+
+						return;
+					}
+
 					try {
 						$parsedMessage = $this->schemaValidator->validate(
-							$response->getBody()->getContents(),
-							$this->getSchemaFilePath(self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME),
+							$responseBody,
+							$this->getSchema(self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME),
 						);
 					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
-						$response->getBody()->rewind();
-
 						$this->logger->error(
 							'Could not decode received response payload',
 							[
@@ -1243,7 +1954,7 @@ final class OpenApi
 								'type' => 'openapi-api',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'response' => [
-									'body' => $response->getBody()->getContents(),
+									'body' => $responseBody,
 									'schema' => self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME,
 								],
 								'connector' => [
@@ -1252,7 +1963,7 @@ final class OpenApi
 							],
 						);
 
-						$promise->reject(new Exceptions\OpenApiCall('Could not decode received response payload'));
+						$deferred->reject(new Exceptions\OpenApiCall('Could not decode received response payload'));
 
 						return;
 					}
@@ -1260,7 +1971,7 @@ final class OpenApi
 					$result = $parsedMessage->offsetGet('result');
 
 					if (!$result instanceof Utils\ArrayHash) {
-						$promise->reject(new Exceptions\OpenApiCall('Received response is not valid'));
+						$deferred->reject(new Exceptions\OpenApiCall('Received response is not valid'));
 
 						return;
 					}
@@ -1272,40 +1983,111 @@ final class OpenApi
 							continue;
 						}
 
-						$statuses[] = EntityFactory::build(
-							Entities\API\DeviceDataPointStatus::class,
-							$statusData,
-						);
+						try {
+							$statuses[] = EntityFactory::build(
+								Entities\API\DeviceDataPointStatus::class,
+								$statusData,
+							);
+						} catch (Exceptions\InvalidState $ex) {
+							$deferred->reject(
+								new Exceptions\OpenApiCall(
+									'Could not create entity from response',
+									$ex->getCode(),
+									$ex,
+								),
+							);
+
+							return;
+						}
 					}
 
-					$promise->resolve($statuses);
+					$deferred->resolve($statuses);
 				})
-				->otherwise(static function (Throwable $ex) use ($promise): void {
-					$promise->reject($ex);
+				->otherwise(static function (Throwable $ex) use ($deferred): void {
+					$deferred->reject($ex);
 				});
-		} else {
-			throw new Exceptions\InvalidState('Request promise could not be created');
+
+			return $deferred->promise();
 		}
 
-		return $promise->promise();
+		if ($result === false) {
+			throw new Exceptions\OpenApiCall('Could load data from cloud server');
+		}
+
+		try {
+			$responseBody = $result->getBody()->getContents();
+		} catch (RuntimeException $ex) {
+			throw new Exceptions\OpenApiCall('Could not get content from response body', $ex->getCode(), $ex);
+		}
+
+		try {
+			$parsedMessage = $this->schemaValidator->validate(
+				$responseBody,
+				$this->getSchema(self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME),
+			);
+		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+			$this->logger->error(
+				'Could not decode received response payload',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'type' => 'openapi-api',
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'response' => [
+						'body' => $responseBody,
+						'schema' => self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME,
+					],
+					'connector' => [
+						'identifier' => $this->identifier,
+					],
+				],
+			);
+
+			throw new Exceptions\OpenApiCall('Could not decode received response payload');
+		}
+
+		$result = $parsedMessage->offsetGet('result');
+
+		if (!$result instanceof Utils\ArrayHash) {
+			throw new Exceptions\OpenApiCall('Received response is not valid');
+		}
+
+		$statuses = [];
+
+		foreach ($result as $statusData) {
+			if (!$statusData instanceof Utils\ArrayHash) {
+				continue;
+			}
+
+			try {
+				$statuses[] = EntityFactory::build(
+					Entities\API\DeviceDataPointStatus::class,
+					$statusData,
+				);
+			} catch (Exceptions\InvalidState $ex) {
+				throw new Exceptions\OpenApiCall('Could not create entity from response', $ex->getCode(), $ex);
+			}
+		}
+
+		return $statuses;
 	}
 
 	/**
-	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws RuntimeException
+	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : bool)
+	 *
+	 * @throws Exceptions\OpenApiCall
 	 */
 	public function setDeviceStatus(
 		string $deviceId,
 		string $code,
 		string|int|float|bool $value,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface
+		bool $async = true,
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|bool
 	{
 		if (!$this->isConnected()) {
 			$this->connect();
 		}
 
-		$promise = new Promise\Deferred();
+		$deferred = new Promise\Deferred();
 
 		try {
 			$body = Utils\Json::encode([
@@ -1329,19 +2111,32 @@ final class OpenApi
 			sprintf(self::DEVICE_SEND_COMMAND_API_ENDPOINT, $deviceId),
 			[],
 			$body,
+			$async,
 		);
 
 		if ($result instanceof Promise\PromiseInterface) {
 			$result
-				->then(function (Message\ResponseInterface $response) use ($promise): void {
+				->then(function (Message\ResponseInterface $response) use ($deferred): void {
+					try {
+						$responseBody = $response->getBody()->getContents();
+					} catch (RuntimeException $ex) {
+						$deferred->reject(
+							new Exceptions\OpenApiCall(
+								'Could not get content from response body',
+								$ex->getCode(),
+								$ex,
+							),
+						);
+
+						return;
+					}
+
 					try {
 						$parsedMessage = $this->schemaValidator->validate(
-							$response->getBody()->getContents(),
-							$this->getSchemaFilePath(self::DEVICE_SEND_COMMAND_MESSAGE_SCHEMA_FILENAME),
+							$responseBody,
+							$this->getSchema(self::DEVICE_SEND_COMMAND_MESSAGE_SCHEMA_FILENAME),
 						);
 					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
-						$response->getBody()->rewind();
-
 						$this->logger->error(
 							'Could not decode received response payload',
 							[
@@ -1349,7 +2144,7 @@ final class OpenApi
 								'type' => 'openapi-api',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'response' => [
-									'body' => $response->getBody()->getContents(),
+									'body' => $responseBody,
 									'schema' => self::DEVICE_SEND_COMMAND_MESSAGE_SCHEMA_FILENAME,
 								],
 								'connector' => [
@@ -1358,28 +2153,64 @@ final class OpenApi
 							],
 						);
 
-						$promise->reject(new Exceptions\OpenApiCall('Could not decode received response payload'));
+						$deferred->reject(new Exceptions\OpenApiCall('Could not decode received response payload'));
 
 						return;
 					}
 
-					$promise->resolve(boolval($parsedMessage->offsetGet('result')));
+					$deferred->resolve(boolval($parsedMessage->offsetGet('result')));
 				})
-				->otherwise(static function (Throwable $ex) use ($promise): void {
-					$promise->reject($ex);
+				->otherwise(static function (Throwable $ex) use ($deferred): void {
+					$deferred->reject($ex);
 				});
-		} else {
-			throw new Exceptions\InvalidState('Request promise could not be created');
+
+			return $deferred->promise();
 		}
 
-		return $promise->promise();
+		if ($result === false) {
+			throw new Exceptions\OpenApiCall('Could load data from cloud server');
+		}
+
+		try {
+			$responseBody = $result->getBody()->getContents();
+		} catch (RuntimeException $ex) {
+			throw new Exceptions\OpenApiCall('Could not get content from response body', $ex->getCode(), $ex);
+		}
+
+		try {
+			$parsedMessage = $this->schemaValidator->validate(
+				$responseBody,
+				$this->getSchema(self::DEVICE_SEND_COMMAND_MESSAGE_SCHEMA_FILENAME),
+			);
+		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+			$this->logger->error(
+				'Could not decode received response payload',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'type' => 'openapi-api',
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'response' => [
+						'body' => $responseBody,
+						'schema' => self::DEVICE_SEND_COMMAND_MESSAGE_SCHEMA_FILENAME,
+					],
+					'connector' => [
+						'identifier' => $this->identifier,
+					],
+				],
+			);
+
+			throw new Exceptions\OpenApiCall('Could not decode received response payload');
+		}
+
+		return boolval($parsedMessage->offsetGet('result'));
 	}
 
 	/**
 	 * @param array<string, mixed> $params
 	 *
-	 * @throws MetadataExceptions\Logic
-	 * @throws RuntimeException
+	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Message\ResponseInterface|false)
+	 *
+	 * @throws Exceptions\OpenApiCall
 	 */
 	private function callRequest(
 		string $method,
@@ -1450,6 +2281,18 @@ final class OpenApi
 				$request
 					->then(
 						function (Message\ResponseInterface $response) use ($deferred, $method, $path, $headers, $params, $body): void {
+							try {
+								$responseBody = $response->getBody()->getContents();
+
+								$response->getBody()->rewind();
+							} catch (RuntimeException $ex) {
+								throw new Exceptions\OpenApiCall(
+									'Could not get content from response body',
+									$ex->getCode(),
+									$ex,
+								);
+							}
+
 							$this->logger->debug('Received response', [
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 								'type' => 'openapi-api',
@@ -1462,43 +2305,24 @@ final class OpenApi
 								],
 								'response' => [
 									'status_code' => $response->getStatusCode(),
-									'body' => $response->getBody()->getContents(),
+									'body' => $responseBody,
 								],
 								'connector' => [
 									'identifier' => $this->identifier,
 								],
 							]);
 
-							$response->getBody()->rewind();
+							$this->checkResponse($path, $responseBody);
 
-							try {
-								$response = $this->checkResponse($path, $response);
-
-							} catch (Exceptions\OpenApiCall $ex) {
-								$this->logger->error('Received payload is not valid', [
-									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-									'type' => 'openapi-api',
-									'exception' => BootstrapHelpers\Logger::buildException($ex),
-									'request' => [
-										'method' => $method,
-										'path' => $path,
-										'headers' => $headers,
-										'params' => $params,
-										'body' => $body,
-									],
-									'connector' => [
-										'identifier' => $this->identifier,
-									],
-								]);
-
+							$deferred->resolve($response);
+						},
+						function (Throwable $ex) use ($deferred, $method, $path, $headers, $params, $body): void {
+							if ($ex instanceof Exceptions\OpenApiCall) {
 								$deferred->reject($ex);
 
 								return;
 							}
 
-							$deferred->resolve($response);
-						},
-						function (Throwable $ex) use ($deferred, $method, $path, $headers, $params, $body): void {
 							$this->logger->error('Calling api endpoint failed', [
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 								'type' => 'openapi-api',
@@ -1523,95 +2347,96 @@ final class OpenApi
 			}
 
 			return $deferred->promise();
-		} else {
+		}
+
+		try {
+			$response = $this->getClient(false)->request(
+				$method,
+				$requestPath,
+				[
+					'headers' => $headers,
+					'body' => $body ?? '',
+				],
+			);
+
+			assert($response instanceof Message\ResponseInterface);
+
 			try {
-				$response = $this->getClient(false)->request(
-					$method,
-					$requestPath,
-					[
-						'headers' => $headers,
-						'body' => $body ?? '',
-					],
-				);
-
-				assert($response instanceof Message\ResponseInterface);
-
-				$this->logger->debug('Received response', [
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-					'type' => 'openapi-api',
-					'request' => [
-						'method' => $method,
-						'path' => $path,
-						'headers' => $headers,
-						'params' => $params,
-						'body' => $body,
-					],
-					'response' => [
-						'status_code' => $response->getStatusCode(),
-						'body' => $response->getBody()->getContents(),
-					],
-					'connector' => [
-						'identifier' => $this->identifier,
-					],
-				]);
+				$responseBody = $response->getBody()->getContents();
 
 				$response->getBody()->rewind();
-
-				$response = $this->checkResponse($path, $response);
-
-			} catch (GuzzleHttp\Exception\GuzzleException | InvalidArgumentException $ex) {
-				$this->logger->error('Calling api endpoint failed', [
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-					'type' => 'openapi-api',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
-					'request' => [
-						'method' => $method,
-						'path' => $path,
-						'headers' => $headers,
-						'params' => $params,
-						'body' => $body,
-					],
-					'connector' => [
-						'identifier' => $this->identifier,
-					],
-				]);
-
-				return false;
-			} catch (Exceptions\OpenApiCall $ex) {
-				$this->logger->error('Received payload is not valid', [
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-					'type' => 'openapi-api',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
-					'request' => [
-						'method' => $method,
-						'path' => $path,
-						'headers' => $headers,
-						'params' => $params,
-						'body' => $body,
-					],
-					'connector' => [
-						'identifier' => $this->identifier,
-					],
-				]);
-
-				return false;
+			} catch (RuntimeException $ex) {
+				throw new Exceptions\OpenApiCall('Could not get content from response body', $ex->getCode(), $ex);
 			}
 
+			$this->logger->debug('Received response', [
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+				'type' => 'openapi-api',
+				'request' => [
+					'method' => $method,
+					'path' => $path,
+					'headers' => $headers,
+					'params' => $params,
+					'body' => $body,
+				],
+				'response' => [
+					'status_code' => $response->getStatusCode(),
+					'body' => $responseBody,
+				],
+				'connector' => [
+					'identifier' => $this->identifier,
+				],
+			]);
+
+			$this->checkResponse($path, $responseBody);
+
 			return $response;
+		} catch (GuzzleHttp\Exception\GuzzleException | InvalidArgumentException $ex) {
+			$this->logger->error('Calling api endpoint failed', [
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+				'type' => 'openapi-api',
+				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'request' => [
+					'method' => $method,
+					'path' => $path,
+					'headers' => $headers,
+					'params' => $params,
+					'body' => $body,
+				],
+				'connector' => [
+					'identifier' => $this->identifier,
+				],
+			]);
+
+			return false;
+		} catch (Exceptions\OpenApiCall $ex) {
+			$this->logger->error('Received payload is not valid', [
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+				'type' => 'openapi-api',
+				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'request' => [
+					'method' => $method,
+					'path' => $path,
+					'headers' => $headers,
+					'params' => $params,
+					'body' => $body,
+				],
+				'connector' => [
+					'identifier' => $this->identifier,
+				],
+			]);
+
+			return false;
 		}
 	}
 
 	/**
 	 * @throws Exceptions\OpenApiCall
-	 * @throws MetadataExceptions\Logic
-	 * @throws RuntimeException
 	 */
-	private function checkResponse(string $path, Message\ResponseInterface $response): Message\ResponseInterface
+	private function checkResponse(string $path, string $response): bool
 	{
-		$body = $response->getBody()->getContents();
-
 		try {
-			$decodedResponse = Utils\Json::decode($body, Utils\Json::FORCE_ARRAY);
+			$decodedResponse = Utils\Json::decode($response, Utils\Json::FORCE_ARRAY);
 
 		} catch (Utils\JsonException) {
 			throw new Exceptions\OpenApiCall('Received response body is not valid JSON');
@@ -1648,18 +2473,11 @@ final class OpenApi
 			throw new Exceptions\OpenApiCall('Received response is not success');
 		}
 
-		$response->getBody()->rewind();
-
-		return $response;
+		return true;
 	}
 
 	/**
-	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\OpenApiCall
-	 * @throws MetadataExceptions\InvalidData
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws RuntimeException
 	 */
 	private function refreshAccessToken(string $path): Promise\PromiseInterface|false
 	{
@@ -1711,6 +2529,12 @@ final class OpenApi
 
 			assert($response instanceof Message\ResponseInterface);
 
+			try {
+				$responseBody = $response->getBody()->getContents();
+			} catch (RuntimeException $ex) {
+				throw new Exceptions\OpenApiCall('Could not get content from response body', $ex->getCode(), $ex);
+			}
+
 			$this->logger->debug('Received response', [
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 				'type' => 'openapi-api',
@@ -1721,21 +2545,15 @@ final class OpenApi
 				],
 				'response' => [
 					'status_code' => $response->getStatusCode(),
-					'body' => $response->getBody()->getContents(),
+					'body' => $responseBody,
 				],
 				'connector' => [
 					'identifier' => $this->identifier,
 				],
 			]);
 
-			$response->getBody()->rewind();
-
-			$body = $response->getBody()->getContents();
-
-			$response->getBody()->rewind();
-
 			try {
-				$decodedResponse = Utils\Json::decode($body, Utils\Json::FORCE_ARRAY);
+				$decodedResponse = Utils\Json::decode($responseBody, Utils\Json::FORCE_ARRAY);
 
 			} catch (Utils\JsonException) {
 				$error = new Exceptions\OpenApiCall('Received response body is not valid JSON');
@@ -1779,7 +2597,7 @@ final class OpenApi
 								'headers' => $headers,
 							],
 							'response' => [
-								'body' => $response->getBody()->getContents(),
+								'body' => $responseBody,
 								'schema' => self::REFRESH_TOKEN_MESSAGE_SCHEMA_FILENAME,
 							],
 							'connector' => [
@@ -1817,12 +2635,10 @@ final class OpenApi
 
 			try {
 				$parsedMessage = $this->schemaValidator->validate(
-					$response->getBody()->getContents(),
-					$this->getSchemaFilePath(self::REFRESH_TOKEN_MESSAGE_SCHEMA_FILENAME),
+					$responseBody,
+					$this->getSchema(self::REFRESH_TOKEN_MESSAGE_SCHEMA_FILENAME),
 				);
 			} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
-				$response->getBody()->rewind();
-
 				$this->logger->error(
 					'Could not decode received refresh token response payload',
 					[
@@ -1835,7 +2651,7 @@ final class OpenApi
 							'headers' => $headers,
 						],
 						'response' => [
-							'body' => $response->getBody()->getContents(),
+							'body' => $responseBody,
 							'schema' => self::REFRESH_TOKEN_MESSAGE_SCHEMA_FILENAME,
 						],
 						'connector' => [
@@ -1872,10 +2688,14 @@ final class OpenApi
 				)) * 1_000,
 			);
 
-			$this->tokenInfo = EntityFactory::build(
-				Entities\API\TuyaTokenInfo::class,
-				$result,
-			);
+			try {
+				$this->tokenInfo = EntityFactory::build(
+					Entities\API\TuyaTokenInfo::class,
+					$result,
+				);
+			} catch (Exceptions\InvalidState $ex) {
+				throw new Exceptions\OpenApiCall('Could not create entity from response', $ex->getCode(), $ex);
+			}
 
 			$this->refreshTokenPromise->resolve();
 			$this->refreshTokenPromise = null;
@@ -2019,7 +2839,7 @@ final class OpenApi
 	/**
 	 * @throws Exceptions\OpenApiCall
 	 */
-	private function getSchemaFilePath(string $schemaFilename): string
+	private function getSchema(string $schemaFilename): string
 	{
 		try {
 			$schema = Utils\FileSystem::read(

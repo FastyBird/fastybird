@@ -36,7 +36,6 @@ use Nette;
 use Psr\Log;
 use React\EventLoop;
 use React\Promise;
-use RuntimeException;
 use Throwable;
 use function array_key_exists;
 use function array_map;
@@ -192,10 +191,10 @@ final class Cloud implements Client
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\OpenApiCall
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws RuntimeException
 	 */
 	public function writeChannelProperty(
 		Entities\TuyaDevice $device,
@@ -235,7 +234,6 @@ final class Cloud implements Client
 	}
 
 	/**
-	 * @throws DevicesExceptions\Terminate
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -275,7 +273,6 @@ final class Cloud implements Client
 	}
 
 	/**
-	 * @throws DevicesExceptions\Terminate
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -291,11 +288,7 @@ final class Cloud implements Client
 	}
 
 	/**
-	 * @throws Exceptions\InvalidState
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws RuntimeException
+	 * @throws Exceptions\OpenApiCall
 	 */
 	private function readDeviceInformation(Entities\TuyaDevice $device): bool
 	{
@@ -358,12 +351,10 @@ final class Cloud implements Client
 	}
 
 	/**
-	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\OpenApiCall
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws RuntimeException
 	 */
 	private function readDeviceStatus(Entities\TuyaDevice $device): bool
 	{

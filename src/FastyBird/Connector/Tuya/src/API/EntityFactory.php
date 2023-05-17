@@ -32,17 +32,20 @@ use Throwable;
 use function array_combine;
 use function array_keys;
 use function array_merge;
+use function assert;
 use function call_user_func_array;
 use function class_exists;
 use function get_object_vars;
 use function in_array;
 use function is_array;
 use function is_callable;
+use function is_string;
 use function is_subclass_of;
 use function preg_replace_callback;
 use function property_exists;
 use function strtolower;
 use function strtoupper;
+use function strval;
 use function trim;
 use function ucfirst;
 
@@ -62,7 +65,7 @@ final class EntityFactory
 	 *
 	 * @template T of Entities\API\Entity
 	 *
-	 * @phpstan-return T
+	 * @return T
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -72,7 +75,7 @@ final class EntityFactory
 	): Entities\API\Entity
 	{
 		if (!class_exists($entityClass)) {
-			throw new Exceptions\InvalidState('Transformer could not be created');
+			throw new Exceptions\InvalidState('Transformer could not be created. Class could not be found');
 		}
 
 		$decoded = self::convertKeys($data);
@@ -89,7 +92,7 @@ final class EntityFactory
 				)
 				: new $entityClass();
 		} catch (Throwable $ex) {
-			throw new Exceptions\InvalidState('Transformer could not be created', 0, $ex);
+			throw new Exceptions\InvalidState('Transformer could not be created: ' . $ex->getMessage(), 0, $ex);
 		}
 
 		$properties = self::getProperties($rc);
@@ -129,7 +132,7 @@ final class EntityFactory
 				} catch (ReflectionException) {
 					continue;
 				} catch (Throwable $ex) {
-					throw new Exceptions\InvalidState('Transformer could not be created', 0, $ex);
+					throw new Exceptions\InvalidState('Transformer could not be created: ' . $ex->getMessage(), 0, $ex);
 				}
 			}
 		}
@@ -181,7 +184,47 @@ final class EntityFactory
 				$parameterValue = $decoded->{$parameterName};
 
 				foreach ($parameterTypes as $parameterType) {
-					if (
+					if ($parameterType === 'array' && is_string($method->getDocComment())) {
+						$factory = phpDocumentor\Reflection\DocBlockFactory::createInstance();
+
+						$rc = new ReflectionClass(Entities\API\Entity::class);
+
+						$docblock = $factory->create(
+							$method->getDocComment(),
+							new phpDocumentor\Reflection\Types\Context($rc->getNamespaceName()),
+						);
+
+						foreach ($docblock->getTags() as $tag) {
+							if (!$tag instanceof phpDocumentor\Reflection\DocBlock\Tags\Param) {
+								continue;
+							}
+
+							$tagType = $tag->getType();
+
+							if (
+								$tag->getVariableName() === $parameterName
+								&& $tagType instanceof phpDocumentor\Reflection\Types\Array_
+							) {
+								$arrayType = strval($tagType->getValueType());
+
+								$subRes = [];
+
+								if ($parameterValue instanceof Utils\ArrayHash) {
+									foreach ($parameterValue as $subParameterValue) {
+										if ($subParameterValue instanceof Utils\ArrayHash) {
+											assert(is_subclass_of($arrayType, Entities\API\Entity::class));
+
+											$subRes[] = self::build($arrayType, $subParameterValue);
+										}
+									}
+								}
+
+								$res[$num] = $subRes;
+							}
+						}
+
+						break;
+					} elseif (
 						class_exists($parameterType, false)
 						&& is_subclass_of($parameterType, Entities\API\Entity::class)
 						&& (

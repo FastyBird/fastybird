@@ -32,7 +32,6 @@ use Nette\Utils;
 use Psr\Log;
 use React\Datagram;
 use React\EventLoop;
-use RuntimeException;
 use SplObjectStorage;
 use Throwable;
 use function array_filter;
@@ -116,18 +115,16 @@ final class Discovery implements Evenement\EventEmitterInterface
 		$this->logger = $logger ?? new Log\NullLogger();
 
 		$this->serverFactory = new Datagram\Factory($this->eventLoop);
+
+		$this->discoveredLocalDevices = new SplObjectStorage();
 	}
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\OpenApiCall
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws RuntimeException
 	 */
 	public function discover(): void
 	{
@@ -147,18 +144,15 @@ final class Discovery implements Evenement\EventEmitterInterface
 	{
 		if ($this->handlerTimer !== null) {
 			$this->eventLoop->cancelTimer($this->handlerTimer);
+			$this->handlerTimer = null;
 		}
 	}
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\OpenApiCall
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws RuntimeException
 	 */
 	private function discoverLocalDevices(): void
 	{
@@ -206,7 +200,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			}
 
 			// Searching timeout
-			$this->eventLoop->addTimer(
+			$this->handlerTimer = $this->eventLoop->addTimer(
 				self::UDP_TIMEOUT,
 				async(function (): void {
 					$this->connection?->close();
@@ -223,6 +217,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 		if ($this->handlerTimer !== null) {
 			$this->eventLoop->cancelTimer($this->handlerTimer);
+			$this->handlerTimer = null;
 		}
 
 		$this->discoveredLocalDevices->rewind();
@@ -244,14 +239,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws Throwable
 	 */
 	private function discoverCloudDevices(): void
 	{
@@ -275,10 +264,13 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 		try {
 			/** @var array<Entities\API\DeviceInformation> $devices */
-			$devices = await($this->openApiApi->getDevices([
-				'source_id' => $this->connector->getUid(),
-				'source_type' => 'tuyaUser',
-			]));
+			$devices = $this->openApiApi->getDevices(
+				[
+					'source_id' => $this->connector->getUid(),
+					'source_type' => 'tuyaUser',
+				],
+				false,
+			);
 
 		} catch (Exceptions\OpenApiCall $ex) {
 			$this->logger->error(
@@ -295,12 +287,13 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 		try {
 			/** @var array<Entities\API\DeviceFactoryInfos> $devicesFactoryInfos */
-			$devicesFactoryInfos = await($this->openApiApi->getDevicesFactoryInfos(
+			$devicesFactoryInfos = $this->openApiApi->getDevicesFactoryInfos(
 				array_map(
 					static fn (Entities\API\DeviceInformation $userDevice): string => $userDevice->getId(),
 					$devices,
 				),
-			));
+				false,
+			);
 
 		} catch (Exceptions\OpenApiCall $ex) {
 			$this->logger->error(
@@ -404,13 +397,9 @@ final class Discovery implements Evenement\EventEmitterInterface
 	 * @return array<Entities\Messages\DiscoveredLocalDevice>
 	 *
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\OpenApiCall
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws RuntimeException
 	 */
 	private function handleFoundLocalDevices(array $devices): array
 	{
@@ -432,12 +421,13 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 		try {
 			/** @var array<Entities\API\DeviceFactoryInfos> $devicesFactoryInfos */
-			$devicesFactoryInfos = await($this->openApiApi->getDevicesFactoryInfos(
+			$devicesFactoryInfos = $this->openApiApi->getDevicesFactoryInfos(
 				array_map(
 					static fn (Entities\Clients\DiscoveredLocalDevice $userDevice): string => $userDevice->getId(),
 					$devices,
 				),
-			));
+				false,
+			);
 
 		} catch (Throwable $ex) {
 			$this->logger->error(
@@ -452,8 +442,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 		foreach ($devices as $device) {
 			try {
-				$deviceInformation = await($this->openApiApi->getDeviceInformation($device->getId()));
-				assert($deviceInformation instanceof Entities\API\DeviceInformation);
+				$deviceInformation = $this->openApiApi->getDeviceInformation($device->getId(), false);
 			} catch (Throwable $ex) {
 				$this->logger->error(
 					'Could not load device basic information from Tuya cloud',
@@ -528,7 +517,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			if (in_array($deviceInformation->getCategory(), self::GATEWAY_CATEGORIES, true)) {
 				try {
 					/** @var array<Entities\API\UserDeviceChild> $children */
-					$children = await($this->openApiApi->getUserDeviceChildren($device->getId()));
+					$children = $this->openApiApi->getUserDeviceChildren($device->getId(), false);
 				} catch (Throwable $ex) {
 					$this->logger->error(
 						'Could not load device children from Tuya cloud',
@@ -548,8 +537,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 				foreach ($children as $child) {
 					try {
-						$childDeviceInformation = await($this->openApiApi->getDeviceInformation($child->getId()));
-						assert($childDeviceInformation instanceof Entities\API\DeviceInformation);
+						$childDeviceInformation = $this->openApiApi->getDeviceInformation($child->getId(), false);
 					} catch (Throwable $ex) {
 						$this->logger->error(
 							'Could not load child device basic information from Tuya cloud',
@@ -638,16 +626,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 	 * @param array<Entities\API\DeviceFactoryInfos> $devicesFactoryInfos
 	 *
 	 * @return array<Entities\Messages\DiscoveredCloudDevice>
-	 *
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws Throwable
 	 */
 	private function handleFoundCloudDevices(
 		array $devices,
@@ -672,8 +650,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$dataPoints = [];
 
 			try {
-				$deviceSpecifications = await($this->openApiApi->getDeviceSpecification($device->getId()));
-				assert($deviceSpecifications instanceof Entities\API\DeviceSpecification);
+				$deviceSpecifications = $this->openApiApi->getDeviceSpecification($device->getId(), false);
 
 				$dataPointsInfos = [];
 
