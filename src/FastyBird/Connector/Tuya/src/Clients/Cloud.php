@@ -56,7 +56,7 @@ final class Cloud implements Client
 
 	use Nette\SmartObject;
 
-	private const HANDLER_START_DELAY = 2;
+	private const HANDLER_START_DELAY = 2.0;
 
 	private const HANDLER_PROCESSING_INTERVAL = 0.01;
 

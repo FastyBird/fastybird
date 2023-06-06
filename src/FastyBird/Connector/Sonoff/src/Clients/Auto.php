@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\Sonoff\Clients;
 
+use FastyBird\Connector\Sonoff\API;
 use FastyBird\Connector\Sonoff\Entities;
 use FastyBird\Connector\Sonoff\Exceptions;
 use FastyBird\Connector\Sonoff\Writers;
@@ -29,6 +30,7 @@ use React\EventLoop;
 use React\Promise;
 use RuntimeException;
 use Throwable;
+use function in_array;
 
 /**
  * Lan client
@@ -42,6 +44,9 @@ final class Auto extends ClientProcess implements Client
 {
 
 	use Nette\SmartObject;
+
+	/** @var array<string> */
+	protected array $ignoredLanDevices = [];
 
 	private Lan $lanClient;
 
@@ -70,8 +75,8 @@ final class Auto extends ClientProcess implements Client
 			$eventLoop,
 		);
 
-		$this->lanClient = $lanClientFactory->create($this->connector);
-		$this->cloudClient = $cloudClientFactory->create($this->connector);
+		$this->lanClient = $lanClientFactory->create($this->connector, true);
+		$this->cloudClient = $cloudClientFactory->create($this->connector, true);
 	}
 
 	/**
@@ -84,16 +89,34 @@ final class Auto extends ClientProcess implements Client
 	 */
 	public function connect(): void
 	{
-		$this->cloudClient->connect(true);
-		$this->lanClient->connect(true);
+		$this->processedDevices = [];
+		$this->processedDevicesCommands = [];
+
+		$this->handlerTimer = null;
+
+		$this->eventLoop->addTimer(
+			self::HANDLER_START_DELAY,
+			function (): void {
+				$this->registerLoopHandler();
+			},
+		);
+
+		$this->cloudClient->connect();
+		$this->lanClient->connect();
 
 		$this->writer->connect($this->connector, $this);
 	}
 
 	public function disconnect(): void
 	{
-		$this->cloudClient->disconnect(true);
-		$this->lanClient->disconnect(true);
+		if ($this->handlerTimer !== null) {
+			$this->eventLoop->cancelTimer($this->handlerTimer);
+
+			$this->handlerTimer = null;
+		}
+
+		$this->cloudClient->disconnect();
+		$this->lanClient->disconnect();
 
 		$this->writer->disconnect($this->connector, $this);
 	}
@@ -153,12 +176,27 @@ final class Auto extends ClientProcess implements Client
 	{
 		$deferred = new Promise\Deferred();
 
-		if ($device->getIpAddress() !== null) {
+		if ($device->getIpAddress() !== null && !in_array($device->getPlainId(), $this->ignoredDevices, true)) {
 			$this->lanClient->readInformation($device)
 				->then(static function () use ($deferred): void {
 					$deferred->resolve(true);
 				})
-				->otherwise(function () use ($deferred, $device): void {
+				->otherwise(function (Throwable $ex) use ($deferred, $device): void {
+					if (
+						in_array(
+							$ex->getCode(),
+							[
+								API\LanApi::ERROR_INVALID_JSON,
+								API\LanApi::ERROR_UNAUTHORIZED,
+								API\LanApi::ERROR_DEVICE_ID_INVALID,
+								API\LanApi::ERROR_INVALID_PARAMETER,
+							],
+							true,
+						)
+					) {
+						$this->ignoredLanDevices[] = $device->getPlainId();
+					}
+
 					$this->cloudClient->readInformation($device)
 						->then(static function () use ($deferred): void {
 							$deferred->resolve(true);
@@ -187,7 +225,7 @@ final class Auto extends ClientProcess implements Client
 	{
 		$deferred = new Promise\Deferred();
 
-		$this->cloudClient->readInformation($device)
+		$this->cloudClient->readStatus($device)
 			->then(static function () use ($deferred): void {
 				$deferred->resolve(true);
 			})

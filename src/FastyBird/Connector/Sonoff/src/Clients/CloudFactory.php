@@ -31,6 +31,6 @@ interface CloudFactory extends ClientFactory
 
 	public const MODE = Types\ClientMode::MODE_CLOUD;
 
-	public function create(Entities\SonoffConnector $connector): Cloud;
+	public function create(Entities\SonoffConnector $connector, bool $autoMode = false): Cloud;
 
 }

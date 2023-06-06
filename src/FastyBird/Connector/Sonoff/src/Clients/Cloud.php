@@ -68,6 +68,7 @@ final class Cloud extends ClientProcess implements Client
 		DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		DateTimeFactory\Factory $dateTimeFactory,
 		EventLoop\LoopInterface $eventLoop,
+		private readonly bool $autoMode,
 		private readonly Consumers\Messages $consumer,
 		API\CloudApiFactory $cloudApiApiFactory,
 		private readonly API\CloudWsFactory $cloudWsApiFactory,
@@ -109,9 +110,9 @@ final class Cloud extends ClientProcess implements Client
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws RuntimeException
 	 */
-	public function connect(bool $onlyApi = false): void
+	public function connect(): void
 	{
-		if (!$onlyApi) {
+		if (!$this->autoMode) {
 			$this->processedDevices = [];
 			$this->processedDevicesCommands = [];
 
@@ -192,12 +193,12 @@ final class Cloud extends ClientProcess implements Client
 			);
 		}
 
-		if (!$onlyApi) {
+		if (!$this->autoMode) {
 			$this->writer->connect($this->connector, $this);
 		}
 	}
 
-	public function disconnect(bool $onlyApi = false): void
+	public function disconnect(): void
 	{
 		$this->cloudWs->disconnect();
 
@@ -207,7 +208,7 @@ final class Cloud extends ClientProcess implements Client
 			$this->handlerTimer = null;
 		}
 
-		if (!$onlyApi) {
+		if (!$this->autoMode) {
 			$this->writer->disconnect($this->connector, $this);
 		}
 

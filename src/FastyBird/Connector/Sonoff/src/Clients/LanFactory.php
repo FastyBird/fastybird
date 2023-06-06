@@ -31,6 +31,6 @@ interface LanFactory extends ClientFactory
 
 	public const MODE = Types\ClientMode::MODE_LAN;
 
-	public function create(Entities\SonoffConnector $connector): Lan;
+	public function create(Entities\SonoffConnector $connector, bool $autoMode = false): Lan;
 
 }

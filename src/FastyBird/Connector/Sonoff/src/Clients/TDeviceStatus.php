@@ -17,7 +17,6 @@ namespace FastyBird\Connector\Sonoff\Clients;
 
 use FastyBird\Connector\Sonoff;
 use FastyBird\Connector\Sonoff\API;
-use FastyBird\Connector\Sonoff\Consumers;
 use FastyBird\Connector\Sonoff\Entities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -34,7 +33,7 @@ use function strval;
  * Device ip address consumer trait
  *
  * @package        FastyBird:SonoffConnector!
- * @subpackage     Consumers
+ * @subpackage     Clients
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *

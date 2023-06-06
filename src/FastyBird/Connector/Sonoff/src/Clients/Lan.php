@@ -27,14 +27,16 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
+use Nette\Utils;
 use Psr\EventDispatcher;
 use Psr\Log;
 use React\EventLoop;
 use React\Promise;
 use Throwable;
+use function assert;
 use function in_array;
-use function var_dump;
 
 /**
  * Lan client
@@ -61,6 +63,7 @@ final class Lan extends ClientProcess implements Client
 		DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		DateTimeFactory\Factory $dateTimeFactory,
 		EventLoop\LoopInterface $eventLoop,
+		private readonly bool $autoMode,
 		private readonly Consumers\Messages $consumer,
 		API\LanApiFactory $lanApiApiFactory,
 		private readonly Writers\Writer $writer,
@@ -88,9 +91,9 @@ final class Lan extends ClientProcess implements Client
 		);
 	}
 
-	public function connect(bool $onlyApi = false): void
+	public function connect(): void
 	{
-		if (!$onlyApi) {
+		if (!$this->autoMode) {
 			$this->processedDevices = [];
 			$this->processedDevicesCommands = [];
 
@@ -106,17 +109,63 @@ final class Lan extends ClientProcess implements Client
 
 		$this->lanApiApi->connect();
 
-		$this->lanApiApi->on('message', static function (Entities\API\LanMessage $message): void {
-			var_dump('LAN MESSAGE');
-			var_dump($message->toArray());
+		$this->lanApiApi->on('message', function (Entities\API\LanMessage $message): void {
+			$findDeviceQuery = new DevicesQueries\FindDevices();
+			$findDeviceQuery->byIdentifier($message->getId());
+
+			$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\SonoffDevice::class);
+
+			if ($device !== null) {
+				assert($device instanceof Entities\SonoffDevice);
+
+				foreach ($message->getData() as $data) {
+					if ($message->isEncrypted()) {
+						if ($device->getDeviceKey() === null) {
+							continue;
+						}
+
+						$data = API\Transformer::decryptMessage(
+							$data,
+							$device->getDeviceKey(),
+							$message->getIv() ?? '',
+						);
+
+						if ($data === false) {
+							$this->logger->warning(
+								'Received device info message could not be decoded',
+								[
+									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
+									'type' => 'lan-client',
+									'connector' => [
+										'id' => $this->connector->getPlainId(),
+									],
+									'device' => [
+										'id' => $device->getPlainId(),
+									],
+								],
+							);
+
+							continue;
+						}
+					}
+
+					try {
+						$params = Utils\ArrayHash::from((array) Utils\Json::decode($data, Utils\Json::FORCE_ARRAY));
+
+						$this->handleDeviceStatus(new Entities\API\DeviceStatus(null, $message->getId(), $params));
+					} catch (Utils\JsonException) {
+						continue;
+					}
+				}
+			}
 		});
 
-		if (!$onlyApi) {
+		if (!$this->autoMode) {
 			$this->writer->connect($this->connector, $this);
 		}
 	}
 
-	public function disconnect(bool $onlyApi = false): void
+	public function disconnect(): void
 	{
 		if ($this->handlerTimer !== null) {
 			$this->eventLoop->cancelTimer($this->handlerTimer);
@@ -124,7 +173,7 @@ final class Lan extends ClientProcess implements Client
 			$this->handlerTimer = null;
 		}
 
-		if (!$onlyApi) {
+		if (!$this->autoMode) {
 			$this->writer->disconnect($this->connector, $this);
 		}
 
@@ -212,16 +261,19 @@ final class Lan extends ClientProcess implements Client
 			})
 			->otherwise(function (Throwable $ex) use ($deferred, $device): void {
 				if ($ex instanceof Exceptions\LanApiCall) {
-					if (in_array(
-						$ex->getCode(),
-						[
-							API\LanApi::ERROR_INVALID_JSON,
-							API\LanApi::ERROR_UNAUTHORIZED,
-							API\LanApi::ERROR_DEVICE_ID_INVALID,
-							API\LanApi::ERROR_INVALID_PARAMETER,
-						],
-						true,
-					)) {
+					if (
+							in_array(
+								$ex->getCode(),
+								[
+									API\LanApi::ERROR_INVALID_JSON,
+									API\LanApi::ERROR_UNAUTHORIZED,
+									API\LanApi::ERROR_DEVICE_ID_INVALID,
+									API\LanApi::ERROR_INVALID_PARAMETER,
+								],
+								true,
+							)
+						&& !$this->autoMode
+					) {
 						$this->ignoredDevices[] = $device->getPlainId();
 					}
 

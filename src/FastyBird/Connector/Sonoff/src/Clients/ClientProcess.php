@@ -51,7 +51,7 @@ abstract class ClientProcess
 
 	use Nette\SmartObject;
 
-	protected const HANDLER_START_DELAY = 2;
+	protected const HANDLER_START_DELAY = 2.0;
 
 	protected const HANDLER_PROCESSING_INTERVAL = 0.01;
 
