@@ -2,12 +2,12 @@ parameters:
     logger:
         rotatingFile:
             enabled: true
-            level: 100
+            level: 200
         stdOut:
             enabled: true
-            level: 100
+            level: 200
         console:
-            level: 100
+            level: 200
 
     database:
         version: 5.7
@@ -15,9 +15,9 @@ parameters:
         port: 3306
         driver: pdo_mysql
         memory: false
-        dbname: fb_miniserver
-        username: miniserver
-        password: miniserver
+        dbname: fastybird_dev
+        username: fastybird
+        password: fastybird
 
     redis:
         host: 127.0.0.1
@@ -35,7 +35,7 @@ parameters:
         port: 8888
 
     security:
-        issuer: com.fastybird.miniserver
+        issuer: com.fastybird.iot
         signature: 'g3xHbkELpMD9LRqW4WmJkHL7kz2bdNYAQJyEuFVzR3k='
 
     api:

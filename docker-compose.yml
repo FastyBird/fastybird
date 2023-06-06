@@ -15,12 +15,12 @@ services:
       # Application specific environment variables
       APP_ENV: "dev"
       FB_CONFIG_DIR: /app/var/config
-      FB_APP_PARAMETER__DATABASE_HOST: database
+      FB_APP_PARAMETER__DATABASE_HOST: 127.0.0.1
       FB_APP_PARAMETER__DATABASE_PORT: 3306
       FB_APP_PARAMETER__DATABASE_USERNAME: ${DATABASE_USERNAME:-fastybird}
       FB_APP_PARAMETER__DATABASE_PASSWORD: ${DATABASE_PASSWORD:-fastybird}
       FB_APP_PARAMETER__DATABASE_DBNAME: ${DATABASE_DBNAME:-fastybird_dev}
-      FB_APP_PARAMETER__REDIS_HOST: redis
+      FB_APP_PARAMETER__REDIS_HOST: 127.0.0.1
       FB_APP_PARAMETER__REDIS_PORT: 6379
       FB_APP_PARAMETER__SECURITY_SIGNATURE: ${SECURITY_SIGNATURE}
       FB_APP_PARAMETER__API_PREFIXED_MODULES: ${API_PREFIXED_MODULES:-true}
@@ -32,10 +32,7 @@ services:
       - "${HTTP_PORT:-8000}:8000"
       - "${WS_PORT:-8888}:8888"
       - "${WORKER_STATUS_PORT:-9001}:9001"
-    networks:
-      fastybird:
-      local_network:
-        ipv4_address: ${LOCAL_NETWORK_APPLICATION_IP_ADDRESS:-192.168.0.10}
+    network_mode: host
     #devices:
     #  - "/dev/tty.usbserial-31420:/dev/ttyUSB0"
 
@@ -138,18 +135,6 @@ services:
 networks:
   fastybird:
     driver: bridge
-
-  local_network:
-    name: local_network
-    driver: ipvlan
-    driver_opts:
-      parent: ${LOCAL_NETWORK_DRIVER:-eth0}
-      ipvlan_mode: l2
-    ipam:
-      config:
-        - subnet: ${LOCAL_NETWORK_SUBNET:-192.168.0.0/24}
-          gateway: ${LOCAL_NETWORK_GATEWAY:-192.168.0.1}
-          ip_range: ${LOCAL_NETWORK_IP_RANGE:-192.168.0.6/24}
 
 volumes:
   mysql-dev-data:

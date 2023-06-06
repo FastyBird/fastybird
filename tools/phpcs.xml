@@ -49,6 +49,10 @@
                 <element key="src/FastyBird/Connector/Shelly/tests/cases/unit" value="FastyBird\Connector\Shelly\Tests\Cases\Unit"/>
                 <element key="src/FastyBird/Connector/Shelly/tests/tools" value="FastyBird\Connector\Shelly\Tests\Tools"/>
 
+                <element key="src/FastyBird/Connector/Sonoff/src" value="FastyBird\Connector\Sonoff"/>
+                <element key="src/FastyBird/Connector/Sonoff/tests/cases/unit" value="FastyBird\Connector\Sonoff\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Connector/Sonoff/tests/tools" value="FastyBird\Connector\Sonoff\Tests\Tools"/>
+
                 <element key="src/FastyBird/Connector/Tuya/src" value="FastyBird\Connector\Tuya"/>
                 <element key="src/FastyBird/Connector/Tuya/tests/cases/unit" value="FastyBird\Connector\Tuya\Tests\Cases\Unit"/>
                 <element key="src/FastyBird/Connector/Tuya/tests/tools" value="FastyBird\Connector\Tuya\Tests\Tools"/>

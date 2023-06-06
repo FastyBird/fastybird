@@ -37,9 +37,11 @@ use Symfony\Component\Console;
 use Symfony\Component\Console\Input;
 use Symfony\Component\Console\Output;
 use Symfony\Component\Console\Style;
+use Symfony\Component\EventDispatcher;
 use Throwable;
 use function array_search;
 use function array_values;
+use function assert;
 use function count;
 use function is_string;
 use const SIGINT;
@@ -53,7 +55,7 @@ use const SIGTERM;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Connector extends Console\Command\Command
+class Connector extends Console\Command\Command implements EventDispatcher\EventSubscriberInterface
 {
 
 	public const NAME = 'fb:devices-module:connector';
@@ -61,6 +63,10 @@ class Connector extends Console\Command\Command
 	private const SHUTDOWN_WAITING_DELAY = 3;
 
 	private const DATABASE_REFRESH_INTERVAL = 5;
+
+	private Entities\Connectors\Connector|null $connector = null;
+
+	private Connectors\Connector|null $service = null;
 
 	/** @var SplObjectStorage<Connectors\ConnectorFactory, string> */
 	private SplObjectStorage $factories;
@@ -97,6 +103,13 @@ class Connector extends Console\Command\Command
 		parent::__construct($name);
 	}
 
+	public static function getSubscribedEvents(): array
+	{
+		return [
+			Events\TerminateConnector::class => 'terminateConnector',
+		];
+	}
+
 	public function attach(Connectors\ConnectorFactory $factory, string $type): void
 	{
 		$this->factories->attach($factory, $type);
@@ -120,6 +133,42 @@ class Connector extends Console\Command\Command
 					),
 				]),
 			);
+	}
+
+	public function terminateConnector(Events\TerminateConnector $event): void
+	{
+		$this->logger->info('Triggering connector termination', [
+			'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+			'type' => 'command',
+			'reason' => [
+				'source' => $event->getSource()->getValue(),
+				'message' => $event->getReason(),
+				'exception' => $event->getException() !== null ? BootstrapHelpers\Logger::buildException(
+					$event->getException(),
+				) : null,
+			],
+		]);
+
+		if ($this->service !== null && $this->connector !== null) {
+			try {
+				$this->terminate($this->service, $this->connector);
+
+				return;
+			} catch (Exceptions\Terminate $ex) {
+				$this->logger->error('Connector could not be safely terminated', [
+					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+					'type' => 'command',
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
+				]);
+			}
+		}
+
+		$this->logger->warning('Force terminating connector', [
+			'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+			'type' => 'command',
+		]);
+
+		$this->eventLoop->stop();
 	}
 
 	/**
@@ -207,9 +256,9 @@ class Connector extends Console\Command\Command
 				$findConnectorQuery->byIdentifier($connectorId);
 			}
 
-			$connector = $this->connectorsRepository->findOneBy($findConnectorQuery);
+			$this->connector = $this->connectorsRepository->findOneBy($findConnectorQuery);
 
-			if ($connector === null) {
+			if ($this->connector === null) {
 				if ($input->getOption('quiet') === false) {
 					$io->warning('Connector was not found in system');
 				}
@@ -259,9 +308,9 @@ class Connector extends Console\Command\Command
 			$findConnectorQuery = new Queries\FindConnectors();
 			$findConnectorQuery->byIdentifier($connectorIdentifierKey);
 
-			$connector = $this->connectorsRepository->findOneBy($findConnectorQuery);
+			$this->connector = $this->connectorsRepository->findOneBy($findConnectorQuery);
 
-			if ($connector === null) {
+			if ($this->connector === null) {
 				if ($input->getOption('quiet') === false) {
 					$io->error('Something went wrong, connector could not be loaded');
 				}
@@ -275,7 +324,7 @@ class Connector extends Console\Command\Command
 			}
 		}
 
-		if (!$connector->isEnabled()) {
+		if (!$this->connector->isEnabled()) {
 			if ($input->getOption('quiet') === false) {
 				$io->warning('Connector is disabled. Disabled connector could not be executed');
 			}
@@ -287,22 +336,22 @@ class Connector extends Console\Command\Command
 			$io->section('Initializing connector');
 		}
 
-		$this->dispatcher?->dispatch(new Events\ConnectorStartup($connector));
-
-		$service = null;
+		$this->dispatcher?->dispatch(new Events\ConnectorStartup($this->connector));
 
 		foreach ($this->factories as $factory) {
-			if ($connector->getType() === $this->factories[$factory]) {
-				$service = $factory->create($connector);
+			if ($this->connector->getType() === $this->factories[$factory]) {
+				$this->service = $factory->create($this->connector);
 			}
 		}
 
-		if ($service === null) {
+		if ($this->service === null) {
 			throw new Exceptions\Terminate('Connector service could not created');
 		}
 
-		$this->eventLoop->futureTick(function () use ($connector, $service): void {
-			$this->dispatcher?->dispatch(new Events\BeforeConnectorStart($connector));
+		$this->eventLoop->futureTick(function (): void {
+			assert($this->connector instanceof Entities\Connectors\Connector);
+
+			$this->dispatcher?->dispatch(new Events\BeforeConnectorStart($this->connector));
 
 			$this->logger->info('Starting connector...', [
 				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
@@ -311,34 +360,44 @@ class Connector extends Console\Command\Command
 
 			try {
 				$this->resetConnector(
-					$connector,
+					$this->connector,
 					MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_UNKNOWN),
 				);
 
+				assert($this->service instanceof Connectors\Connector);
+
 				// Start connector service
-				$service->execute();
+				$this->service->execute();
+
+				assert($this->connector instanceof Entities\Connectors\Connector);
 
 				$this->connectorConnectionManager->setState(
-					$connector,
+					$this->connector,
 					MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_RUNNING),
 				);
 			} catch (Throwable $ex) {
 				throw new Exceptions\Terminate('Connector can\'t be started', $ex->getCode(), $ex);
 			}
 
-			$this->dispatcher?->dispatch(new Events\AfterConnectorStart($connector));
+			$this->dispatcher?->dispatch(new Events\AfterConnectorStart($this->connector));
 
 			foreach ($this->exchangeFactories as $exchangeFactory) {
 				$exchangeFactory->create();
 			}
 		});
 
-		$this->eventLoop->addSignal(SIGTERM, function () use ($connector, $service): void {
-			$this->terminate($service, $connector);
+		$this->eventLoop->addSignal(SIGTERM, function (): void {
+			assert($this->connector instanceof Entities\Connectors\Connector);
+			assert($this->service instanceof Connectors\Connector);
+
+			$this->terminate($this->service, $this->connector);
 		});
 
-		$this->eventLoop->addSignal(SIGINT, function () use ($connector, $service): void {
-			$this->terminate($service, $connector);
+		$this->eventLoop->addSignal(SIGINT, function (): void {
+			assert($this->connector instanceof Entities\Connectors\Connector);
+			assert($this->service instanceof Connectors\Connector);
+
+			$this->terminate($this->service, $this->connector);
 		});
 
 		$this->databaseRefreshTimer = $this->eventLoop->addPeriodicTimer(

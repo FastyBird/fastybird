@@ -123,6 +123,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\OpenApiCall
+	 * @throws Exceptions\OpenApiError
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -151,6 +152,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\OpenApiCall
+	 * @throws Exceptions\OpenApiError
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -272,6 +274,17 @@ final class Discovery implements Evenement\EventEmitterInterface
 				false,
 			);
 
+		} catch (Exceptions\OpenApiError $ex) {
+			$this->logger->warning(
+				'Loading devices from cloud failed',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'type' => 'discovery-client',
+					'error' => $ex->getMessage(),
+				],
+			);
+
+			return;
 		} catch (Exceptions\OpenApiCall $ex) {
 			$this->logger->error(
 				'Loading devices from cloud failed',
@@ -295,6 +308,17 @@ final class Discovery implements Evenement\EventEmitterInterface
 				false,
 			);
 
+		} catch (Exceptions\OpenApiError $ex) {
+			$this->logger->warning(
+				'Loading devices factory infos from cloud failed',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'type' => 'discovery-client',
+					'error' => $ex->getMessage(),
+				],
+			);
+
+			return;
 		} catch (Exceptions\OpenApiCall $ex) {
 			$this->logger->error(
 				'Loading devices factory infos from cloud failed',
@@ -398,6 +422,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 	 *
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\OpenApiCall
+	 * @throws Exceptions\OpenApiError
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -747,6 +772,18 @@ final class Discovery implements Evenement\EventEmitterInterface
 						$dataPointFunction !== null,
 					);
 				}
+			} catch (Exceptions\OpenApiError $ex) {
+				$this->logger->warning(
+					'Device specification could not be loaded',
+					[
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+						'type' => 'discovery-client',
+						'error' => $ex->getMessage(),
+						'device' => [
+							'id' => $device->getId(),
+						],
+					],
+				);
 			} catch (Exceptions\OpenApiCall $ex) {
 				$this->logger->error(
 					'Device specification could not be loaded',

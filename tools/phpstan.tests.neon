@@ -11,6 +11,7 @@ includes:
     - ../src/FastyBird/Connector/HomeKit/tools/phpstan.config.tests.neon
     - ../src/FastyBird/Connector/Modbus/tools/phpstan.config.tests.neon
     - ../src/FastyBird/Connector/Shelly/tools/phpstan.config.tests.neon
+    - ../src/FastyBird/Connector/Sonoff/tools/phpstan.config.tests.neon
     - ../src/FastyBird/Connector/Tuya/tools/phpstan.config.tests.neon
 
     - ../src/FastyBird/Library/Bootstrap/tools/phpstan.config.tests.neon

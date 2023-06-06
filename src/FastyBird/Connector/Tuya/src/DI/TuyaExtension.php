@@ -84,30 +84,6 @@ class TuyaExtension extends DI\CompilerExtension
 		$configuration = $this->getConfig();
 		assert($configuration instanceof stdClass);
 
-		$builder->addDefinition(
-			$this->prefix('consumers.discovery.cloudDevice'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Consumers\Messages\CloudDiscovery::class);
-
-		$builder->addDefinition(
-			$this->prefix('consumers.discovery.localDevice'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Consumers\Messages\LocalDiscovery::class);
-
-		$builder->addDefinition($this->prefix('consumers.discovery.status'), new DI\Definitions\ServiceDefinition())
-			->setType(Consumers\Messages\Status::class);
-
-		$builder->addDefinition($this->prefix('consumers.discovery.state'), new DI\Definitions\ServiceDefinition())
-			->setType(Consumers\Messages\State::class);
-
-		$builder->addDefinition($this->prefix('consumers.proxy'), new DI\Definitions\ServiceDefinition())
-			->setType(Consumers\Messages::class)
-			->setArguments([
-				'consumers' => $builder->findByType(Consumers\Consumer::class),
-			]);
-
 		$writer = null;
 
 		if ($configuration->writer === Writers\Event::NAME) {
@@ -139,6 +115,30 @@ class TuyaExtension extends DI\CompilerExtension
 			->setImplement(API\LocalApiFactory::class)
 			->getResultDefinition()
 			->setType(API\LocalApi::class);
+
+		$builder->addDefinition(
+			$this->prefix('consumers.discovery.cloudDevice'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Consumers\Messages\CloudDiscovery::class);
+
+		$builder->addDefinition(
+			$this->prefix('consumers.discovery.localDevice'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Consumers\Messages\LocalDiscovery::class);
+
+		$builder->addDefinition($this->prefix('consumers.discovery.status'), new DI\Definitions\ServiceDefinition())
+			->setType(Consumers\Messages\Status::class);
+
+		$builder->addDefinition($this->prefix('consumers.discovery.state'), new DI\Definitions\ServiceDefinition())
+			->setType(Consumers\Messages\State::class);
+
+		$builder->addDefinition($this->prefix('consumers.messages'), new DI\Definitions\ServiceDefinition())
+			->setType(Consumers\Messages::class)
+			->setArguments([
+				'consumers' => $builder->findByType(Consumers\Consumer::class),
+			]);
 
 		$builder->addFactoryDefinition($this->prefix('clients.local'))
 			->setImplement(Clients\LocalFactory::class)
