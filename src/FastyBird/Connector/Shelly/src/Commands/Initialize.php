@@ -67,7 +67,7 @@ class Initialize extends Console\Command\Command
 
 	private const CHOICE_QUESTION_CLOUD_MODE = 'Cloud server mode';
 
-	private const CHOICE_QUESTION_MQTT_MODE = 'MQTT broker mode';
+	private const CHOICE_QUESTION_AUTO_MODE = 'Auto mode';
 
 	private Log\LoggerInterface $logger;
 
@@ -576,9 +576,9 @@ class Initialize extends Console\Command\Command
 		$question = new Console\Question\ChoiceQuestion(
 			'In what mode should this connector communicate with devices?',
 			[
+				self::CHOICE_QUESTION_AUTO_MODE,
 				self::CHOICE_QUESTION_LOCAL_MODE,
 				self::CHOICE_QUESTION_CLOUD_MODE,
-				self::CHOICE_QUESTION_MQTT_MODE,
 			],
 			0,
 		);
@@ -588,16 +588,16 @@ class Initialize extends Console\Command\Command
 				throw new Exceptions\InvalidState('Selected answer is not valid');
 			}
 
-			if ($answer === self::CHOICE_QUESTION_LOCAL_MODE || $answer === '0') {
+			if ($answer === self::CHOICE_QUESTION_AUTO_MODE || $answer === '0') {
+				return Types\ClientMode::get(Types\ClientMode::MODE_MQTT);
+			}
+
+			if ($answer === self::CHOICE_QUESTION_LOCAL_MODE || $answer === '1') {
 				return Types\ClientMode::get(Types\ClientMode::MODE_LOCAL);
 			}
 
-			if ($answer === self::CHOICE_QUESTION_CLOUD_MODE || $answer === '1') {
+			if ($answer === self::CHOICE_QUESTION_CLOUD_MODE || $answer === '2') {
 				return Types\ClientMode::get(Types\ClientMode::MODE_CLOUD);
-			}
-
-			if ($answer === self::CHOICE_QUESTION_MQTT_MODE || $answer === '2') {
-				return Types\ClientMode::get(Types\ClientMode::MODE_MQTT);
 			}
 
 			throw new Exceptions\InvalidState('Selected answer is not valid');
