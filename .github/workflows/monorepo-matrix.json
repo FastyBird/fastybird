@@ -56,6 +56,11 @@
   },
   {
     "organization": "FastyBird",
+    "name": "sonoff-connector",
+    "local-path": "src/FastyBird/Connector/Sonoff"
+  },
+  {
+    "organization": "FastyBird",
     "name": "tuya-connector",
     "local-path": "src/FastyBird/Connector/Tuya"
   },

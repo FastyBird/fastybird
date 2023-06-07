@@ -56,7 +56,7 @@ final class Cloud implements Client
 
 	use Nette\SmartObject;
 
-	private const HANDLER_START_DELAY = 2;
+	private const HANDLER_START_DELAY = 2.0;
 
 	private const HANDLER_PROCESSING_INTERVAL = 0.01;
 
@@ -188,11 +188,14 @@ final class Cloud implements Client
 		}
 
 		$this->writer->disconnect($this->connector, $this);
+
+		$this->openApiApi->disconnect();
 	}
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\OpenApiCall
+	 * @throws Exceptions\OpenApiError
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -235,6 +238,8 @@ final class Cloud implements Client
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\OpenApiCall
+	 * @throws Exceptions\OpenApiError
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Exception
@@ -289,6 +294,7 @@ final class Cloud implements Client
 
 	/**
 	 * @throws Exceptions\OpenApiCall
+	 * @throws Exceptions\OpenApiError
 	 */
 	private function readDeviceInformation(Entities\TuyaDevice $device): bool
 	{
@@ -352,6 +358,7 @@ final class Cloud implements Client
 
 	/**
 	 * @throws Exceptions\OpenApiCall
+	 * @throws Exceptions\OpenApiError
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -399,6 +406,22 @@ final class Cloud implements Client
 				));
 			})
 			->otherwise(function (Throwable $ex): void {
+				if ($ex instanceof Exceptions\OpenApiError) {
+					$this->logger->warning(
+						'Calling Tuya cloud failed',
+						[
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+							'type' => 'cloud-client',
+							'error' => $ex->getMessage(),
+							'connector' => [
+								'id' => $this->connector->getPlainId(),
+							],
+						],
+					);
+
+					return;
+				}
+
 				if (!$ex instanceof Exceptions\OpenApiCall) {
 					$this->logger->error(
 						'Calling Tuya cloud failed',

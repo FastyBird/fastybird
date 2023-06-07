@@ -71,6 +71,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 	private const MDNS_SEARCH_TIMEOUT = 30;
 
 	private const MATCH_NAME = '/^(?P<type>shelly.+)-(?P<id>[0-9A-Fa-f]+)._(http|shelly)._tcp.local$/';
+
+	private const MATCH_DOMAIN = '/^(?P<type>[0-9A-Za-z]+)-(?P<id>[0-9A-Fa-f]+).local$/';
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 	private const MATCH_IP_ADDRESS = '/^((?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])[.]){3}(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$/';
 
@@ -193,6 +195,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			foreach ($response->answers as $answer) {
 				if (
 					$answer->type === Dns\Model\Message::TYPE_A
+					&& preg_match(self::MATCH_DOMAIN, $answer->name) === 1
 					&& is_string($answer->data)
 					&& preg_match(self::MATCH_IP_ADDRESS, $answer->data) === 1
 					&& $serviceIpAddress === null

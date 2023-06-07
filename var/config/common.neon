@@ -57,6 +57,7 @@ extensions:
     fbHomeKitConnector                  : FastyBird\Connector\HomeKit\DI\HomeKitExtension
     fbModbusConnector                   : FastyBird\Connector\Modbus\DI\ModbusExtension
     fbShellyConnector                   : FastyBird\Connector\Shelly\DI\ShellyExtension
+    fbSonoffConnector                   : FastyBird\Connector\Sonoff\DI\SonoffExtension
     fbTuyaConnector                     : FastyBird\Connector\Tuya\DI\TuyaExtension
     # FastyBird bridges
     fbRedisDbDevicesModuleBridge        : FastyBird\Bridge\RedisDbDevicesModule\DI\RedisDbDevicesModuleExtension

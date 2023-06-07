@@ -12,7 +12,7 @@ final class ValidatorTest extends BaseTestCase
 {
 
 	/**
-	 * @param array<string|bool|array<string, bool|float|int|null|string>> $expected
+	 * @param array<string|bool|array<string, bool|float|int|string|null>> $expected
 	 *
 	 * @throws Exceptions\InvalidData
 	 * @throws Exceptions\Logic
@@ -55,7 +55,7 @@ final class ValidatorTest extends BaseTestCase
 	}
 
 	/**
-	 * @return array<string, array<string|bool|array<string, bool|float|int|null|string>>>
+	 * @return array<string, array<string|bool|array<string, bool|float|int|string|null>>>
 	 *
 	 * @throws Utils\JsonException
 	 */

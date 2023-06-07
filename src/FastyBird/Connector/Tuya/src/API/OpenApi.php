@@ -162,6 +162,7 @@ final class OpenApi
 
 	/**
 	 * @throws Exceptions\OpenApiCall
+	 * @throws Exceptions\OpenApiError
 	 */
 	public function connect(): void
 	{
@@ -256,6 +257,7 @@ final class OpenApi
 
 	/**
 	 * @throws Exceptions\OpenApiCall
+	 * @throws Exceptions\OpenApiError
 	 */
 	public function getUid(): string
 	{
@@ -274,17 +276,18 @@ final class OpenApi
 	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : array<Entities\API\UserDeviceDetail>)
 	 *
 	 * @throws Exceptions\OpenApiCall
+	 * @throws Exceptions\OpenApiError
 	 */
 	public function getUserDevices(
 		string $userId,
 		bool $async = true,
 	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|array
 	{
+		$deferred = new Promise\Deferred();
+
 		if (!$this->isConnected()) {
 			$this->connect();
 		}
-
-		$deferred = new Promise\Deferred();
 
 		$result = $this->callRequest(
 			'GET',
@@ -447,17 +450,18 @@ final class OpenApi
 	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : array<Entities\API\UserDeviceFactoryInfos>)
 	 *
 	 * @throws Exceptions\OpenApiCall
+	 * @throws Exceptions\OpenApiError
 	 */
 	public function getUserDevicesFactoryInfos(
 		array $deviceIds,
 		bool $async = true,
 	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|array
 	{
+		$deferred = new Promise\Deferred();
+
 		if (!$this->isConnected()) {
 			$this->connect();
 		}
-
-		$deferred = new Promise\Deferred();
 
 		$result = $this->callRequest(
 			'GET',
@@ -620,17 +624,18 @@ final class OpenApi
 	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\UserDeviceDetail)
 	 *
 	 * @throws Exceptions\OpenApiCall
+	 * @throws Exceptions\OpenApiError
 	 */
 	public function getUserDeviceDetail(
 		string $deviceId,
 		bool $async = true,
 	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\UserDeviceDetail
 	{
+		$deferred = new Promise\Deferred();
+
 		if (!$this->isConnected()) {
 			$this->connect();
 		}
-
-		$deferred = new Promise\Deferred();
 
 		$result = $this->callRequest(
 			'GET',
@@ -765,17 +770,18 @@ final class OpenApi
 	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\UserDeviceSpecifications)
 	 *
 	 * @throws Exceptions\OpenApiCall
+	 * @throws Exceptions\OpenApiError
 	 */
 	public function getUserDeviceSpecifications(
 		string $deviceId,
 		bool $async = true,
 	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\UserDeviceSpecifications
 	{
+		$deferred = new Promise\Deferred();
+
 		if (!$this->isConnected()) {
 			$this->connect();
 		}
-
-		$deferred = new Promise\Deferred();
 
 		$result = $this->callRequest(
 			'GET',
@@ -910,17 +916,18 @@ final class OpenApi
 	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : array<Entities\API\UserDeviceDataPointStatus>)
 	 *
 	 * @throws Exceptions\OpenApiCall
+	 * @throws Exceptions\OpenApiError
 	 */
 	public function getUserDeviceStatus(
 		string $deviceId,
 		bool $async = true,
 	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|array
 	{
+		$deferred = new Promise\Deferred();
+
 		if (!$this->isConnected()) {
 			$this->connect();
 		}
-
-		$deferred = new Promise\Deferred();
 
 		$result = $this->callRequest(
 			'GET',
@@ -1081,17 +1088,18 @@ final class OpenApi
 	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : array<Entities\API\UserDeviceChild>)
 	 *
 	 * @throws Exceptions\OpenApiCall
+	 * @throws Exceptions\OpenApiError
 	 */
 	public function getUserDeviceChildren(
 		string $deviceId,
 		bool $async = true,
 	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|array
 	{
+		$deferred = new Promise\Deferred();
+
 		if (!$this->isConnected()) {
 			$this->connect();
 		}
-
-		$deferred = new Promise\Deferred();
 
 		$result = $this->callRequest(
 			'GET',
@@ -1254,17 +1262,18 @@ final class OpenApi
 	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : array<Entities\API\DeviceInformation>)
 	 *
 	 * @throws Exceptions\OpenApiCall
+	 * @throws Exceptions\OpenApiError
 	 */
 	public function getDevices(
 		array $params = [],
 		bool $async = true,
 	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|array
 	{
+		$deferred = new Promise\Deferred();
+
 		if (!$this->isConnected()) {
 			$this->connect();
 		}
-
-		$deferred = new Promise\Deferred();
 
 		$result = $this->callRequest(
 			'GET',
@@ -1441,17 +1450,18 @@ final class OpenApi
 	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : array<Entities\API\DeviceFactoryInfos>)
 	 *
 	 * @throws Exceptions\OpenApiCall
+	 * @throws Exceptions\OpenApiError
 	 */
 	public function getDevicesFactoryInfos(
 		array $deviceIds,
 		bool $async = true,
 	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|array
 	{
+		$deferred = new Promise\Deferred();
+
 		if (!$this->isConnected()) {
 			$this->connect();
 		}
-
-		$deferred = new Promise\Deferred();
 
 		$result = $this->callRequest(
 			'GET',
@@ -1614,17 +1624,18 @@ final class OpenApi
 	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\DeviceInformation)
 	 *
 	 * @throws Exceptions\OpenApiCall
+	 * @throws Exceptions\OpenApiError
 	 */
 	public function getDeviceInformation(
 		string $deviceId,
 		bool $async = true,
 	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\DeviceInformation
 	{
+		$deferred = new Promise\Deferred();
+
 		if (!$this->isConnected()) {
 			$this->connect();
 		}
-
-		$deferred = new Promise\Deferred();
 
 		$result = $this->callRequest(
 			'GET',
@@ -1759,17 +1770,18 @@ final class OpenApi
 	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\DeviceSpecification)
 	 *
 	 * @throws Exceptions\OpenApiCall
+	 * @throws Exceptions\OpenApiError
 	 */
 	public function getDeviceSpecification(
 		string $deviceId,
 		bool $async = true,
 	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\DeviceSpecification
 	{
+		$deferred = new Promise\Deferred();
+
 		if (!$this->isConnected()) {
 			$this->connect();
 		}
-
-		$deferred = new Promise\Deferred();
 
 		$result = $this->callRequest(
 			'GET',
@@ -1904,17 +1916,18 @@ final class OpenApi
 	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : array<Entities\API\DeviceDataPointStatus>)
 	 *
 	 * @throws Exceptions\OpenApiCall
+	 * @throws Exceptions\OpenApiError
 	 */
 	public function getDeviceStatus(
 		string $deviceId,
 		bool $async = true,
 	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|array
 	{
+		$deferred = new Promise\Deferred();
+
 		if (!$this->isConnected()) {
 			$this->connect();
 		}
-
-		$deferred = new Promise\Deferred();
 
 		$result = $this->callRequest(
 			'GET',
@@ -2075,6 +2088,7 @@ final class OpenApi
 	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : bool)
 	 *
 	 * @throws Exceptions\OpenApiCall
+	 * @throws Exceptions\OpenApiError
 	 */
 	public function setDeviceStatus(
 		string $deviceId,
@@ -2083,11 +2097,11 @@ final class OpenApi
 		bool $async = true,
 	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|bool
 	{
+		$deferred = new Promise\Deferred();
+
 		if (!$this->isConnected()) {
 			$this->connect();
 		}
-
-		$deferred = new Promise\Deferred();
 
 		try {
 			$body = Utils\Json::encode([
@@ -2211,6 +2225,7 @@ final class OpenApi
 	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Message\ResponseInterface|false)
 	 *
 	 * @throws Exceptions\OpenApiCall
+	 * @throws Exceptions\OpenApiError
 	 */
 	private function callRequest(
 		string $method,
@@ -2220,6 +2235,8 @@ final class OpenApi
 		bool $async = true,
 	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Message\ResponseInterface|false
 	{
+		$deferred = new Promise\Deferred();
+
 		$refreshTokenResult = $this->refreshAccessToken($path);
 
 		if ($refreshTokenResult instanceof Promise\PromiseInterface) {
@@ -2236,8 +2253,6 @@ final class OpenApi
 				]);
 			}
 		}
-
-		$deferred = new Promise\Deferred();
 
 		$requestPath = $this->endpoint->getValue() . $path;
 
@@ -2432,6 +2447,7 @@ final class OpenApi
 
 	/**
 	 * @throws Exceptions\OpenApiCall
+	 * @throws Exceptions\OpenApiError
 	 */
 	private function checkResponse(string $path, string $response): bool
 	{
@@ -2458,7 +2474,7 @@ final class OpenApi
 				$this->connect();
 
 			} else {
-				throw new Exceptions\OpenApiCall('API token is not valid and can not be refreshed');
+				throw new Exceptions\OpenApiError('API token is not valid and can not be refreshed');
 			}
 		}
 
@@ -2467,10 +2483,10 @@ final class OpenApi
 			&& boolval($data->offsetGet('success')) !== true
 		) {
 			if ($data->offsetExists('msg')) {
-				throw new Exceptions\OpenApiCall(strval($data->offsetGet('msg')));
+				throw new Exceptions\OpenApiError(strval($data->offsetGet('msg')));
 			}
 
-			throw new Exceptions\OpenApiCall('Received response is not success');
+			throw new Exceptions\OpenApiError('Received response is not success');
 		}
 
 		return true;
@@ -2478,6 +2494,7 @@ final class OpenApi
 
 	/**
 	 * @throws Exceptions\OpenApiCall
+	 * @throws Exceptions\OpenApiError
 	 */
 	private function refreshAccessToken(string $path): Promise\PromiseInterface|false
 	{
