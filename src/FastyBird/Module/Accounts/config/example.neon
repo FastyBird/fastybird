@@ -28,12 +28,12 @@ extensions:
     ipubDoctrineCrud                    : IPub\DoctrineCrud\DI\DoctrineCrudExtension
     ipubDoctrineTimestampable           : IPub\DoctrineTimestampable\DI\DoctrineTimestampableExtension
     ipubDoctrineDynamicDiscriminatorMap : IPub\DoctrineDynamicDiscriminatorMap\DI\DoctrineDynamicDiscriminatorMapExtension
-    fbApplicationExchange               : FastyBird\ApplicationExchange\DI\ApplicationExchangeExtension
-    fbDatabase                          : FastyBird\Database\DI\DatabaseExtension
     fbDateTimeFactory                   : FastyBird\DateTimeFactory\DI\DateTimeFactoryExtension
     fbJsonApi                           : FastyBird\JsonApi\DI\JsonApiExtension
     fbSimpleAuth                        : FastyBird\SimpleAuth\DI\SimpleAuthExtension
     fbWebServer                         : FastyBird\WebServer\DI\WebServerExtension
+    fbMetadataLibrary                   : FastyBird\Library\Metadata\DI\MetadataExtension
+    fbExchangeLibrary                   : FastyBird\Library\Exchange\DI\ExchangeExtension
 
 contributteTranslation:
     locales:
@@ -94,6 +94,8 @@ fbSimpleAuth:
         middleware: true
         doctrine:
             mapping: true
+    services:
+        identity: true
 
 fbJsonApi:
     meta:

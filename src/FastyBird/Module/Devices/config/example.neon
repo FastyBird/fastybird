@@ -14,7 +14,9 @@ php:
     date.timezone: Europe/Prague
 
 extensions:
+    contributteConsole                  : Contributte\Console\DI\ConsoleExtension(%consoleMode%)
     contributteTranslation              : Contributte\Translation\DI\TranslationExtension
+    contributteEvents                   : Contributte\EventDispatcher\DI\EventDispatcherExtension
     nettrineAnnotations                 : Nettrine\Annotations\DI\AnnotationsExtension
     nettrineCache                       : Nettrine\Cache\DI\CacheExtension
     nettrineDbal                        : Nettrine\DBAL\DI\DbalExtension
@@ -29,9 +31,9 @@ extensions:
     fbDateTimeFactory                   : FastyBird\DateTimeFactory\DI\DateTimeFactoryExtension
     fbJsonApi                           : FastyBird\JsonApi\DI\JsonApiExtension
     fbSimpleAuth                        : FastyBird\SimpleAuth\DI\SimpleAuthExtension
+    fbWebServer                         : FastyBird\WebServer\DI\WebServerExtension
     fbMetadataLibrary                   : FastyBird\Library\Metadata\DI\MetadataExtension
     fbExchangeLibrary                   : FastyBird\Library\Exchange\DI\ExchangeExtension
-    fbDevicesModule                     : FastyBird\Module\Devices\DI\DevicesExtension
 
 contributteTranslation:
     locales:
