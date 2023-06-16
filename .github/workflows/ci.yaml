@@ -28,7 +28,7 @@ jobs:
       fail-fast: false
       matrix:
         php-version: [ "8.1", "8.2" ]
-        node-version: [ "16" ]
+        node-version: [ "18" ]
         operating-system: [ "ubuntu-latest" ]
 
     steps:
@@ -102,7 +102,7 @@ jobs:
       fail-fast: false
       matrix:
         php-version: [ "8.1", "8.2" ]
-        node-version: [ "16" ]
+        node-version: [ "18" ]
         operating-system: [ "ubuntu-latest" ]
 
     steps:
@@ -167,12 +167,6 @@ jobs:
 
       - name: "Link JS dependencies"
         run: "yarn lerna link"
-
-      - name: "Build JS dependencies"
-        run: "yarn build"
-
-      - name: "Link JS dependencies"
-        run: "yarn link"
 
       - name: "Build JS dependencies"
         run: "yarn build"
@@ -408,7 +402,7 @@ jobs:
     strategy:
       matrix:
         php-version: [ "8.1", "8.2" ]
-        node-version: [ "16" ]
+        node-version: [ "18" ]
         operating-system: [ "ubuntu-latest" ]
       fail-fast: false
 

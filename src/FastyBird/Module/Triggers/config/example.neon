@@ -14,28 +14,28 @@ php:
     date.timezone: Europe/Prague
 
 extensions:
-    contributteConsole					: Contributte\Console\DI\ConsoleExtension(%consoleMode%)
-    contributteTranslation				: Contributte\Translation\DI\TranslationExtension
-    contributteEvents					: Contributte\EventDispatcher\DI\EventDispatcherExtension
-    nettrineAnnotations					: Nettrine\Annotations\DI\AnnotationsExtension
-    nettrineCache						: Nettrine\Cache\DI\CacheExtension
-    nettrineDbal						: Nettrine\DBAL\DI\DbalExtension
-    nettrineOrm							: Nettrine\ORM\DI\OrmExtension
-    nettrineOrmAnnotations				: Nettrine\ORM\DI\OrmAnnotationsExtension
-    nettrineOrmConsole					: Nettrine\ORM\DI\OrmConsoleExtension
-    nettrineOrmCache					: Nettrine\ORM\DI\OrmCacheExtension
-    ipubDoctrineConsistence				: IPub\DoctrineConsistence\DI\DoctrineConsistenceExtension
-    ipubDoctrineCrud					: IPub\DoctrineCrud\DI\DoctrineCrudExtension
-    ipubDoctrineTimestampable			: IPub\DoctrineTimestampable\DI\DoctrineTimestampableExtension
-    ipubDoctrineDynamicDiscriminatorMap	: IPub\DoctrineDynamicDiscriminatorMap\DI\DoctrineDynamicDiscriminatorMapExtension
-    ipubDoctrinePhone					: IPub\DoctrinePhone\DI\DoctrinePhoneExtension
-    ipubPhone							: IPub\Phone\DI\PhoneExtension
-    fbApplicationExchange				: FastyBird\ApplicationExchange\DI\ApplicationExchangeExtension
-    fbDatabase							: FastyBird\Database\DI\DatabaseExtension
-    fbDateTimeFactory					: FastyBird\DateTimeFactory\DI\DateTimeFactoryExtension
-    fbJsonApi							: FastyBird\JsonApi\DI\JsonApiExtension
-    fbSimpleAuth						: FastyBird\SimpleAuth\DI\SimpleAuthExtension
-    fbWebServer							: FastyBird\WebServer\DI\WebServerExtension
+    contributteConsole                  : Contributte\Console\DI\ConsoleExtension(%consoleMode%)
+    contributteTranslation              : Contributte\Translation\DI\TranslationExtension
+    contributteEvents                   : Contributte\EventDispatcher\DI\EventDispatcherExtension
+    nettrineAnnotations                 : Nettrine\Annotations\DI\AnnotationsExtension
+    nettrineCache                       : Nettrine\Cache\DI\CacheExtension
+    nettrineDbal                        : Nettrine\DBAL\DI\DbalExtension
+    nettrineOrm                         : Nettrine\ORM\DI\OrmExtension
+    nettrineOrmAnnotations              : Nettrine\ORM\DI\OrmAnnotationsExtension
+    nettrineOrmConsole                  : Nettrine\ORM\DI\OrmConsoleExtension
+    nettrineOrmCache                    : Nettrine\ORM\DI\OrmCacheExtension
+    ipubDoctrineConsistence             : IPub\DoctrineConsistence\DI\DoctrineConsistenceExtension
+    ipubDoctrineCrud                    : IPub\DoctrineCrud\DI\DoctrineCrudExtension
+    ipubDoctrineTimestampable           : IPub\DoctrineTimestampable\DI\DoctrineTimestampableExtension
+    ipubDoctrineDynamicDiscriminatorMap : IPub\DoctrineDynamicDiscriminatorMap\DI\DoctrineDynamicDiscriminatorMapExtension
+    ipubDoctrinePhone                   : IPub\DoctrinePhone\DI\DoctrinePhoneExtension
+    ipubPhone                           : IPub\Phone\DI\PhoneExtension
+    fbDateTimeFactory                   : FastyBird\DateTimeFactory\DI\DateTimeFactoryExtension
+    fbJsonApi                           : FastyBird\JsonApi\DI\JsonApiExtension
+    fbSimpleAuth                        : FastyBird\SimpleAuth\DI\SimpleAuthExtension
+    fbWebServer                         : FastyBird\WebServer\DI\WebServerExtension
+    fbMetadataLibrary                   : FastyBird\Library\Metadata\DI\MetadataExtension
+    fbExchangeLibrary                   : FastyBird\Library\Exchange\DI\ExchangeExtension
 
 contributteConsole:
     name: FastyBird:TriggersModule!
@@ -92,7 +92,7 @@ nettrineAnnotations:
 
 nettrineOrm:
     configuration:
-        proxyDir	: %tempDir%/cache/doctrine.proxies
+        proxyDir: %tempDir%/cache/doctrine.proxies
 
 nettrineOrmAnnotations:
     mapping: []
@@ -107,3 +107,7 @@ fbSimpleAuth:
             mapping: true
     services:
         identity: true
+
+fbJsonApi:
+    meta:
+        copyright: FastyBird s.r.o
