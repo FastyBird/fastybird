@@ -194,7 +194,6 @@
         }
     },
     "extra": {
-        "enable-patching": false,
         "patches": {
             "nettrine/orm": {
                 "Enable connection overrides": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/nettrine-orm-src-managerregistry-php.patch"
@@ -208,8 +207,12 @@
             },
             "ramsey/uuid-doctrine": {
                 "Bug: Ramsey uuid conversion fallback": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/ramsey-uuid-doctrine-src-uuidbinarytype-php.patch"
+            },
+            "dg/bypass-finals": {
+                "Bug: mkdir check": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/dg-bypass-finals-src-nativewrapper-php.patch"
             }
-        }
+        },
+        "enable-patching": false
     },
     "config": {
         "sort-packages": true,

@@ -87,6 +87,11 @@
   "extra": {
     "branch-alias": {
       "dev-main": "1.0-dev"
+    },
+    "patches": {
+      "dg/bypass-finals": {
+        "Bug: mkdir check": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/dg-bypass-finals-src-nativewrapper-php.patch"
+      }
     }
   },
   "repositories": [
