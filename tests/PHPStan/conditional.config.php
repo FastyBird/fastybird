@@ -2,6 +2,8 @@
 
 $config = [];
 
+/*
+ * Example:
 if (PHP_VERSION_ID >= 8_02_00) {
 	// Change of signature in PHP 8.2
 	$config['parameters']['ignoreErrors'][] = [
@@ -11,5 +13,6 @@ if (PHP_VERSION_ID >= 8_02_00) {
 		'count' => 1,
 	];
 }
+*/
 
 return $config;
