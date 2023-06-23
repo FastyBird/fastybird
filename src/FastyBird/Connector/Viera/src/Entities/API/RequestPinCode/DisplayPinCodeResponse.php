@@ -30,10 +30,7 @@ class DisplayPinCodeResponse implements Entities\API\Entity
 
 	public string|null $X_ChallengeKey = null;
 
-	/**
-	 * @return string|null
-	 */
-	public function getXChallengeKey(): ?string
+	public function getXChallengeKey(): string|null
 	{
 		return $this->X_ChallengeKey;
 	}

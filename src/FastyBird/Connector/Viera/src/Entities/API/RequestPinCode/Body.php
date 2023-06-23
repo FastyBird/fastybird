@@ -30,7 +30,7 @@ class Body implements Entities\API\Entity
 
 	public DisplayPinCodeResponse|null $X_DisplayPinCodeResponse = null;
 
-	public function getXDisplayPinCodeResponse(): ?DisplayPinCodeResponse
+	public function getXDisplayPinCodeResponse(): DisplayPinCodeResponse|null
 	{
 		return $this->X_DisplayPinCodeResponse;
 	}

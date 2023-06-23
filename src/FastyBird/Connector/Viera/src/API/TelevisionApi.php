@@ -15,7 +15,6 @@
 
 namespace FastyBird\Connector\Viera\API;
 
-use Clue\React\Multicast;
 use Evenement;
 use FastyBird\Connector\Viera\Entities;
 use FastyBird\Connector\Viera\Exceptions;
@@ -28,7 +27,6 @@ use Nette;
 use Nette\Utils;
 use Psr\Http\Message;
 use Psr\Log;
-use Ratchet;
 use React\EventLoop;
 use React\Http;
 use React\Promise;
@@ -40,23 +38,30 @@ use Throwable;
 use function array_fill;
 use function array_key_exists;
 use function array_merge;
+use function array_values;
 use function base64_decode;
+use function base64_encode;
 use function count;
 use function hash_hmac;
 use function http_build_query;
-use function is_array;
+use function intval;
+use function is_string;
 use function openssl_decrypt;
 use function openssl_encrypt;
 use function pack;
 use function preg_match;
+use function preg_replace;
 use function random_bytes;
 use function React\Async\await;
 use function sprintf;
 use function strlen;
+use function strpos;
 use function strval;
 use function substr;
 use function unpack;
+use function var_dump;
 use const OPENSSL_RAW_DATA;
+use const OPENSSL_ZERO_PADDING;
 
 /**
  * Television api interface
@@ -360,7 +365,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 
 		$httpServer = new Http\HttpServer(
 			new Http\Middleware\StreamingRequestMiddleware(),
-			function (Message\ServerRequestInterface $request): Message\ResponseInterface {
+			static function (Message\ServerRequestInterface $request): Message\ResponseInterface {
 				var_dump('EVENT');
 				var_dump($request->getBody()->getContents());
 
@@ -377,7 +382,11 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 		$httpServer->listen($socket);
 
 		var_dump($socket->getAddress());
-		preg_match('/(?<protocol>tcp):\/\/(?<ip_address>[0-9]+.[0-9]+.[0-9]+.[0-9]+)?:(?<port>[0-9]+)?/', $socket->getAddress(), $matches);
+		preg_match(
+			'/(?<protocol>tcp):\/\/(?<ip_address>[0-9]+.[0-9]+.[0-9]+.[0-9]+)?:(?<port>[0-9]+)?/',
+			$socket->getAddress(),
+			$matches,
+		);
 
 		try {
 			$client = $this->getClient(false);
@@ -388,35 +397,39 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 		$localIpAddress = '10.10.0.222';
 		$localPort = $matches['port'];
 
-		$this->eventLoop->addTimer(5, function () use ($localIpAddress, $localPort, $client, $httpServer, $socket, $deferred): void {
-			var_dump([
-				'headers' => [
-					'CALLBACK' => '<http://' . $localIpAddress . ':' . $localPort . '>',
-					'NT' => 'upnp:event',
-					'TIMEOUT' => 'Second-' . self::EVENTS_TIMEOUT_IN_SECONDS
-				],
-			]);
-			try {
-				$response = $client->request(
-					'SUBSCRIBE',
-					'http://' . $this->ipAddress . ':' . $this->port . self::URL_EVENT_NRC,
-					[
-						'headers' => [
-							'CALLBACK' => '<http://' . $localIpAddress . ':' . $localPort . '>',
-							'NT' => 'upnp:event',
-							'TIMEOUT' => 'Second-' . self::EVENTS_TIMEOUT_IN_SECONDS
+		$this->eventLoop->addTimer(
+			5,
+			function () use ($localIpAddress, $localPort, $client, $socket, $deferred): void {
+				var_dump([
+					'headers' => [
+						'CALLBACK' => '<http://' . $localIpAddress . ':' . $localPort . '>',
+						'NT' => 'upnp:event',
+						'TIMEOUT' => 'Second-' . self::EVENTS_TIMEOUT_IN_SECONDS,
+					],
+				]);
+				try {
+					$response = $client->request(
+						'SUBSCRIBE',
+						'http://' . $this->ipAddress . ':' . $this->port . self::URL_EVENT_NRC,
+						[
+							'headers' => [
+								'CALLBACK' => '<http://' . $localIpAddress . ':' . $localPort . '>',
+								'NT' => 'upnp:event',
+								'TIMEOUT' => 'Second-' . self::EVENTS_TIMEOUT_IN_SECONDS,
+							],
 						],
-					]
-				);
-			} catch (GuzzleHttp\Exception\GuzzleException) {
-				$socket->close();
+					);
+				} catch (GuzzleHttp\Exception\GuzzleException) {
+					$socket->close();
 
-				$deferred->resolve(false);
-			}
-			var_dump($response->getStatusCode());
-			var_dump($response->getHeaders());
-			var_dump($response->getBody()->getContents());
-		});
+					$deferred->resolve(false);
+				}
+
+				var_dump($response->getStatusCode());
+				var_dump($response->getHeaders());
+				var_dump($response->getBody()->getContents());
+			},
+		);
 
 		return $deferred->promise();
 	}
@@ -463,9 +476,14 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 
 						$service->mapValueObject('{}Envelope', Entities\API\RequestPinCode\Envelope::class);
 						$service->mapValueObject('{}Body', Entities\API\RequestPinCode\Body::class);
-						$service->mapValueObject('{}X_DisplayPinCodeResponse', Entities\API\RequestPinCode\DisplayPinCodeResponse::class);
+						$service->mapValueObject(
+							'{}X_DisplayPinCodeResponse',
+							Entities\API\RequestPinCode\DisplayPinCodeResponse::class,
+						);
 
-						$pinCodeResponse = $service->parse($this->sanitizeReceivedPayload($response->getBody()->getContents()));
+						$pinCodeResponse = $service->parse(
+							$this->sanitizeReceivedPayload($response->getBody()->getContents()),
+						);
 
 						if (!$pinCodeResponse instanceof Entities\API\RequestPinCode\Envelope) {
 							$deferred->reject(new Exceptions\TelevisionApiCall('Received response is not valid'));
@@ -495,7 +513,10 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 
 		$service->mapValueObject('{}Envelope', Entities\API\RequestPinCode\Envelope::class);
 		$service->mapValueObject('{}Body', Entities\API\RequestPinCode\Body::class);
-		$service->mapValueObject('{}X_DisplayPinCodeResponse', Entities\API\RequestPinCode\DisplayPinCodeResponse::class);
+		$service->mapValueObject(
+			'{}X_DisplayPinCodeResponse',
+			Entities\API\RequestPinCode\DisplayPinCodeResponse::class,
+		);
 
 		try {
 			$pinCodeResponse = $service->parse($this->sanitizeReceivedPayload($result->getBody()->getContents()));
@@ -569,11 +590,11 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 		];
 
 		/** @var array<int> $hmacKey */
-		$hmacKey = array_fill(0, self:: SIGNATURE_BYTES_LENGTH, 0);
+		$hmacKey = array_fill(0, self::SIGNATURE_BYTES_LENGTH, 0);
 
 		$i = 0;
 
-		while ($i < self:: SIGNATURE_BYTES_LENGTH) {
+		while ($i < self::SIGNATURE_BYTES_LENGTH) {
 			$hmacKey[$i] = $hmacKeyMaskValues[$i] ^ $iv[$i + 2 & 0xF];
 			$hmacKey[$i + 1] = $hmacKeyMaskValues[$i + 1] ^ $iv[$i + 3 & 0xF];
 			$hmacKey[$i + 2] = $hmacKeyMaskValues[$i + 2] ^ $iv[$i & 0xF];
@@ -1121,7 +1142,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 	{
 		try {
 			// Start with 12 random bytes
-			$message = pack('C*', ...((array)unpack('C*', random_bytes(12))));
+			$message = pack('C*', ...((array) unpack('C*', random_bytes(12))));
 		} catch (Throwable $ex) {
 			throw new Exceptions\Encrypt('Preparing payload header failed', $ex->getCode(), $ex);
 		}
@@ -1162,8 +1183,8 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 			throw new Exceptions\Decrypt('Payload could not be decoded');
 		}
 
-		$decoded = substr($decodedWithSignature, 0, -self:: SIGNATURE_BYTES_LENGTH);
-		$signature = substr($decodedWithSignature, -self:: SIGNATURE_BYTES_LENGTH);
+		$decoded = substr($decodedWithSignature, 0, -self::SIGNATURE_BYTES_LENGTH);
+		$signature = substr($decodedWithSignature, -self::SIGNATURE_BYTES_LENGTH);
 
 		$calculatedSignature = hash_hmac('sha256', $decodedWithSignature, $hmacKey, true);
 

@@ -30,7 +30,7 @@ class Envelope implements Entities\API\Entity
 
 	public Body|null $Body = null;
 
-	public function getBody(): ?Body
+	public function getBody(): Body|null
 	{
 		return $this->Body;
 	}
