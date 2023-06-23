@@ -82,6 +82,8 @@ class PropertyIdentifier extends Consistence\Enum\Enum
 
 	public const IDENTIFIER_FIRMWARE_VERSION = 'firmware_version';
 
+	public const IDENTIFIER_SERIAL_NUMBER = 'serial_number';
+
 	public function __toString(): string
 	{
 		return strval(self::getValue());
