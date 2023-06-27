@@ -27,6 +27,7 @@
         "ext-gmp": "*",
         "ext-openssl": "*",
         "ext-pcntl": "*",
+        "ext-simplexml": "*",
         "ext-sockets": "*",
         "ext-sodium": "*",
         "binsoul/net-mqtt": "^0.8",

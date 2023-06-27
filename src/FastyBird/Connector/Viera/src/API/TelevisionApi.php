@@ -18,7 +18,8 @@ namespace FastyBird\Connector\Viera\API;
 use Evenement;
 use FastyBird\Connector\Viera\Entities;
 use FastyBird\Connector\Viera\Exceptions;
-use FastyBird\DateTimeFactory;
+use FastyBird\Connector\Viera\Helpers;
+use FastyBird\Connector\Viera\Types;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use GuzzleHttp;
@@ -33,33 +34,40 @@ use React\Promise;
 use React\Socket;
 use React\Socket\Connector;
 use RuntimeException;
-use Sabre;
+use SimpleXMLElement;
 use Throwable;
 use function array_fill;
 use function array_key_exists;
 use function array_merge;
+use function array_pop;
 use function array_values;
 use function base64_decode;
 use function base64_encode;
+use function boolval;
+use function chr;
 use function count;
 use function hash_hmac;
 use function http_build_query;
 use function intval;
+use function is_array;
 use function is_string;
 use function openssl_decrypt;
 use function openssl_encrypt;
 use function pack;
 use function preg_match;
+use function preg_match_all;
 use function preg_replace;
+use function preg_split;
+use function property_exists;
 use function random_bytes;
 use function React\Async\await;
+use function simplexml_load_string;
 use function sprintf;
+use function str_repeat;
 use function strlen;
-use function strpos;
 use function strval;
 use function substr;
 use function unpack;
-use function var_dump;
 use const OPENSSL_RAW_DATA;
 use const OPENSSL_ZERO_PADDING;
 
@@ -97,19 +105,9 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 
 	private const URL_CONTROL_NRC_DEF = '/nrc/sdd_0.xml';
 
-	private bool $isEncrypted = false;
+	private bool $isEncrypted;
 
-	private string|null $challengeKey = null;
-
-	private string|null $sessionKey = null;
-
-	private string|null $sessionIv = null;
-
-	private string|null $sessionHmacKey = null;
-
-	private string|null $sessionId = null;
-
-	private int|null $sessionSeqNum = null;
+	private Entities\API\Session|null $session = null;
 
 	private Log\LoggerInterface $logger;
 
@@ -123,7 +121,6 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 		private readonly int $port,
 		private readonly string|null $appId = null,
 		private readonly string|null $encryptionKey = null,
-		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		Log\LoggerInterface|null $logger = null,
 	)
@@ -133,22 +130,162 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
+	/**
+	 * @throws Exceptions\Encrypt
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\Decrypt
+	 * @throws Exceptions\TelevisionApiCall
+	 * @throws RuntimeException
+	 */
 	public function connect(): void
 	{
+		if ($this->encryptionKey !== null) {
+			$this->deriveSessionKeys();
+			$this->requestSessionId(false);
+		}
 	}
 
 	public function disconnect(): void
 	{
+		$this->session = null;
 	}
 
 	/**
-	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\Specs\Device)
+	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\Session)
+	 *
+	 * @throws Exceptions\Encrypt
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\Decrypt
+	 * @throws Exceptions\TelevisionApiCall
+	 * @throws RuntimeException
+	 */
+	public function requestSessionId(
+		bool $async = true,
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\Session
+	{
+		$deferred = new Promise\Deferred();
+
+		if ($this->session === null) {
+			if ($async) {
+				return Promise\reject(new Exceptions\InvalidState('Session is not created'));
+			}
+
+			throw new Exceptions\InvalidState('Session is not created');
+		}
+
+		$encInfo = $this->encryptPayload(
+			'<X_ApplicationId>' . $this->appId . '</X_ApplicationId>',
+			$this->session->getKey(),
+			$this->session->getIv(),
+			$this->session->getHmacKey(),
+		);
+
+		$parameters = '';
+		$parameters .= '<X_ApplicationId>' . $this->appId . '</X_ApplicationId>';
+		$parameters .= '<X_EncInfo>' . $encInfo . '</X_EncInfo>';
+
+		$result = $this->callXmlRequest(
+			self::URL_CONTROL_NRC,
+			self::URN_REMOTE_CONTROL,
+			'X_GetEncryptSessionId',
+			$parameters,
+			'u',
+			$async,
+		);
+
+		if ($result instanceof Promise\PromiseInterface) {
+			$result
+				->then(function (Message\ResponseInterface $response) use ($deferred): void {
+					try {
+						$body = $this->sanitizeReceivedPayload($response->getBody()->getContents());
+
+						preg_match('/<X_EncResult>(?<encrypted>.*?)<\/X_EncResult>/', $body, $matches);
+					} catch (Throwable $ex) {
+						$deferred->reject(
+							new Exceptions\TelevisionApiCall('Received response is not valid', $ex->getCode(), $ex),
+						);
+
+						return;
+					}
+
+					if (!array_key_exists('encrypted', $matches)) {
+						$deferred->reject(new Exceptions\TelevisionApiCall('Could not parse received response'));
+
+						return;
+					}
+
+					if ($this->session === null) {
+						$deferred->reject(new Exceptions\TelevisionApiCall('Something went wrong. Session was lost'));
+
+						return;
+					}
+
+					$payload = $this->decryptPayload(
+						$matches['encrypted'],
+						$this->session->getKey(),
+						$this->session->getIv(),
+						$this->session->getHmacKey(),
+					);
+
+					preg_match('/<X_SessionId>(?<session_id>.*?)<\/X_SessionId>/', $payload, $matches);
+
+					if (array_key_exists('session_id', $matches)) {
+						$this->session->setId($matches['session_id']);
+					}
+
+					$this->session->setSeqNum(1);
+
+					$deferred->resolve($this->session);
+				})
+				->otherwise(static function (Throwable $ex) use ($deferred): void {
+					$deferred->reject($ex);
+				});
+
+			return $deferred->promise();
+		}
+
+		if ($result === false) {
+			throw new Exceptions\TelevisionApiCall('Could send data to television');
+		}
+
+		try {
+			$body = $this->sanitizeReceivedPayload($result->getBody()->getContents());
+
+			preg_match('/<X_EncResult>(?<encrypted>.*?)<\/X_EncResult>/', $body, $matches);
+		} catch (Throwable $ex) {
+			throw new Exceptions\TelevisionApiCall('Received response is not valid', $ex->getCode(), $ex);
+		}
+
+		if (!array_key_exists('encrypted', $matches)) {
+			throw new Exceptions\TelevisionApiCall('Could not parse received response');
+		}
+
+		$payload = $this->decryptPayload(
+			$matches['encrypted'],
+			$this->session->getKey(),
+			$this->session->getIv(),
+			$this->session->getHmacKey(),
+		);
+
+		preg_match('/<X_SessionId>(?<session_id>.*?)<\/X_SessionId>/', $payload, $matches);
+
+		if (array_key_exists('session_id', $matches)) {
+			$this->session->setId($matches['session_id']);
+		}
+
+		$this->session->setSeqNum(1);
+
+		return $this->session;
+	}
+
+	/**
+	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\DeviceSpecs)
 	 *
 	 * @throws Exceptions\TelevisionApiCall
 	 */
 	public function getSpecs(
 		bool $async = true,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\Specs\Device
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\DeviceSpecs
 	{
 		$deferred = new Promise\Deferred();
 
@@ -165,29 +302,21 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 			$result
 				->then(function (Message\ResponseInterface $response) use ($deferred): void {
 					try {
-						$service = new Sabre\Xml\Service();
-
-						$service->mapValueObject(
-							'{urn:schemas-upnp-org:device-1-0}root',
-							Entities\API\Specs\Root::class,
-						);
-						$service->mapValueObject(
-							'{urn:schemas-upnp-org:device-1-0}device',
-							Entities\API\Specs\Device::class,
+						$specsResponse = simplexml_load_string(
+							$this->sanitizeReceivedPayload($response->getBody()->getContents()),
 						);
 
-						$specs = $service->parse($this->sanitizeReceivedPayload($response->getBody()->getContents()));
-
-						if (!$specs instanceof Entities\API\Specs\Root) {
+						if (
+							!$specsResponse instanceof SimpleXMLElement
+							|| !property_exists($specsResponse, 'device')
+							|| !$specsResponse->device instanceof SimpleXMLElement
+						) {
 							$deferred->reject(new Exceptions\TelevisionApiCall('Received response is not valid'));
 						} else {
-							$device = $specs->getDevice();
-
-							if ($device === null) {
-								$deferred->reject(new Exceptions\TelevisionApiCall('Received response is not valid'));
-
-								return;
-							}
+							$device = EntityFactory::build(
+								Entities\API\DeviceSpecs::class,
+								$specsResponse->device,
+							);
 
 							$this->needsCrypto()
 								->then(static function (bool $needsCrypto) use ($deferred, $device): void {
@@ -213,28 +342,27 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 		}
 
 		if ($result === false) {
-			throw new Exceptions\TelevisionApiCall('Could send data to cloud server');
+			throw new Exceptions\TelevisionApiCall('Could send data to television');
 		}
 
-		$service = new Sabre\Xml\Service();
-
-		$service->mapValueObject('{urn:schemas-upnp-org:device-1-0}root', Entities\API\Specs\Root::class);
-		$service->mapValueObject('{urn:schemas-upnp-org:device-1-0}device', Entities\API\Specs\Device::class);
-
 		try {
-			$specs = $service->parse($this->sanitizeReceivedPayload($result->getBody()->getContents()));
+			$specsResponse = simplexml_load_string($this->sanitizeReceivedPayload($result->getBody()->getContents()));
 		} catch (Throwable $ex) {
 			throw new Exceptions\TelevisionApiCall('Received response is not valid', $ex->getCode(), $ex);
 		}
 
-		if (!$specs instanceof Entities\API\Specs\Root) {
+		if (
+			!$specsResponse instanceof SimpleXMLElement
+			|| !property_exists($specsResponse, 'device')
+			|| !$specsResponse->device instanceof SimpleXMLElement
+		) {
 			throw new Exceptions\TelevisionApiCall('Received response is not valid');
 		}
 
-		$device = $specs->getDevice();
-
-		if ($device === null) {
-			throw new Exceptions\TelevisionApiCall('Received response is not valid');
+		try {
+			$device = EntityFactory::build(Entities\API\DeviceSpecs::class, $specsResponse->device);
+		} catch (Exceptions\InvalidState $ex) {
+			throw new Exceptions\TelevisionApiCall('Received response is not valid', $ex->getCode(), $ex);
 		}
 
 		$device->setRequiresEncryption($this->needsCrypto(false));
@@ -243,15 +371,26 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\Specs\Device)
+	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\DeviceApps)
 	 *
+	 * @throws Exceptions\Decrypt
+	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\TelevisionApiCall
+	 * @throws RuntimeException
 	 */
 	public function getApps(
 		bool $async = true,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\Specs\Device
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\DeviceApps
 	{
 		$deferred = new Promise\Deferred();
+
+		if ($this->isEncrypted && $this->session === null) {
+			if ($async) {
+				return Promise\reject(new Exceptions\InvalidState('Session is not created'));
+			}
+
+			throw new Exceptions\InvalidState('Session is not created');
+		}
 
 		$result = $this->callXmlRequest(
 			self::URL_CONTROL_NRC,
@@ -264,7 +403,99 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 
 		if ($result instanceof Promise\PromiseInterface) {
 			$result
-				->then(static function (Message\ResponseInterface $response): void {
+				->then(function (Message\ResponseInterface $response) use ($deferred): void {
+					try {
+						$body = $this->sanitizeReceivedPayload($response->getBody()->getContents());
+
+						if (
+							$this->session !== null
+							&& preg_match('/<X_EncResult>(?<encrypted>.*?)<\/X_EncResult>/', $body, $matches) === 1
+						) {
+							if (!array_key_exists('encrypted', $matches)) {
+								$deferred->reject(
+									new Exceptions\TelevisionApiCall('Could not parse received response'),
+								);
+
+								return;
+							}
+
+							$payload = $this->decryptPayload(
+								$matches['encrypted'],
+								$this->session->getKey(),
+								$this->session->getIv(),
+								$this->session->getHmacKey(),
+							);
+
+							$appsResponse = simplexml_load_string(
+								$this->sanitizeReceivedPayload($payload),
+							);
+
+							if (
+								!$appsResponse instanceof SimpleXMLElement
+								|| !property_exists($appsResponse, 'X_GetAppListResponse')
+								|| !$appsResponse->X_GetAppListResponse instanceof SimpleXMLElement
+								|| !property_exists($appsResponse->X_GetAppListResponse, 'X_AppList')
+							) {
+								$deferred->reject(new Exceptions\TelevisionApiCall('Received response is not valid'));
+
+								return;
+							}
+
+							$appsRaw = strval($appsResponse->X_GetAppListResponse->X_AppList);
+
+						} else {
+							$appsResponse = simplexml_load_string(
+								$this->sanitizeReceivedPayload($body),
+							);
+
+							if (
+								!$appsResponse instanceof SimpleXMLElement
+								|| !property_exists($appsResponse, 'Body')
+								|| !$appsResponse->Body instanceof SimpleXMLElement
+								|| !property_exists($appsResponse->Body, 'X_GetAppListResponse')
+								|| !$appsResponse->Body->X_GetAppListResponse instanceof SimpleXMLElement
+								|| !property_exists($appsResponse->Body->X_GetAppListResponse, 'X_AppList')
+							) {
+								$deferred->reject(new Exceptions\TelevisionApiCall('Received response is not valid'));
+
+								return;
+							}
+
+							$appsRaw = strval($appsResponse->Body->X_GetAppListResponse->X_AppList);
+						}
+
+						if ($appsRaw === '') {
+							$deferred->reject(
+								new Exceptions\TelevisionApiCall('Television is turned off. Apps could not be loaded'),
+							);
+
+							return;
+						}
+
+						if (preg_match_all(
+							"/'product_id=(?<id>[\dA-Z]+)'(?<name>[^']+)/u",
+							$appsRaw,
+							$matches,
+						) === false) {
+							$deferred->reject(new Exceptions\TelevisionApiCall('Received response is not valid'));
+
+							return;
+						}
+
+						$apps = [];
+
+						foreach ($matches as $appData) {
+							if (array_key_exists('id', $appData) && array_key_exists('name', $appData)) {
+								$apps[] = new Entities\API\Application($appData['id'], $appData['name']);
+							}
+						}
+
+						$deferred->resolve(new Entities\API\DeviceApps($apps));
+					} catch (Throwable $ex) {
+						$deferred->reject(
+							new Exceptions\TelevisionApiCall('Received response is not valid', $ex->getCode(), $ex),
+						);
+					}
 				})
 				->otherwise(static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);
@@ -274,7 +505,744 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 		}
 
 		if ($result === false) {
-			throw new Exceptions\TelevisionApiCall('Could send data to cloud server');
+			throw new Exceptions\TelevisionApiCall('Could send data to television');
+		}
+
+		try {
+			$body = $this->sanitizeReceivedPayload($result->getBody()->getContents());
+		} catch (Throwable $ex) {
+			throw new Exceptions\TelevisionApiCall('Received response is not valid', $ex->getCode(), $ex);
+		}
+
+		if (
+			$this->session !== null
+			&& preg_match('/<X_EncResult>(?<encrypted>.*?)<\/X_EncResult>/', $body, $matches) === 1
+		) {
+			if (!array_key_exists('encrypted', $matches)) {
+				throw new Exceptions\TelevisionApiCall('Could not parse received response');
+			}
+
+			$payload = $this->decryptPayload(
+				$matches['encrypted'],
+				$this->session->getKey(),
+				$this->session->getIv(),
+				$this->session->getHmacKey(),
+			);
+
+			$appsResponse = simplexml_load_string(
+				$this->sanitizeReceivedPayload($payload),
+			);
+
+			if (
+				!$appsResponse instanceof SimpleXMLElement
+				|| !property_exists($appsResponse, 'X_GetAppListResponse')
+				|| !$appsResponse->X_GetAppListResponse instanceof SimpleXMLElement
+				|| !property_exists($appsResponse->X_GetAppListResponse, 'X_AppList')
+			) {
+				throw new Exceptions\TelevisionApiCall('Received response is not valid');
+			}
+
+			$appsRaw = strval($appsResponse->X_GetAppListResponse->X_AppList);
+
+		} else {
+			$appsResponse = simplexml_load_string(
+				$this->sanitizeReceivedPayload($body),
+			);
+
+			if (
+				!$appsResponse instanceof SimpleXMLElement
+				|| !property_exists($appsResponse, 'Body')
+				|| !$appsResponse->Body instanceof SimpleXMLElement
+				|| !property_exists($appsResponse->Body, 'X_GetAppListResponse')
+				|| !$appsResponse->Body->X_GetAppListResponse instanceof SimpleXMLElement
+				|| !property_exists($appsResponse->Body->X_GetAppListResponse, 'X_AppList')
+			) {
+				throw new Exceptions\TelevisionApiCall('Received response is not valid');
+			}
+
+			$appsRaw = strval($appsResponse->Body->X_GetAppListResponse->X_AppList);
+		}
+
+		if ($appsRaw === '') {
+			throw new Exceptions\TelevisionApiCall('Television is turned off. Apps could not be loaded');
+		}
+
+		if (preg_match_all("/'product_id=(?<id>[\dA-Z]+)'(?<name>[^']+)/u", $appsRaw, $matches) === false) {
+			throw new Exceptions\TelevisionApiCall('Received response is not valid');
+		}
+
+		$apps = [];
+
+		foreach ($matches as $appData) {
+			if (array_key_exists('id', $appData) && array_key_exists('name', $appData)) {
+				$apps[] = new Entities\API\Application($appData['id'], $appData['name']);
+			}
+		}
+
+		return new Entities\API\DeviceApps($apps);
+	}
+
+	/**
+	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\DeviceVectorInfo)
+	 *
+	 * @throws Exceptions\Decrypt
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\TelevisionApiCall
+	 * @throws RuntimeException
+	 */
+	public function getVectorInfo(
+		bool $async = true,
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\DeviceVectorInfo
+	{
+		$deferred = new Promise\Deferred();
+
+		if ($this->isEncrypted && $this->session === null) {
+			if ($async) {
+				return Promise\reject(new Exceptions\InvalidState('Session is not created'));
+			}
+
+			throw new Exceptions\InvalidState('Session is not created');
+		}
+
+		$result = $this->callXmlRequest(
+			self::URL_CONTROL_NRC,
+			self::URN_REMOTE_CONTROL,
+			'X_GetVectorInfo',
+			'None',
+			'u',
+			$async,
+		);
+
+		if ($result instanceof Promise\PromiseInterface) {
+			$result
+				->then(function (Message\ResponseInterface $response) use ($deferred): void {
+					try {
+						$body = $this->sanitizeReceivedPayload($response->getBody()->getContents());
+
+						if (
+							$this->session !== null
+							&& preg_match('/<X_EncResult>(?<encrypted>.*?)<\/X_EncResult>/', $body, $matches) === 1
+						) {
+							if (!array_key_exists('encrypted', $matches)) {
+								$deferred->reject(
+									new Exceptions\TelevisionApiCall('Could not parse received response'),
+								);
+
+								return;
+							}
+
+							$payload = $this->decryptPayload(
+								$matches['encrypted'],
+								$this->session->getKey(),
+								$this->session->getIv(),
+								$this->session->getHmacKey(),
+							);
+
+							$vectorInfoResponse = simplexml_load_string(
+								$this->sanitizeReceivedPayload($payload),
+							);
+
+							if (
+								!$vectorInfoResponse instanceof SimpleXMLElement
+								|| !property_exists($vectorInfoResponse, 'X_GetVectorInfoResponse')
+								|| !$vectorInfoResponse->X_GetVectorInfoResponse instanceof SimpleXMLElement
+								|| !property_exists($vectorInfoResponse->X_GetVectorInfoResponse, 'X_PortNumber')
+							) {
+								$deferred->reject(new Exceptions\TelevisionApiCall('Received response is not valid'));
+
+								return;
+							}
+
+							$devicePort = intval($vectorInfoResponse->X_GetVectorInfoResponse->X_PortNumber);
+
+						} else {
+							$vectorInfoResponse = simplexml_load_string(
+								$this->sanitizeReceivedPayload($body),
+							);
+
+							if (
+								!$vectorInfoResponse instanceof SimpleXMLElement
+								|| !property_exists($vectorInfoResponse, 'Body')
+								|| !$vectorInfoResponse->Body instanceof SimpleXMLElement
+								|| !property_exists($vectorInfoResponse->Body, 'X_GetVectorInfoResponse')
+								|| !$vectorInfoResponse->Body->X_GetVectorInfoResponse instanceof SimpleXMLElement
+								|| !property_exists($vectorInfoResponse->Body->X_GetVectorInfoResponse, 'X_PortNumber')
+							) {
+								$deferred->reject(new Exceptions\TelevisionApiCall('Received response is not valid'));
+
+								return;
+							}
+
+							$devicePort = intval($vectorInfoResponse->Body->X_GetVectorInfoResponse->X_PortNumber);
+						}
+
+						$deferred->resolve(new Entities\API\DeviceVectorInfo($devicePort));
+					} catch (Throwable $ex) {
+						$deferred->reject(
+							new Exceptions\TelevisionApiCall('Received response is not valid', $ex->getCode(), $ex),
+						);
+					}
+				})
+				->otherwise(static function (Throwable $ex) use ($deferred): void {
+					$deferred->reject($ex);
+				});
+
+			return $deferred->promise();
+		}
+
+		if ($result === false) {
+			throw new Exceptions\TelevisionApiCall('Could send data to television');
+		}
+
+		try {
+			$body = $this->sanitizeReceivedPayload($result->getBody()->getContents());
+		} catch (Throwable $ex) {
+			throw new Exceptions\TelevisionApiCall('Received response is not valid', $ex->getCode(), $ex);
+		}
+
+		if (
+			$this->session !== null
+			&& preg_match('/<X_EncResult>(?<encrypted>.*?)<\/X_EncResult>/', $body, $matches) === 1
+		) {
+			if (!array_key_exists('encrypted', $matches)) {
+				throw new Exceptions\TelevisionApiCall('Could not parse received response');
+			}
+
+			$payload = $this->decryptPayload(
+				$matches['encrypted'],
+				$this->session->getKey(),
+				$this->session->getIv(),
+				$this->session->getHmacKey(),
+			);
+
+			$vectorInfoResponse = simplexml_load_string(
+				$this->sanitizeReceivedPayload($payload),
+			);
+
+			if (
+				!$vectorInfoResponse instanceof SimpleXMLElement
+				|| !property_exists($vectorInfoResponse, 'X_GetVectorInfoResponse')
+				|| !$vectorInfoResponse->X_GetVectorInfoResponse instanceof SimpleXMLElement
+				|| !property_exists($vectorInfoResponse->X_GetVectorInfoResponse, 'X_PortNumber')
+			) {
+				throw new Exceptions\TelevisionApiCall('Received response is not valid');
+			}
+
+			$devicePort = intval($vectorInfoResponse->X_GetVectorInfoResponse->X_PortNumber);
+
+		} else {
+			$vectorInfoResponse = simplexml_load_string(
+				$this->sanitizeReceivedPayload($body),
+			);
+
+			if (
+				!$vectorInfoResponse instanceof SimpleXMLElement
+				|| !property_exists($vectorInfoResponse, 'Body')
+				|| !$vectorInfoResponse->Body instanceof SimpleXMLElement
+				|| !property_exists($vectorInfoResponse->Body, 'X_GetVectorInfoResponse')
+				|| !$vectorInfoResponse->Body->X_GetVectorInfoResponse instanceof SimpleXMLElement
+				|| !property_exists($vectorInfoResponse->Body->X_GetVectorInfoResponse, 'X_PortNumber')
+			) {
+				throw new Exceptions\TelevisionApiCall('Received response is not valid');
+			}
+
+			$devicePort = intval($vectorInfoResponse->Body->X_GetVectorInfoResponse->X_PortNumber);
+		}
+
+		return new Entities\API\DeviceVectorInfo($devicePort);
+	}
+
+	/**
+	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : int)
+	 *
+	 * @throws Exceptions\Decrypt
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\TelevisionApiCall
+	 * @throws RuntimeException
+	 */
+	public function getVolume(
+		bool $async = true,
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|int
+	{
+		$deferred = new Promise\Deferred();
+
+		if ($this->isEncrypted && $this->session === null) {
+			if ($async) {
+				return Promise\reject(new Exceptions\InvalidState('Session is not created'));
+			}
+
+			throw new Exceptions\InvalidState('Session is not created');
+		}
+
+		$result = $this->callXmlRequest(
+			self::URL_CONTROL_DMR,
+			self::URN_RENDERING_CONTROL,
+			'GetVolume',
+			'<InstanceID>0</InstanceID><Channel>Master</Channel>',
+			'u',
+			$async,
+		);
+
+		if ($result instanceof Promise\PromiseInterface) {
+			$result
+				->then(function (Message\ResponseInterface $response) use ($deferred): void {
+					try {
+						$body = $this->sanitizeReceivedPayload($response->getBody()->getContents());
+
+						if (
+							$this->session !== null
+							&& preg_match('/<X_EncResult>(?<encrypted>.*?)<\/X_EncResult>/', $body, $matches) === 1
+						) {
+							if (!array_key_exists('encrypted', $matches)) {
+								$deferred->reject(
+									new Exceptions\TelevisionApiCall('Could not parse received response'),
+								);
+
+								return;
+							}
+
+							$payload = $this->decryptPayload(
+								$matches['encrypted'],
+								$this->session->getKey(),
+								$this->session->getIv(),
+								$this->session->getHmacKey(),
+							);
+
+							if (
+								preg_match('/<CurrentVolume>(?<volume>.*?)<\/CurrentVolume>/', $payload, $matches) !== 1
+								|| !array_key_exists('volume', $matches)
+							) {
+								$deferred->reject(new Exceptions\TelevisionApiCall('Received response is not valid'));
+
+								return;
+							}
+
+							$deferred->resolve(intval($matches['volume']));
+						} else {
+							if (
+								preg_match('/<CurrentVolume>(?<volume>.*?)<\/CurrentVolume>/', $body, $matches) !== 1
+								|| !array_key_exists('volume', $matches)
+							) {
+								$deferred->reject(new Exceptions\TelevisionApiCall('Received response is not valid'));
+
+								return;
+							}
+
+							$deferred->resolve(intval($matches['volume']));
+						}
+					} catch (Throwable $ex) {
+						$deferred->reject(
+							new Exceptions\TelevisionApiCall('Received response is not valid', $ex->getCode(), $ex),
+						);
+					}
+				})
+				->otherwise(static function (Throwable $ex) use ($deferred): void {
+					$deferred->reject($ex);
+				});
+
+			return $deferred->promise();
+		}
+
+		if ($result === false) {
+			throw new Exceptions\TelevisionApiCall('Could send data to television');
+		}
+
+		try {
+			$body = $this->sanitizeReceivedPayload($result->getBody()->getContents());
+		} catch (Throwable $ex) {
+			throw new Exceptions\TelevisionApiCall('Received response is not valid', $ex->getCode(), $ex);
+		}
+
+		if (
+			$this->session !== null
+			&& preg_match('/<X_EncResult>(?<encrypted>.*?)<\/X_EncResult>/', $body, $matches) === 1
+		) {
+			if (!array_key_exists('encrypted', $matches)) {
+				throw new Exceptions\TelevisionApiCall('Could not parse received response');
+			}
+
+			$payload = $this->decryptPayload(
+				$matches['encrypted'],
+				$this->session->getKey(),
+				$this->session->getIv(),
+				$this->session->getHmacKey(),
+			);
+
+			if (
+				preg_match('/<CurrentVolume>(?<volume>.*?)<\/CurrentVolume>/', $payload, $matches) !== 1
+				|| !array_key_exists('volume', $matches)
+			) {
+				throw new Exceptions\TelevisionApiCall('Received response is not valid');
+			}
+
+			return intval($matches['volume']);
+		}
+
+		if (
+			preg_match('/<CurrentVolume>(?<volume>.*?)<\/CurrentVolume>/', $body, $matches) !== 1
+			|| !array_key_exists('volume', $matches)
+		) {
+			throw new Exceptions\TelevisionApiCall('Received response is not valid');
+		}
+
+		return intval($matches['volume']);
+	}
+
+	/**
+	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : bool)
+	 *
+	 * @throws Exceptions\Decrypt
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\TelevisionApiCall
+	 * @throws RuntimeException
+	 */
+	public function setVolume(
+		int $volume,
+		bool $async = true,
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|bool
+	{
+		$deferred = new Promise\Deferred();
+
+		if ($volume < 0 || $volume > 100) {
+			if ($async) {
+				return Promise\reject(
+					new Exceptions\InvalidState('Bad request to volume control. Volume must be between 0 and 100'),
+				);
+			}
+
+			throw new Exceptions\InvalidState('Bad request to volume control. Volume must be between 0 and 100');
+		}
+
+		if ($this->isEncrypted && $this->session === null) {
+			if ($async) {
+				return Promise\reject(new Exceptions\InvalidState('Session is not created'));
+			}
+
+			throw new Exceptions\InvalidState('Session is not created');
+		}
+
+		$result = $this->callXmlRequest(
+			self::URL_CONTROL_DMR,
+			self::URN_RENDERING_CONTROL,
+			'SetVolume',
+			sprintf('<InstanceID>0</InstanceID><Channel>Master</Channel><DesiredVolume>%d</DesiredVolume>', $volume),
+			'u',
+			$async,
+		);
+
+		if ($result instanceof Promise\PromiseInterface) {
+			$result
+				->then(static function () use ($deferred): void {
+					$deferred->resolve(true);
+				})
+				->otherwise(static function (Throwable $ex) use ($deferred): void {
+					$deferred->reject($ex);
+				});
+
+			return $deferred->promise();
+		}
+
+		if ($result === false) {
+			throw new Exceptions\TelevisionApiCall('Could send data to television');
+		}
+
+		return true;
+	}
+
+	/**
+	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : bool)
+	 *
+	 * @throws Exceptions\Decrypt
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\TelevisionApiCall
+	 * @throws RuntimeException
+	 */
+	public function getMute(
+		bool $async = true,
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|bool
+	{
+		$deferred = new Promise\Deferred();
+
+		if ($this->isEncrypted && $this->session === null) {
+			if ($async) {
+				return Promise\reject(new Exceptions\InvalidState('Session is not created'));
+			}
+
+			throw new Exceptions\InvalidState('Session is not created');
+		}
+
+		$result = $this->callXmlRequest(
+			self::URL_CONTROL_DMR,
+			self::URN_RENDERING_CONTROL,
+			'GetMute',
+			'<InstanceID>0</InstanceID><Channel>Master</Channel>',
+			'u',
+			$async,
+		);
+
+		if ($result instanceof Promise\PromiseInterface) {
+			$result
+				->then(function (Message\ResponseInterface $response) use ($deferred): void {
+					try {
+						$body = $this->sanitizeReceivedPayload($response->getBody()->getContents());
+
+						if (
+							$this->session !== null
+							&& preg_match('/<X_EncResult>(?<encrypted>.*?)<\/X_EncResult>/', $body, $matches) === 1
+						) {
+							if (!array_key_exists('encrypted', $matches)) {
+								$deferred->reject(
+									new Exceptions\TelevisionApiCall('Could not parse received response'),
+								);
+
+								return;
+							}
+
+							$payload = $this->decryptPayload(
+								$matches['encrypted'],
+								$this->session->getKey(),
+								$this->session->getIv(),
+								$this->session->getHmacKey(),
+							);
+
+							if (
+								preg_match('/<CurrentMute>(?<mute>.*?)<\/CurrentMute>/', $payload, $matches) !== 1
+								|| !array_key_exists('mute', $matches)
+							) {
+								$deferred->reject(new Exceptions\TelevisionApiCall('Received response is not valid'));
+
+								return;
+							}
+
+							$deferred->resolve(boolval($matches['mute']));
+						} else {
+							if (
+								preg_match('/<CurrentMute>(?<mute>.*?)<\/CurrentMute>/', $body, $matches) !== 1
+								|| !array_key_exists('mute', $matches)
+							) {
+								$deferred->reject(new Exceptions\TelevisionApiCall('Received response is not valid'));
+
+								return;
+							}
+
+							$deferred->resolve(boolval($matches['mute']));
+						}
+					} catch (Throwable $ex) {
+						$deferred->reject(
+							new Exceptions\TelevisionApiCall('Received response is not valid', $ex->getCode(), $ex),
+						);
+					}
+				})
+				->otherwise(static function (Throwable $ex) use ($deferred): void {
+					$deferred->reject($ex);
+				});
+
+			return $deferred->promise();
+		}
+
+		if ($result === false) {
+			throw new Exceptions\TelevisionApiCall('Could send data to television');
+		}
+
+		try {
+			$body = $this->sanitizeReceivedPayload($result->getBody()->getContents());
+		} catch (Throwable $ex) {
+			throw new Exceptions\TelevisionApiCall('Received response is not valid', $ex->getCode(), $ex);
+		}
+
+		if (
+			$this->session !== null
+			&& preg_match('/<X_EncResult>(?<encrypted>.*?)<\/X_EncResult>/', $body, $matches) === 1
+		) {
+			if (!array_key_exists('encrypted', $matches)) {
+				throw new Exceptions\TelevisionApiCall('Could not parse received response');
+			}
+
+			$payload = $this->decryptPayload(
+				$matches['encrypted'],
+				$this->session->getKey(),
+				$this->session->getIv(),
+				$this->session->getHmacKey(),
+			);
+
+			if (
+				preg_match('/<CurrentMute>(?<mute>.*?)<\/CurrentMute>/', $payload, $matches) !== 1
+				|| !array_key_exists('mute', $matches)
+			) {
+				throw new Exceptions\TelevisionApiCall('Received response is not valid');
+			}
+
+			return boolval($matches['mute']);
+		}
+
+		if (
+			preg_match('/<CurrentMute>(?<mute>.*?)<\/CurrentMute>/', $body, $matches) !== 1
+			|| !array_key_exists('mute', $matches)
+		) {
+			throw new Exceptions\TelevisionApiCall('Received response is not valid');
+		}
+
+		return boolval($matches['mute']);
+	}
+
+	/**
+	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : bool)
+	 *
+	 * @throws Exceptions\Decrypt
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\TelevisionApiCall
+	 * @throws RuntimeException
+	 */
+	public function setMute(
+		bool $status,
+		bool $async = true,
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|bool
+	{
+		$deferred = new Promise\Deferred();
+
+		if ($this->isEncrypted && $this->session === null) {
+			if ($async) {
+				return Promise\reject(new Exceptions\InvalidState('Session is not created'));
+			}
+
+			throw new Exceptions\InvalidState('Session is not created');
+		}
+
+		$result = $this->callXmlRequest(
+			self::URL_CONTROL_DMR,
+			self::URN_RENDERING_CONTROL,
+			'SetMute',
+			sprintf(
+				'<InstanceID>0</InstanceID><Channel>Master</Channel><DesiredMute>%d</DesiredMute>',
+				$status ? 1 : 0,
+			),
+			'u',
+			$async,
+		);
+
+		if ($result instanceof Promise\PromiseInterface) {
+			$result
+				->then(static function () use ($deferred): void {
+					$deferred->resolve(true);
+				})
+				->otherwise(static function (Throwable $ex) use ($deferred): void {
+					$deferred->reject($ex);
+				});
+
+			return $deferred->promise();
+		}
+
+		if ($result === false) {
+			throw new Exceptions\TelevisionApiCall('Could send data to television');
+		}
+
+		return true;
+	}
+
+	/**
+	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : bool)
+	 *
+	 * @throws Exceptions\Decrypt
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\TelevisionApiCall
+	 * @throws RuntimeException
+	 */
+	public function sendKey(
+		Types\ActionKey $key,
+		bool $async = true,
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|bool
+	{
+		$deferred = new Promise\Deferred();
+
+		if ($this->isEncrypted && $this->session === null) {
+			if ($async) {
+				return Promise\reject(new Exceptions\InvalidState('Session is not created'));
+			}
+
+			throw new Exceptions\InvalidState('Session is not created');
+		}
+
+		$result = $this->callXmlRequest(
+			self::URL_CONTROL_NRC,
+			self::URN_REMOTE_CONTROL,
+			'X_SendKey',
+			sprintf('<X_KeyEvent>%s</X_KeyEvent>', strval($key->getValue())),
+			'u',
+			$async,
+		);
+
+		if ($result instanceof Promise\PromiseInterface) {
+			$result
+				->then(static function () use ($deferred): void {
+					$deferred->resolve(true);
+				})
+				->otherwise(static function (Throwable $ex) use ($deferred): void {
+					$deferred->reject($ex);
+				});
+
+			return $deferred->promise();
+		}
+
+		if ($result === false) {
+			throw new Exceptions\TelevisionApiCall('Could send data to television');
+		}
+
+		return true;
+	}
+
+	/**
+	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : bool)
+	 */
+	public function turnOn(
+		bool $async = true,
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|bool
+	{
+		try {
+			$status = await($this->isTurnedOn());
+
+			if ($status !== false) {
+				if ($async) {
+					return Promise\resolve(true);
+				}
+
+				return true;
+			}
+
+			return $this->sendKey(Types\ActionKey::get(Types\ActionKey::POWER), $async);
+		} catch (Throwable) {
+			if ($async) {
+				return Promise\resolve(false);
+			}
+
+			return false;
+		}
+	}
+
+	/**
+	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : bool)
+	 */
+	public function turnOff(
+		bool $async = true,
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|bool
+	{
+		try {
+			$status = await($this->isTurnedOn());
+
+			if ($status === false) {
+				if ($async) {
+					return Promise\resolve(true);
+				}
+
+				return true;
+			}
+
+			return $this->sendKey(Types\ActionKey::get(Types\ActionKey::POWER), $async);
+		} catch (Throwable) {
+			if ($async) {
+				return Promise\resolve(false);
+			}
+
+			return false;
 		}
 	}
 
@@ -313,7 +1281,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 		}
 
 		if ($result === false) {
-			throw new Exceptions\TelevisionApiCall('Could send data to cloud server');
+			throw new Exceptions\TelevisionApiCall('Could send data to television');
 		}
 
 		try {
@@ -328,7 +1296,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 	 */
 	public function livenessProbe(
 		float $timeout = 1.5,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Message\ResponseInterface
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface
 	{
 		$deferred = new Promise\Deferred();
 
@@ -363,98 +1331,143 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 	{
 		$deferred = new Promise\Deferred();
 
-		$httpServer = new Http\HttpServer(
-			new Http\Middleware\StreamingRequestMiddleware(),
-			static function (Message\ServerRequestInterface $request): Message\ResponseInterface {
-				var_dump('EVENT');
-				var_dump($request->getBody()->getContents());
-
-				return Http\Message\Response::plaintext('OK');
-			},
-		);
-
 		try {
-			$socket = new Socket\SocketServer('0.0.0.0:43323');
+			$socket = new Socket\SocketServer('0.0.0.0:0');
 		} catch (RuntimeException | InvalidArgumentException) {
 			return Promise\resolve(false);
 		}
 
-		$httpServer->listen($socket);
+		$socket->on('connection', function (Socket\ConnectionInterface $connection) use ($deferred): void {
+			$connection->on('data', static function (string $data) use ($deferred): void {
+				$parts = preg_split('/\r?\n\r?\n/', $data);
 
-		var_dump($socket->getAddress());
+				if (is_array($parts) && count($parts) === 2) {
+					preg_match('/<X_ScreenState>(?<screen_state>\w+)<\/X_ScreenState>/', strval($parts[1]), $matches);
+
+					if (
+						array_key_exists('screen_state', $matches)
+						&& Utils\Strings::lower($matches['screen_state']) === 'on'
+					) {
+						$deferred->resolve(true);
+					} else {
+						$deferred->resolve(false);
+					}
+				}
+			});
+
+			$connection->on('error', function (Throwable $ex) use ($deferred): void {
+				$this->logger->error('Something went wrong with subscription socket', [
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+					'type' => 'television-api',
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'connector' => [
+						'identifier' => $this->identifier,
+					],
+				]);
+
+				$deferred->resolve(false);
+			});
+		});
+
 		preg_match(
 			'/(?<protocol>tcp):\/\/(?<ip_address>[0-9]+.[0-9]+.[0-9]+.[0-9]+)?:(?<port>[0-9]+)?/',
-			$socket->getAddress(),
+			strval($socket->getAddress()),
 			$matches,
 		);
 
 		try {
 			$client = $this->getClient(false);
-		} catch (InvalidArgumentException) {
+		} catch (InvalidArgumentException $ex) {
+			$this->logger->error('Could not get http client', [
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+				'type' => 'television-api',
+				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'connector' => [
+					'identifier' => $this->identifier,
+				],
+			]);
+
 			return Promise\resolve(false);
 		}
 
-		$localIpAddress = '10.10.0.222';
+		$localIpAddress = Helpers\Network::getLocalAddress();
+
+		if ($localIpAddress === null) {
+			$this->logger->error('Could not get connector local address', [
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+				'type' => 'television-api',
+				'connector' => [
+					'identifier' => $this->identifier,
+				],
+			]);
+
+			return Promise\resolve(false);
+		}
+
 		$localPort = $matches['port'];
 
-		$this->eventLoop->addTimer(
-			5,
-			function () use ($localIpAddress, $localPort, $client, $socket, $deferred): void {
-				var_dump([
-					'headers' => [
+		$sid = null;
+
+		try {
+			$response = $client->request(
+				'SUBSCRIBE',
+				'http://' . $this->ipAddress . ':' . $this->port . self::URL_EVENT_NRC,
+				[
+					GuzzleHttp\RequestOptions::HEADERS => [
 						'CALLBACK' => '<http://' . $localIpAddress . ':' . $localPort . '>',
 						'NT' => 'upnp:event',
 						'TIMEOUT' => 'Second-' . self::EVENTS_TIMEOUT_IN_SECONDS,
 					],
-				]);
-				try {
-					$response = $client->request(
-						'SUBSCRIBE',
-						'http://' . $this->ipAddress . ':' . $this->port . self::URL_EVENT_NRC,
-						[
-							'headers' => [
-								'CALLBACK' => '<http://' . $localIpAddress . ':' . $localPort . '>',
-								'NT' => 'upnp:event',
-								'TIMEOUT' => 'Second-' . self::EVENTS_TIMEOUT_IN_SECONDS,
-							],
+				],
+			);
+
+			$sidHeader = $response->getHeader('SID');
+
+			if ($sidHeader !== []) {
+				$sid = array_pop($sidHeader);
+			}
+		} catch (GuzzleHttp\Exception\GuzzleException) {
+			$socket->close();
+
+			$deferred->resolve(false);
+		}
+
+		$this->eventLoop->addTimer(1.5, function () use ($client, $socket, $sid, $deferred): void {
+			try {
+				$client->request(
+					'UNSUBSCRIBE',
+					'http://' . $this->ipAddress . ':' . $this->port . self::URL_EVENT_NRC,
+					[
+						GuzzleHttp\RequestOptions::HEADERS => [
+							'SID' => $sid,
 						],
-					);
-				} catch (GuzzleHttp\Exception\GuzzleException) {
-					$socket->close();
+						GuzzleHttp\RequestOptions::TIMEOUT => 1,
+					],
+				);
+			} catch (GuzzleHttp\Exception\GuzzleException) {
+				// Error could be ignored
+			} finally {
+				$socket->close();
+			}
 
-					$deferred->resolve(false);
-				}
-
-				var_dump($response->getStatusCode());
-				var_dump($response->getHeaders());
-				var_dump($response->getBody()->getContents());
-			},
-		);
+			$deferred->resolve(false);
+		});
 
 		return $deferred->promise();
 	}
 
 	/**
-	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : bool)
+	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : string)
 	 *
 	 * @throws Exceptions\TelevisionApiCall
+	 * @throws RuntimeException
 	 */
 	public function requestPinCode(
 		string $name,
 		bool $async = true,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Message\ResponseInterface|bool
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|string
 	{
 		$deferred = new Promise\Deferred();
-
-		$isTurnedOn = await($this->isTurnedOn());
-
-		if ($isTurnedOn === false) {
-			if ($async) {
-				return Promise\reject(new Exceptions\TelevisionApiCall('Television is turned off'));
-			}
-
-			throw new Exceptions\TelevisionApiCall('Television is turned off');
-		}
 
 		// First let's ask for a pin code and get a challenge key back
 		$parameters = '<X_DeviceName>' . $name . '</X_DeviceName>';
@@ -472,25 +1485,23 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 			$result
 				->then(function (Message\ResponseInterface $response) use ($deferred): void {
 					try {
-						$service = new Sabre\Xml\Service();
-
-						$service->mapValueObject('{}Envelope', Entities\API\RequestPinCode\Envelope::class);
-						$service->mapValueObject('{}Body', Entities\API\RequestPinCode\Body::class);
-						$service->mapValueObject(
-							'{}X_DisplayPinCodeResponse',
-							Entities\API\RequestPinCode\DisplayPinCodeResponse::class,
-						);
-
-						$pinCodeResponse = $service->parse(
+						$pinCodeResponse = simplexml_load_string(
 							$this->sanitizeReceivedPayload($response->getBody()->getContents()),
 						);
 
-						if (!$pinCodeResponse instanceof Entities\API\RequestPinCode\Envelope) {
+						if (
+							!$pinCodeResponse instanceof SimpleXMLElement
+							|| !property_exists($pinCodeResponse, 'Body')
+							|| !$pinCodeResponse->Body instanceof SimpleXMLElement
+							|| !property_exists($pinCodeResponse->Body, 'X_DisplayPinCodeResponse')
+							|| !$pinCodeResponse->Body->X_DisplayPinCodeResponse instanceof SimpleXMLElement
+							|| !property_exists($pinCodeResponse->Body->X_DisplayPinCodeResponse, 'X_ChallengeKey')
+						) {
 							$deferred->reject(new Exceptions\TelevisionApiCall('Received response is not valid'));
 						} else {
-							$this->challengeKey = $pinCodeResponse->getBody()?->getXDisplayPinCodeResponse()?->getXChallengeKey();
-
-							$deferred->resolve(true);
+							$deferred->resolve(
+								strval($pinCodeResponse->Body->X_DisplayPinCodeResponse->X_ChallengeKey),
+							);
 						}
 					} catch (Throwable $ex) {
 						$deferred->reject(
@@ -509,53 +1520,43 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 			throw new Exceptions\TelevisionApiCall('Could not send request to television');
 		}
 
-		$service = new Sabre\Xml\Service();
-
-		$service->mapValueObject('{}Envelope', Entities\API\RequestPinCode\Envelope::class);
-		$service->mapValueObject('{}Body', Entities\API\RequestPinCode\Body::class);
-		$service->mapValueObject(
-			'{}X_DisplayPinCodeResponse',
-			Entities\API\RequestPinCode\DisplayPinCodeResponse::class,
-		);
-
 		try {
-			$pinCodeResponse = $service->parse($this->sanitizeReceivedPayload($result->getBody()->getContents()));
+			$pinCodeResponse = simplexml_load_string($this->sanitizeReceivedPayload($result->getBody()->getContents()));
 		} catch (Throwable $ex) {
 			throw new Exceptions\TelevisionApiCall('Received response is not valid', $ex->getCode(), $ex);
 		}
 
-		if (!$pinCodeResponse instanceof Entities\API\RequestPinCode\Envelope) {
+		if (
+			!$pinCodeResponse instanceof SimpleXMLElement
+			|| !property_exists($pinCodeResponse, 'Body')
+			|| !$pinCodeResponse->Body instanceof SimpleXMLElement
+			|| !property_exists($pinCodeResponse->Body, 'X_DisplayPinCodeResponse')
+			|| !$pinCodeResponse->Body->X_DisplayPinCodeResponse instanceof SimpleXMLElement
+			|| !property_exists($pinCodeResponse->Body->X_DisplayPinCodeResponse, 'X_ChallengeKey')
+		) {
 			throw new Exceptions\TelevisionApiCall('Received response is not valid');
 		}
 
-		$this->challengeKey = $pinCodeResponse->getBody()?->getXDisplayPinCodeResponse()?->getXChallengeKey();
-
-		return true;
+		return strval($pinCodeResponse->Body->X_DisplayPinCodeResponse->X_ChallengeKey);
 	}
 
 	/**
-	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : bool)
+	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\AuthorizePinCode)
 	 *
 	 * @throws Exceptions\Encrypt
 	 * @throws Exceptions\Decrypt
 	 * @throws Exceptions\TelevisionApiCall
+	 * @throws RuntimeException
 	 */
 	public function authorizePinCode(
 		string $pinCode,
+		string $challengeKey,
 		bool $async = true,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Message\ResponseInterface|bool
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\AuthorizePinCode
 	{
 		$deferred = new Promise\Deferred();
 
-		if ($this->challengeKey === null) {
-			if ($async) {
-				return Promise\reject(new Exceptions\TelevisionApiCall('Pairing challenge key is missing'));
-			}
-
-			throw new Exceptions\TelevisionApiCall('Pairing challenge key is missing');
-		}
-
-		$iv = unpack('C*', base64_decode($this->challengeKey, true));
+		$iv = unpack('C*', strval(base64_decode($challengeKey, true)));
 
 		if ($iv === false) {
 			if ($async) {
@@ -625,11 +1626,53 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 
 		if ($result instanceof Promise\PromiseInterface) {
 			$result
-				->then(static function (Message\ResponseInterface $response) use ($deferred): void {
-					var_dump($response->getBody()->getContents());
+				->then(
+					function (Message\ResponseInterface $response) use ($deferred, $key, $iv, $hmacKey): void {
+						try {
+							$body = $this->sanitizeReceivedPayload($response->getBody()->getContents());
 
-					$deferred->resolve(true);
-				})
+							preg_match('/<X_AuthResult>(?<encrypted>.*?)<\/X_AuthResult>/', $body, $matches);
+						} catch (Throwable $ex) {
+							$deferred->reject(
+								new Exceptions\TelevisionApiCall('Received response is not valid', $ex->getCode(), $ex),
+							);
+
+							return;
+						}
+
+						if (!array_key_exists('encrypted', $matches)) {
+							$deferred->reject(new Exceptions\TelevisionApiCall('Could not parse received response'));
+
+							return;
+						}
+
+						$payload = $this->decryptPayload(
+							$matches['encrypted'],
+							pack('C*', ...$key),
+							pack('C*', ...$iv),
+							pack('C*', ...$hmacKey),
+						);
+
+						$appId = $encryptionKey = null;
+
+						preg_match('/<X_ApplicationId>(?<app_id>.*?)<\/X_ApplicationId>/', $payload, $matches);
+
+						if (array_key_exists('app_id', $matches)) {
+							$appId = $matches['app_id'];
+						}
+
+						preg_match('/<X_Keyword>(?<encryption_key>.*?)<\/X_Keyword>/', $payload, $matches);
+
+						if (array_key_exists('encryption_key', $matches)) {
+							$encryptionKey = $matches['encryption_key'];
+						}
+
+						$deferred->resolve(new Entities\API\AuthorizePinCode(
+							$appId,
+							$encryptionKey,
+						));
+					},
+				)
 				->otherwise(static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);
 				});
@@ -641,9 +1684,9 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 			throw new Exceptions\TelevisionApiCall('Could not send request to television');
 		}
 
-		$body = $this->sanitizeReceivedPayload($result->getBody()->getContents());
-
 		try {
+			$body = $this->sanitizeReceivedPayload($result->getBody()->getContents());
+
 			preg_match('/<X_AuthResult>(?<encrypted>.*?)<\/X_AuthResult>/', $body, $matches);
 		} catch (Throwable $ex) {
 			throw new Exceptions\TelevisionApiCall('Received response is not valid', $ex->getCode(), $ex);
@@ -660,14 +1703,21 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 			pack('C*', ...$hmacKey),
 		);
 
-		var_dump($body);
-		var_dump($payload);
+		$appId = $encryptionKey = null;
 
-		// Set session application ID and encryption key
-		//$this->appId = $payload.find(".//X_ApplicationId").text
-		//$this->encryptionKey = $payload.find(".//X_Keyword").text
+		preg_match('/<X_ApplicationId>(?<app_id>.*?)<\/X_ApplicationId>/', $payload, $matches);
 
-		return true;
+		if (array_key_exists('app_id', $matches)) {
+			$appId = $matches['app_id'];
+		}
+
+		preg_match('/<X_Keyword>(?<encryption_key>.*?)<\/X_Keyword>/', $payload, $matches);
+
+		if (array_key_exists('encryption_key', $matches)) {
+			$encryptionKey = $matches['encryption_key'];
+		}
+
+		return new Entities\API\AuthorizePinCode($appId, $encryptionKey);
 	}
 
 	/**
@@ -863,6 +1913,9 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 
 	/**
 	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Message\ResponseInterface|false)
+	 *
+	 * @throws Exceptions\Encrypt
+	 * @throws RuntimeException
 	 */
 	private function callXmlRequest(
 		string $url,
@@ -899,18 +1952,14 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 			&& (
 				$action !== 'X_GetEncryptSessionId' && $action !== 'X_DisplayPinCode' && $action !== 'X_RequestAuth'
 			)
-			&& $this->sessionKey !== null
-			&& $this->sessionIv !== null
-			&& $this->sessionHmacKey !== null
-			&& $this->sessionId !== null
-			&& $this->sessionSeqNum !== null
+			&& $this->session !== null
 		) {
-			$this->sessionSeqNum += 1;
+			$this->session->incrementSeqNum();
 
 			$command = '';
-			$command .= '<X_SessionId>' . $this->sessionId . '</X_SessionId>';
+			$command .= '<X_SessionId>' . $this->session->getId() . '</X_SessionId>';
 			$command .= '<X_SequenceNumber>';
-			$command .= substr('00000000' . $this->sessionSeqNum, -8);
+			$command .= substr('00000000' . $this->session->getSeqNum(), -8);
 			$command .= '</X_SequenceNumber>';
 			$command .= '<X_OriginalCommand>';
 			$command .= '<' . $bodyElement . ':' . $action . ' xmlns:' . $bodyElement . '="urn:' . $urn . '">';
@@ -920,9 +1969,9 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 
 			$encryptedCommand = $this->encryptPayload(
 				$command,
-				$this->sessionKey,
-				$this->sessionIv,
-				$this->sessionHmacKey,
+				$this->session->getKey(),
+				$this->session->getIv(),
+				$this->session->getHmacKey(),
 			);
 
 			$action = 'X_EncryptedCommand';
@@ -954,7 +2003,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 		if ($async) {
 			try {
 				$request = $this->getClient()->post(
-					$this->ipAddress . ':' . $this->port . $url,
+					'http://' . $this->ipAddress . ':' . $this->port . $url,
 					$headers,
 					$body,
 				);
@@ -1113,14 +2162,15 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 			return;
 		}
 
-		// Derive key from IV
-		$this->sessionIv = pack('C*', ...$iv);
+		/** @var array<int> $iv */
+		$iv = array_values($iv);
 
-		$sessionKey = [];
+		/** @var array<int> $sessionKey */
+		$sessionKey = array_fill(0, 16, 0);
 
-		$i = 1;
+		$i = 0;
 
-		while ($i < 17) {
+		while ($i < 16) {
 			$sessionKey[$i] = $iv[$i + 2];
 			$sessionKey[$i + 1] = $iv[$i + 3];
 			$sessionKey[$i + 2] = $iv[$i];
@@ -1129,10 +2179,13 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 			$i += 4;
 		}
 
-		$this->sessionKey = pack('C*', $sessionKey);
-
-		// HMAC key for comms is just the IV repeated twice
-		$this->sessionHmacKey = pack('C*', array_merge($iv, $iv));
+		$this->session = new Entities\API\Session(
+			pack('C*', ...$sessionKey),
+			// Derive key from IV
+			pack('C*', ...$iv),
+			// HMAC key for comms is just the IV repeated twice
+			pack('C*', ...array_merge($iv, $iv)),
+		);
 	}
 
 	/**
@@ -1152,12 +2205,14 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 
 		$message .= $data;
 
+		$message = $message . str_repeat(chr(0), 16 - (strlen($message) % 16));
+
 		// Encrypt the payload
 		$cipherText = openssl_encrypt(
 			$message,
 			'AES-128-CBC',
 			$key,
-			OPENSSL_RAW_DATA,
+			OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING,
 			$iv,
 		);
 
@@ -1169,7 +2224,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 		$sig = hash_hmac('sha256', $cipherText, $hmacKey, true);
 
 		// Concat HMAC with AES encrypted payload
-		return base64_encode($cipherText) . base64_encode($sig);
+		return base64_encode($cipherText . $sig);
 	}
 
 	/**
@@ -1186,7 +2241,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 		$decoded = substr($decodedWithSignature, 0, -self::SIGNATURE_BYTES_LENGTH);
 		$signature = substr($decodedWithSignature, -self::SIGNATURE_BYTES_LENGTH);
 
-		$calculatedSignature = hash_hmac('sha256', $decodedWithSignature, $hmacKey, true);
+		$calculatedSignature = hash_hmac('sha256', $decoded, $hmacKey, true);
 
 		if ($signature !== $calculatedSignature) {
 			throw new Exceptions\Decrypt('Payload could not be decrypted. Signatures are different');
@@ -1204,8 +2259,27 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 			throw new Exceptions\Decrypt('Payload could not be decrypted');
 		}
 
+		$decrypted = unpack('C*', $result);
+
+		if ($decrypted === false) {
+			throw new Exceptions\Decrypt('Payload could not be decrypted');
+		}
+
+		$decrypted = array_values($decrypted);
+
+		$message = [];
+
 		// The valid decrypted data starts at byte offset 16
-		return Utils\Strings::substring($result, 16, intval(strpos($result, pack('C*', '0'), 16)));
+		for ($i = 16; $i < count($decrypted); $i++) {
+			// Strip ending
+			if ($decrypted[$i] === 0) {
+				break;
+			}
+
+			$message[] = $decrypted[$i];
+		}
+
+		return pack('C*', ...$message);
 	}
 
 	private function sanitizeReceivedPayload(string $payload): string

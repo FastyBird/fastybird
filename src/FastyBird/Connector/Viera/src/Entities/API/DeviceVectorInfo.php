@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * DisplayPinCodeResponse.php
+ * DeviceVectorInfo.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,29 +10,31 @@
  * @subpackage     Entities
  * @since          1.0.0
  *
- * @date           22.06.23
+ * @date           27.06.23
  */
 
-namespace FastyBird\Connector\Viera\Entities\API\RequestPinCode;
+namespace FastyBird\Connector\Viera\Entities\API;
 
 use FastyBird\Connector\Viera\Entities;
 
 /**
- * Request pin code entity
+ * Device vector info entity
  *
  * @package        FastyBird:VieraConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class DisplayPinCodeResponse implements Entities\API\Entity
+class DeviceVectorInfo implements Entities\API\Entity
 {
 
-	public string|null $X_ChallengeKey = null;
-
-	public function getXChallengeKey(): string|null
+	public function __construct(private readonly int $port)
 	{
-		return $this->X_ChallengeKey;
+	}
+
+	public function getPort(): int
+	{
+		return $this->port;
 	}
 
 	/**
@@ -41,7 +43,7 @@ class DisplayPinCodeResponse implements Entities\API\Entity
 	public function toArray(): array
 	{
 		return [
-			'challenge_key' => $this->getXChallengeKey(),
+			'port' => $this->getPort(),
 		];
 	}
 

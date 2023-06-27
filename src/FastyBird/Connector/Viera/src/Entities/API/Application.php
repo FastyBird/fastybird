@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Root.php
+ * Application.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,29 +10,39 @@
  * @subpackage     Entities
  * @since          1.0.0
  *
- * @date           21.06.23
+ * @date           27.06.23
  */
 
-namespace FastyBird\Connector\Viera\Entities\API\Specs;
+namespace FastyBird\Connector\Viera\Entities\API;
 
 use FastyBird\Connector\Viera\Entities;
 
 /**
- * Device specs root entity
+ * Television app
  *
  * @package        FastyBird:VieraConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Root implements Entities\API\Entity
+class Application implements Entities\API\Entity
 {
 
-	public Device|null $device = null;
-
-	public function getDevice(): Device|null
+	public function __construct(
+		private readonly string $id,
+		private readonly string $name,
+	)
 	{
-		return $this->device;
+	}
+
+	public function getId(): string
+	{
+		return $this->id;
+	}
+
+	public function getName(): string
+	{
+		return $this->name;
 	}
 
 	/**
@@ -41,7 +51,8 @@ class Root implements Entities\API\Entity
 	public function toArray(): array
 	{
 		return [
-			'device' => $this->getDevice()?->toArray(),
+			'id' => $this->getId(),
+			'name,' => $this->getName(),
 		];
 	}
 

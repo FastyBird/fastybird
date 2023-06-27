@@ -48,6 +48,7 @@ use function React\Async\await;
 use function sprintf;
 use function strval;
 use function usort;
+use function var_dump;
 
 /**
  * Connector devices management command
@@ -216,15 +217,39 @@ class Devices extends Console\Command\Command
 		$identifier = strval($identifier);
 
 		try {
-			$ipAddress = $this->askIpAddress($io);
+			//$ipAddress = $this->askIpAddress($io);
+			//$ipAddress = '10.10.0.75';
+			$ipAddress = '10.10.0.6';
 
 			$televisionApi = $this->televisionApiFactory->create(
 				$identifier,
 				$ipAddress,
 				Viera\Constants::DEFAULT_PORT,
+				'ARKGYpx2DkQ4bw==',
+				'sKAnjVuyxufs8aeVZ0K38A==',
 			);
+			$televisionApi->connect();
 
-			$isOnline = await($televisionApi->livenessProbe());
+			var_dump($televisionApi->turnOff(false));
+
+			return;
+
+			try {
+				$isOnline = await($televisionApi->livenessProbe());
+			} catch (Throwable $ex) {
+				$this->logger->error(
+					'Checking TV status failed',
+					[
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+						'type' => 'devices-cmd',
+						'exception' => BootstrapHelpers\Logger::buildException($ex),
+					],
+				);
+
+				$io->error('Something went wrong, device could not be created. Error was logged.');
+
+				return;
+			}
 
 			if ($isOnline === false) {
 				$io->error(sprintf('The provided IP: %s address is unreachable.', $ipAddress));
@@ -234,28 +259,69 @@ class Devices extends Console\Command\Command
 
 			$specs = $televisionApi->getSpecs(false);
 
-			if ($specs->isRequiresEncryption()) {
-				$result = $televisionApi->requestPinCode($connector->getName() ?? $connector->getIdentifier(), false);
+			$authorization = null;
 
-				if ($result === false) {
-					$io->error(
-						'Something went wrong, PIN request could not be finished. Is you TV turned on and on same network?',
+			if ($specs->isRequiresEncryption()) {
+				try {
+					$isTurnedOn = await($televisionApi->isTurnedOn());
+				} catch (Throwable $ex) {
+					$this->logger->error(
+						'Checking screen status failed',
+						[
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+							'type' => 'devices-cmd',
+							'exception' => BootstrapHelpers\Logger::buildException($ex),
+						],
 					);
+
+					$io->error('Something went wrong, device could not be created. Error was logged.');
 
 					return;
 				}
+
+				if ($isTurnedOn === false) {
+					$io->warning(
+						'It looks like your TV is not turned on. It is possible that the pairing could not be finished.',
+					);
+
+					$question = new Console\Question\ConfirmationQuestion(
+						'Would you like to continue?',
+						false,
+					);
+
+					$continue = (bool) $io->askQuestion($question);
+
+					if (!$continue) {
+						return;
+					}
+				}
+
+				$challengeKey = $televisionApi->requestPinCode(
+					$connector->getName() ?? $connector->getIdentifier(),
+					false,
+				);
 
 				$pinCode = $this->askPinCode($io);
 
-				$result = $televisionApi->authorizePinCode($pinCode, false);
-
-				if ($result === false) {
-					$io->error('Something went wrong, connector authorization could not be finished');
-
-					return;
-				}
+				$authorization = $televisionApi->authorizePinCode($pinCode, $challengeKey, false);
 			}
-		} catch (Exceptions\TelevisionApiCall $ex) {
+
+			var_dump('AUTH');
+			var_dump($authorization?->getAppId());
+			var_dump($authorization?->getEncryptionKey());
+			$televisionApi = $this->televisionApiFactory->create(
+				$identifier,
+				$ipAddress,
+				Viera\Constants::DEFAULT_PORT,
+				$authorization?->getAppId(),
+				$authorization?->getEncryptionKey(),
+			);
+			$televisionApi->connect();
+
+			$televisionApi->getMacAddress();
+			$televisionApi->getApps();
+
+		} catch (Exceptions\TelevisionApiCall | Exceptions\Encrypt | Exceptions\Decrypt $ex) {
 			$this->logger->error(
 				'Calling television api failed',
 				[
@@ -324,6 +390,24 @@ class Devices extends Console\Command\Command
 				'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_SERIAL_NUMBER),
 				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 				'value' => $specs->isRequiresEncryption(),
+				'device' => $device,
+			]));
+
+			$this->devicePropertiesManager->create(Utils\ArrayHash::from([
+				'entity' => DevicesEntities\Devices\Properties\Variable::class,
+				'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_SERIAL_NUMBER,
+				'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_APP_ID),
+				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+				'value' => $authorization?->getAppId(),
+				'device' => $device,
+			]));
+
+			$this->devicePropertiesManager->create(Utils\ArrayHash::from([
+				'entity' => DevicesEntities\Devices\Properties\Variable::class,
+				'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_SERIAL_NUMBER,
+				'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_ENCRYPTION_KEY),
+				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+				'value' => $authorization?->getEncryptionKey(),
 				'device' => $device,
 			]));
 

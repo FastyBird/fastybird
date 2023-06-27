@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Device.php
+ * RequestPinCode.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,26 +13,30 @@
  * @date           22.06.23
  */
 
-namespace FastyBird\Connector\Viera\Entities\API\RequestPinCode;
+namespace FastyBird\Connector\Viera\Entities\API;
 
 use FastyBird\Connector\Viera\Entities;
 
 /**
- * Request pin code body entity
+ * Request pin code entity
  *
  * @package        FastyBird:VieraConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Body implements Entities\API\Entity
+class RequestPinCode implements Entities\API\Entity
 {
 
-	public DisplayPinCodeResponse|null $X_DisplayPinCodeResponse = null;
-
-	public function getXDisplayPinCodeResponse(): DisplayPinCodeResponse|null
+	public function __construct(
+		private readonly string|null $X_ChallengeKey = null,
+	)
 	{
-		return $this->X_DisplayPinCodeResponse;
+	}
+
+	public function getXChallengeKey(): string|null
+	{
+		return $this->X_ChallengeKey;
 	}
 
 	/**
@@ -41,7 +45,7 @@ class Body implements Entities\API\Entity
 	public function toArray(): array
 	{
 		return [
-			'display_pin_code_response' => $this->getXDisplayPinCodeResponse()->toArray(),
+			'challenge_key' => $this->getXChallengeKey(),
 		];
 	}
 

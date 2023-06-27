@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Envelope.php
+ * DeviceApps.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,29 +10,38 @@
  * @subpackage     Entities
  * @since          1.0.0
  *
- * @date           22.06.23
+ * @date           27.06.23
  */
 
-namespace FastyBird\Connector\Viera\Entities\API\RequestPinCode;
+namespace FastyBird\Connector\Viera\Entities\API;
 
 use FastyBird\Connector\Viera\Entities;
+use function array_map;
 
 /**
- * Request pin code envelope entity
+ * Device apps info entity
  *
  * @package        FastyBird:VieraConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Envelope implements Entities\API\Entity
+class DeviceApps implements Entities\API\Entity
 {
 
-	public Body|null $Body = null;
-
-	public function getBody(): Body|null
+	/**
+	 * @param array<Application> $apps
+	 */
+	public function __construct(private readonly array $apps = [])
 	{
-		return $this->Body;
+	}
+
+	/**
+	 * @return array<Application>
+	 */
+	public function getApps(): array
+	{
+		return $this->apps;
 	}
 
 	/**
@@ -41,7 +50,7 @@ class Envelope implements Entities\API\Entity
 	public function toArray(): array
 	{
 		return [
-			'body' => $this->getBody()?->toArray(),
+			'applications' => array_map(static fn (Application $app): array => $app->toArray(), $this->getApps()),
 		];
 	}
 
