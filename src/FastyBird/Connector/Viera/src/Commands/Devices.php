@@ -39,6 +39,7 @@ use Symfony\Component\Console\Output;
 use Symfony\Component\Console\Style;
 use Throwable;
 use function array_key_exists;
+use function array_map;
 use function array_search;
 use function array_values;
 use function assert;
@@ -48,7 +49,6 @@ use function React\Async\await;
 use function sprintf;
 use function strval;
 use function usort;
-use function var_dump;
 
 /**
  * Connector devices management command
@@ -166,9 +166,6 @@ class Devices extends Console\Command\Command
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
-	 * @throws InvalidArgumentException
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 */
 	private function createNewDevice(Style\SymfonyStyle $io, Entities\VieraConnector $connector): void
 	{
@@ -217,22 +214,14 @@ class Devices extends Console\Command\Command
 		$identifier = strval($identifier);
 
 		try {
-			//$ipAddress = $this->askIpAddress($io);
-			//$ipAddress = '10.10.0.75';
-			$ipAddress = '10.10.0.6';
+			$ipAddress = $this->askIpAddress($io);
 
 			$televisionApi = $this->televisionApiFactory->create(
 				$identifier,
 				$ipAddress,
 				Viera\Constants::DEFAULT_PORT,
-				'ARKGYpx2DkQ4bw==',
-				'sKAnjVuyxufs8aeVZ0K38A==',
 			);
 			$televisionApi->connect();
-
-			var_dump($televisionApi->turnOff(false));
-
-			return;
 
 			try {
 				$isOnline = await($televisionApi->livenessProbe());
@@ -306,9 +295,6 @@ class Devices extends Console\Command\Command
 				$authorization = $televisionApi->authorizePinCode($pinCode, $challengeKey, false);
 			}
 
-			var_dump('AUTH');
-			var_dump($authorization?->getAppId());
-			var_dump($authorization?->getEncryptionKey());
 			$televisionApi = $this->televisionApiFactory->create(
 				$identifier,
 				$ipAddress,
@@ -318,12 +304,25 @@ class Devices extends Console\Command\Command
 			);
 			$televisionApi->connect();
 
-			$televisionApi->getMacAddress();
-			$televisionApi->getApps();
+			$apps = $televisionApi->getApps(false);
 
 		} catch (Exceptions\TelevisionApiCall | Exceptions\Encrypt | Exceptions\Decrypt $ex) {
 			$this->logger->error(
 				'Calling television api failed',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+					'type' => 'devices-cmd',
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
+				],
+			);
+
+			$io->error('Something went wrong, device could not be created. Error was logged.');
+
+			return;
+
+		} catch (Throwable $ex) {
+			$this->logger->error(
+				'Unhandled error occur',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
 					'type' => 'devices-cmd',
@@ -395,7 +394,7 @@ class Devices extends Console\Command\Command
 
 			$this->devicePropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
-				'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_SERIAL_NUMBER,
+				'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_APP_ID,
 				'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_APP_ID),
 				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 				'value' => $authorization?->getAppId(),
@@ -404,10 +403,23 @@ class Devices extends Console\Command\Command
 
 			$this->devicePropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
-				'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_SERIAL_NUMBER,
+				'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_ENCRYPTION_KEY,
 				'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_ENCRYPTION_KEY),
 				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 				'value' => $authorization?->getEncryptionKey(),
+				'device' => $device,
+			]));
+
+			$this->devicePropertiesManager->create(Utils\ArrayHash::from([
+				'entity' => DevicesEntities\Devices\Properties\Dynamic::class,
+				'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_APPLICATIONS,
+				'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_APPLICATIONS),
+				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
+				'enum' => array_map(static fn (Entities\API\Application $application): array => [
+					$application->getName(),
+					$application->getId(),
+					$application->getId(),
+				], $apps->getApps()),
 				'device' => $device,
 			]));
 
@@ -466,7 +478,124 @@ class Devices extends Console\Command\Command
 			return;
 		}
 
+		$authorization = null;
+
 		$name = $this->askDeviceName($io, $device);
+
+		try {
+			$ipAddress = $device->getIpAddress();
+
+			if ($ipAddress === null) {
+				$ipAddress = $this->askIpAddress($io, $device);
+			}
+
+			$televisionApi = $this->televisionApiFactory->create(
+				$device->getIdentifier(),
+				$ipAddress,
+				$device->getPort(),
+				$device->getAppId(),
+				$device->getEncryptionKey(),
+			);
+			$televisionApi->connect();
+
+			try {
+				$isOnline = await($televisionApi->livenessProbe());
+			} catch (Throwable $ex) {
+				$this->logger->error(
+					'Checking TV status failed',
+					[
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+						'type' => 'devices-cmd',
+						'exception' => BootstrapHelpers\Logger::buildException($ex),
+					],
+				);
+
+				$io->error('Something went wrong, device could not be edited. Error was logged.');
+
+				return;
+			}
+
+			if ($isOnline === false) {
+				$io->warning(sprintf('Television with IP: %s address is unreachable.', $ipAddress));
+
+				return;
+			}
+
+			$specs = $televisionApi->getSpecs(false);
+
+			if (!$device->isEncrypted() && $specs->isRequiresEncryption()) {
+				try {
+					$isTurnedOn = await($televisionApi->isTurnedOn());
+				} catch (Throwable $ex) {
+					$this->logger->error(
+						'Checking screen status failed',
+						[
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+							'type' => 'devices-cmd',
+							'exception' => BootstrapHelpers\Logger::buildException($ex),
+						],
+					);
+
+					$io->error('Something went wrong, device could not be edited. Error was logged.');
+
+					return;
+				}
+
+				if ($isTurnedOn === false) {
+					$io->warning(
+						'It looks like your TV is not turned on. It is possible that the pairing could not be finished.',
+					);
+
+					$question = new Console\Question\ConfirmationQuestion(
+						'Would you like to continue?',
+						false,
+					);
+
+					$continue = (bool) $io->askQuestion($question);
+
+					if (!$continue) {
+						return;
+					}
+				}
+
+				$challengeKey = $televisionApi->requestPinCode(
+					$connector->getName() ?? $connector->getIdentifier(),
+					false,
+				);
+
+				$pinCode = $this->askPinCode($io);
+
+				$authorization = $televisionApi->authorizePinCode($pinCode, $challengeKey, false);
+			}
+
+		} catch (Exceptions\TelevisionApiCall | Exceptions\Encrypt | Exceptions\Decrypt $ex) {
+			$this->logger->error(
+				'Calling television api failed',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+					'type' => 'devices-cmd',
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
+				],
+			);
+
+			$io->error('Something went wrong, device could not be edited. Error was logged.');
+
+			return;
+
+		} catch (Throwable $ex) {
+			$this->logger->error(
+				'Unhandled error occur',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+					'type' => 'devices-cmd',
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
+				],
+			);
+
+			$io->error('Something went wrong, device could not be edited. Error was logged.');
+
+			return;
+		}
 
 		try {
 			// Start transaction connection to the database

@@ -75,14 +75,6 @@ final class Television implements Client
 	{
 	}
 
-	public function writeDeviceProperty(
-		Entities\VieraDevice $device,
-		DevicesEntities\Devices\Properties\Dynamic $property,
-	): Promise\PromiseInterface
-	{
-		throw new Exceptions\InvalidState('Not implemented');
-	}
-
 	public function writeChannelProperty(
 		Entities\VieraDevice $device,
 		DevicesEntities\Channels\Channel $channel,

@@ -53,6 +53,8 @@ class DevicePropertyIdentifier extends Consistence\Enum\Enum
 
 	public const IDENTIFIER_ENCRYPTION_KEY = 'encryption_key';
 
+	public const IDENTIFIER_APPLICATIONS = 'applications';
+
 	public function __toString(): string
 	{
 		return strval(self::getValue());

@@ -41,14 +41,6 @@ interface Client
 	public function disconnect(): void;
 
 	/**
-	 * Write thing parameter mapped as device parameter
-	 */
-	public function writeDeviceProperty(
-		Entities\VieraDevice $device,
-		DevicesEntities\Devices\Properties\Dynamic $property,
-	): Promise\PromiseInterface;
-
-	/**
 	 * Write thing parameter mapped as channel
 	 */
 	public function writeChannelProperty(
