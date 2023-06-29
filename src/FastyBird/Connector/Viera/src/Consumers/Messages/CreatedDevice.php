@@ -233,13 +233,10 @@ final class CreatedDevice implements Consumer
 				DevicesEntities\Channels\Properties\Dynamic::class,
 				$channel->getId(),
 				null,
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_SWITCH),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN),
 				Types\ChannelPropertyIdentifier::IDENTIFIER_STATE,
 				Helpers\Name::createName(Types\ChannelPropertyIdentifier::IDENTIFIER_STATE),
-				[
-					MetadataTypes\SwitchPayload::PAYLOAD_ON,
-					MetadataTypes\SwitchPayload::PAYLOAD_OFF,
-				],
+				null,
 				true,
 				true,
 			);

@@ -102,7 +102,7 @@ class Devices extends Console\Command\Command
 	{
 		$this
 			->setName(self::NAME)
-			->setDescription('Viera devices management');
+			->setDescription('Viera televisions management');
 	}
 
 	/**
@@ -117,7 +117,7 @@ class Devices extends Console\Command\Command
 	{
 		$io = new Style\SymfonyStyle($input, $output);
 
-		$io->title('Viera connector - devices management');
+		$io->title('Viera connector - televisions management');
 
 		$io->note('This action will create|update|delete connector device.');
 
@@ -173,7 +173,7 @@ class Devices extends Console\Command\Command
 	 */
 	private function createNewDevice(Style\SymfonyStyle $io, Entities\VieraConnector $connector): void
 	{
-		$question = new Console\Question\Question('Provide device identifier');
+		$question = new Console\Question\Question('Provide television identifier');
 
 		$question->setValidator(function (string|null $answer) {
 			if ($answer !== '' && $answer !== null) {
@@ -210,7 +210,7 @@ class Devices extends Console\Command\Command
 		}
 
 		if ($identifier === '') {
-			$io->error('Device identifier have to provided');
+			$io->error('Television identifier have to provided');
 
 			return;
 		}
@@ -223,7 +223,7 @@ class Devices extends Console\Command\Command
 			$televisionApi = $this->televisionApiFactory->create(
 				$identifier,
 				$ipAddress,
-				Viera\Constants::DEFAULT_PORT,
+				Entities\VieraDevice::DEFAULT_PORT,
 			);
 			$televisionApi->connect();
 
@@ -239,7 +239,7 @@ class Devices extends Console\Command\Command
 					],
 				);
 
-				$io->error('Something went wrong, device could not be created. Error was logged.');
+				$io->error('Something went wrong, television could not be created. Error was logged.');
 
 				return;
 			}
@@ -267,7 +267,7 @@ class Devices extends Console\Command\Command
 						],
 					);
 
-					$io->error('Something went wrong, device could not be created. Error was logged.');
+					$io->error('Something went wrong, television could not be created. Error was logged.');
 
 					return;
 				}
@@ -302,7 +302,7 @@ class Devices extends Console\Command\Command
 			$televisionApi = $this->televisionApiFactory->create(
 				$identifier,
 				$ipAddress,
-				Viera\Constants::DEFAULT_PORT,
+				Entities\VieraDevice::DEFAULT_PORT,
 				$authorization?->getAppId(),
 				$authorization?->getEncryptionKey(),
 			);
@@ -320,7 +320,7 @@ class Devices extends Console\Command\Command
 				],
 			);
 
-			$io->error('Something went wrong, device could not be created. Error was logged.');
+			$io->error('Something went wrong, television could not be created. Error was logged.');
 
 			return;
 		} catch (Throwable $ex) {
@@ -333,7 +333,7 @@ class Devices extends Console\Command\Command
 				],
 			);
 
-			$io->error('Something went wrong, device could not be created. Error was logged.');
+			$io->error('Something went wrong, television could not be created. Error was logged.');
 
 			return;
 		}
@@ -379,7 +379,7 @@ class Devices extends Console\Command\Command
 			$connector->getId(),
 			$identifier,
 			$ipAddress,
-			Viera\Constants::DEFAULT_PORT,
+			Entities\VieraDevice::DEFAULT_PORT,
 			$specs->getFriendlyName() ?? $specs->getModelName(),
 			trim(sprintf('%s %s', $specs->getModelName(), $specs->getModelNumber())),
 			$specs->getManufacturer(),
@@ -400,7 +400,7 @@ class Devices extends Console\Command\Command
 		$this->consumer->consume($message);
 
 		$io->success(sprintf(
-			'Device "%s" was successfully created',
+			'Television "%s" was successfully created',
 			$message->getName() ?? $message->getIdentifier(),
 		));
 	}
@@ -417,10 +417,10 @@ class Devices extends Console\Command\Command
 		$device = $this->askWhichDevice($io, $connector);
 
 		if ($device === null) {
-			$io->warning('No devices registered in Viera connector');
+			$io->warning('No televisions registered in Viera connector');
 
 			$question = new Console\Question\ConfirmationQuestion(
-				'Would you like to create new device in connector?',
+				'Would you like to create new television in connector?',
 				false,
 			);
 
@@ -448,7 +448,7 @@ class Devices extends Console\Command\Command
 
 		} else {
 			$question = new Console\Question\ConfirmationQuestion(
-				'Do you want to change device IP address?',
+				'Do you want to change television IP address?',
 				false,
 			);
 
@@ -472,7 +472,7 @@ class Devices extends Console\Command\Command
 
 		} else {
 			$question = new Console\Question\ConfirmationQuestion(
-				'Do you want to change device port?',
+				'Do you want to change television port?',
 				false,
 			);
 
@@ -560,7 +560,7 @@ class Devices extends Console\Command\Command
 					],
 				);
 
-				$io->error('Something went wrong, device could not be edited. Error was logged.');
+				$io->error('Something went wrong, television could not be edited. Error was logged.');
 
 				return;
 			}
@@ -590,7 +590,7 @@ class Devices extends Console\Command\Command
 						],
 					);
 
-					$io->error('Something went wrong, device could not be edited. Error was logged.');
+					$io->error('Something went wrong, television could not be edited. Error was logged.');
 
 					return;
 				}
@@ -631,7 +631,7 @@ class Devices extends Console\Command\Command
 				],
 			);
 
-			$io->error('Something went wrong, device could not be edited. Error was logged.');
+			$io->error('Something went wrong, television could not be edited. Error was logged.');
 
 			return;
 		} catch (Throwable $ex) {
@@ -644,7 +644,7 @@ class Devices extends Console\Command\Command
 				],
 			);
 
-			$io->error('Something went wrong, device could not be edited. Error was logged.');
+			$io->error('Something went wrong, television could not be edited. Error was logged.');
 
 			return;
 		}
@@ -673,7 +673,7 @@ class Devices extends Console\Command\Command
 				]));
 			}
 
-			if ($portProperty === null && $port !== Viera\Constants::DEFAULT_PORT) {
+			if ($portProperty === null && $port !== Entities\VieraDevice::DEFAULT_PORT) {
 				$this->devicePropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
 					'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_PORT,
@@ -682,11 +682,11 @@ class Devices extends Console\Command\Command
 					'value' => $port,
 					'device' => $device,
 				]));
-			} elseif ($portProperty !== null && $port !== Viera\Constants::DEFAULT_PORT) {
+			} elseif ($portProperty !== null && $port !== Entities\VieraDevice::DEFAULT_PORT) {
 				$this->devicePropertiesManager->update($portProperty, Utils\ArrayHash::from([
 					'value' => $port,
 				]));
-			} elseif ($portProperty !== null && $port === Viera\Constants::DEFAULT_PORT) {
+			} elseif ($portProperty !== null && $port === Entities\VieraDevice::DEFAULT_PORT) {
 				$this->devicePropertiesManager->delete($portProperty);
 			}
 
@@ -775,7 +775,7 @@ class Devices extends Console\Command\Command
 			$this->getOrmConnection()->commit();
 
 			$io->success(sprintf(
-				'Device "%s" was successfully updated',
+				'Television "%s" was successfully updated',
 				$device->getName() ?? $device->getIdentifier(),
 			));
 		} catch (Throwable $ex) {
@@ -789,7 +789,7 @@ class Devices extends Console\Command\Command
 				],
 			);
 
-			$io->error('Something went wrong, device could not be updated. Error was logged.');
+			$io->error('Something went wrong, television could not be updated. Error was logged.');
 		} finally {
 			// Revert all changes when error occur
 			if ($this->getOrmConnection()->isTransactionActive()) {
@@ -808,7 +808,7 @@ class Devices extends Console\Command\Command
 		$device = $this->askWhichDevice($io, $connector);
 
 		if ($device === null) {
-			$io->info('No Viera devices registered in selected connector');
+			$io->info('No Viera televisions registered in selected connector');
 
 			return;
 		}
@@ -834,7 +834,7 @@ class Devices extends Console\Command\Command
 			$this->getOrmConnection()->commit();
 
 			$io->success(sprintf(
-				'Device "%s" was successfully removed',
+				'Television "%s" was successfully removed',
 				$device->getName() ?? $device->getIdentifier(),
 			));
 		} catch (Throwable $ex) {
@@ -848,7 +848,7 @@ class Devices extends Console\Command\Command
 				],
 			);
 
-			$io->error('Something went wrong, device could not be removed. Error was logged.');
+			$io->error('Something went wrong, television could not be removed. Error was logged.');
 		} finally {
 			// Revert all changes when error occur
 			if ($this->getOrmConnection()->isTransactionActive()) {
@@ -859,7 +859,7 @@ class Devices extends Console\Command\Command
 
 	private function askDeviceName(Style\SymfonyStyle $io, Entities\VieraDevice|null $device = null): string|null
 	{
-		$question = new Console\Question\Question('Provide device name', $device?->getName());
+		$question = new Console\Question\Question('Provide television name', $device?->getName());
 
 		$name = $io->askQuestion($question);
 
@@ -873,7 +873,7 @@ class Devices extends Console\Command\Command
 	 */
 	private function askIpAddress(Style\SymfonyStyle $io, Entities\VieraDevice|null $device = null): string
 	{
-		$question = new Console\Question\Question('Provide device IP address', $device?->getIpAddress());
+		$question = new Console\Question\Question('Provide television IP address', $device?->getIpAddress());
 		$question->setValidator(static function (string|null $answer): string {
 			if ($answer !== null && preg_match(self::MATCH_IP_ADDRESS, $answer) === 1) {
 				return $answer;
@@ -894,7 +894,7 @@ class Devices extends Console\Command\Command
 	 */
 	private function askPort(Style\SymfonyStyle $io, Entities\VieraDevice|null $device = null): int
 	{
-		$question = new Console\Question\Question('Provide device port number', $device?->getPort());
+		$question = new Console\Question\Question('Provide television port number', $device?->getPort());
 		$question->setValidator(static function (string|null $answer): int {
 			if ($answer !== null && strval(intval($answer)) === $answer) {
 				return intval($answer);
@@ -916,7 +916,7 @@ class Devices extends Console\Command\Command
 	private function askMacAddress(Style\SymfonyStyle $io, Entities\VieraDevice|null $device = null): string
 	{
 		$question = new Console\Question\Question(
-			'Provide device MAC address in format: 01:23:45:67:89:ab',
+			'Provide television MAC address in format: 01:23:45:67:89:ab',
 			$device?->getMacAddress(),
 		);
 		$question->setValidator(static function (string|null $answer): string {
@@ -934,7 +934,7 @@ class Devices extends Console\Command\Command
 
 	private function askPinCode(Style\SymfonyStyle $io): string
 	{
-		$question = new Console\Question\Question('Provide device PIN code displayed on you TV');
+		$question = new Console\Question\Question('Provide television PIN code displayed on you TV');
 		$question->setValidator(static function (string|null $answer): string {
 			if ($answer !== null && $answer !== '') {
 				return $answer;
@@ -1087,14 +1087,14 @@ class Devices extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			'Please select device to manage',
+			'Please select television to manage',
 			array_values($devices),
 			count($devices) === 1 ? 0 : null,
 		);
 		$question->setErrorMessage('Selected device: "%s" is not valid.');
 		$question->setValidator(function (string|null $answer) use ($connector, $devices): Entities\VieraDevice {
 			if ($answer === null) {
-				throw new Exceptions\Runtime('You have to select device from list');
+				throw new Exceptions\Runtime('You have to select television from list');
 			}
 
 			if (array_key_exists($answer, array_values($devices))) {
@@ -1116,7 +1116,7 @@ class Devices extends Console\Command\Command
 				}
 			}
 
-			throw new Exceptions\Runtime('You have to select device from list');
+			throw new Exceptions\Runtime('You have to select television from list');
 		});
 
 		$device = $io->askQuestion($question);

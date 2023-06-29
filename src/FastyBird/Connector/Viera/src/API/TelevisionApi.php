@@ -107,6 +107,8 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 
 	private bool $isEncrypted;
 
+	private bool $isConnected = false;
+
 	private Entities\API\Session|null $session = null;
 
 	private Log\LoggerInterface $logger;
@@ -143,11 +145,19 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 			$this->deriveSessionKeys();
 			$this->requestSessionId(false);
 		}
+
+		$this->isConnected = true;
 	}
 
 	public function disconnect(): void
 	{
 		$this->session = null;
+		$this->isConnected = false;
+	}
+
+	public function isConnected(): bool
+	{
+		return $this->isConnected;
 	}
 
 	/**
@@ -1148,7 +1158,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 	 * @throws RuntimeException
 	 */
 	public function sendKey(
-		Types\ActionKey $key,
+		Types\ActionKey|string $key,
 		bool $async = true,
 	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|bool
 	{
@@ -1166,7 +1176,62 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 			self::URL_CONTROL_NRC,
 			self::URN_REMOTE_CONTROL,
 			'X_SendKey',
-			sprintf('<X_KeyEvent>%s</X_KeyEvent>', strval($key->getValue())),
+			sprintf('<X_KeyEvent>%s</X_KeyEvent>', is_string($key) ? $key : strval($key->getValue())),
+			'u',
+			$async,
+		);
+
+		if ($result instanceof Promise\PromiseInterface) {
+			$result
+				->then(static function () use ($deferred): void {
+					$deferred->resolve(true);
+				})
+				->otherwise(static function (Throwable $ex) use ($deferred): void {
+					$deferred->reject($ex);
+				});
+
+			return $deferred->promise();
+		}
+
+		if ($result === false) {
+			throw new Exceptions\TelevisionApiCall('Could send data to television');
+		}
+
+		return true;
+	}
+
+	/**
+	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : bool)
+	 *
+	 * @throws Exceptions\Decrypt
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\TelevisionApiCall
+	 * @throws RuntimeException
+	 */
+	public function launchApplication(
+		string $application,
+		bool $async = true,
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|bool
+	{
+		$deferred = new Promise\Deferred();
+
+		if ($this->isEncrypted && $this->session === null) {
+			if ($async) {
+				return Promise\reject(new Exceptions\InvalidState('Session is not created'));
+			}
+
+			throw new Exceptions\InvalidState('Session is not created');
+		}
+
+		$result = $this->callXmlRequest(
+			self::URL_CONTROL_NRC,
+			self::URN_REMOTE_CONTROL,
+			'X_LaunchApp',
+			sprintf(
+				'<X_AppType>vc_app</X_AppType><X_LaunchKeyword>%s_id=%s</X_LaunchKeyword>',
+				strlen($application) === 16 ? 'product' : 'resource',
+				$application,
+			),
 			'u',
 			$async,
 		);

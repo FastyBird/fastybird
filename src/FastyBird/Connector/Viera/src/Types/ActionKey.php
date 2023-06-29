@@ -190,6 +190,8 @@ class ActionKey extends Consistence\Enum\Enum
 
 	public const YELLOW = 'NRC_YELLOW-ONOFF';
 
+	public const AD_CHANGE = 'NRC_AD_CHANGE-ONOFF';
+
 	public function __toString(): string
 	{
 		return strval(self::getValue());

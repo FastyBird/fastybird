@@ -16,13 +16,14 @@
 namespace FastyBird\Connector\Viera\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\Connector\Viera;
 use FastyBird\Connector\Viera\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use function floatval;
 use function is_int;
+use function is_numeric;
 use function is_string;
 
 /**
@@ -32,6 +33,8 @@ class VieraDevice extends DevicesEntities\Devices\Device
 {
 
 	public const DEVICE_TYPE = 'viera';
+
+	public const DEFAULT_PORT = 55_000;
 
 	private const STATUS_READING_DELAY = 120.0;
 
@@ -95,7 +98,7 @@ class VieraDevice extends DevicesEntities\Devices\Device
 			return $property->getValue();
 		}
 
-		return Viera\Constants::DEFAULT_PORT;
+		return self::DEFAULT_PORT;
 	}
 
 	/**
@@ -178,6 +181,30 @@ class VieraDevice extends DevicesEntities\Devices\Device
 		}
 
 		return null;
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function getStatusReadingDelay(): float
+	{
+		$property = $this->properties
+			->filter(
+			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::IDENTIFIER_STATUS_READING_DELAY
+			)
+			->first();
+
+		if (
+			$property instanceof DevicesEntities\Devices\Properties\Variable
+			&& is_numeric($property->getValue())
+		) {
+			return floatval($property->getValue());
+		}
+
+		return self::STATUS_READING_DELAY;
 	}
 
 }

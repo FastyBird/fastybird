@@ -15,20 +15,36 @@
 
 namespace FastyBird\Connector\Viera\Clients;
 
+use DateTimeInterface;
+use Exception;
 use FastyBird\Connector\Viera\API;
 use FastyBird\Connector\Viera\Consumers;
 use FastyBird\Connector\Viera\Entities;
 use FastyBird\Connector\Viera\Exceptions;
+use FastyBird\Connector\Viera\Types;
 use FastyBird\Connector\Viera\Writers;
 use FastyBird\DateTimeFactory;
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
+use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
-use Psr\EventDispatcher;
 use Psr\Log;
 use React\EventLoop;
 use React\Promise;
+use RuntimeException;
+use Throwable;
+use function array_key_exists;
+use function assert;
+use function boolval;
+use function in_array;
+use function intval;
+use function is_string;
+use function strval;
 
 /**
  * Television client
@@ -43,45 +59,366 @@ final class Television implements Client
 
 	use Nette\SmartObject;
 
+	private const HANDLER_START_DELAY = 2.0;
+
+	private const HANDLER_PROCESSING_INTERVAL = 0.01;
+
+	/** @var array<string, API\TelevisionApi> */
+	private array $devicesClients = [];
+
+	/** @var array<string> */
+	private array $processedDevices = [];
+
+	/** @var array<string, array<string, DateTimeInterface|false>> */
+	private array $processedChannelsProperties = [];
+
+	private EventLoop\TimerInterface|null $handlerTimer = null;
+
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
 		private readonly Entities\VieraConnector $connector,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
-		private readonly DevicesUtilities\DevicePropertiesStates $devicePropertiesStates,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
-		private readonly bool $autoMode,
 		private readonly Consumers\Messages $consumer,
-		private readonly API\TelevisionApiFactory $televisionApiApiFactory,
+		private readonly API\TelevisionApiFactory $televisionApiFactory,
 		private readonly Writers\Writer $writer,
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
-		private readonly DevicesModels\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
 		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
-		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 		Log\LoggerInterface|null $logger = null,
 	)
 	{
 		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
 	public function connect(): void
 	{
+		$this->processedDevices = [];
+
+		$findDevicesQuery = new DevicesQueries\FindDevices();
+		$findDevicesQuery->forConnector($this->connector);
+
+		foreach ($this->devicesRepository->findAllBy($findDevicesQuery, Entities\VieraDevice::class) as $device) {
+			assert($device instanceof Entities\VieraDevice);
+
+			$this->createDeviceClient($device);
+		}
+
+		$this->eventLoop->addTimer(
+			self::HANDLER_START_DELAY,
+			function (): void {
+				$this->registerLoopHandler();
+			},
+		);
+
+		$this->writer->connect($this->connector, $this);
 	}
 
 	public function disconnect(): void
 	{
+		foreach ($this->devicesClients as $client) {
+			$client->disconnect();
+		}
+
+		if ($this->handlerTimer !== null) {
+			$this->eventLoop->cancelTimer($this->handlerTimer);
+
+			$this->handlerTimer = null;
+		}
+
+		$this->writer->disconnect($this->connector, $this);
 	}
 
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws RuntimeException
+	 */
 	public function writeChannelProperty(
 		Entities\VieraDevice $device,
 		DevicesEntities\Channels\Channel $channel,
 		DevicesEntities\Channels\Properties\Dynamic $property,
 	): Promise\PromiseInterface
 	{
-		throw new Exceptions\InvalidState('Not implemented');
+		$client = $this->getDeviceClient($device);
+
+		if ($client === null) {
+			return Promise\reject(new Exceptions\InvalidArgument('For provided device is not created client'));
+		}
+
+		$state = $this->channelPropertiesStates->getValue($property);
+
+		if ($state === null) {
+			return Promise\reject(
+				new Exceptions\InvalidArgument('Property state could not be found. Nothing to write'),
+			);
+		}
+
+		$expectedValue = DevicesUtilities\ValueHelper::flattenValue($state->getExpectedValue());
+
+		if (!$property->isSettable()) {
+			return Promise\reject(new Exceptions\InvalidArgument('Provided property is not writable'));
+		}
+
+		if ($expectedValue === null) {
+			return Promise\reject(
+				new Exceptions\InvalidArgument('Property expected value is not set. Nothing to write'),
+			);
+		}
+
+		if ($state->isPending() === true) {
+			switch ($property->getIdentifier()) {
+				case Types\ChannelPropertyIdentifier::IDENTIFIER_STATE:
+					if ($expectedValue === true) {
+						return $client->turnOn();
+					}
+
+					return $client->turnOff();
+				case Types\ChannelPropertyIdentifier::IDENTIFIER_VOLUME:
+					return $client->setVolume(intval($expectedValue));
+				case Types\ChannelPropertyIdentifier::IDENTIFIER_MUTE:
+					return $client->setMute(boolval($expectedValue));
+				case Types\ChannelPropertyIdentifier::IDENTIFIER_INPUT_SOURCE:
+					if (intval($expectedValue) < 100) {
+						return $client->sendKey('NRC_HDMI' . $expectedValue . '-ONOFF');
+					} elseif (intval($expectedValue) === 500) {
+						return $client->sendKey(Types\ActionKey::get(Types\ActionKey::AD_CHANGE));
+					} else {
+						return $client->launchApplication(strval($expectedValue));
+					}
+				default:
+					return Promise\reject(
+						new Exceptions\InvalidArgument('Provided property is not supported for writing'),
+					);
+			}
+		}
+
+		return Promise\reject(new Exceptions\InvalidArgument('Provided property state is in invalid state'));
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws Exception
+	 */
+	private function handleCommunication(): void
+	{
+		$findDevicesQuery = new DevicesQueries\FindDevices();
+		$findDevicesQuery->forConnector($this->connector);
+
+		foreach ($this->devicesRepository->findAllBy($findDevicesQuery, Entities\VieraDevice::class) as $device) {
+			assert($device instanceof Entities\VieraDevice);
+
+			if (
+				!in_array($device->getPlainId(), $this->processedDevices, true)
+				&& !$this->deviceConnectionManager->getState($device)->equalsValue(
+					MetadataTypes\ConnectionState::STATE_STOPPED,
+				)
+			) {
+				$this->processedDevices[] = $device->getPlainId();
+
+				if ($this->processDevice($device)) {
+					$this->registerLoopHandler();
+
+					return;
+				}
+			}
+		}
+
+		$this->processedDevices = [];
+
+		$this->registerLoopHandler();
+	}
+
+	/**
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws RuntimeException
+	 */
+	private function processDevice(Entities\VieraDevice $device): bool
+	{
+		$client = $this->getDeviceClient($device);
+
+		if ($client === null) {
+			$this->createDeviceClient($device);
+
+			return false;
+		}
+
+		if (!$client->isConnected()) {
+			$client->connect();
+
+			$this->consumer->append(
+				new Entities\Messages\DeviceState(
+					$device->getConnector()->getId(),
+					$device->getIdentifier(),
+					MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_CONNECTED),
+				),
+			);
+		}
+
+		$findChannelsQuery = new DevicesQueries\FindChannels();
+		$findChannelsQuery->forDevice($device);
+		$findChannelsQuery->byIdentifier(Types\ChannelType::TELEVISION);
+
+		$channel = $this->channelsRepository->findOneBy($findChannelsQuery);
+
+		if ($channel === null) {
+			$this->consumer->append(
+				new Entities\Messages\DeviceState(
+					$device->getConnector()->getId(),
+					$device->getIdentifier(),
+					MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_STOPPED),
+				),
+			);
+
+			return false;
+		}
+
+		$findChannelPropertiesQuery = new DevicesQueries\FindChannelProperties();
+		$findChannelPropertiesQuery->forChannel($channel);
+
+		foreach ($this->channelPropertiesRepository->findAllBy($findChannelPropertiesQuery) as $property) {
+			if (!$property instanceof DevicesEntities\Channels\Properties\Dynamic) {
+				continue;
+			}
+
+			if (!array_key_exists($device->getIdentifier(), $this->processedChannelsProperties)) {
+				$this->processedChannelsProperties[$device->getIdentifier()] = [];
+			}
+
+			if (array_key_exists(
+				$property->getIdentifier(),
+				$this->processedChannelsProperties[$device->getIdentifier()],
+			)) {
+				$cmdResult = $this->processedChannelsProperties[$device->getIdentifier()][$property->getIdentifier()];
+
+				if (
+					$cmdResult instanceof DateTimeInterface
+					&& (
+						$this->dateTimeFactory->getNow()->getTimestamp() - $cmdResult->getTimestamp() < $device->getStatusReadingDelay()
+					)
+				) {
+					return false;
+				}
+			}
+
+			$this->processedChannelsProperties[$device->getIdentifier()][$property->getIdentifier()] = $this->dateTimeFactory->getNow();
+
+			$result = null;
+
+			switch ($property->getIdentifier()) {
+				case Types\ChannelPropertyIdentifier::IDENTIFIER_STATE:
+					$result = $client->isTurnedOn();
+
+					break;
+				case Types\ChannelPropertyIdentifier::IDENTIFIER_VOLUME:
+					$result = $client->getVolume();
+
+					break;
+				case Types\ChannelPropertyIdentifier::IDENTIFIER_MUTE:
+					$result = $client->getMute();
+
+					break;
+			}
+
+			if ($result === null) {
+				continue;
+			}
+
+			$result
+				->then(function (int|bool $state) use ($device, $property): void {
+					$this->processedChannelsProperties[$device->getIdentifier()][$property->getIdentifier()] = $this->dateTimeFactory->getNow();
+
+					$this->consumer->append(new Entities\Messages\ChannelPropertyState(
+						$this->connector->getId(),
+						$device->getIdentifier(),
+						$property->getIdentifier(),
+						$state,
+					));
+				})
+				->otherwise(function (Throwable $ex) use ($device, $property): void {
+					$this->processedChannelsProperties[$device->getIdentifier()][$property->getIdentifier()] = false;
+
+					$this->logger->warning(
+						'Could not call local api',
+						[
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+							'type' => 'local-client',
+							'exception' => BootstrapHelpers\Logger::buildException($ex),
+							'connector' => [
+								'id' => $this->connector->getPlainId(),
+							],
+							'device' => [
+								'id' => $device->getPlainId(),
+							],
+						],
+					);
+
+					$this->consumer->append(
+						new Entities\Messages\DeviceState(
+							$device->getConnector()->getId(),
+							$device->getIdentifier(),
+							MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_DISCONNECTED),
+						),
+					);
+				});
+		}
+
+		return true;
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	private function createDeviceClient(Entities\VieraDevice $device): void
+	{
+		unset($this->processedChannelsProperties[$device->getIdentifier()]);
+
+		assert(is_string($device->getIpAddress()));
+
+		$client = $this->televisionApiFactory->create(
+			$device->getIdentifier(),
+			$device->getIpAddress(),
+			$device->getPort(),
+			$device->getAppId(),
+			$device->getEncryptionKey(),
+		);
+
+		$this->devicesClients[$device->getPlainId()] = $client;
+	}
+
+	private function getDeviceClient(Entities\VieraDevice $device): API\TelevisionApi|null
+	{
+		return array_key_exists(
+			$device->getPlainId(),
+			$this->devicesClients,
+		)
+			? $this->devicesClients[$device->getPlainId()]
+			: null;
+	}
+
+	private function registerLoopHandler(): void
+	{
+		$this->handlerTimer = $this->eventLoop->addTimer(
+			self::HANDLER_PROCESSING_INTERVAL,
+			function (): void {
+				$this->handleCommunication();
+			},
+		);
 	}
 
 }
