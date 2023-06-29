@@ -28,6 +28,6 @@ use FastyBird\Connector\Viera\Entities;
 interface TelevisionFactory extends ClientFactory
 {
 
-	public function create(Entities\VieraConnector $connector, bool $autoMode = false): Television;
+	public function create(Entities\VieraConnector $connector): Television;
 
 }
