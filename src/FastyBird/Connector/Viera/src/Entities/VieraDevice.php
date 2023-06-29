@@ -22,7 +22,6 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
-use function is_bool;
 use function is_int;
 use function is_string;
 
@@ -106,21 +105,7 @@ class VieraDevice extends DevicesEntities\Devices\Device
 	 */
 	public function isEncrypted(): bool
 	{
-		$property = $this->properties
-			->filter(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::IDENTIFIER_ENCRYPTED
-			)
-			->first();
-
-		if (
-			$property instanceof DevicesEntities\Devices\Properties\Variable
-			&& is_bool($property->getValue())
-		) {
-			return $property->getValue();
-		}
-
-		return false;
+		return $this->getAppId() !== null && $this->getEncryptionKey() !== null;
 	}
 
 	/**
@@ -158,6 +143,30 @@ class VieraDevice extends DevicesEntities\Devices\Device
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::IDENTIFIER_ENCRYPTION_KEY
+			)
+			->first();
+
+		if (
+			$property instanceof DevicesEntities\Devices\Properties\Variable
+			&& is_string($property->getValue())
+		) {
+			return $property->getValue();
+		}
+
+		return null;
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function getMacAddress(): string|null
+	{
+		$property = $this->properties
+			->filter(
+			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS
 			)
 			->first();
 

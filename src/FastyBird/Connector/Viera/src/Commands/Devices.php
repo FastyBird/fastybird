@@ -30,7 +30,7 @@ use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
-use InvalidArgumentException;
+use InvalidArgumentException as InvalidArgumentExceptionAlias;
 use Nette\Utils;
 use Psr\Log;
 use Symfony\Component\Console;
@@ -44,10 +44,12 @@ use function array_search;
 use function array_values;
 use function assert;
 use function count;
+use function intval;
 use function preg_match;
 use function React\Async\await;
 use function sprintf;
 use function strval;
+use function trim;
 use function usort;
 
 /**
@@ -65,6 +67,8 @@ class Devices extends Console\Command\Command
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 	private const MATCH_IP_ADDRESS = '/^((?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])[.]){3}(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$/';
 
+	private const MATCH_MAC_ADDRESS = '/^([0-9a-fA-F][0-9a-fA-F]:){5}([0-9a-fA-F][0-9a-fA-F])$/';
+
 	private const CHOICE_QUESTION_CREATE_DEVICE = 'Create new connector device';
 
 	private const CHOICE_QUESTION_EDIT_DEVICE = 'Edit existing connector device';
@@ -80,6 +84,7 @@ class Devices extends Console\Command\Command
 		private readonly DevicesModels\Devices\DevicesManager $devicesManager,
 		private readonly DevicesModels\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
 		private readonly DevicesModels\Devices\Properties\PropertiesManager $devicePropertiesManager,
+		private readonly Viera\Consumers\Consumer $consumer,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 		Log\LoggerInterface|null $logger = null,
 		string|null $name = null,
@@ -105,7 +110,8 @@ class Devices extends Console\Command\Command
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
-	 * @throws InvalidArgumentException
+	 * @throws InvalidArgumentExceptionAlias
+	 * @throws MetadataExceptions\InvalidState
 	 */
 	protected function execute(Input\InputInterface $input, Output\OutputInterface $output): int
 	{
@@ -163,9 +169,7 @@ class Devices extends Console\Command\Command
 	}
 
 	/**
-	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\Runtime
 	 */
 	private function createNewDevice(Style\SymfonyStyle $io, Entities\VieraConnector $connector): void
 	{
@@ -319,7 +323,6 @@ class Devices extends Console\Command\Command
 			$io->error('Something went wrong, device could not be created. Error was logged.');
 
 			return;
-
 		} catch (Throwable $ex) {
 			$this->logger->error(
 				'Unhandled error occur',
@@ -335,127 +338,79 @@ class Devices extends Console\Command\Command
 			return;
 		}
 
-		try {
-			// Start transaction connection to the database
-			$this->getOrmConnection()->beginTransaction();
+		$hdmi = [];
 
-			$device = $this->devicesManager->create(Utils\ArrayHash::from([
-				'entity' => Entities\VieraDevice::class,
-				'connector' => $connector,
-				'identifier' => $identifier,
-				'name' => $specs->getFriendlyName() ?? $specs->getModelName(),
-			]));
-			assert($device instanceof Entities\VieraDevice);
+		$question = new Console\Question\ConfirmationQuestion(
+			'Would you like to configure HDMI inputs?',
+			false,
+		);
 
-			$this->devicePropertiesManager->create(Utils\ArrayHash::from([
-				'entity' => DevicesEntities\Devices\Properties\Variable::class,
-				'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS,
-				'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS),
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-				'value' => $ipAddress,
-				'device' => $device,
-			]));
+		$configureHdmi = (bool) $io->askQuestion($question);
 
-			$this->devicePropertiesManager->create(Utils\ArrayHash::from([
-				'entity' => DevicesEntities\Devices\Properties\Variable::class,
-				'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL,
-				'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL),
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-				'value' => $specs->getModelNumber(),
-				'device' => $device,
-			]));
-
-			$this->devicePropertiesManager->create(Utils\ArrayHash::from([
-				'entity' => DevicesEntities\Devices\Properties\Variable::class,
-				'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MANUFACTURER,
-				'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MANUFACTURER),
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-				'value' => $specs->getManufacturer(),
-				'device' => $device,
-			]));
-
-			$this->devicePropertiesManager->create(Utils\ArrayHash::from([
-				'entity' => DevicesEntities\Devices\Properties\Variable::class,
-				'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_ENCRYPTED,
-				'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_ENCRYPTED),
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN),
-				'value' => $specs->isRequiresEncryption(),
-				'device' => $device,
-			]));
-
-			$this->devicePropertiesManager->create(Utils\ArrayHash::from([
-				'entity' => DevicesEntities\Devices\Properties\Variable::class,
-				'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_SERIAL_NUMBER,
-				'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_SERIAL_NUMBER),
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-				'value' => $specs->isRequiresEncryption(),
-				'device' => $device,
-			]));
-
-			$this->devicePropertiesManager->create(Utils\ArrayHash::from([
-				'entity' => DevicesEntities\Devices\Properties\Variable::class,
-				'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_APP_ID,
-				'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_APP_ID),
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-				'value' => $authorization?->getAppId(),
-				'device' => $device,
-			]));
-
-			$this->devicePropertiesManager->create(Utils\ArrayHash::from([
-				'entity' => DevicesEntities\Devices\Properties\Variable::class,
-				'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_ENCRYPTION_KEY,
-				'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_ENCRYPTION_KEY),
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-				'value' => $authorization?->getEncryptionKey(),
-				'device' => $device,
-			]));
-
-			$this->devicePropertiesManager->create(Utils\ArrayHash::from([
-				'entity' => DevicesEntities\Devices\Properties\Dynamic::class,
-				'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_APPLICATIONS,
-				'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_APPLICATIONS),
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
-				'enum' => array_map(static fn (Entities\API\Application $application): array => [
-					$application->getName(),
-					$application->getId(),
-					$application->getId(),
-				], $apps->getApps()),
-				'device' => $device,
-			]));
-
-			// Commit all changes into database
-			$this->getOrmConnection()->commit();
-
-			$io->success(sprintf(
-				'Device "%s" was successfully created',
-				$device->getName() ?? $device->getIdentifier(),
-			));
-		} catch (Throwable $ex) {
-			// Log caught exception
-			$this->logger->error(
-				'An unhandled error occurred',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
-					'type' => 'devices-cmd',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
-				],
+		if ($configureHdmi) {
+			$io->info(
+				'Now you have to provide name for configured HDMI input and its number. HDMI number is related to you television',
 			);
 
-			$io->error('Something went wrong, device could not be created. Error was logged.');
+			while (true) {
+				$hdmiName = $this->askHdmiName($io);
 
-			return;
-		} finally {
-			// Revert all changes when error occur
-			if ($this->getOrmConnection()->isTransactionActive()) {
-				$this->getOrmConnection()->rollBack();
+				$hdmiIndex = $this->askHdmiIndex($io, $hdmiName);
+
+				$hdmi[] = new Entities\Messages\CreatedDeviceHdmi(
+					$hdmiIndex,
+					$hdmiName,
+				);
+
+				$question = new Console\Question\ConfirmationQuestion(
+					'Would you like to configure another HDMI input?',
+					false,
+				);
+
+				$configureMode = (bool) $io->askQuestion($question);
+
+				if (!$configureMode) {
+					break;
+				}
 			}
 		}
+
+		$message = new Entities\Messages\CreatedDevice(
+			$connector->getId(),
+			$identifier,
+			$ipAddress,
+			Viera\Constants::DEFAULT_PORT,
+			$specs->getFriendlyName() ?? $specs->getModelName(),
+			trim(sprintf('%s %s', $specs->getModelName(), $specs->getModelNumber())),
+			$specs->getManufacturer(),
+			$specs->getSerialNumber(),
+			$authorization?->getAppId(),
+			$authorization?->getEncryptionKey(),
+			$hdmi,
+			array_map(
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (Entities\API\Application $application): Entities\Messages\CreatedDeviceApplication => new Entities\Messages\CreatedDeviceApplication(
+					$application->getId(),
+					$application->getName(),
+				),
+				$apps->getApps(),
+			),
+		);
+
+		$this->consumer->consume($message);
+
+		$io->success(sprintf(
+			'Device "%s" was successfully created',
+			$message->getName() ?? $message->getIdentifier(),
+		));
 	}
 
 	/**
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
 	 */
 	private function editExistingDevice(Style\SymfonyStyle $io, Entities\VieraConnector $connector): void
 	{
@@ -482,17 +437,112 @@ class Devices extends Console\Command\Command
 
 		$name = $this->askDeviceName($io, $device);
 
+		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+		$findDevicePropertyQuery->forDevice($device);
+		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS);
+
+		$ipAddressProperty = $this->devicePropertiesRepository->findOneBy($findDevicePropertyQuery);
+
+		if ($ipAddressProperty === null) {
+			$changeIpAddress = true;
+
+		} else {
+			$question = new Console\Question\ConfirmationQuestion(
+				'Do you want to change device IP address?',
+				false,
+			);
+
+			$changeIpAddress = (bool) $io->askQuestion($question);
+		}
+
+		$ipAddress = $device->getIpAddress();
+
+		if ($changeIpAddress || $ipAddress === null) {
+			$ipAddress = $this->askIpAddress($io, $device);
+		}
+
+		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+		$findDevicePropertyQuery->forDevice($device);
+		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IDENTIFIER_PORT);
+
+		$portProperty = $this->devicePropertiesRepository->findOneBy($findDevicePropertyQuery);
+
+		if ($portProperty === null) {
+			$changePort = true;
+
+		} else {
+			$question = new Console\Question\ConfirmationQuestion(
+				'Do you want to change device port?',
+				false,
+			);
+
+			$changePort = (bool) $io->askQuestion($question);
+		}
+
+		$port = $device->getPort();
+
+		if ($changePort) {
+			$port = $this->askPort($io, $device);
+		}
+
+		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+		$findDevicePropertyQuery->forDevice($device);
+		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IDENTIFIER_APP_ID);
+
+		$appIdProperty = $this->devicePropertiesRepository->findOneBy($findDevicePropertyQuery);
+
+		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+		$findDevicePropertyQuery->forDevice($device);
+		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IDENTIFIER_ENCRYPTION_KEY);
+
+		$encryptionKeyProperty = $this->devicePropertiesRepository->findOneBy($findDevicePropertyQuery);
+
+		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+		$findDevicePropertyQuery->forDevice($device);
+		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL);
+
+		$hardwareModelProperty = $this->devicePropertiesRepository->findOneBy($findDevicePropertyQuery);
+
+		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+		$findDevicePropertyQuery->forDevice($device);
+		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MANUFACTURER);
+
+		$hardwareManufacturerProperty = $this->devicePropertiesRepository->findOneBy($findDevicePropertyQuery);
+
+		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+		$findDevicePropertyQuery->forDevice($device);
+		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS);
+
+		$macAddressProperty = $this->devicePropertiesRepository->findOneBy($findDevicePropertyQuery);
+
+		if ($macAddressProperty === null) {
+			$question = new Console\Question\ConfirmationQuestion(
+				'Do you want to configure television MAC address?',
+				false,
+			);
+
+			$changeMacAddress = (bool) $io->askQuestion($question);
+
+		} else {
+			$question = new Console\Question\ConfirmationQuestion(
+				'Do you want to change television MAC address?',
+				false,
+			);
+
+			$changeMacAddress = (bool) $io->askQuestion($question);
+		}
+
+		$macAddress = $device->getMacAddress();
+
+		if ($changeMacAddress) {
+			$macAddress = $this->askMacAddress($io, $device);
+		}
+
 		try {
-			$ipAddress = $device->getIpAddress();
-
-			if ($ipAddress === null) {
-				$ipAddress = $this->askIpAddress($io, $device);
-			}
-
 			$televisionApi = $this->televisionApiFactory->create(
 				$device->getIdentifier(),
 				$ipAddress,
-				$device->getPort(),
+				$port,
 				$device->getAppId(),
 				$device->getEncryptionKey(),
 			);
@@ -524,6 +574,10 @@ class Devices extends Console\Command\Command
 			$specs = $televisionApi->getSpecs(false);
 
 			if (!$device->isEncrypted() && $specs->isRequiresEncryption()) {
+				$io->warning(
+					'It looks like your TV require application pairing.',
+				);
+
 				try {
 					$isTurnedOn = await($televisionApi->isTurnedOn());
 				} catch (Throwable $ex) {
@@ -567,7 +621,6 @@ class Devices extends Console\Command\Command
 
 				$authorization = $televisionApi->authorizePinCode($pinCode, $challengeKey, false);
 			}
-
 		} catch (Exceptions\TelevisionApiCall | Exceptions\Encrypt | Exceptions\Decrypt $ex) {
 			$this->logger->error(
 				'Calling television api failed',
@@ -581,7 +634,6 @@ class Devices extends Console\Command\Command
 			$io->error('Something went wrong, device could not be edited. Error was logged.');
 
 			return;
-
 		} catch (Throwable $ex) {
 			$this->logger->error(
 				'Unhandled error occur',
@@ -604,6 +656,120 @@ class Devices extends Console\Command\Command
 			$device = $this->devicesManager->update($device, Utils\ArrayHash::from([
 				'name' => $name,
 			]));
+			assert($device instanceof Entities\VieraDevice);
+
+			if ($ipAddressProperty === null) {
+				$this->devicePropertiesManager->create(Utils\ArrayHash::from([
+					'entity' => DevicesEntities\Devices\Properties\Variable::class,
+					'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS,
+					'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+					'value' => $ipAddress,
+					'device' => $device,
+				]));
+			} elseif ($ipAddress !== null) {
+				$this->devicePropertiesManager->update($ipAddressProperty, Utils\ArrayHash::from([
+					'value' => $ipAddress,
+				]));
+			}
+
+			if ($portProperty === null && $port !== Viera\Constants::DEFAULT_PORT) {
+				$this->devicePropertiesManager->create(Utils\ArrayHash::from([
+					'entity' => DevicesEntities\Devices\Properties\Variable::class,
+					'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_PORT,
+					'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_PORT),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UINT),
+					'value' => $port,
+					'device' => $device,
+				]));
+			} elseif ($portProperty !== null && $port !== Viera\Constants::DEFAULT_PORT) {
+				$this->devicePropertiesManager->update($portProperty, Utils\ArrayHash::from([
+					'value' => $port,
+				]));
+			} elseif ($portProperty !== null && $port === Viera\Constants::DEFAULT_PORT) {
+				$this->devicePropertiesManager->delete($portProperty);
+			}
+
+			if ($appIdProperty === null && $authorization !== null) {
+				$this->devicePropertiesManager->create(Utils\ArrayHash::from([
+					'entity' => DevicesEntities\Devices\Properties\Variable::class,
+					'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_APP_ID,
+					'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_APP_ID),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+					'value' => $authorization->getAppId(),
+					'device' => $device,
+				]));
+			} elseif ($appIdProperty !== null && $authorization !== null) {
+				$this->devicePropertiesManager->update($appIdProperty, Utils\ArrayHash::from([
+					'value' => $authorization->getAppId(),
+				]));
+			} elseif ($appIdProperty !== null && $authorization === null) {
+				$this->devicePropertiesManager->delete($appIdProperty);
+			}
+
+			if ($encryptionKeyProperty === null && $authorization !== null) {
+				$this->devicePropertiesManager->create(Utils\ArrayHash::from([
+					'entity' => DevicesEntities\Devices\Properties\Variable::class,
+					'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_ENCRYPTION_KEY,
+					'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_ENCRYPTION_KEY),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+					'value' => $authorization->getEncryptionKey(),
+					'device' => $device,
+				]));
+			} elseif ($encryptionKeyProperty !== null && $authorization !== null) {
+				$this->devicePropertiesManager->update($encryptionKeyProperty, Utils\ArrayHash::from([
+					'value' => $authorization->getEncryptionKey(),
+				]));
+			} elseif ($encryptionKeyProperty !== null && $authorization === null) {
+				$this->devicePropertiesManager->delete($encryptionKeyProperty);
+			}
+
+			if ($hardwareModelProperty === null) {
+				$this->devicePropertiesManager->create(Utils\ArrayHash::from([
+					'entity' => DevicesEntities\Devices\Properties\Variable::class,
+					'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL,
+					'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+					'value' => trim(sprintf('%s %s', $specs->getModelName(), $specs->getModelNumber())),
+					'device' => $device,
+				]));
+			} else {
+				$this->devicePropertiesManager->update($hardwareModelProperty, Utils\ArrayHash::from([
+					'value' => trim(sprintf('%s %s', $specs->getModelName(), $specs->getModelNumber())),
+				]));
+			}
+
+			if ($hardwareManufacturerProperty === null) {
+				$this->devicePropertiesManager->create(Utils\ArrayHash::from([
+					'entity' => DevicesEntities\Devices\Properties\Variable::class,
+					'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL,
+					'name' => Helpers\Name::createName(
+						Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MANUFACTURER,
+					),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+					'value' => $specs->getManufacturer(),
+					'device' => $device,
+				]));
+			} else {
+				$this->devicePropertiesManager->update($hardwareManufacturerProperty, Utils\ArrayHash::from([
+					'value' => $specs->getManufacturer(),
+				]));
+			}
+
+			if ($macAddressProperty === null) {
+				$this->devicePropertiesManager->create(Utils\ArrayHash::from([
+					'entity' => DevicesEntities\Devices\Properties\Variable::class,
+					'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS,
+					'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+					'value' => $macAddress,
+					'device' => $device,
+				]));
+			} elseif ($macAddress !== null) {
+				$this->devicePropertiesManager->update($macAddressProperty, Utils\ArrayHash::from([
+					'value' => $macAddress,
+				]));
+			}
 
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
@@ -721,6 +887,51 @@ class Devices extends Console\Command\Command
 		return strval($ipAddress);
 	}
 
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	private function askPort(Style\SymfonyStyle $io, Entities\VieraDevice|null $device = null): int
+	{
+		$question = new Console\Question\Question('Provide device port number', $device?->getPort());
+		$question->setValidator(static function (string|null $answer): int {
+			if ($answer !== null && strval(intval($answer)) === $answer) {
+				return intval($answer);
+			}
+
+			throw new Exceptions\Runtime('Provided port number is not valid');
+		});
+
+		$port = $io->askQuestion($question);
+
+		return intval($port);
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	private function askMacAddress(Style\SymfonyStyle $io, Entities\VieraDevice|null $device = null): string
+	{
+		$question = new Console\Question\Question(
+			'Provide device MAC address in format: 01:23:45:67:89:ab',
+			$device?->getMacAddress(),
+		);
+		$question->setValidator(static function (string|null $answer): string {
+			if ($answer !== null && preg_match(self::MATCH_MAC_ADDRESS, $answer) === 1) {
+				return $answer;
+			}
+
+			throw new Exceptions\Runtime('Provided mac address is not valid');
+		});
+
+		$macAddress = $io->askQuestion($question);
+
+		return strval($macAddress);
+	}
+
 	private function askPinCode(Style\SymfonyStyle $io): string
 	{
 		$question = new Console\Question\Question('Provide device PIN code displayed on you TV');
@@ -735,6 +946,43 @@ class Devices extends Console\Command\Command
 		$pinCode = $io->askQuestion($question);
 
 		return strval($pinCode);
+	}
+
+	private function askHdmiName(Style\SymfonyStyle $io): string
+	{
+		$question = new Console\Question\Question('Provide name for HDMI input');
+		$question->setValidator(static function (string|null $answer): string {
+			if ($answer !== null) {
+				return $answer;
+			}
+
+			throw new Exceptions\Runtime('Provided HDMI name is not valid');
+		});
+
+		$ipAddress = $io->askQuestion($question);
+
+		return strval($ipAddress);
+	}
+
+	private function askHdmiIndex(Style\SymfonyStyle $io, string $name): int
+	{
+		$question = new Console\Question\Question(sprintf('Provide number for "%s" HDMI input', $name));
+		$question->setValidator(static function (string|null $answer): int {
+			if (
+				$answer !== null
+				&& strval(intval($answer)) === $answer
+				&& intval($answer) > 0
+				&& intval($answer) < 10
+			) {
+				return intval($answer);
+			}
+
+			throw new Exceptions\Runtime('Provided HDMI number is not valid');
+		});
+
+		$ipAddress = $io->askQuestion($question);
+
+		return intval($ipAddress);
 	}
 
 	/**
