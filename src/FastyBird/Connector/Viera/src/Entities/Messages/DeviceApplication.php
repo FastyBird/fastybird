@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * CreatedDeviceHdmi.php
+ * DeviceApplication.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -18,26 +18,26 @@ namespace FastyBird\Connector\Viera\Entities\Messages;
 use Nette;
 
 /**
- * Created device hdmi entity
+ * Created device application entity
  *
  * @package        FastyBird:VieraConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class CreatedDeviceHdmi implements Entity
+final class DeviceApplication implements Entity
 {
 
 	use Nette\SmartObject;
 
 	public function __construct(
-		private readonly int $id,
+		private readonly string $id,
 		private readonly string $name,
 	)
 	{
 	}
 
-	public function getId(): int
+	public function getId(): string
 	{
 		return $this->id;
 	}

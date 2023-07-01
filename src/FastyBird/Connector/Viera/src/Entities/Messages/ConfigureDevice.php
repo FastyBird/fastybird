@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * CreatedDevice.php
+ * ConfigureDevice.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -27,14 +27,14 @@ use function array_map;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class CreatedDevice implements Entity
+final class ConfigureDevice implements Entity
 {
 
 	use Nette\SmartObject;
 
 	/**
-	 * @param array<CreatedDeviceHdmi> $hdmi
-	 * @param array<CreatedDeviceApplication> $applications
+	 * @param array<DeviceHdmi> $hdmi
+	 * @param array<DeviceApplication> $applications
 	 */
 	public function __construct(
 		private readonly Uuid\UuidInterface $connector,
@@ -104,7 +104,7 @@ final class CreatedDevice implements Entity
 	}
 
 	/**
-	 * @return array<CreatedDeviceHdmi>
+	 * @return array<DeviceHdmi>
 	 */
 	public function getHdmi(): array
 	{
@@ -112,7 +112,7 @@ final class CreatedDevice implements Entity
 	}
 
 	/**
-	 * @return array<CreatedDeviceApplication>
+	 * @return array<DeviceApplication>
 	 */
 	public function getApplications(): array
 	{
@@ -136,11 +136,11 @@ final class CreatedDevice implements Entity
 			'app_id' => $this->getAppId(),
 			'encryption_key' => $this->getEncryptionKey(),
 			'hdmi' => array_map(
-				static fn (CreatedDeviceHdmi $item): array => $item->toArray(),
+				static fn (DeviceHdmi $item): array => $item->toArray(),
 				$this->getHdmi(),
 			),
 			'applications' => array_map(
-				static fn (CreatedDeviceApplication $item): array => $item->toArray(),
+				static fn (DeviceApplication $item): array => $item->toArray(),
 				$this->getApplications(),
 			),
 		];

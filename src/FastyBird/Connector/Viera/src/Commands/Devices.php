@@ -297,16 +297,16 @@ class Devices extends Console\Command\Command
 				$pinCode = $this->askPinCode($io);
 
 				$authorization = $televisionApi->authorizePinCode($pinCode, $challengeKey, false);
-			}
 
-			$televisionApi = $this->televisionApiFactory->create(
-				$identifier,
-				$ipAddress,
-				Entities\VieraDevice::DEFAULT_PORT,
-				$authorization?->getAppId(),
-				$authorization?->getEncryptionKey(),
-			);
-			$televisionApi->connect();
+				$televisionApi = $this->televisionApiFactory->create(
+					$identifier,
+					$ipAddress,
+					Entities\VieraDevice::DEFAULT_PORT,
+					$authorization->getAppId(),
+					$authorization->getEncryptionKey(),
+				);
+				$televisionApi->connect();
+			}
 
 			$apps = $televisionApi->getApps(false);
 
@@ -357,7 +357,7 @@ class Devices extends Console\Command\Command
 
 				$hdmiIndex = $this->askHdmiIndex($io, $hdmiName);
 
-				$hdmi[] = new Entities\Messages\CreatedDeviceHdmi(
+				$hdmi[] = new Entities\Messages\DeviceHdmi(
 					$hdmiIndex,
 					$hdmiName,
 				);
@@ -375,7 +375,7 @@ class Devices extends Console\Command\Command
 			}
 		}
 
-		$message = new Entities\Messages\CreatedDevice(
+		$message = new Entities\Messages\ConfigureDevice(
 			$connector->getId(),
 			$identifier,
 			$ipAddress,
@@ -389,7 +389,7 @@ class Devices extends Console\Command\Command
 			$hdmi,
 			array_map(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (Entities\API\Application $application): Entities\Messages\CreatedDeviceApplication => new Entities\Messages\CreatedDeviceApplication(
+				static fn (Entities\API\Application $application): Entities\Messages\DeviceApplication => new Entities\Messages\DeviceApplication(
 					$application->getId(),
 					$application->getName(),
 				),

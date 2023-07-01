@@ -36,6 +36,7 @@ use React\Socket\Connector;
 use RuntimeException;
 use SimpleXMLElement;
 use Throwable;
+use function array_combine;
 use function array_fill;
 use function array_key_exists;
 use function array_merge;
@@ -494,10 +495,8 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 
 						$apps = [];
 
-						foreach ($matches as $appData) {
-							if (array_key_exists('id', $appData) && array_key_exists('name', $appData)) {
-								$apps[] = new Entities\API\Application($appData['id'], $appData['name']);
-							}
+						foreach (array_combine($matches['id'], $matches['name']) as $appId => $appName) {
+							$apps[] = new Entities\API\Application($appId, $appName);
 						}
 
 						$deferred->resolve(new Entities\API\DeviceApps($apps));
@@ -583,10 +582,8 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 
 		$apps = [];
 
-		foreach ($matches as $appData) {
-			if (array_key_exists('id', $appData) && array_key_exists('name', $appData)) {
-				$apps[] = new Entities\API\Application($appData['id'], $appData['name']);
-			}
+		foreach (array_combine($matches['id'], $matches['name']) as $appId => $appName) {
+			$apps[] = new Entities\API\Application($appId, $appName);
 		}
 
 		return new Entities\API\DeviceApps($apps);

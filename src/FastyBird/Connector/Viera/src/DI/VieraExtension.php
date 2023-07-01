@@ -116,7 +116,7 @@ class VieraExtension extends DI\CompilerExtension
 			$this->prefix('consumers.messages.device.created'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Consumers\Messages\CreatedDevice::class);
+			->setType(Consumers\Messages\ConfigureDevice::class);
 
 		$builder->addDefinition($this->prefix('consumers.messages'), new DI\Definitions\ServiceDefinition())
 			->setType(Consumers\Messages::class)

@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * CreatedDevice.php
+ * ConfigureDevice.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -33,6 +33,10 @@ use Psr\Log;
 use function array_map;
 use function array_merge;
 use function assert;
+use function mb_convert_case;
+use function preg_replace;
+use function strtolower;
+use const MB_CASE_TITLE;
 
 /**
  * New device message consumer
@@ -42,7 +46,7 @@ use function assert;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class CreatedDevice implements Consumer
+final class ConfigureDevice implements Consumer
 {
 
 	use Nette\SmartObject;
@@ -77,7 +81,7 @@ final class CreatedDevice implements Consumer
 	 */
 	public function consume(Entities\Messages\Entity $entity): bool
 	{
-		if (!$entity instanceof Entities\Messages\CreatedDevice) {
+		if (!$entity instanceof Entities\Messages\ConfigureDevice) {
 			return false;
 		}
 
@@ -277,13 +281,21 @@ final class CreatedDevice implements Consumer
 				Helpers\Name::createName(Types\ChannelPropertyIdentifier::IDENTIFIER_INPUT_SOURCE),
 				array_merge(
 					[
-						'TV',
-						500,
-						500,
+						[
+							'TV',
+							500,
+							500,
+						],
 					],
 					array_map(
-						static fn (Entities\Messages\CreatedDeviceHdmi|Entities\Messages\CreatedDeviceApplication $item): array => [
-							$item->getName(),
+						static fn (Entities\Messages\DeviceHdmi|Entities\Messages\DeviceApplication $item): array => [
+							strtolower(
+								strval(preg_replace(
+									'/(?<!^)[A-Z]/',
+									'_$0',
+									mb_convert_case($item->getName(), MB_CASE_TITLE, 'UTF-8'),
+								)),
+							),
 							$item->getId(),
 							$item->getId(),
 						],

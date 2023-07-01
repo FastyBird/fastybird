@@ -26,6 +26,8 @@ use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette\Utils;
 use Psr\Log;
 use Ramsey\Uuid;
+use function array_merge;
+use function var_dump;
 
 /**
  * Device channel property consumer trait
@@ -66,6 +68,8 @@ trait ConsumeChannelProperty
 		bool $queryable = false,
 	): void
 	{
+		var_dump($identifier);
+		var_dump($format);
 		$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
 		$findChannelPropertyQuery->byChannelId($channelId);
 		$findChannelPropertyQuery->byIdentifier($identifier);
@@ -109,7 +113,7 @@ trait ConsumeChannelProperty
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
 						'type' => 'message-consumer',
-						'device' => [
+						'channel' => [
 							'id' => $channelId->toString(),
 						],
 						'property' => [
@@ -135,17 +139,23 @@ trait ConsumeChannelProperty
 
 			$property = $this->databaseHelper->transaction(
 				fn (): DevicesEntities\Channels\Properties\Property => $this->channelsPropertiesManager->create(
-					Utils\ArrayHash::from([
-						'entity' => $type,
-						'device' => $channel,
-						'identifier' => $identifier,
-						'name' => $name,
-						'dataType' => $dataType,
-						'settable' => $settable,
-						'queryable' => $queryable,
-						'value' => $value,
-						'format' => $format,
-					]),
+					Utils\ArrayHash::from(array_merge(
+						[
+							'entity' => $type,
+							'channel' => $channel,
+							'identifier' => $identifier,
+							'name' => $name,
+							'dataType' => $dataType,
+							'settable' => $settable,
+							'queryable' => $queryable,
+							'format' => $format,
+						],
+						$type === DevicesEntities\Channels\Properties\Variable::class
+							? [
+								'value' => $value,
+							]
+							: [],
+					)),
 				),
 			);
 
@@ -154,7 +164,7 @@ trait ConsumeChannelProperty
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
 					'type' => 'message-consumer',
-					'device' => [
+					'channel' => [
 						'id' => $channelId->toString(),
 					],
 					'property' => [
@@ -168,13 +178,20 @@ trait ConsumeChannelProperty
 			$property = $this->databaseHelper->transaction(
 				fn (): DevicesEntities\Channels\Properties\Property => $this->channelsPropertiesManager->update(
 					$property,
-					Utils\ArrayHash::from([
-						'dataType' => $dataType,
-						'settable' => $settable,
-						'queryable' => $queryable,
-						'value' => $value,
-						'format' => $format,
-					]),
+					Utils\ArrayHash::from(array_merge(
+						[
+							'dataType' => $dataType,
+							'settable' => $settable,
+							'queryable' => $queryable,
+							'value' => $value,
+							'format' => $format,
+						],
+						$type === DevicesEntities\Channels\Properties\Variable::class
+							? [
+								'value' => $value,
+							]
+							: [],
+					)),
 				),
 			);
 
@@ -183,7 +200,7 @@ trait ConsumeChannelProperty
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
 					'type' => 'message-consumer',
-					'device' => [
+					'channel' => [
 						'id' => $channelId->toString(),
 					],
 					'property' => [
