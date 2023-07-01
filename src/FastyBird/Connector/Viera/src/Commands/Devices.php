@@ -84,7 +84,7 @@ class Devices extends Console\Command\Command
 		private readonly DevicesModels\Devices\DevicesManager $devicesManager,
 		private readonly DevicesModels\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
 		private readonly DevicesModels\Devices\Properties\PropertiesManager $devicePropertiesManager,
-		private readonly Viera\Consumers\Consumer $consumer,
+		private readonly Viera\Consumers\Messages $consumer,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 		Log\LoggerInterface|null $logger = null,
 		string|null $name = null,
