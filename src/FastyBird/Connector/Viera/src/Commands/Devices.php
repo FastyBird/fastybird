@@ -397,7 +397,7 @@ class Devices extends Console\Command\Command
 			),
 		);
 
-		$this->consumer->consume($message);
+		$this->consumer->append($message);
 
 		$io->success(sprintf(
 			'Television "%s" was successfully created',
