@@ -113,10 +113,22 @@ class VieraExtension extends DI\CompilerExtension
 			->setType(API\TelevisionApi::class);
 
 		$builder->addDefinition(
-			$this->prefix('consumers.messages.device.created'),
+			$this->prefix('consumers.messages.device.configured'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Consumers\Messages\ConfigureDevice::class);
+
+		$builder->addDefinition(
+			$this->prefix('consumers.messages.device.state'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Consumers\Messages\State::class);
+
+		$builder->addDefinition(
+			$this->prefix('consumers.messages.channel.propertyState'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Consumers\Messages\ChannelPropertyState::class);
 
 		$builder->addDefinition($this->prefix('consumers.messages'), new DI\Definitions\ServiceDefinition())
 			->setType(Consumers\Messages::class)

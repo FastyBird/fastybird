@@ -36,6 +36,7 @@ use function assert;
 use function mb_convert_case;
 use function preg_replace;
 use function strtolower;
+use function strval;
 use const MB_CASE_TITLE;
 
 /**

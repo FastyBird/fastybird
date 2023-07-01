@@ -164,37 +164,47 @@ final class Television implements Client
 			);
 		}
 
-		$expectedValue = DevicesUtilities\ValueHelper::flattenValue($state->getExpectedValue());
-
 		if (!$property->isSettable()) {
 			return Promise\reject(new Exceptions\InvalidArgument('Provided property is not writable'));
 		}
 
-		if ($expectedValue === null) {
+		if ($state->getExpectedValue() === null) {
 			return Promise\reject(
 				new Exceptions\InvalidArgument('Property expected value is not set. Nothing to write'),
+			);
+		}
+
+		$valueToWrite = API\Transformer::transformValueToDevice(
+			$property->getDataType(),
+			$property->getFormat(),
+			$state->getExpectedValue(),
+		);
+
+		if ($valueToWrite === null) {
+			return Promise\reject(
+				new Exceptions\InvalidArgument('Property expected value could not be transformed to device'),
 			);
 		}
 
 		if ($state->isPending() === true) {
 			switch ($property->getIdentifier()) {
 				case Types\ChannelPropertyIdentifier::IDENTIFIER_STATE:
-					if ($expectedValue === true) {
+					if ($valueToWrite === true) {
 						return $client->turnOn();
 					}
 
 					return $client->turnOff();
 				case Types\ChannelPropertyIdentifier::IDENTIFIER_VOLUME:
-					return $client->setVolume(intval($expectedValue));
+					return $client->setVolume(intval($valueToWrite));
 				case Types\ChannelPropertyIdentifier::IDENTIFIER_MUTE:
-					return $client->setMute(boolval($expectedValue));
+					return $client->setMute(boolval($valueToWrite));
 				case Types\ChannelPropertyIdentifier::IDENTIFIER_INPUT_SOURCE:
-					if (intval($expectedValue) < 100) {
-						return $client->sendKey('NRC_HDMI' . $expectedValue . '-ONOFF');
-					} elseif (intval($expectedValue) === 500) {
+					if (intval($valueToWrite) < 100) {
+						return $client->sendKey('NRC_HDMI' . $valueToWrite . '-ONOFF');
+					} elseif (intval($valueToWrite) === 500) {
 						return $client->sendKey(Types\ActionKey::get(Types\ActionKey::AD_CHANGE));
 					} else {
-						return $client->launchApplication(strval($expectedValue));
+						return $client->launchApplication(strval($valueToWrite));
 					}
 				default:
 					return Promise\reject(
@@ -338,14 +348,19 @@ final class Television implements Client
 			}
 
 			$result
-				->then(function (int|bool $state) use ($device, $property): void {
+				->then(function (int|bool $state) use ($device, $channel, $property): void {
 					$this->processedChannelsProperties[$device->getIdentifier()][$property->getIdentifier()] = $this->dateTimeFactory->getNow();
 
 					$this->consumer->append(new Entities\Messages\ChannelPropertyState(
 						$this->connector->getId(),
 						$device->getIdentifier(),
+						$channel->getIdentifier(),
 						$property->getIdentifier(),
-						$state,
+						API\Transformer::transformValueFromDevice(
+							$property->getDataType(),
+							$property->getFormat(),
+							$state,
+						),
 					));
 				})
 				->otherwise(function (Throwable $ex) use ($device, $property): void {
@@ -354,7 +369,7 @@ final class Television implements Client
 					$this->logger->warning(
 						'Could not call local api',
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
 							'type' => 'local-client',
 							'exception' => BootstrapHelpers\Logger::buildException($ex),
 							'connector' => [

@@ -15,6 +15,8 @@
 
 namespace FastyBird\Connector\Viera\Entities\Messages;
 
+use DateTimeInterface;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Ramsey\Uuid;
 use function array_merge;
 
@@ -31,12 +33,18 @@ final class ChannelPropertyState extends Device
 
 	public function __construct(
 		Uuid\UuidInterface $connector,
-		string $identifier,
+		string $device,
+		private readonly string $channel,
 		private readonly string $property,
-		private readonly int|bool $state,
+		private readonly float|int|string|bool|MetadataTypes\SwitchPayload|DateTimeInterface|null $state,
 	)
 	{
-		parent::__construct($connector, $identifier);
+		parent::__construct($connector, $device);
+	}
+
+	public function getChannel(): string
+	{
+		return $this->channel;
 	}
 
 	public function getProperty(): string
@@ -44,7 +52,7 @@ final class ChannelPropertyState extends Device
 		return $this->property;
 	}
 
-	public function getState(): int|bool
+	public function getState(): float|int|string|bool|MetadataTypes\SwitchPayload|DateTimeInterface|null
 	{
 		return $this->state;
 	}
@@ -55,6 +63,7 @@ final class ChannelPropertyState extends Device
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), [
+			'channel' => $this->getChannel(),
 			'property' => $this->getProperty(),
 			'state' => $this->getState(),
 		]);
