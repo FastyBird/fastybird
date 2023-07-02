@@ -27,7 +27,6 @@ use Nette\Utils;
 use Psr\Log;
 use Ramsey\Uuid;
 use function array_merge;
-use function var_dump;
 
 /**
  * Device channel property consumer trait
@@ -68,8 +67,6 @@ trait ConsumeChannelProperty
 		bool $queryable = false,
 	): void
 	{
-		var_dump($identifier);
-		var_dump($format);
 		$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
 		$findChannelPropertyQuery->byChannelId($channelId);
 		$findChannelPropertyQuery->byIdentifier($identifier);

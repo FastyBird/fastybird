@@ -190,6 +190,10 @@ class Devices extends Console\Command\Command
 			self::QUEUE_PROCESSING_INTERVAL,
 			async(function (): void {
 				$this->consumer->consume();
+
+				if ($this->consumer->isEmpty()) {
+					$this->checkAndTerminate();
+				}
 			}),
 		);
 
