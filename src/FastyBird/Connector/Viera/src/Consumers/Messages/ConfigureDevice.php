@@ -33,8 +33,10 @@ use Psr\Log;
 use function array_map;
 use function array_merge;
 use function assert;
+use function iconv;
 use function mb_convert_case;
 use function preg_replace;
+use function str_replace;
 use function strtolower;
 use function strval;
 use const MB_CASE_TITLE;
@@ -290,11 +292,19 @@ final class ConfigureDevice implements Consumer
 					],
 					array_map(
 						static fn (Entities\Messages\DeviceHdmi|Entities\Messages\DeviceApplication $item): array => [
-							strtolower(
-								strval(preg_replace(
-									'/(?<!^)[A-Z]/',
-									'_$0',
-									mb_convert_case($item->getName(), MB_CASE_TITLE, 'UTF-8'),
+							str_replace(
+								' ',
+								'',
+								strval(iconv(
+									'utf-8',
+									'ascii//TRANSLIT',
+									strtolower(
+										strval(preg_replace(
+											'/(?<!^)[A-Z]/',
+											'_$0',
+											mb_convert_case($item->getName(), MB_CASE_TITLE, 'UTF-8'),
+										)),
+									),
 								)),
 							),
 							$item->getId(),
