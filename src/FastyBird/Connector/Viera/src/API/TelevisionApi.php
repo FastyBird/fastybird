@@ -1354,11 +1354,14 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 	}
 
 	/**
+	 * @return ($runLoop is false ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : bool)
+	 *
 	 * @throws InvalidArgumentException
 	 */
 	public function livenessProbe(
 		float $timeout = 1.5,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface
+		bool $runLoop = false,
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|bool
 	{
 		$deferred = new Promise\Deferred();
 
@@ -1372,64 +1375,114 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 			],
 		]);
 
-		$timeoutTimer = $this->eventLoop->addTimer($timeout, static function () use ($deferred): void {
+		$result = false;
+
+		$timeoutTimer = $this->eventLoop->addTimer($timeout, function () use ($deferred, $runLoop, &$result): void {
 			$deferred->resolve(false);
+			$result = false;
+
+			if ($runLoop) {
+				$this->eventLoop->stop();
+			}
 		});
 
 		$connector->connect($this->ipAddress . ':' . $this->port)
-			->then(function () use ($deferred, $timeoutTimer): void {
+			->then(function () use ($deferred, $timeoutTimer, $runLoop, &$result): void {
 				$this->eventLoop->cancelTimer($timeoutTimer);
 
 				$deferred->resolve(true);
+				$result = true;
+
+				if ($runLoop) {
+					$this->eventLoop->stop();
+				}
 			})
-			->otherwise(static function () use ($deferred): void {
+			->otherwise(function () use ($deferred, $runLoop, &$result): void {
 				$deferred->resolve(false);
+				$result = false;
+
+				if ($runLoop) {
+					$this->eventLoop->stop();
+				}
 			});
 
-		return $deferred->promise();
+		if ($runLoop) {
+			$this->eventLoop->run();
+
+			return $result;
+		} else {
+			return $deferred->promise();
+		}
 	}
 
-	public function isTurnedOn(): Promise\ExtendedPromiseInterface|Promise\PromiseInterface
+	/**
+	 * @return ($runLoop is false ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : bool)
+	 */
+	public function isTurnedOn(bool $runLoop = false): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|bool
 	{
 		$deferred = new Promise\Deferred();
 
 		try {
 			$socket = new Socket\SocketServer('0.0.0.0:0');
 		} catch (RuntimeException | InvalidArgumentException) {
+			if ($runLoop) {
+				return false;
+			}
+
 			return Promise\resolve(false);
 		}
 
-		$socket->on('connection', function (Socket\ConnectionInterface $connection) use ($deferred): void {
-			$connection->on('data', static function (string $data) use ($deferred): void {
-				$parts = preg_split('/\r?\n\r?\n/', $data);
+		$result = false;
 
-				if (is_array($parts) && count($parts) === 2) {
-					preg_match('/<X_ScreenState>(?<screen_state>\w+)<\/X_ScreenState>/', strval($parts[1]), $matches);
+		$socket->on(
+			'connection',
+			function (Socket\ConnectionInterface $connection) use ($deferred, $runLoop, &$result): void {
+				$connection->on('data', function (string $data) use ($deferred, $runLoop, &$result): void {
+					$parts = preg_split('/\r?\n\r?\n/', $data);
 
-					if (
-						array_key_exists('screen_state', $matches)
-						&& Utils\Strings::lower($matches['screen_state']) === 'on'
-					) {
-						$deferred->resolve(true);
-					} else {
-						$deferred->resolve(false);
+					if (is_array($parts) && count($parts) === 2) {
+						preg_match(
+							'/<X_ScreenState>(?<screen_state>\w+)<\/X_ScreenState>/',
+							strval($parts[1]),
+							$matches,
+						);
+
+						if (
+							array_key_exists('screen_state', $matches)
+							&& Utils\Strings::lower($matches['screen_state']) === 'on'
+						) {
+							$deferred->resolve(true);
+							$result = true;
+						} else {
+							$deferred->resolve(false);
+							$result = false;
+						}
+
+						if ($runLoop) {
+							$this->eventLoop->stop();
+						}
 					}
-				}
-			});
+				});
 
-			$connection->on('error', function (Throwable $ex) use ($deferred): void {
-				$this->logger->error('Something went wrong with subscription socket', [
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
-					'type' => 'television-api',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
-					'connector' => [
-						'identifier' => $this->identifier,
-					],
-				]);
+				$connection->on('error', function (Throwable $ex) use ($deferred, $runLoop, &$result): void {
+					$this->logger->error('Something went wrong with subscription socket', [
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+						'type' => 'television-api',
+						'exception' => BootstrapHelpers\Logger::buildException($ex),
+						'connector' => [
+							'identifier' => $this->identifier,
+						],
+					]);
 
-				$deferred->resolve(false);
-			});
-		});
+					$deferred->resolve(false);
+					$result = false;
+
+					if ($runLoop) {
+						$this->eventLoop->stop();
+					}
+				});
+			},
+		);
 
 		preg_match(
 			'/(?<protocol>tcp):\/\/(?<ip_address>[0-9]+.[0-9]+.[0-9]+.[0-9]+)?:(?<port>[0-9]+)?/',
@@ -1449,6 +1502,10 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 				],
 			]);
 
+			if ($runLoop) {
+				return false;
+			}
+
 			return Promise\resolve(false);
 		}
 
@@ -1462,6 +1519,10 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 					'identifier' => $this->identifier,
 				],
 			]);
+
+			if ($runLoop) {
+				return false;
+			}
 
 			return Promise\resolve(false);
 		}
@@ -1492,9 +1553,10 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 			$socket->close();
 
 			$deferred->resolve(false);
+			$result = false;
 		}
 
-		$this->eventLoop->addTimer(1.5, function () use ($client, $socket, $sid, $deferred): void {
+		$this->eventLoop->addTimer(1.5, function () use ($client, $socket, $sid, $deferred, $runLoop, &$result): void {
 			try {
 				$client->request(
 					'UNSUBSCRIBE',
@@ -1513,9 +1575,20 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 			}
 
 			$deferred->resolve(false);
+			$result = false;
+
+			if ($runLoop) {
+				$this->eventLoop->stop();
+			}
 		});
 
-		return $deferred->promise();
+		if ($runLoop) {
+			$this->eventLoop->run();
+
+			return $result;
+		} else {
+			return $deferred->promise();
+		}
 	}
 
 	/**

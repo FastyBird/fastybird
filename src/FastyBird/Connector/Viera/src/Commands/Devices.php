@@ -15,6 +15,8 @@
 
 namespace FastyBird\Connector\Viera\Commands;
 
+use BadMethodCallException;
+use DateTimeInterface;
 use Doctrine\DBAL;
 use Doctrine\Persistence;
 use FastyBird\Connector\Viera;
@@ -23,6 +25,7 @@ use FastyBird\Connector\Viera\Entities;
 use FastyBird\Connector\Viera\Exceptions;
 use FastyBird\Connector\Viera\Helpers;
 use FastyBird\Connector\Viera\Types;
+use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -33,6 +36,7 @@ use FastyBird\Module\Devices\Queries as DevicesQueries;
 use InvalidArgumentException as InvalidArgumentExceptionAlias;
 use Nette\Utils;
 use Psr\Log;
+use React\EventLoop;
 use Symfony\Component\Console;
 use Symfony\Component\Console\Input;
 use Symfony\Component\Console\Output;
@@ -46,11 +50,13 @@ use function assert;
 use function count;
 use function intval;
 use function preg_match;
+use function React\Async\async;
 use function React\Async\await;
 use function sprintf;
 use function strval;
 use function trim;
 use function usort;
+use const SIGINT;
 
 /**
  * Connector devices management command
@@ -64,6 +70,12 @@ class Devices extends Console\Command\Command
 {
 
 	public const NAME = 'fb:viera-connector:devices';
+
+	private const WAITING_INTERVAL = 5.0;
+
+	private const MAX_PROCESSING_INTERVAL = 60.0;
+
+	private const QUEUE_PROCESSING_INTERVAL = 0.01;
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 	private const MATCH_IP_ADDRESS = '/^((?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])[.]){3}(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$/';
 
@@ -74,6 +86,10 @@ class Devices extends Console\Command\Command
 	private const CHOICE_QUESTION_EDIT_DEVICE = 'Edit existing connector device';
 
 	private const CHOICE_QUESTION_DELETE_DEVICE = 'Delete existing connector device';
+
+	private DateTimeInterface|null $executedTime = null;
+
+	private EventLoop\TimerInterface|null $consumerTimer = null;
 
 	private Log\LoggerInterface $logger;
 
@@ -86,6 +102,8 @@ class Devices extends Console\Command\Command
 		private readonly DevicesModels\Devices\Properties\PropertiesManager $devicePropertiesManager,
 		private readonly Viera\Consumers\Messages $consumer,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
+		private readonly DateTimeFactory\Factory $dateTimeFactory,
+		private readonly EventLoop\LoopInterface $eventLoop,
 		Log\LoggerInterface|null $logger = null,
 		string|null $name = null,
 	)
@@ -106,6 +124,7 @@ class Devices extends Console\Command\Command
 	}
 
 	/**
+	 * @throws BadMethodCallException
 	 * @throws Console\Exception\InvalidArgumentException
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
@@ -142,6 +161,8 @@ class Devices extends Console\Command\Command
 			return Console\Command\Command::SUCCESS;
 		}
 
+		$this->executedTime = $this->dateTimeFactory->getNow();
+
 		$question = new Console\Question\ChoiceQuestion(
 			'What would you like to do?',
 			[
@@ -164,6 +185,26 @@ class Devices extends Console\Command\Command
 		} elseif ($whatToDo === self::CHOICE_QUESTION_DELETE_DEVICE) {
 			$this->deleteExistingDevice($io, $connector);
 		}
+
+		$this->consumerTimer = $this->eventLoop->addPeriodicTimer(
+			self::QUEUE_PROCESSING_INTERVAL,
+			async(function (): void {
+				$this->consumer->consume();
+			}),
+		);
+
+		$this->eventLoop->addSignal(SIGINT, function (): void {
+			$this->checkAndTerminate();
+		});
+
+		$this->eventLoop->addTimer(
+			self::MAX_PROCESSING_INTERVAL,
+			async(function (): void {
+				$this->checkAndTerminate();
+			}),
+		);
+
+		$this->eventLoop->run();
 
 		return Console\Command\Command::SUCCESS;
 	}
@@ -228,7 +269,7 @@ class Devices extends Console\Command\Command
 			$televisionApi->connect();
 
 			try {
-				$isOnline = await($televisionApi->livenessProbe());
+				$isOnline = $televisionApi->livenessProbe(1.5, true);
 			} catch (Throwable $ex) {
 				$this->logger->error(
 					'Checking TV status failed',
@@ -549,7 +590,7 @@ class Devices extends Console\Command\Command
 			$televisionApi->connect();
 
 			try {
-				$isOnline = await($televisionApi->livenessProbe());
+				$isOnline = $televisionApi->livenessProbe(1.5, true);
 			} catch (Throwable $ex) {
 				$this->logger->error(
 					'Checking TV status failed',
@@ -1123,6 +1164,46 @@ class Devices extends Console\Command\Command
 		assert($device instanceof Entities\VieraDevice);
 
 		return $device;
+	}
+
+	private function checkAndTerminate(): void
+	{
+		if ($this->consumer->isEmpty()) {
+			if ($this->consumerTimer !== null) {
+				$this->eventLoop->cancelTimer($this->consumerTimer);
+			}
+
+			$this->eventLoop->stop();
+
+		} else {
+			if (
+				$this->executedTime !== null
+				&& $this->dateTimeFactory->getNow()->getTimestamp() - $this->executedTime->getTimestamp() > self::MAX_PROCESSING_INTERVAL
+			) {
+				$this->logger->error(
+					'Discovery exceeded reserved time and have been terminated',
+					[
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+						'type' => 'discovery-cmd',
+					],
+				);
+
+				if ($this->consumerTimer !== null) {
+					$this->eventLoop->cancelTimer($this->consumerTimer);
+				}
+
+				$this->eventLoop->stop();
+
+				return;
+			}
+
+			$this->eventLoop->addTimer(
+				self::WAITING_INTERVAL,
+				async(function (): void {
+					$this->checkAndTerminate();
+				}),
+			);
+		}
 	}
 
 	/**
