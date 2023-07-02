@@ -393,7 +393,7 @@ class Devices extends Console\Command\Command
 		$configureHdmi = (bool) $io->askQuestion($question);
 
 		if ($configureHdmi) {
-			$io->info(
+			$io->note(
 				'Now you have to provide name for configured HDMI input and its number. HDMI number is related to you television',
 			);
 
