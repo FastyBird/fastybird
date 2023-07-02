@@ -110,6 +110,10 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 
 	private bool $isConnected = false;
 
+	private string|null $subscriptionId = null;
+
+	private Socket\ServerInterface|null $eventsServer = null;
+
 	private Entities\API\Session|null $session = null;
 
 	private Log\LoggerInterface $logger;
@@ -140,11 +144,15 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 	 * @throws Exceptions\TelevisionApiCall
 	 * @throws RuntimeException
 	 */
-	public function connect(): void
+	public function connect(bool $subscribe = false): void
 	{
 		if ($this->encryptionKey !== null) {
 			$this->deriveSessionKeys();
 			$this->requestSessionId(false);
+		}
+
+		if ($subscribe) {
+			$this->subscribeEvents();
 		}
 
 		$this->isConnected = true;
@@ -154,6 +162,8 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 	{
 		$this->session = null;
 		$this->isConnected = false;
+
+		$this->unsubscribeEvents();
 	}
 
 	public function isConnected(): bool
@@ -1422,157 +1432,56 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 	{
 		$deferred = new Promise\Deferred();
 
-		try {
-			$socket = new Socket\SocketServer('0.0.0.0:0');
-		} catch (RuntimeException | InvalidArgumentException) {
-			if ($runLoop) {
-				return false;
-			}
-
-			return Promise\resolve(false);
-		}
-
 		$result = false;
 
-		$socket->on(
-			'connection',
-			function (Socket\ConnectionInterface $connection) use ($deferred, $runLoop, &$result): void {
-				$connection->on('data', function (string $data) use ($deferred, $runLoop, &$result): void {
-					$parts = preg_split('/\r?\n\r?\n/', $data);
+		$this->on('event-data', function (string $data) use ($deferred, $runLoop, &$result): void {
+			$parts = preg_split('/\r?\n\r?\n/', $data);
 
-					if (is_array($parts) && count($parts) === 2) {
-						preg_match(
-							'/<X_ScreenState>(?<screen_state>\w+)<\/X_ScreenState>/',
-							strval($parts[1]),
-							$matches,
-						);
+			if (is_array($parts) && count($parts) === 2) {
+				preg_match(
+					'/<X_ScreenState>(?<screen_state>\w+)<\/X_ScreenState>/',
+					strval($parts[1]),
+					$matches,
+				);
 
-						if (
-							array_key_exists('screen_state', $matches)
-							&& Utils\Strings::lower($matches['screen_state']) === 'on'
-						) {
-							$deferred->resolve(true);
-							$result = true;
-						} else {
-							$deferred->resolve(false);
-							$result = false;
-						}
-
-						if ($runLoop) {
-							$this->eventLoop->stop();
-						}
-					}
-				});
-
-				$connection->on('error', function (Throwable $ex) use ($deferred, $runLoop, &$result): void {
-					$this->logger->error('Something went wrong with subscription socket', [
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
-						'type' => 'television-api',
-						'exception' => BootstrapHelpers\Logger::buildException($ex),
-						'connector' => [
-							'identifier' => $this->identifier,
-						],
-					]);
-
+				if (
+					array_key_exists('screen_state', $matches)
+					&& Utils\Strings::lower($matches['screen_state']) === 'on'
+				) {
+					$deferred->resolve(true);
+					$result = true;
+				} else {
 					$deferred->resolve(false);
 					$result = false;
+				}
 
-					if ($runLoop) {
-						$this->eventLoop->stop();
-					}
-				});
-			},
-		);
-
-		preg_match(
-			'/(?<protocol>tcp):\/\/(?<ip_address>[0-9]+.[0-9]+.[0-9]+.[0-9]+)?:(?<port>[0-9]+)?/',
-			strval($socket->getAddress()),
-			$matches,
-		);
-
-		try {
-			$client = $this->getClient(false);
-		} catch (InvalidArgumentException $ex) {
-			$this->logger->error('Could not get http client', [
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
-				'type' => 'television-api',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
-				'connector' => [
-					'identifier' => $this->identifier,
-				],
-			]);
-
-			if ($runLoop) {
-				return false;
+				if ($runLoop) {
+					$this->eventLoop->stop();
+				}
 			}
+		});
 
-			return Promise\resolve(false);
-		}
-
-		$localIpAddress = Helpers\Network::getLocalAddress();
-
-		if ($localIpAddress === null) {
-			$this->logger->error('Could not get connector local address', [
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
-				'type' => 'television-api',
-				'connector' => [
-					'identifier' => $this->identifier,
-				],
-			]);
-
-			if ($runLoop) {
-				return false;
-			}
-
-			return Promise\resolve(false);
-		}
-
-		$localPort = $matches['port'];
-
-		$sid = null;
-
-		try {
-			$response = $client->request(
-				'SUBSCRIBE',
-				'http://' . $this->ipAddress . ':' . $this->port . self::URL_EVENT_NRC,
-				[
-					GuzzleHttp\RequestOptions::HEADERS => [
-						'CALLBACK' => '<http://' . $localIpAddress . ':' . $localPort . '>',
-						'NT' => 'upnp:event',
-						'TIMEOUT' => 'Second-' . self::EVENTS_TIMEOUT_IN_SECONDS,
-					],
-				],
-			);
-
-			$sidHeader = $response->getHeader('SID');
-
-			if ($sidHeader !== []) {
-				$sid = array_pop($sidHeader);
-			}
-		} catch (GuzzleHttp\Exception\GuzzleException) {
-			$socket->close();
-
+		$this->on('event-error', function () use ($deferred, $runLoop, &$result): void {
 			$deferred->resolve(false);
 			$result = false;
+
+			if ($runLoop) {
+				$this->eventLoop->stop();
+			}
+		});
+
+		$subscribeResult = $this->subscribeEvents();
+
+		if ($subscribeResult === false) {
+			if ($runLoop) {
+				return false;
+			}
+
+			return Promise\resolve(false);
 		}
 
-		$this->eventLoop->addTimer(1.5, function () use ($client, $socket, $sid, $deferred, $runLoop, &$result): void {
-			try {
-				$client->request(
-					'UNSUBSCRIBE',
-					'http://' . $this->ipAddress . ':' . $this->port . self::URL_EVENT_NRC,
-					[
-						GuzzleHttp\RequestOptions::HEADERS => [
-							'SID' => $sid,
-						],
-						GuzzleHttp\RequestOptions::TIMEOUT => 1,
-					],
-				);
-			} catch (GuzzleHttp\Exception\GuzzleException) {
-				// Error could be ignored
-			} finally {
-				$socket->close();
-			}
+		$this->eventLoop->addTimer(1.5, function () use ($deferred, $runLoop, &$result): void {
+			$this->unsubscribeEvents();
 
 			$deferred->resolve(false);
 			$result = false;
@@ -1853,6 +1762,141 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 		}
 
 		return new Entities\API\AuthorizePinCode($appId, $encryptionKey);
+	}
+
+	private function subscribeEvents(): bool
+	{
+		try {
+			$this->eventsServer = new Socket\SocketServer('0.0.0.0:0');
+		} catch (RuntimeException | InvalidArgumentException) {
+			return false;
+		}
+
+		$this->eventsServer->on(
+			'connection',
+			function (Socket\ConnectionInterface $connection): void {
+				$connection->on('data', function (string $data): void {
+					$this->emit('event-data', [$data]);
+				});
+
+				$connection->on('error', function (Throwable $ex): void {
+					$this->logger->error('Something went wrong with subscription socket', [
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+						'type' => 'television-api',
+						'exception' => BootstrapHelpers\Logger::buildException($ex),
+						'connector' => [
+							'identifier' => $this->identifier,
+						],
+					]);
+
+					$this->emit('event-error', [$ex]);
+				});
+			},
+		);
+
+		preg_match(
+			'/(?<protocol>tcp):\/\/(?<ip_address>[0-9]+.[0-9]+.[0-9]+.[0-9]+)?:(?<port>[0-9]+)?/',
+			strval($this->eventsServer->getAddress()),
+			$matches,
+		);
+
+		try {
+			$client = $this->getClient(false);
+		} catch (InvalidArgumentException $ex) {
+			$this->logger->error('Could not get http client', [
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+				'type' => 'television-api',
+				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'connector' => [
+					'identifier' => $this->identifier,
+				],
+			]);
+
+			return false;
+		}
+
+		$localIpAddress = Helpers\Network::getLocalAddress();
+
+		if ($localIpAddress === null) {
+			$this->logger->error('Could not get connector local address', [
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+				'type' => 'television-api',
+				'connector' => [
+					'identifier' => $this->identifier,
+				],
+			]);
+
+			return false;
+		}
+
+		$localPort = $matches['port'];
+
+		$this->subscriptionId = null;
+
+		try {
+			$response = $client->request(
+				'SUBSCRIBE',
+				'http://' . $this->ipAddress . ':' . $this->port . self::URL_EVENT_NRC,
+				[
+					GuzzleHttp\RequestOptions::HEADERS => [
+						'CALLBACK' => '<http://' . $localIpAddress . ':' . $localPort . '>',
+						'NT' => 'upnp:event',
+						'TIMEOUT' => 'Second-' . self::EVENTS_TIMEOUT_IN_SECONDS,
+					],
+				],
+			);
+
+			$sidHeader = $response->getHeader('SID');
+
+			if ($sidHeader !== []) {
+				$this->subscriptionId = array_pop($sidHeader);
+			}
+		} catch (GuzzleHttp\Exception\GuzzleException) {
+			$this->eventsServer->close();
+		}
+
+		return true;
+	}
+
+	private function unsubscribeEvents(): void
+	{
+		if ($this->subscriptionId === null) {
+			return;
+		}
+
+		try {
+			$client = $this->getClient(false);
+		} catch (InvalidArgumentException $ex) {
+			$this->logger->error('Could not get http client', [
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+				'type' => 'television-api',
+				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'connector' => [
+					'identifier' => $this->identifier,
+				],
+			]);
+
+			$this->eventsServer?->close();
+
+			return;
+		}
+
+		try {
+			$client->request(
+				'UNSUBSCRIBE',
+				'http://' . $this->ipAddress . ':' . $this->port . self::URL_EVENT_NRC,
+				[
+					GuzzleHttp\RequestOptions::HEADERS => [
+						'SID' => $this->subscriptionId,
+					],
+					GuzzleHttp\RequestOptions::TIMEOUT => 1,
+				],
+			);
+		} catch (GuzzleHttp\Exception\GuzzleException) {
+			// Error could be ignored
+		} finally {
+			$this->eventsServer?->close();
+		}
 	}
 
 	/**

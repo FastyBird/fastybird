@@ -126,7 +126,7 @@ final class ConfigureDevice implements Consumer
 				'Creating new device',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
-					'type' => 'create-device-message-consumer',
+					'type' => 'configure-device-message-consumer',
 					'device' => [
 						'id' => $device->getPlainId(),
 						'identifier' => $entity->getIdentifier(),
@@ -150,7 +150,7 @@ final class ConfigureDevice implements Consumer
 				'Device was updated',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
-					'type' => 'create-device-message-consumer',
+					'type' => 'configure-device-message-consumer',
 					'device' => [
 						'id' => $device->getPlainId(),
 					],
@@ -225,7 +225,7 @@ final class ConfigureDevice implements Consumer
 					'Creating new device channel',
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
-						'type' => 'create-device-message-consumer',
+						'type' => 'configure-device-message-consumer',
 						'device' => [
 							'id' => $device->getPlainId(),
 						],
@@ -323,7 +323,7 @@ final class ConfigureDevice implements Consumer
 			'Consumed device found message',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
-				'type' => 'create-device-message-consumer',
+				'type' => 'configure-device-message-consumer',
 				'device' => [
 					'id' => $device->getPlainId(),
 				],
