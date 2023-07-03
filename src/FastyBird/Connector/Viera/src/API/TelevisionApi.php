@@ -90,7 +90,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 
 	private const SIGNATURE_BYTES_LENGTH = 32;
 
-	private const EVENTS_TIMEOUT_IN_SECONDS = 1;
+	private const EVENTS_TIMEOUT = 10;
 
 	private const URN_RENDERING_CONTROL = 'schemas-upnp-org:service:RenderingControl:1';
 
@@ -111,6 +111,10 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 	private bool $isConnected = false;
 
 	private string|null $subscriptionId = null;
+
+	private bool $subscriptionCreated = false;
+
+	private bool $screenState = false;
 
 	private Socket\ServerInterface|null $eventsServer = null;
 
@@ -1430,34 +1434,29 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 	 */
 	public function isTurnedOn(bool $runLoop = false): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|bool
 	{
+		if ($this->subscriptionCreated) {
+			if ($runLoop) {
+				return Promise\resolve($this->screenState);
+			}
+
+			return $this->screenState;
+		}
+
 		$deferred = new Promise\Deferred();
 
 		$result = false;
 
-		$this->on('event-data', function (string $data) use ($deferred, $runLoop, &$result): void {
-			$parts = preg_split('/\r?\n\r?\n/', $data);
+		$this->on('event-data', function (Entities\API\Event $event) use ($deferred, $runLoop, &$result): void {
+			if ($event->getScreenState() !== null) {
+				$deferred->resolve($event->getScreenState());
+				$result = $event->getScreenState();
+			} else {
+				$deferred->resolve(false);
+				$result = false;
+			}
 
-			if (is_array($parts) && count($parts) === 2) {
-				preg_match(
-					'/<X_ScreenState>(?<screen_state>\w+)<\/X_ScreenState>/',
-					strval($parts[1]),
-					$matches,
-				);
-
-				if (
-					array_key_exists('screen_state', $matches)
-					&& Utils\Strings::lower($matches['screen_state']) === 'on'
-				) {
-					$deferred->resolve(true);
-					$result = true;
-				} else {
-					$deferred->resolve(false);
-					$result = false;
-				}
-
-				if ($runLoop) {
-					$this->eventLoop->stop();
-				}
+			if ($runLoop) {
+				$this->eventLoop->stop();
 			}
 		});
 
@@ -1766,17 +1765,54 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 
 	private function subscribeEvents(): bool
 	{
+		if ($this->eventsServer !== null) {
+			return false;
+		}
+
 		try {
 			$this->eventsServer = new Socket\SocketServer('0.0.0.0:0');
 		} catch (RuntimeException | InvalidArgumentException) {
 			return false;
 		}
 
+		$this->subscriptionCreated = true;
+
 		$this->eventsServer->on(
 			'connection',
 			function (Socket\ConnectionInterface $connection): void {
-				$connection->on('data', function (string $data): void {
-					$this->emit('event-data', [$data]);
+				$connection->on('data', function (string $data) use ($connection): void {
+					$parts = preg_split('/\r?\n\r?\n/', $data);
+
+					$screenState = null;
+					$inputMode = null;
+
+					if (is_array($parts) && count($parts) === 2) {
+						preg_match(
+							'/<X_ScreenState>(?<screen_state>\w+)<\/X_ScreenState>/',
+							strval($parts[1]),
+							$matches,
+						);
+
+						if (array_key_exists('screen_state', $matches)) {
+							$screenState = Utils\Strings::lower($matches['screen_state']) === 'on';
+						}
+
+						preg_match(
+							'/<X_InputMode>(?<input_mode>\w+)<\/X_InputMode>/',
+							strval($parts[1]),
+							$matches,
+						);
+
+						if (array_key_exists('input_mode', $matches)) {
+							$inputMode = Utils\Strings::lower($matches['input_mode']);
+						}
+					}
+
+					$this->emit('event-data', [new Entities\API\Event($screenState, $inputMode)]);
+
+					$connection->write(
+						"HTTP/1.1 200 OK\r\nContent-Type: text/xml; charset=\"utf-8\"\r\nContent-Length: 0\r\n\r\n",
+					);
 				});
 
 				$connection->on('error', function (Throwable $ex): void {
@@ -1841,7 +1877,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 					GuzzleHttp\RequestOptions::HEADERS => [
 						'CALLBACK' => '<http://' . $localIpAddress . ':' . $localPort . '>',
 						'NT' => 'upnp:event',
-						'TIMEOUT' => 'Second-' . self::EVENTS_TIMEOUT_IN_SECONDS,
+						'TIMEOUT' => 'Second-' . self::EVENTS_TIMEOUT,
 					],
 				],
 			);
@@ -1853,6 +1889,8 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 			}
 		} catch (GuzzleHttp\Exception\GuzzleException) {
 			$this->eventsServer->close();
+
+			$this->subscriptionCreated = false;
 		}
 
 		return true;
@@ -1860,6 +1898,8 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 
 	private function unsubscribeEvents(): void
 	{
+		$this->subscriptionCreated = false;
+
 		if ($this->subscriptionId === null) {
 			return;
 		}

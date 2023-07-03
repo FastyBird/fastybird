@@ -45,6 +45,7 @@ use function in_array;
 use function intval;
 use function is_string;
 use function strval;
+use function var_dump;
 
 /**
  * Television client
@@ -267,7 +268,7 @@ final class Television implements Client
 		}
 
 		if (!$client->isConnected()) {
-			$client->connect();
+			$client->connect(true);
 
 			$this->consumer->append(
 				new Entities\Messages\DeviceState(
@@ -351,6 +352,9 @@ final class Television implements Client
 				->then(function (int|bool $state) use ($device, $channel, $property): void {
 					$this->processedChannelsProperties[$device->getIdentifier()][$property->getIdentifier()] = $this->dateTimeFactory->getNow();
 
+					var_dump($property->getIdentifier());
+					var_dump($state);
+
 					$this->consumer->append(new Entities\Messages\ChannelPropertyState(
 						$this->connector->getId(),
 						$device->getIdentifier(),
@@ -411,6 +415,51 @@ final class Television implements Client
 			$device->getPort(),
 			$device->getAppId(),
 			$device->getEncryptionKey(),
+		);
+
+		$client->on(
+			'event-data',
+			function (Entities\API\Event $event) use ($device): void {
+				if ($event->getScreenState() !== null) {
+					$this->consumer->append(
+						new Entities\Messages\ChannelPropertyState(
+							$this->connector->getId(),
+							$device->getIdentifier(),
+							Types\ChannelType::TELEVISION,
+							Types\ChannelPropertyIdentifier::IDENTIFIER_STATE,
+							$event->getScreenState(),
+						),
+					);
+				}
+			},
+		);
+
+		$client->on(
+			'event-error',
+			function (Throwable $ex) use ($device): void {
+				$this->logger->warning(
+					'Event subscription with device failed',
+					[
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+						'type' => 'local-client',
+						'exception' => BootstrapHelpers\Logger::buildException($ex),
+						'connector' => [
+							'id' => $this->connector->getPlainId(),
+						],
+						'device' => [
+							'id' => $device->getPlainId(),
+						],
+					],
+				);
+
+				$this->consumer->append(
+					new Entities\Messages\DeviceState(
+						$device->getConnector()->getId(),
+						$device->getIdentifier(),
+						MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_DISCONNECTED),
+					),
+				);
+			},
 		);
 
 		$this->devicesClients[$device->getPlainId()] = $client;
