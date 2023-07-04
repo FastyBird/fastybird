@@ -36,7 +36,7 @@ final class ChannelPropertyState extends Device
 		string $device,
 		private readonly string $channel,
 		private readonly string $property,
-		private readonly float|int|string|bool|MetadataTypes\SwitchPayload|DateTimeInterface|null $state,
+		private readonly bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $state,
 	)
 	{
 		parent::__construct($connector, $device);
@@ -52,7 +52,7 @@ final class ChannelPropertyState extends Device
 		return $this->property;
 	}
 
-	public function getState(): float|int|string|bool|MetadataTypes\SwitchPayload|DateTimeInterface|null
+	public function getState(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
 	{
 		return $this->state;
 	}

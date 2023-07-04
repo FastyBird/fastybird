@@ -1436,10 +1436,10 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 	{
 		if ($this->subscriptionCreated) {
 			if ($runLoop) {
-				return Promise\resolve($this->screenState);
+				return $this->screenState;
 			}
 
-			return $this->screenState;
+			return Promise\resolve($this->screenState);
 		}
 
 		$deferred = new Promise\Deferred();
@@ -1795,6 +1795,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 
 						if (array_key_exists('screen_state', $matches)) {
 							$screenState = Utils\Strings::lower($matches['screen_state']) === 'on';
+							$this->screenState = $screenState;
 						}
 
 						preg_match(

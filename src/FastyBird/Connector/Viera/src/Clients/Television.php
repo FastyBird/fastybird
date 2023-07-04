@@ -45,7 +45,6 @@ use function in_array;
 use function intval;
 use function is_string;
 use function strval;
-use function var_dump;
 
 /**
  * Television client
@@ -191,27 +190,67 @@ final class Television implements Client
 			switch ($property->getIdentifier()) {
 				case Types\ChannelPropertyIdentifier::IDENTIFIER_STATE:
 					if ($valueToWrite === true) {
-						return $client->turnOn();
+						$result = $client->turnOn();
 					}
 
-					return $client->turnOff();
+					$result = $client->turnOff();
+
+					break;
 				case Types\ChannelPropertyIdentifier::IDENTIFIER_VOLUME:
-					return $client->setVolume(intval($valueToWrite));
+					$result = $client->setVolume(intval($valueToWrite));
+
+					break;
 				case Types\ChannelPropertyIdentifier::IDENTIFIER_MUTE:
-					return $client->setMute(boolval($valueToWrite));
+					$result = $client->setMute(boolval($valueToWrite));
+
+					break;
 				case Types\ChannelPropertyIdentifier::IDENTIFIER_INPUT_SOURCE:
 					if (intval($valueToWrite) < 100) {
-						return $client->sendKey('NRC_HDMI' . $valueToWrite . '-ONOFF');
+						$result = $client->sendKey('NRC_HDMI' . $valueToWrite . '-ONOFF');
 					} elseif (intval($valueToWrite) === 500) {
-						return $client->sendKey(Types\ActionKey::get(Types\ActionKey::AD_CHANGE));
+						$result = $client->sendKey(Types\ActionKey::get(Types\ActionKey::AD_CHANGE));
 					} else {
-						return $client->launchApplication(strval($valueToWrite));
+						$result = $client->launchApplication(strval($valueToWrite));
 					}
+
+					break;
 				default:
 					return Promise\reject(
 						new Exceptions\InvalidArgument('Provided property is not supported for writing'),
 					);
 			}
+
+			$deferred = new Promise\Deferred();
+
+			$result->then(
+				function () use ($deferred, $device, $property, $state): void {
+					switch ($property->getIdentifier()) {
+						case Types\ChannelPropertyIdentifier::IDENTIFIER_STATE:
+						case Types\ChannelPropertyIdentifier::IDENTIFIER_VOLUME:
+						case Types\ChannelPropertyIdentifier::IDENTIFIER_MUTE:
+						case Types\ChannelPropertyIdentifier::IDENTIFIER_INPUT_SOURCE:
+							$this->consumer->append(
+								new Entities\Messages\ChannelPropertyState(
+									$this->connector->getId(),
+									$device->getIdentifier(),
+									Types\ChannelType::TELEVISION,
+									$property->getIdentifier(),
+									$state->getExpectedValue(),
+								),
+							);
+
+							break;
+					}
+
+					$deferred->resolve();
+				},
+				static function (Throwable $ex) use ($deferred): void {
+					var_dump('ERR');
+					$deferred->reject($ex);
+				},
+			);
+
+			return $deferred->promise();
 		}
 
 		return Promise\reject(new Exceptions\InvalidArgument('Provided property state is in invalid state'));
@@ -349,11 +388,8 @@ final class Television implements Client
 			}
 
 			$result
-				->then(function (int|bool $state) use ($device, $channel, $property): void {
+				->then(function (int|bool $value) use ($device, $channel, $property): void {
 					$this->processedChannelsProperties[$device->getIdentifier()][$property->getIdentifier()] = $this->dateTimeFactory->getNow();
-
-					var_dump($property->getIdentifier());
-					var_dump($state);
 
 					$this->consumer->append(new Entities\Messages\ChannelPropertyState(
 						$this->connector->getId(),
@@ -363,7 +399,7 @@ final class Television implements Client
 						API\Transformer::transformValueFromDevice(
 							$property->getDataType(),
 							$property->getFormat(),
-							$state,
+							$value,
 						),
 					));
 				})

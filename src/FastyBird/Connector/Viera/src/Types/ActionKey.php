@@ -40,8 +40,6 @@ class ActionKey extends Consistence\Enum\Enum
 
 	public const ASPECT = 'NRC_ASPECT-ONOFF';
 
-	public const BACK = 'NRC_RETURN-ONOFF';
-
 	public const BLUE = 'NRC_BLUE-ONOFF';
 
 	public const CANCEL = 'NRC_CANCEL-ONOFF';
@@ -52,7 +50,7 @@ class ActionKey extends Consistence\Enum\Enum
 
 	public const CH_DOWN = 'NRC_CH_DOWN-ONOFF';
 
-	public const INPUT_KEY = 'NRC_CHG_INPUT-ONOFF';
+	public const INPUT = 'NRC_CHG_INPUT-ONOFF';
 
 	public const NETWORK = 'NRC_CHG_NETWORK-ONOFF';
 
@@ -87,8 +85,6 @@ class ActionKey extends Consistence\Enum\Enum
 	public const ENTER = 'NRC_ENTER-ONOFF';
 
 	public const EPG = 'NRC_EPG-ONOFF';
-
-	public const EXIT = 'NRC_CANCEL-ONOFF';
 
 	public const EZ_SYNC = 'NRC_EZ_SYNC-ONOFF';
 
@@ -144,7 +140,7 @@ class ActionKey extends Consistence\Enum\Enum
 
 	public const RED = 'NRC_RED-ONOFF';
 
-	public const RETURN_KEY = 'NRC_RETURN-ONOFF';
+	public const RETURN = 'NRC_RETURN-ONOFF';
 
 	public const REWIND = 'NRC_REW-ONOFF';
 
