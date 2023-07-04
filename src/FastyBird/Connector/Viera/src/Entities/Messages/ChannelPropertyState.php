@@ -36,6 +36,7 @@ final class ChannelPropertyState extends Device
 		string $device,
 		private readonly string $channel,
 		private readonly string $property,
+		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		private readonly bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $state,
 	)
 	{
@@ -51,7 +52,7 @@ final class ChannelPropertyState extends Device
 	{
 		return $this->property;
 	}
-
+	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 	public function getState(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
 	{
 		return $this->state;

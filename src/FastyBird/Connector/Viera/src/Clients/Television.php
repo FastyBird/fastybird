@@ -245,7 +245,6 @@ final class Television implements Client
 					$deferred->resolve();
 				},
 				static function (Throwable $ex) use ($deferred): void {
-					var_dump('ERR');
 					$deferred->reject($ex);
 				},
 			);
