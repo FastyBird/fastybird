@@ -429,6 +429,7 @@ class Devices extends Console\Command\Command
 			trim(sprintf('%s %s', $specs->getModelName(), $specs->getModelNumber())),
 			$specs->getManufacturer(),
 			$specs->getSerialNumber(),
+			$authorization?->getAppId() !== null && $authorization->getEncryptionKey() !== null,
 			$authorization?->getAppId(),
 			$authorization?->getEncryptionKey(),
 			$hdmi,

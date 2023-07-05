@@ -22,6 +22,7 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use function floatval;
+use function is_bool;
 use function is_int;
 use function is_numeric;
 use function is_string;
@@ -108,7 +109,25 @@ class VieraDevice extends DevicesEntities\Devices\Device
 	 */
 	public function isEncrypted(): bool
 	{
-		return $this->getAppId() !== null && $this->getEncryptionKey() !== null;
+		if ($this->getAppId() !== null && $this->getEncryptionKey() !== null) {
+			return true;
+		}
+
+		$property = $this->properties
+			->filter(
+			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::IDENTIFIER_ENCRYPTED
+			)
+			->first();
+
+		if (
+			$property instanceof DevicesEntities\Devices\Properties\Variable
+			&& is_bool($property->getValue())
+		) {
+			return $property->getValue();
+		}
+
+		return false;
 	}
 
 	/**

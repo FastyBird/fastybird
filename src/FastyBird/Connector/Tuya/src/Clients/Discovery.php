@@ -19,7 +19,6 @@ use Evenement;
 use FastyBird\Connector\Tuya\API;
 use FastyBird\Connector\Tuya\Consumers;
 use FastyBird\Connector\Tuya\Entities;
-use FastyBird\Connector\Tuya\Entities\Clients\DiscoveredLocalDevice;
 use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
@@ -90,7 +89,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 	/** @var array<string> */
 	private array $processedProtocols = [];
 
-	/** @var SplObjectStorage<DiscoveredLocalDevice, null> */
+	/** @var SplObjectStorage<Entities\Clients\DiscoveredLocalDevice, null> */
 	private SplObjectStorage $discoveredLocalDevices;
 
 	private EventLoop\TimerInterface|null $handlerTimer = null;
@@ -416,7 +415,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @param array<DiscoveredLocalDevice> $devices
+	 * @param array<Entities\Clients\DiscoveredLocalDevice> $devices
 	 *
 	 * @return array<Entities\Messages\DiscoveredLocalDevice>
 	 *

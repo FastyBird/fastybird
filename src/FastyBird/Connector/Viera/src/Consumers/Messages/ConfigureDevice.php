@@ -195,6 +195,13 @@ final class ConfigureDevice implements Consumer
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
+			$entity->isEncrypted(),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN),
+			Types\DevicePropertyIdentifier::IDENTIFIER_ENCRYPTED,
+			Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_ENCRYPTED),
+		);
+		$this->setDeviceProperty(
+			$device->getId(),
 			$entity->getAppId(),
 			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 			Types\DevicePropertyIdentifier::IDENTIFIER_APP_ID,

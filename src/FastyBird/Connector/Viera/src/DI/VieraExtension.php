@@ -107,6 +107,11 @@ class VieraExtension extends DI\CompilerExtension
 				'writer' => $writer,
 			]);
 
+		$builder->addFactoryDefinition($this->prefix('clients.discovery'))
+			->setImplement(Clients\DiscoveryFactory::class)
+			->getResultDefinition()
+			->setType(Clients\Discovery::class);
+
 		$builder->addFactoryDefinition($this->prefix('api.televisionApi'))
 			->setImplement(API\TelevisionApiFactory::class)
 			->getResultDefinition()
@@ -172,6 +177,9 @@ class VieraExtension extends DI\CompilerExtension
 
 		$builder->addDefinition($this->prefix('commands.initialize'), new DI\Definitions\ServiceDefinition())
 			->setType(Commands\Initialize::class);
+
+		$builder->addDefinition($this->prefix('commands.discovery'), new DI\Definitions\ServiceDefinition())
+			->setType(Commands\Discovery::class);
 
 		$builder->addDefinition($this->prefix('commands.device'), new DI\Definitions\ServiceDefinition())
 			->setType(Commands\Devices::class);

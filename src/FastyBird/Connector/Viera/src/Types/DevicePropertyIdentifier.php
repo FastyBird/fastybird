@@ -47,6 +47,8 @@ class DevicePropertyIdentifier extends Consistence\Enum\Enum
 
 	public const IDENTIFIER_PORT = 'port';
 
+	public const IDENTIFIER_ENCRYPTED = 'encrypted';
+
 	public const IDENTIFIER_APP_ID = 'app_id';
 
 	public const IDENTIFIER_ENCRYPTION_KEY = 'encryption_key';

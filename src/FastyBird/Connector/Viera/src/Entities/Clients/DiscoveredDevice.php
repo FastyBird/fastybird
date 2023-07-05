@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ConfigureDevice.php
+ * DiscoveredDevice.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,13 +10,13 @@
  * @subpackage     Entities
  * @since          1.0.0
  *
- * @date           28.06.23
+ * @date           05.07.23
  */
 
-namespace FastyBird\Connector\Viera\Entities\Messages;
+namespace FastyBird\Connector\Viera\Entities\Clients;
 
+use FastyBird\Connector\Viera\Entities\Messages\Entity;
 use Nette;
-use Ramsey\Uuid;
 use function array_map;
 
 /**
@@ -27,17 +27,15 @@ use function array_map;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ConfigureDevice implements Entity
+final class DiscoveredDevice implements Entity
 {
 
 	use Nette\SmartObject;
 
 	/**
-	 * @param array<DeviceHdmi> $hdmi
 	 * @param array<DeviceApplication> $applications
 	 */
 	public function __construct(
-		private readonly Uuid\UuidInterface $connector,
 		private readonly string $identifier,
 		private readonly string $ipAddress,
 		private readonly int $port,
@@ -46,17 +44,9 @@ final class ConfigureDevice implements Entity
 		private readonly string|null $manufacturer,
 		private readonly string|null $serialNumber,
 		private readonly bool $encrypted,
-		private readonly string|null $appId,
-		private readonly string|null $encryptionKey,
-		private readonly array $hdmi,
 		private readonly array $applications,
 	)
 	{
-	}
-
-	public function getConnector(): Uuid\UuidInterface
-	{
-		return $this->connector;
 	}
 
 	public function getIdentifier(): string
@@ -99,24 +89,6 @@ final class ConfigureDevice implements Entity
 		return $this->encrypted;
 	}
 
-	public function getAppId(): string|null
-	{
-		return $this->appId;
-	}
-
-	public function getEncryptionKey(): string|null
-	{
-		return $this->encryptionKey;
-	}
-
-	/**
-	 * @return array<DeviceHdmi>
-	 */
-	public function getHdmi(): array
-	{
-		return $this->hdmi;
-	}
-
 	/**
 	 * @return array<DeviceApplication>
 	 */
@@ -131,7 +103,6 @@ final class ConfigureDevice implements Entity
 	public function toArray(): array
 	{
 		return [
-			'connector' => $this->getConnector(),
 			'identifier' => $this->getIdentifier(),
 			'ip_address' => $this->getIpAddress(),
 			'port' => $this->getPort(),
@@ -140,12 +111,6 @@ final class ConfigureDevice implements Entity
 			'manufacturer' => $this->getManufacturer(),
 			'serial_number' => $this->getSerialNumber(),
 			'is_encrypted' => $this->isEncrypted(),
-			'app_id' => $this->getAppId(),
-			'encryption_key' => $this->getEncryptionKey(),
-			'hdmi' => array_map(
-				static fn (DeviceHdmi $item): array => $item->toArray(),
-				$this->getHdmi(),
-			),
 			'applications' => array_map(
 				static fn (DeviceApplication $item): array => $item->toArray(),
 				$this->getApplications(),
