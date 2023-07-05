@@ -36,6 +36,7 @@ use function is_array;
 use function parse_url;
 use function preg_match;
 use function React\Async\async;
+use function React\Async\await;
 use function sprintf;
 use function trim;
 
@@ -59,7 +60,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 	private const SEARCH_TIMEOUT = 5;
 
-	private const MATCH_DEVICE_LOCATION = '/LOCATION:\s(?<location>[\da-zA-Z:\/.]+)\n/';
+	private const MATCH_DEVICE_LOCATION = '/LOCATION:\s(?<location>[\da-zA-Z:\/.]+)/';
 
 	private const MATCH_DEVICE_ID = '/USN:\suuid:(?<usn>[\da-zA-Z-]+)::urn/';
 
@@ -117,7 +118,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			return;
 		}
 
-		$this->sender->on('message', function ($data, $remote): void {
+		$this->sender->on('message', async(function (string $data): void {
 			if (
 				preg_match(self::MATCH_DEVICE_LOCATION, $data, $matches) === 1
 				&& array_key_exists('location', $matches)
@@ -133,11 +134,14 @@ final class Discovery implements Evenement\EventEmitterInterface
 					$this->handleDiscoveredDevice(
 						$matches['usn'],
 						$urlParts['host'],
-						array_key_exists('port', $urlParts) ? $urlParts['port'] : Entities\VieraDevice::DEFAULT_PORT,
+						array_key_exists(
+							'port',
+							$urlParts,
+						) ? $urlParts['port'] : Entities\VieraDevice::DEFAULT_PORT,
 					);
 				}
 			}
-		});
+		}));
 
 		// Searching timeout
 		$this->handlerTimer = $this->eventLoop->addTimer(
@@ -194,7 +198,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$televisionApi->connect();
 
 			try {
-				$isOnline = $televisionApi->livenessProbe(1.5, true);
+				$isOnline = await($televisionApi->livenessProbe());
 			} catch (Throwable $ex) {
 				$this->logger->error(
 					'Checking TV status failed',
@@ -238,7 +242,12 @@ final class Discovery implements Evenement\EventEmitterInterface
 			if ($specs->isRequiresEncryption()) {
 				$needsAuthorization = true;
 			} else {
-				$apps = $televisionApi->getApps(false);
+				$isTurnedOn = await($televisionApi->isTurnedOn());
+
+				// Apps could be loaded only if TV is turned on
+				if ($isTurnedOn === true) {
+					$apps = $televisionApi->getApps(false);
+				}
 			}
 		} catch (Exceptions\TelevisionApiCall | Exceptions\Encrypt | Exceptions\Decrypt $ex) {
 			$this->logger->error(

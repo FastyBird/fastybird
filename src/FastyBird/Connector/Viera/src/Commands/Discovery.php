@@ -436,7 +436,7 @@ class Discovery extends Console\Command\Command
 				$io->info('Some televisions require to by paired to get encryption keys');
 
 				$question = new Console\Question\ConfirmationQuestion(
-					'Would you like to pair this devices?',
+					'Would you like to pair this televisions?',
 					false,
 				);
 

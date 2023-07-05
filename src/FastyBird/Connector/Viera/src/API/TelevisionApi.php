@@ -61,7 +61,6 @@ use function preg_replace;
 use function preg_split;
 use function property_exists;
 use function random_bytes;
-use function React\Async\await;
 use function simplexml_load_string;
 use function sprintf;
 use function str_repeat;
@@ -1266,59 +1265,61 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 		return true;
 	}
 
-	/**
-	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : bool)
-	 */
-	public function turnOn(
-		bool $async = true,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|bool
+	public function turnOn(): Promise\ExtendedPromiseInterface|Promise\PromiseInterface
 	{
+		$deferred = new Promise\Deferred();
+
 		try {
-			$status = await($this->isTurnedOn());
+			$this->isTurnedOn()
+				->then(function (bool $status) use ($deferred): void {
+					if ($status !== false) {
+						$deferred->resolve(true);
+					} else {
+						$this->sendKey(Types\ActionKey::get(Types\ActionKey::POWER))
+							->then(static function () use ($deferred): void {
+								$deferred->resolve(true);
+							})
+							->otherwise(static function (Throwable $ex) use ($deferred): void {
+								$deferred->reject($ex);
+							});
+					}
+				})
+				->otherwise(static function (Throwable $ex) use ($deferred): void {
+					$deferred->reject($ex);
+				});
 
-			if ($status !== false) {
-				if ($async) {
-					return Promise\resolve(true);
-				}
-
-				return true;
-			}
-
-			return $this->sendKey(Types\ActionKey::get(Types\ActionKey::POWER), $async);
-		} catch (Throwable) {
-			if ($async) {
-				return Promise\resolve(false);
-			}
-
-			return false;
+			return $deferred->promise();
+		} catch (Throwable $ex) {
+			return Promise\reject($ex);
 		}
 	}
 
-	/**
-	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : bool)
-	 */
-	public function turnOff(
-		bool $async = true,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|bool
+	public function turnOff(): Promise\ExtendedPromiseInterface|Promise\PromiseInterface
 	{
+		$deferred = new Promise\Deferred();
+
 		try {
-			$status = await($this->isTurnedOn());
+			$this->isTurnedOn()
+				->then(function (bool $status) use ($deferred): void {
+					if ($status === false) {
+						$deferred->resolve(true);
+					} else {
+						$this->sendKey(Types\ActionKey::get(Types\ActionKey::POWER))
+							->then(static function () use ($deferred): void {
+								$deferred->resolve(true);
+							})
+							->otherwise(static function (Throwable $ex) use ($deferred): void {
+								$deferred->reject($ex);
+							});
+					}
+				})
+				->otherwise(static function (Throwable $ex) use ($deferred): void {
+					$deferred->reject($ex);
+				});
 
-			if ($status === false) {
-				if ($async) {
-					return Promise\resolve(true);
-				}
-
-				return true;
-			}
-
-			return $this->sendKey(Types\ActionKey::get(Types\ActionKey::POWER), $async);
-		} catch (Throwable) {
-			if ($async) {
-				return Promise\resolve(false);
-			}
-
-			return false;
+			return $deferred->promise();
+		} catch (Throwable $ex) {
+			return Promise\reject($ex);
 		}
 	}
 
@@ -1494,9 +1495,9 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 			$this->eventLoop->run();
 
 			return $result;
-		} else {
-			return $deferred->promise();
 		}
+
+		return $deferred->promise();
 	}
 
 	/**

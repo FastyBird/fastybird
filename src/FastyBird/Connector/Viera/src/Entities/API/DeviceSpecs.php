@@ -30,7 +30,7 @@ use function strval;
 class DeviceSpecs implements Entities\API\Entity
 {
 
-	private string|null $serialNumber;
+	private string $serialNumber;
 
 	public function __construct(
 		private readonly string|null $deviceType = null,
@@ -80,7 +80,7 @@ class DeviceSpecs implements Entities\API\Entity
 		return $this->requiresEncryption;
 	}
 
-	public function getSerialNumber(): string|null
+	public function getSerialNumber(): string
 	{
 		return $this->serialNumber;
 	}

@@ -51,7 +51,6 @@ use function count;
 use function intval;
 use function preg_match;
 use function React\Async\async;
-use function React\Async\await;
 use function sprintf;
 use function strval;
 use function trim;
@@ -213,60 +212,15 @@ class Devices extends Console\Command\Command
 		return Console\Command\Command::SUCCESS;
 	}
 
-	/**
-	 * @throws DevicesExceptions\InvalidState
-	 */
 	private function createNewDevice(Style\SymfonyStyle $io, Entities\VieraConnector $connector): void
 	{
-		$question = new Console\Question\Question('Provide television identifier');
-
-		$question->setValidator(function (string|null $answer) {
-			if ($answer !== '' && $answer !== null) {
-				$findDeviceQuery = new DevicesQueries\FindDevices();
-				$findDeviceQuery->byIdentifier($answer);
-
-				if (
-					$this->devicesRepository->findOneBy($findDeviceQuery, Entities\VieraDevice::class) !== null
-				) {
-					throw new Exceptions\Runtime('This identifier is already used');
-				}
-			}
-
-			return $answer;
-		});
-
-		$identifier = $io->askQuestion($question);
-
-		if ($identifier === '' || $identifier === null) {
-			$identifierPattern = 'viera-%d';
-
-			for ($i = 1; $i <= 100; $i++) {
-				$identifier = sprintf($identifierPattern, $i);
-
-				$findDeviceQuery = new DevicesQueries\FindDevices();
-				$findDeviceQuery->byIdentifier($identifier);
-
-				if (
-					$this->devicesRepository->findOneBy($findDeviceQuery, Entities\VieraDevice::class) === null
-				) {
-					break;
-				}
-			}
-		}
-
-		if ($identifier === '') {
-			$io->error('Television identifier have to provided');
-
-			return;
-		}
-
-		$identifier = strval($identifier);
+		$tempIdentifier = 'new-device-' . $this->dateTimeFactory->getNow()->format(DateTimeInterface::ATOM);
 
 		try {
 			$ipAddress = $this->askIpAddress($io);
 
 			$televisionApi = $this->televisionApiFactory->create(
-				$identifier,
+				$tempIdentifier,
 				$ipAddress,
 				Entities\VieraDevice::DEFAULT_PORT,
 			);
@@ -301,7 +255,7 @@ class Devices extends Console\Command\Command
 
 			if ($specs->isRequiresEncryption()) {
 				try {
-					$isTurnedOn = await($televisionApi->isTurnedOn());
+					$isTurnedOn = $televisionApi->isTurnedOn(true);
 				} catch (Throwable $ex) {
 					$this->logger->error(
 						'Checking screen status failed',
@@ -344,7 +298,7 @@ class Devices extends Console\Command\Command
 				$authorization = $televisionApi->authorizePinCode($pinCode, $challengeKey, false);
 
 				$televisionApi = $this->televisionApiFactory->create(
-					$identifier,
+					$tempIdentifier,
 					$ipAddress,
 					Entities\VieraDevice::DEFAULT_PORT,
 					$authorization->getAppId(),
@@ -422,7 +376,7 @@ class Devices extends Console\Command\Command
 
 		$message = new Entities\Messages\ConfigureDevice(
 			$connector->getId(),
-			$identifier,
+			$specs->getSerialNumber(),
 			$ipAddress,
 			Entities\VieraDevice::DEFAULT_PORT,
 			$specs->getFriendlyName() ?? $specs->getModelName(),
@@ -625,7 +579,7 @@ class Devices extends Console\Command\Command
 				);
 
 				try {
-					$isTurnedOn = await($televisionApi->isTurnedOn());
+					$isTurnedOn = $televisionApi->isTurnedOn(true);
 				} catch (Throwable $ex) {
 					$this->logger->error(
 						'Checking screen status failed',

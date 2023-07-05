@@ -189,11 +189,7 @@ final class Television implements Client
 		if ($state->isPending() === true) {
 			switch ($property->getIdentifier()) {
 				case Types\ChannelPropertyIdentifier::IDENTIFIER_STATE:
-					if ($valueToWrite === true) {
-						$result = $client->turnOn();
-					}
-
-					$result = $client->turnOff();
+					$result = $valueToWrite === true ? $client->turnOn() : $client->turnOff();
 
 					break;
 				case Types\ChannelPropertyIdentifier::IDENTIFIER_VOLUME:
