@@ -446,6 +446,7 @@ final class Television implements Client
 			$device->getPort(),
 			$device->getAppId(),
 			$device->getEncryptionKey(),
+			$device->getMacAddress(),
 		);
 
 		$client->on(

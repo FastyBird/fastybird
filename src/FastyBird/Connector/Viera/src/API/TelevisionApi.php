@@ -28,6 +28,7 @@ use Nette;
 use Nette\Utils;
 use Psr\Http\Message;
 use Psr\Log;
+use React\Datagram;
 use React\EventLoop;
 use React\Http;
 use React\Promise;
@@ -47,8 +48,11 @@ use function base64_encode;
 use function boolval;
 use function chr;
 use function count;
+use function explode;
 use function hash_hmac;
+use function hexdec;
 use function http_build_query;
+use function implode;
 use function intval;
 use function is_array;
 use function is_string;
@@ -64,7 +68,11 @@ use function random_bytes;
 use function simplexml_load_string;
 use function sprintf;
 use function str_repeat;
+use function str_replace;
+use function str_split;
 use function strlen;
+use function strpos;
+use function strtoupper;
 use function strval;
 use function substr;
 use function unpack;
@@ -129,8 +137,9 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 		private readonly string $identifier,
 		private readonly string $ipAddress,
 		private readonly int $port,
-		private readonly string|null $appId = null,
-		private readonly string|null $encryptionKey = null,
+		private readonly string|null $appId,
+		private readonly string|null $encryptionKey,
+		private readonly string|null $macAddress,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		Log\LoggerInterface|null $logger = null,
 	)
@@ -1275,13 +1284,24 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 					if ($status !== false) {
 						$deferred->resolve(true);
 					} else {
-						$this->sendKey(Types\ActionKey::get(Types\ActionKey::POWER))
-							->then(static function () use ($deferred): void {
-								$deferred->resolve(true);
-							})
-							->otherwise(static function (Throwable $ex) use ($deferred): void {
-								$deferred->reject($ex);
-							});
+						if ($this->macAddress !== null) {
+							$this->wakeOnLan()
+								->then(static function () use ($deferred): void {
+									$deferred->resolve(true);
+								})
+								->otherwise(static function (Throwable $ex) use ($deferred): void {
+									$deferred->reject($ex);
+								});
+
+						} else {
+							$this->sendKey(Types\ActionKey::get(Types\ActionKey::POWER))
+								->then(static function () use ($deferred): void {
+									$deferred->resolve(true);
+								})
+								->otherwise(static function (Throwable $ex) use ($deferred): void {
+									$deferred->reject($ex);
+								});
+						}
 					}
 				})
 				->otherwise(static function (Throwable $ex) use ($deferred): void {
@@ -1762,6 +1782,55 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 		}
 
 		return new Entities\API\AuthorizePinCode($appId, $encryptionKey);
+	}
+
+	public function wakeOnLan(): Promise\ExtendedPromiseInterface|Promise\PromiseInterface
+	{
+		$deferred = new Promise\Deferred();
+
+		$mac = $this->macAddress;
+
+		if ($mac === null) {
+			return Promise\reject(new Exceptions\InvalidArgument('Television MAC address have to be configured'));
+		}
+
+		$datagramFactory = new Datagram\Factory($this->eventLoop);
+
+		$datagramFactory->createClient(sprintf('%s:%d', $this->ipAddress, 9))
+			->then(static function (Datagram\SocketInterface $socket) use ($mac, $deferred): void {
+				$socket->pause();
+
+				if (strlen($mac) === 12) {
+					// No separators => add colons in between
+					$mac = implode(':', str_split($mac, 2));
+				} elseif (strpos($mac, '-') !== false) {
+					// Hyphen separators => replace with colons
+					$mac = str_replace('-', ':', $mac);
+				}
+
+				$mac = strtoupper($mac);
+
+				if (preg_match('/^(?:[A-F0-9]{2}\:){5}[A-F0-9]{2}$/', $mac) === 1) {
+					$deferred->reject(new Exceptions\InvalidArgument('Invalid mac address given'));
+
+					return;
+				}
+
+				$address = '';
+
+				foreach (explode(':', $mac) as $part) {
+					$address .= chr(intval(hexdec($part)));
+				}
+
+				$socket->send("\xFF\xFF\xFF\xFF\xFF\xFF" . str_repeat($address, 16));
+
+				$deferred->resolve(true);
+			})
+			->otherwise(static function (Throwable $ex) use ($deferred): void {
+				$deferred->reject($ex);
+			});
+
+		return $deferred->promise();
 	}
 
 	private function subscribeEvents(): bool

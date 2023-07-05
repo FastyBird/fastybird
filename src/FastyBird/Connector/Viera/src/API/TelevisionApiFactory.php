@@ -32,6 +32,7 @@ interface TelevisionApiFactory
 		int $port,
 		string|null $appId = null,
 		string|null $encryptionKey = null,
+		string|null $macAddress = null,
 	): TelevisionApi;
 
 }
