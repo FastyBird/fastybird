@@ -183,7 +183,9 @@ final class ValueHelper
 			if ($format instanceof MetadataValueObjects\StringEnumFormat) {
 				$filtered = array_filter(
 					$format->getItems(),
-					static fn (string $item): bool => Utils\Strings::lower(strval($value)) === $item
+					static fn (string $item): bool => Utils\Strings::lower(strval($value)) === Utils\Strings::lower(
+						strval($item),
+					)
 				);
 
 				if (count($filtered) === 1) {
@@ -204,7 +206,9 @@ final class ValueHelper
 									return false;
 								}
 
-								return Utils\Strings::lower(strval($value)) === $part->getValue();
+								return Utils\Strings::lower(strval($value)) === Utils\Strings::lower(
+									strval($part->getValue()),
+								);
 							},
 						);
 

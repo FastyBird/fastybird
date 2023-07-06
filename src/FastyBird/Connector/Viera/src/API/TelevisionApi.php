@@ -76,6 +76,7 @@ use function strtoupper;
 use function strval;
 use function substr;
 use function unpack;
+use function var_dump;
 use const OPENSSL_RAW_DATA;
 use const OPENSSL_ZERO_PADDING;
 
@@ -1290,6 +1291,8 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 									$deferred->resolve(true);
 								})
 								->otherwise(static function (Throwable $ex) use ($deferred): void {
+									var_dump('ERR');
+									var_dump($ex->getMessage());
 									$deferred->reject($ex);
 								});
 
@@ -1810,7 +1813,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 
 				$mac = strtoupper($mac);
 
-				if (preg_match('/^(?:[A-F0-9]{2}\:){5}[A-F0-9]{2}$/', $mac) === 1) {
+				if (preg_match('/^(?:[A-F0-9]{2}\:){5}[A-F0-9]{2}$/', $mac) === false) {
 					$deferred->reject(new Exceptions\InvalidArgument('Invalid mac address given'));
 
 					return;

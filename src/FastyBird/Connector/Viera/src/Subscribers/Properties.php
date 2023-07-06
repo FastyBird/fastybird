@@ -21,7 +21,9 @@ use Doctrine\Persistence;
 use FastyBird\Connector\Viera\Entities;
 use FastyBird\Connector\Viera\Helpers;
 use FastyBird\Connector\Viera\Types;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -29,6 +31,7 @@ use FastyBird\Module\Devices\Queries as DevicesQueries;
 use IPub\DoctrineCrud;
 use Nette;
 use Nette\Utils;
+use function array_merge;
 
 /**
  * Doctrine entities events
@@ -46,6 +49,8 @@ final class Properties implements Common\EventSubscriber
 	public function __construct(
 		private readonly DevicesModels\Devices\Properties\PropertiesRepository $propertiesRepository,
 		private readonly DevicesModels\Devices\Properties\PropertiesManager $propertiesManager,
+		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
+		private readonly DevicesModels\Channels\Properties\PropertiesManager $channelsPropertiesManager,
 	)
 	{
 	}
@@ -54,6 +59,7 @@ final class Properties implements Common\EventSubscriber
 	{
 		return [
 			ORM\Events::postPersist,
+			ORM\Events::postUpdate,
 		];
 	}
 
@@ -69,12 +75,43 @@ final class Properties implements Common\EventSubscriber
 		$entity = $eventArgs->getObject();
 
 		// Check for valid entity
-		if (!$entity instanceof Entities\VieraDevice) {
-			return;
+		if ($entity instanceof Entities\VieraDevice) {
+			$this->configureDeviceState($entity);
 		}
+	}
 
+	/**
+	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
+	 *
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws DoctrineCrud\Exceptions\InvalidArgumentException
+	 * @throws MetadataExceptions\InvalidArgument
+	 */
+	public function postUpdate(Persistence\Event\LifecycleEventArgs $eventArgs): void
+	{
+		// onFlush was executed before, everything already initialized
+		$entity = $eventArgs->getObject();
+
+		if (
+			$entity instanceof DevicesEntities\Channels\Properties\Dynamic
+			&& $entity->getChannel()->getDevice() instanceof Entities\VieraDevice
+			&& (
+				$entity->getIdentifier() === Types\ChannelPropertyIdentifier::IDENTIFIER_HDMI
+				|| $entity->getIdentifier() === Types\ChannelPropertyIdentifier::IDENTIFIER_APPLICATION
+			)
+		) {
+			$this->configureDeviceInputSource($entity);
+		}
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws DoctrineCrud\Exceptions\InvalidArgumentException
+	 */
+	private function configureDeviceState(Entities\VieraDevice $device): void
+	{
 		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
-		$findDevicePropertyQuery->forDevice($entity);
+		$findDevicePropertyQuery->forDevice($device);
 		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IDENTIFIER_STATE);
 
 		$stateProperty = $this->propertiesRepository->findOneBy($findDevicePropertyQuery);
@@ -84,7 +121,7 @@ final class Properties implements Common\EventSubscriber
 		}
 
 		$this->propertiesManager->create(Utils\ArrayHash::from([
-			'device' => $entity,
+			'device' => $device,
 			'entity' => DevicesEntities\Devices\Properties\Dynamic::class,
 			'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_STATE,
 			'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_STATE),
@@ -100,6 +137,102 @@ final class Properties implements Common\EventSubscriber
 			'settable' => false,
 			'queryable' => false,
 		]));
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws DoctrineCrud\Exceptions\InvalidArgumentException
+	 * @throws MetadataExceptions\InvalidArgument
+	 */
+	private function configureDeviceInputSource(DevicesEntities\Channels\Properties\Dynamic $property): void
+	{
+		$channel = $property->getChannel();
+
+		$findChannelProperty = new DevicesQueries\FindChannelProperties();
+		$findChannelProperty->forChannel($channel);
+		$findChannelProperty->byIdentifier(Types\ChannelPropertyIdentifier::IDENTIFIER_HDMI);
+
+		$hdmiProperty = $this->channelsPropertiesRepository->findOneBy(
+			$findChannelProperty,
+			DevicesEntities\Channels\Properties\Dynamic::class,
+		);
+
+		$hdmiFormat = $hdmiProperty?->getFormat();
+
+		$hdmiFormat = $hdmiFormat instanceof MetadataValueObjects\CombinedEnumFormat ? $hdmiFormat->toArray() : [];
+
+		$findChannelProperty = new DevicesQueries\FindChannelProperties();
+		$findChannelProperty->forChannel($channel);
+		$findChannelProperty->byIdentifier(Types\ChannelPropertyIdentifier::IDENTIFIER_APPLICATION);
+
+		$applicationProperty = $this->channelsPropertiesRepository->findOneBy(
+			$findChannelProperty,
+			DevicesEntities\Channels\Properties\Dynamic::class,
+		);
+
+		$applicationFormat = $applicationProperty?->getFormat();
+
+		$applicationFormat = $applicationFormat instanceof MetadataValueObjects\CombinedEnumFormat
+			? $applicationFormat->toArray()
+			: [];
+
+		$findChannelProperty = new DevicesQueries\FindChannelProperties();
+		$findChannelProperty->forChannel($channel);
+		$findChannelProperty->byIdentifier(Types\ChannelPropertyIdentifier::IDENTIFIER_INPUT_SOURCE);
+
+		$inputSourceProperty = $this->channelsPropertiesRepository->findOneBy(
+			$findChannelProperty,
+			DevicesEntities\Channels\Properties\Dynamic::class,
+		);
+
+		if ($inputSourceProperty === null) {
+			$this->channelsPropertiesManager->create(
+				Utils\ArrayHash::from(
+					[
+						'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
+						'channel' => $channel,
+						'identifier' => Types\ChannelPropertyIdentifier::IDENTIFIER_INPUT_SOURCE,
+						'name' => Helpers\Name::createName(Types\ChannelPropertyIdentifier::IDENTIFIER_INPUT_SOURCE),
+						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
+						'settable' => true,
+						'queryable' => false,
+						'format' => array_merge(
+							[
+								[
+									'TV',
+									500,
+									500,
+								],
+							],
+							$hdmiFormat,
+							$applicationFormat,
+						),
+					],
+				),
+			);
+		} else {
+			$this->channelsPropertiesManager->update(
+				$inputSourceProperty,
+				Utils\ArrayHash::from(
+					[
+						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
+						'settable' => true,
+						'queryable' => false,
+						'format' => array_merge(
+							[
+								[
+									'TV',
+									500,
+									500,
+								],
+							],
+							$hdmiFormat,
+							$applicationFormat,
+						),
+					],
+				),
+			);
+		}
 	}
 
 }

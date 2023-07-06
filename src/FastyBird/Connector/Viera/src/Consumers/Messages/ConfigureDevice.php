@@ -39,6 +39,7 @@ use function preg_replace;
 use function str_replace;
 use function strtolower;
 use function strval;
+use function var_dump;
 use const MB_CASE_TITLE;
 
 /**
@@ -88,6 +89,7 @@ final class ConfigureDevice implements Consumer
 			return false;
 		}
 
+		var_dump('CONFIGURE TV');
 		$findDeviceQuery = new DevicesQueries\FindDevices();
 		$findDeviceQuery->byConnectorId($entity->getConnector());
 		$findDeviceQuery->byIdentifier($entity->getIdentifier());
@@ -159,6 +161,7 @@ final class ConfigureDevice implements Consumer
 		}
 
 		$this->setDeviceProperty(
+			DevicesEntities\Devices\Properties\Variable::class,
 			$device->getId(),
 			$entity->getIpAddress(),
 			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
@@ -166,6 +169,7 @@ final class ConfigureDevice implements Consumer
 			Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS),
 		);
 		$this->setDeviceProperty(
+			DevicesEntities\Devices\Properties\Variable::class,
 			$device->getId(),
 			$entity->getPort(),
 			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UINT),
@@ -173,6 +177,7 @@ final class ConfigureDevice implements Consumer
 			Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_PORT),
 		);
 		$this->setDeviceProperty(
+			DevicesEntities\Devices\Properties\Variable::class,
 			$device->getId(),
 			$entity->getModel(),
 			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
@@ -180,6 +185,7 @@ final class ConfigureDevice implements Consumer
 			Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL),
 		);
 		$this->setDeviceProperty(
+			DevicesEntities\Devices\Properties\Variable::class,
 			$device->getId(),
 			$entity->getManufacturer(),
 			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
@@ -187,6 +193,7 @@ final class ConfigureDevice implements Consumer
 			Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MANUFACTURER),
 		);
 		$this->setDeviceProperty(
+			DevicesEntities\Devices\Properties\Variable::class,
 			$device->getId(),
 			$entity->getSerialNumber(),
 			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
@@ -194,6 +201,15 @@ final class ConfigureDevice implements Consumer
 			Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_SERIAL_NUMBER),
 		);
 		$this->setDeviceProperty(
+			DevicesEntities\Devices\Properties\Variable::class,
+			$device->getId(),
+			$entity->getMacAddress(),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+			Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS,
+			Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS),
+		);
+		$this->setDeviceProperty(
+			DevicesEntities\Devices\Properties\Variable::class,
 			$device->getId(),
 			$entity->isEncrypted(),
 			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN),
@@ -201,6 +217,7 @@ final class ConfigureDevice implements Consumer
 			Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_ENCRYPTED),
 		);
 		$this->setDeviceProperty(
+			DevicesEntities\Devices\Properties\Variable::class,
 			$device->getId(),
 			$entity->getAppId(),
 			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
@@ -208,6 +225,7 @@ final class ConfigureDevice implements Consumer
 			Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_APP_ID),
 		);
 		$this->setDeviceProperty(
+			DevicesEntities\Devices\Properties\Variable::class,
 			$device->getId(),
 			$entity->getEncryptionKey(),
 			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
@@ -287,6 +305,42 @@ final class ConfigureDevice implements Consumer
 				$channel->getId(),
 				null,
 				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
+				Types\ChannelPropertyIdentifier::IDENTIFIER_HDMI,
+				Helpers\Name::createName(Types\ChannelPropertyIdentifier::IDENTIFIER_HDMI),
+				$entity->getHdmi() !== [] ? array_map(
+					fn (Entities\Messages\DeviceHdmi|Entities\Messages\DeviceApplication $item): array => [
+						$this->sanitizeEnumName($item->getName()),
+						$item->getId(),
+						$item->getId(),
+					],
+					$entity->getHdmi(),
+				) : null,
+				true,
+			);
+
+			$this->setChannelProperty(
+				DevicesEntities\Channels\Properties\Dynamic::class,
+				$channel->getId(),
+				null,
+				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
+				Types\ChannelPropertyIdentifier::IDENTIFIER_APPLICATION,
+				Helpers\Name::createName(Types\ChannelPropertyIdentifier::IDENTIFIER_APPLICATION),
+				$entity->getApplications() !== [] ? array_map(
+					fn (Entities\Messages\DeviceHdmi|Entities\Messages\DeviceApplication $item): array => [
+						$this->sanitizeEnumName($item->getName()),
+						$item->getId(),
+						$item->getId(),
+					],
+					$entity->getApplications(),
+				) : null,
+				true,
+			);
+
+			$this->setChannelProperty(
+				DevicesEntities\Channels\Properties\Dynamic::class,
+				$channel->getId(),
+				null,
+				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
 				Types\ChannelPropertyIdentifier::IDENTIFIER_INPUT_SOURCE,
 				Helpers\Name::createName(Types\ChannelPropertyIdentifier::IDENTIFIER_INPUT_SOURCE),
 				array_merge(
@@ -298,22 +352,8 @@ final class ConfigureDevice implements Consumer
 						],
 					],
 					array_map(
-						static fn (Entities\Messages\DeviceHdmi|Entities\Messages\DeviceApplication $item): array => [
-							str_replace(
-								' ',
-								'',
-								strval(iconv(
-									'utf-8',
-									'ascii//TRANSLIT',
-									strtolower(
-										strval(preg_replace(
-											'/(?<!^)[A-Z]/',
-											'_$0',
-											mb_convert_case($item->getName(), MB_CASE_TITLE, 'UTF-8'),
-										)),
-									),
-								)),
-							),
+						fn (Entities\Messages\DeviceHdmi|Entities\Messages\DeviceApplication $item): array => [
+							$this->sanitizeEnumName($item->getName()),
 							$item->getId(),
 							$item->getId(),
 						],
@@ -339,6 +379,25 @@ final class ConfigureDevice implements Consumer
 		);
 
 		return true;
+	}
+
+	private function sanitizeEnumName(string $name): string
+	{
+		return str_replace(
+			' ',
+			'',
+			strval(iconv(
+				'utf-8',
+				'ascii//TRANSLIT',
+				strtolower(
+					strval(preg_replace(
+						'/(?<!^)[A-Z]/',
+						'_$0',
+						mb_convert_case($name, MB_CASE_TITLE, 'UTF-8'),
+					)),
+				),
+			)),
+		);
 	}
 
 }

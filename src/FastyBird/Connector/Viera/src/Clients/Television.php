@@ -210,6 +210,14 @@ final class Television implements Client
 					}
 
 					break;
+				case Types\ChannelPropertyIdentifier::IDENTIFIER_APPLICATION:
+					$result = $client->launchApplication(strval($valueToWrite));
+
+					break;
+				case Types\ChannelPropertyIdentifier::IDENTIFIER_HDMI:
+					$result = $client->sendKey('NRC_HDMI' . $valueToWrite . '-ONOFF');
+
+					break;
 				default:
 					return Promise\reject(
 						new Exceptions\InvalidArgument('Provided property is not supported for writing'),
@@ -219,12 +227,14 @@ final class Television implements Client
 			$deferred = new Promise\Deferred();
 
 			$result->then(
-				function () use ($deferred, $device, $property, $state): void {
+				function () use ($deferred, $device, $property, $state, $valueToWrite): void {
 					switch ($property->getIdentifier()) {
 						case Types\ChannelPropertyIdentifier::IDENTIFIER_STATE:
 						case Types\ChannelPropertyIdentifier::IDENTIFIER_VOLUME:
 						case Types\ChannelPropertyIdentifier::IDENTIFIER_MUTE:
 						case Types\ChannelPropertyIdentifier::IDENTIFIER_INPUT_SOURCE:
+						case Types\ChannelPropertyIdentifier::IDENTIFIER_APPLICATION:
+						case Types\ChannelPropertyIdentifier::IDENTIFIER_HDMI:
 							$this->consumer->append(
 								new Entities\Messages\ChannelPropertyState(
 									$this->connector->getId(),
@@ -236,6 +246,89 @@ final class Television implements Client
 							);
 
 							break;
+					}
+
+					if ($property->getIdentifier() === Types\ChannelPropertyIdentifier::IDENTIFIER_INPUT_SOURCE) {
+						$this->consumer->append(
+							new Entities\Messages\ChannelPropertyState(
+								$this->connector->getId(),
+								$device->getIdentifier(),
+								Types\ChannelType::TELEVISION,
+								Types\ChannelPropertyIdentifier::IDENTIFIER_HDMI,
+								null,
+							),
+						);
+
+						$this->consumer->append(
+							new Entities\Messages\ChannelPropertyState(
+								$this->connector->getId(),
+								$device->getIdentifier(),
+								Types\ChannelType::TELEVISION,
+								Types\ChannelPropertyIdentifier::IDENTIFIER_APPLICATION,
+								null,
+							),
+						);
+
+						if (intval($valueToWrite) < 100) {
+							$this->consumer->append(
+								new Entities\Messages\ChannelPropertyState(
+									$this->connector->getId(),
+									$device->getIdentifier(),
+									Types\ChannelType::TELEVISION,
+									Types\ChannelPropertyIdentifier::IDENTIFIER_HDMI,
+									$state->getExpectedValue(),
+								),
+							);
+						} elseif (intval($valueToWrite) !== 500) {
+							$this->consumer->append(
+								new Entities\Messages\ChannelPropertyState(
+									$this->connector->getId(),
+									$device->getIdentifier(),
+									Types\ChannelType::TELEVISION,
+									Types\ChannelPropertyIdentifier::IDENTIFIER_APPLICATION,
+									$state->getExpectedValue(),
+								),
+							);
+						}
+					}
+
+					if (
+						$property->getIdentifier() === Types\ChannelPropertyIdentifier::IDENTIFIER_APPLICATION
+						|| $property->getIdentifier() === Types\ChannelPropertyIdentifier::IDENTIFIER_HDMI
+					) {
+						if ($property->getIdentifier() === Types\ChannelPropertyIdentifier::IDENTIFIER_HDMI) {
+							$this->consumer->append(
+								new Entities\Messages\ChannelPropertyState(
+									$this->connector->getId(),
+									$device->getIdentifier(),
+									Types\ChannelType::TELEVISION,
+									Types\ChannelPropertyIdentifier::IDENTIFIER_APPLICATION,
+									null,
+								),
+							);
+						}
+
+						if ($property->getIdentifier() === Types\ChannelPropertyIdentifier::IDENTIFIER_APPLICATION) {
+							$this->consumer->append(
+								new Entities\Messages\ChannelPropertyState(
+									$this->connector->getId(),
+									$device->getIdentifier(),
+									Types\ChannelType::TELEVISION,
+									Types\ChannelPropertyIdentifier::IDENTIFIER_HDMI,
+									null,
+								),
+							);
+						}
+
+						$this->consumer->append(
+							new Entities\Messages\ChannelPropertyState(
+								$this->connector->getId(),
+								$device->getIdentifier(),
+								Types\ChannelType::TELEVISION,
+								Types\ChannelPropertyIdentifier::IDENTIFIER_INPUT_SOURCE,
+								$state->getExpectedValue(),
+							),
+						);
 					}
 
 					$deferred->resolve();

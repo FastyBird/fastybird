@@ -45,6 +45,7 @@ final class ConfigureDevice implements Entity
 		private readonly string|null $model,
 		private readonly string|null $manufacturer,
 		private readonly string|null $serialNumber,
+		private readonly string|null $macAddress,
 		private readonly bool $encrypted,
 		private readonly string|null $appId,
 		private readonly string|null $encryptionKey,
@@ -94,6 +95,11 @@ final class ConfigureDevice implements Entity
 		return $this->serialNumber;
 	}
 
+	public function getMacAddress(): string|null
+	{
+		return $this->macAddress;
+	}
+
 	public function isEncrypted(): bool
 	{
 		return $this->encrypted;
@@ -139,6 +145,7 @@ final class ConfigureDevice implements Entity
 			'model' => $this->getModel(),
 			'manufacturer' => $this->getManufacturer(),
 			'serial_number' => $this->getSerialNumber(),
+			'mac_address' => $this->getMacAddress(),
 			'is_encrypted' => $this->isEncrypted(),
 			'app_id' => $this->getAppId(),
 			'encryption_key' => $this->getEncryptionKey(),

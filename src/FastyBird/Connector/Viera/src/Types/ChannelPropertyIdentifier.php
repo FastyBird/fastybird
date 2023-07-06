@@ -40,6 +40,10 @@ class ChannelPropertyIdentifier extends Consistence\Enum\Enum
 
 	public const IDENTIFIER_INPUT_SOURCE = 'input_source';
 
+	public const IDENTIFIER_APPLICATION = 'application';
+
+	public const IDENTIFIER_HDMI = 'hdmi';
+
 	public function __toString(): string
 	{
 		return strval(self::getValue());

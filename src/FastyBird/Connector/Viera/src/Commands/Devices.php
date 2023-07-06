@@ -212,6 +212,11 @@ class Devices extends Console\Command\Command
 		return Console\Command\Command::SUCCESS;
 	}
 
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
 	private function createNewDevice(Style\SymfonyStyle $io, Entities\VieraConnector $connector): void
 	{
 		$tempIdentifier = 'new-device-' . $this->dateTimeFactory->getNow()->format(DateTimeInterface::ATOM);
@@ -374,6 +379,21 @@ class Devices extends Console\Command\Command
 			}
 		}
 
+		$question = new Console\Question\ConfirmationQuestion(
+			'Would you like to configure television MAC address?',
+			false,
+		);
+
+		$configureMacAddress = (bool) $io->askQuestion($question);
+
+		$macAddress = null;
+
+		if ($configureMacAddress) {
+			$io->note('MAC address will be used to turn on you television on');
+
+			$macAddress = $this->askMacAddress($io);
+		}
+
 		$message = new Entities\Messages\ConfigureDevice(
 			$connector->getId(),
 			$specs->getSerialNumber(),
@@ -383,6 +403,7 @@ class Devices extends Console\Command\Command
 			trim(sprintf('%s %s', $specs->getModelName(), $specs->getModelNumber())),
 			$specs->getManufacturer(),
 			$specs->getSerialNumber(),
+			$macAddress,
 			$authorization?->getAppId() !== null && $authorization->getEncryptionKey() !== null,
 			$authorization?->getAppId(),
 			$authorization?->getEncryptionKey(),

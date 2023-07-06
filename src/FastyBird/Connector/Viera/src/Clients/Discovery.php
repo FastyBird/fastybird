@@ -312,6 +312,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$device->getModel(),
 				$device->getManufacturer(),
 				$device->getSerialNumber(),
+				null,
 				$device->isEncrypted(),
 				null,
 				null,

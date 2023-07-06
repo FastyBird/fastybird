@@ -27,6 +27,7 @@ use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette\Utils;
 use Psr\Log;
 use Ramsey\Uuid;
+use function array_merge;
 use function assert;
 
 /**
@@ -47,6 +48,7 @@ trait ConsumeDeviceProperty
 {
 
 	/**
+	 * @param class-string<DevicesEntities\Devices\Properties\Variable|DevicesEntities\Devices\Properties\Dynamic> $type
 	 * @param string|array<int, string>|array<int, string|int|float|array<int, string|int|float>|Utils\ArrayHash|null>|array<int, array<int, string|array<int, string|int|float|bool>|Utils\ArrayHash|null>>|null $format
 	 *
 	 * @throws DBAL\Exception
@@ -56,12 +58,15 @@ trait ConsumeDeviceProperty
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	private function setDeviceProperty(
+		string $type,
 		Uuid\UuidInterface $deviceId,
 		string|bool|int|null $value,
 		MetadataTypes\DataType $dataType,
 		string $identifier,
 		string|null $name = null,
 		array|string|null $format = null,
+		bool $settable = false,
+		bool $queryable = false,
 	): void
 	{
 		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
@@ -140,17 +145,23 @@ trait ConsumeDeviceProperty
 
 			$property = $this->databaseHelper->transaction(
 				fn (): DevicesEntities\Devices\Properties\Property => $this->propertiesManager->create(
-					Utils\ArrayHash::from([
-						'entity' => DevicesEntities\Devices\Properties\Variable::class,
-						'device' => $device,
-						'identifier' => $identifier,
-						'name' => $name,
-						'dataType' => $dataType,
-						'settable' => false,
-						'queryable' => false,
-						'value' => $value,
-						'format' => $format,
-					]),
+					Utils\ArrayHash::from(array_merge(
+						[
+							'entity' => DevicesEntities\Devices\Properties\Variable::class,
+							'device' => $device,
+							'identifier' => $identifier,
+							'name' => $name,
+							'dataType' => $dataType,
+							'settable' => $settable,
+							'queryable' => $queryable,
+							'format' => $format,
+						],
+						$type === DevicesEntities\Devices\Properties\Variable::class
+							? [
+								'value' => $value,
+							]
+							: [],
+					)),
 				),
 			);
 
@@ -173,11 +184,19 @@ trait ConsumeDeviceProperty
 			$property = $this->databaseHelper->transaction(
 				fn (): DevicesEntities\Devices\Properties\Property => $this->propertiesManager->update(
 					$property,
-					Utils\ArrayHash::from([
-						'dataType' => $dataType,
-						'value' => $value,
-						'format' => $format,
-					]),
+					Utils\ArrayHash::from(array_merge(
+						[
+							'dataType' => $dataType,
+							'settable' => $settable,
+							'queryable' => $queryable,
+							'format' => $format,
+						],
+						$type === DevicesEntities\Devices\Properties\Variable::class
+							? [
+								'value' => $value,
+							]
+							: [],
+					)),
 				),
 			);
 

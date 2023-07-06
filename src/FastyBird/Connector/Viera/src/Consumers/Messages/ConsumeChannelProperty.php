@@ -180,7 +180,6 @@ trait ConsumeChannelProperty
 							'dataType' => $dataType,
 							'settable' => $settable,
 							'queryable' => $queryable,
-							'value' => $value,
 							'format' => $format,
 						],
 						$type === DevicesEntities\Channels\Properties\Variable::class
