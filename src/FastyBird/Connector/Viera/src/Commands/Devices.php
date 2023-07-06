@@ -43,6 +43,7 @@ use Symfony\Component\Console\Output;
 use Symfony\Component\Console\Style;
 use Throwable;
 use function array_key_exists;
+use function array_keys;
 use function array_map;
 use function array_search;
 use function array_values;
@@ -99,6 +100,10 @@ class Devices extends Console\Command\Command
 		private readonly DevicesModels\Devices\DevicesManager $devicesManager,
 		private readonly DevicesModels\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
 		private readonly DevicesModels\Devices\Properties\PropertiesManager $devicePropertiesManager,
+		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
+		private readonly DevicesModels\Channels\ChannelsManager $channelsManager,
+		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
+		private readonly DevicesModels\Channels\Properties\PropertiesManager $channelPropertiesManager,
 		private readonly Viera\Consumers\Messages $consumer,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
@@ -454,6 +459,12 @@ class Devices extends Console\Command\Command
 			return;
 		}
 
+		$findDeviceChannel = new DevicesQueries\FindChannels();
+		$findDeviceChannel->forDevice($device);
+		$findDeviceChannel->byIdentifier(Types\ChannelType::TELEVISION);
+
+		$channel = $this->channelsRepository->findOneBy($findDeviceChannel);
+
 		$authorization = null;
 
 		$name = $this->askDeviceName($io, $device);
@@ -504,6 +515,72 @@ class Devices extends Console\Command\Command
 
 		if ($changePort) {
 			$port = $this->askPort($io, $device);
+		}
+
+		$hdmiProperty = null;
+
+		if ($channel !== null) {
+			$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+			$findChannelPropertyQuery->forChannel($channel);
+			$findChannelPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::IDENTIFIER_HDMI);
+
+			$hdmiProperty = $this->channelPropertiesRepository->findOneBy($findChannelPropertyQuery);
+		}
+
+		if ($hdmiProperty === null) {
+			$question = new Console\Question\ConfirmationQuestion(
+				'Would you like to configure HDMI inputs?',
+				false,
+			);
+
+			$configureHdmi = (bool) $io->askQuestion($question);
+
+		} else {
+			$question = new Console\Question\ConfirmationQuestion(
+				'Do you want to redefine television HDMI inputs?',
+				false,
+			);
+
+			$configureHdmi = (bool) $io->askQuestion($question);
+		}
+
+		$hdmi = null;
+
+		if ($configureHdmi) {
+			$hdmi = [];
+
+			$io->note(
+				'Now you have to provide name for configured HDMI input and its number. HDMI number is related to you television',
+			);
+
+			while (true) {
+				$hdmiName = $this->askHdmiName($io);
+
+				$hdmiIndex = $this->askHdmiIndex($io, $hdmiName);
+
+				$hdmi[$hdmiIndex] = $hdmiName;
+
+				$question = new Console\Question\ConfirmationQuestion(
+					'Would you like to configure another HDMI input?',
+					false,
+				);
+
+				$configureMode = (bool) $io->askQuestion($question);
+
+				if (!$configureMode) {
+					break;
+				}
+			}
+		}
+
+		$appsProperty = null;
+
+		if ($channel !== null) {
+			$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+			$findChannelPropertyQuery->forChannel($channel);
+			$findChannelPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::IDENTIFIER_APPLICATION);
+
+			$appsProperty = $this->channelPropertiesRepository->findOneBy($findChannelPropertyQuery);
 		}
 
 		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
@@ -594,27 +671,27 @@ class Devices extends Console\Command\Command
 
 			$specs = $televisionApi->getSpecs(false);
 
+			try {
+				$isTurnedOn = $televisionApi->isTurnedOn(true);
+			} catch (Throwable $ex) {
+				$this->logger->error(
+					'Checking screen status failed',
+					[
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+						'type' => 'devices-cmd',
+						'exception' => BootstrapHelpers\Logger::buildException($ex),
+					],
+				);
+
+				$io->error('Something went wrong, television could not be edited. Error was logged.');
+
+				return;
+			}
+
 			if (!$device->isEncrypted() && $specs->isRequiresEncryption()) {
 				$io->warning(
 					'It looks like your TV require application pairing.',
 				);
-
-				try {
-					$isTurnedOn = $televisionApi->isTurnedOn(true);
-				} catch (Throwable $ex) {
-					$this->logger->error(
-						'Checking screen status failed',
-						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
-							'type' => 'devices-cmd',
-							'exception' => BootstrapHelpers\Logger::buildException($ex),
-						],
-					);
-
-					$io->error('Something went wrong, television could not be edited. Error was logged.');
-
-					return;
-				}
 
 				if ($isTurnedOn === false) {
 					$io->warning(
@@ -641,7 +718,18 @@ class Devices extends Console\Command\Command
 				$pinCode = $this->askPinCode($io);
 
 				$authorization = $televisionApi->authorizePinCode($pinCode, $challengeKey, false);
+
+				$televisionApi = $this->televisionApiFactory->create(
+					$device->getIdentifier(),
+					$ipAddress,
+					$port,
+					$authorization->getAppId(),
+					$authorization->getEncryptionKey(),
+				);
+				$televisionApi->connect();
 			}
+
+			$apps = $isTurnedOn ? $televisionApi->getApps(false) : null;
 		} catch (Exceptions\TelevisionApiCall | Exceptions\Encrypt | Exceptions\Decrypt $ex) {
 			$this->logger->error(
 				'Calling television api failed',
@@ -694,7 +782,7 @@ class Devices extends Console\Command\Command
 				]));
 			}
 
-			if ($portProperty === null && $port !== Entities\VieraDevice::DEFAULT_PORT) {
+			if ($portProperty === null) {
 				$this->devicePropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
 					'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_PORT,
@@ -703,12 +791,10 @@ class Devices extends Console\Command\Command
 					'value' => $port,
 					'device' => $device,
 				]));
-			} elseif ($portProperty !== null && $port !== Entities\VieraDevice::DEFAULT_PORT) {
+			} else {
 				$this->devicePropertiesManager->update($portProperty, Utils\ArrayHash::from([
 					'value' => $port,
 				]));
-			} elseif ($portProperty !== null && $port === Entities\VieraDevice::DEFAULT_PORT) {
-				$this->devicePropertiesManager->delete($portProperty);
 			}
 
 			if ($appIdProperty === null && $authorization !== null) {
@@ -790,6 +876,73 @@ class Devices extends Console\Command\Command
 				$this->devicePropertiesManager->update($macAddressProperty, Utils\ArrayHash::from([
 					'value' => $macAddress,
 				]));
+			}
+
+			if ($channel === null) {
+				$channel = $this->channelsManager->create(Utils\ArrayHash::from([
+					'device' => $device,
+					'identifier' => Types\ChannelType::TELEVISION,
+				]));
+			}
+
+			if ($hdmi !== null) {
+				if ($hdmiProperty === null) {
+					$this->channelPropertiesManager->create(Utils\ArrayHash::from([
+						'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
+						'identifier' => Types\ChannelPropertyIdentifier::IDENTIFIER_HDMI,
+						'name' => Helpers\Name::createName(Types\ChannelPropertyIdentifier::IDENTIFIER_HDMI),
+						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
+						'settable' => true,
+						'queryable' => false,
+						'format' => array_map(static fn (string $name, int $index): array => [
+							Helpers\Name::sanitizeEnumName($name),
+							$index,
+							$index,
+						], array_values($hdmi), array_keys($hdmi)),
+						'channel' => $channel,
+					]));
+				} elseif ($macAddress !== null) {
+					$this->channelPropertiesManager->update($hdmiProperty, Utils\ArrayHash::from([
+						'format' => array_map(static fn (string $name, int $index): array => [
+							Helpers\Name::sanitizeEnumName($name),
+							$index,
+							$index,
+						], array_values($hdmi), array_keys($hdmi)),
+					]));
+				}
+			}
+
+			if ($apps !== null) {
+				if ($appsProperty === null) {
+					$this->channelPropertiesManager->create(Utils\ArrayHash::from([
+						'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
+						'identifier' => Types\ChannelPropertyIdentifier::IDENTIFIER_APPLICATION,
+						'name' => Helpers\Name::createName(Types\ChannelPropertyIdentifier::IDENTIFIER_APPLICATION),
+						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
+						'settable' => true,
+						'queryable' => false,
+						'format' => $apps->getApps() !== [] ? array_map(
+							static fn (Entities\API\Application $application): array => [
+								Helpers\Name::sanitizeEnumName($application->getName()),
+								$application->getId(),
+								$application->getId(),
+							],
+							$apps->getApps(),
+						) : null,
+						'channel' => $channel,
+					]));
+				} elseif ($macAddress !== null) {
+					$this->channelPropertiesManager->update($appsProperty, Utils\ArrayHash::from([
+						'format' => $apps->getApps() !== [] ? array_map(
+							static fn (Entities\API\Application $application): array => [
+								Helpers\Name::sanitizeEnumName($application->getName()),
+								$application->getId(),
+								$application->getId(),
+							],
+							$apps->getApps(),
+						) : null,
+					]));
+				}
 			}
 
 			// Commit all changes into database

@@ -33,13 +33,6 @@ use Psr\Log;
 use function array_map;
 use function array_merge;
 use function assert;
-use function iconv;
-use function mb_convert_case;
-use function preg_replace;
-use function str_replace;
-use function strtolower;
-use function strval;
-use const MB_CASE_TITLE;
 
 /**
  * New device message consumer
@@ -306,8 +299,8 @@ final class ConfigureDevice implements Consumer
 				Types\ChannelPropertyIdentifier::IDENTIFIER_HDMI,
 				Helpers\Name::createName(Types\ChannelPropertyIdentifier::IDENTIFIER_HDMI),
 				$entity->getHdmi() !== [] ? array_map(
-					fn (Entities\Messages\DeviceHdmi|Entities\Messages\DeviceApplication $item): array => [
-						$this->sanitizeEnumName($item->getName()),
+					static fn (Entities\Messages\DeviceHdmi|Entities\Messages\DeviceApplication $item): array => [
+						Helpers\Name::sanitizeEnumName($item->getName()),
 						$item->getId(),
 						$item->getId(),
 					],
@@ -324,8 +317,8 @@ final class ConfigureDevice implements Consumer
 				Types\ChannelPropertyIdentifier::IDENTIFIER_APPLICATION,
 				Helpers\Name::createName(Types\ChannelPropertyIdentifier::IDENTIFIER_APPLICATION),
 				$entity->getApplications() !== [] ? array_map(
-					fn (Entities\Messages\DeviceHdmi|Entities\Messages\DeviceApplication $item): array => [
-						$this->sanitizeEnumName($item->getName()),
+					static fn (Entities\Messages\DeviceHdmi|Entities\Messages\DeviceApplication $item): array => [
+						Helpers\Name::sanitizeEnumName($item->getName()),
 						$item->getId(),
 						$item->getId(),
 					],
@@ -350,8 +343,8 @@ final class ConfigureDevice implements Consumer
 						],
 					],
 					array_map(
-						fn (Entities\Messages\DeviceHdmi|Entities\Messages\DeviceApplication $item): array => [
-							$this->sanitizeEnumName($item->getName()),
+						static fn (Entities\Messages\DeviceHdmi|Entities\Messages\DeviceApplication $item): array => [
+							Helpers\Name::sanitizeEnumName($item->getName()),
 							$item->getId(),
 							$item->getId(),
 						],
@@ -377,25 +370,6 @@ final class ConfigureDevice implements Consumer
 		);
 
 		return true;
-	}
-
-	private function sanitizeEnumName(string $name): string
-	{
-		return str_replace(
-			' ',
-			'',
-			strval(iconv(
-				'utf-8',
-				'ascii//TRANSLIT',
-				strtolower(
-					strval(preg_replace(
-						'/(?<!^)[A-Z]/',
-						'_$0',
-						mb_convert_case($name, MB_CASE_TITLE, 'UTF-8'),
-					)),
-				),
-			)),
-		);
 	}
 
 }

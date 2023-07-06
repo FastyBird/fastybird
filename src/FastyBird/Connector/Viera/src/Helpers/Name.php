@@ -17,14 +17,18 @@ namespace FastyBird\Connector\Viera\Helpers;
 
 use function array_map;
 use function explode;
+use function iconv;
 use function implode;
 use function in_array;
 use function is_string;
+use function mb_convert_case;
 use function preg_replace;
 use function str_replace;
 use function strtolower;
 use function strtoupper;
+use function strval;
 use function ucfirst;
+use const MB_CASE_TITLE;
 
 /**
  * Useful name helpers
@@ -57,6 +61,25 @@ final class Name
 		}, $transformed);
 
 		return ucfirst(implode(' ', $transformed));
+	}
+
+	public static function sanitizeEnumName(string $name): string
+	{
+		return str_replace(
+			' ',
+			'',
+			strval(iconv(
+				'utf-8',
+				'ascii//TRANSLIT',
+				strtolower(
+					strval(preg_replace(
+						'/(?<!^)[A-Z]/',
+						'_$0',
+						mb_convert_case($name, MB_CASE_TITLE, 'UTF-8'),
+					)),
+				),
+			)),
+		);
 	}
 
 }
