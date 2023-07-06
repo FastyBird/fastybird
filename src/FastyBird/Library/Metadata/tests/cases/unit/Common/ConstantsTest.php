@@ -122,12 +122,12 @@ final class ConstantsTest extends BaseTestCase
 			Metadata\Constants::VALUE_FORMAT_COMBINED_ENUM,
 			'sw|switch_on:u8|10:s|on,sw|switch_off:u8|20:s|off',
 		));
-		self::assertSame(1, preg_match(
+
+		// Invalid
+		self::assertSame(0, preg_match(
 			Metadata\Constants::VALUE_FORMAT_COMBINED_ENUM,
 			'sw|switch_on:u10|10:s|on,sw|switch_off:u8|20:s|off',
 		));
-
-		// Invalid
 		self::assertSame(0, preg_match(
 			Metadata\Constants::VALUE_FORMAT_COMBINED_ENUM,
 			'sw,sw|switch_off:u8|20:s|off',
