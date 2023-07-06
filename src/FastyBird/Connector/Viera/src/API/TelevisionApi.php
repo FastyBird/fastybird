@@ -76,7 +76,6 @@ use function strtoupper;
 use function strval;
 use function substr;
 use function unpack;
-use function var_dump;
 use const OPENSSL_RAW_DATA;
 use const OPENSSL_ZERO_PADDING;
 
@@ -1291,8 +1290,6 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 									$deferred->resolve(true);
 								})
 								->otherwise(static function (Throwable $ex) use ($deferred): void {
-									var_dump('ERR');
-									var_dump($ex->getMessage());
 									$deferred->reject($ex);
 								});
 

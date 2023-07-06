@@ -39,7 +39,6 @@ use function preg_replace;
 use function str_replace;
 use function strtolower;
 use function strval;
-use function var_dump;
 use const MB_CASE_TITLE;
 
 /**
@@ -89,7 +88,6 @@ final class ConfigureDevice implements Consumer
 			return false;
 		}
 
-		var_dump('CONFIGURE TV');
 		$findDeviceQuery = new DevicesQueries\FindDevices();
 		$findDeviceQuery->byConnectorId($entity->getConnector());
 		$findDeviceQuery->byIdentifier($entity->getIdentifier());
