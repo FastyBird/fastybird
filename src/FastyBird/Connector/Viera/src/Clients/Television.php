@@ -219,9 +219,18 @@ final class Television implements Client
 
 					break;
 				default:
-					return Promise\reject(
-						new Exceptions\InvalidArgument('Provided property is not supported for writing'),
-					);
+					if (
+						Types\ChannelPropertyIdentifier::isValidValue($property->getIdentifier())
+						&& $property->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)
+					) {
+						$result = $client->sendKey(Types\ActionKey::get($valueToWrite));
+					} else {
+						return Promise\reject(
+							new Exceptions\InvalidArgument('Provided property is not supported for writing'),
+						);
+					}
+
+					break;
 			}
 
 			$deferred = new Promise\Deferred();
@@ -244,6 +253,23 @@ final class Television implements Client
 									$state->getExpectedValue(),
 								),
 							);
+
+							break;
+						default:
+							if (
+								Types\ChannelPropertyIdentifier::isValidValue($property->getIdentifier())
+								&& $property->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)
+							) {
+								$this->consumer->append(
+									new Entities\Messages\ChannelPropertyState(
+										$this->connector->getId(),
+										$device->getIdentifier(),
+										Types\ChannelType::TELEVISION,
+										$property->getIdentifier(),
+										$state->getExpectedValue(),
+									),
+								);
+							}
 
 							break;
 					}
@@ -333,7 +359,17 @@ final class Television implements Client
 
 					$deferred->resolve();
 				},
-				static function (Throwable $ex) use ($deferred): void {
+				function (Throwable $ex) use ($deferred, $device): void {
+					if ($ex->getCode() === 500) {
+						$this->consumer->append(
+							new Entities\Messages\DeviceState(
+								$device->getConnector()->getId(),
+								$device->getIdentifier(),
+								MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_DISCONNECTED),
+							),
+						);
+					}
+
 					$deferred->reject($ex);
 				},
 			);
@@ -509,13 +545,15 @@ final class Television implements Client
 						],
 					);
 
-					$this->consumer->append(
-						new Entities\Messages\DeviceState(
-							$device->getConnector()->getId(),
-							$device->getIdentifier(),
-							MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_DISCONNECTED),
-						),
-					);
+					if ($ex->getCode() === 500) {
+						$this->consumer->append(
+							new Entities\Messages\DeviceState(
+								$device->getConnector()->getId(),
+								$device->getIdentifier(),
+								MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_DISCONNECTED),
+							),
+						);
+					}
 				});
 		}
 

@@ -121,7 +121,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 
 	private bool $subscriptionCreated = false;
 
-	private bool $screenState = false;
+	private bool|null $screenState = null;
 
 	private Socket\ServerInterface|null $eventsServer = null;
 
@@ -1455,7 +1455,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 	 */
 	public function isTurnedOn(bool $runLoop = false): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|bool
 	{
-		if ($this->subscriptionCreated) {
+		if ($this->subscriptionCreated && $this->screenState !== null) {
 			if ($runLoop) {
 				return $this->screenState;
 			}
@@ -1490,18 +1490,26 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 			}
 		});
 
-		$subscribeResult = $this->subscribeEvents();
+		$doUnsubscribe = false;
 
-		if ($subscribeResult === false) {
-			if ($runLoop) {
-				return false;
+		if (!$this->subscriptionCreated) {
+			$doUnsubscribe = true;
+
+			$subscribeResult = $this->subscribeEvents();
+
+			if ($subscribeResult === false) {
+				if ($runLoop) {
+					return false;
+				}
+
+				return Promise\resolve(false);
 			}
-
-			return Promise\resolve(false);
 		}
 
-		$this->eventLoop->addTimer(1.5, function () use ($deferred, $runLoop, &$result): void {
-			$this->unsubscribeEvents();
+		$this->eventLoop->addTimer(1.5, function () use ($deferred, $runLoop, &$result, $doUnsubscribe): void {
+			if ($doUnsubscribe) {
+				$this->unsubscribeEvents();
+			}
 
 			$deferred->resolve(false);
 			$result = false;
@@ -1836,7 +1844,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 	private function subscribeEvents(): bool
 	{
 		if ($this->eventsServer !== null) {
-			return false;
+			return true;
 		}
 
 		try {
@@ -1853,7 +1861,6 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 				$connection->on('data', function (string $data) use ($connection): void {
 					$parts = preg_split('/\r?\n\r?\n/', $data);
 
-					$screenState = null;
 					$inputMode = null;
 
 					if (is_array($parts) && count($parts) === 2) {
@@ -1864,8 +1871,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 						);
 
 						if (array_key_exists('screen_state', $matches)) {
-							$screenState = Utils\Strings::lower($matches['screen_state']) === 'on';
-							$this->screenState = $screenState;
+							$this->screenState = Utils\Strings::lower($matches['screen_state']) === 'on';
 						}
 
 						preg_match(
@@ -1879,7 +1885,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 						}
 					}
 
-					$this->emit('event-data', [new Entities\API\Event($screenState, $inputMode)]);
+					$this->emit('event-data', [new Entities\API\Event($this->screenState, $inputMode)]);
 
 					$connection->write(
 						"HTTP/1.1 200 OK\r\nContent-Type: text/xml; charset=\"utf-8\"\r\nContent-Length: 0\r\n\r\n",

@@ -102,10 +102,19 @@ final class ChannelPropertyState implements Consumer
 
 		assert($property instanceof DevicesEntities\Channels\Properties\Dynamic);
 
-		$this->propertyStateHelper->setValue($property, Utils\ArrayHash::from([
-			DevicesStates\Property::ACTUAL_VALUE_KEY => $entity->getState(),
-			DevicesStates\Property::VALID_KEY => true,
-		]));
+		if ($property->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)) {
+			$this->propertyStateHelper->setValue($property, Utils\ArrayHash::from([
+				DevicesStates\Property::ACTUAL_VALUE_KEY => null,
+				DevicesStates\Property::EXPECTED_VALUE_KEY => null,
+				DevicesStates\Property::PENDING_KEY => false,
+				DevicesStates\Property::VALID_KEY => true,
+			]));
+		} else {
+			$this->propertyStateHelper->setValue($property, Utils\ArrayHash::from([
+				DevicesStates\Property::ACTUAL_VALUE_KEY => $entity->getState(),
+				DevicesStates\Property::VALID_KEY => true,
+			]));
+		}
 
 		$this->logger->debug(
 			'Consumed channel property status message',

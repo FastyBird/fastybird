@@ -145,6 +145,46 @@ final class Transformer
 			}
 		}
 
+		if ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)) {
+			if ($format instanceof MetadataValueObjects\StringEnumFormat) {
+				$filtered = array_values(array_filter(
+					$format->getItems(),
+					static fn (string $item): bool => Utils\Strings::lower(strval($value)) === $item,
+				));
+
+				if (count($filtered) === 1) {
+					return MetadataTypes\ButtonPayload::isValidValue(strval($value))
+						? MetadataTypes\ButtonPayload::get(
+							strval($value),
+						)
+						: null;
+				}
+
+				return null;
+			} elseif ($format instanceof MetadataValueObjects\CombinedEnumFormat) {
+				$filtered = array_values(array_filter(
+					$format->getItems(),
+					static fn (array $item): bool => $item[1] !== null
+						&& Utils\Strings::lower(strval($item[1]->getValue())) === Utils\Strings::lower(
+							strval($value),
+						),
+				));
+
+				if (
+					count($filtered) === 1
+					&& $filtered[0][0] instanceof MetadataValueObjects\CombinedEnumFormatItem
+				) {
+					return MetadataTypes\ButtonPayload::isValidValue(strval($filtered[0][0]->getValue()))
+						? MetadataTypes\ButtonPayload::get(
+							strval($filtered[0][0]->getValue()),
+						)
+						: null;
+				}
+
+				return null;
+			}
+		}
+
 		if ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_ENUM)) {
 			if ($format instanceof MetadataValueObjects\StringEnumFormat) {
 				$filtered = array_values(array_filter(
@@ -209,6 +249,38 @@ final class Transformer
 		}
 
 		if ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SWITCH)) {
+			if ($format instanceof MetadataValueObjects\StringEnumFormat) {
+				$filtered = array_values(array_filter(
+					$format->getItems(),
+					static fn (string $item): bool => Utils\Strings::lower(strval($value)) === $item,
+				));
+
+				if (count($filtered) === 1) {
+					return strval($value);
+				}
+
+				return null;
+			} elseif ($format instanceof MetadataValueObjects\CombinedEnumFormat) {
+				$filtered = array_values(array_filter(
+					$format->getItems(),
+					static fn (array $item): bool => $item[0] !== null
+						&& Utils\Strings::lower(strval($item[0]->getValue())) === Utils\Strings::lower(
+							strval($value),
+						),
+				));
+
+				if (
+					count($filtered) === 1
+					&& $filtered[0][2] instanceof MetadataValueObjects\CombinedEnumFormatItem
+				) {
+					return strval($filtered[0][2]->getValue());
+				}
+
+				return null;
+			}
+		}
+
+		if ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)) {
 			if ($format instanceof MetadataValueObjects\StringEnumFormat) {
 				$filtered = array_values(array_filter(
 					$format->getItems(),
