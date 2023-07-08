@@ -78,6 +78,8 @@ final class Constants
 
 	public const CONNECTOR_TERMINAL_SOURCE = 'com.fastybird.terminal-connector';
 
+	public const CONNECTOR_VIERA_SOURCE = 'com.fastybird.viera-connector';
+
 	public const AUTOMATOR_DEVICE_MODULE = 'com.fastybird.device-module-automator';
 
 	public const AUTOMATOR_DATE_TIME = 'com.fastybird.date-time-automator';
@@ -582,7 +584,7 @@ final class Constants
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 	public const VALUE_FORMAT_STRING_ENUM = '/^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-?_?:?.?\+?\/?])*)(?:\,(?:[a-zA-Z0-9](?:[a-zA-Z0-9-?_?:?.?\+?\/?])*))*(?:,)?$/';
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-	public const VALUE_FORMAT_COMBINED_ENUM = '/^(?:(?:(?:i8|u8|i16|u16|i32|u32|f|b|s|btn|sw){1}\|)?(?:[a-zA-Z0-9]-?_?)*)(?:\:(?:(?:i8|u8|i16|u16|i32|u32|f|b|s|btn|sw){1}\|)?(?:[a-zA-Z0-9]-?_?)*){2}(?:,(?:(?:(?:i8|u8|i16|u16|i32|u32|f|b|s|btn|sw){1}\|)?(?:[a-zA-Z0-9]-?_?)*)(?:\:(?:(?:i8|u8|i16|u16|i32|u32|f|b|s|btn|sw){1}\|)?(?:[a-zA-Z0-9]-?_?)*){2})*$/';
+	public const VALUE_FORMAT_COMBINED_ENUM = '/^(?:(?:(?:i8|u8|i16|u16|i32|u32|f|b|s|btn|sw){1}\|)?(?:[a-zA-Z0-9]-?_?\.?)*)(?:\:(?:(?:i8|u8|i16|u16|i32|u32|f|b|s|btn|sw){1}\|)?(?:[a-zA-Z0-9]-?_?\.?)*){2}(?:,(?:(?:(?:i8|u8|i16|u16|i32|u32|f|b|s|btn|sw){1}\|)?(?:[a-zA-Z0-9]-?_?\.?)*)(?:\:(?:(?:i8|u8|i16|u16|i32|u32|f|b|s|btn|sw){1}\|)?(?:[a-zA-Z0-9]-?_?\.?)*){2})*$/';
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 	public const VALUE_FORMAT_EQUATION = '/^equation:(?:(?:x=)(?<equation_x>(?:(?:[\dy]?)*(?:[\+\-\^\*\/\(\)])*(?:\s)*)*)){1}(?::(?:(?:y=)(?<equation_y>(?:(?:[\dx]?)*(?:[\+\-\^\*\/\(\)])*(?:\s)*)*))){0,1}$/';
 

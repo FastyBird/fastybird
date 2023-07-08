@@ -72,6 +72,8 @@ class DevicePropertyIdentifier extends Consistence\Enum\Enum
 
 	public const IDENTIFIER_FIRMWARE_VERSION = PropertyIdentifier::IDENTIFIER_FIRMWARE_VERSION;
 
+	public const IDENTIFIER_SERIAL_NUMBER = PropertyIdentifier::IDENTIFIER_SERIAL_NUMBER;
+
 	public function __toString(): string
 	{
 		return strval(self::getValue());

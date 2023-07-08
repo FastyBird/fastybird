@@ -32,6 +32,7 @@ services:
       - "${HTTP_PORT:-8000}:8000"
       - "${WS_PORT:-8888}:8888"
       - "${WORKER_STATUS_PORT:-9001}:9001"
+      - "43323:43323"
     network_mode: host
     #devices:
     #  - "/dev/tty.usbserial-31420:/dev/ttyUSB0"

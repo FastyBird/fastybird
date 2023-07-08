@@ -113,7 +113,7 @@ abstract class Property implements Entity,
 
 	/**
 	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="string", name="property_format", nullable=true, options={"default": null})
+	 * @ORM\Column(type="text", name="property_format", nullable=true, options={"default": null})
 	 */
 	protected string|null $format = null;
 
