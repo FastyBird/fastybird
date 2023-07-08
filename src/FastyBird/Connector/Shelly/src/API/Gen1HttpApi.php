@@ -28,7 +28,6 @@ use Nette;
 use Nette\Utils;
 use Psr\Http\Message;
 use Psr\Log;
-use React\EventLoop;
 use React\Promise;
 use RuntimeException;
 use Throwable;
@@ -110,11 +109,11 @@ final class Gen1HttpApi extends HttpApi
 
 	public function __construct(
 		private readonly MetadataSchemas\Validator $schemaValidator,
-		EventLoop\LoopInterface $eventLoop,
+		HttpClientFactory $httpClientFactory,
 		Log\LoggerInterface|null $logger = null,
 	)
 	{
-		parent::__construct($eventLoop, $logger);
+		parent::__construct($httpClientFactory, $logger);
 	}
 
 	/**

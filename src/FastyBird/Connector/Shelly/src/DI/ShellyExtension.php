@@ -152,6 +152,9 @@ class ShellyExtension extends DI\CompilerExtension
 			->getResultDefinition()
 			->setType(API\WsApi::class);
 
+		$builder->addDefinition($this->prefix('api.httpClient'), new DI\Definitions\ServiceDefinition())
+			->setType(API\HttpClientFactory::class);
+
 		$builder->addDefinition(
 			$this->prefix('consumers.messages.device.status'),
 			new DI\Definitions\ServiceDefinition(),

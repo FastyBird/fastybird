@@ -23,10 +23,8 @@ use Nette;
 use Nette\Utils;
 use Psr\Http\Message;
 use Psr\Log;
-use React\EventLoop;
 use React\Http;
 use React\Promise;
-use React\Socket\Connector;
 use Throwable;
 use function array_key_exists;
 use function array_merge;
@@ -54,8 +52,6 @@ abstract class HttpApi
 
 	use Nette\SmartObject;
 
-	private const CONNECTION_TIMEOUT = 10;
-
 	private const REQUEST_AUTHORIZATION_HEADER = 'Authorization';
 
 	private const RESPONSE_AUTHENTICATION_RESPONSE_HEADER = 'WWW-Authenticate';
@@ -64,14 +60,10 @@ abstract class HttpApi
 
 	protected const AUTHORIZATION_DIGEST = 'digest';
 
-	protected GuzzleHttp\Client|null $client = null;
-
-	protected Http\Browser|null $asyncClient = null;
-
 	protected Log\LoggerInterface $logger;
 
 	public function __construct(
-		protected readonly EventLoop\LoopInterface $eventLoop,
+		protected readonly HttpClientFactory $httpClientFactory,
 		Log\LoggerInterface|null $logger = null,
 	)
 	{
@@ -127,11 +119,7 @@ abstract class HttpApi
 		}
 
 		try {
-			if ($this->client === null) {
-				$this->client = new GuzzleHttp\Client();
-			}
-
-			return $this->client->request($method, $path, $options);
+			return $this->httpClientFactory->createClient(false)->request($method, $path, $options);
 		} catch (Throwable $ex) {
 			throw new Exceptions\HttpApiCall('Calling api endpoint failed', $ex->getCode(), $ex);
 		}
@@ -180,20 +168,7 @@ abstract class HttpApi
 		}
 
 		try {
-			if ($this->asyncClient === null) {
-				$this->asyncClient = new Http\Browser(
-					new Connector(
-						[
-							'dns' => false,
-							'timeout' => self::CONNECTION_TIMEOUT,
-						],
-						$this->eventLoop,
-					),
-					$this->eventLoop,
-				);
-			}
-
-			$this->asyncClient->request($method, $path, $headers, $body ?? '')
+			$this->httpClientFactory->createClient()->request($method, $path, $headers, $body ?? '')
 				->then(
 					static function (Message\ResponseInterface $response) use ($deferred): void {
 						$deferred->resolve($response);

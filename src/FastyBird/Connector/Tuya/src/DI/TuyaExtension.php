@@ -116,6 +116,9 @@ class TuyaExtension extends DI\CompilerExtension
 			->getResultDefinition()
 			->setType(API\LocalApi::class);
 
+		$builder->addDefinition($this->prefix('api.httpClient'), new DI\Definitions\ServiceDefinition())
+			->setType(API\HttpClientFactory::class);
+
 		$builder->addDefinition(
 			$this->prefix('consumers.discovery.cloudDevice'),
 			new DI\Definitions\ServiceDefinition(),
