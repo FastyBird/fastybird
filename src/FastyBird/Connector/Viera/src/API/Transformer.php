@@ -52,7 +52,7 @@ final class Transformer
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		MetadataValueObjects\StringEnumFormat|MetadataValueObjects\NumberRangeFormat|MetadataValueObjects\CombinedEnumFormat|MetadataValueObjects\EquationFormat|null $format,
 		string|int|float|bool|null $value,
-	): float|int|string|bool|MetadataTypes\SwitchPayload|DateTimeInterface|null
+	): float|int|string|bool|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|DateTimeInterface|null
 	{
 		if ($value === null) {
 			return null;
