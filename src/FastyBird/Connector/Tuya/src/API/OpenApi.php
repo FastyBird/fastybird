@@ -31,13 +31,9 @@ use Nette\Utils;
 use Psr\Http\Message;
 use Psr\Log;
 use Ramsey\Uuid;
-use React\EventLoop;
-use React\Http;
 use React\Promise;
-use React\Socket\Connector;
 use RuntimeException;
 use Throwable;
-use function assert;
 use function boolval;
 use function count;
 use function hash;
@@ -64,8 +60,6 @@ final class OpenApi
 {
 
 	use Nette\SmartObject;
-
-	private const CONNECTION_TIMEOUT = 30;
 
 	private const VERSION = '0.1.0';
 
@@ -135,10 +129,6 @@ final class OpenApi
 
 	private Entities\API\TuyaTokenInfo|null $tokenInfo = null;
 
-	private GuzzleHttp\Client|null $client = null;
-
-	private Http\Browser|null $asyncClient = null;
-
 	private Promise\Deferred|null $refreshTokenPromise = null;
 
 	private Log\LoggerInterface $logger;
@@ -149,9 +139,9 @@ final class OpenApi
 		private readonly string $accessSecret,
 		private readonly string $lang,
 		private readonly Types\OpenApiEndpoint $endpoint,
+		private readonly HttpClientFactory $httpClientFactory,
 		private readonly MetadataSchemas\Validator $schemaValidator,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
-		private readonly EventLoop\LoopInterface $eventLoop,
 		Log\LoggerInterface|null $logger = null,
 	)
 	{
@@ -244,9 +234,6 @@ final class OpenApi
 
 	public function disconnect(): void
 	{
-		$this->client = null;
-		$this->asyncClient = null;
-
 		$this->tokenInfo = null;
 	}
 
@@ -2284,14 +2271,12 @@ final class OpenApi
 
 		if ($async) {
 			try {
-				$request = $this->getClient()->request(
+				$request = $this->httpClientFactory->createClient()->request(
 					$method,
 					$requestPath,
 					$headers,
 					$body ?? '',
 				);
-
-				assert($request instanceof Promise\PromiseInterface);
 
 				$request
 					->then(
@@ -2365,7 +2350,7 @@ final class OpenApi
 		}
 
 		try {
-			$response = $this->getClient(false)->request(
+			$response = $this->httpClientFactory->createClient(false)->request(
 				$method,
 				$requestPath,
 				[
@@ -2373,8 +2358,6 @@ final class OpenApi
 					'body' => $body ?? '',
 				],
 			);
-
-			assert($response instanceof Message\ResponseInterface);
 
 			try {
 				$responseBody = $response->getBody()->getContents();
@@ -2537,14 +2520,12 @@ final class OpenApi
 				],
 			]);
 
-			$response = $this->getClient(false)->get(
+			$response = $this->httpClientFactory->createClient(false)->get(
 				$this->endpoint->getValue() . $path,
 				[
 					'headers' => $headers,
 				],
 			);
-
-			assert($response instanceof Message\ResponseInterface);
 
 			try {
 				$responseBody = $response->getBody()->getContents();
@@ -2823,34 +2804,6 @@ final class OpenApi
 		$sign = Utils\Strings::upper(hash_hmac('sha256', $message, $this->accessSecret));
 
 		return new Entities\API\Sign($sign, $timestamp);
-	}
-
-	/**
-	 * @throws InvalidArgumentException
-	 */
-	private function getClient(bool $async = true): GuzzleHttp\Client|Http\Browser
-	{
-		if ($async) {
-			if ($this->asyncClient === null) {
-				$this->asyncClient = new Http\Browser(
-					new Connector(
-						[
-							'timeout' => self::CONNECTION_TIMEOUT,
-						],
-						$this->eventLoop,
-					),
-					$this->eventLoop,
-				);
-			}
-
-			return $this->asyncClient;
-		} else {
-			if ($this->client === null) {
-				$this->client = new GuzzleHttp\Client();
-			}
-
-			return $this->client;
-		}
 	}
 
 	/**
