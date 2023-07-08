@@ -30,7 +30,6 @@ use Psr\Http\Message;
 use Psr\Log;
 use React\Datagram;
 use React\EventLoop;
-use React\Http;
 use React\Promise;
 use React\Socket;
 use RuntimeException;
