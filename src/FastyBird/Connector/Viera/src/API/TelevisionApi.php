@@ -2389,10 +2389,6 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 
 				return $response;
 			} catch (GuzzleHttp\Exception\GuzzleException | InvalidArgumentException $ex) {
-				if ($ex instanceof GuzzleHttp\Exception\BadResponseException) {
-					echo $ex->getResponse()->getBody()->getContents();
-				}
-
 				$this->logger->error('Calling api endpoint failed', [
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
 					'type' => 'television-api',

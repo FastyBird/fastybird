@@ -10,7 +10,8 @@
     "fb",
     "viera",
     "fastybird",
-    "panasonic"
+    "panasonic",
+    "television"
   ],
   "homepage": "https://www.fastybird.com",
   "license": "Apache-2.0",
@@ -45,7 +46,6 @@
     "guzzlehttp/guzzle": "^7.5",
     "nette/di": "^3.0",
     "psr/log": "^1.1|^3.0",
-    "ratchet/pawl": "^0.4",
     "react/async": "^4.0",
     "react/datagram": "^1.8",
     "react/http": "^1.7",

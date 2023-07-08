@@ -87,6 +87,8 @@ class Devices extends Console\Command\Command
 
 	private const CHOICE_QUESTION_DELETE_DEVICE = 'Delete existing connector device';
 
+	private string|null $challengeKey = null;
+
 	private DateTimeInterface|null $executedTime = null;
 
 	private EventLoop\TimerInterface|null $consumerTimer = null;
@@ -263,24 +265,24 @@ class Devices extends Console\Command\Command
 
 			$authorization = null;
 
+			try {
+				$isTurnedOn = $televisionApi->isTurnedOn(true);
+			} catch (Throwable $ex) {
+				$this->logger->error(
+					'Checking screen status failed',
+					[
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+						'type' => 'devices-cmd',
+						'exception' => BootstrapHelpers\Logger::buildException($ex),
+					],
+				);
+
+				$io->error('Something went wrong, television could not be created. Error was logged.');
+
+				return;
+			}
+
 			if ($specs->isRequiresEncryption()) {
-				try {
-					$isTurnedOn = $televisionApi->isTurnedOn(true);
-				} catch (Throwable $ex) {
-					$this->logger->error(
-						'Checking screen status failed',
-						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
-							'type' => 'devices-cmd',
-							'exception' => BootstrapHelpers\Logger::buildException($ex),
-						],
-					);
-
-					$io->error('Something went wrong, television could not be created. Error was logged.');
-
-					return;
-				}
-
 				if ($isTurnedOn === false) {
 					$io->warning(
 						'It looks like your TV is not turned on. It is possible that the pairing could not be finished.',
@@ -298,14 +300,12 @@ class Devices extends Console\Command\Command
 					}
 				}
 
-				$challengeKey = $televisionApi->requestPinCode(
+				$this->challengeKey = $televisionApi->requestPinCode(
 					$connector->getName() ?? $connector->getIdentifier(),
 					false,
 				);
 
-				$pinCode = $this->askPinCode($io);
-
-				$authorization = $televisionApi->authorizePinCode($pinCode, $challengeKey, false);
+				$authorization = $this->askPinCode($io, $connector, $televisionApi);
 
 				$televisionApi = $this->televisionApiFactory->create(
 					$tempIdentifier,
@@ -317,7 +317,7 @@ class Devices extends Console\Command\Command
 				$televisionApi->connect();
 			}
 
-			$apps = $televisionApi->getApps(false);
+			$apps = $isTurnedOn ? $televisionApi->getApps(false) : null;
 
 		} catch (Exceptions\TelevisionApiCall | Exceptions\Encrypt | Exceptions\Decrypt $ex) {
 			$this->logger->error(
@@ -413,14 +413,14 @@ class Devices extends Console\Command\Command
 			$authorization?->getAppId(),
 			$authorization?->getEncryptionKey(),
 			$hdmi,
-			array_map(
+			$apps !== null ? array_map(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				static fn (Entities\API\Application $application): Entities\Messages\DeviceApplication => new Entities\Messages\DeviceApplication(
 					$application->getId(),
 					$application->getName(),
 				),
 				$apps->getApps(),
-			),
+			) : [],
 		);
 
 		$this->consumer->append($message);
@@ -710,14 +710,12 @@ class Devices extends Console\Command\Command
 					}
 				}
 
-				$challengeKey = $televisionApi->requestPinCode(
+				$this->challengeKey = $televisionApi->requestPinCode(
 					$connector->getName() ?? $connector->getIdentifier(),
 					false,
 				);
 
-				$pinCode = $this->askPinCode($io);
-
-				$authorization = $televisionApi->authorizePinCode($pinCode, $challengeKey, false);
+				$authorization = $this->askPinCode($io, $connector, $televisionApi);
 
 				$televisionApi = $this->televisionApiFactory->create(
 					$device->getIdentifier(),
@@ -1106,20 +1104,36 @@ class Devices extends Console\Command\Command
 		return strval($macAddress);
 	}
 
-	private function askPinCode(Style\SymfonyStyle $io): string
+	private function askPinCode(
+		Style\SymfonyStyle $io,
+		Entities\VieraConnector $connector,
+		API\TelevisionApi $televisionApi,
+	): Entities\API\AuthorizePinCode
 	{
 		$question = new Console\Question\Question('Provide television PIN code displayed on you TV');
-		$question->setValidator(static function (string|null $answer): string {
-			if ($answer !== null && $answer !== '') {
-				return $answer;
-			}
+		$question->setValidator(
+			function (string|null $answer) use ($connector, $televisionApi): Entities\API\AuthorizePinCode {
+				if ($answer !== null && $answer !== '') {
+					try {
+						return $televisionApi->authorizePinCode($answer, strval($this->challengeKey), false);
+					} catch (Exceptions\TelevisionApiCall) {
+						$this->challengeKey = $televisionApi->requestPinCode(
+							$connector->getName() ?? $connector->getIdentifier(),
+							false,
+						);
 
-			throw new Exceptions\Runtime('Provided PIN code is not valid');
-		});
+						throw new Exceptions\Runtime('Provided PIN code is not valid');
+					}
+				}
 
-		$pinCode = $io->askQuestion($question);
+				throw new Exceptions\Runtime('Provided PIN code is not valid');
+			},
+		);
 
-		return strval($pinCode);
+		$authorization = $io->askQuestion($question);
+		assert($authorization instanceof Entities\API\AuthorizePinCode);
+
+		return $authorization;
 	}
 
 	private function askHdmiName(Style\SymfonyStyle $io): string

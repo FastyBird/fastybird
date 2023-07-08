@@ -47,7 +47,6 @@ use function count;
 use function intval;
 use function is_string;
 use function React\Async\async;
-use function React\Async\await;
 use function sprintf;
 use function strval;
 use function usort;
@@ -71,6 +70,8 @@ class Discovery extends Console\Command\Command
 	private const DISCOVERY_MAX_PROCESSING_INTERVAL = 60.0;
 
 	private const QUEUE_PROCESSING_INTERVAL = 0.01;
+
+	private string|null $challengeKey = null;
 
 	private DateTimeInterface|null $executedTime = null;
 
@@ -465,7 +466,7 @@ class Discovery extends Console\Command\Command
 						$televisionApi->connect();
 
 						try {
-							$isTurnedOn = await($televisionApi->isTurnedOn());
+							$isTurnedOn = $televisionApi->isTurnedOn(true);
 						} catch (Throwable $ex) {
 							$this->logger->error(
 								'Checking screen status failed',
@@ -498,14 +499,12 @@ class Discovery extends Console\Command\Command
 							}
 						}
 
-						$challengeKey = $televisionApi->requestPinCode(
+						$this->challengeKey = $televisionApi->requestPinCode(
 							$connector->getName() ?? $connector->getIdentifier(),
 							false,
 						);
 
-						$pinCode = $this->askPinCode($io);
-
-						$authorization = $televisionApi->authorizePinCode($pinCode, $challengeKey, false);
+						$authorization = $this->askPinCode($io, $connector, $televisionApi);
 
 						$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
 						$findDevicePropertyQuery->forDevice($device);
@@ -602,20 +601,36 @@ class Discovery extends Console\Command\Command
 		}
 	}
 
-	private function askPinCode(Style\SymfonyStyle $io): string
+	private function askPinCode(
+		Style\SymfonyStyle $io,
+		Entities\VieraConnector $connector,
+		API\TelevisionApi $televisionApi,
+	): Entities\API\AuthorizePinCode
 	{
 		$question = new Console\Question\Question('Provide television PIN code displayed on you TV');
-		$question->setValidator(static function (string|null $answer): string {
-			if ($answer !== null && $answer !== '') {
-				return $answer;
-			}
+		$question->setValidator(
+			function (string|null $answer) use ($connector, $televisionApi): Entities\API\AuthorizePinCode {
+				if ($answer !== null && $answer !== '') {
+					try {
+						return $televisionApi->authorizePinCode($answer, strval($this->challengeKey), false);
+					} catch (Exceptions\TelevisionApiCall) {
+						$this->challengeKey = $televisionApi->requestPinCode(
+							$connector->getName() ?? $connector->getIdentifier(),
+							false,
+						);
 
-			throw new Exceptions\Runtime('Provided PIN code is not valid');
-		});
+						throw new Exceptions\Runtime('Provided PIN code is not valid');
+					}
+				}
 
-		$pinCode = $io->askQuestion($question);
+				throw new Exceptions\Runtime('Provided PIN code is not valid');
+			},
+		);
 
-		return strval($pinCode);
+		$authorization = $io->askQuestion($question);
+		assert($authorization instanceof Entities\API\AuthorizePinCode);
+
+		return $authorization;
 	}
 
 	private function checkAndTerminate(): void
