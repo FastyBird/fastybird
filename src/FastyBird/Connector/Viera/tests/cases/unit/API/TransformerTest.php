@@ -27,6 +27,7 @@ final class TransformerTest extends BaseTestCase
 
 		$iv = unpack('C*', strval(base64_decode($challengeKey, true)));
 		assert(is_array($iv));
+		/** @var array<int> $iv */
 		$iv = array_values($iv);
 
 		$key = array_fill(0, 16, 0);
