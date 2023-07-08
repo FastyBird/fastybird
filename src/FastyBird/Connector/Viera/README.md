@@ -15,15 +15,16 @@
 ## What is Panasonic Viera connector?
 
 Panasonic Viera connector is extension for [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem
-which is integrating [Panasonic Viera](https://www.panasonic.com) devices.
+which is integrating [Panasonic Viera](https://www.panasonic.com) televisions.
 
 Panasonic Viera Connector is a distributed extension that is developed in [PHP](https://www.php.net), built on the [Nette](https://nette.org) and [Symfony](https://symfony.com) frameworks,
 and is licensed under [Apache2](http://www.apache.org/licenses/LICENSE-2.0).
 
 ### Features:
 
-- The Panasonic Viera Connector offers support for both local and cloud-based communication with Panasonic Viera devices, providing users with a versatile and flexible way to connect and control a wide range of Panasonic Viera devices in their home or office.
-- Automated device discovery feature, which automatically detects and adds Panasonic Viera devices to the FastyBird ecosystem
+- Full support for 2018 and later models
+- Support for televisions which need PIN authentication
+- Automated device discovery feature, which automatically detects and adds Panasonic Viera televisions to the FastyBird ecosystem
 - Panasonic Viera Connector management for the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) [devices module](https://github.com/FastyBird/devices-module), allowing users to easily manage and monitor Panasonic Viera devices
 - Advanced device management features, such as controlling power status, measuring energy consumption, and reading sensor data
 - [{JSON:API}](https://jsonapi.org/) schemas for full API access, providing a standardized and consistent way for developers to access and manipulate Panasonic Viera device data
@@ -32,8 +33,9 @@ and is licensed under [Apache2](http://www.apache.org/licenses/LICENSE-2.0).
 
 ## Requirements
 
-Panasonic Viera connector is tested against PHP 8.1 and require installed [Process Control](https://www.php.net/manual/en/book.pcntl.php)
-PHP extension.
+Panasonic Viera connector is tested against PHP 8.1 and require installed [Process Control](https://www.php.net/manual/en/book.pcntl.php),
+[OpenSSL](https://www.php.net/manual/en/book.openssl.php), [SimpleXML](https://www.php.net/manual/en/book.simplexml.php) and [Iconv](https://www.php.net/manual/en/book.iconv.php)
+PHP extensions.
 
 ## Installation
 
@@ -52,7 +54,7 @@ application under marketplace section.
 
 ## Documentation
 
-Learn how to connect Panasonic Viera devices and manage them with [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) system
+Learn how to connect Panasonic Viera televisions and manage them with [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) system
 in [documentation](https://github.com/FastyBird/viera-connector/wiki).
 
 ## Feedback

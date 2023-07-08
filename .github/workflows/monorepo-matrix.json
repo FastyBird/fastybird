@@ -66,6 +66,11 @@
   },
   {
     "organization": "FastyBird",
+    "name": "viera-connector",
+    "local-path": "src/FastyBird/Connector/Viera"
+  },
+  {
+    "organization": "FastyBird",
     "name": "couchdb-plugin",
     "local-path": "src/FastyBird/Plugin/CouchDb"
   },
