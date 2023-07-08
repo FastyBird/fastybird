@@ -33,7 +33,6 @@ use React\EventLoop;
 use React\Http;
 use React\Promise;
 use React\Socket;
-use React\Socket\Connector;
 use RuntimeException;
 use SimpleXMLElement;
 use Throwable;
@@ -44,27 +43,22 @@ use function array_merge;
 use function array_pop;
 use function array_values;
 use function base64_decode;
-use function base64_encode;
 use function boolval;
 use function chr;
 use function count;
 use function explode;
-use function hash_hmac;
 use function hexdec;
 use function http_build_query;
 use function implode;
 use function intval;
 use function is_array;
 use function is_string;
-use function openssl_decrypt;
-use function openssl_encrypt;
 use function pack;
 use function preg_match;
 use function preg_match_all;
 use function preg_replace;
 use function preg_split;
 use function property_exists;
-use function random_bytes;
 use function simplexml_load_string;
 use function sprintf;
 use function str_repeat;
@@ -76,8 +70,6 @@ use function strtoupper;
 use function strval;
 use function substr;
 use function unpack;
-use const OPENSSL_RAW_DATA;
-use const OPENSSL_ZERO_PADDING;
 
 /**
  * Television api interface
@@ -92,10 +84,6 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 
 	use Nette\SmartObject;
 	use Evenement\EventEmitterTrait;
-
-	private const CONNECTION_TIMEOUT = 10;
-
-	private const SIGNATURE_BYTES_LENGTH = 32;
 
 	private const EVENTS_TIMEOUT = 10;
 
@@ -129,10 +117,6 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 
 	private Log\LoggerInterface $logger;
 
-	private GuzzleHttp\Client|null $client = null;
-
-	private Http\Browser|null $asyncClient = null;
-
 	public function __construct(
 		private readonly string $identifier,
 		private readonly string $ipAddress,
@@ -140,6 +124,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 		private readonly string|null $appId,
 		private readonly string|null $encryptionKey,
 		private readonly string|null $macAddress,
+		private readonly HttpClientFactory $httpClientFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		Log\LoggerInterface|null $logger = null,
 	)
@@ -206,7 +191,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 			throw new Exceptions\InvalidState('Session is not created');
 		}
 
-		$encInfo = $this->encryptPayload(
+		$encInfo = Transformer::encryptPayload(
 			'<X_ApplicationId>' . $this->appId . '</X_ApplicationId>',
 			$this->session->getKey(),
 			$this->session->getIv(),
@@ -253,7 +238,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 						return;
 					}
 
-					$payload = $this->decryptPayload(
+					$payload = Transformer::decryptPayload(
 						$matches['encrypted'],
 						$this->session->getKey(),
 						$this->session->getIv(),
@@ -293,7 +278,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 			throw new Exceptions\TelevisionApiCall('Could not parse received response');
 		}
 
-		$payload = $this->decryptPayload(
+		$payload = Transformer::decryptPayload(
 			$matches['encrypted'],
 			$this->session->getKey(),
 			$this->session->getIv(),
@@ -452,7 +437,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 								return;
 							}
 
-							$payload = $this->decryptPayload(
+							$payload = Transformer::decryptPayload(
 								$matches['encrypted'],
 								$this->session->getKey(),
 								$this->session->getIv(),
@@ -553,7 +538,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 				throw new Exceptions\TelevisionApiCall('Could not parse received response');
 			}
 
-			$payload = $this->decryptPayload(
+			$payload = Transformer::decryptPayload(
 				$matches['encrypted'],
 				$this->session->getKey(),
 				$this->session->getIv(),
@@ -660,7 +645,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 								return;
 							}
 
-							$payload = $this->decryptPayload(
+							$payload = Transformer::decryptPayload(
 								$matches['encrypted'],
 								$this->session->getKey(),
 								$this->session->getIv(),
@@ -737,7 +722,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 				throw new Exceptions\TelevisionApiCall('Could not parse received response');
 			}
 
-			$payload = $this->decryptPayload(
+			$payload = Transformer::decryptPayload(
 				$matches['encrypted'],
 				$this->session->getKey(),
 				$this->session->getIv(),
@@ -830,7 +815,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 								return;
 							}
 
-							$payload = $this->decryptPayload(
+							$payload = Transformer::decryptPayload(
 								$matches['encrypted'],
 								$this->session->getKey(),
 								$this->session->getIv(),
@@ -890,7 +875,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 				throw new Exceptions\TelevisionApiCall('Could not parse received response');
 			}
 
-			$payload = $this->decryptPayload(
+			$payload = Transformer::decryptPayload(
 				$matches['encrypted'],
 				$this->session->getKey(),
 				$this->session->getIv(),
@@ -1027,7 +1012,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 								return;
 							}
 
-							$payload = $this->decryptPayload(
+							$payload = Transformer::decryptPayload(
 								$matches['encrypted'],
 								$this->session->getKey(),
 								$this->session->getIv(),
@@ -1087,7 +1072,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 				throw new Exceptions\TelevisionApiCall('Could not parse received response');
 			}
 
-			$payload = $this->decryptPayload(
+			$payload = Transformer::decryptPayload(
 				$matches['encrypted'],
 				$this->session->getKey(),
 				$this->session->getIv(),
@@ -1663,11 +1648,11 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 		];
 
 		/** @var array<int> $hmacKey */
-		$hmacKey = array_fill(0, self::SIGNATURE_BYTES_LENGTH, 0);
+		$hmacKey = array_fill(0, Transformer::SIGNATURE_BYTES_LENGTH, 0);
 
 		$i = 0;
 
-		while ($i < self::SIGNATURE_BYTES_LENGTH) {
+		while ($i < Transformer::SIGNATURE_BYTES_LENGTH) {
 			$hmacKey[$i] = $hmacKeyMaskValues[$i] ^ $iv[$i + 2 & 0xF];
 			$hmacKey[$i + 1] = $hmacKeyMaskValues[$i + 1] ^ $iv[$i + 3 & 0xF];
 			$hmacKey[$i + 2] = $hmacKeyMaskValues[$i + 2] ^ $iv[$i & 0xF];
@@ -1677,7 +1662,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 		}
 
 		// Encrypt X_PinCode argument and send it within an X_AuthInfo tag
-		$payload = $this->encryptPayload(
+		$payload = Transformer::encryptPayload(
 			'<X_PinCode>' . $pinCode . '</X_PinCode>',
 			pack('C*', ...$key),
 			pack('C*', ...$iv),
@@ -1718,7 +1703,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 							return;
 						}
 
-						$payload = $this->decryptPayload(
+						$payload = Transformer::decryptPayload(
 							$matches['encrypted'],
 							pack('C*', ...$key),
 							pack('C*', ...$iv),
@@ -1768,7 +1753,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 			throw new Exceptions\TelevisionApiCall('Could not parse received response');
 		}
 
-		$payload = $this->decryptPayload(
+		$payload = Transformer::decryptPayload(
 			$matches['encrypted'],
 			pack('C*', ...$key),
 			pack('C*', ...$iv),
@@ -1914,7 +1899,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 		);
 
 		try {
-			$client = $this->getClient(false);
+			$client = $this->httpClientFactory->createClient(false);
 		} catch (InvalidArgumentException $ex) {
 			$this->logger->error('Could not get http client', [
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
@@ -1982,7 +1967,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 		}
 
 		try {
-			$client = $this->getClient(false);
+			$client = $this->httpClientFactory->createClient(false);
 		} catch (InvalidArgumentException $ex) {
 			$this->logger->error('Could not get http client', [
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
@@ -2059,7 +2044,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 
 		if ($async) {
 			try {
-				$request = $this->getClient()->request(
+				$request = $this->httpClientFactory->createClient($async)->request(
 					$method,
 					$requestPath,
 					$headers,
@@ -2128,7 +2113,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 			return $deferred->promise();
 		} else {
 			try {
-				$response = $this->getClient(false)->request(
+				$response = $this->httpClientFactory->createClient(false)->request(
 					$method,
 					$requestPath,
 					[
@@ -2263,7 +2248,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 			$command .= '</' . $bodyElement . ':' . $action . '>';
 			$command .= '</X_OriginalCommand>';
 
-			$encryptedCommand = $this->encryptPayload(
+			$encryptedCommand = Transformer::encryptPayload(
 				$command,
 				$this->session->getKey(),
 				$this->session->getIv(),
@@ -2298,7 +2283,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 
 		if ($async) {
 			try {
-				$request = $this->getClient()->post(
+				$request = $this->httpClientFactory->createClient()->post(
 					'http://' . $this->ipAddress . ':' . $this->port . $url,
 					$headers,
 					$body,
@@ -2365,7 +2350,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 			return $deferred->promise();
 		} else {
 			try {
-				$response = $this->getClient(false)->post(
+				$response = $this->httpClientFactory->createClient(false)->post(
 					$this->ipAddress . ':' . $this->port . $url,
 					[
 						'headers' => $headers,
@@ -2484,100 +2469,6 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 		);
 	}
 
-	/**
-	 * @throws Exceptions\Encrypt
-	 */
-	private function encryptPayload(string $data, string $key, string $iv, string $hmacKey): string
-	{
-		try {
-			// Start with 12 random bytes
-			$message = pack('C*', ...((array) unpack('C*', random_bytes(12))));
-		} catch (Throwable $ex) {
-			throw new Exceptions\Encrypt('Preparing payload header failed', $ex->getCode(), $ex);
-		}
-
-		// Add 4 bytes (big endian) of the length of data
-		$message .= pack('N', strlen($data));
-
-		$message .= $data;
-
-		$message = $message . str_repeat(chr(0), 16 - (strlen($message) % 16));
-
-		// Encrypt the payload
-		$cipherText = openssl_encrypt(
-			$message,
-			'AES-128-CBC',
-			$key,
-			OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING,
-			$iv,
-		);
-
-		if ($cipherText === false) {
-			throw new Exceptions\Encrypt('Payload could not be encrypted');
-		}
-
-		// Compute HMAC-SHA-256
-		$sig = hash_hmac('sha256', $cipherText, $hmacKey, true);
-
-		// Concat HMAC with AES encrypted payload
-		return base64_encode($cipherText . $sig);
-	}
-
-	/**
-	 * @throws Exceptions\Decrypt
-	 */
-	private function decryptPayload(string $data, string $key, string $iv, string $hmacKey): string
-	{
-		$decodedWithSignature = base64_decode($data, true);
-
-		if ($decodedWithSignature === false) {
-			throw new Exceptions\Decrypt('Payload could not be decoded');
-		}
-
-		$decoded = substr($decodedWithSignature, 0, -self::SIGNATURE_BYTES_LENGTH);
-		$signature = substr($decodedWithSignature, -self::SIGNATURE_BYTES_LENGTH);
-
-		$calculatedSignature = hash_hmac('sha256', $decoded, $hmacKey, true);
-
-		if ($signature !== $calculatedSignature) {
-			throw new Exceptions\Decrypt('Payload could not be decrypted. Signatures are different');
-		}
-
-		$result = openssl_decrypt(
-			$decoded,
-			'AES-128-CBC',
-			$key,
-			OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING,
-			$iv,
-		);
-
-		if ($result === false) {
-			throw new Exceptions\Decrypt('Payload could not be decrypted');
-		}
-
-		$decrypted = unpack('C*', $result);
-
-		if ($decrypted === false) {
-			throw new Exceptions\Decrypt('Payload could not be decrypted');
-		}
-
-		$decrypted = array_values($decrypted);
-
-		$message = [];
-
-		// The valid decrypted data starts at byte offset 16
-		for ($i = 16; $i < count($decrypted); $i++) {
-			// Strip ending
-			if ($decrypted[$i] === 0) {
-				break;
-			}
-
-			$message[] = $decrypted[$i];
-		}
-
-		return pack('C*', ...$message);
-	}
-
 	private function sanitizeReceivedPayload(string $payload): string
 	{
 		$sanitized = preg_replace('/<(\/?)\w+:(\w+\/?) ?(\w+:\w+.*)?>/', '<$1$2>', $payload);
@@ -2587,36 +2478,6 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 		}
 
 		return $sanitized;
-	}
-
-	/**
-	 * @return ($async is true ? Http\Browser : GuzzleHttp\Client)
-	 *
-	 * @throws InvalidArgumentException
-	 */
-	private function getClient(bool $async = true): GuzzleHttp\Client|Http\Browser
-	{
-		if ($async) {
-			if ($this->asyncClient === null) {
-				$this->asyncClient = new Http\Browser(
-					new Connector(
-						[
-							'timeout' => self::CONNECTION_TIMEOUT,
-						],
-						$this->eventLoop,
-					),
-					$this->eventLoop,
-				);
-			}
-
-			return $this->asyncClient;
-		} else {
-			if ($this->client === null) {
-				$this->client = new GuzzleHttp\Client();
-			}
-
-			return $this->client;
-		}
 	}
 
 }
