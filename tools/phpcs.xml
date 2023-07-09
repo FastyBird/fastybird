@@ -45,6 +45,10 @@
                 <element key="src/FastyBird/Connector/Modbus/tests/cases/unit" value="FastyBird\Connector\Modbus\Tests\Cases\Unit"/>
                 <element key="src/FastyBird/Connector/Modbus/tests/tools" value="FastyBird\Connector\Modbus\Tests\Tools"/>
 
+                <element key="src/FastyBird/Connector/NsPanel/src" value="FastyBird\Connector\NsPanel"/>
+                <element key="src/FastyBird/Connector/NsPanel/tests/cases/unit" value="FastyBird\Connector\NsPanel\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Connector/NsPanel/tests/tools" value="FastyBird\Connector\NsPanel\Tests\Tools"/>
+
                 <element key="src/FastyBird/Connector/Shelly/src" value="FastyBird\Connector\Shelly"/>
                 <element key="src/FastyBird/Connector/Shelly/tests/cases/unit" value="FastyBird\Connector\Shelly\Tests\Cases\Unit"/>
                 <element key="src/FastyBird/Connector/Shelly/tests/tools" value="FastyBird\Connector\Shelly\Tests\Tools"/>

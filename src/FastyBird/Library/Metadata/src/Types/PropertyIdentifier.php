@@ -84,6 +84,8 @@ class PropertyIdentifier extends Consistence\Enum\Enum
 
 	public const IDENTIFIER_SERIAL_NUMBER = 'serial_number';
 
+	public const IDENTIFIER_ACCESS_TOKEN = 'access_token';
+
 	public function __toString(): string
 	{
 		return strval(self::getValue());

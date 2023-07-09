@@ -80,6 +80,8 @@ final class Constants
 
 	public const CONNECTOR_VIERA_SOURCE = 'com.fastybird.viera-connector';
 
+	public const CONNECTOR_NS_PANEL_SOURCE = 'com.fastybird.ns-panel-connector';
+
 	public const AUTOMATOR_DEVICE_MODULE = 'com.fastybird.device-module-automator';
 
 	public const AUTOMATOR_DATE_TIME = 'com.fastybird.date-time-automator';

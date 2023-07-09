@@ -51,6 +51,11 @@
   },
   {
     "organization": "FastyBird",
+    "name": "ns-panel-connector",
+    "local-path": "src/FastyBird/Connector/NsPanel"
+  },
+  {
+    "organization": "FastyBird",
     "name": "shelly-connector",
     "local-path": "src/FastyBird/Connector/Shelly"
   },

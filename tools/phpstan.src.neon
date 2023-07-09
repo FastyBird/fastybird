@@ -10,6 +10,7 @@ includes:
     - ../src/FastyBird/Connector/FbMqtt/tools/phpstan.config.src.neon
     - ../src/FastyBird/Connector/HomeKit/tools/phpstan.config.src.neon
     - ../src/FastyBird/Connector/Modbus/tools/phpstan.config.src.neon
+    - ../src/FastyBird/Connector/NsPanel/tools/phpstan.config.src.neon
     - ../src/FastyBird/Connector/Shelly/tools/phpstan.config.src.neon
     - ../src/FastyBird/Connector/Sonoff/tools/phpstan.config.src.neon
     - ../src/FastyBird/Connector/Tuya/tools/phpstan.config.src.neon

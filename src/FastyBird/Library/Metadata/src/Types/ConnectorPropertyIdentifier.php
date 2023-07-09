@@ -44,7 +44,9 @@ class ConnectorPropertyIdentifier extends Consistence\Enum\Enum
 
 	public const IDENTIFIER_INTERFACE = PropertyIdentifier::IDENTIFIER_INTERFACE;
 
-	public const IDENTIFIER_ADDRESS = PropertyIdentifier::IDENTIFIER_ADDRESS;
+	public const IDENTIFIER_IP_ADDRESS = PropertyIdentifier::IDENTIFIER_IP_ADDRESS;
+
+	public const IDENTIFIER_ACCESS_TOKEN = PropertyIdentifier::IDENTIFIER_ACCESS_TOKEN;
 
 	public function __toString(): string
 	{
