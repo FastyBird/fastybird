@@ -1,36 +1,46 @@
 <?php declare(strict_types = 1);
 
 /**
- * Entity.php
+ * Permission.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:NsPanelConnector!
- * @subpackage     Entities
+ * @subpackage     Types
  * @since          1.0.0
  *
  * @date           09.07.23
  */
 
-namespace FastyBird\Connector\NsPanel\Entities\API;
+namespace FastyBird\Connector\NsPanel\Types;
+
+use Consistence;
+use function strval;
 
 /**
- * NS Panel base message data entity interface
+ * Capability permission types
  *
  * @package        FastyBird:NsPanelConnector!
- * @subpackage     Entities
+ * @subpackage     Types
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-interface Entity
+class Permission extends Consistence\Enum\Enum
 {
 
 	/**
-	 * @return array<string, mixed>
+	 * Permissions
 	 */
-	public function toArray(): array;
+	public const READ = 'read';
 
-	public function toJson(): object;
+	public const WRITE = 'write';
+
+	public const READ_WRITE = 'readWrite';
+
+	public function __toString(): string
+	{
+		return strval(self::getValue());
+	}
 
 }

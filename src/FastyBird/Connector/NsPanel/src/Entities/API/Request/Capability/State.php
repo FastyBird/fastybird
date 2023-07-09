@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Entity.php
+ * State.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,24 +13,19 @@
  * @date           09.07.23
  */
 
-namespace FastyBird\Connector\NsPanel\Entities\API;
+namespace FastyBird\Connector\NsPanel\Entities\API\Request\Capability;
+
+use FastyBird\Connector\NsPanel\Entities;
 
 /**
- * NS Panel base message data entity interface
+ * Device capability state base message data entity interface
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-interface Entity
+interface State extends Entities\API\Entity
 {
-
-	/**
-	 * @return array<string, mixed>
-	 */
-	public function toArray(): array;
-
-	public function toJson(): object;
 
 }

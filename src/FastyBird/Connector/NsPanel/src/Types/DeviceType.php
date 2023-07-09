@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ChannelType.php
+ * DeviceType.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -30,7 +30,7 @@ class DeviceType extends Consistence\Enum\Enum
 {
 
 	/**
-	 * Define device states
+	 * Define types
 	 */
 	public const PLUG = 'plug';
 
