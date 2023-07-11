@@ -15,6 +15,8 @@
 
 namespace FastyBird\Connector\NsPanel\Controllers;
 
+use Psr\Http\Message;
+
 /**
  * Gateway directive controller
  *
@@ -25,5 +27,13 @@ namespace FastyBird\Connector\NsPanel\Controllers;
  */
 final class DirectiveController extends BaseController
 {
+
+	public function index(
+		Message\ServerRequestInterface $request,
+		Message\ResponseInterface $response,
+	): Message\ResponseInterface
+	{
+		return $response;
+	}
 
 }

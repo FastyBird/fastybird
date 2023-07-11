@@ -73,9 +73,6 @@ final class LanApi
 
 	public function __construct(
 		private readonly string $identifier,
-		private readonly string $ipAddress,
-		private readonly int $port,
-		private readonly string|null $accessToken,
 		private readonly HttpClientFactory $httpClientFactory,
 		private readonly MetadataSchemas\Validator $schemaValidator,
 		Log\LoggerInterface|null $logger = null,
@@ -84,22 +81,14 @@ final class LanApi
 		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
-	public function connect(): void
-	{
-		// TODO: Finalize
-	}
-
-	public function disconnect(): void
-	{
-		// TODO: Finalize
-	}
-
 	/**
 	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\Response\GetGatewayInfo)
 	 *
 	 * @throws Exceptions\LanApiCall
 	 */
 	public function getGatewayInfo(
+		string $ipAddress,
+		int $port = self::GATEWAY_PORT,
 		bool $async = true,
 	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\Response\GetGatewayInfo
 	{
@@ -107,7 +96,7 @@ final class LanApi
 
 		$result = $this->callRequest(
 			'GET',
-			sprintf('http://%s:%d/open-api/v1/rest/bridge', $this->ipAddress, $this->port),
+			sprintf('http://%s:%d/open-api/v1/rest/bridge', $ipAddress, $port),
 			[
 				'Content-Type' => 'application/json',
 			],
@@ -146,6 +135,8 @@ final class LanApi
 	 */
 	public function getGatewayAccessToken(
 		string $name,
+		string $ipAddress,
+		int $port = self::GATEWAY_PORT,
 		bool $async = true,
 	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\Response\GetGatewayAccessToken
 	{
@@ -153,7 +144,7 @@ final class LanApi
 
 		$result = $this->callRequest(
 			'GET',
-			sprintf('http://%s:%d/open-api/v1/rest/bridge/access_token', $this->ipAddress, $this->port),
+			sprintf('http://%s:%d/open-api/v1/rest/bridge/access_token', $ipAddress, $port),
 			[
 				'Content-Type' => 'application/json',
 			],
@@ -188,7 +179,7 @@ final class LanApi
 	}
 
 	/**
-	 * @param array<Entities\NsPanelDevice> $devices
+	 * @param array<Entities\Devices\SubDevice> $devices
 	 *
 	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\Response\SyncDevices)
 	 *
@@ -196,6 +187,9 @@ final class LanApi
 	 */
 	public function synchroniseDevices(
 		array $devices,
+		string $ipAddress,
+		string $accessToken,
+		int $port = self::GATEWAY_PORT,
 		bool $async = true,
 	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\Response\SyncDevices
 	{
@@ -210,7 +204,7 @@ final class LanApi
 				),
 				new Entities\API\Request\SyncDevicesEventPayload(
 					array_map(
-						static fn (Entities\NsPanelDevice $device): Entities\API\Request\Description => new Entities\API\Request\Description(
+						static fn (Entities\Devices\SubDevice $device): Entities\API\Request\Description => new Entities\API\Request\Description(
 							$device->getPlainId(),
 							$device->getName() ?? $device->getIdentifier(),
 							$device->getDisplayCategory(),
@@ -231,10 +225,10 @@ final class LanApi
 		try {
 			$result = $this->callRequest(
 				'POST',
-				sprintf('http://%s:%d/open-api/v1/rest/thirdparty/event', $this->ipAddress, $this->port),
+				sprintf('http://%s:%d/open-api/v1/rest/thirdparty/event', $ipAddress, $port),
 				[
 					'Content-Type' => 'application/json',
-					'Autorization' => sprintf('Bearer %s', $this->accessToken),
+					'Authorization' => sprintf('Bearer %s', $accessToken),
 				],
 				[],
 				Utils\Json::encode($data->toJson()),
@@ -292,7 +286,10 @@ final class LanApi
 	 * @throws Exceptions\LanApiCall
 	 */
 	public function reportDeviceStatus(
-		Entities\NsPanelDevice $device,
+		Entities\Devices\SubDevice $device,
+		string $ipAddress,
+		string $accessToken,
+		int $port = self::GATEWAY_PORT,
 		bool $async = true,
 	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\Response\ReportDeviceStatus
 	{
@@ -337,10 +334,10 @@ final class LanApi
 		try {
 			$result = $this->callRequest(
 				'POST',
-				sprintf('http://%s:%d/open-api/v1/rest/thirdparty/event', $this->ipAddress, $this->port),
+				sprintf('http://%s:%d/open-api/v1/rest/thirdparty/event', $ipAddress, $port),
 				[
 					'Content-Type' => 'application/json',
-					'Autorization' => sprintf('Bearer %s', $this->accessToken),
+					'Authorization' => sprintf('Bearer %s', $accessToken),
 				],
 				[],
 				Utils\Json::encode($data->toJson()),
@@ -398,8 +395,11 @@ final class LanApi
 	 * @throws Exceptions\LanApiCall
 	 */
 	public function reportDeviceState(
-		Entities\NsPanelDevice $device,
+		Entities\Devices\SubDevice $device,
 		MetadataTypes\ConnectionState $state,
+		string $ipAddress,
+		string $accessToken,
+		int $port = self::GATEWAY_PORT,
 		bool $async = true,
 	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\Response\ReportDeviceState
 	{
@@ -443,10 +443,10 @@ final class LanApi
 		try {
 			$result = $this->callRequest(
 				'POST',
-				sprintf('http://%s:%d/open-api/v1/rest/thirdparty/event', $this->ipAddress, $this->port),
+				sprintf('http://%s:%d/open-api/v1/rest/thirdparty/event', $ipAddress, $port),
 				[
 					'Content-Type' => 'application/json',
-					'Autorization' => sprintf('Bearer %s', $this->accessToken),
+					'Authorization' => sprintf('Bearer %s', $accessToken),
 				],
 				[],
 				Utils\Json::encode($data->toJson()),
@@ -514,7 +514,7 @@ final class LanApi
 			$this->logger->error(
 				'Read NS Panel status failed',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 					'type' => 'lan-api',
 					'error' => $body->offsetGet('message'),
 					'connector' => [
@@ -529,7 +529,7 @@ final class LanApi
 		}
 
 		try {
-			return EntityFactory::build(Entities\API\Response\GetGatewayInfo::class, $data);
+			return Entities\EntityFactory::build(Entities\API\Response\GetGatewayInfo::class, $data);
 		} catch (Exceptions\InvalidState $ex) {
 			throw new Exceptions\LanApiCall('Could not create entity from response', $ex->getCode(), $ex);
 		}
@@ -553,7 +553,7 @@ final class LanApi
 			$this->logger->error(
 				'Read NS Panel access token failed',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 					'type' => 'lan-api',
 					'error' => $body->offsetGet('message'),
 					'connector' => [
@@ -568,7 +568,7 @@ final class LanApi
 		}
 
 		try {
-			return EntityFactory::build(Entities\API\Response\GetGatewayAccessToken::class, $data);
+			return Entities\EntityFactory::build(Entities\API\Response\GetGatewayAccessToken::class, $data);
 		} catch (Exceptions\InvalidState $ex) {
 			throw new Exceptions\LanApiCall('Could not create entity from response', $ex->getCode(), $ex);
 		}
@@ -590,7 +590,7 @@ final class LanApi
 			$this->logger->error(
 				'Synchronise devices with NS Panel failed',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 					'type' => 'lan-api',
 					'error' => $body->offsetGet('message'),
 					'connector' => [
@@ -605,7 +605,7 @@ final class LanApi
 		}
 
 		try {
-			return EntityFactory::build(Entities\API\Response\SyncDevices::class, $data);
+			return Entities\EntityFactory::build(Entities\API\Response\SyncDevices::class, $data);
 		} catch (Exceptions\InvalidState $ex) {
 			throw new Exceptions\LanApiCall('Could not create entity from response', $ex->getCode(), $ex);
 		}
@@ -629,7 +629,7 @@ final class LanApi
 			$this->logger->error(
 				'Report device status to NS Panel failed',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 					'type' => 'lan-api',
 					'error' => $body->offsetGet('message'),
 					'connector' => [
@@ -644,7 +644,7 @@ final class LanApi
 		}
 
 		try {
-			return EntityFactory::build(Entities\API\Response\ReportDeviceStatus::class, $data);
+			return Entities\EntityFactory::build(Entities\API\Response\ReportDeviceStatus::class, $data);
 		} catch (Exceptions\InvalidState $ex) {
 			throw new Exceptions\LanApiCall('Could not create entity from response', $ex->getCode(), $ex);
 		}
@@ -668,7 +668,7 @@ final class LanApi
 			$this->logger->error(
 				'Report device state to NS Panel failed',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 					'type' => 'lan-api',
 					'error' => $body->offsetGet('message'),
 					'connector' => [
@@ -683,7 +683,7 @@ final class LanApi
 		}
 
 		try {
-			return EntityFactory::build(Entities\API\Response\ReportDeviceState::class, $data);
+			return Entities\EntityFactory::build(Entities\API\Response\ReportDeviceState::class, $data);
 		} catch (Exceptions\InvalidState $ex) {
 			throw new Exceptions\LanApiCall('Could not create entity from response', $ex->getCode(), $ex);
 		}

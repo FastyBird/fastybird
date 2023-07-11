@@ -50,6 +50,20 @@ class ConnectorPropertyIdentifier extends Consistence\Enum\Enum
 
 	public const IDENTIFIER_ACCESS_TOKEN = PropertyIdentifier::IDENTIFIER_ACCESS_TOKEN;
 
+	public const IDENTIFIER_HARDWARE_MANUFACTURER = PropertyIdentifier::IDENTIFIER_HARDWARE_MANUFACTURER;
+
+	public const IDENTIFIER_HARDWARE_MODEL = PropertyIdentifier::IDENTIFIER_HARDWARE_MODEL;
+
+	public const IDENTIFIER_HARDWARE_VERSION = PropertyIdentifier::IDENTIFIER_HARDWARE_VERSION;
+
+	public const IDENTIFIER_HARDWARE_MAC_ADDRESS = PropertyIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS;
+
+	public const IDENTIFIER_FIRMWARE_MANUFACTURER = PropertyIdentifier::IDENTIFIER_FIRMWARE_MANUFACTURER;
+
+	public const IDENTIFIER_FIRMWARE_NAME = PropertyIdentifier::IDENTIFIER_FIRMWARE_NAME;
+
+	public const IDENTIFIER_FIRMWARE_VERSION = PropertyIdentifier::IDENTIFIER_FIRMWARE_VERSION;
+
 	public function __toString(): string
 	{
 		return strval(self::getValue());

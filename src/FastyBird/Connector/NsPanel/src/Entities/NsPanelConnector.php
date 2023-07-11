@@ -21,6 +21,7 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use function is_int;
 use function is_string;
 
 /**
@@ -45,7 +46,7 @@ class NsPanelConnector extends DevicesEntities\Connectors\Connector
 
 	public function getSource(): MetadataTypes\ConnectorSource
 	{
-		return MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA);
+		return MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL);
 	}
 
 	/**
@@ -65,6 +66,30 @@ class NsPanelConnector extends DevicesEntities\Connectors\Connector
 		if (
 			$property instanceof DevicesEntities\Connectors\Properties\Variable
 			&& is_string($property->getValue())
+		) {
+			return $property->getValue();
+		}
+
+		return null;
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function getPort(): int|null
+	{
+		$property = $this->properties
+			->filter(
+			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::IDENTIFIER_PORT
+			)
+			->first();
+
+		if (
+			$property instanceof DevicesEntities\Connectors\Properties\Variable
+			&& is_int($property->getValue())
 		) {
 			return $property->getValue();
 		}

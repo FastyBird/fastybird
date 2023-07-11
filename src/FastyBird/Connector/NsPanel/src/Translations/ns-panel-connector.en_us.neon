@@ -56,9 +56,10 @@ cmd:
                 identifier: "Provide connector identifier"
                 name: "Provide connector name"
                 address: "Provide NS Panel local IP address or domain"
-                port: "Provide server port"
+                port: "Provide communication port or leave blank for use dynamic"
             select:
                 connector: "Please select connector to manage"
+            connection: "Do you want to change NS Panel connection?"
 
         messages:
             identifier:
@@ -75,6 +76,7 @@ cmd:
                 error: "Something went wrong, connector could not be removed. Error was logged."
             noConnectors: "No NS Panel connectors registered in system."
             portUsed: "Provided port is already taken by \"%connector%\" connector"
+            addressNotReachable: "NS Panel with address \"%address\" is not reachable."
 
     devices:
         title: "NS Panel connector - devices management"

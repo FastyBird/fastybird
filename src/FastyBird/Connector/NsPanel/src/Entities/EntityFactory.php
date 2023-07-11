@@ -7,13 +7,13 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:NsPanelConnector!
- * @subpackage     API
+ * @subpackage     Entities
  * @since          1.0.0
  *
  * @date           06.05.23
  */
 
-namespace FastyBird\Connector\NsPanel\API;
+namespace FastyBird\Connector\NsPanel\Entities;
 
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
@@ -50,10 +50,10 @@ use function trim;
 use function ucfirst;
 
 /**
- * API data entity factory
+ * Entity factory
  *
  * @package        FastyBird:NsPanelConnector!
- * @subpackage     API
+ * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */

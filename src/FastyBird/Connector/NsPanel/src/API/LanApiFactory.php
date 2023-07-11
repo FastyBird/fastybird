@@ -26,11 +26,6 @@ namespace FastyBird\Connector\NsPanel\API;
 interface LanApiFactory
 {
 
-	public function create(
-		string $identifier,
-		string $ipAddress,
-		int $port = LanApi::GATEWAY_PORT,
-		string|null $accessToken = null,
-	): LanApi;
+	public function create(string $identifier): LanApi;
 
 }

@@ -65,7 +65,7 @@ final class Messages
 		$this->logger->debug(
 			sprintf('Registered %d messages consumers', count($this->consumers)),
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 				'type' => 'consumer',
 			],
 		);
@@ -78,7 +78,7 @@ final class Messages
 		$this->logger->debug(
 			'Appended new message into consumers queue',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 				'type' => 'consumer',
 				'message' => $entity->toArray(),
 			],
@@ -101,7 +101,7 @@ final class Messages
 			$this->logger->error(
 				'No consumer is registered, messages could not be consumed',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 					'type' => 'consumer',
 				],
 			);
@@ -118,7 +118,7 @@ final class Messages
 		$this->logger->error(
 			'Message could not be consumed',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 				'type' => 'consumer',
 				'message' => $entity->toArray(),
 			],

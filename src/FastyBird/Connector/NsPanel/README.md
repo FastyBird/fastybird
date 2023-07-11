@@ -1,4 +1,4 @@
-# FastyBird IoT Panasonic Viera connector
+# FastyBird IoT Sonoff NS Panel Pro connector
 
 [![Build Status](https://badgen.net/github/checks/FastyBird/ns-panel-connector/main?cache=300&style=flast-square)](https://github.com/FastyBird/ns-panel-connector/actions)
 [![Licence](https://badgen.net/github/license/FastyBird/ns-panel-connector?cache=300&style=flast-square)](https://github.com/FastyBird/ns-panel-connector/blob/main/LICENSE.md)

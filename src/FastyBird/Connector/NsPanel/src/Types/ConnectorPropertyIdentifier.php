@@ -41,6 +41,10 @@ class ConnectorPropertyIdentifier extends Consistence\Enum\Enum
 
 	public const IDENTIFIER_ACCESS_TOKEN = MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_ACCESS_TOKEN;
 
+	public const IDENTIFIER_MAC_ADDRESS = MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS;
+
+	public const IDENTIFIER_FIRMWARE_VERSION = MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_FIRMWARE_VERSION;
+
 	public function __toString(): string
 	{
 		return strval(self::getValue());
