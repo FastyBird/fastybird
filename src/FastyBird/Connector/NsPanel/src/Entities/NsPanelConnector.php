@@ -31,6 +31,8 @@ class NsPanelConnector extends DevicesEntities\Connectors\Connector
 
 	public const CONNECTOR_TYPE = 'ns-panel';
 
+	public const DEFAULT_PORT = 44_000;
+
 	public function getType(): string
 	{
 		return self::CONNECTOR_TYPE;

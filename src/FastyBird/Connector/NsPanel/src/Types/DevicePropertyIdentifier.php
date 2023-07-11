@@ -35,6 +35,14 @@ class DevicePropertyIdentifier extends Consistence\Enum\Enum
 	 */
 	public const IDENTIFIER_STATE = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_STATE;
 
+	public const IDENTIFIER_HARDWARE_MANUFACTURER = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MANUFACTURER;
+
+	public const IDENTIFIER_HARDWARE_MODEL = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL;
+
+	public const IDENTIFIER_CATEGORY = 'category';
+
+	public const IDENTIFIER_GATEWAY_IDENTIFIER = 'gateway_identifier';
+
 	public const IDENTIFIER_STATUS_READING_DELAY = 'status_reading_delay';
 
 	public function __toString(): string

@@ -32,6 +32,8 @@ class DeviceType extends Consistence\Enum\Enum
 	/**
 	 * Define types
 	 */
+	public const UNKNOWN = 'unknown';
+
 	public const PLUG = 'plug';
 
 	public const SWITCH = 'switch';

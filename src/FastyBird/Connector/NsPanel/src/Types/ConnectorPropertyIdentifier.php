@@ -35,6 +35,10 @@ class ConnectorPropertyIdentifier extends Consistence\Enum\Enum
 	 */
 	public const IDENTIFIER_IP_ADDRESS = MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_IP_ADDRESS;
 
+	public const IDENTIFIER_DOMAIN = MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_DOMAIN;
+
+	public const IDENTIFIER_PORT = MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_PORT;
+
 	public const IDENTIFIER_ACCESS_TOKEN = MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_ACCESS_TOKEN;
 
 	public function __toString(): string
