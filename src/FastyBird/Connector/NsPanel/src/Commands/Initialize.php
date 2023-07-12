@@ -17,12 +17,9 @@ namespace FastyBird\Connector\NsPanel\Commands;
 
 use Doctrine\DBAL;
 use Doctrine\Persistence;
-use FastyBird\Connector\NsPanel\API;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
-use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -41,9 +38,6 @@ use function array_search;
 use function array_values;
 use function assert;
 use function count;
-use function intval;
-use function is_int;
-use function is_string;
 use function sprintf;
 use function strval;
 use function usort;
@@ -64,11 +58,8 @@ class Initialize extends Console\Command\Command
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
-		private readonly API\LanApiFactory $lanApiFactory,
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Connectors\ConnectorsManager $connectorsManager,
-		private readonly DevicesModels\Connectors\Properties\PropertiesRepository $propertiesRepository,
-		private readonly DevicesModels\Connectors\Properties\PropertiesManager $propertiesManager,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 		private readonly Localization\Translator $translator,
 		Log\LoggerInterface|null $logger = null,
@@ -95,8 +86,6 @@ class Initialize extends Console\Command\Command
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 */
 	protected function execute(Input\InputInterface $input, Output\OutputInterface $output): int
 	{
@@ -151,8 +140,6 @@ class Initialize extends Console\Command\Command
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 */
 	private function createNewConfiguration(Style\SymfonyStyle $io): void
 	{
@@ -204,13 +191,7 @@ class Initialize extends Console\Command\Command
 			return;
 		}
 
-		assert(is_string($identifier));
-
 		$name = $this->askName($io);
-
-		$panelInfo = $this->askWhichPanel($io, $identifier);
-
-		$port = $this->askPort($io);
 
 		try {
 			// Start transaction connection to the database
@@ -220,38 +201,6 @@ class Initialize extends Console\Command\Command
 				'entity' => Entities\NsPanelConnector::class,
 				'identifier' => $identifier,
 				'name' => $name === '' ? null : $name,
-			]));
-
-			$this->propertiesManager->create(Utils\ArrayHash::from([
-				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-				'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_IP_ADDRESS,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-				'value' => $panelInfo->getIpAddress(),
-				'connector' => $connector,
-			]));
-
-			$this->propertiesManager->create(Utils\ArrayHash::from([
-				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-				'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_DOMAIN,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-				'value' => $panelInfo->getDomain(),
-				'connector' => $connector,
-			]));
-
-			$this->propertiesManager->create(Utils\ArrayHash::from([
-				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-				'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_MAC_ADDRESS,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-				'value' => $panelInfo->getMacAddress(),
-				'connector' => $connector,
-			]));
-
-			$this->propertiesManager->create(Utils\ArrayHash::from([
-				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-				'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_PORT,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
-				'value' => $port,
-				'connector' => $connector,
 			]));
 
 			// Commit all changes into database
@@ -287,8 +236,6 @@ class Initialize extends Console\Command\Command
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 */
 	private function editExistingConfiguration(Style\SymfonyStyle $io): void
 	{
@@ -335,50 +282,6 @@ class Initialize extends Console\Command\Command
 			}
 		}
 
-		$findConnectorPropertyQuery = new DevicesQueries\FindConnectorProperties();
-		$findConnectorPropertyQuery->forConnector($connector);
-		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_IP_ADDRESS);
-
-		$ipAddressProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
-
-		$findConnectorPropertyQuery = new DevicesQueries\FindConnectorProperties();
-		$findConnectorPropertyQuery->forConnector($connector);
-		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_DOMAIN);
-
-		$domainProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
-
-		$findConnectorPropertyQuery = new DevicesQueries\FindConnectorProperties();
-		$findConnectorPropertyQuery->forConnector($connector);
-		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_MAC_ADDRESS);
-
-		$macAddressProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
-
-		$panelInfo = null;
-
-		if ($ipAddressProperty === null || $domainProperty === null || $macAddressProperty === null) {
-			$changeWhichPanel = true;
-
-		} else {
-			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//ns-panel-connector.cmd.initialize.questions.connection'),
-				false,
-			);
-
-			$changeWhichPanel = (bool) $io->askQuestion($question);
-		}
-
-		if ($changeWhichPanel) {
-			$panelInfo = $this->askWhichPanel($io, $connector->getIdentifier(), $connector);
-		}
-
-		$port = $this->askPort($io, $connector);
-
-		$findConnectorPropertyQuery = new DevicesQueries\FindConnectorProperties();
-		$findConnectorPropertyQuery->forConnector($connector);
-		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_PORT);
-
-		$portProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
-
 		try {
 			// Start transaction connection to the database
 			$this->getOrmConnection()->beginTransaction();
@@ -387,75 +290,6 @@ class Initialize extends Console\Command\Command
 				'name' => $name === '' ? null : $name,
 				'enabled' => $enabled,
 			]));
-			assert($connector instanceof Entities\NsPanelConnector);
-
-			if ($ipAddressProperty === null) {
-				if ($panelInfo === null) {
-					$panelInfo = $this->askWhichPanel($io, $connector->getIdentifier(), $connector);
-				}
-
-				$this->propertiesManager->create(Utils\ArrayHash::from([
-					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_IP_ADDRESS,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-					'value' => $panelInfo->getIpAddress(),
-					'connector' => $connector,
-				]));
-			} elseif ($panelInfo !== null) {
-				$this->propertiesManager->update($ipAddressProperty, Utils\ArrayHash::from([
-					'value' => $panelInfo->getIpAddress(),
-				]));
-			}
-
-			if ($domainProperty === null) {
-				if ($panelInfo === null) {
-					$panelInfo = $this->askWhichPanel($io, $connector->getIdentifier(), $connector);
-				}
-
-				$this->propertiesManager->create(Utils\ArrayHash::from([
-					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_DOMAIN,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-					'value' => $panelInfo->getDomain(),
-					'connector' => $connector,
-				]));
-			} elseif ($panelInfo !== null) {
-				$this->propertiesManager->update($domainProperty, Utils\ArrayHash::from([
-					'value' => $panelInfo->getDomain(),
-				]));
-			}
-
-			if ($macAddressProperty === null) {
-				if ($panelInfo === null) {
-					$panelInfo = $this->askWhichPanel($io, $connector->getIdentifier(), $connector);
-				}
-
-				$this->propertiesManager->create(Utils\ArrayHash::from([
-					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_DOMAIN,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-					'value' => $panelInfo->getMacAddress(),
-					'connector' => $connector,
-				]));
-			} elseif ($panelInfo !== null) {
-				$this->propertiesManager->update($macAddressProperty, Utils\ArrayHash::from([
-					'value' => $panelInfo->getMacAddress(),
-				]));
-			}
-
-			if ($portProperty === null) {
-				$this->propertiesManager->create(Utils\ArrayHash::from([
-					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_PORT,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
-					'value' => $port,
-					'connector' => $connector,
-				]));
-			} else {
-				$this->propertiesManager->update($portProperty, Utils\ArrayHash::from([
-					'value' => $port,
-				]));
-			}
 
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
@@ -557,105 +391,6 @@ class Initialize extends Console\Command\Command
 		$name = $io->askQuestion($question);
 
 		return strval($name) === '' ? null : strval($name);
-	}
-
-	private function askWhichPanel(
-		Style\SymfonyStyle $io,
-		string $identifier,
-		Entities\NsPanelConnector|null $connector = null,
-	): Entities\Commands\GatewayInfo
-	{
-		$question = new Console\Question\Question(
-			$this->translator->translate('//ns-panel-connector.cmd.initialize.questions.provide.address'),
-			$connector?->getName(),
-		);
-		$question->setValidator(
-			function (string|null $answer) use ($identifier): Entities\Commands\GatewayInfo {
-				if ($answer !== null && $answer !== '') {
-					$panelApi = $this->lanApiFactory->create($identifier);
-
-					try {
-						$panelInfo = $panelApi->getGatewayInfo($answer, API\LanApi::GATEWAY_PORT, false);
-					} catch (Exceptions\LanApiCall) {
-						throw new Exceptions\Runtime(
-							sprintf(
-								$this->translator->translate(
-									'//ns-panel-connector.cmd.initialize.messages.addressNotReachable',
-								),
-								$answer,
-							),
-						);
-					}
-
-					return Entities\EntityFactory::build(
-						Entities\Commands\GatewayInfo::class,
-						Utils\ArrayHash::from($panelInfo->getData()->toArray()),
-					);
-				}
-
-				throw new Exceptions\Runtime(
-					sprintf(
-						$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
-						$answer,
-					),
-				);
-			},
-		);
-
-		$panelInfo = $io->askQuestion($question);
-		assert($panelInfo instanceof Entities\Commands\GatewayInfo);
-
-		return $panelInfo;
-	}
-
-	/**
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 */
-	private function askPort(Style\SymfonyStyle $io, Entities\NsPanelConnector|null $connector = null): int|null
-	{
-		$question = new Console\Question\Question(
-			$this->translator->translate('//ns-panel-connector.cmd.initialize.questions.provide.port'),
-			$connector?->getPort() ?? Entities\NsPanelConnector::DEFAULT_PORT,
-		);
-		$question->setValidator(function (string|null $answer) use ($connector): int|null {
-			if ($answer === '' || $answer === null) {
-				return null;
-			}
-
-			$findConnectorPropertiesQuery = new DevicesQueries\FindConnectorProperties();
-			$findConnectorPropertiesQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_PORT);
-
-			$properties = $this->propertiesRepository->findAllBy(
-				$findConnectorPropertiesQuery,
-				DevicesEntities\Connectors\Properties\Variable::class,
-			);
-
-			foreach ($properties as $property) {
-				if (
-					$property->getConnector() instanceof Entities\NsPanelConnector
-					&& $property->getValue() === intval($answer)
-					&& (
-						$connector === null || !$property->getConnector()->getId()->equals($connector->getId())
-					)
-				) {
-					throw new Exceptions\Runtime(
-						$this->translator->translate(
-							'//ns-panel-connector.cmd.initialize.messages.portUsed',
-							['connector' => $property->getConnector()->getIdentifier()],
-						),
-					);
-				}
-			}
-
-			return intval($answer);
-		});
-
-		$port = $io->askQuestion($question);
-		assert(is_int($port) || $port === null);
-
-		return $port;
 	}
 
 	/**

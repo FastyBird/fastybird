@@ -33,6 +33,8 @@ final class Gateway extends Entities\NsPanelDevice
 
 	public const DEVICE_TYPE = 'ns-panel-gateway';
 
+	public const DEFAULT_PORT = 44_000;
+
 	private const STATUS_READING_DELAY = 120.0;
 
 	public function getType(): string

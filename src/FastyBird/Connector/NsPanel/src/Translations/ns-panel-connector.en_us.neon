@@ -55,11 +55,8 @@ cmd:
             provide:
                 identifier: "Provide connector identifier"
                 name: "Provide connector name"
-                address: "Provide NS Panel local IP address or domain"
-                port: "Provide communication port or leave blank for use dynamic"
             select:
                 connector: "Please select connector to manage"
-            connection: "Do you want to change NS Panel connection?"
 
         messages:
             identifier:
@@ -75,8 +72,6 @@ cmd:
                 success: "Connector \"%name%\" was successfully removed."
                 error: "Something went wrong, connector could not be removed. Error was logged."
             noConnectors: "No NS Panel connectors registered in system."
-            portUsed: "Provided port is already taken by \"%connector%\" connector"
-            addressNotReachable: "NS Panel with address \"%address\" is not reachable."
 
     devices:
         title: "NS Panel connector - devices management"
@@ -101,6 +96,8 @@ cmd:
                 identifier: "Provide device identifier"
                 name: "Provide device name"
                 value: "Provide characteristic value"
+                address: "Provide NS Panel local IP address or domain"
+                port: "Provide communication port or leave blank for use dynamic"
             select:
                 connector: "Please select connector under which you want to manage devices"
                 device: "Please select device to manage"
@@ -121,6 +118,7 @@ cmd:
             createAnotherService: "Would you like to configure another device service?"
             editServices: "Would you like to manage device services?"
             addCharacteristics: "Would you like to add new characteristics?"
+            connection: "Do you want to change NS Panel connection?"
 
         answers:
             none: "None"
@@ -166,6 +164,7 @@ cmd:
             serviceNotFound: "Something went wrong, service could not be loaded"
             characteristicNotFound: "Something went wrong, characteristic could not be loaded"
             noHardwareDevices: "No devices registered in system"
+            addressNotReachable: "NS Panel with address \"%address\" is not reachable."
 
     execute:
         title: "NS Panel connector - service"
