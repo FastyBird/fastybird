@@ -69,6 +69,10 @@ final class LanApi
 
 	private const REPORT_DEVICE_STATE_MESSAGE_SCHEMA_FILENAME = 'report_device_state.json';
 
+	private const GET_SUB_DEVICES_MESSAGE_SCHEMA_FILENAME = 'get_sub_devices.json';
+
+	private const SET_SUB_DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME = 'set_sub_device_status.json';
+
 	private Log\LoggerInterface $logger;
 
 	public function __construct(
@@ -198,13 +202,14 @@ final class LanApi
 		$data = new Entities\API\Request\SyncDevices(
 			new Entities\API\Request\SyncDevicesEvent(
 				new Entities\API\Header(
-					NsPanel\Types\Header::DISCOVERY_REQUEST,
+					NsPanel\Types\Header::get(NsPanel\Types\Header::DISCOVERY_REQUEST),
 					Uuid\Uuid::uuid4()->toString(),
 					self::API_VERSION,
 				),
 				new Entities\API\Request\SyncDevicesEventPayload(
 					array_map(
-						static fn (Entities\Devices\SubDevice $device): Entities\API\Request\Description => new Entities\API\Request\Description(
+						// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+						static fn (Entities\Devices\SubDevice $device): Entities\API\Request\SyncDevicesEventPayloadEndpoint => new Entities\API\Request\SyncDevicesEventPayloadEndpoint(
 							$device->getPlainId(),
 							$device->getName() ?? $device->getIdentifier(),
 							$device->getDisplayCategory(),
@@ -316,7 +321,7 @@ final class LanApi
 		$data = new Entities\API\Request\ReportDeviceStatus(
 			new Entities\API\Request\ReportDeviceStatusEvent(
 				new Entities\API\Header(
-					NsPanel\Types\Header::DEVICE_STATES_CHANGE_REPORT,
+					NsPanel\Types\Header::get(NsPanel\Types\Header::DEVICE_STATES_CHANGE_REPORT),
 					Uuid\Uuid::uuid4()->toString(),
 					self::API_VERSION,
 				),
@@ -324,7 +329,7 @@ final class LanApi
 					$serialNumber,
 				),
 				new Entities\API\Request\ReportDeviceStatusEventPayload(
-					new Entities\API\Request\Capability\Power(
+					new Entities\API\States\Power(
 						NsPanel\Types\PowerPayload::get(NsPanel\Types\PowerPayload::OFF),
 					),
 				),
@@ -426,7 +431,7 @@ final class LanApi
 		$data = new Entities\API\Request\ReportDeviceState(
 			new Entities\API\Request\ReportDeviceStateEvent(
 				new Entities\API\Header(
-					NsPanel\Types\Header::DEVICE_ONLINE_CHANGE_REPORT,
+					NsPanel\Types\Header::get(NsPanel\Types\Header::DEVICE_ONLINE_CHANGE_REPORT),
 					Uuid\Uuid::uuid4()->toString(),
 					self::API_VERSION,
 				),
@@ -496,6 +501,134 @@ final class LanApi
 		}
 
 		return $this->parseReportDeviceState($result);
+	}
+
+	/**
+	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\Response\GetSubDevices)
+	 *
+	 * @throws Exceptions\LanApiCall
+	 */
+	public function getSubDevices(
+		string $ipAddress,
+		string $accessToken,
+		int $port = self::GATEWAY_PORT,
+		bool $async = true,
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\Response\GetSubDevices
+	{
+		$deferred = new Promise\Deferred();
+
+		$result = $this->callRequest(
+			'GET',
+			sprintf('http://%s:%d/open-api/v1/rest/devices', $ipAddress, $port),
+			[
+				'Content-Type' => 'application/json',
+				'Authorization' => sprintf('Bearer %s', $accessToken),
+			],
+			[],
+			null,
+			$async,
+		);
+
+		if ($result instanceof Promise\PromiseInterface) {
+			$result
+				->then(function (Message\ResponseInterface $response) use ($deferred): void {
+					try {
+						$deferred->resolve($this->parseGetSubDevices($response));
+					} catch (Throwable $ex) {
+						$deferred->reject($ex);
+					}
+				})
+				->otherwise(static function (Throwable $ex) use ($deferred): void {
+					$deferred->reject($ex);
+				});
+
+			return $deferred->promise();
+		}
+
+		if ($result === false) {
+			throw new Exceptions\LanApiCall('Could send data to cloud server');
+		}
+
+		return $this->parseGetSubDevices($result);
+	}
+
+	/**
+	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\Response\SetSubDeviceStatus)
+	 *
+	 * @throws Exceptions\LanApiCall
+	 */
+	public function setSubDeviceState(
+		Entities\Devices\SubDevice $device,
+		string $ipAddress,
+		string $accessToken,
+		int $port = self::GATEWAY_PORT,
+		bool $async = true,
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\Response\SetSubDeviceStatus
+	{
+		$deferred = new Promise\Deferred();
+
+		$data = new Entities\API\Request\SetSubDeviceStatus(
+			new Entities\API\States\Power(
+				NsPanel\Types\PowerPayload::get(NsPanel\Types\PowerPayload::OFF),
+			),
+		);
+
+		try {
+			$result = $this->callRequest(
+				'PUT',
+				sprintf('http://%s:%d/open-api/v1/rest/devices/%s', $ipAddress, $port, $device->getIdentifier()),
+				[
+					'Content-Type' => 'application/json',
+					'Authorization' => sprintf('Bearer %s', $accessToken),
+				],
+				[],
+				Utils\Json::encode($data->toJson()),
+				$async,
+			);
+		} catch (Utils\JsonException $ex) {
+			$this->logger->error(
+				'Could not encode request payload',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'type' => 'lan-api',
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'response' => [
+						'body' => $data->toArray(),
+					],
+					'connector' => [
+						'identifier' => $this->identifier,
+					],
+				],
+			);
+
+			if ($async) {
+				return Promise\reject(new Exceptions\LanApiCall('Could not prepare request'));
+			}
+
+			throw new Exceptions\LanApiCall('Could not prepare request');
+		}
+
+		if ($result instanceof Promise\PromiseInterface) {
+			$result
+				->then(function (Message\ResponseInterface $response) use ($deferred): void {
+					try {
+						$deferred->resolve($this->parseSetSubDeviceStatus($response));
+					} catch (Throwable $ex) {
+						$deferred->reject($ex);
+					}
+				})
+				->otherwise(static function (Throwable $ex) use ($deferred): void {
+					$deferred->reject($ex);
+				});
+
+			return $deferred->promise();
+		}
+
+		if ($result === false) {
+			throw new Exceptions\LanApiCall('Could send data to cloud server');
+		}
+
+		return $this->parseSetSubDeviceStatus($result);
 	}
 
 	/**
@@ -627,7 +760,7 @@ final class LanApi
 
 		if ($error !== 0) {
 			$this->logger->error(
-				'Report device status to NS Panel failed',
+				'Report third-party device status to NS Panel failed',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 					'type' => 'lan-api',
@@ -639,7 +772,7 @@ final class LanApi
 			);
 
 			throw new Exceptions\LanApiCall(
-				sprintf('Report device status failed: %s', strval($body->offsetGet('message'))),
+				sprintf('Report third-party device status failed: %s', strval($body->offsetGet('message'))),
 			);
 		}
 
@@ -666,7 +799,7 @@ final class LanApi
 
 		if ($error !== 0) {
 			$this->logger->error(
-				'Report device state to NS Panel failed',
+				'Report third-party device state to NS Panel failed',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 					'type' => 'lan-api',
@@ -678,12 +811,90 @@ final class LanApi
 			);
 
 			throw new Exceptions\LanApiCall(
-				sprintf('Report device state failed: %s', strval($body->offsetGet('message'))),
+				sprintf('Report third-party device state failed: %s', strval($body->offsetGet('message'))),
 			);
 		}
 
 		try {
 			return Entities\EntityFactory::build(Entities\API\Response\ReportDeviceState::class, $data);
+		} catch (Exceptions\InvalidState $ex) {
+			throw new Exceptions\LanApiCall('Could not create entity from response', $ex->getCode(), $ex);
+		}
+	}
+
+	/**
+	 * @throws Exceptions\LanApiCall
+	 */
+	private function parseGetSubDevices(
+		Message\ResponseInterface $response,
+	): Entities\API\Response\GetSubDevices
+	{
+		$body = $this->validateResponseBody($response, self::GET_SUB_DEVICES_MESSAGE_SCHEMA_FILENAME);
+
+		$error = $body->offsetGet('error');
+
+		$data = $body->offsetGet('data');
+		assert($data instanceof Utils\ArrayHash);
+
+		if ($error !== 0) {
+			$this->logger->error(
+				'Get sub-devices list from NS Panel failed',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'type' => 'lan-api',
+					'error' => $body->offsetGet('message'),
+					'connector' => [
+						'identifier' => $this->identifier,
+					],
+				],
+			);
+
+			throw new Exceptions\LanApiCall(
+				sprintf('Get sub-devices list failed: %s', strval($body->offsetGet('message'))),
+			);
+		}
+
+		try {
+			return Entities\EntityFactory::build(Entities\API\Response\GetSubDevices::class, $data);
+		} catch (Exceptions\InvalidState $ex) {
+			throw new Exceptions\LanApiCall('Could not create entity from response', $ex->getCode(), $ex);
+		}
+	}
+
+	/**
+	 * @throws Exceptions\LanApiCall
+	 */
+	private function parseSetSubDeviceStatus(
+		Message\ResponseInterface $response,
+	): Entities\API\Response\SetSubDeviceStatus
+	{
+		$body = $this->validateResponseBody($response, self::SET_SUB_DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME);
+
+		$error = $body->offsetGet('error');
+
+		$data = $body->offsetGet('data');
+		assert($data instanceof Utils\ArrayHash);
+
+		if ($error !== 0) {
+			$this->logger->error(
+				'Send sub-device set status to NS Panel failed',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'type' => 'lan-api',
+					'error' => $body->offsetGet('message'),
+					'connector' => [
+						'identifier' => $this->identifier,
+					],
+				],
+			);
+
+			throw new Exceptions\LanApiCall(
+				sprintf('Set sub-device status failed: %s', strval($body->offsetGet('message'))),
+			);
+		}
+
+		try {
+			return Entities\EntityFactory::build(Entities\API\Response\SetSubDeviceStatus::class, $data);
 		} catch (Exceptions\InvalidState $ex) {
 			throw new Exceptions\LanApiCall('Could not create entity from response', $ex->getCode(), $ex);
 		}

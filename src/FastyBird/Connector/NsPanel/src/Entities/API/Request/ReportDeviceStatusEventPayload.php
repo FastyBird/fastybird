@@ -20,7 +20,7 @@ use Nette;
 use stdClass;
 
 /**
- * Gateway report device status event payload request definition
+ * Report third-party device status to NS Panel event payload request definition
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Entities
@@ -32,11 +32,11 @@ final class ReportDeviceStatusEventPayload implements Entities\API\Entity
 
 	use Nette\SmartObject;
 
-	public function __construct(private readonly Entities\API\Request\Capability\State $state)
+	public function __construct(private readonly Entities\API\States\State $state)
 	{
 	}
 
-	public function getState(): Capability\State
+	public function getState(): Entities\API\States\State
 	{
 		return $this->state;
 	}

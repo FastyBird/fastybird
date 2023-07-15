@@ -21,7 +21,7 @@ use stdClass;
 use function array_map;
 
 /**
- * NS Panel sync devices event payload response definition
+ * Synchronise third-party devices with NS Panel even payload response definition
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Entities
@@ -34,14 +34,14 @@ final class SyncDevicesEventPayload implements Entities\API\Entity
 	use Nette\SmartObject;
 
 	/**
-	 * @param array<Description> $endpoints
+	 * @param array<SyncDevicesEventPayloadEndpoint> $endpoints
 	 */
 	public function __construct(private readonly array $endpoints)
 	{
 	}
 
 	/**
-	 * @return array<Description>
+	 * @return array<SyncDevicesEventPayloadEndpoint>
 	 */
 	public function getEndpoints(): array
 	{
@@ -55,7 +55,7 @@ final class SyncDevicesEventPayload implements Entities\API\Entity
 	{
 		return [
 			'endpoints' => array_map(
-				static fn (Description $description): array => $description->toArray(),
+				static fn (SyncDevicesEventPayloadEndpoint $description): array => $description->toArray(),
 				$this->getEndpoints(),
 			),
 		];
@@ -65,7 +65,7 @@ final class SyncDevicesEventPayload implements Entities\API\Entity
 	{
 		$json = new stdClass();
 		$json->endpoints = array_map(
-			static fn (Description $description): object => $description->toJson(),
+			static fn (SyncDevicesEventPayloadEndpoint $description): object => $description->toJson(),
 			$this->getEndpoints(),
 		);
 

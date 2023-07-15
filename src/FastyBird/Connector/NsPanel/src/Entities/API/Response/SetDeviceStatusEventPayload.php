@@ -33,11 +33,11 @@ final class SetDeviceStatusEventPayload implements Entities\API\Entity
 
 	use Nette\SmartObject;
 
-	public function __construct(private readonly Types\DirectiveError $type)
+	public function __construct(private readonly Types\ServerStatus $type)
 	{
 	}
 
-	public function getType(): Types\DirectiveError
+	public function getType(): Types\ServerStatus
 	{
 		return $this->type;
 	}

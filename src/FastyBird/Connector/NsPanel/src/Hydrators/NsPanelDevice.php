@@ -21,18 +21,14 @@ use FastyBird\Module\Devices\Hydrators as DevicesHydrators;
 /**
  * NS Panel device entity hydrator
  *
- * @extends DevicesHydrators\Devices\Device<Entities\NsPanelDevice>
+ * @template  T of Entities\NsPanelDevice
+ * @extends   DevicesHydrators\Devices\Device<T>
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Hydrators
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class NsPanelDevice extends DevicesHydrators\Devices\Device
+abstract class NsPanelDevice extends DevicesHydrators\Devices\Device
 {
-
-	public function getEntityName(): string
-	{
-		return Entities\NsPanelDevice::class;
-	}
 
 }

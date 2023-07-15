@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\NsPanel\Entities\API;
 
+use FastyBird\Connector\NsPanel\Types;
 use Nette;
 use stdClass;
 
@@ -32,14 +33,14 @@ final class Header implements Entity
 	use Nette\SmartObject;
 
 	public function __construct(
-		private readonly string $name,
+		private readonly Types\Header $name,
 		private readonly string $messageId,
 		private readonly string $version,
 	)
 	{
 	}
 
-	public function getName(): string
+	public function getName(): Types\Header
 	{
 		return $this->name;
 	}
@@ -60,7 +61,7 @@ final class Header implements Entity
 	public function toArray(): array
 	{
 		return [
-			'name' => $this->getName(),
+			'name' => $this->getName()->getValue(),
 			'message_id' => $this->getMessageId(),
 			'version' => $this->getVersion(),
 		];
@@ -69,7 +70,7 @@ final class Header implements Entity
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->name = $this->getName();
+		$json->name = $this->getName()->getValue();
 		$json->message_id = $this->getMessageId();
 		$json->version = $this->getVersion();
 

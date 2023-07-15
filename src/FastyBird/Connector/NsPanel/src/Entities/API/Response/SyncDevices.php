@@ -20,7 +20,7 @@ use Nette;
 use stdClass;
 
 /**
- * NS Panel sync devices response definition
+ * Synchronise third-party devices with NS Panel response definition
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Entities

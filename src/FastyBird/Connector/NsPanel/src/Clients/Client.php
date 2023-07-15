@@ -44,7 +44,7 @@ interface Client
 	 * Write thing parameter mapped as channel
 	 */
 	public function writeChannelProperty(
-		Entities\Devices\Gateway|Entities\Devices\SubDevice $device,
+		Entities\NsPanelDevice $device,
 		DevicesEntities\Channels\Channel $channel,
 		DevicesEntities\Channels\Properties\Dynamic $property,
 	): Promise\PromiseInterface;

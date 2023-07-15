@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\NsPanel\Entities;
 
+use Consistence;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
 use Nette\Utils;
@@ -43,6 +44,7 @@ use function is_string;
 use function is_subclass_of;
 use function preg_replace_callback;
 use function property_exists;
+use function sprintf;
 use function strtolower;
 use function strtoupper;
 use function strval;
@@ -163,6 +165,7 @@ final class EntityFactory
 	 *
 	 * @return array<int, mixed>
 	 *
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws ReflectionException
 	 */
@@ -237,6 +240,25 @@ final class EntityFactory
 							: $parameterValue;
 
 						$res[$num] = self::build($parameterType, $parameterValue);
+
+						break;
+					} elseif (
+						class_exists($parameterType, false)
+						&& is_subclass_of($parameterType, Consistence\Enum\Enum::class)
+						&& is_string($parameterValue)
+						&& $parameterType::isValidValue($parameterValue)
+					) {
+						if (!$parameterType::isValidValue($parameterValue)) {
+							throw new Exceptions\InvalidArgument(
+								sprintf(
+									'Provided enum value %s is not valid for: %s',
+									$parameterValue,
+									$parameterType,
+								),
+							);
+						}
+
+						$res[$num] = $parameterType::get($parameterValue);
 
 						break;
 					}

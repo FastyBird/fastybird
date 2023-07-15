@@ -32,11 +32,11 @@ final class SetDeviceStatusDirectivePayload implements Entities\API\Entity
 
 	use Nette\SmartObject;
 
-	public function __construct(private readonly Entities\API\Request\Capability\State $state)
+	public function __construct(private readonly Entities\API\States\State $state)
 	{
 	}
 
-	public function getState(): Capability\State
+	public function getState(): Entities\API\States\State
 	{
 		return $this->state;
 	}

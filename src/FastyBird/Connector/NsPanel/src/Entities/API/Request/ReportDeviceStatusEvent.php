@@ -20,7 +20,7 @@ use Nette;
 use stdClass;
 
 /**
- * Gateway report device status event request definition
+ * Report third-party device status to NS Panel event request definition
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Entities

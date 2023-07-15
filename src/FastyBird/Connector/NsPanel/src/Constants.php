@@ -28,4 +28,6 @@ final class Constants
 
 	public const RESOURCES_FOLDER = __DIR__ . '/../resources';
 
+	public const DEFAULT_PORT = 52_323;
+
 }
