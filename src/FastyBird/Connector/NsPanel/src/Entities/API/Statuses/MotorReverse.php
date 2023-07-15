@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Temperature.php
+ * MotorReverse.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,7 +13,7 @@
  * @date           09.07.23
  */
 
-namespace FastyBird\Connector\NsPanel\Entities\API\States;
+namespace FastyBird\Connector\NsPanel\Entities\API\Statuses;
 
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Types;
@@ -21,23 +21,33 @@ use Nette;
 use stdClass;
 
 /**
- * Temperature detection capability state
+ * Motor reverse rotation capability state
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Temperature implements State
+final class MotorReverse implements Status
 {
 
 	use Nette\SmartObject;
 
-	public function __construct(private readonly int $value)
+	public function __construct(private readonly bool $value)
 	{
 	}
 
-	public function getValue(): int
+	public function getType(): Types\Capability
+	{
+		return Types\Capability::get(Types\Capability::MOTOR_REVERSE);
+	}
+
+	public function getName(): string|null
+	{
+		return null;
+	}
+
+	public function getValue(): bool
 	{
 		return $this->value;
 	}
@@ -55,8 +65,8 @@ final class Temperature implements State
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Capability::TEMPERATURE} = new stdClass();
-		$json->{Types\Capability::TEMPERATURE}->temperature = $this->getValue();
+		$json->{Types\Capability::MOTOR_REVERSE} = new stdClass();
+		$json->{Types\Capability::MOTOR_REVERSE}->motorReverse = $this->getValue();
 
 		return $json;
 	}

@@ -30,13 +30,10 @@ use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
-use InvalidArgumentException;
 use Nette;
-use Psr\EventDispatcher;
 use Psr\Log;
 use React\EventLoop;
 use React\Promise;
-use RuntimeException;
 use Throwable;
 use function array_key_exists;
 use function assert;
@@ -77,26 +74,15 @@ final class Gateway implements Client
 
 	private EventLoop\TimerInterface|null $handlerTimer = null;
 
-	/**
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 */
 	public function __construct(
 		private readonly Entities\NsPanelConnector $connector,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
-		private readonly DevicesUtilities\DevicePropertiesStates $devicePropertiesStates,
-		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
-		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
-		private readonly DevicesModels\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
-		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		private readonly Consumers\Messages $consumer,
-		private readonly API\LanApiFactory $lanApiApiFactory,
 		private readonly Writers\Writer $writer,
-		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
+		API\LanApiFactory $lanApiApiFactory,
 		Log\LoggerInterface|null $logger = null,
 	)
 	{
@@ -107,14 +93,6 @@ final class Gateway implements Client
 		);
 	}
 
-	/**
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\LanApiCall
-	 * @throws InvalidArgumentException
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws RuntimeException
-	 */
 	public function connect(): void
 	{
 		$this->processedDevices = [];
@@ -156,6 +134,7 @@ final class Gateway implements Client
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\LanApiCall
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -322,28 +301,46 @@ final class Gateway implements Client
 		$this->processedDevicesCommands[$device->getIdentifier()][self::CMD_STATUS] = $this->dateTimeFactory->getNow();
 
 		$this->lanApiApi->getSubDevices($device->getIdentifier(), $device->getAccessToken())
-			->then(function (array $statuses) use ($device): void {
+			->then(function (Entities\API\Response\GetSubDevices $subDevices) use ($device): void {
 				$this->processedDevicesCommands[$device->getIdentifier()][self::CMD_STATUS] = $this->dateTimeFactory->getNow();
 
-				$dataPointsStatuses = [];
+				foreach ($subDevices->getData()->getDevicesList() as $subDevice) {
+					// Ignore third-party devices
+					if ($subDevice->getThirdSerialNumber() !== null) {
+						continue;
+					}
 
-				foreach ($statuses as $status) {
-					if (!in_array($status->getCode(), $device->getExcludedDps(), true)) {
-						$dataPointsStatuses[] = new Entities\Messages\DataPointStatus(
-							$status->getCode(),
+					$this->consumer->append(
+						new Entities\Messages\DeviceState(
+							$this->connector->getId(),
+							$subDevice->getSerialNumber(),
+							$subDevice->isOnline() ? MetadataTypes\ConnectionState::get(
+								MetadataTypes\ConnectionState::STATE_CONNECTED,
+							) : MetadataTypes\ConnectionState::get(
+								MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+							),
+						),
+					);
+
+					$capabilityStatuses = [];
+
+					foreach ($subDevice->getStatuses() as $status) {
+						$capabilityStatuses[] = new Entities\Messages\CapabilityStatus(
+							$status->getType(),
 							$status->getValue(),
+							$status->getName(),
 						);
 					}
-				}
 
-				$this->consumer->append(new Entities\Messages\DeviceStatus(
-					$this->connector->getId(),
-					$device->getIdentifier(),
-					$dataPointsStatuses,
-				));
+					$this->consumer->append(new Entities\Messages\DeviceStatus(
+						$this->connector->getId(),
+						$device->getIdentifier(),
+						$capabilityStatuses,
+					));
+				}
 			})
 			->otherwise(function (Throwable $ex): void {
-				if ($ex instanceof Exceptions\OpenApiError) {
+				if ($ex instanceof Exceptions\LanApiCall) {
 					$this->logger->warning(
 						'Calling Tuya cloud failed',
 						[
@@ -359,25 +356,23 @@ final class Gateway implements Client
 					return;
 				}
 
-				if (!$ex instanceof Exceptions\LanApiCall) {
-					$this->logger->error(
-						'Calling Tuya cloud failed',
-						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-							'type' => 'gateway-client',
-							'exception' => BootstrapHelpers\Logger::buildException($ex),
-							'connector' => [
-								'id' => $this->connector->getPlainId(),
-							],
+				$this->logger->error(
+					'Calling Tuya cloud failed',
+					[
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+						'type' => 'gateway-client',
+						'exception' => BootstrapHelpers\Logger::buildException($ex),
+						'connector' => [
+							'id' => $this->connector->getPlainId(),
 						],
-					);
+					],
+				);
 
-					throw new DevicesExceptions\Terminate(
-						'Calling Tuya cloud failed',
-						$ex->getCode(),
-						$ex,
-					);
-				}
+				throw new DevicesExceptions\Terminate(
+					'Calling Tuya cloud failed',
+					$ex->getCode(),
+					$ex,
+				);
 			});
 
 		return true;

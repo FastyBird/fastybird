@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * MotorControl.php
+ * CameraStream.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,7 +13,7 @@
  * @date           09.07.23
  */
 
-namespace FastyBird\Connector\NsPanel\Entities\API\States;
+namespace FastyBird\Connector\NsPanel\Entities\API\Statuses;
 
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Types;
@@ -21,25 +21,33 @@ use Nette;
 use stdClass;
 
 /**
- * Motor control capability state
+ * Camera stream capability state
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class MotorControl implements State
+final class CameraStream implements Status
 {
 
 	use Nette\SmartObject;
 
-	public function __construct(
-		private readonly Types\MotorControlPayload $value,
-	)
+	public function __construct(private readonly string $value)
 	{
 	}
 
-	public function getValue(): Types\MotorControlPayload
+	public function getType(): Types\Capability
+	{
+		return Types\Capability::get(Types\Capability::CAMERA_STREAM);
+	}
+
+	public function getName(): string|null
+	{
+		return null;
+	}
+
+	public function getValue(): string
 	{
 		return $this->value;
 	}
@@ -50,15 +58,16 @@ final class MotorControl implements State
 	public function toArray(): array
 	{
 		return [
-			'value' => $this->getValue()->getValue(),
+			'value' => $this->getValue(),
 		];
 	}
 
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Capability::MOTOR_CONTROL} = new stdClass();
-		$json->{Types\Capability::MOTOR_CONTROL}->motorControl = $this->getValue()->getValue();
+		$json->{Types\Capability::CAMERA_STREAM} = new stdClass();
+		$json->{Types\Capability::CAMERA_STREAM}->configuration = new stdClass();
+		$json->{Types\Capability::CAMERA_STREAM}->configuration->streamUrl = $this->getValue();
 
 		return $json;
 	}

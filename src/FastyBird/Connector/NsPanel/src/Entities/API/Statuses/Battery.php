@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * MotorCalibration.php
+ * Battery.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,7 +13,7 @@
  * @date           09.07.23
  */
 
-namespace FastyBird\Connector\NsPanel\Entities\API\States;
+namespace FastyBird\Connector\NsPanel\Entities\API\Statuses;
 
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Types;
@@ -21,25 +21,33 @@ use Nette;
 use stdClass;
 
 /**
- * Motor calibration detection capability state
+ * Remaining battery detection capability state
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class MotorCalibration implements State
+final class Battery implements Status
 {
 
 	use Nette\SmartObject;
 
-	public function __construct(
-		private readonly Types\MotorCalibrationPayload $value,
-	)
+	public function __construct(private readonly int $value)
 	{
 	}
 
-	public function getValue(): Types\MotorCalibrationPayload
+	public function getType(): Types\Capability
+	{
+		return Types\Capability::get(Types\Capability::BATTERY);
+	}
+
+	public function getName(): string|null
+	{
+		return null;
+	}
+
+	public function getValue(): int
 	{
 		return $this->value;
 	}
@@ -50,15 +58,15 @@ final class MotorCalibration implements State
 	public function toArray(): array
 	{
 		return [
-			'value' => $this->getValue()->getValue(),
+			'value' => $this->getValue(),
 		];
 	}
 
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Capability::MOTOR_CALIBRATION} = new stdClass();
-		$json->{Types\Capability::MOTOR_CALIBRATION}->motorClb = $this->getValue()->getValue();
+		$json->{Types\Capability::BATTERY} = new stdClass();
+		$json->{Types\Capability::BATTERY}->battery = $this->getValue();
 
 		return $json;
 	}

@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Power.php
+ * Rssi.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,7 +13,7 @@
  * @date           09.07.23
  */
 
-namespace FastyBird\Connector\NsPanel\Entities\API\States;
+namespace FastyBird\Connector\NsPanel\Entities\API\Statuses;
 
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Types;
@@ -21,23 +21,33 @@ use Nette;
 use stdClass;
 
 /**
- * Power control capability state
+ * Wireless signal strength detection capability state
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Power implements State
+final class Rssi implements Status
 {
 
 	use Nette\SmartObject;
 
-	public function __construct(private readonly Types\PowerPayload $value)
+	public function __construct(private readonly int $value)
 	{
 	}
 
-	public function getValue(): Types\PowerPayload
+	public function getType(): Types\Capability
+	{
+		return Types\Capability::get(Types\Capability::RSSI);
+	}
+
+	public function getName(): string|null
+	{
+		return null;
+	}
+
+	public function getValue(): int
 	{
 		return $this->value;
 	}
@@ -48,15 +58,15 @@ final class Power implements State
 	public function toArray(): array
 	{
 		return [
-			'value' => $this->getValue()->getValue(),
+			'value' => $this->getValue(),
 		];
 	}
 
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Capability::POWER} = new stdClass();
-		$json->{Types\Capability::POWER}->powerState = $this->getValue()->getValue();
+		$json->{Types\Capability::RSSI} = new stdClass();
+		$json->{Types\Capability::RSSI}->rssi = $this->getValue();
 
 		return $json;
 	}

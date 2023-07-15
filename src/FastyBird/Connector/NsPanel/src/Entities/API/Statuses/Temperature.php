@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ColorRgb.php
+ * Temperature.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,7 +13,7 @@
  * @date           09.07.23
  */
 
-namespace FastyBird\Connector\NsPanel\Entities\API\States;
+namespace FastyBird\Connector\NsPanel\Entities\API\Statuses;
 
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Types;
@@ -21,39 +21,35 @@ use Nette;
 use stdClass;
 
 /**
- * Color control capability state
+ * Temperature detection capability state
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ColorRgb implements State
+final class Temperature implements Status
 {
 
 	use Nette\SmartObject;
 
-	public function __construct(
-		private readonly int $red,
-		private readonly int $green,
-		private readonly int $blue,
-	)
+	public function __construct(private readonly int $value)
 	{
 	}
 
-	public function getRed(): int
+	public function getType(): Types\Capability
 	{
-		return $this->red;
+		return Types\Capability::get(Types\Capability::TEMPERATURE);
 	}
 
-	public function getGreen(): int
+	public function getName(): string|null
 	{
-		return $this->green;
+		return null;
 	}
 
-	public function getBlue(): int
+	public function getValue(): int
 	{
-		return $this->blue;
+		return $this->value;
 	}
 
 	/**
@@ -62,19 +58,15 @@ final class ColorRgb implements State
 	public function toArray(): array
 	{
 		return [
-			'red' => $this->getRed(),
-			'green' => $this->getGreen(),
-			'blue' => $this->getBlue(),
+			'value' => $this->getValue(),
 		];
 	}
 
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Capability::COLOR_RGB} = new stdClass();
-		$json->{Types\Capability::COLOR_RGB}->red = $this->getRed();
-		$json->{Types\Capability::COLOR_RGB}->green = $this->getGreen();
-		$json->{Types\Capability::COLOR_RGB}->blue = $this->getBlue();
+		$json->{Types\Capability::TEMPERATURE} = new stdClass();
+		$json->{Types\Capability::TEMPERATURE}->temperature = $this->getValue();
 
 		return $json;
 	}

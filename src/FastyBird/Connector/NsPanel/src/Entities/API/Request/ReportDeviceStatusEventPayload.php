@@ -32,11 +32,11 @@ final class ReportDeviceStatusEventPayload implements Entities\API\Entity
 
 	use Nette\SmartObject;
 
-	public function __construct(private readonly Entities\API\States\State $state)
+	public function __construct(private readonly Entities\API\Statuses\Status $state)
 	{
 	}
 
-	public function getState(): Entities\API\States\State
+	public function getState(): Entities\API\Statuses\Status
 	{
 		return $this->state;
 	}

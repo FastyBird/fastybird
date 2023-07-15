@@ -36,7 +36,7 @@ final class GetSubDevicesDataSubDevice implements Entities\API\Entity
 
 	/**
 	 * @param array<Entities\API\Capability> $capabilities
-	 * @param array<Entities\API\States\State> $state
+	 * @param array<Entities\API\Statuses\Status> $state
 	 * @param array<string, string> $tags
 	 */
 	public function __construct(
@@ -130,9 +130,9 @@ final class GetSubDevicesDataSubDevice implements Entities\API\Entity
 	}
 
 	/**
-	 * @return array<Entities\API\States\State>
+	 * @return array<Entities\API\Statuses\Status>
 	 */
-	public function getState(): array
+	public function getStatuses(): array
 	{
 		return $this->state;
 	}
@@ -178,8 +178,8 @@ final class GetSubDevicesDataSubDevice implements Entities\API\Entity
 			),
 			'protocol' => $this->getProtocol(),
 			'state' => array_map(
-				static fn (Entities\API\States\State $state): array => $state->toArray(),
-				$this->getState(),
+				static fn (Entities\API\Statuses\Status $state): array => $state->toArray(),
+				$this->getStatuses(),
 			),
 			'tags' => $this->getTags(),
 			'online' => $this->isOnline(),
@@ -207,8 +207,8 @@ final class GetSubDevicesDataSubDevice implements Entities\API\Entity
 		);
 		$json->protocol = $this->getProtocol();
 		$json->state = array_map(
-			static fn (Entities\API\States\State $state): array => $state->toArray(),
-			$this->getState(),
+			static fn (Entities\API\Statuses\Status $state): array => $state->toArray(),
+			$this->getStatuses(),
 		);
 		$json->tags = $this->getTags();
 		$json->online = $this->isOnline();

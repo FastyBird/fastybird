@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Percentage.php
+ * Power.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,7 +13,7 @@
  * @date           09.07.23
  */
 
-namespace FastyBird\Connector\NsPanel\Entities\API\States;
+namespace FastyBird\Connector\NsPanel\Entities\API\Statuses;
 
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Types;
@@ -21,23 +21,33 @@ use Nette;
 use stdClass;
 
 /**
- * Percentage control capability state
+ * Power control capability state
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Percentage implements State
+final class Power implements Status
 {
 
 	use Nette\SmartObject;
 
-	public function __construct(private readonly int $value)
+	public function __construct(private readonly Types\PowerPayload $value)
 	{
 	}
 
-	public function getValue(): int
+	public function getType(): Types\Capability
+	{
+		return Types\Capability::get(Types\Capability::POWER);
+	}
+
+	public function getName(): string|null
+	{
+		return null;
+	}
+
+	public function getValue(): Types\PowerPayload
 	{
 		return $this->value;
 	}
@@ -48,15 +58,15 @@ final class Percentage implements State
 	public function toArray(): array
 	{
 		return [
-			'value' => $this->getValue(),
+			'value' => $this->getValue()->getValue(),
 		];
 	}
 
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Capability::PERCENTAGE} = new stdClass();
-		$json->{Types\Capability::PERCENTAGE}->percentage = $this->getValue();
+		$json->{Types\Capability::POWER} = new stdClass();
+		$json->{Types\Capability::POWER}->powerState = $this->getValue()->getValue();
 
 		return $json;
 	}

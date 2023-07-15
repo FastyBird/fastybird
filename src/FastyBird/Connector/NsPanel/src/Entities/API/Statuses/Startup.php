@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Humidity.php
+ * Startup.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,7 +13,7 @@
  * @date           09.07.23
  */
 
-namespace FastyBird\Connector\NsPanel\Entities\API\States;
+namespace FastyBird\Connector\NsPanel\Entities\API\Statuses;
 
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Types;
@@ -21,25 +21,38 @@ use Nette;
 use stdClass;
 
 /**
- * Humidity detection capability state
+ * Power on state (Power Supply) capability state
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Humidity implements State
+final class Startup implements Status
 {
 
 	use Nette\SmartObject;
 
-	public function __construct(private readonly int $value)
+	public function __construct(
+		private readonly Types\StartupPayload $value,
+		private readonly string|null $name,
+	)
 	{
 	}
 
-	public function getValue(): int
+	public function getType(): Types\Capability
+	{
+		return Types\Capability::get(Types\Capability::STARTUP);
+	}
+
+	public function getValue(): Types\StartupPayload
 	{
 		return $this->value;
+	}
+
+	public function getName(): string|null
+	{
+		return $this->name;
 	}
 
 	/**
@@ -48,15 +61,16 @@ final class Humidity implements State
 	public function toArray(): array
 	{
 		return [
-			'value' => $this->getValue(),
+			'value' => $this->getValue()->getValue(),
+			'name' => $this->getName(),
 		];
 	}
 
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Capability::HUMIDITY} = new stdClass();
-		$json->{Types\Capability::HUMIDITY}->humidity = $this->getValue();
+		$json->{Types\Capability::STARTUP} = new stdClass();
+		$json->{Types\Capability::STARTUP}->startup = $this->getValue()->getValue();
 
 		return $json;
 	}

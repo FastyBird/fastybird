@@ -13,7 +13,7 @@
  * @date           09.07.23
  */
 
-namespace FastyBird\Connector\NsPanel\Entities\API\States;
+namespace FastyBird\Connector\NsPanel\Entities\API\Statuses;
 
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Types;
@@ -28,7 +28,7 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Toggle implements State
+final class Toggle implements Status
 {
 
 	use Nette\SmartObject;
@@ -39,6 +39,11 @@ final class Toggle implements State
 		private readonly Types\StartupPayload|null $startup,
 	)
 	{
+	}
+
+	public function getType(): Types\Capability
+	{
+		return Types\Capability::get(Types\Capability::TOGGLE);
 	}
 
 	public function getName(): string

@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Startup.php
+ * MotorControl.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,7 +13,7 @@
  * @date           09.07.23
  */
 
-namespace FastyBird\Connector\NsPanel\Entities\API\States;
+namespace FastyBird\Connector\NsPanel\Entities\API\Statuses;
 
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Types;
@@ -21,33 +21,37 @@ use Nette;
 use stdClass;
 
 /**
- * Power on state (Power Supply) capability state
+ * Motor control capability state
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Startup implements State
+final class MotorControl implements Status
 {
 
 	use Nette\SmartObject;
 
 	public function __construct(
-		private readonly Types\StartupPayload $value,
-		private readonly string|null $name,
+		private readonly Types\MotorControlPayload $value,
 	)
 	{
 	}
 
-	public function getValue(): Types\StartupPayload
+	public function getType(): Types\Capability
 	{
-		return $this->value;
+		return Types\Capability::get(Types\Capability::MOTOR_CONTROL);
 	}
 
 	public function getName(): string|null
 	{
-		return $this->name;
+		return null;
+	}
+
+	public function getValue(): Types\MotorControlPayload
+	{
+		return $this->value;
 	}
 
 	/**
@@ -57,15 +61,14 @@ final class Startup implements State
 	{
 		return [
 			'value' => $this->getValue()->getValue(),
-			'name' => $this->getName(),
 		];
 	}
 
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Capability::STARTUP} = new stdClass();
-		$json->{Types\Capability::STARTUP}->startup = $this->getValue()->getValue();
+		$json->{Types\Capability::MOTOR_CONTROL} = new stdClass();
+		$json->{Types\Capability::MOTOR_CONTROL}->motorControl = $this->getValue()->getValue();
 
 		return $json;
 	}

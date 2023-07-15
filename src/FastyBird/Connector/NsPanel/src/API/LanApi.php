@@ -329,7 +329,7 @@ final class LanApi
 					$serialNumber,
 				),
 				new Entities\API\Request\ReportDeviceStatusEventPayload(
-					new Entities\API\States\Power(
+					new Entities\API\Statuses\Power(
 						NsPanel\Types\PowerPayload::get(NsPanel\Types\PowerPayload::OFF),
 					),
 				),
@@ -557,7 +557,7 @@ final class LanApi
 	 *
 	 * @throws Exceptions\LanApiCall
 	 */
-	public function setSubDeviceState(
+	public function setSubDeviceStatus(
 		Entities\Devices\SubDevice $device,
 		string $ipAddress,
 		string $accessToken,
@@ -568,7 +568,7 @@ final class LanApi
 		$deferred = new Promise\Deferred();
 
 		$data = new Entities\API\Request\SetSubDeviceStatus(
-			new Entities\API\States\Power(
+			new Entities\API\Statuses\Power(
 				NsPanel\Types\PowerPayload::get(NsPanel\Types\PowerPayload::OFF),
 			),
 		);

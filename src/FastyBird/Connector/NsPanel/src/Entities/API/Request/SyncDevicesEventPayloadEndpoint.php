@@ -36,7 +36,7 @@ final class SyncDevicesEventPayloadEndpoint implements Entities\API\Entity
 
 	/**
 	 * @param array<Entities\API\Capability> $capabilities
-	 * @param array<Entities\API\States\State> $state
+	 * @param array<Entities\API\Statuses\Status> $state
 	 * @param array<string, string> $tags
 	 */
 	public function __construct(
@@ -79,7 +79,7 @@ final class SyncDevicesEventPayloadEndpoint implements Entities\API\Entity
 	}
 
 	/**
-	 * @return array<Entities\API\States\State>
+	 * @return array<Entities\API\Statuses\Status>
 	 */
 	public function getState(): array
 	{
@@ -133,7 +133,7 @@ final class SyncDevicesEventPayloadEndpoint implements Entities\API\Entity
 				$this->getCapabilities(),
 			),
 			'state' => array_map(
-				static fn (Entities\API\States\State $state): array => $state->toArray(),
+				static fn (Entities\API\Statuses\Status $state): array => $state->toArray(),
 				$this->getState(),
 			),
 			'tags' => $this->getTags(),
@@ -156,7 +156,7 @@ final class SyncDevicesEventPayloadEndpoint implements Entities\API\Entity
 			$this->getCapabilities(),
 		);
 		$json->state = array_map(
-			static fn (Entities\API\States\State $state): object => $state->toJson(),
+			static fn (Entities\API\Statuses\Status $state): object => $state->toJson(),
 			$this->getState(),
 		);
 		$json->tags = $this->getTags();
