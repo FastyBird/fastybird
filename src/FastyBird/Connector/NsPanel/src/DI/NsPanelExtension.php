@@ -121,7 +121,7 @@ class NsPanelExtension extends DI\CompilerExtension
 			->setType(Schemas\Devices\Gateway::class);
 
 		$builder->addDefinition(
-			$this->prefix('schemas.device.nsPanel.sub-device'),
+			$this->prefix('schemas.device.nsPanel.subDevice'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Schemas\Devices\SubDevice::class);
@@ -142,7 +142,7 @@ class NsPanelExtension extends DI\CompilerExtension
 			->setType(Hydrators\Devices\Gateway::class);
 
 		$builder->addDefinition(
-			$this->prefix('hydrators.device.nsPanel.sub-device'),
+			$this->prefix('hydrators.device.nsPanel.subDevice'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Hydrators\Devices\SubDevice::class);
