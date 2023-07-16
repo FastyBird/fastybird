@@ -28,7 +28,7 @@ use function is_string;
 /**
  * @ORM\Entity
  */
-final class Gateway extends Entities\NsPanelDevice
+class Gateway extends Entities\NsPanelDevice
 {
 
 	public const DEVICE_TYPE = 'ns-panel-gateway';

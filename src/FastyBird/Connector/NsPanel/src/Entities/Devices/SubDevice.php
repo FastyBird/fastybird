@@ -29,7 +29,7 @@ use function is_string;
 /**
  * @ORM\Entity
  */
-final class SubDevice extends Entities\NsPanelDevice
+class SubDevice extends Entities\NsPanelDevice
 {
 
 	public const DEVICE_TYPE = 'ns-panel-sub-device';
