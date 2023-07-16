@@ -183,7 +183,7 @@ final class LanApi
 	}
 
 	/**
-	 * @param array<Entities\Devices\SubDevice> $devices
+	 * @param array<Entities\Devices\Device> $devices
 	 *
 	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\Response\SyncDevices)
 	 *
@@ -209,7 +209,7 @@ final class LanApi
 				new Entities\API\Request\SyncDevicesEventPayload(
 					array_map(
 						// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-						static fn (Entities\Devices\SubDevice $device): Entities\API\Request\SyncDevicesEventPayloadEndpoint => new Entities\API\Request\SyncDevicesEventPayloadEndpoint(
+						static fn (Entities\Devices\Device $device): Entities\API\Request\SyncDevicesEventPayloadEndpoint => new Entities\API\Request\SyncDevicesEventPayloadEndpoint(
 							$device->getPlainId(),
 							$device->getName() ?? $device->getIdentifier(),
 							$device->getDisplayCategory(),
@@ -291,7 +291,7 @@ final class LanApi
 	 * @throws Exceptions\LanApiCall
 	 */
 	public function reportDeviceStatus(
-		Entities\Devices\SubDevice $device,
+		Entities\Devices\Device $device,
 		string $ipAddress,
 		string $accessToken,
 		int $port = self::GATEWAY_PORT,
@@ -400,7 +400,7 @@ final class LanApi
 	 * @throws Exceptions\LanApiCall
 	 */
 	public function reportDeviceState(
-		Entities\Devices\SubDevice $device,
+		Entities\Devices\Device $device,
 		MetadataTypes\ConnectionState $state,
 		string $ipAddress,
 		string $accessToken,

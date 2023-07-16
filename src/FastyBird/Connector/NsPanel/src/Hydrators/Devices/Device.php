@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * SubDevice.php
+ * Device.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -19,20 +19,20 @@ use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Hydrators;
 
 /**
- * NS Panel sub-device entity hydrator
+ * NS Panel device entity hydrator
  *
- * @extends Hydrators\NsPanelDevice<Entities\Devices\SubDevice>
+ * @extends Hydrators\NsPanelDevice<Entities\Devices\Device>
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Hydrators
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class SubDevice extends Hydrators\NsPanelDevice
+final class Device extends Hydrators\NsPanelDevice
 {
 
 	public function getEntityName(): string
 	{
-		return Entities\Devices\SubDevice::class;
+		return Entities\Devices\Device::class;
 	}
 
 }

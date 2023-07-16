@@ -16,7 +16,6 @@
 namespace FastyBird\Connector\NsPanel\DI;
 
 use Doctrine\Persistence;
-use FastyBird\Connector\NsPanel\Clients;
 use FastyBird\Connector\NsPanel\Commands;
 use FastyBird\Connector\NsPanel\Connector;
 use FastyBird\Connector\NsPanel\Controllers;
@@ -127,6 +126,12 @@ class NsPanelExtension extends DI\CompilerExtension
 		)
 			->setType(Schemas\Devices\SubDevice::class);
 
+		$builder->addDefinition(
+			$this->prefix('schemas.device.ns-panel.device'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Schemas\Devices\Device::class);
+
 		$builder->addDefinition($this->prefix('hydrators.connector.ns-panel'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\NsPanelConnector::class);
 
@@ -142,6 +147,12 @@ class NsPanelExtension extends DI\CompilerExtension
 		)
 			->setType(Hydrators\Devices\SubDevice::class);
 
+		$builder->addDefinition(
+			$this->prefix('hydrators.device.ns-panel.device'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Hydrators\Devices\Device::class);
+
 		$router = $builder->addDefinition($this->prefix('http.router'), new DI\Definitions\ServiceDefinition())
 			->setType(Router\Router::class)
 			->setAutowired(false);
@@ -156,9 +167,6 @@ class NsPanelExtension extends DI\CompilerExtension
 				'useExchange' => $configuration->writer === Writers\Exchange::NAME,
 			])
 			->addTag('nette.inject');
-
-		$builder->addDefinition($this->prefix('clients.subscriber'))
-			->setType(Clients\Subscriber::class);
 
 		$builder->addFactoryDefinition($this->prefix('executor.factory'))
 			->setImplement(Connector\ConnectorFactory::class)

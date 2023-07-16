@@ -62,15 +62,15 @@ final class Gateway implements Client
 
 	private const CMD_HEARTBEAT = 'hearbeat';
 
-	private API\LanApi $lanApiApi;
-
-	private Log\LoggerInterface $logger;
-
 	/** @var array<string> */
 	private array $processedDevices = [];
 
 	/** @var array<string, array<string, DateTimeInterface|bool>> */
 	private array $processedDevicesCommands = [];
+
+	private API\LanApi $lanApiApi;
+
+	private Log\LoggerInterface $logger;
 
 	private EventLoop\TimerInterface|null $handlerTimer = null;
 
@@ -78,6 +78,7 @@ final class Gateway implements Client
 		private readonly Entities\NsPanelConnector $connector,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
+		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		private readonly Consumers\Messages $consumer,
@@ -121,15 +122,60 @@ final class Gateway implements Client
 		$this->writer->disconnect($this->connector, $this);
 	}
 
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\LanApiCall
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
 	public function writeChannelProperty(
 		Entities\NsPanelDevice $device,
 		DevicesEntities\Channels\Channel $channel,
 		DevicesEntities\Channels\Properties\Dynamic $property,
 	): Promise\PromiseInterface
 	{
-		// TODO: Implement it
+		if (!$device instanceof Entities\Devices\SubDevice) {
+			return Promise\reject(
+				new Exceptions\InvalidArgument('Only sub-device could be updated'),
+			);
+		}
 
-		return Promise\resolve(true);
+		if ($device->getParent()->getIpAddress() === null || $device->getParent()->getAccessToken() === null) {
+			return Promise\reject(
+				new Exceptions\InvalidArgument('Device assigned gateway is not configured'),
+			);
+		}
+
+		$state = $this->channelPropertiesStates->getValue($property);
+
+		if ($state === null) {
+			return Promise\reject(
+				new Exceptions\InvalidArgument('Property state could not be found. Nothing to write'),
+			);
+		}
+
+		$expectedValue = DevicesUtilities\ValueHelper::flattenValue($state->getExpectedValue());
+
+		if (!$property->isSettable()) {
+			return Promise\reject(new Exceptions\InvalidArgument('Provided property is not writable'));
+		}
+
+		if ($expectedValue === null) {
+			return Promise\reject(
+				new Exceptions\InvalidArgument('Property expected value is not set. Nothing to write'),
+			);
+		}
+
+		if ($state->isPending() === true) {
+			return $this->lanApiApi->setSubDeviceStatus(
+				$device,
+				$device->getParent()->getIpAddress(),
+				$device->getParent()->getAccessToken(),
+			);
+		}
+
+		return Promise\reject(new Exceptions\InvalidArgument('Provided property state is in invalid state'));
 	}
 
 	/**
@@ -235,7 +281,7 @@ final class Gateway implements Client
 			})
 			->otherwise(function (Throwable $ex) use ($device): void {
 				$this->logger->error(
-					'Could not call cloud openapi',
+					'Could not NS Panel api',
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 						'type' => 'gateway-client',
@@ -342,7 +388,7 @@ final class Gateway implements Client
 			->otherwise(function (Throwable $ex): void {
 				if ($ex instanceof Exceptions\LanApiCall) {
 					$this->logger->warning(
-						'Calling Tuya cloud failed',
+						'Calling NS Panel api failed',
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 							'type' => 'gateway-client',
@@ -357,7 +403,7 @@ final class Gateway implements Client
 				}
 
 				$this->logger->error(
-					'Calling Tuya cloud failed',
+					'Calling NS Panel api failed',
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 						'type' => 'gateway-client',

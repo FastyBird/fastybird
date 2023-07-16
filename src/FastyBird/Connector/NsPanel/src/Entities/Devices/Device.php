@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * SubDevice.php
+ * Device.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,7 +10,7 @@
  * @subpackage     Entities
  * @since          1.0.0
  *
- * @date           11.07.23
+ * @date           16.07.23
  */
 
 namespace FastyBird\Connector\NsPanel\Entities\Devices;
@@ -29,10 +29,10 @@ use function is_string;
 /**
  * @ORM\Entity
  */
-final class SubDevice extends Entities\NsPanelDevice
+final class Device extends Entities\NsPanelDevice
 {
 
-	public const DEVICE_TYPE = 'ns-panel-sub-device';
+	public const DEVICE_TYPE = 'ns-panel-device';
 
 	/**
 	 * @throws Exceptions\InvalidState
@@ -157,6 +157,30 @@ final class SubDevice extends Entities\NsPanelDevice
 		}
 
 		return 'N/A';
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function getGatewayIdentifier(): string|null
+	{
+		$property = $this->properties
+			->filter(
+			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::IDENTIFIER_GATEWAY_IDENTIFIER
+			)
+			->first();
+
+		if (
+			$property instanceof DevicesEntities\Devices\Properties\Variable
+			&& is_string($property->getValue())
+		) {
+			return $property->getValue();
+		}
+
+		return null;
 	}
 
 }
