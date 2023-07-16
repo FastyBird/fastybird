@@ -111,44 +111,44 @@ class NsPanelExtension extends DI\CompilerExtension
 		$builder->addDefinition($this->prefix('subscribers.controls'), new DI\Definitions\ServiceDefinition())
 			->setType(Subscribers\Controls::class);
 
-		$builder->addDefinition($this->prefix('schemas.connector.ns-panel'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition($this->prefix('schemas.connector.nsPanel'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\NsPanelConnector::class);
 
 		$builder->addDefinition(
-			$this->prefix('schemas.device.ns-panel.gateway'),
+			$this->prefix('schemas.device.nsPanel.gateway'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Schemas\Devices\Gateway::class);
 
 		$builder->addDefinition(
-			$this->prefix('schemas.device.ns-panel.sub-device'),
+			$this->prefix('schemas.device.nsPanel.sub-device'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Schemas\Devices\SubDevice::class);
 
 		$builder->addDefinition(
-			$this->prefix('schemas.device.ns-panel.device'),
+			$this->prefix('schemas.device.nsPanel.device'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Schemas\Devices\Device::class);
 
-		$builder->addDefinition($this->prefix('hydrators.connector.ns-panel'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition($this->prefix('hydrators.connector.nsPanel'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\NsPanelConnector::class);
 
 		$builder->addDefinition(
-			$this->prefix('hydrators.device.ns-panel.gateway'),
+			$this->prefix('hydrators.device.nsPanel.gateway'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Hydrators\Devices\Gateway::class);
 
 		$builder->addDefinition(
-			$this->prefix('hydrators.device.ns-panel.sub-device'),
+			$this->prefix('hydrators.device.nsPanel.sub-device'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Hydrators\Devices\SubDevice::class);
 
 		$builder->addDefinition(
-			$this->prefix('hydrators.device.ns-panel.device'),
+			$this->prefix('hydrators.device.nsPanel.device'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Hydrators\Devices\Device::class);
