@@ -16,9 +16,11 @@
 namespace FastyBird\Connector\NsPanel\DI;
 
 use Doctrine\Persistence;
+use FastyBird\Connector\NsPanel\API;
 use FastyBird\Connector\NsPanel\Clients;
 use FastyBird\Connector\NsPanel\Commands;
 use FastyBird\Connector\NsPanel\Connector;
+use FastyBird\Connector\NsPanel\Consumers;
 use FastyBird\Connector\NsPanel\Controllers;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Helpers;
@@ -118,10 +120,24 @@ class NsPanelExtension extends DI\CompilerExtension
 				'writer' => $writer,
 			]);
 
+		$builder->addFactoryDefinition($this->prefix('api.lanApi'))
+			->setImplement(API\LanApiFactory::class)
+			->getResultDefinition()
+			->setType(API\LanApi::class);
+
+		$builder->addDefinition($this->prefix('api.httpClient'), new DI\Definitions\ServiceDefinition())
+			->setType(API\HttpClientFactory::class);
+
 		$builder->addFactoryDefinition($this->prefix('server.http'))
 			->setImplement(Servers\HttpFactory::class)
 			->getResultDefinition()
 			->setType(Servers\Http::class);
+
+		$builder->addDefinition($this->prefix('consumers.messages'), new DI\Definitions\ServiceDefinition())
+			->setType(Consumers\Messages::class)
+			->setArguments([
+				'consumers' => $builder->findByType(Consumers\Consumer::class),
+			]);
 
 		$builder->addDefinition($this->prefix('subscribers.properties'), new DI\Definitions\ServiceDefinition())
 			->setType(Subscribers\Properties::class);

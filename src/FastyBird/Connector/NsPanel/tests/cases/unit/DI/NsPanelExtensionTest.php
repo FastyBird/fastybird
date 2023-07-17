@@ -20,10 +20,14 @@ final class NsPanelExtensionTest extends BaseTestCase
 		$container = $this->createContainer();
 
 		self::assertNotNull($container->getByType(Hydrators\NsPanelConnector::class, false));
-		self::assertNotNull($container->getByType(Hydrators\NsPanelDevice::class, false));
+		self::assertNotNull($container->getByType(Hydrators\Devices\Gateway::class, false));
+		self::assertNotNull($container->getByType(Hydrators\Devices\SubDevice::class, false));
+		self::assertNotNull($container->getByType(Hydrators\Devices\Device::class, false));
 
 		self::assertNotNull($container->getByType(Schemas\NsPanelConnector::class, false));
-		self::assertNotNull($container->getByType(Schemas\NsPanelDevice::class, false));
+		self::assertNotNull($container->getByType(Schemas\Devices\Gateway::class, false));
+		self::assertNotNull($container->getByType(Schemas\Devices\SubDevice::class, false));
+		self::assertNotNull($container->getByType(Schemas\Devices\Device::class, false));
 	}
 
 }
