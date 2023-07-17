@@ -60,8 +60,10 @@ final class Connector implements DevicesConnectors\Connector
 	{
 		assert($this->connector instanceof Entities\NsPanelConnector);
 
-		$this->client = $this->clientFactory->create($this->connector);
-		$this->client->connect();
+		foreach ($this->clientsFactories as $clientFactory) {
+			$this->client = $clientFactory->create($this->connector);
+			$this->client->connect();
+		}
 
 		$this->consumerTimer = $this->eventLoop->addPeriodicTimer(
 			self::QUEUE_PROCESSING_INTERVAL,
