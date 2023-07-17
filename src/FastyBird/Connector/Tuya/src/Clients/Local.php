@@ -76,8 +76,6 @@ final class Local implements Client
 
 	private EventLoop\TimerInterface|null $handlerTimer = null;
 
-	private Log\LoggerInterface $logger;
-
 	public function __construct(
 		private readonly Entities\TuyaConnector $connector,
 		private readonly Consumers\Messages $consumer,
@@ -88,10 +86,9 @@ final class Local implements Client
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
-		Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
-		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	/**

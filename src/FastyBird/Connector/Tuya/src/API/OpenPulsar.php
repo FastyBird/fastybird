@@ -84,8 +84,6 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 
 	private Ratchet\Client\WebSocket|null $wsConnection = null;
 
-	private Log\LoggerInterface $logger;
-
 	public function __construct(
 		private readonly string $identifier,
 		private readonly string $accessId,
@@ -95,10 +93,9 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 		private readonly MetadataSchemas\Validator $schemaValidator,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
-		Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
-		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	/**

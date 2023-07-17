@@ -38,8 +38,6 @@ use function in_array;
 class Client implements EventDispatcher\EventSubscriberInterface
 {
 
-	protected Log\LoggerInterface $logger;
-
 	/** @var array<string> */
 	private array $wsKeys;
 
@@ -48,15 +46,13 @@ class Client implements EventDispatcher\EventSubscriberInterface
 
 	public function __construct(
 		private readonly BootstrapHelpers\Database $database,
-		Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 		string|null $wsKeys = null,
 		string|null $allowedOrigins = null,
 	)
 	{
 		$this->wsKeys = $wsKeys !== null ? explode(',', $wsKeys) : [];
 		$this->allowedOrigins = $allowedOrigins !== null ? explode(',', $allowedOrigins) : [];
-
-		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	public static function getSubscribedEvents(): array

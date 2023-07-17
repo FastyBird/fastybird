@@ -39,7 +39,7 @@ class StatesRepositoryFactory
 
 	public function __construct(
 		private readonly Clients\Client $client,
-		private readonly Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
 	}

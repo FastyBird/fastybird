@@ -53,8 +53,6 @@ final class Ws
 	/** @var array<string, API\WsApi> */
 	private array $devicesClients = [];
 
-	private Log\LoggerInterface $logger;
-
 	public function __construct(
 		private readonly API\WsApiFactory $wsApiFactory,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
@@ -62,10 +60,9 @@ final class Ws
 		protected readonly DevicesModels\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
 		protected readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		protected readonly DevicesModels\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
-		Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
-		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	/**

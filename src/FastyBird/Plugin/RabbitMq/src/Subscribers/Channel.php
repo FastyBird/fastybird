@@ -32,14 +32,11 @@ use Symfony\Component\EventDispatcher;
 class Channel implements EventDispatcher\EventSubscriberInterface
 {
 
-	private Log\LoggerInterface $logger;
-
 	public function __construct(
 		private readonly Publishers\Publisher $publisher,
-		Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
-		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	public static function getSubscribedEvents(): array

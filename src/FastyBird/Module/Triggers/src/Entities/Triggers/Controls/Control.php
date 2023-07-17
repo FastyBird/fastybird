@@ -69,8 +69,6 @@ class Control implements Entities\Entity,
 
 	public function __construct(string $name, Entities\Triggers\Trigger $trigger)
 	{
-		$this->id = Uuid\Uuid::uuid4();
-
 		$this->name = $name;
 		$this->trigger = $trigger;
 

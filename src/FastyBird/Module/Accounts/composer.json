@@ -49,6 +49,7 @@
     "ipub/doctrine-timestampable": "^1.5",
     "ipub/slim-router": "^0.2",
     "nettrine/orm": "^0.8",
+    "react/promise": "~2.2",
     "symfony/console": "^5.0|^6.0",
     "symplify/vendor-patches": "^11.2"
   },
@@ -61,7 +62,7 @@
     "pds/skeleton": "^1.0",
     "php-parallel-lint/php-parallel-lint": "^1.3",
     "phpstan/extension-installer": "^1.1",
-    "phpstan/phpstan": "1.10.11",
+    "phpstan/phpstan": "^1.10",
     "phpstan/phpstan-deprecation-rules": "^1.0",
     "phpstan/phpstan-doctrine": "^1.3",
     "phpstan/phpstan-nette": "^1.1",

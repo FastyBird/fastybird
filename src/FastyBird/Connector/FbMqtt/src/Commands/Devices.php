@@ -60,19 +60,15 @@ class Devices extends Console\Command\Command
 
 	private const CHOICE_QUESTION_DELETE_DEVICE = 'Delete existing connector device';
 
-	private Log\LoggerInterface $logger;
-
 	public function __construct(
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Devices\DevicesManager $devicesManager,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
-		Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 		string|null $name = null,
 	)
 	{
-		$this->logger = $logger ?? new Log\NullLogger();
-
 		parent::__construct($name);
 	}
 

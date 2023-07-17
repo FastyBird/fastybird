@@ -45,8 +45,6 @@ final class WsServer extends Console\Command\Command
 
 	public const NAME = 'fb:ws-server:start';
 
-	private Log\LoggerInterface $logger;
-
 	/**
 	 * @param array<ExchangeExchange\Factory> $exchangeFactories
 	 */
@@ -56,12 +54,10 @@ final class WsServer extends Console\Command\Command
 		private readonly EventLoop\LoopInterface $eventLoop,
 		private readonly array $exchangeFactories = [],
 		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
-		Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 		string|null $name = null,
 	)
 	{
-		$this->logger = $logger ?? new Log\NullLogger();
-
 		parent::__construct($name);
 	}
 

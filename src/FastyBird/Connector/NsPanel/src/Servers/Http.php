@@ -50,16 +50,13 @@ final class Http implements Server
 
 	private Socket\ServerInterface|null $socket = null;
 
-	private Log\LoggerInterface $logger;
-
 	public function __construct(
 		private readonly Entities\NsPanelConnector $connector,
 		private readonly Middleware\Router $routerMiddleware,
 		private readonly EventLoop\LoopInterface $eventLoop,
-		Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
-		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	/**

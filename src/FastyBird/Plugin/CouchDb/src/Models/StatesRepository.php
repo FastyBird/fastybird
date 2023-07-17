@@ -46,18 +46,15 @@ class StatesRepository
 
 	use Nette\SmartObject;
 
-	private Log\LoggerInterface $logger;
-
 	/**
 	 * @param class-string<T> $entity
 	 */
 	public function __construct(
 		private readonly Connections\Connection $client,
 		private readonly string $entity = States\State::class,
-		Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
-		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	/**

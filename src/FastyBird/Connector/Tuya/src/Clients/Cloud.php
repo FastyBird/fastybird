@@ -78,8 +78,6 @@ final class Cloud implements Client
 
 	private API\OpenPulsar $openPulsar;
 
-	private Log\LoggerInterface $logger;
-
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
@@ -96,11 +94,9 @@ final class Cloud implements Client
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
-		Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
-		$this->logger = $logger ?? new Log\NullLogger();
-
 		assert(is_string($this->connector->getAccessId()));
 		assert(is_string($this->connector->getAccessSecret()));
 

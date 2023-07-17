@@ -42,16 +42,13 @@ final class DevicePropertiesStates
 
 	use Nette\SmartObject;
 
-	private Log\LoggerInterface $logger;
-
 	public function __construct(
 		private readonly Models\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
 		private readonly Models\States\DevicePropertiesRepository $devicePropertyStateRepository,
 		private readonly Models\States\DevicePropertiesManager $devicePropertiesStatesManager,
-		Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
-		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	/**

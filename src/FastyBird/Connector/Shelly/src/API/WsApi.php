@@ -101,8 +101,6 @@ final class WsApi implements Evenement\EventEmitterInterface
 
 	private Entities\API\Gen2\WsSession|null $session = null;
 
-	private Log\LoggerInterface $logger;
-
 	public function __construct(
 		private readonly string $identifier,
 		private readonly string|null $ipAddress,
@@ -111,11 +109,10 @@ final class WsApi implements Evenement\EventEmitterInterface
 		private readonly string|null $password,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
-		protected readonly MetadataSchemas\Validator $schemaValidator,
-		Log\LoggerInterface|null $logger = null,
+		private readonly MetadataSchemas\Validator $schemaValidator,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
-		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	public function connect(): Promise\PromiseInterface

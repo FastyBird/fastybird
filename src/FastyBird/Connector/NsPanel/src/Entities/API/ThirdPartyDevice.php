@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * SyncDevicesEventPayloadEndpoint.php
+ * ThirdPartyDevice.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,7 +13,7 @@
  * @date           09.07.23
  */
 
-namespace FastyBird\Connector\NsPanel\Entities\API\Request;
+namespace FastyBird\Connector\NsPanel\Entities\API;
 
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Types;
@@ -22,14 +22,14 @@ use stdClass;
 use function array_map;
 
 /**
- * Synchronise third-party devices with NS Panel event payload endpoint request definition
+ * Third party device description definition
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class SyncDevicesEventPayloadEndpoint implements Entities\API\Entity
+final class ThirdPartyDevice implements Entities\API\Entity
 {
 
 	use Nette\SmartObject;

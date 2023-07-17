@@ -60,8 +60,6 @@ final class Http
 
 	private API\Gen2HttpApi|null $gen2httpApi = null;
 
-	private Log\LoggerInterface $logger;
-
 	public function __construct(
 		private readonly API\Gen1HttpApiFactory $gen1HttpApiFactory,
 		private readonly API\Gen2HttpApiFactory $gen2HttpApiFactory,
@@ -69,10 +67,9 @@ final class Http
 		protected readonly DevicesModels\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
 		protected readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		protected readonly DevicesModels\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
-		Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
-		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	public function connect(): void

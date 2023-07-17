@@ -72,47 +72,51 @@ final class ValueHelper
 			|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_INT)
 			|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_UINT)
 		) {
-			if ($invalid !== null && intval($invalid) === intval($value)) {
+			if ($invalid !== null && intval($invalid) === intval(self::flattenValue($value))) {
 				return $invalid;
 			}
 
 			if ($format instanceof MetadataValueObjects\NumberRangeFormat) {
-				if ($format->getMin() !== null && intval($format->getMin()) > intval($value)) {
+				if ($format->getMin() !== null && intval($format->getMin()) > intval(self::flattenValue($value))) {
 					return intval($format->getMin());
 				}
 
-				if ($format->getMax() !== null && intval($format->getMax()) < intval($value)) {
+				if ($format->getMax() !== null && intval($format->getMax()) < intval(self::flattenValue($value))) {
 					return intval($format->getMax());
 				}
 			}
 
-			return intval($value);
+			return intval(self::flattenValue($value));
 		} elseif ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_FLOAT)) {
-			if ($invalid !== null && floatval($invalid) === floatval($value)) {
+			if ($invalid !== null && floatval($invalid) === floatval(self::flattenValue($value))) {
 				return $invalid;
 			}
 
 			if ($format instanceof MetadataValueObjects\NumberRangeFormat) {
-				if ($format->getMin() !== null && floatval($format->getMin()) > floatval($value)) {
+				if ($format->getMin() !== null && floatval($format->getMin()) > floatval(self::flattenValue($value))) {
 					return floatval($format->getMin());
 				}
 
-				if ($format->getMax() !== null && floatval($format->getMax()) < floatval($value)) {
+				if ($format->getMax() !== null && floatval($format->getMax()) < floatval(self::flattenValue($value))) {
 					return floatval($format->getMax());
 				}
 			}
 
-			return floatval($value);
+			return floatval(self::flattenValue($value));
 		} elseif ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_STRING)) {
 			return $value;
 		} elseif ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BOOLEAN)) {
-			return in_array(Utils\Strings::lower(strval($value)), ['true', 't', 'yes', 'y', '1', 'on'], true);
+			return in_array(
+				Utils\Strings::lower(strval(self::flattenValue($value))),
+				['true', 't', 'yes', 'y', '1', 'on'],
+				true,
+			);
 		} elseif ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_DATE)) {
 			if ($value instanceof DateTime) {
 				return $value;
 			}
 
-			$value = Utils\DateTime::createFromFormat('Y-m-d', strval($value));
+			$value = Utils\DateTime::createFromFormat('Y-m-d', strval(self::flattenValue($value)));
 
 			return $value === false ? null : $value;
 		} elseif ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_TIME)) {
@@ -120,7 +124,7 @@ final class ValueHelper
 				return $value;
 			}
 
-			$value = Utils\DateTime::createFromFormat('H:i:sP', strval($value));
+			$value = Utils\DateTime::createFromFormat('H:i:sP', strval(self::flattenValue($value)));
 
 			return $value === false ? null : $value;
 		} elseif ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_DATETIME)) {
@@ -128,7 +132,7 @@ final class ValueHelper
 				return $value;
 			}
 
-			$value = Utils\DateTime::createFromFormat(DateTimeInterface::ATOM, strval($value));
+			$value = Utils\DateTime::createFromFormat(DateTimeInterface::ATOM, strval(self::flattenValue($value)));
 
 			return $value === false ? null : $value;
 		} elseif ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)) {
@@ -136,14 +140,14 @@ final class ValueHelper
 				return $value;
 			}
 
-			if (MetadataTypes\ButtonPayload::isValidValue(strval($value))) {
-				return MetadataTypes\ButtonPayload::get($value);
+			if (MetadataTypes\ButtonPayload::isValidValue(strval(self::flattenValue($value)))) {
+				return MetadataTypes\ButtonPayload::get(strval(self::flattenValue($value)));
 			}
 
 			throw new Exceptions\InvalidState(
 				sprintf(
 					'Provided value "%s" is not in valid rage: %s',
-					strval($value),
+					strval(self::flattenValue($value)),
 					implode(', ', (array) MetadataTypes\ButtonPayload::getAvailableValues()),
 				),
 			);
@@ -152,14 +156,14 @@ final class ValueHelper
 				return $value;
 			}
 
-			if (MetadataTypes\SwitchPayload::isValidValue(strval($value))) {
-				return MetadataTypes\SwitchPayload::get($value);
+			if (MetadataTypes\SwitchPayload::isValidValue(strval(self::flattenValue($value)))) {
+				return MetadataTypes\SwitchPayload::get(strval(self::flattenValue($value)));
 			}
 
 			throw new Exceptions\InvalidState(
 				sprintf(
 					'Provided value "%s" is not in valid rage: %s',
-					strval($value),
+					strval(self::flattenValue($value)),
 					implode(', ', (array) MetadataTypes\SwitchPayload::getAvailableValues()),
 				),
 			);
@@ -168,14 +172,14 @@ final class ValueHelper
 				return $value;
 			}
 
-			if (MetadataTypes\CoverPayload::isValidValue(strval($value))) {
-				return MetadataTypes\CoverPayload::get($value);
+			if (MetadataTypes\CoverPayload::isValidValue(strval(self::flattenValue($value)))) {
+				return MetadataTypes\CoverPayload::get(strval(self::flattenValue($value)));
 			}
 
 			throw new Exceptions\InvalidState(
 				sprintf(
 					'Provided value "%s" is not in valid rage: %s',
-					strval($value),
+					strval(self::flattenValue($value)),
 					implode(', ', (array) MetadataTypes\CoverPayload::getAvailableValues()),
 				),
 			);
@@ -183,7 +187,9 @@ final class ValueHelper
 			if ($format instanceof MetadataValueObjects\StringEnumFormat) {
 				$filtered = array_filter(
 					$format->getItems(),
-					static fn (string $item): bool => Utils\Strings::lower(strval($value)) === Utils\Strings::lower(
+					static fn (string $item): bool => Utils\Strings::lower(
+						strval(self::flattenValue($value)),
+					) === Utils\Strings::lower(
 						strval($item),
 					)
 				);
@@ -193,7 +199,11 @@ final class ValueHelper
 				}
 
 				throw new Exceptions\InvalidState(
-					sprintf('Provided value "%s" is not in valid rage: %s', strval($value), strval($format)),
+					sprintf(
+						'Provided value "%s" is not in valid rage: %s',
+						strval(self::flattenValue($value)),
+						strval($format),
+					),
 				);
 			} elseif ($format instanceof MetadataValueObjects\CombinedEnumFormat) {
 				$filtered = array_filter(
@@ -206,8 +216,10 @@ final class ValueHelper
 									return false;
 								}
 
-								return Utils\Strings::lower(strval($value)) === Utils\Strings::lower(
-									strval($part->getValue()),
+								return Utils\Strings::lower(
+									strval(self::flattenValue($value)),
+								) === Utils\Strings::lower(
+									strval(self::flattenValue($part->getValue())),
 								);
 							},
 						);
@@ -221,7 +233,11 @@ final class ValueHelper
 				}
 
 				throw new Exceptions\InvalidState(
-					sprintf('Provided value "%s" is not in valid rage: %s', strval($value), strval($format)),
+					sprintf(
+						'Provided value "%s" is not in valid rage: %s',
+						strval(self::flattenValue($value)),
+						strval($format),
+					),
 				);
 			}
 

@@ -48,8 +48,6 @@ final class Exchange extends Console\Command\Command
 
 	public const NAME = 'fb:devices-module:exchange';
 
-	private Log\LoggerInterface $logger;
-
 	/**
 	 * @param array<ExchangeExchange\Factory> $exchangeFactories
 	 */
@@ -58,13 +56,11 @@ final class Exchange extends Console\Command\Command
 		private readonly ExchangeConsumers\Container $consumer,
 		private readonly array $exchangeFactories = [],
 		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
-		Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 		string|null $name = null,
 	)
 	{
 		parent::__construct($name);
-
-		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	/**

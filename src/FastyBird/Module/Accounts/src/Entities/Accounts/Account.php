@@ -122,6 +122,7 @@ class Account implements Entities\Entity,
 
 	public function __construct(Uuid\UuidInterface|null $id = null)
 	{
+		// @phpstan-ignore-next-line
 		$this->id = $id ?? Uuid\Uuid::uuid4();
 
 		$this->state = MetadataTypes\AccountState::get(MetadataTypes\AccountState::STATE_NOT_ACTIVATED);

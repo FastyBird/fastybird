@@ -18,6 +18,7 @@ namespace FastyBird\Connector\NsPanel\Entities;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
+use function assert;
 
 /**
  * @ORM\MappedSuperclass
@@ -28,6 +29,13 @@ abstract class NsPanelDevice extends DevicesEntities\Devices\Device
 	public function getSource(): MetadataTypes\ConnectorSource
 	{
 		return MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL);
+	}
+
+	public function getConnector(): NsPanelConnector
+	{
+		assert($this->connector instanceof NsPanelConnector);
+
+		return $this->connector;
 	}
 
 }

@@ -42,16 +42,13 @@ final class Status implements Consumer
 
 	use Nette\SmartObject;
 
-	private Log\LoggerInterface $logger;
-
 	public function __construct(
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly Mappers\DataPoint $dataPointMapper,
 		private readonly Helpers\Property $propertyStateHelper,
-		Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
-		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	/**

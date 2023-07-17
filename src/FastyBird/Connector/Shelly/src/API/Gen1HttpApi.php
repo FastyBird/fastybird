@@ -110,7 +110,7 @@ final class Gen1HttpApi extends HttpApi
 	public function __construct(
 		private readonly MetadataSchemas\Validator $schemaValidator,
 		HttpClientFactory $httpClientFactory,
-		Log\LoggerInterface|null $logger = null,
+		Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
 		parent::__construct($httpClientFactory, $logger);

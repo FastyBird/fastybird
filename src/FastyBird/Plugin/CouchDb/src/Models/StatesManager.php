@@ -36,9 +36,10 @@ use function assert;
 use function is_numeric;
 use function is_object;
 use function is_string;
+use function method_exists;
 use function property_exists;
+use function serialize;
 use function sprintf;
-use function strval;
 use const DATE_ATOM;
 
 /**
@@ -58,8 +59,6 @@ class StatesManager
 
 	private const MAX_RETRIES = 5;
 
-	private Log\LoggerInterface $logger;
-
 	/** @var array<int> */
 	private array $retries = [];
 
@@ -71,10 +70,9 @@ class StatesManager
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly string $entity = States\State::class,
 		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
-		Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
-		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	/**
@@ -232,7 +230,7 @@ class StatesManager
 						} elseif ($value instanceof Consistence\Enum\Enum) {
 							$value = $value->getValue();
 						} elseif (is_object($value)) {
-							$value = strval($value);
+							$value = method_exists($value, '__toString') ? $value->__toString() : serialize($value);
 						}
 					} else {
 						$value = null;
@@ -303,7 +301,7 @@ class StatesManager
 						$value = $value->getValue();
 
 					} elseif (is_object($value)) {
-						$value = strval($value);
+						$value = method_exists($value, '__toString') ? $value->__toString() : serialize($value);
 					}
 
 					if ($doc->get($field) !== $value) {

@@ -100,19 +100,15 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 	private Datagram\Factory $serverFactory;
 
-	private Log\LoggerInterface $logger;
-
 	public function __construct(
 		private readonly Entities\TuyaConnector $connector,
 		private readonly API\OpenApiFactory $openApiApiFactory,
 		private readonly API\LocalApiFactory $localApiFactory,
 		private readonly Consumers\Messages $consumer,
 		private readonly EventLoop\LoopInterface $eventLoop,
-		Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
-		$this->logger = $logger ?? new Log\NullLogger();
-
 		$this->serverFactory = new Datagram\Factory($this->eventLoop);
 
 		$this->discoveredLocalDevices = new SplObjectStorage();

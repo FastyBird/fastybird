@@ -60,8 +60,6 @@ class Devices extends Console\Command\Command
 
 	public const NAME = 'fb:viera-connector:devices';
 
-	private Log\LoggerInterface $logger;
-
 	public function __construct(
 		private readonly API\LanApiFactory $lanApiFactory,
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
@@ -71,12 +69,10 @@ class Devices extends Console\Command\Command
 		private readonly DevicesModels\Devices\Properties\PropertiesManager $devicesPropertiesManager,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 		private readonly Localization\Translator $translator,
-		Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 		string|null $name = null,
 	)
 	{
-		$this->logger = $logger ?? new Log\NullLogger();
-
 		parent::__construct($name);
 	}
 

@@ -60,14 +60,11 @@ abstract class HttpApi
 
 	protected const AUTHORIZATION_DIGEST = 'digest';
 
-	protected Log\LoggerInterface $logger;
-
 	public function __construct(
 		protected readonly HttpClientFactory $httpClientFactory,
-		Log\LoggerInterface|null $logger = null,
+		protected readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
-		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	/**

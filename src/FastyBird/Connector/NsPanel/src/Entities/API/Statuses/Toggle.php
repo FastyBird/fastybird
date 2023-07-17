@@ -36,7 +36,7 @@ final class Toggle implements Status
 	public function __construct(
 		private readonly string $name,
 		private readonly Types\TogglePayload $value,
-		private readonly Types\StartupPayload|null $startup,
+		private readonly Types\StartupPayload|null $startup = null,
 	)
 	{
 	}

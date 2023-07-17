@@ -11,7 +11,6 @@ use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
 use Throwable;
 use function array_keys;
-use function strval;
 
 final class FactoryTest extends TestCase
 {
@@ -46,7 +45,7 @@ final class FactoryTest extends TestCase
 		$formatted = $entity->toArray();
 
 		foreach ($data as $key => $value) {
-			self::assertSame(strval($value), strval($formatted[$key]));
+			self::assertSame($value, $formatted[$key]);
 		}
 	}
 

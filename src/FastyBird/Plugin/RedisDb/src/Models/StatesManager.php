@@ -40,12 +40,13 @@ use function in_array;
 use function is_numeric;
 use function is_object;
 use function is_string;
+use function method_exists;
 use function preg_replace;
 use function property_exists;
 use function React\Async\await;
+use function serialize;
 use function sprintf;
 use function strtolower;
-use function strval;
 use const DATE_ATOM;
 
 /**
@@ -62,8 +63,6 @@ class StatesManager
 
 	use Nette\SmartObject;
 
-	private Log\LoggerInterface $logger;
-
 	/**
 	 * @phpstan-param class-string<T> $entity
 	 */
@@ -72,10 +71,9 @@ class StatesManager
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly string $entity = States\State::class,
 		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
-		Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
-		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	/**
@@ -208,7 +206,7 @@ class StatesManager
 						} elseif ($value instanceof Consistence\Enum\Enum) {
 							$value = $value->getValue();
 						} elseif (is_object($value)) {
-							$value = strval($value);
+							$value = method_exists($value, '__toString') ? $value->__toString() : serialize($value);
 						}
 					} else {
 						$value = null;
@@ -292,7 +290,7 @@ class StatesManager
 						$value = $value->getValue();
 
 					} elseif (is_object($value)) {
-						$value = strval($value);
+						$value = method_exists($value, '__toString') ? $value->__toString() : serialize($value);
 					}
 
 					if (

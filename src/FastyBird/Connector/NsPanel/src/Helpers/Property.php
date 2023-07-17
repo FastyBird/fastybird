@@ -15,7 +15,9 @@
 
 namespace FastyBird\Connector\NsPanel\Helpers;
 
+use DateTimeInterface;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
@@ -57,6 +59,40 @@ final class Property
 		} else {
 			$this->channelPropertiesStateManager->setValue($property, $data);
 		}
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function getActualValue(
+		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+		DevicesEntities\Devices\Properties\Dynamic|DevicesEntities\Devices\Properties\Mapped|DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped $property,
+	): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
+	{
+		return $property instanceof DevicesEntities\Devices\Properties\Dynamic || $property instanceof DevicesEntities\Devices\Properties\Mapped
+			? $this->devicePropertiesStateManager->getValue($property)?->getActualValue()
+			: $this->channelPropertiesStateManager->getValue(
+				$property,
+			)?->getActualValue();
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function getExpectedValue(
+		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+		DevicesEntities\Devices\Properties\Dynamic|DevicesEntities\Devices\Properties\Mapped|DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped $property,
+	): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
+	{
+		return $property instanceof DevicesEntities\Devices\Properties\Dynamic || $property instanceof DevicesEntities\Devices\Properties\Mapped
+			? $this->devicePropertiesStateManager->getValue($property)?->getExpectedValue()
+			: $this->channelPropertiesStateManager->getValue(
+				$property,
+			)?->getExpectedValue();
 	}
 
 }

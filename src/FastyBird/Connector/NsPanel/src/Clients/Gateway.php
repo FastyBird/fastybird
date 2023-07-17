@@ -20,6 +20,7 @@ use FastyBird\Connector\NsPanel\API;
 use FastyBird\Connector\NsPanel\Consumers;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
+use FastyBird\Connector\NsPanel\Types\PowerPayload;
 use FastyBird\Connector\NsPanel\Writers;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
@@ -38,6 +39,8 @@ use Throwable;
 use function array_key_exists;
 use function assert;
 use function in_array;
+use function is_object;
+use function strval;
 
 /**
  * Gateway client
@@ -70,13 +73,13 @@ final class Gateway implements Client
 
 	private API\LanApi $lanApiApi;
 
-	private Log\LoggerInterface $logger;
-
 	private EventLoop\TimerInterface|null $handlerTimer = null;
 
 	public function __construct(
 		private readonly Entities\NsPanelConnector $connector,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
+		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
@@ -84,11 +87,9 @@ final class Gateway implements Client
 		private readonly Consumers\Messages $consumer,
 		private readonly Writers\Writer $writer,
 		API\LanApiFactory $lanApiApiFactory,
-		Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
-		$this->logger = $logger ?? new Log\NullLogger();
-
 		$this->lanApiApi = $lanApiApiFactory->create(
 			$this->connector->getIdentifier(),
 		);
@@ -132,12 +133,18 @@ final class Gateway implements Client
 	public function writeChannelProperty(
 		Entities\NsPanelDevice $device,
 		DevicesEntities\Channels\Channel $channel,
-		DevicesEntities\Channels\Properties\Dynamic $property,
+		DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped $property,
 	): Promise\PromiseInterface
 	{
 		if (!$device instanceof Entities\Devices\SubDevice) {
 			return Promise\reject(
 				new Exceptions\InvalidArgument('Only sub-device could be updated'),
+			);
+		}
+
+		if (!$property instanceof DevicesEntities\Channels\Properties\Dynamic) {
+			return Promise\reject(
+				new Exceptions\InvalidArgument('Only dynamic properties could be updated'),
 			);
 		}
 
@@ -169,7 +176,8 @@ final class Gateway implements Client
 
 		if ($state->isPending() === true) {
 			return $this->lanApiApi->setSubDeviceStatus(
-				$device,
+				$device->getIdentifier(),
+				new Entities\API\Statuses\Power(PowerPayload::get(PowerPayload::ON)),
 				$device->getParent()->getIpAddress(),
 				$device->getParent()->getAccessToken(),
 			);
@@ -371,11 +379,35 @@ final class Gateway implements Client
 					$capabilityStatuses = [];
 
 					foreach ($subDevice->getStatuses() as $status) {
-						$capabilityStatuses[] = new Entities\Messages\CapabilityStatus(
-							$status->getType(),
-							$status->getValue(),
-							$status->getName(),
-						);
+						$findChannels = new DevicesQueries\FindChannels();
+						$findChannels->byDeviceIdentifier($subDevice->getSerialNumber());
+
+						foreach ($this->channelsRepository->findAllBy($findChannels) as $channel) {
+							$findChannelProperty = new DevicesQueries\FindChannelProperties();
+							$findChannelProperty->forChannel($channel);
+							$findChannelProperty->byIdentifier(strval($status->getType()->getValue()));
+
+							$property = $this->channelsPropertiesRepository->findOneBy(
+								$findChannelProperty,
+								DevicesEntities\Channels\Properties\Dynamic::class,
+							);
+
+							if ($property !== null) {
+								$capabilityStatuses[] = new Entities\Messages\CapabilityStatus(
+									$status->getType(),
+									API\Transformer::transformValueFromDevice(
+										$property->getDataType(),
+										$property->getFormat(),
+										is_object($status->getValue()) ? strval(
+											$status->getValue(),
+										) : $status->getValue(),
+									),
+									$status->getName(),
+								);
+
+								break;
+							}
+						}
 					}
 
 					$this->consumer->append(new Entities\Messages\DeviceStatus(

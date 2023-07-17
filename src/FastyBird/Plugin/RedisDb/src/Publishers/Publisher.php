@@ -39,17 +39,14 @@ final class Publisher implements ExchangePublisher\Publisher
 
 	use Nette\SmartObject;
 
-	private Log\LoggerInterface $logger;
-
 	public function __construct(
 		private readonly Utilities\IdentifierGenerator $identifier,
 		private readonly string $channel,
 		private readonly Clients\Client $client,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
-		Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
-		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	public function publish(

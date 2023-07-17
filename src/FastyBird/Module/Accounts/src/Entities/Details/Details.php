@@ -80,8 +80,6 @@ class Details implements Entities\Entity,
 		string $lastName,
 	)
 	{
-		$this->id = Uuid\Uuid::uuid4();
-
 		$this->account = $account;
 
 		$this->setFirstName($firstName);

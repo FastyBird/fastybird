@@ -20,6 +20,7 @@ use FastyBird\Connector\NsPanel\Commands;
 use FastyBird\Connector\NsPanel\Connector;
 use FastyBird\Connector\NsPanel\Controllers;
 use FastyBird\Connector\NsPanel\Entities;
+use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Hydrators;
 use FastyBird\Connector\NsPanel\Middleware;
 use FastyBird\Connector\NsPanel\Router;
@@ -152,6 +153,9 @@ class NsPanelExtension extends DI\CompilerExtension
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Hydrators\Devices\Device::class);
+
+		$builder->addDefinition($this->prefix('helpers.property'), new DI\Definitions\ServiceDefinition())
+			->setType(Helpers\Property::class);
 
 		$router = $builder->addDefinition($this->prefix('http.router'), new DI\Definitions\ServiceDefinition())
 			->setType(Router\Router::class)

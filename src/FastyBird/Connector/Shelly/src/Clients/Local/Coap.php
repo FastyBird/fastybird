@@ -74,8 +74,6 @@ final class Coap implements Clients\Client
 
 	private Datagram\SocketInterface|null $server = null;
 
-	private Log\LoggerInterface $logger;
-
 	public function __construct(
 		private readonly Entities\ShellyConnector $connector,
 		private readonly Consumers\Messages $consumer,
@@ -84,10 +82,9 @@ final class Coap implements Clients\Client
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		private readonly MetadataSchemas\Validator $schemaValidator,
 		private readonly EventLoop\LoopInterface $eventLoop,
-		Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
-		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	/**

@@ -33,7 +33,6 @@ use Ramsey\Uuid;
 use React\Promise;
 use RuntimeException;
 use Throwable;
-use function array_map;
 use function assert;
 use function count;
 use function http_build_query;
@@ -73,16 +72,13 @@ final class LanApi
 
 	private const SET_SUB_DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME = 'set_sub_device_status.json';
 
-	private Log\LoggerInterface $logger;
-
 	public function __construct(
 		private readonly string $identifier,
 		private readonly HttpClientFactory $httpClientFactory,
 		private readonly MetadataSchemas\Validator $schemaValidator,
-		Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
-		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	/**
@@ -183,7 +179,7 @@ final class LanApi
 	}
 
 	/**
-	 * @param array<Entities\Devices\Device> $devices
+	 * @param array<Entities\API\ThirdPartyDevice> $devices
 	 *
 	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\Response\SyncDevices)
 	 *
@@ -206,24 +202,7 @@ final class LanApi
 					Uuid\Uuid::uuid4()->toString(),
 					self::API_VERSION,
 				),
-				new Entities\API\Request\SyncDevicesEventPayload(
-					array_map(
-						// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-						static fn (Entities\Devices\Device $device): Entities\API\Request\SyncDevicesEventPayloadEndpoint => new Entities\API\Request\SyncDevicesEventPayloadEndpoint(
-							$device->getPlainId(),
-							$device->getName() ?? $device->getIdentifier(),
-							$device->getDisplayCategory(),
-							[],
-							[],
-							[],
-							$device->getManufacturer(),
-							$device->getModel(),
-							'',
-							'',
-						),
-						$devices,
-					),
-				),
+				new Entities\API\Request\SyncDevicesEventPayload($devices),
 			),
 		);
 
@@ -291,7 +270,8 @@ final class LanApi
 	 * @throws Exceptions\LanApiCall
 	 */
 	public function reportDeviceStatus(
-		Entities\Devices\Device $device,
+		string $serialNumber,
+		Entities\API\Statuses\Status $status,
 		string $ipAddress,
 		string $accessToken,
 		int $port = self::GATEWAY_PORT,
@@ -300,24 +280,6 @@ final class LanApi
 	{
 		$deferred = new Promise\Deferred();
 
-		try {
-			$serialNumber = $device->getGatewayIdentifier();
-
-			if ($serialNumber === null) {
-				if ($async) {
-					return Promise\reject(new Exceptions\LanApiCall('Device gateway identifier is not configured'));
-				}
-
-				throw new Exceptions\LanApiCall('Device gateway identifier is not configured');
-			}
-		} catch (Throwable) {
-			if ($async) {
-				return Promise\reject(new Exceptions\LanApiCall('Could not get device gateway identifier'));
-			}
-
-			throw new Exceptions\LanApiCall('Could not get device gateway identifier');
-		}
-
 		$data = new Entities\API\Request\ReportDeviceStatus(
 			new Entities\API\Request\ReportDeviceStatusEvent(
 				new Entities\API\Header(
@@ -325,14 +287,8 @@ final class LanApi
 					Uuid\Uuid::uuid4()->toString(),
 					self::API_VERSION,
 				),
-				new Entities\API\Request\ReportDeviceStatusEventEndpoint(
-					$serialNumber,
-				),
-				new Entities\API\Request\ReportDeviceStatusEventPayload(
-					new Entities\API\Statuses\Power(
-						NsPanel\Types\PowerPayload::get(NsPanel\Types\PowerPayload::OFF),
-					),
-				),
+				new Entities\API\Request\ReportDeviceStatusEventEndpoint($serialNumber),
+				new Entities\API\Request\ReportDeviceStatusEventPayload($status),
 			),
 		);
 
@@ -400,8 +356,8 @@ final class LanApi
 	 * @throws Exceptions\LanApiCall
 	 */
 	public function reportDeviceState(
-		Entities\Devices\Device $device,
-		MetadataTypes\ConnectionState $state,
+		string $serialNumber,
+		bool $online,
 		string $ipAddress,
 		string $accessToken,
 		int $port = self::GATEWAY_PORT,
@@ -409,24 +365,6 @@ final class LanApi
 	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\Response\ReportDeviceState
 	{
 		$deferred = new Promise\Deferred();
-
-		try {
-			$serialNumber = $device->getGatewayIdentifier();
-
-			if ($serialNumber === null) {
-				if ($async) {
-					return Promise\reject(new Exceptions\LanApiCall('Device gateway identifier is not configured'));
-				}
-
-				throw new Exceptions\LanApiCall('Device gateway identifier is not configured');
-			}
-		} catch (Throwable) {
-			if ($async) {
-				return Promise\reject(new Exceptions\LanApiCall('Could not get device gateway identifier'));
-			}
-
-			throw new Exceptions\LanApiCall('Could not get device gateway identifier');
-		}
 
 		$data = new Entities\API\Request\ReportDeviceState(
 			new Entities\API\Request\ReportDeviceStateEvent(
@@ -438,10 +376,7 @@ final class LanApi
 				new Entities\API\Request\ReportDeviceStateEventEndpoint(
 					$serialNumber,
 				),
-				new Entities\API\Request\ReportDeviceStateEventPayload(
-					$state->equalsValue(MetadataTypes\ConnectionState::STATE_CONNECTED)
-					|| $state->equalsValue(MetadataTypes\ConnectionState::STATE_RUNNING),
-				),
+				new Entities\API\Request\ReportDeviceStateEventPayload($online),
 			),
 		);
 
@@ -558,7 +493,8 @@ final class LanApi
 	 * @throws Exceptions\LanApiCall
 	 */
 	public function setSubDeviceStatus(
-		Entities\Devices\SubDevice $device,
+		string $serialNumber,
+		Entities\API\Statuses\Status $status,
 		string $ipAddress,
 		string $accessToken,
 		int $port = self::GATEWAY_PORT,
@@ -567,16 +503,12 @@ final class LanApi
 	{
 		$deferred = new Promise\Deferred();
 
-		$data = new Entities\API\Request\SetSubDeviceStatus(
-			new Entities\API\Statuses\Power(
-				NsPanel\Types\PowerPayload::get(NsPanel\Types\PowerPayload::OFF),
-			),
-		);
+		$data = new Entities\API\Request\SetSubDeviceStatus($status);
 
 		try {
 			$result = $this->callRequest(
 				'PUT',
-				sprintf('http://%s:%d/open-api/v1/rest/devices/%s', $ipAddress, $port, $device->getIdentifier()),
+				sprintf('http://%s:%d/open-api/v1/rest/devices/%s', $ipAddress, $port, $serialNumber),
 				[
 					'Content-Type' => 'application/json',
 					'Authorization' => sprintf('Bearer %s', $accessToken),

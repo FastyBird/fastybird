@@ -15,10 +15,11 @@
 
 namespace FastyBird\Connector\NsPanel\Entities\Messages;
 
+use DateTimeInterface;
 use FastyBird\Connector\NsPanel\Types;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
-use function is_scalar;
-use function strval;
 
 /**
  * Device capability status entity
@@ -33,13 +34,9 @@ final class CapabilityStatus implements Entity
 
 	use Nette\SmartObject;
 
-	/**
-	 * @param int|float|string|bool|array<int>|Types\MotorCalibrationPayload|Types\MotorControlPayload|Types\PowerPayload|Types\PressPayload|Types\StartupPayload|Types\TogglePayload|null $value
-	 */
 	public function __construct(
 		private readonly Types\Capability $capability,
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		private readonly int|float|string|bool|array|Types\MotorCalibrationPayload|Types\MotorControlPayload|Types\PowerPayload|Types\PressPayload|Types\StartupPayload|Types\TogglePayload|null $value,
+		private readonly float|int|string|bool|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|DateTimeInterface|null $value,
 		private readonly string|null $name,
 	)
 	{
@@ -50,11 +47,7 @@ final class CapabilityStatus implements Entity
 		return $this->capability;
 	}
 
-	/**
-	 * @return int|float|string|bool|array<int>|Types\MotorCalibrationPayload|Types\MotorControlPayload|Types\PowerPayload|Types\PressPayload|Types\StartupPayload|Types\TogglePayload|null
-	 */
-	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-	public function getValue(): int|float|string|bool|array|Types\MotorCalibrationPayload|Types\MotorControlPayload|Types\PowerPayload|Types\PressPayload|Types\StartupPayload|Types\TogglePayload|null
+	public function getValue(): float|int|string|bool|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|DateTimeInterface|null
 	{
 		return $this->value;
 	}
@@ -71,7 +64,7 @@ final class CapabilityStatus implements Entity
 	{
 		return [
 			'capability' => $this->getCapability()->getValue(),
-			'value' => is_scalar($this->getValue()) ? $this->getValue() : strval($this->getValue()),
+			'value' => DevicesUtilities\ValueHelper::flattenValue($this->getValue()),
 			'name' => $this->getName(),
 		];
 	}

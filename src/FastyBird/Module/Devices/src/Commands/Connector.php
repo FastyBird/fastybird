@@ -71,8 +71,6 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 	/** @var SplObjectStorage<Connectors\ConnectorFactory, string> */
 	private SplObjectStorage $factories;
 
-	private Log\LoggerInterface $logger;
-
 	private EventLoop\TimerInterface|null $databaseRefreshTimer = null;
 
 	/**
@@ -92,12 +90,10 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 		private readonly EventLoop\LoopInterface $eventLoop,
 		private readonly array $exchangeFactories = [],
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
-		Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 		string|null $name = null,
 	)
 	{
-		$this->logger = $logger ?? new Log\NullLogger();
-
 		$this->factories = new SplObjectStorage();
 
 		parent::__construct($name);

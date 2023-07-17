@@ -87,19 +87,15 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 	private Datagram\SocketInterface|null $server = null;
 
-	private Log\LoggerInterface $logger;
-
 	public function __construct(
 		private readonly Entities\ShellyConnector $connector,
 		private readonly API\Gen1HttpApiFactory $gen1HttpApiFactory,
 		private readonly API\Gen2HttpApiFactory $gen2HttpApiFactory,
 		private readonly Consumers\Messages $consumer,
 		private readonly EventLoop\LoopInterface $eventLoop,
-		Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
-		$this->logger = $logger ?? new Log\NullLogger();
-
 		$this->searchResult = new Storages\MdnsResultStorage();
 
 		$this->parser = new Dns\Protocol\Parser();

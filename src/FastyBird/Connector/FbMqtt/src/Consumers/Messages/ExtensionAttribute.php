@@ -42,17 +42,14 @@ final class ExtensionAttribute implements Consumers\Consumer
 
 	use Nette\SmartObject;
 
-	private Log\LoggerInterface $logger;
-
 	public function __construct(
 		private readonly DevicesModels\Devices\DevicesRepository $deviceRepository,
 		private readonly DevicesModels\Devices\Properties\PropertiesRepository $propertiesRepository,
 		private readonly DevicesModels\Devices\Properties\PropertiesManager $propertiesManager,
 		private readonly DevicesUtilities\Database $databaseHelper,
-		Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
-		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	/**

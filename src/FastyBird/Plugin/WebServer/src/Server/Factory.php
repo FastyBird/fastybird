@@ -37,17 +37,14 @@ use function str_replace;
 final class Factory
 {
 
-	private Log\LoggerInterface $logger;
-
 	public function __construct(
 		private readonly Middleware\Cors $corsMiddleware,
 		private readonly Middleware\StaticFiles $staticFilesMiddleware,
 		private readonly Middleware\Router $routerMiddleware,
 		private readonly EventLoop\LoopInterface $eventLoop,
-		Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
-		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	public function create(Socket\ServerInterface $server): void

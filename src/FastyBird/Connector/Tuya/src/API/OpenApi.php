@@ -131,8 +131,6 @@ final class OpenApi
 
 	private Promise\Deferred|null $refreshTokenPromise = null;
 
-	private Log\LoggerInterface $logger;
-
 	public function __construct(
 		private readonly string $identifier,
 		private readonly string $accessId,
@@ -142,11 +140,9 @@ final class OpenApi
 		private readonly HttpClientFactory $httpClientFactory,
 		private readonly MetadataSchemas\Validator $schemaValidator,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
-		Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
-		$this->logger = $logger ?? new Log\NullLogger();
-
 		$this->nonce = Uuid\Uuid::uuid1();
 	}
 

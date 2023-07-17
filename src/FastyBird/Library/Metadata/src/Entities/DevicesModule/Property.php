@@ -203,7 +203,7 @@ abstract class Property implements Entities\Entity, Entities\Owner
 						return implode(
 							'|',
 							array_map(
-								static fn ($part): string|int|float => is_array($part) ? strval($part) : $part,
+								static fn ($part): string|int|float|null => is_array($part) ? implode($part) : $part,
 								$item,
 							),
 						);

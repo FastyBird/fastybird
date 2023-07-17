@@ -47,22 +47,18 @@ class HttpServer extends Console\Command\Command
 
 	public const NAME = 'fb:web-server:start';
 
-	private Log\LoggerInterface $logger;
-
 	public function __construct(
 		private readonly string $serverAddress,
 		private readonly int $serverPort,
 		private readonly Server\Factory $serverFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
-		Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 		private readonly string|null $serverCertificate = null,
 		string|null $name = null,
 	)
 	{
 		parent::__construct($name);
-
-		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	/**
