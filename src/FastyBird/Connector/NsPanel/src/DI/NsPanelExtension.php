@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\NsPanel\DI;
 
 use Doctrine\Persistence;
+use FastyBird\Connector\NsPanel\Clients;
 use FastyBird\Connector\NsPanel\Commands;
 use FastyBird\Connector\NsPanel\Connector;
 use FastyBird\Connector\NsPanel\Controllers;
@@ -101,6 +102,22 @@ class NsPanelExtension extends DI\CompilerExtension
 				->setAutowired(false);
 		}
 
+		$builder->addFactoryDefinition($this->prefix('clients.gateway'))
+			->setImplement(Clients\GatewayFactory::class)
+			->getResultDefinition()
+			->setType(Clients\Gateway::class)
+			->setArguments([
+				'writer' => $writer,
+			]);
+
+		$builder->addFactoryDefinition($this->prefix('clients.device'))
+			->setImplement(Clients\DeviceFactory::class)
+			->getResultDefinition()
+			->setType(Clients\Device::class)
+			->setArguments([
+				'writer' => $writer,
+			]);
+
 		$builder->addFactoryDefinition($this->prefix('server.http'))
 			->setImplement(Servers\HttpFactory::class)
 			->getResultDefinition()
@@ -167,9 +184,6 @@ class NsPanelExtension extends DI\CompilerExtension
 
 		$builder->addDefinition($this->prefix('http.controllers.directive'), new DI\Definitions\ServiceDefinition())
 			->setType(Controllers\DirectiveController::class)
-			->setArguments([
-				'useExchange' => $configuration->writer === Writers\Exchange::NAME,
-			])
 			->addTag('nette.inject');
 
 		$builder->addFactoryDefinition($this->prefix('executor.factory'))
@@ -181,7 +195,7 @@ class NsPanelExtension extends DI\CompilerExtension
 			->getResultDefinition()
 			->setType(Connector\Connector::class)
 			->setArguments([
-				'writer' => $writer,
+				'clientsFactories' => $builder->findByType(Clients\ClientFactory::class),
 			]);
 
 		$builder->addDefinition($this->prefix('commands.initialize'), new DI\Definitions\ServiceDefinition())

@@ -44,9 +44,12 @@ final class Connector implements DevicesConnectors\Connector
 
 	private EventLoop\TimerInterface|null $consumerTimer = null;
 
+	/**
+	 * @param array<Clients\ClientFactory> $clientsFactories
+	 */
 	public function __construct(
 		private readonly DevicesEntities\Connectors\Connector $connector,
-		private readonly Clients\ClientFactory $clientFactory,
+		private readonly array $clientsFactories,
 		private readonly Consumers\Messages $consumer,
 		private readonly EventLoop\LoopInterface $eventLoop,
 	)
