@@ -20,8 +20,9 @@ use FastyBird\Library\Metadata\Exceptions;
 use MathSolver\Math;
 use Nette;
 use function array_key_exists;
+use function implode;
+use function is_array;
 use function preg_match;
-use function strval;
 
 /**
  * Equation value format
@@ -76,9 +77,12 @@ final class EquationFormat
 
 	public function __toString(): string
 	{
+		$from = $this->getEquationFrom()->string();
+		$to = $this->getEquationTo()?->string();
+
 		return 'equation:x='
-			. strval($this->getEquationFrom()->string())
-			. ($this->getEquationTo() !== null ? ':y=' . strval($this->getEquationTo()->string()) : '');
+			. (is_array($from) ? implode($from) : $from)
+			. ($to !== null ? ':y=' . (is_array($to) ? implode($to) : $to) : '');
 	}
 
 }

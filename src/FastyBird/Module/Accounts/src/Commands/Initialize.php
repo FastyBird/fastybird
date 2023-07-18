@@ -41,16 +41,12 @@ class Initialize extends Console\Command\Command
 
 	public const NAME = 'fb:accounts-module:initialize';
 
-	private Log\LoggerInterface $logger;
-
 	public function __construct(
-		Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 		string|null $name = null,
 	)
 	{
 		parent::__construct($name);
-
-		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	/**

@@ -36,15 +36,12 @@ use Throwable;
 final class Sockets implements ExchangeConsumer\Consumer
 {
 
-	private Log\LoggerInterface $logger;
-
 	public function __construct(
 		private readonly WebSockets\Router\LinkGenerator $linkGenerator,
 		private readonly WebSocketsWAMP\Topics\IStorage $topicsStorage,
-		Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
-		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	public function consume(

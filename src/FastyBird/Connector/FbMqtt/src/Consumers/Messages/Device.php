@@ -46,8 +46,6 @@ final class Device implements Consumers\Consumer
 
 	use Nette\SmartObject;
 
-	private Log\LoggerInterface $logger;
-
 	public function __construct(
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
@@ -59,10 +57,9 @@ final class Device implements Consumers\Consumer
 		private readonly DevicesModels\Channels\ChannelsManager $channelsManager,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DevicesUtilities\Database $databaseHelper,
-		Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
-		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	/**

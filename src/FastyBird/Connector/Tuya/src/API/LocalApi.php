@@ -144,8 +144,6 @@ final class LocalApi implements Evenement\EventEmitterInterface
 
 	private Socket\ConnectionInterface|null $connection = null;
 
-	private Log\LoggerInterface $logger;
-
 	/**
 	 * @param array<Entities\Clients\LocalChild> $children
 	 */
@@ -160,7 +158,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 		private readonly MetadataSchemas\Validator $schemaValidator,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
-		Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
 		$this->deviceType = $this->nodeId !== null
@@ -181,8 +179,6 @@ final class LocalApi implements Evenement\EventEmitterInterface
 		if (count($this->children) > 0) {
 			$this->deviceType = Types\LocalDeviceType::get(Types\LocalDeviceType::GATEWAY);
 		}
-
-		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	public function connect(): Promise\PromiseInterface

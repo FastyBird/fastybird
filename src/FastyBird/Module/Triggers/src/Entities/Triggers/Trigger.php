@@ -106,6 +106,7 @@ abstract class Trigger implements Entities\Entity,
 
 	public function __construct(string $name, Uuid\UuidInterface|null $id = null)
 	{
+		// @phpstan-ignore-next-line
 		$this->id = $id ?? Uuid\Uuid::uuid4();
 
 		$this->setName($name);

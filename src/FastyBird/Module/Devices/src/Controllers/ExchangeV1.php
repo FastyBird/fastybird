@@ -51,8 +51,6 @@ use function is_array;
 final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 {
 
-	private Log\LoggerInterface $logger;
-
 	public function __construct(
 		private readonly Models\Connectors\Properties\PropertiesRepository $connectorPropertiesRepository,
 		private readonly Models\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
@@ -63,12 +61,10 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 		private readonly MetadataLoaders\SchemaLoader $schemaLoader,
 		private readonly MetadataSchemas\Validator $jsonValidator,
 		private readonly ExchangeEntities\EntityFactory $entityFactory,
-		Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
 		parent::__construct();
-
-		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	/**

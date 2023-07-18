@@ -41,15 +41,12 @@ final class ConnectorPropertiesStates
 
 	use Nette\SmartObject;
 
-	private Log\LoggerInterface $logger;
-
 	public function __construct(
 		private readonly Models\States\ConnectorPropertiesRepository $connectorPropertyStateRepository,
 		private readonly Models\States\ConnectorPropertiesManager $connectorPropertiesStatesManager,
-		Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
-		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	/**

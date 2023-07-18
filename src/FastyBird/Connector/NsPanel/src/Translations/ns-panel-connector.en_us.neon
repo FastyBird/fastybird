@@ -1,0 +1,183 @@
+#
+# Connector translations
+#
+# @language       en_US
+#
+# @license        More in LICENSE.md
+# @copyright      https://www.fastybird.com
+# @author         Adam Kadlec <adam.kadlec@fastybird.com>
+# @package        FastyBird:NsPanelConnector!
+# @subpackage     Translations
+# @since          1.0.0
+#
+# @date           10.07.23
+#
+
+cmd:
+    base:
+        questions:
+            continue: "Would you like to continue?"
+            whatToDo: "What would you like to do?"
+
+        messages:
+            noConnectors: "No NS Panel connectors registered in system."
+            answerNotValid: "Selected answer: \"%s\" is not valid."
+
+        deviceType:
+            plug: "Plug"
+            switch: "Switch"
+            light: "Light"
+            curtain: "Curtain"
+            contactSensor: "Contact Sensor"
+            motionSensor: "Motion Sensor"
+            temperatureSensor: "Temperature Sensor"
+            humiditySensor: "Humidity Sensor"
+            temperatureAndHumiditySensor: "Temperature and Humidity Sensor"
+            waterLeakDetector: "Water Leak Detector"
+            smokeDetector: "Smoke Detector"
+            button: "Button"
+            camera: "Camera"
+            sensor: "Sensor"
+
+    initialize:
+        title: "NS Panel connector - initialization"
+        subtitle: "This action will create|update|delete connector configuration"
+
+        actions:
+            create: "Create new connector configuration"
+            update: "Edit existing connector configuration"
+            remove: "Delete existing connector configuration"
+
+        questions:
+            create: "Would you like to create new NS Panel connector configuration?"
+            disable: "Do you want to disable connector?"
+            enable: "Do you want to enable connector?"
+            provide:
+                identifier: "Provide connector identifier"
+                name: "Provide connector name"
+            select:
+                connector: "Please select connector to manage"
+
+        messages:
+            identifier:
+                used: "This identifier is already used."
+                missing: "Connector identifier have to be provided."
+            create:
+                success: "Connector \"%name%\" was successfully created."
+                error: "Something went wrong, connector could not be created. Error was logged."
+            update:
+                success: "Connector \"%name%\" was successfully updated."
+                error: "Something went wrong, connector could not be updated. Error was logged."
+            remove:
+                success: "Connector \"%name%\" was successfully removed."
+                error: "Something went wrong, connector could not be removed. Error was logged."
+            noConnectors: "No NS Panel connectors registered in system."
+
+    devices:
+        title: "NS Panel connector - devices management"
+        subtitle: "This action will create|update|delete connector device"
+
+        actions:
+            create: "Create new connector device"
+            update: "Edit existing connector device"
+            remove: "Delete existing connector device"
+            createService: "Create new device service"
+            updateService: "Edit existing device service"
+            removeService: "Delete existing device service"
+            listServices: "List device services"
+            updateCharacteristic: "Edit existing service characteristic"
+            removeCharacteristic: "Delete existing service characteristic"
+            listCharacteristics: "List service characteristics"
+            nothing: "Nothing"
+
+        questions:
+            create: "Would you like to create new device in connector?"
+            provide:
+                identifier: "Provide device identifier"
+                name: "Provide device name"
+                value: "Provide characteristic value"
+                address: "Provide NS Panel local IP address or domain"
+                port: "Provide communication port or leave blank for use dynamic"
+            select:
+                connector: "Please select connector under which you want to manage devices"
+                device: "Please select device to manage"
+                category: "Please select device category"
+                service: "Please select device's service"
+                characteristic: "Please select service's characteristic"
+                value: "Please select characteristic value"
+                propertyType: "What type of property you want to map?"
+                mappedDevice: "Select device for mapping"
+                mappedDeviceProperty: "Select device property for mapping"
+                mappedDeviceChannel: "Select device channel for mapping"
+                mappedChannelProperty: "Select channel property for mapping"
+                requiredCharacteristic: "What type of service characteristic you would like to add?"
+                optionalCharacteristic: "What type of service characteristic you would like to add? (optional)"
+                valueMapping: "Select device value which will be mapped to: %value%"
+            connectCharacteristic: "Connect characteristic with device?"
+            createService: "Would you like to configure new device service?"
+            createAnotherService: "Would you like to configure another device service?"
+            editServices: "Would you like to manage device services?"
+            addCharacteristics: "Would you like to add new characteristics?"
+            connection: "Do you want to change NS Panel connection?"
+
+        answers:
+            none: "None"
+            true: "True"
+            false: "False"
+            deviceProperty: "Device property"
+            channelProperty: "Channel property"
+
+        messages:
+            identifier:
+                used: "This identifier is already used."
+                missing: "Device identifier have to provided."
+            create:
+                device:
+                    success: "Device \"%name%\" was successfully created."
+                    error: "Something went wrong, device could not be created. Error was logged."
+                service:
+                    success: "Service \"%name%\" was successfully created."
+                    error: "Something went wrong, service could not be created. Error was logged."
+            update:
+                device:
+                    success: "Device \"%name%\" was successfully updated."
+                    error: "Something went wrong, device could not be updated. Error was logged."
+                service:
+                    success: "Service \"%name%\" was successfully updated."
+                    error: "Something went wrong, service could not be updated. Error was logged."
+                characteristic:
+                    success: "Characteristic \"%name%\" was successfully updated."
+                    error: "Something went wrong, characteristic could not be updated. Error was logged."
+            remove:
+                device:
+                    success: "Device \"%name%\" was successfully removed."
+                    error: "Something went wrong, device could not be removed. Error was logged."
+                service:
+                    success: "Service \"%name%\" was successfully removed."
+                    error: "Something went wrong, service could not be removed. Error was logged."
+                characteristic:
+                    success: "Characteristic \"%name%\" was successfully removed."
+                    error: "Something went wrong, characteristic could not be removed. Error was logged."
+            noDevices: "No devices registered in NS Panel connector."
+            noServices: "This device has not configured any service."
+            noCharacteristics: "This device service has not configured any characteristic."
+            serviceNotFound: "Something went wrong, service could not be loaded"
+            characteristicNotFound: "Something went wrong, characteristic could not be loaded"
+            noHardwareDevices: "No devices registered in system"
+            addressNotReachable: "NS Panel with address \"%address\" is not reachable."
+
+    execute:
+        title: "NS Panel connector - service"
+        subtitle: "This action will run connector service"
+
+        questions:
+            execute: "Would you like to execute \"%connector%\" connector"
+            select:
+                connector: "Please select connector to execute"
+
+        messages:
+            connector:
+                notFound: "Connector was not found in system."
+                disabled: "Connector is disabled. Disabled connector could not be executed."
+            noConnectors: "No NS Panel connectors registered in system."
+            error: "Something went wrong, service could not be processed."

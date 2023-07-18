@@ -75,6 +75,7 @@ abstract class Condition implements Entities\Entity,
 		Uuid\UuidInterface|null $id = null,
 	)
 	{
+		// @phpstan-ignore-next-line
 		$this->id = $id ?? Uuid\Uuid::uuid4();
 
 		$this->trigger = $trigger;

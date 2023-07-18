@@ -97,17 +97,15 @@ abstract class Client
 
 	protected Mqtt\FlowFactory $flowFactory;
 
-	protected Log\LoggerInterface $logger;
-
 	public function __construct(
-		protected Entities\FbMqttConnector $connector,
-		protected Consumers\Messages $consumer,
-		private readonly Writers\Writer $writer,
-		protected EventLoop\LoopInterface $eventLoop,
+		protected readonly Entities\FbMqttConnector $connector,
+		protected readonly Consumers\Messages $consumer,
+		protected readonly Writers\Writer $writer,
+		protected readonly EventLoop\LoopInterface $eventLoop,
 		Mqtt\ClientIdentifierGenerator|null $identifierGenerator = null,
 		Mqtt\FlowFactory|null $flowFactory = null,
 		Mqtt\StreamParser|null $parser = null,
-		Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
 		$this->parser = $parser ?? new Mqtt\StreamParser(new Mqtt\DefaultPacketFactory());
@@ -123,8 +121,6 @@ abstract class Client
 			new Mqtt\DefaultIdentifierGenerator(),
 			new Mqtt\DefaultPacketFactory(),
 		);
-
-		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	/**

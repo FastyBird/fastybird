@@ -57,6 +57,8 @@ class ConnectorSource extends Consistence\Enum\Enum
 
 	public const SOURCE_CONNECTOR_VIERA = Metadata\Constants::CONNECTOR_VIERA_SOURCE;
 
+	public const SOURCE_CONNECTOR_NS_PANEL = Metadata\Constants::CONNECTOR_NS_PANEL_SOURCE;
+
 	public function __toString(): string
 	{
 		return strval(self::getValue());

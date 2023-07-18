@@ -55,18 +55,15 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 	/** @var array<string, Clients\Client> */
 	private array $clients = [];
 
-	private Log\LoggerInterface $logger;
-
 	public function __construct(
 		private readonly Helpers\Property $propertyStateHelper,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly DevicesModels\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
 		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
 		private readonly ExchangeConsumers\Container $consumer,
-		Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
-		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	public function connect(

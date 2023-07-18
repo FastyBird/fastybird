@@ -54,6 +54,8 @@ class DevicePropertyIdentifier extends Consistence\Enum\Enum
 
 	public const IDENTIFIER_IP_ADDRESS = PropertyIdentifier::IDENTIFIER_IP_ADDRESS;
 
+	public const IDENTIFIER_DOMAIN = PropertyIdentifier::IDENTIFIER_DOMAIN;
+
 	public const IDENTIFIER_STATUS_LED = PropertyIdentifier::IDENTIFIER_STATUS_LED;
 
 	public const IDENTIFIER_FREE_HEAP = PropertyIdentifier::IDENTIFIER_FREE_HEAP;

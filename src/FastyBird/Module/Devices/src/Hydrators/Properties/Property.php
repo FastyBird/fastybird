@@ -187,7 +187,7 @@ abstract class Property extends JsonApiHydrators\Hydrator
 						return implode(
 							'|',
 							array_map(
-								static fn ($part): string|int|float => is_array($part) ? strval($part) : $part,
+								static fn ($part): string|int|float => is_array($part) ? implode($part) : $part,
 								(array) $item,
 							),
 						);

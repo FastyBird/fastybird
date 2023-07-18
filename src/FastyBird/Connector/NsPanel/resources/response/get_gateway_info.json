@@ -1,0 +1,40 @@
+{
+  "$schema" : "http://json-schema.org/draft-07/schema#",
+  "type" : "object",
+  "properties" : {
+    "error" : {
+      "type" : "integer"
+    },
+    "data" : {
+      "type" : "object",
+      "properties" : {
+        "ip" : {
+          "type" : "string"
+        },
+        "mac" : {
+          "type" : "string"
+        },
+        "domain" : {
+          "type" : "string"
+        },
+        "fw_version" : {
+          "type" : "string"
+        }
+      },
+      "required": [
+        "ip",
+        "mac",
+        "domain",
+        "fw_version"
+      ]
+    },
+    "message" : {
+      "type" : "string"
+    }
+  },
+  "required" : [
+    "error",
+    "data",
+    "message"
+  ]
+}

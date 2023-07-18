@@ -152,6 +152,7 @@ abstract class Property implements Entity,
 		Uuid\UuidInterface|null $id = null,
 	)
 	{
+		// @phpstan-ignore-next-line
 		$this->id = $id ?? Uuid\Uuid::uuid4();
 
 		$this->identifier = $identifier;
@@ -288,7 +289,7 @@ abstract class Property implements Entity,
 						return implode(
 							'|',
 							array_map(
-								static fn ($part): string|int|float => is_array($part) ? strval($part) : $part,
+								static fn ($part): string|int|float => is_array($part) ? implode($part) : $part,
 								(array) $item,
 							),
 						);

@@ -39,18 +39,15 @@ final class Connection
 
 	private PHPOnCouch\CouchClient|null $client = null;
 
-	private Log\LoggerInterface $logger;
-
 	public function __construct(
 		private readonly string $database,
 		private readonly string $host = '127.0.0.1',
 		private readonly int $port = 5_984,
 		private readonly string|null $username = null,
 		private readonly string|null $password = null,
-		Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
-		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	public function getHost(): string

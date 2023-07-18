@@ -19,6 +19,7 @@ use DateTimeInterface;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
+use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Nette\Utils;
 use function array_filter;
@@ -202,11 +203,13 @@ final class Transformer
 			if ($format instanceof MetadataValueObjects\StringEnumFormat) {
 				$filtered = array_values(array_filter(
 					$format->getItems(),
-					static fn (string $item): bool => Utils\Strings::lower(strval($value)) === $item,
+					static fn (string $item): bool => Utils\Strings::lower(
+						strval(DevicesUtilities\ValueHelper::flattenValue($value)),
+					) === $item,
 				));
 
 				if (count($filtered) === 1) {
-					return strval($value);
+					return strval(DevicesUtilities\ValueHelper::flattenValue($value));
 				}
 
 				return null;
@@ -215,7 +218,7 @@ final class Transformer
 					$format->getItems(),
 					static fn (array $item): bool => $item[0] !== null
 							&& Utils\Strings::lower(strval($item[0]->getValue())) === Utils\Strings::lower(
-								strval($value),
+								strval(DevicesUtilities\ValueHelper::flattenValue($value)),
 							),
 				));
 
@@ -234,11 +237,13 @@ final class Transformer
 			if ($format instanceof MetadataValueObjects\StringEnumFormat) {
 				$filtered = array_values(array_filter(
 					$format->getItems(),
-					static fn (string $item): bool => Utils\Strings::lower(strval($value)) === $item,
+					static fn (string $item): bool => Utils\Strings::lower(
+						strval(DevicesUtilities\ValueHelper::flattenValue($value)),
+					) === $item,
 				));
 
 				if (count($filtered) === 1) {
-					return strval($value);
+					return strval(DevicesUtilities\ValueHelper::flattenValue($value));
 				}
 
 				return null;
@@ -247,7 +252,7 @@ final class Transformer
 					$format->getItems(),
 					static fn (array $item): bool => $item[0] !== null
 							&& Utils\Strings::lower(strval($item[0]->getValue())) === Utils\Strings::lower(
-								strval($value),
+								strval(DevicesUtilities\ValueHelper::flattenValue($value)),
 							),
 				));
 

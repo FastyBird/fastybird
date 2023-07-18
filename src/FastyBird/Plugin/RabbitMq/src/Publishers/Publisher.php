@@ -47,17 +47,14 @@ final class Publisher implements ExchangePublisher\Publisher
 
 	private Bunny\Channel|null $asyncChannel = null;
 
-	private Log\LoggerInterface $logger;
-
 	public function __construct(
 		private readonly string $exchangeName,
 		private readonly Channels\Channel $channel,
 		private readonly Utilities\IdentifierGenerator $identifier,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
-		Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
-		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	/**

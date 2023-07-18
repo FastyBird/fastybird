@@ -76,7 +76,7 @@ final class FbMqttV1 extends Client
 		Mqtt\ClientIdentifierGenerator|null $identifierGenerator = null,
 		Mqtt\FlowFactory|null $flowFactory = null,
 		Mqtt\StreamParser|null $parser = null,
-		Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
 		parent::__construct(
@@ -359,7 +359,7 @@ final class FbMqttV1 extends Client
 		) {
 			return $this->publish(
 				$this->apiBuilder->buildDevicePropertyTopic($device, $property),
-				strval($state->getExpectedValue()),
+				strval(DevicesUtilities\ValueHelper::flattenValue($state->getExpectedValue())),
 			);
 		}
 
@@ -384,7 +384,7 @@ final class FbMqttV1 extends Client
 		) {
 			return $this->publish(
 				$this->apiBuilder->buildChannelPropertyTopic($device, $property->getChannel(), $property),
-				strval($state->getExpectedValue()),
+				strval(DevicesUtilities\ValueHelper::flattenValue($state->getExpectedValue())),
 			);
 		}
 

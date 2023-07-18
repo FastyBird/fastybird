@@ -19,6 +19,7 @@ use FastyBird\Connector\FbMqtt\Entities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use function array_merge;
 use function boolval;
+use function is_string;
 use function strval;
 
 /**
@@ -42,7 +43,10 @@ trait TProperty
 		$toUpdate = [];
 
 		foreach ($entity->getAttributes() as $attribute) {
-			if ($attribute->getAttribute() === Entities\Messages\PropertyAttribute::NAME) {
+			if (
+				$attribute->getAttribute() === Entities\Messages\PropertyAttribute::NAME
+				&& is_string($attribute->getValue())
+			) {
 				$toUpdate = array_merge($toUpdate, [
 					'name' => strval($attribute->getValue()),
 				]);
@@ -62,6 +66,7 @@ trait TProperty
 
 			if (
 				$attribute->getAttribute() === Entities\Messages\PropertyAttribute::DATA_TYPE
+				&& is_string($attribute->getValue())
 				&& MetadataTypes\DataType::isValidValue(strval($attribute->getValue()))
 			) {
 				$toUpdate = array_merge($toUpdate, [

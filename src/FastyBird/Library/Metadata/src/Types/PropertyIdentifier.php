@@ -64,6 +64,8 @@ class PropertyIdentifier extends Consistence\Enum\Enum
 
 	public const IDENTIFIER_IP_ADDRESS = 'ip_address';
 
+	public const IDENTIFIER_DOMAIN = 'domain';
+
 	public const IDENTIFIER_STATUS_LED = 'status_led';
 
 	public const IDENTIFIER_FREE_HEAP = 'free_heap';
@@ -83,6 +85,8 @@ class PropertyIdentifier extends Consistence\Enum\Enum
 	public const IDENTIFIER_FIRMWARE_VERSION = 'firmware_version';
 
 	public const IDENTIFIER_SERIAL_NUMBER = 'serial_number';
+
+	public const IDENTIFIER_ACCESS_TOKEN = 'access_token';
 
 	public function __toString(): string
 	{

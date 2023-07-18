@@ -37,15 +37,11 @@ class Initialize extends Console\Command\Command
 
 	public const NAME = 'fb:devices-module:initialize';
 
-	private Log\LoggerInterface $logger;
-
 	public function __construct(
-		Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 		string|null $name = null,
 	)
 	{
-		$this->logger = $logger ?? new Log\NullLogger();
-
 		parent::__construct($name);
 	}
 

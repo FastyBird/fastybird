@@ -43,7 +43,7 @@ class StatesManagerFactory
 		private readonly Clients\Client $client,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
-		private readonly Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
 	}

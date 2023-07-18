@@ -42,17 +42,14 @@ use function strval;
 final class Message extends Evenement\EventEmitter
 {
 
-	private Log\LoggerInterface $logger;
-
 	public function __construct(
 		private readonly Utilities\IdentifierGenerator $identifier,
 		private readonly ExchangeEntities\EntityFactory $entityFactory,
 		private readonly ExchangeConsumer\Container $consumer,
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
-		Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
-		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	public function handle(string $payload): void

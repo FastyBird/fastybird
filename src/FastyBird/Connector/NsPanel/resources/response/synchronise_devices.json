@@ -1,0 +1,56 @@
+{
+  "$schema" : "http://json-schema.org/draft-07/schema#",
+  "type" : "object",
+  "properties" : {
+    "header" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "message_id" : {
+          "type" : "string"
+        },
+        "version" : {
+          "type" : "string"
+        }
+      },
+      "required": [
+        "name",
+        "message_id",
+        "version"
+      ]
+    },
+    "payload" : {
+      "type" : "object",
+      "properties" : {
+        "endpoints" : {
+          "type" : "array",
+          "uniqueItems" : true,
+          "items" : {
+            "type" : "object",
+            "properties" : {
+              "third_serial_number" : {
+                "type" : "string"
+              },
+              "serial_number" : {
+                "type" : "string"
+              }
+            },
+            "required" : [
+              "third_serial_number",
+              "serial_number"
+            ]
+          }
+        }
+      },
+      "required": [
+        "endpoints"
+      ]
+    }
+  },
+  "required" : [
+    "header",
+    "payload"
+  ]
+}

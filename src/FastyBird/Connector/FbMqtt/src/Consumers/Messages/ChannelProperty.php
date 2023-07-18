@@ -48,8 +48,6 @@ final class ChannelProperty implements Consumers\Consumer
 	use Nette\SmartObject;
 	use TProperty;
 
-	private Log\LoggerInterface $logger;
-
 	public function __construct(
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
@@ -57,10 +55,9 @@ final class ChannelProperty implements Consumers\Consumer
 		private readonly DevicesModels\Channels\Properties\PropertiesManager $propertiesManager,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly DevicesUtilities\Database $databaseHelper,
-		Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
-		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	/**

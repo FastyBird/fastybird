@@ -42,16 +42,13 @@ final class ChannelPropertiesStates
 
 	use Nette\SmartObject;
 
-	private Log\LoggerInterface $logger;
-
 	public function __construct(
 		private readonly Models\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
 		private readonly Models\States\ChannelPropertiesRepository $channelPropertyStateRepository,
 		private readonly Models\States\ChannelPropertiesManager $channelPropertiesStatesManager,
-		Log\LoggerInterface|null $logger = null,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
-		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	/**
