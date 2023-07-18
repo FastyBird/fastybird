@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\NsPanel\Clients;
 
-use DateTimeInterface;
+use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\API;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
@@ -31,16 +31,12 @@ use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
-use Psr\Log;
 use React\Promise;
 use Throwable;
 use function array_map;
 use function assert;
-use function boolval;
-use function intval;
 use function is_string;
 use function sprintf;
-use function strval;
 
 /**
  * Third-party device client
@@ -53,6 +49,7 @@ use function strval;
 final class Device implements Client
 {
 
+	use TPropertiesMapper;
 	use Nette\SmartObject;
 
 	private API\LanApi $lanApiApi;
@@ -64,7 +61,7 @@ final class Device implements Client
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly Writers\Writer $writer,
 		API\LanApiFactory $lanApiApiFactory,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
+		private readonly NsPanel\Logger $logger,
 	)
 	{
 		$this->lanApiApi = $lanApiApiFactory->create(
@@ -148,7 +145,7 @@ final class Device implements Client
 							$device->getConnector()->getPort(),
 							$device->getPlainId(),
 						),
-						true,
+						true, // Virtual device is always online
 					);
 				},
 				$devices,
@@ -244,7 +241,7 @@ final class Device implements Client
 					$ipAddress,
 					$accessToken,
 				)
-					->then(function () use ($gateway): void {
+					->then(function () use ($gateway, $device): void {
 						$this->logger->debug(
 							'State for NS Panel third-party device was successfully updated',
 							[
@@ -256,10 +253,13 @@ final class Device implements Client
 								'gateway' => [
 									'id' => $gateway->getPlainId(),
 								],
+								'device' => [
+									'id' => $device->getPlainId(),
+								],
 							],
 						);
 					})
-					->otherwise(function (Throwable $ex) use ($gateway): void {
+					->otherwise(function (Throwable $ex) use ($gateway, $device): void {
 						$this->logger->error(
 							'State for NS Panel third-party device could not be updated',
 							[
@@ -271,6 +271,9 @@ final class Device implements Client
 								],
 								'gateway' => [
 									'id' => $gateway->getPlainId(),
+								],
+								'device' => [
+									'id' => $device->getPlainId(),
 								],
 							],
 						);
@@ -351,68 +354,6 @@ final class Device implements Client
 		}
 
 		return Promise\reject(new Exceptions\InvalidArgument('Provided property state is in invalid state'));
-	}
-
-	/**
-	 * @throws Exceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 */
-	private function mapPropertyToState(
-		DevicesEntities\Channels\Properties\Mapped $property,
-		bool|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\CoverPayload|MetadataTypes\SwitchPayload|float|int|string|null $value = null,
-	): Entities\API\Statuses\Status
-	{
-		$value = API\Transformer::transformValueToDevice(
-			$property->getDataType(),
-			$property->getFormat(),
-			$value,
-		);
-
-		switch ($property->getIdentifier()) {
-			case Types\Capability::POWER:
-				return new Entities\API\Statuses\Power(Types\PowerPayload::get($value));
-			case Types\Capability::TOGGLE:
-				return new Entities\API\Statuses\Toggle(
-					$property->getChannel()->getIdentifier(),
-					Types\TogglePayload::get($value),
-				);
-			case Types\Capability::BRIGHTNESS:
-				return new Entities\API\Statuses\Brightness(intval($value));
-			case Types\Capability::COLOR_TEMPERATURE:
-				return new Entities\API\Statuses\ColorTemperature(intval($value));
-			case Types\Capability::COLOR_RGB:
-				return new Entities\API\Statuses\ColorRgb(0, 0, 0);
-			case Types\Capability::PERCENTAGE:
-				return new Entities\API\Statuses\Percentage(intval($value));
-			case Types\Capability::MOTOR_CONTROL:
-				return new Entities\API\Statuses\MotorControl(Types\MotorControlPayload::get($value));
-			case Types\Capability::MOTOR_REVERSE:
-				return new Entities\API\Statuses\MotorReverse(boolval($value));
-			case Types\Capability::MOTOR_CALIBRATION:
-				return new Entities\API\Statuses\MotorCalibration(Types\MotorCalibrationPayload::get($value));
-			case Types\Capability::STARTUP:
-				return new Entities\API\Statuses\Startup(
-					Types\StartupPayload::get($value),
-					$property->getChannel()->getIdentifier(),
-				);
-			case Types\Capability::CAMERA_STREAM:
-				return new Entities\API\Statuses\CameraStream(strval($value));
-			case Types\Capability::DETECT:
-				return new Entities\API\Statuses\Detect(boolval($value));
-			case Types\Capability::HUMIDITY:
-				return new Entities\API\Statuses\Humidity(intval($value));
-			case Types\Capability::TEMPERATURE:
-				return new Entities\API\Statuses\Temperature(intval($value));
-			case Types\Capability::BATTERY:
-				return new Entities\API\Statuses\Battery(intval($value));
-			case Types\Capability::PRESS:
-				return new Entities\API\Statuses\Press(Types\PressPayload::get($value));
-			case Types\Capability::RSSI:
-				return new Entities\API\Statuses\Rssi(intval($value));
-		}
-
-		throw new Exceptions\InvalidArgument('Provided property type is not supported');
 	}
 
 }

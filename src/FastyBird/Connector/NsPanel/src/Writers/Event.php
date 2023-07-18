@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\NsPanel\Writers;
 
 use DateTimeInterface;
+use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Clients;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Helpers;
@@ -28,7 +29,6 @@ use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Nette\Utils;
-use Psr\Log;
 use Ramsey\Uuid;
 use Symfony\Component\EventDispatcher;
 use Throwable;
@@ -56,7 +56,7 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 		private readonly Helpers\Property $propertyStateHelper,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
+		private readonly NsPanel\Logger $logger,
 	)
 	{
 	}
@@ -119,26 +119,66 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 
 		assert($device instanceof Entities\NsPanelDevice);
 
+		if (
+			!(
+				$device instanceof Entities\Devices\Device
+				&& $client instanceof Clients\Device
+			)
+			&& !(
+				$device instanceof Entities\Devices\SubDevice
+				&& $client instanceof Clients\Gateway
+			)
+		) {
+			return;
+		}
+
+		$this->writeChannelProperty($client, $connectorId, $device, $channel, $property);
+
+		foreach ($property->getChildren() as $child) {
+			if ($child instanceof DevicesEntities\Channels\Properties\Mapped) {
+				$this->writeChannelProperty($client, $connectorId, $device, $channel, $property);
+			}
+		}
+	}
+
+	private function writeChannelProperty(
+		Clients\Client $client,
+		Uuid\UuidInterface $connectorId,
+		Entities\NsPanelDevice $device,
+		DevicesEntities\Channels\Channel $channel,
+		DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped $property,
+	): void
+	{
+		if ($client instanceof Clients\Gateway && !$property instanceof DevicesEntities\Channels\Properties\Dynamic) {
+			return;
+		}
+
+		if ($client instanceof Clients\Device && !$property instanceof DevicesEntities\Channels\Properties\Mapped) {
+			return;
+		}
+
 		$client->writeChannelProperty($device, $channel, $property)
 			->then(function () use ($property): void {
-				$state = $this->channelPropertiesStates->getValue($property);
+				if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
+					$state = $this->channelPropertiesStates->getValue($property);
 
-				if ($state !== null && $state->getExpectedValue() === null) {
-					return;
+					if ($state !== null && $state->getExpectedValue() === null) {
+						return;
+					}
+
+					$this->propertyStateHelper->setValue(
+						$property,
+						Utils\ArrayHash::from([
+							DevicesStates\Property::PENDING_KEY => $this->dateTimeFactory->getNow()->format(
+								DateTimeInterface::ATOM,
+							),
+						]),
+					);
 				}
-
-				$this->propertyStateHelper->setValue(
-					$property,
-					Utils\ArrayHash::from([
-						DevicesStates\Property::PENDING_KEY => $this->dateTimeFactory->getNow()->format(
-							DateTimeInterface::ATOM,
-						),
-					]),
-				);
 			})
 			->otherwise(function (Throwable $ex) use ($connectorId, $device, $channel, $property): void {
 				$this->logger->error(
-					'Could write new property state',
+					'Could not write new property state',
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 						'type' => 'event-writer',
@@ -158,13 +198,15 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 					],
 				);
 
-				$this->propertyStateHelper->setValue(
-					$property,
-					Utils\ArrayHash::from([
-						DevicesStates\Property::EXPECTED_VALUE_KEY => null,
-						DevicesStates\Property::PENDING_KEY => false,
-					]),
-				);
+				if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
+					$this->propertyStateHelper->setValue(
+						$property,
+						Utils\ArrayHash::from([
+							DevicesStates\Property::EXPECTED_VALUE_KEY => null,
+							DevicesStates\Property::PENDING_KEY => false,
+						]),
+					);
+				}
 			});
 	}
 

@@ -17,6 +17,7 @@ namespace FastyBird\Connector\NsPanel\Commands;
 
 use Doctrine\DBAL;
 use Doctrine\Persistence;
+use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\API;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
@@ -31,7 +32,6 @@ use FastyBird\Module\Devices\Queries as DevicesQueries;
 use InvalidArgumentException as InvalidArgumentExceptionAlias;
 use Nette\Localization;
 use Nette\Utils;
-use Psr\Log;
 use Symfony\Component\Console;
 use Symfony\Component\Console\Input;
 use Symfony\Component\Console\Output;
@@ -69,7 +69,7 @@ class Devices extends Console\Command\Command
 		private readonly DevicesModels\Devices\Properties\PropertiesManager $devicesPropertiesManager,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 		private readonly Localization\Translator $translator,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
+		private readonly NsPanel\Logger $logger,
 		string|null $name = null,
 	)
 	{
@@ -271,7 +271,7 @@ class Devices extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 					'type' => 'devices-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -434,7 +434,7 @@ class Devices extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 					'type' => 'devices-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -495,7 +495,7 @@ class Devices extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 					'type' => 'devices-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],

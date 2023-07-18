@@ -17,6 +17,7 @@ namespace FastyBird\Connector\NsPanel\Commands;
 
 use Doctrine\DBAL;
 use Doctrine\Persistence;
+use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
@@ -27,7 +28,6 @@ use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette\Localization;
 use Nette\Utils;
-use Psr\Log;
 use Symfony\Component\Console;
 use Symfony\Component\Console\Input;
 use Symfony\Component\Console\Output;
@@ -60,7 +60,7 @@ class Initialize extends Console\Command\Command
 		private readonly DevicesModels\Connectors\ConnectorsManager $connectorsManager,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 		private readonly Localization\Translator $translator,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
+		private readonly NsPanel\Logger $logger,
 		string|null $name = null,
 	)
 	{

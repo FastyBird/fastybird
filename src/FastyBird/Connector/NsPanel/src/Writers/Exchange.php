@@ -17,6 +17,7 @@ namespace FastyBird\Connector\NsPanel\Writers;
 
 use DateTimeInterface;
 use Exception;
+use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Clients;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Helpers;
@@ -33,7 +34,6 @@ use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Nette\Utils;
-use Psr\Log;
 use Ramsey\Uuid;
 use Throwable;
 use function assert;
@@ -62,7 +62,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 		private readonly DevicesModels\Channels\Properties\PropertiesRepository $propertiesRepository,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly ExchangeConsumers\Container $consumer,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
+		private readonly NsPanel\Logger $logger,
 	)
 	{
 	}
@@ -115,7 +115,10 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 		Clients\Client $client,
 	): void
 	{
-		if ($entity instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty) {
+		if (
+			$entity instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty
+			|| $entity instanceof MetadataEntities\DevicesModule\ChannelMappedProperty
+		) {
 			if ($entity->getExpectedValue() === null || $entity->getPending() !== true) {
 				return;
 			}
@@ -129,7 +132,10 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 				return;
 			}
 
-			assert($property instanceof DevicesEntities\Channels\Properties\Dynamic);
+			assert(
+				$property instanceof DevicesEntities\Channels\Properties\Dynamic
+				|| $property instanceof DevicesEntities\Channels\Properties\Mapped,
+			);
 
 			if (!$property->getChannel()->getDevice()->getConnector()->getId()->equals($connectorId)) {
 				return;
@@ -140,8 +146,29 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 
 			assert($device instanceof Entities\NsPanelDevice);
 
-			$client->writeChannelProperty($device, $channel, $property)
-				->then(function () use ($property): void {
+			$this->writeChannelProperty($client, $connectorId, $device, $channel, $property);
+		}
+	}
+
+	private function writeChannelProperty(
+		Clients\Client $client,
+		Uuid\UuidInterface $connectorId,
+		Entities\NsPanelDevice $device,
+		DevicesEntities\Channels\Channel $channel,
+		DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped $property,
+	): void
+	{
+		if ($client instanceof Clients\Gateway && !$property instanceof DevicesEntities\Channels\Properties\Dynamic) {
+			return;
+		}
+
+		if ($client instanceof Clients\Device && !$property instanceof DevicesEntities\Channels\Properties\Mapped) {
+			return;
+		}
+
+		$client->writeChannelProperty($device, $channel, $property)
+			->then(function () use ($property): void {
+				if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
 					$state = $this->channelPropertiesStates->getValue($property);
 
 					if ($state !== null && $state->getExpectedValue() === null) {
@@ -156,29 +183,31 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 							),
 						]),
 					);
-				})
-				->otherwise(function (Throwable $ex) use ($connectorId, $device, $channel, $property): void {
-					$this->logger->error(
-						'Could write new property state',
-						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-							'type' => 'exchange-writer',
-							'exception' => BootstrapHelpers\Logger::buildException($ex),
-							'connector' => [
-								'id' => $connectorId->toString(),
-							],
-							'device' => [
-								'id' => $device->getPlainId(),
-							],
-							'channel' => [
-								'id' => $channel->getPlainId(),
-							],
-							'property' => [
-								'id' => $property->getPlainId(),
-							],
+				}
+			})
+			->otherwise(function (Throwable $ex) use ($connectorId, $device, $channel, $property): void {
+				$this->logger->error(
+					'Could not write new property state',
+					[
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+						'type' => 'exchange-writer',
+						'exception' => BootstrapHelpers\Logger::buildException($ex),
+						'connector' => [
+							'id' => $connectorId->toString(),
 						],
-					);
+						'device' => [
+							'id' => $device->getPlainId(),
+						],
+						'channel' => [
+							'id' => $channel->getPlainId(),
+						],
+						'property' => [
+							'id' => $property->getPlainId(),
+						],
+					],
+				);
 
+				if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
 					$this->propertyStateHelper->setValue(
 						$property,
 						Utils\ArrayHash::from([
@@ -186,8 +215,8 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 							DevicesStates\Property::PENDING_KEY => false,
 						]),
 					);
-				});
-		}
+				}
+			});
 	}
 
 }

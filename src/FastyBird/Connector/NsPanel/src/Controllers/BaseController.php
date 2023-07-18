@@ -15,8 +15,8 @@
 
 namespace FastyBird\Connector\NsPanel\Controllers;
 
+use FastyBird\Connector\NsPanel;
 use Nette;
-use Psr\Log;
 
 /**
  * API base controller
@@ -31,11 +31,11 @@ abstract class BaseController
 
 	use Nette\SmartObject;
 
-	protected Log\LoggerInterface $logger;
+	protected NsPanel\Logger $logger;
 
-	public function injectLogger(Log\LoggerInterface|null $logger = null): void
+	public function injectLogger(NsPanel\Logger $logger): void
 	{
-		$this->logger = $logger ?? new Log\NullLogger();
+		$this->logger = $logger;
 	}
 
 }

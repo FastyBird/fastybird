@@ -15,9 +15,11 @@
 
 namespace FastyBird\Connector\NsPanel\Connector;
 
+use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Clients;
 use FastyBird\Connector\NsPanel\Consumers;
 use FastyBird\Connector\NsPanel\Entities;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Connectors as DevicesConnectors;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use Nette;
@@ -50,6 +52,7 @@ final class Connector implements DevicesConnectors\Connector
 	public function __construct(
 		private readonly DevicesEntities\Connectors\Connector $connector,
 		private readonly array $clientsFactories,
+		private readonly NsPanel\Logger $logger,
 		private readonly Consumers\Messages $consumer,
 		private readonly EventLoop\LoopInterface $eventLoop,
 	)
@@ -59,6 +62,17 @@ final class Connector implements DevicesConnectors\Connector
 	public function execute(): void
 	{
 		assert($this->connector instanceof Entities\NsPanelConnector);
+
+		$this->logger->debug(
+			'Starting NS Panel connector',
+			[
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+				'type' => 'connector',
+				'connector' => [
+					'id' => $this->connector->getPlainId(),
+				],
+			],
+		);
 
 		foreach ($this->clientsFactories as $clientFactory) {
 			$this->client = $clientFactory->create($this->connector);
@@ -71,6 +85,17 @@ final class Connector implements DevicesConnectors\Connector
 				$this->consumer->consume();
 			}),
 		);
+
+		$this->logger->debug(
+			'Connector has been started',
+			[
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+				'type' => 'connector',
+				'connector' => [
+					'id' => $this->connector->getPlainId(),
+				],
+			],
+		);
 	}
 
 	public function terminate(): void
@@ -80,6 +105,17 @@ final class Connector implements DevicesConnectors\Connector
 		if ($this->consumerTimer !== null) {
 			$this->eventLoop->cancelTimer($this->consumerTimer);
 		}
+
+		$this->logger->debug(
+			'Connector has been terminated',
+			[
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+				'type' => 'connector',
+				'connector' => [
+					'id' => $this->connector->getPlainId(),
+				],
+			],
+		);
 	}
 
 	public function hasUnfinishedTasks(): bool

@@ -69,7 +69,10 @@ final class Properties implements Common\EventSubscriber
 		$entity = $eventArgs->getObject();
 
 		// Check for valid entity
-		if (!$entity instanceof Entities\Devices\Gateway) {
+		if (
+			!$entity instanceof Entities\Devices\Gateway
+			&& !$entity instanceof Entities\Devices\SubDevice
+		) {
 			return;
 		}
 

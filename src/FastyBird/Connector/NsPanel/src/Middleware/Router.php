@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\NsPanel\Middleware;
 
+use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Events;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Servers;
@@ -31,7 +32,6 @@ use Nette\Utils;
 use Psr\EventDispatcher;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Log;
 use Ramsey\Uuid;
 use Throwable;
 
@@ -51,7 +51,7 @@ final class Router
 	public function __construct(
 		private readonly SlimRouterRouting\IRouter $router,
 		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
+		private readonly NsPanel\Logger $logger,
 	)
 	{
 		$this->responseFactory = new SlimRouterHttp\ResponseFactory();

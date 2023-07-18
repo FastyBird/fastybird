@@ -28,7 +28,6 @@ use InvalidArgumentException;
 use Nette;
 use Nette\Utils;
 use Psr\Http\Message;
-use Psr\Log;
 use Ramsey\Uuid;
 use React\Promise;
 use RuntimeException;
@@ -76,7 +75,7 @@ final class LanApi
 		private readonly string $identifier,
 		private readonly HttpClientFactory $httpClientFactory,
 		private readonly MetadataSchemas\Validator $schemaValidator,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
+		private readonly NsPanel\Logger $logger,
 	)
 	{
 	}
@@ -125,7 +124,11 @@ final class LanApi
 			throw new Exceptions\LanApiCall('Could send data to cloud server');
 		}
 
-		return $this->parseGetGatewayInfo($result);
+		try {
+			return $this->parseGetGatewayInfo($result);
+		} catch (RuntimeException $ex) {
+			throw new Exceptions\LanApiCall('Could not handle received data', $ex->getCode(), $ex);
+		}
 	}
 
 	/**
@@ -175,7 +178,11 @@ final class LanApi
 			throw new Exceptions\LanApiCall('Could send data to cloud server');
 		}
 
-		return $this->parseGetGatewayAccessToken($result);
+		try {
+			return $this->parseGetGatewayAccessToken($result);
+		} catch (RuntimeException $ex) {
+			throw new Exceptions\LanApiCall('Could not handle received data', $ex->getCode(), $ex);
+		}
 	}
 
 	/**
@@ -220,12 +227,12 @@ final class LanApi
 			);
 		} catch (Utils\JsonException $ex) {
 			$this->logger->error(
-				'Could not encode request payload',
+				'Could not encode request content',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 					'type' => 'lan-api',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
-					'response' => [
+					'request' => [
 						'body' => $data->toArray(),
 					],
 					'connector' => [
@@ -261,7 +268,11 @@ final class LanApi
 			throw new Exceptions\LanApiCall('Could send data to cloud server');
 		}
 
-		return $this->parseSynchroniseDevices($result);
+		try {
+			return $this->parseSynchroniseDevices($result);
+		} catch (RuntimeException $ex) {
+			throw new Exceptions\LanApiCall('Could not handle received data', $ex->getCode(), $ex);
+		}
 	}
 
 	/**
@@ -306,12 +317,12 @@ final class LanApi
 			);
 		} catch (Utils\JsonException $ex) {
 			$this->logger->error(
-				'Could not encode request payload',
+				'Could not encode request content',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 					'type' => 'lan-api',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
-					'response' => [
+					'request' => [
 						'body' => $data->toArray(),
 					],
 					'connector' => [
@@ -347,7 +358,11 @@ final class LanApi
 			throw new Exceptions\LanApiCall('Could send data to cloud server');
 		}
 
-		return $this->parseReportDeviceStatus($result);
+		try {
+			return $this->parseReportDeviceStatus($result);
+		} catch (RuntimeException $ex) {
+			throw new Exceptions\LanApiCall('Could not handle received data', $ex->getCode(), $ex);
+		}
 	}
 
 	/**
@@ -394,12 +409,12 @@ final class LanApi
 			);
 		} catch (Utils\JsonException $ex) {
 			$this->logger->error(
-				'Could not encode request payload',
+				'Could not encode request content',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 					'type' => 'lan-api',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
-					'response' => [
+					'request' => [
 						'body' => $data->toArray(),
 					],
 					'connector' => [
@@ -435,7 +450,11 @@ final class LanApi
 			throw new Exceptions\LanApiCall('Could send data to cloud server');
 		}
 
-		return $this->parseReportDeviceState($result);
+		try {
+			return $this->parseReportDeviceState($result);
+		} catch (RuntimeException $ex) {
+			throw new Exceptions\LanApiCall('Could not handle received data', $ex->getCode(), $ex);
+		}
 	}
 
 	/**
@@ -484,7 +503,11 @@ final class LanApi
 			throw new Exceptions\LanApiCall('Could send data to cloud server');
 		}
 
-		return $this->parseGetSubDevices($result);
+		try {
+			return $this->parseGetSubDevices($result);
+		} catch (RuntimeException $ex) {
+			throw new Exceptions\LanApiCall('Could not handle received data', $ex->getCode(), $ex);
+		}
 	}
 
 	/**
@@ -519,12 +542,12 @@ final class LanApi
 			);
 		} catch (Utils\JsonException $ex) {
 			$this->logger->error(
-				'Could not encode request payload',
+				'Could not encode request content',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 					'type' => 'lan-api',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
-					'response' => [
+					'request' => [
 						'body' => $data->toArray(),
 					],
 					'connector' => [
@@ -560,11 +583,16 @@ final class LanApi
 			throw new Exceptions\LanApiCall('Could send data to cloud server');
 		}
 
-		return $this->parseSetSubDeviceStatus($result);
+		try {
+			return $this->parseSetSubDeviceStatus($result);
+		} catch (RuntimeException $ex) {
+			throw new Exceptions\LanApiCall('Could not handle received data', $ex->getCode(), $ex);
+		}
 	}
 
 	/**
 	 * @throws Exceptions\LanApiCall
+	 * @throws RuntimeException
 	 */
 	private function parseGetGatewayInfo(Message\ResponseInterface $response): Entities\API\Response\GetGatewayInfo
 	{
@@ -582,6 +610,10 @@ final class LanApi
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 					'type' => 'lan-api',
 					'error' => $body->offsetGet('message'),
+					'response' => [
+						'headers' => $response->getHeaders(),
+						'body' => $response->getBody()->getContents(),
+					],
 					'connector' => [
 						'identifier' => $this->identifier,
 					],
@@ -602,6 +634,7 @@ final class LanApi
 
 	/**
 	 * @throws Exceptions\LanApiCall
+	 * @throws RuntimeException
 	 */
 	private function parseGetGatewayAccessToken(
 		Message\ResponseInterface $response,
@@ -621,6 +654,10 @@ final class LanApi
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 					'type' => 'lan-api',
 					'error' => $body->offsetGet('message'),
+					'response' => [
+						'headers' => $response->getHeaders(),
+						'body' => $response->getBody()->getContents(),
+					],
 					'connector' => [
 						'identifier' => $this->identifier,
 					],
@@ -641,6 +678,7 @@ final class LanApi
 
 	/**
 	 * @throws Exceptions\LanApiCall
+	 * @throws RuntimeException
 	 */
 	private function parseSynchroniseDevices(Message\ResponseInterface $response): Entities\API\Response\SyncDevices
 	{
@@ -658,6 +696,10 @@ final class LanApi
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 					'type' => 'lan-api',
 					'error' => $body->offsetGet('message'),
+					'response' => [
+						'headers' => $response->getHeaders(),
+						'body' => $response->getBody()->getContents(),
+					],
 					'connector' => [
 						'identifier' => $this->identifier,
 					],
@@ -678,6 +720,7 @@ final class LanApi
 
 	/**
 	 * @throws Exceptions\LanApiCall
+	 * @throws RuntimeException
 	 */
 	private function parseReportDeviceStatus(
 		Message\ResponseInterface $response,
@@ -697,6 +740,10 @@ final class LanApi
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 					'type' => 'lan-api',
 					'error' => $body->offsetGet('message'),
+					'response' => [
+						'headers' => $response->getHeaders(),
+						'body' => $response->getBody()->getContents(),
+					],
 					'connector' => [
 						'identifier' => $this->identifier,
 					],
@@ -717,6 +764,7 @@ final class LanApi
 
 	/**
 	 * @throws Exceptions\LanApiCall
+	 * @throws RuntimeException
 	 */
 	private function parseReportDeviceState(
 		Message\ResponseInterface $response,
@@ -736,6 +784,10 @@ final class LanApi
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 					'type' => 'lan-api',
 					'error' => $body->offsetGet('message'),
+					'response' => [
+						'headers' => $response->getHeaders(),
+						'body' => $response->getBody()->getContents(),
+					],
 					'connector' => [
 						'identifier' => $this->identifier,
 					],
@@ -756,6 +808,7 @@ final class LanApi
 
 	/**
 	 * @throws Exceptions\LanApiCall
+	 * @throws RuntimeException
 	 */
 	private function parseGetSubDevices(
 		Message\ResponseInterface $response,
@@ -775,6 +828,10 @@ final class LanApi
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 					'type' => 'lan-api',
 					'error' => $body->offsetGet('message'),
+					'response' => [
+						'headers' => $response->getHeaders(),
+						'body' => $response->getBody()->getContents(),
+					],
 					'connector' => [
 						'identifier' => $this->identifier,
 					],
@@ -795,6 +852,7 @@ final class LanApi
 
 	/**
 	 * @throws Exceptions\LanApiCall
+	 * @throws RuntimeException
 	 */
 	private function parseSetSubDeviceStatus(
 		Message\ResponseInterface $response,
@@ -814,6 +872,10 @@ final class LanApi
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 					'type' => 'lan-api',
 					'error' => $body->offsetGet('message'),
+					'response' => [
+						'headers' => $response->getHeaders(),
+						'body' => $response->getBody()->getContents(),
+					],
 					'connector' => [
 						'identifier' => $this->identifier,
 					],
@@ -834,6 +896,7 @@ final class LanApi
 
 	/**
 	 * @throws Exceptions\LanApiCall
+	 * @throws RuntimeException
 	 */
 	private function validateResponseBody(Message\ResponseInterface $response, string $schemaFilename): Utils\ArrayHash
 	{
@@ -856,7 +919,8 @@ final class LanApi
 					'type' => 'lan-api',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'response' => [
-						'body' => $body,
+						'headers' => $response->getHeaders(),
+						'body' => $response->getBody()->getContents(),
 						'schema' => $schemaFilename,
 					],
 					'connector' => [
@@ -867,6 +931,8 @@ final class LanApi
 
 			throw new Exceptions\LanApiCall('Could not validate received response payload');
 		}
+
+		$response->getBody()->rewind();
 
 		return $body;
 	}

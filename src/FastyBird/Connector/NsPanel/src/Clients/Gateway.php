@@ -16,11 +16,11 @@
 namespace FastyBird\Connector\NsPanel\Clients;
 
 use DateTimeInterface;
+use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\API;
 use FastyBird\Connector\NsPanel\Consumers;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
-use FastyBird\Connector\NsPanel\Types\PowerPayload;
 use FastyBird\Connector\NsPanel\Writers;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
@@ -32,7 +32,6 @@ use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
-use Psr\Log;
 use React\EventLoop;
 use React\Promise;
 use Throwable;
@@ -53,6 +52,7 @@ use function strval;
 final class Gateway implements Client
 {
 
+	use TPropertiesMapper;
 	use Nette\SmartObject;
 
 	private const HANDLER_START_DELAY = 2.0;
@@ -87,7 +87,7 @@ final class Gateway implements Client
 		private readonly Consumers\Messages $consumer,
 		private readonly Writers\Writer $writer,
 		API\LanApiFactory $lanApiApiFactory,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
+		private readonly NsPanel\Logger $logger,
 	)
 	{
 		$this->lanApiApi = $lanApiApiFactory->create(
@@ -125,6 +125,7 @@ final class Gateway implements Client
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\LanApiCall
 	 * @throws MetadataExceptions\InvalidArgument
@@ -177,7 +178,7 @@ final class Gateway implements Client
 		if ($state->isPending() === true) {
 			return $this->lanApiApi->setSubDeviceStatus(
 				$device->getIdentifier(),
-				new Entities\API\Statuses\Power(PowerPayload::get(PowerPayload::ON)),
+				$this->mapPropertyToState($property, $expectedValue),
 				$device->getParent()->getIpAddress(),
 				$device->getParent()->getAccessToken(),
 			);
@@ -288,8 +289,35 @@ final class Gateway implements Client
 				);
 			})
 			->otherwise(function (Throwable $ex) use ($device): void {
+				if ($ex instanceof Exceptions\LanApiCall) {
+					$this->logger->error(
+						'Could not NS Panel API',
+						[
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+							'type' => 'gateway-client',
+							'exception' => BootstrapHelpers\Logger::buildException($ex),
+							'connector' => [
+								'id' => $this->connector->getPlainId(),
+							],
+							'device' => [
+								'id' => $device->getPlainId(),
+							],
+						],
+					);
+
+					$this->consumer->append(
+						new Entities\Messages\DeviceState(
+							$this->connector->getId(),
+							$device->getIdentifier(),
+							MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_DISCONNECTED),
+						),
+					);
+
+					return;
+				}
+
 				$this->logger->error(
-					'Could not NS Panel api',
+					'Calling NS Panel API failed',
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 						'type' => 'gateway-client',
@@ -297,15 +325,16 @@ final class Gateway implements Client
 						'connector' => [
 							'id' => $this->connector->getPlainId(),
 						],
+						'device' => [
+							'id' => $device->getPlainId(),
+						],
 					],
 				);
 
-				$this->consumer->append(
-					new Entities\Messages\DeviceState(
-						$this->connector->getId(),
-						$device->getIdentifier(),
-						MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_DISCONNECTED),
-					),
+				throw new DevicesExceptions\Terminate(
+					'Calling NS Panel API failed',
+					$ex->getCode(),
+					$ex,
 				);
 			});
 
@@ -417,10 +446,10 @@ final class Gateway implements Client
 					));
 				}
 			})
-			->otherwise(function (Throwable $ex): void {
+			->otherwise(function (Throwable $ex) use ($device): void {
 				if ($ex instanceof Exceptions\LanApiCall) {
 					$this->logger->warning(
-						'Calling NS Panel api failed',
+						'Calling NS Panel API failed',
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 							'type' => 'gateway-client',
@@ -428,14 +457,25 @@ final class Gateway implements Client
 							'connector' => [
 								'id' => $this->connector->getPlainId(),
 							],
+							'device' => [
+								'id' => $device->getPlainId(),
+							],
 						],
+					);
+
+					$this->consumer->append(
+						new Entities\Messages\DeviceState(
+							$this->connector->getId(),
+							$device->getIdentifier(),
+							MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_DISCONNECTED),
+						),
 					);
 
 					return;
 				}
 
 				$this->logger->error(
-					'Calling NS Panel api failed',
+					'Calling NS Panel API failed',
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 						'type' => 'gateway-client',
@@ -443,11 +483,14 @@ final class Gateway implements Client
 						'connector' => [
 							'id' => $this->connector->getPlainId(),
 						],
+						'device' => [
+							'id' => $device->getPlainId(),
+						],
 					],
 				);
 
 				throw new DevicesExceptions\Terminate(
-					'Calling Tuya cloud failed',
+					'Calling NS Panel API failed',
 					$ex->getCode(),
 					$ex,
 				);

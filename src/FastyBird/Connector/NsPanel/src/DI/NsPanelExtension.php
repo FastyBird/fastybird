@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\NsPanel\DI;
 
 use Doctrine\Persistence;
+use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\API;
 use FastyBird\Connector\NsPanel\Clients;
 use FastyBird\Connector\NsPanel\Commands;
@@ -222,6 +223,9 @@ class NsPanelExtension extends DI\CompilerExtension
 
 		$builder->addDefinition($this->prefix('commands.devices'), new DI\Definitions\ServiceDefinition())
 			->setType(Commands\Devices::class);
+
+		$builder->addDefinition($this->prefix('logger'), new DI\Definitions\ServiceDefinition())
+			->setType(NsPanel\Logger::class);
 	}
 
 	/**

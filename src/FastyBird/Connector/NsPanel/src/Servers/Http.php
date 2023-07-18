@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\NsPanel\Servers;
 
+use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Middleware;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
@@ -23,7 +24,6 @@ use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Nette;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Log;
 use React\EventLoop;
 use React\Http as ReactHttp;
 use React\Socket;
@@ -54,7 +54,7 @@ final class Http implements Server
 		private readonly Entities\NsPanelConnector $connector,
 		private readonly Middleware\Router $routerMiddleware,
 		private readonly EventLoop\LoopInterface $eventLoop,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
+		private readonly NsPanel\Logger $logger,
 	)
 	{
 	}
@@ -66,7 +66,7 @@ final class Http implements Server
 	{
 		try {
 			$this->logger->debug(
-				'Creating NS Panel web server',
+				'Creating connector web server',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 					'type' => 'http-server',
@@ -87,7 +87,7 @@ final class Http implements Server
 			);
 		} catch (Throwable $ex) {
 			$this->logger->error(
-				'Socket server could not be created',
+				'Connector web server could not be created',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 					'type' => 'http-server',
@@ -143,7 +143,7 @@ final class Http implements Server
 	public function disconnect(): void
 	{
 		$this->logger->debug(
-			'Closing NS Panel web server',
+			'Closing connector web server',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 				'type' => 'http-server',
