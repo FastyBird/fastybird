@@ -225,7 +225,8 @@ class NsPanelExtension extends DI\CompilerExtension
 			->setType(Commands\Devices::class);
 
 		$builder->addDefinition($this->prefix('logger'), new DI\Definitions\ServiceDefinition())
-			->setType(NsPanel\Logger::class);
+			->setType(NsPanel\Logger::class)
+			->setAutowired(false);
 	}
 
 	/**
