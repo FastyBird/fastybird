@@ -88,20 +88,33 @@ class NsPanelExtension extends DI\CompilerExtension
 		$configuration = $this->getConfig();
 		assert($configuration instanceof stdClass);
 
+		$logger = $builder->addDefinition($this->prefix('logger'), new DI\Definitions\ServiceDefinition())
+			->setType(NsPanel\Logger::class)
+			->setAutowired(false);
+
 		$writer = null;
 
 		if ($configuration->writer === Writers\Event::NAME) {
 			$writer = $builder->addDefinition($this->prefix('writers.event'), new DI\Definitions\ServiceDefinition())
 				->setType(Writers\Event::class)
+				->setArguments([
+					'logger' => $logger,
+				])
 				->setAutowired(false);
 		} elseif ($configuration->writer === Writers\Exchange::NAME) {
 			$writer = $builder->addDefinition($this->prefix('writers.exchange'), new DI\Definitions\ServiceDefinition())
 				->setType(Writers\Exchange::class)
+				->setArguments([
+					'logger' => $logger,
+				])
 				->setAutowired(false)
 				->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATUS, false);
 		} elseif ($configuration->writer === Writers\Periodic::NAME) {
 			$writer = $builder->addDefinition($this->prefix('writers.periodic'), new DI\Definitions\ServiceDefinition())
 				->setType(Writers\Periodic::class)
+				->setArguments([
+					'logger' => $logger,
+				])
 				->setAutowired(false);
 		}
 
@@ -111,6 +124,7 @@ class NsPanelExtension extends DI\CompilerExtension
 			->setType(Clients\Gateway::class)
 			->setArguments([
 				'writer' => $writer,
+				'logger' => $logger,
 			]);
 
 		$builder->addFactoryDefinition($this->prefix('clients.device'))
@@ -119,12 +133,16 @@ class NsPanelExtension extends DI\CompilerExtension
 			->setType(Clients\Device::class)
 			->setArguments([
 				'writer' => $writer,
+				'logger' => $logger,
 			]);
 
 		$builder->addFactoryDefinition($this->prefix('api.lanApi'))
 			->setImplement(API\LanApiFactory::class)
 			->getResultDefinition()
-			->setType(API\LanApi::class);
+			->setType(API\LanApi::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
 
 		$builder->addDefinition($this->prefix('api.httpClient'), new DI\Definitions\ServiceDefinition())
 			->setType(API\HttpClientFactory::class);
@@ -132,12 +150,16 @@ class NsPanelExtension extends DI\CompilerExtension
 		$builder->addFactoryDefinition($this->prefix('server.http'))
 			->setImplement(Servers\HttpFactory::class)
 			->getResultDefinition()
-			->setType(Servers\Http::class);
+			->setType(Servers\Http::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
 
 		$builder->addDefinition($this->prefix('consumers.messages'), new DI\Definitions\ServiceDefinition())
 			->setType(Consumers\Messages::class)
 			->setArguments([
 				'consumers' => $builder->findByType(Consumers\Consumer::class),
+				'logger' => $logger,
 			]);
 
 		$builder->addDefinition($this->prefix('subscribers.properties'), new DI\Definitions\ServiceDefinition())
@@ -197,7 +219,10 @@ class NsPanelExtension extends DI\CompilerExtension
 
 		$builder->addDefinition($this->prefix('http.middlewares.router'), new DI\Definitions\ServiceDefinition())
 			->setType(Middleware\Router::class)
-			->setArguments(['router' => $router]);
+			->setArguments([
+				'router' => $router,
+				'logger' => $logger,
+			]);
 
 		$builder->addDefinition($this->prefix('http.controllers.directive'), new DI\Definitions\ServiceDefinition())
 			->setType(Controllers\DirectiveController::class)
@@ -213,20 +238,26 @@ class NsPanelExtension extends DI\CompilerExtension
 			->setType(Connector\Connector::class)
 			->setArguments([
 				'clientsFactories' => $builder->findByType(Clients\ClientFactory::class),
+				'logger' => $logger,
 			]);
 
 		$builder->addDefinition($this->prefix('commands.initialize'), new DI\Definitions\ServiceDefinition())
-			->setType(Commands\Initialize::class);
+			->setType(Commands\Initialize::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
 
 		$builder->addDefinition($this->prefix('commands.execute'), new DI\Definitions\ServiceDefinition())
-			->setType(Commands\Execute::class);
+			->setType(Commands\Execute::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
 
 		$builder->addDefinition($this->prefix('commands.devices'), new DI\Definitions\ServiceDefinition())
-			->setType(Commands\Devices::class);
-
-		$builder->addDefinition($this->prefix('logger'), new DI\Definitions\ServiceDefinition())
-			->setType(NsPanel\Logger::class)
-			->setAutowired(false);
+			->setType(Commands\Devices::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
 	}
 
 	/**
