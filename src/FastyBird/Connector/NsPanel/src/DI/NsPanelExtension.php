@@ -159,13 +159,19 @@ class NsPanelExtension extends DI\CompilerExtension
 			$this->prefix('consumers.messages.device.status'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Consumers\Messages\Status::class);
+			->setType(Consumers\Messages\Status::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
 
 		$builder->addDefinition(
 			$this->prefix('consumers.messages.device.state'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Consumers\Messages\State::class);
+			->setType(Consumers\Messages\State::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
 
 		$builder->addDefinition($this->prefix('consumers.messages'), new DI\Definitions\ServiceDefinition())
 			->setType(Consumers\Messages::class)
