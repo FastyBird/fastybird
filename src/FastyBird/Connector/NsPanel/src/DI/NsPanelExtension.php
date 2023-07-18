@@ -155,6 +155,18 @@ class NsPanelExtension extends DI\CompilerExtension
 				'logger' => $logger,
 			]);
 
+		$builder->addDefinition(
+			$this->prefix('consumers.messages.device.status'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Consumers\Messages\Status::class);
+
+		$builder->addDefinition(
+			$this->prefix('consumers.messages.device.state'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Consumers\Messages\State::class);
+
 		$builder->addDefinition($this->prefix('consumers.messages'), new DI\Definitions\ServiceDefinition())
 			->setType(Consumers\Messages::class)
 			->setArguments([
@@ -226,6 +238,7 @@ class NsPanelExtension extends DI\CompilerExtension
 
 		$builder->addDefinition($this->prefix('http.controllers.directive'), new DI\Definitions\ServiceDefinition())
 			->setType(Controllers\DirectiveController::class)
+			->addSetup('setLogger', [$logger])
 			->addTag('nette.inject');
 
 		$builder->addFactoryDefinition($this->prefix('executor.factory'))

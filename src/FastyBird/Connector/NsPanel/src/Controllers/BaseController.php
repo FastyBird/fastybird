@@ -33,7 +33,7 @@ abstract class BaseController
 
 	protected NsPanel\Logger $logger;
 
-	public function injectLogger(NsPanel\Logger $logger): void
+	public function setLogger(NsPanel\Logger $logger): void
 	{
 		$this->logger = $logger;
 	}
