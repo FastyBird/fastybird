@@ -73,9 +73,7 @@ final class Property
 	{
 		return $property instanceof DevicesEntities\Devices\Properties\Dynamic || $property instanceof DevicesEntities\Devices\Properties\Mapped
 			? $this->devicePropertiesStateManager->getValue($property)?->getActualValue()
-			: $this->channelPropertiesStateManager->getValue(
-				$property,
-			)?->getActualValue();
+			: $this->channelPropertiesStateManager->getValue($property)?->getActualValue();
 	}
 
 	/**
@@ -90,9 +88,7 @@ final class Property
 	{
 		return $property instanceof DevicesEntities\Devices\Properties\Dynamic || $property instanceof DevicesEntities\Devices\Properties\Mapped
 			? $this->devicePropertiesStateManager->getValue($property)?->getExpectedValue()
-			: $this->channelPropertiesStateManager->getValue(
-				$property,
-			)?->getExpectedValue();
+			: $this->channelPropertiesStateManager->getValue($property)?->getExpectedValue();
 	}
 
 }

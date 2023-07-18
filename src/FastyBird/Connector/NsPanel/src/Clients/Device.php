@@ -322,13 +322,15 @@ final class Device implements Client
 			);
 		}
 
-		$expectedValue = DevicesUtilities\ValueHelper::flattenValue($state->getExpectedValue());
+		$propertyValue = DevicesUtilities\ValueHelper::flattenValue(
+			$state->getExpectedValue() ?? $state->getActualValue(),
+		);
 
 		if (!$property->isSettable()) {
 			return Promise\reject(new Exceptions\InvalidArgument('Provided property is not writable'));
 		}
 
-		if ($expectedValue === null) {
+		if ($propertyValue === null) {
 			return Promise\reject(
 				new Exceptions\InvalidArgument('Property expected value is not set. Nothing to write'),
 			);
@@ -347,7 +349,7 @@ final class Device implements Client
 		if ($state->isPending() === true) {
 			return $this->lanApiApi->reportDeviceStatus(
 				$serialNumber,
-				$this->mapPropertyToState($property, $expectedValue),
+				$this->mapPropertyToState($property, $propertyValue),
 				$device->getParent()->getIpAddress(),
 				$device->getParent()->getAccessToken(),
 			);

@@ -100,7 +100,11 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 	): void
 	{
 		foreach ($this->clients as $id => $client) {
-			$this->processClient(Uuid\Uuid::fromString($id), $source, $entity, $client);
+			if ($client instanceof Clients\Gateway) {
+				$this->processGatewayClient(Uuid\Uuid::fromString($id), $source, $entity, $client);
+			} elseif ($client instanceof Clients\Device) {
+				$this->processDeviceClient(Uuid\Uuid::fromString($id), $source, $entity, $client);
+			}
 		}
 	}
 
@@ -108,17 +112,14 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exception
 	 */
-	public function processClient(
+	public function processGatewayClient(
 		Uuid\UuidInterface $connectorId,
 		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|MetadataTypes\AutomatorSource $source,
 		MetadataEntities\Entity|null $entity,
-		Clients\Client $client,
+		Clients\Gateway $client,
 	): void
 	{
-		if (
-			$entity instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty
-			|| $entity instanceof MetadataEntities\DevicesModule\ChannelMappedProperty
-		) {
+		if ($entity instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty) {
 			if ($entity->getExpectedValue() === null || $entity->getPending() !== true) {
 				return;
 			}
@@ -132,10 +133,43 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 				return;
 			}
 
-			assert(
-				$property instanceof DevicesEntities\Channels\Properties\Dynamic
-				|| $property instanceof DevicesEntities\Channels\Properties\Mapped,
-			);
+			assert($property instanceof DevicesEntities\Channels\Properties\Dynamic);
+
+			if (!$property->getChannel()->getDevice()->getConnector()->getId()->equals($connectorId)) {
+				return;
+			}
+
+			$device = $property->getChannel()->getDevice();
+			$channel = $property->getChannel();
+
+			assert($device instanceof Entities\NsPanelDevice);
+
+			$this->writeChannelProperty($client, $connectorId, $device, $channel, $property);
+		}
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exception
+	 */
+	public function processDeviceClient(
+		Uuid\UuidInterface $connectorId,
+		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|MetadataTypes\AutomatorSource $source,
+		MetadataEntities\Entity|null $entity,
+		Clients\Device $client,
+	): void
+	{
+		if ($entity instanceof MetadataEntities\DevicesModule\ChannelMappedProperty) {
+			$findPropertyQuery = new DevicesQueries\FindChannelProperties();
+			$findPropertyQuery->byId($entity->getId());
+
+			$property = $this->propertiesRepository->findOneBy($findPropertyQuery);
+
+			if ($property === null) {
+				return;
+			}
+
+			assert($property instanceof DevicesEntities\Channels\Properties\Mapped);
 
 			if (!$property->getChannel()->getDevice()->getConnector()->getId()->equals($connectorId)) {
 				return;
@@ -187,7 +221,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 			})
 			->otherwise(function (Throwable $ex) use ($connectorId, $device, $channel, $property): void {
 				$this->logger->error(
-					'Could not write new property state',
+					'Could not write property state',
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 						'type' => 'exchange-writer',

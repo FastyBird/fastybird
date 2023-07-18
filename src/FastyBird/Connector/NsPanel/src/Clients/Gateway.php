@@ -38,7 +38,6 @@ use Throwable;
 use function array_key_exists;
 use function assert;
 use function in_array;
-use function is_object;
 use function strval;
 
 /**
@@ -427,9 +426,7 @@ final class Gateway implements Client
 									API\Transformer::transformValueFromDevice(
 										$property->getDataType(),
 										$property->getFormat(),
-										is_object($status->getValue()) ? strval(
-											$status->getValue(),
-										) : $status->getValue(),
+										$status->getValue(),
 									),
 									$status->getName(),
 								);

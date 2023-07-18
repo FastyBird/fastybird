@@ -263,7 +263,7 @@ class Periodic implements Writer
 							})
 							->otherwise(function (Throwable $ex) use ($device, $channel, $property): void {
 								$this->logger->error(
-									'Could not write new property state',
+									'Could not write property state',
 									[
 										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 										'type' => 'periodic-writer',

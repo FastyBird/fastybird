@@ -15,7 +15,9 @@
 
 namespace FastyBird\Connector\NsPanel\API;
 
+use Consistence\Enum;
 use DateTimeInterface;
+use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
@@ -46,7 +48,7 @@ final class Transformer
 	use Nette\SmartObject;
 
 	/**
-	 * @param string|int|float|bool|array<int>|null $value
+	 * @param int|float|string|bool|array<int>|Types\MotorCalibrationPayload|Types\MotorControlPayload|Types\PowerPayload|Types\PressPayload|Types\StartupPayload|Types\TogglePayload|null $value
 	 *
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -54,12 +56,19 @@ final class Transformer
 		MetadataTypes\DataType $dataType,
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		MetadataValueObjects\StringEnumFormat|MetadataValueObjects\NumberRangeFormat|MetadataValueObjects\CombinedEnumFormat|MetadataValueObjects\EquationFormat|null $format,
-		string|int|float|bool|array|null $value,
+		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+		int|float|string|bool|array|Types\MotorCalibrationPayload|Types\MotorControlPayload|Types\PowerPayload|Types\PressPayload|Types\StartupPayload|Types\TogglePayload|null $value,
 	): float|int|string|bool|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|DateTimeInterface|null
 	{
 		if ($value === null || is_array($value)) {
 			return null;
 		}
+
+		if ($value instanceof Enum\Enum) {
+			$value = strval($value->getValue());
+		}
+
+		$value = DevicesUtilities\ValueHelper::flattenValue($value);
 
 		if ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_STRING)) {
 			return strval($value);
