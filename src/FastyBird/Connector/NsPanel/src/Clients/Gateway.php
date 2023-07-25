@@ -21,6 +21,8 @@ use FastyBird\Connector\NsPanel\API;
 use FastyBird\Connector\NsPanel\Consumers;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
+use FastyBird\Connector\NsPanel\Helpers;
+use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Connector\NsPanel\Writers;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
@@ -38,7 +40,7 @@ use Throwable;
 use function array_key_exists;
 use function assert;
 use function in_array;
-use function strval;
+use function is_array;
 
 /**
  * Gateway client
@@ -75,18 +77,19 @@ final class Gateway implements Client
 	private EventLoop\TimerInterface|null $handlerTimer = null;
 
 	public function __construct(
+		protected readonly Helpers\Property $propertyStateHelper,
+		protected readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly Entities\NsPanelConnector $connector,
+		private readonly Consumers\Messages $consumer,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
-		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
-		private readonly Consumers\Messages $consumer,
 		private readonly Writers\Writer $writer,
-		API\LanApiFactory $lanApiApiFactory,
 		private readonly NsPanel\Logger $logger,
+		API\LanApiFactory $lanApiApiFactory,
 	)
 	{
 		$this->lanApiApi = $lanApiApiFactory->create(
@@ -132,7 +135,7 @@ final class Gateway implements Client
 	 */
 	public function writeChannelProperty(
 		Entities\NsPanelDevice $device,
-		DevicesEntities\Channels\Channel $channel,
+		Entities\NsPanelChannel $channel,
 		DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped $property,
 	): Promise\PromiseInterface
 	{
@@ -148,9 +151,13 @@ final class Gateway implements Client
 			);
 		}
 
+		if (!$property->isSettable()) {
+			return Promise\reject(new Exceptions\InvalidArgument('Provided property is not writable'));
+		}
+
 		if ($device->getParent()->getIpAddress() === null || $device->getParent()->getAccessToken() === null) {
 			return Promise\reject(
-				new Exceptions\InvalidArgument('Device assigned gateway is not configured'),
+				new Exceptions\InvalidArgument('Device assigned NS Panel is not configured'),
 			);
 		}
 
@@ -164,20 +171,22 @@ final class Gateway implements Client
 
 		$expectedValue = DevicesUtilities\ValueHelper::flattenValue($state->getExpectedValue());
 
-		if (!$property->isSettable()) {
-			return Promise\reject(new Exceptions\InvalidArgument('Provided property is not writable'));
-		}
-
 		if ($expectedValue === null) {
 			return Promise\reject(
 				new Exceptions\InvalidArgument('Property expected value is not set. Nothing to write'),
 			);
 		}
 
+		$status = $this->mapChannelToStatus($channel);
+
+		if ($status === null) {
+			return Promise\reject(new Exceptions\LanApiCall('Device capability status could not be created'));
+		}
+
 		if ($state->isPending() === true) {
 			return $this->lanApiApi->setSubDeviceStatus(
 				$device->getIdentifier(),
-				$this->mapPropertyToState($property, $expectedValue),
+				$status,
 				$device->getParent()->getIpAddress(),
 				$device->getParent()->getAccessToken(),
 			);
@@ -407,31 +416,60 @@ final class Gateway implements Client
 					$capabilityStatuses = [];
 
 					foreach ($subDevice->getStatuses() as $status) {
-						$findChannels = new DevicesQueries\FindChannels();
-						$findChannels->byDeviceIdentifier($subDevice->getSerialNumber());
+						$findChannelQuery = new DevicesQueries\FindChannels();
+						$findChannelQuery->byDeviceIdentifier($subDevice->getSerialNumber());
+						$findChannelQuery->byIdentifier(
+							Helpers\Name::convertCapabilityToChannel($status->getType(), $status->getName()),
+						);
 
-						foreach ($this->channelsRepository->findAllBy($findChannels) as $channel) {
-							$findChannelProperty = new DevicesQueries\FindChannelProperties();
-							$findChannelProperty->forChannel($channel);
-							$findChannelProperty->byIdentifier(strval($status->getType()->getValue()));
+						$channel = $this->channelsRepository->findOneBy($findChannelQuery);
 
-							$property = $this->channelsPropertiesRepository->findOneBy(
-								$findChannelProperty,
+						if ($channel !== null) {
+							$findChannelPropertiesQuery = new DevicesQueries\FindChannelProperties();
+							$findChannelPropertiesQuery->forChannel($channel);
+							$findChannelPropertiesQuery->byIdentifier($status->getType()->getValue());
+
+							$properties = $this->channelsPropertiesRepository->findAllBy(
+								$findChannelPropertiesQuery,
 								DevicesEntities\Channels\Properties\Dynamic::class,
 							);
 
-							if ($property !== null) {
+							foreach ($properties as $property) {
+								if (
+									Helpers\Name::convertPropertyToProtocol($property->getIdentifier())->equalsValue(
+										Types\Protocol::COLOR_RED,
+									)
+									&& $status instanceof Entities\API\Statuses\ColorRgb
+								) {
+									$value = $status->getRed();
+								} elseif (
+									Helpers\Name::convertPropertyToProtocol($property->getIdentifier())->equalsValue(
+										Types\Protocol::COLOR_GREEN,
+									)
+									&& $status instanceof Entities\API\Statuses\ColorRgb
+								) {
+									$value = $status->getGreen();
+								} elseif (
+									Helpers\Name::convertPropertyToProtocol($property->getIdentifier())->equalsValue(
+										Types\Protocol::COLOR_BLUE,
+									)
+									&& $status instanceof Entities\API\Statuses\ColorRgb
+								) {
+									$value = $status->getBlue();
+								} else {
+									$value = $status->getValue();
+									assert(!is_array($value));
+								}
+
 								$capabilityStatuses[] = new Entities\Messages\CapabilityStatus(
-									$status->getType(),
-									API\Transformer::transformValueFromDevice(
+									$channel->getId(),
+									$property->getId(),
+									Helpers\Transformer::transformValueFromDevice(
 										$property->getDataType(),
 										$property->getFormat(),
-										$status->getValue(),
+										$value,
 									),
-									$status->getName(),
 								);
-
-								break;
 							}
 						}
 					}

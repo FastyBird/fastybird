@@ -66,6 +66,19 @@ final class Controls implements Common\EventSubscriber
 		if ($entity instanceof Entities\NsPanelConnector) {
 			$findConnectorControlQuery = new DevicesQueries\FindConnectorControls();
 			$findConnectorControlQuery->forConnector($entity);
+			$findConnectorControlQuery->byName(Types\ConnectorControlName::NAME_DISCOVER);
+
+			$discoveryControl = $this->controlsRepository->findOneBy($findConnectorControlQuery);
+
+			if ($discoveryControl === null) {
+				$this->controlsManager->create(Utils\ArrayHash::from([
+					'name' => Types\ConnectorControlName::NAME_DISCOVER,
+					'connector' => $entity,
+				]));
+			}
+
+			$findConnectorControlQuery = new DevicesQueries\FindConnectorControls();
+			$findConnectorControlQuery->forConnector($entity);
 			$findConnectorControlQuery->byName(Types\ConnectorControlName::NAME_REBOOT);
 
 			$rebootControl = $this->controlsRepository->findOneBy($findConnectorControlQuery);

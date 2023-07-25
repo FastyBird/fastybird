@@ -43,10 +43,7 @@
           "type": "object",
           "properties": {
             "state": {
-              "type": "object",
-              "properties": {
-
-              }
+              "type": "object"
             }
           },
           "required": [

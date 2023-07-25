@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * DeviceType.php
+ * Category.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -19,14 +19,14 @@ use Consistence;
 use function strval;
 
 /**
- * Device type types
+ * Device category types
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Types
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class DeviceType extends Consistence\Enum\Enum
+class Category extends Consistence\Enum\Enum
 {
 
 	/**
@@ -62,9 +62,25 @@ class DeviceType extends Consistence\Enum\Enum
 
 	public const SENSOR = 'sensor';
 
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
+
+	/**
+	 * @return array<int>
+	 */
+	public static function getValues(): array
+	{
+		/** @var iterable<int> $availableValues */
+		$availableValues = parent::getAvailableValues();
+
+		return (array) $availableValues;
+	}
+
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }

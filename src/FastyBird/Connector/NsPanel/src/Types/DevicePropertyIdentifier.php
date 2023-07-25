@@ -53,11 +53,16 @@ class DevicePropertyIdentifier extends Consistence\Enum\Enum
 
 	public const IDENTIFIER_GATEWAY_IDENTIFIER = 'gateway_identifier';
 
-	public const IDENTIFIER_STATUS_READING_DELAY = 'status_reading_delay';
+	public const IDENTIFIER_STATUS_READING_DELAY = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_STATUS_READING_DELAY;
+
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
 
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }

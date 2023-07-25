@@ -15,7 +15,6 @@
 
 namespace FastyBird\Connector\NsPanel\Entities\API\Statuses;
 
-use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Types;
 use Nette;
 use stdClass;

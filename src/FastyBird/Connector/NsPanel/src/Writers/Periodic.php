@@ -192,9 +192,11 @@ class Periodic implements Writer
 		$findChannelsQuery = new DevicesQueries\FindChannels();
 		$findChannelsQuery->forDevice($device);
 
-		$channels = $this->channelsRepository->findAllBy($findChannelsQuery);
+		$channels = $this->channelsRepository->findAllBy($findChannelsQuery, Entities\NsPanelChannel::class);
 
 		foreach ($channels as $channel) {
+			assert($channel instanceof Entities\NsPanelChannel);
+
 			foreach ($channel->getProperties() as $property) {
 				if (!$property instanceof DevicesEntities\Channels\Properties\Dynamic) {
 					continue;
@@ -319,9 +321,11 @@ class Periodic implements Writer
 		$findChannelsQuery = new DevicesQueries\FindChannels();
 		$findChannelsQuery->forDevice($device);
 
-		$channels = $this->channelsRepository->findAllBy($findChannelsQuery);
+		$channels = $this->channelsRepository->findAllBy($findChannelsQuery, Entities\NsPanelChannel::class);
 
 		foreach ($channels as $channel) {
+			assert($channel instanceof Entities\NsPanelChannel);
+
 			foreach ($channel->getProperties() as $property) {
 				if (!$property instanceof DevicesEntities\Channels\Properties\Mapped) {
 					continue;

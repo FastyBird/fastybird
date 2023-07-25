@@ -42,6 +42,8 @@ class ControlName extends Consistence\Enum\Enum
 
 	public const NAME_TRIGGER = 'trigger';
 
+	public const NAME_DISCOVER = 'discover';
+
 	public function __toString(): string
 	{
 		return strval(self::getValue());

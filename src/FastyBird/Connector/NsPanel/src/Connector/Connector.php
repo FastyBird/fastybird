@@ -42,7 +42,8 @@ final class Connector implements DevicesConnectors\Connector
 
 	private const QUEUE_PROCESSING_INTERVAL = 0.01;
 
-	private Clients\Client|null $client = null;
+	/** @var array<Clients\Client> */
+	private array $clients = [];
 
 	private EventLoop\TimerInterface|null $consumerTimer = null;
 
@@ -64,7 +65,7 @@ final class Connector implements DevicesConnectors\Connector
 		assert($this->connector instanceof Entities\NsPanelConnector);
 
 		$this->logger->debug(
-			'Starting NS Panel connector',
+			'Starting NS Panel connector processing',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 				'type' => 'connector',
@@ -75,8 +76,10 @@ final class Connector implements DevicesConnectors\Connector
 		);
 
 		foreach ($this->clientsFactories as $clientFactory) {
-			$this->client = $clientFactory->create($this->connector);
-			$this->client->connect();
+			$client = $clientFactory->create($this->connector);
+			$client->connect();
+
+			$this->clients[] = $client;
 		}
 
 		$this->consumerTimer = $this->eventLoop->addPeriodicTimer(
@@ -98,9 +101,47 @@ final class Connector implements DevicesConnectors\Connector
 		);
 	}
 
+	public function discover(): void
+	{
+		assert($this->connector instanceof Entities\NsPanelConnector);
+
+		$this->logger->debug(
+			'Starting NS Panel connector discovery',
+			[
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+				'type' => 'connector',
+				'connector' => [
+					'id' => $this->connector->getPlainId(),
+				],
+			],
+		);
+
+		// TODO: Implement discovery
+
+		$this->consumerTimer = $this->eventLoop->addPeriodicTimer(
+			self::QUEUE_PROCESSING_INTERVAL,
+			async(function (): void {
+				$this->consumer->consume();
+			}),
+		);
+
+		$this->logger->debug(
+			'Connector discovery has been started',
+			[
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+				'type' => 'connector',
+				'connector' => [
+					'id' => $this->connector->getPlainId(),
+				],
+			],
+		);
+	}
+
 	public function terminate(): void
 	{
-		$this->client?->disconnect();
+		foreach ($this->clients as $client) {
+			$client->disconnect();
+		}
 
 		if ($this->consumerTimer !== null) {
 			$this->eventLoop->cancelTimer($this->consumerTimer);

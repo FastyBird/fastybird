@@ -35,9 +35,14 @@ class ConnectorPropertyIdentifier extends Consistence\Enum\Enum
 	 */
 	public const IDENTIFIER_PORT = MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_PORT;
 
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
+
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }

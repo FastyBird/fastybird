@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * State.php
+ * Status.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com

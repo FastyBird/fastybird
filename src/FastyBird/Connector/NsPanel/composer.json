@@ -36,6 +36,7 @@
     "ext-iconv": "*",
     "ext-openssl": "*",
     "ext-simplexml": "*",
+    "brick/math": "^0.10",
     "clue/multicast-react": "^1.1",
     "cweagans/composer-patches": "^1.7",
     "evenement/evenement": "^3.0",

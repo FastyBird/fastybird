@@ -74,7 +74,7 @@ final class Capability implements Entities\API\Entity
 		$json->capability = $this->getCapability()->getValue();
 		$json->permission = $this->getPermission()->getValue();
 
-		if ($this->getName() !== null) {
+		if ($this->getCapability()->equalsValue(Types\Capability::TOGGLE) && $this->getName() !== null) {
 			$json->name = $this->getName();
 		}
 

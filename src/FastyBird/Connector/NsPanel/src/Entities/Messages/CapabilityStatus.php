@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * DataPointStatus.php
+ * CapabilityStatus.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -16,10 +16,10 @@
 namespace FastyBird\Connector\NsPanel\Entities\Messages;
 
 use DateTimeInterface;
-use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
+use Ramsey\Uuid;
 
 /**
  * Device capability status entity
@@ -35,26 +35,26 @@ final class CapabilityStatus implements Entity
 	use Nette\SmartObject;
 
 	public function __construct(
-		private readonly Types\Capability $capability,
+		private readonly Uuid\UuidInterface $chanel,
+		private readonly Uuid\UuidInterface $property,
 		private readonly float|int|string|bool|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|DateTimeInterface|null $value,
-		private readonly string|null $name,
 	)
 	{
 	}
 
-	public function getCapability(): Types\Capability
+	public function getChanel(): Uuid\UuidInterface
 	{
-		return $this->capability;
+		return $this->chanel;
+	}
+
+	public function getProperty(): Uuid\UuidInterface
+	{
+		return $this->property;
 	}
 
 	public function getValue(): float|int|string|bool|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|DateTimeInterface|null
 	{
 		return $this->value;
-	}
-
-	public function getName(): string|null
-	{
-		return $this->name;
 	}
 
 	/**
@@ -63,9 +63,9 @@ final class CapabilityStatus implements Entity
 	public function toArray(): array
 	{
 		return [
-			'capability' => $this->getCapability()->getValue(),
+			'channel' => $this->getChanel()->toString(),
+			'property' => $this->getProperty()->toString(),
 			'value' => DevicesUtilities\ValueHelper::flattenValue($this->getValue()),
-			'name' => $this->getName(),
 		];
 	}
 

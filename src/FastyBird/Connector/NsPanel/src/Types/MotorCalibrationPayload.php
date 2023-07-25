@@ -36,9 +36,14 @@ class MotorCalibrationPayload extends Consistence\Enum\Enum
 
 	public const NORMAL = 'normal';
 
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
+
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }

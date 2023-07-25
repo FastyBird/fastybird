@@ -17,6 +17,7 @@ namespace FastyBird\Connector\NsPanel\Clients;
 
 use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\API;
+use FastyBird\Connector\NsPanel\Consumers;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
@@ -33,9 +34,13 @@ use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use React\Promise;
 use Throwable;
+use function array_filter;
+use function array_key_exists;
 use function array_map;
 use function assert;
+use function is_array;
 use function is_string;
+use function preg_match;
 use function sprintf;
 
 /**
@@ -55,13 +60,15 @@ final class Device implements Client
 	private API\LanApi $lanApiApi;
 
 	public function __construct(
+		protected readonly Helpers\Property $propertyStateHelper,
+		protected readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly Entities\NsPanelConnector $connector,
-		private readonly Helpers\Property $propertyStateHelper,
+		private readonly Consumers\Messages $consumer,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly Writers\Writer $writer,
-		API\LanApiFactory $lanApiApiFactory,
 		private readonly NsPanel\Logger $logger,
+		API\LanApiFactory $lanApiApiFactory,
 	)
 	{
 		$this->lanApiApi = $lanApiApiFactory->create(
@@ -101,30 +108,49 @@ final class Device implements Client
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				function (Entities\Devices\Device $device): Entities\API\ThirdPartyDevice {
 					$capabilities = [];
-					$states = [];
+					$statuses = [];
 					$tags = [];
 
 					foreach ($device->getChannels() as $channel) {
+						assert($channel instanceof Entities\NsPanelChannel);
+
+						$capabilities[] = new Entities\API\Capability(
+							$channel->getCapability(),
+							Types\Permission::get(
+								$channel->getCapability()->hasReadWritePermission() ? Types\Permission::READ_WRITE : Types\Permission::READ,
+							),
+							$channel->getIdentifier(),
+						);
+
+						$statuses[] = $this->mapChannelToStatus($channel);
+
+						$statuses = array_filter(
+							$statuses,
+							static fn (Entities\API\Statuses\Status|null $value) => $value !== null,
+						);
+
 						foreach ($channel->getProperties() as $property) {
 							if (
 								$property instanceof DevicesEntities\Channels\Properties\Variable
 								&& is_string($property->getValue())
+								&& preg_match(
+									NsPanel\Constants::TAG_PROPERTY_IDENTIFIER,
+									$property->getIdentifier(),
+									$matches,
+								) === 1
+								&& array_key_exists('tag', $matches)
 							) {
-								$tags[$property->getIdentifier()] = $property->getValue();
+								$tags[$matches['tag']] = $property->getValue();
+							}
+						}
 
-							} elseif ($property instanceof DevicesEntities\Channels\Properties\Mapped) {
-								$capabilities[] = new Entities\API\Capability(
-									Types\Capability::get($property->getIdentifier()),
-									Types\Permission::get(
-										$property->isSettable() ? Types\Permission::READ_WRITE : Types\Permission::READ,
-									),
-									$channel->getName(),
-								);
+						if ($channel->getCapability()->equalsValue(Types\Capability::TOGGLE)) {
+							if (!array_key_exists('toggle', $tags)) {
+								$tags['toggle'] = [];
+							}
 
-								$states[] = $this->mapPropertyToState(
-									$property,
-									$this->propertyStateHelper->getActualValue($property),
-								);
+							if (is_array($tags['toggle'])) {
+								$tags['toggle'][$channel->getIdentifier()] = $channel->getName() ?? $channel->getIdentifier();
 							}
 						}
 					}
@@ -134,7 +160,7 @@ final class Device implements Client
 						$device->getName() ?? $device->getIdentifier(),
 						$device->getDisplayCategory(),
 						$capabilities,
-						$states,
+						$statuses,
 						$tags,
 						$device->getManufacturer(),
 						$device->getModel(),
@@ -150,6 +176,16 @@ final class Device implements Client
 				},
 				$devices,
 			);
+
+			foreach ($devices as $device) {
+				$this->consumer->append(
+					new Entities\Messages\DeviceState(
+						$this->connector->getId(),
+						$device->getIdentifier(),
+						MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_RUNNING),
+					),
+				);
+			}
 
 			$this->lanApiApi->synchroniseDevices(
 				$syncDevices,
@@ -278,6 +314,14 @@ final class Device implements Client
 							],
 						);
 					});
+
+				$this->consumer->append(
+					new Entities\Messages\DeviceState(
+						$this->connector->getId(),
+						$device->getIdentifier(),
+						MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_STOPPED),
+					),
+				);
 			}
 		}
 	}
@@ -292,7 +336,7 @@ final class Device implements Client
 	 */
 	public function writeChannelProperty(
 		Entities\NsPanelDevice $device,
-		DevicesEntities\Channels\Channel $channel,
+		Entities\NsPanelChannel $channel,
 		DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped $property,
 	): Promise\PromiseInterface
 	{
@@ -302,15 +346,9 @@ final class Device implements Client
 			);
 		}
 
-		if (!$property instanceof DevicesEntities\Channels\Properties\Mapped) {
-			return Promise\reject(
-				new Exceptions\InvalidArgument('Only dynamic properties could be updated'),
-			);
-		}
-
 		if ($device->getParent()->getIpAddress() === null || $device->getParent()->getAccessToken() === null) {
 			return Promise\reject(
-				new Exceptions\InvalidArgument('Device assigned gateway is not configured'),
+				new Exceptions\InvalidArgument('Device assigned NS Panel is not configured'),
 			);
 		}
 
@@ -319,20 +357,6 @@ final class Device implements Client
 		if ($state === null) {
 			return Promise\reject(
 				new Exceptions\InvalidArgument('Property state could not be found. Nothing to write'),
-			);
-		}
-
-		$propertyValue = DevicesUtilities\ValueHelper::flattenValue(
-			$state->getExpectedValue() ?? $state->getActualValue(),
-		);
-
-		if (!$property->isSettable()) {
-			return Promise\reject(new Exceptions\InvalidArgument('Provided property is not writable'));
-		}
-
-		if ($propertyValue === null) {
-			return Promise\reject(
-				new Exceptions\InvalidArgument('Property expected value is not set. Nothing to write'),
 			);
 		}
 
@@ -346,16 +370,18 @@ final class Device implements Client
 			return Promise\reject(new Exceptions\LanApiCall('Could not get device gateway identifier'));
 		}
 
-		if ($state->isPending() === true) {
-			return $this->lanApiApi->reportDeviceStatus(
-				$serialNumber,
-				$this->mapPropertyToState($property, $propertyValue),
-				$device->getParent()->getIpAddress(),
-				$device->getParent()->getAccessToken(),
-			);
+		$status = $this->mapChannelToStatus($channel);
+
+		if ($status === null) {
+			return Promise\reject(new Exceptions\LanApiCall('Device capability status could not be created'));
 		}
 
-		return Promise\reject(new Exceptions\InvalidArgument('Provided property state is in invalid state'));
+		return $this->lanApiApi->reportDeviceStatus(
+			$serialNumber,
+			$status,
+			$device->getParent()->getIpAddress(),
+			$device->getParent()->getAccessToken(),
+		);
 	}
 
 }

@@ -37,12 +37,12 @@ final class ThirdPartyDevice implements Entities\API\Entity
 	/**
 	 * @param array<Entities\API\Capability> $capabilities
 	 * @param array<Entities\API\Statuses\Status> $state
-	 * @param array<string, string> $tags
+	 * @param array<string, string|array<string, string>> $tags
 	 */
 	public function __construct(
 		private readonly string $thirdSerialNumber,
 		private readonly string $name,
-		private readonly Types\DeviceType $displayCategory,
+		private readonly Types\Category $displayCategory,
 		private readonly array $capabilities,
 		private readonly array $state,
 		private readonly array $tags,
@@ -65,7 +65,7 @@ final class ThirdPartyDevice implements Entities\API\Entity
 		return $this->name;
 	}
 
-	public function getDisplayCategory(): Types\DeviceType
+	public function getDisplayCategory(): Types\Category
 	{
 		return $this->displayCategory;
 	}
@@ -87,7 +87,7 @@ final class ThirdPartyDevice implements Entities\API\Entity
 	}
 
 	/**
-	 * @return array<string, string>
+	 * @return array<string, string|array<string, string>>
 	 */
 	public function getTags(): array
 	{

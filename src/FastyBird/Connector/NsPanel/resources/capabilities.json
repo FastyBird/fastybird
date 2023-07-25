@@ -1,0 +1,87 @@
+{
+  "power": {
+    "permission": "readWrite",
+    "protocol": ["powerState"],
+    "multiple": false
+  },
+  "toggle": {
+    "permission": "readWrite",
+    "protocol": ["toggleState"],
+    "multiple": true
+  },
+  "brightness": {
+    "permission": "readWrite",
+    "protocol": ["brightness"],
+    "multiple": false
+  },
+  "color-temperature": {
+    "permission": "readWrite",
+    "protocol": ["colorTemperature"],
+    "multiple": false
+  },
+  "color-rgb": {
+    "permission": "readWrite",
+    "protocol": ["red", "green", "blue"],
+    "multiple": false
+  },
+  "percentage": {
+    "permission": "readWrite",
+    "protocol": ["percentage"],
+    "multiple": false
+  },
+  "motor-control": {
+    "permission": "readWrite",
+    "protocol": ["motorControl"],
+    "multiple": false
+  },
+  "motor-reverse": {
+    "permission": "readWrite",
+    "protocol": ["motorReverse"],
+    "multiple": false
+  },
+  "motor-clb": {
+    "permission": "read",
+    "protocol": ["motorClb"],
+    "multiple": false
+  },
+  "startup": {
+    "permission": "readWrite",
+    "protocol": ["startup"],
+    "multiple": false
+  },
+  "camera-stream": {
+    "permission": "read",
+    "protocol": ["streamUrl"],
+    "multiple": false
+  },
+  "detect": {
+    "permission": "read",
+    "protocol": ["detect"],
+    "multiple": false
+  },
+  "humidity": {
+    "permission": "read",
+    "protocol": ["humidity"],
+    "multiple": false
+  },
+  "temperature": {
+    "permission": "read",
+    "protocol": ["temperature"],
+    "multiple": false
+  },
+  "battery": {
+    "permission": "read",
+    "protocol": ["battery"],
+    "multiple": false
+  },
+  "press": {
+    "permission": "read",
+    "protocol": ["press"],
+    "multiple": false
+  },
+  "rssi": {
+    "permission": "read",
+    "protocol": ["rssi"],
+    "multiple": false
+  }
+}

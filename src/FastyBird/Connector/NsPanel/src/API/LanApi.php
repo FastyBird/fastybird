@@ -626,7 +626,7 @@ final class LanApi
 		}
 
 		try {
-			return Entities\EntityFactory::build(Entities\API\Response\GetGatewayInfo::class, $data);
+			return Entities\EntityFactory::build(Entities\API\Response\GetGatewayInfo::class, $body);
 		} catch (Exceptions\InvalidState $ex) {
 			throw new Exceptions\LanApiCall('Could not create entity from response', $ex->getCode(), $ex);
 		}
@@ -640,7 +640,7 @@ final class LanApi
 		Message\ResponseInterface $response,
 	): Entities\API\Response\GetGatewayAccessToken
 	{
-		$body = $this->validateResponseBody($response, self::SYNCHRONISE_DEVICES_MESSAGE_SCHEMA_FILENAME);
+		$body = $this->validateResponseBody($response, self::GET_GATEWAY_ACCESS_TOKEN_MESSAGE_SCHEMA_FILENAME);
 
 		$error = $body->offsetGet('error');
 
@@ -670,7 +670,7 @@ final class LanApi
 		}
 
 		try {
-			return Entities\EntityFactory::build(Entities\API\Response\GetGatewayAccessToken::class, $data);
+			return Entities\EntityFactory::build(Entities\API\Response\GetGatewayAccessToken::class, $body);
 		} catch (Exceptions\InvalidState $ex) {
 			throw new Exceptions\LanApiCall('Could not create entity from response', $ex->getCode(), $ex);
 		}
@@ -682,7 +682,7 @@ final class LanApi
 	 */
 	private function parseSynchroniseDevices(Message\ResponseInterface $response): Entities\API\Response\SyncDevices
 	{
-		$body = $this->validateResponseBody($response, self::GET_GATEWAY_ACCESS_TOKEN_MESSAGE_SCHEMA_FILENAME);
+		$body = $this->validateResponseBody($response, self::SYNCHRONISE_DEVICES_MESSAGE_SCHEMA_FILENAME);
 
 		$error = $body->offsetGet('error');
 
@@ -712,7 +712,7 @@ final class LanApi
 		}
 
 		try {
-			return Entities\EntityFactory::build(Entities\API\Response\SyncDevices::class, $data);
+			return Entities\EntityFactory::build(Entities\API\Response\SyncDevices::class, $body);
 		} catch (Exceptions\InvalidState $ex) {
 			throw new Exceptions\LanApiCall('Could not create entity from response', $ex->getCode(), $ex);
 		}
@@ -756,7 +756,7 @@ final class LanApi
 		}
 
 		try {
-			return Entities\EntityFactory::build(Entities\API\Response\ReportDeviceStatus::class, $data);
+			return Entities\EntityFactory::build(Entities\API\Response\ReportDeviceStatus::class, $body);
 		} catch (Exceptions\InvalidState $ex) {
 			throw new Exceptions\LanApiCall('Could not create entity from response', $ex->getCode(), $ex);
 		}
@@ -800,7 +800,7 @@ final class LanApi
 		}
 
 		try {
-			return Entities\EntityFactory::build(Entities\API\Response\ReportDeviceState::class, $data);
+			return Entities\EntityFactory::build(Entities\API\Response\ReportDeviceState::class, $body);
 		} catch (Exceptions\InvalidState $ex) {
 			throw new Exceptions\LanApiCall('Could not create entity from response', $ex->getCode(), $ex);
 		}
@@ -844,7 +844,7 @@ final class LanApi
 		}
 
 		try {
-			return Entities\EntityFactory::build(Entities\API\Response\GetSubDevices::class, $data);
+			return Entities\EntityFactory::build(Entities\API\Response\GetSubDevices::class, $body);
 		} catch (Exceptions\InvalidState $ex) {
 			throw new Exceptions\LanApiCall('Could not create entity from response', $ex->getCode(), $ex);
 		}
@@ -861,9 +861,6 @@ final class LanApi
 		$body = $this->validateResponseBody($response, self::SET_SUB_DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME);
 
 		$error = $body->offsetGet('error');
-
-		$data = $body->offsetGet('data');
-		assert($data instanceof Utils\ArrayHash);
 
 		if ($error !== 0) {
 			$this->logger->error(
@@ -888,7 +885,7 @@ final class LanApi
 		}
 
 		try {
-			return Entities\EntityFactory::build(Entities\API\Response\SetSubDeviceStatus::class, $data);
+			return Entities\EntityFactory::build(Entities\API\Response\SetSubDeviceStatus::class, $body);
 		} catch (Exceptions\InvalidState $ex) {
 			throw new Exceptions\LanApiCall('Could not create entity from response', $ex->getCode(), $ex);
 		}
@@ -904,6 +901,8 @@ final class LanApi
 			$body = $response->getBody()->getContents();
 		} catch (RuntimeException $ex) {
 			throw new Exceptions\LanApiCall('Could not get content from response body', $ex->getCode(), $ex);
+		} finally {
+			$response->getBody()->rewind();
 		}
 
 		try {
@@ -929,10 +928,10 @@ final class LanApi
 				],
 			);
 
+			$response->getBody()->rewind();
+
 			throw new Exceptions\LanApiCall('Could not validate received response payload');
 		}
-
-		$response->getBody()->rewind();
 
 		return $body;
 	}
@@ -1144,9 +1143,9 @@ final class LanApi
 	{
 		try {
 			$schema = $response ? Utils\FileSystem::read(
-				NsPanel\Constants::RESOURCES_FOLDER . DIRECTORY_SEPARATOR . 'response' . $schemaFilename,
+				NsPanel\Constants::RESOURCES_FOLDER . DIRECTORY_SEPARATOR . 'response' . DIRECTORY_SEPARATOR . $schemaFilename,
 			) : Utils\FileSystem::read(
-				NsPanel\Constants::RESOURCES_FOLDER . DIRECTORY_SEPARATOR . 'request' . $schemaFilename,
+				NsPanel\Constants::RESOURCES_FOLDER . DIRECTORY_SEPARATOR . 'request' . DIRECTORY_SEPARATOR . $schemaFilename,
 			);
 		} catch (Nette\IOException) {
 			throw new Exceptions\LanApiCall('Validation schema for response could not be loaded');

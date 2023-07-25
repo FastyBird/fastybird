@@ -40,9 +40,14 @@ class MotorControlPayload extends Consistence\Enum\Enum
 
 	public const LOCK = 'lock';
 
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
+
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }

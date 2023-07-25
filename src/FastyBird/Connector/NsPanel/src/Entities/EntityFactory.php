@@ -65,7 +65,7 @@ final class EntityFactory
 	/**
 	 * @param class-string<T> $entityClass
 	 *
-	 * @template T of Entities\API\Entity
+	 * @template T of Entities\Entity
 	 *
 	 * @return T
 	 *
@@ -74,7 +74,7 @@ final class EntityFactory
 	public static function build(
 		string $entityClass,
 		Utils\ArrayHash $data,
-	): Entities\API\Entity
+	): Entities\Entity
 	{
 		if (!class_exists($entityClass)) {
 			throw new Exceptions\InvalidState('Transformer could not be created. Class could not be found');
@@ -190,7 +190,7 @@ final class EntityFactory
 					if ($parameterType === 'array' && is_string($method->getDocComment())) {
 						$factory = phpDocumentor\Reflection\DocBlockFactory::createInstance();
 
-						$rc = new ReflectionClass(Entities\API\Entity::class);
+						$rc = new ReflectionClass(Entities\Entity::class);
 
 						$docblock = $factory->create(
 							$method->getDocComment(),
@@ -215,7 +215,7 @@ final class EntityFactory
 								if ($parameterValue instanceof Utils\ArrayHash) {
 									foreach ($parameterValue as $subParameterValue) {
 										if ($subParameterValue instanceof Utils\ArrayHash) {
-											assert(is_subclass_of($arrayType, Entities\API\Entity::class));
+											assert(is_subclass_of($arrayType, Entities\Entity::class));
 
 											$subRes[] = self::build($arrayType, $subParameterValue);
 										}
@@ -229,7 +229,7 @@ final class EntityFactory
 						break;
 					} elseif (
 						class_exists($parameterType, false)
-						&& is_subclass_of($parameterType, Entities\API\Entity::class)
+						&& is_subclass_of($parameterType, Entities\Entity::class)
 						&& (
 							$parameterValue instanceof Utils\ArrayHash
 							|| is_array($parameterValue)

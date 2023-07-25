@@ -29,7 +29,6 @@ use FastyBird\Module\Devices\States as DevicesStates;
 use Nette;
 use Nette\Utils;
 use function assert;
-use function strval;
 
 /**
  * Device status message consumer
@@ -77,13 +76,28 @@ final class Status implements Consumers\Consumer
 		}
 
 		foreach ($entity->getStatuses() as $status) {
-			$property = $this->findProperty($device, $status);
+			$findChannelQuery = new DevicesQueries\FindChannels();
+			$findChannelQuery->forDevice($device);
+			$findChannelQuery->byId($status->getChanel());
 
-			if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
-				$this->propertyStateHelper->setValue($property, Utils\ArrayHash::from([
-					DevicesStates\Property::ACTUAL_VALUE_KEY => $status->getValue(),
-					DevicesStates\Property::VALID_KEY => true,
-				]));
+			$channel = $this->channelsRepository->findOneBy($findChannelQuery);
+
+			if ($channel !== null) {
+				$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+				$findChannelPropertyQuery->forChannel($channel);
+				$findChannelPropertyQuery->byId($status->getProperty());
+
+				$property = $this->channelPropertiesRepository->findOneBy(
+					$findChannelPropertyQuery,
+					DevicesEntities\Channels\Properties\Dynamic::class,
+				);
+
+				if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
+					$this->propertyStateHelper->setValue($property, Utils\ArrayHash::from([
+						DevicesStates\Property::ACTUAL_VALUE_KEY => $status->getValue(),
+						DevicesStates\Property::VALID_KEY => true,
+					]));
+				}
 			}
 		}
 
@@ -100,60 +114,6 @@ final class Status implements Consumers\Consumer
 		);
 
 		return true;
-	}
-
-	/**
-	 * @throws DevicesExceptions\InvalidState
-	 */
-	private function findProperty(
-		Entities\NsPanelDevice $device,
-		Entities\Messages\CapabilityStatus $status,
-	): DevicesEntities\Channels\Properties\Dynamic|null
-	{
-		if ($status->getName() !== null) {
-			$findChannelQuery = new DevicesQueries\FindChannels();
-			$findChannelQuery->forDevice($device);
-			$findChannelQuery->byIdentifier($status->getName());
-
-			$channel = $this->channelsRepository->findOneBy($findChannelQuery);
-
-			if ($channel === null) {
-				return null;
-			}
-
-			$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
-			$findChannelPropertyQuery->forChannel($channel);
-			$findChannelPropertyQuery->byIdentifier(strval($status->getCapability()->getValue()));
-
-			$property = $this->channelPropertiesRepository->findOneBy(
-				$findChannelPropertyQuery,
-				DevicesEntities\Channels\Properties\Dynamic::class,
-			);
-			assert($property instanceof DevicesEntities\Channels\Properties\Dynamic || $property === null);
-
-			return $property;
-		} else {
-			$findChannelsQuery = new DevicesQueries\FindChannels();
-			$findChannelsQuery->forDevice($device);
-
-			foreach ($this->channelsRepository->findAllBy($findChannelsQuery) as $channel) {
-				$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
-				$findChannelPropertyQuery->forChannel($channel);
-				$findChannelPropertyQuery->byIdentifier(strval($status->getCapability()->getValue()));
-
-				$property = $this->channelPropertiesRepository->findOneBy(
-					$findChannelPropertyQuery,
-					DevicesEntities\Channels\Properties\Dynamic::class,
-				);
-				assert($property instanceof DevicesEntities\Channels\Properties\Dynamic || $property === null);
-
-				if ($property !== null) {
-					return $property;
-				}
-			}
-		}
-
-		return null;
 	}
 
 }

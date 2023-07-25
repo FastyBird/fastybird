@@ -46,9 +46,14 @@ class ServerStatus extends Consistence\Enum\Enum
 
 	public const INTERNAL_ERROR = 'INTERNAL_ERROR';
 
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
+
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }

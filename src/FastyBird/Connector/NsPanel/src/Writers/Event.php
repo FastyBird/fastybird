@@ -133,6 +133,7 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 		$channel = $property->getChannel();
 
 		assert($device instanceof Entities\NsPanelDevice);
+		assert($channel instanceof Entities\NsPanelChannel);
 
 		$this->writeChannelProperty($client, $connectorId, $device, $channel, $property);
 	}
@@ -169,6 +170,7 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 			$channel = $child->getChannel();
 
 			assert($device instanceof Entities\NsPanelDevice);
+			assert($channel instanceof Entities\NsPanelChannel);
 
 			$this->writeChannelProperty($client, $connectorId, $device, $channel, $child);
 		}
@@ -178,7 +180,7 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 		Clients\Client $client,
 		Uuid\UuidInterface $connectorId,
 		Entities\NsPanelDevice $device,
-		DevicesEntities\Channels\Channel $channel,
+		Entities\NsPanelChannel $channel,
 		DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped $property,
 	): void
 	{

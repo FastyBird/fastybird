@@ -38,9 +38,14 @@ class PressPayload extends Consistence\Enum\Enum
 
 	public const LONG_PRESS = 'longPress';
 
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
+
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }

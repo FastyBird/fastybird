@@ -143,6 +143,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 			$channel = $property->getChannel();
 
 			assert($device instanceof Entities\NsPanelDevice);
+			assert($channel instanceof Entities\NsPanelChannel);
 
 			$this->writeChannelProperty($client, $connectorId, $device, $channel, $property);
 		}
@@ -179,6 +180,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 			$channel = $property->getChannel();
 
 			assert($device instanceof Entities\NsPanelDevice);
+			assert($channel instanceof Entities\NsPanelChannel);
 
 			$this->writeChannelProperty($client, $connectorId, $device, $channel, $property);
 		}
@@ -188,7 +190,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 		Clients\Client $client,
 		Uuid\UuidInterface $connectorId,
 		Entities\NsPanelDevice $device,
-		DevicesEntities\Channels\Channel $channel,
+		Entities\NsPanelChannel $channel,
 		DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped $property,
 	): void
 	{

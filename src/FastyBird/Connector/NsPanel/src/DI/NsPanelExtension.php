@@ -136,6 +136,14 @@ class NsPanelExtension extends DI\CompilerExtension
 				'logger' => $logger,
 			]);
 
+		$builder->addFactoryDefinition($this->prefix('clients.discovery'))
+			->setImplement(Clients\DiscoveryFactory::class)
+			->getResultDefinition()
+			->setType(Clients\Discovery::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
+
 		$builder->addFactoryDefinition($this->prefix('api.lanApi'))
 			->setImplement(API\LanApiFactory::class)
 			->getResultDefinition()
@@ -169,6 +177,15 @@ class NsPanelExtension extends DI\CompilerExtension
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Consumers\Messages\State::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
+
+		$builder->addDefinition(
+			$this->prefix('consumers.messages.device.subDevicesDiscovery'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Consumers\Messages\SubDevicesDiscovery::class)
 			->setArguments([
 				'logger' => $logger,
 			]);
@@ -207,6 +224,12 @@ class NsPanelExtension extends DI\CompilerExtension
 		)
 			->setType(Schemas\Devices\Device::class);
 
+		$builder->addDefinition(
+			$this->prefix('schemas.channel.nsPanel'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Schemas\NsPanelChannel::class);
+
 		$builder->addDefinition($this->prefix('hydrators.connector.nsPanel'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\NsPanelConnector::class);
 
@@ -227,6 +250,15 @@ class NsPanelExtension extends DI\CompilerExtension
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Hydrators\Devices\Device::class);
+
+		$builder->addDefinition(
+			$this->prefix('hydrators.channel.nsPanel'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Hydrators\NsPanelChannel::class);
+
+		$builder->addDefinition($this->prefix('helpers.loader'), new DI\Definitions\ServiceDefinition())
+			->setType(Helpers\Loader::class);
 
 		$builder->addDefinition($this->prefix('helpers.property'), new DI\Definitions\ServiceDefinition())
 			->setType(Helpers\Property::class);
@@ -267,16 +299,16 @@ class NsPanelExtension extends DI\CompilerExtension
 			]);
 
 		$builder->addDefinition($this->prefix('commands.execute'), new DI\Definitions\ServiceDefinition())
-			->setType(Commands\Execute::class)
-			->setArguments([
-				'logger' => $logger,
-			]);
+			->setType(Commands\Execute::class);
 
 		$builder->addDefinition($this->prefix('commands.devices'), new DI\Definitions\ServiceDefinition())
 			->setType(Commands\Devices::class)
 			->setArguments([
 				'logger' => $logger,
 			]);
+
+		$builder->addDefinition($this->prefix('commands.discovery'), new DI\Definitions\ServiceDefinition())
+			->setType(Commands\Discovery::class);
 	}
 
 	/**

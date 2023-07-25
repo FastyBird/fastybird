@@ -7,13 +7,13 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:NsPanelConnector!
- * @subpackage     API
+ * @subpackage     Helpers
  * @since          1.0.0
  *
  * @date           16.07.23
  */
 
-namespace FastyBird\Connector\NsPanel\API;
+namespace FastyBird\Connector\NsPanel\Helpers;
 
 use Consistence\Enum;
 use DateTimeInterface;
@@ -30,15 +30,14 @@ use function boolval;
 use function count;
 use function floatval;
 use function intval;
-use function is_array;
 use function is_bool;
 use function strval;
 
 /**
- * Devices data transformers
+ * States values data transformers
  *
  * @package        FastyBird:NsPanelConnector!
- * @subpackage     API
+ * @subpackage     Helpers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
@@ -48,8 +47,6 @@ final class Transformer
 	use Nette\SmartObject;
 
 	/**
-	 * @param int|float|string|bool|array<int>|Types\MotorCalibrationPayload|Types\MotorControlPayload|Types\PowerPayload|Types\PressPayload|Types\StartupPayload|Types\TogglePayload|null $value
-	 *
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	public static function transformValueFromDevice(
@@ -57,10 +54,10 @@ final class Transformer
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		MetadataValueObjects\StringEnumFormat|MetadataValueObjects\NumberRangeFormat|MetadataValueObjects\CombinedEnumFormat|MetadataValueObjects\EquationFormat|null $format,
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		int|float|string|bool|array|Types\MotorCalibrationPayload|Types\MotorControlPayload|Types\PowerPayload|Types\PressPayload|Types\StartupPayload|Types\TogglePayload|null $value,
+		int|float|string|bool|Types\MotorCalibrationPayload|Types\MotorControlPayload|Types\PowerPayload|Types\PressPayload|Types\StartupPayload|Types\TogglePayload|null $value,
 	): float|int|string|bool|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|DateTimeInterface|null
 	{
-		if ($value === null || is_array($value)) {
+		if ($value === null) {
 			return null;
 		}
 

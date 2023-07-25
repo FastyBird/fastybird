@@ -37,7 +37,7 @@ final class GetSubDevicesDataSubDevice implements Entities\API\Entity
 	/**
 	 * @param array<Entities\API\Capability> $capabilities
 	 * @param array<Entities\API\Statuses\Status> $state
-	 * @param array<string, string> $tags
+	 * @param array<string, string|array<string, string>> $tags
 	 */
 	public function __construct(
 		private readonly string $serial_number,
@@ -45,7 +45,7 @@ final class GetSubDevicesDataSubDevice implements Entities\API\Entity
 		private readonly string $manufacturer,
 		private readonly string $model,
 		private readonly string $firmwareVersion,
-		private readonly Types\DeviceType $displayCategory,
+		private readonly Types\Category $displayCategory,
 		private readonly string|null $thirdSerialNumber = null,
 		private readonly string|null $serviceAddress = null,
 		private readonly string|null $hostname = null,
@@ -86,7 +86,7 @@ final class GetSubDevicesDataSubDevice implements Entities\API\Entity
 		return $this->firmwareVersion;
 	}
 
-	public function getDisplayCategory(): Types\DeviceType
+	public function getDisplayCategory(): Types\Category
 	{
 		return $this->displayCategory;
 	}
@@ -138,7 +138,7 @@ final class GetSubDevicesDataSubDevice implements Entities\API\Entity
 	}
 
 	/**
-	 * @return array<string, string>
+	 * @return array<string, string|array<string, string>>
 	 */
 	public function getTags(): array
 	{

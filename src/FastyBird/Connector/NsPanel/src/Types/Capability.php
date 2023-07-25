@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * DeviceCapability.php
+ * Capability.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\NsPanel\Types;
 
 use Consistence;
+use function in_array;
 use function strval;
 
 /**
@@ -66,9 +67,59 @@ class Capability extends Consistence\Enum\Enum
 
 	public const RSSI = 'rssi';
 
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
+
+	/**
+	 * @return array<string>
+	 */
+	public function getReadWrite(): array
+	{
+		return [
+			self::POWER,
+			self::TOGGLE,
+			self::BRIGHTNESS,
+			self::COLOR_TEMPERATURE,
+			self::COLOR_RGB,
+			self::PERCENTAGE,
+			self::MOTOR_CONTROL,
+			self::MOTOR_REVERSE,
+			self::STARTUP,
+		];
+	}
+
+	/**
+	 * @return array<string>
+	 */
+	public function getRead(): array
+	{
+		return [
+			self::MOTOR_CALIBRATION,
+			self::CAMERA_STREAM,
+			self::DETECT,
+			self::HUMIDITY,
+			self::TEMPERATURE,
+			self::BATTERY,
+			self::PRESS,
+			self::RSSI,
+		];
+	}
+
+	public function hasReadWritePermission(): bool
+	{
+		return in_array(self::getValue(), self::getReadWrite(), true);
+	}
+
+	public function hasReadPermission(): bool
+	{
+		return in_array(self::getValue(), self::getRead(), true);
+	}
+
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }

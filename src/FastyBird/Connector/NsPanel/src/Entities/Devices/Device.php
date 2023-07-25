@@ -91,7 +91,7 @@ class Device extends Entities\NsPanelDevice
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getDisplayCategory(): Types\DeviceType
+	public function getDisplayCategory(): Types\Category
 	{
 		$property = $this->properties
 			->filter(
@@ -103,12 +103,12 @@ class Device extends Entities\NsPanelDevice
 		if (
 			$property instanceof DevicesEntities\Devices\Properties\Variable
 			&& is_string($property->getValue())
-			&& Types\DeviceType::isValidValue($property->getValue())
+			&& Types\Category::isValidValue($property->getValue())
 		) {
-			return Types\DeviceType::get($property->getValue());
+			return Types\Category::get($property->getValue());
 		}
 
-		return Types\DeviceType::get(Types\DeviceType::UNKNOWN);
+		return Types\Category::get(Types\Category::UNKNOWN);
 	}
 
 	/**

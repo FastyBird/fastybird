@@ -65,13 +65,13 @@ class SubDevice extends Entities\NsPanelDevice
 	 */
 	public function getParent(): Gateway
 	{
-		$parent = $this->parents->first();
-
-		if (!$parent instanceof Gateway) {
-			throw new Exceptions\InvalidState('Sub-device have to have parent gateway defined');
+		foreach ($this->parents->toArray() as $parent) {
+			if ($parent instanceof Gateway) {
+				return $parent;
+			}
 		}
 
-		return $parent;
+		throw new Exceptions\InvalidState('Sub-device have to have parent gateway defined');
 	}
 
 	/**
@@ -91,7 +91,7 @@ class SubDevice extends Entities\NsPanelDevice
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getDisplayCategory(): Types\DeviceType
+	public function getDisplayCategory(): Types\Category
 	{
 		$property = $this->properties
 			->filter(
@@ -103,12 +103,12 @@ class SubDevice extends Entities\NsPanelDevice
 		if (
 			$property instanceof DevicesEntities\Devices\Properties\Variable
 			&& is_string($property->getValue())
-			&& Types\DeviceType::isValidValue($property->getValue())
+			&& Types\Category::isValidValue($property->getValue())
 		) {
-			return Types\DeviceType::get($property->getValue());
+			return Types\Category::get($property->getValue());
 		}
 
-		return Types\DeviceType::get(Types\DeviceType::UNKNOWN);
+		return Types\Category::get(Types\Category::UNKNOWN);
 	}
 
 	/**

@@ -128,34 +128,24 @@ final class State implements Consumers\Consumer
 				}
 			}
 
-			$findChildrenDevicesQuery = new DevicesQueries\FindDevices();
-			$findChildrenDevicesQuery->forParent($device);
+			if ($device instanceof Entities\Devices\Gateway) {
+				$findChildrenDevicesQuery = new DevicesQueries\FindDevices();
+				$findChildrenDevicesQuery->forParent($device);
 
-			$children = $this->devicesRepository->findAllBy($findChildrenDevicesQuery);
-
-			foreach ($children as $child) {
-				$this->deviceConnectionManager->setState(
-					$child,
-					$entity->getState(),
+				$children = $this->devicesRepository->findAllBy(
+					$findChildrenDevicesQuery,
+					Entities\Devices\SubDevice::class,
 				);
 
-				if ($entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_DISCONNECTED)) {
-					foreach ($child->getProperties() as $property) {
-						if (!$property instanceof DevicesEntities\Devices\Properties\Dynamic) {
-							continue;
-						}
+				foreach ($children as $child) {
+					$this->deviceConnectionManager->setState(
+						$child,
+						$entity->getState(),
+					);
 
-						$this->propertyStateHelper->setValue(
-							$property,
-							Nette\Utils\ArrayHash::from([
-								DevicesStates\Property::VALID_KEY => false,
-							]),
-						);
-					}
-
-					foreach ($child->getChannels() as $channel) {
-						foreach ($channel->getProperties() as $property) {
-							if (!$property instanceof DevicesEntities\Channels\Properties\Dynamic) {
+					if ($entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_DISCONNECTED)) {
+						foreach ($child->getProperties() as $property) {
+							if (!$property instanceof DevicesEntities\Devices\Properties\Dynamic) {
 								continue;
 							}
 
@@ -165,6 +155,21 @@ final class State implements Consumers\Consumer
 									DevicesStates\Property::VALID_KEY => false,
 								]),
 							);
+						}
+
+						foreach ($child->getChannels() as $channel) {
+							foreach ($channel->getProperties() as $property) {
+								if (!$property instanceof DevicesEntities\Channels\Properties\Dynamic) {
+									continue;
+								}
+
+								$this->propertyStateHelper->setValue(
+									$property,
+									Nette\Utils\ArrayHash::from([
+										DevicesStates\Property::VALID_KEY => false,
+									]),
+								);
+							}
 						}
 					}
 				}

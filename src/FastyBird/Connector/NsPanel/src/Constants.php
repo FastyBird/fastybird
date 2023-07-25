@@ -30,4 +30,6 @@ final class Constants
 
 	public const DEFAULT_PORT = 52_323;
 
+	public const TAG_PROPERTY_IDENTIFIER = '/^tag_(?P<tag>[a-z_]+)$/';
+
 }
