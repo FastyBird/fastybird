@@ -120,19 +120,24 @@ cmd:
         subtitle: "This action will create|update|delete connector device"
 
         actions:
-            create: "Create new gateway device"
-            update: "Edit existing gateway device"
-            remove: "Delete existing gateway device"
-            createGateway: "Create new gateway device"
-            updateGateway: "Edit existing gateway device"
-            removeGateway: "Delete existing gateway device"
-            createCapability: "Create new device capability"
-            updateCapability: "Edit existing device capability"
-            removeCapability: "Delete existing device capability"
-            listCapabilities: "List device capabilities"
-            updateProtocol: "Edit existing capability protocol"
-            removeProtocol: "Delete existing capability protocol"
-            listProtocols: "List capability protocols"
+            create:
+                device: "Create new gateway device"
+                gateway: "Create new gateway device"
+                capability: "Create new device capability"
+            update:
+                device: "Edit existing gateway device"
+                gateway: "Edit existing gateway device"
+                capability: "Edit existing device capability"
+                protocol: "Edit existing capability protocol"
+            remove:
+                device: "Delete existing gateway device"
+                gateway: "Delete existing gateway device"
+                capability: "Delete existing device capability"
+                protocol: "Delete existing capability protocol"
+            list:
+                gateways: "List gateways"
+                capabilities: "List device capabilities"
+                protocols: "List capability protocols"
             nothing: "Nothing"
 
         questions:

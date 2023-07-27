@@ -112,7 +112,7 @@ class Discovery extends Console\Command\Command
 					),
 					new Input\InputOption(
 						'device',
-						'c',
+						'd',
 						Input\InputOption::VALUE_OPTIONAL,
 						'Device ID or identifier',
 						true,

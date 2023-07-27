@@ -156,6 +156,8 @@ class Devices extends Console\Command\Command
 			return Console\Command\Command::SUCCESS;
 		}
 
+		$this->askGatewayAction($io, $connector);
+
 		$gateway = $this->askWhichGateway($io, $connector);
 
 		if ($gateway === null) {
@@ -179,30 +181,7 @@ class Devices extends Console\Command\Command
 			}
 		}
 
-		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//ns-panel-connector.cmd.base.questions.whatToDo'),
-			[
-				0 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.create'),
-				1 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.update'),
-				2 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.remove'),
-			],
-		);
-
-		$question->setErrorMessage(
-			$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
-		);
-
-		$whatToDo = $io->askQuestion($question);
-
-		if ($whatToDo === $this->translator->translate('//ns-panel-connector.cmd.devices.actions.create')) {
-			$this->createNewDevice($io, $connector, $gateway);
-
-		} elseif ($whatToDo === $this->translator->translate('//ns-panel-connector.cmd.devices.actions.update')) {
-			$this->editExistingDevice($io, $connector, $gateway);
-
-		} elseif ($whatToDo === $this->translator->translate('//ns-panel-connector.cmd.devices.actions.remove')) {
-			$this->deleteExistingDevice($io, $connector, $gateway);
-		}
+		$this->askDeviceAction($io, $connector, $gateway);
 
 		return Console\Command\Command::SUCCESS;
 	}
@@ -215,6 +194,7 @@ class Devices extends Console\Command\Command
 	private function createNewGateway(
 		Style\SymfonyStyle $io,
 		Entities\NsPanelConnector $connector,
+		bool $editMode = false,
 	): Entities\Devices\Gateway|null
 	{
 		$question = new Console\Question\Question(
@@ -398,6 +378,297 @@ class Devices extends Console\Command\Command
 		}
 
 		return $device;
+	}
+
+	/**
+	 * @throws DBAL\Exception
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\Runtime
+	 */
+	private function editExistingGateway(
+		Style\SymfonyStyle $io,
+		Entities\NsPanelConnector $connector,
+	): void
+	{
+		$gateway = $this->askWhichGateway($io, $connector);
+
+		if ($gateway === null) {
+			$io->warning($this->translator->translate('//ns-panel-connector.cmd.devices.messages.noGateways'));
+
+			$question = new Console\Question\ConfirmationQuestion(
+				$this->translator->translate('//ns-panel-connector.cmd.devices.questions.create.gateway'),
+				false,
+			);
+
+			$continue = (bool) $io->askQuestion($question);
+
+			if ($continue) {
+				$this->createNewGateway($io, $connector);
+			}
+
+			return;
+		}
+
+		$name = $this->askDeviceName($io, $gateway);
+
+		$panelInfo = $this->askWhichPanel($io, $gateway->getIdentifier(), $gateway);
+
+		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+		$findDevicePropertyQuery->forDevice($gateway);
+		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS);
+
+		$ipAddressProperty = $this->devicesPropertiesRepository->findOneBy($findDevicePropertyQuery);
+
+		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+		$findDevicePropertyQuery->forDevice($gateway);
+		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IDENTIFIER_DOMAIN);
+
+		$domainProperty = $this->devicesPropertiesRepository->findOneBy($findDevicePropertyQuery);
+
+		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+		$findDevicePropertyQuery->forDevice($gateway);
+		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IDENTIFIER_MAC_ADDRESS);
+
+		$macAddressProperty = $this->devicesPropertiesRepository->findOneBy($findDevicePropertyQuery);
+
+		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+		$findDevicePropertyQuery->forDevice($gateway);
+		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_VERSION);
+
+		$firmwareVersionProperty = $this->devicesPropertiesRepository->findOneBy($findDevicePropertyQuery);
+
+		$question = new Console\Question\ConfirmationQuestion(
+			$this->translator->translate('//ns-panel-connector.cmd.devices.questions.regenerateAccessToken'),
+			false,
+		);
+
+		$regenerate = (bool) $io->askQuestion($question);
+
+		$accessToken = null;
+
+		if ($regenerate) {
+			$io->note($this->translator->translate('//ns-panel-connector.cmd.devices.messages.prepareGateway'));
+
+			do {
+				$question = new Console\Question\ConfirmationQuestion(
+					$this->translator->translate('//ns-panel-connector.cmd.devices.questions.isGatewayReady'),
+					false,
+				);
+
+				$continue = (bool) $io->askQuestion($question);
+
+				if (!$continue) {
+					$question = new Console\Question\ConfirmationQuestion(
+						$this->translator->translate('//ns-panel-connector.cmd.base.questions.exit'),
+						false,
+					);
+
+					$exit = (bool) $io->askQuestion($question);
+
+					if ($exit) {
+						return;
+					}
+				}
+			} while (!$continue);
+
+			$panelApi = $this->lanApiFactory->create($gateway->getIdentifier());
+
+			try {
+				$accessToken = $panelApi->getGatewayAccessToken(
+					$connector->getName() ?? $connector->getIdentifier(),
+					$panelInfo->getIpAddress(),
+					API\LanApi::GATEWAY_PORT,
+					false,
+				);
+			} catch (Exceptions\LanApiCall) {
+				$io->error(
+					$this->translator->translate('//ns-panel-connector.cmd.devices.messages.getAccessTokenFailed'),
+				);
+			}
+		}
+
+		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+		$findDevicePropertyQuery->forDevice($gateway);
+		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IDENTIFIER_ACCESS_TOKEN);
+
+		$accessTokenProperty = $this->devicesPropertiesRepository->findOneBy($findDevicePropertyQuery);
+
+		try {
+			// Start transaction connection to the database
+			$this->getOrmConnection()->beginTransaction();
+
+			$gateway = $this->devicesManager->update($gateway, Utils\ArrayHash::from([
+				'name' => $name,
+			]));
+
+			if ($ipAddressProperty === null) {
+				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
+					'entity' => DevicesEntities\Devices\Properties\Variable::class,
+					'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS,
+					'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+					'value' => $panelInfo->getIpAddress(),
+					'device' => $gateway,
+				]));
+			} elseif ($ipAddressProperty instanceof DevicesEntities\Devices\Properties\Variable) {
+				$this->devicesPropertiesManager->update($ipAddressProperty, Utils\ArrayHash::from([
+					'value' => $panelInfo->getIpAddress(),
+				]));
+			}
+
+			if ($domainProperty === null) {
+				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
+					'entity' => DevicesEntities\Devices\Properties\Variable::class,
+					'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_DOMAIN,
+					'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_DOMAIN),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+					'value' => $panelInfo->getDomain(),
+					'device' => $gateway,
+				]));
+			} elseif ($domainProperty instanceof DevicesEntities\Devices\Properties\Variable) {
+				$this->devicesPropertiesManager->update($domainProperty, Utils\ArrayHash::from([
+					'value' => $panelInfo->getDomain(),
+				]));
+			}
+
+			if ($macAddressProperty === null) {
+				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
+					'entity' => DevicesEntities\Devices\Properties\Variable::class,
+					'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_MAC_ADDRESS,
+					'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_MAC_ADDRESS),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+					'value' => $panelInfo->getMacAddress(),
+					'device' => $gateway,
+				]));
+			} elseif ($macAddressProperty instanceof DevicesEntities\Devices\Properties\Variable) {
+				$this->devicesPropertiesManager->update($macAddressProperty, Utils\ArrayHash::from([
+					'value' => $panelInfo->getMacAddress(),
+				]));
+			}
+
+			if ($firmwareVersionProperty === null) {
+				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
+					'entity' => DevicesEntities\Devices\Properties\Variable::class,
+					'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_VERSION,
+					'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_VERSION),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+					'value' => $panelInfo->getFirmwareVersion(),
+					'device' => $gateway,
+				]));
+			} elseif ($firmwareVersionProperty instanceof DevicesEntities\Devices\Properties\Variable) {
+				$this->devicesPropertiesManager->update($firmwareVersionProperty, Utils\ArrayHash::from([
+					'value' => $panelInfo->getFirmwareVersion(),
+				]));
+			}
+
+			if ($accessToken !== null) {
+				if ($accessTokenProperty === null) {
+					$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
+						'entity' => DevicesEntities\Devices\Properties\Variable::class,
+						'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_ACCESS_TOKEN,
+						'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_ACCESS_TOKEN),
+						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+						'value' => $accessToken->getData()->getAccessToken(),
+						'device' => $gateway,
+					]));
+				} elseif ($accessTokenProperty instanceof DevicesEntities\Devices\Properties\Variable) {
+					$this->devicesPropertiesManager->update($accessTokenProperty, Utils\ArrayHash::from([
+						'value' => $accessToken->getData()->getAccessToken(),
+					]));
+				}
+			}
+
+			// Commit all changes into database
+			$this->getOrmConnection()->commit();
+
+			$io->success(
+				$this->translator->translate(
+					'//ns-panel-connector.cmd.devices.messages.update.gateway.success',
+					['name' => $gateway->getName() ?? $gateway->getIdentifier()],
+				),
+			);
+		} catch (Throwable $ex) {
+			// Log caught exception
+			$this->logger->error(
+				'An unhandled error occurred',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'type' => 'devices-cmd',
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
+				],
+			);
+
+			$io->error($this->translator->translate('//ns-panel-connector.cmd.devices.messages.update.gateway.error'));
+		} finally {
+			// Revert all changes when error occur
+			if ($this->getOrmConnection()->isTransactionActive()) {
+				$this->getOrmConnection()->rollBack();
+			}
+		}
+	}
+
+	/**
+	 * @throws DBAL\Exception
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\Runtime
+	 */
+	private function deleteExistingGateway(
+		Style\SymfonyStyle $io,
+		Entities\NsPanelConnector $connector,
+	): void
+	{
+		$gateway = $this->askWhichGateway($io, $connector);
+
+		if ($gateway === null) {
+			$io->info($this->translator->translate('//ns-panel-connector.cmd.devices.messages.noGateways'));
+
+			return;
+		}
+
+		$question = new Console\Question\ConfirmationQuestion(
+			$this->translator->translate('//ns-panel-connector.cmd.base.questions.continue'),
+			false,
+		);
+
+		$continue = (bool) $io->askQuestion($question);
+
+		if (!$continue) {
+			return;
+		}
+
+		try {
+			// Start transaction connection to the database
+			$this->getOrmConnection()->beginTransaction();
+
+			$this->devicesManager->delete($gateway);
+
+			// Commit all changes into database
+			$this->getOrmConnection()->commit();
+
+			$io->success(
+				$this->translator->translate(
+					'//ns-panel-connector.cmd.devices.messages.remove.gateway.success',
+					['name' => $gateway->getName() ?? $gateway->getIdentifier()],
+				),
+			);
+		} catch (Throwable $ex) {
+			// Log caught exception
+			$this->logger->error(
+				'An unhandled error occurred',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'type' => 'devices-cmd',
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
+				],
+			);
+
+			$io->error($this->translator->translate('//ns-panel-connector.cmd.devices.messages.remove.gateway.error'));
+		} finally {
+			// Revert all changes when error occur
+			if ($this->getOrmConnection()->isTransactionActive()) {
+				$this->getOrmConnection()->rollBack();
+			}
+		}
 	}
 
 	/**
@@ -663,7 +934,6 @@ class Devices extends Console\Command\Command
 	private function deleteExistingDevice(
 		Style\SymfonyStyle $io,
 		Entities\NsPanelConnector $connector,
-		Entities\Devices\Gateway $gateway,
 	): void
 	{
 		$device = $this->askWhichDevice($io, $connector);
@@ -1075,6 +1345,116 @@ class Devices extends Console\Command\Command
 		if (count($channels) > 0) {
 			$this->askCapabilityAction($io, $device, true);
 		}
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 */
+	private function listGateways(Style\SymfonyStyle $io, Entities\NsPanelConnector $connector): void
+	{
+		$findDevicesQuery = new DevicesQueries\FindDevices();
+		$findDevicesQuery->forConnector($connector);
+
+		/** @var array<Entities\Devices\Gateway> $devices */
+		$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\Gateway::class);
+		usort(
+			$devices,
+			static function (Entities\Devices\Gateway $a, Entities\Devices\Gateway $b): int {
+				if ($a->getIdentifier() === $b->getIdentifier()) {
+					return $a->getName() <=> $b->getName();
+				}
+
+				return $a->getIdentifier() <=> $b->getIdentifier();
+			},
+		);
+
+		$table = new Console\Helper\Table($io);
+		$table->setHeaders([
+			'#',
+			'Name',
+			'Devices',
+		]);
+
+		foreach ($devices as $index => $device) {
+			$findDevicesQuery = new DevicesQueries\FindDevices();
+			$findDevicesQuery->forParent($device);
+
+			$table->addRow([
+				$index + 1,
+				$device->getName() ?? $device->getIdentifier(),
+				implode(
+					', ',
+					array_map(
+						static fn (DevicesEntities\Devices\Device $device): string => $device->getName() ?? $device->getIdentifier(),
+						$this->devicesRepository->findAllBy($findDevicesQuery, Entities\NsPanelDevice::class),
+					),
+				),
+			]);
+		}
+
+		$table->render();
+
+		$io->newLine();
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	private function listDevices(Style\SymfonyStyle $io, Entities\Devices\Gateway $gateway): void
+	{
+		$findDevicesQuery = new DevicesQueries\FindDevices();
+		$findDevicesQuery->forParent($gateway);
+
+		/** @var array<Entities\NsPanelDevice> $devices */
+		$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\NsPanelDevice::class);
+		usort(
+			$devices,
+			static function (Entities\NsPanelDevice $a, Entities\NsPanelDevice $b): int {
+				if ($a->getIdentifier() === $b->getIdentifier()) {
+					return $a->getName() <=> $b->getName();
+				}
+
+				return $a->getIdentifier() <=> $b->getIdentifier();
+			},
+		);
+
+		$table = new Console\Helper\Table($io);
+		$table->setHeaders([
+			'#',
+			'Name',
+			'Category',
+			'Type',
+		]);
+
+		foreach ($devices as $index => $device) {
+			assert($device instanceof Entities\Devices\Device || $device instanceof Entities\Devices\SubDevice);
+
+			$findChannelsQuery = new DevicesQueries\FindChannels();
+			$findChannelsQuery->forDevice($device);
+
+			$table->addRow([
+				$index + 1,
+				$device->getName() ?? $device->getIdentifier(),
+				$device->getDisplayCategory()->getValue(),
+				implode(
+					', ',
+					array_map(
+						static function (DevicesEntities\Channels\Channel $channel): string {
+							assert($channel instanceof Entities\NsPanelChannel);
+
+							return $channel->getCapability()->getValue();
+						},
+						$this->channelsRepository->findAllBy($findChannelsQuery, Entities\NsPanelChannel::class),
+					),
+				),
+			]);
+		}
+
+		$table->render();
+
+		$io->newLine();
 	}
 
 	/**
@@ -1675,19 +2055,19 @@ class Devices extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
 	 */
-	private function askCapabilityAction(
+	private function askGatewayAction(
 		Style\SymfonyStyle $io,
-		Entities\Devices\Device $device,
+		Entities\NsPanelConnector $connector,
 		bool $editMode = false,
 	): void
 	{
 		$question = new Console\Question\ChoiceQuestion(
 			$this->translator->translate('//ns-panel-connector.cmd.base.questions.whatToDo'),
 			[
-				0 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.createCapability'),
-				1 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.updateCapability'),
-				2 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.removeCapability'),
-				3 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.listCapabilities'),
+				0 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.create.gateway'),
+				1 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.update.gateway'),
+				2 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.remove.gateway'),
+				3 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.list.gateways'),
 				4 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.nothing'),
 			],
 			4,
@@ -1701,7 +2081,159 @@ class Devices extends Console\Command\Command
 
 		if (
 			$whatToDo === $this->translator->translate(
-				'//ns-panel-connector.cmd.devices.actions.createCapability',
+				'//ns-panel-connector.cmd.devices.actions.create.gateway',
+			)
+			|| $whatToDo === '0'
+		) {
+			$this->createNewGateway($io, $connector, $editMode);
+
+			$this->askGatewayAction($io, $connector, $editMode);
+
+		} elseif (
+			$whatToDo === $this->translator->translate(
+				'//ns-panel-connector.cmd.devices.actions.update.gateway',
+			)
+			|| $whatToDo === '1'
+		) {
+			$this->editExistingGateway($io, $connector);
+
+			$this->askGatewayAction($io, $connector, $editMode);
+
+		} elseif (
+			$whatToDo === $this->translator->translate(
+				'//ns-panel-connector.cmd.devices.actions.remove.gateway',
+			)
+			|| $whatToDo === '2'
+		) {
+			$this->deleteExistingGateway($io, $connector);
+
+			$this->askGatewayAction($io, $connector, $editMode);
+
+		} elseif (
+			$whatToDo === $this->translator->translate(
+				'//ns-panel-connector.cmd.devices.actions.list.gateways',
+			)
+			|| $whatToDo === '3'
+		) {
+			$this->listGateways($io, $connector);
+
+			$this->askGatewayAction($io, $connector, $editMode);
+		}
+	}
+
+	/**
+	 * @throws DBAL\Exception
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\Runtime
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws Nette\IOException
+	 */
+	private function askDeviceAction(
+		Style\SymfonyStyle $io,
+		Entities\NsPanelConnector $connector,
+		Entities\Devices\Gateway $gateway,
+	): void
+	{
+		$question = new Console\Question\ChoiceQuestion(
+			$this->translator->translate('//ns-panel-connector.cmd.base.questions.whatToDo'),
+			[
+				0 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.create.device'),
+				1 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.update.device'),
+				2 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.remove.device'),
+				3 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.list.devices'),
+				4 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.nothing'),
+			],
+			4,
+		);
+
+		$question->setErrorMessage(
+			$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+		);
+
+		$whatToDo = $io->askQuestion($question);
+
+		if (
+			$whatToDo === $this->translator->translate(
+				'//ns-panel-connector.cmd.devices.actions.create.device',
+			)
+			|| $whatToDo === '0'
+		) {
+			$this->createNewDevice($io, $connector, $gateway);
+
+			$this->askDeviceAction($io, $connector, $gateway);
+
+		} elseif (
+			$whatToDo === $this->translator->translate(
+				'//ns-panel-connector.cmd.devices.actions.update.device',
+			)
+			|| $whatToDo === '1'
+		) {
+			$this->editExistingDevice($io, $connector, $gateway);
+
+			$this->askDeviceAction($io, $connector, $gateway);
+
+		} elseif (
+			$whatToDo === $this->translator->translate(
+				'//ns-panel-connector.cmd.devices.actions.remove.device',
+			)
+			|| $whatToDo === '2'
+		) {
+			$this->deleteExistingDevice($io, $connector);
+
+			$this->askDeviceAction($io, $connector, $gateway);
+
+		} elseif (
+			$whatToDo === $this->translator->translate(
+				'//ns-panel-connector.cmd.devices.actions.list.devices',
+			)
+			|| $whatToDo === '3'
+		) {
+			$this->listDevices($io, $gateway);
+
+			$this->askDeviceAction($io, $connector, $gateway);
+		}
+	}
+
+	/**
+	 * @throws DBAL\Exception
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\Runtime
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws Nette\IOException
+	 */
+	private function askCapabilityAction(
+		Style\SymfonyStyle $io,
+		Entities\Devices\Device $device,
+		bool $editMode = false,
+	): void
+	{
+		$question = new Console\Question\ChoiceQuestion(
+			$this->translator->translate('//ns-panel-connector.cmd.base.questions.whatToDo'),
+			[
+				0 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.create.capability'),
+				1 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.update.capability'),
+				2 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.remove.capability'),
+				3 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.list.capabilities'),
+				4 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.nothing'),
+			],
+			4,
+		);
+
+		$question->setErrorMessage(
+			$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+		);
+
+		$whatToDo = $io->askQuestion($question);
+
+		if (
+			$whatToDo === $this->translator->translate(
+				'//ns-panel-connector.cmd.devices.actions.create.capability',
 			)
 			|| $whatToDo === '0'
 		) {
@@ -1709,7 +2241,7 @@ class Devices extends Console\Command\Command
 
 		} elseif (
 			$whatToDo === $this->translator->translate(
-				'//ns-panel-connector.cmd.devices.actions.updateCapability',
+				'//ns-panel-connector.cmd.devices.actions.update.capability',
 			)
 			|| $whatToDo === '1'
 		) {
@@ -1717,7 +2249,7 @@ class Devices extends Console\Command\Command
 
 		} elseif (
 			$whatToDo === $this->translator->translate(
-				'//ns-panel-connector.cmd.devices.actions.removeCapability',
+				'//ns-panel-connector.cmd.devices.actions.remove.capability',
 			)
 			|| $whatToDo === '2'
 		) {
@@ -1725,7 +2257,7 @@ class Devices extends Console\Command\Command
 
 		} elseif (
 			$whatToDo === $this->translator->translate(
-				'//ns-panel-connector.cmd.devices.actions.listCapabilities',
+				'//ns-panel-connector.cmd.devices.actions.list.capabilities',
 			)
 			|| $whatToDo === '3'
 		) {
@@ -1751,9 +2283,9 @@ class Devices extends Console\Command\Command
 		$question = new Console\Question\ChoiceQuestion(
 			$this->translator->translate('//ns-panel-connector.cmd.base.questions.whatToDo'),
 			[
-				0 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.updateProtocol'),
-				1 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.removeProtocol'),
-				2 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.listProtocols'),
+				0 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.update.protocol'),
+				1 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.remove.protocol'),
+				2 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.list.protocols'),
 				3 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.nothing'),
 			],
 			3,
@@ -1767,7 +2299,7 @@ class Devices extends Console\Command\Command
 
 		if (
 			$whatToDo === $this->translator->translate(
-				'//ns-panel-connector.cmd.devices.actions.updateProtocol',
+				'//ns-panel-connector.cmd.devices.actions.update.protocol',
 			)
 			|| $whatToDo === '0'
 		) {
@@ -1775,7 +2307,7 @@ class Devices extends Console\Command\Command
 
 		} elseif (
 			$whatToDo === $this->translator->translate(
-				'//ns-panel-connector.cmd.devices.actions.removeProtocol',
+				'//ns-panel-connector.cmd.devices.actions.remove.protocol',
 			)
 			|| $whatToDo === '1'
 		) {
@@ -1783,7 +2315,7 @@ class Devices extends Console\Command\Command
 
 		} elseif (
 			$whatToDo === $this->translator->translate(
-				'//ns-panel-connector.cmd.devices.actions.listProtocols',
+				'//ns-panel-connector.cmd.devices.actions.list.protocols',
 			)
 			|| $whatToDo === '2'
 		) {
@@ -2951,7 +3483,7 @@ class Devices extends Console\Command\Command
 		Entities\NsPanelConnector $connector,
 	): Entities\Devices\Gateway|null
 	{
-		$devices = [];
+		$gateways = [];
 
 		$findDevicesQuery = new DevicesQueries\FindDevices();
 		$findDevicesQuery->forConnector($connector);
@@ -2962,27 +3494,27 @@ class Devices extends Console\Command\Command
 			static fn (DevicesEntities\Devices\Device $a, DevicesEntities\Devices\Device $b): int => $a->getIdentifier() <=> $b->getIdentifier()
 		);
 
-		foreach ($connectorDevices as $device) {
-			assert($device instanceof Entities\Devices\Gateway);
+		foreach ($connectorDevices as $gateway) {
+			assert($gateway instanceof Entities\Devices\Gateway);
 
-			$devices[$device->getIdentifier()] = $device->getIdentifier()
-				. ($device->getName() !== null ? ' [' . $device->getName() . ']' : '');
+			$gateways[$gateway->getIdentifier()] = $gateway->getIdentifier()
+				. ($gateway->getName() !== null ? ' [' . $gateway->getName() . ']' : '');
 		}
 
-		if (count($devices) === 0) {
+		if (count($gateways) === 0) {
 			return null;
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
 			$this->translator->translate('//ns-panel-connector.cmd.devices.questions.select.gateway'),
-			array_values($devices),
-			count($devices) === 1 ? 0 : null,
+			array_values($gateways),
+			count($gateways) === 1 ? 0 : null,
 		);
 		$question->setErrorMessage(
 			$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(
-			function (string|int|null $answer) use ($connector, $devices): Entities\Devices\Gateway {
+			function (string|int|null $answer) use ($connector, $gateways): Entities\Devices\Gateway {
 				if ($answer === null) {
 					throw new Exceptions\Runtime(
 						sprintf(
@@ -2992,11 +3524,11 @@ class Devices extends Console\Command\Command
 					);
 				}
 
-				if (array_key_exists($answer, array_values($devices))) {
-					$answer = array_values($devices)[$answer];
+				if (array_key_exists($answer, array_values($gateways))) {
+					$answer = array_values($gateways)[$answer];
 				}
 
-				$identifier = array_search($answer, $devices, true);
+				$identifier = array_search($answer, $gateways, true);
 
 				if ($identifier !== false) {
 					$findDeviceQuery = new DevicesQueries\FindDevices();
@@ -3020,10 +3552,10 @@ class Devices extends Console\Command\Command
 			},
 		);
 
-		$device = $io->askQuestion($question);
-		assert($device instanceof Entities\Devices\Gateway);
+		$gateway = $io->askQuestion($question);
+		assert($gateway instanceof Entities\Devices\Gateway);
 
-		return $device;
+		return $gateway;
 	}
 
 	/**

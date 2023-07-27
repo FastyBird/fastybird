@@ -51,8 +51,8 @@ final class ChannelsRepository
 	/**
 	 * @template T of Entities\Channels\Channel
 	 *
-	 * @phpstan-param Queries\FindChannels<T> $queryObject
-	 * @phpstan-param class-string<T> $type
+	 * @param Queries\FindChannels<T> $queryObject
+	 * @param class-string<T> $type
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -69,10 +69,10 @@ final class ChannelsRepository
 	/**
 	 * @template T of Entities\Channels\Channel
 	 *
-	 * @phpstan-param Queries\FindChannels<T> $queryObject
-	 * @phpstan-param class-string<T> $type
+	 * @param Queries\FindChannels<T> $queryObject
+	 * @param class-string<T> $type
 	 *
-	 * @phpstan-return array<T>
+	 * @return array<T>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -102,10 +102,10 @@ final class ChannelsRepository
 	/**
 	 * @template T of Entities\Channels\Channel
 	 *
-	 * @phpstan-param Queries\FindChannels<T> $queryObject
-	 * @phpstan-param class-string<T> $type
+	 * @param Queries\FindChannels<T> $queryObject
+	 * @param class-string<T> $type
 	 *
-	 * @phpstan-return DoctrineOrmQuery\ResultSet<T>
+	 * @return DoctrineOrmQuery\ResultSet<T>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -130,9 +130,9 @@ final class ChannelsRepository
 	/**
 	 * @template T of Entities\Channels\Channel
 	 *
-	 * @phpstan-param class-string<T> $type
+	 * @param class-string<T> $type
 	 *
-	 * @phpstan-return ORM\EntityRepository<T>
+	 * @return ORM\EntityRepository<T>
 	 */
 	private function getRepository(string $type): ORM\EntityRepository
 	{

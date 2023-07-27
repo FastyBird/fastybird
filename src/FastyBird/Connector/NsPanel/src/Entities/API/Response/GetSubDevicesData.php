@@ -34,9 +34,9 @@ final class GetSubDevicesData implements Entities\API\Entity
 	use Nette\SmartObject;
 
 	/**
-	 * @param array<GetSubDevicesDataSubDevice> $devicesList
+	 * @param array<GetSubDevicesDataSubDevice> $deviceList
 	 */
-	public function __construct(private readonly array $devicesList)
+	public function __construct(private readonly array $deviceList)
 	{
 	}
 
@@ -45,7 +45,7 @@ final class GetSubDevicesData implements Entities\API\Entity
 	 */
 	public function getDevicesList(): array
 	{
-		return $this->devicesList;
+		return $this->deviceList;
 	}
 
 	/**
