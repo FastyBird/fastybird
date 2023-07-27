@@ -17,12 +17,13 @@ namespace FastyBird\Module\Accounts\Models\Emails;
 
 use Doctrine\ORM;
 use Doctrine\Persistence;
-use Exception;
 use FastyBird\Module\Accounts\Entities;
+use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\Module\Accounts\Queries;
+use FastyBird\Module\Accounts\Utilities;
 use IPub\DoctrineOrmQuery;
-use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette;
+use Throwable;
 use function is_array;
 
 /**
@@ -38,16 +39,18 @@ final class EmailsRepository
 
 	use Nette\SmartObject;
 
-	/** @phpstan-var ORM\EntityRepository<Entities\Emails\Email>|null */
+	/** @var ORM\EntityRepository<Entities\Emails\Email>|null */
 	private ORM\EntityRepository|null $repository = null;
 
-	public function __construct(private readonly Persistence\ManagerRegistry $managerRegistry)
+	public function __construct(
+		private readonly Utilities\Database $database,
+		private readonly Persistence\ManagerRegistry $managerRegistry,
+	)
 	{
 	}
 
 	/**
-	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
-	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws Exceptions\InvalidState
 	 */
 	public function findOneByAddress(string $address): Entities\Emails\Email|null
 	{
@@ -58,56 +61,58 @@ final class EmailsRepository
 	}
 
 	/**
-	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
-	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws Exceptions\InvalidState
 	 */
 	public function findOneBy(
 		Queries\FindEmails $queryObject,
 	): Entities\Emails\Email|null
 	{
-		return $queryObject->fetchOne($this->getRepository());
+		return $this->database->query(
+			fn (): Entities\Emails\Email|null => $queryObject->fetchOne($this->getRepository()),
+		);
 	}
 
 	/**
-	 * @phpstan-return array<Entities\Emails\Email>
+	 * @return array<Entities\Emails\Email>
 	 *
-	 * @throws Exception
-	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws Exceptions\InvalidState
 	 */
 	public function findAllBy(Queries\FindEmails $queryObject): array
 	{
-		/** @var array<Entities\Emails\Email>|DoctrineOrmQuery\ResultSet<Entities\Emails\Email> $result */
-		$result = $queryObject->fetch($this->getRepository());
+		try {
+			/** @var array<Entities\Emails\Email> $result */
+			$result = $this->getResultSet($queryObject)->toArray();
 
-		if (is_array($result)) {
 			return $result;
+		} catch (Throwable $ex) {
+			throw new Exceptions\InvalidState('Fetch all data by query failed', $ex->getCode(), $ex);
 		}
-
-		/** @var array<Entities\Emails\Email> $data */
-		$data = $result->toArray();
-
-		return $data;
 	}
 
 	/**
-	 * @phpstan-return DoctrineOrmQuery\ResultSet<Entities\Emails\Email>
+	 * @return DoctrineOrmQuery\ResultSet<Entities\Emails\Email>
 	 *
-	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws Exceptions\InvalidState
 	 */
 	public function getResultSet(
 		Queries\FindEmails $queryObject,
 	): DoctrineOrmQuery\ResultSet
 	{
-		/** @var DoctrineOrmQuery\ResultSet<Entities\Emails\Email> $result */
-		$result = $queryObject->fetch($this->getRepository());
+		$result = $this->database->query(
+			fn (): DoctrineOrmQuery\ResultSet|array => $queryObject->fetch($this->getRepository()),
+		);
+
+		if (is_array($result)) {
+			throw new Exceptions\InvalidState('Result set could not be created');
+		}
 
 		return $result;
 	}
 
 	/**
-	 * @phpstan-param class-string<Entities\Emails\Email> $type
+	 * @param class-string<Entities\Emails\Email> $type
 	 *
-	 * @phpstan-return ORM\EntityRepository<Entities\Emails\Email>
+	 * @return ORM\EntityRepository<Entities\Emails\Email>
 	 */
 	private function getRepository(string $type = Entities\Emails\Email::class): ORM\EntityRepository
 	{

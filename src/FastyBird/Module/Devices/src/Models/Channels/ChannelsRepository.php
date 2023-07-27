@@ -23,6 +23,7 @@ use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\Utilities;
 use IPub\DoctrineOrmQuery;
 use Nette;
+use Throwable;
 use function is_array;
 
 /**
@@ -54,6 +55,8 @@ final class ChannelsRepository
 	 * @param Queries\FindChannels<T> $queryObject
 	 * @param class-string<T> $type
 	 *
+	 * @return T|null
+	 *
 	 * @throws Exceptions\InvalidState
 	 */
 	public function findOneBy(
@@ -81,22 +84,14 @@ final class ChannelsRepository
 		string $type = Entities\Channels\Channel::class,
 	): array
 	{
-		// @phpstan-ignore-next-line
-		return $this->database->query(
-			function () use ($queryObject, $type): array {
-				/** @var array<T>|DoctrineOrmQuery\ResultSet<T> $result */
-				$result = $queryObject->fetch($this->getRepository($type));
+		try {
+			/** @var array<T> $result */
+			$result = $this->getResultSet($queryObject, $type)->toArray();
 
-				if (is_array($result)) {
-					return $result;
-				}
-
-				/** @var array<T> $data */
-				$data = $result->toArray();
-
-				return $data;
-			},
-		);
+			return $result;
+		} catch (Throwable $ex) {
+			throw new Exceptions\InvalidState('Fetch all data by query failed', $ex->getCode(), $ex);
+		}
 	}
 
 	/**
@@ -114,17 +109,15 @@ final class ChannelsRepository
 		string $type = Entities\Channels\Channel::class,
 	): DoctrineOrmQuery\ResultSet
 	{
-		return $this->database->query(
-			function () use ($queryObject, $type): DoctrineOrmQuery\ResultSet {
-				$result = $queryObject->fetch($this->getRepository($type));
-
-				if (is_array($result)) {
-					throw new Exceptions\InvalidState('Err');
-				}
-
-				return $result;
-			},
+		$result = $this->database->query(
+			fn (): DoctrineOrmQuery\ResultSet|array => $queryObject->fetch($this->getRepository($type)),
 		);
+
+		if (is_array($result)) {
+			throw new Exceptions\InvalidState('Result set could not be created');
+		}
+
+		return $result;
 	}
 
 	/**

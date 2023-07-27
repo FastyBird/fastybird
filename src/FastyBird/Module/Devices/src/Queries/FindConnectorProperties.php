@@ -27,7 +27,8 @@ use function in_array;
 /**
  * Find connector properties entities query
  *
- * @extends  DoctrineOrmQuery\QueryObject<Entities\Connectors\Properties\Property>
+ * @template T of Entities\Connectors\Properties\Property
+ * @extends  DoctrineOrmQuery\QueryObject<T>
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Queries
@@ -87,7 +88,7 @@ class FindConnectorProperties extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @phpstan-param ORM\EntityRepository<Entities\Connectors\Properties\Property> $repository
+	 * @param ORM\EntityRepository<T> $repository
 	 */
 	protected function doCreateQuery(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{
@@ -101,7 +102,7 @@ class FindConnectorProperties extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @phpstan-param ORM\EntityRepository<Entities\Connectors\Properties\Property> $repository
+	 * @param ORM\EntityRepository<T> $repository
 	 */
 	private function createBasicDql(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{
@@ -117,7 +118,7 @@ class FindConnectorProperties extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @phpstan-param ORM\EntityRepository<Entities\Connectors\Properties\Property> $repository
+	 * @param ORM\EntityRepository<T> $repository
 	 */
 	protected function doCreateCountQuery(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{

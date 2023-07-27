@@ -87,7 +87,7 @@ class FindChannelControls extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @phpstan-param ORM\EntityRepository<Entities\Channels\Controls\Control> $repository
+	 * @param ORM\EntityRepository<Entities\Channels\Controls\Control> $repository
 	 */
 	protected function doCreateQuery(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{
@@ -101,7 +101,7 @@ class FindChannelControls extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @phpstan-param ORM\EntityRepository<Entities\Channels\Controls\Control> $repository
+	 * @param ORM\EntityRepository<Entities\Channels\Controls\Control> $repository
 	 */
 	private function createBasicDql(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{
@@ -117,7 +117,7 @@ class FindChannelControls extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @phpstan-param ORM\EntityRepository<Entities\Channels\Controls\Control> $repository
+	 * @param ORM\EntityRepository<Entities\Channels\Controls\Control> $repository
 	 */
 	protected function doCreateCountQuery(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{

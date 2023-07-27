@@ -17,11 +17,11 @@ namespace FastyBird\Module\Accounts\Controllers\Finders;
 
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
 use FastyBird\Module\Accounts\Entities;
+use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\Module\Accounts\Models;
 use FastyBird\Module\Accounts\Queries;
 use FastyBird\Module\Accounts\Router;
 use Fig\Http\Message\StatusCodeInterface;
-use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette\Localization;
 use Psr\Http\Message;
 use Ramsey\Uuid;
@@ -35,8 +35,7 @@ trait TEmail
 {
 
 	/**
-	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
-	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws Exceptions\InvalidState
 	 * @throws JsonApiExceptions\JsonApi
 	 */
 	private function findEmail(
