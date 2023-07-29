@@ -36,6 +36,7 @@ use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use InvalidArgumentException as InvalidArgumentExceptionAlias;
+use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
 use Nette;
 use Nette\Localization;
 use Nette\Utils;
@@ -50,6 +51,7 @@ use function array_filter;
 use function array_key_exists;
 use function array_keys;
 use function array_map;
+use function array_merge;
 use function array_search;
 use function array_values;
 use function asort;
@@ -1557,6 +1559,7 @@ class Devices extends Console\Command\Command
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws Nette\IOException
+	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 */
 	private function createProtocol(
 		Style\SymfonyStyle $io,
@@ -1606,6 +1609,10 @@ class Devices extends Console\Command\Command
 			$format = $this->askFormat($io, $protocol, $connectProperty);
 
 			if ($connectProperty instanceof DevicesEntities\Devices\Properties\Dynamic) {
+				$this->devicesManager->update($device, Utils\ArrayHash::from([
+					'parents' => array_merge($device->getParents(), [$connectProperty->getDevice()]),
+				]));
+
 				return $this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Mapped::class,
 					'parent' => $connectProperty,
@@ -1618,6 +1625,10 @@ class Devices extends Console\Command\Command
 					'format' => $format,
 				]));
 			} elseif ($connectProperty instanceof DevicesEntities\Channels\Properties\Dynamic) {
+				$this->devicesManager->update($device, Utils\ArrayHash::from([
+					'parents' => array_merge($device->getParents(), [$connectProperty->getChannel()->getDevice()]),
+				]));
+
 				return $this->channelsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Channels\Properties\Mapped::class,
 					'parent' => $connectProperty,
