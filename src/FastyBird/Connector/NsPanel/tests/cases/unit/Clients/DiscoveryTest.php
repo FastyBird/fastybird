@@ -150,6 +150,9 @@ final class DiscoveryTest extends DbTestCase
 		$device = $devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\SubDevice::class);
 
 		self::assertInstanceOf(Entities\Devices\SubDevice::class, $device);
+		self::assertSame(Types\Category::TEMPERATURE_HUMIDITY_SENSOR, $device->getDisplayCategory()->getValue());
+		self::assertSame('eWeLink', $device->getManufacturer());
+		self::assertSame('TH01', $device->getModel());
 
 		$channelsRepository = $this->getContainer()->getByType(DevicesModels\Channels\ChannelsRepository::class);
 
