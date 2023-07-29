@@ -823,13 +823,13 @@ class Devices extends Console\Command\Command
 			$this->getOrmConnection()->beginTransaction();
 
 			$device = $this->devicesManager->create(Utils\ArrayHash::from([
-				'entity' => Entities\Devices\Device::class,
+				'entity' => Entities\Devices\ThirdPartyDevice::class,
 				'connector' => $connector,
 				'parent' => $gateway,
 				'identifier' => $identifier,
 				'name' => $name,
 			]));
-			assert($device instanceof Entities\Devices\Device);
+			assert($device instanceof Entities\Devices\ThirdPartyDevice);
 
 			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
@@ -1125,7 +1125,9 @@ class Devices extends Console\Command\Command
 		]);
 
 		foreach ($devices as $index => $device) {
-			assert($device instanceof Entities\Devices\Device || $device instanceof Entities\Devices\SubDevice);
+			assert(
+				$device instanceof Entities\Devices\ThirdPartyDevice || $device instanceof Entities\Devices\SubDevice,
+			);
 
 			$findChannelsQuery = new Queries\FindChannels();
 			$findChannelsQuery->forDevice($device);
@@ -1200,7 +1202,7 @@ class Devices extends Console\Command\Command
 	 */
 	private function createCapability(
 		Style\SymfonyStyle $io,
-		Entities\Devices\Device $device,
+		Entities\Devices\ThirdPartyDevice $device,
 	): void
 	{
 		$capability = $this->askCapabilityType($io, $device);
@@ -1318,7 +1320,7 @@ class Devices extends Console\Command\Command
 	 * @throws Exceptions\Runtime
 	 * @throws Nette\IOException
 	 */
-	private function editCapability(Style\SymfonyStyle $io, Entities\Devices\Device $device): void
+	private function editCapability(Style\SymfonyStyle $io, Entities\Devices\ThirdPartyDevice $device): void
 	{
 		$channel = $this->askWhichCapability($io, $device);
 
@@ -1442,7 +1444,7 @@ class Devices extends Console\Command\Command
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 */
-	private function deleteCapability(Style\SymfonyStyle $io, Entities\Devices\Device $device): void
+	private function deleteCapability(Style\SymfonyStyle $io, Entities\Devices\ThirdPartyDevice $device): void
 	{
 		$channel = $this->askWhichCapability($io, $device);
 
@@ -1496,7 +1498,7 @@ class Devices extends Console\Command\Command
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 */
-	private function listCapabilities(Style\SymfonyStyle $io, Entities\Devices\Device $device): void
+	private function listCapabilities(Style\SymfonyStyle $io, Entities\Devices\ThirdPartyDevice $device): void
 	{
 		$findChannelsQuery = new Queries\FindChannels();
 		$findChannelsQuery->forDevice($device);
@@ -1556,7 +1558,7 @@ class Devices extends Console\Command\Command
 	 */
 	private function createProtocol(
 		Style\SymfonyStyle $io,
-		Entities\Devices\Device $device,
+		Entities\Devices\ThirdPartyDevice $device,
 		Entities\NsPanelChannel $channel,
 	): DevicesEntities\Devices\Properties\Property|DevicesEntities\Channels\Properties\Property|null
 	{
@@ -1970,7 +1972,7 @@ class Devices extends Console\Command\Command
 	 */
 	private function askCategory(
 		Style\SymfonyStyle $io,
-		Entities\Devices\Device|null $device = null,
+		Entities\Devices\ThirdPartyDevice|null $device = null,
 	): Types\Category
 	{
 		$categories = array_combine(
@@ -2222,7 +2224,7 @@ class Devices extends Console\Command\Command
 	 */
 	private function askCapabilityAction(
 		Style\SymfonyStyle $io,
-		Entities\Devices\Device $device,
+		Entities\Devices\ThirdPartyDevice $device,
 	): void
 	{
 		$question = new Console\Question\ChoiceQuestion(
@@ -2350,7 +2352,7 @@ class Devices extends Console\Command\Command
 	 */
 	private function askCapabilityType(
 		Style\SymfonyStyle $io,
-		Entities\Devices\Device $device,
+		Entities\Devices\ThirdPartyDevice $device,
 	): Types\Capability
 	{
 		$metadata = $this->loader->loadCapabilities();
@@ -2552,7 +2554,7 @@ class Devices extends Console\Command\Command
 		);
 
 		foreach ($systemDevices as $device) {
-			if ($device instanceof Entities\Devices\Device) {
+			if ($device instanceof Entities\Devices\ThirdPartyDevice) {
 				continue;
 			}
 
@@ -3599,7 +3601,7 @@ class Devices extends Console\Command\Command
 		Style\SymfonyStyle $io,
 		Entities\NsPanelConnector $connector,
 		Entities\Devices\Gateway $gateway,
-	): Entities\Devices\Device|null
+	): Entities\Devices\ThirdPartyDevice|null
 	{
 		$devices = [];
 
@@ -3607,7 +3609,10 @@ class Devices extends Console\Command\Command
 		$findDevicesQuery->forConnector($connector);
 		$findDevicesQuery->forParent($gateway);
 
-		$connectorDevices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\Device::class);
+		$connectorDevices = $this->devicesRepository->findAllBy(
+			$findDevicesQuery,
+			Entities\Devices\ThirdPartyDevice::class,
+		);
 		usort(
 			$connectorDevices,
 			static fn (DevicesEntities\Devices\Device $a, DevicesEntities\Devices\Device $b): int => $a->getIdentifier() <=> $b->getIdentifier()
@@ -3631,7 +3636,7 @@ class Devices extends Console\Command\Command
 			$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(
-			function (string|int|null $answer) use ($connector, $gateway, $devices): Entities\Devices\Device {
+			function (string|int|null $answer) use ($connector, $gateway, $devices): Entities\Devices\ThirdPartyDevice {
 				if ($answer === null) {
 					throw new Exceptions\Runtime(
 						sprintf(
@@ -3653,7 +3658,10 @@ class Devices extends Console\Command\Command
 					$findDeviceQuery->forConnector($connector);
 					$findDeviceQuery->forParent($gateway);
 
-					$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\Device::class);
+					$device = $this->devicesRepository->findOneBy(
+						$findDeviceQuery,
+						Entities\Devices\ThirdPartyDevice::class,
+					);
 
 					if ($device !== null) {
 						return $device;
@@ -3670,7 +3678,7 @@ class Devices extends Console\Command\Command
 		);
 
 		$device = $io->askQuestion($question);
-		assert($device instanceof Entities\Devices\Device);
+		assert($device instanceof Entities\Devices\ThirdPartyDevice);
 
 		return $device;
 	}
@@ -3680,7 +3688,7 @@ class Devices extends Console\Command\Command
 	 */
 	private function askWhichCapability(
 		Style\SymfonyStyle $io,
-		Entities\Devices\Device $device,
+		Entities\Devices\ThirdPartyDevice $device,
 	): Entities\NsPanelChannel|null
 	{
 		$channels = [];
@@ -3866,7 +3874,7 @@ class Devices extends Console\Command\Command
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 */
-	private function findNextChannelIdentifier(Entities\Devices\Device $device, string $type): string
+	private function findNextChannelIdentifier(Entities\Devices\ThirdPartyDevice $device, string $type): string
 	{
 		for ($i = 1; $i <= 100; $i++) {
 			$identifier = Helpers\Name::convertCapabilityToChannel(Types\Capability::get($type), $i);

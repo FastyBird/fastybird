@@ -99,12 +99,12 @@ final class Device implements Client
 			$findDevicesQuery->forConnector($this->connector);
 			$findDevicesQuery->forParent($gateway);
 
-			/** @var array<Entities\Devices\Device> $devices */
-			$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\Device::class);
+			/** @var array<Entities\Devices\ThirdPartyDevice> $devices */
+			$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\ThirdPartyDevice::class);
 
 			$syncDevices = array_map(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				function (Entities\Devices\Device $device): Entities\API\ThirdPartyDevice {
+				function (Entities\Devices\ThirdPartyDevice $device): Entities\API\ThirdPartyDevice {
 					$capabilities = [];
 					$statuses = [];
 					$tags = [];
@@ -253,7 +253,7 @@ final class Device implements Client
 
 			foreach ($this->devicesRepository->findAllBy(
 				$findDevicesQuery,
-				Entities\Devices\Device::class,
+				Entities\Devices\ThirdPartyDevice::class,
 			) as $device) {
 				try {
 					$serialNumber = $device->getGatewayIdentifier();
@@ -334,7 +334,7 @@ final class Device implements Client
 		DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped $property,
 	): Promise\PromiseInterface
 	{
-		if (!$device instanceof Entities\Devices\Device) {
+		if (!$device instanceof Entities\Devices\ThirdPartyDevice) {
 			return Promise\reject(
 				new Exceptions\InvalidArgument('Only third-party device could be updated'),
 			);

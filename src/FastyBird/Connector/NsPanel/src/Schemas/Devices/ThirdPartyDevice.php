@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Device.php
+ * ThirdPartyDevice.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -22,23 +22,23 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 /**
  * NS Panel device entity schema
  *
- * @extends Schemas\NsPanelDevice<Entities\Devices\Device>
+ * @extends Schemas\NsPanelDevice<Entities\Devices\ThirdPartyDevice>
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Schemas
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Device extends Schemas\NsPanelDevice
+final class ThirdPartyDevice extends Schemas\NsPanelDevice
 {
 
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL . '/device/' . Entities\Devices\Device::DEVICE_TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL . '/device/' . Entities\Devices\ThirdPartyDevice::DEVICE_TYPE;
 
 	public function getEntityClass(): string
 	{
-		return Entities\Devices\Device::class;
+		return Entities\Devices\ThirdPartyDevice::class;
 	}
 
 	public function getType(): string

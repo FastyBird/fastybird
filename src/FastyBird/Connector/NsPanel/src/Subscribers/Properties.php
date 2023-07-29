@@ -74,7 +74,7 @@ final class Properties implements Common\EventSubscriber
 		if (
 			$entity instanceof Entities\Devices\Gateway
 			|| $entity instanceof Entities\Devices\SubDevice
-			|| $entity instanceof Entities\Devices\Device
+			|| $entity instanceof Entities\Devices\ThirdPartyDevice
 		) {
 			$this->processDeviceProperties($entity);
 
@@ -106,7 +106,7 @@ final class Properties implements Common\EventSubscriber
 			$stateProperty = null;
 		}
 
-		$enumValues = $device instanceof Entities\Devices\Device ? [
+		$enumValues = $device instanceof Entities\Devices\ThirdPartyDevice ? [
 			MetadataTypes\ConnectionState::STATE_RUNNING,
 			MetadataTypes\ConnectionState::STATE_STOPPED,
 			MetadataTypes\ConnectionState::STATE_UNKNOWN,

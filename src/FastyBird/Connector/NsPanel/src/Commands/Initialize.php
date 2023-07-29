@@ -427,7 +427,7 @@ class Initialize extends Console\Command\Command
 			$findDevicesQuery = new Queries\FindThirdPartyDevices();
 			$findDevicesQuery->forConnector($connector);
 
-			$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\Device::class);
+			$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\ThirdPartyDevice::class);
 
 			$table->addRow([
 				$index + 1,

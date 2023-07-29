@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Device.php
+ * ThirdPartyDevice.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -21,18 +21,18 @@ use FastyBird\Connector\NsPanel\Hydrators;
 /**
  * NS Panel device entity hydrator
  *
- * @extends Hydrators\NsPanelDevice<Entities\Devices\Device>
+ * @extends Hydrators\NsPanelDevice<Entities\Devices\ThirdPartyDevice>
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Hydrators
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Device extends Hydrators\NsPanelDevice
+final class ThirdPartyDevice extends Hydrators\NsPanelDevice
 {
 
 	public function getEntityName(): string
 	{
-		return Entities\Devices\Device::class;
+		return Entities\Devices\ThirdPartyDevice::class;
 	}
 
 }

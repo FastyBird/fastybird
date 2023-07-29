@@ -20,7 +20,7 @@ use FastyBird\Connector\NsPanel\Entities;
 /**
  * Find devices entities query
  *
- * @template T of Entities\Devices\Device
+ * @template T of Entities\Devices\ThirdPartyDevice
  * @extends  FindDevices<T>
  *
  * @package        FastyBird:NsPanelConnector!

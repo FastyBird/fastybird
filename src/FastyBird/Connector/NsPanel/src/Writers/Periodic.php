@@ -139,7 +139,10 @@ class Periodic implements Writer
 				$findDevicesQuery = new Queries\FindThirdPartyDevices();
 				$findDevicesQuery->byConnectorId(Uuid\Uuid::fromString($id));
 
-				$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\Device::class);
+				$devices = $this->devicesRepository->findAllBy(
+					$findDevicesQuery,
+					Entities\Devices\ThirdPartyDevice::class,
+				);
 			}
 
 			foreach ($devices as $device) {
@@ -157,7 +160,7 @@ class Periodic implements Writer
 						}
 					} elseif (
 						$client instanceof Clients\Device
-						&& $device instanceof Entities\Devices\Device
+						&& $device instanceof Entities\Devices\ThirdPartyDevice
 					) {
 						if ($this->writeDeviceChannelProperty($client, $device)) {
 							$this->registerLoopHandler();
@@ -311,7 +314,7 @@ class Periodic implements Writer
 	 */
 	private function writeDeviceChannelProperty(
 		Clients\Device $client,
-		Entities\Devices\Device $device,
+		Entities\Devices\ThirdPartyDevice $device,
 	): bool
 	{
 		$now = $this->dateTimeFactory->getNow();

@@ -222,7 +222,7 @@ class NsPanelExtension extends DI\CompilerExtension
 			$this->prefix('schemas.device.nsPanel.device'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Schemas\Devices\Device::class);
+			->setType(Schemas\Devices\ThirdPartyDevice::class);
 
 		$builder->addDefinition(
 			$this->prefix('schemas.channel.nsPanel'),
@@ -249,7 +249,7 @@ class NsPanelExtension extends DI\CompilerExtension
 			$this->prefix('hydrators.device.nsPanel.device'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Hydrators\Devices\Device::class);
+			->setType(Hydrators\Devices\ThirdPartyDevice::class);
 
 		$builder->addDefinition(
 			$this->prefix('hydrators.channel.nsPanel'),

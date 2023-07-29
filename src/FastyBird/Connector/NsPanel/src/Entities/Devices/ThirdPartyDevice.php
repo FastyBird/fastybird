@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Device.php
+ * ThirdPartyDevice.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -29,10 +29,10 @@ use function is_string;
 /**
  * @ORM\Entity
  */
-class Device extends Entities\NsPanelDevice
+class ThirdPartyDevice extends Entities\NsPanelDevice
 {
 
-	public const DEVICE_TYPE = 'ns-panel-device';
+	public const DEVICE_TYPE = 'ns-panel-third-party-device';
 
 	/**
 	 * @throws Exceptions\InvalidState
