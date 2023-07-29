@@ -1222,6 +1222,7 @@ class Devices extends Console\Command\Command
 			!$capabilityMetadata instanceof Utils\ArrayHash
 			|| !$capabilityMetadata->offsetExists('permission')
 			|| !is_string($capabilityMetadata->offsetGet('permission'))
+			|| !Types\Permission::isValidValue($capabilityMetadata->offsetGet('permission'))
 			|| !$capabilityMetadata->offsetExists('protocol')
 			|| !$capabilityMetadata->offsetGet('protocol') instanceof Utils\ArrayHash
 			|| !$capabilityMetadata->offsetExists('multiple')
@@ -1361,6 +1362,7 @@ class Devices extends Console\Command\Command
 			!$capabilityMetadata instanceof Utils\ArrayHash
 			|| !$capabilityMetadata->offsetExists('permission')
 			|| !is_string($capabilityMetadata->offsetGet('permission'))
+			|| !Types\Permission::isValidValue($capabilityMetadata->offsetGet('permission'))
 			|| !$capabilityMetadata->offsetExists('protocol')
 			|| !$capabilityMetadata->offsetGet('protocol') instanceof Utils\ArrayHash
 			|| !$capabilityMetadata->offsetExists('multiple')
@@ -2447,6 +2449,7 @@ class Devices extends Console\Command\Command
 			!$capabilityMetadata instanceof Utils\ArrayHash
 			|| !$capabilityMetadata->offsetExists('permission')
 			|| !is_string($capabilityMetadata->offsetGet('permission'))
+			|| !Types\Permission::isValidValue($capabilityMetadata->offsetGet('permission'))
 			|| !$capabilityMetadata->offsetExists('protocol')
 			|| !$capabilityMetadata->offsetGet('protocol') instanceof Utils\ArrayHash
 			|| !$capabilityMetadata->offsetExists('multiple')

@@ -1,17 +1,27 @@
 {
   "powerState": {
     "data_type": "enum",
-    "valid_values": ["on", "off"]
+    "valid_values": ["on", "off"],
+    "mapped_values": [
+      ["switch_on", "on", "on"],
+      ["switch_off", "off", "off"]
+    ]
   },
   "toggleState": {
     "data_type": "enum",
-    "valid_values": ["on", "off", "toggle"]
+    "valid_values": ["on", "off", "toggle"],
+    "mapped_values": [
+      ["switch_on", "on", "on"],
+      ["switch_off", "off", "off"],
+      ["switch_toggle", "toggle", "toggle"]
+    ]
   },
   "brightness": {
     "data_type": "uchar",
     "min_value": 0,
     "max_value": 100,
-    "step_value": 1
+    "step_value": 1,
+    "unit": "%"
   },
   "colorTemperature": {
     "data_type": "uchar",
@@ -41,7 +51,8 @@
     "data_type": "uchar",
     "min_value": 0,
     "max_value": 100,
-    "step_value": 1
+    "step_value": 1,
+    "unit": "%"
   },
   "motorControl": {
     "data_type": "enum",
@@ -68,13 +79,15 @@
     "data_type": "uchar",
     "min_value": 0,
     "max_value": 100,
-    "step_value": 1
+    "step_value": 1,
+    "unit": "%"
   },
   "temperature": {
     "data_type": "float",
     "min_value": -40,
     "max_value": 80,
-    "step_value": 0.1
+    "step_value": 0.1,
+    "unit": "C"
   },
   "battery": {
     "data_type": "char",
@@ -85,7 +98,12 @@
   },
   "press": {
     "data_type": "enum",
-    "valid_values": ["singlePress", "doublePress", "longPress"]
+    "valid_values": ["singlePress", "doublePress", "longPress"],
+    "mapped_values": [
+      ["btn_clicked", "singlePress", "singlePress"],
+      ["btn_double_clicked", "doublePress", "doublePress"],
+      ["btn_long_clicked", "longPress", "longPress"]
+    ]
   },
   "rssi": {
     "data_type": "char",
