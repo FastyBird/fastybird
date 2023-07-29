@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * StateEntityDeleted.php
+ * DevicePropertyStateEntityDeleted.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,7 +10,7 @@
  * @subpackage     Events
  * @since          1.0.0
  *
- * @date           22.06.22
+ * @date           29.07.23
  */
 
 namespace FastyBird\Module\Devices\Events;
@@ -20,23 +20,23 @@ use FastyBird\Module\Devices\Entities;
 use Symfony\Contracts\EventDispatcher;
 
 /**
- * State entity was deleted event
+ * Device property state entity was deleted event
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Events
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class StateEntityDeleted extends EventDispatcher\Event
+class DevicePropertyStateEntityDeleted extends EventDispatcher\Event
 {
 
 	public function __construct(
-		private readonly MetadataEntities\DevicesModule\DynamicProperty|Entities\Connectors\Properties\Dynamic|Entities\Devices\Properties\Dynamic|Entities\Channels\Properties\Dynamic $property,
+		private readonly MetadataEntities\DevicesModule\DeviceDynamicProperty|Entities\Devices\Properties\Dynamic $property,
 	)
 	{
 	}
 
-	public function getProperty(): MetadataEntities\DevicesModule\DynamicProperty|Entities\Connectors\Properties\Dynamic|Entities\Devices\Properties\Dynamic|Entities\Channels\Properties\Dynamic
+	public function getProperty(): MetadataEntities\DevicesModule\DeviceDynamicProperty|Entities\Devices\Properties\Dynamic
 	{
 		return $this->property;
 	}

@@ -24,6 +24,7 @@ use FastyBird\Connector\Shelly\Consumers;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -143,7 +144,7 @@ final class Coap implements Clients\Client
 	public function writeChannelProperty(
 		Entities\ShellyDevice $device,
 		DevicesEntities\Channels\Channel $channel,
-		DevicesEntities\Channels\Properties\Dynamic $property,
+		DevicesEntities\Channels\Properties\Dynamic|MetadataEntities\DevicesModule\ChannelDynamicProperty $property,
 	): Promise\PromiseInterface
 	{
 		return Promise\reject(new Exceptions\InvalidState('Coap client does not support channel writing'));

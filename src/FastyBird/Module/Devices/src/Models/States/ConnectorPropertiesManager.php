@@ -74,7 +74,7 @@ final class ConnectorPropertiesManager
 
 		$createdState = $this->manager->create($property->getId(), $values);
 
-		$this->dispatcher?->dispatch(new Events\StateEntityCreated($property, $createdState));
+		$this->dispatcher?->dispatch(new Events\ConnectorPropertyStateEntityCreated($property, $createdState));
 
 		return $createdState;
 	}
@@ -106,7 +106,7 @@ final class ConnectorPropertiesManager
 			);
 		}
 
-		$this->dispatcher?->dispatch(new Events\StateEntityUpdated($property, $state, $updatedState));
+		$this->dispatcher?->dispatch(new Events\ConnectorPropertyStateEntityUpdated($property, $state, $updatedState));
 
 		return $updatedState;
 	}
@@ -132,7 +132,7 @@ final class ConnectorPropertiesManager
 
 		$result = $this->manager->delete($state);
 
-		$this->dispatcher?->dispatch(new Events\StateEntityDeleted($property));
+		$this->dispatcher?->dispatch(new Events\ConnectorPropertyStateEntityDeleted($property));
 
 		return $result;
 	}

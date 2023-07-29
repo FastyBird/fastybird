@@ -138,7 +138,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 
 			assert($device instanceof Entities\FbMqttDevice);
 
-			$client->writeProperty($device, $property)
+			$client->writeDeviceProperty($device, $property)
 				->then(function () use ($property): void {
 					$this->propertyStateHelper->setValue(
 						$property,
@@ -201,7 +201,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 
 			assert($device instanceof Entities\FbMqttDevice);
 
-			$client->writeProperty($device, $property)
+			$client->writeChannelProperty($device, $channel, $property)
 				->then(function () use ($property): void {
 					$this->propertyStateHelper->setValue(
 						$property,

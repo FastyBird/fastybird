@@ -20,6 +20,7 @@ use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Clients;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Helpers;
+use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
@@ -60,6 +61,7 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 	public function __construct(
 		private readonly Helpers\Property $propertyStateHelper,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
+		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly NsPanel\Logger $logger,
@@ -70,8 +72,8 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 	public static function getSubscribedEvents(): array
 	{
 		return [
-			DevicesEvents\StateEntityCreated::class => 'stateChanged',
-			DevicesEvents\StateEntityUpdated::class => 'stateChanged',
+			DevicesEvents\ChannelPropertyStateEntityCreated::class => 'stateChanged',
+			DevicesEvents\ChannelPropertyStateEntityUpdated::class => 'stateChanged',
 		];
 	}
 
@@ -96,7 +98,9 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function stateChanged(DevicesEvents\StateEntityCreated|DevicesEvents\StateEntityUpdated $event): void
+	public function stateChanged(
+		DevicesEvents\ChannelPropertyStateEntityCreated|DevicesEvents\ChannelPropertyStateEntityUpdated $event,
+	): void
 	{
 		foreach ($this->clients as $id => $client) {
 			if ($client instanceof Clients\Gateway) {
@@ -107,17 +111,16 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 		}
 	}
 
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 */
 	public function processGatewayClient(
 		Uuid\UuidInterface $connectorId,
-		DevicesEvents\StateEntityCreated|DevicesEvents\StateEntityUpdated $event,
+		DevicesEvents\ChannelPropertyStateEntityCreated|DevicesEvents\ChannelPropertyStateEntityUpdated $event,
 		Clients\Client $client,
 	): void
 	{
 		$property = $event->getProperty();
-
-		if (!$property instanceof DevicesEntities\Channels\Properties\Dynamic) {
-			return;
-		}
 
 		$state = $event->getState();
 
@@ -125,15 +128,28 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 			return;
 		}
 
-		if (!$property->getChannel()->getDevice()->getConnector()->getId()->equals($connectorId)) {
+		if ($property->getChannel() instanceof DevicesEntities\Channels\Channel) {
+			$channel = $property->getChannel();
+			assert($channel instanceof Entities\NsPanelChannel);
+
+		} else {
+			$findChannelQuery = new Queries\FindChannels();
+			$findChannelQuery->byId($property->getChannel());
+
+			$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\NsPanelChannel::class);
+		}
+
+		if ($channel === null) {
 			return;
 		}
 
-		$device = $property->getChannel()->getDevice();
-		$channel = $property->getChannel();
+		if (!$channel->getDevice()->getConnector()->getId()->equals($connectorId)) {
+			return;
+		}
+
+		$device = $channel->getDevice();
 
 		assert($device instanceof Entities\Devices\SubDevice);
-		assert($channel instanceof Entities\NsPanelChannel);
 
 		$this->writeChannelProperty($client, $connectorId, $device, $channel, $property);
 	}
@@ -145,16 +161,17 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 	 */
 	public function processDeviceClient(
 		Uuid\UuidInterface $connectorId,
-		DevicesEvents\StateEntityCreated|DevicesEvents\StateEntityUpdated $event,
+		DevicesEvents\ChannelPropertyStateEntityCreated|DevicesEvents\ChannelPropertyStateEntityUpdated $event,
 		Clients\Client $client,
 	): void
 	{
 		$property = $event->getProperty();
 
 		foreach ($this->findChildren($property) as $child) {
-			if (
-				!$child->getChannel()->getDevice()->getConnector()->getId()->equals($connectorId)
-			) {
+			$channel = $property->getChannel();
+			assert($channel instanceof Entities\NsPanelChannel);
+
+			if (!$channel->getDevice()->getConnector()->getId()->equals($connectorId)) {
 				continue;
 			}
 
@@ -164,11 +181,9 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 				continue;
 			}
 
-			$device = $child->getChannel()->getDevice();
-			$channel = $child->getChannel();
+			$device = $channel->getDevice();
 
 			assert($device instanceof Entities\Devices\ThirdPartyDevice);
-			assert($channel instanceof Entities\NsPanelChannel);
 
 			$this->writeChannelProperty($client, $connectorId, $device, $channel, $child);
 		}
@@ -179,7 +194,8 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 		Uuid\UuidInterface $connectorId,
 		Entities\NsPanelDevice $device,
 		Entities\NsPanelChannel $channel,
-		DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped $property,
+		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+		DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped|MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelMappedProperty $property,
 	): void
 	{
 		$now = $this->dateTimeFactory->getNow();
@@ -216,7 +232,7 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 							'id' => $channel->getPlainId(),
 						],
 						'property' => [
-							'id' => $property->getPlainId(),
+							'id' => $property->getId()->toString(),
 						],
 					],
 				);
@@ -240,20 +256,22 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 	 */
 	private function findChildren(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		MetadataEntities\DevicesModule\DynamicProperty|DevicesEntities\Connectors\Properties\Dynamic|DevicesEntities\Devices\Properties\Dynamic|DevicesEntities\Channels\Properties\Dynamic $property,
+		DevicesEntities\Channels\Properties\Dynamic|MetadataEntities\DevicesModule\ChannelDynamicProperty $property,
 	): array
 	{
-		if ($property instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty) {
-			$findPropertyQuery = new DevicesQueries\FindChannelMappedProperties();
-			$findPropertyQuery->byParentId($property->getId());
+		$findPropertyQuery = new DevicesQueries\FindChannelMappedProperties();
 
-			return $this->channelPropertiesRepository->findAllBy(
-				$findPropertyQuery,
-				DevicesEntities\Channels\Properties\Mapped::class,
-			);
+		if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
+			$findPropertyQuery->forParent($property);
+
+		} else {
+			$findPropertyQuery->byParentId($property->getId());
 		}
 
-		return [];
+		return $this->channelPropertiesRepository->findAllBy(
+			$findPropertyQuery,
+			DevicesEntities\Channels\Properties\Mapped::class,
+		);
 	}
 
 }

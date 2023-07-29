@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\NsPanel\Clients;
 
 use FastyBird\Connector\NsPanel\Entities;
+use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use React\Promise;
 
@@ -46,7 +47,8 @@ interface Client
 	public function writeChannelProperty(
 		Entities\NsPanelDevice $device,
 		Entities\NsPanelChannel $channel,
-		DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped $property,
+		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+		DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped|MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelMappedProperty $property,
 	): Promise\PromiseInterface;
 
 }

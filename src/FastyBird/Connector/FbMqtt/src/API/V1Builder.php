@@ -107,7 +107,7 @@ final class V1Builder
 
 	public function buildDevicePropertyTopic(
 		Entities\FbMqttDevice $device,
-		DevicesEntities\Devices\Properties\Dynamic $property,
+		DevicesEntities\Devices\Properties\Dynamic|MetadataEntities\DevicesModule\DeviceDynamicProperty $property,
 	): string
 	{
 		$topic = self::DEVICE_PROPERTY_TOPIC;
@@ -130,7 +130,7 @@ final class V1Builder
 	public function buildChannelPropertyTopic(
 		Entities\FbMqttDevice $device,
 		DevicesEntities\Channels\Channel $channel,
-		DevicesEntities\Channels\Properties\Dynamic $property,
+		DevicesEntities\Channels\Properties\Dynamic|MetadataEntities\DevicesModule\ChannelDynamicProperty $property,
 	): string
 	{
 		$topic = self::CHANNEL_PROPERTY_TOPIC;

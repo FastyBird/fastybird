@@ -19,11 +19,16 @@ use DateTimeInterface;
 use FastyBird\Connector\FbMqtt\Clients;
 use FastyBird\Connector\FbMqtt\Entities;
 use FastyBird\Connector\FbMqtt\Helpers;
+use FastyBird\Connector\FbMqtt\Queries;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Events as DevicesEvents;
+use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\States as DevicesStates;
 use Nette;
 use Nette\Utils;
@@ -54,6 +59,8 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 	public function __construct(
 		private readonly Helpers\Property $propertyStateHelper,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
+		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
@@ -62,8 +69,10 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 	public static function getSubscribedEvents(): array
 	{
 		return [
-			DevicesEvents\StateEntityCreated::class => 'stateChanged',
-			DevicesEvents\StateEntityUpdated::class => 'stateChanged',
+			DevicesEvents\DevicePropertyStateEntityCreated::class => 'stateChanged',
+			DevicesEvents\DevicePropertyStateEntityUpdated::class => 'stateChanged',
+			DevicesEvents\ChannelPropertyStateEntityCreated::class => 'stateChanged',
+			DevicesEvents\ChannelPropertyStateEntityUpdated::class => 'stateChanged',
 		];
 	}
 
@@ -83,16 +92,26 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 		unset($this->clients[$connector->getPlainId()]);
 	}
 
-	public function stateChanged(DevicesEvents\StateEntityCreated|DevicesEvents\StateEntityUpdated $event): void
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 */
+	public function stateChanged(
+		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+		DevicesEvents\DevicePropertyStateEntityCreated|DevicesEvents\DevicePropertyStateEntityUpdated|DevicesEvents\ChannelPropertyStateEntityCreated|DevicesEvents\ChannelPropertyStateEntityUpdated $event,
+	): void
 	{
 		foreach ($this->clients as $id => $client) {
 			$this->processClient(Uuid\Uuid::fromString($id), $event, $client);
 		}
 	}
 
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 */
 	public function processClient(
 		Uuid\UuidInterface $connectorId,
-		DevicesEvents\StateEntityCreated|DevicesEvents\StateEntityUpdated $event,
+		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+		DevicesEvents\DevicePropertyStateEntityCreated|DevicesEvents\DevicePropertyStateEntityUpdated|DevicesEvents\ChannelPropertyStateEntityCreated|DevicesEvents\ChannelPropertyStateEntityUpdated $event,
 		Clients\Client $client,
 	): void
 	{
@@ -104,16 +123,30 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 			return;
 		}
 
-		if ($property instanceof DevicesEntities\Devices\Properties\Dynamic) {
-			if (!$property->getDevice()->getConnector()->getId()->equals($connectorId)) {
+		if (
+			$property instanceof DevicesEntities\Devices\Properties\Dynamic
+			|| $property instanceof MetadataEntities\DevicesModule\DeviceDynamicProperty
+		) {
+			if ($property->getDevice() instanceof DevicesEntities\Devices\Device) {
+				$device = $property->getDevice();
+				assert($device instanceof Entities\FbMqttDevice);
+
+			} else {
+				$findDeviceQuery = new Queries\FindDevices();
+				$findDeviceQuery->byId($property->getDevice());
+
+				$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\FbMqttDevice::class);
+			}
+
+			if ($device === null) {
 				return;
 			}
 
-			$device = $property->getDevice();
+			if (!$device->getConnector()->getId()->equals($connectorId)) {
+				return;
+			}
 
-			assert($device instanceof Entities\FbMqttDevice);
-
-			$client->writeProperty($device, $property)
+			$client->writeDeviceProperty($device, $property)
 				->then(function () use ($property): void {
 					$this->propertyStateHelper->setValue(
 						$property,
@@ -138,7 +171,7 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 								'id' => $device->getPlainId(),
 							],
 							'property' => [
-								'id' => $property->getPlainId(),
+								'id' => $property->getId()->toString(),
 							],
 						],
 					);
@@ -151,17 +184,30 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 						]),
 					);
 				});
-		} elseif ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
-			if (!$property->getChannel()->getDevice()->getConnector()->getId()->equals($connectorId)) {
+		} else {
+			if ($property->getChannel() instanceof DevicesEntities\Channels\Channel) {
+				$channel = $property->getChannel();
+
+			} else {
+				$findChannelQuery = new DevicesQueries\FindChannels();
+				$findChannelQuery->byId($property->getChannel());
+
+				$channel = $this->channelsRepository->findOneBy($findChannelQuery);
+			}
+
+			if ($channel === null) {
 				return;
 			}
 
-			$device = $property->getChannel()->getDevice();
-			$channel = $property->getChannel();
+			if (!$channel->getDevice()->getConnector()->getId()->equals($connectorId)) {
+				return;
+			}
+
+			$device = $channel->getDevice();
 
 			assert($device instanceof Entities\FbMqttDevice);
 
-			$client->writeProperty($device, $property)
+			$client->writeChannelProperty($device, $channel, $property)
 				->then(function () use ($property): void {
 					$this->propertyStateHelper->setValue(
 						$property,
@@ -189,7 +235,7 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 								'id' => $channel->getPlainId(),
 							],
 							'property' => [
-								'id' => $property->getPlainId(),
+								'id' => $property->getId()->toString(),
 							],
 						],
 					);

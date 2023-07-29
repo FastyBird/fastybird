@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * StateEntityCreated.php
+ * DevicePropertyStateEntityUpdated.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,7 +10,7 @@
  * @subpackage     Events
  * @since          1.0.0
  *
- * @date           22.06.22
+ * @date           29.07.23
  */
 
 namespace FastyBird\Module\Devices\Events;
@@ -21,29 +21,35 @@ use FastyBird\Module\Devices\States;
 use Symfony\Contracts\EventDispatcher;
 
 /**
- * State entity was created event
+ * Device property state entity was updated event
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Events
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class StateEntityCreated extends EventDispatcher\Event
+class DevicePropertyStateEntityUpdated extends EventDispatcher\Event
 {
 
 	public function __construct(
-		private readonly MetadataEntities\DevicesModule\DynamicProperty|Entities\Connectors\Properties\Dynamic|Entities\Devices\Properties\Dynamic|Entities\Channels\Properties\Dynamic $property,
-		private readonly States\ConnectorProperty|States\ChannelProperty|States\DeviceProperty $state,
+		private readonly MetadataEntities\DevicesModule\DeviceDynamicProperty|Entities\Devices\Properties\Dynamic $property,
+		private readonly States\DeviceProperty $previousState,
+		private readonly States\DeviceProperty $state,
 	)
 	{
 	}
 
-	public function getProperty(): MetadataEntities\DevicesModule\DynamicProperty|Entities\Connectors\Properties\Dynamic|Entities\Devices\Properties\Dynamic|Entities\Channels\Properties\Dynamic
+	public function getProperty(): MetadataEntities\DevicesModule\DeviceDynamicProperty|Entities\Devices\Properties\Dynamic
 	{
 		return $this->property;
 	}
 
-	public function getState(): States\ConnectorProperty|States\ChannelProperty|States\DeviceProperty
+	public function getPreviousState(): States\DeviceProperty
+	{
+		return $this->previousState;
+	}
+
+	public function getState(): States\DeviceProperty
 	{
 		return $this->state;
 	}
