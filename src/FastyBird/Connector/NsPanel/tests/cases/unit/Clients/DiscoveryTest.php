@@ -9,6 +9,7 @@ use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Tests\Cases\Unit\DbTestCase;
+use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -149,6 +150,29 @@ final class DiscoveryTest extends DbTestCase
 		$device = $devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\SubDevice::class);
 
 		self::assertInstanceOf(Entities\Devices\SubDevice::class, $device);
+
+		$channelsRepository = $this->getContainer()->getByType(DevicesModels\Channels\ChannelsRepository::class);
+
+		$findChannelsQuery = new Queries\FindChannels();
+		$findChannelsQuery->forDevice($device);
+
+		$channels = $channelsRepository->findAllBy($findChannelsQuery, Entities\NsPanelChannel::class);
+
+		self::assertCount(4, $channels);
+
+		foreach ($channels as $channel) {
+			self::assertContains(
+				$channel->getCapability()->getValue(),
+				[
+					Types\Capability::TEMPERATURE,
+					Types\Capability::HUMIDITY,
+					Types\Capability::BATTERY,
+					Types\Capability::RSSI,
+				],
+			);
+
+			self::assertCount(1, $channel->getProperties());
+		}
 	}
 
 }

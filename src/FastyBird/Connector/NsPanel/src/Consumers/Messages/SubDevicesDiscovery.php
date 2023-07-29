@@ -211,6 +211,7 @@ final class SubDevicesDiscovery implements Consumer
 
 				if ($channel === null) {
 					$channel = $this->channelsManager->create(Utils\ArrayHash::from([
+						'entity' => Entities\NsPanelChannel::class,
 						'device' => $device,
 						'identifier' => $identifier,
 					]));
