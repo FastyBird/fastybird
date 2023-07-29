@@ -116,6 +116,7 @@ export default defineComponent({
 		const left = ref<HTMLElement | null>(null);
 		const right = ref<HTMLElement | null>(null);
 
+		// eslint-disable-next-line vue/no-setup-props-destructure
 		const innerRevealed = ref<boolean | TFbUiSwipeActionsOutDir>(props.revealed || false);
 		const animationFrame = ref<number | null>(null);
 
