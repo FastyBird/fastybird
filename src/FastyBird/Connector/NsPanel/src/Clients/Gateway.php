@@ -22,6 +22,7 @@ use FastyBird\Connector\NsPanel\Consumers;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
+use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Connector\NsPanel\Writers;
 use FastyBird\DateTimeFactory;
@@ -203,12 +204,10 @@ final class Gateway implements Client
 	 */
 	private function handleCommunication(): void
 	{
-		$findDevicesQuery = new DevicesQueries\FindDevices();
+		$findDevicesQuery = new Queries\FindGatewayDevices();
 		$findDevicesQuery->forConnector($this->connector);
 
 		foreach ($this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\Gateway::class) as $device) {
-			assert($device instanceof Entities\Devices\Gateway);
-
 			if (
 				!in_array($device->getPlainId(), $this->processedDevices, true)
 				&& !$this->deviceConnectionManager->getState($device)->equalsValue(
@@ -416,13 +415,16 @@ final class Gateway implements Client
 					$capabilityStatuses = [];
 
 					foreach ($subDevice->getStatuses() as $status) {
-						$findChannelQuery = new DevicesQueries\FindChannels();
+						$findChannelQuery = new Queries\FindChannels();
 						$findChannelQuery->byDeviceIdentifier($subDevice->getSerialNumber());
 						$findChannelQuery->byIdentifier(
 							Helpers\Name::convertCapabilityToChannel($status->getType(), $status->getName()),
 						);
 
-						$channel = $this->channelsRepository->findOneBy($findChannelQuery);
+						$channel = $this->channelsRepository->findOneBy(
+							$findChannelQuery,
+							Entities\NsPanelChannel::class,
+						);
 
 						if ($channel !== null) {
 							$findChannelPropertiesQuery = new DevicesQueries\FindChannelProperties();

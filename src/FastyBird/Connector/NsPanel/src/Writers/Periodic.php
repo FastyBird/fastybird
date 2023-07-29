@@ -21,6 +21,7 @@ use FastyBird\Connector\NsPanel\Clients;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
+use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -28,7 +29,6 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
@@ -37,7 +37,6 @@ use Ramsey\Uuid;
 use React\EventLoop;
 use Throwable;
 use function array_key_exists;
-use function assert;
 use function in_array;
 
 /**
@@ -129,20 +128,21 @@ class Periodic implements Writer
 	private function handleCommunication(): void
 	{
 		foreach ($this->clients as $id => $client) {
-			$findDevicesQuery = new DevicesQueries\FindDevices();
-			$findDevicesQuery->byConnectorId(Uuid\Uuid::fromString($id));
-
 			$devices = [];
 
 			if ($client instanceof Clients\Gateway) {
+				$findDevicesQuery = new Queries\FindSubDevices();
+				$findDevicesQuery->byConnectorId(Uuid\Uuid::fromString($id));
+
 				$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\SubDevice::class);
 			} elseif ($client instanceof Clients\Device) {
+				$findDevicesQuery = new Queries\FindThirdPartyDevices();
+				$findDevicesQuery->byConnectorId(Uuid\Uuid::fromString($id));
+
 				$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\Device::class);
 			}
 
 			foreach ($devices as $device) {
-				assert($device instanceof Entities\Devices\SubDevice || $device instanceof Entities\Devices\Device);
-
 				if (!in_array($device->getPlainId(), $this->processedDevices, true)) {
 					$this->processedDevices[] = $device->getPlainId();
 
@@ -189,14 +189,12 @@ class Periodic implements Writer
 	{
 		$now = $this->dateTimeFactory->getNow();
 
-		$findChannelsQuery = new DevicesQueries\FindChannels();
+		$findChannelsQuery = new Queries\FindChannels();
 		$findChannelsQuery->forDevice($device);
 
 		$channels = $this->channelsRepository->findAllBy($findChannelsQuery, Entities\NsPanelChannel::class);
 
 		foreach ($channels as $channel) {
-			assert($channel instanceof Entities\NsPanelChannel);
-
 			foreach ($channel->getProperties() as $property) {
 				if (!$property instanceof DevicesEntities\Channels\Properties\Dynamic) {
 					continue;
@@ -318,14 +316,12 @@ class Periodic implements Writer
 	{
 		$now = $this->dateTimeFactory->getNow();
 
-		$findChannelsQuery = new DevicesQueries\FindChannels();
+		$findChannelsQuery = new Queries\FindChannels();
 		$findChannelsQuery->forDevice($device);
 
 		$channels = $this->channelsRepository->findAllBy($findChannelsQuery, Entities\NsPanelChannel::class);
 
 		foreach ($channels as $channel) {
-			assert($channel instanceof Entities\NsPanelChannel);
-
 			foreach ($channel->getProperties() as $property) {
 				if (!$property instanceof DevicesEntities\Channels\Properties\Mapped) {
 					continue;

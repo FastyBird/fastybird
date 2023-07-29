@@ -19,6 +19,7 @@ use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Consumers;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Helpers;
+use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
@@ -28,7 +29,6 @@ use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\States as DevicesStates;
 use Nette;
 use Nette\Utils;
-use function assert;
 
 /**
  * Device status message consumer
@@ -64,23 +64,22 @@ final class Status implements Consumers\Consumer
 			return false;
 		}
 
-		$findDeviceQuery = new DevicesQueries\FindDevices();
+		$findDeviceQuery = new Queries\FindDevices();
 		$findDeviceQuery->byConnectorId($entity->getConnector());
 		$findDeviceQuery->startWithIdentifier($entity->getIdentifier());
 
 		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\NsPanelDevice::class);
-		assert($device instanceof Entities\NsPanelDevice || $device === null);
 
 		if ($device === null) {
 			return true;
 		}
 
 		foreach ($entity->getStatuses() as $status) {
-			$findChannelQuery = new DevicesQueries\FindChannels();
+			$findChannelQuery = new Queries\FindChannels();
 			$findChannelQuery->forDevice($device);
 			$findChannelQuery->byId($status->getChanel());
 
-			$channel = $this->channelsRepository->findOneBy($findChannelQuery);
+			$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\NsPanelChannel::class);
 
 			if ($channel !== null) {
 				$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();

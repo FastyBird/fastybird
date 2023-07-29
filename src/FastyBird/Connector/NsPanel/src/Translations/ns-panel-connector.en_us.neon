@@ -89,6 +89,8 @@ cmd:
             create: "Create new connector configuration"
             update: "Edit existing connector configuration"
             remove: "Delete existing connector configuration"
+            list: "List NS Panel connectors"
+            nothing: "Nothing"
 
         questions:
             create: "Would you like to create new NS Panel connector configuration?"
@@ -99,6 +101,12 @@ cmd:
                 name: "Provide connector name"
             select:
                 connector: "Please select connector to manage"
+
+        data:
+            name: "Name"
+            panelsCnt: "#NS Panels"
+            subDevicesCnt: "#Sub-devices"
+            devicesCnt: "#Devices"
 
         messages:
             identifier:
@@ -117,27 +125,32 @@ cmd:
 
     devices:
         title: "NS Panel connector - devices management"
-        subtitle: "This action will create|update|delete connector device"
+        subtitle: "This action will manage connector NS Panels and their devices"
 
         actions:
             create:
-                device: "Create new gateway device"
-                gateway: "Create new gateway device"
+                gateway: "Connect new NS Panel"
+                device: "Create new device"
                 capability: "Create new device capability"
             update:
-                device: "Edit existing gateway device"
-                gateway: "Edit existing gateway device"
+                gateway: "Edit existing NS Panel"
+                device: "Edit existing device"
                 capability: "Edit existing device capability"
                 protocol: "Edit existing capability protocol"
             remove:
-                device: "Delete existing gateway device"
-                gateway: "Delete existing gateway device"
+                gateway: "Delete existing NS Panel"
+                device: "Delete existing device"
                 capability: "Delete existing device capability"
                 protocol: "Delete existing capability protocol"
             list:
-                gateways: "List gateways"
+                gateways: "List NS Panels"
+                devices: "List devices"
                 capabilities: "List device capabilities"
                 protocols: "List capability protocols"
+            manage:
+                gateway: "Manage NS Panel devices"
+                device: "Manage device capabilities"
+                capability: "Manage capability protocols"
             nothing: "Nothing"
 
         questions:
@@ -150,29 +163,25 @@ cmd:
                 name: "Provide device name"
                 value: "Provide protocol value"
                 address: "Provide NS Panel local IP address or domain"
-                port: "Provide communication port or leave blank for use dynamic"
             select:
                 connector: "Please select connector under which you want to manage devices"
                 gateway: "Please select NS Panel to manage"
                 device: "Please select device to manage"
-                category: "Please select device category"
                 capability: "Please select device's capability"
                 protocol: "Please select capability's protocol"
-                value: "Please select protocol value"
-                propertyType: "What type of property you want to map?"
+                category: "Please select device category"
+                capabilityType: "What type of device capability you would like to add?"
+                protocolType: "What type of capability protocol you would like to add?"
                 mappedDevice: "Select device for mapping"
+                propertyType: "What type of property you want to map?"
                 mappedDeviceProperty: "Select device property for mapping"
                 mappedDeviceChannel: "Select device channel for mapping"
                 mappedChannelProperty: "Select channel property for mapping"
-                capabilityType: "What type of device capability you would like to add?"
-                requiredProtocol: "What type of capability protocol you would like to add?"
                 valueMapping: "Select device value which will be mapped to: %value%"
-            connectProtocol: "Connect protocol with device?"
-            createAnotherCapability: "Would you like to configure another device capability?"
-            editCapabilities: "Would you like to manage device capabilities?"
-            addProtocols: "Would you like to add new protocols?"
-            connection: "Do you want to change NS Panel connection?"
+                value: "Please select protocol value"
             isGatewayReady: "Is your NS Panel ready?"
+            regenerateAccessToken: "Would you like to establish new connection with NS Panel?"
+            connectProtocol: "Connect protocol with device?"
 
         answers:
             none: "None"
@@ -181,10 +190,17 @@ cmd:
             deviceProperty: "Device property"
             channelProperty: "Channel property"
 
+        data:
+            name: "Name"
+            ipAddress: "IP Address"
+            devices: "Devices"
+            category: "Category"
+            capabilities: "Capabilities"
+            type: "Type"
+            protocols: "Protocols"
+            value: "Value"
+
         messages:
-            identifier:
-                used: "This identifier is already used."
-                missing: "Identifier have to provided."
             create:
                 gateway:
                     success: "NS Panel \"%name%\" was successfully created."
@@ -195,6 +211,9 @@ cmd:
                 capability:
                     success: "Capability \"%name%\" was successfully created."
                     error: "Something went wrong, capability could not be created. Error was logged."
+                protocol:
+                    success: "Protocol \"%name%\" was successfully created."
+                    error: "Something went wrong, protocol could not be created. Error was logged."
             update:
                 gateway:
                     success: "NS Panel \"%name%\" was successfully updated."
@@ -221,22 +240,26 @@ cmd:
                 protocol:
                     success: "Protocol \"%name%\" was successfully removed."
                     error: "Something went wrong, protocol could not be removed. Error was logged."
+            identifier:
+                used: "This identifier is already used."
+                missing: "Identifier have to provided."
+            gateway:
+                prepare: "Now you have to prepare your NS Panel for pairing. Go to Settings, then to About and tap 7 times in a row on Name."
+            accessToken:
+                error: "Could not get NS Panel access token"
             noGateways: "No NS Panels registered in NS Panel connector."
-            noDevices: "No devices registered in NS Panel."
-            noCapabilities: "This device has not configured any capability."
+            noDevices: "No devices are registered in \"%name%\" NS Panel."
+            noCapabilities: "No capabilities are registered in \"%name%\" device."
             noProtocols: "This device capability has not configured any protocol."
-            noMissingProtocols: "All available protocols for selected capability are configured"
-            capabilityNotFound: "Something went wrong, capability could not be loaded"
-            protocolNotFound: "Something went wrong, protocol could not be loaded"
-            noHardwareDevices: "No devices registered in system"
-            addressNotReachable: "NS Panel with address \"%s\" is not reachable."
             noMultipleCapabilities: "Capability \"%type%\" is already created under this device"
-            getAccessTokenFailed: "Could not get NS Panel access token"
-            prepareGateway: "Now you have to prepare your NS Panel for pairing. Go to Settings, then to About and tap 7 times in a row on Name."
+            noMissingProtocols: "All available protocols for selected capability are configured"
+            noHardwareDevices: "No devices registered in system which could be connected with NS Panel device"
+            addressNotReachable: "NS Panel with address \"%address%\" is not reachable."
+            removeDeviceFromPanelFailed: "Device \"%name%\" could not be removed from NS panel \"%panel%\""
 
     execute:
-        title: "NS Panel connector - capability"
-        subtitle: "This action will run connector capability"
+        title: "NS Panel connector - service"
+        subtitle: "This action will run connector service"
 
         questions:
             execute: "Would you like to execute \"%connector%\" connector"
@@ -248,9 +271,6 @@ cmd:
                 notFound: "Connector was not found in system."
                 disabled: "Connector is disabled. Disabled connector could not be executed."
             noConnectors: "No NS Panel connectors registered in system."
-            uriPath: "Setup payload: %path%"
-            scanCode: "Scan this code with your NS Panel app on your iOS device:"
-            pinCode: "Or enter this code in your NS Panel app on your iOS device: %code%."
             error: "Something went wrong, capability could not be processed."
 
     discovery:

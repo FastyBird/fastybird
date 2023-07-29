@@ -21,6 +21,7 @@ use FastyBird\Connector\NsPanel\Consumers;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
+use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Connector\NsPanel\Writers;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
@@ -29,7 +30,6 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use React\Promise;
@@ -84,12 +84,10 @@ final class Device implements Client
 	 */
 	public function connect(): void
 	{
-		$findDevicesQuery = new DevicesQueries\FindDevices();
+		$findDevicesQuery = new Queries\FindGatewayDevices();
 		$findDevicesQuery->forConnector($this->connector);
 
 		foreach ($this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\Gateway::class) as $gateway) {
-			assert($gateway instanceof Entities\Devices\Gateway);
-
 			$ipAddress = $gateway->getIpAddress();
 			$accessToken = $gateway->getAccessToken();
 
@@ -97,7 +95,7 @@ final class Device implements Client
 				continue;
 			}
 
-			$findDevicesQuery = new DevicesQueries\FindDevices();
+			$findDevicesQuery = new Queries\FindThirdPartyDevices();
 			$findDevicesQuery->forConnector($this->connector);
 			$findDevicesQuery->forParent($gateway);
 
@@ -238,12 +236,10 @@ final class Device implements Client
 	{
 		$this->writer->disconnect($this->connector, $this);
 
-		$findDevicesQuery = new DevicesQueries\FindDevices();
+		$findDevicesQuery = new Queries\FindGatewayDevices();
 		$findDevicesQuery->forConnector($this->connector);
 
 		foreach ($this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\Gateway::class) as $gateway) {
-			assert($gateway instanceof Entities\Devices\Gateway);
-
 			$ipAddress = $gateway->getIpAddress();
 			$accessToken = $gateway->getAccessToken();
 
@@ -251,7 +247,7 @@ final class Device implements Client
 				continue;
 			}
 
-			$findDevicesQuery = new DevicesQueries\FindDevices();
+			$findDevicesQuery = new Queries\FindThirdPartyDevices();
 			$findDevicesQuery->forConnector($this->connector);
 			$findDevicesQuery->forParent($gateway);
 
@@ -259,8 +255,6 @@ final class Device implements Client
 				$findDevicesQuery,
 				Entities\Devices\Device::class,
 			) as $device) {
-				assert($device instanceof Entities\Devices\Device);
-
 				try {
 					$serialNumber = $device->getGatewayIdentifier();
 

@@ -24,6 +24,7 @@ use FastyBird\Connector\NsPanel\API;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
+use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -45,7 +46,6 @@ use Symfony\Component\Console\Output;
 use Symfony\Component\Console\Style;
 use Throwable;
 use function array_combine;
-use function array_diff;
 use function array_filter;
 use function array_key_exists;
 use function array_keys;
@@ -158,43 +158,18 @@ class Devices extends Console\Command\Command
 
 		$this->askGatewayAction($io, $connector);
 
-		$gateway = $this->askWhichGateway($io, $connector);
-
-		if ($gateway === null) {
-			$io->warning($this->translator->translate('//ns-panel-connector.cmd.devices.messages.noGateways'));
-
-			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//ns-panel-connector.cmd.devices.questions.create.gateway'),
-				false,
-			);
-
-			$continue = (bool) $io->askQuestion($question);
-
-			if ($continue) {
-				$gateway = $this->createNewGateway($io, $connector);
-
-				if ($gateway === null) {
-					return Console\Command\Command::FAILURE;
-				}
-			} else {
-				return Console\Command\Command::SUCCESS;
-			}
-		}
-
-		$this->askDeviceAction($io, $connector, $gateway);
-
 		return Console\Command\Command::SUCCESS;
 	}
 
 	/**
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 */
-	private function createNewGateway(
+	private function createGateway(
 		Style\SymfonyStyle $io,
 		Entities\NsPanelConnector $connector,
-		bool $editMode = false,
 	): Entities\Devices\Gateway|null
 	{
 		$question = new Console\Question\Question(
@@ -203,8 +178,7 @@ class Devices extends Console\Command\Command
 
 		$question->setValidator(function (string|null $answer) {
 			if ($answer !== '' && $answer !== null) {
-				/** @var DevicesQueries\FindDevices<Entities\NsPanelDevice> $findDeviceQuery */
-				$findDeviceQuery = new DevicesQueries\FindDevices();
+				$findDeviceQuery = new Queries\FindDevices();
 				$findDeviceQuery->byIdentifier($answer);
 
 				if (
@@ -224,19 +198,7 @@ class Devices extends Console\Command\Command
 		if ($identifier === '' || $identifier === null) {
 			$identifierPattern = 'ns-panel-gw-%d';
 
-			for ($i = 1; $i <= 100; $i++) {
-				$identifier = sprintf($identifierPattern, $i);
-
-				/** @var DevicesQueries\FindDevices<Entities\NsPanelDevice> $findDeviceQuery */
-				$findDeviceQuery = new DevicesQueries\FindDevices();
-				$findDeviceQuery->byIdentifier($identifier);
-
-				if (
-					$this->devicesRepository->findOneBy($findDeviceQuery, Entities\NsPanelDevice::class) === null
-				) {
-					break;
-				}
-			}
+			$identifier = $this->findNextDeviceIdentifier($connector, $identifierPattern);
 		}
 
 		if ($identifier === '') {
@@ -251,7 +213,7 @@ class Devices extends Console\Command\Command
 
 		$panelInfo = $this->askWhichPanel($io, $identifier);
 
-		$io->note($this->translator->translate('//ns-panel-connector.cmd.devices.messages.prepareGateway'));
+		$io->note($this->translator->translate('//ns-panel-connector.cmd.devices.messages.gateway.prepare'));
 
 		do {
 			$question = new Console\Question\ConfirmationQuestion(
@@ -286,7 +248,7 @@ class Devices extends Console\Command\Command
 			);
 		} catch (Exceptions\LanApiCall) {
 			$io->error(
-				$this->translator->translate('//ns-panel-connector.cmd.devices.messages.getAccessTokenFailed'),
+				$this->translator->translate('//ns-panel-connector.cmd.devices.messages.accessToken.error'),
 			);
 
 			return null;
@@ -385,9 +347,10 @@ class Devices extends Console\Command\Command
 	/**
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 */
-	private function editExistingGateway(
+	private function editGateway(
 		Style\SymfonyStyle $io,
 		Entities\NsPanelConnector $connector,
 	): void
@@ -405,7 +368,7 @@ class Devices extends Console\Command\Command
 			$continue = (bool) $io->askQuestion($question);
 
 			if ($continue) {
-				$this->createNewGateway($io, $connector);
+				$this->createGateway($io, $connector);
 			}
 
 			return;
@@ -465,7 +428,7 @@ class Devices extends Console\Command\Command
 		$accessToken = null;
 
 		if ($regenerate) {
-			$io->note($this->translator->translate('//ns-panel-connector.cmd.devices.messages.prepareGateway'));
+			$io->note($this->translator->translate('//ns-panel-connector.cmd.devices.messages.gateway.prepare'));
 
 			do {
 				$question = new Console\Question\ConfirmationQuestion(
@@ -500,7 +463,7 @@ class Devices extends Console\Command\Command
 				);
 			} catch (Exceptions\LanApiCall) {
 				$io->error(
-					$this->translator->translate('//ns-panel-connector.cmd.devices.messages.getAccessTokenFailed'),
+					$this->translator->translate('//ns-panel-connector.cmd.devices.messages.accessToken.error'),
 				);
 			}
 		}
@@ -634,7 +597,7 @@ class Devices extends Console\Command\Command
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 */
-	private function deleteExistingGateway(
+	private function deleteGateway(
 		Style\SymfonyStyle $io,
 		Entities\NsPanelConnector $connector,
 	): void
@@ -642,7 +605,7 @@ class Devices extends Console\Command\Command
 		$gateway = $this->askWhichGateway($io, $connector);
 
 		if ($gateway === null) {
-			$io->info($this->translator->translate('//ns-panel-connector.cmd.devices.messages.noGateways'));
+			$io->warning($this->translator->translate('//ns-panel-connector.cmd.devices.messages.noGateways'));
 
 			return;
 		}
@@ -694,6 +657,70 @@ class Devices extends Console\Command\Command
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	private function listGateways(Style\SymfonyStyle $io, Entities\NsPanelConnector $connector): void
+	{
+		$findDevicesQuery = new Queries\FindGatewayDevices();
+		$findDevicesQuery->forConnector($connector);
+
+		/** @var array<Entities\Devices\Gateway> $devices */
+		$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\Gateway::class);
+		usort(
+			$devices,
+			static function (Entities\Devices\Gateway $a, Entities\Devices\Gateway $b): int {
+				if ($a->getIdentifier() === $b->getIdentifier()) {
+					return $a->getName() <=> $b->getName();
+				}
+
+				return $a->getIdentifier() <=> $b->getIdentifier();
+			},
+		);
+
+		$table = new Console\Helper\Table($io);
+		$table->setHeaders([
+			'#',
+			$this->translator->translate('//ns-panel-connector.cmd.initialize.data.name'),
+			$this->translator->translate('//ns-panel-connector.cmd.initialize.data.ipAddress'),
+			$this->translator->translate('//ns-panel-connector.cmd.initialize.data.devices'),
+		]);
+
+		foreach ($devices as $index => $device) {
+			/** @var DevicesQueries\FindDeviceProperties<DevicesEntities\Devices\Properties\Variable> $findDevicePropertyQuery */
+			$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+			$findDevicePropertyQuery->forDevice($device);
+			$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS);
+
+			$ipAddressProperty = $this->devicesPropertiesRepository->findOneBy(
+				$findDevicePropertyQuery,
+				DevicesEntities\Devices\Properties\Variable::class,
+			);
+
+			$findDevicesQuery = new Queries\FindDevices();
+			$findDevicesQuery->forParent($device);
+
+			$table->addRow([
+				$index + 1,
+				$device->getName() ?? $device->getIdentifier(),
+				$ipAddressProperty?->getValue(),
+				implode(
+					', ',
+					array_map(
+						static fn (DevicesEntities\Devices\Device $device): string => $device->getName() ?? $device->getIdentifier(),
+						$this->devicesRepository->findAllBy($findDevicesQuery, Entities\NsPanelDevice::class),
+					),
+				),
+			]);
+		}
+
+		$table->render();
+
+		$io->newLine();
+	}
+
+	/**
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -703,7 +730,48 @@ class Devices extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
 	 */
-	private function createNewDevice(
+	private function manageGateway(
+		Style\SymfonyStyle $io,
+		Entities\NsPanelConnector $connector,
+	): void
+	{
+		$gateway = $this->askWhichGateway($io, $connector);
+
+		if ($gateway === null) {
+			$io->warning($this->translator->translate('//ns-panel-connector.cmd.devices.messages.noGateways'));
+
+			$question = new Console\Question\ConfirmationQuestion(
+				$this->translator->translate('//ns-panel-connector.cmd.devices.questions.create.gateway'),
+				false,
+			);
+
+			$continue = (bool) $io->askQuestion($question);
+
+			if ($continue) {
+				$gateway = $this->createGateway($io, $connector);
+
+				if ($gateway === null) {
+					return;
+				}
+			} else {
+				return;
+			}
+		}
+
+		$this->askDeviceAction($io, $connector, $gateway);
+	}
+
+	/**
+	 * @throws DBAL\Exception
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\Runtime
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws Nette\IOException
+	 */
+	private function createDevice(
 		Style\SymfonyStyle $io,
 		Entities\NsPanelConnector $connector,
 		Entities\Devices\Gateway $gateway,
@@ -715,8 +783,7 @@ class Devices extends Console\Command\Command
 
 		$question->setValidator(function (string|null $answer) {
 			if ($answer !== '' && $answer !== null) {
-				/** @var DevicesQueries\FindDevices<Entities\NsPanelDevice> $findDeviceQuery */
-				$findDeviceQuery = new DevicesQueries\FindDevices();
+				$findDeviceQuery = new Queries\FindDevices();
 				$findDeviceQuery->byIdentifier($answer);
 
 				if (
@@ -736,19 +803,7 @@ class Devices extends Console\Command\Command
 		if ($identifier === '' || $identifier === null) {
 			$identifierPattern = 'ns-panel-device-%d';
 
-			for ($i = 1; $i <= 100; $i++) {
-				$identifier = sprintf($identifierPattern, $i);
-
-				/** @var DevicesQueries\FindDevices<Entities\NsPanelDevice> $findDeviceQuery */
-				$findDeviceQuery = new DevicesQueries\FindDevices();
-				$findDeviceQuery->byIdentifier($identifier);
-
-				if (
-					$this->devicesRepository->findOneBy($findDeviceQuery, Entities\NsPanelDevice::class) === null
-				) {
-					break;
-				}
-			}
+			$identifier = $this->findNextDeviceIdentifier($connector, $identifierPattern);
 		}
 
 		if ($identifier === '') {
@@ -828,16 +883,19 @@ class Devices extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
 	 */
-	private function editExistingDevice(
+	private function editDevice(
 		Style\SymfonyStyle $io,
 		Entities\NsPanelConnector $connector,
 		Entities\Devices\Gateway $gateway,
 	): void
 	{
-		$device = $this->askWhichDevice($io, $connector);
+		$device = $this->askWhichDevice($io, $connector, $gateway);
 
 		if ($device === null) {
-			$io->warning($this->translator->translate('//ns-panel-connector.cmd.devices.messages.noDevices'));
+			$io->warning($this->translator->translate(
+				'//ns-panel-connector.cmd.devices.messages.noDevices',
+				['name' => $gateway->getName() ?? $gateway->getIdentifier()],
+			));
 
 			$question = new Console\Question\ConfirmationQuestion(
 				$this->translator->translate('//ns-panel-connector.cmd.devices.questions.create.device'),
@@ -847,7 +905,7 @@ class Devices extends Console\Command\Command
 			$continue = (bool) $io->askQuestion($question);
 
 			if ($continue) {
-				$this->createNewDevice($io, $connector, $gateway);
+				$this->createDevice($io, $connector, $gateway);
 			}
 
 			return;
@@ -917,58 +975,28 @@ class Devices extends Console\Command\Command
 				$this->getOrmConnection()->rollBack();
 			}
 		}
-
-		assert($device instanceof Entities\Devices\Device);
-
-		$question = new Console\Question\ConfirmationQuestion(
-			$this->translator->translate('//ns-panel-connector.cmd.devices.questions.editCapabilities'),
-			false,
-		);
-
-		$manage = (bool) $io->askQuestion($question);
-
-		if (!$manage) {
-			return;
-		}
-
-		/** @var DevicesQueries\FindChannels<Entities\NsPanelChannel> $findChannelsQuery */
-		$findChannelsQuery = new DevicesQueries\FindChannels();
-		$findChannelsQuery->forDevice($device);
-
-		$channels = $this->channelsRepository->findAllBy($findChannelsQuery, Entities\NsPanelChannel::class);
-
-		if (count($channels) > 0) {
-			$this->askCapabilityAction($io, $device);
-
-			return;
-		}
-
-		$question = new Console\Question\ConfirmationQuestion(
-			$this->translator->translate('//ns-panel-connector.cmd.devices.questions.createChannel'),
-			false,
-		);
-
-		$create = (bool) $io->askQuestion($question);
-
-		if ($create) {
-			$this->createCapability($io, $device, true);
-		}
 	}
 
 	/**
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function deleteExistingDevice(
+	private function deleteDevice(
 		Style\SymfonyStyle $io,
 		Entities\NsPanelConnector $connector,
+		Entities\Devices\Gateway $gateway,
 	): void
 	{
-		$device = $this->askWhichDevice($io, $connector);
+		$device = $this->askWhichDevice($io, $connector, $gateway);
 
 		if ($device === null) {
-			$io->info($this->translator->translate('//ns-panel-connector.cmd.devices.messages.noDevices'));
+			$io->warning($this->translator->translate(
+				'//ns-panel-connector.cmd.devices.messages.noDevices',
+				['name' => $gateway->getName() ?? $gateway->getIdentifier()],
+			));
 
 			return;
 		}
@@ -982,6 +1010,52 @@ class Devices extends Console\Command\Command
 
 		if (!$continue) {
 			return;
+		}
+
+		if (
+			$device->getGatewayIdentifier() !== null
+			&& $gateway->getIpAddress() !== null
+			&& $gateway->getAccessToken() !== null
+		) {
+			$panelApi = $this->lanApiFactory->create($connector->getIdentifier());
+
+			try {
+				$result = $panelApi->removeDevice(
+					$device->getGatewayIdentifier(),
+					$gateway->getIpAddress(),
+					$gateway->getAccessToken(),
+					API\LanApi::GATEWAY_PORT,
+					false,
+				);
+
+				if ($result !== true) {
+					$io->error($this->translator->translate(
+						'//ns-panel-connector.cmd.devices.messages.removeDeviceFromPanelFailed',
+						[
+							'name' => $device->getName() ?? $device->getIdentifier(),
+							'panel' => $gateway->getName() ?? $gateway->getIdentifier(),
+						],
+					));
+				}
+			} catch (Throwable $ex) {
+				// Log caught exception
+				$this->logger->error(
+					'Calling NS Panel api failed',
+					[
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+						'type' => 'devices-cmd',
+						'exception' => BootstrapHelpers\Logger::buildException($ex),
+					],
+				);
+
+				$io->error($this->translator->translate(
+					'//ns-panel-connector.cmd.devices.messages.removeDeviceFromPanelFailed',
+					[
+						'name' => $device->getName() ?? $device->getIdentifier(),
+						'panel' => $gateway->getName() ?? $gateway->getIdentifier(),
+					],
+				));
+			}
 		}
 
 		try {
@@ -1020,6 +1094,62 @@ class Devices extends Console\Command\Command
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	private function listDevices(Style\SymfonyStyle $io, Entities\Devices\Gateway $gateway): void
+	{
+		$findDevicesQuery = new Queries\FindDevices();
+		$findDevicesQuery->forParent($gateway);
+
+		/** @var array<Entities\NsPanelDevice> $devices */
+		$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\NsPanelDevice::class);
+		usort(
+			$devices,
+			static function (Entities\NsPanelDevice $a, Entities\NsPanelDevice $b): int {
+				if ($a->getIdentifier() === $b->getIdentifier()) {
+					return $a->getName() <=> $b->getName();
+				}
+
+				return $a->getIdentifier() <=> $b->getIdentifier();
+			},
+		);
+
+		$table = new Console\Helper\Table($io);
+		$table->setHeaders([
+			'#',
+			$this->translator->translate('//ns-panel-connector.cmd.initialize.data.name'),
+			$this->translator->translate('//ns-panel-connector.cmd.initialize.data.category'),
+			$this->translator->translate('//ns-panel-connector.cmd.initialize.data.capabilities'),
+		]);
+
+		foreach ($devices as $index => $device) {
+			assert($device instanceof Entities\Devices\Device || $device instanceof Entities\Devices\SubDevice);
+
+			$findChannelsQuery = new Queries\FindChannels();
+			$findChannelsQuery->forDevice($device);
+
+			$table->addRow([
+				$index + 1,
+				$device->getName() ?? $device->getIdentifier(),
+				$device->getDisplayCategory()->getValue(),
+				implode(
+					', ',
+					array_map(
+						static fn (Entities\NsPanelChannel $channel): string => $channel->getCapability()->getValue(),
+						$this->channelsRepository->findAllBy($findChannelsQuery, Entities\NsPanelChannel::class),
+					),
+				),
+			]);
+		}
+
+		$table->render();
+
+		$io->newLine();
+	}
+
+	/**
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -1029,10 +1159,48 @@ class Devices extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
 	 */
+	private function manageDevice(
+		Style\SymfonyStyle $io,
+		Entities\NsPanelConnector $connector,
+		Entities\Devices\Gateway $gateway,
+	): void
+	{
+		$device = $this->askWhichDevice($io, $connector, $gateway);
+
+		if ($device === null) {
+			$io->warning($this->translator->translate(
+				'//ns-panel-connector.cmd.devices.messages.noDevices',
+				['name' => $gateway->getName() ?? $gateway->getIdentifier()],
+			));
+
+			$question = new Console\Question\ConfirmationQuestion(
+				$this->translator->translate('//ns-panel-connector.cmd.devices.questions.create.device'),
+				false,
+			);
+
+			$continue = (bool) $io->askQuestion($question);
+
+			if ($continue) {
+				$this->createDevice($io, $connector, $gateway);
+			}
+
+			return;
+		}
+
+		$this->askCapabilityAction($io, $device);
+	}
+
+	/**
+	 * @throws DBAL\Exception
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\Runtime
+	 * @throws Nette\IOException
+	 */
 	private function createCapability(
 		Style\SymfonyStyle $io,
 		Entities\Devices\Device $device,
-		bool $editMode = false,
 	): void
 	{
 		$capability = $this->askCapabilityType($io, $device);
@@ -1068,8 +1236,7 @@ class Devices extends Console\Command\Command
 		} else {
 			$identifier = Helpers\Name::convertCapabilityToChannel($capability);
 
-			/** @var DevicesQueries\FindChannels<Entities\NsPanelChannel> $findChannelQuery */
-			$findChannelQuery = new DevicesQueries\FindChannels();
+			$findChannelQuery = new Queries\FindChannels();
 			$findChannelQuery->forDevice($device);
 			$findChannelQuery->byIdentifier($identifier);
 
@@ -1083,28 +1250,9 @@ class Devices extends Console\Command\Command
 					),
 				);
 
-				if ($editMode) {
-					$this->askCapabilityAction($io, $device, $editMode);
-
-					return;
-				}
-
-				$question = new Console\Question\ConfirmationQuestion(
-					$this->translator->translate('//ns-panel-connector.cmd.devices.questions.createAnotherCapability'),
-					false,
-				);
-
-				$create = (bool) $io->askQuestion($question);
-
-				if ($create) {
-					$this->createCapability($io, $device, $editMode);
-				}
-
 				return;
 			}
 		}
-
-		$protocols = (array) $capabilityMetadata->offsetGet('protocol');
 
 		try {
 			// Start transaction connection to the database
@@ -1125,7 +1273,9 @@ class Devices extends Console\Command\Command
 			]));
 			assert($channel instanceof Entities\NsPanelChannel);
 
-			$this->createProtocols($io, $device, $channel, $protocols);
+			do {
+				$property = $this->createProtocol($io, $device, $channel);
+			} while ($property !== null);
 
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
@@ -1158,23 +1308,6 @@ class Devices extends Console\Command\Command
 				$this->getOrmConnection()->rollBack();
 			}
 		}
-
-		if ($editMode) {
-			$this->askCapabilityAction($io, $device, $editMode);
-
-			return;
-		}
-
-		$question = new Console\Question\ConfirmationQuestion(
-			$this->translator->translate('//ns-panel-connector.cmd.devices.questions.createAnotherCapability'),
-			false,
-		);
-
-		$create = (bool) $io->askQuestion($question);
-
-		if ($create) {
-			$this->createCapability($io, $device, $editMode);
-		}
 	}
 
 	/**
@@ -1183,16 +1316,17 @@ class Devices extends Console\Command\Command
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
 	 */
 	private function editCapability(Style\SymfonyStyle $io, Entities\Devices\Device $device): void
 	{
-		$channels = $this->getCapabilitiesList($device);
+		$channel = $this->askWhichCapability($io, $device);
 
-		if (count($channels) === 0) {
-			$io->warning($this->translator->translate('//ns-panel-connector.cmd.devices.messages.noCapabilities'));
+		if ($channel === null) {
+			$io->warning($this->translator->translate(
+				'//ns-panel-connector.cmd.devices.messages.noCapabilities',
+				['name' => $device->getName() ?? $device->getIdentifier()],
+			));
 
 			$question = new Console\Question\ConfirmationQuestion(
 				$this->translator->translate('//ns-panel-connector.cmd.devices.questions.create.capability'),
@@ -1202,15 +1336,9 @@ class Devices extends Console\Command\Command
 			$continue = (bool) $io->askQuestion($question);
 
 			if ($continue) {
-				$this->createCapability($io, $device, true);
+				$this->createCapability($io, $device);
 			}
 
-			return;
-		}
-
-		$channel = $this->askWhichCapability($io, $device, $channels);
-
-		if ($channel === null) {
 			return;
 		}
 
@@ -1241,14 +1369,14 @@ class Devices extends Console\Command\Command
 
 		$protocols = (array) $capabilityMetadata->offsetGet('protocol');
 
-		$missingRequired = [];
+		$missingProtocols = [];
 
-		foreach ($protocols as $requiredProtocol) {
+		foreach ($protocols as $protocol) {
 			/** @var DevicesQueries\FindChannelProperties<DevicesEntities\Channels\Properties\Variable> $findPropertyQuery */
 			$findPropertyQuery = new DevicesQueries\FindChannelProperties();
 			$findPropertyQuery->forChannel($channel);
 			$findPropertyQuery->byIdentifier(
-				Helpers\Name::convertProtocolToProperty(Types\Protocol::get($requiredProtocol)),
+				Helpers\Name::convertProtocolToProperty(Types\Protocol::get($protocol)),
 			);
 
 			$property = $this->channelsPropertiesRepository->findOneBy(
@@ -1257,16 +1385,18 @@ class Devices extends Console\Command\Command
 			);
 
 			if ($property === null) {
-				$missingRequired[] = $requiredProtocol;
+				$missingProtocols[] = $protocol;
 			}
 		}
 
 		try {
-			if (count($missingRequired) > 0) {
+			if (count($missingProtocols) > 0) {
 				// Start transaction connection to the database
 				$this->getOrmConnection()->beginTransaction();
 
-				$this->createProtocols($io, $device, $channel, $missingRequired);
+				do {
+					$property = $this->createProtocol($io, $device, $channel);
+				} while ($property !== null);
 
 				// Commit all changes into database
 				$this->getOrmConnection()->commit();
@@ -1305,33 +1435,23 @@ class Devices extends Console\Command\Command
 				$this->getOrmConnection()->rollBack();
 			}
 		}
-
-		$this->askCapabilityAction($io, $device);
 	}
 
 	/**
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\InvalidArgument
-	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws Nette\IOException
 	 */
 	private function deleteCapability(Style\SymfonyStyle $io, Entities\Devices\Device $device): void
 	{
-		$channels = $this->getCapabilitiesList($device);
-
-		if (count($channels) === 0) {
-			$io->warning($this->translator->translate('//ns-panel-connector.cmd.devices.messages.noCapabilities'));
-
-			return;
-		}
-
-		$channel = $this->askWhichCapability($io, $device, $channels);
+		$channel = $this->askWhichCapability($io, $device);
 
 		if ($channel === null) {
+			$io->warning($this->translator->translate(
+				'//ns-panel-connector.cmd.devices.messages.noCapabilities',
+				['name' => $device->getName() ?? $device->getIdentifier()],
+			));
+
 			return;
 		}
 
@@ -1370,142 +1490,15 @@ class Devices extends Console\Command\Command
 				$this->getOrmConnection()->rollBack();
 			}
 		}
-
-		/** @var DevicesQueries\FindChannels<Entities\NsPanelChannel> $findChannelsQuery */
-		$findChannelsQuery = new DevicesQueries\FindChannels();
-		$findChannelsQuery->forDevice($device);
-
-		$channels = $this->channelsRepository->findAllBy($findChannelsQuery, Entities\NsPanelChannel::class);
-
-		if (count($channels) > 0) {
-			$this->askCapabilityAction($io, $device, true);
-		}
 	}
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 */
-	private function listGateways(Style\SymfonyStyle $io, Entities\NsPanelConnector $connector): void
-	{
-		/** @var DevicesQueries\FindDevices<Entities\Devices\Gateway> $findDevicesQuery */
-		$findDevicesQuery = new DevicesQueries\FindDevices();
-		$findDevicesQuery->forConnector($connector);
-
-		/** @var array<Entities\Devices\Gateway> $devices */
-		$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\Gateway::class);
-		usort(
-			$devices,
-			static function (Entities\Devices\Gateway $a, Entities\Devices\Gateway $b): int {
-				if ($a->getIdentifier() === $b->getIdentifier()) {
-					return $a->getName() <=> $b->getName();
-				}
-
-				return $a->getIdentifier() <=> $b->getIdentifier();
-			},
-		);
-
-		$table = new Console\Helper\Table($io);
-		$table->setHeaders([
-			'#',
-			'Name',
-			'Devices',
-		]);
-
-		foreach ($devices as $index => $device) {
-			/** @var DevicesQueries\FindDevices<Entities\NsPanelDevice> $findDevicesQuery */
-			$findDevicesQuery = new DevicesQueries\FindDevices();
-			$findDevicesQuery->forParent($device);
-
-			$table->addRow([
-				$index + 1,
-				$device->getName() ?? $device->getIdentifier(),
-				implode(
-					', ',
-					array_map(
-						static fn (DevicesEntities\Devices\Device $device): string => $device->getName() ?? $device->getIdentifier(),
-						$this->devicesRepository->findAllBy($findDevicesQuery, Entities\NsPanelDevice::class),
-					),
-				),
-			]);
-		}
-
-		$table->render();
-
-		$io->newLine();
-	}
-
-	/**
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 */
-	private function listDevices(Style\SymfonyStyle $io, Entities\Devices\Gateway $gateway): void
-	{
-		/** @var DevicesQueries\FindDevices<Entities\NsPanelDevice> $findDevicesQuery */
-		$findDevicesQuery = new DevicesQueries\FindDevices();
-		$findDevicesQuery->forParent($gateway);
-
-		/** @var array<Entities\NsPanelDevice> $devices */
-		$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\NsPanelDevice::class);
-		usort(
-			$devices,
-			static function (Entities\NsPanelDevice $a, Entities\NsPanelDevice $b): int {
-				if ($a->getIdentifier() === $b->getIdentifier()) {
-					return $a->getName() <=> $b->getName();
-				}
-
-				return $a->getIdentifier() <=> $b->getIdentifier();
-			},
-		);
-
-		$table = new Console\Helper\Table($io);
-		$table->setHeaders([
-			'#',
-			'Name',
-			'Category',
-			'Type',
-		]);
-
-		foreach ($devices as $index => $device) {
-			assert($device instanceof Entities\Devices\Device || $device instanceof Entities\Devices\SubDevice);
-
-			/** @var DevicesQueries\FindChannels<Entities\NsPanelChannel> $findChannelsQuery */
-			$findChannelsQuery = new DevicesQueries\FindChannels();
-			$findChannelsQuery->forDevice($device);
-
-			$table->addRow([
-				$index + 1,
-				$device->getName() ?? $device->getIdentifier(),
-				$device->getDisplayCategory()->getValue(),
-				implode(
-					', ',
-					array_map(
-						static fn (DevicesEntities\Channels\Channel $channel): string => $channel->getCapability()->getValue(),
-						$this->channelsRepository->findAllBy($findChannelsQuery, Entities\NsPanelChannel::class),
-					),
-				),
-			]);
-		}
-
-		$table->render();
-
-		$io->newLine();
-	}
-
-	/**
-	 * @throws DBAL\Exception
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\Runtime
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws Nette\IOException
 	 */
 	private function listCapabilities(Style\SymfonyStyle $io, Entities\Devices\Device $device): void
 	{
-		/** @var DevicesQueries\FindChannels<Entities\NsPanelChannel> $findChannelsQuery */
-		$findChannelsQuery = new DevicesQueries\FindChannels();
+		$findChannelsQuery = new Queries\FindChannels();
 		$findChannelsQuery->forDevice($device);
 
 		/** @var array<Entities\NsPanelChannel> $deviceChannels */
@@ -1524,9 +1517,9 @@ class Devices extends Console\Command\Command
 		$table = new Console\Helper\Table($io);
 		$table->setHeaders([
 			'#',
-			'Name',
-			'Type',
-			'Protocols',
+			$this->translator->translate('//ns-panel-connector.cmd.initialize.data.name'),
+			$this->translator->translate('//ns-panel-connector.cmd.initialize.data.type'),
+			$this->translator->translate('//ns-panel-connector.cmd.initialize.data.protocols'),
 		]);
 
 		foreach ($deviceChannels as $index => $channel) {
@@ -1552,107 +1545,78 @@ class Devices extends Console\Command\Command
 		$table->render();
 
 		$io->newLine();
-
-		/** @var DevicesQueries\FindChannels<Entities\NsPanelChannel> $findChannelsQuery */
-		$findChannelsQuery = new DevicesQueries\FindChannels();
-		$findChannelsQuery->forDevice($device);
-
-		$channels = $this->channelsRepository->findAllBy($findChannelsQuery, Entities\NsPanelChannel::class);
-
-		if (count($channels) > 0) {
-			$this->askCapabilityAction($io, $device, true);
-		}
 	}
 
 	/**
-	 * @param array<string> $protocols
-	 *
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws Nette\IOException
 	 */
-	private function createProtocols(
+	private function createProtocol(
 		Style\SymfonyStyle $io,
 		Entities\Devices\Device $device,
 		Entities\NsPanelChannel $channel,
-		array $protocols,
-	): void
+	): DevicesEntities\Devices\Properties\Property|DevicesEntities\Channels\Properties\Property|null
 	{
+		$protocol = $this->askProtocolType($io, $channel);
+
+		if ($protocol === null) {
+			return null;
+		}
+
 		$metadata = $this->loader->loadProtocols();
 
-		$createdProtocols = [];
+		if (!$metadata->offsetExists($protocol->getValue())) {
+			throw new Exceptions\InvalidArgument(sprintf(
+				'Definition for protocol: %s was not found',
+				$protocol->getValue(),
+			));
+		}
 
-		while (count(array_diff($protocols, $createdProtocols)) > 0) {
-			$protocol = $this->askProtocol(
-				$io,
-				$channel->getCapability(),
-				$protocols,
-				$createdProtocols,
-			);
+		$protocolMetadata = $metadata->offsetGet($protocol->getValue());
 
-			if ($protocol === null) {
-				break;
-			}
+		if (
+			!$protocolMetadata instanceof Utils\ArrayHash
+			|| !$protocolMetadata->offsetExists('data_type')
+			|| !is_string($protocolMetadata->offsetGet('data_type'))
+		) {
+			throw new Exceptions\InvalidState('Protocol definition is missing required attributes');
+		}
 
-			$protocolMetadata = $metadata->offsetGet($protocol->getValue());
+		$dataType = MetadataTypes\DataType::get($protocolMetadata->offsetGet('data_type'));
 
-			if (
-				!$protocolMetadata instanceof Utils\ArrayHash
-				|| !$protocolMetadata->offsetExists('data_type')
-				|| !is_string($protocolMetadata->offsetGet('data_type'))
-			) {
-				throw new Exceptions\InvalidState('Protocol definition is missing required attributes');
-			}
+		$format = $this->askFormat($io, $protocol);
 
-			$dataType = MetadataTypes\DataType::get($protocolMetadata->offsetGet('data_type'));
+		$question = new Console\Question\ConfirmationQuestion(
+			$this->translator->translate('//ns-panel-connector.cmd.devices.questions.connectProtocol'),
+			true,
+		);
 
-			$format = $this->askFormat($io, $protocol);
+		$connect = (bool) $io->askQuestion($question);
 
-			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//ns-panel-connector.cmd.devices.questions.connectProtocol'),
-				true,
-			);
+		if ($connect) {
+			$connectProperty = $this->askPropertyForConnect($io);
 
-			$connect = (bool) $io->askQuestion($question);
+			$format = $this->askFormat($io, $protocol, $connectProperty);
 
-			if ($connect) {
-				$connectProperty = $this->askProperty($io);
-
-				$format = $this->askFormat($io, $protocol, $connectProperty);
-
-				if ($connectProperty instanceof DevicesEntities\Devices\Properties\Dynamic) {
-					$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
-						'entity' => DevicesEntities\Devices\Properties\Mapped::class,
-						'parent' => $connectProperty,
-						'identifier' => Helpers\Name::convertProtocolToProperty($protocol),
-						'name' => $this->translator->translate(
-							'//ns-panel-connector.cmd.base.protocol.' . $protocol->getValue(),
-						),
-						'device' => $device,
-						'dataType' => $dataType,
-						'format' => $format,
-					]));
-
-				} elseif ($connectProperty instanceof DevicesEntities\Channels\Properties\Dynamic) {
-					$this->channelsPropertiesManager->create(Utils\ArrayHash::from([
-						'entity' => DevicesEntities\Channels\Properties\Mapped::class,
-						'parent' => $connectProperty,
-						'identifier' => Helpers\Name::convertProtocolToProperty($protocol),
-						'name' => $this->translator->translate(
-							'//ns-panel-connector.cmd.base.protocol.' . $protocol->getValue(),
-						),
-						'channel' => $channel,
-						'dataType' => $dataType,
-						'format' => $format,
-					]));
-				}
-			} else {
-				$value = $this->provideProtocolValue($io, $protocol);
-
-				$this->channelsPropertiesManager->create(Utils\ArrayHash::from([
-					'entity' => DevicesEntities\Channels\Properties\Variable::class,
+			if ($connectProperty instanceof DevicesEntities\Devices\Properties\Dynamic) {
+				return $this->devicesPropertiesManager->create(Utils\ArrayHash::from([
+					'entity' => DevicesEntities\Devices\Properties\Mapped::class,
+					'parent' => $connectProperty,
+					'identifier' => Helpers\Name::convertProtocolToProperty($protocol),
+					'name' => $this->translator->translate(
+						'//ns-panel-connector.cmd.base.protocol.' . $protocol->getValue(),
+					),
+					'device' => $device,
+					'dataType' => $dataType,
+					'format' => $format,
+				]));
+			} elseif ($connectProperty instanceof DevicesEntities\Channels\Properties\Dynamic) {
+				return $this->channelsPropertiesManager->create(Utils\ArrayHash::from([
+					'entity' => DevicesEntities\Channels\Properties\Mapped::class,
+					'parent' => $connectProperty,
 					'identifier' => Helpers\Name::convertProtocolToProperty($protocol),
 					'name' => $this->translator->translate(
 						'//ns-panel-connector.cmd.base.protocol.' . $protocol->getValue(),
@@ -1660,14 +1624,27 @@ class Devices extends Console\Command\Command
 					'channel' => $channel,
 					'dataType' => $dataType,
 					'format' => $format,
-					'settable' => false,
-					'queryable' => false,
-					'value' => $value,
 				]));
 			}
+		} else {
+			$value = $this->provideProtocolValue($io, $protocol);
 
-			$createdProtocols[] = $protocol->getValue();
+			return $this->channelsPropertiesManager->create(Utils\ArrayHash::from([
+				'entity' => DevicesEntities\Channels\Properties\Variable::class,
+				'identifier' => Helpers\Name::convertProtocolToProperty($protocol),
+				'name' => $this->translator->translate(
+					'//ns-panel-connector.cmd.base.protocol.' . $protocol->getValue(),
+				),
+				'channel' => $channel,
+				'dataType' => $dataType,
+				'format' => $format,
+				'settable' => false,
+				'queryable' => false,
+				'value' => $value,
+			]));
 		}
+
+		return null;
 	}
 
 	/**
@@ -1682,17 +1659,11 @@ class Devices extends Console\Command\Command
 	 */
 	private function editProtocol(Style\SymfonyStyle $io, Entities\NsPanelChannel $channel): void
 	{
-		$properties = $this->getProtocolsList($channel);
-
-		if (count($properties) === 0) {
-			$io->warning($this->translator->translate('//ns-panel-connector.cmd.devices.messages.noProtocols'));
-
-			return;
-		}
-
-		$property = $this->askWhichProtocol($io, $channel, $properties);
+		$property = $this->askWhichProtocol($io, $channel);
 
 		if ($property === null) {
+			$io->warning($this->translator->translate('//ns-panel-connector.cmd.devices.messages.noProtocols'));
+
 			return;
 		}
 
@@ -1732,7 +1703,7 @@ class Devices extends Console\Command\Command
 			$connect = (bool) $io->askQuestion($question);
 
 			if ($connect) {
-				$connectProperty = $this->askProperty(
+				$connectProperty = $this->askPropertyForConnect(
 					$io,
 					(
 					$property instanceof DevicesEntities\Channels\Properties\Mapped
@@ -1858,17 +1829,11 @@ class Devices extends Console\Command\Command
 	 */
 	private function deleteProtocol(Style\SymfonyStyle $io, Entities\NsPanelChannel $channel): void
 	{
-		$properties = $this->getProtocolsList($channel);
-
-		if (count($properties) === 0) {
-			$io->warning($this->translator->translate('//ns-panel-connector.cmd.devices.messages.noProtocols'));
-
-			return;
-		}
-
-		$property = $this->askWhichProtocol($io, $channel, $properties);
+		$property = $this->askWhichProtocol($io, $channel);
 
 		if ($property === null) {
+			$io->warning($this->translator->translate('//ns-panel-connector.cmd.devices.messages.noProtocols'));
+
 			return;
 		}
 
@@ -1917,11 +1882,8 @@ class Devices extends Console\Command\Command
 	}
 
 	/**
-	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
@@ -1934,7 +1896,7 @@ class Devices extends Console\Command\Command
 		$channelProperties = $this->channelsPropertiesRepository->findAllBy($findPropertiesQuery);
 		usort(
 			$channelProperties,
-			static function (DevicesEntities\Channels\Properties\Property $a, DevicesEntities\Channels\Properties\Property $b): int {
+			static function (DevicesEntities\Property $a, DevicesEntities\Property $b): int {
 				if ($a->getIdentifier() === $b->getIdentifier()) {
 					return $a->getName() <=> $b->getName();
 				}
@@ -1946,9 +1908,9 @@ class Devices extends Console\Command\Command
 		$table = new Console\Helper\Table($io);
 		$table->setHeaders([
 			'#',
-			'Name',
-			'Type',
-			'Value',
+			$this->translator->translate('//ns-panel-connector.cmd.initialize.data.name'),
+			$this->translator->translate('//ns-panel-connector.cmd.initialize.data.type'),
+			$this->translator->translate('//ns-panel-connector.cmd.initialize.data.value'),
 		]);
 
 		$metadata = $this->loader->loadProtocols();
@@ -1987,13 +1949,6 @@ class Devices extends Console\Command\Command
 		$table->render();
 
 		$io->newLine();
-
-		$findChannelPropertiesQuery = new DevicesQueries\FindChannelProperties();
-		$findChannelPropertiesQuery->forChannel($channel);
-
-		if (count($this->channelsPropertiesRepository->findAllBy($findChannelPropertiesQuery)) > 0) {
-			$this->askProtocolAction($io, $channel);
-		}
 	}
 
 	private function askDeviceName(Style\SymfonyStyle $io, Entities\NsPanelDevice|null $device = null): string|null
@@ -2095,7 +2050,6 @@ class Devices extends Console\Command\Command
 	private function askGatewayAction(
 		Style\SymfonyStyle $io,
 		Entities\NsPanelConnector $connector,
-		bool $editMode = false,
 	): void
 	{
 		$question = new Console\Question\ChoiceQuestion(
@@ -2105,9 +2059,10 @@ class Devices extends Console\Command\Command
 				1 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.update.gateway'),
 				2 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.remove.gateway'),
 				3 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.list.gateways'),
-				4 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.nothing'),
+				4 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.manage.gateway'),
+				5 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.nothing'),
 			],
-			4,
+			5,
 		);
 
 		$question->setErrorMessage(
@@ -2122,9 +2077,9 @@ class Devices extends Console\Command\Command
 			)
 			|| $whatToDo === '0'
 		) {
-			$this->createNewGateway($io, $connector, $editMode);
+			$this->createGateway($io, $connector);
 
-			$this->askGatewayAction($io, $connector, $editMode);
+			$this->askGatewayAction($io, $connector);
 
 		} elseif (
 			$whatToDo === $this->translator->translate(
@@ -2132,9 +2087,9 @@ class Devices extends Console\Command\Command
 			)
 			|| $whatToDo === '1'
 		) {
-			$this->editExistingGateway($io, $connector);
+			$this->editGateway($io, $connector);
 
-			$this->askGatewayAction($io, $connector, $editMode);
+			$this->askGatewayAction($io, $connector);
 
 		} elseif (
 			$whatToDo === $this->translator->translate(
@@ -2142,9 +2097,9 @@ class Devices extends Console\Command\Command
 			)
 			|| $whatToDo === '2'
 		) {
-			$this->deleteExistingGateway($io, $connector);
+			$this->deleteGateway($io, $connector);
 
-			$this->askGatewayAction($io, $connector, $editMode);
+			$this->askGatewayAction($io, $connector);
 
 		} elseif (
 			$whatToDo === $this->translator->translate(
@@ -2154,7 +2109,17 @@ class Devices extends Console\Command\Command
 		) {
 			$this->listGateways($io, $connector);
 
-			$this->askGatewayAction($io, $connector, $editMode);
+			$this->askGatewayAction($io, $connector);
+
+		} elseif (
+			$whatToDo === $this->translator->translate(
+				'//ns-panel-connector.cmd.devices.actions.manage.gateway',
+			)
+			|| $whatToDo === '4'
+		) {
+			$this->manageGateway($io, $connector);
+
+			$this->askGatewayAction($io, $connector);
 		}
 	}
 
@@ -2181,9 +2146,10 @@ class Devices extends Console\Command\Command
 				1 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.update.device'),
 				2 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.remove.device'),
 				3 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.list.devices'),
-				4 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.nothing'),
+				4 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.manage.device'),
+				5 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.nothing'),
 			],
-			4,
+			5,
 		);
 
 		$question->setErrorMessage(
@@ -2198,7 +2164,7 @@ class Devices extends Console\Command\Command
 			)
 			|| $whatToDo === '0'
 		) {
-			$this->createNewDevice($io, $connector, $gateway);
+			$this->createDevice($io, $connector, $gateway);
 
 			$this->askDeviceAction($io, $connector, $gateway);
 
@@ -2208,7 +2174,7 @@ class Devices extends Console\Command\Command
 			)
 			|| $whatToDo === '1'
 		) {
-			$this->editExistingDevice($io, $connector, $gateway);
+			$this->editDevice($io, $connector, $gateway);
 
 			$this->askDeviceAction($io, $connector, $gateway);
 
@@ -2218,7 +2184,7 @@ class Devices extends Console\Command\Command
 			)
 			|| $whatToDo === '2'
 		) {
-			$this->deleteExistingDevice($io, $connector);
+			$this->deleteDevice($io, $connector, $gateway);
 
 			$this->askDeviceAction($io, $connector, $gateway);
 
@@ -2229,6 +2195,16 @@ class Devices extends Console\Command\Command
 			|| $whatToDo === '3'
 		) {
 			$this->listDevices($io, $gateway);
+
+			$this->askDeviceAction($io, $connector, $gateway);
+
+		} elseif (
+			$whatToDo === $this->translator->translate(
+				'//ns-panel-connector.cmd.devices.actions.manage.device',
+			)
+			|| $whatToDo === '4'
+		) {
+			$this->manageDevice($io, $connector, $gateway);
 
 			$this->askDeviceAction($io, $connector, $gateway);
 		}
@@ -2247,7 +2223,6 @@ class Devices extends Console\Command\Command
 	private function askCapabilityAction(
 		Style\SymfonyStyle $io,
 		Entities\Devices\Device $device,
-		bool $editMode = false,
 	): void
 	{
 		$question = new Console\Question\ChoiceQuestion(
@@ -2274,7 +2249,9 @@ class Devices extends Console\Command\Command
 			)
 			|| $whatToDo === '0'
 		) {
-			$this->createCapability($io, $device, $editMode);
+			$this->createCapability($io, $device);
+
+			$this->askCapabilityAction($io, $device);
 
 		} elseif (
 			$whatToDo === $this->translator->translate(
@@ -2284,6 +2261,8 @@ class Devices extends Console\Command\Command
 		) {
 			$this->editCapability($io, $device);
 
+			$this->askCapabilityAction($io, $device);
+
 		} elseif (
 			$whatToDo === $this->translator->translate(
 				'//ns-panel-connector.cmd.devices.actions.remove.capability',
@@ -2292,6 +2271,8 @@ class Devices extends Console\Command\Command
 		) {
 			$this->deleteCapability($io, $device);
 
+			$this->askCapabilityAction($io, $device);
+
 		} elseif (
 			$whatToDo === $this->translator->translate(
 				'//ns-panel-connector.cmd.devices.actions.list.capabilities',
@@ -2299,6 +2280,8 @@ class Devices extends Console\Command\Command
 			|| $whatToDo === '3'
 		) {
 			$this->listCapabilities($io, $device);
+
+			$this->askCapabilityAction($io, $device);
 		}
 	}
 
@@ -2382,8 +2365,7 @@ class Devices extends Console\Command\Command
 			) {
 				$allowMultiple = $capabilityMetadata->offsetGet('multiple');
 
-				/** @var DevicesQueries\FindChannels<Entities\NsPanelChannel> $findChannelQuery */
-				$findChannelQuery = new DevicesQueries\FindChannels();
+				$findChannelQuery = new Queries\FindChannels();
 				$findChannelQuery->forDevice($device);
 				$findChannelQuery->byIdentifier(Helpers\Name::convertCapabilityToChannel(Types\Capability::get($type)));
 
@@ -2438,45 +2420,70 @@ class Devices extends Console\Command\Command
 	}
 
 	/**
-	 * @param array<string> $protocols
-	 * @param array<string> $ignore
-	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws Nette\IOException
 	 */
-	private function askProtocol(
+	private function askProtocolType(
 		Style\SymfonyStyle $io,
-		Types\Capability $capability,
-		array $protocols = [],
-		array $ignore = [],
+		Entities\NsPanelChannel $channel,
 	): Types\Protocol|null
 	{
 		$metadata = $this->loader->loadCapabilities();
 
-		if (!$metadata->offsetExists($capability->getValue())) {
+		if (!$metadata->offsetExists($channel->getCapability()->getValue())) {
 			throw new Exceptions\InvalidArgument(sprintf(
 				'Definition for capability: %s was not found',
-				$capability->getValue(),
+				$channel->getCapability()->getValue(),
 			));
 		}
 
-		$protocols = array_combine(
-			array_values(array_diff($protocols, $ignore)),
-			array_map(
-				fn (string $protocol): string => $this->translator->translate(
-					'//ns-panel-connector.cmd.base.protocol.' . $protocol,
-				),
-				array_values(array_diff($protocols, $ignore)),
-			),
-		);
+		$capabilityMetadata = $metadata->offsetGet($channel->getCapability()->getValue());
+
+		if (
+			!$capabilityMetadata instanceof Utils\ArrayHash
+			|| !$capabilityMetadata->offsetExists('permission')
+			|| !is_string($capabilityMetadata->offsetGet('permission'))
+			|| !$capabilityMetadata->offsetExists('protocol')
+			|| !$capabilityMetadata->offsetGet('protocol') instanceof Utils\ArrayHash
+			|| !$capabilityMetadata->offsetExists('multiple')
+			|| !is_bool($capabilityMetadata->offsetGet('multiple'))
+		) {
+			throw new Exceptions\InvalidState('Capability definition is missing required attributes');
+		}
+
+		$protocols = (array) $capabilityMetadata->offsetGet('protocol');
+
+		$protocolsMetadata = $this->loader->loadProtocols();
+
+		foreach ($protocols as $type) {
+			if (
+				$protocolsMetadata->offsetExists($type)
+				&& $protocolsMetadata->offsetGet($type) instanceof Utils\ArrayHash
+			) {
+				$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+				$findChannelPropertyQuery->forChannel($channel);
+				$findChannelPropertyQuery->byIdentifier(
+					Helpers\Name::convertProtocolToProperty(Types\Protocol::get($type)),
+				);
+
+				$property = $this->channelsPropertiesRepository->findOneBy($findChannelPropertyQuery);
+
+				if ($property === null) {
+					$protocols[$type] = $this->translator->translate(
+						'//ns-panel-connector.cmd.base.protocol.' . Types\Protocol::get($type)->getValue(),
+					);
+				}
+			}
+		}
 
 		if ($protocols === []) {
 			return null;
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//ns-panel-connector.cmd.devices.questions.select.requiredProtocol'),
+			$this->translator->translate('//ns-panel-connector.cmd.devices.questions.select.protocolType'),
 			array_values($protocols),
 			0,
 		);
@@ -2505,7 +2512,7 @@ class Devices extends Console\Command\Command
 			}
 
 			throw new Exceptions\Runtime(
-				sprintf($this->translator->translate('//homekit-connector.cmd.base.messages.answerNotValid'), $answer),
+				sprintf($this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'), $answer),
 			);
 		});
 
@@ -2518,7 +2525,7 @@ class Devices extends Console\Command\Command
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 */
-	private function askProperty(
+	private function askPropertyForConnect(
 		Style\SymfonyStyle $io,
 		DevicesEntities\Devices\Properties\Dynamic|DevicesEntities\Channels\Properties\Dynamic|null $connectedProperty = null,
 	): DevicesEntities\Devices\Properties\Dynamic|DevicesEntities\Channels\Properties\Dynamic|null
@@ -2773,7 +2780,6 @@ class Devices extends Console\Command\Command
 			$property = $io->askQuestion($question);
 			assert($property instanceof DevicesEntities\Devices\Properties\Dynamic);
 
-			return $property;
 		} else {
 			$channels = [];
 
@@ -2958,9 +2964,9 @@ class Devices extends Console\Command\Command
 
 			$property = $io->askQuestion($question);
 			assert($property instanceof DevicesEntities\Channels\Properties\Dynamic);
-
-			return $property;
 		}
+
+		return $property;
 	}
 
 	/**
@@ -3398,11 +3404,9 @@ class Devices extends Console\Command\Command
 						$panelInfo = $panelApi->getGatewayInfo($answer, API\LanApi::GATEWAY_PORT, false);
 					} catch (Exceptions\LanApiCall) {
 						throw new Exceptions\Runtime(
-							sprintf(
-								$this->translator->translate(
-									'//ns-panel-connector.cmd.devices.messages.addressNotReachable',
-								),
-								$answer,
+							$this->translator->translate(
+								'//ns-panel-connector.cmd.devices.messages.addressNotReachable',
+								['address' => $answer],
 							),
 						);
 					}
@@ -3435,8 +3439,7 @@ class Devices extends Console\Command\Command
 	{
 		$connectors = [];
 
-		/** @var DevicesQueries\FindConnectors<Entities\NsPanelConnector> $findConnectorsQuery */
-		$findConnectorsQuery = new DevicesQueries\FindConnectors();
+		$findConnectorsQuery = new Queries\FindConnectors();
 
 		$systemConnectors = $this->connectorsRepository->findAllBy(
 			$findConnectorsQuery,
@@ -3445,7 +3448,7 @@ class Devices extends Console\Command\Command
 		usort(
 			$systemConnectors,
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-			static fn (DevicesEntities\Connectors\Connector $a, DevicesEntities\Connectors\Connector $b): int => $a->getIdentifier() <=> $b->getIdentifier()
+			static fn (Entities\NsPanelConnector $a, Entities\NsPanelConnector $b): int => $a->getIdentifier() <=> $b->getIdentifier()
 		);
 
 		foreach ($systemConnectors as $connector) {
@@ -3482,8 +3485,7 @@ class Devices extends Console\Command\Command
 			$identifier = array_search($answer, $connectors, true);
 
 			if ($identifier !== false) {
-				/** @var DevicesQueries\FindConnectors<Entities\NsPanelConnector> $findConnectorQuery */
-				$findConnectorQuery = new DevicesQueries\FindConnectors();
+				$findConnectorQuery = new Queries\FindConnectors();
 				$findConnectorQuery->byIdentifier($identifier);
 
 				$connector = $this->connectorsRepository->findOneBy(
@@ -3520,8 +3522,7 @@ class Devices extends Console\Command\Command
 	{
 		$gateways = [];
 
-		/** @var DevicesQueries\FindDevices<Entities\Devices\Gateway> $findDevicesQuery */
-		$findDevicesQuery = new DevicesQueries\FindDevices();
+		$findDevicesQuery = new Queries\FindGatewayDevices();
 		$findDevicesQuery->forConnector($connector);
 
 		$connectorDevices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\Gateway::class);
@@ -3565,8 +3566,7 @@ class Devices extends Console\Command\Command
 				$identifier = array_search($answer, $gateways, true);
 
 				if ($identifier !== false) {
-					/** @var DevicesQueries\FindDevices<Entities\Devices\Gateway> $findDeviceQuery */
-					$findDeviceQuery = new DevicesQueries\FindDevices();
+					$findDeviceQuery = new Queries\FindGatewayDevices();
 					$findDeviceQuery->byIdentifier($identifier);
 					$findDeviceQuery->forConnector($connector);
 
@@ -3598,13 +3598,14 @@ class Devices extends Console\Command\Command
 	private function askWhichDevice(
 		Style\SymfonyStyle $io,
 		Entities\NsPanelConnector $connector,
+		Entities\Devices\Gateway $gateway,
 	): Entities\Devices\Device|null
 	{
 		$devices = [];
 
-		/** @var DevicesQueries\FindDevices<Entities\Devices\Device> $findDevicesQuery */
-		$findDevicesQuery = new DevicesQueries\FindDevices();
+		$findDevicesQuery = new Queries\FindThirdPartyDevices();
 		$findDevicesQuery->forConnector($connector);
+		$findDevicesQuery->forParent($gateway);
 
 		$connectorDevices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\Device::class);
 		usort(
@@ -3630,7 +3631,7 @@ class Devices extends Console\Command\Command
 			$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(
-			function (string|int|null $answer) use ($connector, $devices): Entities\Devices\Device {
+			function (string|int|null $answer) use ($connector, $gateway, $devices): Entities\Devices\Device {
 				if ($answer === null) {
 					throw new Exceptions\Runtime(
 						sprintf(
@@ -3647,10 +3648,10 @@ class Devices extends Console\Command\Command
 				$identifier = array_search($answer, $devices, true);
 
 				if ($identifier !== false) {
-					/** @var DevicesQueries\FindDevices<Entities\Devices\Device> $findDeviceQuery */
-					$findDeviceQuery = new DevicesQueries\FindDevices();
+					$findDeviceQuery = new Queries\FindThirdPartyDevices();
 					$findDeviceQuery->byIdentifier($identifier);
 					$findDeviceQuery->forConnector($connector);
+					$findDeviceQuery->forParent($gateway);
 
 					$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\Device::class);
 
@@ -3675,16 +3676,33 @@ class Devices extends Console\Command\Command
 	}
 
 	/**
-	 * @param array<string, string> $channels
-	 *
 	 * @throws DevicesExceptions\InvalidState
 	 */
 	private function askWhichCapability(
 		Style\SymfonyStyle $io,
 		Entities\Devices\Device $device,
-		array $channels,
 	): Entities\NsPanelChannel|null
 	{
+		$channels = [];
+
+		$findChannelsQuery = new Queries\FindChannels();
+		$findChannelsQuery->forDevice($device);
+
+		$deviceChannels = $this->channelsRepository->findAllBy($findChannelsQuery, Entities\NsPanelChannel::class);
+		usort(
+			$deviceChannels,
+			static fn (Entities\NsPanelChannel $a, Entities\NsPanelChannel $b): int => $a->getIdentifier() <=> $b->getIdentifier()
+		);
+
+		foreach ($deviceChannels as $channel) {
+			$channels[$device->getIdentifier()] = $channel->getIdentifier()
+				. ($channel->getName() !== null ? ' [' . $channel->getName() . ']' : '');
+		}
+
+		if (count($channels) === 0) {
+			return null;
+		}
+
 		$question = new Console\Question\ChoiceQuestion(
 			$this->translator->translate('//ns-panel-connector.cmd.devices.questions.select.capability'),
 			array_values($channels),
@@ -3693,103 +3711,128 @@ class Devices extends Console\Command\Command
 		$question->setErrorMessage(
 			$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 		);
+		$question->setValidator(
+			function (string|int|null $answer) use ($device, $channels): Entities\NsPanelChannel {
+				if ($answer === null) {
+					throw new Exceptions\Runtime(
+						sprintf(
+							$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+							$answer,
+						),
+					);
+				}
 
-		$capabilityIdentifier = array_search($io->askQuestion($question), $channels, true);
+				if (array_key_exists($answer, array_values($channels))) {
+					$answer = array_values($channels)[$answer];
+				}
 
-		if ($capabilityIdentifier === false) {
-			$io->error($this->translator->translate('//ns-panel-connector.cmd.devices.messages.capabilityNotFound'));
+				if (in_array($answer, $channels, true)) {
+					$findChannelQuery = new Queries\FindChannels();
+					$findChannelQuery->forDevice($device);
 
-			$this->logger->alert(
-				'Could not read capability identifier from console answer',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'devices-cmd',
-				],
-			);
+					$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\NsPanelChannel::class);
 
-			return null;
-		}
+					if ($channel !== null) {
+						return $channel;
+					}
+				}
 
-		/** @var DevicesQueries\FindChannels<Entities\NsPanelChannel> $findChannelQuery */
-		$findChannelQuery = new DevicesQueries\FindChannels();
-		$findChannelQuery->forDevice($device);
-		$findChannelQuery->byIdentifier($capabilityIdentifier);
+				throw new Exceptions\Runtime(
+					sprintf(
+						$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+						$answer,
+					),
+				);
+			},
+		);
 
-		$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\NsPanelChannel::class);
-
-		if ($channel === null) {
-			$io->error($this->translator->translate('//ns-panel-connector.cmd.devices.messages.capabilityNotFound'));
-
-			$this->logger->alert(
-				'Channel was not found',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'devices-cmd',
-				],
-			);
-
-			return null;
-		}
+		$channel = $io->askQuestion($question);
+		assert($channel instanceof Entities\NsPanelChannel);
 
 		return $channel;
 	}
 
 	/**
-	 * @param array<string, string> $properties
-	 *
 	 * @throws DevicesExceptions\InvalidState
 	 */
 	private function askWhichProtocol(
 		Style\SymfonyStyle $io,
 		Entities\NsPanelChannel $channel,
-		array $properties,
 	): DevicesEntities\Channels\Properties\Variable|DevicesEntities\Channels\Properties\Mapped|null
 	{
+		$properties = [];
+
+		$findChannelPropertiesQuery = new DevicesQueries\FindChannelProperties();
+		$findChannelPropertiesQuery->forChannel($channel);
+
+		$channelProperties = $this->channelsPropertiesRepository->findAllBy($findChannelPropertiesQuery);
+		usort(
+			$channelProperties,
+			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+			static fn (DevicesEntities\Channels\Properties\Property $a, DevicesEntities\Channels\Properties\Property $b): int => $a->getIdentifier() <=> $b->getIdentifier()
+		);
+
+		foreach ($channelProperties as $property) {
+			$properties[$property->getIdentifier()] = $property->getIdentifier()
+				. ($property->getName() !== null ? ' [' . $property->getName() . ']' : '');
+		}
+
+		if (count($properties) === 0) {
+			return null;
+		}
+
 		$question = new Console\Question\ChoiceQuestion(
 			$this->translator->translate('//ns-panel-connector.cmd.devices.questions.select.protocol'),
 			array_values($properties),
+			count($properties) === 1 ? 0 : null,
 		);
 		$question->setErrorMessage(
 			$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 		);
+		$question->setValidator(
+			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+			function (string|int|null $answer) use ($channel, $properties): DevicesEntities\Channels\Properties\Variable|DevicesEntities\Channels\Properties\Mapped {
+				if ($answer === null) {
+					throw new Exceptions\Runtime(
+						sprintf(
+							$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+							$answer,
+						),
+					);
+				}
 
-		$protocolIdentifier = array_search($io->askQuestion($question), $properties, true);
+				if (array_key_exists($answer, array_values($properties))) {
+					$answer = array_values($properties)[$answer];
+				}
 
-		if ($protocolIdentifier === false) {
-			$io->error($this->translator->translate('//ns-panel-connector.cmd.devices.messages.protocolNotFound'));
+				if (in_array($answer, $properties, true)) {
+					$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+					$findChannelPropertyQuery->forChannel($channel);
 
-			$this->logger->alert(
-				'Could not read protocol identifier from console answer',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'devices-cmd',
-				],
-			);
+					$property = $this->channelsPropertiesRepository->findOneBy($findChannelPropertyQuery);
 
-			return null;
-		}
+					if ($property !== null) {
+						assert(
+							// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+							$property instanceof DevicesEntities\Channels\Properties\Variable || $property instanceof DevicesEntities\Channels\Properties\Mapped,
+						);
 
-		$findPropertyQuery = new DevicesQueries\FindChannelProperties();
-		$findPropertyQuery->forChannel($channel);
-		$findPropertyQuery->byIdentifier($protocolIdentifier);
+						return $property;
+					}
+				}
 
-		$property = $this->channelsPropertiesRepository->findOneBy($findPropertyQuery);
+				throw new Exceptions\Runtime(
+					sprintf(
+						$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+						$answer,
+					),
+				);
+			},
+		);
 
-		if ($property === null) {
-			$io->error($this->translator->translate('//ns-panel-connector.cmd.devices.messages.protocolNotFound'));
-
-			$this->logger->alert(
-				'Property was not found',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'devices-cmd',
-				],
-			);
-
-			return null;
-		}
-
+		$property = $io->askQuestion($question);
 		assert(
+			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 			$property instanceof DevicesEntities\Channels\Properties\Variable || $property instanceof DevicesEntities\Channels\Properties\Mapped,
 		);
 
@@ -3797,74 +3840,26 @@ class Devices extends Console\Command\Command
 	}
 
 	/**
-	 * @return array<string, string>
-	 *
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
 	 */
-	private function getCapabilitiesList(Entities\Devices\Device $device): array
+	private function findNextDeviceIdentifier(Entities\NsPanelConnector $connector, string $pattern): string
 	{
-		$channels = [];
+		for ($i = 1; $i <= 100; $i++) {
+			$identifier = sprintf($pattern, $i);
 
-		/** @var DevicesQueries\FindChannels<Entities\NsPanelChannel> $findChannelsQuery */
-		$findChannelsQuery = new DevicesQueries\FindChannels();
-		$findChannelsQuery->forDevice($device);
+			$findDeviceQuery = new Queries\FindDevices();
+			$findDeviceQuery->forConnector($connector);
+			$findDeviceQuery->byIdentifier($identifier);
 
-		$deviceChannels = $this->channelsRepository->findAllBy($findChannelsQuery, Entities\NsPanelChannel::class);
-		usort(
-			$deviceChannels,
-			static function (DevicesEntities\Channels\Channel $a, DevicesEntities\Channels\Channel $b): int {
-				if ($a->getIdentifier() === $b->getIdentifier()) {
-					return $a->getName() <=> $b->getName();
-				}
+			$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\NsPanelDevice::class);
 
-				return $a->getIdentifier() <=> $b->getIdentifier();
-			},
-		);
-
-		foreach ($deviceChannels as $channel) {
-			$channels[$channel->getIdentifier()] = sprintf(
-				'%s%s',
-				$channel->getIdentifier(),
-				($channel->getName() !== null ? ' [' . $channel->getName() . ']' : ''),
-			);
+			if ($device === null) {
+				return $identifier;
+			}
 		}
 
-		return $channels;
-	}
-
-	/**
-	 * @return array<string, string>
-	 *
-	 * @throws DevicesExceptions\InvalidState
-	 */
-	private function getProtocolsList(Entities\NsPanelChannel $channel): array
-	{
-		$properties = [];
-
-		$findPropertiesQuery = new DevicesQueries\FindChannelProperties();
-		$findPropertiesQuery->forChannel($channel);
-
-		$channelProperties = $this->channelsPropertiesRepository->findAllBy($findPropertiesQuery);
-		usort(
-			$channelProperties,
-			static function (DevicesEntities\Channels\Properties\Property $a, DevicesEntities\Channels\Properties\Property $b): int {
-				if ($a->getIdentifier() === $b->getIdentifier()) {
-					return $a->getName() <=> $b->getName();
-				}
-
-				return $a->getIdentifier() <=> $b->getIdentifier();
-			},
-		);
-
-		foreach ($channelProperties as $property) {
-			$properties[$property->getIdentifier()] = sprintf(
-				'%s%s',
-				$property->getIdentifier(),
-				($property->getName() !== null ? ' [' . $property->getName() . ']' : ''),
-			);
-		}
-
-		return $properties;
+		throw new Exceptions\InvalidState('Could not find free device identifier');
 	}
 
 	/**
@@ -3876,8 +3871,7 @@ class Devices extends Console\Command\Command
 		for ($i = 1; $i <= 100; $i++) {
 			$identifier = Helpers\Name::convertCapabilityToChannel(Types\Capability::get($type), $i);
 
-			/** @var DevicesQueries\FindChannels<Entities\NsPanelChannel> $findChannelQuery */
-			$findChannelQuery = new DevicesQueries\FindChannels();
+			$findChannelQuery = new Queries\FindChannels();
 			$findChannelQuery->forDevice($device);
 			$findChannelQuery->byIdentifier($identifier);
 

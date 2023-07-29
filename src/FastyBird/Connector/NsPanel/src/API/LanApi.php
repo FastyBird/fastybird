@@ -458,6 +458,56 @@ final class LanApi
 	}
 
 	/**
+	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : bool)
+	 *
+	 * @throws Exceptions\LanApiCall
+	 */
+	public function removeDevice(
+		string $serialNumber,
+		string $ipAddress,
+		string $accessToken,
+		int $port = self::GATEWAY_PORT,
+		bool $async = true,
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|bool
+	{
+		$deferred = new Promise\Deferred();
+
+		$result = $this->callRequest(
+			'DELETE',
+			sprintf('http://%s:%d/open-api/v1/rest/devices/%s', $ipAddress, $port, $serialNumber),
+			[
+				'Content-Type' => 'application/json',
+				'Authorization' => sprintf('Bearer %s', $accessToken),
+			],
+			[],
+			null,
+			$async,
+		);
+
+		if ($result instanceof Promise\PromiseInterface) {
+			$result
+				->then(static function (Message\ResponseInterface $response) use ($deferred): void {
+					try {
+						$deferred->resolve(true);
+					} catch (Throwable $ex) {
+						$deferred->reject($ex);
+					}
+				})
+				->otherwise(static function (Throwable $ex) use ($deferred): void {
+					$deferred->reject($ex);
+				});
+
+			return $deferred->promise();
+		}
+
+		if ($result === false) {
+			throw new Exceptions\LanApiCall('Could send data to cloud server');
+		}
+
+		return true;
+	}
+
+	/**
 	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\Response\GetSubDevices)
 	 *
 	 * @throws Exceptions\LanApiCall

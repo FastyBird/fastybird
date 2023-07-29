@@ -20,9 +20,9 @@ use Doctrine\Persistence;
 use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
+use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -58,6 +58,7 @@ class Initialize extends Console\Command\Command
 	public function __construct(
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Connectors\ConnectorsManager $connectorsManager,
+		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 		private readonly Localization\Translator $translator,
 		private readonly NsPanel\Logger $logger,
@@ -110,6 +111,8 @@ class Initialize extends Console\Command\Command
 				0 => $this->translator->translate('//ns-panel-connector.cmd.initialize.actions.create'),
 				1 => $this->translator->translate('//ns-panel-connector.cmd.initialize.actions.update'),
 				2 => $this->translator->translate('//ns-panel-connector.cmd.initialize.actions.remove'),
+				3 => $this->translator->translate('//ns-panel-connector.cmd.initialize.actions.list'),
+				4 => $this->translator->translate('//ns-panel-connector.cmd.initialize.actions.nothing'),
 			],
 		);
 
@@ -120,13 +123,16 @@ class Initialize extends Console\Command\Command
 		$whatToDo = $io->askQuestion($question);
 
 		if ($whatToDo === $this->translator->translate('//ns-panel-connector.cmd.initialize.actions.create')) {
-			$this->createNewConfiguration($io);
+			$this->createConfiguration($io);
 
 		} elseif ($whatToDo === $this->translator->translate('//ns-panel-connector.cmd.initialize.actions.update')) {
-			$this->editExistingConfiguration($io);
+			$this->editConfiguration($io);
 
 		} elseif ($whatToDo === $this->translator->translate('//ns-panel-connector.cmd.initialize.actions.remove')) {
-			$this->deleteExistingConfiguration($io);
+			$this->deleteConfiguration($io);
+
+		} elseif ($whatToDo === $this->translator->translate('//ns-panel-connector.cmd.initialize.actions.list')) {
+			$this->listConfigurations($io);
 		}
 
 		return Console\Command\Command::SUCCESS;
@@ -137,7 +143,7 @@ class Initialize extends Console\Command\Command
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 */
-	private function createNewConfiguration(Style\SymfonyStyle $io): void
+	private function createConfiguration(Style\SymfonyStyle $io): void
 	{
 		$question = new Console\Question\Question(
 			$this->translator->translate('//ns-panel-connector.cmd.initialize.questions.provide.identifier'),
@@ -145,7 +151,7 @@ class Initialize extends Console\Command\Command
 
 		$question->setValidator(function ($answer) {
 			if ($answer !== null) {
-				$findConnectorQuery = new DevicesQueries\FindConnectors();
+				$findConnectorQuery = new Queries\FindConnectors();
 				$findConnectorQuery->byIdentifier($answer);
 
 				if ($this->connectorsRepository->findOneBy(
@@ -169,7 +175,7 @@ class Initialize extends Console\Command\Command
 			for ($i = 1; $i <= 100; $i++) {
 				$identifier = sprintf($identifierPattern, $i);
 
-				$findConnectorQuery = new DevicesQueries\FindConnectors();
+				$findConnectorQuery = new Queries\FindConnectors();
 				$findConnectorQuery->byIdentifier($identifier);
 
 				if ($this->connectorsRepository->findOneBy(
@@ -233,7 +239,7 @@ class Initialize extends Console\Command\Command
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 */
-	private function editExistingConfiguration(Style\SymfonyStyle $io): void
+	private function editConfiguration(Style\SymfonyStyle $io): void
 	{
 		$connector = $this->askWhichConnector($io);
 
@@ -248,7 +254,7 @@ class Initialize extends Console\Command\Command
 			$continue = (bool) $io->askQuestion($question);
 
 			if ($continue) {
-				$this->createNewConfiguration($io);
+				$this->createConfiguration($io);
 			}
 
 			return;
@@ -321,7 +327,7 @@ class Initialize extends Console\Command\Command
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 */
-	private function deleteExistingConfiguration(Style\SymfonyStyle $io): void
+	private function deleteConfiguration(Style\SymfonyStyle $io): void
 	{
 		$connector = $this->askWhichConnector($io);
 
@@ -377,6 +383,66 @@ class Initialize extends Console\Command\Command
 		}
 	}
 
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 */
+	private function listConfigurations(Style\SymfonyStyle $io): void
+	{
+		/** @var DevicesQueries\FindConnectors<Entities\NsPanelConnector> $findConnectorsQuery */
+		$findConnectorsQuery = new Queries\FindConnectors();
+
+		/** @var array<Entities\NsPanelConnector> $connectors */
+		$connectors = $this->connectorsRepository->findAllBy($findConnectorsQuery, Entities\NsPanelConnector::class);
+		usort(
+			$connectors,
+			static function (Entities\NsPanelConnector $a, Entities\NsPanelConnector $b): int {
+				if ($a->getIdentifier() === $b->getIdentifier()) {
+					return $a->getName() <=> $b->getName();
+				}
+
+				return $a->getIdentifier() <=> $b->getIdentifier();
+			},
+		);
+
+		$table = new Console\Helper\Table($io);
+		$table->setHeaders([
+			'#',
+			$this->translator->translate('//ns-panel-connector.cmd.initialize.data.name'),
+			$this->translator->translate('//ns-panel-connector.cmd.initialize.data.panelsCnt'),
+			$this->translator->translate('//ns-panel-connector.cmd.initialize.data.subDevicesCnt'),
+			$this->translator->translate('//ns-panel-connector.cmd.initialize.data.devicesCnt'),
+		]);
+
+		foreach ($connectors as $index => $connector) {
+			$findDevicesQuery = new Queries\FindGatewayDevices();
+			$findDevicesQuery->forConnector($connector);
+
+			$nsPanels = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\Gateway::class);
+
+			$findDevicesQuery = new Queries\FindSubDevices();
+			$findDevicesQuery->forConnector($connector);
+
+			$subDevices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\SubDevice::class);
+
+			$findDevicesQuery = new Queries\FindThirdPartyDevices();
+			$findDevicesQuery->forConnector($connector);
+
+			$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\Device::class);
+
+			$table->addRow([
+				$index + 1,
+				$connector->getName() ?? $connector->getIdentifier(),
+				count($nsPanels),
+				count($subDevices),
+				count($devices),
+			]);
+		}
+
+		$table->render();
+
+		$io->newLine();
+	}
+
 	private function askName(Style\SymfonyStyle $io, Entities\NsPanelConnector|null $connector = null): string|null
 	{
 		$question = new Console\Question\Question(
@@ -396,7 +462,7 @@ class Initialize extends Console\Command\Command
 	{
 		$connectors = [];
 
-		$findConnectorsQuery = new DevicesQueries\FindConnectors();
+		$findConnectorsQuery = new Queries\FindConnectors();
 
 		$systemConnectors = $this->connectorsRepository->findAllBy(
 			$findConnectorsQuery,
@@ -405,12 +471,10 @@ class Initialize extends Console\Command\Command
 		usort(
 			$systemConnectors,
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-			static fn (DevicesEntities\Connectors\Connector $a, DevicesEntities\Connectors\Connector $b): int => $a->getIdentifier() <=> $b->getIdentifier()
+			static fn (Entities\NsPanelConnector $a, Entities\NsPanelConnector $b): int => $a->getIdentifier() <=> $b->getIdentifier()
 		);
 
 		foreach ($systemConnectors as $connector) {
-			assert($connector instanceof Entities\NsPanelConnector);
-
 			$connectors[$connector->getIdentifier()] = $connector->getIdentifier()
 				. ($connector->getName() !== null ? ' [' . $connector->getName() . ']' : '');
 		}
@@ -444,14 +508,13 @@ class Initialize extends Console\Command\Command
 			$identifier = array_search($answer, $connectors, true);
 
 			if ($identifier !== false) {
-				$findConnectorQuery = new DevicesQueries\FindConnectors();
+				$findConnectorQuery = new Queries\FindConnectors();
 				$findConnectorQuery->byIdentifier($identifier);
 
 				$connector = $this->connectorsRepository->findOneBy(
 					$findConnectorQuery,
 					Entities\NsPanelConnector::class,
 				);
-				assert($connector instanceof Entities\NsPanelConnector || $connector === null);
 
 				if ($connector !== null) {
 					return $connector;

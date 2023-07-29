@@ -19,6 +19,7 @@ use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Consumers;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Helpers;
+use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -65,7 +66,7 @@ final class State implements Consumers\Consumer
 			return false;
 		}
 
-		$findDeviceQuery = new DevicesQueries\FindDevices();
+		$findDeviceQuery = new Queries\FindDevices();
 		$findDeviceQuery->byConnectorId($entity->getConnector());
 		$findDeviceQuery->byIdentifier($entity->getIdentifier());
 
@@ -107,10 +108,10 @@ final class State implements Consumers\Consumer
 					);
 				}
 
-				$findChannelsQuery = new DevicesQueries\FindChannels();
+				$findChannelsQuery = new Queries\FindChannels();
 				$findChannelsQuery->forDevice($device);
 
-				$channels = $this->channelsRepository->findAllBy($findChannelsQuery);
+				$channels = $this->channelsRepository->findAllBy($findChannelsQuery, Entities\NsPanelChannel::class);
 
 				foreach ($channels as $channel) {
 					foreach ($channel->getProperties() as $property) {
@@ -129,7 +130,7 @@ final class State implements Consumers\Consumer
 			}
 
 			if ($device instanceof Entities\Devices\Gateway) {
-				$findChildrenDevicesQuery = new DevicesQueries\FindDevices();
+				$findChildrenDevicesQuery = new Queries\FindSubDevices();
 				$findChildrenDevicesQuery->forParent($device);
 
 				$children = $this->devicesRepository->findAllBy(

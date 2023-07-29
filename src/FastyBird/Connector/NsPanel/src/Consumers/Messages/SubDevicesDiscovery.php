@@ -19,12 +19,12 @@ use Doctrine\DBAL;
 use FastyBird\Connector\NsPanel\Consumers\Consumer;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Helpers;
+use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Nette\Utils;
@@ -73,7 +73,7 @@ final class SubDevicesDiscovery implements Consumer
 			return false;
 		}
 
-		$findDeviceQuery = new DevicesQueries\FindDevices();
+		$findDeviceQuery = new Queries\FindGatewayDevices();
 		$findDeviceQuery->byConnectorId($entity->getConnector());
 		$findDeviceQuery->byId($entity->getParent());
 
@@ -83,7 +83,7 @@ final class SubDevicesDiscovery implements Consumer
 			return true;
 		}
 
-		$findDeviceQuery = new DevicesQueries\FindDevices();
+		$findDeviceQuery = new Queries\FindSubDevices();
 		$findDeviceQuery->byConnectorId($entity->getConnector());
 		$findDeviceQuery->forParent($parent);
 		$findDeviceQuery->byIdentifier($entity->getSerialNumber());
@@ -91,14 +91,13 @@ final class SubDevicesDiscovery implements Consumer
 		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\SubDevice::class);
 
 		if ($device === null) {
-			$findConnectorQuery = new DevicesQueries\FindConnectors();
+			$findConnectorQuery = new Queries\FindConnectors();
 			$findConnectorQuery->byId($entity->getConnector());
 
 			$connector = $this->connectorsRepository->findOneBy(
 				$findConnectorQuery,
 				Entities\NsPanelConnector::class,
 			);
-			assert($connector instanceof Entities\NsPanelConnector || $connector === null);
 
 			if ($connector === null) {
 				return true;
@@ -203,11 +202,11 @@ final class SubDevicesDiscovery implements Consumer
 					$identifier .= '_' . $capability->getName();
 				}
 
-				$findChannelQuery = new DevicesQueries\FindChannels();
+				$findChannelQuery = new Queries\FindChannels();
 				$findChannelQuery->byIdentifier($identifier);
 				$findChannelQuery->forDevice($device);
 
-				$channel = $this->channelsRepository->findOneBy($findChannelQuery);
+				$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\NsPanelChannel::class);
 
 				if ($channel === null) {
 					$channel = $this->channelsManager->create(Utils\ArrayHash::from([
@@ -238,7 +237,7 @@ final class SubDevicesDiscovery implements Consumer
 			if ($tag === Types\Capability::TOGGLE && is_array($value)) {
 				$this->databaseHelper->transaction(function () use ($device, $value): void {
 					foreach ($value as $key => $name) {
-						$findChannelQuery = new DevicesQueries\FindChannels();
+						$findChannelQuery = new Queries\FindChannels();
 						$findChannelQuery->byIdentifier(
 							Helpers\Name::convertCapabilityToChannel(
 								Types\Capability::get(Types\Capability::TOGGLE),
@@ -247,7 +246,10 @@ final class SubDevicesDiscovery implements Consumer
 						);
 						$findChannelQuery->forDevice($device);
 
-						$channel = $this->channelsRepository->findOneBy($findChannelQuery);
+						$channel = $this->channelsRepository->findOneBy(
+							$findChannelQuery,
+							Entities\NsPanelChannel::class,
+						);
 
 						if ($channel !== null) {
 							$channel = $this->channelsManager->update($channel, Utils\ArrayHash::from([

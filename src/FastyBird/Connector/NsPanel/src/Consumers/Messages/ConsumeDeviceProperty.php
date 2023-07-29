@@ -18,6 +18,7 @@ namespace FastyBird\Connector\NsPanel\Consumers\Messages;
 use Doctrine\DBAL;
 use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Entities;
+use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
@@ -27,7 +28,6 @@ use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette\Utils;
 use Ramsey\Uuid;
-use function assert;
 
 /**
  * Device ip address consumer trait
@@ -127,14 +127,13 @@ trait ConsumeDeviceProperty
 		}
 
 		if ($property === null) {
-			$findDeviceQuery = new DevicesQueries\FindDevices();
+			$findDeviceQuery = new Queries\FindDevices();
 			$findDeviceQuery->byId($deviceId);
 
 			$device = $this->devicesRepository->findOneBy(
 				$findDeviceQuery,
 				Entities\NsPanelDevice::class,
 			);
-			assert($device instanceof Entities\NsPanelDevice || $device === null);
 
 			if ($device === null) {
 				return;

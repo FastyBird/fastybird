@@ -20,18 +20,17 @@ use FastyBird\Connector\NsPanel\API;
 use FastyBird\Connector\NsPanel\Consumers;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
+use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
 use Nette\Utils;
 use Psr\Log;
 use React\EventLoop;
 use function array_merge;
-use function assert;
 
 /**
  * Sub-devices discovery client
@@ -99,15 +98,13 @@ final class Discovery implements Evenement\EventEmitterInterface
 				],
 			);
 
-			$findDevicesQuery = new DevicesQueries\FindDevices();
+			$findDevicesQuery = new Queries\FindGatewayDevices();
 			$findDevicesQuery->forConnector($this->connector);
 
 			foreach ($this->devicesRepository->findAllBy(
 				$findDevicesQuery,
 				Entities\Devices\Gateway::class,
 			) as $gateway) {
-				assert($gateway instanceof Entities\Devices\Gateway);
-
 				$foundSubDevices[$gateway->getIdentifier()] = $this->discoverSubDevices($gateway);
 			}
 		}

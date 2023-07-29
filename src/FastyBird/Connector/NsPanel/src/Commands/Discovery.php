@@ -20,11 +20,11 @@ use FastyBird\Connector\NsPanel\Clients;
 use FastyBird\Connector\NsPanel\Consumers;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
+use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Types;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -153,7 +153,7 @@ class Discovery extends Console\Command\Command
 		) {
 			$connectorId = $input->getOption('connector');
 
-			$findConnectorQuery = new DevicesQueries\FindConnectors();
+			$findConnectorQuery = new Queries\FindConnectors();
 
 			if (Uuid\Uuid::isValid($connectorId)) {
 				$findConnectorQuery->byId(Uuid\Uuid::fromString($connectorId));
@@ -162,7 +162,6 @@ class Discovery extends Console\Command\Command
 			}
 
 			$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\NsPanelConnector::class);
-			assert($connector instanceof Entities\NsPanelConnector || $connector === null);
 
 			if ($connector === null) {
 				$io->warning(
@@ -174,7 +173,7 @@ class Discovery extends Console\Command\Command
 		} else {
 			$connectors = [];
 
-			$findConnectorsQuery = new DevicesQueries\FindConnectors();
+			$findConnectorsQuery = new Queries\FindConnectors();
 
 			$systemConnectors = $this->connectorsRepository->findAllBy(
 				$findConnectorsQuery,
@@ -183,12 +182,10 @@ class Discovery extends Console\Command\Command
 			usort(
 				$systemConnectors,
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Connectors\Connector $a, DevicesEntities\Connectors\Connector $b): int => $a->getIdentifier() <=> $b->getIdentifier()
+				static fn (Entities\NsPanelConnector $a, Entities\NsPanelConnector $b): int => $a->getIdentifier() <=> $b->getIdentifier()
 			);
 
 			foreach ($systemConnectors as $connector) {
-				assert($connector instanceof Entities\NsPanelConnector);
-
 				$connectors[$connector->getIdentifier()] = $connector->getIdentifier()
 					. ($connector->getName() !== null ? ' [' . $connector->getName() . ']' : '');
 			}
@@ -202,14 +199,13 @@ class Discovery extends Console\Command\Command
 			if (count($connectors) === 1) {
 				$connectorIdentifier = array_key_first($connectors);
 
-				$findConnectorQuery = new DevicesQueries\FindConnectors();
+				$findConnectorQuery = new Queries\FindConnectors();
 				$findConnectorQuery->byIdentifier($connectorIdentifier);
 
 				$connector = $this->connectorsRepository->findOneBy(
 					$findConnectorQuery,
 					Entities\NsPanelConnector::class,
 				);
-				assert($connector instanceof Entities\NsPanelConnector || $connector === null);
 
 				if ($connector === null) {
 					$io->warning(
@@ -260,14 +256,13 @@ class Discovery extends Console\Command\Command
 						$identifier = array_search($answer, $connectors, true);
 
 						if ($identifier !== false) {
-							$findConnectorQuery = new DevicesQueries\FindConnectors();
+							$findConnectorQuery = new Queries\FindConnectors();
 							$findConnectorQuery->byIdentifier($identifier);
 
 							$connector = $this->connectorsRepository->findOneBy(
 								$findConnectorQuery,
 								Entities\NsPanelConnector::class,
 							);
-							assert($connector instanceof Entities\NsPanelConnector || $connector === null);
 
 							if ($connector !== null) {
 								return $connector;
@@ -377,7 +372,7 @@ class Discovery extends Console\Command\Command
 
 			$io->newLine();
 
-			$findDevicesQuery = new DevicesQueries\FindDevices();
+			$findDevicesQuery = new Queries\FindSubDevices();
 			$findDevicesQuery->byConnectorId($connector->getId());
 
 			$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\SubDevice::class);
@@ -394,8 +389,6 @@ class Discovery extends Console\Command\Command
 			$foundDevices = 0;
 
 			foreach ($devices as $device) {
-				assert($device instanceof Entities\Devices\SubDevice);
-
 				$createdAt = $device->getCreatedAt();
 
 				if (
