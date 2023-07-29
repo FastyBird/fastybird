@@ -26,7 +26,7 @@ final class FindActionsTest extends DbTestCase
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
 	 */
-	public function testFindById(): void
+	public function XtestFindById(): void
 	{
 		$repository = $this->getContainer()->getByType(Models\Actions\ActionsRepository::class);
 

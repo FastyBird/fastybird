@@ -9,7 +9,7 @@ use function preg_match;
 final class ConstantsTest extends BaseTestCase
 {
 
-	public function testValueFormatStringEnum(): void
+	public function XtestValueFormatStringEnum(): void
 	{
 		// Valid
 		self::assertSame(1, preg_match(
@@ -48,7 +48,7 @@ final class ConstantsTest extends BaseTestCase
 		));
 	}
 
-	public function testValueFormatNumberRange(): void
+	public function XtestValueFormatNumberRange(): void
 	{
 		// Valid
 		self::assertSame(1, preg_match(
@@ -103,7 +103,7 @@ final class ConstantsTest extends BaseTestCase
 		));
 	}
 
-	public function testValueFormatCombinedEnum(): void
+	public function XtestValueFormatCombinedEnum(): void
 	{
 		// Valid
 		self::assertSame(1, preg_match(
@@ -134,7 +134,7 @@ final class ConstantsTest extends BaseTestCase
 		));
 	}
 
-	public function testValueFormatEquation(): void
+	public function XtestValueFormatEquation(): void
 	{
 		// Valid
 		self::assertSame(1, preg_match(

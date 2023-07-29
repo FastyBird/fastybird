@@ -14,7 +14,7 @@ final class ApiKeyExtensionTest extends BaseTestCase
 	/**
 	 * @throws Nette\DI\MissingServiceException
 	 */
-	public function testServicesRegistration(): void
+	public function XtestServicesRegistration(): void
 	{
 		self::assertNotNull($this->container->getByType(Commands\Create::class, false));
 

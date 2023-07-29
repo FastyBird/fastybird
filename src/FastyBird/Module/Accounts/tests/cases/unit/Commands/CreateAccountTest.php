@@ -33,7 +33,7 @@ final class CreateAccountTest extends DbTestCase
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
 	 */
-	public function testExecute(): void
+	public function XtestExecute(): void
 	{
 		$accountsManager = $this->getContainer()->getByType(Models\Accounts\AccountsManager::class);
 

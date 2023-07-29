@@ -896,6 +896,7 @@ final class LanApi
 		try {
 			return Entities\EntityFactory::build(Entities\API\Response\GetSubDevices::class, $body);
 		} catch (Exceptions\InvalidState $ex) {
+			var_dump($ex->getMessage());
 			throw new Exceptions\LanApiCall('Could not create entity from response', $ex->getCode(), $ex);
 		}
 	}

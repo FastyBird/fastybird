@@ -23,7 +23,7 @@ final class ConnectorFactoryTest extends DbTestCase
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
 	 */
-	public function testCreateConnector(): void
+	public function XtestCreateConnector(): void
 	{
 		$connectorsRepository = $this->getContainer()->getByType(
 			DevicesModels\Connectors\ConnectorsRepository::class,

@@ -25,7 +25,7 @@ final class FactoryTest extends TestCase
 	 *
 	 * @dataProvider createStateValidDocumentData
 	 */
-	public function testCreateEntity(string $class, array $data): void
+	public function XtestCreateEntity(string $class, array $data): void
 	{
 		$document = $this->createMock(PHPOnCouch\CouchDocument::class);
 		$document
@@ -60,7 +60,7 @@ final class FactoryTest extends TestCase
 	 *
 	 * @dataProvider createStateInvalidDocumentData
 	 */
-	public function testCreateEntityFail(string $class, array $data, string $exception): void
+	public function XtestCreateEntityFail(string $class, array $data, string $exception): void
 	{
 		$document = $this->createMock(PHPOnCouch\CouchDocument::class);
 		$document

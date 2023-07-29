@@ -105,7 +105,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$findDevicesQuery,
 				Entities\Devices\Gateway::class,
 			) as $gateway) {
-				$foundSubDevices[$gateway->getIdentifier()] = $this->discoverSubDevices($gateway);
+				$foundSubDevices[$gateway->getPlainId()] = $this->discoverSubDevices($gateway);
 			}
 		}
 

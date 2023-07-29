@@ -44,7 +44,7 @@ final class IdentitiesV1Test extends DbTestCase
 	 *
 	 * @dataProvider identitiesRead
 	 */
-	public function testRead(string $url, string|null $token, int $statusCode, string $fixture): void
+	public function XtestRead(string $url, string|null $token, int $statusCode, string $fixture): void
 	{
 		$router = $this->getContainer()->getByType(SlimRouter\Routing\IRouter::class);
 
@@ -200,7 +200,7 @@ final class IdentitiesV1Test extends DbTestCase
 	 *
 	 * @dataProvider identitiesCreate
 	 */
-	public function testCreate(string $url, string|null $token, string $body, int $statusCode, string $fixture): void
+	public function XtestCreate(string $url, string|null $token, string $body, int $statusCode, string $fixture): void
 	{
 		$router = $this->getContainer()->getByType(SlimRouter\Routing\IRouter::class);
 

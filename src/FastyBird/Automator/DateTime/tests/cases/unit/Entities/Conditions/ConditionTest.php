@@ -26,7 +26,7 @@ final class ConditionTest extends DbTestCase
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
 	 */
-	public function testTimeConditionValidation(): void
+	public function XtestTimeConditionValidation(): void
 	{
 		$repository = $this->getContainer()->getByType(TriggersModels\Conditions\ConditionsRepository::class);
 

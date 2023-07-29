@@ -40,7 +40,7 @@ final class GetSubDevicesDataSubDevice implements Entities\API\Entity
 	 * @param array<string, string|array<string, string>> $tags
 	 */
 	public function __construct(
-		private readonly string $serial_number,
+		private readonly string $serialNumber,
 		private readonly string $name,
 		private readonly string $manufacturer,
 		private readonly string $model,
@@ -63,7 +63,7 @@ final class GetSubDevicesDataSubDevice implements Entities\API\Entity
 
 	public function getSerialNumber(): string
 	{
-		return $this->serial_number;
+		return $this->serialNumber;
 	}
 
 	public function getName(): string

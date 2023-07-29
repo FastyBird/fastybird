@@ -38,6 +38,7 @@ use function call_user_func_array;
 use function class_exists;
 use function get_object_vars;
 use function in_array;
+use function interface_exists;
 use function is_array;
 use function is_callable;
 use function is_string;
@@ -50,6 +51,7 @@ use function strtoupper;
 use function strval;
 use function trim;
 use function ucfirst;
+use function var_dump;
 
 /**
  * Entity factory
@@ -90,7 +92,7 @@ final class EntityFactory
 
 			$entity = $constructor !== null
 				? $rc->newInstanceArgs(
-					self::autowireArguments($constructor, $decoded),
+					self::autowireArguments($rc->getNamespaceName(), $constructor, $decoded),
 				)
 				: new $entityClass();
 		} catch (Throwable $ex) {
@@ -170,6 +172,7 @@ final class EntityFactory
 	 * @throws ReflectionException
 	 */
 	private static function autowireArguments(
+		string $namespace,
 		ReflectionMethod $method,
 		stdClass $decoded,
 	): array
@@ -187,6 +190,13 @@ final class EntityFactory
 				$parameterValue = $decoded->{$parameterName};
 
 				foreach ($parameterTypes as $parameterType) {
+					if (
+						!class_exists($parameterType)
+						&& class_exists($namespace . '\\' . $parameterType)
+					) {
+						$parameterType = $namespace . '\\' . $parameterType;
+					}
+
 					if ($parameterType === 'array' && is_string($method->getDocComment())) {
 						$factory = phpDocumentor\Reflection\DocBlockFactory::createInstance();
 
@@ -194,7 +204,7 @@ final class EntityFactory
 
 						$docblock = $factory->create(
 							$method->getDocComment(),
-							new phpDocumentor\Reflection\Types\Context($rc->getNamespaceName()),
+							new phpDocumentor\Reflection\Types\Context('\FastyBird\Connector\NsPanel'),
 						);
 
 						foreach ($docblock->getTags() as $tag) {
@@ -212,7 +222,9 @@ final class EntityFactory
 
 								$subRes = [];
 
-								if ($parameterValue instanceof Utils\ArrayHash) {
+								var_dump($arrayType);
+
+								if ($parameterValue instanceof Utils\ArrayHash && !interface_exists($arrayType)) {
 									foreach ($parameterValue as $subParameterValue) {
 										if ($subParameterValue instanceof Utils\ArrayHash) {
 											assert(is_subclass_of($arrayType, Entities\Entity::class));
@@ -228,12 +240,13 @@ final class EntityFactory
 
 						break;
 					} elseif (
-						class_exists($parameterType, false)
+						class_exists($parameterType)
 						&& is_subclass_of($parameterType, Entities\Entity::class)
 						&& (
 							$parameterValue instanceof Utils\ArrayHash
 							|| is_array($parameterValue)
 						)
+						&& !interface_exists($parameterType)
 					) {
 						$parameterValue = is_array($parameterValue)
 							? Utils\ArrayHash::from($parameterValue)
@@ -243,7 +256,7 @@ final class EntityFactory
 
 						break;
 					} elseif (
-						class_exists($parameterType, false)
+						class_exists($parameterType)
 						&& is_subclass_of($parameterType, Consistence\Enum\Enum::class)
 						&& is_string($parameterValue)
 						&& $parameterType::isValidValue($parameterValue)
@@ -279,6 +292,13 @@ final class EntityFactory
 				// !optional + defaultAvailable = func($a = NULL, $b) since 5.4.7
 				// optional + !defaultAvailable = i.e. Exception::__construct, mysqli::mysqli, ...
 				$res[$num] = $parameter->isDefaultValueAvailable() ? $parameter->getDefaultValue() : null;
+			} else {
+				throw new Exceptions\InvalidArgument(
+					sprintf(
+						'Entity parameter is required but could not be created: %s',
+						$parameterName,
+					),
+				);
 			}
 		}
 

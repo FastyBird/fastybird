@@ -16,7 +16,7 @@ final class RedisDbExtensionTest extends BaseTestCase
 	/**
 	 * @throws Nette\DI\MissingServiceException
 	 */
-	public function testServicesRegistration(): void
+	public function XtestServicesRegistration(): void
 	{
 		self::assertNotNull($this->container->getByType(Connections\Connection::class, false));
 

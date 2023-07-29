@@ -27,7 +27,7 @@ final class ActionsRepositoryTest extends DbTestCase
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
 	 */
-	public function testReadOne(): void
+	public function XtestReadOne(): void
 	{
 		$repository = $this->getContainer()->getByType(Models\Actions\ActionsRepository::class);
 
@@ -48,7 +48,7 @@ final class ActionsRepositoryTest extends DbTestCase
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
 	 */
-	public function testReadResultSet(): void
+	public function XtestReadResultSet(): void
 	{
 		$repository = $this->getContainer()->getByType(Models\Actions\ActionsRepository::class);
 

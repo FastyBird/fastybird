@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\NsPanel\Entities\Messages;
 
+use FastyBird\Connector\NsPanel\Entities;
 use Ramsey\Uuid;
 use function array_map;
 use function array_merge;
@@ -31,7 +32,7 @@ final class DeviceStatus extends Device
 {
 
 	/**
-	 * @param array<CapabilityStatus> $statuses
+	 * @param array<Entities\Messages\CapabilityStatus> $statuses
 	 */
 	public function __construct(
 		Uuid\UuidInterface $connector,
@@ -43,7 +44,7 @@ final class DeviceStatus extends Device
 	}
 
 	/**
-	 * @return array<CapabilityStatus>
+	 * @return array<Entities\Messages\CapabilityStatus>
 	 */
 	public function getStatuses(): array
 	{
@@ -57,7 +58,7 @@ final class DeviceStatus extends Device
 	{
 		return array_merge(parent::toArray(), [
 			'capabilities' => array_map(
-				static fn (CapabilityStatus $status): array => $status->toArray(),
+				static fn (Entities\Messages\CapabilityStatus $status): array => $status->toArray(),
 				$this->getStatuses(),
 			),
 		]);

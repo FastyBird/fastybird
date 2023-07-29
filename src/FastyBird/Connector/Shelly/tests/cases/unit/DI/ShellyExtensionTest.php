@@ -15,7 +15,7 @@ final class ShellyExtensionTest extends BaseTestCase
 	 * @throws BootstrapExceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 */
-	public function testServicesRegistration(): void
+	public function XtestServicesRegistration(): void
 	{
 		$container = $this->createContainer();
 

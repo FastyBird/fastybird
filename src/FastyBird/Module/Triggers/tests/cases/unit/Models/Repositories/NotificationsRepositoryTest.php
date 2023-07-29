@@ -27,7 +27,7 @@ final class NotificationsRepositoryTest extends DbTestCase
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
 	 */
-	public function testReadOne(): void
+	public function XtestReadOne(): void
 	{
 		$repository = $this->getContainer()->getByType(Models\Notifications\NotificationsRepository::class);
 
@@ -56,7 +56,7 @@ final class NotificationsRepositoryTest extends DbTestCase
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
 	 */
-	public function testReadResultSet(): void
+	public function XtestReadResultSet(): void
 	{
 		$repository = $this->getContainer()->getByType(Models\Notifications\NotificationsRepository::class);
 

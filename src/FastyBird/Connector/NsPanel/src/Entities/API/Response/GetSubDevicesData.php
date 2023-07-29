@@ -34,14 +34,14 @@ final class GetSubDevicesData implements Entities\API\Entity
 	use Nette\SmartObject;
 
 	/**
-	 * @param array<GetSubDevicesDataSubDevice> $deviceList
+	 * @param array<Entities\API\Response\GetSubDevicesDataSubDevice> $deviceList
 	 */
 	public function __construct(private readonly array $deviceList)
 	{
 	}
 
 	/**
-	 * @return array<GetSubDevicesDataSubDevice>
+	 * @return array<Entities\API\Response\GetSubDevicesDataSubDevice>
 	 */
 	public function getDevicesList(): array
 	{
@@ -55,7 +55,7 @@ final class GetSubDevicesData implements Entities\API\Entity
 	{
 		return [
 			'devices_list' => array_map(
-				static fn (GetSubDevicesDataSubDevice $device): array => $device->toArray(),
+				static fn (Entities\API\Response\GetSubDevicesDataSubDevice $device): array => $device->toArray(),
 				$this->getDevicesList(),
 			),
 		];
@@ -65,7 +65,7 @@ final class GetSubDevicesData implements Entities\API\Entity
 	{
 		$json = new stdClass();
 		$json->devices_list = array_map(
-			static fn (GetSubDevicesDataSubDevice $device): object => $device->toJson(),
+			static fn (Entities\API\Response\GetSubDevicesDataSubDevice $device): object => $device->toJson(),
 			$this->getDevicesList(),
 		);
 

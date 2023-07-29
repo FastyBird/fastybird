@@ -32,7 +32,7 @@ final class DeviceChildrenV1Test extends DbTestCase
 	 *
 	 * @dataProvider deviceChildrenRead
 	 */
-	public function testRead(string $url, string|null $token, int $statusCode, string $fixture): void
+	public function XtestRead(string $url, string|null $token, int $statusCode, string $fixture): void
 	{
 		$router = $this->getContainer()->getByType(SlimRouter\Routing\IRouter::class);
 

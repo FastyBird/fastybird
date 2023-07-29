@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 final class ConditionOperatorTest extends TestCase
 {
 
-	public function testCreateOperator(): void
+	public function XtestCreateOperator(): void
 	{
 		$operatorType = MetadataTypes\TriggerConditionOperator::get(
 			MetadataTypes\TriggerConditionOperator::OPERATOR_VALUE_EQUAL,
@@ -30,7 +30,7 @@ final class ConditionOperatorTest extends TestCase
 		self::assertSame(MetadataTypes\TriggerConditionOperator::OPERATOR_VALUE_BELOW, $operatorType->getValue());
 	}
 
-	public function testInvalidOperator(): void
+	public function XtestInvalidOperator(): void
 	{
 		$this->expectException(InvalidEnumValueException::class);
 

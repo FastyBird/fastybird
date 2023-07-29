@@ -104,10 +104,11 @@ final class SubDevicesDiscovery implements Consumer
 			}
 
 			$device = $this->databaseHelper->transaction(
-				function () use ($entity, $connector): Entities\Devices\SubDevice {
+				function () use ($entity, $connector, $parent): Entities\Devices\SubDevice {
 					$device = $this->devicesManager->create(Utils\ArrayHash::from([
 						'entity' => Entities\Devices\SubDevice::class,
 						'connector' => $connector,
+						'parent' => $parent,
 						'identifier' => $entity->getSerialNumber(),
 						'name' => $entity->getName(),
 					]));
