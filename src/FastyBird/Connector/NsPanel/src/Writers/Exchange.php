@@ -124,16 +124,17 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 				return;
 			}
 
-			$findPropertyQuery = new DevicesQueries\FindChannelProperties();
+			$findPropertyQuery = new DevicesQueries\FindChannelDynamicProperties();
 			$findPropertyQuery->byId($entity->getId());
 
-			$property = $this->propertiesRepository->findOneBy($findPropertyQuery);
+			$property = $this->propertiesRepository->findOneBy(
+				$findPropertyQuery,
+				DevicesEntities\Channels\Properties\Dynamic::class,
+			);
 
 			if ($property === null) {
 				return;
 			}
-
-			assert($property instanceof DevicesEntities\Channels\Properties\Dynamic);
 
 			if (!$property->getChannel()->getDevice()->getConnector()->getId()->equals($connectorId)) {
 				return;
@@ -142,7 +143,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 			$device = $property->getChannel()->getDevice();
 			$channel = $property->getChannel();
 
-			assert($device instanceof Entities\NsPanelDevice);
+			assert($device instanceof Entities\Devices\SubDevice);
 			assert($channel instanceof Entities\NsPanelChannel);
 
 			$this->writeChannelProperty($client, $connectorId, $device, $channel, $property);
@@ -161,16 +162,17 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 	): void
 	{
 		if ($entity instanceof MetadataEntities\DevicesModule\ChannelMappedProperty) {
-			$findPropertyQuery = new DevicesQueries\FindChannelProperties();
+			$findPropertyQuery = new DevicesQueries\FindChannelMappedProperties();
 			$findPropertyQuery->byId($entity->getId());
 
-			$property = $this->propertiesRepository->findOneBy($findPropertyQuery);
+			$property = $this->propertiesRepository->findOneBy(
+				$findPropertyQuery,
+				DevicesEntities\Channels\Properties\Mapped::class,
+			);
 
 			if ($property === null) {
 				return;
 			}
-
-			assert($property instanceof DevicesEntities\Channels\Properties\Mapped);
 
 			if (!$property->getChannel()->getDevice()->getConnector()->getId()->equals($connectorId)) {
 				return;
@@ -179,7 +181,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 			$device = $property->getChannel()->getDevice();
 			$channel = $property->getChannel();
 
-			assert($device instanceof Entities\NsPanelDevice);
+			assert($device instanceof Entities\Devices\ThirdPartyDevice);
 			assert($channel instanceof Entities\NsPanelChannel);
 
 			$this->writeChannelProperty($client, $connectorId, $device, $channel, $property);
@@ -194,31 +196,21 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 		DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped $property,
 	): void
 	{
-		if ($client instanceof Clients\Gateway && !$property instanceof DevicesEntities\Channels\Properties\Dynamic) {
-			return;
-		}
-
-		if ($client instanceof Clients\Device && !$property instanceof DevicesEntities\Channels\Properties\Mapped) {
-			return;
-		}
+		$now = $this->dateTimeFactory->getNow();
 
 		$client->writeChannelProperty($device, $channel, $property)
-			->then(function () use ($property): void {
+			->then(function () use ($property, $now): void {
 				if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
 					$state = $this->channelPropertiesStates->getValue($property);
 
-					if ($state !== null && $state->getExpectedValue() === null) {
-						return;
+					if ($state?->getExpectedValue() !== null) {
+						$this->propertyStateHelper->setValue(
+							$property,
+							Utils\ArrayHash::from([
+								DevicesStates\Property::PENDING_KEY => $now->format(DateTimeInterface::ATOM),
+							]),
+						);
 					}
-
-					$this->propertyStateHelper->setValue(
-						$property,
-						Utils\ArrayHash::from([
-							DevicesStates\Property::PENDING_KEY => $this->dateTimeFactory->getNow()->format(
-								DateTimeInterface::ATOM,
-							),
-						]),
-					);
 				}
 			})
 			->otherwise(function (Throwable $ex) use ($connectorId, $device, $channel, $property): void {

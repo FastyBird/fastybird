@@ -156,7 +156,7 @@ final class Gateway implements Client
 			return Promise\reject(new Exceptions\InvalidArgument('Provided property is not writable'));
 		}
 
-		if ($device->getParent()->getIpAddress() === null || $device->getParent()->getAccessToken() === null) {
+		if ($device->getGateway()->getIpAddress() === null || $device->getGateway()->getAccessToken() === null) {
 			return Promise\reject(
 				new Exceptions\InvalidArgument('Device assigned NS Panel is not configured'),
 			);
@@ -188,8 +188,8 @@ final class Gateway implements Client
 			return $this->lanApiApi->setSubDeviceStatus(
 				$device->getIdentifier(),
 				$status,
-				$device->getParent()->getIpAddress(),
-				$device->getParent()->getAccessToken(),
+				$device->getGateway()->getIpAddress(),
+				$device->getGateway()->getAccessToken(),
 			);
 		}
 
@@ -338,10 +338,12 @@ final class Gateway implements Client
 					],
 				);
 
-				throw new DevicesExceptions\Terminate(
-					'Calling NS Panel API failed',
-					$ex->getCode(),
-					$ex,
+				$this->consumer->append(
+					new Entities\Messages\DeviceState(
+						$this->connector->getId(),
+						$device->getIdentifier(),
+						MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_LOST),
+					),
 				);
 			});
 
@@ -427,7 +429,7 @@ final class Gateway implements Client
 						);
 
 						if ($channel !== null) {
-							$findChannelPropertiesQuery = new DevicesQueries\FindChannelProperties();
+							$findChannelPropertiesQuery = new DevicesQueries\FindChannelDynamicProperties();
 							$findChannelPropertiesQuery->forChannel($channel);
 							$findChannelPropertiesQuery->byIdentifier($status->getType()->getValue());
 
@@ -526,10 +528,12 @@ final class Gateway implements Client
 					],
 				);
 
-				throw new DevicesExceptions\Terminate(
-					'Calling NS Panel API failed',
-					$ex->getCode(),
-					$ex,
+				$this->consumer->append(
+					new Entities\Messages\DeviceState(
+						$this->connector->getId(),
+						$device->getIdentifier(),
+						MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_LOST),
+					),
 				);
 			});
 

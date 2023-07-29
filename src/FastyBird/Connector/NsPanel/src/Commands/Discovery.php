@@ -398,7 +398,7 @@ class Discovery extends Console\Command\Command
 				) {
 					$foundDevices++;
 
-					$gateway = $device->getParent()->getName() ?? $device->getParent()->getIdentifier();
+					$gateway = $device->getGateway()->getName() ?? $device->getGateway()->getIdentifier();
 
 					$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
 					$findDevicePropertyQuery->forDevice($device);

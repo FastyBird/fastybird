@@ -75,7 +75,7 @@ final class SubDevicesDiscovery implements Consumer
 
 		$findDeviceQuery = new Queries\FindGatewayDevices();
 		$findDeviceQuery->byConnectorId($entity->getConnector());
-		$findDeviceQuery->byId($entity->getParent());
+		$findDeviceQuery->byId($entity->getGateway());
 
 		$parent = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\Gateway::class);
 

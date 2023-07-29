@@ -82,7 +82,7 @@ final class Status implements Consumers\Consumer
 			$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\NsPanelChannel::class);
 
 			if ($channel !== null) {
-				$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+				$findChannelPropertyQuery = new DevicesQueries\FindChannelDynamicProperties();
 				$findChannelPropertyQuery->forChannel($channel);
 				$findChannelPropertyQuery->byId($status->getProperty());
 
@@ -91,7 +91,7 @@ final class Status implements Consumers\Consumer
 					DevicesEntities\Channels\Properties\Dynamic::class,
 				);
 
-				if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
+				if ($property !== null) {
 					$this->propertyStateHelper->setValue($property, Utils\ArrayHash::from([
 						DevicesStates\Property::ACTUAL_VALUE_KEY => $status->getValue(),
 						DevicesStates\Property::VALID_KEY => true,

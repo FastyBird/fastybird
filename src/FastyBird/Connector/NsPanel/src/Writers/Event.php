@@ -115,13 +115,13 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 	{
 		$property = $event->getProperty();
 
-		$state = $event->getState();
-
-		if ($state->getExpectedValue() === null || $state->getPending() !== true) {
+		if (!$property instanceof DevicesEntities\Channels\Properties\Dynamic) {
 			return;
 		}
 
-		if (!$property instanceof DevicesEntities\Channels\Properties\Dynamic) {
+		$state = $event->getState();
+
+		if ($state->getExpectedValue() === null || $state->getPending() !== true) {
 			return;
 		}
 
@@ -132,7 +132,7 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 		$device = $property->getChannel()->getDevice();
 		$channel = $property->getChannel();
 
-		assert($device instanceof Entities\NsPanelDevice);
+		assert($device instanceof Entities\Devices\SubDevice);
 		assert($channel instanceof Entities\NsPanelChannel);
 
 		$this->writeChannelProperty($client, $connectorId, $device, $channel, $property);
@@ -152,11 +152,9 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 		$property = $event->getProperty();
 
 		foreach ($this->findChildren($property) as $child) {
-			if ($child instanceof DevicesEntities\Channels\Properties\Mapped) {
-				if (!$child->getChannel()->getDevice()->getConnector()->getId()->equals($connectorId)) {
-					continue;
-				}
-			} else {
+			if (
+				!$child->getChannel()->getDevice()->getConnector()->getId()->equals($connectorId)
+			) {
 				continue;
 			}
 
@@ -169,7 +167,7 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 			$device = $child->getChannel()->getDevice();
 			$channel = $child->getChannel();
 
-			assert($device instanceof Entities\NsPanelDevice);
+			assert($device instanceof Entities\Devices\ThirdPartyDevice);
 			assert($channel instanceof Entities\NsPanelChannel);
 
 			$this->writeChannelProperty($client, $connectorId, $device, $channel, $child);
@@ -184,31 +182,21 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 		DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped $property,
 	): void
 	{
-		if ($client instanceof Clients\Gateway && !$property instanceof DevicesEntities\Channels\Properties\Dynamic) {
-			return;
-		}
-
-		if ($client instanceof Clients\Device && !$property instanceof DevicesEntities\Channels\Properties\Mapped) {
-			return;
-		}
+		$now = $this->dateTimeFactory->getNow();
 
 		$client->writeChannelProperty($device, $channel, $property)
-			->then(function () use ($property): void {
+			->then(function () use ($property, $now): void {
 				if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
 					$state = $this->channelPropertiesStates->getValue($property);
 
-					if ($state !== null && $state->getExpectedValue() === null) {
-						return;
+					if ($state?->getExpectedValue() !== null) {
+						$this->propertyStateHelper->setValue(
+							$property,
+							Utils\ArrayHash::from([
+								DevicesStates\Property::PENDING_KEY => $now->format(DateTimeInterface::ATOM),
+							]),
+						);
 					}
-
-					$this->propertyStateHelper->setValue(
-						$property,
-						Utils\ArrayHash::from([
-							DevicesStates\Property::PENDING_KEY => $this->dateTimeFactory->getNow()->format(
-								DateTimeInterface::ATOM,
-							),
-						]),
-					);
 				}
 			})
 			->otherwise(function (Throwable $ex) use ($connectorId, $device, $channel, $property): void {
@@ -246,7 +234,7 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 	}
 
 	/**
-	 * @return array<DevicesEntities\Devices\Properties\Property|DevicesEntities\Channels\Properties\Property>
+	 * @return array<DevicesEntities\Channels\Properties\Mapped>
 	 *
 	 * @throws DevicesExceptions\InvalidState
 	 */
@@ -256,7 +244,7 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 	): array
 	{
 		if ($property instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty) {
-			$findPropertyQuery = new DevicesQueries\FindChannelProperties();
+			$findPropertyQuery = new DevicesQueries\FindChannelMappedProperties();
 			$findPropertyQuery->byParentId($property->getId());
 
 			return $this->channelPropertiesRepository->findAllBy(

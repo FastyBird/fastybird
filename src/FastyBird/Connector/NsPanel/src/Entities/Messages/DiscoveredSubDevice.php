@@ -40,7 +40,7 @@ final class DiscoveredSubDevice implements Entities\Messages\Entity
 	 */
 	public function __construct(
 		private readonly Uuid\UuidInterface $connector,
-		private readonly Uuid\UuidInterface $parent,
+		private readonly Uuid\UuidInterface $gateway,
 		private readonly string $serialNumber,
 		private readonly string $name,
 		private readonly string $manufacturer,
@@ -66,9 +66,9 @@ final class DiscoveredSubDevice implements Entities\Messages\Entity
 		return $this->connector;
 	}
 
-	public function getParent(): Uuid\UuidInterface
+	public function getGateway(): Uuid\UuidInterface
 	{
-		return $this->parent;
+		return $this->gateway;
 	}
 
 	public function getSerialNumber(): string

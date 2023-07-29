@@ -29,6 +29,7 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
@@ -77,6 +78,7 @@ class Periodic implements Writer
 		private readonly Helpers\Property $propertyStateHelper,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
+		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
@@ -134,7 +136,10 @@ class Periodic implements Writer
 				$findDevicesQuery = new Queries\FindSubDevices();
 				$findDevicesQuery->byConnectorId(Uuid\Uuid::fromString($id));
 
-				$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\SubDevice::class);
+				$devices = $this->devicesRepository->findAllBy(
+					$findDevicesQuery,
+					Entities\Devices\SubDevice::class,
+				);
 			} elseif ($client instanceof Clients\Device) {
 				$findDevicesQuery = new Queries\FindThirdPartyDevices();
 				$findDevicesQuery->byConnectorId(Uuid\Uuid::fromString($id));
@@ -162,7 +167,7 @@ class Periodic implements Writer
 						$client instanceof Clients\Device
 						&& $device instanceof Entities\Devices\ThirdPartyDevice
 					) {
-						if ($this->writeDeviceChannelProperty($client, $device)) {
+						if ($this->writeThirdPartyDeviceChannelProperty($client, $device)) {
 							$this->registerLoopHandler();
 
 							return;
@@ -198,11 +203,15 @@ class Periodic implements Writer
 		$channels = $this->channelsRepository->findAllBy($findChannelsQuery, Entities\NsPanelChannel::class);
 
 		foreach ($channels as $channel) {
-			foreach ($channel->getProperties() as $property) {
-				if (!$property instanceof DevicesEntities\Channels\Properties\Dynamic) {
-					continue;
-				}
+			$findChannelPropertiesQuery = new DevicesQueries\FindChannelDynamicProperties();
+			$findChannelPropertiesQuery->forChannel($channel);
 
+			$properties = $this->channelPropertiesRepository->findAllBy(
+				$findChannelPropertiesQuery,
+				DevicesEntities\Channels\Properties\Dynamic::class,
+			);
+
+			foreach ($properties as $property) {
 				$state = $this->channelPropertiesStates->getValue($property);
 
 				if ($state === null) {
@@ -246,23 +255,21 @@ class Periodic implements Writer
 						$this->processedProperties[$property->getPlainId()] = $now;
 
 						$client->writeChannelProperty($device, $channel, $property)
-							->then(function () use ($property): void {
+							->then(function () use ($property, $now): void {
 								unset($this->processedProperties[$property->getPlainId()]);
 
 								$state = $this->channelPropertiesStates->getValue($property);
 
-								if ($state !== null && $state->getExpectedValue() === null) {
-									return;
+								if ($state?->getExpectedValue() !== null) {
+									$this->propertyStateHelper->setValue(
+										$property,
+										Utils\ArrayHash::from([
+											DevicesStates\Property::PENDING_KEY => $now->format(
+												DateTimeInterface::ATOM,
+											),
+										]),
+									);
 								}
-
-								$this->propertyStateHelper->setValue(
-									$property,
-									Utils\ArrayHash::from([
-										DevicesStates\Property::PENDING_KEY => $this->dateTimeFactory->getNow()->format(
-											DateTimeInterface::ATOM,
-										),
-									]),
-								);
 							})
 							->otherwise(function (Throwable $ex) use ($device, $channel, $property): void {
 								$this->logger->error(
@@ -312,7 +319,7 @@ class Periodic implements Writer
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function writeDeviceChannelProperty(
+	private function writeThirdPartyDeviceChannelProperty(
 		Clients\Device $client,
 		Entities\Devices\ThirdPartyDevice $device,
 	): bool
@@ -325,11 +332,15 @@ class Periodic implements Writer
 		$channels = $this->channelsRepository->findAllBy($findChannelsQuery, Entities\NsPanelChannel::class);
 
 		foreach ($channels as $channel) {
-			foreach ($channel->getProperties() as $property) {
-				if (!$property instanceof DevicesEntities\Channels\Properties\Mapped) {
-					continue;
-				}
+			$findChannelPropertiesQuery = new DevicesQueries\FindChannelMappedProperties();
+			$findChannelPropertiesQuery->forChannel($channel);
 
+			$properties = $this->channelPropertiesRepository->findAllBy(
+				$findChannelPropertiesQuery,
+				DevicesEntities\Channels\Properties\Mapped::class,
+			);
+
+			foreach ($properties as $property) {
 				$state = $this->channelPropertiesStates->getValue($property);
 
 				if ($state === null) {
@@ -338,56 +349,58 @@ class Periodic implements Writer
 
 				$propertyValue = $state->getExpectedValue() ?? $state->getActualValue();
 
-				if ($propertyValue !== null) {
-					$debounce = array_key_exists(
-						$property->getPlainId(),
-						$this->processedProperties,
-					)
-						? $this->processedProperties[$property->getPlainId()]
-						: false;
-
-					if (
-						$debounce !== false
-						&& (float) $now->format('Uv') - (float) $debounce->format(
-							'Uv',
-						) < self::HANDLER_DEBOUNCE_INTERVAL
-					) {
-						continue;
-					}
-
-					unset($this->processedProperties[$property->getPlainId()]);
-
-					$this->processedProperties[$property->getPlainId()] = $now;
-
-					$client->writeChannelProperty($device, $channel, $property)
-						->then(function () use ($property): void {
-							unset($this->processedProperties[$property->getPlainId()]);
-						})
-						->otherwise(function (Throwable $ex) use ($device, $channel, $property): void {
-							$this->logger->error(
-								'Could not write property state',
-								[
-									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-									'type' => 'periodic-writer',
-									'exception' => BootstrapHelpers\Logger::buildException($ex),
-									'connector' => [
-										'id' => $device->getConnector()->getPlainId(),
-									],
-									'device' => [
-										'id' => $device->getPlainId(),
-									],
-									'channel' => [
-										'id' => $channel->getPlainId(),
-									],
-									'property' => [
-										'id' => $property->getPlainId(),
-									],
-								],
-							);
-						});
-
-					return true;
+				if ($propertyValue === null) {
+					continue;
 				}
+
+				$debounce = array_key_exists(
+					$property->getPlainId(),
+					$this->processedProperties,
+				)
+					? $this->processedProperties[$property->getPlainId()]
+					: false;
+
+				if (
+					$debounce !== false
+					&& (float) $now->format('Uv') - (float) $debounce->format(
+						'Uv',
+					) < self::HANDLER_DEBOUNCE_INTERVAL
+				) {
+					continue;
+				}
+
+				unset($this->processedProperties[$property->getPlainId()]);
+
+				$this->processedProperties[$property->getPlainId()] = $now;
+
+				$client->writeChannelProperty($device, $channel, $property)
+					->then(function () use ($property): void {
+						unset($this->processedProperties[$property->getPlainId()]);
+					})
+					->otherwise(function (Throwable $ex) use ($device, $channel, $property): void {
+						$this->logger->error(
+							'Could not write property state',
+							[
+								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+								'type' => 'periodic-writer',
+								'exception' => BootstrapHelpers\Logger::buildException($ex),
+								'connector' => [
+									'id' => $device->getConnector()->getPlainId(),
+								],
+								'device' => [
+									'id' => $device->getPlainId(),
+								],
+								'channel' => [
+									'id' => $channel->getPlainId(),
+								],
+								'property' => [
+									'id' => $property->getPlainId(),
+								],
+							],
+						);
+					});
+
+				return true;
 			}
 		}
 

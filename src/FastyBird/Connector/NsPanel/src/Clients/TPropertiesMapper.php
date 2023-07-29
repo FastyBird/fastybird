@@ -23,7 +23,7 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries\FindChannelProperties;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use function boolval;
 use function intval;
 use function strval;
@@ -362,7 +362,7 @@ trait TPropertiesMapper
 		Types\Protocol $protocol,
 	): DevicesEntities\Channels\Properties\Mapped|DevicesEntities\Channels\Properties\Variable|null
 	{
-		$findChannelPropertyQuery = new FindChannelProperties();
+		$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
 		$findChannelPropertyQuery->forChannel($channel);
 		$findChannelPropertyQuery->byIdentifier(Helpers\Name::convertProtocolToProperty($protocol));
 

@@ -32,6 +32,7 @@ use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
+use Ramsey\Uuid;
 use React\Promise;
 use Throwable;
 use function array_filter;
@@ -221,6 +222,85 @@ final class Device implements Client
 						],
 					);
 				});
+
+			$this->lanApiApi->getSubDevices($ipAddress, $accessToken)
+				->then(
+					function (Entities\API\Response\GetSubDevices $response) use ($gateway, $ipAddress, $accessToken): void {
+						foreach ($response->getData()->getDevicesList() as $subDevice) {
+							if ($subDevice->getThirdSerialNumber() !== null) {
+								$findDevicesQuery = new Queries\FindThirdPartyDevices();
+								$findDevicesQuery->forParent($gateway);
+								$findDevicesQuery->byId(Uuid\Uuid::fromString($subDevice->getThirdSerialNumber()));
+
+								$device = $this->devicesRepository->findOneBy(
+									$findDevicesQuery,
+									Entities\Devices\ThirdPartyDevice::class,
+								);
+
+								if ($device === null) {
+									$this->lanApiApi->removeDevice(
+										$subDevice->getSerialNumber(),
+										$ipAddress,
+										$accessToken,
+									)
+										->then(function () use ($gateway, $subDevice): void {
+											$this->logger->debug(
+												'Removed third-party from NS Panel',
+												[
+													'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+													'type' => 'device-client',
+													'connector' => [
+														'id' => $this->connector->getPlainId(),
+													],
+													'gateway' => [
+														'id' => $gateway->getPlainId(),
+													],
+													'device' => [
+														'id' => $subDevice->getThirdSerialNumber(),
+													],
+												],
+											);
+										})
+										->otherwise(function (Throwable $ex) use ($gateway, $subDevice): void {
+											$this->logger->error(
+												'Could not remove deleted third-party device from NS Panel',
+												[
+													'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+													'type' => 'device-client',
+													'exception' => BootstrapHelpers\Logger::buildException($ex),
+													'connector' => [
+														'id' => $this->connector->getPlainId(),
+													],
+													'gateway' => [
+														'id' => $gateway->getPlainId(),
+													],
+													'device' => [
+														'id' => $subDevice->getThirdSerialNumber(),
+													],
+												],
+											);
+										});
+								}
+							}
+						}
+					},
+				)
+				->otherwise(function (Throwable $ex) use ($gateway): void {
+					$this->logger->error(
+						'Could not fetch NS Panel registered devices',
+						[
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+							'type' => 'device-client',
+							'exception' => BootstrapHelpers\Logger::buildException($ex),
+							'connector' => [
+								'id' => $this->connector->getPlainId(),
+							],
+							'gateway' => [
+								'id' => $gateway->getPlainId(),
+							],
+						],
+					);
+				});
 		}
 
 		$this->writer->connect($this->connector, $this);
@@ -340,7 +420,7 @@ final class Device implements Client
 			);
 		}
 
-		if ($device->getParent()->getIpAddress() === null || $device->getParent()->getAccessToken() === null) {
+		if ($device->getGateway()->getIpAddress() === null || $device->getGateway()->getAccessToken() === null) {
 			return Promise\reject(
 				new Exceptions\InvalidArgument('Device assigned NS Panel is not configured'),
 			);
@@ -373,8 +453,8 @@ final class Device implements Client
 		return $this->lanApiApi->reportDeviceStatus(
 			$serialNumber,
 			$status,
-			$device->getParent()->getIpAddress(),
-			$device->getParent()->getAccessToken(),
+			$device->getGateway()->getIpAddress(),
+			$device->getGateway()->getAccessToken(),
 		);
 	}
 

@@ -63,7 +63,7 @@ class SubDevice extends Entities\NsPanelDevice
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function getParent(): Gateway
+	public function getGateway(): Gateway
 	{
 		foreach ($this->parents->toArray() as $parent) {
 			if ($parent instanceof Gateway) {

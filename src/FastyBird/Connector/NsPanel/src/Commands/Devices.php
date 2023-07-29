@@ -1378,8 +1378,7 @@ class Devices extends Console\Command\Command
 		$missingProtocols = [];
 
 		foreach ($protocols as $protocol) {
-			/** @var DevicesQueries\FindChannelProperties<DevicesEntities\Channels\Properties\Variable> $findPropertyQuery */
-			$findPropertyQuery = new DevicesQueries\FindChannelProperties();
+			$findPropertyQuery = new DevicesQueries\FindChannelVariableProperties();
 			$findPropertyQuery->forChannel($channel);
 			$findPropertyQuery->byIdentifier(
 				Helpers\Name::convertProtocolToProperty(Types\Protocol::get($protocol)),
@@ -2886,7 +2885,7 @@ class Devices extends Console\Command\Command
 
 			$properties = [];
 
-			$findDevicePropertiesQuery = new DevicesQueries\FindChannelProperties();
+			$findDevicePropertiesQuery = new DevicesQueries\FindChannelDynamicProperties();
 			$findDevicePropertiesQuery->forChannel($channel);
 
 			$channelProperties = $this->channelsPropertiesRepository->findAllBy(
@@ -2895,7 +2894,7 @@ class Devices extends Console\Command\Command
 			);
 			usort(
 				$channelProperties,
-				static function (DevicesEntities\Channels\Properties\Property $a, DevicesEntities\Channels\Properties\Property $b): int {
+				static function (DevicesEntities\Channels\Properties\Dynamic $a, DevicesEntities\Channels\Properties\Dynamic $b): int {
 					if ($a->getIdentifier() === $b->getIdentifier()) {
 						return $a->getName() <=> $b->getName();
 					}
@@ -2905,10 +2904,6 @@ class Devices extends Console\Command\Command
 			);
 
 			foreach ($channelProperties as $property) {
-				if (!$property instanceof DevicesEntities\Channels\Properties\Dynamic) {
-					continue;
-				}
-
 				$properties[$property->getIdentifier()] = sprintf(
 					'%s%s',
 					$property->getIdentifier(),
@@ -2954,8 +2949,7 @@ class Devices extends Console\Command\Command
 					$identifier = array_search($answer, $properties, true);
 
 					if ($identifier !== false) {
-						/** @var DevicesQueries\FindChannelProperties<DevicesEntities\Channels\Properties\Dynamic> $findPropertyQuery */
-						$findPropertyQuery = new DevicesQueries\FindChannelProperties();
+						$findPropertyQuery = new DevicesQueries\FindChannelDynamicProperties();
 						$findPropertyQuery->byIdentifier($identifier);
 						$findPropertyQuery->forChannel($channel);
 
