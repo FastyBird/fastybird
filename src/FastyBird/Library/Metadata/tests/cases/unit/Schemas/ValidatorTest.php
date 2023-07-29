@@ -20,7 +20,7 @@ final class ValidatorTest extends BaseTestCase
 	 *
 	 * @dataProvider validateValidData
 	 */
-	public function XtestValidateValidInput(
+	public function testValidateValidInput(
 		string $data,
 		string $schema,
 		array $expected,
@@ -42,7 +42,7 @@ final class ValidatorTest extends BaseTestCase
 	 *
 	 * @dataProvider validateInvalidData
 	 */
-	public function XtestValidateDevicePropertyInvalid(
+	public function testValidateDevicePropertyInvalid(
 		string $data,
 		string $schema,
 	): void

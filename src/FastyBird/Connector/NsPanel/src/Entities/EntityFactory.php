@@ -51,7 +51,6 @@ use function strtoupper;
 use function strval;
 use function trim;
 use function ucfirst;
-use function var_dump;
 
 /**
  * Entity factory
@@ -200,8 +199,6 @@ final class EntityFactory
 					if ($parameterType === 'array' && is_string($method->getDocComment())) {
 						$factory = phpDocumentor\Reflection\DocBlockFactory::createInstance();
 
-						$rc = new ReflectionClass(Entities\Entity::class);
-
 						$docblock = $factory->create(
 							$method->getDocComment(),
 							new phpDocumentor\Reflection\Types\Context('\FastyBird\Connector\NsPanel'),
@@ -221,8 +218,6 @@ final class EntityFactory
 								$arrayType = strval($tagType->getValueType());
 
 								$subRes = [];
-
-								var_dump($arrayType);
 
 								if ($parameterValue instanceof Utils\ArrayHash && !interface_exists($arrayType)) {
 									foreach ($parameterValue as $subParameterValue) {

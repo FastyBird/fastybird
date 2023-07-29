@@ -27,7 +27,7 @@ final class TriggersRepositoryTest extends DbTestCase
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
 	 */
-	public function XtestReadOne(): void
+	public function testReadOne(): void
 	{
 		$repository = $this->getContainer()->getByType(Models\Triggers\TriggersRepository::class);
 
@@ -49,7 +49,7 @@ final class TriggersRepositoryTest extends DbTestCase
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
 	 */
-	public function XtestReadResultSet(): void
+	public function testReadResultSet(): void
 	{
 		$repository = $this->getContainer()->getByType(Models\Triggers\TriggersRepository::class);
 

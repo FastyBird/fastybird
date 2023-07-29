@@ -14,7 +14,7 @@ final class NumberRangeFormatTest extends BaseTestCase
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 */
-	public function XtestFromString(): void
+	public function testFromString(): void
 	{
 		$valueObject = new ValueObjects\NumberRangeFormat('10:20');
 
@@ -63,7 +63,7 @@ final class NumberRangeFormatTest extends BaseTestCase
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 */
-	public function XtestFromArray(): void
+	public function testFromArray(): void
 	{
 		$valueObject = new ValueObjects\NumberRangeFormat(['10', '20']);
 

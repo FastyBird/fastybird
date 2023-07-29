@@ -20,7 +20,7 @@ use stdClass;
 final class ModuleEntitiesTest extends TestCase
 {
 
-	public function XtestSubscriberEvents(): void
+	public function testSubscriberEvents(): void
 	{
 		$publisher = $this->createMock(ExchangePublisher\Publisher::class);
 
@@ -52,7 +52,7 @@ final class ModuleEntitiesTest extends TestCase
 	/**
 	 * @throws Exception
 	 */
-	public function XtestPublishCreatedEntity(): void
+	public function testPublishCreatedEntity(): void
 	{
 		$publisher = $this->createMock(ExchangePublisher\Publisher::class);
 		$publisher
@@ -143,7 +143,7 @@ final class ModuleEntitiesTest extends TestCase
 	/**
 	 * @throws Exception
 	 */
-	public function XtestPublishUpdatedEntity(): void
+	public function testPublishUpdatedEntity(): void
 	{
 		$publisher = $this->createMock(ExchangePublisher\Publisher::class);
 		$publisher
@@ -234,7 +234,7 @@ final class ModuleEntitiesTest extends TestCase
 	/**
 	 * @throws Exception
 	 */
-	public function XtestPublishDeletedEntity(): void
+	public function testPublishDeletedEntity(): void
 	{
 		$publisher = $this->createMock(ExchangePublisher\Publisher::class);
 		$publisher

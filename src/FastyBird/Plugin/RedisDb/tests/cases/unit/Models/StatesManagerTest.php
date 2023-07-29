@@ -27,7 +27,7 @@ final class StatesManagerTest extends TestCase
 	 *
 	 * @dataProvider createStateValue
 	 */
-	public function XtestCreateEntity(Uuid\UuidInterface $id, array $data, array $dbData, array $expected): void
+	public function testCreateEntity(Uuid\UuidInterface $id, array $data, array $dbData, array $expected): void
 	{
 		$redisClient = $this->createMock(Clients\Client::class);
 		$redisClient
@@ -67,7 +67,7 @@ final class StatesManagerTest extends TestCase
 	 *
 	 * @dataProvider updateStateValue
 	 */
-	public function XtestUpdateEntity(
+	public function testUpdateEntity(
 		Uuid\UuidInterface $id,
 		array $originalData,
 		array $data,
@@ -107,7 +107,7 @@ final class StatesManagerTest extends TestCase
 	 * @throws Exceptions\InvalidState
 	 * @throws Utils\JsonException
 	 */
-	public function XtestDeleteEntity(): void
+	public function testDeleteEntity(): void
 	{
 		$id = Uuid\Uuid::uuid4();
 

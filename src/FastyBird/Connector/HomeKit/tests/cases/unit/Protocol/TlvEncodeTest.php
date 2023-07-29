@@ -17,7 +17,7 @@ final class TlvEncodeTest extends BaseTestCase
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 */
-	public function XtestEncode(): void
+	public function testEncode(): void
 	{
 		$tlvTool = new Protocol\Tlv();
 
@@ -52,7 +52,7 @@ final class TlvEncodeTest extends BaseTestCase
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 */
-	public function XtestEncodeWithMerge(): void
+	public function testEncodeWithMerge(): void
 	{
 		$tlvTool = new Protocol\Tlv();
 
@@ -114,7 +114,7 @@ final class TlvEncodeTest extends BaseTestCase
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 */
-	public function XtestEncodeSeparated(): void
+	public function testEncodeSeparated(): void
 	{
 		$tlvTool = new Protocol\Tlv();
 

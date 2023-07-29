@@ -25,7 +25,7 @@ final class EmailEntityTest extends DbTestCase
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
 	 */
-	public function XtestChangeDefault(): void
+	public function testChangeDefault(): void
 	{
 		$repository = $this->getContainer()->getByType(Models\Emails\EmailsRepository::class);
 

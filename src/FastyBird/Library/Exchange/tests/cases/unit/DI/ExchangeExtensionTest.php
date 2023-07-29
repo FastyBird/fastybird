@@ -14,7 +14,7 @@ final class ExchangeExtensionTest extends BaseTestCase
 	/**
 	 * @throws Nette\DI\MissingServiceException
 	 */
-	public function XtestCompilersServices(): void
+	public function testCompilersServices(): void
 	{
 		self::assertNotNull($this->container->getByType(Entities\EntityFactory::class, false));
 		self::assertNotNull($this->container->getByType(Publisher\Container::class, false));

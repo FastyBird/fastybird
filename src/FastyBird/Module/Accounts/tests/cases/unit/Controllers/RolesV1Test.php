@@ -40,7 +40,7 @@ final class RolesV1Test extends DbTestCase
 	 *
 	 * @dataProvider rolesRead
 	 */
-	public function XtestRead(string $url, string|null $token, int $statusCode, string $fixture): void
+	public function testRead(string $url, string|null $token, int $statusCode, string $fixture): void
 	{
 		$router = $this->getContainer()->getByType(SlimRouter\Routing\IRouter::class);
 
@@ -220,7 +220,7 @@ final class RolesV1Test extends DbTestCase
 	 *
 	 * @dataProvider rolesUpdate
 	 */
-	public function XtestUpdate(string $url, string|null $token, string $body, int $statusCode, string $fixture): void
+	public function testUpdate(string $url, string|null $token, string $body, int $statusCode, string $fixture): void
 	{
 		$router = $this->getContainer()->getByType(SlimRouter\Routing\IRouter::class);
 

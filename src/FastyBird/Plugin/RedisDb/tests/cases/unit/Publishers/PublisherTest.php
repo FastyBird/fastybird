@@ -20,7 +20,7 @@ final class PublisherTest extends TestCase
 	/**
 	 * @throws Utils\JsonException
 	 */
-	public function XtestPublish(): void
+	public function testPublish(): void
 	{
 		$now = new DateTime();
 

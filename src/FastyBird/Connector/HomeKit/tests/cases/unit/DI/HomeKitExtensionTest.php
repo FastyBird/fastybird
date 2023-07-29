@@ -15,7 +15,7 @@ final class HomeKitExtensionTest extends BaseTestCase
 	 * @throws BootstrapExceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 */
-	public function XtestServicesRegistration(): void
+	public function testServicesRegistration(): void
 	{
 		$container = $this->createContainer();
 

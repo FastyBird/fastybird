@@ -26,7 +26,7 @@ final class TriggersModuleExtensionTests extends DbTestCase
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
 	 */
-	public function XtestServicesRegistration(): void
+	public function testServicesRegistration(): void
 	{
 		self::assertNotNull($this->getContainer()->getByType(Commands\Initialize::class, false));
 

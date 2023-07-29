@@ -26,7 +26,7 @@ final class FindActionsTest extends DbTestCase
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
 	 */
-	public function XtestFindById(): void
+	public function testFindById(): void
 	{
 		$repository = $this->getContainer()->getByType(TriggersModels\Actions\ActionsRepository::class);
 
@@ -46,7 +46,7 @@ final class FindActionsTest extends DbTestCase
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
 	 */
-	public function XtestFindForDevice(): void
+	public function testFindForDevice(): void
 	{
 		$repository = $this->getContainer()->getByType(TriggersModels\Actions\ActionsRepository::class);
 
@@ -66,7 +66,7 @@ final class FindActionsTest extends DbTestCase
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
 	 */
-	public function XtestFindForChannel(): void
+	public function testFindForChannel(): void
 	{
 		$repository = $this->getContainer()->getByType(TriggersModels\Actions\ActionsRepository::class);
 
@@ -86,7 +86,7 @@ final class FindActionsTest extends DbTestCase
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
 	 */
-	public function XtestFindForChannelProperty(): void
+	public function testFindForChannelProperty(): void
 	{
 		$repository = $this->getContainer()->getByType(TriggersModels\Actions\ActionsRepository::class);
 
@@ -106,7 +106,7 @@ final class FindActionsTest extends DbTestCase
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
 	 */
-	public function XtestFindForCombination(): void
+	public function testFindForCombination(): void
 	{
 		$repository = $this->getContainer()->getByType(TriggersModels\Actions\ActionsRepository::class);
 

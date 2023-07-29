@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 final class DataTypeTest extends TestCase
 {
 
-	public function XtestCreateDatatype(): void
+	public function testCreateDatatype(): void
 	{
 		$datatype = MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_INT);
 
@@ -36,7 +36,7 @@ final class DataTypeTest extends TestCase
 		self::assertSame(MetadataTypes\DataType::DATA_TYPE_COLOR, $datatype->getValue());
 	}
 
-	public function XtestInvalidDatatype(): void
+	public function testInvalidDatatype(): void
 	{
 		$this->expectException(InvalidEnumValueException::class);
 

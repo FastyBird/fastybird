@@ -25,7 +25,7 @@ final class AccountsModuleExtensionTests extends DbTestCase
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
 	 */
-	public function XtestServicesRegistration(): void
+	public function testServicesRegistration(): void
 	{
 		self::assertNotNull($this->getContainer()->getByType(Middleware\Access::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Middleware\UrlFormat::class, false));

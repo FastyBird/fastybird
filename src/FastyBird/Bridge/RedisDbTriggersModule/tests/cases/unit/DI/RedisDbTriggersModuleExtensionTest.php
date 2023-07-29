@@ -12,7 +12,7 @@ final class RedisDbTriggersModuleExtensionTest extends BaseTestCase
 	/**
 	 * @throws Nette\DI\MissingServiceException
 	 */
-	public function XtestServicesRegistration(): void
+	public function testServicesRegistration(): void
 	{
 		self::assertNotNull($this->container->getByType(Models\ActionsRepository::class, false));
 		self::assertNotNull($this->container->getByType(Models\ActionsManager::class, false));

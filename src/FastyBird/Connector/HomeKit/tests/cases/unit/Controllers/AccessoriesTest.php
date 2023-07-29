@@ -65,7 +65,7 @@ final class AccessoriesTest extends DbTestCase
 	 *
 	 * @dataProvider accessoriesRead
 	 */
-	public function XtestRead(string $url, int $statusCode, string $fixture): void
+	public function testRead(string $url, int $statusCode, string $fixture): void
 	{
 		$middleware = $this->getContainer()->getByType(Middleware\Router::class);
 

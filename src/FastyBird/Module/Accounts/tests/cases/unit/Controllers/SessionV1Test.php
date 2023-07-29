@@ -39,7 +39,7 @@ final class SessionV1Test extends DbTestCase
 	 *
 	 * @dataProvider sessionRead
 	 */
-	public function XtestRead(string $url, string|null $token, int $statusCode, string $fixture): void
+	public function testRead(string $url, string|null $token, int $statusCode, string $fixture): void
 	{
 		$router = $this->getContainer()->getByType(SlimRouter\Routing\IRouter::class);
 
@@ -161,7 +161,7 @@ final class SessionV1Test extends DbTestCase
 	 *
 	 * @dataProvider sessionCreate
 	 */
-	public function XtestCreate(string $url, string|null $token, string $body, int $statusCode, string $fixture): void
+	public function testCreate(string $url, string|null $token, string $body, int $statusCode, string $fixture): void
 	{
 		$router = $this->getContainer()->getByType(SlimRouter\Routing\IRouter::class);
 
@@ -341,7 +341,7 @@ final class SessionV1Test extends DbTestCase
 	 *
 	 * @dataProvider sessionUpdate
 	 */
-	public function XtestUpdate(string $url, string|null $token, string $body, int $statusCode, string $fixture): void
+	public function testUpdate(string $url, string|null $token, string $body, int $statusCode, string $fixture): void
 	{
 		$router = $this->getContainer()->getByType(SlimRouter\Routing\IRouter::class);
 
@@ -476,7 +476,7 @@ final class SessionV1Test extends DbTestCase
 	 *
 	 * @dataProvider sessionDelete
 	 */
-	public function XtestDelete(string $url, string|null $token, int $statusCode, string $fixture): void
+	public function testDelete(string $url, string|null $token, int $statusCode, string $fixture): void
 	{
 		$router = $this->getContainer()->getByType(SlimRouter\Routing\IRouter::class);
 

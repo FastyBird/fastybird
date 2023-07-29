@@ -9,7 +9,7 @@ use function strval;
 final class StringEnumFormatTest extends BaseTestCase
 {
 
-	public function XtestFromString(): void
+	public function testFromString(): void
 	{
 		$valueObject = new ValueObjects\StringEnumFormat('one,two,three');
 
@@ -24,7 +24,7 @@ final class StringEnumFormatTest extends BaseTestCase
 		self::assertEquals('one,two,three', strval($valueObject));
 	}
 
-	public function XtestFromArray(): void
+	public function testFromArray(): void
 	{
 		$valueObject = new ValueObjects\StringEnumFormat(['one', 'two', 'three']);
 

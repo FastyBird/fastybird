@@ -21,7 +21,7 @@ final class ChannelPropertiesRepositoryTest extends BaseTestCase
 	 * @throws RedisDbExceptions\InvalidState
 	 * @throws Exception
 	 */
-	public function XtestFindOne(): void
+	public function testFindOne(): void
 	{
 		$id = Uuid::uuid4();
 
@@ -62,7 +62,7 @@ final class ChannelPropertiesRepositoryTest extends BaseTestCase
 	 * @throws RedisDbExceptions\InvalidState
 	 * @throws Exception
 	 */
-	public function XtestFindOneById(): void
+	public function testFindOneById(): void
 	{
 		$id = Uuid::uuid4();
 

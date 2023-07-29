@@ -10,7 +10,7 @@ use Nette;
 final class ConnectionTest extends Tests\Cases\Unit\BaseTestCase
 {
 
-	public function XtestDefaultValues(): void
+	public function testDefaultValues(): void
 	{
 		$config = new Connections\Connection('127.0.0.1', 1_234);
 
@@ -24,7 +24,7 @@ final class ConnectionTest extends Tests\Cases\Unit\BaseTestCase
 	 * @throws BootstrapExceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 */
-	public function XtestConfiguredValues(): void
+	public function testConfiguredValues(): void
 	{
 		$container = $this->createContainer(__DIR__ . '/../../../fixtures/Connections/customConnection.neon');
 

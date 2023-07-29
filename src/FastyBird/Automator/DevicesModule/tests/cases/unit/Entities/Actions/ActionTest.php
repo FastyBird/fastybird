@@ -26,7 +26,7 @@ final class ActionTest extends DbTestCase
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
 	 */
-	public function XtestValidation(): void
+	public function testValidation(): void
 	{
 		$repository = $this->getContainer()->getByType(TriggersModels\Actions\ActionsRepository::class);
 

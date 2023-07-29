@@ -33,7 +33,7 @@ final class DevicesV1Test extends DbTestCase
 	 *
 	 * @dataProvider devicesRead
 	 */
-	public function XtestRead(string $url, string|null $token, int $statusCode, string $fixture): void
+	public function testRead(string $url, string|null $token, int $statusCode, string $fixture): void
 	{
 		$router = $this->getContainer()->getByType(SlimRouter\Routing\IRouter::class);
 
@@ -184,7 +184,7 @@ final class DevicesV1Test extends DbTestCase
 	 *
 	 * @dataProvider devicesCreate
 	 */
-	public function XtestCreate(
+	public function testCreate(
 		string $url,
 		string|null $token,
 		string $body,
@@ -343,7 +343,7 @@ final class DevicesV1Test extends DbTestCase
 	 *
 	 * @dataProvider devicesUpdate
 	 */
-	public function XtestUpdate(string $url, string|null $token, string $body, int $statusCode, string $fixture): void
+	public function testUpdate(string $url, string|null $token, string $body, int $statusCode, string $fixture): void
 	{
 		$router = $this->getContainer()->getByType(SlimRouter\Routing\IRouter::class);
 
@@ -449,7 +449,7 @@ final class DevicesV1Test extends DbTestCase
 	 *
 	 * @dataProvider devicesDelete
 	 */
-	public function XtestDelete(string $url, string|null $token, int $statusCode, string $fixture): void
+	public function testDelete(string $url, string|null $token, int $statusCode, string $fixture): void
 	{
 		$router = $this->getContainer()->getByType(SlimRouter\Routing\IRouter::class);
 

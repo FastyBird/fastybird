@@ -25,7 +25,7 @@ final class DeviceEntitiesTest extends DbTestCase
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
 	 */
-	public function XtestFindChildren(): void
+	public function testFindChildren(): void
 	{
 		$repository = $this->getContainer()->getByType(Models\Devices\DevicesRepository::class);
 
@@ -54,7 +54,7 @@ final class DeviceEntitiesTest extends DbTestCase
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
 	 */
-	public function XtestCreateChild(): void
+	public function testCreateChild(): void
 	{
 		$manager = $this->getContainer()->getByType(Models\Devices\DevicesManager::class);
 
@@ -91,7 +91,7 @@ final class DeviceEntitiesTest extends DbTestCase
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
 	 */
-	public function XtestRemoveParent(): void
+	public function testRemoveParent(): void
 	{
 		$manager = $this->getContainer()->getByType(Models\Devices\DevicesManager::class);
 
@@ -131,7 +131,7 @@ final class DeviceEntitiesTest extends DbTestCase
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
 	 */
-	public function XtestChildParent(): void
+	public function testChildParent(): void
 	{
 		$manager = $this->getContainer()->getByType(Models\Devices\DevicesManager::class);
 

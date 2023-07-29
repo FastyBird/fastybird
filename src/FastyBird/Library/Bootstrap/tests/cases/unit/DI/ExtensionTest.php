@@ -17,7 +17,7 @@ final class ExtensionTest extends TestCase
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 */
-	public function XtestCompilersServices(): void
+	public function testCompilersServices(): void
 	{
 		$configurator = Boot\Bootstrap::boot();
 
