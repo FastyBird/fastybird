@@ -21,13 +21,11 @@ use FastyBird\Connector\NsPanel\Consumers;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Queries;
-use FastyBird\Connector\NsPanel\Types;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette\Localization;
 use Psr\Log;
 use Ramsey\Uuid;
@@ -69,6 +67,9 @@ class Discovery extends Console\Command\Command
 
 	private const QUEUE_PROCESSING_INTERVAL = 0.01;
 
+	/** @var array<string, array<Entities\Clients\DiscoveredSubDevice>>  */
+	private array $foundSubDevices = [];
+
 	private DateTimeInterface|null $executedTime = null;
 
 	private EventLoop\TimerInterface|null $consumerTimer = null;
@@ -82,7 +83,6 @@ class Discovery extends Console\Command\Command
 		private readonly Consumers\Messages $consumer,
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
-		private readonly DevicesModels\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		private readonly Localization\Translator $translator,
@@ -333,7 +333,9 @@ class Discovery extends Console\Command\Command
 
 					$this->executedTime = $this->dateTimeFactory->getNow();
 
-					$this->client?->on('finished', function (): void {
+					$this->client?->on('finished', function (array $foundSubDevices): void {
+						$this->foundSubDevices = $foundSubDevices;
+
 						$this->client?->disconnect();
 
 						$this->checkAndTerminate();
@@ -372,11 +374,6 @@ class Discovery extends Console\Command\Command
 
 			$io->newLine();
 
-			$findDevicesQuery = new Queries\FindSubDevices();
-			$findDevicesQuery->byConnectorId($connector->getId());
-
-			$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\SubDevice::class);
-
 			$table = new Console\Helper\Table($output);
 			$table->setHeaders([
 				'#',
@@ -388,29 +385,37 @@ class Discovery extends Console\Command\Command
 
 			$foundDevices = 0;
 
-			foreach ($devices as $device) {
-				$createdAt = $device->getCreatedAt();
+			foreach ($this->foundSubDevices as $gatewayId => $gatewaySubDevices) {
+				assert(Uuid\Uuid::isValid($gatewayId));
 
-				if (
-					$createdAt !== null
-					&& $this->executedTime !== null
-					&& $createdAt->getTimestamp() > $this->executedTime->getTimestamp()
-				) {
+				foreach ($gatewaySubDevices as $subDevice) {
 					$foundDevices++;
 
-					$gateway = $device->getGateway()->getName() ?? $device->getGateway()->getIdentifier();
+					$findDeviceQuery = new Queries\FindGatewayDevices();
+					$findDeviceQuery->byId(Uuid\Uuid::fromString($gatewayId));
 
-					$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
-					$findDevicePropertyQuery->forDevice($device);
-					$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IDENTIFIER_MODEL);
+					$gateway = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\Gateway::class);
 
-					$hardwareModelProperty = $this->devicePropertiesRepository->findOneBy($findDevicePropertyQuery);
+					if ($gateway === null) {
+						continue;
+					}
+
+					$gateway = $gateway->getName() ?? $gateway->getIdentifier();
+
+					$findDeviceQuery = new Queries\FindSubDevices();
+					$findDeviceQuery->byIdentifier($subDevice->getSerialNumber());
+
+					$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\SubDevice::class);
+
+					if ($device === null) {
+						continue;
+					}
 
 					$table->addRow([
 						$foundDevices,
 						$device->getPlainId(),
 						$device->getName() ?? $device->getIdentifier(),
-						$hardwareModelProperty?->getValue() ?? 'N/A',
+						$device->getModel(),
 						$gateway,
 					]);
 				}
