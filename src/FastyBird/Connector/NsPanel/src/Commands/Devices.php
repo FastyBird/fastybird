@@ -684,9 +684,9 @@ class Devices extends Console\Command\Command
 		$table = new Console\Helper\Table($io);
 		$table->setHeaders([
 			'#',
-			$this->translator->translate('//ns-panel-connector.cmd.initialize.data.name'),
-			$this->translator->translate('//ns-panel-connector.cmd.initialize.data.ipAddress'),
-			$this->translator->translate('//ns-panel-connector.cmd.initialize.data.devices'),
+			$this->translator->translate('//ns-panel-connector.cmd.devices.data.name'),
+			$this->translator->translate('//ns-panel-connector.cmd.devices.data.ipAddress'),
+			$this->translator->translate('//ns-panel-connector.cmd.devices.data.devices'),
 		]);
 
 		foreach ($devices as $index => $device) {
@@ -1121,9 +1121,9 @@ class Devices extends Console\Command\Command
 		$table = new Console\Helper\Table($io);
 		$table->setHeaders([
 			'#',
-			$this->translator->translate('//ns-panel-connector.cmd.initialize.data.name'),
-			$this->translator->translate('//ns-panel-connector.cmd.initialize.data.category'),
-			$this->translator->translate('//ns-panel-connector.cmd.initialize.data.capabilities'),
+			$this->translator->translate('//ns-panel-connector.cmd.devices.data.name'),
+			$this->translator->translate('//ns-panel-connector.cmd.devices.data.category'),
+			$this->translator->translate('//ns-panel-connector.cmd.devices.data.capabilities'),
 		]);
 
 		foreach ($devices as $index => $device) {
@@ -1522,9 +1522,9 @@ class Devices extends Console\Command\Command
 		$table = new Console\Helper\Table($io);
 		$table->setHeaders([
 			'#',
-			$this->translator->translate('//ns-panel-connector.cmd.initialize.data.name'),
-			$this->translator->translate('//ns-panel-connector.cmd.initialize.data.type'),
-			$this->translator->translate('//ns-panel-connector.cmd.initialize.data.protocols'),
+			$this->translator->translate('//ns-panel-connector.cmd.devices.data.name'),
+			$this->translator->translate('//ns-panel-connector.cmd.devices.data.type'),
+			$this->translator->translate('//ns-panel-connector.cmd.devices.data.protocols'),
 		]);
 
 		foreach ($deviceChannels as $index => $channel) {
@@ -1922,9 +1922,9 @@ class Devices extends Console\Command\Command
 		$table = new Console\Helper\Table($io);
 		$table->setHeaders([
 			'#',
-			$this->translator->translate('//ns-panel-connector.cmd.initialize.data.name'),
-			$this->translator->translate('//ns-panel-connector.cmd.initialize.data.type'),
-			$this->translator->translate('//ns-panel-connector.cmd.initialize.data.value'),
+			$this->translator->translate('//ns-panel-connector.cmd.devices.data.name'),
+			$this->translator->translate('//ns-panel-connector.cmd.devices.data.type'),
+			$this->translator->translate('//ns-panel-connector.cmd.devices.data.value'),
 		]);
 
 		$metadata = $this->loader->loadProtocols();

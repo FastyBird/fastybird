@@ -104,9 +104,9 @@ cmd:
 
         data:
             name: "Name"
-            panelsCnt: "#NS Panels"
-            subDevicesCnt: "#Sub-devices"
-            devicesCnt: "#Devices"
+            panelsCnt: "# NS Panels"
+            subDevicesCnt: "# Sub-devices"
+            devicesCnt: "# Devices"
 
         messages:
             identifier:
