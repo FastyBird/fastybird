@@ -215,12 +215,12 @@ final class EntityFactory
 					if ($parameterType === 'array' && is_string($method->getDocComment())) {
 						$factory = phpDocumentor\Reflection\DocBlockFactory::createInstance();
 
-						$docblock = $factory->create(
+						$docBlock = $factory->create(
 							$method->getDocComment(),
 							new phpDocumentor\Reflection\Types\Context('\FastyBird\Connector\NsPanel'),
 						);
 
-						foreach ($docblock->getTags() as $tag) {
+						foreach ($docBlock->getTags() as $tag) {
 							if (!$tag instanceof phpDocumentor\Reflection\DocBlock\Tags\Param) {
 								continue;
 							}
@@ -309,18 +309,13 @@ final class EntityFactory
 											$arrayValues = array_filter(
 												(array) $parameterValue,
 												static function ($item) use ($arrayType): bool {
-													switch (Utils\Strings::lower($arrayType)) {
-														case self::TYPE_STRING:
-															return is_string($item);
-														case self::TYPE_INT:
-															return is_int($item);
-														case self::TYPE_FLOAT:
-															return is_float($item);
-														case self::TYPE_BOOL:
-															return is_bool($item);
-													}
-
-													return false;
+													return match (Utils\Strings::lower($arrayType)) {
+														self::TYPE_STRING => is_string($item),
+														self::TYPE_INT => is_int($item),
+														self::TYPE_FLOAT => is_float($item),
+														self::TYPE_BOOL => is_bool($item),
+														default => false,
+													};
 												},
 											);
 
