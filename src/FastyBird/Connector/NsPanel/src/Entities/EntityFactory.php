@@ -38,12 +38,16 @@ use function assert;
 use function call_user_func_array;
 use function class_exists;
 use function class_implements;
+use function explode;
 use function get_declared_classes;
 use function get_object_vars;
 use function in_array;
 use function interface_exists;
 use function is_array;
+use function is_bool;
 use function is_callable;
+use function is_float;
+use function is_int;
 use function is_string;
 use function is_subclass_of;
 use function ltrim;
@@ -55,6 +59,7 @@ use function strtoupper;
 use function strval;
 use function trim;
 use function ucfirst;
+use function var_dump;
 
 /**
  * Entity factory
@@ -66,6 +71,14 @@ use function ucfirst;
  */
 final class EntityFactory
 {
+
+	private const TYPE_STRING = 'string';
+
+	private const TYPE_INT = 'int';
+
+	private const TYPE_FLOAT = 'float';
+
+	private const TYPE_BOOL = 'bool';
 
 	/**
 	 * @param class-string<T> $entityClass
@@ -115,13 +128,13 @@ final class EntityFactory
 
 				$methodName = 'set' . ucfirst($rp->getName());
 
-				if ($varAnnotation === 'int') {
+				if ($varAnnotation === self::TYPE_INT) {
 					$value = (int) $value;
-				} elseif ($varAnnotation === 'float') {
+				} elseif ($varAnnotation === self::TYPE_FLOAT) {
 					$value = (float) $value;
-				} elseif ($varAnnotation === 'bool') {
+				} elseif ($varAnnotation === self::TYPE_BOOL) {
 					$value = (bool) $value;
-				} elseif ($varAnnotation === 'string') {
+				} elseif ($varAnnotation === self::TYPE_STRING) {
 					$value = (string) $value;
 				}
 
@@ -219,49 +232,117 @@ final class EntityFactory
 								$tag->getVariableName() === $parameterName
 								&& $tagType instanceof phpDocumentor\Reflection\Types\Array_
 							) {
-								$arrayType = strval($tagType->getValueType());
-
-								$subRes = [];
-
 								if ($parameterValue instanceof Utils\ArrayHash) {
-									if (interface_exists($arrayType)) {
-										$subclasses = self::getInterfaceClasses($arrayType);
+									$arrayTypes = explode('|', strval($tagType->getValueType()));
 
-										if ($subclasses !== []) {
+									$subRes = [];
+									var_dump($arrayTypes);
+
+									foreach ($arrayTypes as $arrayType) {
+										if (interface_exists($arrayType)) {
+											$subclasses = self::getInterfaceClasses($arrayType);
+
+											if ($subclasses !== []) {
+												foreach ($parameterValue as $subParameterValue) {
+													if ($subParameterValue instanceof Utils\ArrayHash) {
+														assert(is_subclass_of($arrayType, Entities\Entity::class));
+
+														$subEntity = null;
+
+														foreach ($subclasses as $subclass) {
+															try {
+																if (is_subclass_of(
+																	$subclass,
+																	Entities\API\Statuses\Aggregate::class,
+																)) {
+																	$aggregatesValue = [];
+
+																	foreach ($subParameterValue as $subParameterValueKey => $subParameterValueValue) {
+																		if ($subParameterValueValue instanceof Utils\ArrayHash) {
+																			$subParameterValueValue->offsetSet(
+																				'name',
+																				$subParameterValueKey,
+																			);
+
+																			$aggregatesValue[] = $subParameterValueValue;
+																		}
+																	}
+
+																	$subEntity = self::build(
+																		$subclass,
+																		Utils\ArrayHash::from([
+																			'aggregates' => Utils\ArrayHash::from(
+																				$aggregatesValue,
+																			),
+																		]),
+																	);
+																} else {
+																	$subEntity = self::build(
+																		$subclass,
+																		$subParameterValue,
+																	);
+																}
+
+																break;
+															} catch (Exceptions\InvalidState) {
+																// Just ignore error if builder crash
+															}
+														}
+
+														if ($subEntity !== null) {
+															$subRes[] = $subEntity;
+														}
+													}
+												}
+											}
+										} elseif (class_exists($arrayType)) {
 											foreach ($parameterValue as $subParameterValue) {
 												if ($subParameterValue instanceof Utils\ArrayHash) {
 													assert(is_subclass_of($arrayType, Entities\Entity::class));
 
-													$subEntity = null;
-
-													foreach ($subclasses as $subclass) {
-														try {
-															$subEntity = self::build($subclass, $subParameterValue);
-
-															break;
-														} catch (Exceptions\InvalidState) {
-															// Just ignore error if builder crash
-														}
+													$subRes[] = self::build($arrayType, $subParameterValue);
+												}
+											}
+										} elseif (in_array(
+											Utils\Strings::lower($arrayType),
+											[self::TYPE_STRING, self::TYPE_INT, self::TYPE_FLOAT, self::TYPE_BOOL],
+											true,
+										)) {
+											$arrayValues = array_filter(
+												(array) $parameterValue,
+												static function ($item) use ($arrayType): bool {
+													switch (Utils\Strings::lower($arrayType)) {
+														case self::TYPE_STRING:
+															return is_string($item);
+														case self::TYPE_INT:
+															return is_int($item);
+														case self::TYPE_FLOAT:
+															return is_float($item);
+														case self::TYPE_BOOL:
+															return is_bool($item);
 													}
 
-													if ($subEntity !== null) {
-														$subRes[] = $subEntity;
-													}
+													return false;
+												},
+											);
+
+											if ($arrayValues !== []) {
+												$subRes = $arrayValues;
+											}
+										} elseif (Utils\Strings::startsWith(
+											Utils\Strings::lower($arrayType),
+											'array<',
+										)) {
+											foreach ($parameterValue as $subParameterKey => $subParameterValue) {
+												if ($subParameterValue instanceof Utils\ArrayHash) {
+													$subRes[$subParameterKey] = (array) $subParameterValue;
 												}
 											}
 										}
-									} else {
-										foreach ($parameterValue as $subParameterValue) {
-											if ($subParameterValue instanceof Utils\ArrayHash) {
-												assert(is_subclass_of($arrayType, Entities\Entity::class));
-
-												$subRes[] = self::build($arrayType, $subParameterValue);
-											}
-										}
 									}
-								}
 
-								$res[$num] = $subRes;
+									$res[$num] = $subRes;
+								}
 							}
 						}
 
@@ -296,7 +377,7 @@ final class EntityFactory
 							if ($subEntity !== null) {
 								$res[$num] = $subEntity;
 							}
-						} else {
+						} elseif (class_exists($parameterType)) {
 							$parameterValue = is_array($parameterValue)
 								? Utils\ArrayHash::from($parameterValue)
 								: $parameterValue;

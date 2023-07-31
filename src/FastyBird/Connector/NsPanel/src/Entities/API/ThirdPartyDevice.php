@@ -37,7 +37,7 @@ final class ThirdPartyDevice implements Entities\API\Entity
 
 	/**
 	 * @param array<Entities\API\Capability> $capabilities
-	 * @param array<Entities\API\Statuses\Status> $state
+	 * @param array<Entities\API\Statuses\Status|Entities\API\Statuses\Aggregate> $state
 	 * @param array<string, string|array<string, string>> $tags
 	 */
 	public function __construct(
@@ -84,7 +84,19 @@ final class ThirdPartyDevice implements Entities\API\Entity
 	 */
 	public function getStatuses(): array
 	{
-		return $this->state;
+		$statuses = [];
+
+		foreach ($this->state as $status) {
+			if ($status instanceof Entities\API\Statuses\Status) {
+				$statuses[] = $status;
+			} else {
+				foreach ($status->getAggregates() as $aggregate) {
+					$statuses[] = $aggregate;
+				}
+			}
+		}
+
+		return $statuses;
 	}
 
 	/**
@@ -134,7 +146,7 @@ final class ThirdPartyDevice implements Entities\API\Entity
 				$this->getCapabilities(),
 			),
 			'state' => array_map(
-				static fn (Entities\API\Statuses\Status $state): array => $state->toArray(),
+				static fn (Entities\API\Statuses\Status|Entities\API\Statuses\Aggregate $state): array => $state->toArray(),
 				$this->getStatuses(),
 			),
 			'tags' => $this->getTags(),
@@ -151,7 +163,7 @@ final class ThirdPartyDevice implements Entities\API\Entity
 		$state = new stdClass();
 
 		foreach ($this->getStatuses() as $item) {
-			if ($item->getType()->equalsValue(Types\Capability::TOGGLE)) {
+			if ($item instanceof Entities\API\Statuses\Toggle) {
 				if (!$state->{$item->getType()->getValue()} instanceof stdClass) {
 					$state->{$item->getType()->getValue()} = new stdClass();
 				}

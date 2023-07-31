@@ -43,7 +43,9 @@
             "rssi": -24
           }
         },
-        "tags": {},
+        "tags": {
+          "temperature_unit": "c"
+        },
         "online": true,
         "subnet": true
       },
@@ -62,6 +64,16 @@
             "permission": "readWrite"
           },
           {
+            "capability": "toggle",
+            "permission": "readWrite",
+            "name": "1"
+          },
+          {
+            "capability": "toggle",
+            "permission": "readWrite",
+            "name": "2"
+          },
+          {
             "capability": "rssi",
             "permission": "read"
           }
@@ -70,11 +82,24 @@
           "power": {
             "powerState": "off"
           },
+          "toggle": {
+            "1": {
+              "toggleState": "on"
+            },
+            "2": {
+              "toggleState": "off"
+            }
+          },
           "rssi": {
             "rssi": -51
           }
         },
-        "tags": {},
+        "tags": {
+          "toggle": {
+            "1": "Chanel 1",
+            "2": "Chanel 2"
+          }
+        },
         "online": true
       }
     ]
