@@ -59,7 +59,6 @@ use function strtoupper;
 use function strval;
 use function trim;
 use function ucfirst;
-use function var_dump;
 
 /**
  * Entity factory
@@ -236,7 +235,6 @@ final class EntityFactory
 									$arrayTypes = explode('|', strval($tagType->getValueType()));
 
 									$subRes = [];
-									var_dump($arrayTypes);
 
 									foreach ($arrayTypes as $arrayType) {
 										if (interface_exists($arrayType)) {

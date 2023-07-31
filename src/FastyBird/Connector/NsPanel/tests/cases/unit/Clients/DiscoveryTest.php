@@ -124,7 +124,9 @@ final class DiscoveryTest extends DbTestCase
 							],
 						],
 						'protocol' => 'zigbee',
-						'tags' => [],
+						'tags' => [
+							'temperature_unit' => 'c',
+						],
 						'online' => true,
 						'subnet' => true,
 					],

@@ -21,7 +21,6 @@ use Nette;
 use stdClass;
 use function array_map;
 use function is_array;
-use function var_dump;
 
 /**
  * NS Panel sub-device description - both NS Panel connected & third-party
@@ -61,8 +60,6 @@ final class GetSubDevicesDataSubDevice implements Entities\API\Entity
 		private readonly bool|null $subnet = null,
 	)
 	{
-		var_dump('CONSTRUCT');
-		var_dump($this->tags);
 	}
 
 	public function getSerialNumber(): string
