@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * SyncDevices.php
+ * ErrorEventPayload.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,7 +10,7 @@
  * @subpackage     Entities
  * @since          1.0.0
  *
- * @date           09.07.23
+ * @date           31.07.23
  */
 
 namespace FastyBird\Connector\NsPanel\Entities\API\Response;
@@ -20,33 +20,30 @@ use Nette;
 use stdClass;
 
 /**
- * Synchronise third-party devices with NS Panel response definition
+ * NS Panel event error payload response definition
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class SyncDevices implements Entities\API\Entity
+final class ErrorEventPayload implements Entities\API\Entity
 {
 
 	use Nette\SmartObject;
 
-	public function __construct(
-		private readonly Entities\API\Header $header,
-		private readonly SyncDevicesEventPayload $payload,
-	)
+	public function __construct(private readonly string $type, private readonly string $description)
 	{
 	}
 
-	public function getHeader(): Entities\API\Header
+	public function getType(): string
 	{
-		return $this->header;
+		return $this->type;
 	}
 
-	public function getPayload(): SyncDevicesEventPayload
+	public function getDescription(): string
 	{
-		return $this->payload;
+		return $this->description;
 	}
 
 	/**
@@ -55,16 +52,16 @@ final class SyncDevices implements Entities\API\Entity
 	public function toArray(): array
 	{
 		return [
-			'header' => $this->getHeader()->toArray(),
-			'payload' => $this->getPayload()->toArray(),
+			'type' => $this->getType(),
+			'description' => $this->getDescription(),
 		];
 	}
 
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->header = $this->getHeader()->toJson();
-		$json->payload = $this->getPayload()->toJson();
+		$json->type = $this->getType();
+		$json->description = $this->getDescription();
 
 		return $json;
 	}

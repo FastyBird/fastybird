@@ -31,11 +31,14 @@ use Reflector;
 use stdClass;
 use Throwable;
 use function array_combine;
+use function array_filter;
 use function array_keys;
 use function array_merge;
 use function assert;
 use function call_user_func_array;
 use function class_exists;
+use function class_implements;
+use function get_declared_classes;
 use function get_object_vars;
 use function in_array;
 use function interface_exists;
@@ -219,12 +222,40 @@ final class EntityFactory
 
 								$subRes = [];
 
-								if ($parameterValue instanceof Utils\ArrayHash && !interface_exists($arrayType)) {
-									foreach ($parameterValue as $subParameterValue) {
-										if ($subParameterValue instanceof Utils\ArrayHash) {
-											assert(is_subclass_of($arrayType, Entities\Entity::class));
+								if ($parameterValue instanceof Utils\ArrayHash) {
+									if (interface_exists($arrayType)) {
+										$subclasses = self::getInterfaceClasses($arrayType);
 
-											$subRes[] = self::build($arrayType, $subParameterValue);
+										if ($subclasses !== []) {
+											foreach ($parameterValue as $subParameterValue) {
+												if ($subParameterValue instanceof Utils\ArrayHash) {
+													assert(is_subclass_of($arrayType, Entities\Entity::class));
+
+													$subEntity = null;
+
+													foreach ($subclasses as $subclass) {
+														try {
+															$subEntity = self::build($subclass, $subParameterValue);
+
+															break;
+														} catch (Exceptions\InvalidState) {
+															// Just ignore error if builder crash
+														}
+													}
+
+													if ($subEntity !== null) {
+														$subRes[] = $subEntity;
+													}
+												}
+											}
+										}
+									} else {
+										foreach ($parameterValue as $subParameterValue) {
+											if ($subParameterValue instanceof Utils\ArrayHash) {
+												assert(is_subclass_of($arrayType, Entities\Entity::class));
+
+												$subRes[] = self::build($arrayType, $subParameterValue);
+											}
 										}
 									}
 								}
@@ -241,13 +272,36 @@ final class EntityFactory
 							$parameterValue instanceof Utils\ArrayHash
 							|| is_array($parameterValue)
 						)
-						&& !interface_exists($parameterType)
 					) {
-						$parameterValue = is_array($parameterValue)
-							? Utils\ArrayHash::from($parameterValue)
-							: $parameterValue;
+						if (interface_exists($parameterType)) {
+							$subclasses = self::getInterfaceClasses($parameterType);
 
-						$res[$num] = self::build($parameterType, $parameterValue);
+							$subEntity = null;
+
+							foreach ($subclasses as $subclass) {
+								try {
+									$parameterValue = is_array($parameterValue)
+										? Utils\ArrayHash::from($parameterValue)
+										: $parameterValue;
+
+									$subEntity = self::build($subclass, $parameterValue);
+
+									break;
+								} catch (Exceptions\InvalidState) {
+									// Just ignore error if builder crash
+								}
+							}
+
+							if ($subEntity !== null) {
+								$res[$num] = $subEntity;
+							}
+						} else {
+							$parameterValue = is_array($parameterValue)
+								? Utils\ArrayHash::from($parameterValue)
+								: $parameterValue;
+
+							$res[$num] = self::build($parameterType, $parameterValue);
+						}
 
 						break;
 					} elseif (
@@ -388,6 +442,21 @@ final class EntityFactory
 		}
 
 		return $converted;
+	}
+
+	/**
+	 * @param class-string $interface
+	 *
+	 * @return array<class-string<Entities\Entity>>
+	 */
+	private static function getInterfaceClasses(string $interface): array
+	{
+		return array_filter(
+			get_declared_classes(),
+			static fn ($className) =>
+				in_array($interface, class_implements($className), true)
+				&& is_subclass_of($className, Entities\Entity::class),
+		);
 	}
 
 }

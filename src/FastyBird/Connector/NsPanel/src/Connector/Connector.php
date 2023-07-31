@@ -19,9 +19,12 @@ use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Clients;
 use FastyBird\Connector\NsPanel\Consumers;
 use FastyBird\Connector\NsPanel\Entities;
+use FastyBird\Connector\NsPanel\Exceptions;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Connectors as DevicesConnectors;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
+use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Nette;
 use React\EventLoop;
 use function assert;
@@ -42,7 +45,7 @@ final class Connector implements DevicesConnectors\Connector
 
 	private const QUEUE_PROCESSING_INTERVAL = 0.01;
 
-	/** @var array<Clients\Client> */
+	/** @var array<Clients\Client|Clients\Discovery> */
 	private array $clients = [];
 
 	private EventLoop\TimerInterface|null $consumerTimer = null;
@@ -53,6 +56,7 @@ final class Connector implements DevicesConnectors\Connector
 	public function __construct(
 		private readonly DevicesEntities\Connectors\Connector $connector,
 		private readonly array $clientsFactories,
+		private readonly Clients\DiscoveryFactory $discoveryClientFactory,
 		private readonly NsPanel\Logger $logger,
 		private readonly Consumers\Messages $consumer,
 		private readonly EventLoop\LoopInterface $eventLoop,
@@ -101,6 +105,12 @@ final class Connector implements DevicesConnectors\Connector
 		);
 	}
 
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
 	public function discover(): void
 	{
 		assert($this->connector instanceof Entities\NsPanelConnector);
@@ -116,7 +126,10 @@ final class Connector implements DevicesConnectors\Connector
 			],
 		);
 
-		// TODO: Implement discovery
+		$client = $this->discoveryClientFactory->create($this->connector);
+		$client->discover();
+
+		$this->clients[] = $client;
 
 		$this->consumerTimer = $this->eventLoop->addPeriodicTimer(
 			self::QUEUE_PROCESSING_INTERVAL,

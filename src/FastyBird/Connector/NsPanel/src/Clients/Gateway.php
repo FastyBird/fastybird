@@ -394,7 +394,7 @@ final class Gateway implements Client
 
 		$this->processedDevicesCommands[$device->getIdentifier()][self::CMD_STATUS] = $this->dateTimeFactory->getNow();
 
-		$this->lanApiApi->getSubDevices($device->getIdentifier(), $device->getAccessToken())
+		$this->lanApiApi->getSubDevices($device->getIpAddress(), $device->getAccessToken())
 			->then(function (Entities\API\Response\GetSubDevices $subDevices) use ($device): void {
 				$this->processedDevicesCommands[$device->getIdentifier()][self::CMD_STATUS] = $this->dateTimeFactory->getNow();
 

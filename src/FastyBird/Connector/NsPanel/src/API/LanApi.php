@@ -71,6 +71,8 @@ final class LanApi
 
 	private const SET_SUB_DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME = 'set_sub_device_status.json';
 
+	private const EVENT_ERROR_MESSAGE_SCHEMA_FILENAME = 'event_error.json';
+
 	public function __construct(
 		private readonly string $identifier,
 		private readonly HttpClientFactory $httpClientFactory,
@@ -732,20 +734,21 @@ final class LanApi
 	 */
 	private function parseSynchroniseDevices(Message\ResponseInterface $response): Entities\API\Response\SyncDevices
 	{
-		$body = $this->validateResponseBody($response, self::SYNCHRONISE_DEVICES_MESSAGE_SCHEMA_FILENAME);
+		$errorBody = $this->validateResponseBody($response, self::EVENT_ERROR_MESSAGE_SCHEMA_FILENAME, false);
 
-		$error = $body->offsetGet('error');
+		if ($errorBody !== false) {
+			try {
+				$error = Entities\EntityFactory::build(Entities\API\Response\ErrorEvent::class, $errorBody);
+			} catch (Exceptions\InvalidState $ex) {
+				throw new Exceptions\LanApiCall('Could not create error entity from response', $ex->getCode(), $ex);
+			}
 
-		$data = $body->offsetGet('data');
-		assert($data instanceof Utils\ArrayHash);
-
-		if ($error !== 0) {
 			$this->logger->error(
-				'Synchronise devices with NS Panel failed',
+				'Read NS Panel access token failed',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 					'type' => 'lan-api',
-					'error' => $body->offsetGet('message'),
+					'error' => $error->getPayload()->getDescription(),
 					'response' => [
 						'headers' => $response->getHeaders(),
 						'body' => $response->getBody()->getContents(),
@@ -757,9 +760,11 @@ final class LanApi
 			);
 
 			throw new Exceptions\LanApiCall(
-				sprintf('Synchronise devices failed: %s', strval($body->offsetGet('message'))),
+				sprintf('Getting gateway access token failed: %s', $error->getPayload()->getDescription()),
 			);
 		}
+
+		$body = $this->validateResponseBody($response, self::SYNCHRONISE_DEVICES_MESSAGE_SCHEMA_FILENAME);
 
 		try {
 			return Entities\EntityFactory::build(Entities\API\Response\SyncDevices::class, $body);
@@ -776,20 +781,21 @@ final class LanApi
 		Message\ResponseInterface $response,
 	): Entities\API\Response\ReportDeviceStatus
 	{
-		$body = $this->validateResponseBody($response, self::REPORT_DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME);
+		$errorBody = $this->validateResponseBody($response, self::EVENT_ERROR_MESSAGE_SCHEMA_FILENAME, false);
 
-		$error = $body->offsetGet('error');
+		if ($errorBody !== false) {
+			try {
+				$error = Entities\EntityFactory::build(Entities\API\Response\ErrorEvent::class, $errorBody);
+			} catch (Exceptions\InvalidState $ex) {
+				throw new Exceptions\LanApiCall('Could not create error entity from response', $ex->getCode(), $ex);
+			}
 
-		$data = $body->offsetGet('data');
-		assert($data instanceof Utils\ArrayHash);
-
-		if ($error !== 0) {
 			$this->logger->error(
-				'Report third-party device status to NS Panel failed',
+				'Read NS Panel access token failed',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 					'type' => 'lan-api',
-					'error' => $body->offsetGet('message'),
+					'error' => $error->getPayload()->getDescription(),
 					'response' => [
 						'headers' => $response->getHeaders(),
 						'body' => $response->getBody()->getContents(),
@@ -801,9 +807,11 @@ final class LanApi
 			);
 
 			throw new Exceptions\LanApiCall(
-				sprintf('Report third-party device status failed: %s', strval($body->offsetGet('message'))),
+				sprintf('Getting gateway access token failed: %s', $error->getPayload()->getDescription()),
 			);
 		}
+
+		$body = $this->validateResponseBody($response, self::REPORT_DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME);
 
 		try {
 			return Entities\EntityFactory::build(Entities\API\Response\ReportDeviceStatus::class, $body);
@@ -820,20 +828,21 @@ final class LanApi
 		Message\ResponseInterface $response,
 	): Entities\API\Response\ReportDeviceState
 	{
-		$body = $this->validateResponseBody($response, self::REPORT_DEVICE_STATE_MESSAGE_SCHEMA_FILENAME);
+		$errorBody = $this->validateResponseBody($response, self::EVENT_ERROR_MESSAGE_SCHEMA_FILENAME, false);
 
-		$error = $body->offsetGet('error');
+		if ($errorBody !== false) {
+			try {
+				$error = Entities\EntityFactory::build(Entities\API\Response\ErrorEvent::class, $errorBody);
+			} catch (Exceptions\InvalidState $ex) {
+				throw new Exceptions\LanApiCall('Could not create error entity from response', $ex->getCode(), $ex);
+			}
 
-		$data = $body->offsetGet('data');
-		assert($data instanceof Utils\ArrayHash);
-
-		if ($error !== 0) {
 			$this->logger->error(
-				'Report third-party device state to NS Panel failed',
+				'Read NS Panel access token failed',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 					'type' => 'lan-api',
-					'error' => $body->offsetGet('message'),
+					'error' => $error->getPayload()->getDescription(),
 					'response' => [
 						'headers' => $response->getHeaders(),
 						'body' => $response->getBody()->getContents(),
@@ -845,9 +854,11 @@ final class LanApi
 			);
 
 			throw new Exceptions\LanApiCall(
-				sprintf('Report third-party device state failed: %s', strval($body->offsetGet('message'))),
+				sprintf('Getting gateway access token failed: %s', $error->getPayload()->getDescription()),
 			);
 		}
+
+		$body = $this->validateResponseBody($response, self::REPORT_DEVICE_STATE_MESSAGE_SCHEMA_FILENAME);
 
 		try {
 			return Entities\EntityFactory::build(Entities\API\Response\ReportDeviceState::class, $body);
@@ -942,10 +953,16 @@ final class LanApi
 	}
 
 	/**
+	 * @return ($throw is true ? Utils\ArrayHash : Utils\ArrayHash|false)
+	 *
 	 * @throws Exceptions\LanApiCall
 	 * @throws RuntimeException
 	 */
-	private function validateResponseBody(Message\ResponseInterface $response, string $schemaFilename): Utils\ArrayHash
+	private function validateResponseBody(
+		Message\ResponseInterface $response,
+		string $schemaFilename,
+		bool $throw = true,
+	): Utils\ArrayHash|bool
 	{
 		try {
 			$body = $response->getBody()->getContents();
@@ -961,26 +978,30 @@ final class LanApi
 				$this->getSchema($schemaFilename),
 			);
 		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
-			$this->logger->error(
-				'Could not decode received response payload',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'lan-api',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
-					'response' => [
-						'headers' => $response->getHeaders(),
-						'body' => $response->getBody()->getContents(),
-						'schema' => $schemaFilename,
+			if ($throw) {
+				$this->logger->error(
+					'Could not decode received response payload',
+					[
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+						'type' => 'lan-api',
+						'exception' => BootstrapHelpers\Logger::buildException($ex),
+						'response' => [
+							'headers' => $response->getHeaders(),
+							'body' => $response->getBody()->getContents(),
+							'schema' => $schemaFilename,
+						],
+						'connector' => [
+							'identifier' => $this->identifier,
+						],
 					],
-					'connector' => [
-						'identifier' => $this->identifier,
-					],
-				],
-			);
+				);
 
-			$response->getBody()->rewind();
+				$response->getBody()->rewind();
 
-			throw new Exceptions\LanApiCall('Could not validate received response payload');
+				throw new Exceptions\LanApiCall('Could not validate received response payload');
+			}
+
+			return false;
 		}
 
 		return $body;
