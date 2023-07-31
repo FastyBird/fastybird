@@ -54,7 +54,8 @@ final class SetDeviceStatusDirectivePayload implements Entities\API\Entity
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->state = $this->getState()->toJson();
+		$json->state = new stdClass();
+		$json->state->{$this->getState()->getType()->getValue()} = $this->getState()->toJson();
 
 		return $json;
 	}

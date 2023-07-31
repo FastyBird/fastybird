@@ -32,7 +32,7 @@ final class Press implements Status
 
 	use Nette\SmartObject;
 
-	public function __construct(private readonly Types\PressPayload $value)
+	public function __construct(private readonly Types\PressPayload $press)
 	{
 	}
 
@@ -48,7 +48,7 @@ final class Press implements Status
 
 	public function getValue(): Types\PressPayload
 	{
-		return $this->value;
+		return $this->press;
 	}
 
 	/**
@@ -64,8 +64,7 @@ final class Press implements Status
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Capability::PRESS} = new stdClass();
-		$json->{Types\Capability::PRESS}->press = $this->getValue()->getValue();
+		$json->press = $this->getValue()->getValue();
 
 		return $json;
 	}

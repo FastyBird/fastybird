@@ -20,6 +20,7 @@ use FastyBird\Connector\NsPanel\Types;
 use Nette;
 use stdClass;
 use function array_map;
+use function is_array;
 
 /**
  * NS Panel sub-device description - both NS Panel connected & third-party
@@ -189,30 +190,72 @@ final class GetSubDevicesDataSubDevice implements Entities\API\Entity
 
 	public function toJson(): object
 	{
+		$state = new stdClass();
+
+		foreach ($this->getStatuses() as $item) {
+			if ($item->getType()->equalsValue(Types\Capability::TOGGLE)) {
+				if (!$state->{$item->getType()->getValue()} instanceof stdClass) {
+					$state->{$item->getType()->getValue()} = new stdClass();
+				}
+
+				$state->{$item->getType()->getValue()}->{$item->getName()} = $item->toJson();
+			} else {
+				$state->{$item->getType()->getValue()} = $item->toJson();
+			}
+		}
+
+		$tags = new stdClass();
+
+		foreach ($this->getTags() as $name => $value) {
+			if (is_array($value)) {
+				$tags->{$name} = new stdClass();
+
+				foreach ($value as $subName => $subValue) {
+					$tags->{$name}->{$subName} = $subValue;
+				}
+			} else {
+				$tags->{$name} = $value;
+			}
+		}
+
 		$json = new stdClass();
 		$json->serial_number = $this->getSerialNumber();
-		$json->third_serial_number = $this->getThirdSerialNumber();
-		$json->service_address = $this->getServiceAddress();
+		if ($this->getThirdSerialNumber() !== null) {
+			$json->third_serial_number = $this->getThirdSerialNumber();
+			$json->service_address = $this->getServiceAddress();
+		}
+
 		$json->name = $this->getName();
 		$json->manufacturer = $this->getManufacturer();
 		$json->model = $this->getModel();
 		$json->firmware_version = $this->getFirmwareVersion();
-		$json->hostname = $this->getHostname();
-		$json->mac_address = $this->getMacAddress();
-		$json->app_name = $this->getAppName();
+		if ($this->getHostname() !== null) {
+			$json->hostname = $this->getHostname();
+		}
+
+		if ($this->getMacAddress() !== null) {
+			$json->mac_address = $this->getMacAddress();
+		}
+
+		if ($this->getAppName() !== null) {
+			$json->app_name = $this->getAppName();
+		}
+
 		$json->display_category = $this->getDisplayCategory()->getValue();
 		$json->capabilities = array_map(
-			static fn (Entities\API\Capability $capability): array => $capability->toArray(),
+			static fn (Entities\API\Capability $capability): object => $capability->toJson(),
 			$this->getCapabilities(),
 		);
-		$json->protocol = $this->getProtocol();
-		$json->state = array_map(
-			static fn (Entities\API\Statuses\Status $state): array => $state->toArray(),
-			$this->getStatuses(),
-		);
-		$json->tags = $this->getTags();
+		if ($this->getThirdSerialNumber() === null) {
+			$json->protocol = $this->getProtocol();
+		}
+
+		$json->state = $state;
+		$json->tags = $tags;
 		$json->online = $this->isOnline();
-		$json->subnet = $this->isInSubnet();
+		if ($this->isInSubnet() !== null) {
+			$json->subnet = $this->isInSubnet();
+		}
 
 		return $json;
 	}

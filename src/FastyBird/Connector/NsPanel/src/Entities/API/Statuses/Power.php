@@ -32,7 +32,7 @@ final class Power implements Status
 
 	use Nette\SmartObject;
 
-	public function __construct(private readonly Types\PowerPayload $value)
+	public function __construct(private readonly Types\PowerPayload $powerState)
 	{
 	}
 
@@ -48,7 +48,7 @@ final class Power implements Status
 
 	public function getValue(): Types\PowerPayload
 	{
-		return $this->value;
+		return $this->powerState;
 	}
 
 	/**
@@ -64,8 +64,7 @@ final class Power implements Status
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Capability::POWER} = new stdClass();
-		$json->{Types\Capability::POWER}->powerState = $this->getValue()->getValue();
+		$json->powerState = $this->getValue()->getValue();
 
 		return $json;
 	}

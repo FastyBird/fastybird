@@ -32,7 +32,7 @@ final class Rssi implements Status
 
 	use Nette\SmartObject;
 
-	public function __construct(private readonly int $value)
+	public function __construct(private readonly int $rssi)
 	{
 	}
 
@@ -48,7 +48,7 @@ final class Rssi implements Status
 
 	public function getValue(): int
 	{
-		return $this->value;
+		return $this->rssi;
 	}
 
 	/**
@@ -64,8 +64,7 @@ final class Rssi implements Status
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Capability::RSSI} = new stdClass();
-		$json->{Types\Capability::RSSI}->rssi = $this->getValue();
+		$json->rssi = $this->getValue();
 
 		return $json;
 	}

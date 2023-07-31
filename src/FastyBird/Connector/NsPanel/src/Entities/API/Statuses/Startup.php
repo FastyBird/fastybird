@@ -33,8 +33,8 @@ final class Startup implements Status
 	use Nette\SmartObject;
 
 	public function __construct(
-		private readonly Types\StartupPayload $value,
-		private readonly string|null $name,
+		private readonly Types\StartupPayload $startup,
+		private readonly string|null $name = null,
 	)
 	{
 	}
@@ -46,7 +46,7 @@ final class Startup implements Status
 
 	public function getValue(): Types\StartupPayload
 	{
-		return $this->value;
+		return $this->startup;
 	}
 
 	public function getName(): string|null
@@ -68,8 +68,7 @@ final class Startup implements Status
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Capability::STARTUP} = new stdClass();
-		$json->{Types\Capability::STARTUP}->startup = $this->getValue()->getValue();
+		$json->startup = $this->getValue()->getValue();
 
 		return $json;
 	}

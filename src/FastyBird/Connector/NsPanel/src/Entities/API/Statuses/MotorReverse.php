@@ -32,7 +32,7 @@ final class MotorReverse implements Status
 
 	use Nette\SmartObject;
 
-	public function __construct(private readonly bool $value)
+	public function __construct(private readonly bool $motorReverse)
 	{
 	}
 
@@ -48,7 +48,7 @@ final class MotorReverse implements Status
 
 	public function getValue(): bool
 	{
-		return $this->value;
+		return $this->motorReverse;
 	}
 
 	/**
@@ -64,8 +64,7 @@ final class MotorReverse implements Status
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Capability::MOTOR_REVERSE} = new stdClass();
-		$json->{Types\Capability::MOTOR_REVERSE}->motorReverse = $this->getValue();
+		$json->motorReverse = $this->getValue();
 
 		return $json;
 	}

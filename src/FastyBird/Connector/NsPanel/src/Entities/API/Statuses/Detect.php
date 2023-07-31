@@ -32,7 +32,7 @@ final class Detect implements Status
 
 	use Nette\SmartObject;
 
-	public function __construct(private readonly bool $value)
+	public function __construct(private readonly bool $detected)
 	{
 	}
 
@@ -48,7 +48,7 @@ final class Detect implements Status
 
 	public function getValue(): bool
 	{
-		return $this->value;
+		return $this->detected;
 	}
 
 	/**
@@ -64,8 +64,7 @@ final class Detect implements Status
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Capability::DETECT} = new stdClass();
-		$json->{Types\Capability::DETECT}->detected = $this->getValue();
+		$json->detected = $this->getValue();
 
 		return $json;
 	}

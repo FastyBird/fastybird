@@ -32,7 +32,7 @@ final class Humidity implements Status
 
 	use Nette\SmartObject;
 
-	public function __construct(private readonly int $value)
+	public function __construct(private readonly int $humidity)
 	{
 	}
 
@@ -48,7 +48,7 @@ final class Humidity implements Status
 
 	public function getValue(): int
 	{
-		return $this->value;
+		return $this->humidity;
 	}
 
 	/**
@@ -64,8 +64,7 @@ final class Humidity implements Status
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Capability::HUMIDITY} = new stdClass();
-		$json->{Types\Capability::HUMIDITY}->humidity = $this->getValue();
+		$json->humidity = $this->getValue();
 
 		return $json;
 	}

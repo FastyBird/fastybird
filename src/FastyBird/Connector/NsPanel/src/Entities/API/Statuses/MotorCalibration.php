@@ -33,7 +33,7 @@ final class MotorCalibration implements Status
 	use Nette\SmartObject;
 
 	public function __construct(
-		private readonly Types\MotorCalibrationPayload $value,
+		private readonly Types\MotorCalibrationPayload $motorClb,
 	)
 	{
 	}
@@ -50,7 +50,7 @@ final class MotorCalibration implements Status
 
 	public function getValue(): Types\MotorCalibrationPayload
 	{
-		return $this->value;
+		return $this->motorClb;
 	}
 
 	/**
@@ -66,8 +66,7 @@ final class MotorCalibration implements Status
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Capability::MOTOR_CALIBRATION} = new stdClass();
-		$json->{Types\Capability::MOTOR_CALIBRATION}->motorClb = $this->getValue()->getValue();
+		$json->motorClb = $this->getValue()->getValue();
 
 		return $json;
 	}

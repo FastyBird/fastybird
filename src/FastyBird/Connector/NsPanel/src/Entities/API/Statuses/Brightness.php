@@ -32,7 +32,7 @@ final class Brightness implements Status
 
 	use Nette\SmartObject;
 
-	public function __construct(private readonly int $value)
+	public function __construct(private readonly int $brightness)
 	{
 	}
 
@@ -48,7 +48,7 @@ final class Brightness implements Status
 
 	public function getValue(): int
 	{
-		return $this->value;
+		return $this->brightness;
 	}
 
 	/**
@@ -64,8 +64,7 @@ final class Brightness implements Status
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Capability::BRIGHTNESS} = new stdClass();
-		$json->{Types\Capability::BRIGHTNESS}->brightness = $this->getValue();
+		$json->brightness = $this->getValue();
 
 		return $json;
 	}

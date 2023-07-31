@@ -20,6 +20,7 @@ use FastyBird\Connector\NsPanel\Types;
 use Nette;
 use stdClass;
 use function array_map;
+use function is_array;
 
 /**
  * Third party device description definition
@@ -81,7 +82,7 @@ final class ThirdPartyDevice implements Entities\API\Entity
 	/**
 	 * @return array<Entities\API\Statuses\Status>
 	 */
-	public function getState(): array
+	public function getStatuses(): array
 	{
 		return $this->state;
 	}
@@ -134,7 +135,7 @@ final class ThirdPartyDevice implements Entities\API\Entity
 			),
 			'state' => array_map(
 				static fn (Entities\API\Statuses\Status $state): array => $state->toArray(),
-				$this->getState(),
+				$this->getStatuses(),
 			),
 			'tags' => $this->getTags(),
 			'manufacturer' => $this->getManufacturer(),
@@ -147,6 +148,34 @@ final class ThirdPartyDevice implements Entities\API\Entity
 
 	public function toJson(): object
 	{
+		$state = new stdClass();
+
+		foreach ($this->getStatuses() as $item) {
+			if ($item->getType()->equalsValue(Types\Capability::TOGGLE)) {
+				if (!$state->{$item->getType()->getValue()} instanceof stdClass) {
+					$state->{$item->getType()->getValue()} = new stdClass();
+				}
+
+				$state->{$item->getType()->getValue()}->{$item->getName()} = $item->toJson();
+			} else {
+				$state->{$item->getType()->getValue()} = $item->toJson();
+			}
+		}
+
+		$tags = new stdClass();
+
+		foreach ($this->getTags() as $name => $value) {
+			if (is_array($value)) {
+				$tags->{$name} = new stdClass();
+
+				foreach ($value as $subName => $subValue) {
+					$tags->{$name}->{$subName} = $subValue;
+				}
+			} else {
+				$tags->{$name} = $value;
+			}
+		}
+
 		$json = new stdClass();
 		$json->third_serial_number = $this->getThirdSerialNumber();
 		$json->name = $this->getName();
@@ -155,11 +184,8 @@ final class ThirdPartyDevice implements Entities\API\Entity
 			static fn (Entities\API\Capability $capability): object => $capability->toJson(),
 			$this->getCapabilities(),
 		);
-		$json->state = array_map(
-			static fn (Entities\API\Statuses\Status $state): object => $state->toJson(),
-			$this->getState(),
-		);
-		$json->tags = $this->getTags();
+		$json->state = $state;
+		$json->tags = $tags;
 		$json->manufacturer = $this->getManufacturer();
 		$json->model = $this->getModel();
 		$json->firmware_version = $this->getFirmwareVersion();

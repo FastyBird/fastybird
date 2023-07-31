@@ -32,9 +32,7 @@ final class MotorControl implements Status
 
 	use Nette\SmartObject;
 
-	public function __construct(
-		private readonly Types\MotorControlPayload $value,
-	)
+	public function __construct(private readonly Types\MotorControlPayload $motorControl)
 	{
 	}
 
@@ -50,7 +48,7 @@ final class MotorControl implements Status
 
 	public function getValue(): Types\MotorControlPayload
 	{
-		return $this->value;
+		return $this->motorControl;
 	}
 
 	/**
@@ -66,8 +64,7 @@ final class MotorControl implements Status
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Capability::MOTOR_CONTROL} = new stdClass();
-		$json->{Types\Capability::MOTOR_CONTROL}->motorControl = $this->getValue()->getValue();
+		$json->motorControl = $this->getValue()->getValue();
 
 		return $json;
 	}

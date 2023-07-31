@@ -92,10 +92,9 @@ final class ColorRgb implements Status
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Capability::COLOR_RGB} = new stdClass();
-		$json->{Types\Capability::COLOR_RGB}->red = $this->getRed();
-		$json->{Types\Capability::COLOR_RGB}->green = $this->getGreen();
-		$json->{Types\Capability::COLOR_RGB}->blue = $this->getBlue();
+		$json->red = $this->getRed();
+		$json->green = $this->getGreen();
+		$json->blue = $this->getBlue();
 
 		return $json;
 	}

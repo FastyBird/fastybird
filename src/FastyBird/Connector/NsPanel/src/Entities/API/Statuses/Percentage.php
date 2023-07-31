@@ -32,7 +32,7 @@ final class Percentage implements Status
 
 	use Nette\SmartObject;
 
-	public function __construct(private readonly int $value)
+	public function __construct(private readonly int $percentage)
 	{
 	}
 
@@ -48,7 +48,7 @@ final class Percentage implements Status
 
 	public function getValue(): int
 	{
-		return $this->value;
+		return $this->percentage;
 	}
 
 	/**
@@ -64,8 +64,7 @@ final class Percentage implements Status
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Capability::PERCENTAGE} = new stdClass();
-		$json->{Types\Capability::PERCENTAGE}->percentage = $this->getValue();
+		$json->percentage = $this->getValue();
 
 		return $json;
 	}

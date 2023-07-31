@@ -64,9 +64,8 @@ final class CameraStream implements Status
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Capability::CAMERA_STREAM} = new stdClass();
-		$json->{Types\Capability::CAMERA_STREAM}->configuration = new stdClass();
-		$json->{Types\Capability::CAMERA_STREAM}->configuration->streamUrl = $this->getValue();
+		$json->configuration = new stdClass();
+		$json->configuration->streamUrl = $this->getValue();
 
 		return $json;
 	}

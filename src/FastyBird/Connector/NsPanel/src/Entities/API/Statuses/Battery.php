@@ -32,7 +32,7 @@ final class Battery implements Status
 
 	use Nette\SmartObject;
 
-	public function __construct(private readonly int $value)
+	public function __construct(private readonly int $battery)
 	{
 	}
 
@@ -48,7 +48,7 @@ final class Battery implements Status
 
 	public function getValue(): int
 	{
-		return $this->value;
+		return $this->battery;
 	}
 
 	/**
@@ -64,8 +64,7 @@ final class Battery implements Status
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Capability::BATTERY} = new stdClass();
-		$json->{Types\Capability::BATTERY}->battery = $this->getValue();
+		$json->battery = $this->getValue();
 
 		return $json;
 	}

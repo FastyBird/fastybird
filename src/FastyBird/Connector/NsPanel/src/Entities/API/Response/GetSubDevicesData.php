@@ -64,7 +64,7 @@ final class GetSubDevicesData implements Entities\API\Entity
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->devices_list = array_map(
+		$json->device_list = array_map(
 			static fn (Entities\API\Response\GetSubDevicesDataSubDevice $device): object => $device->toJson(),
 			$this->getDevicesList(),
 		);

@@ -46,6 +46,7 @@ use function is_array;
 use function is_callable;
 use function is_string;
 use function is_subclass_of;
+use function ltrim;
 use function preg_replace_callback;
 use function property_exists;
 use function sprintf;
@@ -454,7 +455,7 @@ final class EntityFactory
 		return array_filter(
 			get_declared_classes(),
 			static fn ($className) =>
-				in_array($interface, class_implements($className), true)
+				in_array(ltrim($interface, '\\'), class_implements($className), true)
 				&& is_subclass_of($className, Entities\Entity::class),
 		);
 	}

@@ -32,7 +32,7 @@ final class ColorTemperature implements Status
 
 	use Nette\SmartObject;
 
-	public function __construct(private readonly int $value)
+	public function __construct(private readonly int $colorTemperature)
 	{
 	}
 
@@ -48,7 +48,7 @@ final class ColorTemperature implements Status
 
 	public function getValue(): int
 	{
-		return $this->value;
+		return $this->colorTemperature;
 	}
 
 	/**
@@ -64,8 +64,7 @@ final class ColorTemperature implements Status
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Capability::COLOR_TEMPERATURE} = new stdClass();
-		$json->{Types\Capability::COLOR_TEMPERATURE}->colorTemperature = $this->getValue();
+		$json->colorTemperature = $this->getValue();
 
 		return $json;
 	}
