@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\NsPanel\Entities\API\Statuses;
 
 use FastyBird\Connector\NsPanel\Types;
-use Nette;
+use Orisai\ObjectMapper;
 use stdClass;
 
 /**
@@ -27,14 +27,15 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ColorRgb implements Status
+final class ColorRgb implements Status, ObjectMapper\MappedObject
 {
 
-	use Nette\SmartObject;
-
 	public function __construct(
+		#[ObjectMapper\Rules\IntValue(min: 0, max: 255, unsigned: true)]
 		private readonly int $red,
+		#[ObjectMapper\Rules\IntValue(min: 0, max: 255, unsigned: true)]
 		private readonly int $green,
+		#[ObjectMapper\Rules\IntValue(min: 0, max: 255, unsigned: true)]
 		private readonly int $blue,
 	)
 	{
@@ -83,9 +84,11 @@ final class ColorRgb implements Status
 	public function toArray(): array
 	{
 		return [
-			'red' => $this->getRed(),
-			'green' => $this->getGreen(),
-			'blue' => $this->getBlue(),
+			$this->getType()->getValue() => [
+				'red' => $this->getRed(),
+				'green' => $this->getGreen(),
+				'blue' => $this->getBlue(),
+			],
 		];
 	}
 

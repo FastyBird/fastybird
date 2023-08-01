@@ -22,7 +22,7 @@
         }
     ],
     "require": {
-        "php": ">=8.1",
+        "php": ">=8.1.0",
         "ext-bcmath": "*",
         "ext-gmp": "*",
         "ext-iconv": "*",
@@ -67,6 +67,8 @@
         "nettrine/fixtures": "^0.6",
         "nettrine/orm": "^0.8",
         "opis/json-schema": "^2.3",
+        "orisai/nette-object-mapper": "^0.1",
+        "orisai/object-mapper": "^0.1",
         "php-on-couch/php-on-couch": "^4.0",
         "phpdocumentor/reflection": "^4.0",
         "phpdocumentor/reflection-common": "^2.2",

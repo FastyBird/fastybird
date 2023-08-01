@@ -86,8 +86,6 @@ final class LanApiTest extends DbTestCase
 			__DIR__ . '/../../../fixtures/Clients/responses/get_sub_devices.json',
 			Utils\Json::encode($subDevices->toJson()),
 		);
-
-		//self::assertSame('', Utils\Json::encode($subDevices->toJson()));
 	}
 
 }

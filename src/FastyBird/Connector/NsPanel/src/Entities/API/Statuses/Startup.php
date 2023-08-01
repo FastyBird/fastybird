@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\NsPanel\Entities\API\Statuses;
 
 use FastyBird\Connector\NsPanel\Types;
-use Nette;
+use Orisai\ObjectMapper;
 use stdClass;
 
 /**
@@ -27,13 +27,17 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Startup implements Status
+final class Startup implements Status, ObjectMapper\MappedObject
 {
 
-	use Nette\SmartObject;
-
 	public function __construct(
-		private readonly Types\StartupPayload $startup,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		private readonly string $startup,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\DefaultValue(null)]
 		private readonly string|null $name = null,
 	)
 	{
@@ -46,7 +50,7 @@ final class Startup implements Status
 
 	public function getValue(): Types\StartupPayload
 	{
-		return $this->startup;
+		return Types\StartupPayload::get($this->startup);
 	}
 
 	public function getName(): string|null
@@ -60,8 +64,10 @@ final class Startup implements Status
 	public function toArray(): array
 	{
 		return [
-			'value' => $this->getValue()->getValue(),
-			'name' => $this->getName(),
+			$this->getType()->getValue() => [
+				'value' => $this->getValue()->getValue(),
+				'name' => $this->getName(),
+			],
 		];
 	}
 

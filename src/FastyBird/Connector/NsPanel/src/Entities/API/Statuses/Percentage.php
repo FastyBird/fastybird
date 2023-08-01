@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\NsPanel\Entities\API\Statuses;
 
 use FastyBird\Connector\NsPanel\Types;
-use Nette;
+use Orisai\ObjectMapper;
 use stdClass;
 
 /**
@@ -27,12 +27,13 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Percentage implements Status
+final class Percentage implements Status, ObjectMapper\MappedObject
 {
 
-	use Nette\SmartObject;
-
-	public function __construct(private readonly int $percentage)
+	public function __construct(
+		#[ObjectMapper\Rules\IntValue(min: 0, max: 100, unsigned: true)]
+		private readonly int $percentage,
+	)
 	{
 	}
 
@@ -57,7 +58,7 @@ final class Percentage implements Status
 	public function toArray(): array
 	{
 		return [
-			'value' => $this->getValue(),
+			$this->getType()->getValue() => $this->getValue(),
 		];
 	}
 

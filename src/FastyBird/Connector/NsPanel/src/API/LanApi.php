@@ -27,6 +27,7 @@ use GuzzleHttp;
 use InvalidArgumentException;
 use Nette;
 use Nette\Utils;
+use Orisai\ObjectMapper;
 use Psr\Http\Message;
 use Ramsey\Uuid;
 use React\Promise;
@@ -77,6 +78,7 @@ final class LanApi
 		private readonly string $identifier,
 		private readonly HttpClientFactory $httpClientFactory,
 		private readonly MetadataSchemas\Validator $schemaValidator,
+		private readonly ObjectMapper\Processing\Processor $entityMapper,
 		private readonly NsPanel\Logger $logger,
 	)
 	{
@@ -905,8 +907,20 @@ final class LanApi
 		}
 
 		try {
-			return Entities\EntityFactory::build(Entities\API\Response\GetSubDevices::class, $body);
-		} catch (Exceptions\InvalidState $ex) {
+			$options = new ObjectMapper\Processing\Options();
+			$options->setAllowUnknownFields();
+
+			return $this->entityMapper->process(
+				Utils\Json::decode(Utils\Json::encode($body), Utils\Json::FORCE_ARRAY),
+				Entities\API\Response\GetSubDevices::class,
+				$options,
+			);
+		} catch (ObjectMapper\Exception\InvalidData $ex) {
+			$errorPrinter = new ObjectMapper\Printers\ErrorVisualPrinter(new ObjectMapper\Printers\TypeToStringConverter());
+			$error = $errorPrinter->printError($ex);
+
+			throw new Exceptions\LanApiCall('Could not create entity from response: '. $error);
+		} catch (Utils\JsonException $ex) {
 			throw new Exceptions\LanApiCall('Could not create entity from response', $ex->getCode(), $ex);
 		}
 	}

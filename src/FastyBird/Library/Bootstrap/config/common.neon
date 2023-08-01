@@ -17,6 +17,7 @@
 extensions:
     contributteConsole  : Contributte\Console\DI\ConsoleExtension(%consoleMode%)
     contributteMonolog  : Contributte\Monolog\DI\MonologExtension
+    orisaiObjectMapper  : OriNette\ObjectMapper\DI\ObjectMapperExtension
     fbBootstrapLibrary  : FastyBird\Library\Bootstrap\DI\BootstrapExtension
 
 ##################################
@@ -45,6 +46,11 @@ contributteMonolog:
                 - Monolog\Handler\NullHandler
             processors:
                 - Monolog\Processor\MemoryPeakUsageProcessor
+
+# Universal object mapper tool
+##############################
+orisaiObjectMapper:
+    debug: %debugMode%
 
 # Application bootstrap extension
 #################################

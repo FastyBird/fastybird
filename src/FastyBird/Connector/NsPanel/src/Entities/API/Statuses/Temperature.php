@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\NsPanel\Entities\API\Statuses;
 
 use FastyBird\Connector\NsPanel\Types;
-use Nette;
+use Orisai\ObjectMapper;
 use stdClass;
 
 /**
@@ -27,12 +27,13 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Temperature implements Status
+final class Temperature implements Status, ObjectMapper\MappedObject
 {
 
-	use Nette\SmartObject;
-
-	public function __construct(private readonly float $temperature)
+	public function __construct(
+		#[ObjectMapper\Rules\FloatValue(min: -40, max: 80)]
+		private readonly float $temperature,
+	)
 	{
 	}
 
@@ -57,7 +58,7 @@ final class Temperature implements Status
 	public function toArray(): array
 	{
 		return [
-			'value' => $this->getValue(),
+			$this->getType()->getValue() => $this->getValue(),
 		];
 	}
 

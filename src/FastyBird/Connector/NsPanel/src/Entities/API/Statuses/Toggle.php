@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\NsPanel\Entities\API\Statuses;
 
 use FastyBird\Connector\NsPanel\Types;
-use Nette;
+use Orisai\ObjectMapper;
 use stdClass;
 
 /**
@@ -27,15 +27,18 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Toggle implements Status
+final class Toggle implements Status, ObjectMapper\MappedObject
 {
 
-	use Nette\SmartObject;
-
 	public function __construct(
-		private readonly string $name,
-		private readonly Types\TogglePayload $toggleState,
-		private readonly Types\StartupPayload|null $startup = null,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		private readonly string $toggleState,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\DefaultValue(null)]
+		private readonly string|null $startup = null,
 	)
 	{
 	}
@@ -45,19 +48,19 @@ final class Toggle implements Status
 		return Types\Capability::get(Types\Capability::TOGGLE);
 	}
 
-	public function getName(): string
+	public function getName(): string|null
 	{
-		return $this->name;
+		return null;
 	}
 
 	public function getValue(): Types\TogglePayload
 	{
-		return $this->toggleState;
+		return Types\TogglePayload::get($this->toggleState);
 	}
 
 	public function getStartup(): Types\StartupPayload|null
 	{
-		return $this->startup;
+		return $this->startup !== null ? Types\StartupPayload::get($this->startup) : null;
 	}
 
 	/**

@@ -17,6 +17,7 @@ namespace FastyBird\Connector\NsPanel\Entities\API\Statuses;
 
 use FastyBird\Connector\NsPanel\Types;
 use Nette;
+use Orisai\ObjectMapper;
 use stdClass;
 
 /**
@@ -27,12 +28,12 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class CameraStream implements Status
+final class CameraStream implements Status, ObjectMapper\MappedObject
 {
 
-	use Nette\SmartObject;
-
-	public function __construct(private readonly string $value)
+	public function __construct(
+		private readonly object $configuration,
+	)
 	{
 	}
 
@@ -48,7 +49,7 @@ final class CameraStream implements Status
 
 	public function getValue(): string
 	{
-		return $this->value;
+		return '';
 	}
 
 	/**
@@ -57,7 +58,7 @@ final class CameraStream implements Status
 	public function toArray(): array
 	{
 		return [
-			'value' => $this->getValue(),
+			$this->getType()->getValue() => $this->getValue(),
 		];
 	}
 

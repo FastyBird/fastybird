@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\NsPanel\Entities\API\Statuses;
 
 use FastyBird\Connector\NsPanel\Types;
+use Orisai\ObjectMapper;
 use Nette;
 use stdClass;
 
@@ -27,12 +28,13 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Brightness implements Status
+final class Brightness implements Status, ObjectMapper\MappedObject
 {
 
-	use Nette\SmartObject;
-
-	public function __construct(private readonly int $brightness)
+	public function __construct(
+		#[ObjectMapper\Rules\IntValue(min: 0, max: 100, unsigned: true)]
+		private readonly int $brightness,
+	)
 	{
 	}
 
@@ -57,7 +59,7 @@ final class Brightness implements Status
 	public function toArray(): array
 	{
 		return [
-			'value' => $this->getValue(),
+			$this->getType()->getValue() => $this->getValue(),
 		];
 	}
 

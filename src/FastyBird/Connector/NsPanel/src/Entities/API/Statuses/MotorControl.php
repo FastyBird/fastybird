@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\NsPanel\Entities\API\Statuses;
 
 use FastyBird\Connector\NsPanel\Types;
-use Nette;
+use Orisai\ObjectMapper;
 use stdClass;
 
 /**
@@ -27,12 +27,13 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class MotorControl implements Status
+final class MotorControl implements Status, ObjectMapper\MappedObject
 {
 
-	use Nette\SmartObject;
-
-	public function __construct(private readonly Types\MotorControlPayload $motorControl)
+	public function __construct(
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		private readonly string $motorControl,
+	)
 	{
 	}
 
@@ -48,7 +49,7 @@ final class MotorControl implements Status
 
 	public function getValue(): Types\MotorControlPayload
 	{
-		return $this->motorControl;
+		return Types\MotorControlPayload::get($this->motorControl);
 	}
 
 	/**
@@ -57,7 +58,7 @@ final class MotorControl implements Status
 	public function toArray(): array
 	{
 		return [
-			'value' => $this->getValue()->getValue(),
+			$this->getType()->getValue() => $this->getValue()->getValue(),
 		];
 	}
 

@@ -17,7 +17,7 @@ namespace FastyBird\Connector\NsPanel\Entities\API\Response;
 
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Types;
-use Nette;
+use Orisai\ObjectMapper;
 use stdClass;
 use function array_map;
 use function is_array;
@@ -31,33 +31,96 @@ use function property_exists;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class GetSubDevicesDataSubDevice implements Entities\API\Entity
+final class GetSubDevicesDataSubDevice implements Entities\API\Entity, ObjectMapper\MappedObject
 {
-
-	use Nette\SmartObject;
 
 	/**
 	 * @param array<Entities\API\Capability> $capabilities
-	 * @param array<Entities\API\Statuses\Status|Entities\API\Statuses\Aggregate> $state
 	 * @param array<string, string|array<string, string>> $tags
 	 */
 	public function __construct(
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		#[ObjectMapper\Modifiers\FieldName('serial_number')]
 		private readonly string $serialNumber,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $name,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $manufacturer,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $model,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		#[ObjectMapper\Modifiers\FieldName('firmware_version')]
 		private readonly string $firmwareVersion,
-		private readonly Types\Category $displayCategory,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		#[ObjectMapper\Modifiers\FieldName('display_category')]
+		private readonly string $displayCategory,
+		#[ObjectMapper\Rules\MappedObjectValue(GetSubDevicesDataSubDeviceState::class)]
+		private readonly GetSubDevicesDataSubDeviceState $state,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('third_serial_number')]
+		#[ObjectMapper\Modifiers\DefaultValue(null)]
 		private readonly string|null $thirdSerialNumber = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('service_address')]
+		#[ObjectMapper\Modifiers\DefaultValue(null)]
 		private readonly string|null $serviceAddress = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\DefaultValue(null)]
 		private readonly string|null $hostname = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('mac_address')]
+		#[ObjectMapper\Modifiers\DefaultValue(null)]
 		private readonly string|null $macAddress = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('app_name')]
+		#[ObjectMapper\Modifiers\DefaultValue(null)]
 		private readonly string|null $appName = null,
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(Entities\API\Capability::class),
+		)]
 		private readonly array $capabilities = [],
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\DefaultValue(null)]
 		private readonly string|null $protocol = null,
-		private readonly array $state = [],
+		#[ObjectMapper\Rules\ArrayOf(
+			item: new ObjectMapper\Rules\AnyOf([
+				new ObjectMapper\Rules\StringValue(),
+				new ObjectMapper\Rules\ArrayOf(
+					item: new ObjectMapper\Rules\StringValue(),
+					key: new ObjectMapper\Rules\AnyOf([
+						new ObjectMapper\Rules\StringValue(),
+						new ObjectMapper\Rules\IntValue(),
+					]),
+				),
+			]),
+			key: new ObjectMapper\Rules\StringValue(),
+		)]
 		private readonly array $tags = [],
+		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $online = false,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\NullValue(),
+		])]
+		#[ObjectMapper\Modifiers\DefaultValue(null)]
 		private readonly bool|null $subnet = null,
 	)
 	{
@@ -90,7 +153,7 @@ final class GetSubDevicesDataSubDevice implements Entities\API\Entity
 
 	public function getDisplayCategory(): Types\Category
 	{
-		return $this->displayCategory;
+		return Types\Category::get($this->displayCategory);
 	}
 
 	public function getThirdSerialNumber(): string|null
@@ -132,23 +195,11 @@ final class GetSubDevicesDataSubDevice implements Entities\API\Entity
 	}
 
 	/**
-	 * @return array<Entities\API\Statuses\Status>
+	 * @return array<Entities\API\Statuses\NamedStatus>
 	 */
 	public function getStatuses(): array
 	{
-		$statuses = [];
-
-		foreach ($this->state as $status) {
-			if ($status instanceof Entities\API\Statuses\Status) {
-				$statuses[] = $status;
-			} else {
-				foreach ($status->getAggregates() as $aggregate) {
-					$statuses[] = $aggregate;
-				}
-			}
-		}
-
-		return $statuses;
+		return $this->state->getStatuses();
 	}
 
 	/**
@@ -192,7 +243,7 @@ final class GetSubDevicesDataSubDevice implements Entities\API\Entity
 			),
 			'protocol' => $this->getProtocol(),
 			'state' => array_map(
-				static fn (Entities\API\Statuses\Status|Entities\API\Statuses\Aggregate $state): array => $state->toArray(),
+				static fn (Entities\API\Statuses\Status $state): array => $state->toArray(),
 				$this->getStatuses(),
 			),
 			'tags' => $this->getTags(),
@@ -206,7 +257,7 @@ final class GetSubDevicesDataSubDevice implements Entities\API\Entity
 		$state = new stdClass();
 
 		foreach ($this->getStatuses() as $item) {
-			if ($item instanceof Entities\API\Statuses\Toggle) {
+			if ($item->getName() !== null) {
 				if (
 					!property_exists($state, $item->getType()->getValue())
 					|| !$state->{$item->getType()->getValue()} instanceof stdClass

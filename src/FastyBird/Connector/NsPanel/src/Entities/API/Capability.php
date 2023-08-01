@@ -17,7 +17,7 @@ namespace FastyBird\Connector\NsPanel\Entities\API;
 
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Types;
-use Nette;
+use Orisai\ObjectMapper;
 use stdClass;
 
 /**
@@ -28,14 +28,19 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Capability implements Entities\API\Entity
+final class Capability implements Entities\API\Entity, ObjectMapper\MappedObject
 {
 
-	use Nette\SmartObject;
-
 	public function __construct(
-		private readonly Types\Capability $capability,
-		private readonly Types\Permission $permission,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		private readonly string $capability,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		private readonly string $permission,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\DefaultValue(null)]
 		private readonly string|null $name = null,
 	)
 	{
@@ -43,12 +48,12 @@ final class Capability implements Entities\API\Entity
 
 	public function getCapability(): Types\Capability
 	{
-		return $this->capability;
+		return Types\Capability::get($this->capability);
 	}
 
 	public function getPermission(): Types\Permission
 	{
-		return $this->permission;
+		return Types\Permission::get($this->permission);
 	}
 
 	public function getName(): string|null

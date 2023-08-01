@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\NsPanel\Entities\API\Statuses;
 
 use FastyBird\Connector\NsPanel\Types;
-use Nette;
+use Orisai\ObjectMapper;
 use stdClass;
 
 /**
@@ -27,12 +27,13 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Press implements Status
+final class Press implements Status, ObjectMapper\MappedObject
 {
 
-	use Nette\SmartObject;
-
-	public function __construct(private readonly Types\PressPayload $press)
+	public function __construct(
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		private readonly string $press,
+	)
 	{
 	}
 
@@ -48,7 +49,7 @@ final class Press implements Status
 
 	public function getValue(): Types\PressPayload
 	{
-		return $this->press;
+		return Types\PressPayload::get($this->press);
 	}
 
 	/**
@@ -57,7 +58,7 @@ final class Press implements Status
 	public function toArray(): array
 	{
 		return [
-			'value' => $this->getValue()->getValue(),
+			$this->getType()->getValue() => $this->getValue()->getValue(),
 		];
 	}
 
