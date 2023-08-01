@@ -308,14 +308,12 @@ final class EntityFactory
 										)) {
 											$arrayValues = array_filter(
 												(array) $parameterValue,
-												static function ($item) use ($arrayType): bool {
-													return match (Utils\Strings::lower($arrayType)) {
+												static fn ($item): bool => match (Utils\Strings::lower($arrayType)) {
 														self::TYPE_STRING => is_string($item),
 														self::TYPE_INT => is_int($item),
 														self::TYPE_FLOAT => is_float($item),
 														self::TYPE_BOOL => is_bool($item),
 														default => false,
-													};
 												},
 											);
 
