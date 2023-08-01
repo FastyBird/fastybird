@@ -21,6 +21,7 @@ use Nette;
 use stdClass;
 use function array_map;
 use function is_array;
+use function property_exists;
 
 /**
  * NS Panel sub-device description - both NS Panel connected & third-party
@@ -206,7 +207,10 @@ final class GetSubDevicesDataSubDevice implements Entities\API\Entity
 
 		foreach ($this->getStatuses() as $item) {
 			if ($item instanceof Entities\API\Statuses\Toggle) {
-				if (!$state->{$item->getType()->getValue()} instanceof stdClass) {
+				if (
+					!property_exists($state, $item->getType()->getValue())
+					|| !$state->{$item->getType()->getValue()} instanceof stdClass
+				) {
 					$state->{$item->getType()->getValue()} = new stdClass();
 				}
 
