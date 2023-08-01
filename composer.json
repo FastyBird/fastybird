@@ -99,7 +99,7 @@
     "require-dev": {
         "brianium/paratest": "^7.1",
         "dg/bypass-finals": "^1.4",
-        "doctrine/orm": "^2.8",
+        "doctrine/orm": "2.15.*",
         "infection/infection": "^0.26",
         "ipub/websockets": "^1.5",
         "latte/latte": "^3.0",
