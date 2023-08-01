@@ -482,7 +482,7 @@ final class Gateway implements Client
 
 					$this->consumer->append(new Entities\Messages\DeviceStatus(
 						$this->connector->getId(),
-						$device->getIdentifier(),
+						$subDevice->getSerialNumber(),
 						$capabilityStatuses,
 					));
 				}

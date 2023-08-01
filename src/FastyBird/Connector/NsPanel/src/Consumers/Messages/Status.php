@@ -66,7 +66,7 @@ final class Status implements Consumers\Consumer
 
 		$findDeviceQuery = new Queries\FindDevices();
 		$findDeviceQuery->byConnectorId($entity->getConnector());
-		$findDeviceQuery->startWithIdentifier($entity->getIdentifier());
+		$findDeviceQuery->byIdentifier($entity->getIdentifier());
 
 		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\NsPanelDevice::class);
 

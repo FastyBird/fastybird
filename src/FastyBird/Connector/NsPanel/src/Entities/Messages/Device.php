@@ -54,6 +54,7 @@ abstract class Device implements Entity
 	public function toArray(): array
 	{
 		return [
+			'connector' => $this->getConnector()->toString(),
 			'identifier' => $this->getIdentifier(),
 		];
 	}
