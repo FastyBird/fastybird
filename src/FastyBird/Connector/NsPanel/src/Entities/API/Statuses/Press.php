@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\NsPanel\Entities\API\Statuses;
 
 use FastyBird\Connector\NsPanel\Types;
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use Orisai\ObjectMapper;
 use stdClass;
 
@@ -27,12 +28,13 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Press implements Status, ObjectMapper\MappedObject
+final class Press implements Status
 {
 
 	public function __construct(
-		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $press,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\PressPayload::class)]
+		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::PRESS)]
+		private readonly Types\PressPayload $value,
 	)
 	{
 	}
@@ -42,14 +44,9 @@ final class Press implements Status, ObjectMapper\MappedObject
 		return Types\Capability::get(Types\Capability::PRESS);
 	}
 
-	public function getName(): string|null
-	{
-		return null;
-	}
-
 	public function getValue(): Types\PressPayload
 	{
-		return Types\PressPayload::get($this->press);
+		return $this->value;
 	}
 
 	/**
@@ -58,14 +55,14 @@ final class Press implements Status, ObjectMapper\MappedObject
 	public function toArray(): array
 	{
 		return [
-			$this->getType()->getValue() => $this->getValue()->getValue(),
+			'value' => $this->getValue()->getValue(),
 		];
 	}
 
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->press = $this->getValue()->getValue();
+		$json->{Types\Protocol::PRESS} = $this->getValue()->getValue();
 
 		return $json;
 	}

@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ThirdPartyDevice.php
+ * SyncDevicesEventPayload.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,44 +13,71 @@
  * @date           09.07.23
  */
 
-namespace FastyBird\Connector\NsPanel\Entities\API;
+namespace FastyBird\Connector\NsPanel\Entities\API\Request;
 
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Types;
-use Nette;
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use Orisai\ObjectMapper;
 use stdClass;
 use function array_map;
 use function is_array;
 
 /**
- * Third party device description definition
+ * Synchronise third-party devices with NS Panel event payload endpoint request definition
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ThirdPartyDevice implements Entities\API\Entity
+final class SyncDevicesEventPayloadEndpoint implements Entities\API\Entity
 {
-
-	use Nette\SmartObject;
 
 	/**
 	 * @param array<Entities\API\Capability> $capabilities
-	 * @param array<Entities\API\Statuses\Status|Entities\API\Statuses\Aggregate> $state
 	 * @param array<string, string|array<string, string>> $tags
 	 */
 	public function __construct(
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		#[ObjectMapper\Modifiers\FieldName('third_serial_number')]
 		private readonly string $thirdSerialNumber,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $name,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\Category::class)]
+		#[ObjectMapper\Modifiers\FieldName('display_category')]
 		private readonly Types\Category $displayCategory,
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(Entities\API\Capability::class),
+		)]
 		private readonly array $capabilities,
-		private readonly array $state,
+		#[ObjectMapper\Rules\MappedObjectValue(Entities\API\State::class)]
+		private readonly Entities\API\State $state,
+		#[ObjectMapper\Rules\ArrayOf(
+			item: new ObjectMapper\Rules\AnyOf([
+				new ObjectMapper\Rules\StringValue(),
+				new ObjectMapper\Rules\ArrayOf(
+					item: new ObjectMapper\Rules\StringValue(),
+					key: new ObjectMapper\Rules\AnyOf([
+						new ObjectMapper\Rules\StringValue(),
+						new ObjectMapper\Rules\IntValue(),
+					]),
+				),
+			]),
+			key: new ObjectMapper\Rules\StringValue(),
+		)]
 		private readonly array $tags,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $manufacturer,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $model,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		#[ObjectMapper\Modifiers\FieldName('firmware_version')]
 		private readonly string $firmwareVersion,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		#[ObjectMapper\Modifiers\FieldName('service_address')]
 		private readonly string $serviceAddress,
+		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $online = false,
 	)
 	{
@@ -84,19 +111,7 @@ final class ThirdPartyDevice implements Entities\API\Entity
 	 */
 	public function getStatuses(): array
 	{
-		$statuses = [];
-
-		foreach ($this->state as $status) {
-			if ($status instanceof Entities\API\Statuses\Status) {
-				$statuses[] = $status;
-			} else {
-				foreach ($status->getAggregates() as $aggregate) {
-					$statuses[] = $aggregate;
-				}
-			}
-		}
-
-		return $statuses;
+		return $this->state->getStatuses();
 	}
 
 	/**
@@ -145,10 +160,7 @@ final class ThirdPartyDevice implements Entities\API\Entity
 				static fn (Entities\API\Capability $capability): array => $capability->toArray(),
 				$this->getCapabilities(),
 			),
-			'state' => array_map(
-				static fn (Entities\API\Statuses\Status|Entities\API\Statuses\Aggregate $state): array => $state->toArray(),
-				$this->getStatuses(),
-			),
+			'state' => $this->state->toArray(),
 			'tags' => $this->getTags(),
 			'manufacturer' => $this->getManufacturer(),
 			'model' => $this->getModel(),
@@ -160,20 +172,6 @@ final class ThirdPartyDevice implements Entities\API\Entity
 
 	public function toJson(): object
 	{
-		$state = new stdClass();
-
-		foreach ($this->getStatuses() as $item) {
-			if ($item instanceof Entities\API\Statuses\Toggle) {
-				if (!$state->{$item->getType()->getValue()} instanceof stdClass) {
-					$state->{$item->getType()->getValue()} = new stdClass();
-				}
-
-				$state->{$item->getType()->getValue()}->{$item->getName()} = $item->toJson();
-			} else {
-				$state->{$item->getType()->getValue()} = $item->toJson();
-			}
-		}
-
 		$tags = new stdClass();
 
 		foreach ($this->getTags() as $name => $value) {
@@ -196,7 +194,7 @@ final class ThirdPartyDevice implements Entities\API\Entity
 			static fn (Entities\API\Capability $capability): object => $capability->toJson(),
 			$this->getCapabilities(),
 		);
-		$json->state = $state;
+		$json->state = $this->state->toJson();
 		$json->tags = $tags;
 		$json->manufacturer = $this->getManufacturer();
 		$json->model = $this->getModel();

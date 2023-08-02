@@ -27,12 +27,13 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Temperature implements Status, ObjectMapper\MappedObject
+final class Temperature implements Status
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\FloatValue(min: -40, max: 80)]
-		private readonly float $temperature,
+		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::TEMPERATURE)]
+		private readonly float $value,
 	)
 	{
 	}
@@ -42,14 +43,9 @@ final class Temperature implements Status, ObjectMapper\MappedObject
 		return Types\Capability::get(Types\Capability::TEMPERATURE);
 	}
 
-	public function getName(): string|null
-	{
-		return null;
-	}
-
 	public function getValue(): float
 	{
-		return $this->temperature;
+		return $this->value;
 	}
 
 	/**
@@ -58,14 +54,14 @@ final class Temperature implements Status, ObjectMapper\MappedObject
 	public function toArray(): array
 	{
 		return [
-			$this->getType()->getValue() => $this->getValue(),
+			'value' => $this->getValue(),
 		];
 	}
 
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->temperature = $this->getValue();
+		$json->{Types\Protocol::TEMPERATURE} = $this->getValue();
 
 		return $json;
 	}

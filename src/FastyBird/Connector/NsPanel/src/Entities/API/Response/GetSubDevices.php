@@ -27,7 +27,7 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class GetSubDevices implements Entities\API\Entity, ObjectMapper\MappedObject
+final class GetSubDevices implements Entities\API\Entity
 {
 
 	public function __construct(

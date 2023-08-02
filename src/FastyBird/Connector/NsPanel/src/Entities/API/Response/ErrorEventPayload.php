@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\NsPanel\Entities\API\Response;
 
 use FastyBird\Connector\NsPanel\Entities;
-use Nette;
+use Orisai\ObjectMapper;
 use stdClass;
 
 /**
@@ -30,9 +30,12 @@ use stdClass;
 final class ErrorEventPayload implements Entities\API\Entity
 {
 
-	use Nette\SmartObject;
-
-	public function __construct(private readonly string $type, private readonly string $description)
+	public function __construct(
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		private readonly string $type,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		private readonly string $description,
+	)
 	{
 	}
 

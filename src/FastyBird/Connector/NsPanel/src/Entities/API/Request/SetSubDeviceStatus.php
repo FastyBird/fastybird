@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\NsPanel\Entities\API\Request;
 
 use FastyBird\Connector\NsPanel\Entities;
-use Nette;
+use Orisai\ObjectMapper;
 use stdClass;
 
 /**
@@ -30,17 +30,19 @@ use stdClass;
 final class SetSubDeviceStatus implements Entities\API\Entity
 {
 
-	use Nette\SmartObject;
-
 	public function __construct(
-		private readonly Entities\API\Statuses\Status $state,
+		#[ObjectMapper\Rules\MappedObjectValue(Entities\API\State::class)]
+		private readonly Entities\API\State $state,
 	)
 	{
 	}
 
-	public function getState(): Entities\API\Statuses\Status
+	/**
+	 * @return array<Entities\API\Statuses\Status>
+	 */
+	public function getState(): array
 	{
-		return $this->state;
+		return $this->state->getStatuses();
 	}
 
 	/**
@@ -49,15 +51,14 @@ final class SetSubDeviceStatus implements Entities\API\Entity
 	public function toArray(): array
 	{
 		return [
-			'status' => $this->getState()->toArray(),
+			'state' => $this->state->toArray(),
 		];
 	}
 
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->state = new stdClass();
-		$json->state->{$this->getState()->getType()->getValue()} = $this->getState()->toJson();
+		$json->state = $this->state->toJson();
 
 		return $json;
 	}

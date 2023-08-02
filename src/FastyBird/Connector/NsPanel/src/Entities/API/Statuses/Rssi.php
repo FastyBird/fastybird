@@ -27,12 +27,13 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Rssi implements Status, ObjectMapper\MappedObject
+final class Rssi implements Status
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\IntValue(min: -200, max: 0, unsigned: false)]
-		private readonly int $rssi,
+		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::RSSI)]
+		private readonly int $value,
 	)
 	{
 	}
@@ -42,14 +43,9 @@ final class Rssi implements Status, ObjectMapper\MappedObject
 		return Types\Capability::get(Types\Capability::RSSI);
 	}
 
-	public function getName(): string|null
-	{
-		return null;
-	}
-
 	public function getValue(): int
 	{
-		return $this->rssi;
+		return $this->value;
 	}
 
 	/**
@@ -58,14 +54,14 @@ final class Rssi implements Status, ObjectMapper\MappedObject
 	public function toArray(): array
 	{
 		return [
-			$this->getType()->getValue() => $this->getValue(),
+			'value' => $this->getValue(),
 		];
 	}
 
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->rssi = $this->getValue();
+		$json->{Types\Protocol::RSSI} = $this->getValue();
 
 		return $json;
 	}

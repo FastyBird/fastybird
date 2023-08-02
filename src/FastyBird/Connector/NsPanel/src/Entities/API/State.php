@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * GetSubDevicesDataSubDeviceState.php
+ * State.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,26 +13,32 @@
  * @date           09.07.23
  */
 
-namespace FastyBird\Connector\NsPanel\Entities\API\Response;
+namespace FastyBird\Connector\NsPanel\Entities\API;
 
-use FastyBird\Connector\NsPanel\Consumers\Messages\Status;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Types;
 use Orisai\ObjectMapper;
 use stdClass;
-use function Clue\StreamFilter\fun;
+use function array_map;
+use function assert;
+use function is_string;
+use function sprintf;
+use function strval;
 
 /**
- * Sub-device state
+ * Device capabilities state
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class GetSubDevicesDataSubDeviceState implements Entities\API\Entity, ObjectMapper\MappedObject
+final class State implements Entity
 {
 
+	/**
+	 * @param array<Entities\API\Statuses\Toggle> $toggle
+	 */
 	public function __construct(
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\MappedObjectValue(Entities\API\Statuses\Battery::class),
@@ -144,7 +150,7 @@ final class GetSubDevicesDataSubDeviceState implements Entities\API\Entity, Obje
 	}
 
 	/**
-	 * @return array<Entities\API\Statuses\NamedStatus>
+	 * @return array<string, Entities\API\Statuses\Status>
 	 */
 	public function getStatuses(): array
 	{
@@ -153,14 +159,109 @@ final class GetSubDevicesDataSubDeviceState implements Entities\API\Entity, Obje
 		foreach (Types\Capability::getAvailableValues() as $capability) {
 			assert(is_string($capability));
 
-			if ($capability === Types\Capability::TOGGLE) {
-				foreach ($this->toggle as $name => $status) {
-					$statuses[] = new Entities\API\Statuses\NamedStatus(strval($name), $status);
-				}
-			} else {
-				if (property_exists($this, $capability) && $this->{$capability} instanceof Entities\API\Statuses\Status) {
-					$statuses[] = new Entities\API\Statuses\NamedStatus(null, $this->{$capability});
-				}
+			switch ($capability) {
+				case Types\Capability::POWER:
+					if ($this->power !== null) {
+						$statuses[$capability] = $this->power;
+					}
+
+					break;
+				case Types\Capability::TOGGLE:
+					foreach ($this->toggle as $identifier => $status) {
+						$statuses[sprintf('%s_%s', $capability, strval($identifier))] = $status;
+					}
+
+					break;
+				case Types\Capability::BRIGHTNESS:
+					if ($this->brightness !== null) {
+						$statuses[$capability] = $this->brightness;
+					}
+
+					break;
+				case Types\Capability::COLOR_TEMPERATURE:
+					if ($this->colorTemperature !== null) {
+						$statuses[$capability] = $this->colorTemperature;
+					}
+
+					break;
+				case Types\Capability::COLOR_RGB:
+					if ($this->colorRgb !== null) {
+						$statuses[$capability] = $this->colorRgb;
+					}
+
+					break;
+				case Types\Capability::PERCENTAGE:
+					if ($this->percentage !== null) {
+						$statuses[$capability] = $this->percentage;
+					}
+
+					break;
+				case Types\Capability::MOTOR_CONTROL:
+					if ($this->motorControl !== null) {
+						$statuses[$capability] = $this->motorControl;
+					}
+
+					break;
+				case Types\Capability::MOTOR_REVERSE:
+					if ($this->motorReverse !== null) {
+						$statuses[$capability] = $this->motorReverse;
+					}
+
+					break;
+				case Types\Capability::MOTOR_CALIBRATION:
+					if ($this->motorCalibration !== null) {
+						$statuses[$capability] = $this->motorCalibration;
+					}
+
+					break;
+				case Types\Capability::STARTUP:
+					if ($this->startup !== null) {
+						$statuses[$capability] = $this->startup;
+					}
+
+					break;
+				case Types\Capability::CAMERA_STREAM:
+					if ($this->cameraStream !== null) {
+						$statuses[$capability] = $this->cameraStream;
+					}
+
+					break;
+				case Types\Capability::DETECT:
+					if ($this->detect !== null) {
+						$statuses[$capability] = $this->detect;
+					}
+
+					break;
+				case Types\Capability::HUMIDITY:
+					if ($this->humidity !== null) {
+						$statuses[$capability] = $this->humidity;
+					}
+
+					break;
+				case Types\Capability::TEMPERATURE:
+					if ($this->temperature !== null) {
+						$statuses[$capability] = $this->temperature;
+					}
+
+					break;
+				case Types\Capability::BATTERY:
+					if ($this->battery !== null) {
+						$statuses[$capability] = $this->battery;
+					}
+
+					break;
+				case Types\Capability::PRESS:
+					if ($this->press !== null) {
+						$statuses[$capability] = $this->press;
+					}
+
+					break;
+				case Types\Capability::RSSI:
+					if ($this->rssi !== null) {
+						$statuses[$capability] = $this->rssi;
+					}
+
+					break;
 			}
 		}
 
@@ -172,9 +273,10 @@ final class GetSubDevicesDataSubDeviceState implements Entities\API\Entity, Obje
 	 */
 	public function toArray(): array
 	{
-		return array_map(function (Entities\API\Statuses\Status $status): array {
-			return $status->toArray();
-		}, $this->getStatuses());
+		return array_map(
+			static fn (Entities\API\Statuses\Status $status): array => $status->toArray(),
+			$this->getStatuses(),
+		);
 	}
 
 	public function toJson(): object
@@ -184,8 +286,113 @@ final class GetSubDevicesDataSubDeviceState implements Entities\API\Entity, Obje
 		foreach (Types\Capability::getAvailableValues() as $capability) {
 			assert(is_string($capability));
 
-			if (property_exists($this, $capability) && $this->{$capability} instanceof Entities\API\Statuses\Status) {
-				$json->{$capability} = $this->{$capability}->toJson();
+			switch ($capability) {
+				case Types\Capability::POWER:
+					if ($this->power !== null) {
+						$json->{$capability} = $this->power->toJson();
+					}
+
+					break;
+				case Types\Capability::TOGGLE:
+					if ($this->toggle !== []) {
+						$json->{$capability} = new stdClass();
+
+						foreach ($this->toggle as $name => $status) {
+							$json->{$capability}->{$name} = $status->toJson();
+						}
+					}
+
+					break;
+				case Types\Capability::BRIGHTNESS:
+					if ($this->brightness !== null) {
+						$json->{$capability} = $this->brightness->toJson();
+					}
+
+					break;
+				case Types\Capability::COLOR_TEMPERATURE:
+					if ($this->colorTemperature !== null) {
+						$json->{$capability} = $this->colorTemperature->toJson();
+					}
+
+					break;
+				case Types\Capability::COLOR_RGB:
+					if ($this->colorRgb !== null) {
+						$json->{$capability} = $this->colorRgb->toJson();
+					}
+
+					break;
+				case Types\Capability::PERCENTAGE:
+					if ($this->percentage !== null) {
+						$json->{$capability} = $this->percentage->toJson();
+					}
+
+					break;
+				case Types\Capability::MOTOR_CONTROL:
+					if ($this->motorControl !== null) {
+						$json->{$capability} = $this->motorControl->toJson();
+					}
+
+					break;
+				case Types\Capability::MOTOR_REVERSE:
+					if ($this->motorReverse !== null) {
+						$json->{$capability} = $this->motorReverse->toJson();
+					}
+
+					break;
+				case Types\Capability::MOTOR_CALIBRATION:
+					if ($this->motorCalibration !== null) {
+						$json->{$capability} = $this->motorCalibration->toJson();
+					}
+
+					break;
+				case Types\Capability::STARTUP:
+					if ($this->startup !== null) {
+						$json->{$capability} = $this->startup->toJson();
+					}
+
+					break;
+				case Types\Capability::CAMERA_STREAM:
+					if ($this->cameraStream !== null) {
+						$json->{$capability} = $this->cameraStream->toJson();
+					}
+
+					break;
+				case Types\Capability::DETECT:
+					if ($this->detect !== null) {
+						$json->{$capability} = $this->detect->toJson();
+					}
+
+					break;
+				case Types\Capability::HUMIDITY:
+					if ($this->humidity !== null) {
+						$json->{$capability} = $this->humidity->toJson();
+					}
+
+					break;
+				case Types\Capability::TEMPERATURE:
+					if ($this->temperature !== null) {
+						$json->{$capability} = $this->temperature->toJson();
+					}
+
+					break;
+				case Types\Capability::BATTERY:
+					if ($this->battery !== null) {
+						$json->{$capability} = $this->battery->toJson();
+					}
+
+					break;
+				case Types\Capability::PRESS:
+					if ($this->press !== null) {
+						$json->{$capability} = $this->press->toJson();
+					}
+
+					break;
+				case Types\Capability::RSSI:
+					if ($this->rssi !== null) {
+						$json->{$capability} = $this->rssi->toJson();
+					}
+
+					break;
 			}
 		}
 

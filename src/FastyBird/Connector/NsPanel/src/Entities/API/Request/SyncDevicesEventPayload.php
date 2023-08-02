@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\NsPanel\Entities\API\Request;
 
 use FastyBird\Connector\NsPanel\Entities;
-use Nette;
+use Orisai\ObjectMapper;
 use stdClass;
 use function array_map;
 
@@ -31,17 +31,20 @@ use function array_map;
 final class SyncDevicesEventPayload implements Entities\API\Entity
 {
 
-	use Nette\SmartObject;
-
 	/**
-	 * @param array<Entities\API\ThirdPartyDevice> $endpoints
+	 * @param array<SyncDevicesEventPayloadEndpoint> $endpoints
 	 */
-	public function __construct(private readonly array $endpoints)
+	public function __construct(
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(SyncDevicesEventPayloadEndpoint::class),
+		)]
+		private readonly array $endpoints,
+	)
 	{
 	}
 
 	/**
-	 * @return array<Entities\API\ThirdPartyDevice>
+	 * @return array<SyncDevicesEventPayloadEndpoint>
 	 */
 	public function getEndpoints(): array
 	{
@@ -55,7 +58,7 @@ final class SyncDevicesEventPayload implements Entities\API\Entity
 	{
 		return [
 			'endpoints' => array_map(
-				static fn (Entities\API\ThirdPartyDevice $description): array => $description->toArray(),
+				static fn (SyncDevicesEventPayloadEndpoint $description): array => $description->toArray(),
 				$this->getEndpoints(),
 			),
 		];
@@ -65,7 +68,7 @@ final class SyncDevicesEventPayload implements Entities\API\Entity
 	{
 		$json = new stdClass();
 		$json->endpoints = array_map(
-			static fn (Entities\API\ThirdPartyDevice $description): object => $description->toJson(),
+			static fn (SyncDevicesEventPayloadEndpoint $description): object => $description->toJson(),
 			$this->getEndpoints(),
 		);
 

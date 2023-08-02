@@ -27,12 +27,13 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Battery implements Status, ObjectMapper\MappedObject
+final class Battery implements Status
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\IntValue(min: 0, max: 100, unsigned: true)]
-		private readonly int $battery,
+		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::BATTERY)]
+		private readonly int $value,
 	)
 	{
 	}
@@ -42,14 +43,9 @@ final class Battery implements Status, ObjectMapper\MappedObject
 		return Types\Capability::get(Types\Capability::BATTERY);
 	}
 
-	public function getName(): string|null
-	{
-		return null;
-	}
-
 	public function getValue(): int
 	{
-		return $this->battery;
+		return $this->value;
 	}
 
 	/**
@@ -58,14 +54,14 @@ final class Battery implements Status, ObjectMapper\MappedObject
 	public function toArray(): array
 	{
 		return [
-			$this->getType()->getValue() => $this->getValue(),
+			'value' => $this->getValue(),
 		];
 	}
 
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->battery = $this->getValue();
+		$json->{Types\Protocol::BATTERY} = $this->getValue();
 
 		return $json;
 	}

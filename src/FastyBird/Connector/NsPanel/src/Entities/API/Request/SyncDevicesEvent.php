@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\NsPanel\Entities\API\Request;
 
 use FastyBird\Connector\NsPanel\Entities;
-use Nette;
+use Orisai\ObjectMapper;
 use stdClass;
 
 /**
@@ -30,10 +30,10 @@ use stdClass;
 final class SyncDevicesEvent implements Entities\API\Entity
 {
 
-	use Nette\SmartObject;
-
 	public function __construct(
+		#[ObjectMapper\Rules\MappedObjectValue(Entities\API\Header::class)]
 		private readonly Entities\API\Header $header,
+		#[ObjectMapper\Rules\MappedObjectValue(SyncDevicesEventPayload::class)]
 		private readonly SyncDevicesEventPayload $payload,
 	)
 	{

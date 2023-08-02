@@ -68,11 +68,11 @@ class Category extends Consistence\Enum\Enum
 	}
 
 	/**
-	 * @return array<int>
+	 * @return array<string>
 	 */
 	public static function getValues(): array
 	{
-		/** @var iterable<int> $availableValues */
+		/** @var iterable<string> $availableValues */
 		$availableValues = parent::getAvailableValues();
 
 		return (array) $availableValues;

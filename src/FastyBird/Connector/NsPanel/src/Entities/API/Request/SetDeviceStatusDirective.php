@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\NsPanel\Entities\API\Request;
 
 use FastyBird\Connector\NsPanel\Entities;
-use Nette;
+use Orisai\ObjectMapper;
 use stdClass;
 
 /**
@@ -30,11 +30,12 @@ use stdClass;
 final class SetDeviceStatusDirective implements Entities\API\Entity
 {
 
-	use Nette\SmartObject;
-
 	public function __construct(
+		#[ObjectMapper\Rules\MappedObjectValue(Entities\API\Header::class)]
 		private readonly Entities\API\Header $header,
+		#[ObjectMapper\Rules\MappedObjectValue(SetDeviceStatusDirectiveEndpoint::class)]
 		private readonly SetDeviceStatusDirectiveEndpoint $endpoint,
+		#[ObjectMapper\Rules\MappedObjectValue(SetDeviceStatusDirectivePayload::class)]
 		private readonly SetDeviceStatusDirectivePayload $payload,
 	)
 	{

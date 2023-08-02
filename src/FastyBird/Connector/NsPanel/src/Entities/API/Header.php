@@ -16,7 +16,8 @@
 namespace FastyBird\Connector\NsPanel\Entities\API;
 
 use FastyBird\Connector\NsPanel\Types;
-use Nette;
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use Orisai\ObjectMapper;
 use stdClass;
 
 /**
@@ -30,11 +31,13 @@ use stdClass;
 final class Header implements Entity
 {
 
-	use Nette\SmartObject;
-
 	public function __construct(
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\Header::class)]
 		private readonly Types\Header $name,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		#[ObjectMapper\Modifiers\FieldName('message_id')]
 		private readonly string $messageId,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $version,
 	)
 	{

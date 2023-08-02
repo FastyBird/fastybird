@@ -51,6 +51,8 @@ contributteMonolog:
 ##############################
 orisaiObjectMapper:
     debug: %debugMode%
+    rules:
+        - FastyBird\Library\Bootstrap\ObjectMapper\Rules\ConsistenceEnumRule()
 
 # Application bootstrap extension
 #################################

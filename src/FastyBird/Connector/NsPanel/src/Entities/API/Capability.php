@@ -15,8 +15,8 @@
 
 namespace FastyBird\Connector\NsPanel\Entities\API;
 
-use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Types;
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use Orisai\ObjectMapper;
 use stdClass;
 
@@ -28,19 +28,18 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Capability implements Entities\API\Entity, ObjectMapper\MappedObject
+final class Capability implements Entity
 {
 
 	public function __construct(
-		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $capability,
-		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $permission,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\Capability::class)]
+		private readonly Types\Capability $capability,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\Permission::class)]
+		private readonly Types\Permission $permission,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		#[ObjectMapper\Modifiers\DefaultValue(null)]
 		private readonly string|null $name = null,
 	)
 	{
@@ -48,12 +47,12 @@ final class Capability implements Entities\API\Entity, ObjectMapper\MappedObject
 
 	public function getCapability(): Types\Capability
 	{
-		return Types\Capability::get($this->capability);
+		return $this->capability;
 	}
 
 	public function getPermission(): Types\Permission
 	{
-		return Types\Permission::get($this->permission);
+		return $this->permission;
 	}
 
 	public function getName(): string|null

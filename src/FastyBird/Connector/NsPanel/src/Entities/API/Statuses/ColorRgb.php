@@ -27,15 +27,18 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ColorRgb implements Status, ObjectMapper\MappedObject
+final class ColorRgb implements Status
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\IntValue(min: 0, max: 255, unsigned: true)]
+		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::COLOR_RED)]
 		private readonly int $red,
 		#[ObjectMapper\Rules\IntValue(min: 0, max: 255, unsigned: true)]
+		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::COLOR_GREEN)]
 		private readonly int $green,
 		#[ObjectMapper\Rules\IntValue(min: 0, max: 255, unsigned: true)]
+		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::COLOR_BLUE)]
 		private readonly int $blue,
 	)
 	{
@@ -44,11 +47,6 @@ final class ColorRgb implements Status, ObjectMapper\MappedObject
 	public function getType(): Types\Capability
 	{
 		return Types\Capability::get(Types\Capability::COLOR_RGB);
-	}
-
-	public function getName(): string|null
-	{
-		return null;
 	}
 
 	public function getRed(): int
@@ -84,20 +82,18 @@ final class ColorRgb implements Status, ObjectMapper\MappedObject
 	public function toArray(): array
 	{
 		return [
-			$this->getType()->getValue() => [
-				'red' => $this->getRed(),
-				'green' => $this->getGreen(),
-				'blue' => $this->getBlue(),
-			],
+			'red' => $this->getRed(),
+			'green' => $this->getGreen(),
+			'blue' => $this->getBlue(),
 		];
 	}
 
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->red = $this->getRed();
-		$json->green = $this->getGreen();
-		$json->blue = $this->getBlue();
+		$json->{Types\Protocol::COLOR_RED} = $this->getRed();
+		$json->{Types\Protocol::COLOR_GREEN} = $this->getGreen();
+		$json->{Types\Protocol::COLOR_BLUE} = $this->getBlue();
 
 		return $json;
 	}

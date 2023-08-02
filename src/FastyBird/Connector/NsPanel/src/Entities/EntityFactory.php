@@ -249,37 +249,10 @@ final class EntityFactory
 
 														foreach ($subclasses as $subclass) {
 															try {
-																if (is_subclass_of(
+																$subEntity = self::build(
 																	$subclass,
-																	Entities\API\Statuses\Aggregate::class,
-																)) {
-																	$aggregatesValue = [];
-
-																	foreach ($subParameterValue as $subParameterValueKey => $subParameterValueValue) {
-																		if ($subParameterValueValue instanceof Utils\ArrayHash) {
-																			$subParameterValueValue->offsetSet(
-																				'name',
-																				$subParameterValueKey,
-																			);
-
-																			$aggregatesValue[] = $subParameterValueValue;
-																		}
-																	}
-
-																	$subEntity = self::build(
-																		$subclass,
-																		Utils\ArrayHash::from([
-																			'aggregates' => Utils\ArrayHash::from(
-																				$aggregatesValue,
-																			),
-																		]),
-																	);
-																} else {
-																	$subEntity = self::build(
-																		$subclass,
-																		$subParameterValue,
-																	);
-																}
+																	$subParameterValue,
+																);
 
 																break;
 															} catch (Exceptions\InvalidState) {

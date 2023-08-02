@@ -16,7 +16,6 @@
 namespace FastyBird\Connector\NsPanel\Entities\API\Statuses;
 
 use FastyBird\Connector\NsPanel\Types;
-use Nette;
 use Orisai\ObjectMapper;
 use stdClass;
 
@@ -28,11 +27,13 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class CameraStream implements Status, ObjectMapper\MappedObject
+final class CameraStream implements Status
 {
 
 	public function __construct(
-		private readonly object $configuration,
+		#[ObjectMapper\Rules\MappedObjectValue(CameraStreamConfiguration::class)]
+		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::CONFIGURATION)]
+		private readonly CameraStreamConfiguration $configuration,
 	)
 	{
 	}
@@ -42,14 +43,9 @@ final class CameraStream implements Status, ObjectMapper\MappedObject
 		return Types\Capability::get(Types\Capability::CAMERA_STREAM);
 	}
 
-	public function getName(): string|null
-	{
-		return null;
-	}
-
 	public function getValue(): string
 	{
-		return '';
+		return $this->configuration->getStreamUrl();
 	}
 
 	/**
@@ -58,15 +54,14 @@ final class CameraStream implements Status, ObjectMapper\MappedObject
 	public function toArray(): array
 	{
 		return [
-			$this->getType()->getValue() => $this->getValue(),
+			'value' => $this->configuration->toArray(),
 		];
 	}
 
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->configuration = new stdClass();
-		$json->configuration->streamUrl = $this->getValue();
+		$json->{Types\Protocol::CONFIGURATION} = $this->configuration->toJson();
 
 		return $json;
 	}

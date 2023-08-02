@@ -27,12 +27,13 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Percentage implements Status, ObjectMapper\MappedObject
+final class Percentage implements Status
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\IntValue(min: 0, max: 100, unsigned: true)]
-		private readonly int $percentage,
+		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::PERCENTAGE)]
+		private readonly int $value,
 	)
 	{
 	}
@@ -42,14 +43,9 @@ final class Percentage implements Status, ObjectMapper\MappedObject
 		return Types\Capability::get(Types\Capability::PERCENTAGE);
 	}
 
-	public function getName(): string|null
-	{
-		return null;
-	}
-
 	public function getValue(): int
 	{
-		return $this->percentage;
+		return $this->value;
 	}
 
 	/**
@@ -58,14 +54,14 @@ final class Percentage implements Status, ObjectMapper\MappedObject
 	public function toArray(): array
 	{
 		return [
-			$this->getType()->getValue() => $this->getValue(),
+			'value' => $this->getValue(),
 		];
 	}
 
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->percentage = $this->getValue();
+		$json->{Types\Protocol::PERCENTAGE} = $this->getValue();
 
 		return $json;
 	}

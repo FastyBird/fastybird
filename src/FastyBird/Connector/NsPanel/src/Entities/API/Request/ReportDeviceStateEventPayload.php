@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\NsPanel\Entities\API\Request;
 
 use FastyBird\Connector\NsPanel\Entities;
-use Nette;
+use Orisai\ObjectMapper;
 use stdClass;
 
 /**
@@ -30,9 +30,10 @@ use stdClass;
 final class ReportDeviceStateEventPayload implements Entities\API\Entity
 {
 
-	use Nette\SmartObject;
-
-	public function __construct(private readonly bool $online)
+	public function __construct(
+		#[ObjectMapper\Rules\BoolValue()]
+		private readonly bool $online,
+	)
 	{
 	}
 

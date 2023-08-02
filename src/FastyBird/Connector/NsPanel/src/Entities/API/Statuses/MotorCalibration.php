@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\NsPanel\Entities\API\Statuses;
 
 use FastyBird\Connector\NsPanel\Types;
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use Orisai\ObjectMapper;
 use stdClass;
 
@@ -27,12 +28,13 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class MotorCalibration implements Status, ObjectMapper\MappedObject
+final class MotorCalibration implements Status
 {
 
 	public function __construct(
-		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $motorClb,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\MotorCalibrationPayload::class)]
+		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::MOTOR_CALIBRATION)]
+		private readonly Types\MotorCalibrationPayload $value,
 	)
 	{
 	}
@@ -42,14 +44,9 @@ final class MotorCalibration implements Status, ObjectMapper\MappedObject
 		return Types\Capability::get(Types\Capability::MOTOR_CALIBRATION);
 	}
 
-	public function getName(): string|null
-	{
-		return null;
-	}
-
 	public function getValue(): Types\MotorCalibrationPayload
 	{
-		return Types\MotorCalibrationPayload::get($this->motorClb);
+		return $this->value;
 	}
 
 	/**
@@ -58,14 +55,14 @@ final class MotorCalibration implements Status, ObjectMapper\MappedObject
 	public function toArray(): array
 	{
 		return [
-			$this->getType()->getValue() => $this->getValue()->getValue(),
+			'value' => $this->getValue()->getValue(),
 		];
 	}
 
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->motorClb = $this->getValue()->getValue();
+		$json->{Types\Protocol::MOTOR_CALIBRATION} = $this->getValue()->getValue();
 
 		return $json;
 	}

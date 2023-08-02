@@ -1,0 +1,15 @@
+{
+  "header": {
+    "name": "Response",
+    "message_id": "63275f37-ebf1-47c0-881c-85b44a3898bc",
+    "version": "1"
+  },
+  "payload": {
+    "endpoints": [
+      {
+        "serial_number": "3f89afee-146d-4a7f-ba55-bf2f6bcc862c",
+        "third_serial_number": "dfb92f3d-7a92-4a66-84c1-c903e89b13e7"
+      }
+    ]
+  }
+}

@@ -128,11 +128,7 @@ final class LanApi
 			throw new Exceptions\LanApiCall('Could send data to cloud server');
 		}
 
-		try {
-			return $this->parseGetGatewayInfo($result);
-		} catch (RuntimeException $ex) {
-			throw new Exceptions\LanApiCall('Could not handle received data', $ex->getCode(), $ex);
-		}
+		return $this->parseGetGatewayInfo($result);
 	}
 
 	/**
@@ -182,15 +178,11 @@ final class LanApi
 			throw new Exceptions\LanApiCall('Could send data to cloud server');
 		}
 
-		try {
-			return $this->parseGetGatewayAccessToken($result);
-		} catch (RuntimeException $ex) {
-			throw new Exceptions\LanApiCall('Could not handle received data', $ex->getCode(), $ex);
-		}
+		return $this->parseGetGatewayAccessToken($result);
 	}
 
 	/**
-	 * @param array<Entities\API\ThirdPartyDevice> $devices
+	 * @param array<mixed> $devices
 	 *
 	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\Response\SyncDevices)
 	 *
@@ -206,15 +198,20 @@ final class LanApi
 	{
 		$deferred = new Promise\Deferred();
 
-		$data = new Entities\API\Request\SyncDevices(
-			new Entities\API\Request\SyncDevicesEvent(
-				new Entities\API\Header(
-					NsPanel\Types\Header::get(NsPanel\Types\Header::DISCOVERY_REQUEST),
-					Uuid\Uuid::uuid4()->toString(),
-					self::API_VERSION,
-				),
-				new Entities\API\Request\SyncDevicesEventPayload($devices),
-			),
+		$entity = $this->createEntity(
+			Entities\API\Request\SyncDevices::class,
+			Utils\ArrayHash::from([
+				'event' => [
+					'header' => [
+						'name' => NsPanel\Types\Header::DISCOVERY_REQUEST,
+						'message_id' => Uuid\Uuid::uuid4()->toString(),
+						'version' => self::API_VERSION,
+					],
+					'payload' => [
+						'endpoints' => $devices,
+					],
+				],
+			]),
 		);
 
 		try {
@@ -226,7 +223,7 @@ final class LanApi
 					'Authorization' => sprintf('Bearer %s', $accessToken),
 				],
 				[],
-				Utils\Json::encode($data->toJson()),
+				Utils\Json::encode($entity->toJson()),
 				$async,
 			);
 		} catch (Utils\JsonException $ex) {
@@ -237,7 +234,7 @@ final class LanApi
 					'type' => 'lan-api',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'request' => [
-						'body' => $data->toArray(),
+						'body' => $entity->toArray(),
 					],
 					'connector' => [
 						'identifier' => $this->identifier,
@@ -272,21 +269,19 @@ final class LanApi
 			throw new Exceptions\LanApiCall('Could send data to cloud server');
 		}
 
-		try {
-			return $this->parseSynchroniseDevices($result);
-		} catch (RuntimeException $ex) {
-			throw new Exceptions\LanApiCall('Could not handle received data', $ex->getCode(), $ex);
-		}
+		return $this->parseSynchroniseDevices($result);
 	}
 
 	/**
+	 * @param array<mixed> $status
+	 *
 	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\Response\ReportDeviceStatus)
 	 *
 	 * @throws Exceptions\LanApiCall
 	 */
 	public function reportDeviceStatus(
 		string $serialNumber,
-		Entities\API\Statuses\Status $status,
+		array $status,
 		string $ipAddress,
 		string $accessToken,
 		int $port = self::GATEWAY_PORT,
@@ -295,16 +290,23 @@ final class LanApi
 	{
 		$deferred = new Promise\Deferred();
 
-		$data = new Entities\API\Request\ReportDeviceStatus(
-			new Entities\API\Request\ReportDeviceStatusEvent(
-				new Entities\API\Header(
-					NsPanel\Types\Header::get(NsPanel\Types\Header::DEVICE_STATES_CHANGE_REPORT),
-					Uuid\Uuid::uuid4()->toString(),
-					self::API_VERSION,
-				),
-				new Entities\API\Request\ReportDeviceStatusEventEndpoint($serialNumber),
-				new Entities\API\Request\ReportDeviceStatusEventPayload($status),
-			),
+		$entity = $this->createEntity(
+			Entities\API\Request\ReportDeviceStatus::class,
+			Utils\ArrayHash::from([
+				'event' => [
+					'header' => [
+						'name' => NsPanel\Types\Header::DEVICE_STATES_CHANGE_REPORT,
+						'message_id' => Uuid\Uuid::uuid4()->toString(),
+						'version' => self::API_VERSION,
+					],
+					'endpoint' => [
+						'serial_number' => $serialNumber,
+					],
+					'payload' => [
+						'state' => $status,
+					],
+				],
+			]),
 		);
 
 		try {
@@ -316,7 +318,7 @@ final class LanApi
 					'Authorization' => sprintf('Bearer %s', $accessToken),
 				],
 				[],
-				Utils\Json::encode($data->toJson()),
+				Utils\Json::encode($entity->toJson()),
 				$async,
 			);
 		} catch (Utils\JsonException $ex) {
@@ -327,7 +329,7 @@ final class LanApi
 					'type' => 'lan-api',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'request' => [
-						'body' => $data->toArray(),
+						'body' => $entity->toArray(),
 					],
 					'connector' => [
 						'identifier' => $this->identifier,
@@ -362,11 +364,7 @@ final class LanApi
 			throw new Exceptions\LanApiCall('Could send data to cloud server');
 		}
 
-		try {
-			return $this->parseReportDeviceStatus($result);
-		} catch (RuntimeException $ex) {
-			throw new Exceptions\LanApiCall('Could not handle received data', $ex->getCode(), $ex);
-		}
+		return $this->parseReportDeviceStatus($result);
 	}
 
 	/**
@@ -385,18 +383,23 @@ final class LanApi
 	{
 		$deferred = new Promise\Deferred();
 
-		$data = new Entities\API\Request\ReportDeviceState(
-			new Entities\API\Request\ReportDeviceStateEvent(
-				new Entities\API\Header(
-					NsPanel\Types\Header::get(NsPanel\Types\Header::DEVICE_ONLINE_CHANGE_REPORT),
-					Uuid\Uuid::uuid4()->toString(),
-					self::API_VERSION,
-				),
-				new Entities\API\Request\ReportDeviceStateEventEndpoint(
-					$serialNumber,
-				),
-				new Entities\API\Request\ReportDeviceStateEventPayload($online),
-			),
+		$entity = $this->createEntity(
+			Entities\API\Request\ReportDeviceState::class,
+			Utils\ArrayHash::from([
+				'event' => [
+					'header' => [
+						'name' => NsPanel\Types\Header::DEVICE_ONLINE_CHANGE_REPORT,
+						'message_id' => Uuid\Uuid::uuid4()->toString(),
+						'version' => self::API_VERSION,
+					],
+					'endpoint' => [
+						'serial_number' => $serialNumber,
+					],
+					'payload' => [
+						'online' => $online,
+					],
+				],
+			]),
 		);
 
 		try {
@@ -408,7 +411,7 @@ final class LanApi
 					'Authorization' => sprintf('Bearer %s', $accessToken),
 				],
 				[],
-				Utils\Json::encode($data->toJson()),
+				Utils\Json::encode($entity->toJson()),
 				$async,
 			);
 		} catch (Utils\JsonException $ex) {
@@ -419,7 +422,7 @@ final class LanApi
 					'type' => 'lan-api',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'request' => [
-						'body' => $data->toArray(),
+						'body' => $entity->toArray(),
 					],
 					'connector' => [
 						'identifier' => $this->identifier,
@@ -454,11 +457,7 @@ final class LanApi
 			throw new Exceptions\LanApiCall('Could send data to cloud server');
 		}
 
-		try {
-			return $this->parseReportDeviceState($result);
-		} catch (RuntimeException $ex) {
-			throw new Exceptions\LanApiCall('Could not handle received data', $ex->getCode(), $ex);
-		}
+		return $this->parseReportDeviceState($result);
 	}
 
 	/**
@@ -557,21 +556,19 @@ final class LanApi
 			throw new Exceptions\LanApiCall('Could send data to cloud server');
 		}
 
-		try {
-			return $this->parseGetSubDevices($result);
-		} catch (RuntimeException $ex) {
-			throw new Exceptions\LanApiCall('Could not handle received data', $ex->getCode(), $ex);
-		}
+		return $this->parseGetSubDevices($result);
 	}
 
 	/**
+	 * @param array<mixed> $status
+	 *
 	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\Response\SetSubDeviceStatus)
 	 *
 	 * @throws Exceptions\LanApiCall
 	 */
 	public function setSubDeviceStatus(
 		string $serialNumber,
-		Entities\API\Statuses\Status $status,
+		array $status,
 		string $ipAddress,
 		string $accessToken,
 		int $port = self::GATEWAY_PORT,
@@ -580,7 +577,12 @@ final class LanApi
 	{
 		$deferred = new Promise\Deferred();
 
-		$data = new Entities\API\Request\SetSubDeviceStatus($status);
+		$entity = $this->createEntity(
+			Entities\API\Request\SetSubDeviceStatus::class,
+			Utils\ArrayHash::from([
+				'state' => $status,
+			]),
+		);
 
 		try {
 			$result = $this->callRequest(
@@ -591,7 +593,7 @@ final class LanApi
 					'Authorization' => sprintf('Bearer %s', $accessToken),
 				],
 				[],
-				Utils\Json::encode($data->toJson()),
+				Utils\Json::encode($entity->toJson()),
 				$async,
 			);
 		} catch (Utils\JsonException $ex) {
@@ -602,7 +604,7 @@ final class LanApi
 					'type' => 'lan-api',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'request' => [
-						'body' => $data->toArray(),
+						'body' => $entity->toArray(),
 					],
 					'connector' => [
 						'identifier' => $this->identifier,
@@ -637,16 +639,11 @@ final class LanApi
 			throw new Exceptions\LanApiCall('Could send data to cloud server');
 		}
 
-		try {
-			return $this->parseSetSubDeviceStatus($result);
-		} catch (RuntimeException $ex) {
-			throw new Exceptions\LanApiCall('Could not handle received data', $ex->getCode(), $ex);
-		}
+		return $this->parseSetSubDeviceStatus($result);
 	}
 
 	/**
 	 * @throws Exceptions\LanApiCall
-	 * @throws RuntimeException
 	 */
 	private function parseGetGatewayInfo(Message\ResponseInterface $response): Entities\API\Response\GetGatewayInfo
 	{
@@ -666,7 +663,7 @@ final class LanApi
 					'error' => $body->offsetGet('message'),
 					'response' => [
 						'headers' => $response->getHeaders(),
-						'body' => $response->getBody()->getContents(),
+						'body' => $this->getResponseBody($response),
 					],
 					'connector' => [
 						'identifier' => $this->identifier,
@@ -679,16 +676,11 @@ final class LanApi
 			);
 		}
 
-		try {
-			return Entities\EntityFactory::build(Entities\API\Response\GetGatewayInfo::class, $body);
-		} catch (Exceptions\InvalidState $ex) {
-			throw new Exceptions\LanApiCall('Could not create entity from response', $ex->getCode(), $ex);
-		}
+		return $this->createEntity(Entities\API\Response\GetGatewayInfo::class, $body);
 	}
 
 	/**
 	 * @throws Exceptions\LanApiCall
-	 * @throws RuntimeException
 	 */
 	private function parseGetGatewayAccessToken(
 		Message\ResponseInterface $response,
@@ -710,7 +702,7 @@ final class LanApi
 					'error' => $body->offsetGet('message'),
 					'response' => [
 						'headers' => $response->getHeaders(),
-						'body' => $response->getBody()->getContents(),
+						'body' => $this->getResponseBody($response),
 					],
 					'connector' => [
 						'identifier' => $this->identifier,
@@ -723,27 +715,18 @@ final class LanApi
 			);
 		}
 
-		try {
-			return Entities\EntityFactory::build(Entities\API\Response\GetGatewayAccessToken::class, $body);
-		} catch (Exceptions\InvalidState $ex) {
-			throw new Exceptions\LanApiCall('Could not create entity from response', $ex->getCode(), $ex);
-		}
+		return $this->createEntity(Entities\API\Response\GetGatewayAccessToken::class, $body);
 	}
 
 	/**
 	 * @throws Exceptions\LanApiCall
-	 * @throws RuntimeException
 	 */
 	private function parseSynchroniseDevices(Message\ResponseInterface $response): Entities\API\Response\SyncDevices
 	{
 		$errorBody = $this->validateResponseBody($response, self::EVENT_ERROR_MESSAGE_SCHEMA_FILENAME, false);
 
 		if ($errorBody !== false) {
-			try {
-				$error = Entities\EntityFactory::build(Entities\API\Response\ErrorEvent::class, $errorBody);
-			} catch (Exceptions\InvalidState $ex) {
-				throw new Exceptions\LanApiCall('Could not create error entity from response', $ex->getCode(), $ex);
-			}
+			$error = $this->createEntity(Entities\API\Response\ErrorEvent::class, $errorBody);
 
 			$this->logger->error(
 				'Read NS Panel access token failed',
@@ -753,7 +736,7 @@ final class LanApi
 					'error' => $error->getPayload()->getDescription(),
 					'response' => [
 						'headers' => $response->getHeaders(),
-						'body' => $response->getBody()->getContents(),
+						'body' => $this->getResponseBody($response),
 					],
 					'connector' => [
 						'identifier' => $this->identifier,
@@ -766,18 +749,14 @@ final class LanApi
 			);
 		}
 
-		$body = $this->validateResponseBody($response, self::SYNCHRONISE_DEVICES_MESSAGE_SCHEMA_FILENAME);
-
-		try {
-			return Entities\EntityFactory::build(Entities\API\Response\SyncDevices::class, $body);
-		} catch (Exceptions\InvalidState $ex) {
-			throw new Exceptions\LanApiCall('Could not create entity from response', $ex->getCode(), $ex);
-		}
+		return $this->createEntity(
+			Entities\API\Response\SyncDevices::class,
+			$this->validateResponseBody($response, self::SYNCHRONISE_DEVICES_MESSAGE_SCHEMA_FILENAME),
+		);
 	}
 
 	/**
 	 * @throws Exceptions\LanApiCall
-	 * @throws RuntimeException
 	 */
 	private function parseReportDeviceStatus(
 		Message\ResponseInterface $response,
@@ -786,11 +765,7 @@ final class LanApi
 		$errorBody = $this->validateResponseBody($response, self::EVENT_ERROR_MESSAGE_SCHEMA_FILENAME, false);
 
 		if ($errorBody !== false) {
-			try {
-				$error = Entities\EntityFactory::build(Entities\API\Response\ErrorEvent::class, $errorBody);
-			} catch (Exceptions\InvalidState $ex) {
-				throw new Exceptions\LanApiCall('Could not create error entity from response', $ex->getCode(), $ex);
-			}
+			$error = $this->createEntity(Entities\API\Response\ErrorEvent::class, $errorBody);
 
 			$this->logger->error(
 				'Read NS Panel access token failed',
@@ -800,7 +775,7 @@ final class LanApi
 					'error' => $error->getPayload()->getDescription(),
 					'response' => [
 						'headers' => $response->getHeaders(),
-						'body' => $response->getBody()->getContents(),
+						'body' => $this->getResponseBody($response),
 					],
 					'connector' => [
 						'identifier' => $this->identifier,
@@ -813,18 +788,14 @@ final class LanApi
 			);
 		}
 
-		$body = $this->validateResponseBody($response, self::REPORT_DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME);
-
-		try {
-			return Entities\EntityFactory::build(Entities\API\Response\ReportDeviceStatus::class, $body);
-		} catch (Exceptions\InvalidState $ex) {
-			throw new Exceptions\LanApiCall('Could not create entity from response', $ex->getCode(), $ex);
-		}
+		return $this->createEntity(
+			Entities\API\Response\ReportDeviceStatus::class,
+			$this->validateResponseBody($response, self::REPORT_DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME),
+		);
 	}
 
 	/**
 	 * @throws Exceptions\LanApiCall
-	 * @throws RuntimeException
 	 */
 	private function parseReportDeviceState(
 		Message\ResponseInterface $response,
@@ -833,11 +804,7 @@ final class LanApi
 		$errorBody = $this->validateResponseBody($response, self::EVENT_ERROR_MESSAGE_SCHEMA_FILENAME, false);
 
 		if ($errorBody !== false) {
-			try {
-				$error = Entities\EntityFactory::build(Entities\API\Response\ErrorEvent::class, $errorBody);
-			} catch (Exceptions\InvalidState $ex) {
-				throw new Exceptions\LanApiCall('Could not create error entity from response', $ex->getCode(), $ex);
-			}
+			$error = $this->createEntity(Entities\API\Response\ErrorEvent::class, $errorBody);
 
 			$this->logger->error(
 				'Read NS Panel access token failed',
@@ -847,7 +814,7 @@ final class LanApi
 					'error' => $error->getPayload()->getDescription(),
 					'response' => [
 						'headers' => $response->getHeaders(),
-						'body' => $response->getBody()->getContents(),
+						'body' => $this->getResponseBody($response),
 					],
 					'connector' => [
 						'identifier' => $this->identifier,
@@ -860,18 +827,14 @@ final class LanApi
 			);
 		}
 
-		$body = $this->validateResponseBody($response, self::REPORT_DEVICE_STATE_MESSAGE_SCHEMA_FILENAME);
-
-		try {
-			return Entities\EntityFactory::build(Entities\API\Response\ReportDeviceState::class, $body);
-		} catch (Exceptions\InvalidState $ex) {
-			throw new Exceptions\LanApiCall('Could not create entity from response', $ex->getCode(), $ex);
-		}
+		return $this->createEntity(
+			Entities\API\Response\ReportDeviceState::class,
+			$this->validateResponseBody($response, self::REPORT_DEVICE_STATE_MESSAGE_SCHEMA_FILENAME),
+		);
 	}
 
 	/**
 	 * @throws Exceptions\LanApiCall
-	 * @throws RuntimeException
 	 */
 	private function parseGetSubDevices(
 		Message\ResponseInterface $response,
@@ -893,7 +856,7 @@ final class LanApi
 					'error' => $body->offsetGet('message'),
 					'response' => [
 						'headers' => $response->getHeaders(),
-						'body' => $response->getBody()->getContents(),
+						'body' => $this->getResponseBody($response),
 					],
 					'connector' => [
 						'identifier' => $this->identifier,
@@ -906,28 +869,11 @@ final class LanApi
 			);
 		}
 
-		try {
-			$options = new ObjectMapper\Processing\Options();
-			$options->setAllowUnknownFields();
-
-			return $this->entityMapper->process(
-				Utils\Json::decode(Utils\Json::encode($body), Utils\Json::FORCE_ARRAY),
-				Entities\API\Response\GetSubDevices::class,
-				$options,
-			);
-		} catch (ObjectMapper\Exception\InvalidData $ex) {
-			$errorPrinter = new ObjectMapper\Printers\ErrorVisualPrinter(new ObjectMapper\Printers\TypeToStringConverter());
-			$error = $errorPrinter->printError($ex);
-
-			throw new Exceptions\LanApiCall('Could not create entity from response: '. $error);
-		} catch (Utils\JsonException $ex) {
-			throw new Exceptions\LanApiCall('Could not create entity from response', $ex->getCode(), $ex);
-		}
+		return $this->createEntity(Entities\API\Response\GetSubDevices::class, $body);
 	}
 
 	/**
 	 * @throws Exceptions\LanApiCall
-	 * @throws RuntimeException
 	 */
 	private function parseSetSubDeviceStatus(
 		Message\ResponseInterface $response,
@@ -946,7 +892,7 @@ final class LanApi
 					'error' => $body->offsetGet('message'),
 					'response' => [
 						'headers' => $response->getHeaders(),
-						'body' => $response->getBody()->getContents(),
+						'body' => $this->getResponseBody($response),
 					],
 					'connector' => [
 						'identifier' => $this->identifier,
@@ -959,18 +905,13 @@ final class LanApi
 			);
 		}
 
-		try {
-			return Entities\EntityFactory::build(Entities\API\Response\SetSubDeviceStatus::class, $body);
-		} catch (Exceptions\InvalidState $ex) {
-			throw new Exceptions\LanApiCall('Could not create entity from response', $ex->getCode(), $ex);
-		}
+		return $this->createEntity(Entities\API\Response\SetSubDeviceStatus::class, $body);
 	}
 
 	/**
 	 * @return ($throw is true ? Utils\ArrayHash : Utils\ArrayHash|false)
 	 *
 	 * @throws Exceptions\LanApiCall
-	 * @throws RuntimeException
 	 */
 	private function validateResponseBody(
 		Message\ResponseInterface $response,
@@ -978,16 +919,10 @@ final class LanApi
 		bool $throw = true,
 	): Utils\ArrayHash|bool
 	{
-		try {
-			$body = $response->getBody()->getContents();
-		} catch (RuntimeException $ex) {
-			throw new Exceptions\LanApiCall('Could not get content from response body', $ex->getCode(), $ex);
-		} finally {
-			$response->getBody()->rewind();
-		}
+		$body = $this->getResponseBody($response);
 
 		try {
-			$body = $this->schemaValidator->validate(
+			return $this->schemaValidator->validate(
 				$body,
 				$this->getSchema($schemaFilename),
 			);
@@ -1001,7 +936,7 @@ final class LanApi
 						'exception' => BootstrapHelpers\Logger::buildException($ex),
 						'response' => [
 							'headers' => $response->getHeaders(),
-							'body' => $response->getBody()->getContents(),
+							'body' => $body,
 							'schema' => $schemaFilename,
 						],
 						'connector' => [
@@ -1010,15 +945,58 @@ final class LanApi
 					],
 				);
 
-				$response->getBody()->rewind();
-
 				throw new Exceptions\LanApiCall('Could not validate received response payload');
 			}
 
 			return false;
 		}
+	}
 
-		return $body;
+	/**
+	 * @throws Exceptions\LanApiCall
+	 */
+	private function getResponseBody(
+		Message\ResponseInterface $response,
+	): string
+	{
+		try {
+			$response->getBody()->rewind();
+
+			return $response->getBody()->getContents();
+		} catch (RuntimeException $ex) {
+			throw new Exceptions\LanApiCall('Could not get content from response body', $ex->getCode(), $ex);
+		}
+	}
+
+	/**
+	 * @template T of Entities\API\Entity
+	 *
+	 * @param class-string<T> $entity
+	 *
+	 * @return T
+	 *
+	 * @throws Exceptions\LanApiCall
+	 */
+	private function createEntity(string $entity, Utils\ArrayHash $data): Entities\API\Entity
+	{
+		try {
+			$options = new ObjectMapper\Processing\Options();
+			$options->setAllowUnknownFields();
+
+			return $this->entityMapper->process(
+				Utils\Json::decode(Utils\Json::encode($data), Utils\Json::FORCE_ARRAY),
+				$entity,
+				$options,
+			);
+		} catch (ObjectMapper\Exception\InvalidData $ex) {
+			$errorPrinter = new ObjectMapper\Printers\ErrorVisualPrinter(
+				new ObjectMapper\Printers\TypeToStringConverter(),
+			);
+
+			throw new Exceptions\LanApiCall('Could not map data to entity: ' . $errorPrinter->printError($ex));
+		} catch (Utils\JsonException $ex) {
+			throw new Exceptions\LanApiCall('Could not create entity from response', $ex->getCode(), $ex);
+		}
 	}
 
 	/**

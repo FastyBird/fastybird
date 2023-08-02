@@ -36,9 +36,9 @@ use Nette;
 use Ramsey\Uuid;
 use React\Promise;
 use Throwable;
-use function array_filter;
 use function array_key_exists;
 use function array_map;
+use function array_merge;
 use function assert;
 use function is_array;
 use function is_string;
@@ -105,8 +105,7 @@ final class Device implements Client
 			$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\ThirdPartyDevice::class);
 
 			$syncDevices = array_map(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				function (Entities\Devices\ThirdPartyDevice $device): Entities\API\ThirdPartyDevice {
+				function (Entities\Devices\ThirdPartyDevice $device): array {
 					$capabilities = [];
 					$statuses = [];
 					$tags = [];
@@ -114,20 +113,19 @@ final class Device implements Client
 					foreach ($device->getChannels() as $channel) {
 						assert($channel instanceof Entities\NsPanelChannel);
 
-						$capabilities[] = new Entities\API\Capability(
-							$channel->getCapability(),
-							Types\Permission::get(
+						$capabilities[] = [
+							'capability' => $channel->getCapability()->getValue(),
+							'permission' => Types\Permission::get(
 								$channel->getCapability()->hasReadWritePermission() ? Types\Permission::READ_WRITE : Types\Permission::READ,
-							),
-							$channel->getIdentifier(),
-						);
+							)->getValue(),
+							'name' => $channel->getIdentifier(),
+						];
 
-						$statuses[] = $this->mapChannelToStatus($channel);
+						$status = $this->mapChannelToStatus($channel);
 
-						$statuses = array_filter(
-							$statuses,
-							static fn (Entities\API\Statuses\Status|null $value) => $value !== null,
-						);
+						if ($status !== null) {
+							$statuses = array_merge($statuses, $status);
+						}
 
 						foreach ($channel->getProperties() as $property) {
 							if (
@@ -155,24 +153,24 @@ final class Device implements Client
 						}
 					}
 
-					return new Entities\API\ThirdPartyDevice(
-						$device->getPlainId(),
-						$device->getName() ?? $device->getIdentifier(),
-						$device->getDisplayCategory(),
-						$capabilities,
-						$statuses,
-						$tags,
-						$device->getManufacturer(),
-						$device->getModel(),
-						$device->getFirmwareVersion(),
-						sprintf(
+					return [
+						'third_serial_number' => $device->getPlainId(),
+						'name' => $device->getName() ?? $device->getIdentifier(),
+						'display_category' => $device->getDisplayCategory()->getValue(),
+						'capabilities' => $capabilities,
+						'state' => $statuses,
+						'tags' => $tags,
+						'manufacturer' => $device->getManufacturer(),
+						'model' => $device->getModel(),
+						'firmware_version' => $device->getFirmwareVersion(),
+						'service_address' => sprintf(
 							'http://%s:%d/do-directive/%s',
 							Helpers\Network::getLocalAddress(),
 							$device->getConnector()->getPort(),
 							$device->getPlainId(),
 						),
-						true, // Virtual device is always online
-					);
+						'online' => true, // Virtual device is always online
+					];
 				},
 				$devices,
 			);

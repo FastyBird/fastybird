@@ -43,6 +43,8 @@ use function array_key_exists;
 use function assert;
 use function in_array;
 use function is_array;
+use function is_string;
+use function preg_match;
 
 /**
  * Gateway client
@@ -418,11 +420,21 @@ final class Gateway implements Client
 
 					$capabilityStatuses = [];
 
-					foreach ($subDevice->getStatuses() as $status) {
+					foreach ($subDevice->getStatuses() as $key => $status) {
+						$stateIdentifier = null;
+
+						if (
+							is_string($key)
+							&& preg_match(NsPanel\Constants::STATE_NAME_KEY, $key, $matches) === 1
+							&& array_key_exists('identifier', $matches)
+						) {
+							$stateIdentifier = $matches['identifier'];
+						}
+
 						$findChannelQuery = new Queries\FindChannels();
 						$findChannelQuery->byDeviceIdentifier($subDevice->getSerialNumber());
 						$findChannelQuery->byIdentifier(
-							Helpers\Name::convertCapabilityToChannel($status->getType(), $status->getName()),
+							Helpers\Name::convertCapabilityToChannel($status->getType(), $stateIdentifier),
 						);
 
 						$channel = $this->channelsRepository->findOneBy(
@@ -442,23 +454,23 @@ final class Gateway implements Client
 
 							foreach ($properties as $property) {
 								if (
-									Helpers\Name::convertPropertyToProtocol($property->getIdentifier())->equalsValue(
-										Types\Protocol::COLOR_RED,
-									)
+									Helpers\Name::convertPropertyToProtocol(
+										$property->getIdentifier(),
+									)->equalsValue(Types\Protocol::COLOR_RED)
 									&& $status instanceof Entities\API\Statuses\ColorRgb
 								) {
 									$value = $status->getRed();
 								} elseif (
-									Helpers\Name::convertPropertyToProtocol($property->getIdentifier())->equalsValue(
-										Types\Protocol::COLOR_GREEN,
-									)
+									Helpers\Name::convertPropertyToProtocol(
+										$property->getIdentifier(),
+									)->equalsValue(Types\Protocol::COLOR_GREEN)
 									&& $status instanceof Entities\API\Statuses\ColorRgb
 								) {
 									$value = $status->getGreen();
 								} elseif (
-									Helpers\Name::convertPropertyToProtocol($property->getIdentifier())->equalsValue(
-										Types\Protocol::COLOR_BLUE,
-									)
+									Helpers\Name::convertPropertyToProtocol(
+										$property->getIdentifier(),
+									)->equalsValue(Types\Protocol::COLOR_BLUE)
 									&& $status instanceof Entities\API\Statuses\ColorRgb
 								) {
 									$value = $status->getBlue();

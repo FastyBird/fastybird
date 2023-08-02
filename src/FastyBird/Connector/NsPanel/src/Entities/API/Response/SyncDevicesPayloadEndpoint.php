@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * SyncDevicesEventPayloadEndpoint.php
+ * SyncDevicesPayloadEndpoint.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\NsPanel\Entities\API\Response;
 
 use FastyBird\Connector\NsPanel\Entities;
-use Nette;
+use Orisai\ObjectMapper;
 use stdClass;
 
 /**
@@ -27,13 +27,15 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class SyncDevicesEventPayloadEndpoint implements Entities\API\Entity
+final class SyncDevicesPayloadEndpoint implements Entities\API\Entity
 {
 
-	use Nette\SmartObject;
-
 	public function __construct(
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		#[ObjectMapper\Modifiers\FieldName('third_serial_number')]
 		private readonly string $thirdSerialNumber,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		#[ObjectMapper\Modifiers\FieldName('serial_number')]
 		private readonly string $serialNumber,
 	)
 	{

@@ -27,12 +27,13 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class MotorReverse implements Status, ObjectMapper\MappedObject
+final class MotorReverse implements Status
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\BoolValue()]
-		private readonly bool $motorReverse,
+		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::MOTOR_REVERSE)]
+		private readonly bool $value,
 	)
 	{
 	}
@@ -42,14 +43,9 @@ final class MotorReverse implements Status, ObjectMapper\MappedObject
 		return Types\Capability::get(Types\Capability::MOTOR_REVERSE);
 	}
 
-	public function getName(): string|null
-	{
-		return null;
-	}
-
 	public function getValue(): bool
 	{
-		return $this->motorReverse;
+		return $this->value;
 	}
 
 	/**
@@ -58,14 +54,14 @@ final class MotorReverse implements Status, ObjectMapper\MappedObject
 	public function toArray(): array
 	{
 		return [
-			$this->getType()->getValue() => $this->getValue(),
+			'value' => $this->getValue(),
 		];
 	}
 
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->motorReverse = $this->getValue();
+		$json->{Types\Protocol::MOTOR_REVERSE} = $this->getValue();
 
 		return $json;
 	}

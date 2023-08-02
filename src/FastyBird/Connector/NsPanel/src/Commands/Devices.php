@@ -3333,7 +3333,7 @@ class Devices extends Console\Command\Command
 					) {
 						throw new Exceptions\Runtime(
 							sprintf(
-								$this->translator->translate('//homekit-connector.cmd.base.messages.answerNotValid'),
+								$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 								$answer,
 							),
 						);

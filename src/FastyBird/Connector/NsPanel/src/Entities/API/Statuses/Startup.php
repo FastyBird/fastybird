@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\NsPanel\Entities\API\Statuses;
 
 use FastyBird\Connector\NsPanel\Types;
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use Orisai\ObjectMapper;
 use stdClass;
 
@@ -27,18 +28,13 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Startup implements Status, ObjectMapper\MappedObject
+final class Startup implements Status
 {
 
 	public function __construct(
-		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $startup,
-		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\StringValue(notEmpty: true),
-			new ObjectMapper\Rules\NullValue(castEmptyString: true),
-		])]
-		#[ObjectMapper\Modifiers\DefaultValue(null)]
-		private readonly string|null $name = null,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\StartupPayload::class)]
+		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::STARTUP)]
+		private readonly Types\StartupPayload $value,
 	)
 	{
 	}
@@ -50,12 +46,7 @@ final class Startup implements Status, ObjectMapper\MappedObject
 
 	public function getValue(): Types\StartupPayload
 	{
-		return Types\StartupPayload::get($this->startup);
-	}
-
-	public function getName(): string|null
-	{
-		return $this->name;
+		return $this->value;
 	}
 
 	/**
@@ -64,17 +55,14 @@ final class Startup implements Status, ObjectMapper\MappedObject
 	public function toArray(): array
 	{
 		return [
-			$this->getType()->getValue() => [
-				'value' => $this->getValue()->getValue(),
-				'name' => $this->getName(),
-			],
+			'value' => $this->getValue()->getValue(),
 		];
 	}
 
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->startup = $this->getValue()->getValue();
+		$json->{Types\Protocol::STARTUP} = $this->getValue()->getValue();
 
 		return $json;
 	}

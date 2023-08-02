@@ -17,21 +17,21 @@ namespace FastyBird\Connector\NsPanel\Entities\API\Response;
 
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Types;
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use Orisai\ObjectMapper;
 use stdClass;
 use function array_map;
 use function is_array;
-use function property_exists;
 
 /**
- * NS Panel sub-device description - both NS Panel connected & third-party
+ * Get NS Panel sub-devices list data sub-device response definition
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class GetSubDevicesDataSubDevice implements Entities\API\Entity, ObjectMapper\MappedObject
+final class GetSubDevicesDataSubDevice implements Entities\API\Entity
 {
 
 	/**
@@ -51,44 +51,39 @@ final class GetSubDevicesDataSubDevice implements Entities\API\Entity, ObjectMap
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('firmware_version')]
 		private readonly string $firmwareVersion,
-		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\Category::class)]
 		#[ObjectMapper\Modifiers\FieldName('display_category')]
-		private readonly string $displayCategory,
-		#[ObjectMapper\Rules\MappedObjectValue(GetSubDevicesDataSubDeviceState::class)]
-		private readonly GetSubDevicesDataSubDeviceState $state,
+		private readonly Types\Category $displayCategory,
+		#[ObjectMapper\Rules\MappedObjectValue(Entities\API\State::class)]
+		private readonly Entities\API\State $state,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('third_serial_number')]
-		#[ObjectMapper\Modifiers\DefaultValue(null)]
 		private readonly string|null $thirdSerialNumber = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('service_address')]
-		#[ObjectMapper\Modifiers\DefaultValue(null)]
 		private readonly string|null $serviceAddress = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		#[ObjectMapper\Modifiers\DefaultValue(null)]
 		private readonly string|null $hostname = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('mac_address')]
-		#[ObjectMapper\Modifiers\DefaultValue(null)]
 		private readonly string|null $macAddress = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('app_name')]
-		#[ObjectMapper\Modifiers\DefaultValue(null)]
 		private readonly string|null $appName = null,
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(Entities\API\Capability::class),
@@ -98,7 +93,6 @@ final class GetSubDevicesDataSubDevice implements Entities\API\Entity, ObjectMap
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		#[ObjectMapper\Modifiers\DefaultValue(null)]
 		private readonly string|null $protocol = null,
 		#[ObjectMapper\Rules\ArrayOf(
 			item: new ObjectMapper\Rules\AnyOf([
@@ -120,7 +114,6 @@ final class GetSubDevicesDataSubDevice implements Entities\API\Entity, ObjectMap
 			new ObjectMapper\Rules\BoolValue(),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		#[ObjectMapper\Modifiers\DefaultValue(null)]
 		private readonly bool|null $subnet = null,
 	)
 	{
@@ -153,7 +146,7 @@ final class GetSubDevicesDataSubDevice implements Entities\API\Entity, ObjectMap
 
 	public function getDisplayCategory(): Types\Category
 	{
-		return Types\Category::get($this->displayCategory);
+		return $this->displayCategory;
 	}
 
 	public function getThirdSerialNumber(): string|null
@@ -195,7 +188,7 @@ final class GetSubDevicesDataSubDevice implements Entities\API\Entity, ObjectMap
 	}
 
 	/**
-	 * @return array<Entities\API\Statuses\NamedStatus>
+	 * @return array<string|int, Entities\API\Statuses\Status>
 	 */
 	public function getStatuses(): array
 	{
@@ -242,10 +235,7 @@ final class GetSubDevicesDataSubDevice implements Entities\API\Entity, ObjectMap
 				$this->getCapabilities(),
 			),
 			'protocol' => $this->getProtocol(),
-			'state' => array_map(
-				static fn (Entities\API\Statuses\Status $state): array => $state->toArray(),
-				$this->getStatuses(),
-			),
+			'state' => $this->state->toArray(),
 			'tags' => $this->getTags(),
 			'online' => $this->isOnline(),
 			'subnet' => $this->isInSubnet(),
@@ -254,23 +244,6 @@ final class GetSubDevicesDataSubDevice implements Entities\API\Entity, ObjectMap
 
 	public function toJson(): object
 	{
-		$state = new stdClass();
-
-		foreach ($this->getStatuses() as $item) {
-			if ($item->getName() !== null) {
-				if (
-					!property_exists($state, $item->getType()->getValue())
-					|| !$state->{$item->getType()->getValue()} instanceof stdClass
-				) {
-					$state->{$item->getType()->getValue()} = new stdClass();
-				}
-
-				$state->{$item->getType()->getValue()}->{$item->getName()} = $item->toJson();
-			} else {
-				$state->{$item->getType()->getValue()} = $item->toJson();
-			}
-		}
-
 		$tags = new stdClass();
 
 		foreach ($this->getTags() as $name => $value) {
@@ -317,7 +290,7 @@ final class GetSubDevicesDataSubDevice implements Entities\API\Entity, ObjectMap
 			$json->protocol = $this->getProtocol();
 		}
 
-		$json->state = $state;
+		$json->state = $this->state->toJson();
 		$json->tags = $tags;
 		$json->online = $this->isOnline();
 		if ($this->isInSubnet() !== null) {

@@ -15,7 +15,6 @@
 
 namespace FastyBird\Connector\NsPanel\Entities\Commands;
 
-use FastyBird\Connector\NsPanel\Entities;
 use Nette;
 use stdClass;
 
@@ -27,7 +26,7 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class GatewayInfo implements Entities\API\Entity
+final class GatewayInfo implements Entity
 {
 
 	use Nette\SmartObject;

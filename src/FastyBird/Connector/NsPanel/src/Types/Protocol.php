@@ -70,6 +70,8 @@ class Protocol extends Consistence\Enum\Enum
 
 	public const RSSI = 'rssi';
 
+	public const CONFIGURATION = 'configuration';
+
 	public function getValue(): string
 	{
 		return strval(parent::getValue());

@@ -37,6 +37,4 @@ interface Status extends Entities\API\Entity
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 	public function getValue(): int|float|string|bool|array|Types\MotorCalibrationPayload|Types\MotorControlPayload|Types\PowerPayload|Types\PressPayload|Types\StartupPayload|Types\TogglePayload|null;
 
-	public function getName(): string|null;
-
 }

@@ -117,10 +117,7 @@
             ]
           }
         }
-      },
-      "required": [
-        "device_list"
-      ]
+      }
     },
     "message" : {
       "type" : "string"

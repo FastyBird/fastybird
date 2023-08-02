@@ -28,7 +28,7 @@ use function array_map;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class GetSubDevicesData implements Entities\API\Entity, ObjectMapper\MappedObject
+final class GetSubDevicesData implements Entities\API\Entity
 {
 
 	/**
@@ -39,13 +39,13 @@ final class GetSubDevicesData implements Entities\API\Entity, ObjectMapper\Mappe
 			new ObjectMapper\Rules\MappedObjectValue(GetSubDevicesDataSubDevice::class),
 		)]
 		#[ObjectMapper\Modifiers\FieldName('device_list')]
-		private readonly array $devicesList
+		private readonly array $devicesList,
 	)
 	{
 	}
 
 	/**
-	 * @return array<Entities\API\Response\GetSubDevicesDataSubDevice>
+	 * @return array<GetSubDevicesDataSubDevice>
 	 */
 	public function getDevicesList(): array
 	{
@@ -59,7 +59,7 @@ final class GetSubDevicesData implements Entities\API\Entity, ObjectMapper\Mappe
 	{
 		return [
 			'devices_list' => array_map(
-				static fn (Entities\API\Response\GetSubDevicesDataSubDevice $device): array => $device->toArray(),
+				static fn (GetSubDevicesDataSubDevice $device): array => $device->toArray(),
 				$this->getDevicesList(),
 			),
 		];
@@ -69,7 +69,7 @@ final class GetSubDevicesData implements Entities\API\Entity, ObjectMapper\Mappe
 	{
 		$json = new stdClass();
 		$json->device_list = array_map(
-			static fn (Entities\API\Response\GetSubDevicesDataSubDevice $device): object => $device->toJson(),
+			static fn (GetSubDevicesDataSubDevice $device): object => $device->toJson(),
 			$this->getDevicesList(),
 		);
 

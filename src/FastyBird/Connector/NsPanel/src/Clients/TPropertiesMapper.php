@@ -25,6 +25,7 @@ use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use function boolval;
+use function floatval;
 use function intval;
 use function strval;
 
@@ -43,6 +44,8 @@ trait TPropertiesMapper
 {
 
 	/**
+	 * @return array<mixed>|null
+	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
@@ -51,7 +54,7 @@ trait TPropertiesMapper
 	 */
 	protected function mapChannelToStatus(
 		Entities\NsPanelChannel $channel,
-	): Entities\API\Statuses\Status|null
+	): array|null
 	{
 		switch ($channel->getCapability()->getValue()) {
 			case Types\Capability::POWER:
@@ -67,7 +70,11 @@ trait TPropertiesMapper
 					return null;
 				}
 
-				return new Entities\API\Statuses\Power(Types\PowerPayload::get($value));
+				return [
+					$channel->getCapability()->getValue() => [
+						Types\Protocol::POWER_STATE => Types\PowerPayload::get($value)->getValue(),
+					],
+				];
 			case Types\Capability::TOGGLE:
 				$property = $this->findProtocolProperty($channel, Types\Protocol::get(Types\Protocol::TOGGLE_STATE));
 
@@ -81,10 +88,13 @@ trait TPropertiesMapper
 					return null;
 				}
 
-				return new Entities\API\Statuses\Toggle(
-					$channel->getIdentifier(),
-					Types\TogglePayload::get($value),
-				);
+				return [
+					$channel->getCapability()->getValue() => [
+						$channel->getIdentifier() => [
+							Types\Protocol::TOGGLE_STATE => Types\PowerPayload::get($value)->getValue(),
+						],
+					],
+				];
 			case Types\Capability::BRIGHTNESS:
 				$property = $this->findProtocolProperty($channel, Types\Protocol::get(Types\Protocol::BRIGHTNESS));
 
@@ -98,7 +108,11 @@ trait TPropertiesMapper
 					return null;
 				}
 
-				return new Entities\API\Statuses\Brightness(intval($value));
+				return [
+					$channel->getCapability()->getValue() => [
+						Types\Protocol::BRIGHTNESS => intval($value),
+					],
+				];
 			case Types\Capability::COLOR_TEMPERATURE:
 				$property = $this->findProtocolProperty(
 					$channel,
@@ -115,7 +129,11 @@ trait TPropertiesMapper
 					return null;
 				}
 
-				return new Entities\API\Statuses\ColorTemperature(intval($value));
+				return [
+					$channel->getCapability()->getValue() => [
+						Types\Protocol::COLOR_TEMPERATURE => intval($value),
+					],
+				];
 			case Types\Capability::COLOR_RGB:
 				$property = $this->findProtocolProperty($channel, Types\Protocol::get(Types\Protocol::COLOR_RED));
 
@@ -153,7 +171,13 @@ trait TPropertiesMapper
 					return null;
 				}
 
-				return new Entities\API\Statuses\ColorRgb(intval($red), intval($green), intval($blue));
+				return [
+					$channel->getCapability()->getValue() => [
+						Types\Protocol::COLOR_RED => intval($red),
+						Types\Protocol::COLOR_GREEN => intval($green),
+						Types\Protocol::COLOR_BLUE => intval($blue),
+					],
+				];
 			case Types\Capability::PERCENTAGE:
 				$property = $this->findProtocolProperty($channel, Types\Protocol::get(Types\Protocol::PERCENTAGE));
 
@@ -167,7 +191,11 @@ trait TPropertiesMapper
 					return null;
 				}
 
-				return new Entities\API\Statuses\Percentage(intval($value));
+				return [
+					$channel->getCapability()->getValue() => [
+						Types\Protocol::PERCENTAGE => intval($value),
+					],
+				];
 			case Types\Capability::MOTOR_CONTROL:
 				$property = $this->findProtocolProperty($channel, Types\Protocol::get(Types\Protocol::MOTOR_CONTROL));
 
@@ -181,7 +209,11 @@ trait TPropertiesMapper
 					return null;
 				}
 
-				return new Entities\API\Statuses\MotorControl(Types\MotorControlPayload::get($value));
+				return [
+					$channel->getCapability()->getValue() => [
+						Types\Protocol::MOTOR_CONTROL => Types\MotorControlPayload::get($value)->getValue(),
+					],
+				];
 			case Types\Capability::MOTOR_REVERSE:
 				$property = $this->findProtocolProperty($channel, Types\Protocol::get(Types\Protocol::MOTOR_REVERSE));
 
@@ -195,7 +227,11 @@ trait TPropertiesMapper
 					return null;
 				}
 
-				return new Entities\API\Statuses\MotorReverse(boolval($value));
+				return [
+					$channel->getCapability()->getValue() => [
+						Types\Protocol::MOTOR_REVERSE => boolval($value),
+					],
+				];
 			case Types\Capability::MOTOR_CALIBRATION:
 				$property = $this->findProtocolProperty(
 					$channel,
@@ -212,7 +248,11 @@ trait TPropertiesMapper
 					return null;
 				}
 
-				return new Entities\API\Statuses\MotorCalibration(Types\MotorCalibrationPayload::get($value));
+				return [
+					$channel->getCapability()->getValue() => [
+						Types\Protocol::MOTOR_CALIBRATION => Types\MotorCalibrationPayload::get($value)->getValue(),
+					],
+				];
 			case Types\Capability::STARTUP:
 				$property = $this->findProtocolProperty($channel, Types\Protocol::get(Types\Protocol::STARTUP));
 
@@ -226,10 +266,11 @@ trait TPropertiesMapper
 					return null;
 				}
 
-				return new Entities\API\Statuses\Startup(
-					Types\StartupPayload::get($value),
-					$channel->getIdentifier(),
-				);
+				return [
+					$channel->getCapability()->getValue() => [
+						Types\Protocol::STARTUP => Types\StartupPayload::get($value)->getValue(),
+					],
+				];
 			case Types\Capability::CAMERA_STREAM:
 				$property = $this->findProtocolProperty($channel, Types\Protocol::get(Types\Protocol::STREAM_URL));
 
@@ -239,7 +280,13 @@ trait TPropertiesMapper
 
 				$value = $this->getPropertyValue($property);
 
-				return new Entities\API\Statuses\CameraStream(strval($value));
+				return [
+					$channel->getCapability()->getValue() => [
+						'configuration' => [
+							Types\Protocol::STREAM_URL => strval($value),
+						],
+					],
+				];
 			case Types\Capability::DETECT:
 				$property = $this->findProtocolProperty($channel, Types\Protocol::get(Types\Protocol::DETECT));
 
@@ -253,7 +300,11 @@ trait TPropertiesMapper
 					return null;
 				}
 
-				return new Entities\API\Statuses\Detect(boolval($value));
+				return [
+					$channel->getCapability()->getValue() => [
+						Types\Protocol::DETECT => boolval($value),
+					],
+				];
 			case Types\Capability::HUMIDITY:
 				$property = $this->findProtocolProperty($channel, Types\Protocol::get(Types\Protocol::HUMIDITY));
 
@@ -267,7 +318,11 @@ trait TPropertiesMapper
 					return null;
 				}
 
-				return new Entities\API\Statuses\Humidity(intval($value));
+				return [
+					$channel->getCapability()->getValue() => [
+						Types\Protocol::HUMIDITY => intval($value),
+					],
+				];
 			case Types\Capability::TEMPERATURE:
 				$property = $this->findProtocolProperty($channel, Types\Protocol::get(Types\Protocol::TEMPERATURE));
 
@@ -281,7 +336,11 @@ trait TPropertiesMapper
 					return null;
 				}
 
-				return new Entities\API\Statuses\Temperature(intval($value));
+				return [
+					$channel->getCapability()->getValue() => [
+						Types\Protocol::TEMPERATURE => floatval($value),
+					],
+				];
 			case Types\Capability::BATTERY:
 				$property = $this->findProtocolProperty($channel, Types\Protocol::get(Types\Protocol::BATTERY));
 
@@ -295,7 +354,11 @@ trait TPropertiesMapper
 					return null;
 				}
 
-				return new Entities\API\Statuses\Battery(intval($value));
+				return [
+					$channel->getCapability()->getValue() => [
+						Types\Protocol::BATTERY => intval($value),
+					],
+				];
 			case Types\Capability::PRESS:
 				$property = $this->findProtocolProperty($channel, Types\Protocol::get(Types\Protocol::PRESS));
 
@@ -309,7 +372,11 @@ trait TPropertiesMapper
 					return null;
 				}
 
-				return new Entities\API\Statuses\Press(Types\PressPayload::get($value));
+				return [
+					$channel->getCapability()->getValue() => [
+						Types\Protocol::PRESS => Types\PressPayload::get($value)->getValue(),
+					],
+				];
 			case Types\Capability::RSSI:
 				$property = $this->findProtocolProperty($channel, Types\Protocol::get(Types\Protocol::RSSI));
 
@@ -323,7 +390,11 @@ trait TPropertiesMapper
 					return null;
 				}
 
-				return new Entities\API\Statuses\Rssi(intval($value));
+				return [
+					$channel->getCapability()->getValue() => [
+						Types\Protocol::RSSI => intval($value),
+					],
+				];
 		}
 
 		throw new Exceptions\InvalidArgument('Provided property type is not supported');
