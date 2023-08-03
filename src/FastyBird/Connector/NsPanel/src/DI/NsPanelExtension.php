@@ -308,7 +308,10 @@ class NsPanelExtension extends DI\CompilerExtension
 			]);
 
 		$builder->addDefinition($this->prefix('commands.discovery'), new DI\Definitions\ServiceDefinition())
-			->setType(Commands\Discovery::class);
+			->setType(Commands\Discovery::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
 	}
 
 	/**
