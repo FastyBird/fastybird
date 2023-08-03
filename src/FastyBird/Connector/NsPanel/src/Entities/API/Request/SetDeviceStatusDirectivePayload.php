@@ -38,9 +38,9 @@ final class SetDeviceStatusDirectivePayload implements Entities\API\Entity
 	}
 
 	/**
-	 * @return array<Entities\API\Statuses\Status>
+	 * @return array<string|int, Entities\API\Statuses\Status>
 	 */
-	public function getState(): array
+	public function getStatuses(): array
 	{
 		return $this->state->getStatuses();
 	}

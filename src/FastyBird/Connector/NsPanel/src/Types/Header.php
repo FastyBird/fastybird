@@ -36,6 +36,8 @@ class Header extends Consistence\Enum\Enum
 
 	public const ERROR_RESPONSE = 'ErrorResponse';
 
+	public const UPDATE_DEVICE_STATES_RESPONSE = 'UpdateDeviceStatesResponse';
+
 	public const DISCOVERY_REQUEST = 'DiscoveryRequest';
 
 	public const DEVICE_STATES_CHANGE_REPORT = 'DeviceStatesChangeReport';

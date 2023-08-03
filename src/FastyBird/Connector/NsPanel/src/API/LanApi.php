@@ -56,8 +56,6 @@ final class LanApi
 
 	public const GATEWAY_PORT = 8_081;
 
-	public const API_VERSION = '1';
-
 	private const GET_GATEWAY_INFO_MESSAGE_SCHEMA_FILENAME = 'get_gateway_info.json';
 
 	private const GET_GATEWAY_ACCESS_TOKEN_MESSAGE_SCHEMA_FILENAME = 'get_gateway_access_token.json';
@@ -205,7 +203,7 @@ final class LanApi
 					'header' => [
 						'name' => NsPanel\Types\Header::DISCOVERY_REQUEST,
 						'message_id' => Uuid\Uuid::uuid4()->toString(),
-						'version' => self::API_VERSION,
+						'version' => NsPanel\Constants::NS_PANEL_API_VERSION_V1,
 					],
 					'payload' => [
 						'endpoints' => $devices,
@@ -297,7 +295,7 @@ final class LanApi
 					'header' => [
 						'name' => NsPanel\Types\Header::DEVICE_STATES_CHANGE_REPORT,
 						'message_id' => Uuid\Uuid::uuid4()->toString(),
-						'version' => self::API_VERSION,
+						'version' => NsPanel\Constants::NS_PANEL_API_VERSION_V1,
 					],
 					'endpoint' => [
 						'serial_number' => $serialNumber,
@@ -390,7 +388,7 @@ final class LanApi
 					'header' => [
 						'name' => NsPanel\Types\Header::DEVICE_ONLINE_CHANGE_REPORT,
 						'message_id' => Uuid\Uuid::uuid4()->toString(),
-						'version' => self::API_VERSION,
+						'version' => NsPanel\Constants::NS_PANEL_API_VERSION_V1,
 					],
 					'endpoint' => [
 						'serial_number' => $serialNumber,

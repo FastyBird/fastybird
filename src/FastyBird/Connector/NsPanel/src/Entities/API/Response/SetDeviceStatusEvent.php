@@ -37,7 +37,7 @@ final class SetDeviceStatusEvent implements Entities\API\Entity
 			new ObjectMapper\Rules\MappedObjectValue(SetDeviceStatusEventPayload::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		private readonly SetDeviceStatusEventPayload|null $payload,
+		private readonly SetDeviceStatusEventPayload|null $payload = null,
 	)
 	{
 	}
@@ -67,7 +67,6 @@ final class SetDeviceStatusEvent implements Entities\API\Entity
 	{
 		$json = new stdClass();
 		$json->header = $this->getHeader()->toJson();
-
 		$json->payload = $this->getPayload()?->toJson() ?? new stdClass();
 
 		return $json;

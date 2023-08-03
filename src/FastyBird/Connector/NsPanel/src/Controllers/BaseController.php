@@ -17,6 +17,7 @@ namespace FastyBird\Connector\NsPanel\Controllers;
 
 use FastyBird\Connector\NsPanel;
 use Nette;
+use Orisai\ObjectMapper;
 
 /**
  * API base controller
@@ -31,7 +32,14 @@ abstract class BaseController
 
 	use Nette\SmartObject;
 
+	protected ObjectMapper\Processing\Processor $entityMapper;
+
 	protected NsPanel\Logger $logger;
+
+	public function injectEntityMapper(ObjectMapper\Processing\Processor $entityMapper): void
+	{
+		$this->entityMapper = $entityMapper;
+	}
 
 	public function setLogger(NsPanel\Logger $logger): void
 	{

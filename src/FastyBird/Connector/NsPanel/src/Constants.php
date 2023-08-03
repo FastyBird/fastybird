@@ -30,6 +30,8 @@ final class Constants
 
 	public const DEFAULT_PORT = 52_323;
 
+	public const NS_PANEL_API_VERSION_V1 = '1';
+
 	public const TAG_PROPERTY_IDENTIFIER = '/^tag_(?P<tag>[a-z_]+)$/';
 
 	public const STATE_NAME_KEY = '/^(?P<capability>[a-z\-]+)_(?P<identifier>[a-z0-9_]+)$/';
