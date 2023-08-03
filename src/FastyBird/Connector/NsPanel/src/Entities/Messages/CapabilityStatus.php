@@ -16,13 +16,14 @@
 namespace FastyBird\Connector\NsPanel\Entities\Messages;
 
 use DateTimeInterface;
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
-use Nette;
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 
 /**
- * Device capability status entity
+ * Device status definition
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Entities
@@ -32,11 +33,21 @@ use Ramsey\Uuid;
 final class CapabilityStatus implements Entity
 {
 
-	use Nette\SmartObject;
-
 	public function __construct(
+		#[BootstrapObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $chanel,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $property,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\BoolValue(),
+			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\ButtonPayload::class),
+			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\SwitchPayload::class),
+			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly float|int|string|bool|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|DateTimeInterface|null $value,
 	)
 	{

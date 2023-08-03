@@ -16,7 +16,8 @@
 namespace FastyBird\Connector\NsPanel\Consumers\Messages;
 
 use Doctrine\DBAL;
-use FastyBird\Connector\NsPanel\Consumers\Consumer;
+use FastyBird\Connector\NsPanel;
+use FastyBird\Connector\NsPanel\Consumers;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Queries;
@@ -28,7 +29,6 @@ use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Nette\Utils;
-use Psr\Log;
 use function assert;
 use function is_array;
 
@@ -40,7 +40,7 @@ use function is_array;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DiscoveredSubDevice implements Consumer
+final class DiscoveredSubDevice implements Consumers\Consumer
 {
 
 	use Nette\SmartObject;
@@ -55,7 +55,7 @@ final class DiscoveredSubDevice implements Consumer
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		private readonly DevicesModels\Channels\ChannelsManager $channelsManager,
 		private readonly DevicesUtilities\Database $databaseHelper,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
+		private readonly NsPanel\Logger $logger,
 	)
 	{
 	}
@@ -124,7 +124,7 @@ final class DiscoveredSubDevice implements Consumer
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 					'type' => 'discovered-sub-device-message-consumer',
 					'device' => [
-						'id' => $device->getPlainId(),
+						'id' => $device->getId()->toString(),
 						'identifier' => $entity->getSerialNumber(),
 						'protocol' => $entity->getProtocol(),
 					],
@@ -148,7 +148,7 @@ final class DiscoveredSubDevice implements Consumer
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 					'type' => 'discovered-sub-device-message-consumer',
 					'device' => [
-						'id' => $device->getPlainId(),
+						'id' => $device->getId()->toString(),
 						'identifier' => $entity->getSerialNumber(),
 						'protocol' => $entity->getProtocol(),
 					],
@@ -222,10 +222,10 @@ final class DiscoveredSubDevice implements Consumer
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 							'type' => 'discovered-sub-device-message-consumer',
 							'device' => [
-								'id' => $device->getPlainId(),
+								'id' => $device->getId()->toString(),
 							],
 							'channel' => [
-								'id' => $channel->getPlainId(),
+								'id' => $channel->getId()->toString(),
 							],
 						],
 					);
@@ -264,10 +264,10 @@ final class DiscoveredSubDevice implements Consumer
 									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 									'type' => 'discovered-sub-device-message-consumer',
 									'device' => [
-										'id' => $device->getPlainId(),
+										'id' => $device->getId()->toString(),
 									],
 									'channel' => [
-										'id' => $channel->getPlainId(),
+										'id' => $channel->getId()->toString(),
 									],
 								],
 							);
@@ -283,7 +283,7 @@ final class DiscoveredSubDevice implements Consumer
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 				'type' => 'discovered-sub-device-message-consumer',
 				'device' => [
-					'id' => $device->getPlainId(),
+					'id' => $device->getId()->toString(),
 				],
 				'data' => $entity->toArray(),
 			],

@@ -19,7 +19,7 @@ use Consistence;
 use function strval;
 
 /**
- * Server statuses types
+ * Server status types
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Types

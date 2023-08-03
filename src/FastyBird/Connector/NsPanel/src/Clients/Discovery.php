@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\NsPanel\Clients;
 
 use Evenement;
+use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\API;
 use FastyBird\Connector\NsPanel\Consumers;
 use FastyBird\Connector\NsPanel\Entities;
@@ -28,12 +29,11 @@ use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use Nette;
 use Orisai\ObjectMapper;
-use Psr\Log;
 use React\EventLoop;
 use function array_merge;
 
 /**
- * Sub-devices discovery client
+ * Connector sub-devices discovery client
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Clients
@@ -55,7 +55,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		private readonly ObjectMapper\Processing\Processor $entityMapper,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
+		private readonly NsPanel\Logger $logger,
 	)
 	{
 	}
@@ -76,10 +76,10 @@ final class Discovery implements Evenement\EventEmitterInterface
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 					'type' => 'discovery-client',
 					'connector' => [
-						'id' => $this->connector->getPlainId(),
+						'id' => $this->connector->getId()->toString(),
 					],
 					'device' => [
-						'id' => $onlyGateway->getPlainId(),
+						'id' => $onlyGateway->getId()->toString(),
 					],
 				],
 			);
@@ -93,7 +93,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 					'type' => 'discovery-client',
 					'connector' => [
-						'id' => $this->connector->getPlainId(),
+						'id' => $this->connector->getId()->toString(),
 					],
 				],
 			);
@@ -105,7 +105,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$findDevicesQuery,
 				Entities\Devices\Gateway::class,
 			) as $gateway) {
-				$foundSubDevices[$gateway->getPlainId()] = $this->discoverSubDevices($gateway);
+				$foundSubDevices[$gateway->getId()->toString()] = $this->discoverSubDevices($gateway);
 			}
 		}
 
@@ -152,10 +152,10 @@ final class Discovery implements Evenement\EventEmitterInterface
 					'type' => 'discovery-client',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'connector' => [
-						'id' => $this->connector->getPlainId(),
+						'id' => $this->connector->getId()->toString(),
 					],
 					'device' => [
-						'id' => $device->getPlainId(),
+						'id' => $device->getId()->toString(),
 					],
 				],
 			);
@@ -216,7 +216,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 						'type' => 'discovery-client',
 						'connector' => [
-							'id' => $this->connector->getPlainId(),
+							'id' => $this->connector->getId()->toString(),
 						],
 						'device' => [
 							'identifier' => $subDevice->getThirdSerialNumber(),

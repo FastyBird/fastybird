@@ -19,7 +19,7 @@ use Consistence;
 use function strval;
 
 /**
- * Requests & Responses header names types
+ * Requests & Responses header name types
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Types

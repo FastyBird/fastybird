@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\NsPanel\Commands;
 
 use DateTimeInterface;
+use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Clients;
 use FastyBird\Connector\NsPanel\Consumers;
 use FastyBird\Connector\NsPanel\Entities;
@@ -27,7 +28,6 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use Nette\Localization;
-use Psr\Log;
 use Ramsey\Uuid;
 use React\EventLoop;
 use Symfony\Component\Console;
@@ -86,7 +86,7 @@ class Discovery extends Console\Command\Command
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		private readonly Localization\Translator $translator,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
+		private readonly NsPanel\Logger $logger,
 		string|null $name = null,
 	)
 	{
@@ -413,7 +413,7 @@ class Discovery extends Console\Command\Command
 
 					$table->addRow([
 						$foundDevices,
-						$device->getPlainId(),
+						$device->getId()->toString(),
 						$device->getName() ?? $device->getIdentifier(),
 						$device->getModel(),
 						$gateway,

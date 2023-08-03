@@ -73,7 +73,7 @@ final class Connector implements DevicesConnectors\Connector
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 				'type' => 'connector',
 				'connector' => [
-					'id' => $this->connector->getPlainId(),
+					'id' => $this->connector->getId()->toString(),
 				],
 			],
 		);
@@ -98,7 +98,7 @@ final class Connector implements DevicesConnectors\Connector
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 				'type' => 'connector',
 				'connector' => [
-					'id' => $this->connector->getPlainId(),
+					'id' => $this->connector->getId()->toString(),
 				],
 			],
 		);
@@ -119,7 +119,7 @@ final class Connector implements DevicesConnectors\Connector
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 				'type' => 'connector',
 				'connector' => [
-					'id' => $this->connector->getPlainId(),
+					'id' => $this->connector->getId()->toString(),
 				],
 			],
 		);
@@ -142,7 +142,7 @@ final class Connector implements DevicesConnectors\Connector
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 				'type' => 'connector',
 				'connector' => [
-					'id' => $this->connector->getPlainId(),
+					'id' => $this->connector->getId()->toString(),
 				],
 			],
 		);
@@ -164,7 +164,7 @@ final class Connector implements DevicesConnectors\Connector
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 				'type' => 'connector',
 				'connector' => [
-					'id' => $this->connector->getPlainId(),
+					'id' => $this->connector->getId()->toString(),
 				],
 			],
 		);

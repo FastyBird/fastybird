@@ -30,7 +30,7 @@ use React\Socket;
 use Throwable;
 
 /**
- * HTTP connector communication server
+ * Connector HTTP communication server
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Servers
@@ -44,7 +44,7 @@ final class Http implements Server
 
 	public const REQUEST_ATTRIBUTE_CONNECTOR = 'connector';
 
-	public const JSON_CONTENT_TYPE = 'application/hap+json';
+	public const JSON_CONTENT_TYPE = 'application/json';
 
 	private const LISTENING_ADDRESS = '0.0.0.0';
 
@@ -71,7 +71,7 @@ final class Http implements Server
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 					'type' => 'http-server',
 					'connector' => [
-						'id' => $this->connector->getPlainId(),
+						'id' => $this->connector->getId()->toString(),
 					],
 					'server' => [
 						'address' => self::LISTENING_ADDRESS,
@@ -93,7 +93,7 @@ final class Http implements Server
 					'type' => 'http-server',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'connector' => [
-						'id' => $this->connector->getPlainId(),
+						'id' => $this->connector->getId()->toString(),
 					],
 				],
 			);
@@ -110,7 +110,7 @@ final class Http implements Server
 			function (ServerRequestInterface $request, callable $next): ResponseInterface {
 				$request = $request->withAttribute(
 					self::REQUEST_ATTRIBUTE_CONNECTOR,
-					$this->connector->getPlainId(),
+					$this->connector->getId()->toString(),
 				);
 
 				return $next($request);
@@ -127,7 +127,7 @@ final class Http implements Server
 					'type' => 'http-server',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'connector' => [
-						'id' => $this->connector->getPlainId(),
+						'id' => $this->connector->getId()->toString(),
 					],
 				],
 			);
@@ -148,7 +148,7 @@ final class Http implements Server
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 				'type' => 'http-server',
 				'connector' => [
-					'id' => $this->connector->getPlainId(),
+					'id' => $this->connector->getId()->toString(),
 				],
 			],
 		);

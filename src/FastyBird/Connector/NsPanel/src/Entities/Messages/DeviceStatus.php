@@ -15,10 +15,10 @@
 
 namespace FastyBird\Connector\NsPanel\Entities\Messages;
 
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_map;
+use function array_merge;
 
 /**
  * Device status message entity
@@ -28,33 +28,22 @@ use function array_map;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceStatus implements Entity
+final class DeviceStatus extends Device implements Entity
 {
 
 	/**
 	 * @param array<CapabilityStatus> $statuses
 	 */
 	public function __construct(
-		#[BootstrapObjectMapper\Rules\UuidValue()]
-		private readonly Uuid\UuidInterface $connector,
-		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $identifier,
+		Uuid\UuidInterface $connector,
+		string $identifier,
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(CapabilityStatus::class),
 		)]
 		private readonly array $statuses,
 	)
 	{
-	}
-
-	public function getConnector(): Uuid\UuidInterface
-	{
-		return $this->connector;
-	}
-
-	public function getIdentifier(): string
-	{
-		return $this->identifier;
+		parent::__construct($connector, $identifier);
 	}
 
 	/**
@@ -70,14 +59,12 @@ final class DeviceStatus implements Entity
 	 */
 	public function toArray(): array
 	{
-		return [
-			'connector' => $this->getConnector()->toString(),
-			'identifier' => $this->getIdentifier(),
-			'capabilities' => array_map(
+		return array_merge(parent::toArray(), [
+			'statuses' => array_map(
 				static fn (CapabilityStatus $status): array => $status->toArray(),
 				$this->getStatuses(),
 			),
-		];
+		]);
 	}
 
 }

@@ -33,6 +33,7 @@ use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use React\Promise;
 use Throwable;
@@ -46,7 +47,7 @@ use function preg_match;
 use function sprintf;
 
 /**
- * Third-party device client
+ * Connector third-party device client
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Clients
@@ -70,6 +71,7 @@ final class Device implements Client
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly Writers\Writer $writer,
 		private readonly NsPanel\Logger $logger,
+		private readonly ObjectMapper\Processing\Processor $entityMapper,
 		API\LanApiFactory $lanApiApiFactory,
 	)
 	{
@@ -81,6 +83,7 @@ final class Device implements Client
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\LanApiCall
+	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -154,7 +157,7 @@ final class Device implements Client
 					}
 
 					return [
-						'third_serial_number' => $device->getPlainId(),
+						'third_serial_number' => $device->getId()->toString(),
 						'name' => $device->getName() ?? $device->getIdentifier(),
 						'display_category' => $device->getDisplayCategory()->getValue(),
 						'capabilities' => $capabilities,
@@ -167,7 +170,7 @@ final class Device implements Client
 							'http://%s:%d/do-directive/%s',
 							Helpers\Network::getLocalAddress(),
 							$device->getConnector()->getPort(),
-							$device->getPlainId(),
+							$device->getId()->toString(),
 						),
 						'online' => true, // Virtual device is always online
 					];
@@ -177,10 +180,13 @@ final class Device implements Client
 
 			foreach ($devices as $device) {
 				$this->consumer->append(
-					new Entities\Messages\DeviceState(
-						$this->connector->getId(),
-						$device->getIdentifier(),
-						MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_RUNNING),
+					$this->createEntity(
+						Entities\Messages\DeviceState::class,
+						[
+							'connector' => $this->connector->getId()->toString(),
+							'identifier' => $device->getIdentifier(),
+							'state' => MetadataTypes\ConnectionState::STATE_RUNNING,
+						],
 					),
 				);
 			}
@@ -197,10 +203,10 @@ final class Device implements Client
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 							'type' => 'device-client',
 							'connector' => [
-								'id' => $this->connector->getPlainId(),
+								'id' => $this->connector->getId()->toString(),
 							],
 							'gateway' => [
-								'id' => $gateway->getPlainId(),
+								'id' => $gateway->getId()->toString(),
 							],
 						],
 					);
@@ -213,10 +219,10 @@ final class Device implements Client
 							'type' => 'device-client',
 							'exception' => BootstrapHelpers\Logger::buildException($ex),
 							'connector' => [
-								'id' => $this->connector->getPlainId(),
+								'id' => $this->connector->getId()->toString(),
 							],
 							'gateway' => [
-								'id' => $gateway->getPlainId(),
+								'id' => $gateway->getId()->toString(),
 							],
 						],
 					);
@@ -249,10 +255,10 @@ final class Device implements Client
 													'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 													'type' => 'device-client',
 													'connector' => [
-														'id' => $this->connector->getPlainId(),
+														'id' => $this->connector->getId()->toString(),
 													],
 													'gateway' => [
-														'id' => $gateway->getPlainId(),
+														'id' => $gateway->getId()->toString(),
 													],
 													'device' => [
 														'id' => $subDevice->getThirdSerialNumber(),
@@ -268,10 +274,10 @@ final class Device implements Client
 													'type' => 'device-client',
 													'exception' => BootstrapHelpers\Logger::buildException($ex),
 													'connector' => [
-														'id' => $this->connector->getPlainId(),
+														'id' => $this->connector->getId()->toString(),
 													],
 													'gateway' => [
-														'id' => $gateway->getPlainId(),
+														'id' => $gateway->getId()->toString(),
 													],
 													'device' => [
 														'id' => $subDevice->getThirdSerialNumber(),
@@ -292,10 +298,10 @@ final class Device implements Client
 							'type' => 'device-client',
 							'exception' => BootstrapHelpers\Logger::buildException($ex),
 							'connector' => [
-								'id' => $this->connector->getPlainId(),
+								'id' => $this->connector->getId()->toString(),
 							],
 							'gateway' => [
-								'id' => $gateway->getPlainId(),
+								'id' => $gateway->getId()->toString(),
 							],
 						],
 					);
@@ -308,6 +314,7 @@ final class Device implements Client
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\LanApiCall
+	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -357,13 +364,13 @@ final class Device implements Client
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 								'type' => 'device-client',
 								'connector' => [
-									'id' => $this->connector->getPlainId(),
+									'id' => $this->connector->getId()->toString(),
 								],
 								'gateway' => [
-									'id' => $gateway->getPlainId(),
+									'id' => $gateway->getId()->toString(),
 								],
 								'device' => [
-									'id' => $device->getPlainId(),
+									'id' => $device->getId()->toString(),
 								],
 							],
 						);
@@ -376,23 +383,26 @@ final class Device implements Client
 								'type' => 'device-client',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'connector' => [
-									'id' => $this->connector->getPlainId(),
+									'id' => $this->connector->getId()->toString(),
 								],
 								'gateway' => [
-									'id' => $gateway->getPlainId(),
+									'id' => $gateway->getId()->toString(),
 								],
 								'device' => [
-									'id' => $device->getPlainId(),
+									'id' => $device->getId()->toString(),
 								],
 							],
 						);
 					});
 
 				$this->consumer->append(
-					new Entities\Messages\DeviceState(
-						$this->connector->getId(),
-						$device->getIdentifier(),
-						MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_STOPPED),
+					$this->createEntity(
+						Entities\Messages\DeviceState::class,
+						[
+							'connector' => $this->connector->getId()->toString(),
+							'identifier' => $device->getIdentifier(),
+							'state' => MetadataTypes\ConnectionState::STATE_STOPPED,
+						],
 					),
 				);
 			}
@@ -456,6 +466,32 @@ final class Device implements Client
 			$device->getGateway()->getIpAddress(),
 			$device->getGateway()->getAccessToken(),
 		);
+	}
+
+	/**
+	 * @template T of Entities\Messages\Entity
+	 *
+	 * @param class-string<T> $entity
+	 * @param array<mixed> $data
+	 *
+	 * @return T
+	 *
+	 * @throws Exceptions\Runtime
+	 */
+	private function createEntity(string $entity, array $data): Entities\Messages\Entity
+	{
+		try {
+			$options = new ObjectMapper\Processing\Options();
+			$options->setAllowUnknownFields();
+
+			return $this->entityMapper->process($data, $entity, $options);
+		} catch (ObjectMapper\Exception\InvalidData $ex) {
+			$errorPrinter = new ObjectMapper\Printers\ErrorVisualPrinter(
+				new ObjectMapper\Printers\TypeToStringConverter(),
+			);
+
+			throw new Exceptions\Runtime('Could not map data to entity: ' . $errorPrinter->printError($ex));
+		}
 	}
 
 }

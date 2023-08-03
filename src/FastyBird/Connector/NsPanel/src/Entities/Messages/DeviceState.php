@@ -17,8 +17,8 @@ namespace FastyBird\Connector\NsPanel\Entities\Messages;
 
 use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use Orisai\ObjectMapper;
 use Ramsey\Uuid;
+use function array_merge;
 
 /**
  * Device state message entity
@@ -28,28 +28,17 @@ use Ramsey\Uuid;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceState implements Entity
+final class DeviceState extends Device implements Entity
 {
 
 	public function __construct(
-		#[BootstrapObjectMapper\Rules\UuidValue()]
-		private readonly Uuid\UuidInterface $connector,
-		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $identifier,
+		Uuid\UuidInterface $connector,
+		string $identifier,
 		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\ConnectionState::class)]
 		private readonly MetadataTypes\ConnectionState $state,
 	)
 	{
-	}
-
-	public function getConnector(): Uuid\UuidInterface
-	{
-		return $this->connector;
-	}
-
-	public function getIdentifier(): string
-	{
-		return $this->identifier;
+		parent::__construct($connector, $identifier);
 	}
 
 	public function getState(): MetadataTypes\ConnectionState
@@ -62,11 +51,9 @@ final class DeviceState implements Entity
 	 */
 	public function toArray(): array
 	{
-		return [
-			'connector' => $this->getConnector()->toString(),
-			'identifier' => $this->getIdentifier(),
+		return array_merge(parent::toArray(), [
 			'state' => $this->getState()->getValue(),
-		];
+		]);
 	}
 
 }

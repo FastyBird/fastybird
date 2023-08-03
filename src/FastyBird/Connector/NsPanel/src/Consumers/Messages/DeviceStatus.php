@@ -106,7 +106,7 @@ final class DeviceStatus implements Consumers\Consumer
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 				'type' => 'device-status-message-consumer',
 				'device' => [
-					'id' => $device->getPlainId(),
+					'id' => $device->getId()->toString(),
 				],
 				'data' => $entity->toArray(),
 			],

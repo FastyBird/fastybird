@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\NsPanel\Servers;
 
 /**
- * NsPanel device server interface
+ * Connector base communication server
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Servers

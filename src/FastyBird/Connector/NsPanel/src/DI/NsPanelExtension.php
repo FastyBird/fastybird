@@ -43,7 +43,7 @@ use function assert;
 use const DIRECTORY_SEPARATOR;
 
 /**
- * NsPanel connector
+ * NS Panel connector
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     DI
@@ -164,7 +164,7 @@ class NsPanelExtension extends DI\CompilerExtension
 			]);
 
 		$builder->addDefinition(
-			$this->prefix('consumers.messages.device.status'),
+			$this->prefix('consumers.messages.deviceStatus'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Consumers\Messages\DeviceStatus::class)
@@ -173,7 +173,7 @@ class NsPanelExtension extends DI\CompilerExtension
 			]);
 
 		$builder->addDefinition(
-			$this->prefix('consumers.messages.device.state'),
+			$this->prefix('consumers.messages.deviceState'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Consumers\Messages\DeviceState::class)
@@ -182,7 +182,7 @@ class NsPanelExtension extends DI\CompilerExtension
 			]);
 
 		$builder->addDefinition(
-			$this->prefix('consumers.messages.device.subDevicesDiscovery'),
+			$this->prefix('consumers.messages.subDeviceDiscovery'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Consumers\Messages\DiscoveredSubDevice::class)
@@ -219,7 +219,7 @@ class NsPanelExtension extends DI\CompilerExtension
 			->setType(Schemas\Devices\SubDevice::class);
 
 		$builder->addDefinition(
-			$this->prefix('schemas.device.nsPanel.device'),
+			$this->prefix('schemas.device.nsPanel.thirdPartyDevice'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Schemas\Devices\ThirdPartyDevice::class);
@@ -246,7 +246,7 @@ class NsPanelExtension extends DI\CompilerExtension
 			->setType(Hydrators\Devices\SubDevice::class);
 
 		$builder->addDefinition(
-			$this->prefix('hydrators.device.nsPanel.device'),
+			$this->prefix('hydrators.device.nsPanel.thirdPartyDevice'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Hydrators\Devices\ThirdPartyDevice::class);

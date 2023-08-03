@@ -2573,7 +2573,7 @@ class Devices extends Console\Command\Command
 				continue;
 			}
 
-			$devices[$device->getPlainId()] = $device->getIdentifier()
+			$devices[$device->getId()->toString()] = $device->getIdentifier()
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				. ($device->getConnector()->getName() !== null ? ' [' . $device->getConnector()->getName() . ']' : '[' . $device->getConnector()->getIdentifier() . ']')
 				. ($device->getName() !== null ? ' [' . $device->getName() . ']' : '');

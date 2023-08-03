@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * GetGatewayAccessTokenData.php
+ * Device.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,36 +10,43 @@
  * @subpackage     Entities
  * @since          1.0.0
  *
- * @date           09.07.23
+ * @date           15.07.23
  */
 
-namespace FastyBird\Connector\NsPanel\Entities\API\Response;
+namespace FastyBird\Connector\NsPanel\Entities\Messages;
 
-use FastyBird\Connector\NsPanel\Entities;
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use Orisai\ObjectMapper;
-use stdClass;
+use Ramsey\Uuid;
 
 /**
- * NS Panel acquire access token data response definition
+ * Base device message entity
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class GetGatewayAccessTokenData implements Entities\API\Entity
+abstract class Device implements Entity
 {
 
 	public function __construct(
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $connector,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $token,
+		private readonly string $identifier,
 	)
 	{
 	}
 
-	public function getAccessToken(): string
+	public function getConnector(): Uuid\UuidInterface
 	{
-		return $this->token;
+		return $this->connector;
+	}
+
+	public function getIdentifier(): string
+	{
+		return $this->identifier;
 	}
 
 	/**
@@ -48,16 +55,9 @@ final class GetGatewayAccessTokenData implements Entities\API\Entity
 	public function toArray(): array
 	{
 		return [
-			'access_token' => $this->getAccessToken(),
+			'connector' => $this->getConnector()->toString(),
+			'identifier' => $this->getIdentifier(),
 		];
-	}
-
-	public function toJson(): object
-	{
-		$json = new stdClass();
-		$json->token = $this->getAccessToken();
-
-		return $json;
 	}
 
 }

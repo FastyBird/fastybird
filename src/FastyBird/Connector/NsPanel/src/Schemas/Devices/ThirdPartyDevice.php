@@ -20,7 +20,7 @@ use FastyBird\Connector\NsPanel\Schemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 
 /**
- * NS Panel device entity schema
+ * NS Panel third-party device entity schema
  *
  * @extends Schemas\NsPanelDevice<Entities\Devices\ThirdPartyDevice>
  *

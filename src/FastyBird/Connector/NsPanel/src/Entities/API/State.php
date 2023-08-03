@@ -26,7 +26,7 @@ use function sprintf;
 use function strval;
 
 /**
- * Device capabilities state
+ * Third-party device & Sub-device status definition
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Entities

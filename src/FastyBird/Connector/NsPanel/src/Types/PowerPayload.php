@@ -19,7 +19,7 @@ use Consistence;
 use function strval;
 
 /**
- * Toggle capability supported payload types
+ * Power state capability supported payload types
  *
  * @package        FastyBird:MetadataLibrary!
  * @subpackage     Types

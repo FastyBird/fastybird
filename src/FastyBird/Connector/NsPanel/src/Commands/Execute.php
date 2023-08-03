@@ -265,7 +265,7 @@ class Execute extends Console\Command\Command
 		$serviceCmd = $symfonyApp->find(DevicesCommands\Connector::NAME);
 
 		$result = $serviceCmd->run(new Input\ArrayInput([
-			'--connector' => $connector->getPlainId(),
+			'--connector' => $connector->getId()->toString(),
 			'--no-interaction' => true,
 			'--quiet' => true,
 		]), $output);

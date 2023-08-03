@@ -183,7 +183,7 @@ final class DeviceState implements Consumers\Consumer
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 				'type' => 'device-state-message-consumer',
 				'device' => [
-					'id' => $device->getPlainId(),
+					'id' => $device->getId()->toString(),
 				],
 				'data' => $entity->toArray(),
 			],

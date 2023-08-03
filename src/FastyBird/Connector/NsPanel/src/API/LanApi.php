@@ -41,7 +41,7 @@ use function strval;
 use const DIRECTORY_SEPARATOR;
 
 /**
- * Local LAN API interface
+ * NS Panel LAN API interface
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     API

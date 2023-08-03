@@ -23,7 +23,7 @@ use React\Http;
 use React\Socket\Connector;
 
 /**
- * HTTP client factory
+ * API HTTP client factory
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     API

@@ -18,7 +18,7 @@ namespace FastyBird\Connector\NsPanel\Clients;
 use FastyBird\Connector\NsPanel\Entities;
 
 /**
- * Base device client factory
+ * Connector client interface factory
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Clients

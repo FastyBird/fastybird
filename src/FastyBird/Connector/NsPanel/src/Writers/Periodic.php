@@ -92,7 +92,7 @@ class Periodic implements Writer
 		Clients\Client $client,
 	): void
 	{
-		$this->clients[$connector->getPlainId()] = $client;
+		$this->clients[$connector->getId()->toString()] = $client;
 
 		$this->processedDevices = [];
 		$this->processedProperties = [];
@@ -110,7 +110,7 @@ class Periodic implements Writer
 		Clients\Client $client,
 	): void
 	{
-		unset($this->clients[$connector->getPlainId()]);
+		unset($this->clients[$connector->getId()->toString()]);
 
 		if ($this->clients === [] && $this->handlerTimer !== null) {
 			$this->eventLoop->cancelTimer($this->handlerTimer);
@@ -151,8 +151,8 @@ class Periodic implements Writer
 			}
 
 			foreach ($devices as $device) {
-				if (!in_array($device->getPlainId(), $this->processedDevices, true)) {
-					$this->processedDevices[] = $device->getPlainId();
+				if (!in_array($device->getId()->toString(), $this->processedDevices, true)) {
+					$this->processedDevices[] = $device->getId()->toString();
 
 					if (
 						$client instanceof Clients\Gateway
@@ -226,10 +226,10 @@ class Periodic implements Writer
 					&& $state->isPending() === true
 				) {
 					$debounce = array_key_exists(
-						$property->getPlainId(),
+						$property->getId()->toString(),
 						$this->processedProperties,
 					)
-						? $this->processedProperties[$property->getPlainId()]
+						? $this->processedProperties[$property->getId()->toString()]
 						: false;
 
 					if (
@@ -241,7 +241,7 @@ class Periodic implements Writer
 						continue;
 					}
 
-					unset($this->processedProperties[$property->getPlainId()]);
+					unset($this->processedProperties[$property->getId()->toString()]);
 
 					$pending = $state->getPending();
 
@@ -252,11 +252,11 @@ class Periodic implements Writer
 							&& (float) $now->format('Uv') - (float) $pending->format('Uv') > self::HANDLER_PENDING_DELAY
 						)
 					) {
-						$this->processedProperties[$property->getPlainId()] = $now;
+						$this->processedProperties[$property->getId()->toString()] = $now;
 
 						$client->writeChannelProperty($device, $channel, $property)
 							->then(function () use ($property, $now): void {
-								unset($this->processedProperties[$property->getPlainId()]);
+								unset($this->processedProperties[$property->getId()->toString()]);
 
 								$state = $this->channelPropertiesStates->getValue($property);
 
@@ -279,16 +279,16 @@ class Periodic implements Writer
 										'type' => 'periodic-writer',
 										'exception' => BootstrapHelpers\Logger::buildException($ex),
 										'connector' => [
-											'id' => $device->getConnector()->getPlainId(),
+											'id' => $device->getConnector()->getId()->toString(),
 										],
 										'device' => [
-											'id' => $device->getPlainId(),
+											'id' => $device->getId()->toString(),
 										],
 										'channel' => [
-											'id' => $channel->getPlainId(),
+											'id' => $channel->getId()->toString(),
 										],
 										'property' => [
-											'id' => $property->getPlainId(),
+											'id' => $property->getId()->toString(),
 										],
 									],
 								);
@@ -354,10 +354,10 @@ class Periodic implements Writer
 				}
 
 				$debounce = array_key_exists(
-					$property->getPlainId(),
+					$property->getId()->toString(),
 					$this->processedProperties,
 				)
-					? $this->processedProperties[$property->getPlainId()]
+					? $this->processedProperties[$property->getId()->toString()]
 					: false;
 
 				if (
@@ -369,13 +369,13 @@ class Periodic implements Writer
 					continue;
 				}
 
-				unset($this->processedProperties[$property->getPlainId()]);
+				unset($this->processedProperties[$property->getId()->toString()]);
 
-				$this->processedProperties[$property->getPlainId()] = $now;
+				$this->processedProperties[$property->getId()->toString()] = $now;
 
 				$client->writeChannelProperty($device, $channel, $property)
 					->then(function () use ($property): void {
-						unset($this->processedProperties[$property->getPlainId()]);
+						unset($this->processedProperties[$property->getId()->toString()]);
 					})
 					->otherwise(function (Throwable $ex) use ($device, $channel, $property): void {
 						$this->logger->error(
@@ -385,16 +385,16 @@ class Periodic implements Writer
 								'type' => 'periodic-writer',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'connector' => [
-									'id' => $device->getConnector()->getPlainId(),
+									'id' => $device->getConnector()->getId()->toString(),
 								],
 								'device' => [
-									'id' => $device->getPlainId(),
+									'id' => $device->getId()->toString(),
 								],
 								'channel' => [
-									'id' => $channel->getPlainId(),
+									'id' => $channel->getId()->toString(),
 								],
 								'property' => [
-									'id' => $property->getPlainId(),
+									'id' => $property->getId()->toString(),
 								],
 							],
 						);

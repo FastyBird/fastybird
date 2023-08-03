@@ -21,7 +21,7 @@ use Orisai\ObjectMapper;
 use stdClass;
 
 /**
- * Device capability definition
+ * Third-party device & Sub-device capability definition
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Entities

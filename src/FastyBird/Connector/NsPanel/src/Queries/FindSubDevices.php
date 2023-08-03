@@ -18,7 +18,7 @@ namespace FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Entities;
 
 /**
- * Find devices entities query
+ * Find sub-devices entities query
  *
  * @template T of Entities\Devices\SubDevice
  * @extends  FindDevices<T>

@@ -30,7 +30,7 @@ use Nette\Utils;
 use Ramsey\Uuid;
 
 /**
- * Device property consumer trait
+ * Device property consumer
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Consumers
@@ -116,7 +116,7 @@ trait ConsumeDeviceProperty
 							'id' => $deviceId->toString(),
 						],
 						'property' => [
-							'id' => $property->getPlainId(),
+							'id' => $property->getId()->toString(),
 							'identifier' => $identifier,
 						],
 					],
@@ -164,7 +164,7 @@ trait ConsumeDeviceProperty
 						'id' => $deviceId->toString(),
 					],
 					'property' => [
-						'id' => $property->getPlainId(),
+						'id' => $property->getId()->toString(),
 						'identifier' => $identifier,
 					],
 				],
@@ -193,7 +193,7 @@ trait ConsumeDeviceProperty
 						'id' => $deviceId->toString(),
 					],
 					'property' => [
-						'id' => $property->getPlainId(),
+						'id' => $property->getId()->toString(),
 						'identifier' => $identifier,
 					],
 				],

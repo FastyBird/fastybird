@@ -19,7 +19,7 @@ use Consistence;
 use function strval;
 
 /**
- * Protocol types
+ * Capability protocol types
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Types

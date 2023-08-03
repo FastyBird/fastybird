@@ -21,7 +21,7 @@ use FastyBird\Module\Devices\Entities as DevicesEntities;
 use React\Promise;
 
 /**
- * Base device client interface
+ * Connector client interface
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Clients

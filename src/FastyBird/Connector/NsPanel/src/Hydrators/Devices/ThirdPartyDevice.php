@@ -19,7 +19,7 @@ use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Hydrators;
 
 /**
- * NS Panel device entity hydrator
+ * NS Panel third-party device entity hydrator
  *
  * @extends Hydrators\NsPanelDevice<Entities\Devices\ThirdPartyDevice>
  *

@@ -72,7 +72,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 		Clients\Client $client,
 	): void
 	{
-		$this->clients[$connector->getPlainId()] = $client;
+		$this->clients[$connector->getId()->toString()] = $client;
 
 		$this->consumer->enable(self::class);
 	}
@@ -82,7 +82,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 		Clients\Client $client,
 	): void
 	{
-		unset($this->clients[$connector->getPlainId()]);
+		unset($this->clients[$connector->getId()->toString()]);
 
 		if ($this->clients === []) {
 			$this->consumer->disable(self::class);
@@ -224,13 +224,13 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 							'id' => $connectorId->toString(),
 						],
 						'device' => [
-							'id' => $device->getPlainId(),
+							'id' => $device->getId()->toString(),
 						],
 						'channel' => [
-							'id' => $channel->getPlainId(),
+							'id' => $channel->getId()->toString(),
 						],
 						'property' => [
-							'id' => $property->getPlainId(),
+							'id' => $property->getId()->toString(),
 						],
 					],
 				);

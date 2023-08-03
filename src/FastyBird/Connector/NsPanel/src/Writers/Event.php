@@ -82,7 +82,7 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 		Clients\Client $client,
 	): void
 	{
-		$this->clients[$connector->getPlainId()] = $client;
+		$this->clients[$connector->getId()->toString()] = $client;
 	}
 
 	public function disconnect(
@@ -90,7 +90,7 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 		Clients\Client $client,
 	): void
 	{
-		unset($this->clients[$connector->getPlainId()]);
+		unset($this->clients[$connector->getId()->toString()]);
 	}
 
 	/**
@@ -226,10 +226,10 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 							'id' => $connectorId->toString(),
 						],
 						'device' => [
-							'id' => $device->getPlainId(),
+							'id' => $device->getId()->toString(),
 						],
 						'channel' => [
-							'id' => $channel->getPlainId(),
+							'id' => $channel->getId()->toString(),
 						],
 						'property' => [
 							'id' => $property->getId()->toString(),
