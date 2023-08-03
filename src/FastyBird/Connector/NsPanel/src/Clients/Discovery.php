@@ -196,8 +196,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 					$this->entityMapper->process(
 						array_merge(
 							[
-								'connector' => $this->connector->getId(),
-								'gateway' => $gateway->getId(),
+								'connector' => $this->connector->getId()->toString(),
+								'gateway' => $gateway->getId()->toString(),
 							],
 							$subDevice->toArray(),
 						),
