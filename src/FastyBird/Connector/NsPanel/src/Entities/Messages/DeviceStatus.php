@@ -15,10 +15,10 @@
 
 namespace FastyBird\Connector\NsPanel\Entities\Messages;
 
-use FastyBird\Connector\NsPanel\Entities;
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_map;
-use function array_merge;
 
 /**
  * Device status message entity
@@ -28,23 +28,37 @@ use function array_merge;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceStatus extends Device
+final class DeviceStatus implements Entity
 {
 
 	/**
-	 * @param array<Entities\Messages\CapabilityStatus> $statuses
+	 * @param array<CapabilityStatus> $statuses
 	 */
 	public function __construct(
-		Uuid\UuidInterface $connector,
-		string $identifier,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $connector,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		private readonly string $identifier,
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(CapabilityStatus::class),
+		)]
 		private readonly array $statuses,
 	)
 	{
-		parent::__construct($connector, $identifier);
+	}
+
+	public function getConnector(): Uuid\UuidInterface
+	{
+		return $this->connector;
+	}
+
+	public function getIdentifier(): string
+	{
+		return $this->identifier;
 	}
 
 	/**
-	 * @return array<Entities\Messages\CapabilityStatus>
+	 * @return array<CapabilityStatus>
 	 */
 	public function getStatuses(): array
 	{
@@ -56,12 +70,14 @@ final class DeviceStatus extends Device
 	 */
 	public function toArray(): array
 	{
-		return array_merge(parent::toArray(), [
+		return [
+			'connector' => $this->getConnector()->toString(),
+			'identifier' => $this->getIdentifier(),
 			'capabilities' => array_map(
-				static fn (Entities\Messages\CapabilityStatus $status): array => $status->toArray(),
+				static fn (CapabilityStatus $status): array => $status->toArray(),
 				$this->getStatuses(),
 			),
-		]);
+		];
 	}
 
 }

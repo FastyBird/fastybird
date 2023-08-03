@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Status.php
+ * DeviceStatus.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -38,7 +38,7 @@ use Nette\Utils;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Status implements Consumers\Consumer
+final class DeviceStatus implements Consumers\Consumer
 {
 
 	use Nette\SmartObject;
@@ -104,7 +104,7 @@ final class Status implements Consumers\Consumer
 			'Consumed device status message',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-				'type' => 'status-message-consumer',
+				'type' => 'device-status-message-consumer',
 				'device' => [
 					'id' => $device->getPlainId(),
 				],

@@ -167,7 +167,7 @@ class NsPanelExtension extends DI\CompilerExtension
 			$this->prefix('consumers.messages.device.status'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Consumers\Messages\Status::class)
+			->setType(Consumers\Messages\DeviceStatus::class)
 			->setArguments([
 				'logger' => $logger,
 			]);
@@ -176,7 +176,7 @@ class NsPanelExtension extends DI\CompilerExtension
 			$this->prefix('consumers.messages.device.state'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Consumers\Messages\State::class)
+			->setType(Consumers\Messages\DeviceState::class)
 			->setArguments([
 				'logger' => $logger,
 			]);
@@ -185,7 +185,7 @@ class NsPanelExtension extends DI\CompilerExtension
 			$this->prefix('consumers.messages.device.subDevicesDiscovery'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Consumers\Messages\SubDevicesDiscovery::class)
+			->setType(Consumers\Messages\DiscoveredSubDevice::class)
 			->setArguments([
 				'logger' => $logger,
 			]);

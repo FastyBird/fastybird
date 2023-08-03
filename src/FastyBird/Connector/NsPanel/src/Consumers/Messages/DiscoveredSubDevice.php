@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * SubDevicesDiscovery.php
+ * DiscoveredSubDevice.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -40,7 +40,7 @@ use function is_array;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class SubDevicesDiscovery implements Consumer
+final class DiscoveredSubDevice implements Consumer
 {
 
 	use Nette\SmartObject;
@@ -122,7 +122,7 @@ final class SubDevicesDiscovery implements Consumer
 				'Creating new sub-device',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'sub-devices-discovery-message-consumer',
+					'type' => 'discovered-sub-device-message-consumer',
 					'device' => [
 						'id' => $device->getPlainId(),
 						'identifier' => $entity->getSerialNumber(),
@@ -146,7 +146,7 @@ final class SubDevicesDiscovery implements Consumer
 				'Sub-device was updated',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'sub-devices-discovery-message-consumer',
+					'type' => 'discovered-sub-device-message-consumer',
 					'device' => [
 						'id' => $device->getPlainId(),
 						'identifier' => $entity->getSerialNumber(),
@@ -220,7 +220,7 @@ final class SubDevicesDiscovery implements Consumer
 						'Creating new device channel',
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-							'type' => 'local-discovery-message-consumer',
+							'type' => 'discovered-sub-device-message-consumer',
 							'device' => [
 								'id' => $device->getPlainId(),
 							],
@@ -262,7 +262,7 @@ final class SubDevicesDiscovery implements Consumer
 								'Set toggle channel name',
 								[
 									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-									'type' => 'local-discovery-message-consumer',
+									'type' => 'discovered-sub-device-message-consumer',
 									'device' => [
 										'id' => $device->getPlainId(),
 									],
@@ -281,7 +281,7 @@ final class SubDevicesDiscovery implements Consumer
 			'Consumed sub-device found message',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-				'type' => 'sub-devices-discovery-message-consumer',
+				'type' => 'discovered-sub-device-message-consumer',
 				'device' => [
 					'id' => $device->getPlainId(),
 				],
