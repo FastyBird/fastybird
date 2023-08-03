@@ -53,6 +53,7 @@ orisaiObjectMapper:
     debug: %debugMode%
     rules:
         - FastyBird\Library\Bootstrap\ObjectMapper\Rules\ConsistenceEnumRule()
+        - FastyBird\Library\Bootstrap\ObjectMapper\Rules\UuidRule()
 
 # Application bootstrap extension
 #################################

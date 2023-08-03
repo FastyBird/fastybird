@@ -27,7 +27,7 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use Nette;
-use Nette\Utils;
+use Orisai\ObjectMapper;
 use Psr\Log;
 use React\EventLoop;
 use function array_merge;
@@ -54,6 +54,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 		private readonly Consumers\Messages $consumer,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly EventLoop\LoopInterface $eventLoop,
+		private readonly ObjectMapper\Processing\Processor $entityMapper,
 		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
@@ -61,7 +62,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -124,7 +124,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 	 * @return array<Entities\Clients\DiscoveredSubDevice>
 	 *
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -169,8 +168,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 	/**
 	 * @return array<Entities\Clients\DiscoveredSubDevice>
-	 *
-	 * @throws Exceptions\InvalidState
 	 */
 	private function handleFoundSubDevices(
 		Entities\Devices\Gateway $gateway,
@@ -185,15 +182,18 @@ final class Discovery implements Evenement\EventEmitterInterface
 				continue;
 			}
 
-			$processedSubDevices[] = Entities\EntityFactory::build(
-				Entities\Clients\DiscoveredSubDevice::class,
-				Utils\ArrayHash::from($subDevice->toArray()),
-			);
+			try {
+				$options = new ObjectMapper\Processing\Options();
+				$options->setAllowUnknownFields();
 
-			$this->consumer->append(
-				Entities\EntityFactory::build(
-					Entities\Messages\DiscoveredSubDevice::class,
-					Utils\ArrayHash::from(
+				$processedSubDevices[] = $this->entityMapper->process(
+					$subDevice->toArray(),
+					Entities\Clients\DiscoveredSubDevice::class,
+					$options,
+				);
+
+				$this->consumer->append(
+					$this->entityMapper->process(
 						array_merge(
 							[
 								'connector' => $this->connector->getId(),
@@ -201,9 +201,30 @@ final class Discovery implements Evenement\EventEmitterInterface
 							],
 							$subDevice->toArray(),
 						),
+						Entities\Messages\DiscoveredSubDevice::class,
+						$options,
 					),
-				),
-			);
+				);
+			} catch (ObjectMapper\Exception\InvalidData $ex) {
+				$errorPrinter = new ObjectMapper\Printers\ErrorVisualPrinter(
+					new ObjectMapper\Printers\TypeToStringConverter(),
+				);
+
+				$this->logger->error(
+					'Could not map discovered device to result',
+					[
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+						'type' => 'discovery-client',
+						'connector' => [
+							'id' => $this->connector->getPlainId(),
+						],
+						'device' => [
+							'identifier' => $subDevice->getThirdSerialNumber(),
+						],
+						'error' => $errorPrinter->printError($ex),
+					],
+				);
+			}
 		}
 
 		return $processedSubDevices;

@@ -19,7 +19,6 @@ use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Clients;
 use FastyBird\Connector\NsPanel\Consumers;
 use FastyBird\Connector\NsPanel\Entities;
-use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Connectors as DevicesConnectors;
@@ -107,7 +106,6 @@ final class Connector implements DevicesConnectors\Connector
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */

@@ -15,9 +15,9 @@
 
 namespace FastyBird\Connector\NsPanel\Entities\Messages;
 
-use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Types;
-use Nette;
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_map;
 
@@ -29,33 +29,91 @@ use function array_map;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DiscoveredSubDevice implements Entities\Messages\Entity
+final class DiscoveredSubDevice implements Entity
 {
 
-	use Nette\SmartObject;
-
 	/**
-	 * @param array<Entities\Messages\CapabilityDescription> $capabilities
+	 * @param array<CapabilityDescription> $capabilities
 	 * @param array<string, string|array<string, string>> $tags
 	 */
 	public function __construct(
+		#[BootstrapObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $connector,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $gateway,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		#[ObjectMapper\Modifiers\FieldName('serial_number')]
 		private readonly string $serialNumber,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $name,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $manufacturer,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $model,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		#[ObjectMapper\Modifiers\FieldName('firmware_version')]
 		private readonly string $firmwareVersion,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\Category::class)]
+		#[ObjectMapper\Modifiers\FieldName('display_category')]
 		private readonly Types\Category $displayCategory,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('third_serial_number')]
 		private readonly string|null $thirdSerialNumber = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('service_address')]
 		private readonly string|null $serviceAddress = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly string|null $hostname = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('mac_address')]
 		private readonly string|null $macAddress = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('app_name')]
 		private readonly string|null $appName = null,
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(CapabilityDescription::class),
+		)]
 		private readonly array $capabilities = [],
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly string|null $protocol = null,
+		#[ObjectMapper\Rules\ArrayOf(
+			item: new ObjectMapper\Rules\AnyOf([
+				new ObjectMapper\Rules\StringValue(),
+				new ObjectMapper\Rules\ArrayOf(
+					item: new ObjectMapper\Rules\StringValue(),
+					key: new ObjectMapper\Rules\AnyOf([
+						new ObjectMapper\Rules\StringValue(),
+						new ObjectMapper\Rules\IntValue(),
+					]),
+				),
+			]),
+			key: new ObjectMapper\Rules\StringValue(),
+		)]
 		private readonly array $tags = [],
+		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $online = false,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\NullValue(),
+		])]
 		private readonly bool|null $subnet = null,
 	)
 	{
@@ -127,7 +185,7 @@ final class DiscoveredSubDevice implements Entities\Messages\Entity
 	}
 
 	/**
-	 * @return array<Entities\Messages\CapabilityDescription>
+	 * @return array<CapabilityDescription>
 	 */
 	public function getCapabilities(): array
 	{
@@ -175,7 +233,7 @@ final class DiscoveredSubDevice implements Entities\Messages\Entity
 			'app_name' => $this->getAppName(),
 			'display_category' => $this->getDisplayCategory()->getValue(),
 			'capabilities' => array_map(
-				static fn (Entities\Messages\CapabilityDescription $capability): array => $capability->toArray(),
+				static fn (CapabilityDescription $capability): array => $capability->toArray(),
 				$this->getCapabilities(),
 			),
 			'protocol' => $this->getProtocol(),

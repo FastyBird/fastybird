@@ -17,7 +17,8 @@ namespace FastyBird\Connector\NsPanel\Entities\Messages;
 
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Types;
-use Nette;
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use Orisai\ObjectMapper;
 use stdClass;
 
 /**
@@ -31,11 +32,15 @@ use stdClass;
 final class CapabilityDescription implements Entities\Clients\Entity
 {
 
-	use Nette\SmartObject;
-
 	public function __construct(
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\Capability::class)]
 		private readonly Types\Capability $capability,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\Permission::class)]
 		private readonly Types\Permission $permission,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly string|null $name = null,
 	)
 	{
