@@ -16,7 +16,9 @@
 namespace FastyBird\Connector\NsPanel\Entities\API\Response;
 
 use FastyBird\Connector\NsPanel\Entities;
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use Orisai\ObjectMapper;
+use Ramsey\Uuid;
 use stdClass;
 
 /**
@@ -31,9 +33,9 @@ final class SyncDevicesPayloadEndpoint implements Entities\API\Entity
 {
 
 	public function __construct(
-		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		#[BootstrapObjectMapper\Rules\UuidValue()]
 		#[ObjectMapper\Modifiers\FieldName('third_serial_number')]
-		private readonly string $thirdSerialNumber,
+		private readonly Uuid\UuidInterface $thirdSerialNumber,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('serial_number')]
 		private readonly string $serialNumber,
@@ -41,7 +43,7 @@ final class SyncDevicesPayloadEndpoint implements Entities\API\Entity
 	{
 	}
 
-	public function getThirdSerialNumber(): string
+	public function getThirdSerialNumber(): Uuid\UuidInterface
 	{
 		return $this->thirdSerialNumber;
 	}
@@ -57,7 +59,7 @@ final class SyncDevicesPayloadEndpoint implements Entities\API\Entity
 	public function toArray(): array
 	{
 		return [
-			'third_serial_number' => $this->getThirdSerialNumber(),
+			'third_serial_number' => $this->getThirdSerialNumber()->toString(),
 			'serial_number' => $this->getSerialNumber(),
 		];
 	}
@@ -65,7 +67,7 @@ final class SyncDevicesPayloadEndpoint implements Entities\API\Entity
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->third_serial_number = $this->getThirdSerialNumber();
+		$json->third_serial_number = $this->getThirdSerialNumber()->toString();
 		$json->serial_number = $this->getSerialNumber();
 
 		return $json;

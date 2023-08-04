@@ -63,7 +63,7 @@ final class GetGatewayAccessToken implements Entities\API\Entity
 	{
 		return [
 			'error' => $this->getError(),
-			'data' => $this->getData(),
+			'data' => $this->getData()->toArray(),
 			'message' => $this->getMessage(),
 		];
 	}

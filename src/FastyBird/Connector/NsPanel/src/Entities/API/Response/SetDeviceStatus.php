@@ -55,7 +55,7 @@ final class SetDeviceStatus implements Entities\API\Entity
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->event = $this->getEvent();
+		$json->event = $this->getEvent()->toJson();
 
 		return $json;
 	}

@@ -19,6 +19,7 @@ use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use Orisai\ObjectMapper;
+use Ramsey\Uuid;
 use stdClass;
 use function array_map;
 use function is_array;
@@ -57,11 +58,11 @@ final class GetSubDevicesDataSubDevice implements Entities\API\Entity
 		#[ObjectMapper\Rules\MappedObjectValue(Entities\API\State::class)]
 		private readonly Entities\API\State $state,
 		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new BootstrapObjectMapper\Rules\UuidValue(),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('third_serial_number')]
-		private readonly string|null $thirdSerialNumber = null,
+		private readonly Uuid\UuidInterface|null $thirdSerialNumber = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
@@ -149,7 +150,7 @@ final class GetSubDevicesDataSubDevice implements Entities\API\Entity
 		return $this->displayCategory;
 	}
 
-	public function getThirdSerialNumber(): string|null
+	public function getThirdSerialNumber(): Uuid\UuidInterface|null
 	{
 		return $this->thirdSerialNumber;
 	}
@@ -220,7 +221,7 @@ final class GetSubDevicesDataSubDevice implements Entities\API\Entity
 	{
 		return [
 			'serial_number' => $this->getSerialNumber(),
-			'third_serial_number' => $this->getThirdSerialNumber(),
+			'third_serial_number' => $this->getThirdSerialNumber()?->toString(),
 			'service_address' => $this->getServiceAddress(),
 			'name' => $this->getName(),
 			'manufacturer' => $this->getManufacturer(),
@@ -261,7 +262,7 @@ final class GetSubDevicesDataSubDevice implements Entities\API\Entity
 		$json = new stdClass();
 		$json->serial_number = $this->getSerialNumber();
 		if ($this->getThirdSerialNumber() !== null) {
-			$json->third_serial_number = $this->getThirdSerialNumber();
+			$json->third_serial_number = $this->getThirdSerialNumber()->toString();
 			$json->service_address = $this->getServiceAddress();
 		}
 

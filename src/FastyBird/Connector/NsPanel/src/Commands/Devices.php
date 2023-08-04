@@ -2470,11 +2470,13 @@ class Devices extends Console\Command\Command
 			throw new Exceptions\InvalidState('Capability definition is missing required attributes');
 		}
 
-		$protocols = (array) $capabilityMetadata->offsetGet('protocol');
+		$capabilityProtocols = (array) $capabilityMetadata->offsetGet('protocol');
 
 		$protocolsMetadata = $this->loader->loadProtocols();
 
-		foreach ($protocols as $type) {
+		$protocols = [];
+
+		foreach ($capabilityProtocols as $type) {
 			if (
 				$protocolsMetadata->offsetExists($type)
 				&& $protocolsMetadata->offsetGet($type) instanceof Utils\ArrayHash

@@ -16,8 +16,11 @@
 namespace FastyBird\Connector\NsPanel\Entities\API\Request;
 
 use FastyBird\Connector\NsPanel\Entities;
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use Orisai\ObjectMapper;
+use Ramsey\Uuid;
 use stdClass;
+use function is_array;
 
 /**
  * NS Panel requested set device status directive endpoint request definition
@@ -30,18 +33,35 @@ use stdClass;
 final class SetDeviceStatusDirectiveEndpoint implements Entities\API\Entity
 {
 
+	/**
+	 * @param array<string, string|array<string, string>> $tags
+	 */
 	public function __construct(
-		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		#[BootstrapObjectMapper\Rules\UuidValue()]
 		#[ObjectMapper\Modifiers\FieldName('third_serial_number')]
-		private readonly string $thirdSerialNumber,
+		private readonly Uuid\UuidInterface $thirdSerialNumber,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('serial_number')]
 		private readonly string $serialNumber,
+		#[ObjectMapper\Rules\ArrayOf(
+			item: new ObjectMapper\Rules\AnyOf([
+				new ObjectMapper\Rules\StringValue(),
+				new ObjectMapper\Rules\ArrayOf(
+					item: new ObjectMapper\Rules\StringValue(),
+					key: new ObjectMapper\Rules\AnyOf([
+						new ObjectMapper\Rules\StringValue(),
+						new ObjectMapper\Rules\IntValue(),
+					]),
+				),
+			]),
+			key: new ObjectMapper\Rules\StringValue(),
+		)]
+		private readonly array $tags = [],
 	)
 	{
 	}
 
-	public function getThirdSerialNumber(): string
+	public function getThirdSerialNumber(): Uuid\UuidInterface
 	{
 		return $this->thirdSerialNumber;
 	}
@@ -52,21 +72,45 @@ final class SetDeviceStatusDirectiveEndpoint implements Entities\API\Entity
 	}
 
 	/**
+	 * @return array<string, string|array<string, string>>
+	 */
+	public function getTags(): array
+	{
+		return $this->tags;
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public function toArray(): array
 	{
 		return [
-			'third_serial_number' => $this->getThirdSerialNumber(),
+			'third_serial_number' => $this->getThirdSerialNumber()->toString(),
 			'serial_number' => $this->getSerialNumber(),
+			'tags' => $this->getTags(),
 		];
 	}
 
 	public function toJson(): object
 	{
+		$tags = new stdClass();
+
+		foreach ($this->getTags() as $name => $value) {
+			if (is_array($value)) {
+				$tags->{$name} = new stdClass();
+
+				foreach ($value as $subName => $subValue) {
+					$tags->{$name}->{$subName} = $subValue;
+				}
+			} else {
+				$tags->{$name} = $value;
+			}
+		}
+
 		$json = new stdClass();
-		$json->third_serial_number = $this->getThirdSerialNumber();
+		$json->third_serial_number = $this->getThirdSerialNumber()->toString();
 		$json->serial_number = $this->getSerialNumber();
+		$json->tags = $tags;
 
 		return $json;
 	}

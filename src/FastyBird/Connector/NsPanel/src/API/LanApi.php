@@ -727,7 +727,7 @@ final class LanApi
 			$error = $this->createEntity(Entities\API\Response\ErrorEvent::class, $errorBody);
 
 			$this->logger->error(
-				'Read NS Panel access token failed',
+				'Synchronise third-party devices failed',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 					'type' => 'lan-api',
@@ -743,7 +743,7 @@ final class LanApi
 			);
 
 			throw new Exceptions\LanApiCall(
-				sprintf('Getting gateway access token failed: %s', $error->getPayload()->getDescription()),
+				sprintf('Synchronise third-party devices failed: %s', $error->getPayload()->getDescription()),
 			);
 		}
 
@@ -766,7 +766,7 @@ final class LanApi
 			$error = $this->createEntity(Entities\API\Response\ErrorEvent::class, $errorBody);
 
 			$this->logger->error(
-				'Read NS Panel access token failed',
+				'Report third-party device status failed',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 					'type' => 'lan-api',
@@ -782,7 +782,7 @@ final class LanApi
 			);
 
 			throw new Exceptions\LanApiCall(
-				sprintf('Getting gateway access token failed: %s', $error->getPayload()->getDescription()),
+				sprintf('Report third-party device status failed: %s', $error->getPayload()->getDescription()),
 			);
 		}
 
@@ -805,7 +805,7 @@ final class LanApi
 			$error = $this->createEntity(Entities\API\Response\ErrorEvent::class, $errorBody);
 
 			$this->logger->error(
-				'Read NS Panel access token failed',
+				'Report third-party device state failed',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 					'type' => 'lan-api',
@@ -821,7 +821,7 @@ final class LanApi
 			);
 
 			throw new Exceptions\LanApiCall(
-				sprintf('Getting gateway access token failed: %s', $error->getPayload()->getDescription()),
+				sprintf('Report third-party device state failed: %s', $error->getPayload()->getDescription()),
 			);
 		}
 

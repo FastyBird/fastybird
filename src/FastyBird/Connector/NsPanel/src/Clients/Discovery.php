@@ -219,7 +219,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 							'id' => $this->connector->getId()->toString(),
 						],
 						'device' => [
-							'identifier' => $subDevice->getThirdSerialNumber(),
+							'identifier' => $subDevice->getSerialNumber(),
 						],
 						'error' => $errorPrinter->printError($ex),
 					],

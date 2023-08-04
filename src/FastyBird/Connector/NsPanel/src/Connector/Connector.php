@@ -19,6 +19,7 @@ use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Clients;
 use FastyBird\Connector\NsPanel\Consumers;
 use FastyBird\Connector\NsPanel\Entities;
+use FastyBird\Connector\NsPanel\Servers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Connectors as DevicesConnectors;
@@ -47,6 +48,8 @@ final class Connector implements DevicesConnectors\Connector
 	/** @var array<Clients\Client|Clients\Discovery> */
 	private array $clients = [];
 
+	private Servers\Server|null $server = null;
+
 	private EventLoop\TimerInterface|null $consumerTimer = null;
 
 	/**
@@ -56,6 +59,7 @@ final class Connector implements DevicesConnectors\Connector
 		private readonly DevicesEntities\Connectors\Connector $connector,
 		private readonly array $clientsFactories,
 		private readonly Clients\DiscoveryFactory $discoveryClientFactory,
+		private readonly Servers\ServerFactory $serverFactory,
 		private readonly NsPanel\Logger $logger,
 		private readonly Consumers\Messages $consumer,
 		private readonly EventLoop\LoopInterface $eventLoop,
@@ -84,6 +88,9 @@ final class Connector implements DevicesConnectors\Connector
 
 			$this->clients[] = $client;
 		}
+
+		$this->server = $this->serverFactory->create($this->connector);
+		$this->server->connect();
 
 		$this->consumerTimer = $this->eventLoop->addPeriodicTimer(
 			self::QUEUE_PROCESSING_INTERVAL,
@@ -123,6 +130,8 @@ final class Connector implements DevicesConnectors\Connector
 				],
 			],
 		);
+
+		$this->server?->disconnect();
 
 		$client = $this->discoveryClientFactory->create($this->connector);
 		$client->discover();

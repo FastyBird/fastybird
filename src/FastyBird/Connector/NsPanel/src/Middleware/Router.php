@@ -68,7 +68,6 @@ final class Router
 		try {
 			$response = $this->router->handle($request);
 			$response = $response->withHeader('Server', 'FastyBird NS Panel Connector');
-
 		} catch (Exceptions\ServerRequestError $ex) {
 			$this->logger->warning(
 				'Request ended with error',

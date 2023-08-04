@@ -182,6 +182,15 @@ class NsPanelExtension extends DI\CompilerExtension
 			]);
 
 		$builder->addDefinition(
+			$this->prefix('consumers.messages.deviceSynchronisation'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Consumers\Messages\DeviceSynchronisation::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
+
+		$builder->addDefinition(
 			$this->prefix('consumers.messages.subDeviceDiscovery'),
 			new DI\Definitions\ServiceDefinition(),
 		)

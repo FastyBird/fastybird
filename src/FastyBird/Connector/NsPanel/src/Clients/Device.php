@@ -34,7 +34,6 @@ use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Orisai\ObjectMapper;
-use Ramsey\Uuid;
 use React\Promise;
 use Throwable;
 use function array_key_exists;
@@ -45,6 +44,7 @@ use function is_array;
 use function is_string;
 use function preg_match;
 use function sprintf;
+use function var_dump;
 
 /**
  * Connector third-party device client
@@ -112,6 +112,18 @@ final class Device implements Client
 					$capabilities = [];
 					$statuses = [];
 					$tags = [];
+
+					// INFO: NS Panel has bug, RSSI capability is required
+					$capabilities[] = [
+						'capability' => Types\Capability::RSSI,
+						'permission' => Types\Permission::READ,
+						'name' => null,
+					];
+					$statuses[] = [
+						Types\Capability::RSSI => [
+							Types\Protocol::RSSI => 0,
+						],
+					];
 
 					foreach ($device->getChannels() as $channel) {
 						assert($channel instanceof Entities\NsPanelChannel);
@@ -196,7 +208,7 @@ final class Device implements Client
 				$ipAddress,
 				$accessToken,
 			)
-				->then(function () use ($gateway): void {
+				->then(function (Entities\API\Response\SyncDevices $response) use ($gateway): void {
 					$this->logger->debug(
 						'NS Panel third-party devices was successfully synchronised',
 						[
@@ -210,6 +222,48 @@ final class Device implements Client
 							],
 						],
 					);
+
+					foreach ($response->getPayload()->getEndpoints() as $endpoint) {
+						$findDeviceQuery = new Queries\FindThirdPartyDevices();
+						$findDeviceQuery->byId($endpoint->getThirdSerialNumber());
+						$findDeviceQuery->forConnector($this->connector);
+						$findDeviceQuery->forParent($gateway);
+
+						$device = $this->devicesRepository->findOneBy(
+							$findDeviceQuery,
+							Entities\Devices\ThirdPartyDevice::class,
+						);
+
+						if ($device !== null) {
+							$this->consumer->append(
+								$this->createEntity(
+									Entities\Messages\DeviceSynchronisation::class,
+									[
+										'connector' => $this->connector->getId()->toString(),
+										'identifier' => $device->getIdentifier(),
+										'gateway_identifier' => $endpoint->getSerialNumber(),
+									],
+								),
+							);
+						} else {
+							$this->logger->error(
+								'Could not finish third-party device synchronisation',
+								[
+									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+									'type' => 'device-client',
+									'connector' => [
+										'id' => $this->connector->getId()->toString(),
+									],
+									'gateway' => [
+										'id' => $gateway->getId()->toString(),
+									],
+									'device' => [
+										'id' => $endpoint->getThirdSerialNumber()->toString(),
+									],
+								],
+							);
+						}
+					}
 				})
 				->otherwise(function (Throwable $ex) use ($gateway): void {
 					$this->logger->error(
@@ -235,7 +289,7 @@ final class Device implements Client
 							if ($subDevice->getThirdSerialNumber() !== null) {
 								$findDevicesQuery = new Queries\FindThirdPartyDevices();
 								$findDevicesQuery->forParent($gateway);
-								$findDevicesQuery->byId(Uuid\Uuid::fromString($subDevice->getThirdSerialNumber()));
+								$findDevicesQuery->byId($subDevice->getThirdSerialNumber());
 
 								$device = $this->devicesRepository->findOneBy(
 									$findDevicesQuery,
@@ -261,7 +315,7 @@ final class Device implements Client
 														'id' => $gateway->getId()->toString(),
 													],
 													'device' => [
-														'id' => $subDevice->getThirdSerialNumber(),
+														'id' => $subDevice->getThirdSerialNumber()->toString(),
 													],
 												],
 											);
@@ -280,7 +334,7 @@ final class Device implements Client
 														'id' => $gateway->getId()->toString(),
 													],
 													'device' => [
-														'id' => $subDevice->getThirdSerialNumber(),
+														'id' => $subDevice->getThirdSerialNumber()->toString(),
 													],
 												],
 											);
@@ -459,6 +513,9 @@ final class Device implements Client
 		if ($status === null) {
 			return Promise\reject(new Exceptions\LanApiCall('Device capability status could not be created'));
 		}
+
+		var_dump('REPORT');
+		var_dump($status);
 
 		return $this->lanApiApi->reportDeviceStatus(
 			$serialNumber,

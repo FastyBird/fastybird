@@ -23,7 +23,6 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Ramsey\Uuid;
-use function count;
 use function is_string;
 
 /**
@@ -34,9 +33,6 @@ class ThirdPartyDevice extends Entities\NsPanelDevice
 
 	public const DEVICE_TYPE = 'ns-panel-third-party-device';
 
-	/**
-	 * @throws Exceptions\InvalidState
-	 */
 	public function __construct(
 		string $identifier,
 		Gateway $parent,
@@ -65,25 +61,13 @@ class ThirdPartyDevice extends Entities\NsPanelDevice
 	 */
 	public function getGateway(): Gateway
 	{
-		$parent = $this->parents->first();
-
-		if (!$parent instanceof Gateway) {
-			throw new Exceptions\InvalidState('Sub-device have to have parent gateway defined');
+		foreach ($this->parents->toArray() as $parent) {
+			if ($parent instanceof Gateway) {
+				return $parent;
+			}
 		}
 
-		return $parent;
-	}
-
-	/**
-	 * @throws Exceptions\InvalidState
-	 */
-	public function setParents(array $parents): void
-	{
-		if (count($parents) !== 1 || !$parents[0] instanceof Gateway) {
-			throw new Exceptions\InvalidState('Sub-device could have only one parent and it have to be gateway');
-		}
-
-		parent::setParents($parents);
+		throw new Exceptions\InvalidState('Third-party device have to have parent gateway defined');
 	}
 
 	/**

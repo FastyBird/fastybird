@@ -90,7 +90,7 @@ final class DirectiveController extends BaseController
 	 * @throws RuntimeException
 	 * @throws Utils\JsonException
 	 */
-	public function index(
+	public function process(
 		Message\ServerRequestInterface $request,
 		Message\ResponseInterface $response,
 	): Message\ResponseInterface
@@ -119,7 +119,7 @@ final class DirectiveController extends BaseController
 			$options->setAllowUnknownFields();
 
 			$requestData = $this->entityMapper->process(
-				Utils\Json::decode($request->getBody()->getContents()),
+				Utils\Json::decode($request->getBody()->getContents(), Utils\Json::FORCE_ARRAY),
 				Entities\API\Request\SetDeviceStatus::class,
 				$options,
 			);

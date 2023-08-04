@@ -19,6 +19,7 @@ use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use Orisai\ObjectMapper;
+use Ramsey\Uuid;
 use stdClass;
 use function array_map;
 use function is_array;
@@ -39,9 +40,9 @@ final class SyncDevicesEventPayloadEndpoint implements Entities\API\Entity
 	 * @param array<string, string|array<string, string>> $tags
 	 */
 	public function __construct(
-		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		#[BootstrapObjectMapper\Rules\UuidValue()]
 		#[ObjectMapper\Modifiers\FieldName('third_serial_number')]
-		private readonly string $thirdSerialNumber,
+		private readonly Uuid\UuidInterface $thirdSerialNumber,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $name,
 		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\Category::class)]
@@ -83,7 +84,7 @@ final class SyncDevicesEventPayloadEndpoint implements Entities\API\Entity
 	{
 	}
 
-	public function getThirdSerialNumber(): string
+	public function getThirdSerialNumber(): Uuid\UuidInterface
 	{
 		return $this->thirdSerialNumber;
 	}
@@ -153,7 +154,7 @@ final class SyncDevicesEventPayloadEndpoint implements Entities\API\Entity
 	public function toArray(): array
 	{
 		return [
-			'third_serial_number' => $this->getThirdSerialNumber(),
+			'third_serial_number' => $this->getThirdSerialNumber()->toString(),
 			'name' => $this->getName(),
 			'display_category' => $this->getDisplayCategory()->getValue(),
 			'capabilities' => array_map(

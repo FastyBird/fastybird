@@ -43,8 +43,8 @@ use function is_array;
 final class DiscoveredSubDevice implements Consumers\Consumer
 {
 
-	use Nette\SmartObject;
 	use ConsumeDeviceProperty;
+	use Nette\SmartObject;
 
 	public function __construct(
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,

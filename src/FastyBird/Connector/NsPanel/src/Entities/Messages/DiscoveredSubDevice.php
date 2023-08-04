@@ -57,11 +57,11 @@ final class DiscoveredSubDevice implements Entity
 		#[ObjectMapper\Modifiers\FieldName('display_category')]
 		private readonly Types\Category $displayCategory,
 		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new BootstrapObjectMapper\Rules\UuidValue(),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('third_serial_number')]
-		private readonly string|null $thirdSerialNumber = null,
+		private readonly Uuid\UuidInterface|null $thirdSerialNumber = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
@@ -159,7 +159,7 @@ final class DiscoveredSubDevice implements Entity
 		return $this->displayCategory;
 	}
 
-	public function getThirdSerialNumber(): string|null
+	public function getThirdSerialNumber(): Uuid\UuidInterface|null
 	{
 		return $this->thirdSerialNumber;
 	}
@@ -222,7 +222,7 @@ final class DiscoveredSubDevice implements Entity
 	{
 		return [
 			'serial_number' => $this->getSerialNumber(),
-			'third_serial_number' => $this->getThirdSerialNumber(),
+			'third_serial_number' => $this->getThirdSerialNumber()?->toString(),
 			'service_address' => $this->getServiceAddress(),
 			'name' => $this->getName(),
 			'manufacturer' => $this->getManufacturer(),
