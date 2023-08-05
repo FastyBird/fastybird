@@ -67,8 +67,12 @@ final class Transformer
 
 		$value = DevicesUtilities\ValueHelper::flattenValue($value);
 
+		if ($value === null) {
+			return null;
+		}
+
 		if ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_STRING)) {
-			return strval($value);
+			return self::valueToString($value);
 		}
 
 		if ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BOOLEAN)) {
@@ -118,14 +122,12 @@ final class Transformer
 			if ($format instanceof MetadataValueObjects\StringEnumFormat) {
 				$filtered = array_values(array_filter(
 					$format->getItems(),
-					static fn (string $item): bool => Utils\Strings::lower(strval($value)) === $item,
+					static fn (string $item): bool => self::valueToString($value) === $item,
 				));
 
 				if (count($filtered) === 1) {
-					return MetadataTypes\SwitchPayload::isValidValue(strval($value))
-						? MetadataTypes\SwitchPayload::get(
-							strval($value),
-						)
+					return MetadataTypes\SwitchPayload::isValidValue(self::valueToString($value))
+						? MetadataTypes\SwitchPayload::get(self::valueToString($value))
 						: null;
 				}
 
@@ -134,9 +136,7 @@ final class Transformer
 				$filtered = array_values(array_filter(
 					$format->getItems(),
 					static fn (array $item): bool => $item[1] !== null
-						&& Utils\Strings::lower(strval($item[1]->getValue())) === Utils\Strings::lower(
-							strval($value),
-						),
+						&& self::valueToString($item[1]->getValue()) === self::valueToString($value),
 				));
 
 				if (
@@ -144,9 +144,7 @@ final class Transformer
 					&& $filtered[0][0] instanceof MetadataValueObjects\CombinedEnumFormatItem
 				) {
 					return MetadataTypes\SwitchPayload::isValidValue(strval($filtered[0][0]->getValue()))
-						? MetadataTypes\SwitchPayload::get(
-							strval($filtered[0][0]->getValue()),
-						)
+						? MetadataTypes\SwitchPayload::get(strval($filtered[0][0]->getValue()))
 						: null;
 				}
 
@@ -158,14 +156,12 @@ final class Transformer
 			if ($format instanceof MetadataValueObjects\StringEnumFormat) {
 				$filtered = array_values(array_filter(
 					$format->getItems(),
-					static fn (string $item): bool => Utils\Strings::lower(strval($value)) === $item,
+					static fn (string $item): bool => self::valueToString($value) === $item,
 				));
 
 				if (count($filtered) === 1) {
-					return MetadataTypes\ButtonPayload::isValidValue(strval($value))
-						? MetadataTypes\ButtonPayload::get(
-							strval($value),
-						)
+					return MetadataTypes\ButtonPayload::isValidValue(self::valueToString($value))
+						? MetadataTypes\ButtonPayload::get(self::valueToString($value))
 						: null;
 				}
 
@@ -174,9 +170,7 @@ final class Transformer
 				$filtered = array_values(array_filter(
 					$format->getItems(),
 					static fn (array $item): bool => $item[1] !== null
-						&& Utils\Strings::lower(strval($item[1]->getValue())) === Utils\Strings::lower(
-							strval($value),
-						),
+						&& self::valueToString($item[1]->getValue()) === self::valueToString($value),
 				));
 
 				if (
@@ -184,9 +178,7 @@ final class Transformer
 					&& $filtered[0][0] instanceof MetadataValueObjects\CombinedEnumFormatItem
 				) {
 					return MetadataTypes\ButtonPayload::isValidValue(strval($filtered[0][0]->getValue()))
-						? MetadataTypes\ButtonPayload::get(
-							strval($filtered[0][0]->getValue()),
-						)
+						? MetadataTypes\ButtonPayload::get(strval($filtered[0][0]->getValue()))
 						: null;
 				}
 
@@ -198,11 +190,11 @@ final class Transformer
 			if ($format instanceof MetadataValueObjects\StringEnumFormat) {
 				$filtered = array_values(array_filter(
 					$format->getItems(),
-					static fn (string $item): bool => Utils\Strings::lower(strval($value)) === $item,
+					static fn (string $item): bool => self::valueToString($value) === $item,
 				));
 
 				if (count($filtered) === 1) {
-					return strval($value);
+					return self::valueToString($value);
 				}
 
 				return null;
@@ -210,9 +202,7 @@ final class Transformer
 				$filtered = array_values(array_filter(
 					$format->getItems(),
 					static fn (array $item): bool => $item[1] !== null
-						&& Utils\Strings::lower(strval($item[1]->getValue())) === Utils\Strings::lower(
-							strval($value),
-						),
+						&& self::valueToString($item[1]->getValue()) === self::valueToString($value),
 				));
 
 				if (
@@ -227,7 +217,7 @@ final class Transformer
 		}
 
 		if ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_DATETIME)) {
-			$value = Utils\DateTime::createFromFormat(DateTimeInterface::RFC3339_EXTENDED, strval($value));
+			$value = Utils\DateTime::createFromFormat(DateTimeInterface::RFC3339_EXTENDED, self::valueToString($value));
 
 			return $value === false ? null : $value;
 		}
@@ -261,13 +251,11 @@ final class Transformer
 			if ($format instanceof MetadataValueObjects\StringEnumFormat) {
 				$filtered = array_values(array_filter(
 					$format->getItems(),
-					static fn (string $item): bool => Utils\Strings::lower(
-						strval(DevicesUtilities\ValueHelper::flattenValue($value)),
-					) === $item,
+					static fn (string $item): bool => self::valueToString($value) === $item,
 				));
 
 				if (count($filtered) === 1) {
-					return strval(DevicesUtilities\ValueHelper::flattenValue($value));
+					return self::valueToString($value);
 				}
 
 				return null;
@@ -275,9 +263,7 @@ final class Transformer
 				$filtered = array_values(array_filter(
 					$format->getItems(),
 					static fn (array $item): bool => $item[0] !== null
-						&& Utils\Strings::lower(strval($item[0]->getValue())) === Utils\Strings::lower(
-							strval(DevicesUtilities\ValueHelper::flattenValue($value)),
-						),
+						&& self::valueToString($item[0]->getValue()) === self::valueToString($value),
 				));
 
 				if (
@@ -295,13 +281,11 @@ final class Transformer
 			if ($format instanceof MetadataValueObjects\StringEnumFormat) {
 				$filtered = array_values(array_filter(
 					$format->getItems(),
-					static fn (string $item): bool => Utils\Strings::lower(
-						strval(DevicesUtilities\ValueHelper::flattenValue($value)),
-					) === $item,
+					static fn (string $item): bool => self::valueToString($value) === $item,
 				));
 
 				if (count($filtered) === 1) {
-					return strval(DevicesUtilities\ValueHelper::flattenValue($value));
+					return self::valueToString($value);
 				}
 
 				return null;
@@ -309,9 +293,7 @@ final class Transformer
 				$filtered = array_values(array_filter(
 					$format->getItems(),
 					static fn (array $item): bool => $item[0] !== null
-						&& Utils\Strings::lower(strval($item[0]->getValue())) === Utils\Strings::lower(
-							strval(DevicesUtilities\ValueHelper::flattenValue($value)),
-						),
+						&& self::valueToString($item[0]->getValue()) === self::valueToString($value),
 				));
 
 				if (
@@ -329,13 +311,11 @@ final class Transformer
 			if ($format instanceof MetadataValueObjects\StringEnumFormat) {
 				$filtered = array_values(array_filter(
 					$format->getItems(),
-					static fn (string $item): bool => Utils\Strings::lower(
-						strval(DevicesUtilities\ValueHelper::flattenValue($value)),
-					) === $item,
+					static fn (string $item): bool => self::valueToString($value) === $item,
 				));
 
 				if (count($filtered) === 1) {
-					return strval(DevicesUtilities\ValueHelper::flattenValue($value));
+					return self::valueToString($value);
 				}
 
 				return null;
@@ -343,9 +323,7 @@ final class Transformer
 				$filtered = array_values(array_filter(
 					$format->getItems(),
 					static fn (array $item): bool => $item[0] !== null
-						&& Utils\Strings::lower(strval($item[0]->getValue())) === Utils\Strings::lower(
-							strval(DevicesUtilities\ValueHelper::flattenValue($value)),
-						),
+						&& self::valueToString($item[0]->getValue()) === self::valueToString($value),
 				));
 
 				if (
@@ -360,6 +338,19 @@ final class Transformer
 		}
 
 		return DevicesUtilities\ValueHelper::flattenValue($value);
+	}
+
+	private static function valueToString(
+		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload $value,
+	): string
+	{
+		$value = DevicesUtilities\ValueHelper::flattenValue($value);
+
+		if (is_bool($value)) {
+			return $value ? 'true' : 'false';
+		}
+
+		return Utils\Strings::lower(strval($value));
 	}
 
 }

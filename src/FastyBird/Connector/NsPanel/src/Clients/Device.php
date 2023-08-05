@@ -44,7 +44,6 @@ use function is_array;
 use function is_string;
 use function preg_match;
 use function sprintf;
-use function var_dump;
 
 /**
  * Connector third-party device client
@@ -82,8 +81,6 @@ final class Device implements Client
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\LanApiCall
-	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -113,27 +110,24 @@ final class Device implements Client
 					$statuses = [];
 					$tags = [];
 
-					// INFO: NS Panel has bug, RSSI capability is required
-					$capabilities[] = [
-						'capability' => Types\Capability::RSSI,
-						'permission' => Types\Permission::READ,
-						'name' => null,
-					];
-					$statuses[] = [
-						Types\Capability::RSSI => [
-							Types\Protocol::RSSI => 0,
-						],
-					];
-
 					foreach ($device->getChannels() as $channel) {
 						assert($channel instanceof Entities\NsPanelChannel);
+
+						$capabilityName = null;
+
+						if (
+							preg_match(NsPanel\Constants::STATE_NAME_KEY, $channel->getIdentifier(), $matches) === 1
+							&& array_key_exists('identifier', $matches)
+						) {
+							$capabilityName = $matches['identifier'];
+						}
 
 						$capabilities[] = [
 							'capability' => $channel->getCapability()->getValue(),
 							'permission' => Types\Permission::get(
 								$channel->getCapability()->hasReadWritePermission() ? Types\Permission::READ_WRITE : Types\Permission::READ,
 							)->getValue(),
-							'name' => $channel->getIdentifier(),
+							'name' => $capabilityName,
 						];
 
 						$status = $this->mapChannelToStatus($channel);
@@ -157,13 +151,16 @@ final class Device implements Client
 							}
 						}
 
-						if ($channel->getCapability()->equalsValue(Types\Capability::TOGGLE)) {
+						if (
+							$capabilityName !== null
+							&& $channel->getCapability()->equalsValue(Types\Capability::TOGGLE)
+						) {
 							if (!array_key_exists('toggle', $tags)) {
 								$tags['toggle'] = [];
 							}
 
 							if (is_array($tags['toggle'])) {
-								$tags['toggle'][$channel->getIdentifier()] = $channel->getName() ?? $channel->getIdentifier();
+								$tags['toggle'][$capabilityName] = $channel->getName() ?? $channel->getIdentifier();
 							}
 						}
 					}
@@ -190,176 +187,239 @@ final class Device implements Client
 				$devices,
 			);
 
-			foreach ($devices as $device) {
-				$this->consumer->append(
-					$this->createEntity(
-						Entities\Messages\DeviceState::class,
-						[
-							'connector' => $this->connector->getId()->toString(),
-							'identifier' => $device->getIdentifier(),
-							'state' => MetadataTypes\ConnectionState::STATE_RUNNING,
-						],
-					),
-				);
-			}
-
-			$this->lanApiApi->synchroniseDevices(
-				$syncDevices,
-				$ipAddress,
-				$accessToken,
-			)
-				->then(function (Entities\API\Response\SyncDevices $response) use ($gateway): void {
-					$this->logger->debug(
-						'NS Panel third-party devices was successfully synchronised',
-						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-							'type' => 'device-client',
-							'connector' => [
-								'id' => $this->connector->getId()->toString(),
+			try {
+				$this->lanApiApi->synchroniseDevices(
+					$syncDevices,
+					$ipAddress,
+					$accessToken,
+				)
+					->then(function (Entities\API\Response\SyncDevices $response) use ($gateway): void {
+						$this->logger->debug(
+							'NS Panel third-party devices was successfully synchronised',
+							[
+								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+								'type' => 'device-client',
+								'connector' => [
+									'id' => $this->connector->getId()->toString(),
+								],
+								'gateway' => [
+									'id' => $gateway->getId()->toString(),
+								],
 							],
-							'gateway' => [
-								'id' => $gateway->getId()->toString(),
-							],
-						],
-					);
-
-					foreach ($response->getPayload()->getEndpoints() as $endpoint) {
-						$findDeviceQuery = new Queries\FindThirdPartyDevices();
-						$findDeviceQuery->byId($endpoint->getThirdSerialNumber());
-						$findDeviceQuery->forConnector($this->connector);
-						$findDeviceQuery->forParent($gateway);
-
-						$device = $this->devicesRepository->findOneBy(
-							$findDeviceQuery,
-							Entities\Devices\ThirdPartyDevice::class,
 						);
 
-						if ($device !== null) {
-							$this->consumer->append(
-								$this->createEntity(
-									Entities\Messages\DeviceSynchronisation::class,
-									[
-										'connector' => $this->connector->getId()->toString(),
-										'identifier' => $device->getIdentifier(),
-										'gateway_identifier' => $endpoint->getSerialNumber(),
-									],
-								),
+						foreach ($response->getPayload()->getEndpoints() as $endpoint) {
+							$findDeviceQuery = new Queries\FindThirdPartyDevices();
+							$findDeviceQuery->byId($endpoint->getThirdSerialNumber());
+							$findDeviceQuery->forConnector($this->connector);
+							$findDeviceQuery->forParent($gateway);
+
+							$device = $this->devicesRepository->findOneBy(
+								$findDeviceQuery,
+								Entities\Devices\ThirdPartyDevice::class,
 							);
-						} else {
-							$this->logger->error(
-								'Could not finish third-party device synchronisation',
+
+							if ($device !== null) {
+								$this->consumer->append(
+									$this->createEntity(
+										Entities\Messages\DeviceState::class,
+										[
+											'connector' => $this->connector->getId()->toString(),
+											'identifier' => $device->getIdentifier(),
+											'state' => MetadataTypes\ConnectionState::STATE_CONNECTED,
+										],
+									),
+								);
+
+								$this->consumer->append(
+									$this->createEntity(
+										Entities\Messages\DeviceSynchronisation::class,
+										[
+											'connector' => $this->connector->getId()->toString(),
+											'identifier' => $device->getIdentifier(),
+											'gateway_identifier' => $endpoint->getSerialNumber(),
+										],
+									),
+								);
+							} else {
+								$this->logger->error(
+									'Could not finish third-party device synchronisation',
+									[
+										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+										'type' => 'device-client',
+										'connector' => [
+											'id' => $this->connector->getId()->toString(),
+										],
+										'gateway' => [
+											'id' => $gateway->getId()->toString(),
+										],
+										'device' => [
+											'id' => $endpoint->getThirdSerialNumber()->toString(),
+										],
+									],
+								);
+							}
+						}
+					})
+					->otherwise(function (Throwable $ex) use ($gateway): void {
+						$extra = [];
+
+						if ($ex instanceof Exceptions\LanApiCall) {
+							$extra = [
+								'request' => [
+									'body' => $ex->getRequest()?->getBody()->getContents(),
+								],
+								'response' => [
+									'body' => $ex->getRequest()?->getBody()->getContents(),
+								],
+							];
+						}
+
+						$this->logger->error(
+							'Could not synchronise third-party devices with NS Panel',
+							array_merge(
 								[
 									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 									'type' => 'device-client',
+									'exception' => BootstrapHelpers\Logger::buildException($ex),
 									'connector' => [
 										'id' => $this->connector->getId()->toString(),
 									],
 									'gateway' => [
 										'id' => $gateway->getId()->toString(),
 									],
-									'device' => [
-										'id' => $endpoint->getThirdSerialNumber()->toString(),
-									],
 								],
-							);
-						}
-					}
-				})
-				->otherwise(function (Throwable $ex) use ($gateway): void {
-					$this->logger->error(
-						'Could not synchronise third-party devices with NS Panel',
-						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-							'type' => 'device-client',
-							'exception' => BootstrapHelpers\Logger::buildException($ex),
-							'connector' => [
-								'id' => $this->connector->getId()->toString(),
-							],
-							'gateway' => [
-								'id' => $gateway->getId()->toString(),
-							],
-						],
-					);
-				});
+								$extra,
+							),
+						);
+					});
 
-			$this->lanApiApi->getSubDevices($ipAddress, $accessToken)
-				->then(
-					function (Entities\API\Response\GetSubDevices $response) use ($gateway, $ipAddress, $accessToken): void {
-						foreach ($response->getData()->getDevicesList() as $subDevice) {
-							if ($subDevice->getThirdSerialNumber() !== null) {
-								$findDevicesQuery = new Queries\FindThirdPartyDevices();
-								$findDevicesQuery->forParent($gateway);
-								$findDevicesQuery->byId($subDevice->getThirdSerialNumber());
+				$this->lanApiApi->getSubDevices($ipAddress, $accessToken)
+					->then(
+						function (Entities\API\Response\GetSubDevices $response) use ($gateway, $ipAddress, $accessToken): void {
+							foreach ($response->getData()->getDevicesList() as $subDevice) {
+								if ($subDevice->getThirdSerialNumber() !== null) {
+									$findDevicesQuery = new Queries\FindThirdPartyDevices();
+									$findDevicesQuery->forParent($gateway);
+									$findDevicesQuery->byId($subDevice->getThirdSerialNumber());
 
-								$device = $this->devicesRepository->findOneBy(
-									$findDevicesQuery,
-									Entities\Devices\ThirdPartyDevice::class,
-								);
+									$device = $this->devicesRepository->findOneBy(
+										$findDevicesQuery,
+										Entities\Devices\ThirdPartyDevice::class,
+									);
 
-								if ($device === null) {
-									$this->lanApiApi->removeDevice(
-										$subDevice->getSerialNumber(),
-										$ipAddress,
-										$accessToken,
-									)
-										->then(function () use ($gateway, $subDevice): void {
-											$this->logger->debug(
-												'Removed third-party from NS Panel',
-												[
-													'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-													'type' => 'device-client',
-													'connector' => [
-														'id' => $this->connector->getId()->toString(),
+									if ($device === null) {
+										$this->lanApiApi->removeDevice(
+											$subDevice->getSerialNumber(),
+											$ipAddress,
+											$accessToken,
+										)
+											->then(function () use ($gateway, $subDevice): void {
+												$this->logger->debug(
+													'Removed third-party from NS Panel',
+													[
+														'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+														'type' => 'device-client',
+														'connector' => [
+															'id' => $this->connector->getId()->toString(),
+														],
+														'gateway' => [
+															'id' => $gateway->getId()->toString(),
+														],
+														'device' => [
+															'id' => $subDevice->getThirdSerialNumber()->toString(),
+														],
 													],
-													'gateway' => [
-														'id' => $gateway->getId()->toString(),
-													],
-													'device' => [
-														'id' => $subDevice->getThirdSerialNumber()->toString(),
-													],
-												],
-											);
-										})
-										->otherwise(function (Throwable $ex) use ($gateway, $subDevice): void {
-											$this->logger->error(
-												'Could not remove deleted third-party device from NS Panel',
-												[
-													'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-													'type' => 'device-client',
-													'exception' => BootstrapHelpers\Logger::buildException($ex),
-													'connector' => [
-														'id' => $this->connector->getId()->toString(),
-													],
-													'gateway' => [
-														'id' => $gateway->getId()->toString(),
-													],
-													'device' => [
-														'id' => $subDevice->getThirdSerialNumber()->toString(),
-													],
-												],
-											);
-										});
+												);
+											})
+											->otherwise(function (Throwable $ex) use ($gateway, $subDevice): void {
+												$extra = [];
+
+												if ($ex instanceof Exceptions\LanApiCall) {
+													$extra = [
+														'request' => [
+															'body' => $ex->getRequest()?->getBody()->getContents(),
+														],
+														'response' => [
+															'body' => $ex->getRequest()?->getBody()->getContents(),
+														],
+													];
+												}
+
+												$this->logger->error(
+													'Could not remove deleted third-party device from NS Panel',
+													array_merge(
+														[
+															'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+															'type' => 'device-client',
+															'exception' => BootstrapHelpers\Logger::buildException($ex),
+															'connector' => [
+																'id' => $this->connector->getId()->toString(),
+															],
+															'gateway' => [
+																'id' => $gateway->getId()->toString(),
+															],
+															'device' => [
+																'id' => $subDevice->getThirdSerialNumber()->toString(),
+															],
+														],
+														$extra,
+													),
+												);
+											});
+									}
 								}
 							}
+						},
+					)
+					->otherwise(function (Throwable $ex) use ($gateway): void {
+						$extra = [];
+
+						if ($ex instanceof Exceptions\LanApiCall) {
+							$extra = [
+								'request' => [
+									'body' => $ex->getRequest()?->getBody()->getContents(),
+								],
+								'response' => [
+									'body' => $ex->getRequest()?->getBody()->getContents(),
+								],
+							];
 						}
-					},
-				)
-				->otherwise(function (Throwable $ex) use ($gateway): void {
-					$this->logger->error(
-						'Could not fetch NS Panel registered devices',
-						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-							'type' => 'device-client',
-							'exception' => BootstrapHelpers\Logger::buildException($ex),
-							'connector' => [
-								'id' => $this->connector->getId()->toString(),
-							],
-							'gateway' => [
-								'id' => $gateway->getId()->toString(),
-							],
+
+						$this->logger->error(
+							'Could not fetch NS Panel registered devices',
+							array_merge(
+								[
+									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+									'type' => 'device-client',
+									'exception' => BootstrapHelpers\Logger::buildException($ex),
+									'connector' => [
+										'id' => $this->connector->getId()->toString(),
+									],
+									'gateway' => [
+										'id' => $gateway->getId()->toString(),
+									],
+								],
+								$extra,
+							),
+						);
+					});
+			} catch (Throwable $ex) {
+				$this->logger->error(
+					'An unhandled error occur',
+					[
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+						'type' => 'device-client',
+						'exception' => BootstrapHelpers\Logger::buildException($ex),
+						'connector' => [
+							'id' => $this->connector->getId()->toString(),
 						],
-					);
-				});
+						'gateway' => [
+							'id' => $gateway->getId()->toString(),
+						],
+					],
+				);
+			}
 		}
 
 		$this->writer->connect($this->connector, $this);
@@ -367,7 +427,6 @@ final class Device implements Client
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\LanApiCall
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -395,60 +454,6 @@ final class Device implements Client
 				$findDevicesQuery,
 				Entities\Devices\ThirdPartyDevice::class,
 			) as $device) {
-				try {
-					$serialNumber = $device->getGatewayIdentifier();
-
-					if ($serialNumber === null) {
-						continue;
-					}
-				} catch (Throwable) {
-					continue;
-				}
-
-				$this->lanApiApi->reportDeviceState(
-					$serialNumber,
-					false,
-					$ipAddress,
-					$accessToken,
-				)
-					->then(function () use ($gateway, $device): void {
-						$this->logger->debug(
-							'State for NS Panel third-party device was successfully updated',
-							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-								'type' => 'device-client',
-								'connector' => [
-									'id' => $this->connector->getId()->toString(),
-								],
-								'gateway' => [
-									'id' => $gateway->getId()->toString(),
-								],
-								'device' => [
-									'id' => $device->getId()->toString(),
-								],
-							],
-						);
-					})
-					->otherwise(function (Throwable $ex) use ($gateway, $device): void {
-						$this->logger->error(
-							'State for NS Panel third-party device could not be updated',
-							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-								'type' => 'device-client',
-								'exception' => BootstrapHelpers\Logger::buildException($ex),
-								'connector' => [
-									'id' => $this->connector->getId()->toString(),
-								],
-								'gateway' => [
-									'id' => $gateway->getId()->toString(),
-								],
-								'device' => [
-									'id' => $device->getId()->toString(),
-								],
-							],
-						);
-					});
-
 				$this->consumer->append(
 					$this->createEntity(
 						Entities\Messages\DeviceState::class,
@@ -459,7 +464,102 @@ final class Device implements Client
 						],
 					),
 				);
+
+				try {
+					$serialNumber = $device->getGatewayIdentifier();
+
+					if ($serialNumber === null) {
+						continue;
+					}
+				} catch (Throwable) {
+					continue;
+				}
+
+				try {
+					$this->lanApiApi->reportDeviceState(
+						$serialNumber,
+						false,
+						$ipAddress,
+						$accessToken,
+					)
+						->then(function () use ($gateway, $device): void {
+							$this->logger->debug(
+								'State for NS Panel third-party device was successfully updated',
+								[
+									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+									'type' => 'device-client',
+									'connector' => [
+										'id' => $this->connector->getId()->toString(),
+									],
+									'gateway' => [
+										'id' => $gateway->getId()->toString(),
+									],
+									'device' => [
+										'id' => $device->getId()->toString(),
+									],
+								],
+							);
+						})
+						->otherwise(function (Throwable $ex) use ($gateway): void {
+							$extra = [];
+
+							if ($ex instanceof Exceptions\LanApiCall) {
+								$extra = [
+									'request' => [
+										'body' => $ex->getRequest()?->getBody()->getContents(),
+									],
+									'response' => [
+										'body' => $ex->getRequest()?->getBody()->getContents(),
+									],
+								];
+							}
+
+							$this->logger->error(
+								'State for NS Panel third-party device could not be updated',
+								array_merge(
+									[
+										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+										'type' => 'device-client',
+										'exception' => BootstrapHelpers\Logger::buildException($ex),
+										'connector' => [
+											'id' => $this->connector->getId()->toString(),
+										],
+										'gateway' => [
+											'id' => $gateway->getId()->toString(),
+										],
+									],
+									$extra,
+								),
+							);
+						});
+				} catch (Throwable $ex) {
+					$this->logger->error(
+						'An unhandled error occur',
+						[
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+							'type' => 'device-client',
+							'exception' => BootstrapHelpers\Logger::buildException($ex),
+							'connector' => [
+								'id' => $this->connector->getId()->toString(),
+							],
+							'gateway' => [
+								'id' => $gateway->getId()->toString(),
+							],
+						],
+					);
+				}
 			}
+
+			$this->consumer->append(
+				$this->createEntity(
+					Entities\Messages\DeviceState::class,
+					[
+						'connector' => $this->connector->getId()->toString(),
+						'identifier' => $gateway->getIdentifier(),
+						'state' => MetadataTypes\ConnectionState::STATE_STOPPED,
+					],
+				),
+			);
 		}
 	}
 
@@ -467,7 +567,6 @@ final class Device implements Client
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\LanApiCall
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -502,27 +601,28 @@ final class Device implements Client
 			$serialNumber = $device->getGatewayIdentifier();
 
 			if ($serialNumber === null) {
-				return Promise\reject(new Exceptions\LanApiCall('Device gateway identifier is not configured'));
+				return Promise\reject(new Exceptions\InvalidState('Device gateway identifier is not configured'));
 			}
 		} catch (Throwable) {
-			return Promise\reject(new Exceptions\LanApiCall('Could not get device gateway identifier'));
+			return Promise\reject(new Exceptions\InvalidState('Could not get device gateway identifier'));
 		}
 
 		$status = $this->mapChannelToStatus($channel);
 
 		if ($status === null) {
-			return Promise\reject(new Exceptions\LanApiCall('Device capability status could not be created'));
+			return Promise\reject(new Exceptions\InvalidState('Device capability status could not be created'));
 		}
 
-		var_dump('REPORT');
-		var_dump($status);
-
-		return $this->lanApiApi->reportDeviceStatus(
-			$serialNumber,
-			$status,
-			$device->getGateway()->getIpAddress(),
-			$device->getGateway()->getAccessToken(),
-		);
+		try {
+			return $this->lanApiApi->reportDeviceStatus(
+				$serialNumber,
+				$status,
+				$device->getGateway()->getIpAddress(),
+				$device->getGateway()->getAccessToken(),
+			);
+		} catch (Throwable $ex) {
+			return Promise\reject(new Exceptions\InvalidState('Request could not be handled', $ex->getCode(), $ex));
+		}
 	}
 
 	/**

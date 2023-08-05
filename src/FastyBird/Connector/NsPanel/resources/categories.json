@@ -1,0 +1,123 @@
+{
+  "plug": {
+    "capabilities": [
+      "power",
+      "rssi"
+    ],
+    "optionalCapabilities": [
+      "startup"
+    ]
+  },
+  "switch": {
+    "capabilities": [
+      "power",
+      "rssi"
+    ],
+    "optionalCapabilities": [
+      "startup",
+      "toggle"
+    ]
+  },
+  "light": {
+    "capabilities": [
+      "power",
+      "brightness",
+      "color-temperature",
+      "rssi"
+    ],
+    "optionalCapabilities": [
+      "color-rgb"
+    ]
+  },
+  "curtain": {
+    "capabilities": [
+      "motor-control",
+      "motor-reverse",
+      "motor-clb",
+      "percentage",
+      "battery",
+      "rssi"
+    ],
+    "optionalCapabilities": [
+    ]
+  },
+  "contactSensor": {
+    "capabilities": [
+      "detect",
+      "battery",
+      "rssi"
+    ],
+    "optionalCapabilities": [
+    ]
+  },
+  "motionSensor": {
+    "capabilities": [
+      "detect",
+      "battery",
+      "rssi"
+    ],
+    "optionalCapabilities": [
+    ]
+  },
+  "temperatureSensor": {
+    "capabilities": [
+    ],
+    "optionalCapabilities": [
+    ]
+  },
+  "humiditySensor": {
+    "capabilities": [
+    ],
+    "optionalCapabilities": [
+    ]
+  },
+  "temperatureAndHumiditySensor": {
+    "capabilities": [
+      "temperature",
+      "humidity",
+      "battery",
+      "rssi"
+    ],
+    "optionalCapabilities": [
+    ]
+  },
+  "waterLeakDetector": {
+    "capabilities": [
+      "detect",
+      "battery",
+      "rssi"
+    ],
+    "optionalCapabilities": [
+    ]
+  },
+  "smokeDetector": {
+    "capabilities": [
+      "detect",
+      "battery",
+      "rssi"
+    ],
+    "optionalCapabilities": [
+    ]
+  },
+  "button": {
+    "capabilities": [
+      "press",
+      "battery",
+      "rssi"
+    ],
+    "optionalCapabilities": [
+    ]
+  },
+  "camera": {
+    "capabilities": [
+    ],
+    "optionalCapabilities": [
+    ]
+  },
+  "sensor": {
+    "capabilities": [
+    ],
+    "optionalCapabilities": [
+    ]
+  }
+}

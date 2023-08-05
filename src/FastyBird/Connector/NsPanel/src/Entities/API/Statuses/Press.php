@@ -34,7 +34,7 @@ final class Press implements Status
 	public function __construct(
 		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\PressPayload::class)]
 		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::PRESS)]
-		private readonly Types\PressPayload $value,
+		private readonly Types\PressPayload $press,
 	)
 	{
 	}
@@ -44,9 +44,11 @@ final class Press implements Status
 		return Types\Capability::get(Types\Capability::PRESS);
 	}
 
-	public function getValue(): Types\PressPayload
+	public function getProtocols(): array
 	{
-		return $this->value;
+		return [
+			Types\Protocol::PRESS => $this->press,
+		];
 	}
 
 	/**
@@ -55,14 +57,14 @@ final class Press implements Status
 	public function toArray(): array
 	{
 		return [
-			'value' => $this->getValue()->getValue(),
+			'value' => $this->press->getValue(),
 		];
 	}
 
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Protocol::PRESS} = $this->getValue()->getValue();
+		$json->{Types\Protocol::PRESS} = $this->press->getValue();
 
 		return $json;
 	}

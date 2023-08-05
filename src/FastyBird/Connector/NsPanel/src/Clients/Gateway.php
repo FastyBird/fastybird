@@ -41,9 +41,7 @@ use React\EventLoop;
 use React\Promise;
 use Throwable;
 use function array_key_exists;
-use function assert;
 use function in_array;
-use function is_array;
 use function is_string;
 use function preg_match;
 
@@ -135,7 +133,6 @@ final class Gateway implements Client
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\LanApiCall
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -187,16 +184,20 @@ final class Gateway implements Client
 		$status = $this->mapChannelToStatus($channel);
 
 		if ($status === null) {
-			return Promise\reject(new Exceptions\LanApiCall('Device capability status could not be created'));
+			return Promise\reject(new Exceptions\InvalidArgument('Device capability status could not be created'));
 		}
 
 		if ($state->isPending() === true) {
-			return $this->lanApiApi->setSubDeviceStatus(
-				$device->getIdentifier(),
-				$status,
-				$device->getGateway()->getIpAddress(),
-				$device->getGateway()->getAccessToken(),
-			);
+			try {
+				return $this->lanApiApi->setSubDeviceStatus(
+					$device->getIdentifier(),
+					$status,
+					$device->getGateway()->getIpAddress(),
+					$device->getGateway()->getAccessToken(),
+				);
+			} catch (Throwable $ex) {
+				return Promise\reject(new Exceptions\InvalidState('Request could not be handled', $ex->getCode(), $ex));
+			}
 		}
 
 		return Promise\reject(new Exceptions\InvalidArgument('Provided property state is in invalid state'));
@@ -204,7 +205,6 @@ final class Gateway implements Client
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\LanApiCall
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -238,7 +238,6 @@ final class Gateway implements Client
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\LanApiCall
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -254,20 +253,19 @@ final class Gateway implements Client
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\LanApiCall
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function readDeviceInformation(Entities\Devices\Gateway $device): bool
+	private function readDeviceInformation(Entities\Devices\Gateway $gateway): bool
 	{
-		if ($device->getIpAddress() === null) {
+		if ($gateway->getIpAddress() === null) {
 			$this->consumer->append(
 				$this->createEntity(
 					Entities\Messages\DeviceState::class,
 					[
 						'connector' => $this->connector->getId()->toString(),
-						'identifier' => $device->getIdentifier(),
+						'identifier' => $gateway->getIdentifier(),
 						'state' => MetadataTypes\ConnectionState::STATE_STOPPED,
 					],
 				),
@@ -276,12 +274,12 @@ final class Gateway implements Client
 			return true;
 		}
 
-		if (!array_key_exists($device->getIdentifier(), $this->processedDevicesCommands)) {
-			$this->processedDevicesCommands[$device->getIdentifier()] = [];
+		if (!array_key_exists($gateway->getIdentifier(), $this->processedDevicesCommands)) {
+			$this->processedDevicesCommands[$gateway->getIdentifier()] = [];
 		}
 
-		if (array_key_exists(self::CMD_HEARTBEAT, $this->processedDevicesCommands[$device->getIdentifier()])) {
-			$cmdResult = $this->processedDevicesCommands[$device->getIdentifier()][self::CMD_HEARTBEAT];
+		if (array_key_exists(self::CMD_HEARTBEAT, $this->processedDevicesCommands[$gateway->getIdentifier()])) {
+			$cmdResult = $this->processedDevicesCommands[$gateway->getIdentifier()][self::CMD_HEARTBEAT];
 
 			if (
 				$cmdResult instanceof DateTimeInterface
@@ -293,27 +291,63 @@ final class Gateway implements Client
 			}
 		}
 
-		$this->processedDevicesCommands[$device->getIdentifier()][self::CMD_HEARTBEAT] = $this->dateTimeFactory->getNow();
+		$this->processedDevicesCommands[$gateway->getIdentifier()][self::CMD_HEARTBEAT] = $this->dateTimeFactory->getNow();
 
-		$this->lanApiApi->getGatewayInfo($device->getIpAddress())
-			->then(function () use ($device): void {
-				$this->processedDevicesCommands[$device->getIdentifier()][self::CMD_HEARTBEAT] = $this->dateTimeFactory->getNow();
+		try {
+			$this->lanApiApi->getGatewayInfo($gateway->getIpAddress())
+				->then(function () use ($gateway): void {
+					$this->processedDevicesCommands[$gateway->getIdentifier()][self::CMD_HEARTBEAT] = $this->dateTimeFactory->getNow();
 
-				$this->consumer->append(
-					$this->createEntity(
-						Entities\Messages\DeviceState::class,
-						[
-							'connector' => $this->connector->getId()->toString(),
-							'identifier' => $device->getIdentifier(),
-							'state' => MetadataTypes\ConnectionState::STATE_CONNECTED,
-						],
-					),
-				);
-			})
-			->otherwise(function (Throwable $ex) use ($device): void {
-				if ($ex instanceof Exceptions\LanApiCall) {
+					$this->consumer->append(
+						$this->createEntity(
+							Entities\Messages\DeviceState::class,
+							[
+								'connector' => $this->connector->getId()->toString(),
+								'identifier' => $gateway->getIdentifier(),
+								'state' => MetadataTypes\ConnectionState::STATE_CONNECTED,
+							],
+						),
+					);
+				})
+				->otherwise(function (Throwable $ex) use ($gateway): void {
+					if ($ex instanceof Exceptions\LanApiCall) {
+						$this->logger->error(
+							'Could not NS Panel API',
+							[
+								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+								'type' => 'gateway-client',
+								'exception' => BootstrapHelpers\Logger::buildException($ex),
+								'connector' => [
+									'id' => $this->connector->getId()->toString(),
+								],
+								'device' => [
+									'id' => $gateway->getId()->toString(),
+								],
+								'request' => [
+									'body' => $ex->getRequest()?->getBody()->getContents(),
+								],
+								'response' => [
+									'body' => $ex->getRequest()?->getBody()->getContents(),
+								],
+							],
+						);
+
+						$this->consumer->append(
+							$this->createEntity(
+								Entities\Messages\DeviceState::class,
+								[
+									'connector' => $this->connector->getId()->toString(),
+									'identifier' => $gateway->getIdentifier(),
+									'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+								],
+							),
+						);
+
+						return;
+					}
+
 					$this->logger->error(
-						'Could not NS Panel API',
+						'Calling NS Panel API failed',
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 							'type' => 'gateway-client',
@@ -322,7 +356,7 @@ final class Gateway implements Client
 								'id' => $this->connector->getId()->toString(),
 							],
 							'device' => [
-								'id' => $device->getId()->toString(),
+								'id' => $gateway->getId()->toString(),
 							],
 						],
 					);
@@ -332,48 +366,36 @@ final class Gateway implements Client
 							Entities\Messages\DeviceState::class,
 							[
 								'connector' => $this->connector->getId()->toString(),
-								'identifier' => $device->getIdentifier(),
-								'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+								'identifier' => $gateway->getIdentifier(),
+								'state' => MetadataTypes\ConnectionState::STATE_LOST,
 							],
 						),
 					);
-
-					return;
-				}
-
-				$this->logger->error(
-					'Calling NS Panel API failed',
-					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-						'type' => 'gateway-client',
-						'exception' => BootstrapHelpers\Logger::buildException($ex),
-						'connector' => [
-							'id' => $this->connector->getId()->toString(),
-						],
-						'device' => [
-							'id' => $device->getId()->toString(),
-						],
+				});
+		} catch (Throwable $ex) {
+			$this->logger->error(
+				'An unhandled error occur',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'type' => 'gateway-client',
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'connector' => [
+						'id' => $this->connector->getId()->toString(),
 					],
-				);
+					'device' => [
+						'id' => $gateway->getId()->toString(),
+					],
+				],
+			);
 
-				$this->consumer->append(
-					$this->createEntity(
-						Entities\Messages\DeviceState::class,
-						[
-							'connector' => $this->connector->getId()->toString(),
-							'identifier' => $device->getIdentifier(),
-							'state' => MetadataTypes\ConnectionState::STATE_LOST,
-						],
-					),
-				);
-			});
+			return false;
+		}
 
 		return true;
 	}
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\LanApiCall
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -417,123 +439,141 @@ final class Gateway implements Client
 
 		$this->processedDevicesCommands[$device->getIdentifier()][self::CMD_STATUS] = $this->dateTimeFactory->getNow();
 
-		$this->lanApiApi->getSubDevices($device->getIpAddress(), $device->getAccessToken())
-			->then(function (Entities\API\Response\GetSubDevices $subDevices) use ($device): void {
-				$this->processedDevicesCommands[$device->getIdentifier()][self::CMD_STATUS] = $this->dateTimeFactory->getNow();
+		try {
+			$this->lanApiApi->getSubDevices($device->getIpAddress(), $device->getAccessToken())
+				->then(function (Entities\API\Response\GetSubDevices $subDevices) use ($device): void {
+					$this->processedDevicesCommands[$device->getIdentifier()][self::CMD_STATUS] = $this->dateTimeFactory->getNow();
 
-				foreach ($subDevices->getData()->getDevicesList() as $subDevice) {
-					// Ignore third-party devices
-					if ($subDevice->getThirdSerialNumber() !== null) {
-						continue;
-					}
-
-					$this->consumer->append(
-						$this->createEntity(
-							Entities\Messages\DeviceState::class,
-							[
-								'connector' => $this->connector->getId()->toString(),
-								'identifier' => $subDevice->getSerialNumber(),
-								'state' => $subDevice->isOnline()
-									? MetadataTypes\ConnectionState::STATE_CONNECTED
-									: MetadataTypes\ConnectionState::STATE_DISCONNECTED,
-							],
-						),
-					);
-
-					$capabilityStatuses = [];
-
-					foreach ($subDevice->getStatuses() as $key => $status) {
-						$stateIdentifier = null;
-
-						if (
-							is_string($key)
-							&& preg_match(NsPanel\Constants::STATE_NAME_KEY, $key, $matches) === 1
-							&& array_key_exists('identifier', $matches)
-						) {
-							$stateIdentifier = $matches['identifier'];
+					foreach ($subDevices->getData()->getDevicesList() as $subDevice) {
+						// Ignore third-party devices
+						if ($subDevice->getThirdSerialNumber() !== null) {
+							continue;
 						}
 
-						$findChannelQuery = new Queries\FindChannels();
-						$findChannelQuery->byDeviceIdentifier($subDevice->getSerialNumber());
-						$findChannelQuery->byIdentifier(
-							Helpers\Name::convertCapabilityToChannel($status->getType(), $stateIdentifier),
+						$this->consumer->append(
+							$this->createEntity(
+								Entities\Messages\DeviceState::class,
+								[
+									'connector' => $this->connector->getId()->toString(),
+									'identifier' => $subDevice->getSerialNumber(),
+									'state' => $subDevice->isOnline()
+										? MetadataTypes\ConnectionState::STATE_CONNECTED
+										: MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+								],
+							),
 						);
 
-						$channel = $this->channelsRepository->findOneBy(
-							$findChannelQuery,
-							Entities\NsPanelChannel::class,
-						);
+						$capabilityStatuses = [];
 
-						if ($channel !== null) {
-							$findChannelPropertiesQuery = new DevicesQueries\FindChannelDynamicProperties();
-							$findChannelPropertiesQuery->forChannel($channel);
-							$findChannelPropertiesQuery->byIdentifier($status->getType()->getValue());
+						foreach ($subDevice->getStatuses() as $key => $status) {
+							$stateIdentifier = null;
 
-							$properties = $this->channelsPropertiesRepository->findAllBy(
-								$findChannelPropertiesQuery,
-								DevicesEntities\Channels\Properties\Dynamic::class,
+							if (
+								is_string($key)
+								&& preg_match(NsPanel\Constants::STATE_NAME_KEY, $key, $matches) === 1
+								&& array_key_exists('identifier', $matches)
+							) {
+								$stateIdentifier = $matches['identifier'];
+							}
+
+							$findChannelQuery = new Queries\FindChannels();
+							$findChannelQuery->byDeviceIdentifier($subDevice->getSerialNumber());
+							$findChannelQuery->byIdentifier(
+								Helpers\Name::convertCapabilityToChannel($status->getType(), $stateIdentifier),
 							);
 
-							foreach ($properties as $property) {
-								if (
-									Helpers\Name::convertPropertyToProtocol(
-										$property->getIdentifier(),
-									)->equalsValue(Types\Protocol::COLOR_RED)
-									&& $status instanceof Entities\API\Statuses\ColorRgb
-								) {
-									$value = $status->getRed();
-								} elseif (
-									Helpers\Name::convertPropertyToProtocol(
-										$property->getIdentifier(),
-									)->equalsValue(Types\Protocol::COLOR_GREEN)
-									&& $status instanceof Entities\API\Statuses\ColorRgb
-								) {
-									$value = $status->getGreen();
-								} elseif (
-									Helpers\Name::convertPropertyToProtocol(
-										$property->getIdentifier(),
-									)->equalsValue(Types\Protocol::COLOR_BLUE)
-									&& $status instanceof Entities\API\Statuses\ColorRgb
-								) {
-									$value = $status->getBlue();
-								} else {
-									$value = $status->getValue();
-									assert(!is_array($value));
-								}
+							$channel = $this->channelsRepository->findOneBy(
+								$findChannelQuery,
+								Entities\NsPanelChannel::class,
+							);
 
-								$capabilityStatuses[] = [
-									'chanel' => $channel->getId()->toString(),
-									'property' => $property->getId()->toString(),
-									'value' => Helpers\Transformer::transformValueFromDevice(
-										$property->getDataType(),
-										$property->getFormat(),
-										$value,
-									),
-								];
+							if ($channel !== null) {
+								foreach ($status->getProtocols() as $protocol => $value) {
+									$protocol = Types\Protocol::get($protocol);
+
+									$findChannelPropertiesQuery = new DevicesQueries\FindChannelDynamicProperties();
+									$findChannelPropertiesQuery->forChannel($channel);
+									$findChannelPropertiesQuery->byIdentifier(
+										Helpers\Name::convertProtocolToProperty($protocol),
+									);
+
+									$property = $this->channelsPropertiesRepository->findOneBy(
+										$findChannelPropertiesQuery,
+										DevicesEntities\Channels\Properties\Dynamic::class,
+									);
+
+									if ($property === null) {
+										continue;
+									}
+
+									$capabilityStatuses[] = [
+										'chanel' => $channel->getId()->toString(),
+										'property' => $property->getId()->toString(),
+										'value' => Helpers\Transformer::transformValueFromDevice(
+											$property->getDataType(),
+											$property->getFormat(),
+											$value,
+										),
+									];
+								}
 							}
 						}
+
+						$this->consumer->append(
+							$this->createEntity(
+								Entities\Messages\DeviceStatus::class,
+								[
+									'connector' => $this->connector->getId()->toString(),
+									'identifier' => $subDevice->getSerialNumber(),
+									'statuses' => $capabilityStatuses,
+								],
+							),
+						);
+					}
+				})
+				->otherwise(function (Throwable $ex) use ($device): void {
+					if ($ex instanceof Exceptions\LanApiCall) {
+						$this->logger->warning(
+							'Calling NS Panel API failed',
+							[
+								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+								'type' => 'gateway-client',
+								'error' => $ex->getMessage(),
+								'connector' => [
+									'id' => $this->connector->getId()->toString(),
+								],
+								'device' => [
+									'id' => $device->getId()->toString(),
+								],
+								'request' => [
+									'body' => $ex->getRequest()?->getBody()->getContents(),
+								],
+								'response' => [
+									'body' => $ex->getRequest()?->getBody()->getContents(),
+								],
+							],
+						);
+
+						$this->consumer->append(
+							$this->createEntity(
+								Entities\Messages\DeviceState::class,
+								[
+									'connector' => $this->connector->getId()->toString(),
+									'identifier' => $device->getIdentifier(),
+									'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+								],
+							),
+						);
+
+						return;
 					}
 
-					$this->consumer->append(
-						$this->createEntity(
-							Entities\Messages\DeviceStatus::class,
-							[
-								'connector' => $this->connector->getId()->toString(),
-								'identifier' => $subDevice->getSerialNumber(),
-								'statuses' => $capabilityStatuses,
-							],
-						),
-					);
-				}
-			})
-			->otherwise(function (Throwable $ex) use ($device): void {
-				if ($ex instanceof Exceptions\LanApiCall) {
-					$this->logger->warning(
+					$this->logger->error(
 						'Calling NS Panel API failed',
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 							'type' => 'gateway-client',
-							'error' => $ex->getMessage(),
+							'exception' => BootstrapHelpers\Logger::buildException($ex),
 							'connector' => [
 								'id' => $this->connector->getId()->toString(),
 							],
@@ -549,40 +589,29 @@ final class Gateway implements Client
 							[
 								'connector' => $this->connector->getId()->toString(),
 								'identifier' => $device->getIdentifier(),
-								'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+								'state' => MetadataTypes\ConnectionState::STATE_LOST,
 							],
 						),
 					);
-
-					return;
-				}
-
-				$this->logger->error(
-					'Calling NS Panel API failed',
-					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-						'type' => 'gateway-client',
-						'exception' => BootstrapHelpers\Logger::buildException($ex),
-						'connector' => [
-							'id' => $this->connector->getId()->toString(),
-						],
-						'device' => [
-							'id' => $device->getId()->toString(),
-						],
+				});
+		} catch (Throwable $ex) {
+			$this->logger->error(
+				'An unhandled error occur',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'type' => 'gateway-client',
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'connector' => [
+						'id' => $this->connector->getId()->toString(),
 					],
-				);
+					'device' => [
+						'id' => $device->getId()->toString(),
+					],
+				],
+			);
 
-				$this->consumer->append(
-					$this->createEntity(
-						Entities\Messages\DeviceState::class,
-						[
-							'connector' => $this->connector->getId()->toString(),
-							'identifier' => $device->getIdentifier(),
-							'state' => MetadataTypes\ConnectionState::STATE_LOST,
-						],
-					),
-				);
-			});
+			return false;
+		}
 
 		return true;
 	}

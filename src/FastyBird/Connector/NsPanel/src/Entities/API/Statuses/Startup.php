@@ -34,7 +34,7 @@ final class Startup implements Status
 	public function __construct(
 		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\StartupPayload::class)]
 		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::STARTUP)]
-		private readonly Types\StartupPayload $value,
+		private readonly Types\StartupPayload $startup,
 	)
 	{
 	}
@@ -44,9 +44,11 @@ final class Startup implements Status
 		return Types\Capability::get(Types\Capability::STARTUP);
 	}
 
-	public function getValue(): Types\StartupPayload
+	public function getProtocols(): array
 	{
-		return $this->value;
+		return [
+			Types\Protocol::STARTUP => $this->startup,
+		];
 	}
 
 	/**
@@ -55,14 +57,14 @@ final class Startup implements Status
 	public function toArray(): array
 	{
 		return [
-			'value' => $this->getValue()->getValue(),
+			'value' => $this->startup->getValue(),
 		];
 	}
 
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Protocol::STARTUP} = $this->getValue()->getValue();
+		$json->{Types\Protocol::STARTUP} = $this->startup->getValue();
 
 		return $json;
 	}

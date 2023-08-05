@@ -210,7 +210,7 @@ class Channel implements Entities\Entity,
 		// Process all passed entities...
 		foreach ($properties as $entity) {
 			// ...and assign them to collection
-			$this->properties->add($entity);
+			$this->addProperty($entity);
 		}
 	}
 
@@ -241,7 +241,7 @@ class Channel implements Entities\Entity,
 		// Process all passed entities...
 		foreach ($controls as $entity) {
 			// ...and assign them to collection
-			$this->controls->add($entity);
+			$this->addControl($entity);
 		}
 	}
 

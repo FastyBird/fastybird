@@ -32,9 +32,33 @@ use const DIRECTORY_SEPARATOR;
 final class Loader
 {
 
+	private Utils\ArrayHash|null $categories = null;
+
 	private Utils\ArrayHash|null $capabilities = null;
 
 	private Utils\ArrayHash|null $protocols = null;
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 * @throws Nette\IOException
+	 */
+	public function loadCategories(): Utils\ArrayHash
+	{
+		if ($this->categories === null) {
+			$metadata = NsPanel\Constants::RESOURCES_FOLDER . DIRECTORY_SEPARATOR . 'categories.json';
+			$metadata = Utils\FileSystem::read($metadata);
+
+			try {
+				$this->categories = Utils\ArrayHash::from(
+					(array) Utils\Json::decode($metadata, Utils\Json::FORCE_ARRAY),
+				);
+			} catch (Utils\JsonException) {
+				throw new Exceptions\InvalidState('Categories metadata could not be loaded');
+			}
+		}
+
+		return $this->categories;
+	}
 
 	/**
 	 * @throws Exceptions\InvalidState

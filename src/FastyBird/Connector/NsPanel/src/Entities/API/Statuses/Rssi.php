@@ -33,7 +33,7 @@ final class Rssi implements Status
 	public function __construct(
 		#[ObjectMapper\Rules\IntValue(min: -200, max: 0, unsigned: false)]
 		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::RSSI)]
-		private readonly int $value,
+		private readonly int $rssi,
 	)
 	{
 	}
@@ -43,9 +43,11 @@ final class Rssi implements Status
 		return Types\Capability::get(Types\Capability::RSSI);
 	}
 
-	public function getValue(): int
+	public function getProtocols(): array
 	{
-		return $this->value;
+		return [
+			Types\Protocol::RSSI => $this->rssi,
+		];
 	}
 
 	/**
@@ -54,14 +56,14 @@ final class Rssi implements Status
 	public function toArray(): array
 	{
 		return [
-			'value' => $this->getValue(),
+			'value' => $this->rssi,
 		];
 	}
 
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Protocol::RSSI} = $this->getValue();
+		$json->{Types\Protocol::RSSI} = $this->rssi;
 
 		return $json;
 	}

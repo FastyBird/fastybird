@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Power.php
+ * PowerState.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -21,20 +21,20 @@ use Orisai\ObjectMapper;
 use stdClass;
 
 /**
- * Power control capability state
+ * Power state control capability state
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Power implements Status
+final class PowerState implements Status
 {
 
 	public function __construct(
 		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\PowerPayload::class)]
 		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::POWER_STATE)]
-		private readonly Types\PowerPayload $value,
+		private readonly Types\PowerPayload $powerState,
 	)
 	{
 	}
@@ -44,9 +44,11 @@ final class Power implements Status
 		return Types\Capability::get(Types\Capability::POWER);
 	}
 
-	public function getValue(): Types\PowerPayload
+	public function getProtocols(): array
 	{
-		return $this->value;
+		return [
+			Types\Protocol::POWER_STATE => $this->powerState,
+		];
 	}
 
 	/**
@@ -55,14 +57,14 @@ final class Power implements Status
 	public function toArray(): array
 	{
 		return [
-			'value' => $this->getValue()->getValue(),
+			'value' => $this->powerState->getValue(),
 		];
 	}
 
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Protocol::POWER_STATE} = $this->getValue()->getValue();
+		$json->{Types\Protocol::POWER_STATE} = $this->powerState->getValue();
 
 		return $json;
 	}

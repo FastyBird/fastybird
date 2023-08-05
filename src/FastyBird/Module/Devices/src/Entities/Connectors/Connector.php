@@ -213,7 +213,7 @@ abstract class Connector implements Entities\Entity,
 		// Process all passed entities...
 		foreach ($devices as $entity) {
 			// ...and assign them to collection
-			$this->devices->add($entity);
+			$this->addDevice($entity);
 		}
 	}
 
@@ -244,7 +244,7 @@ abstract class Connector implements Entities\Entity,
 		// Process all passed entities...
 		foreach ($properties as $entity) {
 			// ...and assign them to collection
-			$this->properties->add($entity);
+			$this->addProperty($entity);
 		}
 	}
 
@@ -275,7 +275,7 @@ abstract class Connector implements Entities\Entity,
 		// Process all passed entities...
 		foreach ($controls as $entity) {
 			// ...and assign them to collection
-			$this->controls->add($entity);
+			$this->addControl($entity);
 		}
 	}
 

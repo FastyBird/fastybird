@@ -24,6 +24,9 @@ use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use function boolval;
+use function floatval;
+use function intval;
 use function is_bool;
 use function is_float;
 use function is_int;
@@ -67,7 +70,11 @@ trait TPropertiesMapper
 				$value = $this->getPropertyValue($property);
 
 				if ($value === null || !Types\PowerPayload::isValidValue($value)) {
-					$value = Types\PowerPayload::OFF;
+					$value = $property->getInvalid();
+				}
+
+				if ($value === null) {
+					return null;
 				}
 
 				return [
@@ -85,7 +92,11 @@ trait TPropertiesMapper
 				$value = $this->getPropertyValue($property);
 
 				if ($value === null || !Types\TogglePayload::isValidValue($value)) {
-					$value = Types\TogglePayload::OFF;
+					$value = $property->getInvalid();
+				}
+
+				if ($value === null) {
+					return null;
 				}
 
 				return [
@@ -105,12 +116,16 @@ trait TPropertiesMapper
 				$value = $this->getPropertyValue($property);
 
 				if (!is_int($value)) {
-					$value = 0;
+					$value = $property->getInvalid();
+				}
+
+				if ($value === null) {
+					return null;
 				}
 
 				return [
 					$channel->getCapability()->getValue() => [
-						Types\Protocol::BRIGHTNESS => $value,
+						Types\Protocol::BRIGHTNESS => intval($value),
 					],
 				];
 			case Types\Capability::COLOR_TEMPERATURE:
@@ -126,12 +141,16 @@ trait TPropertiesMapper
 				$value = $this->getPropertyValue($property);
 
 				if (!is_int($value)) {
-					$value = 0;
+					$value = $property->getInvalid();
+				}
+
+				if ($value === null) {
+					return null;
 				}
 
 				return [
 					$channel->getCapability()->getValue() => [
-						Types\Protocol::COLOR_TEMPERATURE => $value,
+						Types\Protocol::COLOR_TEMPERATURE => intval($value),
 					],
 				];
 			case Types\Capability::COLOR_RGB:
@@ -144,7 +163,11 @@ trait TPropertiesMapper
 				$red = $this->getPropertyValue($property);
 
 				if (!is_int($red)) {
-					$red = 0;
+					$red = $property->getInvalid();
+				}
+
+				if ($red === null) {
+					return null;
 				}
 
 				$property = $this->findProtocolProperty($channel, Types\Protocol::get(Types\Protocol::COLOR_GREEN));
@@ -156,7 +179,11 @@ trait TPropertiesMapper
 				$green = $this->getPropertyValue($property);
 
 				if (!is_int($green)) {
-					$green = 0;
+					$green = $property->getInvalid();
+				}
+
+				if ($green === null) {
+					return null;
 				}
 
 				$property = $this->findProtocolProperty($channel, Types\Protocol::get(Types\Protocol::COLOR_BLUE));
@@ -168,14 +195,18 @@ trait TPropertiesMapper
 				$blue = $this->getPropertyValue($property);
 
 				if (!is_int($blue)) {
-					$blue = 0;
+					$blue = $property->getInvalid();
+				}
+
+				if ($blue === null) {
+					return null;
 				}
 
 				return [
 					$channel->getCapability()->getValue() => [
-						Types\Protocol::COLOR_RED => $red,
-						Types\Protocol::COLOR_GREEN => $green,
-						Types\Protocol::COLOR_BLUE => $blue,
+						Types\Protocol::COLOR_RED => intval($red),
+						Types\Protocol::COLOR_GREEN => intval($green),
+						Types\Protocol::COLOR_BLUE => intval($blue),
 					],
 				];
 			case Types\Capability::PERCENTAGE:
@@ -188,12 +219,16 @@ trait TPropertiesMapper
 				$value = $this->getPropertyValue($property);
 
 				if (!is_int($value)) {
-					$value = 0;
+					$value = $property->getInvalid();
+				}
+
+				if ($value === null) {
+					return null;
 				}
 
 				return [
 					$channel->getCapability()->getValue() => [
-						Types\Protocol::PERCENTAGE => $value,
+						Types\Protocol::PERCENTAGE => intval($value),
 					],
 				];
 			case Types\Capability::MOTOR_CONTROL:
@@ -206,7 +241,11 @@ trait TPropertiesMapper
 				$value = $this->getPropertyValue($property);
 
 				if ($value === null || !Types\MotorControlPayload::isValidValue($value)) {
-					$value = Types\MotorControlPayload::STOP;
+					$value = $property->getInvalid();
+				}
+
+				if ($value === null) {
+					return null;
 				}
 
 				return [
@@ -224,12 +263,16 @@ trait TPropertiesMapper
 				$value = $this->getPropertyValue($property);
 
 				if (!is_bool($value)) {
-					$value = false;
+					$value = $property->getInvalid();
+				}
+
+				if ($value === null) {
+					return null;
 				}
 
 				return [
 					$channel->getCapability()->getValue() => [
-						Types\Protocol::MOTOR_REVERSE => $value,
+						Types\Protocol::MOTOR_REVERSE => boolval($value),
 					],
 				];
 			case Types\Capability::MOTOR_CALIBRATION:
@@ -245,7 +288,11 @@ trait TPropertiesMapper
 				$value = $this->getPropertyValue($property);
 
 				if ($value === null || !Types\MotorCalibrationPayload::isValidValue($value)) {
-					$value = Types\MotorCalibrationPayload::NORMAL;
+					$value = $property->getInvalid();
+				}
+
+				if ($value === null) {
+					return null;
 				}
 
 				return [
@@ -263,7 +310,11 @@ trait TPropertiesMapper
 				$value = $this->getPropertyValue($property);
 
 				if ($value === null || !Types\StartupPayload::isValidValue($value)) {
-					$value = Types\StartupPayload::OFF;
+					$value = $property->getInvalid();
+				}
+
+				if ($value === null) {
+					return null;
 				}
 
 				return [
@@ -297,12 +348,16 @@ trait TPropertiesMapper
 				$value = $this->getPropertyValue($property);
 
 				if (!is_bool($value)) {
-					$value = false;
+					$value = $property->getInvalid();
+				}
+
+				if ($value === null) {
+					return null;
 				}
 
 				return [
 					$channel->getCapability()->getValue() => [
-						Types\Protocol::DETECT => $value,
+						Types\Protocol::DETECT => boolval($value),
 					],
 				];
 			case Types\Capability::HUMIDITY:
@@ -315,12 +370,16 @@ trait TPropertiesMapper
 				$value = $this->getPropertyValue($property);
 
 				if (!is_int($value)) {
-					$value = 0;
+					$value = $property->getInvalid();
+				}
+
+				if ($value === null) {
+					return null;
 				}
 
 				return [
 					$channel->getCapability()->getValue() => [
-						Types\Protocol::HUMIDITY => $value,
+						Types\Protocol::HUMIDITY => intval($value),
 					],
 				];
 			case Types\Capability::TEMPERATURE:
@@ -333,12 +392,16 @@ trait TPropertiesMapper
 				$value = $this->getPropertyValue($property);
 
 				if (!is_float($value)) {
-					$value = 0.0;
+					$value = $property->getInvalid();
+				}
+
+				if ($value === null) {
+					return null;
 				}
 
 				return [
 					$channel->getCapability()->getValue() => [
-						Types\Protocol::TEMPERATURE => $value,
+						Types\Protocol::TEMPERATURE => floatval($value),
 					],
 				];
 			case Types\Capability::BATTERY:
@@ -351,12 +414,16 @@ trait TPropertiesMapper
 				$value = $this->getPropertyValue($property);
 
 				if (!is_int($value)) {
-					$value = 0;
+					$value = $property->getInvalid();
+				}
+
+				if ($value === null) {
+					return null;
 				}
 
 				return [
 					$channel->getCapability()->getValue() => [
-						Types\Protocol::BATTERY => $value,
+						Types\Protocol::BATTERY => intval($value),
 					],
 				];
 			case Types\Capability::PRESS:
@@ -387,12 +454,16 @@ trait TPropertiesMapper
 				$value = $this->getPropertyValue($property);
 
 				if (!is_int($value)) {
-					$value = 0;
+					$value = $property->getInvalid();
+				}
+
+				if ($value === null) {
+					return null;
 				}
 
 				return [
 					$channel->getCapability()->getValue() => [
-						Types\Protocol::RSSI => $value,
+						Types\Protocol::RSSI => intval($value),
 					],
 				];
 		}

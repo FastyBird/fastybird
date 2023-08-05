@@ -33,7 +33,7 @@ final class Brightness implements Status
 	public function __construct(
 		#[ObjectMapper\Rules\IntValue(min: 0, max: 100, unsigned: true)]
 		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::BRIGHTNESS)]
-		private readonly int $value,
+		private readonly int $brightness,
 	)
 	{
 	}
@@ -43,9 +43,11 @@ final class Brightness implements Status
 		return Types\Capability::get(Types\Capability::BRIGHTNESS);
 	}
 
-	public function getValue(): int
+	public function getProtocols(): array
 	{
-		return $this->value;
+		return [
+			Types\Protocol::BRIGHTNESS => $this->brightness,
+		];
 	}
 
 	/**
@@ -54,14 +56,14 @@ final class Brightness implements Status
 	public function toArray(): array
 	{
 		return [
-			'value' => $this->getValue(),
+			'value' => $this->brightness,
 		];
 	}
 
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Protocol::BRIGHTNESS} = $this->getValue();
+		$json->{Types\Protocol::BRIGHTNESS} = $this->brightness;
 
 		return $json;
 	}

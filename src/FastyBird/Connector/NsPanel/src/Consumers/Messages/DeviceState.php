@@ -47,8 +47,9 @@ final class DeviceState implements Consumers\Consumer
 	public function __construct(
 		private readonly Helpers\Property $propertyStateHelper,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
-		private readonly DevicesModels\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
+		private readonly DevicesModels\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
+		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly NsPanel\Logger $logger,
 	)
@@ -92,14 +93,13 @@ final class DeviceState implements Consumers\Consumer
 				|| $entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_LOST)
 				|| $entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_UNKNOWN)
 			) {
-				$findDevicePropertiesQuery = new DevicesQueries\FindDeviceProperties();
+				$findDevicePropertiesQuery = new DevicesQueries\FindDeviceDynamicProperties();
 				$findDevicePropertiesQuery->forDevice($device);
 
-				foreach ($this->devicePropertiesRepository->findAllBy($findDevicePropertiesQuery) as $property) {
-					if (!$property instanceof DevicesEntities\Devices\Properties\Dynamic) {
-						continue;
-					}
-
+				foreach ($this->devicesPropertiesRepository->findAllBy(
+					$findDevicePropertiesQuery,
+					DevicesEntities\Devices\Properties\Dynamic::class,
+				) as $property) {
 					$this->propertyStateHelper->setValue(
 						$property,
 						Nette\Utils\ArrayHash::from([
@@ -114,11 +114,13 @@ final class DeviceState implements Consumers\Consumer
 				$channels = $this->channelsRepository->findAllBy($findChannelsQuery, Entities\NsPanelChannel::class);
 
 				foreach ($channels as $channel) {
-					foreach ($channel->getProperties() as $property) {
-						if (!$property instanceof DevicesEntities\Channels\Properties\Dynamic) {
-							continue;
-						}
+					$findChannelPropertiesQuery = new DevicesQueries\FindChannelDynamicProperties();
+					$findChannelPropertiesQuery->forChannel($channel);
 
+					foreach ($this->channelsPropertiesRepository->findAllBy(
+						$findChannelPropertiesQuery,
+						DevicesEntities\Channels\Properties\Dynamic::class,
+					) as $property) {
 						$this->propertyStateHelper->setValue(
 							$property,
 							Nette\Utils\ArrayHash::from([
@@ -144,12 +146,19 @@ final class DeviceState implements Consumers\Consumer
 						$entity->getState(),
 					);
 
-					if ($entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_DISCONNECTED)) {
-						foreach ($child->getProperties() as $property) {
-							if (!$property instanceof DevicesEntities\Devices\Properties\Dynamic) {
-								continue;
-							}
+					if (
+						$entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_DISCONNECTED)
+						|| $entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_STOPPED)
+						|| $entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_LOST)
+						|| $entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_UNKNOWN)
+					) {
+						$findDevicePropertiesQuery = new DevicesQueries\FindDeviceDynamicProperties();
+						$findDevicePropertiesQuery->forDevice($child);
 
+						foreach ($this->devicesPropertiesRepository->findAllBy(
+							$findDevicePropertiesQuery,
+							DevicesEntities\Devices\Properties\Dynamic::class,
+						) as $property) {
 							$this->propertyStateHelper->setValue(
 								$property,
 								Nette\Utils\ArrayHash::from([
@@ -158,12 +167,22 @@ final class DeviceState implements Consumers\Consumer
 							);
 						}
 
-						foreach ($child->getChannels() as $channel) {
-							foreach ($channel->getProperties() as $property) {
-								if (!$property instanceof DevicesEntities\Channels\Properties\Dynamic) {
-									continue;
-								}
+						$findChannelsQuery = new Queries\FindChannels();
+						$findChannelsQuery->forDevice($child);
 
+						$channels = $this->channelsRepository->findAllBy(
+							$findChannelsQuery,
+							Entities\NsPanelChannel::class,
+						);
+
+						foreach ($channels as $channel) {
+							$findChannelPropertiesQuery = new DevicesQueries\FindChannelDynamicProperties();
+							$findChannelPropertiesQuery->forChannel($channel);
+
+							foreach ($this->channelsPropertiesRepository->findAllBy(
+								$findChannelPropertiesQuery,
+								DevicesEntities\Channels\Properties\Dynamic::class,
+							) as $property) {
 								$this->propertyStateHelper->setValue(
 									$property,
 									Nette\Utils\ArrayHash::from([

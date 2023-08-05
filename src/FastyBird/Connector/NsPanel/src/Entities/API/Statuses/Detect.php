@@ -33,7 +33,7 @@ final class Detect implements Status
 	public function __construct(
 		#[ObjectMapper\Rules\BoolValue()]
 		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::DETECT)]
-		private readonly bool $value,
+		private readonly bool $detect,
 	)
 	{
 	}
@@ -43,9 +43,11 @@ final class Detect implements Status
 		return Types\Capability::get(Types\Capability::DETECT);
 	}
 
-	public function getValue(): bool
+	public function getProtocols(): array
 	{
-		return $this->value;
+		return [
+			Types\Protocol::DETECT => $this->detect,
+		];
 	}
 
 	/**
@@ -54,14 +56,14 @@ final class Detect implements Status
 	public function toArray(): array
 	{
 		return [
-			'value' => $this->getValue(),
+			'value' => $this->detect,
 		];
 	}
 
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Protocol::DETECT} = $this->getValue();
+		$json->{Types\Protocol::DETECT} = $this->detect;
 
 		return $json;
 	}

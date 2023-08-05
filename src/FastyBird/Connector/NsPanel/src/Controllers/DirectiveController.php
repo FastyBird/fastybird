@@ -44,11 +44,9 @@ use Ramsey\Uuid;
 use RuntimeException;
 use function array_key_exists;
 use function assert;
-use function is_array;
 use function is_string;
 use function preg_match;
 use function strval;
-use function var_dump;
 
 /**
  * Gateway directive controller
@@ -151,10 +149,6 @@ final class DirectiveController extends BaseController
 			);
 		}
 
-		// TODO: Handle request
-		var_dump($device->getIdentifier());
-		var_dump($requestData->toJson());
-
 		foreach ($requestData->getDirective()->getPayload()->getStatuses() as $key => $status) {
 			$stateIdentifier = null;
 
@@ -178,44 +172,24 @@ final class DirectiveController extends BaseController
 			);
 
 			if ($channel !== null) {
-				$findChannelPropertiesQuery = new DevicesQueries\FindChannelProperties();
-				$findChannelPropertiesQuery->forChannel($channel);
-				$findChannelPropertiesQuery->byIdentifier($status->getType()->getValue());
+				foreach ($status->getProtocols() as $protocol => $value) {
+					$protocol = Types\Protocol::get($protocol);
 
-				$properties = $this->channelsPropertiesRepository->findAllBy($findChannelPropertiesQuery);
+					$findChannelPropertiesQuery = new DevicesQueries\FindChannelProperties();
+					$findChannelPropertiesQuery->forChannel($channel);
+					$findChannelPropertiesQuery->byIdentifier(Helpers\Name::convertProtocolToProperty($protocol));
 
-				foreach ($properties as $property) {
+					$property = $this->channelsPropertiesRepository->findOneBy($findChannelPropertiesQuery);
+
+					if ($property === null) {
+						continue;
+					}
+
 					assert(
 						$property instanceof DevicesEntities\Channels\Properties\Dynamic
 						|| $property instanceof DevicesEntities\Channels\Properties\Mapped
 						|| $property instanceof DevicesEntities\Channels\Properties\Variable,
 					);
-
-					if (
-						Helpers\Name::convertPropertyToProtocol(
-							$property->getIdentifier(),
-						)->equalsValue(Types\Protocol::COLOR_RED)
-						&& $status instanceof Entities\API\Statuses\ColorRgb
-					) {
-						$value = $status->getRed();
-					} elseif (
-						Helpers\Name::convertPropertyToProtocol(
-							$property->getIdentifier(),
-						)->equalsValue(Types\Protocol::COLOR_GREEN)
-						&& $status instanceof Entities\API\Statuses\ColorRgb
-					) {
-						$value = $status->getGreen();
-					} elseif (
-						Helpers\Name::convertPropertyToProtocol(
-							$property->getIdentifier(),
-						)->equalsValue(Types\Protocol::COLOR_BLUE)
-						&& $status instanceof Entities\API\Statuses\ColorRgb
-					) {
-						$value = $status->getBlue();
-					} else {
-						$value = $status->getValue();
-						assert(!is_array($value));
-					}
 
 					$value = Helpers\Transformer::transformValueFromDevice(
 						$property->getDataType(),
@@ -378,7 +352,6 @@ final class DirectiveController extends BaseController
 			$this->channelPropertiesStateManager->writeValue(
 				$property,
 				Utils\ArrayHash::from([
-					DevicesStates\Property::VALID_KEY => true,
 					DevicesStates\Property::EXPECTED_VALUE_KEY => $value,
 					DevicesStates\Property::PENDING_KEY => true,
 				]),

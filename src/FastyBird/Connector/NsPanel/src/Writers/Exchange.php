@@ -161,7 +161,10 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 		Clients\Device $client,
 	): void
 	{
-		if ($entity instanceof MetadataEntities\DevicesModule\ChannelMappedProperty) {
+		if (
+			$entity instanceof MetadataEntities\DevicesModule\ChannelMappedProperty
+			&& $entity->isValid() !== false
+		) {
 			$findPropertyQuery = new DevicesQueries\FindChannelMappedProperties();
 			$findPropertyQuery->byId($entity->getId());
 

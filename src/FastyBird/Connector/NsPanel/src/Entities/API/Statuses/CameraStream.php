@@ -43,9 +43,11 @@ final class CameraStream implements Status
 		return Types\Capability::get(Types\Capability::CAMERA_STREAM);
 	}
 
-	public function getValue(): string
+	public function getProtocols(): array
 	{
-		return $this->configuration->getStreamUrl();
+		return [
+			Types\Protocol::STREAM_URL => $this->configuration->getStreamUrl(),
+		];
 	}
 
 	/**

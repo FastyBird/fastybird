@@ -49,30 +49,12 @@ final class ColorRgb implements Status
 		return Types\Capability::get(Types\Capability::COLOR_RGB);
 	}
 
-	public function getRed(): int
-	{
-		return $this->red;
-	}
-
-	public function getGreen(): int
-	{
-		return $this->green;
-	}
-
-	public function getBlue(): int
-	{
-		return $this->blue;
-	}
-
-	/**
-	 * @return array<int>
-	 */
-	public function getValue(): array
+	public function getProtocols(): array
 	{
 		return [
-			$this->getRed(),
-			$this->getGreen(),
-			$this->getBlue(),
+			Types\Protocol::COLOR_RED => $this->red,
+			Types\Protocol::COLOR_GREEN => $this->green,
+			Types\Protocol::COLOR_BLUE => $this->blue,
 		];
 	}
 
@@ -82,18 +64,18 @@ final class ColorRgb implements Status
 	public function toArray(): array
 	{
 		return [
-			'red' => $this->getRed(),
-			'green' => $this->getGreen(),
-			'blue' => $this->getBlue(),
+			'red' => $this->red,
+			'green' => $this->green,
+			'blue' => $this->blue,
 		];
 	}
 
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Protocol::COLOR_RED} = $this->getRed();
-		$json->{Types\Protocol::COLOR_GREEN} = $this->getGreen();
-		$json->{Types\Protocol::COLOR_BLUE} = $this->getBlue();
+		$json->{Types\Protocol::COLOR_RED} = $this->red;
+		$json->{Types\Protocol::COLOR_GREEN} = $this->green;
+		$json->{Types\Protocol::COLOR_BLUE} = $this->blue;
 
 		return $json;
 	}

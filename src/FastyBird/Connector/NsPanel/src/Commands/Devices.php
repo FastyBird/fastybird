@@ -42,6 +42,7 @@ use Nette\Localization;
 use Nette\Utils;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
+use RuntimeException;
 use Symfony\Component\Console;
 use Symfony\Component\Console\Input;
 use Symfony\Component\Console\Output;
@@ -130,6 +131,7 @@ class Devices extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws RuntimeException
 	 */
 	protected function execute(Input\InputInterface $input, Output\OutputInterface $output): int
 	{
@@ -170,6 +172,7 @@ class Devices extends Console\Command\Command
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
+	 * @throws RuntimeException
 	 */
 	private function createGateway(
 		Style\SymfonyStyle $io,
@@ -215,7 +218,7 @@ class Devices extends Console\Command\Command
 
 		$name = $this->askDeviceName($io);
 
-		$panelInfo = $this->askWhichPanel($io, $identifier);
+		$panelInfo = $this->askWhichPanel($io, $connector);
 
 		$io->note($this->translator->translate('//ns-panel-connector.cmd.devices.messages.gateway.prepare'));
 
@@ -250,7 +253,22 @@ class Devices extends Console\Command\Command
 				API\LanApi::GATEWAY_PORT,
 				false,
 			);
-		} catch (Exceptions\LanApiCall) {
+		} catch (Exceptions\LanApiCall $ex) {
+			$this->logger->error(
+				'Could not get NS Panel access token',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'type' => 'devices-cmd',
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'request' => [
+						'body' => $ex->getRequest()?->getBody()->getContents(),
+					],
+					'connector' => [
+						'id' => $connector->getId()->toString(),
+					],
+				],
+			);
+
 			$io->error(
 				$this->translator->translate('//ns-panel-connector.cmd.devices.messages.accessToken.error'),
 			);
@@ -353,6 +371,7 @@ class Devices extends Console\Command\Command
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
+	 * @throws RuntimeException
 	 */
 	private function editGateway(
 		Style\SymfonyStyle $io,
@@ -380,7 +399,7 @@ class Devices extends Console\Command\Command
 
 		$name = $this->askDeviceName($io, $gateway);
 
-		$panelInfo = $this->askWhichPanel($io, $gateway->getIdentifier(), $gateway);
+		$panelInfo = $this->askWhichPanel($io, $connector, $gateway);
 
 		/** @var DevicesQueries\FindDeviceProperties<DevicesEntities\Devices\Properties\Variable> $findDevicePropertyQuery */
 		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
@@ -465,7 +484,22 @@ class Devices extends Console\Command\Command
 					API\LanApi::GATEWAY_PORT,
 					false,
 				);
-			} catch (Exceptions\LanApiCall) {
+			} catch (Exceptions\LanApiCall $ex) {
+				$this->logger->error(
+					'Could not get NS Panel access token',
+					[
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+						'type' => 'devices-cmd',
+						'exception' => BootstrapHelpers\Logger::buildException($ex),
+						'request' => [
+							'body' => $ex->getRequest()?->getBody()->getContents(),
+						],
+						'connector' => [
+							'id' => $connector->getId()->toString(),
+						],
+					],
+				);
+
 				$io->error(
 					$this->translator->translate('//ns-panel-connector.cmd.devices.messages.accessToken.error'),
 				);
@@ -733,6 +767,7 @@ class Devices extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws RuntimeException
 	 */
 	private function manageGateway(
 		Style\SymfonyStyle $io,
@@ -874,7 +909,10 @@ class Devices extends Console\Command\Command
 			}
 		}
 
-		$this->createCapability($io, $device);
+		do {
+			$channel = $this->createCapability($io, $device);
+
+		} while ($channel !== null);
 	}
 
 	/**
@@ -917,18 +955,6 @@ class Devices extends Console\Command\Command
 
 		$name = $this->askDeviceName($io, $device);
 
-		/** @var DevicesQueries\FindDeviceProperties<DevicesEntities\Devices\Properties\Variable> $findDevicePropertyQuery */
-		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
-		$findDevicePropertyQuery->forDevice($device);
-		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IDENTIFIER_CATEGORY);
-
-		$categoryProperty = $this->devicesPropertiesRepository->findOneBy(
-			$findDevicePropertyQuery,
-			DevicesEntities\Devices\Properties\Variable::class,
-		);
-
-		$category = $this->askCategory($io, $device);
-
 		try {
 			// Start transaction connection to the database
 			$this->getOrmConnection()->beginTransaction();
@@ -936,21 +962,6 @@ class Devices extends Console\Command\Command
 			$device = $this->devicesManager->update($device, Utils\ArrayHash::from([
 				'name' => $name,
 			]));
-
-			if ($categoryProperty === null) {
-				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
-					'entity' => DevicesEntities\Devices\Properties\Variable::class,
-					'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_CATEGORY,
-					'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_CATEGORY),
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-					'value' => $category->getValue(),
-					'device' => $device,
-				]));
-			} elseif ($categoryProperty instanceof DevicesEntities\Devices\Properties\Variable) {
-				$this->devicesPropertiesManager->update($categoryProperty, Utils\ArrayHash::from([
-					'value' => $category->getValue(),
-				]));
-			}
 
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
@@ -1202,14 +1213,20 @@ class Devices extends Console\Command\Command
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
 	 */
 	private function createCapability(
 		Style\SymfonyStyle $io,
 		Entities\Devices\ThirdPartyDevice $device,
-	): void
+	): Entities\NsPanelChannel|null
 	{
 		$capability = $this->askCapabilityType($io, $device);
+
+		if ($capability === null) {
+			return null;
+		}
 
 		$metadata = $this->loader->loadCapabilities();
 
@@ -1257,7 +1274,7 @@ class Devices extends Console\Command\Command
 					),
 				);
 
-				return;
+				return null;
 			}
 		}
 
@@ -1308,13 +1325,15 @@ class Devices extends Console\Command\Command
 				$this->translator->translate('//ns-panel-connector.cmd.devices.messages.create.capability.error'),
 			);
 
-			return;
+			return null;
 		} finally {
 			// Revert all changes when error occur
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
 		}
+
+		return $channel;
 	}
 
 	/**
@@ -1323,6 +1342,8 @@ class Devices extends Console\Command\Command
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
 	 */
 	private function editCapability(Style\SymfonyStyle $io, Entities\Devices\ThirdPartyDevice $device): void
@@ -1610,9 +1631,11 @@ class Devices extends Console\Command\Command
 			$format = $this->askFormat($io, $protocol, $connectProperty);
 
 			if ($connectProperty instanceof DevicesEntities\Devices\Properties\Dynamic) {
-				$this->devicesManager->update($device, Utils\ArrayHash::from([
-					'parents' => array_merge($device->getParents(), [$connectProperty->getDevice()]),
-				]));
+				if (!$device->hasParent($connectProperty->getDevice())) {
+					$this->devicesManager->update($device, Utils\ArrayHash::from([
+						'parents' => array_merge($device->getParents(), [$connectProperty->getDevice()]),
+					]));
+				}
 
 				return $this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Mapped::class,
@@ -1624,11 +1647,16 @@ class Devices extends Console\Command\Command
 					'device' => $device,
 					'dataType' => $dataType,
 					'format' => $format,
+					'invalid' => $protocolMetadata->offsetExists('invalid_value')
+						? $protocolMetadata->offsetGet('invalid_value')
+						: null,
 				]));
 			} elseif ($connectProperty instanceof DevicesEntities\Channels\Properties\Dynamic) {
-				$this->devicesManager->update($device, Utils\ArrayHash::from([
-					'parents' => array_merge($device->getParents(), [$connectProperty->getChannel()->getDevice()]),
-				]));
+				if (!$device->hasParent($connectProperty->getChannel()->getDevice())) {
+					$this->devicesManager->update($device, Utils\ArrayHash::from([
+						'parents' => array_merge($device->getParents(), [$connectProperty->getChannel()->getDevice()]),
+					]));
+				}
 
 				return $this->channelsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Channels\Properties\Mapped::class,
@@ -1640,6 +1668,9 @@ class Devices extends Console\Command\Command
 					'channel' => $channel,
 					'dataType' => $dataType,
 					'format' => $format,
+					'invalid' => $protocolMetadata->offsetExists('invalid_value')
+						? $protocolMetadata->offsetGet('invalid_value')
+						: null,
 				]));
 			}
 		} else {
@@ -1657,6 +1688,9 @@ class Devices extends Console\Command\Command
 				'settable' => false,
 				'queryable' => false,
 				'value' => $value,
+				'invalid' => $protocolMetadata->offsetExists('invalid_value')
+					? $protocolMetadata->offsetGet('invalid_value')
+					: null,
 			]));
 		}
 
@@ -1738,6 +1772,9 @@ class Devices extends Console\Command\Command
 					$this->channelsPropertiesManager->update($property, Utils\ArrayHash::from([
 						'parent' => $connectProperty,
 						'format' => $format,
+						'invalid' => $protocolMetadata->offsetExists('invalid_value')
+							? $protocolMetadata->offsetGet('invalid_value')
+							: null,
 					]));
 				} else {
 					$this->channelsPropertiesManager->delete($property);
@@ -1753,6 +1790,9 @@ class Devices extends Console\Command\Command
 							'device' => $channel->getDevice(),
 							'dataType' => $dataType,
 							'format' => $format,
+							'invalid' => $protocolMetadata->offsetExists('invalid_value')
+								? $protocolMetadata->offsetGet('invalid_value')
+								: null,
 						]));
 
 					} elseif ($connectProperty instanceof DevicesEntities\Channels\Properties\Dynamic) {
@@ -1766,6 +1806,9 @@ class Devices extends Console\Command\Command
 							'channel' => $channel,
 							'dataType' => $dataType,
 							'format' => $format,
+							'invalid' => $protocolMetadata->offsetExists('invalid_value')
+								? $protocolMetadata->offsetGet('invalid_value')
+								: null,
 						]));
 					}
 				}
@@ -1780,6 +1823,9 @@ class Devices extends Console\Command\Command
 					$this->channelsPropertiesManager->update($property, Utils\ArrayHash::from([
 						'value' => $value,
 						'format' => $format,
+						'invalid' => $protocolMetadata->offsetExists('invalid_value')
+							? $protocolMetadata->offsetGet('invalid_value')
+							: null,
 					]));
 				} else {
 					$this->channelsPropertiesManager->delete($property);
@@ -1796,6 +1842,9 @@ class Devices extends Console\Command\Command
 						'settable' => false,
 						'queryable' => false,
 						'value' => $value,
+						'invalid' => $protocolMetadata->offsetExists('invalid_value')
+							? $protocolMetadata->offsetGet('invalid_value')
+							: null,
 					]));
 				}
 			}
@@ -1981,29 +2030,36 @@ class Devices extends Console\Command\Command
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws Nette\IOException
 	 */
 	private function askCategory(
 		Style\SymfonyStyle $io,
 		Entities\Devices\ThirdPartyDevice|null $device = null,
 	): Types\Category
 	{
-		$categories = array_combine(
-			array_values(Types\Category::getValues()),
-			array_map(
-				fn (Types\Category $category): string => $this->translator->translate(
-					'//ns-panel-connector.cmd.base.deviceType.' . $category->getValue(),
-				),
-				(array) Types\Category::getAvailableEnums(),
-			),
-		);
-		$categories = array_filter(
-			$categories,
-			fn (string $category): bool => $category !== $this->translator->translate(
-				'//ns-panel-connector.cmd.base.deviceType.' . Types\Category::UNKNOWN,
-			)
-		);
+		$metadata = $this->loader->loadCategories();
+
+		$categories = [];
+
+		foreach ((array) $metadata as $type => $categoryMetadata) {
+			if (
+				$categoryMetadata instanceof Utils\ArrayHash
+				&& $categoryMetadata->offsetExists('capabilities')
+				&& $categoryMetadata->offsetGet('capabilities') instanceof Utils\ArrayHash
+			) {
+				$requiredCapabilities = $categoryMetadata->offsetGet('capabilities');
+
+				if ((array) $requiredCapabilities !== []) {
+					$categories[$type] = $this->translator->translate(
+						'//ns-panel-connector.cmd.base.deviceType.' . $type,
+					);
+				}
+			}
+		}
+
 		asort($categories);
 
 		$default = $device !== null ? array_search(
@@ -2062,6 +2118,7 @@ class Devices extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws RuntimeException
 	 */
 	private function askGatewayAction(
 		Style\SymfonyStyle $io,
@@ -2362,34 +2419,95 @@ class Devices extends Console\Command\Command
 	/**
 	 * @throws Exceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
 	 */
 	private function askCapabilityType(
 		Style\SymfonyStyle $io,
 		Entities\Devices\ThirdPartyDevice $device,
-	): Types\Capability
+	): Types\Capability|null
 	{
-		$metadata = $this->loader->loadCapabilities();
+		$metadata = $this->loader->loadCategories();
+
+		if (!array_key_exists($device->getDisplayCategory()->getValue(), (array) $metadata)) {
+			return null;
+		}
+
+		$categoryMetadata = $metadata[$device->getDisplayCategory()->getValue()];
 
 		$capabilities = [];
 
-		foreach ((array) $metadata as $type => $capabilityMetadata) {
-			if (
-				$capabilityMetadata instanceof Utils\ArrayHash
-				&& $capabilityMetadata->offsetExists('multiple')
-				&& is_bool($capabilityMetadata->offsetGet('multiple'))
-			) {
-				$allowMultiple = $capabilityMetadata->offsetGet('multiple');
+		if (
+			$categoryMetadata instanceof Utils\ArrayHash
+			&& $categoryMetadata->offsetExists('capabilities')
+			&& $categoryMetadata->offsetGet('capabilities') instanceof Utils\ArrayHash
+			&& $categoryMetadata->offsetExists('optionalCapabilities')
+			&& $categoryMetadata->offsetGet('optionalCapabilities') instanceof Utils\ArrayHash
+		) {
+			$metadata = $this->loader->loadCapabilities();
 
-				$findChannelQuery = new Queries\FindChannels();
-				$findChannelQuery->forDevice($device);
-				$findChannelQuery->byIdentifier(Helpers\Name::convertCapabilityToChannel(Types\Capability::get($type)));
+			$requiredCapabilities = $categoryMetadata->offsetGet('capabilities');
 
-				$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\NsPanelChannel::class);
+			foreach ($requiredCapabilities as $type) {
+				if (
+					array_key_exists(strval($type), (array) $metadata)
+					&& $metadata[$type] instanceof Utils\ArrayHash
+					&& $metadata[$type]->offsetExists('multiple')
+					&& is_bool($metadata[$type]->offsetGet('multiple'))
+				) {
+					$allowMultiple = $metadata[$type]->offsetGet('multiple');
 
-				if ($channel === null || $allowMultiple) {
-					$capabilities[$type] = $this->translator->translate(
-						'//ns-panel-connector.cmd.base.capability.' . Types\Capability::get($type)->getValue(),
+					$findChannelQuery = new Queries\FindChannels();
+					$findChannelQuery->forDevice($device);
+					$findChannelQuery->byIdentifier(
+						Helpers\Name::convertCapabilityToChannel(Types\Capability::get($type)),
+					);
+
+					$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\NsPanelChannel::class);
+
+					if ($channel === null || $allowMultiple) {
+						$capabilities[$type] = $this->translator->translate(
+							'//ns-panel-connector.cmd.base.capability.' . Types\Capability::get($type)->getValue(),
+						);
+					}
+				}
+			}
+
+			if ($capabilities === []) {
+				$optionalCapabilities = $categoryMetadata->offsetGet('optionalCapabilities');
+
+				foreach ($optionalCapabilities as $type) {
+					if (
+						array_key_exists(strval($type), (array) $metadata)
+						&& $metadata[$type] instanceof Utils\ArrayHash
+						&& $metadata[$type]->offsetExists('multiple')
+						&& is_bool($metadata[$type]->offsetGet('multiple'))
+					) {
+						$allowMultiple = $metadata[$type]->offsetGet('multiple');
+
+						$findChannelQuery = new Queries\FindChannels();
+						$findChannelQuery->forDevice($device);
+						$findChannelQuery->byIdentifier(
+							Helpers\Name::convertCapabilityToChannel(Types\Capability::get($type)),
+						);
+
+						$channel = $this->channelsRepository->findOneBy(
+							$findChannelQuery,
+							Entities\NsPanelChannel::class,
+						);
+
+						if ($channel === null || $allowMultiple) {
+							$capabilities[$type] = $this->translator->translate(
+								'//ns-panel-connector.cmd.base.capability.' . Types\Capability::get($type)->getValue(),
+							);
+						}
+					}
+				}
+
+				if ($capabilities !== []) {
+					$capabilities['none'] = $this->translator->translate(
+						'//ns-panel-connector.cmd.devices.answers.none',
 					);
 				}
 			}
@@ -2404,7 +2522,7 @@ class Devices extends Console\Command\Command
 		$question->setErrorMessage(
 			$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 		);
-		$question->setValidator(function (string|null $answer) use ($capabilities): Types\Capability {
+		$question->setValidator(function (string|null $answer) use ($capabilities): Types\Capability|null {
 			if ($answer === null) {
 				throw new Exceptions\Runtime(
 					sprintf(
@@ -2420,6 +2538,10 @@ class Devices extends Console\Command\Command
 
 			$capability = array_search($answer, $capabilities, true);
 
+			if ($capability === 'none') {
+				return null;
+			}
+
 			if ($capability !== false && Types\Capability::isValidValue($capability)) {
 				return Types\Capability::get($capability);
 			}
@@ -2430,7 +2552,7 @@ class Devices extends Console\Command\Command
 		});
 
 		$answer = $io->askQuestion($question);
-		assert($answer instanceof Types\Capability);
+		assert($answer instanceof Types\Capability || $answer === null);
 
 		return $answer;
 	}
@@ -3048,32 +3170,49 @@ class Devices extends Console\Command\Command
 			if (
 				$connectProperty !== null
 				&& (
-					$connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_ENUM)
-					|| $connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_SWITCH)
-					|| $connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)
-				) && (
-					$connectProperty->getFormat() instanceof MetadataValueObjects\StringEnumFormat
-					|| $connectProperty->getFormat() instanceof MetadataValueObjects\CombinedEnumFormat
+					(
+						(
+							$connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_ENUM)
+							|| $connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_SWITCH)
+							|| $connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)
+						) && (
+							$connectProperty->getFormat() instanceof MetadataValueObjects\StringEnumFormat
+							|| $connectProperty->getFormat() instanceof MetadataValueObjects\CombinedEnumFormat
+						)
+					)
+					|| $connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_BOOLEAN)
 				)
 			) {
 				$mappedFormat = [];
 
 				foreach ($protocolMetadata->offsetGet('valid_values') as $name) {
-					$options = $connectProperty->getFormat() instanceof MetadataValueObjects\StringEnumFormat
-						? $connectProperty->getFormat()->toArray()
-						: array_map(
-							static function (array $items): array|null {
-								if ($items[0] === null) {
-									return null;
-								}
-
-								return [
-									$items[0]->getDataType(),
-									strval($items[0]->getValue()),
-								];
-							},
-							$connectProperty->getFormat()->getItems(),
+					if ($connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_BOOLEAN)) {
+						$options = [
+							'true',
+							'false',
+						];
+					} else {
+						assert(
+							$connectProperty->getFormat() instanceof MetadataValueObjects\StringEnumFormat
+							|| $connectProperty->getFormat() instanceof MetadataValueObjects\CombinedEnumFormat,
 						);
+
+						$options = $connectProperty->getFormat() instanceof MetadataValueObjects\StringEnumFormat
+							? $connectProperty->getFormat()->toArray()
+							: array_map(
+								static function (array $items): array|null {
+									if ($items[0] === null) {
+										return null;
+									}
+
+									return [
+										$items[0]->getDataType(),
+										strval($items[0]->getValue()),
+									];
+								},
+								$connectProperty->getFormat()->getItems(),
+							);
+					}
 
 					$question = new Console\Question\ChoiceQuestion(
 						$this->translator->translate(
@@ -3146,8 +3285,8 @@ class Devices extends Console\Command\Command
 
 					$mappedFormat[] = [
 						[$valueDataType, strval($value)],
-						[MetadataTypes\DataTypeShort::DATA_TYPE_UCHAR, strval($name)],
-						[MetadataTypes\DataTypeShort::DATA_TYPE_UCHAR, strval($name)],
+						[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, strval($name)],
+						[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, strval($name)],
 					];
 				}
 
@@ -3401,7 +3540,7 @@ class Devices extends Console\Command\Command
 
 	private function askWhichPanel(
 		Style\SymfonyStyle $io,
-		string $identifier,
+		Entities\NsPanelConnector $connector,
 		Entities\Devices\Gateway|null $gateway = null,
 	): Entities\Commands\GatewayInfo
 	{
@@ -3410,13 +3549,28 @@ class Devices extends Console\Command\Command
 			$gateway?->getName(),
 		);
 		$question->setValidator(
-			function (string|null $answer) use ($identifier): Entities\Commands\GatewayInfo {
+			function (string|null $answer) use ($connector): Entities\Commands\GatewayInfo {
 				if ($answer !== null && $answer !== '') {
-					$panelApi = $this->lanApiFactory->create($identifier);
+					$panelApi = $this->lanApiFactory->create($connector->getIdentifier());
 
 					try {
 						$panelInfo = $panelApi->getGatewayInfo($answer, API\LanApi::GATEWAY_PORT, false);
-					} catch (Exceptions\LanApiCall) {
+					} catch (Exceptions\LanApiCall $ex) {
+						$this->logger->error(
+							'Could not get NS Panel basic information',
+							[
+								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+								'type' => 'devices-cmd',
+								'exception' => BootstrapHelpers\Logger::buildException($ex),
+								'request' => [
+									'body' => $ex->getRequest()?->getBody()->getContents(),
+								],
+								'connector' => [
+									'id' => $connector->getId()->toString(),
+								],
+							],
+						);
+
 						throw new Exceptions\Runtime(
 							$this->translator->translate(
 								'//ns-panel-connector.cmd.devices.messages.addressNotReachable',

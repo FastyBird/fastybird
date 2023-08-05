@@ -21,6 +21,7 @@ use Doctrine\Persistence;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
+use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
@@ -53,6 +54,8 @@ final class Properties implements Common\EventSubscriber
 		private readonly Helpers\Loader $loader,
 		private readonly DevicesModels\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
 		private readonly DevicesModels\Devices\Properties\PropertiesManager $devicesPropertiesManager,
+		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
+		private readonly DevicesModels\Channels\ChannelsManager $channelsManager,
 		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly DevicesModels\Channels\Properties\PropertiesManager $channelsPropertiesManager,
 	)
@@ -88,6 +91,9 @@ final class Properties implements Common\EventSubscriber
 		) {
 			$this->processDeviceProperties($entity);
 
+			if ($entity instanceof Entities\Devices\ThirdPartyDevice) {
+				$this->processRequiredCapability($entity);
+			}
 		} elseif (
 			$entity instanceof Entities\NsPanelChannel
 			&& $entity->getDevice() instanceof Entities\Devices\SubDevice
@@ -115,7 +121,8 @@ final class Properties implements Common\EventSubscriber
 		}
 
 		$enumValues = $device instanceof Entities\Devices\ThirdPartyDevice ? [
-			MetadataTypes\ConnectionState::STATE_RUNNING,
+			MetadataTypes\ConnectionState::STATE_CONNECTED,
+			MetadataTypes\ConnectionState::STATE_DISCONNECTED,
 			MetadataTypes\ConnectionState::STATE_STOPPED,
 			MetadataTypes\ConnectionState::STATE_UNKNOWN,
 		] : [
@@ -146,6 +153,38 @@ final class Properties implements Common\EventSubscriber
 				'settable' => false,
 				'queryable' => false,
 			]));
+		}
+	}
+
+	/**
+	 * INFO: NS Panel has bug, RSSI capability is required
+	 *
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws DoctrineCrud\Exceptions\InvalidArgumentException
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws Nette\IOException
+	 */
+	private function processRequiredCapability(Entities\Devices\ThirdPartyDevice $device): void
+	{
+		$findChannelQuery = new Queries\FindChannels();
+		$findChannelQuery->forDevice($device);
+		$findChannelQuery->byIdentifier(
+			Helpers\Name::convertCapabilityToChannel(Types\Capability::get(Types\Capability::RSSI)),
+		);
+
+		$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\NsPanelChannel::class);
+
+		if ($channel === null) {
+			$channel = $this->channelsManager->create(Utils\ArrayHash::from([
+				'entity' => Entities\NsPanelChannel::class,
+				'identifier' => Helpers\Name::convertCapabilityToChannel(Types\Capability::get(Types\Capability::RSSI)),
+				'name' => 'RSSI',
+				'device' => $device,
+			]));
+			assert($channel instanceof Entities\NsPanelChannel);
+
+			$this->processSubDeviceChannelProperties($channel);
 		}
 	}
 
@@ -254,9 +293,9 @@ final class Properties implements Common\EventSubscriber
 					Types\Permission::READ,
 				),
 				$protocolMetadata->offsetExists('unit') ? strval($protocolMetadata->offsetGet('unit')) : null,
-				$protocolMetadata->offsetExists('invalid_value') ? strval(
-					$protocolMetadata->offsetGet('invalid_value'),
-				) : null,
+				$protocolMetadata->offsetExists('invalid_value')
+					? strval($protocolMetadata->offsetGet('invalid_value'))
+					: null,
 			);
 		}
 	}
@@ -300,18 +339,33 @@ final class Properties implements Common\EventSubscriber
 				'invalid' => $invalidValue,
 			]));
 		} else {
-			$this->channelsPropertiesManager->create(Utils\ArrayHash::from([
-				'channel' => $channel,
-				'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
-				'identifier' => Helpers\Name::convertProtocolToProperty($protocol),
-				'name' => Helpers\Name::createName(Helpers\Name::convertProtocolToProperty($protocol)),
-				'dataType' => $dataType,
-				'unit' => $unit,
-				'format' => $format,
-				'settable' => $settable,
-				'queryable' => $queryable,
-				'invalid' => $invalidValue,
-			]));
+			if ($protocol->equalsValue(Types\Protocol::RSSI)) {
+				$this->channelsPropertiesManager->create(Utils\ArrayHash::from([
+					'entity' => DevicesEntities\Channels\Properties\Variable::class,
+					'identifier' => Helpers\Name::convertProtocolToProperty($protocol),
+					'name' => Helpers\Name::createName(Helpers\Name::convertProtocolToProperty($protocol)),
+					'channel' => $channel,
+					'dataType' => $dataType,
+					'unit' => $unit,
+					'format' => $format,
+					'settable' => false,
+					'queryable' => false,
+					'value' => 0,
+				]));
+			} else {
+				$this->channelsPropertiesManager->create(Utils\ArrayHash::from([
+					'channel' => $channel,
+					'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
+					'identifier' => Helpers\Name::convertProtocolToProperty($protocol),
+					'name' => Helpers\Name::createName(Helpers\Name::convertProtocolToProperty($protocol)),
+					'dataType' => $dataType,
+					'unit' => $unit,
+					'format' => $format,
+					'settable' => $settable,
+					'queryable' => $queryable,
+					'invalid' => $invalidValue,
+				]));
+			}
 		}
 	}
 

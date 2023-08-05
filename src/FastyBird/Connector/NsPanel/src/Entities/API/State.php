@@ -37,7 +37,7 @@ final class State implements Entity
 {
 
 	/**
-	 * @param array<Entities\API\Statuses\Toggle> $toggle
+	 * @param array<Entities\API\Statuses\ToggleState> $toggle
 	 */
 	public function __construct(
 		#[ObjectMapper\Rules\AnyOf([
@@ -107,11 +107,11 @@ final class State implements Entity
 		#[ObjectMapper\Modifiers\FieldName(Types\Capability::PERCENTAGE)]
 		private readonly Entities\API\Statuses\Percentage|null $percentage = null,
 		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\MappedObjectValue(Entities\API\Statuses\Power::class),
+			new ObjectMapper\Rules\MappedObjectValue(Entities\API\Statuses\PowerState::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName(Types\Capability::POWER)]
-		private readonly Entities\API\Statuses\Power|null $power = null,
+		private readonly Entities\API\Statuses\PowerState|null $power = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\MappedObjectValue(Entities\API\Statuses\Press::class),
 			new ObjectMapper\Rules\NullValue(),
@@ -137,7 +137,7 @@ final class State implements Entity
 		#[ObjectMapper\Modifiers\FieldName(Types\Capability::TEMPERATURE)]
 		private readonly Entities\API\Statuses\Temperature|null $temperature = null,
 		#[ObjectMapper\Rules\ArrayOf(
-			item: new ObjectMapper\Rules\MappedObjectValue(Entities\API\Statuses\Toggle::class),
+			item: new ObjectMapper\Rules\MappedObjectValue(Entities\API\Statuses\ToggleState::class),
 			key: new ObjectMapper\Rules\AnyOf([
 				new ObjectMapper\Rules\StringValue(),
 				new ObjectMapper\Rules\IntValue(),

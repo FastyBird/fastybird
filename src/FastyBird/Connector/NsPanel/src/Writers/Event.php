@@ -24,7 +24,6 @@ use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Events as DevicesEvents;
@@ -95,8 +94,6 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function stateChanged(
 		DevicesEvents\ChannelPropertyStateEntityCreated|DevicesEvents\ChannelPropertyStateEntityUpdated $event,
@@ -156,8 +153,6 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function processDeviceClient(
 		Uuid\UuidInterface $connectorId,
@@ -175,9 +170,9 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 				continue;
 			}
 
-			$state = $this->channelPropertiesStates->readValue($child);
+			$state = $event->getState();
 
-			if ($state === null) {
+			if (!$state->isValid() === false) {
 				continue;
 			}
 

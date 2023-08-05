@@ -34,7 +34,7 @@ final class MotorCalibration implements Status
 	public function __construct(
 		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\MotorCalibrationPayload::class)]
 		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::MOTOR_CALIBRATION)]
-		private readonly Types\MotorCalibrationPayload $value,
+		private readonly Types\MotorCalibrationPayload $motorCalibration,
 	)
 	{
 	}
@@ -44,9 +44,11 @@ final class MotorCalibration implements Status
 		return Types\Capability::get(Types\Capability::MOTOR_CALIBRATION);
 	}
 
-	public function getValue(): Types\MotorCalibrationPayload
+	public function getProtocols(): array
 	{
-		return $this->value;
+		return [
+			Types\Protocol::MOTOR_CALIBRATION => $this->motorCalibration,
+		];
 	}
 
 	/**
@@ -55,14 +57,14 @@ final class MotorCalibration implements Status
 	public function toArray(): array
 	{
 		return [
-			'value' => $this->getValue()->getValue(),
+			'value' => $this->motorCalibration->getValue(),
 		];
 	}
 
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Protocol::MOTOR_CALIBRATION} = $this->getValue()->getValue();
+		$json->{Types\Protocol::MOTOR_CALIBRATION} = $this->motorCalibration->getValue();
 
 		return $json;
 	}

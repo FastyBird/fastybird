@@ -33,7 +33,7 @@ final class Humidity implements Status
 	public function __construct(
 		#[ObjectMapper\Rules\IntValue(min: 0, max: 100, unsigned: true)]
 		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::HUMIDITY)]
-		private readonly int $value,
+		private readonly int $humidity,
 	)
 	{
 	}
@@ -43,9 +43,11 @@ final class Humidity implements Status
 		return Types\Capability::get(Types\Capability::HUMIDITY);
 	}
 
-	public function getValue(): int
+	public function getProtocols(): array
 	{
-		return $this->value;
+		return [
+			Types\Protocol::HUMIDITY => $this->humidity,
+		];
 	}
 
 	/**
@@ -54,14 +56,14 @@ final class Humidity implements Status
 	public function toArray(): array
 	{
 		return [
-			'value' => $this->getValue(),
+			'value' => $this->humidity,
 		];
 	}
 
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Protocol::HUMIDITY} = $this->getValue();
+		$json->{Types\Protocol::HUMIDITY} = $this->humidity;
 
 		return $json;
 	}

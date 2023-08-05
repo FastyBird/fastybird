@@ -246,7 +246,7 @@ abstract class Device implements Entities\Entity,
 		// Process all passed entities...
 		foreach ($parents as $entity) {
 			// ...and assign them to collection
-			$this->parents->add($entity);
+			$this->addParent($entity);
 		}
 	}
 
@@ -257,6 +257,11 @@ abstract class Device implements Entities\Entity,
 			// ...and assign it to collection
 			$this->parents->add($device);
 		}
+	}
+
+	public function hasParent(self $device): bool
+	{
+		return $this->parents->contains($device);
 	}
 
 	/**
@@ -277,7 +282,7 @@ abstract class Device implements Entities\Entity,
 		// Process all passed entities...
 		foreach ($children as $entity) {
 			// ...and assign them to collection
-			$this->children->add($entity);
+			$this->addChild($entity);
 		}
 	}
 
@@ -308,7 +313,7 @@ abstract class Device implements Entities\Entity,
 		// Process all passed entities...
 		foreach ($channels as $entity) {
 			// ...and assign them to collection
-			$this->channels->add($entity);
+			$this->addChannel($entity);
 		}
 	}
 
@@ -339,7 +344,7 @@ abstract class Device implements Entities\Entity,
 		// Process all passed entities...
 		foreach ($controls as $entity) {
 			// ...and assign them to collection
-			$this->controls->add($entity);
+			$this->addControl($entity);
 		}
 	}
 
@@ -370,7 +375,7 @@ abstract class Device implements Entities\Entity,
 		// Process all passed entities...
 		foreach ($properties as $entity) {
 			// ...and assign them to collection
-			$this->properties->add($entity);
+			$this->addProperty($entity);
 		}
 	}
 

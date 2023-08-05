@@ -28,13 +28,13 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Toggle implements Status
+final class ToggleState implements Status
 {
 
 	public function __construct(
 		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\TogglePayload::class)]
 		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::TOGGLE_STATE)]
-		private readonly Types\TogglePayload $value,
+		private readonly Types\TogglePayload $toggleState,
 		#[ObjectMapper\Rules\AnyOf([
 			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\StartupPayload::class),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
@@ -50,14 +50,17 @@ final class Toggle implements Status
 		return Types\Capability::get(Types\Capability::TOGGLE);
 	}
 
-	public function getValue(): Types\TogglePayload
-	{
-		return $this->value;
-	}
-
 	public function getStartup(): Types\StartupPayload|null
 	{
 		return $this->startup;
+	}
+
+	public function getProtocols(): array
+	{
+		return [
+			Types\Protocol::TOGGLE_STATE => $this->toggleState,
+			Types\Protocol::STARTUP => $this->getStartup(),
+		];
 	}
 
 	/**
@@ -66,7 +69,7 @@ final class Toggle implements Status
 	public function toArray(): array
 	{
 		return [
-			'value' => $this->getValue()->getValue(),
+			'value' => $this->toggleState->getValue(),
 			'startup' => $this->getStartup()?->getValue(),
 		];
 	}
@@ -74,7 +77,7 @@ final class Toggle implements Status
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Protocol::TOGGLE_STATE} = $this->getValue()->getValue();
+		$json->{Types\Protocol::TOGGLE_STATE} = $this->toggleState->getValue();
 
 		if ($this->getStartup() !== null) {
 			$json->{Types\Protocol::STARTUP} = $this->getStartup()->getValue();

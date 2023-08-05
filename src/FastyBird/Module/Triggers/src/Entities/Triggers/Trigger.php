@@ -132,7 +132,7 @@ abstract class Trigger implements Entities\Entity,
 		$this->actions = new Common\Collections\ArrayCollection();
 
 		foreach ($actions as $entity) {
-			$this->actions->add($entity);
+			$this->addAction($entity);
 		}
 	}
 
@@ -178,7 +178,7 @@ abstract class Trigger implements Entities\Entity,
 		$this->notifications = new Common\Collections\ArrayCollection();
 
 		foreach ($notifications as $entity) {
-			$this->notifications->add($entity);
+			$this->addNotification($entity);
 		}
 	}
 
@@ -224,7 +224,7 @@ abstract class Trigger implements Entities\Entity,
 		$this->controls = new Common\Collections\ArrayCollection();
 
 		foreach ($controls as $entity) {
-			$this->controls->add($entity);
+			$this->addControl($entity);
 		}
 	}
 

@@ -34,7 +34,7 @@ final class MotorControl implements Status
 	public function __construct(
 		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\MotorControlPayload::class)]
 		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::MOTOR_CONTROL)]
-		private readonly Types\MotorControlPayload $value,
+		private readonly Types\MotorControlPayload $motorControl,
 	)
 	{
 	}
@@ -44,9 +44,11 @@ final class MotorControl implements Status
 		return Types\Capability::get(Types\Capability::MOTOR_CONTROL);
 	}
 
-	public function getValue(): Types\MotorControlPayload
+	public function getProtocols(): array
 	{
-		return $this->value;
+		return [
+			Types\Protocol::MOTOR_CONTROL => $this->motorControl,
+		];
 	}
 
 	/**
@@ -55,14 +57,14 @@ final class MotorControl implements Status
 	public function toArray(): array
 	{
 		return [
-			'value' => $this->getValue()->getValue(),
+			'value' => $this->motorControl->getValue(),
 		];
 	}
 
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Protocol::MOTOR_CONTROL} = $this->getValue()->getValue();
+		$json->{Types\Protocol::MOTOR_CONTROL} = $this->motorControl->getValue();
 
 		return $json;
 	}

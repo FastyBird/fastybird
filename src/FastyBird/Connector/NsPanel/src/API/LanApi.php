@@ -19,10 +19,10 @@ use Evenement;
 use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use Fig\Http\Message\RequestMethodInterface;
 use GuzzleHttp;
 use InvalidArgumentException;
 use Nette;
@@ -95,22 +95,21 @@ final class LanApi
 	{
 		$deferred = new Promise\Deferred();
 
-		$result = $this->callRequest(
-			'GET',
+		$request = $this->createRequest(
+			RequestMethodInterface::METHOD_GET,
 			sprintf('http://%s:%d/open-api/v1/rest/bridge', $ipAddress, $port),
 			[
 				'Content-Type' => 'application/json',
 			],
-			[],
-			null,
-			$async,
 		);
+
+		$result = $this->callRequest($request, $async);
 
 		if ($result instanceof Promise\PromiseInterface) {
 			$result
-				->then(function (Message\ResponseInterface $response) use ($deferred): void {
+				->then(function (Message\ResponseInterface $response) use ($deferred, $request): void {
 					try {
-						$deferred->resolve($this->parseGetGatewayInfo($response));
+						$deferred->resolve($this->parseGetGatewayInfo($request, $response));
 					} catch (Throwable $ex) {
 						$deferred->reject($ex);
 					}
@@ -122,11 +121,7 @@ final class LanApi
 			return $deferred->promise();
 		}
 
-		if ($result === false) {
-			throw new Exceptions\LanApiCall('Could send data to cloud server');
-		}
-
-		return $this->parseGetGatewayInfo($result);
+		return $this->parseGetGatewayInfo($request, $result);
 	}
 
 	/**
@@ -143,8 +138,8 @@ final class LanApi
 	{
 		$deferred = new Promise\Deferred();
 
-		$result = $this->callRequest(
-			'GET',
+		$request = $this->createRequest(
+			RequestMethodInterface::METHOD_GET,
 			sprintf('http://%s:%d/open-api/v1/rest/bridge/access_token', $ipAddress, $port),
 			[
 				'Content-Type' => 'application/json',
@@ -152,15 +147,15 @@ final class LanApi
 			[
 				'app_name' => $name,
 			],
-			null,
-			$async,
 		);
+
+		$result = $this->callRequest($request, $async);
 
 		if ($result instanceof Promise\PromiseInterface) {
 			$result
-				->then(function (Message\ResponseInterface $response) use ($deferred): void {
+				->then(function (Message\ResponseInterface $response) use ($deferred, $request): void {
 					try {
-						$deferred->resolve($this->parseGetGatewayAccessToken($response));
+						$deferred->resolve($this->parseGetGatewayAccessToken($request, $response));
 					} catch (Throwable $ex) {
 						$deferred->reject($ex);
 					}
@@ -172,11 +167,7 @@ final class LanApi
 			return $deferred->promise();
 		}
 
-		if ($result === false) {
-			throw new Exceptions\LanApiCall('Could send data to cloud server');
-		}
-
-		return $this->parseGetGatewayAccessToken($result);
+		return $this->parseGetGatewayAccessToken($request, $result);
 	}
 
 	/**
@@ -213,8 +204,8 @@ final class LanApi
 		);
 
 		try {
-			$result = $this->callRequest(
-				'POST',
+			$request = $this->createRequest(
+				RequestMethodInterface::METHOD_POST,
 				sprintf('http://%s:%d/open-api/v1/rest/thirdparty/event', $ipAddress, $port),
 				[
 					'Content-Type' => 'application/json',
@@ -222,36 +213,36 @@ final class LanApi
 				],
 				[],
 				Utils\Json::encode($entity->toJson()),
-				$async,
-			);
-		} catch (Utils\JsonException $ex) {
-			$this->logger->error(
-				'Could not encode request content',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'lan-api',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
-					'request' => [
-						'body' => $entity->toArray(),
-					],
-					'connector' => [
-						'identifier' => $this->identifier,
-					],
-				],
 			);
 
+			$result = $this->callRequest($request, $async);
+		} catch (Utils\JsonException $ex) {
 			if ($async) {
-				return Promise\reject(new Exceptions\LanApiCall('Could not prepare request'));
+				return Promise\reject(
+					new Exceptions\LanApiCall(
+						'Could not prepare request',
+						null,
+						null,
+						$ex->getCode(),
+						$ex,
+					),
+				);
 			}
 
-			throw new Exceptions\LanApiCall('Could not prepare request');
+			throw new Exceptions\LanApiCall(
+				'Could not prepare request',
+				null,
+				null,
+				$ex->getCode(),
+				$ex,
+			);
 		}
 
 		if ($result instanceof Promise\PromiseInterface) {
 			$result
-				->then(function (Message\ResponseInterface $response) use ($deferred): void {
+				->then(function (Message\ResponseInterface $response) use ($deferred, $request): void {
 					try {
-						$deferred->resolve($this->parseSynchroniseDevices($response));
+						$deferred->resolve($this->parseSynchroniseDevices($request, $response));
 					} catch (Throwable $ex) {
 						$deferred->reject($ex);
 					}
@@ -263,11 +254,7 @@ final class LanApi
 			return $deferred->promise();
 		}
 
-		if ($result === false) {
-			throw new Exceptions\LanApiCall('Could send data to cloud server');
-		}
-
-		return $this->parseSynchroniseDevices($result);
+		return $this->parseSynchroniseDevices($request, $result);
 	}
 
 	/**
@@ -308,8 +295,8 @@ final class LanApi
 		);
 
 		try {
-			$result = $this->callRequest(
-				'POST',
+			$request = $this->createRequest(
+				RequestMethodInterface::METHOD_POST,
 				sprintf('http://%s:%d/open-api/v1/rest/thirdparty/event', $ipAddress, $port),
 				[
 					'Content-Type' => 'application/json',
@@ -317,36 +304,36 @@ final class LanApi
 				],
 				[],
 				Utils\Json::encode($entity->toJson()),
-				$async,
-			);
-		} catch (Utils\JsonException $ex) {
-			$this->logger->error(
-				'Could not encode request content',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'lan-api',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
-					'request' => [
-						'body' => $entity->toArray(),
-					],
-					'connector' => [
-						'identifier' => $this->identifier,
-					],
-				],
 			);
 
+			$result = $this->callRequest($request, $async);
+		} catch (Utils\JsonException $ex) {
 			if ($async) {
-				return Promise\reject(new Exceptions\LanApiCall('Could not prepare request'));
+				return Promise\reject(
+					new Exceptions\LanApiCall(
+						'Could not prepare request',
+						null,
+						null,
+						$ex->getCode(),
+						$ex,
+					),
+				);
 			}
 
-			throw new Exceptions\LanApiCall('Could not prepare request');
+			throw new Exceptions\LanApiCall(
+				'Could not prepare request',
+				null,
+				null,
+				$ex->getCode(),
+				$ex,
+			);
 		}
 
 		if ($result instanceof Promise\PromiseInterface) {
 			$result
-				->then(function (Message\ResponseInterface $response) use ($deferred): void {
+				->then(function (Message\ResponseInterface $response) use ($deferred, $request): void {
 					try {
-						$deferred->resolve($this->parseReportDeviceStatus($response));
+						$deferred->resolve($this->parseReportDeviceStatus($request, $response));
 					} catch (Throwable $ex) {
 						$deferred->reject($ex);
 					}
@@ -358,11 +345,7 @@ final class LanApi
 			return $deferred->promise();
 		}
 
-		if ($result === false) {
-			throw new Exceptions\LanApiCall('Could send data to cloud server');
-		}
-
-		return $this->parseReportDeviceStatus($result);
+		return $this->parseReportDeviceStatus($request, $result);
 	}
 
 	/**
@@ -401,8 +384,8 @@ final class LanApi
 		);
 
 		try {
-			$result = $this->callRequest(
-				'POST',
+			$request = $this->createRequest(
+				RequestMethodInterface::METHOD_POST,
 				sprintf('http://%s:%d/open-api/v1/rest/thirdparty/event', $ipAddress, $port),
 				[
 					'Content-Type' => 'application/json',
@@ -410,36 +393,36 @@ final class LanApi
 				],
 				[],
 				Utils\Json::encode($entity->toJson()),
-				$async,
-			);
-		} catch (Utils\JsonException $ex) {
-			$this->logger->error(
-				'Could not encode request content',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'lan-api',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
-					'request' => [
-						'body' => $entity->toArray(),
-					],
-					'connector' => [
-						'identifier' => $this->identifier,
-					],
-				],
 			);
 
+			$result = $this->callRequest($request, $async);
+		} catch (Utils\JsonException $ex) {
 			if ($async) {
-				return Promise\reject(new Exceptions\LanApiCall('Could not prepare request'));
+				return Promise\reject(
+					new Exceptions\LanApiCall(
+						'Could not prepare request',
+						null,
+						null,
+						$ex->getCode(),
+						$ex,
+					),
+				);
 			}
 
-			throw new Exceptions\LanApiCall('Could not prepare request');
+			throw new Exceptions\LanApiCall(
+				'Could not prepare request',
+				null,
+				null,
+				$ex->getCode(),
+				$ex,
+			);
 		}
 
 		if ($result instanceof Promise\PromiseInterface) {
 			$result
-				->then(function (Message\ResponseInterface $response) use ($deferred): void {
+				->then(function (Message\ResponseInterface $response) use ($deferred, $request): void {
 					try {
-						$deferred->resolve($this->parseReportDeviceState($response));
+						$deferred->resolve($this->parseReportDeviceState($request, $response));
 					} catch (Throwable $ex) {
 						$deferred->reject($ex);
 					}
@@ -451,11 +434,7 @@ final class LanApi
 			return $deferred->promise();
 		}
 
-		if ($result === false) {
-			throw new Exceptions\LanApiCall('Could send data to cloud server');
-		}
-
-		return $this->parseReportDeviceState($result);
+		return $this->parseReportDeviceState($request, $result);
 	}
 
 	/**
@@ -474,14 +453,14 @@ final class LanApi
 		$deferred = new Promise\Deferred();
 
 		$result = $this->callRequest(
-			'DELETE',
-			sprintf('http://%s:%d/open-api/v1/rest/devices/%s', $ipAddress, $port, $serialNumber),
-			[
-				'Content-Type' => 'application/json',
-				'Authorization' => sprintf('Bearer %s', $accessToken),
-			],
-			[],
-			null,
+			$this->createRequest(
+				RequestMethodInterface::METHOD_DELETE,
+				sprintf('http://%s:%d/open-api/v1/rest/devices/%s', $ipAddress, $port, $serialNumber),
+				[
+					'Content-Type' => 'application/json',
+					'Authorization' => sprintf('Bearer %s', $accessToken),
+				],
+			),
 			$async,
 		);
 
@@ -501,10 +480,6 @@ final class LanApi
 			return $deferred->promise();
 		}
 
-		if ($result === false) {
-			throw new Exceptions\LanApiCall('Could send data to cloud server');
-		}
-
 		return true;
 	}
 
@@ -522,23 +497,22 @@ final class LanApi
 	{
 		$deferred = new Promise\Deferred();
 
-		$result = $this->callRequest(
-			'GET',
+		$request = $this->createRequest(
+			RequestMethodInterface::METHOD_GET,
 			sprintf('http://%s:%d/open-api/v1/rest/devices', $ipAddress, $port),
 			[
 				'Content-Type' => 'application/json',
 				'Authorization' => sprintf('Bearer %s', $accessToken),
 			],
-			[],
-			null,
-			$async,
 		);
+
+		$result = $this->callRequest($request, $async);
 
 		if ($result instanceof Promise\PromiseInterface) {
 			$result
-				->then(function (Message\ResponseInterface $response) use ($deferred): void {
+				->then(function (Message\ResponseInterface $response) use ($deferred, $request): void {
 					try {
-						$deferred->resolve($this->parseGetSubDevices($response));
+						$deferred->resolve($this->parseGetSubDevices($request, $response));
 					} catch (Throwable $ex) {
 						$deferred->reject($ex);
 					}
@@ -550,11 +524,7 @@ final class LanApi
 			return $deferred->promise();
 		}
 
-		if ($result === false) {
-			throw new Exceptions\LanApiCall('Could send data to cloud server');
-		}
-
-		return $this->parseGetSubDevices($result);
+		return $this->parseGetSubDevices($request, $result);
 	}
 
 	/**
@@ -583,8 +553,8 @@ final class LanApi
 		);
 
 		try {
-			$result = $this->callRequest(
-				'PUT',
+			$request = $this->createRequest(
+				RequestMethodInterface::METHOD_PUT,
 				sprintf('http://%s:%d/open-api/v1/rest/devices/%s', $ipAddress, $port, $serialNumber),
 				[
 					'Content-Type' => 'application/json',
@@ -592,36 +562,36 @@ final class LanApi
 				],
 				[],
 				Utils\Json::encode($entity->toJson()),
-				$async,
-			);
-		} catch (Utils\JsonException $ex) {
-			$this->logger->error(
-				'Could not encode request content',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'lan-api',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
-					'request' => [
-						'body' => $entity->toArray(),
-					],
-					'connector' => [
-						'identifier' => $this->identifier,
-					],
-				],
 			);
 
+			$result = $this->callRequest($request, $async);
+		} catch (Utils\JsonException $ex) {
 			if ($async) {
-				return Promise\reject(new Exceptions\LanApiCall('Could not prepare request'));
+				return Promise\reject(
+					new Exceptions\LanApiCall(
+						'Could not prepare request',
+						null,
+						null,
+						$ex->getCode(),
+						$ex,
+					),
+				);
 			}
 
-			throw new Exceptions\LanApiCall('Could not prepare request');
+			throw new Exceptions\LanApiCall(
+				'Could not prepare request',
+				null,
+				null,
+				$ex->getCode(),
+				$ex,
+			);
 		}
 
 		if ($result instanceof Promise\PromiseInterface) {
 			$result
-				->then(function (Message\ResponseInterface $response) use ($deferred): void {
+				->then(function (Message\ResponseInterface $response) use ($deferred, $request): void {
 					try {
-						$deferred->resolve($this->parseSetSubDeviceStatus($response));
+						$deferred->resolve($this->parseSetSubDeviceStatus($request, $response));
 					} catch (Throwable $ex) {
 						$deferred->reject($ex);
 					}
@@ -633,19 +603,18 @@ final class LanApi
 			return $deferred->promise();
 		}
 
-		if ($result === false) {
-			throw new Exceptions\LanApiCall('Could send data to cloud server');
-		}
-
-		return $this->parseSetSubDeviceStatus($result);
+		return $this->parseSetSubDeviceStatus($request, $result);
 	}
 
 	/**
 	 * @throws Exceptions\LanApiCall
 	 */
-	private function parseGetGatewayInfo(Message\ResponseInterface $response): Entities\API\Response\GetGatewayInfo
+	private function parseGetGatewayInfo(
+		Message\RequestInterface $request,
+		Message\ResponseInterface $response,
+	): Entities\API\Response\GetGatewayInfo
 	{
-		$body = $this->validateResponseBody($response, self::GET_GATEWAY_INFO_MESSAGE_SCHEMA_FILENAME);
+		$body = $this->validateResponseBody($request, $response, self::GET_GATEWAY_INFO_MESSAGE_SCHEMA_FILENAME);
 
 		$error = $body->offsetGet('error');
 
@@ -653,24 +622,10 @@ final class LanApi
 		assert($data instanceof Utils\ArrayHash);
 
 		if ($error !== 0) {
-			$this->logger->error(
-				'Read NS Panel status failed',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'lan-api',
-					'error' => $body->offsetGet('message'),
-					'response' => [
-						'headers' => $response->getHeaders(),
-						'body' => $this->getResponseBody($response),
-					],
-					'connector' => [
-						'identifier' => $this->identifier,
-					],
-				],
-			);
-
 			throw new Exceptions\LanApiCall(
 				sprintf('Getting gateway status failed: %s', strval($body->offsetGet('message'))),
+				$request,
+				$response,
 			);
 		}
 
@@ -681,10 +636,15 @@ final class LanApi
 	 * @throws Exceptions\LanApiCall
 	 */
 	private function parseGetGatewayAccessToken(
+		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
 	): Entities\API\Response\GetGatewayAccessToken
 	{
-		$body = $this->validateResponseBody($response, self::GET_GATEWAY_ACCESS_TOKEN_MESSAGE_SCHEMA_FILENAME);
+		$body = $this->validateResponseBody(
+			$request,
+			$response,
+			self::GET_GATEWAY_ACCESS_TOKEN_MESSAGE_SCHEMA_FILENAME,
+		);
 
 		$error = $body->offsetGet('error');
 
@@ -692,24 +652,10 @@ final class LanApi
 		assert($data instanceof Utils\ArrayHash);
 
 		if ($error !== 0) {
-			$this->logger->error(
-				'Read NS Panel access token failed',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'lan-api',
-					'error' => $body->offsetGet('message'),
-					'response' => [
-						'headers' => $response->getHeaders(),
-						'body' => $this->getResponseBody($response),
-					],
-					'connector' => [
-						'identifier' => $this->identifier,
-					],
-				],
-			);
-
 			throw new Exceptions\LanApiCall(
 				sprintf('Getting gateway access token failed: %s', strval($body->offsetGet('message'))),
+				$request,
+				$response,
 			);
 		}
 
@@ -719,37 +665,26 @@ final class LanApi
 	/**
 	 * @throws Exceptions\LanApiCall
 	 */
-	private function parseSynchroniseDevices(Message\ResponseInterface $response): Entities\API\Response\SyncDevices
+	private function parseSynchroniseDevices(
+		Message\RequestInterface $request,
+		Message\ResponseInterface $response,
+	): Entities\API\Response\SyncDevices
 	{
-		$errorBody = $this->validateResponseBody($response, self::EVENT_ERROR_MESSAGE_SCHEMA_FILENAME, false);
+		$errorBody = $this->validateResponseBody($request, $response, self::EVENT_ERROR_MESSAGE_SCHEMA_FILENAME, false);
 
 		if ($errorBody !== false) {
 			$error = $this->createEntity(Entities\API\Response\ErrorEvent::class, $errorBody);
 
-			$this->logger->error(
-				'Synchronise third-party devices failed',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'lan-api',
-					'error' => $error->getPayload()->getDescription(),
-					'response' => [
-						'headers' => $response->getHeaders(),
-						'body' => $this->getResponseBody($response),
-					],
-					'connector' => [
-						'identifier' => $this->identifier,
-					],
-				],
-			);
-
 			throw new Exceptions\LanApiCall(
 				sprintf('Synchronise third-party devices failed: %s', $error->getPayload()->getDescription()),
+				$request,
+				$response,
 			);
 		}
 
 		return $this->createEntity(
 			Entities\API\Response\SyncDevices::class,
-			$this->validateResponseBody($response, self::SYNCHRONISE_DEVICES_MESSAGE_SCHEMA_FILENAME),
+			$this->validateResponseBody($request, $response, self::SYNCHRONISE_DEVICES_MESSAGE_SCHEMA_FILENAME),
 		);
 	}
 
@@ -757,38 +692,25 @@ final class LanApi
 	 * @throws Exceptions\LanApiCall
 	 */
 	private function parseReportDeviceStatus(
+		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
 	): Entities\API\Response\ReportDeviceStatus
 	{
-		$errorBody = $this->validateResponseBody($response, self::EVENT_ERROR_MESSAGE_SCHEMA_FILENAME, false);
+		$errorBody = $this->validateResponseBody($request, $response, self::EVENT_ERROR_MESSAGE_SCHEMA_FILENAME, false);
 
 		if ($errorBody !== false) {
 			$error = $this->createEntity(Entities\API\Response\ErrorEvent::class, $errorBody);
 
-			$this->logger->error(
-				'Report third-party device status failed',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'lan-api',
-					'error' => $error->getPayload()->getDescription(),
-					'response' => [
-						'headers' => $response->getHeaders(),
-						'body' => $this->getResponseBody($response),
-					],
-					'connector' => [
-						'identifier' => $this->identifier,
-					],
-				],
-			);
-
 			throw new Exceptions\LanApiCall(
 				sprintf('Report third-party device status failed: %s', $error->getPayload()->getDescription()),
+				$request,
+				$response,
 			);
 		}
 
 		return $this->createEntity(
 			Entities\API\Response\ReportDeviceStatus::class,
-			$this->validateResponseBody($response, self::REPORT_DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME),
+			$this->validateResponseBody($request, $response, self::REPORT_DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME),
 		);
 	}
 
@@ -796,38 +718,25 @@ final class LanApi
 	 * @throws Exceptions\LanApiCall
 	 */
 	private function parseReportDeviceState(
+		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
 	): Entities\API\Response\ReportDeviceState
 	{
-		$errorBody = $this->validateResponseBody($response, self::EVENT_ERROR_MESSAGE_SCHEMA_FILENAME, false);
+		$errorBody = $this->validateResponseBody($request, $response, self::EVENT_ERROR_MESSAGE_SCHEMA_FILENAME, false);
 
 		if ($errorBody !== false) {
 			$error = $this->createEntity(Entities\API\Response\ErrorEvent::class, $errorBody);
 
-			$this->logger->error(
-				'Report third-party device state failed',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'lan-api',
-					'error' => $error->getPayload()->getDescription(),
-					'response' => [
-						'headers' => $response->getHeaders(),
-						'body' => $this->getResponseBody($response),
-					],
-					'connector' => [
-						'identifier' => $this->identifier,
-					],
-				],
-			);
-
 			throw new Exceptions\LanApiCall(
 				sprintf('Report third-party device state failed: %s', $error->getPayload()->getDescription()),
+				$request,
+				$response,
 			);
 		}
 
 		return $this->createEntity(
 			Entities\API\Response\ReportDeviceState::class,
-			$this->validateResponseBody($response, self::REPORT_DEVICE_STATE_MESSAGE_SCHEMA_FILENAME),
+			$this->validateResponseBody($request, $response, self::REPORT_DEVICE_STATE_MESSAGE_SCHEMA_FILENAME),
 		);
 	}
 
@@ -835,10 +744,11 @@ final class LanApi
 	 * @throws Exceptions\LanApiCall
 	 */
 	private function parseGetSubDevices(
+		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
 	): Entities\API\Response\GetSubDevices
 	{
-		$body = $this->validateResponseBody($response, self::GET_SUB_DEVICES_MESSAGE_SCHEMA_FILENAME);
+		$body = $this->validateResponseBody($request, $response, self::GET_SUB_DEVICES_MESSAGE_SCHEMA_FILENAME);
 
 		$error = $body->offsetGet('error');
 
@@ -846,24 +756,10 @@ final class LanApi
 		assert($data instanceof Utils\ArrayHash);
 
 		if ($error !== 0) {
-			$this->logger->error(
-				'Get sub-devices list from NS Panel failed',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'lan-api',
-					'error' => $body->offsetGet('message'),
-					'response' => [
-						'headers' => $response->getHeaders(),
-						'body' => $this->getResponseBody($response),
-					],
-					'connector' => [
-						'identifier' => $this->identifier,
-					],
-				],
-			);
-
 			throw new Exceptions\LanApiCall(
 				sprintf('Get sub-devices list failed: %s', strval($body->offsetGet('message'))),
+				$request,
+				$response,
 			);
 		}
 
@@ -874,32 +770,19 @@ final class LanApi
 	 * @throws Exceptions\LanApiCall
 	 */
 	private function parseSetSubDeviceStatus(
+		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
 	): Entities\API\Response\SetSubDeviceStatus
 	{
-		$body = $this->validateResponseBody($response, self::SET_SUB_DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME);
+		$body = $this->validateResponseBody($request, $response, self::SET_SUB_DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME);
 
 		$error = $body->offsetGet('error');
 
 		if ($error !== 0) {
-			$this->logger->error(
-				'Send sub-device set status to NS Panel failed',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'lan-api',
-					'error' => $body->offsetGet('message'),
-					'response' => [
-						'headers' => $response->getHeaders(),
-						'body' => $this->getResponseBody($response),
-					],
-					'connector' => [
-						'identifier' => $this->identifier,
-					],
-				],
-			);
-
 			throw new Exceptions\LanApiCall(
 				sprintf('Set sub-device status failed: %s', strval($body->offsetGet('message'))),
+				$request,
+				$response,
 			);
 		}
 
@@ -912,12 +795,13 @@ final class LanApi
 	 * @throws Exceptions\LanApiCall
 	 */
 	private function validateResponseBody(
+		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
 		string $schemaFilename,
 		bool $throw = true,
 	): Utils\ArrayHash|bool
 	{
-		$body = $this->getResponseBody($response);
+		$body = $this->getResponseBody($request, $response);
 
 		try {
 			return $this->schemaValidator->validate(
@@ -926,24 +810,13 @@ final class LanApi
 			);
 		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
 			if ($throw) {
-				$this->logger->error(
-					'Could not decode received response payload',
-					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-						'type' => 'lan-api',
-						'exception' => BootstrapHelpers\Logger::buildException($ex),
-						'response' => [
-							'headers' => $response->getHeaders(),
-							'body' => $body,
-							'schema' => $schemaFilename,
-						],
-						'connector' => [
-							'identifier' => $this->identifier,
-						],
-					],
+				throw new Exceptions\LanApiCall(
+					'Could not validate received response payload',
+					$request,
+					$response,
+					$ex->getCode(),
+					$ex,
 				);
-
-				throw new Exceptions\LanApiCall('Could not validate received response payload');
 			}
 
 			return false;
@@ -954,6 +827,7 @@ final class LanApi
 	 * @throws Exceptions\LanApiCall
 	 */
 	private function getResponseBody(
+		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
 	): string
 	{
@@ -962,7 +836,13 @@ final class LanApi
 
 			return $response->getBody()->getContents();
 		} catch (RuntimeException $ex) {
-			throw new Exceptions\LanApiCall('Could not get content from response body', $ex->getCode(), $ex);
+			throw new Exceptions\LanApiCall(
+				'Could not get content from response body',
+				$request,
+				$response,
+				$ex->getCode(),
+				$ex,
+			);
 		}
 	}
 
@@ -993,85 +873,66 @@ final class LanApi
 
 			throw new Exceptions\LanApiCall('Could not map data to entity: ' . $errorPrinter->printError($ex));
 		} catch (Utils\JsonException $ex) {
-			throw new Exceptions\LanApiCall('Could not create entity from response', $ex->getCode(), $ex);
+			throw new Exceptions\LanApiCall(
+				'Could not create entity from response',
+				null,
+				null,
+				$ex->getCode(),
+				$ex,
+			);
 		}
 	}
 
 	/**
-	 * @param array<string, mixed> $headers
-	 * @param array<string, mixed> $params
+	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Message\ResponseInterface)
 	 *
-	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Message\ResponseInterface|false)
+	 * @throws Exceptions\LanApiCall
 	 */
 	private function callRequest(
-		string $method,
-		string $url,
-		array $headers = [],
-		array $params = [],
-		string|null $body = null,
+		Request $request,
 		bool $async = true,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Message\ResponseInterface|false
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Message\ResponseInterface
 	{
 		$deferred = new Promise\Deferred();
 
 		$this->logger->debug(sprintf(
 			'Request: method = %s url = %s',
-			$method,
-			$url,
+			$request->getMethod(),
+			$request->getUri(),
 		), [
 			'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 			'type' => 'lan-api',
 			'request' => [
-				'method' => $method,
-				'url' => $url,
-				'headers' => $headers,
-				'params' => $params,
-				'body' => $body,
+				'method' => $request->getMethod(),
+				'url' => $request->getUri(),
+				'headers' => $request->getHeaders(),
+				'body' => $request->getContent(),
 			],
 			'connector' => [
 				'identifier' => $this->identifier,
 			],
 		]);
 
-		if (count($params) > 0) {
-			$url .= '?';
-			$url .= http_build_query($params);
-		}
-
 		if ($async) {
 			try {
-				$request = $this->httpClientFactory->createClient()->request(
-					$method,
-					$url,
-					$headers,
-					$body ?? '',
-				);
-
-				$request
+				$this->httpClientFactory
+					->createClient()
+					->send($request)
 					->then(
-						function (Message\ResponseInterface $response) use ($deferred, $method, $url, $headers, $params, $body): void {
+						function (Message\ResponseInterface $response) use ($deferred, $request): void {
 							try {
 								$responseBody = $response->getBody()->getContents();
 
 								$response->getBody()->rewind();
 							} catch (RuntimeException $ex) {
-								$this->logger->error('Received payload is not valid', [
-									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-									'type' => 'lan-api',
-									'exception' => BootstrapHelpers\Logger::buildException($ex),
-									'request' => [
-										'method' => $method,
-										'url' => $url,
-										'params' => $params,
-										'body' => $body,
-									],
-									'connector' => [
-										'identifier' => $this->identifier,
-									],
-								]);
-
 								$deferred->reject(
-									new Exceptions\LanApiCall('Could not get content from response body'),
+									new Exceptions\LanApiCall(
+										'Could not get content from response body',
+										$request,
+										$response,
+										$ex->getCode(),
+										$ex,
+									),
 								);
 
 								return;
@@ -1081,11 +942,10 @@ final class LanApi
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 								'type' => 'lan-api',
 								'request' => [
-									'method' => $method,
-									'url' => $url,
-									'headers' => $headers,
-									'params' => $params,
-									'body' => $body,
+									'method' => $request->getMethod(),
+									'url' => $request->getUri(),
+									'headers' => $request->getHeaders(),
+									'body' => $request->getContent(),
 								],
 								'response' => [
 									'status_code' => $response->getStatusCode(),
@@ -1098,23 +958,16 @@ final class LanApi
 
 							$deferred->resolve($response);
 						},
-						function (Throwable $ex) use ($deferred, $method, $url, $params, $body): void {
-							$this->logger->error('Calling api endpoint failed', [
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-								'type' => 'lan-api',
-								'exception' => BootstrapHelpers\Logger::buildException($ex),
-								'request' => [
-									'method' => $method,
-									'url' => $url,
-									'params' => $params,
-									'body' => $body,
-								],
-								'connector' => [
-									'identifier' => $this->identifier,
-								],
-							]);
-
-							$deferred->reject($ex);
+						static function (Throwable $ex) use ($deferred, $request): void {
+							$deferred->reject(
+								new Exceptions\LanApiCall(
+									'Calling api endpoint failed',
+									$request,
+									null,
+									$ex->getCode(),
+									$ex,
+								),
+							);
 						},
 					);
 			} catch (Throwable $ex) {
@@ -1125,47 +978,32 @@ final class LanApi
 		}
 
 		try {
-			$response = $this->httpClientFactory->createClient(false)->request(
-				$method,
-				$url,
-				[
-					'headers' => $headers,
-					'body' => $body ?? '',
-				],
-			);
+			$response = $this->httpClientFactory
+				->createClient(false)
+				->send($request);
 
 			try {
 				$responseBody = $response->getBody()->getContents();
 
 				$response->getBody()->rewind();
 			} catch (RuntimeException $ex) {
-				$this->logger->error('Received payload is not valid', [
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'lan-api',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
-					'request' => [
-						'method' => $method,
-						'url' => $url,
-						'params' => $params,
-						'body' => $body,
-					],
-					'connector' => [
-						'identifier' => $this->identifier,
-					],
-				]);
-
-				return false;
+				throw new Exceptions\LanApiCall(
+					'Could not get content from response body',
+					$request,
+					$response,
+					$ex->getCode(),
+					$ex,
+				);
 			}
 
 			$this->logger->debug('Received response', [
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 				'type' => 'lan-api',
 				'request' => [
-					'method' => $method,
-					'url' => $url,
-					'headers' => $headers,
-					'params' => $params,
-					'body' => $body,
+					'method' => $request->getMethod(),
+					'url' => $request->getUri(),
+					'headers' => $request->getHeaders(),
+					'body' => $request->getContent(),
 				],
 				'response' => [
 					'status_code' => $response->getStatusCode(),
@@ -1178,22 +1016,13 @@ final class LanApi
 
 			return $response;
 		} catch (GuzzleHttp\Exception\GuzzleException | InvalidArgumentException $ex) {
-			$this->logger->error('Calling api endpoint failed', [
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-				'type' => 'lan-api',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
-				'request' => [
-					'method' => $method,
-					'url' => $url,
-					'params' => $params,
-					'body' => $body,
-				],
-				'connector' => [
-					'identifier' => $this->identifier,
-				],
-			]);
-
-			return false;
+			throw new Exceptions\LanApiCall(
+				'Calling api endpoint failed',
+				$request,
+				null,
+				$ex->getCode(),
+				$ex,
+			);
 		}
 	}
 
@@ -1213,6 +1042,32 @@ final class LanApi
 		}
 
 		return $schema;
+	}
+
+	/**
+	 * @param array<string, string|array<string>>|null $headers
+	 * @param array<string, mixed> $params
+	 *
+	 * @throws Exceptions\LanApiCall
+	 */
+	private function createRequest(
+		string $method,
+		string $url,
+		array|null $headers = null,
+		array $params = [],
+		string|null $body = null,
+	): Request
+	{
+		if (count($params) > 0) {
+			$url .= '?';
+			$url .= http_build_query($params);
+		}
+
+		try {
+			return new Request($method, $url, $headers, $body);
+		} catch (Exceptions\InvalidArgument $ex) {
+			throw new Exceptions\LanApiCall('Could not create request instance', null, null, $ex->getCode(), $ex);
+		}
 	}
 
 }

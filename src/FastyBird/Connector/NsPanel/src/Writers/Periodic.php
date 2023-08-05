@@ -68,6 +68,9 @@ class Periodic implements Writer
 
 	/** @var array<string, DateTimeInterface> */
 	private array $processedProperties = [];
+	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+	/** @var array<string, bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null> */
+	private array $lastReportedValue = [];
 
 	/** @var array<string, Clients\Client> */
 	private array $clients = [];
@@ -96,6 +99,7 @@ class Periodic implements Writer
 
 		$this->processedDevices = [];
 		$this->processedProperties = [];
+		$this->lastReportedValue = [];
 
 		$this->eventLoop->addTimer(
 			self::HANDLER_START_DELAY,
@@ -123,7 +127,6 @@ class Periodic implements Writer
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\LanApiCall
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -186,7 +189,6 @@ class Periodic implements Writer
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\LanApiCall
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -315,7 +317,6 @@ class Periodic implements Writer
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\LanApiCall
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -343,7 +344,7 @@ class Periodic implements Writer
 			foreach ($properties as $property) {
 				$state = $this->channelPropertiesStates->getValue($property);
 
-				if ($state === null) {
+				if ($state === null || $state->isValid() === false) {
 					continue;
 				}
 
@@ -369,9 +370,21 @@ class Periodic implements Writer
 					continue;
 				}
 
+				$lastReportedValue = array_key_exists(
+					$property->getId()->toString(),
+					$this->lastReportedValue,
+				)
+					? $this->lastReportedValue[$property->getId()->toString()]
+					: null;
+
+				if ($lastReportedValue === $propertyValue) {
+					continue;
+				}
+
 				unset($this->processedProperties[$property->getId()->toString()]);
 
 				$this->processedProperties[$property->getId()->toString()] = $now;
+				$this->lastReportedValue[$property->getId()->toString()] = $propertyValue;
 
 				$client->writeChannelProperty($device, $channel, $property)
 					->then(function () use ($property): void {
