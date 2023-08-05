@@ -81,7 +81,7 @@ class Periodic implements Writer
 		private readonly Helpers\Property $propertyStateHelper,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
-		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
+		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
@@ -208,7 +208,7 @@ class Periodic implements Writer
 			$findChannelPropertiesQuery = new DevicesQueries\FindChannelDynamicProperties();
 			$findChannelPropertiesQuery->forChannel($channel);
 
-			$properties = $this->channelPropertiesRepository->findAllBy(
+			$properties = $this->channelsPropertiesRepository->findAllBy(
 				$findChannelPropertiesQuery,
 				DevicesEntities\Channels\Properties\Dynamic::class,
 			);
@@ -336,7 +336,7 @@ class Periodic implements Writer
 			$findChannelPropertiesQuery = new DevicesQueries\FindChannelMappedProperties();
 			$findChannelPropertiesQuery->forChannel($channel);
 
-			$properties = $this->channelPropertiesRepository->findAllBy(
+			$properties = $this->channelsPropertiesRepository->findAllBy(
 				$findChannelPropertiesQuery,
 				DevicesEntities\Channels\Properties\Mapped::class,
 			);

@@ -45,8 +45,8 @@ final class DeviceSynchronisation implements Consumers\Consumer
 
 	public function __construct(
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
-		private readonly DevicesModels\Devices\Properties\PropertiesRepository $propertiesRepository,
-		private readonly DevicesModels\Devices\Properties\PropertiesManager $propertiesManager,
+		private readonly DevicesModels\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
+		private readonly DevicesModels\Devices\Properties\PropertiesManager $devicesPropertiesManager,
 		private readonly DevicesUtilities\Database $databaseHelper,
 		private readonly NsPanel\Logger $logger,
 	)

@@ -62,8 +62,8 @@ class Initialize extends Console\Command\Command
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Connectors\ConnectorsManager $connectorsManager,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
-		private readonly DevicesModels\Connectors\Properties\PropertiesRepository $propertiesRepository,
-		private readonly DevicesModels\Connectors\Properties\PropertiesManager $propertiesManager,
+		private readonly DevicesModels\Connectors\Properties\PropertiesRepository $connectorsPropertiesRepository,
+		private readonly DevicesModels\Connectors\Properties\PropertiesManager $connectorsPropertiesManager,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 		private readonly Localization\Translator $translator,
 		private readonly NsPanel\Logger $logger,
@@ -212,6 +212,20 @@ class Initialize extends Console\Command\Command
 				'name' => $name === '' ? null : $name,
 			]));
 
+			$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
+				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
+				'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE,
+				'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE),
+				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
+				'value' => $mode->getValue(),
+				'format' => [
+					Types\ClientMode::MODE_GATEWAY,
+					Types\ClientMode::MODE_DEVICE,
+					Types\ClientMode::MODE_BOTH,
+				],
+				'connector' => $connector,
+			]));
+
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
@@ -271,7 +285,7 @@ class Initialize extends Console\Command\Command
 		$findConnectorPropertyQuery->forConnector($connector);
 		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE);
 
-		$modeProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
+		$modeProperty = $this->connectorsPropertiesRepository->findOneBy($findConnectorPropertyQuery);
 
 		if ($modeProperty === null) {
 			$changeMode = true;
@@ -329,7 +343,7 @@ class Initialize extends Console\Command\Command
 					$mode = $this->askMode($io);
 				}
 
-				$this->propertiesManager->create(Utils\ArrayHash::from([
+				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE,
 					'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE),
@@ -339,7 +353,7 @@ class Initialize extends Console\Command\Command
 					'connector' => $connector,
 				]));
 			} elseif ($mode !== null) {
-				$this->propertiesManager->update($modeProperty, Utils\ArrayHash::from([
+				$this->connectorsPropertiesManager->update($modeProperty, Utils\ArrayHash::from([
 					'value' => $mode->getValue(),
 				]));
 			}

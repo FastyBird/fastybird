@@ -61,7 +61,7 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 		private readonly Helpers\Property $propertyStateHelper,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
-		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
+		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly NsPanel\Logger $logger,
 	)
@@ -263,7 +263,7 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 			$findPropertyQuery->byParentId($property->getId());
 		}
 
-		return $this->channelPropertiesRepository->findAllBy(
+		return $this->channelsPropertiesRepository->findAllBy(
 			$findPropertyQuery,
 			DevicesEntities\Channels\Properties\Mapped::class,
 		);

@@ -59,7 +59,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 	public function __construct(
 		private readonly Helpers\Property $propertyStateHelper,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
-		private readonly DevicesModels\Channels\Properties\PropertiesRepository $propertiesRepository,
+		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly ExchangeConsumers\Container $consumer,
 		private readonly NsPanel\Logger $logger,
@@ -127,7 +127,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 			$findPropertyQuery = new DevicesQueries\FindChannelDynamicProperties();
 			$findPropertyQuery->byId($entity->getId());
 
-			$property = $this->propertiesRepository->findOneBy(
+			$property = $this->channelsPropertiesRepository->findOneBy(
 				$findPropertyQuery,
 				DevicesEntities\Channels\Properties\Dynamic::class,
 			);
@@ -168,7 +168,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 			$findPropertyQuery = new DevicesQueries\FindChannelMappedProperties();
 			$findPropertyQuery->byId($entity->getId());
 
-			$property = $this->propertiesRepository->findOneBy(
+			$property = $this->channelsPropertiesRepository->findOneBy(
 				$findPropertyQuery,
 				DevicesEntities\Channels\Properties\Mapped::class,
 			);

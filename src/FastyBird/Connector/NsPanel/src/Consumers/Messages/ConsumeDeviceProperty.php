@@ -38,8 +38,8 @@ use Ramsey\Uuid;
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *
  * @property-read DevicesModels\Devices\DevicesRepository $devicesRepository
- * @property-read DevicesModels\Devices\Properties\PropertiesRepository $propertiesRepository
- * @property-read DevicesModels\Devices\Properties\PropertiesManager $propertiesManager
+ * @property-read DevicesModels\Devices\Properties\PropertiesRepository $devicesPropertiesRepository
+ * @property-read DevicesModels\Devices\Properties\PropertiesManager $devicesPropertiesManager
  * @property-read DevicesUtilities\Database $databaseHelper
  * @property-read NsPanel\Logger $logger
  */
@@ -70,12 +70,12 @@ trait ConsumeDeviceProperty
 		$findDevicePropertyQuery->byDeviceId($deviceId);
 		$findDevicePropertyQuery->byIdentifier($identifier);
 
-		$property = $this->propertiesRepository->findOneBy($findDevicePropertyQuery);
+		$property = $this->devicesPropertiesRepository->findOneBy($findDevicePropertyQuery);
 
 		if ($property !== null && $value === null) {
 			$this->databaseHelper->transaction(
 				function () use ($property): void {
-					$this->propertiesManager->delete($property);
+					$this->devicesPropertiesManager->delete($property);
 				},
 			);
 
@@ -100,11 +100,11 @@ trait ConsumeDeviceProperty
 			$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
 			$findDevicePropertyQuery->byId($property->getId());
 
-			$property = $this->propertiesRepository->findOneBy($findDevicePropertyQuery);
+			$property = $this->devicesPropertiesRepository->findOneBy($findDevicePropertyQuery);
 
 			if ($property !== null) {
 				$this->databaseHelper->transaction(function () use ($property): void {
-					$this->propertiesManager->delete($property);
+					$this->devicesPropertiesManager->delete($property);
 				});
 
 				$this->logger->warning(
@@ -140,7 +140,7 @@ trait ConsumeDeviceProperty
 			}
 
 			$property = $this->databaseHelper->transaction(
-				fn (): DevicesEntities\Devices\Properties\Property => $this->propertiesManager->create(
+				fn (): DevicesEntities\Devices\Properties\Property => $this->devicesPropertiesManager->create(
 					Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Devices\Properties\Variable::class,
 						'device' => $device,
@@ -172,7 +172,7 @@ trait ConsumeDeviceProperty
 
 		} else {
 			$property = $this->databaseHelper->transaction(
-				fn (): DevicesEntities\Devices\Properties\Property => $this->propertiesManager->update(
+				fn (): DevicesEntities\Devices\Properties\Property => $this->devicesPropertiesManager->update(
 					$property,
 					Utils\ArrayHash::from([
 						'dataType' => $dataType,

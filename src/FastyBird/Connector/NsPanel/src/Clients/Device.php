@@ -67,7 +67,7 @@ final class Device implements Client
 		private readonly Entities\NsPanelConnector $connector,
 		private readonly Consumers\Messages $consumer,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
-		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
+		private readonly DevicesUtilities\ChannelPropertiesStates $channelsPropertiesStates,
 		private readonly Writers\Writer $writer,
 		private readonly NsPanel\Logger $logger,
 		private readonly ObjectMapper\Processing\Processor $entityMapper,
@@ -589,7 +589,7 @@ final class Device implements Client
 			);
 		}
 
-		$state = $this->channelPropertiesStates->getValue($property);
+		$state = $this->channelsPropertiesStates->getValue($property);
 
 		if ($state === null) {
 			return Promise\reject(
