@@ -2,6 +2,7 @@
 
 namespace FastyBird\Module\Devices\Tests\Cases\Unit\Entities;
 
+use Error;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
@@ -24,6 +25,7 @@ final class DeviceEntitiesTest extends DbTestCase
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
+	 * @throws Error
 	 */
 	public function testFindChildren(): void
 	{
@@ -53,6 +55,7 @@ final class DeviceEntitiesTest extends DbTestCase
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
+	 * @throws Error
 	 */
 	public function testCreateChild(): void
 	{
@@ -90,6 +93,7 @@ final class DeviceEntitiesTest extends DbTestCase
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
+	 * @throws Error
 	 */
 	public function testRemoveParent(): void
 	{
@@ -130,6 +134,7 @@ final class DeviceEntitiesTest extends DbTestCase
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
+	 * @throws Error
 	 */
 	public function testChildParent(): void
 	{

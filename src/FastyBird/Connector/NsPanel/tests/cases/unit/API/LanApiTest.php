@@ -2,6 +2,7 @@
 
 namespace FastyBird\Connector\NsPanel\Tests\Cases\Unit\API;
 
+use Error;
 use FastyBird\Connector\NsPanel\API;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
@@ -32,6 +33,7 @@ final class LanApiTest extends DbTestCase
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws RuntimeException
+	 * @throws Error
 	 * @throws Utils\JsonException
 	 */
 	public function testGetGatewayInfo(): void
@@ -120,6 +122,7 @@ final class LanApiTest extends DbTestCase
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws RuntimeException
+	 * @throws Error
 	 * @throws Utils\JsonException
 	 */
 	public function testGetGatewayAccessToken(): void
@@ -212,6 +215,7 @@ final class LanApiTest extends DbTestCase
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws RuntimeException
+	 * @throws Error
 	 */
 	public function testGetGatewayAccessTokenError(): void
 	{
@@ -301,6 +305,7 @@ final class LanApiTest extends DbTestCase
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws RuntimeException
+	 * @throws Error
 	 * @throws Utils\JsonException
 	 */
 	public function testSynchroniseDevices(): void
@@ -444,6 +449,7 @@ final class LanApiTest extends DbTestCase
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws RuntimeException
+	 * @throws Error
 	 * @throws Utils\JsonException
 	 */
 	public function testReportDeviceStatus(): void
@@ -562,6 +568,7 @@ final class LanApiTest extends DbTestCase
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws RuntimeException
+	 * @throws Error
 	 * @throws Utils\JsonException
 	 */
 	public function testReportDeviceState(): void
@@ -676,6 +683,7 @@ final class LanApiTest extends DbTestCase
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws RuntimeException
+	 * @throws Error
 	 * @throws Utils\JsonException
 	 */
 	public function testGetSubDevices(): void
@@ -770,6 +778,7 @@ final class LanApiTest extends DbTestCase
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws RuntimeException
+	 * @throws Error
 	 * @throws Utils\JsonException
 	 */
 	public function testSetSubDeviceStatus(): void

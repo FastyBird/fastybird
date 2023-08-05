@@ -2,6 +2,7 @@
 
 namespace FastyBird\Library\Exchange\Tests\Cases\Unit;
 
+use Error;
 use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
 use FastyBird\Library\Exchange;
@@ -21,6 +22,7 @@ abstract class BaseTestCase extends TestCase
 
 	/**
 	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws Error
 	 */
 	protected function setUp(): void
 	{
@@ -31,6 +33,7 @@ abstract class BaseTestCase extends TestCase
 
 	/**
 	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws Error
 	 */
 	protected function createContainer(string|null $additionalConfig = null): Nette\DI\Container
 	{

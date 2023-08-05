@@ -3,6 +3,7 @@
 namespace FastyBird\Bridge\RedisDbTriggersModule\Tests\Cases\Unit;
 
 use DateTimeImmutable;
+use Error;
 use FastyBird\Bridge\RedisDbTriggersModule;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
@@ -23,6 +24,7 @@ abstract class BaseTestCase extends TestCase
 
 	/**
 	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws Error
 	 */
 	protected function setUp(): void
 	{
@@ -43,6 +45,7 @@ abstract class BaseTestCase extends TestCase
 
 	/**
 	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws Error
 	 */
 	protected function createContainer(string|null $additionalConfig = null): Nette\DI\Container
 	{

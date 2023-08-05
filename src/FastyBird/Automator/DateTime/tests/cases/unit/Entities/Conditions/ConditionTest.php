@@ -3,6 +3,7 @@
 namespace FastyBird\Automator\DateTime\Tests\Cases\Unit\Entities\Conditions;
 
 use DateTime;
+use Error;
 use FastyBird\Automator\DateTime\Entities;
 use FastyBird\Automator\DateTime\Exceptions;
 use FastyBird\Automator\DateTime\Tests\Cases\Unit\DbTestCase;
@@ -25,6 +26,7 @@ final class ConditionTest extends DbTestCase
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
+	 * @throws Error
 	 */
 	public function testTimeConditionValidation(): void
 	{

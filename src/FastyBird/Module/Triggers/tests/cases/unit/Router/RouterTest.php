@@ -2,6 +2,7 @@
 
 namespace FastyBird\Module\Triggers\Tests\Cases\Unit\Router;
 
+use Error;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
 use FastyBird\Library\Metadata;
 use FastyBird\Module\Triggers\Exceptions;
@@ -34,6 +35,7 @@ final class RouterTest extends DbTestCase
 	 * @throws InvalidArgumentException
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
+	 * @throws Error
 	 *
 	 * @dataProvider prefixedRoutes
 	 */

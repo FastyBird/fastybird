@@ -2,6 +2,7 @@
 
 namespace FastyBird\Connector\NsPanel\Tests\Cases\Unit\Entities\API\Request;
 
+use Error;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Tests\Cases\Unit\BaseTestCase;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
@@ -19,6 +20,7 @@ final class SetDeviceStatusTest extends BaseTestCase
 	 * @throws Nette\IOException
 	 * @throws ObjectMapper\Exception\InvalidData
 	 * @throws Utils\JsonException
+	 * @throws Error
 	 */
 	public function testCreateEntity(): void
 	{

@@ -2,6 +2,7 @@
 
 namespace FastyBird\Connector\NsPanel\Tests\Cases\Unit\Entities\API;
 
+use Error;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Tests\Cases\Unit\BaseTestCase;
 use FastyBird\Connector\NsPanel\Types;
@@ -18,6 +19,7 @@ final class HeaderTest extends BaseTestCase
 	 * @throws BootstrapExceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws ObjectMapper\Exception\InvalidData
+	 * @throws Error
 	 */
 	public function testCreateEntity(): void
 	{

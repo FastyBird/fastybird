@@ -2,6 +2,7 @@
 
 namespace FastyBird\Connector\NsPanel\Tests\Cases\Unit\Clients;
 
+use Error;
 use FastyBird\Connector\NsPanel\API;
 use FastyBird\Connector\NsPanel\Clients;
 use FastyBird\Connector\NsPanel\Consumers;
@@ -32,6 +33,7 @@ final class DiscoveryTest extends DbTestCase
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws RuntimeException
+	 * @throws Error
 	 */
 	public function testDiscover(): void
 	{

@@ -2,6 +2,7 @@
 
 namespace FastyBird\Module\Devices\Tests\Cases\Unit\DI;
 
+use Error;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
 use FastyBird\Module\Devices\Commands;
 use FastyBird\Module\Devices\Controllers;
@@ -25,6 +26,7 @@ final class DevicesModuleExtensionTests extends DbTestCase
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
+	 * @throws Error
 	 */
 	public function testServicesRegistration(): void
 	{

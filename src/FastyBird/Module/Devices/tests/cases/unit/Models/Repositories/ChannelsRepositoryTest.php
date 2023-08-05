@@ -2,6 +2,7 @@
 
 namespace FastyBird\Module\Devices\Tests\Cases\Unit\Models\Repositories;
 
+use Error;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
@@ -20,6 +21,7 @@ final class ChannelsRepositoryTest extends DbTestCase
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
+	 * @throws Error
 	 */
 	public function testReadOne(): void
 	{
@@ -40,6 +42,7 @@ final class ChannelsRepositoryTest extends DbTestCase
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
+	 * @throws Error
 	 */
 	public function testReadResultSet(): void
 	{

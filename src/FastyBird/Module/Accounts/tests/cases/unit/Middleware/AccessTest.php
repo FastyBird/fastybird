@@ -2,6 +2,7 @@
 
 namespace FastyBird\Module\Accounts\Tests\Cases\Unit\Middleware;
 
+use Error;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
 use FastyBird\Library\Metadata;
 use FastyBird\Module\Accounts\Exceptions;
@@ -26,6 +27,7 @@ final class AccessTest extends DbTestCase
 	 * @throws InvalidArgumentException
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
+	 * @throws Error
 	 * @throws Utils\JsonException
 	 *
 	 * @dataProvider permissionAnnotation

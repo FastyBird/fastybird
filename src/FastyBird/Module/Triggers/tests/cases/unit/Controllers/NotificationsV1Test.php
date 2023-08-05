@@ -2,6 +2,7 @@
 
 namespace FastyBird\Module\Triggers\Tests\Cases\Unit\Controllers;
 
+use Error;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
 use FastyBird\Library\Metadata;
 use FastyBird\Module\Triggers\Tests\Cases\Unit\DbTestCase;
@@ -29,6 +30,7 @@ final class NotificationsV1Test extends DbTestCase
 	 * @throws InvalidArgumentException
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
+	 * @throws Error
 	 * @throws Utils\JsonException
 	 *
 	 * @dataProvider notificationsRead
@@ -212,6 +214,7 @@ final class NotificationsV1Test extends DbTestCase
 	 * @throws InvalidArgumentException
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
+	 * @throws Error
 	 * @throws Utils\JsonException
 	 *
 	 * @dataProvider notificationsCreate
@@ -354,6 +357,7 @@ final class NotificationsV1Test extends DbTestCase
 	 * @throws InvalidArgumentException
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
+	 * @throws Error
 	 * @throws Utils\JsonException
 	 *
 	 * @dataProvider notificationsUpdate
@@ -488,6 +492,7 @@ final class NotificationsV1Test extends DbTestCase
 	 * @throws InvalidArgumentException
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
+	 * @throws Error
 	 * @throws Utils\JsonException
 	 *
 	 * @dataProvider notificationsDelete

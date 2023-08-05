@@ -2,6 +2,7 @@
 
 namespace FastyBird\Automator\DateTime\Tests\Cases\Unit\DI;
 
+use Error;
 use FastyBird\Automator\DateTime\Exceptions;
 use FastyBird\Automator\DateTime\Hydrators;
 use FastyBird\Automator\DateTime\Schemas;
@@ -18,6 +19,7 @@ final class DateTimeExtensionTests extends DbTestCase
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
+	 * @throws Error
 	 */
 	public function testServicesRegistration(): void
 	{

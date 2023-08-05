@@ -5,6 +5,7 @@ namespace FastyBird\Module\Devices\Tests\Cases\Unit;
 use DateTimeImmutable;
 use Doctrine\DBAL;
 use Doctrine\ORM;
+use Error;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
@@ -67,6 +68,7 @@ abstract class DbTestCase extends TestCase
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
+	 * @throws Error
 	 */
 	public function setUp(): void
 	{
@@ -97,6 +99,7 @@ abstract class DbTestCase extends TestCase
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
+	 * @throws Error
 	 */
 	protected function mockContainerService(
 		string $serviceType,
@@ -116,6 +119,7 @@ abstract class DbTestCase extends TestCase
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
+	 * @throws Error
 	 */
 	protected function getContainer(): Nette\DI\Container
 	{
@@ -131,6 +135,7 @@ abstract class DbTestCase extends TestCase
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
+	 * @throws Error
 	 */
 	private function createContainer(): Nette\DI\Container
 	{
@@ -168,6 +173,7 @@ abstract class DbTestCase extends TestCase
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
+	 * @throws Error
 	 */
 	private function setupDatabase(): void
 	{
@@ -201,6 +207,7 @@ abstract class DbTestCase extends TestCase
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
+	 * @throws Error
 	 */
 	protected function getDb(): DBAL\Connection
 	{
@@ -212,6 +219,7 @@ abstract class DbTestCase extends TestCase
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
+	 * @throws Error
 	 */
 	protected function getEntityManager(): NettrineORM\EntityManagerDecorator
 	{
@@ -273,6 +281,7 @@ abstract class DbTestCase extends TestCase
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
+	 * @throws Error
 	 */
 	private function replaceContainerService(string $serviceName, object $service): void
 	{
@@ -293,6 +302,7 @@ abstract class DbTestCase extends TestCase
 	 * @throws BootstrapExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws RuntimeException
+	 * @throws Error
 	 */
 	protected function tearDown(): void
 	{

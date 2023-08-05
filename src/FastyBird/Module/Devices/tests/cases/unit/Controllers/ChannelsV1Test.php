@@ -2,6 +2,7 @@
 
 namespace FastyBird\Module\Devices\Tests\Cases\Unit\Controllers;
 
+use Error;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
 use FastyBird\Library\Metadata;
 use FastyBird\Module\Devices\Tests\Cases\Unit\DbTestCase;
@@ -29,6 +30,7 @@ final class ChannelsV1Test extends DbTestCase
 	 * @throws InvalidArgumentException
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
+	 * @throws Error
 	 * @throws Utils\JsonException
 	 *
 	 * @dataProvider channelsRead
@@ -184,6 +186,7 @@ final class ChannelsV1Test extends DbTestCase
 	 * @throws InvalidArgumentException
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
+	 * @throws Error
 	 * @throws Utils\JsonException
 	 *
 	 * @dataProvider channelsCreate
@@ -301,6 +304,7 @@ final class ChannelsV1Test extends DbTestCase
 	 * @throws InvalidArgumentException
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
+	 * @throws Error
 	 * @throws Utils\JsonException
 	 *
 	 * @dataProvider channelsUpdate
@@ -417,6 +421,7 @@ final class ChannelsV1Test extends DbTestCase
 	 * @throws InvalidArgumentException
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
+	 * @throws Error
 	 * @throws Utils\JsonException
 	 *
 	 * @dataProvider channelsDelete
