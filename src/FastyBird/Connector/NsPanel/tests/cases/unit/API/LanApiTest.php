@@ -50,27 +50,21 @@ final class LanApiTest extends DbTestCase
 
 		$httpClient = $this->createMock(GuzzleHttp\Client::class);
 		$httpClient
-			->method('request')
+			->method('send')
 			->with(
-				self::callback(static function ($method): bool {
-					self::assertSame('GET', $method);
-
-					return true;
-				}),
-				self::callback(static function ($url): bool {
-					self::assertSame('http://127.0.0.1:8081/open-api/v1/rest/bridge', $url);
-
-					return true;
-				}),
-				self::callback(static function ($options): bool {
+				self::callback(static function (Http\Message\RequestInterface $request): bool {
+					self::assertSame('GET', $request->getMethod());
+					self::assertSame('http://127.0.0.1:8081/open-api/v1/rest/bridge', strval($request->getUri()));
 					self::assertSame(
 						[
-							'headers' => [
-								'Content-Type' => 'application/json',
+							'Host' => [
+								'127.0.0.1:8081',
 							],
-							'body' => '',
+							'Content-Type' => [
+								'application/json',
+							],
 						],
-						$options,
+						$request->getHeaders(),
 					);
 
 					return true;
@@ -139,30 +133,24 @@ final class LanApiTest extends DbTestCase
 
 		$httpClient = $this->createMock(GuzzleHttp\Client::class);
 		$httpClient
-			->method('request')
+			->method('send')
 			->with(
-				self::callback(static function ($method): bool {
-					self::assertSame('GET', $method);
-
-					return true;
-				}),
-				self::callback(static function ($url): bool {
+				self::callback(static function (Http\Message\RequestInterface $request): bool {
+					self::assertSame('GET', $request->getMethod());
 					self::assertSame(
 						'http://127.0.0.1:8081/open-api/v1/rest/bridge/access_token?app_name=ns-panel',
-						$url,
+						strval($request->getUri()),
 					);
-
-					return true;
-				}),
-				self::callback(static function ($options): bool {
 					self::assertSame(
 						[
-							'headers' => [
-								'Content-Type' => 'application/json',
+							'Host' => [
+								'127.0.0.1:8081',
 							],
-							'body' => '',
+							'Content-Type' => [
+								'application/json',
+							],
 						],
-						$options,
+						$request->getHeaders(),
 					);
 
 					return true;
@@ -233,30 +221,24 @@ final class LanApiTest extends DbTestCase
 
 		$httpClient = $this->createMock(GuzzleHttp\Client::class);
 		$httpClient
-			->method('request')
+			->method('send')
 			->with(
-				self::callback(static function ($method): bool {
-					self::assertSame('GET', $method);
-
-					return true;
-				}),
-				self::callback(static function ($url): bool {
+				self::callback(static function (Http\Message\RequestInterface $request): bool {
+					self::assertSame('GET', $request->getMethod());
 					self::assertSame(
 						'http://127.0.0.1:8081/open-api/v1/rest/bridge/access_token?app_name=ns-panel',
-						$url,
+						strval($request->getUri()),
 					);
-
-					return true;
-				}),
-				self::callback(static function ($options): bool {
 					self::assertSame(
 						[
-							'headers' => [
-								'Content-Type' => 'application/json',
+							'Host' => [
+								'127.0.0.1:8081',
 							],
-							'body' => '',
+							'Content-Type' => [
+								'application/json',
+							],
 						],
-						$options,
+						$request->getHeaders(),
 					);
 
 					return true;
@@ -322,33 +304,37 @@ final class LanApiTest extends DbTestCase
 
 		$httpClient = $this->createMock(GuzzleHttp\Client::class);
 		$httpClient
-			->method('request')
+			->method('send')
 			->with(
-				self::callback(static function ($method): bool {
-					self::assertSame('POST', $method);
-
-					return true;
-				}),
-				self::callback(static function ($url): bool {
-					self::assertSame('http://127.0.0.1:8081/open-api/v1/rest/thirdparty/event', $url);
-
-					return true;
-				}),
-				self::callback(static function ($options): bool {
+				self::callback(static function (Http\Message\RequestInterface $request): bool {
+					self::assertSame('POST', $request->getMethod());
+					self::assertSame(
+						'http://127.0.0.1:8081/open-api/v1/rest/thirdparty/event',
+						strval($request->getUri()),
+					);
 					self::assertSame(
 						[
-							'Content-Type' => 'application/json',
-							'Authorization' => 'Bearer abcdefghijklmnopqrstuvwxyz',
+							'Host' => [
+								'127.0.0.1:8081',
+							],
+							'Content-Type' => [
+								'application/json',
+							],
+							'Authorization' => [
+								'Bearer abcdefghijklmnopqrstuvwxyz',
+							],
 						],
-						$options['headers'],
+						$request->getHeaders(),
 					);
 
-					$actual = Utils\Json::decode($options['body'], Utils\Json::FORCE_ARRAY);
+					$actual = Utils\Json::decode($request->getBody()->getContents(), Utils\Json::FORCE_ARRAY);
 					self::assertTrue(is_array($actual));
+
+					$request->getBody()->rewind();
 
 					Tools\JsonAssert::assertFixtureMatch(
 						__DIR__ . '/../../../fixtures/API/request/synchronise_devices.json',
-						$options['body'],
+						$request->getBody()->getContents(),
 						static function (string $expectation) use ($actual): string {
 							if (
 								isset($actual['event'])
@@ -468,33 +454,37 @@ final class LanApiTest extends DbTestCase
 
 		$httpClient = $this->createMock(GuzzleHttp\Client::class);
 		$httpClient
-			->method('request')
+			->method('send')
 			->with(
-				self::callback(static function ($method): bool {
-					self::assertSame('POST', $method);
-
-					return true;
-				}),
-				self::callback(static function ($url): bool {
-					self::assertSame('http://127.0.0.1:8081/open-api/v1/rest/thirdparty/event', $url);
-
-					return true;
-				}),
-				self::callback(static function ($options): bool {
+				self::callback(static function (Http\Message\RequestInterface $request): bool {
+					self::assertSame('POST', $request->getMethod());
+					self::assertSame(
+						'http://127.0.0.1:8081/open-api/v1/rest/thirdparty/event',
+						strval($request->getUri()),
+					);
 					self::assertSame(
 						[
-							'Content-Type' => 'application/json',
-							'Authorization' => 'Bearer abcdefghijklmnopqrstuvwxyz',
+							'Host' => [
+								'127.0.0.1:8081',
+							],
+							'Content-Type' => [
+								'application/json',
+							],
+							'Authorization' => [
+								'Bearer abcdefghijklmnopqrstuvwxyz',
+							],
 						],
-						$options['headers'],
+						$request->getHeaders(),
 					);
 
-					$actual = Utils\Json::decode($options['body'], Utils\Json::FORCE_ARRAY);
+					$actual = Utils\Json::decode($request->getBody()->getContents(), Utils\Json::FORCE_ARRAY);
 					self::assertTrue(is_array($actual));
+
+					$request->getBody()->rewind();
 
 					Tools\JsonAssert::assertFixtureMatch(
 						__DIR__ . '/../../../fixtures/API/request/report_device_status.json',
-						$options['body'],
+						$request->getBody()->getContents(),
 						static function (string $expectation) use ($actual): string {
 							if (
 								isset($actual['event'])
@@ -587,33 +577,37 @@ final class LanApiTest extends DbTestCase
 
 		$httpClient = $this->createMock(GuzzleHttp\Client::class);
 		$httpClient
-			->method('request')
+			->method('send')
 			->with(
-				self::callback(static function ($method): bool {
-					self::assertSame('POST', $method);
-
-					return true;
-				}),
-				self::callback(static function ($url): bool {
-					self::assertSame('http://127.0.0.1:8081/open-api/v1/rest/thirdparty/event', $url);
-
-					return true;
-				}),
-				self::callback(static function ($options): bool {
+				self::callback(static function (Http\Message\RequestInterface $request): bool {
+					self::assertSame('POST', $request->getMethod());
+					self::assertSame(
+						'http://127.0.0.1:8081/open-api/v1/rest/thirdparty/event',
+						strval($request->getUri()),
+					);
 					self::assertSame(
 						[
-							'Content-Type' => 'application/json',
-							'Authorization' => 'Bearer abcdefghijklmnopqrstuvwxyz',
+							'Host' => [
+								'127.0.0.1:8081',
+							],
+							'Content-Type' => [
+								'application/json',
+							],
+							'Authorization' => [
+								'Bearer abcdefghijklmnopqrstuvwxyz',
+							],
 						],
-						$options['headers'],
+						$request->getHeaders(),
 					);
 
-					$actual = Utils\Json::decode($options['body'], Utils\Json::FORCE_ARRAY);
+					$actual = Utils\Json::decode($request->getBody()->getContents(), Utils\Json::FORCE_ARRAY);
 					self::assertTrue(is_array($actual));
+
+					$request->getBody()->rewind();
 
 					Tools\JsonAssert::assertFixtureMatch(
 						__DIR__ . '/../../../fixtures/API/request/report_device_state.json',
-						$options['body'],
+						$request->getBody()->getContents(),
 						static function (string $expectation) use ($actual): string {
 							if (
 								isset($actual['event'])
@@ -700,28 +694,24 @@ final class LanApiTest extends DbTestCase
 
 		$httpClient = $this->createMock(GuzzleHttp\Client::class);
 		$httpClient
-			->method('request')
+			->method('send')
 			->with(
-				self::callback(static function ($method): bool {
-					self::assertSame('GET', $method);
-
-					return true;
-				}),
-				self::callback(static function ($url): bool {
-					self::assertSame('http://127.0.0.1:8081/open-api/v1/rest/devices', $url);
-
-					return true;
-				}),
-				self::callback(static function ($options): bool {
+				self::callback(static function (Http\Message\RequestInterface $request): bool {
+					self::assertSame('GET', $request->getMethod());
+					self::assertSame('http://127.0.0.1:8081/open-api/v1/rest/devices', strval($request->getUri()));
 					self::assertSame(
 						[
-							'headers' => [
-								'Content-Type' => 'application/json',
-								'Authorization' => 'Bearer abcdefghijklmnopqrstuvwxyz',
+							'Host' => [
+								'127.0.0.1:8081',
 							],
-							'body' => '',
+							'Content-Type' => [
+								'application/json',
+							],
+							'Authorization' => [
+								'Bearer abcdefghijklmnopqrstuvwxyz',
+							],
 						],
-						$options,
+						$request->getHeaders(),
 					);
 
 					return true;
@@ -797,33 +787,37 @@ final class LanApiTest extends DbTestCase
 
 		$httpClient = $this->createMock(GuzzleHttp\Client::class);
 		$httpClient
-			->method('request')
+			->method('send')
 			->with(
-				self::callback(static function ($method): bool {
-					self::assertSame('PUT', $method);
-
-					return true;
-				}),
-				self::callback(static function ($url): bool {
-					self::assertSame('http://127.0.0.1:8081/open-api/v1/rest/devices/a480062416', $url);
-
-					return true;
-				}),
-				self::callback(static function ($options): bool {
+				self::callback(static function (Http\Message\RequestInterface $request): bool {
+					self::assertSame('PUT', $request->getMethod());
+					self::assertSame(
+						'http://127.0.0.1:8081/open-api/v1/rest/devices/a480062416',
+						strval($request->getUri()),
+					);
 					self::assertSame(
 						[
-							'Content-Type' => 'application/json',
-							'Authorization' => 'Bearer abcdefghijklmnopqrstuvwxyz',
+							'Host' => [
+								'127.0.0.1:8081',
+							],
+							'Content-Type' => [
+								'application/json',
+							],
+							'Authorization' => [
+								'Bearer abcdefghijklmnopqrstuvwxyz',
+							],
 						],
-						$options['headers'],
+						$request->getHeaders(),
 					);
 
-					$actual = Utils\Json::decode($options['body'], Utils\Json::FORCE_ARRAY);
+					$actual = Utils\Json::decode($request->getBody()->getContents(), Utils\Json::FORCE_ARRAY);
 					self::assertTrue(is_array($actual));
+
+					$request->getBody()->rewind();
 
 					Tools\JsonAssert::assertFixtureMatch(
 						__DIR__ . '/../../../fixtures/API/request/set_sub_device_status.json',
-						$options['body'],
+						$request->getBody()->getContents(),
 						static function (string $expectation) use ($actual): string {
 							if (
 								isset($actual['event'])

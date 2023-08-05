@@ -49,7 +49,7 @@ final class DiscoveryTest extends DbTestCase
 
 		$httpClient = $this->createMock(GuzzleHttp\Client::class);
 		$httpClient
-			->method('request')
+			->method('send')
 			->willReturn($response);
 
 		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
