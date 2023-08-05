@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\NsPanel\Clients;
 
 use FastyBird\Connector\NsPanel\Entities;
+use FastyBird\Connector\NsPanel\Types;
 
 /**
  * Connector third-party device client factory
@@ -27,6 +28,8 @@ use FastyBird\Connector\NsPanel\Entities;
  */
 interface DeviceFactory extends ClientFactory
 {
+
+	public const MODE = Types\ClientMode::MODE_DEVICE;
 
 	public function create(Entities\NsPanelConnector $connector): Device;
 

@@ -19,6 +19,7 @@ use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Clients;
 use FastyBird\Connector\NsPanel\Consumers;
 use FastyBird\Connector\NsPanel\Entities;
+use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Servers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -27,6 +28,8 @@ use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Nette;
 use React\EventLoop;
+use ReflectionClass;
+use function array_key_exists;
 use function assert;
 use function React\Async\async;
 
@@ -67,9 +70,17 @@ final class Connector implements DevicesConnectors\Connector
 	{
 	}
 
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
 	public function execute(): void
 	{
 		assert($this->connector instanceof Entities\NsPanelConnector);
+
+		$mode = $this->connector->getClientMode();
 
 		$this->logger->debug(
 			'Starting NS Panel connector processing',
@@ -83,14 +94,28 @@ final class Connector implements DevicesConnectors\Connector
 		);
 
 		foreach ($this->clientsFactories as $clientFactory) {
-			$client = $clientFactory->create($this->connector);
-			$client->connect();
+			$rc = new ReflectionClass($clientFactory);
 
-			$this->clients[] = $client;
+			$constants = $rc->getConstants();
+
+			if (
+				array_key_exists(Clients\ClientFactory::MODE_CONSTANT_NAME, $constants)
+				&& $mode->equalsValue($constants[Clients\ClientFactory::MODE_CONSTANT_NAME])
+			) {
+				$client = $clientFactory->create($this->connector);
+				$client->connect();
+
+				$this->clients[] = $client;
+			}
 		}
 
-		$this->server = $this->serverFactory->create($this->connector);
-		$this->server->connect();
+		if (
+			$this->connector->getClientMode()->equalsValue(NsPanel\Types\ClientMode::MODE_BOTH)
+			|| $this->connector->getClientMode()->equalsValue(NsPanel\Types\ClientMode::MODE_DEVICE)
+		) {
+			$this->server = $this->serverFactory->create($this->connector);
+			$this->server->connect();
+		}
 
 		$this->consumerTimer = $this->eventLoop->addPeriodicTimer(
 			self::QUEUE_PROCESSING_INTERVAL,

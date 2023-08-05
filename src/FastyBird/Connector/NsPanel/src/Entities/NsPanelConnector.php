@@ -17,6 +17,7 @@ namespace FastyBird\Connector\NsPanel\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Connector\NsPanel;
+use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -69,6 +70,31 @@ class NsPanelConnector extends DevicesEntities\Connectors\Connector
 		}
 
 		return NsPanel\Constants::DEFAULT_PORT;
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function getClientMode(): Types\ClientMode
+	{
+		$property = $this->properties
+			->filter(
+			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE
+			)
+			->first();
+
+		if (
+			$property instanceof DevicesEntities\Connectors\Properties\Variable
+			&& Types\ClientMode::isValidValue($property->getValue())
+		) {
+			return Types\ClientMode::get($property->getValue());
+		}
+
+		throw new Exceptions\InvalidState('Connector mode is not configured');
 	}
 
 }

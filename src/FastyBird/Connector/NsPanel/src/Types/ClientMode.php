@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ConnectorPropertyIdentifier.php
+ * ClientMode.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,41 +10,37 @@
  * @subpackage     Types
  * @since          1.0.0
  *
- * @date           12.07.23
+ * @date           05.08.23
  */
 
 namespace FastyBird\Connector\NsPanel\Types;
 
 use Consistence;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use function strval;
 
 /**
- * Connector property identifier types
+ * Connector client modes
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Types
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class ConnectorPropertyIdentifier extends Consistence\Enum\Enum
+class ClientMode extends Consistence\Enum\Enum
 {
 
 	/**
-	 * Define connector properties identifiers
+	 * Define versions
 	 */
-	public const IDENTIFIER_PORT = MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_PORT;
+	public const MODE_GATEWAY = 'gateway';
 
-	public const IDENTIFIER_CLIENT_MODE = 'mode';
+	public const MODE_DEVICE = 'device';
 
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
+	public const MODE_BOTH = 'both';
 
 	public function __toString(): string
 	{
-		return self::getValue();
+		return strval(self::getValue());
 	}
 
 }

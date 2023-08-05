@@ -28,6 +28,8 @@ use FastyBird\Connector\NsPanel\Entities;
 interface ClientFactory
 {
 
+	public const MODE_CONSTANT_NAME = 'MODE';
+
 	public function create(Entities\NsPanelConnector $connector): Client;
 
 }

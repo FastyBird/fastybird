@@ -20,9 +20,12 @@ use Doctrine\Persistence;
 use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
+use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Queries;
+use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -59,6 +62,8 @@ class Initialize extends Console\Command\Command
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Connectors\ConnectorsManager $connectorsManager,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Connectors\Properties\PropertiesRepository $propertiesRepository,
+		private readonly DevicesModels\Connectors\Properties\PropertiesManager $propertiesManager,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 		private readonly Localization\Translator $translator,
 		private readonly NsPanel\Logger $logger,
@@ -145,6 +150,8 @@ class Initialize extends Console\Command\Command
 	 */
 	private function createConfiguration(Style\SymfonyStyle $io): void
 	{
+		$mode = $this->askMode($io);
+
 		$question = new Console\Question\Question(
 			$this->translator->translate('//ns-panel-connector.cmd.initialize.questions.provide.identifier'),
 		);
@@ -260,6 +267,30 @@ class Initialize extends Console\Command\Command
 			return;
 		}
 
+		$findConnectorPropertyQuery = new DevicesQueries\FindConnectorProperties();
+		$findConnectorPropertyQuery->forConnector($connector);
+		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE);
+
+		$modeProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
+
+		if ($modeProperty === null) {
+			$changeMode = true;
+
+		} else {
+			$question = new Console\Question\ConfirmationQuestion(
+				'Do you want to change connector devices support?',
+				false,
+			);
+
+			$changeMode = (bool) $io->askQuestion($question);
+		}
+
+		$mode = null;
+
+		if ($changeMode) {
+			$mode = $this->askMode($io);
+		}
+
 		$name = $this->askName($io, $connector);
 
 		$enabled = $connector->isEnabled();
@@ -292,6 +323,26 @@ class Initialize extends Console\Command\Command
 				'name' => $name === '' ? null : $name,
 				'enabled' => $enabled,
 			]));
+
+			if ($modeProperty === null) {
+				if ($mode === null) {
+					$mode = $this->askMode($io);
+				}
+
+				$this->propertiesManager->create(Utils\ArrayHash::from([
+					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
+					'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE,
+					'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
+					'value' => $mode->getValue(),
+					'format' => [Types\ClientMode::MODE_GATEWAY, Types\ClientMode::MODE_DEVICE, Types\ClientMode::MODE_BOTH],
+					'connector' => $connector,
+				]));
+			} elseif ($mode !== null) {
+				$this->propertiesManager->update($modeProperty, Utils\ArrayHash::from([
+					'value' => $mode->getValue(),
+				]));
+			}
 
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
@@ -441,6 +492,69 @@ class Initialize extends Console\Command\Command
 		$table->render();
 
 		$io->newLine();
+	}
+
+	private function askMode(Style\SymfonyStyle $io): Types\ClientMode
+	{
+		$question = new Console\Question\ChoiceQuestion(
+			$this->translator->translate('//ns-panel-connector.cmd.base.questions.whatToDo'),
+			[
+				0 => $this->translator->translate('//ns-panel-connector.cmd.devices.questions.connectorMode.gateway'),
+				1 => $this->translator->translate('//ns-panel-connector.cmd.devices.questions.connectorMode.device'),
+				2 => $this->translator->translate('//ns-panel-connector.cmd.devices.questions.connectorMode.both'),
+			],
+			5,
+		);
+
+		$question->setErrorMessage(
+			$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+		);
+		$question->setValidator(function (string|null $answer): Types\ClientMode {
+			if ($answer === null) {
+				throw new Exceptions\Runtime(
+					sprintf(
+						$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+						$answer,
+					),
+				);
+			}
+
+			if (
+				$answer === $this->translator->translate(
+					'//ns-panel-connector.cmd.devices.questions.connectorMode.gateway',
+				)
+				|| $answer === '0'
+			) {
+				return Types\ClientMode::get(Types\ClientMode::MODE_GATEWAY);
+			}
+
+			if (
+				$answer === $this->translator->translate(
+					'//ns-panel-connector.cmd.devices.questions.connectorMode.device',
+				)
+				|| $answer === '1'
+			) {
+				return Types\ClientMode::get(Types\ClientMode::MODE_DEVICE);
+			}
+
+			if (
+				$answer === $this->translator->translate(
+					'//ns-panel-connector.cmd.devices.questions.connectorMode.both',
+				)
+				|| $answer === '2'
+			) {
+				return Types\ClientMode::get(Types\ClientMode::MODE_BOTH);
+			}
+
+			throw new Exceptions\Runtime(
+				sprintf($this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'), $answer),
+			);
+		});
+
+		$answer = $io->askQuestion($question);
+		assert($answer instanceof Types\ClientMode);
+
+		return $answer;
 	}
 
 	private function askName(Style\SymfonyStyle $io, Entities\NsPanelConnector|null $connector = null): string|null
