@@ -123,13 +123,13 @@ final class Properties implements Common\EventSubscriber
 		$enumValues = $device instanceof Entities\Devices\ThirdPartyDevice ? [
 			MetadataTypes\ConnectionState::STATE_CONNECTED,
 			MetadataTypes\ConnectionState::STATE_DISCONNECTED,
-			MetadataTypes\ConnectionState::STATE_STOPPED,
+			MetadataTypes\ConnectionState::STATE_ALERT,
 			MetadataTypes\ConnectionState::STATE_UNKNOWN,
 		] : [
 			MetadataTypes\ConnectionState::STATE_CONNECTED,
 			MetadataTypes\ConnectionState::STATE_DISCONNECTED,
-			MetadataTypes\ConnectionState::STATE_STOPPED,
 			MetadataTypes\ConnectionState::STATE_LOST,
+			MetadataTypes\ConnectionState::STATE_ALERT,
 			MetadataTypes\ConnectionState::STATE_UNKNOWN,
 		];
 

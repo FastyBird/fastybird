@@ -89,8 +89,8 @@ final class DeviceState implements Consumers\Consumer
 
 			if (
 				$entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_DISCONNECTED)
-				|| $entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_STOPPED)
 				|| $entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_LOST)
+				|| $entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_ALERT)
 				|| $entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_UNKNOWN)
 			) {
 				$findDevicePropertiesQuery = new DevicesQueries\FindDeviceDynamicProperties();
@@ -148,8 +148,8 @@ final class DeviceState implements Consumers\Consumer
 
 					if (
 						$entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_DISCONNECTED)
-						|| $entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_STOPPED)
 						|| $entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_LOST)
+						|| $entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_ALERT)
 						|| $entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_UNKNOWN)
 					) {
 						$findDevicePropertiesQuery = new DevicesQueries\FindDeviceDynamicProperties();

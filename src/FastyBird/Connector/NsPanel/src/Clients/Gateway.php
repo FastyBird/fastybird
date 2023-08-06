@@ -84,14 +84,14 @@ final class Gateway implements Client
 		protected readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly Entities\NsPanelConnector $connector,
 		private readonly Consumers\Messages $consumer,
+		private readonly Writers\Writer $writer,
+		private readonly NsPanel\Logger $logger,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
-		private readonly Writers\Writer $writer,
-		private readonly NsPanel\Logger $logger,
 		private readonly ObjectMapper\Processing\Processor $entityMapper,
 		API\LanApiFactory $lanApiApiFactory,
 	)
@@ -218,7 +218,7 @@ final class Gateway implements Client
 			if (
 				!in_array($device->getId()->toString(), $this->processedDevices, true)
 				&& !$this->deviceConnectionManager->getState($device)->equalsValue(
-					MetadataTypes\ConnectionState::STATE_STOPPED,
+					MetadataTypes\ConnectionState::STATE_ALERT,
 				)
 			) {
 				$this->processedDevices[] = $device->getId()->toString();
@@ -259,14 +259,17 @@ final class Gateway implements Client
 	 */
 	private function readDeviceInformation(Entities\Devices\Gateway $gateway): bool
 	{
-		if ($gateway->getIpAddress() === null) {
+		if (
+			$gateway->getIpAddress() === null
+			|| $gateway->getAccessToken() === null
+		) {
 			$this->consumer->append(
 				$this->createEntity(
 					Entities\Messages\DeviceState::class,
 					[
 						'connector' => $this->connector->getId()->toString(),
 						'identifier' => $gateway->getIdentifier(),
-						'state' => MetadataTypes\ConnectionState::STATE_STOPPED,
+						'state' => MetadataTypes\ConnectionState::STATE_ALERT,
 					],
 				),
 			);
@@ -400,19 +403,19 @@ final class Gateway implements Client
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function readDeviceStatus(Entities\Devices\Gateway $device): bool
+	private function readDeviceStatus(Entities\Devices\Gateway $gateway): bool
 	{
 		if (
-			$device->getIpAddress() === null
-			|| $device->getAccessToken() === null
+			$gateway->getIpAddress() === null
+			|| $gateway->getAccessToken() === null
 		) {
 			$this->consumer->append(
 				$this->createEntity(
 					Entities\Messages\DeviceState::class,
 					[
 						'connector' => $this->connector->getId()->toString(),
-						'identifier' => $device->getIdentifier(),
-						'state' => MetadataTypes\ConnectionState::STATE_STOPPED,
+						'identifier' => $gateway->getIdentifier(),
+						'state' => MetadataTypes\ConnectionState::STATE_ALERT,
 					],
 				),
 			);
@@ -420,29 +423,40 @@ final class Gateway implements Client
 			return true;
 		}
 
-		if (!array_key_exists($device->getIdentifier(), $this->processedDevicesCommands)) {
-			$this->processedDevicesCommands[$device->getIdentifier()] = [];
+		if (!array_key_exists($gateway->getIdentifier(), $this->processedDevicesCommands)) {
+			$this->processedDevicesCommands[$gateway->getIdentifier()] = [];
 		}
 
-		if (array_key_exists(self::CMD_STATUS, $this->processedDevicesCommands[$device->getIdentifier()])) {
-			$cmdResult = $this->processedDevicesCommands[$device->getIdentifier()][self::CMD_STATUS];
+		if (array_key_exists(self::CMD_STATUS, $this->processedDevicesCommands[$gateway->getIdentifier()])) {
+			$cmdResult = $this->processedDevicesCommands[$gateway->getIdentifier()][self::CMD_STATUS];
 
 			if (
 				$cmdResult instanceof DateTimeInterface
 				&& (
-					$this->dateTimeFactory->getNow()->getTimestamp() - $cmdResult->getTimestamp() < $device->getStatusReadingDelay()
+					$this->dateTimeFactory->getNow()->getTimestamp() - $cmdResult->getTimestamp() < $gateway->getStatusReadingDelay()
 				)
 			) {
 				return false;
 			}
 		}
 
-		$this->processedDevicesCommands[$device->getIdentifier()][self::CMD_STATUS] = $this->dateTimeFactory->getNow();
+		$this->processedDevicesCommands[$gateway->getIdentifier()][self::CMD_STATUS] = $this->dateTimeFactory->getNow();
 
 		try {
-			$this->lanApiApi->getSubDevices($device->getIpAddress(), $device->getAccessToken())
-				->then(function (Entities\API\Response\GetSubDevices $subDevices) use ($device): void {
-					$this->processedDevicesCommands[$device->getIdentifier()][self::CMD_STATUS] = $this->dateTimeFactory->getNow();
+			$this->lanApiApi->getSubDevices($gateway->getIpAddress(), $gateway->getAccessToken())
+				->then(function (Entities\API\Response\GetSubDevices $subDevices) use ($gateway): void {
+					$this->processedDevicesCommands[$gateway->getIdentifier()][self::CMD_STATUS] = $this->dateTimeFactory->getNow();
+
+					$this->consumer->append(
+						$this->createEntity(
+							Entities\Messages\DeviceState::class,
+							[
+								'connector' => $this->connector->getId()->toString(),
+								'identifier' => $gateway->getIdentifier(),
+								'state' => MetadataTypes\ConnectionState::STATE_CONNECTED,
+							],
+						),
+					);
 
 					foreach ($subDevices->getData()->getDevicesList() as $subDevice) {
 						// Ignore third-party devices
@@ -531,7 +545,7 @@ final class Gateway implements Client
 						);
 					}
 				})
-				->otherwise(function (Throwable $ex) use ($device): void {
+				->otherwise(function (Throwable $ex) use ($gateway): void {
 					if ($ex instanceof Exceptions\LanApiCall) {
 						$this->logger->warning(
 							'Calling NS Panel API failed',
@@ -543,7 +557,7 @@ final class Gateway implements Client
 									'id' => $this->connector->getId()->toString(),
 								],
 								'device' => [
-									'id' => $device->getId()->toString(),
+									'id' => $gateway->getId()->toString(),
 								],
 								'request' => [
 									'body' => $ex->getRequest()?->getBody()->getContents(),
@@ -559,7 +573,7 @@ final class Gateway implements Client
 								Entities\Messages\DeviceState::class,
 								[
 									'connector' => $this->connector->getId()->toString(),
-									'identifier' => $device->getIdentifier(),
+									'identifier' => $gateway->getIdentifier(),
 									'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
 								],
 							),
@@ -578,7 +592,7 @@ final class Gateway implements Client
 								'id' => $this->connector->getId()->toString(),
 							],
 							'device' => [
-								'id' => $device->getId()->toString(),
+								'id' => $gateway->getId()->toString(),
 							],
 						],
 					);
@@ -588,7 +602,7 @@ final class Gateway implements Client
 							Entities\Messages\DeviceState::class,
 							[
 								'connector' => $this->connector->getId()->toString(),
-								'identifier' => $device->getIdentifier(),
+								'identifier' => $gateway->getIdentifier(),
 								'state' => MetadataTypes\ConnectionState::STATE_LOST,
 							],
 						),
@@ -605,7 +619,7 @@ final class Gateway implements Client
 						'id' => $this->connector->getId()->toString(),
 					],
 					'device' => [
-						'id' => $device->getId()->toString(),
+						'id' => $gateway->getId()->toString(),
 					],
 				],
 			);

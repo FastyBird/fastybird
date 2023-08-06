@@ -32,17 +32,17 @@ interface Client
 {
 
 	/**
-	 * Create servers/clients
+	 * Create clients
 	 */
 	public function connect(): void;
 
 	/**
-	 * Destroy servers/clients
+	 * Destroy clients
 	 */
 	public function disconnect(): void;
 
 	/**
-	 * Write thing parameter mapped as channel
+	 * Write data to device
 	 */
 	public function writeChannelProperty(
 		Entities\NsPanelDevice $device,

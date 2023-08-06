@@ -25,6 +25,7 @@ use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -60,6 +61,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 		private readonly Helpers\Property $propertyStateHelper,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
+		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly ExchangeConsumers\Container $consumer,
 		private readonly NsPanel\Logger $logger,
@@ -92,6 +94,8 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exception
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function consume(
 		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|MetadataTypes\AutomatorSource $source,
@@ -111,6 +115,8 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exception
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function processGatewayClient(
 		Uuid\UuidInterface $connectorId,
@@ -146,6 +152,14 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 			assert($device instanceof Entities\Devices\SubDevice);
 			assert($channel instanceof Entities\NsPanelChannel);
 
+			if (
+				$this->deviceConnectionManager->getState($device)->equalsValue(
+					MetadataTypes\ConnectionState::STATE_ALERT,
+				)
+			) {
+				return;
+			}
+
 			$this->writeChannelProperty($client, $connectorId, $device, $channel, $property);
 		}
 	}
@@ -153,6 +167,8 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exception
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function processDeviceClient(
 		Uuid\UuidInterface $connectorId,
@@ -186,6 +202,14 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 
 			assert($device instanceof Entities\Devices\ThirdPartyDevice);
 			assert($channel instanceof Entities\NsPanelChannel);
+
+			if (
+				$this->deviceConnectionManager->getState($device)->equalsValue(
+					MetadataTypes\ConnectionState::STATE_ALERT,
+				)
+			) {
+				return;
+			}
 
 			$this->writeChannelProperty($client, $connectorId, $device, $channel, $property);
 		}

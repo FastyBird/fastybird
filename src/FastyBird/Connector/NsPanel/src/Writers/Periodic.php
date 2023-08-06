@@ -82,6 +82,7 @@ class Periodic implements Writer
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
+		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
@@ -127,6 +128,7 @@ class Periodic implements Writer
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -160,6 +162,9 @@ class Periodic implements Writer
 					if (
 						$client instanceof Clients\Gateway
 						&& $device instanceof Entities\Devices\SubDevice
+						&& !$this->deviceConnectionManager->getState($device)->equalsValue(
+							MetadataTypes\ConnectionState::STATE_ALERT,
+						)
 					) {
 						if ($this->writeSubDeviceChannelProperty($client, $device)) {
 							$this->registerLoopHandler();
@@ -169,6 +174,9 @@ class Periodic implements Writer
 					} elseif (
 						$client instanceof Clients\Device
 						&& $device instanceof Entities\Devices\ThirdPartyDevice
+						&& !$this->deviceConnectionManager->getState($device)->equalsValue(
+							MetadataTypes\ConnectionState::STATE_ALERT,
+						)
 					) {
 						if ($this->writeThirdPartyDeviceChannelProperty($client, $device)) {
 							$this->registerLoopHandler();
@@ -317,6 +325,7 @@ class Periodic implements Writer
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
