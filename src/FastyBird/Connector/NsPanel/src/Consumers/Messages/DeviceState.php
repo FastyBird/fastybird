@@ -193,6 +193,23 @@ final class DeviceState implements Consumers\Consumer
 						}
 					}
 				}
+
+				if ($entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_ALERT)) {
+					$findChildrenDevicesQuery = new Queries\FindThirdPartyDevices();
+					$findChildrenDevicesQuery->forParent($device);
+
+					$children = $this->devicesRepository->findAllBy(
+						$findChildrenDevicesQuery,
+						Entities\Devices\ThirdPartyDevice::class,
+					);
+
+					foreach ($children as $child) {
+						$this->deviceConnectionManager->setState(
+							$child,
+							$entity->getState(),
+						);
+					}
+				}
 			}
 		}
 
