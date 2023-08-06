@@ -110,35 +110,7 @@ class Initialize extends Console\Command\Command
 			}
 		}
 
-		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//ns-panel-connector.cmd.base.questions.whatToDo'),
-			[
-				0 => $this->translator->translate('//ns-panel-connector.cmd.initialize.actions.create'),
-				1 => $this->translator->translate('//ns-panel-connector.cmd.initialize.actions.update'),
-				2 => $this->translator->translate('//ns-panel-connector.cmd.initialize.actions.remove'),
-				3 => $this->translator->translate('//ns-panel-connector.cmd.initialize.actions.list'),
-				4 => $this->translator->translate('//ns-panel-connector.cmd.initialize.actions.nothing'),
-			],
-		);
-
-		$question->setErrorMessage(
-			$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
-		);
-
-		$whatToDo = $io->askQuestion($question);
-
-		if ($whatToDo === $this->translator->translate('//ns-panel-connector.cmd.initialize.actions.create')) {
-			$this->createConfiguration($io);
-
-		} elseif ($whatToDo === $this->translator->translate('//ns-panel-connector.cmd.initialize.actions.update')) {
-			$this->editConfiguration($io);
-
-		} elseif ($whatToDo === $this->translator->translate('//ns-panel-connector.cmd.initialize.actions.remove')) {
-			$this->deleteConfiguration($io);
-
-		} elseif ($whatToDo === $this->translator->translate('//ns-panel-connector.cmd.initialize.actions.list')) {
-			$this->listConfigurations($io);
-		}
+		$this->askInitializeAction($io);
 
 		return Console\Command\Command::SUCCESS;
 	}
@@ -292,7 +264,7 @@ class Initialize extends Console\Command\Command
 
 		} else {
 			$question = new Console\Question\ConfirmationQuestion(
-				'Do you want to change connector devices support?',
+				$this->translator->translate('//ns-panel-connector.cmd.initialize.questions.changeMode'),
 				false,
 			);
 
@@ -511,11 +483,11 @@ class Initialize extends Console\Command\Command
 	private function askMode(Style\SymfonyStyle $io): Types\ClientMode
 	{
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//ns-panel-connector.cmd.base.questions.whatToDo'),
+			$this->translator->translate('//ns-panel-connector.cmd.initialize.questions.select.mode'),
 			[
-				0 => $this->translator->translate('//ns-panel-connector.cmd.devices.questions.connectorMode.gateway'),
-				1 => $this->translator->translate('//ns-panel-connector.cmd.devices.questions.connectorMode.device'),
-				2 => $this->translator->translate('//ns-panel-connector.cmd.devices.questions.connectorMode.both'),
+				0 => $this->translator->translate('//ns-panel-connector.cmd.initialize.answers.mode.gateway'),
+				1 => $this->translator->translate('//ns-panel-connector.cmd.initialize.answers.mode.device'),
+				2 => $this->translator->translate('//ns-panel-connector.cmd.initialize.answers.mode.both'),
 			],
 			5,
 		);
@@ -535,7 +507,7 @@ class Initialize extends Console\Command\Command
 
 			if (
 				$answer === $this->translator->translate(
-					'//ns-panel-connector.cmd.devices.questions.connectorMode.gateway',
+					'//ns-panel-connector.cmd.initialize.answers.mode.gateway',
 				)
 				|| $answer === '0'
 			) {
@@ -544,7 +516,7 @@ class Initialize extends Console\Command\Command
 
 			if (
 				$answer === $this->translator->translate(
-					'//ns-panel-connector.cmd.devices.questions.connectorMode.device',
+					'//ns-panel-connector.cmd.initialize.answers.mode.device',
 				)
 				|| $answer === '1'
 			) {
@@ -553,7 +525,7 @@ class Initialize extends Console\Command\Command
 
 			if (
 				$answer === $this->translator->translate(
-					'//ns-panel-connector.cmd.devices.questions.connectorMode.both',
+					'//ns-panel-connector.cmd.initialize.answers.mode.both',
 				)
 				|| $answer === '2'
 			) {
@@ -661,6 +633,73 @@ class Initialize extends Console\Command\Command
 		assert($connector instanceof Entities\NsPanelConnector);
 
 		return $connector;
+	}
+
+	/**
+	 * @throws DBAL\Exception
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\Runtime
+	 */
+	private function askInitializeAction(Style\SymfonyStyle $io): void
+	{
+		$question = new Console\Question\ChoiceQuestion(
+			$this->translator->translate('//ns-panel-connector.cmd.base.questions.whatToDo'),
+			[
+				0 => $this->translator->translate('//ns-panel-connector.cmd.initialize.actions.create'),
+				1 => $this->translator->translate('//ns-panel-connector.cmd.initialize.actions.update'),
+				2 => $this->translator->translate('//ns-panel-connector.cmd.initialize.actions.remove'),
+				3 => $this->translator->translate('//ns-panel-connector.cmd.initialize.actions.list'),
+				4 => $this->translator->translate('//ns-panel-connector.cmd.initialize.actions.nothing'),
+			],
+			4,
+		);
+
+		$question->setErrorMessage(
+			$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+		);
+
+		$whatToDo = $io->askQuestion($question);
+
+		if (
+			$whatToDo === $this->translator->translate(
+				'//ns-panel-connector.cmd.initialize.actions.create',
+			)
+			|| $whatToDo === '0'
+		) {
+			$this->createConfiguration($io);
+
+			$this->askInitializeAction($io);
+
+		} elseif (
+			$whatToDo === $this->translator->translate(
+				'//ns-panel-connector.cmd.initialize.actions.update',
+			)
+			|| $whatToDo === '1'
+		) {
+			$this->editConfiguration($io);
+
+			$this->askInitializeAction($io);
+
+		} elseif (
+			$whatToDo === $this->translator->translate(
+				'//ns-panel-connector.cmd.initialize.actions.remove',
+			)
+			|| $whatToDo === '2'
+		) {
+			$this->deleteConfiguration($io);
+
+			$this->askInitializeAction($io);
+
+		} elseif (
+			$whatToDo === $this->translator->translate(
+				'//ns-panel-connector.cmd.initialize.actions.list',
+			)
+			|| $whatToDo === '3'
+		) {
+			$this->listConfigurations($io);
+
+			$this->askInitializeAction($io);
+		}
 	}
 
 	/**

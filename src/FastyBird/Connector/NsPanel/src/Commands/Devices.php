@@ -1115,11 +1115,11 @@ class Devices extends Console\Command\Command
 	 */
 	private function listDevices(Style\SymfonyStyle $io, Entities\Devices\Gateway $gateway): void
 	{
-		$findDevicesQuery = new Queries\FindDevices();
+		$findDevicesQuery = new Queries\FindThirdPartyDevices();
 		$findDevicesQuery->forParent($gateway);
 
 		/** @var array<Entities\NsPanelDevice> $devices */
-		$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\NsPanelDevice::class);
+		$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\ThirdPartyDevice::class);
 		usort(
 			$devices,
 			static function (Entities\NsPanelDevice $a, Entities\NsPanelDevice $b): int {

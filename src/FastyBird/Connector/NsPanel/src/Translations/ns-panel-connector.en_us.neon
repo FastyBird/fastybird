@@ -101,6 +101,14 @@ cmd:
                 name: "Provide connector name"
             select:
                 connector: "Please select connector to manage"
+                mode: "In what mode should this connector communicate with NS Panels?"
+            changeMode: "Do you want to change connector devices support?"
+
+        answers:
+            mode:
+                gateway: "Only NS Panel gateway mode"
+                device: "Only NS Panel third-party devices mode"
+                both: "Both modes"
 
         data:
             name: "Name"
@@ -182,10 +190,6 @@ cmd:
             isGatewayReady: "Is your NS Panel ready?"
             regenerateAccessToken: "Would you like to establish new connection with NS Panel?"
             connectProtocol: "Connect protocol with device?"
-            connectorMode:
-                gateway: "Only NS Panel gateway mode"
-                device: "Only NS Panel third-party devices mode"
-                both: "Both modes"
 
         answers:
             none: "None"
