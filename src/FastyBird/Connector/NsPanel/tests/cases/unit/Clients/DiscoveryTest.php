@@ -15,10 +15,11 @@ use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use GuzzleHttp;
 use Nette\DI;
 use Nette\Utils;
 use Psr\Http;
+use React\EventLoop;
+use React;
 use RuntimeException;
 
 final class DiscoveryTest extends DbTestCase
@@ -47,10 +48,24 @@ final class DiscoveryTest extends DbTestCase
 			->method('getBody')
 			->willReturn($responseBody);
 
-		$httpClient = $this->createMock(GuzzleHttp\Client::class);
+		$responsePromise = $this->createMock(React\Promise\PromiseInterface::class);
+		$responsePromise
+			->method('then')
+			->with(
+				self::callback(static function (callable $callback) use($response): bool {
+					$callback($response);
+
+					return true;
+				}),
+				self::callback(static function (): bool {
+					return true;
+				}),
+			);
+
+		$httpClient = $this->createMock(React\Http\Io\Transaction::class);
 		$httpClient
 			->method('send')
-			->willReturn($response);
+			->willReturn($responsePromise);
 
 		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
 		$httpClientFactory
@@ -138,6 +153,14 @@ final class DiscoveryTest extends DbTestCase
 		});
 
 		$client->discover();
+
+		$eventLoop = $this->getContainer()->getByType(EventLoop\LoopInterface::class);
+
+		$eventLoop->addTimer(1, function () use($eventLoop): void {
+			$eventLoop->stop();
+		});
+
+		$eventLoop->run();;
 
 		$consumer = $this->getContainer()->getByType(Consumers\Messages::class);
 
