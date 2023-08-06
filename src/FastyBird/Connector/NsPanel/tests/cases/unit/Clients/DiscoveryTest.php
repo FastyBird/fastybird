@@ -18,8 +18,8 @@ use FastyBird\Module\Devices\Models as DevicesModels;
 use Nette\DI;
 use Nette\Utils;
 use Psr\Http;
-use React\EventLoop;
 use React;
+use React\EventLoop;
 use RuntimeException;
 
 final class DiscoveryTest extends DbTestCase
@@ -52,14 +52,12 @@ final class DiscoveryTest extends DbTestCase
 		$responsePromise
 			->method('then')
 			->with(
-				self::callback(static function (callable $callback) use($response): bool {
+				self::callback(static function (callable $callback) use ($response): bool {
 					$callback($response);
 
 					return true;
 				}),
-				self::callback(static function (): bool {
-					return true;
-				}),
+				self::callback(static fn (): bool => true),
 			);
 
 		$httpClient = $this->createMock(React\Http\Io\Transaction::class);
@@ -156,11 +154,11 @@ final class DiscoveryTest extends DbTestCase
 
 		$eventLoop = $this->getContainer()->getByType(EventLoop\LoopInterface::class);
 
-		$eventLoop->addTimer(1, function () use($eventLoop): void {
+		$eventLoop->addTimer(1, static function () use ($eventLoop): void {
 			$eventLoop->stop();
 		});
 
-		$eventLoop->run();;
+		$eventLoop->run();
 
 		$consumer = $this->getContainer()->getByType(Consumers\Messages::class);
 
