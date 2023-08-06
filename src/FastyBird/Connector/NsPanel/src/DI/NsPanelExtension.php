@@ -310,20 +310,17 @@ class NsPanelExtension extends DI\CompilerExtension
 				'logger' => $logger,
 			]);
 
-		$builder->addDefinition($this->prefix('commands.execute'), new DI\Definitions\ServiceDefinition())
-			->setType(Commands\Execute::class);
-
 		$builder->addDefinition($this->prefix('commands.devices'), new DI\Definitions\ServiceDefinition())
 			->setType(Commands\Devices::class)
 			->setArguments([
 				'logger' => $logger,
 			]);
 
+		$builder->addDefinition($this->prefix('commands.execute'), new DI\Definitions\ServiceDefinition())
+			->setType(Commands\Execute::class);
+
 		$builder->addDefinition($this->prefix('commands.discovery'), new DI\Definitions\ServiceDefinition())
-			->setType(Commands\Discovery::class)
-			->setArguments([
-				'logger' => $logger,
-			]);
+			->setType(Commands\Discovery::class);
 	}
 
 	/**
