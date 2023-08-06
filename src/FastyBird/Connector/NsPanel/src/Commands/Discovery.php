@@ -16,37 +16,29 @@
 namespace FastyBird\Connector\NsPanel\Commands;
 
 use DateTimeInterface;
-use FastyBird\Connector\NsPanel;
-use FastyBird\Connector\NsPanel\Clients;
-use FastyBird\Connector\NsPanel\Consumers;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Module\Devices\Commands as DevicesCommands;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use Nette\Localization;
 use Ramsey\Uuid;
-use React\EventLoop;
 use Symfony\Component\Console;
 use Symfony\Component\Console\Input;
 use Symfony\Component\Console\Output;
 use Symfony\Component\Console\Style;
-use Throwable;
 use function array_key_exists;
 use function array_key_first;
 use function array_search;
 use function array_values;
 use function assert;
 use function count;
-use function intval;
 use function is_string;
-use function React\Async\async;
 use function sprintf;
 use function usort;
-use const SIGINT;
 
 /**
  * Connector devices discovery command
@@ -61,32 +53,13 @@ class Discovery extends Console\Command\Command
 
 	public const NAME = 'fb:ns-panel-connector:discover';
 
-	private const DISCOVERY_WAITING_INTERVAL = 5.0;
-
-	private const DISCOVERY_MAX_PROCESSING_INTERVAL = 60.0;
-
-	private const QUEUE_PROCESSING_INTERVAL = 0.01;
-
-	/** @var array<string, array<Entities\Clients\DiscoveredSubDevice>>  */
-	private array $foundSubDevices = [];
-
 	private DateTimeInterface|null $executedTime = null;
 
-	private EventLoop\TimerInterface|null $consumerTimer = null;
-
-	private EventLoop\TimerInterface|null $progressBarTimer;
-
-	private Clients\Discovery|null $client = null;
-
 	public function __construct(
-		private readonly Clients\DiscoveryFactory $clientFactory,
-		private readonly Consumers\Messages $consumer,
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
-		private readonly EventLoop\LoopInterface $eventLoop,
 		private readonly Localization\Translator $translator,
-		private readonly NsPanel\Logger $logger,
 		string|null $name = null,
 	)
 	{
@@ -122,11 +95,20 @@ class Discovery extends Console\Command\Command
 	}
 
 	/**
+	 * @throws Console\Exception\ExceptionInterface
 	 * @throws Console\Exception\InvalidArgumentException
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
 	 */
 	protected function execute(Input\InputInterface $input, Output\OutputInterface $output): int
 	{
+		$symfonyApp = $this->getApplication();
+
+		if ($symfonyApp === null) {
+			return Console\Command\Command::FAILURE;
+		}
+
 		$io = new Style\SymfonyStyle($input, $output);
 
 		$io->title($this->translator->translate('//ns-panel-connector.cmd.discovery.title'));
@@ -291,238 +273,102 @@ class Discovery extends Console\Command\Command
 			return Console\Command\Command::SUCCESS;
 		}
 
-		$this->client = $this->clientFactory->create($connector);
+		$this->executedTime = $this->dateTimeFactory->getNow();
 
-		$progressBar = new Console\Helper\ProgressBar(
-			$output,
-			intval(self::DISCOVERY_MAX_PROCESSING_INTERVAL * 60),
-		);
+		$serviceCmd = $symfonyApp->find(DevicesCommands\Connector::NAME);
 
-		$progressBar->setFormat('[%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s% %');
+		$result = $serviceCmd->run(new Input\ArrayInput([
+			'--connector' => $connector->getId()->toString(),
+			'--mode' => 'discover',
+			'--no-interaction' => true,
+			'--quiet' => true,
+		]), $output);
 
-		try {
-			$this->eventLoop->addSignal(SIGINT, function () use ($io): void {
-				$this->logger->info(
-					'Stopping NS Panel connector discovery...',
-					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-						'type' => 'discovery-cmd',
-					],
-				);
+		if ($result !== Console\Command\Command::SUCCESS) {
+			$io->error($this->translator->translate('//ns-panel-connector.cmd.execute.messages.error'));
 
-				$io->info($this->translator->translate('//ns-panel-connector.cmd.discovery.messages.stopping'));
+			return Console\Command\Command::FAILURE;
+		}
 
-				$this->client?->disconnect();
+		$this->showResults($io, $output, $connector);
 
-				$this->checkAndTerminate();
-			});
+		return Console\Command\Command::SUCCESS;
+	}
 
-			$this->eventLoop->futureTick(
-				async(function () use ($io, $progressBar): void {
-					$this->logger->info(
-						'Starting NS Panel connector discovery...',
-						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-							'type' => 'discovery-cmd',
-						],
-					);
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	private function showResults(
+		Style\SymfonyStyle $io,
+		Output\OutputInterface $output,
+		Entities\NsPanelConnector $connector,
+	): void
+	{
+		$io->newLine();
 
-					$io->info($this->translator->translate('//ns-panel-connector.cmd.discovery.messages.starting'));
+		$table = new Console\Helper\Table($output);
+		$table->setHeaders([
+			'#',
+			$this->translator->translate('//ns-panel-connector.cmd.discovery.data.id'),
+			$this->translator->translate('//ns-panel-connector.cmd.discovery.data.name'),
+			$this->translator->translate('//ns-panel-connector.cmd.discovery.data.type'),
+			$this->translator->translate('//ns-panel-connector.cmd.discovery.data.gateway'),
+		]);
 
-					$progressBar->start();
+		$foundDevices = 0;
 
-					$this->executedTime = $this->dateTimeFactory->getNow();
+		$findDevicesQuery = new Queries\FindGatewayDevices();
+		$findDevicesQuery->forConnector($connector);
 
-					$this->client?->on('finished', function (array $foundSubDevices): void {
-						$this->foundSubDevices = $foundSubDevices;
+		$gateways = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\Gateway::class);
 
-						$this->client?->disconnect();
+		foreach ($gateways as $gateway) {
+			$findDevicesQuery = new Queries\FindSubDevices();
+			$findDevicesQuery->forConnector($connector);
+			$findDevicesQuery->forParent($gateway);
 
-						$this->checkAndTerminate();
-					});
+			$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\SubDevice::class);
 
-					$this->client?->discover();
-				}),
-			);
+			foreach ($devices as $device) {
+				$createdAt = $device->getCreatedAt();
 
-			$this->consumerTimer = $this->eventLoop->addPeriodicTimer(
-				self::QUEUE_PROCESSING_INTERVAL,
-				async(function (): void {
-					$this->consumer->consume();
-				}),
-			);
-
-			$this->progressBarTimer = $this->eventLoop->addPeriodicTimer(
-				0.1,
-				async(static function () use ($progressBar): void {
-					$progressBar->advance();
-				}),
-			);
-
-			$this->eventLoop->addTimer(
-				self::DISCOVERY_MAX_PROCESSING_INTERVAL,
-				async(function (): void {
-					$this->client?->disconnect();
-
-					$this->checkAndTerminate();
-				}),
-			);
-
-			$this->eventLoop->run();
-
-			$progressBar->finish();
-
-			$io->newLine();
-
-			$table = new Console\Helper\Table($output);
-			$table->setHeaders([
-				'#',
-				$this->translator->translate('//ns-panel-connector.cmd.discovery.data.id'),
-				$this->translator->translate('//ns-panel-connector.cmd.discovery.data.name'),
-				$this->translator->translate('//ns-panel-connector.cmd.discovery.data.type'),
-				$this->translator->translate('//ns-panel-connector.cmd.discovery.data.gateway'),
-			]);
-
-			$foundDevices = 0;
-
-			foreach ($this->foundSubDevices as $gatewayId => $gatewaySubDevices) {
-				assert(Uuid\Uuid::isValid($gatewayId));
-
-				foreach ($gatewaySubDevices as $subDevice) {
+				if (
+					$createdAt !== null
+					&& $this->executedTime !== null
+					&& $createdAt->getTimestamp() > $this->executedTime->getTimestamp()
+				) {
 					$foundDevices++;
-
-					$findDeviceQuery = new Queries\FindGatewayDevices();
-					$findDeviceQuery->byId(Uuid\Uuid::fromString($gatewayId));
-
-					$gateway = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\Gateway::class);
-
-					if ($gateway === null) {
-						continue;
-					}
-
-					$gateway = $gateway->getName() ?? $gateway->getIdentifier();
-
-					$findDeviceQuery = new Queries\FindSubDevices();
-					$findDeviceQuery->byIdentifier($subDevice->getSerialNumber());
-
-					$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\SubDevice::class);
-
-					if ($device === null) {
-						continue;
-					}
 
 					$table->addRow([
 						$foundDevices,
 						$device->getId()->toString(),
 						$device->getName() ?? $device->getIdentifier(),
 						$device->getModel(),
-						$gateway,
+						$gateway->getName() ?? $gateway->getIdentifier(),
 					]);
 				}
 			}
-
-			if ($foundDevices > 0) {
-				$io->newLine();
-
-				$io->info(sprintf(
-					$this->translator->translate('//ns-panel-connector.cmd.discovery.messages.foundDevices'),
-					$foundDevices,
-				));
-
-				$table->render();
-
-				$io->newLine();
-
-			} else {
-				$io->info($this->translator->translate('//ns-panel-connector.cmd.discovery.messages.noDevicesFound'));
-			}
-
-			$io->success($this->translator->translate('//ns-panel-connector.cmd.discovery.messages.success'));
-
-			return Console\Command\Command::SUCCESS;
-		} catch (DevicesExceptions\Terminate $ex) {
-			$this->logger->error(
-				'An error occurred',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'discovery-cmd',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
-				],
-			);
-
-			$io->error($this->translator->translate('//ns-panel-connector.cmd.discovery.messages.error'));
-
-			$this->client->disconnect();
-
-			$this->eventLoop->stop();
-
-			return Console\Command\Command::FAILURE;
-		} catch (Throwable $ex) {
-			$this->logger->error(
-				'An unhandled error occurred',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'discovery-cmd',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
-				],
-			);
-
-			$io->error($this->translator->translate('//ns-panel-connector.cmd.discovery.messages.error'));
-
-			$this->client->disconnect();
-
-			$this->eventLoop->stop();
-
-			return Console\Command\Command::FAILURE;
 		}
-	}
 
-	private function checkAndTerminate(): void
-	{
-		if ($this->consumer->isEmpty()) {
-			if ($this->consumerTimer !== null) {
-				$this->eventLoop->cancelTimer($this->consumerTimer);
-			}
+		if ($foundDevices > 0) {
+			$io->newLine();
 
-			if ($this->progressBarTimer !== null) {
-				$this->eventLoop->cancelTimer($this->progressBarTimer);
-			}
+			$io->info(sprintf(
+				$this->translator->translate('//ns-panel-connector.cmd.discovery.messages.foundDevices'),
+				$foundDevices,
+			));
 
-			$this->eventLoop->stop();
+			$table->render();
+
+			$io->newLine();
 
 		} else {
-			if (
-				$this->executedTime !== null
-				&& $this->dateTimeFactory->getNow()->getTimestamp() - $this->executedTime->getTimestamp() > self::DISCOVERY_MAX_PROCESSING_INTERVAL
-			) {
-				$this->logger->error(
-					'Discovery exceeded reserved time and have been terminated',
-					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-						'type' => 'discovery-cmd',
-					],
-				);
-
-				if ($this->consumerTimer !== null) {
-					$this->eventLoop->cancelTimer($this->consumerTimer);
-				}
-
-				if ($this->progressBarTimer !== null) {
-					$this->eventLoop->cancelTimer($this->progressBarTimer);
-				}
-
-				$this->eventLoop->stop();
-
-				return;
-			}
-
-			$this->eventLoop->addTimer(
-				self::DISCOVERY_WAITING_INTERVAL,
-				async(function (): void {
-					$this->checkAndTerminate();
-				}),
-			);
+			$io->info($this->translator->translate('//ns-panel-connector.cmd.discovery.messages.noDevicesFound'));
 		}
+
+		$io->success($this->translator->translate('//ns-panel-connector.cmd.discovery.messages.success'));
 	}
 
 }

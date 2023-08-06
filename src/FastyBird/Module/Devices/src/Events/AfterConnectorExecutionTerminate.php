@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * AfterConnectorTerminate.php
+ * AfterConnectorExecutionTerminate.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -26,7 +26,7 @@ use Symfony\Contracts\EventDispatcher;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class AfterConnectorTerminate extends EventDispatcher\Event
+class AfterConnectorExecutionTerminate extends EventDispatcher\Event
 {
 
 	public function __construct(private readonly Connectors\Connector $connector)

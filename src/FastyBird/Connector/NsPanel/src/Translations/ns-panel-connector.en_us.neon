@@ -306,4 +306,3 @@ cmd:
             foundDevices: "Found %d new devices"
             noDevicesFound: "No devices were found"
             success: "Devices discovery was successfully finished"
-            error: "Something went wrong, discovery could not be finished. Error was logged."

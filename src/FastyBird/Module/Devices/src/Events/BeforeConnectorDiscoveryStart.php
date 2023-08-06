@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * AfterConnectorStart.php
+ * BeforeConnectorDiscoveryStart.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -19,14 +19,14 @@ use FastyBird\Module\Devices\Entities;
 use Symfony\Contracts\EventDispatcher;
 
 /**
- * Event fired after connector has been started
+ * Event fired before connector discovery has been started
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Events
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class AfterConnectorStart extends EventDispatcher\Event
+class BeforeConnectorDiscoveryStart extends EventDispatcher\Event
 {
 
 	public function __construct(private readonly Entities\Connectors\Connector $connector)

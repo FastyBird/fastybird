@@ -28,6 +28,8 @@ interface Connector
 
 	public function execute(): void;
 
+	public function discover(): void;
+
 	public function terminate(): void;
 
 	public function hasUnfinishedTasks(): bool;

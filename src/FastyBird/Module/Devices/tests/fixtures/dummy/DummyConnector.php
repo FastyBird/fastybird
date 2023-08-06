@@ -18,6 +18,11 @@ class DummyConnector implements Connectors\Connector
 		// NOT IMPLEMENTED
 	}
 
+	public function discover(): void
+	{
+		// NOT IMPLEMENTED
+	}
+
 	public function terminate(): void
 	{
 		// NOT IMPLEMENTED
