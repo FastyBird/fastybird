@@ -30,7 +30,12 @@ use FastyBird\Module\Devices\Models as DevicesModels;
 use Nette;
 use Orisai\ObjectMapper;
 use React\EventLoop;
+use React\Promise;
+use Throwable;
+use function array_key_exists;
 use function array_merge;
+use function assert;
+use function is_array;
 
 /**
  * Connector sub-devices discovery client
@@ -67,7 +72,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 	 */
 	public function discover(Entities\Devices\Gateway|null $onlyGateway = null): void
 	{
-		$foundSubDevices = [];
+		$promises = [];
 
 		if ($onlyGateway !== null) {
 			$this->logger->debug(
@@ -84,7 +89,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				],
 			);
 
-			$foundSubDevices[$onlyGateway->getIdentifier()] = $this->discoverSubDevices($onlyGateway);
+			$promises[] = $this->discoverSubDevices($onlyGateway);
 
 		} else {
 			$this->logger->debug(
@@ -105,11 +110,33 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$findDevicesQuery,
 				Entities\Devices\Gateway::class,
 			) as $gateway) {
-				$foundSubDevices[$gateway->getId()->toString()] = $this->discoverSubDevices($gateway);
+				$promises[] = $this->discoverSubDevices($gateway);
 			}
 		}
 
-		$this->emit('finished', [$foundSubDevices]);
+		Promise\all($promises)
+			->then(function (array $results): void {
+				$foundSubDevices = [];
+
+				foreach ($results as $result) {
+					assert(is_array($result));
+
+					foreach ($result as $device) {
+						assert($device instanceof Entities\Clients\DiscoveredSubDevice);
+
+						if (!array_key_exists($device->getParent()->toString(), $foundSubDevices)) {
+							$foundSubDevices[$device->getParent()->toString()] = [];
+						}
+
+						$foundSubDevices[$device->getParent()->toString()][] = $device;
+					}
+				}
+
+				$this->emit('finished', [$foundSubDevices]);
+			})
+			->otherwise(function (): void {
+				$this->emit('finished', [[]]);
+			});
 	}
 
 	public function disconnect(): void
@@ -121,29 +148,35 @@ final class Discovery implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @return array<Entities\Clients\DiscoveredSubDevice>
-	 *
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function discoverSubDevices(Entities\Devices\Gateway $device): array
+	private function discoverSubDevices(
+		Entities\Devices\Gateway $gateway,
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface
 	{
+		$deferred = new Promise\Deferred();
+
 		$lanApiApi = $this->lanApiApiFactory->create(
 			$this->connector->getIdentifier(),
 		);
 
-		if ($device->getIpAddress() === null || $device->getAccessToken() === null) {
-			return [];
+		if ($gateway->getIpAddress() === null || $gateway->getAccessToken() === null) {
+			return Promise\reject(new Exceptions\InvalidArgument('NS Panel is not configured'));
 		}
 
 		try {
-			$subDevices = $lanApiApi->getSubDevices(
-				$device->getIpAddress(),
-				$device->getAccessToken(),
-				API\LanApi::GATEWAY_PORT,
-				false,
-			);
+			$lanApiApi->getSubDevices(
+				$gateway->getIpAddress(),
+				$gateway->getAccessToken(),
+			)
+				->then(function (Entities\API\Response\GetSubDevices $response) use ($deferred, $gateway): void {
+					$deferred->resolve($this->handleFoundSubDevices($gateway, $response));
+				})
+				->otherwise(static function (Throwable $ex) use ($deferred): void {
+					$deferred->reject($ex);
+				});
 		} catch (Exceptions\LanApiCall $ex) {
 			$this->logger->error(
 				'Loading sub-devices from NS Panel failed',
@@ -155,15 +188,15 @@ final class Discovery implements Evenement\EventEmitterInterface
 						'id' => $this->connector->getId()->toString(),
 					],
 					'device' => [
-						'id' => $device->getId()->toString(),
+						'id' => $gateway->getId()->toString(),
 					],
 				],
 			);
 
-			return [];
+			$deferred->reject($ex);
 		}
 
-		return $this->handleFoundSubDevices($device, $subDevices);
+		return $deferred->promise();
 	}
 
 	/**
@@ -187,7 +220,12 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$options->setAllowUnknownFields();
 
 				$processedSubDevices[] = $this->entityMapper->process(
-					$subDevice->toArray(),
+					array_merge(
+						$subDevice->toArray(),
+						[
+							'parent' => $gateway->getId()->toString(),
+						],
+					),
 					Entities\Clients\DiscoveredSubDevice::class,
 					$options,
 				);

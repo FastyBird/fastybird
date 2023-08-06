@@ -37,6 +37,8 @@ final class DiscoveredSubDevice implements Entity
 	 * @param array<string, string|array<string, string>> $tags
 	 */
 	public function __construct(
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $parent,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('serial_number')]
 		private readonly string $serialNumber,
@@ -113,6 +115,11 @@ final class DiscoveredSubDevice implements Entity
 		private readonly bool|null $subnet = null,
 	)
 	{
+	}
+
+	public function getParent(): Uuid\UuidInterface
+	{
+		return $this->parent;
 	}
 
 	public function getSerialNumber(): string

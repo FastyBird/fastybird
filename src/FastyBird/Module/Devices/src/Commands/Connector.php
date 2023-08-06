@@ -16,7 +16,6 @@
 namespace FastyBird\Module\Devices\Commands;
 
 use BadMethodCallException;
-use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Exchange\Exchange as ExchangeExchange;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -94,7 +93,6 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 		private readonly Utilities\DevicePropertiesStates $devicePropertiesStateManager,
 		private readonly Utilities\ChannelPropertiesStates $channelPropertiesStateManager,
 		private readonly BootstrapHelpers\Database $database,
-		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		private readonly array $exchangeFactories = [],
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
@@ -558,44 +556,35 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 				);
 			}
 
-			$now = $this->dateTimeFactory->getNow();
-
-			$waitingForClosing = true;
-
 			// Wait until connector is fully terminated
-			while (
-				$waitingForClosing
-				&& (
-					$this->dateTimeFactory->getNow()->getTimestamp() - $now->getTimestamp()
-				) < self::SHUTDOWN_WAITING_DELAY
-			) {
-				if (!$service->hasUnfinishedTasks()) {
-					$waitingForClosing = false;
-				}
-			}
+			$this->eventLoop->addTimer(
+				self::SHUTDOWN_WAITING_DELAY,
+				function () use ($connector, $service, $isDiscovery): void {
+					if ($isDiscovery) {
+						$this->dispatcher?->dispatch(new Events\AfterConnectorDiscoveryTerminate($service));
+					} else {
+						$this->dispatcher?->dispatch(new Events\AfterConnectorExecutionTerminate($service));
+					}
 
-			if ($isDiscovery) {
-				$this->dispatcher?->dispatch(new Events\AfterConnectorDiscoveryTerminate($service));
-			} else {
-				$this->dispatcher?->dispatch(new Events\AfterConnectorExecutionTerminate($service));
-			}
+					if (!$isDiscovery) {
+						$this->connectorConnectionManager->setState(
+							$connector,
+							MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_STOPPED),
+						);
+					}
 
-			if (!$isDiscovery) {
-				$this->connectorConnectionManager->setState(
-					$connector,
-					MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_STOPPED),
-				);
-			}
+					if ($this->databaseRefreshTimer !== null) {
+						$this->eventLoop->cancelTimer($this->databaseRefreshTimer);
+					}
 
-			if ($this->databaseRefreshTimer !== null) {
-				$this->eventLoop->cancelTimer($this->databaseRefreshTimer);
-			}
+					if ($this->progressBarTimer !== null) {
+						$this->eventLoop->cancelTimer($this->progressBarTimer);
+					}
 
-			if ($this->progressBarTimer !== null) {
-				$this->eventLoop->cancelTimer($this->progressBarTimer);
-			}
+					$this->eventLoop->stop();
+				},
+			);
 
-			$this->eventLoop->stop();
 		} catch (Throwable $ex) {
 			$this->logger->error('Connector could not be stopped. An unexpected error occurred', [
 				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,

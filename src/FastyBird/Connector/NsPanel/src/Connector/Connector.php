@@ -162,7 +162,6 @@ final class Connector implements DevicesConnectors\Connector
 		$this->server?->disconnect();
 
 		$client = $this->discoveryClientFactory->create($this->connector);
-		$client->discover();
 
 		$client->on('finished', function (): void {
 			$this->dispatcher?->dispatch(
@@ -192,6 +191,8 @@ final class Connector implements DevicesConnectors\Connector
 				],
 			],
 		);
+
+		$client->discover();
 	}
 
 	public function terminate(): void
@@ -200,7 +201,7 @@ final class Connector implements DevicesConnectors\Connector
 			$client->disconnect();
 		}
 
-		if ($this->consumerTimer !== null) {
+		if ($this->consumerTimer !== null && $this->consumer->isEmpty()) {
 			$this->eventLoop->cancelTimer($this->consumerTimer);
 		}
 
