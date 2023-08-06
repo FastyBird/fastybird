@@ -148,17 +148,26 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 
 	public function terminateConnector(Events\TerminateConnector $event): void
 	{
-		$this->logger->info('Triggering connector termination', [
-			'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
-			'type' => 'command',
-			'reason' => [
-				'source' => $event->getSource()->getValue(),
-				'message' => $event->getReason(),
-				'exception' => $event->getException() !== null ? BootstrapHelpers\Logger::buildException(
-					$event->getException(),
-				) : null,
-			],
-		]);
+		if ($event->getException() !== null) {
+			$this->logger->warning('Triggering connector termination due to some error', [
+				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+				'type' => 'command',
+				'reason' => [
+					'source' => $event->getSource()->getValue(),
+					'message' => $event->getReason(),
+				],
+				'exception' => BootstrapHelpers\Logger::buildException($event->getException()),
+			]);
+		} else {
+			$this->logger->info('Triggering connector termination', [
+				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+				'type' => 'command',
+				'reason' => [
+					'source' => $event->getSource()->getValue(),
+					'message' => $event->getReason(),
+				],
+			]);
+		}
 
 		if ($this->service !== null && $this->connector !== null) {
 			try {
@@ -173,11 +182,6 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 				]);
 			}
 		}
-
-		$this->logger->warning('Force terminating connector', [
-			'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
-			'type' => 'command',
-		]);
 
 		$this->eventLoop->stop();
 	}

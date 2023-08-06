@@ -25,8 +25,10 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Connectors as DevicesConnectors;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
+use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Nette;
+use Psr\EventDispatcher as PsrEventDispatcher;
 use React\EventLoop;
 use ReflectionClass;
 use function array_key_exists;
@@ -66,6 +68,7 @@ final class Connector implements DevicesConnectors\Connector
 		private readonly NsPanel\Logger $logger,
 		private readonly Consumers\Messages $consumer,
 		private readonly EventLoop\LoopInterface $eventLoop,
+		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
 	}
@@ -160,6 +163,15 @@ final class Connector implements DevicesConnectors\Connector
 
 		$client = $this->discoveryClientFactory->create($this->connector);
 		$client->discover();
+
+		$client->on('finished', function (): void {
+			$this->dispatcher?->dispatch(
+				new DevicesEvents\TerminateConnector(
+					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL),
+					'Devices discovery finished',
+				),
+			);
+		});
 
 		$this->clients[] = $client;
 
