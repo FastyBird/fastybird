@@ -1029,13 +1029,11 @@ final class LanApi
 	/**
 	 * @throws Exceptions\LanApiCall
 	 */
-	private function getSchema(string $schemaFilename, bool $response = true): string
+	private function getSchema(string $schemaFilename): string
 	{
 		try {
-			$schema = $response ? Utils\FileSystem::read(
+			$schema = Utils\FileSystem::read(
 				NsPanel\Constants::RESOURCES_FOLDER . DIRECTORY_SEPARATOR . 'response' . DIRECTORY_SEPARATOR . $schemaFilename,
-			) : Utils\FileSystem::read(
-				NsPanel\Constants::RESOURCES_FOLDER . DIRECTORY_SEPARATOR . 'request' . DIRECTORY_SEPARATOR . $schemaFilename,
 			);
 		} catch (Nette\IOException) {
 			throw new Exceptions\LanApiCall('Validation schema for response could not be loaded');

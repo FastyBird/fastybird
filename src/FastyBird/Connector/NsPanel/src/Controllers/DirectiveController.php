@@ -28,6 +28,7 @@ use FastyBird\Library\Exchange\Entities as ExchangeEntities;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -59,6 +60,8 @@ use function strval;
 final class DirectiveController extends BaseController
 {
 
+	private const SET_DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME = 'set_device_status.json';
+
 	public function __construct(
 		private readonly bool $useExchange,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
@@ -68,6 +71,7 @@ final class DirectiveController extends BaseController
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStateManager,
 		private readonly ExchangeEntities\EntityFactory $entityFactory,
 		private readonly ExchangePublisher\Publisher $publisher,
+		private readonly MetadataSchemas\Validator $schemaValidator,
 	)
 	{
 	}
@@ -109,15 +113,40 @@ final class DirectiveController extends BaseController
 
 		$request->getBody()->rewind();
 
+		$body = $request->getBody()->getContents();
+
 		// At first, try to load device
 		$device = $this->findDevice($request);
+
+		try {
+			$body = $this->schemaValidator->validate(
+				$body,
+				$this->getSchema(self::SET_DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME),
+			);
+		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+			throw new Exceptions\ServerRequestError(
+				$request,
+				Types\ServerStatus::get(Types\ServerStatus::INVALID_DIRECTIVE),
+				'Could not validate received response payload',
+				$ex->getCode(),
+				$ex,
+			);
+		} catch (Exceptions\InvalidArgument $ex) {
+			throw new Exceptions\ServerRequestError(
+				$request,
+				Types\ServerStatus::get(Types\ServerStatus::INTERNAL_ERROR),
+				'Could not validate received response payload',
+				$ex->getCode(),
+				$ex,
+			);
+		}
 
 		try {
 			$options = new ObjectMapper\Processing\Options();
 			$options->setAllowUnknownFields();
 
 			$requestData = $this->entityMapper->process(
-				Utils\Json::decode($request->getBody()->getContents(), Utils\Json::FORCE_ARRAY),
+				Utils\Json::decode(Utils\Json::encode($body), Utils\Json::FORCE_ARRAY),
 				Entities\API\Request\SetDeviceStatus::class,
 				$options,
 			);
