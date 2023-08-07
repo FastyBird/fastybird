@@ -169,6 +169,7 @@ class NsPanelExtension extends DI\CompilerExtension
 		)
 			->setType(Consumers\Messages\DeviceStatus::class)
 			->setArguments([
+				'useExchange' => $configuration->writer === Writers\Exchange::NAME,
 				'logger' => $logger,
 			]);
 
@@ -288,9 +289,6 @@ class NsPanelExtension extends DI\CompilerExtension
 
 		$builder->addDefinition($this->prefix('http.controllers.directive'), new DI\Definitions\ServiceDefinition())
 			->setType(Controllers\DirectiveController::class)
-			->setArguments([
-				'useExchange' => $configuration->writer === Writers\Exchange::NAME,
-			])
 			->addSetup('setLogger', [$logger])
 			->addTag('nette.inject');
 
