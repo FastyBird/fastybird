@@ -40,7 +40,6 @@ use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
 use Nette;
 use Nette\Localization;
 use Nette\Utils;
-use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use RuntimeException;
 use Symfony\Component\Console;
@@ -92,6 +91,7 @@ class Devices extends Console\Command\Command
 	public function __construct(
 		private readonly API\LanApiFactory $lanApiFactory,
 		private readonly Helpers\Loader $loader,
+		private readonly Helpers\Entity $entityHelper,
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Devices\DevicesManager $devicesManager,
@@ -103,7 +103,6 @@ class Devices extends Console\Command\Command
 		private readonly DevicesModels\Channels\Properties\PropertiesManager $channelsPropertiesManager,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 		private readonly Localization\Translator $translator,
-		private readonly ObjectMapper\Processing\Processor $entityMapper,
 		private readonly NsPanel\Logger $logger,
 		string|null $name = null,
 	)
@@ -3580,11 +3579,11 @@ class Devices extends Console\Command\Command
 					}
 
 					try {
-						return $this->entityMapper->process(
-							$panelInfo->getData()->toArray(),
+						return $this->entityHelper->create(
 							Entities\Commands\GatewayInfo::class,
+							$panelInfo->getData()->toArray(),
 						);
-					} catch (ObjectMapper\Exception\InvalidData) {
+					} catch (Exceptions\Runtime) {
 						throw new Exceptions\Runtime(
 							sprintf(
 								$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),

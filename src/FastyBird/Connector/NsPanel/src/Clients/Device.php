@@ -32,7 +32,6 @@ use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use Nette;
-use Orisai\ObjectMapper;
 use React\Promise;
 use Throwable;
 use function array_diff;
@@ -66,10 +65,10 @@ final class Device implements Client
 		private readonly Entities\NsPanelConnector $connector,
 		private readonly Consumers\Messages $consumer,
 		private readonly Helpers\Loader $loader,
+		private readonly Helpers\Entity $entityHelper,
 		private readonly Writers\Writer $writer,
 		private readonly NsPanel\Logger $logger,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
-		private readonly ObjectMapper\Processing\Processor $entityMapper,
 		API\LanApiFactory $lanApiApiFactory,
 	)
 	{
@@ -117,7 +116,7 @@ final class Device implements Client
 					!array_key_exists($device->getDisplayCategory()->getValue(), (array) $categoriesMetadata)
 				) {
 					$this->consumer->append(
-						$this->createEntity(
+						$this->entityHelper->create(
 							Entities\Messages\DeviceState::class,
 							[
 								'connector' => $this->connector->getId()->toString(),
@@ -209,7 +208,7 @@ final class Device implements Client
 				// Device have to have configured all required capabilities
 				if (array_diff($requiredCapabilities, $deviceCapabilities) === []) {
 					$this->consumer->append(
-						$this->createEntity(
+						$this->entityHelper->create(
 							Entities\Messages\DeviceState::class,
 							[
 								'connector' => $this->connector->getId()->toString(),
@@ -276,7 +275,7 @@ final class Device implements Client
 
 							if ($device !== null) {
 								$this->consumer->append(
-									$this->createEntity(
+									$this->entityHelper->create(
 										Entities\Messages\DeviceState::class,
 										[
 											'connector' => $this->connector->getId()->toString(),
@@ -287,7 +286,7 @@ final class Device implements Client
 								);
 
 								$this->consumer->append(
-									$this->createEntity(
+									$this->entityHelper->create(
 										Entities\Messages\DeviceSynchronisation::class,
 										[
 											'connector' => $this->connector->getId()->toString(),
@@ -330,7 +329,7 @@ final class Device implements Client
 							];
 
 							$this->consumer->append(
-								$this->createEntity(
+								$this->entityHelper->create(
 									Entities\Messages\DeviceState::class,
 									[
 										'connector' => $this->connector->getId()->toString(),
@@ -342,7 +341,7 @@ final class Device implements Client
 
 						} else {
 							$this->consumer->append(
-								$this->createEntity(
+								$this->entityHelper->create(
 									Entities\Messages\DeviceState::class,
 									[
 										'connector' => $this->connector->getId()->toString(),
@@ -430,7 +429,7 @@ final class Device implements Client
 											];
 
 											$this->consumer->append(
-												$this->createEntity(
+												$this->entityHelper->create(
 													Entities\Messages\DeviceState::class,
 													[
 														'connector' => $this->connector->getId()->toString(),
@@ -442,7 +441,7 @@ final class Device implements Client
 
 										} else {
 											$this->consumer->append(
-												$this->createEntity(
+												$this->entityHelper->create(
 													Entities\Messages\DeviceState::class,
 													[
 														'connector' => $this->connector->getId()->toString(),
@@ -491,7 +490,7 @@ final class Device implements Client
 							];
 
 							$this->consumer->append(
-								$this->createEntity(
+								$this->entityHelper->create(
 									Entities\Messages\DeviceState::class,
 									[
 										'connector' => $this->connector->getId()->toString(),
@@ -503,7 +502,7 @@ final class Device implements Client
 
 						} else {
 							$this->consumer->append(
-								$this->createEntity(
+								$this->entityHelper->create(
 									Entities\Messages\DeviceState::class,
 									[
 										'connector' => $this->connector->getId()->toString(),
@@ -551,7 +550,7 @@ final class Device implements Client
 				);
 
 				$this->consumer->append(
-					$this->createEntity(
+					$this->entityHelper->create(
 						Entities\Messages\DeviceState::class,
 						[
 							'connector' => $this->connector->getId()->toString(),
@@ -594,7 +593,7 @@ final class Device implements Client
 				Entities\Devices\ThirdPartyDevice::class,
 			) as $device) {
 				$this->consumer->append(
-					$this->createEntity(
+					$this->entityHelper->create(
 						Entities\Messages\DeviceState::class,
 						[
 							'connector' => $this->connector->getId()->toString(),
@@ -690,7 +689,7 @@ final class Device implements Client
 			}
 
 			$this->consumer->append(
-				$this->createEntity(
+				$this->entityHelper->create(
 					Entities\Messages\DeviceState::class,
 					[
 						'connector' => $this->connector->getId()->toString(),
@@ -725,7 +724,7 @@ final class Device implements Client
 
 		if ($device->getGateway()->getIpAddress() === null || $device->getGateway()->getAccessToken() === null) {
 			$this->consumer->append(
-				$this->createEntity(
+				$this->entityHelper->create(
 					Entities\Messages\DeviceState::class,
 					[
 						'connector' => $this->connector->getId()->toString(),
@@ -745,7 +744,7 @@ final class Device implements Client
 
 			if ($serialNumber === null) {
 				$this->consumer->append(
-					$this->createEntity(
+					$this->entityHelper->create(
 						Entities\Messages\DeviceState::class,
 						[
 							'connector' => $this->connector->getId()->toString(),
@@ -776,32 +775,6 @@ final class Device implements Client
 			);
 		} catch (Throwable $ex) {
 			return Promise\reject(new Exceptions\InvalidState('Request could not be handled', $ex->getCode(), $ex));
-		}
-	}
-
-	/**
-	 * @template T of Entities\Messages\Entity
-	 *
-	 * @param class-string<T> $entity
-	 * @param array<mixed> $data
-	 *
-	 * @return T
-	 *
-	 * @throws Exceptions\Runtime
-	 */
-	private function createEntity(string $entity, array $data): Entities\Messages\Entity
-	{
-		try {
-			$options = new ObjectMapper\Processing\Options();
-			$options->setAllowUnknownFields();
-
-			return $this->entityMapper->process($data, $entity, $options);
-		} catch (ObjectMapper\Exception\InvalidData $ex) {
-			$errorPrinter = new ObjectMapper\Printers\ErrorVisualPrinter(
-				new ObjectMapper\Printers\TypeToStringConverter(),
-			);
-
-			throw new Exceptions\Runtime('Could not map data to entity: ' . $errorPrinter->printError($ex));
 		}
 	}
 

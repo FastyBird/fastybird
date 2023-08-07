@@ -15,8 +15,8 @@
 
 namespace FastyBird\Connector\NsPanel\Controllers;
 
-use DateTimeInterface;
 use FastyBird\Connector\NsPanel;
+use FastyBird\Connector\NsPanel\Consumers;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
@@ -24,27 +24,17 @@ use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Router;
 use FastyBird\Connector\NsPanel\Servers;
 use FastyBird\Connector\NsPanel\Types;
-use FastyBird\Library\Exchange\Entities as ExchangeEntities;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
-use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
-use FastyBird\Module\Devices\States as DevicesStates;
-use FastyBird\Module\Devices\Utilities as DevicesUtilities;
-use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
-use IPub\Phone\Exceptions as PhoneExceptions;
 use Nette\Utils;
-use Orisai\ObjectMapper;
 use Psr\Http\Message;
 use Ramsey\Uuid;
 use RuntimeException;
 use function array_key_exists;
-use function assert;
 use function is_string;
 use function preg_match;
 use function strval;
@@ -63,34 +53,22 @@ final class DirectiveController extends BaseController
 	private const SET_DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME = 'set_device_status.json';
 
 	public function __construct(
-		private readonly bool $useExchange,
+		private readonly Consumers\Messages $consumer,
+		private readonly Helpers\Entity $entityHelper,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
-		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
-		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
-		private readonly DevicesModels\Channels\Properties\PropertiesManager $channelsPropertiesManager,
-		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStateManager,
-		private readonly ExchangeEntities\EntityFactory $entityFactory,
-		private readonly ExchangePublisher\Publisher $publisher,
 		private readonly MetadataSchemas\Validator $schemaValidator,
 	)
 	{
 	}
 
 	/**
-	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\ServerRequestError
 	 * @throws ExchangeExceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
-	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
 	 * @throws MetadataExceptions\MalformedInput
-	 * @throws PhoneExceptions\NoValidCountryException
-	 * @throws PhoneExceptions\NoValidPhoneException
 	 * @throws RuntimeException
-	 * @throws Utils\JsonException
 	 */
 	public function process(
 		Message\ServerRequestInterface $request,
@@ -142,23 +120,17 @@ final class DirectiveController extends BaseController
 		}
 
 		try {
-			$options = new ObjectMapper\Processing\Options();
-			$options->setAllowUnknownFields();
-
-			$requestData = $this->entityMapper->process(
-				Utils\Json::decode(Utils\Json::encode($body), Utils\Json::FORCE_ARRAY),
+			$requestData = $this->entityHelper->create(
 				Entities\API\Request\SetDeviceStatus::class,
-				$options,
+				(array) Utils\Json::decode(Utils\Json::encode($body), Utils\Json::FORCE_ARRAY),
 			);
-		} catch (ObjectMapper\Exception\InvalidData $ex) {
-			$errorPrinter = new ObjectMapper\Printers\ErrorVisualPrinter(
-				new ObjectMapper\Printers\TypeToStringConverter(),
-			);
-
+		} catch (Exceptions\Runtime $ex) {
 			throw new Exceptions\ServerRequestError(
 				$request,
 				Types\ServerStatus::get(Types\ServerStatus::INVALID_DIRECTIVE),
-				'Could not map data to request entity: ' . $errorPrinter->printError($ex),
+				'Could not map data to request entity',
+				$ex->getCode(),
+				$ex,
 			);
 		} catch (Utils\JsonException $ex) {
 			throw new Exceptions\ServerRequestError(
@@ -168,15 +140,9 @@ final class DirectiveController extends BaseController
 				$ex->getCode(),
 				$ex,
 			);
-		} catch (RuntimeException $ex) {
-			throw new Exceptions\ServerRequestError(
-				$request,
-				Types\ServerStatus::get(Types\ServerStatus::INVALID_DIRECTIVE),
-				'Could not read data from request',
-				$ex->getCode(),
-				$ex,
-			);
 		}
+
+		$capabilityStatuses = [];
 
 		foreach ($requestData->getDirective()->getPayload()->getStatuses() as $key => $status) {
 			$stateIdentifier = null;
@@ -189,53 +155,30 @@ final class DirectiveController extends BaseController
 				$stateIdentifier = $matches['identifier'];
 			}
 
-			$findChannelQuery = new Queries\FindChannels();
-			$findChannelQuery->forDevice($device);
-			$findChannelQuery->byIdentifier(
-				Helpers\Name::convertCapabilityToChannel($status->getType(), $stateIdentifier),
-			);
-
-			$channel = $this->channelsRepository->findOneBy(
-				$findChannelQuery,
-				Entities\NsPanelChannel::class,
-			);
-
-			if ($channel !== null) {
-				foreach ($status->getProtocols() as $protocol => $value) {
-					$protocol = Types\Protocol::get($protocol);
-
-					$findChannelPropertiesQuery = new DevicesQueries\FindChannelProperties();
-					$findChannelPropertiesQuery->forChannel($channel);
-					$findChannelPropertiesQuery->byIdentifier(Helpers\Name::convertProtocolToProperty($protocol));
-
-					$property = $this->channelsPropertiesRepository->findOneBy($findChannelPropertiesQuery);
-
-					if ($property === null) {
-						continue;
-					}
-
-					assert(
-						$property instanceof DevicesEntities\Channels\Properties\Dynamic
-						|| $property instanceof DevicesEntities\Channels\Properties\Mapped
-						|| $property instanceof DevicesEntities\Channels\Properties\Variable,
-					);
-
-					$value = Helpers\Transformer::transformValueFromDevice(
-						$property->getDataType(),
-						$property->getFormat(),
-						$value,
-					);
-
-					$this->writeProperty($device, $channel, $property, $value);
-				}
+			foreach ($status->getProtocols() as $protocol => $value) {
+				$capabilityStatuses[] = [
+					'capability' => $status->getType()->getValue(),
+					'protocol' => $protocol,
+					'value' => $value,
+					'identifier' => $stateIdentifier,
+				];
 			}
 		}
 
-		try {
-			$options = new ObjectMapper\Processing\Options();
-			$options->setAllowUnknownFields();
+		$this->consumer->append(
+			$this->entityHelper->create(
+				Entities\Messages\DeviceStatus::class,
+				[
+					'connector' => $device->getConnector()->getId()->toString(),
+					'identifier' => $device->getIdentifier(),
+					'statuses' => $capabilityStatuses,
+				],
+			),
+		);
 
-			$responseData = $this->entityMapper->process(
+		try {
+			$responseData = $this->entityHelper->create(
+				Entities\API\Response\SetDeviceStatus::class,
 				[
 					'event' => [
 						'header' => [
@@ -245,20 +188,16 @@ final class DirectiveController extends BaseController
 						],
 					],
 				],
-				Entities\API\Response\SetDeviceStatus::class,
-				$options,
 			);
 
 			$response->getBody()->write(Utils\Json::encode($responseData->toJson()));
-		} catch (ObjectMapper\Exception\InvalidData $ex) {
-			$errorPrinter = new ObjectMapper\Printers\ErrorVisualPrinter(
-				new ObjectMapper\Printers\TypeToStringConverter(),
-			);
-
+		} catch (Exceptions\Runtime $ex) {
 			throw new Exceptions\ServerRequestError(
 				$request,
 				Types\ServerStatus::get(Types\ServerStatus::INTERNAL_ERROR),
-				'Could not map data to response entity: ' . $errorPrinter->printError($ex),
+				'Could not map data to response entity',
+				$ex->getCode(),
+				$ex,
 			);
 		} catch (Utils\JsonException $ex) {
 			throw new Exceptions\ServerRequestError(
@@ -322,70 +261,6 @@ final class DirectiveController extends BaseController
 		}
 
 		return $device;
-	}
-
-	/**
-	 * @throws DoctrineCrudExceptions\InvalidArgumentException
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws ExchangeExceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws PhoneExceptions\NoValidCountryException
-	 * @throws PhoneExceptions\NoValidPhoneException
-	 * @throws Utils\JsonException
-	 */
-	private function writeProperty(
-		Entities\Devices\ThirdPartyDevice $device,
-		Entities\NsPanelChannel $channel,
-		DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped|DevicesEntities\Channels\Properties\Variable $property,
-		float|int|string|bool|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|DateTimeInterface|null $value,
-	): void
-	{
-		if ($property instanceof DevicesEntities\Channels\Properties\Variable) {
-			$this->channelsPropertiesManager->update(
-				$property,
-				Utils\ArrayHash::from([
-					'value' => $value,
-				]),
-			);
-
-			return;
-		}
-
-		if ($this->useExchange) {
-			$this->publisher->publish(
-				MetadataTypes\ModuleSource::get(
-					MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
-				),
-				MetadataTypes\RoutingKey::get(
-					MetadataTypes\RoutingKey::ROUTE_CHANNEL_PROPERTY_ACTION,
-				),
-				$this->entityFactory->create(
-					Utils\Json::encode([
-						'action' => MetadataTypes\PropertyAction::ACTION_SET,
-						'device' => $device->getId()->toString(),
-						'channel' => $channel->getId()->toString(),
-						'property' => $property->getId()->toString(),
-						'expected_value' => DevicesUtilities\ValueHelper::flattenValue($value),
-					]),
-					MetadataTypes\RoutingKey::get(
-						MetadataTypes\RoutingKey::ROUTE_CHANNEL_PROPERTY_ACTION,
-					),
-				),
-			);
-		} else {
-			$this->channelPropertiesStateManager->writeValue(
-				$property,
-				Utils\ArrayHash::from([
-					DevicesStates\Property::EXPECTED_VALUE_KEY => $value,
-					DevicesStates\Property::PENDING_KEY => true,
-				]),
-			);
-		}
 	}
 
 }

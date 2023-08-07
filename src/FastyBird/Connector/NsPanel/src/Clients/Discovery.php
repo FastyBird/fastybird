@@ -21,6 +21,7 @@ use FastyBird\Connector\NsPanel\API;
 use FastyBird\Connector\NsPanel\Consumers;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
+use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -28,7 +29,6 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use Nette;
-use Orisai\ObjectMapper;
 use React\EventLoop;
 use React\Promise;
 use Throwable;
@@ -57,9 +57,9 @@ final class Discovery implements Evenement\EventEmitterInterface
 		private readonly Entities\NsPanelConnector $connector,
 		private readonly API\LanApiFactory $lanApiApiFactory,
 		private readonly Consumers\Messages $consumer,
+		private readonly Helpers\Entity $entityHelper,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly EventLoop\LoopInterface $eventLoop,
-		private readonly ObjectMapper\Processing\Processor $entityMapper,
 		private readonly NsPanel\Logger $logger,
 	)
 	{
@@ -216,22 +216,19 @@ final class Discovery implements Evenement\EventEmitterInterface
 			}
 
 			try {
-				$options = new ObjectMapper\Processing\Options();
-				$options->setAllowUnknownFields();
-
-				$processedSubDevices[] = $this->entityMapper->process(
+				$processedSubDevices[] = $this->entityHelper->create(
+					Entities\Clients\DiscoveredSubDevice::class,
 					array_merge(
 						$subDevice->toArray(),
 						[
 							'parent' => $gateway->getId()->toString(),
 						],
 					),
-					Entities\Clients\DiscoveredSubDevice::class,
-					$options,
 				);
 
 				$this->consumer->append(
-					$this->entityMapper->process(
+					$this->entityHelper->create(
+						Entities\Messages\DiscoveredSubDevice::class,
 						array_merge(
 							[
 								'connector' => $this->connector->getId()->toString(),
@@ -239,27 +236,21 @@ final class Discovery implements Evenement\EventEmitterInterface
 							],
 							$subDevice->toArray(),
 						),
-						Entities\Messages\DiscoveredSubDevice::class,
-						$options,
 					),
 				);
-			} catch (ObjectMapper\Exception\InvalidData $ex) {
-				$errorPrinter = new ObjectMapper\Printers\ErrorVisualPrinter(
-					new ObjectMapper\Printers\TypeToStringConverter(),
-				);
-
+			} catch (Exceptions\Runtime $ex) {
 				$this->logger->error(
 					'Could not map discovered device to result',
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 						'type' => 'discovery-client',
+						'exception' => BootstrapHelpers\Logger::buildException($ex),
 						'connector' => [
 							'id' => $this->connector->getId()->toString(),
 						],
 						'device' => [
 							'identifier' => $subDevice->getSerialNumber(),
 						],
-						'error' => $errorPrinter->printError($ex),
 					],
 				);
 			}

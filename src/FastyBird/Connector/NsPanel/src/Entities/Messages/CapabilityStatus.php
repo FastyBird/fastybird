@@ -15,12 +15,13 @@
 
 namespace FastyBird\Connector\NsPanel\Entities\Messages;
 
+use Consistence\Enum;
 use DateTimeInterface;
+use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Orisai\ObjectMapper;
-use Ramsey\Uuid;
+use function strval;
 
 /**
  * Device status definition
@@ -34,38 +35,54 @@ final class CapabilityStatus implements Entity
 {
 
 	public function __construct(
-		#[BootstrapObjectMapper\Rules\UuidValue()]
-		private readonly Uuid\UuidInterface $chanel,
-		#[BootstrapObjectMapper\Rules\UuidValue()]
-		private readonly Uuid\UuidInterface $property,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\Capability::class)]
+		private readonly Types\Capability $capability,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\Protocol::class)]
+		private readonly Types\Protocol $protocol,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\IntValue(),
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\BoolValue(),
-			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\ButtonPayload::class),
-			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\SwitchPayload::class),
+			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\MotorCalibrationPayload::class),
+			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\MotorControlPayload::class),
+			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\PowerPayload::class),
+			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\PressPayload::class),
+			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\StartupPayload::class),
+			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\TogglePayload::class),
 			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly float|int|string|bool|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|DateTimeInterface|null $value,
+		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+		private readonly int|float|string|bool|Types\MotorCalibrationPayload|Types\MotorControlPayload|Types\PowerPayload|Types\PressPayload|Types\StartupPayload|Types\TogglePayload|null $value,
+		#[ObjectMapper\Rules\AnyOf([
+			new BootstrapObjectMapper\Rules\UuidValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		private readonly string|null $identifier = null,
 	)
 	{
 	}
 
-	public function getChanel(): Uuid\UuidInterface
+	public function getCapability(): Types\Capability
 	{
-		return $this->chanel;
+		return $this->capability;
 	}
 
-	public function getProperty(): Uuid\UuidInterface
+	public function getProtocol(): Types\Protocol
 	{
-		return $this->property;
+		return $this->protocol;
 	}
 
-	public function getValue(): float|int|string|bool|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|DateTimeInterface|null
+	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+	public function getValue(): int|float|string|bool|Types\MotorCalibrationPayload|Types\MotorControlPayload|Types\PowerPayload|Types\PressPayload|Types\StartupPayload|Types\TogglePayload|null
 	{
 		return $this->value;
+	}
+
+	public function getIdentifier(): string|null
+	{
+		return $this->identifier;
 	}
 
 	/**
@@ -73,10 +90,17 @@ final class CapabilityStatus implements Entity
 	 */
 	public function toArray(): array
 	{
+		$value = $this->getValue();
+
+		if ($value instanceof Enum\Enum) {
+			$value = strval($value->getValue());
+		}
+
 		return [
-			'channel' => $this->getChanel()->toString(),
-			'property' => $this->getProperty()->toString(),
-			'value' => DevicesUtilities\ValueHelper::flattenValue($this->getValue()),
+			'capability' => $this->getCapability()->getValue(),
+			'protocol' => $this->getProtocol()->getValue(),
+			'value' => DevicesUtilities\ValueHelper::flattenValue($value),
+			'identifier' => $this->getIdentifier(),
 		];
 	}
 

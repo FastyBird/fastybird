@@ -19,6 +19,7 @@ use Evenement;
 use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
+use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -27,7 +28,6 @@ use GuzzleHttp;
 use InvalidArgumentException;
 use Nette;
 use Nette\Utils;
-use Orisai\ObjectMapper;
 use Psr\Http\Message;
 use Ramsey\Uuid;
 use React\Promise;
@@ -76,7 +76,7 @@ final class LanApi
 		private readonly string $identifier,
 		private readonly HttpClientFactory $httpClientFactory,
 		private readonly MetadataSchemas\Validator $schemaValidator,
-		private readonly ObjectMapper\Processing\Processor $entityMapper,
+		private readonly Helpers\Entity $entityHelper,
 		private readonly NsPanel\Logger $logger,
 	)
 	{
@@ -858,20 +858,12 @@ final class LanApi
 	private function createEntity(string $entity, Utils\ArrayHash $data): Entities\API\Entity
 	{
 		try {
-			$options = new ObjectMapper\Processing\Options();
-			$options->setAllowUnknownFields();
-
-			return $this->entityMapper->process(
-				Utils\Json::decode(Utils\Json::encode($data), Utils\Json::FORCE_ARRAY),
+			return $this->entityHelper->create(
 				$entity,
-				$options,
+				(array) Utils\Json::decode(Utils\Json::encode($data), Utils\Json::FORCE_ARRAY),
 			);
-		} catch (ObjectMapper\Exception\InvalidData $ex) {
-			$errorPrinter = new ObjectMapper\Printers\ErrorVisualPrinter(
-				new ObjectMapper\Printers\TypeToStringConverter(),
-			);
-
-			throw new Exceptions\LanApiCall('Could not map data to entity: ' . $errorPrinter->printError($ex));
+		} catch (Exceptions\Runtime $ex) {
+			throw new Exceptions\LanApiCall('Could not map data to entity', null, null, $ex->getCode(), $ex);
 		} catch (Utils\JsonException $ex) {
 			throw new Exceptions\LanApiCall(
 				'Could not create entity from response',

@@ -23,7 +23,6 @@ use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Queries;
-use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Connector\NsPanel\Writers;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
@@ -33,10 +32,8 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
-use Orisai\ObjectMapper;
 use React\EventLoop;
 use React\Promise;
 use Throwable;
@@ -67,7 +64,7 @@ final class Gateway implements Client
 
 	private const CMD_STATUS = 'status';
 
-	private const CMD_HEARTBEAT = 'hearbeat';
+	private const CMD_HEARTBEAT = 'heartbeat';
 
 	/** @var array<string> */
 	private array $processedDevices = [];
@@ -81,18 +78,17 @@ final class Gateway implements Client
 
 	public function __construct(
 		protected readonly Helpers\Property $propertyStateHelper,
+		protected readonly Helpers\Entity $entityHelper,
 		protected readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly Entities\NsPanelConnector $connector,
 		private readonly Consumers\Messages $consumer,
 		private readonly Writers\Writer $writer,
 		private readonly NsPanel\Logger $logger,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
-		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
-		private readonly ObjectMapper\Processing\Processor $entityMapper,
 		API\LanApiFactory $lanApiApiFactory,
 	)
 	{
@@ -264,7 +260,7 @@ final class Gateway implements Client
 			|| $gateway->getAccessToken() === null
 		) {
 			$this->consumer->append(
-				$this->createEntity(
+				$this->entityHelper->create(
 					Entities\Messages\DeviceState::class,
 					[
 						'connector' => $this->connector->getId()->toString(),
@@ -302,7 +298,7 @@ final class Gateway implements Client
 					$this->processedDevicesCommands[$gateway->getIdentifier()][self::CMD_HEARTBEAT] = $this->dateTimeFactory->getNow();
 
 					$this->consumer->append(
-						$this->createEntity(
+						$this->entityHelper->create(
 							Entities\Messages\DeviceState::class,
 							[
 								'connector' => $this->connector->getId()->toString(),
@@ -336,7 +332,7 @@ final class Gateway implements Client
 						);
 
 						$this->consumer->append(
-							$this->createEntity(
+							$this->entityHelper->create(
 								Entities\Messages\DeviceState::class,
 								[
 									'connector' => $this->connector->getId()->toString(),
@@ -365,7 +361,7 @@ final class Gateway implements Client
 					);
 
 					$this->consumer->append(
-						$this->createEntity(
+						$this->entityHelper->create(
 							Entities\Messages\DeviceState::class,
 							[
 								'connector' => $this->connector->getId()->toString(),
@@ -410,7 +406,7 @@ final class Gateway implements Client
 			|| $gateway->getAccessToken() === null
 		) {
 			$this->consumer->append(
-				$this->createEntity(
+				$this->entityHelper->create(
 					Entities\Messages\DeviceState::class,
 					[
 						'connector' => $this->connector->getId()->toString(),
@@ -448,7 +444,7 @@ final class Gateway implements Client
 					$this->processedDevicesCommands[$gateway->getIdentifier()][self::CMD_STATUS] = $this->dateTimeFactory->getNow();
 
 					$this->consumer->append(
-						$this->createEntity(
+						$this->entityHelper->create(
 							Entities\Messages\DeviceState::class,
 							[
 								'connector' => $this->connector->getId()->toString(),
@@ -465,7 +461,7 @@ final class Gateway implements Client
 						}
 
 						$this->consumer->append(
-							$this->createEntity(
+							$this->entityHelper->create(
 								Entities\Messages\DeviceState::class,
 								[
 									'connector' => $this->connector->getId()->toString(),
@@ -490,51 +486,18 @@ final class Gateway implements Client
 								$stateIdentifier = $matches['identifier'];
 							}
 
-							$findChannelQuery = new Queries\FindChannels();
-							$findChannelQuery->byDeviceIdentifier($subDevice->getSerialNumber());
-							$findChannelQuery->byIdentifier(
-								Helpers\Name::convertCapabilityToChannel($status->getType(), $stateIdentifier),
-							);
-
-							$channel = $this->channelsRepository->findOneBy(
-								$findChannelQuery,
-								Entities\NsPanelChannel::class,
-							);
-
-							if ($channel !== null) {
-								foreach ($status->getProtocols() as $protocol => $value) {
-									$protocol = Types\Protocol::get($protocol);
-
-									$findChannelPropertiesQuery = new DevicesQueries\FindChannelDynamicProperties();
-									$findChannelPropertiesQuery->forChannel($channel);
-									$findChannelPropertiesQuery->byIdentifier(
-										Helpers\Name::convertProtocolToProperty($protocol),
-									);
-
-									$property = $this->channelsPropertiesRepository->findOneBy(
-										$findChannelPropertiesQuery,
-										DevicesEntities\Channels\Properties\Dynamic::class,
-									);
-
-									if ($property === null) {
-										continue;
-									}
-
-									$capabilityStatuses[] = [
-										'chanel' => $channel->getId()->toString(),
-										'property' => $property->getId()->toString(),
-										'value' => Helpers\Transformer::transformValueFromDevice(
-											$property->getDataType(),
-											$property->getFormat(),
-											$value,
-										),
-									];
-								}
+							foreach ($status->getProtocols() as $protocol => $value) {
+								$capabilityStatuses[] = [
+									'capability' => $status->getType()->getValue(),
+									'protocol' => $protocol,
+									'value' => $value,
+									'identifier' => $stateIdentifier,
+								];
 							}
 						}
 
 						$this->consumer->append(
-							$this->createEntity(
+							$this->entityHelper->create(
 								Entities\Messages\DeviceStatus::class,
 								[
 									'connector' => $this->connector->getId()->toString(),
@@ -569,7 +532,7 @@ final class Gateway implements Client
 						);
 
 						$this->consumer->append(
-							$this->createEntity(
+							$this->entityHelper->create(
 								Entities\Messages\DeviceState::class,
 								[
 									'connector' => $this->connector->getId()->toString(),
@@ -598,7 +561,7 @@ final class Gateway implements Client
 					);
 
 					$this->consumer->append(
-						$this->createEntity(
+						$this->entityHelper->create(
 							Entities\Messages\DeviceState::class,
 							[
 								'connector' => $this->connector->getId()->toString(),
@@ -638,32 +601,6 @@ final class Gateway implements Client
 				$this->handleCommunication();
 			},
 		);
-	}
-
-	/**
-	 * @template T of Entities\Messages\Entity
-	 *
-	 * @param class-string<T> $entity
-	 * @param array<mixed> $data
-	 *
-	 * @return T
-	 *
-	 * @throws Exceptions\Runtime
-	 */
-	private function createEntity(string $entity, array $data): Entities\Messages\Entity
-	{
-		try {
-			$options = new ObjectMapper\Processing\Options();
-			$options->setAllowUnknownFields();
-
-			return $this->entityMapper->process($data, $entity, $options);
-		} catch (ObjectMapper\Exception\InvalidData $ex) {
-			$errorPrinter = new ObjectMapper\Printers\ErrorVisualPrinter(
-				new ObjectMapper\Printers\TypeToStringConverter(),
-			);
-
-			throw new Exceptions\Runtime('Could not map data to entity: ' . $errorPrinter->printError($ex));
-		}
 	}
 
 }

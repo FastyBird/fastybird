@@ -19,7 +19,6 @@ use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Exceptions;
 use Nette;
 use Nette\Utils;
-use Orisai\ObjectMapper;
 use const DIRECTORY_SEPARATOR;
 
 /**
@@ -35,14 +34,7 @@ abstract class BaseController
 
 	use Nette\SmartObject;
 
-	protected ObjectMapper\Processing\Processor $entityMapper;
-
 	protected NsPanel\Logger $logger;
-
-	public function injectEntityMapper(ObjectMapper\Processing\Processor $entityMapper): void
-	{
-		$this->entityMapper = $entityMapper;
-	}
 
 	public function setLogger(NsPanel\Logger $logger): void
 	{
