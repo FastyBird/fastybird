@@ -3507,7 +3507,7 @@ class Devices extends Console\Command\Command
 					if ($step !== null && intval($answer) % $step !== 0) {
 						throw new Exceptions\Runtime(
 							sprintf(
-								$this->translator->translate('//homekit-connector.cmd.base.messages.answerNotValid'),
+								$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 								$answer,
 							),
 						);

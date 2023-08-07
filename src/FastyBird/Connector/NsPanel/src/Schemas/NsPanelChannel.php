@@ -34,7 +34,7 @@ final class NsPanelChannel extends DevicesSchemas\Channels\Channel
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT . '/channel/' . Entities\NsPanelChannel::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL . '/channel/' . Entities\NsPanelChannel::TYPE;
 
 	public function getEntityClass(): string
 	{

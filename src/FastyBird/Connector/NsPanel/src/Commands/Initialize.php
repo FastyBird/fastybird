@@ -489,7 +489,7 @@ class Initialize extends Console\Command\Command
 				1 => $this->translator->translate('//ns-panel-connector.cmd.initialize.answers.mode.device'),
 				2 => $this->translator->translate('//ns-panel-connector.cmd.initialize.answers.mode.both'),
 			],
-			5,
+			2,
 		);
 
 		$question->setErrorMessage(

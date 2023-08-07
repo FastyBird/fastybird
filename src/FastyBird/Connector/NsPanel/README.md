@@ -22,8 +22,8 @@ and is licensed under [Apache2](http://www.apache.org/licenses/LICENSE-2.0).
 
 ### Features:
 
-- Full support for NS Panel sub-devices
-- Full support for third-party devices management through NS Panel
+- Support for Sonoff NS Panel sub-devices, allowing users to connect and control a wide range of Sonoff devices
+- Support for third-party devices management which could be controlled through NS Panels
 - Ability to map multiple devices into a single NS Panel device
 - Sonoff NS Panel Pro Connector management for the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) [devices module](https://github.com/FastyBird/devices-module), allowing users to easily manage and monitor Sonoff NS Panels
 - Advanced device management features, such as controlling power status, measuring energy consumption, and reading sensor data
