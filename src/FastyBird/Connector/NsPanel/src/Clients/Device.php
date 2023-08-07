@@ -117,7 +117,7 @@ final class Device implements Client
 				) {
 					$this->consumer->append(
 						$this->entityHelper->create(
-							Entities\Messages\DeviceState::class,
+							Entities\Messages\DeviceOnline::class,
 							[
 								'connector' => $this->connector->getId()->toString(),
 								'identifier' => $device->getGateway()->getIdentifier(),
@@ -145,7 +145,7 @@ final class Device implements Client
 				$deviceCapabilities = [];
 
 				$capabilities = [];
-				$statuses = [];
+				$state = [];
 				$tags = [];
 
 				foreach ($device->getChannels() as $channel) {
@@ -156,10 +156,10 @@ final class Device implements Client
 					$capabilityName = null;
 
 					if (
-						preg_match(NsPanel\Constants::STATE_NAME_KEY, $channel->getIdentifier(), $matches) === 1
+						preg_match(NsPanel\Constants::CHANNEL_IDENTIFIER, $channel->getIdentifier(), $matches) === 1
 						&& array_key_exists('identifier', $matches)
 					) {
-						$capabilityName = $matches['identifier'];
+						$capabilityName = $matches['key'];
 					}
 
 					$capabilities[] = [
@@ -170,10 +170,10 @@ final class Device implements Client
 						'name' => $capabilityName,
 					];
 
-					$status = $this->mapChannelToStatus($channel);
+					$mapped = $this->mapChannelToState($channel);
 
-					if ($status !== null) {
-						$statuses = array_merge($statuses, $status);
+					if ($mapped !== null) {
+						$state = array_merge($state, $mapped);
 					}
 
 					foreach ($channel->getProperties() as $property) {
@@ -181,7 +181,7 @@ final class Device implements Client
 							$property instanceof DevicesEntities\Channels\Properties\Variable
 							&& is_string($property->getValue())
 							&& preg_match(
-								NsPanel\Constants::TAG_PROPERTY_IDENTIFIER,
+								NsPanel\Constants::PROPERTY_TAG_IDENTIFIER,
 								$property->getIdentifier(),
 								$matches,
 							) === 1
@@ -209,7 +209,7 @@ final class Device implements Client
 				if (array_diff($requiredCapabilities, $deviceCapabilities) === []) {
 					$this->consumer->append(
 						$this->entityHelper->create(
-							Entities\Messages\DeviceState::class,
+							Entities\Messages\DeviceOnline::class,
 							[
 								'connector' => $this->connector->getId()->toString(),
 								'identifier' => $device->getGateway()->getIdentifier(),
@@ -226,7 +226,7 @@ final class Device implements Client
 					'name' => $device->getName() ?? $device->getIdentifier(),
 					'display_category' => $device->getDisplayCategory()->getValue(),
 					'capabilities' => $capabilities,
-					'state' => $statuses,
+					'state' => $state,
 					'tags' => $tags,
 					'manufacturer' => $device->getManufacturer(),
 					'model' => $device->getModel(),
@@ -276,7 +276,7 @@ final class Device implements Client
 							if ($device !== null) {
 								$this->consumer->append(
 									$this->entityHelper->create(
-										Entities\Messages\DeviceState::class,
+										Entities\Messages\DeviceOnline::class,
 										[
 											'connector' => $this->connector->getId()->toString(),
 											'identifier' => $device->getIdentifier(),
@@ -330,7 +330,7 @@ final class Device implements Client
 
 							$this->consumer->append(
 								$this->entityHelper->create(
-									Entities\Messages\DeviceState::class,
+									Entities\Messages\DeviceOnline::class,
 									[
 										'connector' => $this->connector->getId()->toString(),
 										'identifier' => $gateway->getIdentifier(),
@@ -342,7 +342,7 @@ final class Device implements Client
 						} else {
 							$this->consumer->append(
 								$this->entityHelper->create(
-									Entities\Messages\DeviceState::class,
+									Entities\Messages\DeviceOnline::class,
 									[
 										'connector' => $this->connector->getId()->toString(),
 										'identifier' => $gateway->getIdentifier(),
@@ -430,7 +430,7 @@ final class Device implements Client
 
 											$this->consumer->append(
 												$this->entityHelper->create(
-													Entities\Messages\DeviceState::class,
+													Entities\Messages\DeviceOnline::class,
 													[
 														'connector' => $this->connector->getId()->toString(),
 														'identifier' => $gateway->getIdentifier(),
@@ -442,7 +442,7 @@ final class Device implements Client
 										} else {
 											$this->consumer->append(
 												$this->entityHelper->create(
-													Entities\Messages\DeviceState::class,
+													Entities\Messages\DeviceOnline::class,
 													[
 														'connector' => $this->connector->getId()->toString(),
 														'identifier' => $gateway->getIdentifier(),
@@ -491,7 +491,7 @@ final class Device implements Client
 
 							$this->consumer->append(
 								$this->entityHelper->create(
-									Entities\Messages\DeviceState::class,
+									Entities\Messages\DeviceOnline::class,
 									[
 										'connector' => $this->connector->getId()->toString(),
 										'identifier' => $gateway->getIdentifier(),
@@ -503,7 +503,7 @@ final class Device implements Client
 						} else {
 							$this->consumer->append(
 								$this->entityHelper->create(
-									Entities\Messages\DeviceState::class,
+									Entities\Messages\DeviceOnline::class,
 									[
 										'connector' => $this->connector->getId()->toString(),
 										'identifier' => $gateway->getIdentifier(),
@@ -551,7 +551,7 @@ final class Device implements Client
 
 				$this->consumer->append(
 					$this->entityHelper->create(
-						Entities\Messages\DeviceState::class,
+						Entities\Messages\DeviceOnline::class,
 						[
 							'connector' => $this->connector->getId()->toString(),
 							'identifier' => $gateway->getIdentifier(),
@@ -594,7 +594,7 @@ final class Device implements Client
 			) as $device) {
 				$this->consumer->append(
 					$this->entityHelper->create(
-						Entities\Messages\DeviceState::class,
+						Entities\Messages\DeviceOnline::class,
 						[
 							'connector' => $this->connector->getId()->toString(),
 							'identifier' => $device->getIdentifier(),
@@ -614,7 +614,7 @@ final class Device implements Client
 				}
 
 				try {
-					$this->lanApiApi->reportDeviceState(
+					$this->lanApiApi->reportDeviceOnline(
 						$serialNumber,
 						false,
 						$ipAddress,
@@ -690,7 +690,7 @@ final class Device implements Client
 
 			$this->consumer->append(
 				$this->entityHelper->create(
-					Entities\Messages\DeviceState::class,
+					Entities\Messages\DeviceOnline::class,
 					[
 						'connector' => $this->connector->getId()->toString(),
 						'identifier' => $gateway->getIdentifier(),
@@ -725,7 +725,7 @@ final class Device implements Client
 		if ($device->getGateway()->getIpAddress() === null || $device->getGateway()->getAccessToken() === null) {
 			$this->consumer->append(
 				$this->entityHelper->create(
-					Entities\Messages\DeviceState::class,
+					Entities\Messages\DeviceOnline::class,
 					[
 						'connector' => $this->connector->getId()->toString(),
 						'identifier' => $device->getGateway()->getIdentifier(),
@@ -745,7 +745,7 @@ final class Device implements Client
 			if ($serialNumber === null) {
 				$this->consumer->append(
 					$this->entityHelper->create(
-						Entities\Messages\DeviceState::class,
+						Entities\Messages\DeviceOnline::class,
 						[
 							'connector' => $this->connector->getId()->toString(),
 							'identifier' => $device->getIdentifier(),
@@ -760,16 +760,16 @@ final class Device implements Client
 			return Promise\reject(new Exceptions\InvalidState('Could not get device gateway identifier'));
 		}
 
-		$status = $this->mapChannelToStatus($channel);
+		$mapped = $this->mapChannelToState($channel);
 
-		if ($status === null) {
-			return Promise\reject(new Exceptions\InvalidState('Device capability status could not be created'));
+		if ($mapped === null) {
+			return Promise\reject(new Exceptions\InvalidState('Device capability state could not be created'));
 		}
 
 		try {
-			return $this->lanApiApi->reportDeviceStatus(
+			return $this->lanApiApi->reportDeviceState(
 				$serialNumber,
-				$status,
+				$mapped,
 				$device->getGateway()->getIpAddress(),
 				$device->getGateway()->getAccessToken(),
 			);

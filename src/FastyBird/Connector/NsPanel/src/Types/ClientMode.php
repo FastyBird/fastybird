@@ -32,11 +32,11 @@ class ClientMode extends Consistence\Enum\Enum
 	/**
 	 * Define versions
 	 */
-	public const MODE_GATEWAY = 'gateway';
+	public const GATEWAY = 'gateway';
 
-	public const MODE_DEVICE = 'device';
+	public const DEVICE = 'device';
 
-	public const MODE_BOTH = 'both';
+	public const BOTH = 'both';
 
 	public function __toString(): string
 	{

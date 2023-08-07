@@ -26,7 +26,7 @@ use function sprintf;
 use function strval;
 
 /**
- * Third-party device & Sub-device status definition
+ * Third-party device & Sub-device state definition
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Entities
@@ -37,107 +37,107 @@ final class State implements Entity
 {
 
 	/**
-	 * @param array<Entities\API\Statuses\ToggleState> $toggle
+	 * @param array<Entities\API\States\ToggleState> $toggle
 	 */
 	public function __construct(
 		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\MappedObjectValue(Entities\API\Statuses\Battery::class),
+			new ObjectMapper\Rules\MappedObjectValue(Entities\API\States\Battery::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName(Types\Capability::BATTERY)]
-		private readonly Entities\API\Statuses\Battery|null $battery = null,
+		private readonly Entities\API\States\Battery|null $battery = null,
 		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\MappedObjectValue(Entities\API\Statuses\Brightness::class),
+			new ObjectMapper\Rules\MappedObjectValue(Entities\API\States\Brightness::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName(Types\Capability::BRIGHTNESS)]
-		private readonly Entities\API\Statuses\Brightness|null $brightness = null,
+		private readonly Entities\API\States\Brightness|null $brightness = null,
 		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\MappedObjectValue(Entities\API\Statuses\CameraStream::class),
+			new ObjectMapper\Rules\MappedObjectValue(Entities\API\States\CameraStream::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName(Types\Capability::CAMERA_STREAM)]
-		private readonly Entities\API\Statuses\CameraStream|null $cameraStream = null,
+		private readonly Entities\API\States\CameraStream|null $cameraStream = null,
 		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\MappedObjectValue(Entities\API\Statuses\ColorRgb::class),
+			new ObjectMapper\Rules\MappedObjectValue(Entities\API\States\ColorRgb::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName(Types\Capability::COLOR_RGB)]
-		private readonly Entities\API\Statuses\ColorRgb|null $colorRgb = null,
+		private readonly Entities\API\States\ColorRgb|null $colorRgb = null,
 		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\MappedObjectValue(Entities\API\Statuses\ColorTemperature::class),
+			new ObjectMapper\Rules\MappedObjectValue(Entities\API\States\ColorTemperature::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName(Types\Capability::COLOR_TEMPERATURE)]
-		private readonly Entities\API\Statuses\ColorTemperature|null $colorTemperature = null,
+		private readonly Entities\API\States\ColorTemperature|null $colorTemperature = null,
 		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\MappedObjectValue(Entities\API\Statuses\Detect::class),
+			new ObjectMapper\Rules\MappedObjectValue(Entities\API\States\Detect::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName(Types\Capability::DETECT)]
-		private readonly Entities\API\Statuses\Detect|null $detect = null,
+		private readonly Entities\API\States\Detect|null $detect = null,
 		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\MappedObjectValue(Entities\API\Statuses\Humidity::class),
+			new ObjectMapper\Rules\MappedObjectValue(Entities\API\States\Humidity::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName(Types\Capability::HUMIDITY)]
-		private readonly Entities\API\Statuses\Humidity|null $humidity = null,
+		private readonly Entities\API\States\Humidity|null $humidity = null,
 		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\MappedObjectValue(Entities\API\Statuses\MotorCalibration::class),
+			new ObjectMapper\Rules\MappedObjectValue(Entities\API\States\MotorCalibration::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName(Types\Capability::MOTOR_CALIBRATION)]
-		private readonly Entities\API\Statuses\MotorCalibration|null $motorCalibration = null,
+		private readonly Entities\API\States\MotorCalibration|null $motorCalibration = null,
 		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\MappedObjectValue(Entities\API\Statuses\MotorControl::class),
+			new ObjectMapper\Rules\MappedObjectValue(Entities\API\States\MotorControl::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName(Types\Capability::MOTOR_CONTROL)]
-		private readonly Entities\API\Statuses\MotorControl|null $motorControl = null,
+		private readonly Entities\API\States\MotorControl|null $motorControl = null,
 		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\MappedObjectValue(Entities\API\Statuses\MotorReverse::class),
+			new ObjectMapper\Rules\MappedObjectValue(Entities\API\States\MotorReverse::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName(Types\Capability::MOTOR_REVERSE)]
-		private readonly Entities\API\Statuses\MotorReverse|null $motorReverse = null,
+		private readonly Entities\API\States\MotorReverse|null $motorReverse = null,
 		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\MappedObjectValue(Entities\API\Statuses\Percentage::class),
+			new ObjectMapper\Rules\MappedObjectValue(Entities\API\States\Percentage::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName(Types\Capability::PERCENTAGE)]
-		private readonly Entities\API\Statuses\Percentage|null $percentage = null,
+		private readonly Entities\API\States\Percentage|null $percentage = null,
 		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\MappedObjectValue(Entities\API\Statuses\PowerState::class),
+			new ObjectMapper\Rules\MappedObjectValue(Entities\API\States\PowerState::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName(Types\Capability::POWER)]
-		private readonly Entities\API\Statuses\PowerState|null $power = null,
+		private readonly Entities\API\States\PowerState|null $power = null,
 		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\MappedObjectValue(Entities\API\Statuses\Press::class),
+			new ObjectMapper\Rules\MappedObjectValue(Entities\API\States\Press::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName(Types\Capability::PRESS)]
-		private readonly Entities\API\Statuses\Press|null $press = null,
+		private readonly Entities\API\States\Press|null $press = null,
 		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\MappedObjectValue(Entities\API\Statuses\Rssi::class),
+			new ObjectMapper\Rules\MappedObjectValue(Entities\API\States\Rssi::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName(Types\Capability::RSSI)]
-		private readonly Entities\API\Statuses\Rssi|null $rssi = null,
+		private readonly Entities\API\States\Rssi|null $rssi = null,
 		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\MappedObjectValue(Entities\API\Statuses\Startup::class),
+			new ObjectMapper\Rules\MappedObjectValue(Entities\API\States\Startup::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName(Types\Capability::STARTUP)]
-		private readonly Entities\API\Statuses\Startup|null $startup = null,
+		private readonly Entities\API\States\Startup|null $startup = null,
 		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\MappedObjectValue(Entities\API\Statuses\Temperature::class),
+			new ObjectMapper\Rules\MappedObjectValue(Entities\API\States\Temperature::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName(Types\Capability::TEMPERATURE)]
-		private readonly Entities\API\Statuses\Temperature|null $temperature = null,
+		private readonly Entities\API\States\Temperature|null $temperature = null,
 		#[ObjectMapper\Rules\ArrayOf(
-			item: new ObjectMapper\Rules\MappedObjectValue(Entities\API\Statuses\ToggleState::class),
+			item: new ObjectMapper\Rules\MappedObjectValue(Entities\API\States\ToggleState::class),
 			key: new ObjectMapper\Rules\AnyOf([
 				new ObjectMapper\Rules\StringValue(),
 				new ObjectMapper\Rules\IntValue(),
@@ -150,11 +150,11 @@ final class State implements Entity
 	}
 
 	/**
-	 * @return array<string, Entities\API\Statuses\Status>
+	 * @return array<string, Entities\API\States\State>
 	 */
-	public function getStatuses(): array
+	public function getStates(): array
 	{
-		$statuses = [];
+		$states = [];
 
 		foreach (Types\Capability::getAvailableValues() as $capability) {
 			assert(is_string($capability));
@@ -162,110 +162,110 @@ final class State implements Entity
 			switch ($capability) {
 				case Types\Capability::POWER:
 					if ($this->power !== null) {
-						$statuses[$capability] = $this->power;
+						$states[$capability] = $this->power;
 					}
 
 					break;
 				case Types\Capability::TOGGLE:
-					foreach ($this->toggle as $identifier => $status) {
-						$statuses[sprintf('%s_%s', $capability, strval($identifier))] = $status;
+					foreach ($this->toggle as $identifier => $state) {
+						$states[sprintf('%s_%s', $capability, strval($identifier))] = $state;
 					}
 
 					break;
 				case Types\Capability::BRIGHTNESS:
 					if ($this->brightness !== null) {
-						$statuses[$capability] = $this->brightness;
+						$states[$capability] = $this->brightness;
 					}
 
 					break;
 				case Types\Capability::COLOR_TEMPERATURE:
 					if ($this->colorTemperature !== null) {
-						$statuses[$capability] = $this->colorTemperature;
+						$states[$capability] = $this->colorTemperature;
 					}
 
 					break;
 				case Types\Capability::COLOR_RGB:
 					if ($this->colorRgb !== null) {
-						$statuses[$capability] = $this->colorRgb;
+						$states[$capability] = $this->colorRgb;
 					}
 
 					break;
 				case Types\Capability::PERCENTAGE:
 					if ($this->percentage !== null) {
-						$statuses[$capability] = $this->percentage;
+						$states[$capability] = $this->percentage;
 					}
 
 					break;
 				case Types\Capability::MOTOR_CONTROL:
 					if ($this->motorControl !== null) {
-						$statuses[$capability] = $this->motorControl;
+						$states[$capability] = $this->motorControl;
 					}
 
 					break;
 				case Types\Capability::MOTOR_REVERSE:
 					if ($this->motorReverse !== null) {
-						$statuses[$capability] = $this->motorReverse;
+						$states[$capability] = $this->motorReverse;
 					}
 
 					break;
 				case Types\Capability::MOTOR_CALIBRATION:
 					if ($this->motorCalibration !== null) {
-						$statuses[$capability] = $this->motorCalibration;
+						$states[$capability] = $this->motorCalibration;
 					}
 
 					break;
 				case Types\Capability::STARTUP:
 					if ($this->startup !== null) {
-						$statuses[$capability] = $this->startup;
+						$states[$capability] = $this->startup;
 					}
 
 					break;
 				case Types\Capability::CAMERA_STREAM:
 					if ($this->cameraStream !== null) {
-						$statuses[$capability] = $this->cameraStream;
+						$states[$capability] = $this->cameraStream;
 					}
 
 					break;
 				case Types\Capability::DETECT:
 					if ($this->detect !== null) {
-						$statuses[$capability] = $this->detect;
+						$states[$capability] = $this->detect;
 					}
 
 					break;
 				case Types\Capability::HUMIDITY:
 					if ($this->humidity !== null) {
-						$statuses[$capability] = $this->humidity;
+						$states[$capability] = $this->humidity;
 					}
 
 					break;
 				case Types\Capability::TEMPERATURE:
 					if ($this->temperature !== null) {
-						$statuses[$capability] = $this->temperature;
+						$states[$capability] = $this->temperature;
 					}
 
 					break;
 				case Types\Capability::BATTERY:
 					if ($this->battery !== null) {
-						$statuses[$capability] = $this->battery;
+						$states[$capability] = $this->battery;
 					}
 
 					break;
 				case Types\Capability::PRESS:
 					if ($this->press !== null) {
-						$statuses[$capability] = $this->press;
+						$states[$capability] = $this->press;
 					}
 
 					break;
 				case Types\Capability::RSSI:
 					if ($this->rssi !== null) {
-						$statuses[$capability] = $this->rssi;
+						$states[$capability] = $this->rssi;
 					}
 
 					break;
 			}
 		}
 
-		return $statuses;
+		return $states;
 	}
 
 	/**
@@ -274,8 +274,8 @@ final class State implements Entity
 	public function toArray(): array
 	{
 		return array_map(
-			static fn (Entities\API\Statuses\Status $status): array => $status->toArray(),
-			$this->getStatuses(),
+			static fn (Entities\API\States\State $state): array => $state->toArray(),
+			$this->getStates(),
 		);
 	}
 
@@ -297,8 +297,8 @@ final class State implements Entity
 					if ($this->toggle !== []) {
 						$json->{$capability} = new stdClass();
 
-						foreach ($this->toggle as $name => $status) {
-							$json->{$capability}->{$name} = $status->toJson();
+						foreach ($this->toggle as $name => $state) {
+							$json->{$capability}->{$name} = $state->toJson();
 						}
 					}
 

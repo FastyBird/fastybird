@@ -289,8 +289,8 @@ class Devices extends Console\Command\Command
 
 			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
-				'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS,
-				'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS),
+				'identifier' => Types\DevicePropertyIdentifier::IP_ADDRESS,
+				'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::IP_ADDRESS),
 				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 				'value' => $panelInfo->getIpAddress(),
 				'device' => $device,
@@ -298,8 +298,8 @@ class Devices extends Console\Command\Command
 
 			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
-				'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_DOMAIN,
-				'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_DOMAIN),
+				'identifier' => Types\DevicePropertyIdentifier::DOMAIN,
+				'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::DOMAIN),
 				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 				'value' => $panelInfo->getDomain(),
 				'device' => $device,
@@ -307,8 +307,8 @@ class Devices extends Console\Command\Command
 
 			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
-				'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_MAC_ADDRESS,
-				'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_MAC_ADDRESS),
+				'identifier' => Types\DevicePropertyIdentifier::MAC_ADDRESS,
+				'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::MAC_ADDRESS),
 				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 				'value' => $panelInfo->getMacAddress(),
 				'device' => $device,
@@ -316,8 +316,8 @@ class Devices extends Console\Command\Command
 
 			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
-				'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_VERSION,
-				'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_VERSION),
+				'identifier' => Types\DevicePropertyIdentifier::FIRMWARE_VERSION,
+				'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::FIRMWARE_VERSION),
 				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 				'value' => $panelInfo->getFirmwareVersion(),
 				'device' => $device,
@@ -325,8 +325,8 @@ class Devices extends Console\Command\Command
 
 			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
-				'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_ACCESS_TOKEN,
-				'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_ACCESS_TOKEN),
+				'identifier' => Types\DevicePropertyIdentifier::ACCESS_TOKEN,
+				'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::ACCESS_TOKEN),
 				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 				'value' => $accessToken->getData()->getAccessToken(),
 				'device' => $device,
@@ -403,7 +403,7 @@ class Devices extends Console\Command\Command
 		/** @var DevicesQueries\FindDeviceProperties<DevicesEntities\Devices\Properties\Variable> $findDevicePropertyQuery */
 		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($gateway);
-		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS);
+		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IP_ADDRESS);
 
 		$ipAddressProperty = $this->devicesPropertiesRepository->findOneBy(
 			$findDevicePropertyQuery,
@@ -413,7 +413,7 @@ class Devices extends Console\Command\Command
 		/** @var DevicesQueries\FindDeviceProperties<DevicesEntities\Devices\Properties\Variable> $findDevicePropertyQuery */
 		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($gateway);
-		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IDENTIFIER_DOMAIN);
+		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::DOMAIN);
 
 		$domainProperty = $this->devicesPropertiesRepository->findOneBy(
 			$findDevicePropertyQuery,
@@ -423,7 +423,7 @@ class Devices extends Console\Command\Command
 		/** @var DevicesQueries\FindDeviceProperties<DevicesEntities\Devices\Properties\Variable> $findDevicePropertyQuery */
 		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($gateway);
-		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IDENTIFIER_MAC_ADDRESS);
+		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::MAC_ADDRESS);
 
 		$macAddressProperty = $this->devicesPropertiesRepository->findOneBy(
 			$findDevicePropertyQuery,
@@ -433,7 +433,7 @@ class Devices extends Console\Command\Command
 		/** @var DevicesQueries\FindDeviceProperties<DevicesEntities\Devices\Properties\Variable> $findDevicePropertyQuery */
 		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($gateway);
-		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_VERSION);
+		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::FIRMWARE_VERSION);
 
 		$firmwareVersionProperty = $this->devicesPropertiesRepository->findOneBy(
 			$findDevicePropertyQuery,
@@ -508,7 +508,7 @@ class Devices extends Console\Command\Command
 		/** @var DevicesQueries\FindDeviceProperties<DevicesEntities\Devices\Properties\Variable> $findDevicePropertyQuery */
 		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($gateway);
-		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IDENTIFIER_ACCESS_TOKEN);
+		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::ACCESS_TOKEN);
 
 		$accessTokenProperty = $this->devicesPropertiesRepository->findOneBy(
 			$findDevicePropertyQuery,
@@ -526,8 +526,8 @@ class Devices extends Console\Command\Command
 			if ($ipAddressProperty === null) {
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
-					'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS,
-					'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS),
+					'identifier' => Types\DevicePropertyIdentifier::IP_ADDRESS,
+					'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::IP_ADDRESS),
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 					'value' => $panelInfo->getIpAddress(),
 					'device' => $gateway,
@@ -541,8 +541,8 @@ class Devices extends Console\Command\Command
 			if ($domainProperty === null) {
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
-					'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_DOMAIN,
-					'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_DOMAIN),
+					'identifier' => Types\DevicePropertyIdentifier::DOMAIN,
+					'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::DOMAIN),
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 					'value' => $panelInfo->getDomain(),
 					'device' => $gateway,
@@ -556,8 +556,8 @@ class Devices extends Console\Command\Command
 			if ($macAddressProperty === null) {
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
-					'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_MAC_ADDRESS,
-					'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_MAC_ADDRESS),
+					'identifier' => Types\DevicePropertyIdentifier::MAC_ADDRESS,
+					'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::MAC_ADDRESS),
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 					'value' => $panelInfo->getMacAddress(),
 					'device' => $gateway,
@@ -571,8 +571,8 @@ class Devices extends Console\Command\Command
 			if ($firmwareVersionProperty === null) {
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
-					'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_VERSION,
-					'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_VERSION),
+					'identifier' => Types\DevicePropertyIdentifier::FIRMWARE_VERSION,
+					'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::FIRMWARE_VERSION),
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 					'value' => $panelInfo->getFirmwareVersion(),
 					'device' => $gateway,
@@ -587,8 +587,8 @@ class Devices extends Console\Command\Command
 				if ($accessTokenProperty === null) {
 					$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Devices\Properties\Variable::class,
-						'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_ACCESS_TOKEN,
-						'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_ACCESS_TOKEN),
+						'identifier' => Types\DevicePropertyIdentifier::ACCESS_TOKEN,
+						'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::ACCESS_TOKEN),
 						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 						'value' => $accessToken->getData()->getAccessToken(),
 						'device' => $gateway,
@@ -728,7 +728,7 @@ class Devices extends Console\Command\Command
 			/** @var DevicesQueries\FindDeviceProperties<DevicesEntities\Devices\Properties\Variable> $findDevicePropertyQuery */
 			$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
 			$findDevicePropertyQuery->forDevice($device);
-			$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS);
+			$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IP_ADDRESS);
 
 			$ipAddressProperty = $this->devicesPropertiesRepository->findOneBy(
 				$findDevicePropertyQuery,
@@ -871,8 +871,8 @@ class Devices extends Console\Command\Command
 
 			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
-				'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_CATEGORY,
-				'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_CATEGORY),
+				'identifier' => Types\DevicePropertyIdentifier::CATEGORY,
+				'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::CATEGORY),
 				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 				'value' => $category->getValue(),
 				'device' => $device,
@@ -1281,7 +1281,7 @@ class Devices extends Console\Command\Command
 			// Start transaction connection to the database
 			$this->getOrmConnection()->beginTransaction();
 
-			preg_match(Entities\NsPanelChannel::CAPABILITY_IDENTIFIER, $identifier, $matches);
+			preg_match(NsPanel\Constants::CHANNEL_IDENTIFIER, $identifier, $matches);
 
 			$channel = $this->channelsManager->create(Utils\ArrayHash::from([
 				'entity' => Entities\NsPanelChannel::class,
@@ -3414,19 +3414,13 @@ class Devices extends Console\Command\Command
 		}
 
 		$minValue = $protocolMetadata->offsetExists('min_value')
-			? floatval(
-				$protocolMetadata->offsetGet('min_value'),
-			)
+			? floatval($protocolMetadata->offsetGet('min_value'))
 			: null;
 		$maxValue = $protocolMetadata->offsetExists('max_value')
-			? floatval(
-				$protocolMetadata->offsetGet('max_value'),
-			)
+			? floatval($protocolMetadata->offsetGet('max_value'))
 			: null;
 		$step = $protocolMetadata->offsetExists('step_value')
-			? floatval(
-				$protocolMetadata->offsetGet('step_value'),
-			)
+			? floatval($protocolMetadata->offsetGet('step_value'))
 			: null;
 
 		$question = new Console\Question\Question(

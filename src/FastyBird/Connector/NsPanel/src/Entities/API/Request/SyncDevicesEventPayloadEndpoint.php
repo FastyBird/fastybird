@@ -108,11 +108,11 @@ final class SyncDevicesEventPayloadEndpoint implements Entities\API\Entity
 	}
 
 	/**
-	 * @return array<Entities\API\Statuses\Status>
+	 * @return array<Entities\API\States\State>
 	 */
-	public function getStatuses(): array
+	public function getState(): array
 	{
-		return $this->state->getStatuses();
+		return $this->state->getStates();
 	}
 
 	/**

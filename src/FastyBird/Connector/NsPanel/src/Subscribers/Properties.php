@@ -110,7 +110,7 @@ final class Properties implements Common\EventSubscriber
 	{
 		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($device);
-		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IDENTIFIER_STATE);
+		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::STATE);
 
 		$stateProperty = $this->devicesPropertiesRepository->findOneBy($findDevicePropertyQuery);
 
@@ -145,8 +145,8 @@ final class Properties implements Common\EventSubscriber
 			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 				'device' => $device,
 				'entity' => DevicesEntities\Devices\Properties\Dynamic::class,
-				'identifier' => Types\DevicePropertyIdentifier::IDENTIFIER_STATE,
-				'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_STATE),
+				'identifier' => Types\DevicePropertyIdentifier::STATE,
+				'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::STATE),
 				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
 				'unit' => null,
 				'format' => $enumValues,

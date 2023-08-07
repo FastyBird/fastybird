@@ -32,7 +32,7 @@ class ServerStatus extends Consistence\Enum\Enum
 	/**
 	 * Define statuses
 	 */
-	public const STATUS_SUCCESS = 0;
+	public const SUCCESS = 0;
 
 	public const ENDPOINT_UNREACHABLE = 'ENDPOINT_UNREACHABLE';
 

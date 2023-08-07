@@ -32,7 +32,7 @@ use function is_string;
 class SubDevice extends Entities\NsPanelDevice
 {
 
-	public const DEVICE_TYPE = 'ns-panel-sub-device';
+	public const TYPE = 'ns-panel-sub-device';
 
 	/**
 	 * @throws Exceptions\InvalidState
@@ -52,12 +52,12 @@ class SubDevice extends Entities\NsPanelDevice
 
 	public function getType(): string
 	{
-		return self::DEVICE_TYPE;
+		return self::TYPE;
 	}
 
 	public function getDiscriminatorName(): string
 	{
-		return self::DEVICE_TYPE;
+		return self::TYPE;
 	}
 
 	/**
@@ -96,7 +96,7 @@ class SubDevice extends Entities\NsPanelDevice
 		$property = $this->properties
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::IDENTIFIER_CATEGORY
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::CATEGORY
 			)
 			->first();
 
@@ -121,7 +121,7 @@ class SubDevice extends Entities\NsPanelDevice
 		$property = $this->properties
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::IDENTIFIER_MANUFACTURER
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::MANUFACTURER
 			)
 			->first();
 
@@ -145,7 +145,7 @@ class SubDevice extends Entities\NsPanelDevice
 		$property = $this->properties
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::IDENTIFIER_MODEL
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::MODEL
 			)
 			->first();
 

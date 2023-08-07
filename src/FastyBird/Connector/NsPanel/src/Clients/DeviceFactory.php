@@ -29,7 +29,7 @@ use FastyBird\Connector\NsPanel\Types;
 interface DeviceFactory extends ClientFactory
 {
 
-	public const MODE = Types\ClientMode::MODE_DEVICE;
+	public const MODE = Types\ClientMode::DEVICE;
 
 	public function create(Entities\NsPanelConnector $connector): Device;
 

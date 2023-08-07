@@ -31,20 +31,18 @@ use function is_string;
 class Gateway extends Entities\NsPanelDevice
 {
 
-	public const DEVICE_TYPE = 'ns-panel-gateway';
+	public const TYPE = 'ns-panel-gateway';
 
-	public const DEFAULT_PORT = 44_000;
-
-	private const STATUS_READING_DELAY = 120.0;
+	private const STATE_READING_DELAY = 120.0;
 
 	public function getType(): string
 	{
-		return self::DEVICE_TYPE;
+		return self::TYPE;
 	}
 
 	public function getDiscriminatorName(): string
 	{
-		return self::DEVICE_TYPE;
+		return self::TYPE;
 	}
 
 	/**
@@ -57,7 +55,7 @@ class Gateway extends Entities\NsPanelDevice
 		$property = $this->properties
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::IP_ADDRESS
 			)
 			->first();
 
@@ -81,7 +79,7 @@ class Gateway extends Entities\NsPanelDevice
 		$property = $this->properties
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::IDENTIFIER_DOMAIN
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::DOMAIN
 			)
 			->first();
 
@@ -105,7 +103,7 @@ class Gateway extends Entities\NsPanelDevice
 		$property = $this->properties
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::IDENTIFIER_ACCESS_TOKEN
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::ACCESS_TOKEN
 			)
 			->first();
 
@@ -129,7 +127,7 @@ class Gateway extends Entities\NsPanelDevice
 		$property = $this->properties
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::IDENTIFIER_MAC_ADDRESS
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::MAC_ADDRESS
 			)
 			->first();
 
@@ -153,7 +151,7 @@ class Gateway extends Entities\NsPanelDevice
 		$property = $this->properties
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_VERSION
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::FIRMWARE_VERSION
 			)
 			->first();
 
@@ -172,12 +170,12 @@ class Gateway extends Entities\NsPanelDevice
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getStatusReadingDelay(): float
+	public function getStateReadingDelay(): float
 	{
 		$property = $this->properties
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::IDENTIFIER_STATUS_READING_DELAY
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::STATE_READING_DELAY
 			)
 			->first();
 
@@ -188,7 +186,7 @@ class Gateway extends Entities\NsPanelDevice
 			return floatval($property->getValue());
 		}
 
-		return self::STATUS_READING_DELAY;
+		return self::STATE_READING_DELAY;
 	}
 
 }

@@ -33,9 +33,9 @@ class ConnectorPropertyIdentifier extends Consistence\Enum\Enum
 	/**
 	 * Define connector properties identifiers
 	 */
-	public const IDENTIFIER_PORT = MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_PORT;
+	public const PORT = MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_PORT;
 
-	public const IDENTIFIER_CLIENT_MODE = 'mode';
+	public const CLIENT_MODE = 'mode';
 
 	public function getValue(): string
 	{

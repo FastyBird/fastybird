@@ -50,7 +50,7 @@ use function strval;
 final class DirectiveController extends BaseController
 {
 
-	private const SET_DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME = 'set_device_status.json';
+	private const SET_DEVICE_STATE_MESSAGE_SCHEMA_FILENAME = 'set_device_state.json';
 
 	public function __construct(
 		private readonly Consumers\Messages $consumer,
@@ -89,6 +89,18 @@ final class DirectiveController extends BaseController
 			],
 		);
 
+		$connectorId = strval($request->getAttribute(Servers\Http::REQUEST_ATTRIBUTE_CONNECTOR));
+
+		if (!Uuid\Uuid::isValid($connectorId)) {
+			throw new Exceptions\ServerRequestError(
+				$request,
+				Types\ServerStatus::get(Types\ServerStatus::INTERNAL_ERROR),
+				'Connector id could not be determined',
+			);
+		}
+
+		$connectorId = Uuid\Uuid::fromString($connectorId);
+
 		$request->getBody()->rewind();
 
 		$body = $request->getBody()->getContents();
@@ -99,7 +111,7 @@ final class DirectiveController extends BaseController
 		try {
 			$body = $this->schemaValidator->validate(
 				$body,
-				$this->getSchema(self::SET_DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME),
+				$this->getSchema(self::SET_DEVICE_STATE_MESSAGE_SCHEMA_FILENAME),
 			);
 		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
 			throw new Exceptions\ServerRequestError(
@@ -121,7 +133,7 @@ final class DirectiveController extends BaseController
 
 		try {
 			$requestData = $this->entityHelper->create(
-				Entities\API\Request\SetDeviceStatus::class,
+				Entities\API\Request\SetDeviceState::class,
 				(array) Utils\Json::decode(Utils\Json::encode($body), Utils\Json::FORCE_ARRAY),
 			);
 		} catch (Exceptions\Runtime $ex) {
@@ -142,43 +154,43 @@ final class DirectiveController extends BaseController
 			);
 		}
 
-		$capabilityStatuses = [];
+		$state = [];
 
-		foreach ($requestData->getDirective()->getPayload()->getStatuses() as $key => $status) {
-			$stateIdentifier = null;
+		foreach ($requestData->getDirective()->getPayload()->getState() as $key => $item) {
+			$identifier = null;
 
 			if (
 				is_string($key)
 				&& preg_match(NsPanel\Constants::STATE_NAME_KEY, $key, $matches) === 1
 				&& array_key_exists('identifier', $matches)
 			) {
-				$stateIdentifier = $matches['identifier'];
+				$identifier = $matches['identifier'];
 			}
 
-			foreach ($status->getProtocols() as $protocol => $value) {
-				$capabilityStatuses[] = [
-					'capability' => $status->getType()->getValue(),
+			foreach ($item->getProtocols() as $protocol => $value) {
+				$state[] = [
+					'capability' => $item->getType()->getValue(),
 					'protocol' => $protocol,
 					'value' => $value,
-					'identifier' => $stateIdentifier,
+					'identifier' => $identifier,
 				];
 			}
 		}
 
 		$this->consumer->append(
 			$this->entityHelper->create(
-				Entities\Messages\DeviceStatus::class,
+				Entities\Messages\DeviceState::class,
 				[
-					'connector' => $device->getConnector()->getId()->toString(),
+					'connector' => $connectorId->toString(),
 					'identifier' => $device->getIdentifier(),
-					'statuses' => $capabilityStatuses,
+					'state' => $state,
 				],
 			),
 		);
 
 		try {
 			$responseData = $this->entityHelper->create(
-				Entities\API\Response\SetDeviceStatus::class,
+				Entities\API\Response\SetDeviceState::class,
 				[
 					'event' => [
 						'header' => [

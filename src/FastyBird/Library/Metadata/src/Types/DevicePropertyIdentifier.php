@@ -76,7 +76,7 @@ class DevicePropertyIdentifier extends Consistence\Enum\Enum
 
 	public const IDENTIFIER_SERIAL_NUMBER = PropertyIdentifier::IDENTIFIER_SERIAL_NUMBER;
 
-	public const IDENTIFIER_STATUS_READING_DELAY = PropertyIdentifier::IDENTIFIER_STATUS_READING_DELAY;
+	public const IDENTIFIER_STATE_READING_DELAY = PropertyIdentifier::IDENTIFIER_STATE_READING_DELAY;
 
 	public function __toString(): string
 	{

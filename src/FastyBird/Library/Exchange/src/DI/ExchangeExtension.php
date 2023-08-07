@@ -35,7 +35,7 @@ use function is_bool;
 class ExchangeExtension extends DI\CompilerExtension
 {
 
-	public const CONSUMER_STATUS = 'consumer_status';
+	public const CONSUMER_STATE = 'consumer_state';
 
 	public static function register(
 		BootstrapBoot\Configurator $config,
@@ -97,7 +97,7 @@ class ExchangeExtension extends DI\CompilerExtension
 					// Container is not allowed to be autowired
 					$consumerService->setAutowired(false);
 
-					$consumerStatus = $consumerService->getTag(self::CONSUMER_STATUS);
+					$consumerStatus = $consumerService->getTag(self::CONSUMER_STATE);
 
 					$consumerProxyService->addSetup('?->register(?, ?)', [
 						'@self',

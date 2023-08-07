@@ -88,7 +88,7 @@ class PropertyIdentifier extends Consistence\Enum\Enum
 
 	public const IDENTIFIER_ACCESS_TOKEN = 'access_token';
 
-	public const IDENTIFIER_STATUS_READING_DELAY = 'status_reading_delay';
+	public const IDENTIFIER_STATE_READING_DELAY = 'state_reading_delay';
 
 	public function __toString(): string
 	{

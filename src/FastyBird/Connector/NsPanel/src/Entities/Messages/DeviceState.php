@@ -15,9 +15,9 @@
 
 namespace FastyBird\Connector\NsPanel\Entities\Messages;
 
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
+use function array_map;
 use function array_merge;
 
 /**
@@ -31,17 +31,25 @@ use function array_merge;
 final class DeviceState extends Device implements Entity
 {
 
+	/**
+	 * @param array<CapabilityState> $state
+	 */
 	public function __construct(
 		Uuid\UuidInterface $connector,
 		string $identifier,
-		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\ConnectionState::class)]
-		private readonly MetadataTypes\ConnectionState $state,
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(CapabilityState::class),
+		)]
+		private readonly array $state,
 	)
 	{
 		parent::__construct($connector, $identifier);
 	}
 
-	public function getState(): MetadataTypes\ConnectionState
+	/**
+	 * @return array<CapabilityState>
+	 */
+	public function getState(): array
 	{
 		return $this->state;
 	}
@@ -52,7 +60,10 @@ final class DeviceState extends Device implements Entity
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), [
-			'state' => $this->getState()->getValue(),
+			'state' => array_map(
+				static fn (CapabilityState $state): array => $state->toArray(),
+				$this->getState(),
+			),
 		]);
 	}
 

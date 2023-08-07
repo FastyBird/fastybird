@@ -86,7 +86,7 @@ final class Connector implements DevicesConnectors\Connector
 		$mode = $this->connector->getClientMode();
 
 		$this->logger->debug(
-			'Starting NS Panel connector processing',
+			'Starting NS Panel connector service',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 				'type' => 'connector',
@@ -113,8 +113,8 @@ final class Connector implements DevicesConnectors\Connector
 		}
 
 		if (
-			$this->connector->getClientMode()->equalsValue(NsPanel\Types\ClientMode::MODE_BOTH)
-			|| $this->connector->getClientMode()->equalsValue(NsPanel\Types\ClientMode::MODE_DEVICE)
+			$this->connector->getClientMode()->equalsValue(NsPanel\Types\ClientMode::BOTH)
+			|| $this->connector->getClientMode()->equalsValue(NsPanel\Types\ClientMode::DEVICE)
 		) {
 			$this->server = $this->serverFactory->create($this->connector);
 			$this->server->connect();
@@ -128,7 +128,7 @@ final class Connector implements DevicesConnectors\Connector
 		);
 
 		$this->logger->debug(
-			'Connector has been started',
+			'NS Panel connector service has been started',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 				'type' => 'connector',
@@ -182,7 +182,7 @@ final class Connector implements DevicesConnectors\Connector
 		);
 
 		$this->logger->debug(
-			'Connector discovery has been started',
+			'NS Panel connector discovery has been started',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 				'type' => 'connector',
@@ -206,7 +206,7 @@ final class Connector implements DevicesConnectors\Connector
 		}
 
 		$this->logger->debug(
-			'Connector has been terminated',
+			'NS Panel connector has been terminated',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 				'type' => 'connector',

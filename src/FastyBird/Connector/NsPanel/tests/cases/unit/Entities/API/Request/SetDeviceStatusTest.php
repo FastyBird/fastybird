@@ -32,11 +32,11 @@ final class SetDeviceStatusTest extends BaseTestCase
 		$entity = $processor->process(
 			Utils\Json::decode(
 				Utils\FileSystem::read(
-					__DIR__ . '/../../../../../fixtures/Entities/API/Request/set_device_status.json',
+					__DIR__ . '/../../../../../fixtures/Entities/API/Request/set_device_state.json',
 				),
 				Utils\Json::FORCE_ARRAY,
 			),
-			Entities\API\Request\SetDeviceStatus::class,
+			Entities\API\Request\SetDeviceState::class,
 		);
 
 		self::assertSame(

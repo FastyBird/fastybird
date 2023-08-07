@@ -108,7 +108,7 @@ class NsPanelExtension extends DI\CompilerExtension
 					'logger' => $logger,
 				])
 				->setAutowired(false)
-				->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATUS, false);
+				->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATE, false);
 		} elseif ($configuration->writer === Writers\Periodic::NAME) {
 			$writer = $builder->addDefinition($this->prefix('writers.periodic'), new DI\Definitions\ServiceDefinition())
 				->setType(Writers\Periodic::class)
@@ -164,20 +164,20 @@ class NsPanelExtension extends DI\CompilerExtension
 			]);
 
 		$builder->addDefinition(
-			$this->prefix('consumers.messages.deviceStatus'),
+			$this->prefix('consumers.messages.deviceState'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Consumers\Messages\DeviceStatus::class)
+			->setType(Consumers\Messages\DeviceState::class)
 			->setArguments([
 				'useExchange' => $configuration->writer === Writers\Exchange::NAME,
 				'logger' => $logger,
 			]);
 
 		$builder->addDefinition(
-			$this->prefix('consumers.messages.deviceState'),
+			$this->prefix('consumers.messages.deviceOnline'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Consumers\Messages\DeviceState::class)
+			->setType(Consumers\Messages\DeviceOnline::class)
 			->setArguments([
 				'logger' => $logger,
 			]);
@@ -200,7 +200,10 @@ class NsPanelExtension extends DI\CompilerExtension
 				'logger' => $logger,
 			]);
 
-		$builder->addDefinition($this->prefix('consumers.messages'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition(
+			$this->prefix('consumers.messages'),
+			new DI\Definitions\ServiceDefinition(),
+		)
 			->setType(Consumers\Messages::class)
 			->setArguments([
 				'consumers' => $builder->findByType(Consumers\Consumer::class),
@@ -213,7 +216,10 @@ class NsPanelExtension extends DI\CompilerExtension
 		$builder->addDefinition($this->prefix('subscribers.controls'), new DI\Definitions\ServiceDefinition())
 			->setType(Subscribers\Controls::class);
 
-		$builder->addDefinition($this->prefix('schemas.connector.nsPanel'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition(
+			$this->prefix('schemas.connector.nsPanel'),
+			new DI\Definitions\ServiceDefinition(),
+		)
 			->setType(Schemas\NsPanelConnector::class);
 
 		$builder->addDefinition(
@@ -240,7 +246,10 @@ class NsPanelExtension extends DI\CompilerExtension
 		)
 			->setType(Schemas\NsPanelChannel::class);
 
-		$builder->addDefinition($this->prefix('hydrators.connector.nsPanel'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition(
+			$this->prefix('hydrators.connector.nsPanel'),
+			new DI\Definitions\ServiceDefinition(),
+		)
 			->setType(Hydrators\NsPanelConnector::class);
 
 		$builder->addDefinition(
@@ -261,10 +270,7 @@ class NsPanelExtension extends DI\CompilerExtension
 		)
 			->setType(Hydrators\Devices\ThirdPartyDevice::class);
 
-		$builder->addDefinition(
-			$this->prefix('hydrators.channel.nsPanel'),
-			new DI\Definitions\ServiceDefinition(),
-		)
+		$builder->addDefinition($this->prefix('hydrators.channel.nsPanel'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\NsPanelChannel::class);
 
 		$builder->addDefinition($this->prefix('helpers.loader'), new DI\Definitions\ServiceDefinition())
@@ -292,11 +298,11 @@ class NsPanelExtension extends DI\CompilerExtension
 			->addSetup('setLogger', [$logger])
 			->addTag('nette.inject');
 
-		$builder->addFactoryDefinition($this->prefix('executor.factory'))
+		$builder->addFactoryDefinition($this->prefix('connector'))
 			->setImplement(Connector\ConnectorFactory::class)
 			->addTag(
 				DevicesDI\DevicesExtension::CONNECTOR_TYPE_TAG,
-				Entities\NsPanelConnector::CONNECTOR_TYPE,
+				Entities\NsPanelConnector::TYPE,
 			)
 			->getResultDefinition()
 			->setType(Connector\Connector::class)

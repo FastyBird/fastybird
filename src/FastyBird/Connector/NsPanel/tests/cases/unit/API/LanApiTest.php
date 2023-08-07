@@ -438,129 +438,6 @@ final class LanApiTest extends DbTestCase
 	 * @throws Error
 	 * @throws Utils\JsonException
 	 */
-	public function testReportDeviceStatus(): void
-	{
-		$responseBody = $this->createMock(Http\Message\StreamInterface::class);
-		$responseBody
-			->method('getContents')
-			->willReturn(
-				Utils\FileSystem::read(__DIR__ . '/../../../fixtures/API/responses/report_device_status.json'),
-			);
-
-		$response = $this->createMock(Http\Message\ResponseInterface::class);
-		$response
-			->method('getBody')
-			->willReturn($responseBody);
-
-		$httpClient = $this->createMock(GuzzleHttp\Client::class);
-		$httpClient
-			->method('send')
-			->with(
-				self::callback(static function (Http\Message\RequestInterface $request): bool {
-					self::assertSame('POST', $request->getMethod());
-					self::assertSame(
-						'http://127.0.0.1:8081/open-api/v1/rest/thirdparty/event',
-						strval($request->getUri()),
-					);
-					self::assertSame(
-						[
-							'Host' => [
-								'127.0.0.1:8081',
-							],
-							'Content-Type' => [
-								'application/json',
-							],
-							'Authorization' => [
-								'Bearer abcdefghijklmnopqrstuvwxyz',
-							],
-						],
-						$request->getHeaders(),
-					);
-
-					$actual = Utils\Json::decode($request->getBody()->getContents(), Utils\Json::FORCE_ARRAY);
-					self::assertTrue(is_array($actual));
-
-					$request->getBody()->rewind();
-
-					Tools\JsonAssert::assertFixtureMatch(
-						__DIR__ . '/../../../fixtures/API/request/report_device_status.json',
-						$request->getBody()->getContents(),
-						static function (string $expectation) use ($actual): string {
-							if (
-								isset($actual['event'])
-								&& is_array($actual['event'])
-								&& isset($actual['event']['header'])
-								&& is_array($actual['event']['header'])
-								&& isset($actual['event']['header']['message_id'])
-							) {
-								$expectation = str_replace(
-									'__MESSAGE_ID__',
-									strval($actual['event']['header']['message_id']),
-									$expectation,
-								);
-							}
-
-							return $expectation;
-						},
-					);
-
-					return true;
-				}),
-			)
-			->willReturn($response);
-
-		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
-		$httpClientFactory
-			->method('createClient')
-			->willReturn($httpClient);
-
-		$this->mockContainerService(
-			API\HttpClientFactory::class,
-			$httpClientFactory,
-		);
-
-		$connectorsRepository = $this->getContainer()->getByType(DevicesModels\Connectors\ConnectorsRepository::class);
-
-		$findConnectorQuery = new Queries\FindConnectors();
-		$findConnectorQuery->byIdentifier('ns-panel');
-
-		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\NsPanelConnector::class);
-		self::assertInstanceOf(Entities\NsPanelConnector::class, $connector);
-
-		$lanApiFactory = $this->getContainer()->getByType(API\LanApiFactory::class);
-
-		$lanApi = $lanApiFactory->create($connector->getIdentifier());
-
-		$response = $lanApi->reportDeviceStatus(
-			'3f89afee-146d-4a7f-ba55-bf2f6bcc862c',
-			[
-				'power' => [
-					'powerState' => 'on',
-				],
-			],
-			'127.0.0.1',
-			'abcdefghijklmnopqrstuvwxyz',
-			API\LanApi::GATEWAY_PORT,
-			false,
-		);
-
-		self::assertJsonStringEqualsJsonFile(
-			__DIR__ . '/../../../fixtures/API/responses/report_device_status.json',
-			Utils\Json::encode($response->toJson()),
-		);
-	}
-
-	/**
-	 * @throws BootstrapExceptions\InvalidArgument
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws DI\MissingServiceException
-	 * @throws Exceptions\InvalidArgument
-	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws RuntimeException
-	 * @throws Error
-	 * @throws Utils\JsonException
-	 */
 	public function testReportDeviceState(): void
 	{
 		$responseBody = $this->createMock(Http\Message\StreamInterface::class);
@@ -656,7 +533,11 @@ final class LanApiTest extends DbTestCase
 
 		$response = $lanApi->reportDeviceState(
 			'3f89afee-146d-4a7f-ba55-bf2f6bcc862c',
-			false,
+			[
+				'power' => [
+					'powerState' => 'on',
+				],
+			],
 			'127.0.0.1',
 			'abcdefghijklmnopqrstuvwxyz',
 			API\LanApi::GATEWAY_PORT,
@@ -665,6 +546,125 @@ final class LanApiTest extends DbTestCase
 
 		self::assertJsonStringEqualsJsonFile(
 			__DIR__ . '/../../../fixtures/API/responses/report_device_state.json',
+			Utils\Json::encode($response->toJson()),
+		);
+	}
+
+	/**
+	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws DI\MissingServiceException
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws RuntimeException
+	 * @throws Error
+	 * @throws Utils\JsonException
+	 */
+	public function testReportDeviceOnline(): void
+	{
+		$responseBody = $this->createMock(Http\Message\StreamInterface::class);
+		$responseBody
+			->method('getContents')
+			->willReturn(
+				Utils\FileSystem::read(__DIR__ . '/../../../fixtures/API/responses/report_device_online.json'),
+			);
+
+		$response = $this->createMock(Http\Message\ResponseInterface::class);
+		$response
+			->method('getBody')
+			->willReturn($responseBody);
+
+		$httpClient = $this->createMock(GuzzleHttp\Client::class);
+		$httpClient
+			->method('send')
+			->with(
+				self::callback(static function (Http\Message\RequestInterface $request): bool {
+					self::assertSame('POST', $request->getMethod());
+					self::assertSame(
+						'http://127.0.0.1:8081/open-api/v1/rest/thirdparty/event',
+						strval($request->getUri()),
+					);
+					self::assertSame(
+						[
+							'Host' => [
+								'127.0.0.1:8081',
+							],
+							'Content-Type' => [
+								'application/json',
+							],
+							'Authorization' => [
+								'Bearer abcdefghijklmnopqrstuvwxyz',
+							],
+						],
+						$request->getHeaders(),
+					);
+
+					$actual = Utils\Json::decode($request->getBody()->getContents(), Utils\Json::FORCE_ARRAY);
+					self::assertTrue(is_array($actual));
+
+					$request->getBody()->rewind();
+
+					Tools\JsonAssert::assertFixtureMatch(
+						__DIR__ . '/../../../fixtures/API/request/report_device_online.json',
+						$request->getBody()->getContents(),
+						static function (string $expectation) use ($actual): string {
+							if (
+								isset($actual['event'])
+								&& is_array($actual['event'])
+								&& isset($actual['event']['header'])
+								&& is_array($actual['event']['header'])
+								&& isset($actual['event']['header']['message_id'])
+							) {
+								$expectation = str_replace(
+									'__MESSAGE_ID__',
+									strval($actual['event']['header']['message_id']),
+									$expectation,
+								);
+							}
+
+							return $expectation;
+						},
+					);
+
+					return true;
+				}),
+			)
+			->willReturn($response);
+
+		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
+		$httpClientFactory
+			->method('createClient')
+			->willReturn($httpClient);
+
+		$this->mockContainerService(
+			API\HttpClientFactory::class,
+			$httpClientFactory,
+		);
+
+		$connectorsRepository = $this->getContainer()->getByType(DevicesModels\Connectors\ConnectorsRepository::class);
+
+		$findConnectorQuery = new Queries\FindConnectors();
+		$findConnectorQuery->byIdentifier('ns-panel');
+
+		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\NsPanelConnector::class);
+		self::assertInstanceOf(Entities\NsPanelConnector::class, $connector);
+
+		$lanApiFactory = $this->getContainer()->getByType(API\LanApiFactory::class);
+
+		$lanApi = $lanApiFactory->create($connector->getIdentifier());
+
+		$response = $lanApi->reportDeviceOnline(
+			'3f89afee-146d-4a7f-ba55-bf2f6bcc862c',
+			false,
+			'127.0.0.1',
+			'abcdefghijklmnopqrstuvwxyz',
+			API\LanApi::GATEWAY_PORT,
+			false,
+		);
+
+		self::assertJsonStringEqualsJsonFile(
+			__DIR__ . '/../../../fixtures/API/responses/report_device_online.json',
 			Utils\Json::encode($response->toJson()),
 		);
 	}
@@ -751,7 +751,7 @@ final class LanApiTest extends DbTestCase
 		self::assertCount(2, $response->getData()->getDevicesList());
 
 		foreach ($response->getData()->getDevicesList() as $subDevice) {
-			self::assertTrue($subDevice->getStatuses() !== []);
+			self::assertTrue($subDevice->getState() !== []);
 		}
 
 		self::assertJsonStringEqualsJsonFile(
@@ -771,13 +771,13 @@ final class LanApiTest extends DbTestCase
 	 * @throws Error
 	 * @throws Utils\JsonException
 	 */
-	public function testSetSubDeviceStatus(): void
+	public function testSetSubDeviceState(): void
 	{
 		$responseBody = $this->createMock(Http\Message\StreamInterface::class);
 		$responseBody
 			->method('getContents')
 			->willReturn(
-				Utils\FileSystem::read(__DIR__ . '/../../../fixtures/API/responses/set_sub_device_status.json'),
+				Utils\FileSystem::read(__DIR__ . '/../../../fixtures/API/responses/set_sub_device_state.json'),
 			);
 
 		$response = $this->createMock(Http\Message\ResponseInterface::class);
@@ -816,7 +816,7 @@ final class LanApiTest extends DbTestCase
 					$request->getBody()->rewind();
 
 					Tools\JsonAssert::assertFixtureMatch(
-						__DIR__ . '/../../../fixtures/API/request/set_sub_device_status.json',
+						__DIR__ . '/../../../fixtures/API/request/set_sub_device_state.json',
 						$request->getBody()->getContents(),
 						static function (string $expectation) use ($actual): string {
 							if (
@@ -864,7 +864,7 @@ final class LanApiTest extends DbTestCase
 
 		$lanApi = $lanApiFactory->create($connector->getIdentifier());
 
-		$response = $lanApi->setSubDeviceStatus(
+		$response = $lanApi->setSubDeviceState(
 			'a480062416',
 			[
 				'power' => [
@@ -878,7 +878,7 @@ final class LanApiTest extends DbTestCase
 		);
 
 		self::assertJsonStringEqualsJsonFile(
-			__DIR__ . '/../../../fixtures/API/responses/set_sub_device_status.json',
+			__DIR__ . '/../../../fixtures/API/responses/set_sub_device_state.json',
 			Utils\Json::encode($response->toJson()),
 		);
 	}

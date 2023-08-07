@@ -44,10 +44,10 @@ final class DeviceSynchronisation implements Consumers\Consumer
 	use Nette\SmartObject;
 
 	public function __construct(
-		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
-		private readonly DevicesModels\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
-		private readonly DevicesModels\Devices\Properties\PropertiesManager $devicesPropertiesManager,
-		private readonly DevicesUtilities\Database $databaseHelper,
+		protected readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
+		protected readonly DevicesModels\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
+		protected readonly DevicesModels\Devices\Properties\PropertiesManager $devicesPropertiesManager,
+		protected readonly DevicesUtilities\Database $databaseHelper,
 		private readonly NsPanel\Logger $logger,
 	)
 	{
@@ -80,8 +80,8 @@ final class DeviceSynchronisation implements Consumers\Consumer
 			$device->getId(),
 			$entity->getGatewayIdentifier(),
 			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-			Types\DevicePropertyIdentifier::IDENTIFIER_GATEWAY_IDENTIFIER,
-			Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_GATEWAY_IDENTIFIER),
+			Types\DevicePropertyIdentifier::GATEWAY_IDENTIFIER,
+			Helpers\Name::createName(Types\DevicePropertyIdentifier::GATEWAY_IDENTIFIER),
 		);
 
 		$this->logger->debug(

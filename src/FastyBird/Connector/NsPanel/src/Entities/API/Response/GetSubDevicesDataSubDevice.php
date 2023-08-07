@@ -189,11 +189,11 @@ final class GetSubDevicesDataSubDevice implements Entities\API\Entity
 	}
 
 	/**
-	 * @return array<string|int, Entities\API\Statuses\Status>
+	 * @return array<string|int, Entities\API\States\State>
 	 */
-	public function getStatuses(): array
+	public function getState(): array
 	{
-		return $this->state->getStatuses();
+		return $this->state->getStates();
 	}
 
 	/**

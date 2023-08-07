@@ -463,7 +463,7 @@ class DevicesExtension extends DI\CompilerExtension
 
 		$builder->addDefinition($this->prefix('exchange.consumer.states'), new DI\Definitions\ServiceDefinition())
 			->setType(Consumers\State::class)
-			->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATUS, false);
+			->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATE, false);
 
 		if (
 			$builder->findByType('IPub\WebSockets\Router\LinkGenerator') !== []
@@ -471,7 +471,7 @@ class DevicesExtension extends DI\CompilerExtension
 		) {
 			$builder->addDefinition($this->prefix('exchange.consumer.sockets'), new DI\Definitions\ServiceDefinition())
 				->setType(Consumers\Sockets::class)
-				->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATUS, false);
+				->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATE, false);
 		}
 
 		$builder->addDefinition($this->prefix('commands.initialize'), new DI\Definitions\ServiceDefinition())

@@ -47,14 +47,14 @@ final class DiscoveredSubDevice implements Consumers\Consumer
 	use Nette\SmartObject;
 
 	public function __construct(
+		protected readonly DevicesModels\Devices\DevicesManager $devicesManager,
+		protected readonly DevicesModels\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
+		protected readonly DevicesModels\Devices\Properties\PropertiesManager $devicesPropertiesManager,
+		protected readonly DevicesUtilities\Database $databaseHelper,
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
-		private readonly DevicesModels\Devices\DevicesManager $devicesManager,
-		private readonly DevicesModels\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
-		private readonly DevicesModels\Devices\Properties\PropertiesManager $devicesPropertiesManager,
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		private readonly DevicesModels\Channels\ChannelsManager $channelsManager,
-		private readonly DevicesUtilities\Database $databaseHelper,
 		private readonly NsPanel\Logger $logger,
 	)
 	{
@@ -160,36 +160,36 @@ final class DiscoveredSubDevice implements Consumers\Consumer
 			$device->getId(),
 			$entity->getManufacturer(),
 			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-			Types\DevicePropertyIdentifier::IDENTIFIER_MANUFACTURER,
-			Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_MANUFACTURER),
+			Types\DevicePropertyIdentifier::MANUFACTURER,
+			Helpers\Name::createName(Types\DevicePropertyIdentifier::MANUFACTURER),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getModel(),
 			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-			Types\DevicePropertyIdentifier::IDENTIFIER_MODEL,
-			Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_MODEL),
+			Types\DevicePropertyIdentifier::MODEL,
+			Helpers\Name::createName(Types\DevicePropertyIdentifier::MODEL),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getFirmwareVersion(),
 			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-			Types\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_VERSION,
-			Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_VERSION),
+			Types\DevicePropertyIdentifier::FIRMWARE_VERSION,
+			Helpers\Name::createName(Types\DevicePropertyIdentifier::FIRMWARE_VERSION),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getDisplayCategory()->getValue(),
 			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-			Types\DevicePropertyIdentifier::IDENTIFIER_CATEGORY,
-			Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_CATEGORY),
+			Types\DevicePropertyIdentifier::CATEGORY,
+			Helpers\Name::createName(Types\DevicePropertyIdentifier::CATEGORY),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getMacAddress(),
 			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-			Types\DevicePropertyIdentifier::IDENTIFIER_MAC_ADDRESS,
-			Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_MAC_ADDRESS),
+			Types\DevicePropertyIdentifier::MAC_ADDRESS,
+			Helpers\Name::createName(Types\DevicePropertyIdentifier::MAC_ADDRESS),
 		);
 
 		foreach ($entity->getCapabilities() as $capability) {

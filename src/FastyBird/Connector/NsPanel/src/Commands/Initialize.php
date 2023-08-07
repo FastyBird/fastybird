@@ -186,14 +186,14 @@ class Initialize extends Console\Command\Command
 
 			$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-				'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE,
-				'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE),
+				'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE,
+				'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::CLIENT_MODE),
 				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
 				'value' => $mode->getValue(),
 				'format' => [
-					Types\ClientMode::MODE_GATEWAY,
-					Types\ClientMode::MODE_DEVICE,
-					Types\ClientMode::MODE_BOTH,
+					Types\ClientMode::GATEWAY,
+					Types\ClientMode::DEVICE,
+					Types\ClientMode::BOTH,
 				],
 				'connector' => $connector,
 			]));
@@ -255,7 +255,7 @@ class Initialize extends Console\Command\Command
 
 		$findConnectorPropertyQuery = new DevicesQueries\FindConnectorProperties();
 		$findConnectorPropertyQuery->forConnector($connector);
-		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE);
+		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::CLIENT_MODE);
 
 		$modeProperty = $this->connectorsPropertiesRepository->findOneBy($findConnectorPropertyQuery);
 
@@ -317,11 +317,11 @@ class Initialize extends Console\Command\Command
 
 				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE,
-					'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE),
+					'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE,
+					'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::CLIENT_MODE),
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
 					'value' => $mode->getValue(),
-					'format' => [Types\ClientMode::MODE_GATEWAY, Types\ClientMode::MODE_DEVICE, Types\ClientMode::MODE_BOTH],
+					'format' => [Types\ClientMode::GATEWAY, Types\ClientMode::DEVICE, Types\ClientMode::BOTH],
 					'connector' => $connector,
 				]));
 			} elseif ($mode !== null) {
@@ -511,7 +511,7 @@ class Initialize extends Console\Command\Command
 				)
 				|| $answer === '0'
 			) {
-				return Types\ClientMode::get(Types\ClientMode::MODE_GATEWAY);
+				return Types\ClientMode::get(Types\ClientMode::GATEWAY);
 			}
 
 			if (
@@ -520,7 +520,7 @@ class Initialize extends Console\Command\Command
 				)
 				|| $answer === '1'
 			) {
-				return Types\ClientMode::get(Types\ClientMode::MODE_DEVICE);
+				return Types\ClientMode::get(Types\ClientMode::DEVICE);
 			}
 
 			if (
@@ -529,7 +529,7 @@ class Initialize extends Console\Command\Command
 				)
 				|| $answer === '2'
 			) {
-				return Types\ClientMode::get(Types\ClientMode::MODE_BOTH);
+				return Types\ClientMode::get(Types\ClientMode::BOTH);
 			}
 
 			throw new Exceptions\Runtime(

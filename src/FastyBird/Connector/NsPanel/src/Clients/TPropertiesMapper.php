@@ -55,7 +55,7 @@ trait TPropertiesMapper
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	protected function mapChannelToStatus(
+	protected function mapChannelToState(
 		Entities\NsPanelChannel $channel,
 	): array|null
 	{

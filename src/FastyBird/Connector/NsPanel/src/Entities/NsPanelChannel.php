@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\NsPanel\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
+use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -30,18 +31,16 @@ use function str_replace;
 class NsPanelChannel extends DevicesEntities\Channels\Channel
 {
 
-	public const CHANNEL_TYPE = 'ns-panel';
-
-	public const CAPABILITY_IDENTIFIER = '/^(?P<type>[a-z_]+)(?:_(?P<key>[0-9]+){1})?$/';
+	public const TYPE = 'ns-panel';
 
 	public function getType(): string
 	{
-		return self::CHANNEL_TYPE;
+		return self::TYPE;
 	}
 
 	public function getDiscriminatorName(): string
 	{
-		return self::CHANNEL_TYPE;
+		return self::TYPE;
 	}
 
 	public function getSource(): MetadataTypes\ConnectorSource
@@ -54,7 +53,7 @@ class NsPanelChannel extends DevicesEntities\Channels\Channel
 	 */
 	public function getCapability(): Types\Capability
 	{
-		preg_match(self::CAPABILITY_IDENTIFIER, $this->getIdentifier(), $matches);
+		preg_match(NsPanel\Constants::CHANNEL_IDENTIFIER, $this->getIdentifier(), $matches);
 
 		if (!array_key_exists('type', $matches)) {
 			throw new Exceptions\InvalidState('Device channel has invalid identifier');
@@ -71,7 +70,7 @@ class NsPanelChannel extends DevicesEntities\Channels\Channel
 
 	public function getCapabilityKey(): string|int|null
 	{
-		preg_match(self::CAPABILITY_IDENTIFIER, $this->getIdentifier(), $matches);
+		preg_match(NsPanel\Constants::CHANNEL_IDENTIFIER, $this->getIdentifier(), $matches);
 
 		if (array_key_exists('key', $matches)) {
 			return $matches['key'];

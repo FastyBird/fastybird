@@ -62,7 +62,7 @@ final class Gateway implements Client
 
 	private const HEARTBEAT_DELAY = 600;
 
-	private const CMD_STATUS = 'status';
+	private const CMD_STATE = 'state';
 
 	private const CMD_HEARTBEAT = 'heartbeat';
 
@@ -177,17 +177,17 @@ final class Gateway implements Client
 			);
 		}
 
-		$status = $this->mapChannelToStatus($channel);
+		$mapped = $this->mapChannelToState($channel);
 
-		if ($status === null) {
-			return Promise\reject(new Exceptions\InvalidArgument('Device capability status could not be created'));
+		if ($mapped === null) {
+			return Promise\reject(new Exceptions\InvalidArgument('Device capability state could not be created'));
 		}
 
 		if ($state->isPending() === true) {
 			try {
-				return $this->lanApiApi->setSubDeviceStatus(
+				return $this->lanApiApi->setSubDeviceState(
 					$device->getIdentifier(),
-					$status,
+					$mapped,
 					$device->getGateway()->getIpAddress(),
 					$device->getGateway()->getAccessToken(),
 				);
@@ -244,7 +244,7 @@ final class Gateway implements Client
 			return true;
 		}
 
-		return $this->readDeviceStatus($device);
+		return $this->readDeviceState($device);
 	}
 
 	/**
@@ -261,7 +261,7 @@ final class Gateway implements Client
 		) {
 			$this->consumer->append(
 				$this->entityHelper->create(
-					Entities\Messages\DeviceState::class,
+					Entities\Messages\DeviceOnline::class,
 					[
 						'connector' => $this->connector->getId()->toString(),
 						'identifier' => $gateway->getIdentifier(),
@@ -299,7 +299,7 @@ final class Gateway implements Client
 
 					$this->consumer->append(
 						$this->entityHelper->create(
-							Entities\Messages\DeviceState::class,
+							Entities\Messages\DeviceOnline::class,
 							[
 								'connector' => $this->connector->getId()->toString(),
 								'identifier' => $gateway->getIdentifier(),
@@ -333,7 +333,7 @@ final class Gateway implements Client
 
 						$this->consumer->append(
 							$this->entityHelper->create(
-								Entities\Messages\DeviceState::class,
+								Entities\Messages\DeviceOnline::class,
 								[
 									'connector' => $this->connector->getId()->toString(),
 									'identifier' => $gateway->getIdentifier(),
@@ -362,7 +362,7 @@ final class Gateway implements Client
 
 					$this->consumer->append(
 						$this->entityHelper->create(
-							Entities\Messages\DeviceState::class,
+							Entities\Messages\DeviceOnline::class,
 							[
 								'connector' => $this->connector->getId()->toString(),
 								'identifier' => $gateway->getIdentifier(),
@@ -399,7 +399,7 @@ final class Gateway implements Client
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function readDeviceStatus(Entities\Devices\Gateway $gateway): bool
+	private function readDeviceState(Entities\Devices\Gateway $gateway): bool
 	{
 		if (
 			$gateway->getIpAddress() === null
@@ -407,7 +407,7 @@ final class Gateway implements Client
 		) {
 			$this->consumer->append(
 				$this->entityHelper->create(
-					Entities\Messages\DeviceState::class,
+					Entities\Messages\DeviceOnline::class,
 					[
 						'connector' => $this->connector->getId()->toString(),
 						'identifier' => $gateway->getIdentifier(),
@@ -423,29 +423,29 @@ final class Gateway implements Client
 			$this->processedDevicesCommands[$gateway->getIdentifier()] = [];
 		}
 
-		if (array_key_exists(self::CMD_STATUS, $this->processedDevicesCommands[$gateway->getIdentifier()])) {
-			$cmdResult = $this->processedDevicesCommands[$gateway->getIdentifier()][self::CMD_STATUS];
+		if (array_key_exists(self::CMD_STATE, $this->processedDevicesCommands[$gateway->getIdentifier()])) {
+			$cmdResult = $this->processedDevicesCommands[$gateway->getIdentifier()][self::CMD_STATE];
 
 			if (
 				$cmdResult instanceof DateTimeInterface
 				&& (
-					$this->dateTimeFactory->getNow()->getTimestamp() - $cmdResult->getTimestamp() < $gateway->getStatusReadingDelay()
+					$this->dateTimeFactory->getNow()->getTimestamp() - $cmdResult->getTimestamp() < $gateway->getStateReadingDelay()
 				)
 			) {
 				return false;
 			}
 		}
 
-		$this->processedDevicesCommands[$gateway->getIdentifier()][self::CMD_STATUS] = $this->dateTimeFactory->getNow();
+		$this->processedDevicesCommands[$gateway->getIdentifier()][self::CMD_STATE] = $this->dateTimeFactory->getNow();
 
 		try {
 			$this->lanApiApi->getSubDevices($gateway->getIpAddress(), $gateway->getAccessToken())
 				->then(function (Entities\API\Response\GetSubDevices $subDevices) use ($gateway): void {
-					$this->processedDevicesCommands[$gateway->getIdentifier()][self::CMD_STATUS] = $this->dateTimeFactory->getNow();
+					$this->processedDevicesCommands[$gateway->getIdentifier()][self::CMD_STATE] = $this->dateTimeFactory->getNow();
 
 					$this->consumer->append(
 						$this->entityHelper->create(
-							Entities\Messages\DeviceState::class,
+							Entities\Messages\DeviceOnline::class,
 							[
 								'connector' => $this->connector->getId()->toString(),
 								'identifier' => $gateway->getIdentifier(),
@@ -462,7 +462,7 @@ final class Gateway implements Client
 
 						$this->consumer->append(
 							$this->entityHelper->create(
-								Entities\Messages\DeviceState::class,
+								Entities\Messages\DeviceOnline::class,
 								[
 									'connector' => $this->connector->getId()->toString(),
 									'identifier' => $subDevice->getSerialNumber(),
@@ -473,36 +473,36 @@ final class Gateway implements Client
 							),
 						);
 
-						$capabilityStatuses = [];
+						$state = [];
 
-						foreach ($subDevice->getStatuses() as $key => $status) {
-							$stateIdentifier = null;
+						foreach ($subDevice->getState() as $key => $item) {
+							$identifier = null;
 
 							if (
 								is_string($key)
 								&& preg_match(NsPanel\Constants::STATE_NAME_KEY, $key, $matches) === 1
 								&& array_key_exists('identifier', $matches)
 							) {
-								$stateIdentifier = $matches['identifier'];
+								$identifier = $matches['identifier'];
 							}
 
-							foreach ($status->getProtocols() as $protocol => $value) {
-								$capabilityStatuses[] = [
-									'capability' => $status->getType()->getValue(),
+							foreach ($item->getProtocols() as $protocol => $value) {
+								$state[] = [
+									'capability' => $item->getType()->getValue(),
 									'protocol' => $protocol,
 									'value' => $value,
-									'identifier' => $stateIdentifier,
+									'identifier' => $identifier,
 								];
 							}
 						}
 
 						$this->consumer->append(
 							$this->entityHelper->create(
-								Entities\Messages\DeviceStatus::class,
+								Entities\Messages\DeviceState::class,
 								[
 									'connector' => $this->connector->getId()->toString(),
 									'identifier' => $subDevice->getSerialNumber(),
-									'statuses' => $capabilityStatuses,
+									'state' => $state,
 								],
 							),
 						);
@@ -533,7 +533,7 @@ final class Gateway implements Client
 
 						$this->consumer->append(
 							$this->entityHelper->create(
-								Entities\Messages\DeviceState::class,
+								Entities\Messages\DeviceOnline::class,
 								[
 									'connector' => $this->connector->getId()->toString(),
 									'identifier' => $gateway->getIdentifier(),
@@ -562,7 +562,7 @@ final class Gateway implements Client
 
 					$this->consumer->append(
 						$this->entityHelper->create(
-							Entities\Messages\DeviceState::class,
+							Entities\Messages\DeviceOnline::class,
 							[
 								'connector' => $this->connector->getId()->toString(),
 								'identifier' => $gateway->getIdentifier(),

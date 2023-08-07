@@ -20,7 +20,7 @@ use Orisai\ObjectMapper;
 use stdClass;
 
 /**
- * NS Panel report its status response definition
+ * NS Panel report its description response definition
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Entities
