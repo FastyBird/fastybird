@@ -1626,7 +1626,7 @@ class Devices extends Console\Command\Command
 		Style\SymfonyStyle $io,
 		Entities\Devices\ThirdPartyDevice $device,
 		Entities\NsPanelChannel $channel,
-	): DevicesEntities\Devices\Properties\Property|DevicesEntities\Channels\Properties\Property|null
+	): DevicesEntities\Channels\Properties\Property|null
 	{
 		$protocol = $this->askProtocolType($io, $channel);
 
@@ -1669,28 +1669,7 @@ class Devices extends Console\Command\Command
 
 			$format = $this->askFormat($io, $protocol, $connectProperty);
 
-			if ($connectProperty instanceof DevicesEntities\Devices\Properties\Dynamic) {
-				if (!$device->hasParent($connectProperty->getDevice())) {
-					$this->devicesManager->update($device, Utils\ArrayHash::from([
-						'parents' => array_merge($device->getParents(), [$connectProperty->getDevice()]),
-					]));
-				}
-
-				return $this->devicesPropertiesManager->create(Utils\ArrayHash::from([
-					'entity' => DevicesEntities\Devices\Properties\Mapped::class,
-					'parent' => $connectProperty,
-					'identifier' => Helpers\Name::convertProtocolToProperty($protocol),
-					'name' => $this->translator->translate(
-						'//ns-panel-connector.cmd.base.protocol.' . $protocol->getValue(),
-					),
-					'device' => $device,
-					'dataType' => $dataType,
-					'format' => $format,
-					'invalid' => $protocolMetadata->offsetExists('invalid_value')
-						? $protocolMetadata->offsetGet('invalid_value')
-						: null,
-				]));
-			} elseif ($connectProperty instanceof DevicesEntities\Channels\Properties\Dynamic) {
+			if ($connectProperty instanceof DevicesEntities\Channels\Properties\Dynamic) {
 				if (!$device->hasParent($connectProperty->getChannel()->getDevice())) {
 					$this->devicesManager->update($device, Utils\ArrayHash::from([
 						'parents' => array_merge($device->getParents(), [$connectProperty->getChannel()->getDevice()]),
@@ -1818,23 +1797,7 @@ class Devices extends Console\Command\Command
 				} else {
 					$this->channelsPropertiesManager->delete($property);
 
-					if ($connectProperty instanceof DevicesEntities\Devices\Properties\Dynamic) {
-						$property = $this->devicesPropertiesManager->create(Utils\ArrayHash::from([
-							'entity' => DevicesEntities\Devices\Properties\Mapped::class,
-							'parent' => $connectProperty,
-							'identifier' => $property->getIdentifier(),
-							'name' => $this->translator->translate(
-								'//ns-panel-connector.cmd.base.protocol.' . $protocol->getValue(),
-							),
-							'device' => $channel->getDevice(),
-							'dataType' => $dataType,
-							'format' => $format,
-							'invalid' => $protocolMetadata->offsetExists('invalid_value')
-								? $protocolMetadata->offsetGet('invalid_value')
-								: null,
-						]));
-
-					} elseif ($connectProperty instanceof DevicesEntities\Channels\Properties\Dynamic) {
+					if ($connectProperty instanceof DevicesEntities\Channels\Properties\Dynamic) {
 						$property = $this->channelsPropertiesManager->create(Utils\ArrayHash::from([
 							'entity' => DevicesEntities\Channels\Properties\Mapped::class,
 							'parent' => $connectProperty,
@@ -2724,21 +2687,13 @@ class Devices extends Console\Command\Command
 	 */
 	private function askPropertyForConnect(
 		Style\SymfonyStyle $io,
-		DevicesEntities\Devices\Properties\Dynamic|DevicesEntities\Channels\Properties\Dynamic|null $connectedProperty = null,
-	): DevicesEntities\Devices\Properties\Dynamic|DevicesEntities\Channels\Properties\Dynamic|null
+		DevicesEntities\Channels\Properties\Dynamic|null $connectedProperty = null,
+	): DevicesEntities\Channels\Properties\Dynamic|null
 	{
 		$devices = [];
 
-		$connectedDevice = null;
-		$connectedChannel = null;
-
-		if ($connectedProperty instanceof DevicesEntities\Devices\Properties\Dynamic) {
-			$connectedDevice = $connectedProperty->getDevice();
-
-		} elseif ($connectedProperty instanceof DevicesEntities\Channels\Properties\Dynamic) {
-			$connectedChannel = $connectedProperty->getChannel();
-			$connectedDevice = $connectedProperty->getChannel()->getDevice();
-		}
+		$connectedChannel = $connectedProperty?->getChannel();
+		$connectedDevice = $connectedProperty?->getChannel()->getDevice();
 
 		$findDevicesQuery = new DevicesQueries\FindDevices();
 
@@ -3014,7 +2969,7 @@ class Devices extends Console\Command\Command
 	private function askFormat(
 		Style\SymfonyStyle $io,
 		Types\Protocol $protocol,
-		DevicesEntities\Devices\Properties\Dynamic|DevicesEntities\Channels\Properties\Dynamic|null $connectProperty = null,
+		DevicesEntities\Channels\Properties\Dynamic|null $connectProperty = null,
 	): MetadataValueObjects\NumberRangeFormat|MetadataValueObjects\StringEnumFormat|MetadataValueObjects\CombinedEnumFormat|null
 	{
 		$metadata = $this->loader->loadProtocols();
