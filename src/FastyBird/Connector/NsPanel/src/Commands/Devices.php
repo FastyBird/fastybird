@@ -1216,6 +1216,46 @@ class Devices extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
 	 */
+	private function manageCapability(
+		Style\SymfonyStyle $io,
+		Entities\Devices\ThirdPartyDevice $device,
+	): void
+	{
+		$capability = $this->askWhichCapability($io, $device);
+
+		if ($capability === null) {
+			$io->warning($this->translator->translate(
+				'//ns-panel-connector.cmd.devices.messages.noCapabilities',
+				['name' => $device->getName() ?? $device->getIdentifier()],
+			));
+
+			$question = new Console\Question\ConfirmationQuestion(
+				$this->translator->translate('//ns-panel-connector.cmd.devices.questions.create.capability'),
+				false,
+			);
+
+			$continue = (bool) $io->askQuestion($question);
+
+			if ($continue) {
+				$this->createCapability($io, $device);
+			}
+
+			return;
+		}
+
+		$this->askProtocolAction($io, $capability);
+	}
+
+	/**
+	 * @throws DBAL\Exception
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\Runtime
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws Nette\IOException
+	 */
 	private function createCapability(
 		Style\SymfonyStyle $io,
 		Entities\Devices\ThirdPartyDevice $device,
@@ -2304,9 +2344,10 @@ class Devices extends Console\Command\Command
 				1 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.update.capability'),
 				2 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.remove.capability'),
 				3 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.list.capabilities'),
-				4 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.nothing'),
+				4 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.manage.capability'),
+				5 => $this->translator->translate('//ns-panel-connector.cmd.devices.actions.nothing'),
 			],
-			4,
+			5,
 		);
 
 		$question->setErrorMessage(
@@ -2354,6 +2395,16 @@ class Devices extends Console\Command\Command
 			$this->listCapabilities($io, $device);
 
 			$this->askCapabilityAction($io, $device);
+
+		} elseif (
+			$whatToDo === $this->translator->translate(
+				'//ns-panel-connector.cmd.devices.actions.manage.capability',
+			)
+			|| $whatToDo === '4'
+		) {
+			$this->manageCapability($io, $device);
+
+			$this->askCapabilityAction($io, $device);
 		}
 	}
 
@@ -2397,6 +2448,8 @@ class Devices extends Console\Command\Command
 		) {
 			$this->editProtocol($io, $channel);
 
+			$this->askProtocolAction($io, $channel);
+
 		} elseif (
 			$whatToDo === $this->translator->translate(
 				'//ns-panel-connector.cmd.devices.actions.remove.protocol',
@@ -2405,6 +2458,8 @@ class Devices extends Console\Command\Command
 		) {
 			$this->deleteProtocol($io, $channel);
 
+			$this->askProtocolAction($io, $channel);
+
 		} elseif (
 			$whatToDo === $this->translator->translate(
 				'//ns-panel-connector.cmd.devices.actions.list.protocols',
@@ -2412,6 +2467,8 @@ class Devices extends Console\Command\Command
 			|| $whatToDo === '2'
 		) {
 			$this->listProtocols($io, $channel);
+
+			$this->askProtocolAction($io, $channel);
 		}
 	}
 
@@ -2766,340 +2823,184 @@ class Devices extends Console\Command\Command
 		$device = $io->askQuestion($question);
 		assert($device instanceof DevicesEntities\Devices\Device);
 
-		$default = 1;
+		$channels = [];
 
-		if ($connectedProperty !== null) {
-			$default = $connectedProperty instanceof DevicesEntities\Devices\Properties\Dynamic ? 0 : 1;
+		$findChannelsQuery = new DevicesQueries\FindChannels();
+		$findChannelsQuery->forDevice($device);
+		$findChannelsQuery->withProperties();
+
+		$deviceChannels = $this->channelsRepository->findAllBy($findChannelsQuery);
+		usort(
+			$deviceChannels,
+			static function (DevicesEntities\Channels\Channel $a, DevicesEntities\Channels\Channel $b): int {
+				if ($a->getIdentifier() === $b->getIdentifier()) {
+					return $a->getName() <=> $b->getName();
+				}
+
+				return $a->getIdentifier() <=> $b->getIdentifier();
+			},
+		);
+
+		foreach ($deviceChannels as $channel) {
+			$channels[$channel->getIdentifier()] = sprintf(
+				'%s%s',
+				$channel->getIdentifier(),
+				($channel->getName() !== null ? ' [' . $channel->getName() . ']' : ''),
+			);
+		}
+
+		$default = count($channels) === 1 ? 0 : null;
+
+		if ($connectedChannel !== null) {
+			foreach (array_values($channels) as $index => $value) {
+				if (Utils\Strings::contains($value, $connectedChannel->getIdentifier())) {
+					$default = $index;
+
+					break;
+				}
+			}
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//ns-panel-connector.cmd.devices.questions.select.propertyType'),
-			[
-				$this->translator->translate('//ns-panel-connector.cmd.devices.answers.deviceProperty'),
-				$this->translator->translate('//ns-panel-connector.cmd.devices.answers.channelProperty'),
-			],
+			$this->translator->translate('//ns-panel-connector.cmd.devices.questions.select.mappedDeviceChannel'),
+			array_values($channels),
 			$default,
 		);
 		$question->setErrorMessage(
 			$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 		);
-		$question->setValidator(function (string|int|null $answer): int {
-			if ($answer === null) {
+		$question->setValidator(
+			function (string|null $answer) use ($device, $channels): DevicesEntities\Channels\Channel {
+				if ($answer === null) {
+					throw new Exceptions\Runtime(
+						sprintf(
+							$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+							$answer,
+						),
+					);
+				}
+
+				if (array_key_exists($answer, array_values($channels))) {
+					$answer = array_values($channels)[$answer];
+				}
+
+				$identifier = array_search($answer, $channels, true);
+
+				if ($identifier !== false) {
+					$findChannelQuery = new DevicesQueries\FindChannels();
+					$findChannelQuery->byIdentifier($identifier);
+					$findChannelQuery->forDevice($device);
+
+					$channel = $this->channelsRepository->findOneBy($findChannelQuery);
+
+					if ($channel !== null) {
+						return $channel;
+					}
+				}
+
 				throw new Exceptions\Runtime(
 					sprintf(
 						$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 						$answer,
 					),
 				);
-			}
+			},
+		);
 
-			if (
-				$answer === $this->translator->translate(
-					'//ns-panel-connector.cmd.devices.answers.deviceProperty',
-				)
-				|| strval($answer) === '0'
-			) {
-				return 0;
-			}
+		$channel = $io->askQuestion($question);
+		assert($channel instanceof DevicesEntities\Channels\Channel);
 
-			if (
-				$answer === $this->translator->translate(
-					'//ns-panel-connector.cmd.devices.answers.channelProperty',
-				)
-				|| strval($answer) === '1'
-			) {
-				return 1;
-			}
+		$properties = [];
 
-			throw new Exceptions\Runtime(
-				sprintf(
-					$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
-					$answer,
-				),
-			);
-		});
+		$findDevicePropertiesQuery = new DevicesQueries\FindChannelDynamicProperties();
+		$findDevicePropertiesQuery->forChannel($channel);
 
-		$type = $io->askQuestion($question);
-		assert(is_int($type));
-
-		if ($type === 0) {
-			$properties = [];
-
-			$findDevicePropertiesQuery = new DevicesQueries\FindDeviceProperties();
-			$findDevicePropertiesQuery->forDevice($device);
-
-			$deviceProperties = $this->devicesPropertiesRepository->findAllBy(
-				$findDevicePropertiesQuery,
-				DevicesEntities\Devices\Properties\Dynamic::class,
-			);
-			usort(
-				$deviceProperties,
-				static function (DevicesEntities\Devices\Properties\Property $a, DevicesEntities\Devices\Properties\Property $b): int {
-					if ($a->getIdentifier() === $b->getIdentifier()) {
-						return $a->getName() <=> $b->getName();
-					}
-
-					return $a->getIdentifier() <=> $b->getIdentifier();
-				},
-			);
-
-			foreach ($deviceProperties as $property) {
-				if (!$property instanceof DevicesEntities\Devices\Properties\Dynamic) {
-					continue;
+		$channelProperties = $this->channelsPropertiesRepository->findAllBy(
+			$findDevicePropertiesQuery,
+			DevicesEntities\Channels\Properties\Dynamic::class,
+		);
+		usort(
+			$channelProperties,
+			static function (DevicesEntities\Channels\Properties\Dynamic $a, DevicesEntities\Channels\Properties\Dynamic $b): int {
+				if ($a->getIdentifier() === $b->getIdentifier()) {
+					return $a->getName() <=> $b->getName();
 				}
 
-				$properties[$property->getIdentifier()] = sprintf(
-					'%s%s',
-					$property->getIdentifier(),
-					($property->getName() !== null ? ' [' . $property->getName() . ']' : ''),
-				);
-			}
+				return $a->getIdentifier() <=> $b->getIdentifier();
+			},
+		);
 
-			$default = count($properties) === 1 ? 0 : null;
-
-			if ($connectedProperty !== null) {
-				foreach (array_values($properties) as $index => $value) {
-					if (Utils\Strings::contains($value, $connectedProperty->getIdentifier())) {
-						$default = $index;
-
-						break;
-					}
-				}
-			}
-
-			$question = new Console\Question\ChoiceQuestion(
-				$this->translator->translate('//ns-panel-connector.cmd.devices.questions.select.mappedDeviceProperty'),
-				array_values($properties),
-				$default,
+		foreach ($channelProperties as $property) {
+			$properties[$property->getIdentifier()] = sprintf(
+				'%s%s',
+				$property->getIdentifier(),
+				($property->getName() !== null ? ' [' . $property->getName() . ']' : ''),
 			);
-			$question->setErrorMessage(
-				$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
-			);
-			$question->setValidator(
-				function (string|null $answer) use ($device, $properties): DevicesEntities\Devices\Properties\Dynamic {
-					if ($answer === null) {
-						throw new Exceptions\Runtime(
-							sprintf(
-								$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
-								$answer,
-							),
-						);
-					}
-
-					if (array_key_exists($answer, array_values($properties))) {
-						$answer = array_values($properties)[$answer];
-					}
-
-					$identifier = array_search($answer, $properties, true);
-
-					if ($identifier !== false) {
-						/** @var DevicesQueries\FindDeviceProperties<DevicesEntities\Devices\Properties\Dynamic> $findPropertyQuery */
-						$findPropertyQuery = new DevicesQueries\FindDeviceProperties();
-						$findPropertyQuery->byIdentifier($identifier);
-						$findPropertyQuery->forDevice($device);
-
-						$property = $this->devicesPropertiesRepository->findOneBy(
-							$findPropertyQuery,
-							DevicesEntities\Devices\Properties\Dynamic::class,
-						);
-
-						if ($property !== null) {
-							return $property;
-						}
-					}
-
-					throw new Exceptions\Runtime(
-						sprintf(
-							$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
-							$answer,
-						),
-					);
-				},
-			);
-
-			$property = $io->askQuestion($question);
-			assert($property instanceof DevicesEntities\Devices\Properties\Dynamic);
-
-		} else {
-			$channels = [];
-
-			$findChannelsQuery = new DevicesQueries\FindChannels();
-			$findChannelsQuery->forDevice($device);
-			$findChannelsQuery->withProperties();
-
-			$deviceChannels = $this->channelsRepository->findAllBy($findChannelsQuery);
-			usort(
-				$deviceChannels,
-				static function (DevicesEntities\Channels\Channel $a, DevicesEntities\Channels\Channel $b): int {
-					if ($a->getIdentifier() === $b->getIdentifier()) {
-						return $a->getName() <=> $b->getName();
-					}
-
-					return $a->getIdentifier() <=> $b->getIdentifier();
-				},
-			);
-
-			foreach ($deviceChannels as $channel) {
-				$channels[$channel->getIdentifier()] = sprintf(
-					'%s%s',
-					$channel->getIdentifier(),
-					($channel->getName() !== null ? ' [' . $channel->getName() . ']' : ''),
-				);
-			}
-
-			$default = count($channels) === 1 ? 0 : null;
-
-			if ($connectedChannel !== null) {
-				foreach (array_values($channels) as $index => $value) {
-					if (Utils\Strings::contains($value, $connectedChannel->getIdentifier())) {
-						$default = $index;
-
-						break;
-					}
-				}
-			}
-
-			$question = new Console\Question\ChoiceQuestion(
-				$this->translator->translate('//ns-panel-connector.cmd.devices.questions.select.mappedDeviceChannel'),
-				array_values($channels),
-				$default,
-			);
-			$question->setErrorMessage(
-				$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
-			);
-			$question->setValidator(
-				function (string|null $answer) use ($device, $channels): DevicesEntities\Channels\Channel {
-					if ($answer === null) {
-						throw new Exceptions\Runtime(
-							sprintf(
-								$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
-								$answer,
-							),
-						);
-					}
-
-					if (array_key_exists($answer, array_values($channels))) {
-						$answer = array_values($channels)[$answer];
-					}
-
-					$identifier = array_search($answer, $channels, true);
-
-					if ($identifier !== false) {
-						$findChannelQuery = new DevicesQueries\FindChannels();
-						$findChannelQuery->byIdentifier($identifier);
-						$findChannelQuery->forDevice($device);
-
-						$channel = $this->channelsRepository->findOneBy($findChannelQuery);
-
-						if ($channel !== null) {
-							return $channel;
-						}
-					}
-
-					throw new Exceptions\Runtime(
-						sprintf(
-							$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
-							$answer,
-						),
-					);
-				},
-			);
-
-			$channel = $io->askQuestion($question);
-			assert($channel instanceof DevicesEntities\Channels\Channel);
-
-			$properties = [];
-
-			$findDevicePropertiesQuery = new DevicesQueries\FindChannelDynamicProperties();
-			$findDevicePropertiesQuery->forChannel($channel);
-
-			$channelProperties = $this->channelsPropertiesRepository->findAllBy(
-				$findDevicePropertiesQuery,
-				DevicesEntities\Channels\Properties\Dynamic::class,
-			);
-			usort(
-				$channelProperties,
-				static function (DevicesEntities\Channels\Properties\Dynamic $a, DevicesEntities\Channels\Properties\Dynamic $b): int {
-					if ($a->getIdentifier() === $b->getIdentifier()) {
-						return $a->getName() <=> $b->getName();
-					}
-
-					return $a->getIdentifier() <=> $b->getIdentifier();
-				},
-			);
-
-			foreach ($channelProperties as $property) {
-				$properties[$property->getIdentifier()] = sprintf(
-					'%s%s',
-					$property->getIdentifier(),
-					($property->getName() !== null ? ' [' . $property->getName() . ']' : ''),
-				);
-			}
-
-			$default = count($properties) === 1 ? 0 : null;
-
-			if ($connectedProperty !== null) {
-				foreach (array_values($properties) as $index => $value) {
-					if (Utils\Strings::contains($value, $connectedProperty->getIdentifier())) {
-						$default = $index;
-
-						break;
-					}
-				}
-			}
-
-			$question = new Console\Question\ChoiceQuestion(
-				$this->translator->translate('//ns-panel-connector.cmd.devices.questions.select.mappedChannelProperty'),
-				array_values($properties),
-				$default,
-			);
-			$question->setErrorMessage(
-				$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
-			);
-			$question->setValidator(
-				function (string|null $answer) use ($channel, $properties): DevicesEntities\Channels\Properties\Dynamic {
-					if ($answer === null) {
-						throw new Exceptions\Runtime(
-							sprintf(
-								$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
-								$answer,
-							),
-						);
-					}
-
-					if (array_key_exists($answer, array_values($properties))) {
-						$answer = array_values($properties)[$answer];
-					}
-
-					$identifier = array_search($answer, $properties, true);
-
-					if ($identifier !== false) {
-						$findPropertyQuery = new DevicesQueries\FindChannelDynamicProperties();
-						$findPropertyQuery->byIdentifier($identifier);
-						$findPropertyQuery->forChannel($channel);
-
-						$property = $this->channelsPropertiesRepository->findOneBy(
-							$findPropertyQuery,
-							DevicesEntities\Channels\Properties\Dynamic::class,
-						);
-
-						if ($property !== null) {
-							return $property;
-						}
-					}
-
-					throw new Exceptions\Runtime(
-						sprintf(
-							$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
-							$answer,
-						),
-					);
-				},
-			);
-
-			$property = $io->askQuestion($question);
-			assert($property instanceof DevicesEntities\Channels\Properties\Dynamic);
 		}
+
+		$default = count($properties) === 1 ? 0 : null;
+
+		if ($connectedProperty !== null) {
+			foreach (array_values($properties) as $index => $value) {
+				if (Utils\Strings::contains($value, $connectedProperty->getIdentifier())) {
+					$default = $index;
+
+					break;
+				}
+			}
+		}
+
+		$question = new Console\Question\ChoiceQuestion(
+			$this->translator->translate('//ns-panel-connector.cmd.devices.questions.select.mappedChannelProperty'),
+			array_values($properties),
+			$default,
+		);
+		$question->setErrorMessage(
+			$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+		);
+		$question->setValidator(
+			function (string|null $answer) use ($channel, $properties): DevicesEntities\Channels\Properties\Dynamic {
+				if ($answer === null) {
+					throw new Exceptions\Runtime(
+						sprintf(
+							$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+							$answer,
+						),
+					);
+				}
+
+				if (array_key_exists($answer, array_values($properties))) {
+					$answer = array_values($properties)[$answer];
+				}
+
+				$identifier = array_search($answer, $properties, true);
+
+				if ($identifier !== false) {
+					$findPropertyQuery = new DevicesQueries\FindChannelDynamicProperties();
+					$findPropertyQuery->byIdentifier($identifier);
+					$findPropertyQuery->forChannel($channel);
+
+					$property = $this->channelsPropertiesRepository->findOneBy(
+						$findPropertyQuery,
+						DevicesEntities\Channels\Properties\Dynamic::class,
+					);
+
+					if ($property !== null) {
+						return $property;
+					}
+				}
+
+				throw new Exceptions\Runtime(
+					sprintf(
+						$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+						$answer,
+					),
+				);
+			},
+		);
+
+		$property = $io->askQuestion($question);
+		assert($property instanceof DevicesEntities\Channels\Properties\Dynamic);
 
 		return $property;
 	}
@@ -3871,7 +3772,7 @@ class Devices extends Console\Command\Command
 		);
 
 		foreach ($deviceChannels as $channel) {
-			$channels[$device->getIdentifier()] = $channel->getIdentifier()
+			$channels[$channel->getIdentifier()] = $channel->getIdentifier()
 				. ($channel->getName() !== null ? ' [' . $channel->getName() . ']' : '');
 		}
 
@@ -3902,9 +3803,12 @@ class Devices extends Console\Command\Command
 					$answer = array_values($channels)[$answer];
 				}
 
-				if (in_array($answer, $channels, true)) {
+				$identifier = array_search($answer, $channels, true);
+
+				if ($identifier !== false) {
 					$findChannelQuery = new Queries\FindChannels();
 					$findChannelQuery->forDevice($device);
+					$findChannelQuery->byIdentifier($identifier);
 
 					$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\NsPanelChannel::class);
 
@@ -3981,9 +3885,12 @@ class Devices extends Console\Command\Command
 					$answer = array_values($properties)[$answer];
 				}
 
-				if (in_array($answer, $properties, true)) {
+				$identifier = array_search($answer, $properties, true);
+
+				if ($identifier !== false) {
 					$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
 					$findChannelPropertyQuery->forChannel($channel);
+					$findChannelPropertyQuery->byIdentifier($identifier);
 
 					$property = $this->channelsPropertiesRepository->findOneBy($findChannelPropertyQuery);
 

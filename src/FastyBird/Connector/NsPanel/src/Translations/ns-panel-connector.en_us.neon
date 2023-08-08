@@ -181,8 +181,6 @@ cmd:
                 capabilityType: "What type of device capability you would like to add?"
                 protocolType: "What type of capability protocol you would like to add?"
                 mappedDevice: "Select device for mapping"
-                propertyType: "What type of property you want to map?"
-                mappedDeviceProperty: "Select device property for mapping"
                 mappedDeviceChannel: "Select device channel for mapping"
                 mappedChannelProperty: "Select channel property for mapping"
                 valueMapping: "Select device value which will be mapped to: %value%"
@@ -195,8 +193,6 @@ cmd:
             none: "None"
             true: "True"
             false: "False"
-            deviceProperty: "Device property"
-            channelProperty: "Channel property"
 
         data:
             name: "Name"
