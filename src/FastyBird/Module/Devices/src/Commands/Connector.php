@@ -75,6 +75,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 	private Entities\Connectors\Connector|null $connector = null;
 
 	private Connectors\Connector|null $service = null;
+
 	private Console\Helper\ProgressBar|null $progressBar = null;
 
 	private string $mode = self::MODE_EXECUTE;
@@ -428,7 +429,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 		if ($this->mode === self::MODE_DISCOVER) {
 			$this->progressBarTimer = $this->eventLoop->addPeriodicTimer(
 				0.1,
-				async(static function (): void {
+				async(function (): void {
 					$this->progressBar?->advance();
 				}),
 			);

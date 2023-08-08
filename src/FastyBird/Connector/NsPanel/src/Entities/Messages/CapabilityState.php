@@ -15,13 +15,11 @@
 
 namespace FastyBird\Connector\NsPanel\Entities\Messages;
 
-use Consistence\Enum;
 use DateTimeInterface;
 use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Orisai\ObjectMapper;
-use function strval;
 
 /**
  * Device state definition
@@ -56,7 +54,7 @@ final class CapabilityState implements Entity
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		private readonly int|float|string|bool|Types\MotorCalibrationPayload|Types\MotorControlPayload|Types\PowerPayload|Types\PressPayload|Types\StartupPayload|Types\TogglePayload|null $value,
 		#[ObjectMapper\Rules\AnyOf([
-			new BootstrapObjectMapper\Rules\UuidValue(),
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		private readonly string|null $identifier = null,
@@ -90,16 +88,10 @@ final class CapabilityState implements Entity
 	 */
 	public function toArray(): array
 	{
-		$value = $this->getValue();
-
-		if ($value instanceof Enum\Enum) {
-			$value = strval($value->getValue());
-		}
-
 		return [
 			'capability' => $this->getCapability()->getValue(),
 			'protocol' => $this->getProtocol()->getValue(),
-			'value' => DevicesUtilities\ValueHelper::flattenValue($value),
+			'value' => DevicesUtilities\ValueHelper::flattenValue($this->getValue()),
 			'identifier' => $this->getIdentifier(),
 		];
 	}

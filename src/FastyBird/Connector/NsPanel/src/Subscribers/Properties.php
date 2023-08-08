@@ -350,7 +350,7 @@ final class Properties implements Common\EventSubscriber
 					'format' => $format,
 					'settable' => false,
 					'queryable' => false,
-					'value' => 0,
+					'value' => -40,
 				]));
 			} else {
 				$this->channelsPropertiesManager->create(Utils\ArrayHash::from([

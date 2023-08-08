@@ -206,13 +206,13 @@ final class Device implements Client
 				}
 
 				// Device have to have configured all required capabilities
-				if (array_diff($requiredCapabilities, $deviceCapabilities) === []) {
+				if (array_diff($requiredCapabilities, $deviceCapabilities) !== []) {
 					$this->consumer->append(
 						$this->entityHelper->create(
 							Entities\Messages\DeviceOnline::class,
 							[
 								'connector' => $this->connector->getId()->toString(),
-								'identifier' => $device->getGateway()->getIdentifier(),
+								'identifier' => $device->getIdentifier(),
 								'state' => MetadataTypes\ConnectionState::STATE_ALERT,
 							],
 						),

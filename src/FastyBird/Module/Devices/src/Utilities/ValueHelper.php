@@ -358,7 +358,7 @@ final class ValueHelper
 	}
 
 	public static function flattenValue(
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
+		bool|float|int|string|DateTimeInterface|Consistence\Enum\Enum|null $value,
 	): bool|float|int|string|null
 	{
 		if ($value instanceof DateTimeInterface) {

@@ -15,7 +15,6 @@
 
 namespace FastyBird\Connector\NsPanel\Helpers;
 
-use Consistence\Enum;
 use DateTimeInterface;
 use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -59,10 +58,6 @@ final class Transformer
 	{
 		if ($value === null) {
 			return null;
-		}
-
-		if ($value instanceof Enum\Enum) {
-			$value = strval($value->getValue());
 		}
 
 		$value = DevicesUtilities\ValueHelper::flattenValue($value);

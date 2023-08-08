@@ -326,7 +326,7 @@ final class Gateway implements Client
 									'body' => $ex->getRequest()?->getBody()->getContents(),
 								],
 								'response' => [
-									'body' => $ex->getRequest()?->getBody()->getContents(),
+									'body' => $ex->getResponse()?->getBody()->getContents(),
 								],
 							],
 						);
@@ -526,7 +526,7 @@ final class Gateway implements Client
 									'body' => $ex->getRequest()?->getBody()->getContents(),
 								],
 								'response' => [
-									'body' => $ex->getRequest()?->getBody()->getContents(),
+									'body' => $ex->getResponse()?->getBody()->getContents(),
 								],
 							],
 						);
