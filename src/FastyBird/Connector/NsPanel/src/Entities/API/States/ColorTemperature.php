@@ -46,7 +46,7 @@ final class ColorTemperature implements State
 	public function getProtocols(): array
 	{
 		return [
-			Types\Protocol::TEMPERATURE => $this->colorTemperature,
+			Types\Protocol::COLOR_TEMPERATURE => $this->colorTemperature,
 		];
 	}
 

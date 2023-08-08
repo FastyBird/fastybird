@@ -241,124 +241,23 @@ final class Device implements Client
 				];
 			}
 
+			$deferred = new Promise\Deferred();
+
+			$promise = $deferred->promise();
+
 			try {
-				$this->lanApiApi->synchroniseDevices(
-					$syncDevices,
-					$ipAddress,
-					$accessToken,
-				)
-					->then(function (Entities\API\Response\SyncDevices $response) use ($gateway): void {
-						$this->logger->debug(
-							'NS Panel third-party devices was successfully synchronised',
-							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-								'type' => 'device-client',
-								'connector' => [
-									'id' => $this->connector->getId()->toString(),
-								],
-								'gateway' => [
-									'id' => $gateway->getId()->toString(),
-								],
-							],
-						);
-
-						foreach ($response->getPayload()->getEndpoints() as $endpoint) {
-							$findDeviceQuery = new Queries\FindThirdPartyDevices();
-							$findDeviceQuery->byId($endpoint->getThirdSerialNumber());
-							$findDeviceQuery->forConnector($this->connector);
-							$findDeviceQuery->forParent($gateway);
-
-							$device = $this->devicesRepository->findOneBy(
-								$findDeviceQuery,
-								Entities\Devices\ThirdPartyDevice::class,
-							);
-
-							if ($device !== null) {
-								$this->consumer->append(
-									$this->entityHelper->create(
-										Entities\Messages\DeviceOnline::class,
-										[
-											'connector' => $this->connector->getId()->toString(),
-											'identifier' => $device->getIdentifier(),
-											'state' => MetadataTypes\ConnectionState::STATE_CONNECTED,
-										],
-									),
-								);
-
-								$this->consumer->append(
-									$this->entityHelper->create(
-										Entities\Messages\DeviceSynchronisation::class,
-										[
-											'connector' => $this->connector->getId()->toString(),
-											'identifier' => $device->getIdentifier(),
-											'gateway_identifier' => $endpoint->getSerialNumber(),
-										],
-									),
-								);
-							} else {
-								$this->logger->error(
-									'Could not finish third-party device synchronisation',
-									[
-										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-										'type' => 'device-client',
-										'connector' => [
-											'id' => $this->connector->getId()->toString(),
-										],
-										'gateway' => [
-											'id' => $gateway->getId()->toString(),
-										],
-										'device' => [
-											'id' => $endpoint->getThirdSerialNumber()->toString(),
-										],
-									],
-								);
-							}
-						}
-					})
-					->otherwise(function (Throwable $ex) use ($gateway): void {
-						$extra = [];
-
-						if ($ex instanceof Exceptions\LanApiCall) {
-							$extra = [
-								'request' => [
-									'body' => $ex->getRequest()?->getBody()->getContents(),
-								],
-								'response' => [
-									'body' => $ex->getRequest()?->getBody()->getContents(),
-								],
-							];
-
-							$this->consumer->append(
-								$this->entityHelper->create(
-									Entities\Messages\DeviceOnline::class,
-									[
-										'connector' => $this->connector->getId()->toString(),
-										'identifier' => $gateway->getIdentifier(),
-										'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
-									],
-								),
-							);
-
-						} else {
-							$this->consumer->append(
-								$this->entityHelper->create(
-									Entities\Messages\DeviceOnline::class,
-									[
-										'connector' => $this->connector->getId()->toString(),
-										'identifier' => $gateway->getIdentifier(),
-										'state' => MetadataTypes\ConnectionState::STATE_LOST,
-									],
-								),
-							);
-						}
-
-						$this->logger->error(
-							'Could not synchronise third-party devices with NS Panel',
-							array_merge(
+				if ($syncDevices !== []) {
+					$this->lanApiApi->synchroniseDevices(
+						$syncDevices,
+						$ipAddress,
+						$accessToken,
+					)
+						->then(function (Entities\API\Response\SyncDevices $response) use ($gateway, $deferred): void {
+							$this->logger->debug(
+								'NS Panel third-party devices was successfully synchronised',
 								[
 									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 									'type' => 'device-client',
-									'exception' => BootstrapHelpers\Logger::buildException($ex),
 									'connector' => [
 										'id' => $this->connector->getId()->toString(),
 									],
@@ -366,99 +265,157 @@ final class Device implements Client
 										'id' => $gateway->getId()->toString(),
 									],
 								],
-								$extra,
-							),
-						);
-					});
+							);
 
-				$this->lanApiApi->getSubDevices($ipAddress, $accessToken)
-					->then(
-						function (Entities\API\Response\GetSubDevices $response) use ($gateway, $ipAddress, $accessToken): void {
-							foreach ($response->getData()->getDevicesList() as $subDevice) {
-								if ($subDevice->getThirdSerialNumber() === null) {
-									continue;
-								}
-
-								$findDevicesQuery = new Queries\FindThirdPartyDevices();
-								$findDevicesQuery->forParent($gateway);
-								$findDevicesQuery->byId($subDevice->getThirdSerialNumber());
+							foreach ($response->getPayload()->getEndpoints() as $endpoint) {
+								$findDeviceQuery = new Queries\FindThirdPartyDevices();
+								$findDeviceQuery->byId($endpoint->getThirdSerialNumber());
+								$findDeviceQuery->forConnector($this->connector);
+								$findDeviceQuery->forParent($gateway);
 
 								$device = $this->devicesRepository->findOneBy(
-									$findDevicesQuery,
+									$findDeviceQuery,
 									Entities\Devices\ThirdPartyDevice::class,
 								);
 
 								if ($device !== null) {
-									continue;
-								}
-
-								$this->lanApiApi->removeDevice(
-									$subDevice->getSerialNumber(),
-									$ipAddress,
-									$accessToken,
-								)
-									->then(function () use ($gateway, $subDevice): void {
-										$this->logger->debug(
-											'Removed third-party from NS Panel',
+									$this->consumer->append(
+										$this->entityHelper->create(
+											Entities\Messages\DeviceOnline::class,
 											[
-												'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-												'type' => 'device-client',
-												'connector' => [
-													'id' => $this->connector->getId()->toString(),
-												],
-												'gateway' => [
-													'id' => $gateway->getId()->toString(),
-												],
-												'device' => [
-													'id' => $subDevice->getThirdSerialNumber()->toString(),
-												],
+												'connector' => $this->connector->getId()->toString(),
+												'identifier' => $device->getIdentifier(),
+												'state' => MetadataTypes\ConnectionState::STATE_CONNECTED,
 											],
-										);
-									})
-									->otherwise(function (Throwable $ex) use ($gateway, $subDevice): void {
-										$extra = [];
+										),
+									);
 
-										if ($ex instanceof Exceptions\LanApiCall) {
-											$extra = [
-												'request' => [
-													'body' => $ex->getRequest()?->getBody()->getContents(),
-												],
-												'response' => [
-													'body' => $ex->getRequest()?->getBody()->getContents(),
-												],
-											];
+									$this->consumer->append(
+										$this->entityHelper->create(
+											Entities\Messages\DeviceSynchronisation::class,
+											[
+												'connector' => $this->connector->getId()->toString(),
+												'identifier' => $device->getIdentifier(),
+												'gateway_identifier' => $endpoint->getSerialNumber(),
+											],
+										),
+									);
+								} else {
+									$this->logger->error(
+										'Could not finish third-party device synchronisation',
+										[
+											'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+											'type' => 'device-client',
+											'connector' => [
+												'id' => $this->connector->getId()->toString(),
+											],
+											'gateway' => [
+												'id' => $gateway->getId()->toString(),
+											],
+											'device' => [
+												'id' => $endpoint->getThirdSerialNumber()->toString(),
+											],
+										],
+									);
+								}
+							}
 
-											$this->consumer->append(
-												$this->entityHelper->create(
-													Entities\Messages\DeviceOnline::class,
-													[
-														'connector' => $this->connector->getId()->toString(),
-														'identifier' => $gateway->getIdentifier(),
-														'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
-													],
-												),
-											);
+							$deferred->resolve();
+						})
+						->otherwise(function (Throwable $ex) use ($gateway, $deferred): void {
+							$extra = [];
 
-										} else {
-											$this->consumer->append(
-												$this->entityHelper->create(
-													Entities\Messages\DeviceOnline::class,
-													[
-														'connector' => $this->connector->getId()->toString(),
-														'identifier' => $gateway->getIdentifier(),
-														'state' => MetadataTypes\ConnectionState::STATE_LOST,
-													],
-												),
-											);
-										}
+							if ($ex instanceof Exceptions\LanApiCall) {
+								$extra = [
+									'request' => [
+										'body' => $ex->getRequest()?->getBody()->getContents(),
+									],
+									'response' => [
+										'body' => $ex->getRequest()?->getBody()->getContents(),
+									],
+								];
 
-										$this->logger->error(
-											'Could not remove deleted third-party device from NS Panel',
-											array_merge(
+								$this->consumer->append(
+									$this->entityHelper->create(
+										Entities\Messages\DeviceOnline::class,
+										[
+											'connector' => $this->connector->getId()->toString(),
+											'identifier' => $gateway->getIdentifier(),
+											'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+										],
+									),
+								);
+
+							} else {
+								$this->consumer->append(
+									$this->entityHelper->create(
+										Entities\Messages\DeviceOnline::class,
+										[
+											'connector' => $this->connector->getId()->toString(),
+											'identifier' => $gateway->getIdentifier(),
+											'state' => MetadataTypes\ConnectionState::STATE_LOST,
+										],
+									),
+								);
+							}
+
+							$this->logger->error(
+								'Could not synchronise third-party devices with NS Panel',
+								array_merge(
+									[
+										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+										'type' => 'device-client',
+										'exception' => BootstrapHelpers\Logger::buildException($ex),
+										'connector' => [
+											'id' => $this->connector->getId()->toString(),
+										],
+										'gateway' => [
+											'id' => $gateway->getId()->toString(),
+										],
+									],
+									$extra,
+								),
+							);
+
+							$deferred->reject($ex);
+						});
+				} else {
+					$deferred->resolve();
+				}
+
+				$promise->then(function () use ($gateway, $ipAddress, $accessToken): void {
+					$this->lanApiApi->getSubDevices($ipAddress, $accessToken)
+						->then(
+							function (Entities\API\Response\GetSubDevices $response) use ($gateway, $ipAddress, $accessToken): void {
+								foreach ($response->getData()->getDevicesList() as $subDevice) {
+									if ($subDevice->getThirdSerialNumber() === null) {
+										continue;
+									}
+
+									$findDevicesQuery = new Queries\FindThirdPartyDevices();
+									$findDevicesQuery->forParent($gateway);
+									$findDevicesQuery->byId($subDevice->getThirdSerialNumber());
+
+									$device = $this->devicesRepository->findOneBy(
+										$findDevicesQuery,
+										Entities\Devices\ThirdPartyDevice::class,
+									);
+
+									if ($device !== null) {
+										continue;
+									}
+
+									$this->lanApiApi->removeDevice(
+										$subDevice->getSerialNumber(),
+										$ipAddress,
+										$accessToken,
+									)
+										->then(function () use ($gateway, $subDevice): void {
+											$this->logger->debug(
+												'Removed third-party from NS Panel',
 												[
 													'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 													'type' => 'device-client',
-													'exception' => BootstrapHelpers\Logger::buildException($ex),
 													'connector' => [
 														'id' => $this->connector->getId()->toString(),
 													],
@@ -469,68 +426,125 @@ final class Device implements Client
 														'id' => $subDevice->getThirdSerialNumber()->toString(),
 													],
 												],
-												$extra,
-											),
-										);
-									});
+											);
+										})
+										->otherwise(function (Throwable $ex) use ($gateway, $subDevice): void {
+											$extra = [];
+
+											if ($ex instanceof Exceptions\LanApiCall) {
+												$extra = [
+													'request' => [
+														'body' => $ex->getRequest()?->getBody()->getContents(),
+													],
+													'response' => [
+														'body' => $ex->getRequest()?->getBody()->getContents(),
+													],
+												];
+
+												$this->consumer->append(
+													$this->entityHelper->create(
+														Entities\Messages\DeviceOnline::class,
+														[
+															'connector' => $this->connector->getId()->toString(),
+															'identifier' => $gateway->getIdentifier(),
+															'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+														],
+													),
+												);
+
+											} else {
+												$this->consumer->append(
+													$this->entityHelper->create(
+														Entities\Messages\DeviceOnline::class,
+														[
+															'connector' => $this->connector->getId()->toString(),
+															'identifier' => $gateway->getIdentifier(),
+															'state' => MetadataTypes\ConnectionState::STATE_LOST,
+														],
+													),
+												);
+											}
+
+											$this->logger->error(
+												'Could not remove deleted third-party device from NS Panel',
+												array_merge(
+													[
+														'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+														'type' => 'device-client',
+														'exception' => BootstrapHelpers\Logger::buildException($ex),
+														'connector' => [
+															'id' => $this->connector->getId()->toString(),
+														],
+														'gateway' => [
+															'id' => $gateway->getId()->toString(),
+														],
+														'device' => [
+															'id' => $subDevice->getThirdSerialNumber()->toString(),
+														],
+													],
+													$extra,
+												),
+											);
+										});
+								}
+							},
+						)
+						->otherwise(function (Throwable $ex) use ($gateway): void {
+							$extra = [];
+
+							if ($ex instanceof Exceptions\LanApiCall) {
+								$extra = [
+									'request' => [
+										'body' => $ex->getRequest()?->getBody()->getContents(),
+									],
+									'response' => [
+										'body' => $ex->getRequest()?->getBody()->getContents(),
+									],
+								];
+
+								$this->consumer->append(
+									$this->entityHelper->create(
+										Entities\Messages\DeviceOnline::class,
+										[
+											'connector' => $this->connector->getId()->toString(),
+											'identifier' => $gateway->getIdentifier(),
+											'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+										],
+									),
+								);
+
+							} else {
+								$this->consumer->append(
+									$this->entityHelper->create(
+										Entities\Messages\DeviceOnline::class,
+										[
+											'connector' => $this->connector->getId()->toString(),
+											'identifier' => $gateway->getIdentifier(),
+											'state' => MetadataTypes\ConnectionState::STATE_LOST,
+										],
+									),
+								);
 							}
-						},
-					)
-					->otherwise(function (Throwable $ex) use ($gateway): void {
-						$extra = [];
 
-						if ($ex instanceof Exceptions\LanApiCall) {
-							$extra = [
-								'request' => [
-									'body' => $ex->getRequest()?->getBody()->getContents(),
-								],
-								'response' => [
-									'body' => $ex->getRequest()?->getBody()->getContents(),
-								],
-							];
-
-							$this->consumer->append(
-								$this->entityHelper->create(
-									Entities\Messages\DeviceOnline::class,
+							$this->logger->error(
+								'Could not fetch NS Panel registered devices',
+								array_merge(
 									[
-										'connector' => $this->connector->getId()->toString(),
-										'identifier' => $gateway->getIdentifier(),
-										'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+										'type' => 'device-client',
+										'exception' => BootstrapHelpers\Logger::buildException($ex),
+										'connector' => [
+											'id' => $this->connector->getId()->toString(),
+										],
+										'gateway' => [
+											'id' => $gateway->getId()->toString(),
+										],
 									],
+									$extra,
 								),
 							);
-
-						} else {
-							$this->consumer->append(
-								$this->entityHelper->create(
-									Entities\Messages\DeviceOnline::class,
-									[
-										'connector' => $this->connector->getId()->toString(),
-										'identifier' => $gateway->getIdentifier(),
-										'state' => MetadataTypes\ConnectionState::STATE_LOST,
-									],
-								),
-							);
-						}
-
-						$this->logger->error(
-							'Could not fetch NS Panel registered devices',
-							array_merge(
-								[
-									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-									'type' => 'device-client',
-									'exception' => BootstrapHelpers\Logger::buildException($ex),
-									'connector' => [
-										'id' => $this->connector->getId()->toString(),
-									],
-									'gateway' => [
-										'id' => $gateway->getId()->toString(),
-									],
-								],
-								$extra,
-							),
-						);
-					});
+						});
+				});
 
 				$this->writer->connect($this->connector, $this);
 			} catch (Throwable $ex) {
