@@ -271,7 +271,7 @@ final class ConnectorPropertiesStates
 					$data->offsetSet(States\Property::VALID_KEY, false);
 
 					$this->logger->error(
-						'Provided property actual value was not valid',
+						'Provided property actual value is not valid',
 						[
 							'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
 							'type' => 'connector-properties-states',
@@ -298,7 +298,7 @@ final class ConnectorPropertiesStates
 					$data->offsetSet(States\Property::VALID_KEY, false);
 
 					$this->logger->error(
-						'Provided property actual value was not valid',
+						'Provided property actual value is not valid',
 						[
 							'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
 							'type' => 'connector-properties-states',

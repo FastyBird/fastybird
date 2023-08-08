@@ -75,6 +75,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 	private Entities\Connectors\Connector|null $connector = null;
 
 	private Connectors\Connector|null $service = null;
+	private Console\Helper\ProgressBar|null $progressBar = null;
 
 	private string $mode = self::MODE_EXECUTE;
 
@@ -219,19 +220,21 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 			}
 		}
 
-		$progressBar = new Console\Helper\ProgressBar(
-			$output,
-			intval(self::DISCOVERY_MAX_PROCESSING_INTERVAL * 60),
-		);
+		if ($this->mode === self::MODE_DISCOVER) {
+			$this->progressBar = new Console\Helper\ProgressBar(
+				$output,
+				intval(self::DISCOVERY_MAX_PROCESSING_INTERVAL * 60),
+			);
 
-		$progressBar->setFormat('[%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s% %');
+			$this->progressBar->setFormat('[%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s% %');
+		}
 
 		try {
-			$this->executeConnector($io, $input, $progressBar);
+			$this->executeConnector($io, $input);
 
 			$this->eventLoop->run();
 
-			$progressBar->finish();
+			$this->progressBar?->finish();
 
 			return Console\Command\Command::SUCCESS;
 		} catch (Exceptions\Terminate $ex) {
@@ -269,7 +272,6 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 	private function executeConnector(
 		Style\SymfonyStyle $io,
 		Input\InputInterface $input,
-		Console\Helper\ProgressBar $progressBar,
 	): void
 	{
 		if ($input->getOption('quiet') === false) {
@@ -426,13 +428,13 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 		if ($this->mode === self::MODE_DISCOVER) {
 			$this->progressBarTimer = $this->eventLoop->addPeriodicTimer(
 				0.1,
-				async(static function () use ($progressBar): void {
-					$progressBar->advance();
+				async(static function (): void {
+					$this->progressBar?->advance();
 				}),
 			);
 		}
 
-		$this->eventLoop->futureTick(function () use ($progressBar): void {
+		$this->eventLoop->futureTick(function (): void {
 			assert($this->connector instanceof Entities\Connectors\Connector);
 
 			if ($this->mode === self::MODE_DISCOVER) {
@@ -446,7 +448,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 				try {
 					assert($this->service instanceof Connectors\Connector);
 
-					$progressBar->start();
+					$this->progressBar?->start();
 
 					// Start connector service
 					$this->service->discover();

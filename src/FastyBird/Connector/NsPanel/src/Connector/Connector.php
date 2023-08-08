@@ -102,8 +102,10 @@ final class Connector implements DevicesConnectors\Connector
 			$constants = $rc->getConstants();
 
 			if (
-				array_key_exists(Clients\ClientFactory::MODE_CONSTANT_NAME, $constants)
-				&& $mode->equalsValue($constants[Clients\ClientFactory::MODE_CONSTANT_NAME])
+				(
+					array_key_exists(Clients\ClientFactory::MODE_CONSTANT_NAME, $constants)
+					&& $mode->equalsValue($constants[Clients\ClientFactory::MODE_CONSTANT_NAME])
+				) || $mode->equalsValue(NsPanel\Types\ClientMode::BOTH)
 			) {
 				$client = $clientFactory->create($this->connector);
 				$client->connect();
