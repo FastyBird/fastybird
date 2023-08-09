@@ -152,7 +152,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
 	private function processEntity(
-		MetadataEntities\DevicesModule\DynamicProperty|Entities\Connectors\Properties\Dynamic|Entities\Devices\Properties\Dynamic|Entities\Channels\Properties\Dynamic $property,
+		MetadataEntities\DevicesModule\DynamicProperty|MetadataEntities\DevicesModule\MappedProperty|Entities\Connectors\Properties\Dynamic|Entities\Devices\Properties\Dynamic|Entities\Channels\Properties\Dynamic|Entities\Devices\Properties\Mapped|Entities\Channels\Properties\Mapped $property,
 	): void
 	{
 		$state = null;
@@ -165,13 +165,17 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 
 		} elseif (
 			$property instanceof MetadataEntities\DevicesModule\DeviceDynamicProperty
+			|| $property instanceof MetadataEntities\DevicesModule\DeviceMappedProperty
 			|| $property instanceof Entities\Devices\Properties\Dynamic
+			|| $property instanceof Entities\Devices\Properties\Mapped
 		) {
 			$state = $this->devicePropertiesStates->readValue($property);
 
 		} elseif (
 			$property instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty
+			|| $property instanceof MetadataEntities\DevicesModule\ChannelMappedProperty
 			|| $property instanceof Entities\Channels\Properties\Dynamic
+			|| $property instanceof Entities\Channels\Properties\Mapped
 		) {
 			$state = $this->channelPropertiesStates->readValue($property);
 		}
@@ -253,7 +257,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	 * @throws Exceptions\InvalidState
 	 */
 	private function findChildren(
-		MetadataEntities\DevicesModule\DynamicProperty|Entities\Connectors\Properties\Dynamic|Entities\Devices\Properties\Dynamic|Entities\Channels\Properties\Dynamic $property,
+		MetadataEntities\DevicesModule\DynamicProperty|MetadataEntities\DevicesModule\MappedProperty|Entities\Connectors\Properties\Dynamic|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped $property,
 	): array
 	{
 		if (
@@ -263,9 +267,11 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 			return [];
 		} elseif (
 			$property instanceof MetadataEntities\DevicesModule\DeviceDynamicProperty
+			|| $property instanceof MetadataEntities\DevicesModule\DeviceMappedProperty
 			|| $property instanceof Entities\Devices\Properties\Dynamic
+			|| $property instanceof Entities\Devices\Properties\Mapped
 		) {
-			$findDevicePropertiesQuery = new Queries\FindDeviceProperties();
+			$findDevicePropertiesQuery = new Queries\FindDeviceMappedProperties();
 			$findDevicePropertiesQuery->byParentId($property->getId());
 
 			return $this->devicePropertiesRepository->findAllBy(
@@ -274,9 +280,11 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 			);
 		} elseif (
 			$property instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty
+			|| $property instanceof MetadataEntities\DevicesModule\ChannelMappedProperty
 			|| $property instanceof Entities\Channels\Properties\Dynamic
+			|| $property instanceof Entities\Channels\Properties\Mapped
 		) {
-			$findDevicePropertiesQuery = new Queries\FindChannelProperties();
+			$findDevicePropertiesQuery = new Queries\FindChannelMappedProperties();
 			$findDevicePropertiesQuery->byParentId($property->getId());
 
 			return $this->channelPropertiesRepository->findAllBy(

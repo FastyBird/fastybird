@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Messages.php
+ * Consumers.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,38 +10,32 @@
  * @subpackage     Consumers
  * @since          1.0.0
  *
- * @date           09.07.23
+ * @date           09.08.23
  */
 
-namespace FastyBird\Connector\NsPanel\Consumers;
+namespace FastyBird\Connector\NsPanel\Queue;
 
 use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette;
 use SplObjectStorage;
-use SplQueue;
-use function count;
-use function sprintf;
 
 /**
- * Clients message consumer proxy
+ * Clients message queue consumers container
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Consumers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Messages
+final class Consumers
 {
 
 	use Nette\SmartObject;
 
 	/** @var SplObjectStorage<Consumer, null> */
 	private SplObjectStorage $consumers;
-
-	/** @var SplQueue<Entities\Messages\Entity> */
-	private SplQueue $queue;
 
 	/**
 	 * @param array<Consumer> $consumers
@@ -52,45 +46,27 @@ final class Messages
 	)
 	{
 		$this->consumers = new SplObjectStorage();
-		$this->queue = new SplQueue();
 
 		foreach ($consumers as $consumer) {
-			$this->consumers->attach($consumer);
+			$this->append($consumer);
 		}
+	}
+
+	public function append(Consumer $consumer): void
+	{
+		$this->consumers->attach($consumer);
 
 		$this->logger->debug(
-			sprintf('Registered %d messages consumers', count($this->consumers)),
+			'Appended new messages consumer',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-				'type' => 'consumer',
+				'type' => 'consumers',
 			],
 		);
 	}
 
-	public function append(Entities\Messages\Entity $entity): void
+	public function consume(Entities\Messages\Entity $entity): void
 	{
-		$this->queue->enqueue($entity);
-
-		$this->logger->debug(
-			'Appended new message into consumers queue',
-			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-				'type' => 'consumer',
-				'message' => $entity->toArray(),
-			],
-		);
-	}
-
-	public function consume(): void
-	{
-		$this->queue->rewind();
-
-		if ($this->queue->isEmpty()) {
-			return;
-		}
-
-		$entity = $this->queue->dequeue();
-
 		$this->consumers->rewind();
 
 		if ($this->consumers->count() === 0) {
@@ -98,12 +74,9 @@ final class Messages
 				'No consumer is registered, messages could not be consumed',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'consumer',
+					'type' => 'consumers',
 				],
 			);
-
-			// Reset queue items
-			$this->queue = new SplQueue();
 
 			return;
 		}
@@ -118,15 +91,10 @@ final class Messages
 			'Message could not be consumed',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-				'type' => 'consumer',
+				'type' => 'consumers',
 				'message' => $entity->toArray(),
 			],
 		);
-	}
-
-	public function isEmpty(): bool
-	{
-		return $this->queue->isEmpty();
 	}
 
 }

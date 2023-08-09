@@ -22,7 +22,7 @@ use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Orisai\ObjectMapper;
 
 /**
- * Device state definition
+ * Device capability state definition
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Entities
@@ -51,7 +51,7 @@ final class CapabilityState implements Entity
 			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+		                                  // phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		private readonly int|float|string|bool|Types\MotorCalibrationPayload|Types\MotorControlPayload|Types\PowerPayload|Types\PressPayload|Types\StartupPayload|Types\TogglePayload|null $value,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),

@@ -17,10 +17,11 @@ namespace FastyBird\Connector\NsPanel\Connector;
 
 use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Clients;
-use FastyBird\Connector\NsPanel\Consumers;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
+use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Connector\NsPanel\Servers;
+use FastyBird\Connector\NsPanel\Writers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Connectors as DevicesConnectors;
@@ -55,7 +56,9 @@ final class Connector implements DevicesConnectors\Connector
 
 	private Servers\Server|null $server = null;
 
-	private EventLoop\TimerInterface|null $consumerTimer = null;
+	private Writers\Writer|null $writer = null;
+
+	private EventLoop\TimerInterface|null $queueTimer = null;
 
 	/**
 	 * @param array<Clients\ClientFactory> $clientsFactories
@@ -65,8 +68,9 @@ final class Connector implements DevicesConnectors\Connector
 		private readonly array $clientsFactories,
 		private readonly Clients\DiscoveryFactory $discoveryClientFactory,
 		private readonly Servers\ServerFactory $serverFactory,
+		private readonly Writers\WriterFactory $writerFactory,
 		private readonly NsPanel\Logger $logger,
-		private readonly Consumers\Messages $consumer,
+		private readonly Queue\Queue $queue,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
@@ -122,10 +126,13 @@ final class Connector implements DevicesConnectors\Connector
 			$this->server->connect();
 		}
 
-		$this->consumerTimer = $this->eventLoop->addPeriodicTimer(
+		$this->writer = $this->writerFactory->create($this->connector);
+		$this->writer->connect();
+
+		$this->queueTimer = $this->eventLoop->addPeriodicTimer(
 			self::QUEUE_PROCESSING_INTERVAL,
 			async(function (): void {
-				$this->consumer->consume();
+				$this->queue->consume();
 			}),
 		);
 
@@ -176,10 +183,10 @@ final class Connector implements DevicesConnectors\Connector
 
 		$this->clients[] = $client;
 
-		$this->consumerTimer = $this->eventLoop->addPeriodicTimer(
+		$this->queueTimer = $this->eventLoop->addPeriodicTimer(
 			self::QUEUE_PROCESSING_INTERVAL,
 			async(function (): void {
-				$this->consumer->consume();
+				$this->queue->consume();
 			}),
 		);
 
@@ -203,8 +210,12 @@ final class Connector implements DevicesConnectors\Connector
 			$client->disconnect();
 		}
 
-		if ($this->consumerTimer !== null && $this->consumer->isEmpty()) {
-			$this->eventLoop->cancelTimer($this->consumerTimer);
+		$this->server?->disconnect();
+
+		$this->writer?->disconnect();
+
+		if ($this->queueTimer !== null && $this->queue->isEmpty()) {
+			$this->eventLoop->cancelTimer($this->queueTimer);
 		}
 
 		$this->logger->debug(
@@ -221,7 +232,7 @@ final class Connector implements DevicesConnectors\Connector
 
 	public function hasUnfinishedTasks(): bool
 	{
-		return !$this->consumer->isEmpty() && $this->consumerTimer !== null;
+		return !$this->queue->isEmpty() && $this->queueTimer !== null;
 	}
 
 }

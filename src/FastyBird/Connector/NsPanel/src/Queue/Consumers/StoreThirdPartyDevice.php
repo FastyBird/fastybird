@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * DeviceSynchronisation.php
+ * StoreThirdPartyDevice.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,14 +13,14 @@
  * @date           04.08.23
  */
 
-namespace FastyBird\Connector\NsPanel\Consumers\Messages;
+namespace FastyBird\Connector\NsPanel\Queue\Consumers;
 
 use Doctrine\DBAL;
 use FastyBird\Connector\NsPanel;
-use FastyBird\Connector\NsPanel\Consumers;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Queries;
+use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -30,17 +30,17 @@ use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 
 /**
- * Device synchronisation message consumer
+ * Store NS Panel third-party device message consumer
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Consumers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceSynchronisation implements Consumers\Consumer
+final class StoreThirdPartyDevice implements Queue\Consumer
 {
 
-	use ConsumeDeviceProperty;
+	use DeviceProperty;
 	use Nette\SmartObject;
 
 	public function __construct(
@@ -62,7 +62,7 @@ final class DeviceSynchronisation implements Consumers\Consumer
 	 */
 	public function consume(Entities\Messages\Entity $entity): bool
 	{
-		if (!$entity instanceof Entities\Messages\DeviceSynchronisation) {
+		if (!$entity instanceof Entities\Messages\StoreThirdPartyDevice) {
 			return false;
 		}
 
@@ -73,6 +73,24 @@ final class DeviceSynchronisation implements Consumers\Consumer
 		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\ThirdPartyDevice::class);
 
 		if ($device === null) {
+			$this->logger->error(
+				'Device could not be loaded',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'type' => 'store-sub-device-message-consumer',
+					'connector' => [
+						'id' => $entity->getConnector()->toString(),
+					],
+					'gateway' => [
+						'id' => $entity->getGateway(),
+					],
+					'device' => [
+						'identifier' => $entity->getIdentifier(),
+					],
+					'data' => $entity->toArray(),
+				],
+			);
+
 			return true;
 		}
 
@@ -85,10 +103,10 @@ final class DeviceSynchronisation implements Consumers\Consumer
 		);
 
 		$this->logger->debug(
-			'Consumed device synchronisation message',
+			'Consumed store third-party device state message',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-				'type' => 'device-synchronisation-message-consumer',
+				'type' => 'store-third-party-device-message-consumer',
 				'device' => [
 					'id' => $device->getId()->toString(),
 				],

@@ -15,7 +15,7 @@
 
 namespace FastyBird\Library\Metadata\Entities\DevicesModule;
 
-use Exception;
+use FastyBird\Library\Metadata\Exceptions;
 use Nette\Utils;
 use Ramsey\Uuid;
 use function array_map;
@@ -93,6 +93,9 @@ final class ChannelDynamicProperty extends DynamicProperty
 		);
 	}
 
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), [
@@ -108,7 +111,7 @@ final class ChannelDynamicProperty extends DynamicProperty
 	/**
 	 * @return array<string, mixed>
 	 *
-	 * @throws Exception
+	 * @throws Exceptions\InvalidState
 	 */
 	public function __serialize(): array
 	{

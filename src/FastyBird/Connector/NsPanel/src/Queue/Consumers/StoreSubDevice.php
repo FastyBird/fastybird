@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * DiscoveredSubDevice.php
+ * StoreSubDevice.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,14 +13,14 @@
  * @date           24.08.22
  */
 
-namespace FastyBird\Connector\NsPanel\Consumers\Messages;
+namespace FastyBird\Connector\NsPanel\Queue\Consumers;
 
 use Doctrine\DBAL;
 use FastyBird\Connector\NsPanel;
-use FastyBird\Connector\NsPanel\Consumers;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Queries;
+use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -33,17 +33,17 @@ use function assert;
 use function is_array;
 
 /**
- * NS Panel sub-devices discovery message consumer
+ * Store NS Panel sub-device message consumer
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Consumers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DiscoveredSubDevice implements Consumers\Consumer
+final class StoreSubDevice implements Queue\Consumer
 {
 
-	use ConsumeDeviceProperty;
+	use DeviceProperty;
 	use Nette\SmartObject;
 
 	public function __construct(
@@ -69,7 +69,7 @@ final class DiscoveredSubDevice implements Consumers\Consumer
 	 */
 	public function consume(Entities\Messages\Entity $entity): bool
 	{
-		if (!$entity instanceof Entities\Messages\DiscoveredSubDevice) {
+		if (!$entity instanceof Entities\Messages\StoreSubDevice) {
 			return false;
 		}
 
@@ -80,13 +80,31 @@ final class DiscoveredSubDevice implements Consumers\Consumer
 		$parent = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\Gateway::class);
 
 		if ($parent === null) {
+			$this->logger->error(
+				'Device could not be loaded',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'type' => 'store-sub-device-message-consumer',
+					'connector' => [
+						'id' => $entity->getConnector()->toString(),
+					],
+					'gateway' => [
+						'id' => $entity->getGateway(),
+					],
+					'device' => [
+						'identifier' => $entity->getIdentifier(),
+					],
+					'data' => $entity->toArray(),
+				],
+			);
+
 			return true;
 		}
 
 		$findDeviceQuery = new Queries\FindSubDevices();
 		$findDeviceQuery->byConnectorId($entity->getConnector());
 		$findDeviceQuery->forParent($parent);
-		$findDeviceQuery->byIdentifier($entity->getSerialNumber());
+		$findDeviceQuery->byIdentifier($entity->getIdentifier());
 
 		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\SubDevice::class);
 
@@ -100,6 +118,24 @@ final class DiscoveredSubDevice implements Consumers\Consumer
 			);
 
 			if ($connector === null) {
+				$this->logger->error(
+					'Connector could not be loaded',
+					[
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+						'type' => 'store-sub-device-message-consumer',
+						'connector' => [
+							'id' => $entity->getConnector()->toString(),
+						],
+						'gateway' => [
+							'id' => $entity->getGateway(),
+						],
+						'device' => [
+							'identifier' => $entity->getIdentifier(),
+						],
+						'data' => $entity->toArray(),
+					],
+				);
+
 				return true;
 			}
 
@@ -109,7 +145,7 @@ final class DiscoveredSubDevice implements Consumers\Consumer
 						'entity' => Entities\Devices\SubDevice::class,
 						'connector' => $connector,
 						'parent' => $parent,
-						'identifier' => $entity->getSerialNumber(),
+						'identifier' => $entity->getIdentifier(),
 						'name' => $entity->getName(),
 					]));
 					assert($device instanceof Entities\Devices\SubDevice);
@@ -119,13 +155,19 @@ final class DiscoveredSubDevice implements Consumers\Consumer
 			);
 
 			$this->logger->info(
-				'Creating new sub-device',
+				'Sub-device was created',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'discovered-sub-device-message-consumer',
+					'type' => 'store-sub-device-message-consumer',
+					'connector' => [
+						'id' => $entity->getConnector()->toString(),
+					],
+					'gateway' => [
+						'id' => $parent->getId()->toString(),
+					],
 					'device' => [
 						'id' => $device->getId()->toString(),
-						'identifier' => $entity->getSerialNumber(),
+						'identifier' => $entity->getIdentifier(),
 						'protocol' => $entity->getProtocol(),
 					],
 				],
@@ -142,14 +184,20 @@ final class DiscoveredSubDevice implements Consumers\Consumer
 				},
 			);
 
-			$this->logger->debug(
+			$this->logger->info(
 				'Sub-device was updated',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'discovered-sub-device-message-consumer',
+					'type' => 'store-sub-device-message-consumer',
+					'connector' => [
+						'id' => $entity->getConnector()->toString(),
+					],
+					'gateway' => [
+						'id' => $parent->getId()->toString(),
+					],
 					'device' => [
 						'id' => $device->getId()->toString(),
-						'identifier' => $entity->getSerialNumber(),
+						'identifier' => $entity->getIdentifier(),
 						'protocol' => $entity->getProtocol(),
 					],
 				],
@@ -193,7 +241,7 @@ final class DiscoveredSubDevice implements Consumers\Consumer
 		);
 
 		foreach ($entity->getCapabilities() as $capability) {
-			$this->databaseHelper->transaction(function () use ($device, $capability): bool {
+			$this->databaseHelper->transaction(function () use ($entity, $parent, $device, $capability): bool {
 				$identifier = Helpers\Name::convertCapabilityToChannel($capability->getCapability());
 
 				if (
@@ -217,10 +265,16 @@ final class DiscoveredSubDevice implements Consumers\Consumer
 					]));
 
 					$this->logger->debug(
-						'Creating new device channel',
+						'Device channel was created',
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-							'type' => 'discovered-sub-device-message-consumer',
+							'type' => 'store-sub-device-message-consumer',
+							'connector' => [
+								'id' => $entity->getConnector()->toString(),
+							],
+							'gateway' => [
+								'id' => $parent->getId()->toString(),
+							],
 							'device' => [
 								'id' => $device->getId()->toString(),
 							],
@@ -237,7 +291,7 @@ final class DiscoveredSubDevice implements Consumers\Consumer
 
 		foreach ($entity->getTags() as $tag => $value) {
 			if ($tag === Types\Capability::TOGGLE && is_array($value)) {
-				$this->databaseHelper->transaction(function () use ($device, $value): void {
+				$this->databaseHelper->transaction(function () use ($entity, $parent, $device, $value): void {
 					foreach ($value as $key => $name) {
 						$findChannelQuery = new Queries\FindChannels();
 						$findChannelQuery->byIdentifier(
@@ -259,10 +313,16 @@ final class DiscoveredSubDevice implements Consumers\Consumer
 							]));
 
 							$this->logger->debug(
-								'Set toggle channel name',
+								'Toggle channel name was set',
 								[
 									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-									'type' => 'discovered-sub-device-message-consumer',
+									'type' => 'store-sub-device-message-consumer',
+									'connector' => [
+										'id' => $entity->getConnector()->toString(),
+									],
+									'gateway' => [
+										'id' => $parent->getId()->toString(),
+									],
 									'device' => [
 										'id' => $device->getId()->toString(),
 									],
@@ -278,10 +338,16 @@ final class DiscoveredSubDevice implements Consumers\Consumer
 		}
 
 		$this->logger->debug(
-			'Consumed sub-device found message',
+			'Consumed store sub-device message',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-				'type' => 'discovered-sub-device-message-consumer',
+				'type' => 'store-sub-device-message-consumer',
+				'connector' => [
+					'id' => $entity->getConnector()->toString(),
+				],
+				'gateway' => [
+					'id' => $parent->getId()->toString(),
+				],
 				'device' => [
 					'id' => $device->getId()->toString(),
 				],

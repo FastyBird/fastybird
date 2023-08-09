@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * TPropertiesMapper.php
+ * Channel.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,7 +13,7 @@
  * @date           16.07.23
  */
 
-namespace FastyBird\Connector\NsPanel\Clients;
+namespace FastyBird\Connector\NsPanel\Helpers;
 
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
@@ -39,12 +39,16 @@ use function strval;
  * @subpackage     Clients
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- *
- * @property-read Helpers\Property $propertyStateHelper
- * @property-read DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository
  */
-trait TPropertiesMapper
+final class Channel
 {
+
+	public function __construct(
+		private readonly Helpers\Property $propertyStateHelper,
+		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
+	)
+	{
+	}
 
 	/**
 	 * @return array<mixed>|null
@@ -55,7 +59,7 @@ trait TPropertiesMapper
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	protected function mapChannelToState(
+	public function mapChannelToState(
 		Entities\NsPanelChannel $channel,
 	): array|null
 	{

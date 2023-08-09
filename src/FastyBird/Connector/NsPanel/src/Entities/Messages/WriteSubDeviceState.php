@@ -1,33 +1,29 @@
 <?php declare(strict_types = 1);
 
 /**
- * Consumer.php
+ * WriteSubDeviceState.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:NsPanelConnector!
- * @subpackage     Consumers
+ * @subpackage     Entities
  * @since          1.0.0
  *
- * @date           09.07.23
+ * @date           09.08.23
  */
 
-namespace FastyBird\Connector\NsPanel\Consumers;
-
-use FastyBird\Connector\NsPanel\Entities;
+namespace FastyBird\Connector\NsPanel\Entities\Messages;
 
 /**
- * Clients messages consumer interface
+ * Write update sub-device state to hardware message entity
  *
  * @package        FastyBird:NsPanelConnector!
- * @subpackage     Consumers
+ * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-interface Consumer
+final class WriteSubDeviceState extends WriteDeviceState
 {
-
-	public function consume(Entities\Messages\Entity $entity): bool;
 
 }

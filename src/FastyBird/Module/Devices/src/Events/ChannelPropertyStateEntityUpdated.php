@@ -32,14 +32,15 @@ class ChannelPropertyStateEntityUpdated extends EventDispatcher\Event
 {
 
 	public function __construct(
-		private readonly MetadataEntities\DevicesModule\ChannelDynamicProperty|Entities\Channels\Properties\Dynamic $property,
+		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+		private readonly MetadataEntities\DevicesModule\ChannelDynamicProperty|Entities\Channels\Properties\Dynamic|MetadataEntities\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Mapped $property,
 		private readonly States\ChannelProperty $previousState,
 		private readonly States\ChannelProperty $state,
 	)
 	{
 	}
-
-	public function getProperty(): MetadataEntities\DevicesModule\ChannelDynamicProperty|Entities\Channels\Properties\Dynamic
+	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+	public function getProperty(): MetadataEntities\DevicesModule\ChannelDynamicProperty|Entities\Channels\Properties\Dynamic|MetadataEntities\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Mapped
 	{
 		return $this->property;
 	}

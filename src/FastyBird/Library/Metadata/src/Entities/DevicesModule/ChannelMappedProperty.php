@@ -15,7 +15,7 @@
 
 namespace FastyBird\Library\Metadata\Entities\DevicesModule;
 
-use Exception;
+use FastyBird\Library\Metadata\Exceptions;
 use Nette\Utils;
 use Ramsey\Uuid;
 use function array_map;
@@ -98,7 +98,7 @@ final class ChannelMappedProperty extends MappedProperty
 	}
 
 	/**
-	 * @throws Exception
+	 * @throws Exceptions\InvalidState
 	 */
 	public function toArray(): array
 	{
@@ -115,7 +115,7 @@ final class ChannelMappedProperty extends MappedProperty
 	/**
 	 * @return array<string, mixed>
 	 *
-	 * @throws Exception
+	 * @throws Exceptions\InvalidState
 	 */
 	public function __serialize(): array
 	{

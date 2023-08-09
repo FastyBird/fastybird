@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * DeviceState.php
+ * StoreThirdPartyDevice.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -15,43 +15,43 @@
 
 namespace FastyBird\Connector\NsPanel\Entities\Messages;
 
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
-use function array_map;
 use function array_merge;
 
 /**
- * Device state message entity
+ * Store NS Panel third-party device details message entity
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceState extends Device implements Entity
+final class StoreThirdPartyDevice extends Device implements Entity
 {
 
-	/**
-	 * @param array<CapabilityState> $state
-	 */
 	public function __construct(
 		Uuid\UuidInterface $connector,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $gateway,
 		string $identifier,
-		#[ObjectMapper\Rules\ArrayOf(
-			new ObjectMapper\Rules\MappedObjectValue(CapabilityState::class),
-		)]
-		private readonly array $state,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		#[ObjectMapper\Modifiers\FieldName('gateway_identifier')]
+		private readonly string $gatewayIdentifier,
 	)
 	{
 		parent::__construct($connector, $identifier);
 	}
 
-	/**
-	 * @return array<CapabilityState>
-	 */
-	public function getState(): array
+	public function getGateway(): Uuid\UuidInterface
 	{
-		return $this->state;
+		return $this->gateway;
+	}
+
+	public function getGatewayIdentifier(): string
+	{
+		return $this->gatewayIdentifier;
 	}
 
 	/**
@@ -60,10 +60,8 @@ final class DeviceState extends Device implements Entity
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), [
-			'state' => array_map(
-				static fn (CapabilityState $state): array => $state->toArray(),
-				$this->getState(),
-			),
+			'gateway' => $this->getGateway()->toString(),
+			'gateway_identifier' => $this->getGatewayIdentifier(),
 		]);
 	}
 
