@@ -33,6 +33,7 @@
     "contributte/console": "^0.9",
     "contributte/monolog": "^0.5",
     "cweagans/composer-patches": "^1.7",
+    "doctrine/orm": "2.15.*",
     "fastybird/metadata-library": "dev-main",
     "nette/bootstrap": "^3.1",
     "nette/di": "^3.0",
@@ -45,7 +46,6 @@
   "require-dev": {
     "brianium/paratest": "^7.1",
     "dg/bypass-finals": "^1.4",
-    "doctrine/orm": "2.15.*",
     "infection/infection": "^0.26",
     "latte/latte": "^3.0",
     "orisai/coding-standard": "^3.2",
