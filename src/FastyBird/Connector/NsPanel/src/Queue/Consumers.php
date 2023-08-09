@@ -16,7 +16,6 @@
 namespace FastyBird\Connector\NsPanel\Queue;
 
 use FastyBird\Connector\NsPanel;
-use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette;
 use SplObjectStorage;
@@ -42,6 +41,7 @@ final class Consumers
 	 */
 	public function __construct(
 		array $consumers,
+		private readonly Queue $queue,
 		private readonly NsPanel\Logger $logger,
 	)
 	{
@@ -65,8 +65,14 @@ final class Consumers
 		);
 	}
 
-	public function consume(Entities\Messages\Entity $entity): void
+	public function consume(): void
 	{
+		$entity = $this->queue->consume();
+
+		if ($entity === false) {
+			return;
+		}
+
 		$this->consumers->rewind();
 
 		if ($this->consumers->count() === 0) {

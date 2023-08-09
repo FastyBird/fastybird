@@ -37,10 +37,7 @@ final class Queue
 	/** @var SplQueue<Entities\Messages\Entity> */
 	private SplQueue $queue;
 
-	public function __construct(
-		private readonly Consumers $consumers,
-		private readonly NsPanel\Logger $logger,
-	)
+	public function __construct(private readonly NsPanel\Logger $logger)
 	{
 		$this->queue = new SplQueue();
 	}
@@ -59,17 +56,15 @@ final class Queue
 		);
 	}
 
-	public function consume(): void
+	public function consume(): Entities\Messages\Entity|false
 	{
 		$this->queue->rewind();
 
 		if ($this->queue->isEmpty()) {
-			return;
+			return false;
 		}
 
-		$entity = $this->queue->dequeue();
-
-		$this->consumers->consume($entity);
+		return $this->queue->dequeue();
 	}
 
 	public function isEmpty(): bool

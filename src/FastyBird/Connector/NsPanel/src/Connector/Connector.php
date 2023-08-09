@@ -58,7 +58,7 @@ final class Connector implements DevicesConnectors\Connector
 
 	private Writers\Writer|null $writer = null;
 
-	private EventLoop\TimerInterface|null $queueTimer = null;
+	private EventLoop\TimerInterface|null $consumersTimer = null;
 
 	/**
 	 * @param array<Clients\ClientFactory> $clientsFactories
@@ -71,6 +71,7 @@ final class Connector implements DevicesConnectors\Connector
 		private readonly Writers\WriterFactory $writerFactory,
 		private readonly NsPanel\Logger $logger,
 		private readonly Queue\Queue $queue,
+		private readonly Queue\Consumers $consumers,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
@@ -129,10 +130,10 @@ final class Connector implements DevicesConnectors\Connector
 		$this->writer = $this->writerFactory->create($this->connector);
 		$this->writer->connect();
 
-		$this->queueTimer = $this->eventLoop->addPeriodicTimer(
+		$this->consumersTimer = $this->eventLoop->addPeriodicTimer(
 			self::QUEUE_PROCESSING_INTERVAL,
 			async(function (): void {
-				$this->queue->consume();
+				$this->consumers->consume();
 			}),
 		);
 
@@ -183,10 +184,10 @@ final class Connector implements DevicesConnectors\Connector
 
 		$this->clients[] = $client;
 
-		$this->queueTimer = $this->eventLoop->addPeriodicTimer(
+		$this->consumersTimer = $this->eventLoop->addPeriodicTimer(
 			self::QUEUE_PROCESSING_INTERVAL,
 			async(function (): void {
-				$this->queue->consume();
+				$this->consumers->consume();
 			}),
 		);
 
@@ -214,8 +215,8 @@ final class Connector implements DevicesConnectors\Connector
 
 		$this->writer?->disconnect();
 
-		if ($this->queueTimer !== null && $this->queue->isEmpty()) {
-			$this->eventLoop->cancelTimer($this->queueTimer);
+		if ($this->consumersTimer !== null && $this->queue->isEmpty()) {
+			$this->eventLoop->cancelTimer($this->consumersTimer);
 		}
 
 		$this->logger->debug(
@@ -232,7 +233,7 @@ final class Connector implements DevicesConnectors\Connector
 
 	public function hasUnfinishedTasks(): bool
 	{
-		return !$this->queue->isEmpty() && $this->queueTimer !== null;
+		return !$this->queue->isEmpty() && $this->consumersTimer !== null;
 	}
 
 }
