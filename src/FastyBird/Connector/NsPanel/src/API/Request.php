@@ -16,9 +16,9 @@
 namespace FastyBird\Connector\NsPanel\API;
 
 use FastyBird\Connector\NsPanel\Exceptions;
+use InvalidArgumentException;
+use RingCentral\Psr7;
 use RuntimeException;
-use Sunrise\Http;
-use Throwable;
 
 /**
  * HTTP request
@@ -28,7 +28,7 @@ use Throwable;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Request extends Http\Message\Request
+class Request extends Psr7\Request
 {
 
 	/**
@@ -44,17 +44,8 @@ class Request extends Http\Message\Request
 	)
 	{
 		try {
-			$stream = null;
-
-			if ($body !== null) {
-				$stream = new Http\Message\Stream\PhpTempStream();
-
-				$stream->write($body);
-				$stream->rewind();
-			}
-
-			parent::__construct($method, $uri, $headers, $stream);
-		} catch (Throwable $ex) {
+			parent::__construct($method, $uri, $headers, $body);
+		} catch (InvalidArgumentException $ex) {
 			throw new Exceptions\InvalidArgument('Request could not be created', $ex->getCode(), $ex);
 		}
 	}
