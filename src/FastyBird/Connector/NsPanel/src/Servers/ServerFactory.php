@@ -18,7 +18,7 @@ namespace FastyBird\Connector\NsPanel\Servers;
 use FastyBird\Connector\NsPanel\Entities;
 
 /**
- * Base server factory
+ * Connector base communication server factory
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Servers

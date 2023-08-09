@@ -143,7 +143,7 @@ class Role implements Entities\Entity,
 		$this->children = new Common\Collections\ArrayCollection();
 
 		foreach ($children as $entity) {
-			$this->children->add($entity);
+			$this->addChild($entity);
 		}
 
 		foreach ($this->children as $entity) {

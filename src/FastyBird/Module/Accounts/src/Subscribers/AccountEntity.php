@@ -24,7 +24,6 @@ use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\Module\Accounts\Models;
 use FastyBird\Module\Accounts\Queries;
 use FastyBird\SimpleAuth;
-use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette;
 use function array_merge;
 use function count;
@@ -77,8 +76,6 @@ final class AccountEntity implements Common\EventSubscriber
 	/**
 	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
 	 *
-	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
-	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws Exceptions\InvalidState
 	 */
 	public function prePersist(Persistence\Event\LifecycleEventArgs $eventArgs): void
@@ -99,8 +96,6 @@ final class AccountEntity implements Common\EventSubscriber
 	}
 
 	/**
-	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
-	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws Exceptions\AccountRoleInvalid
 	 * @throws Exceptions\InvalidState
 	 */
@@ -155,8 +150,6 @@ final class AccountEntity implements Common\EventSubscriber
 	 *
 	 * @return array<Entities\Roles\Role>
 	 *
-	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
-	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws Exceptions\InvalidState
 	 */
 	private function getDefaultRoles(array $roleNames): array
@@ -180,8 +173,6 @@ final class AccountEntity implements Common\EventSubscriber
 	}
 
 	/**
-	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
-	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws Exceptions\InvalidState
 	 */
 	private function getAdministrator(): Entities\Accounts\Account|null

@@ -29,13 +29,15 @@ use IPub\SlimRouter\Routing;
 class Router extends Routing\Router
 {
 
+	public const URL_DEVICE_ID = 'device';
+
 	public function __construct(
 		Controllers\DirectiveController $directiveController,
 	)
 	{
 		parent::__construct();
 
-		$this->post('/do-directive', [$directiveController, 'process']);
+		$this->post('/do-directive/{' . self::URL_DEVICE_ID . '}', [$directiveController, 'process']);
 	}
 
 }

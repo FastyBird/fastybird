@@ -30,6 +30,7 @@ use Nette\Utils;
 use Ramsey\Uuid;
 use function array_map;
 use function array_merge;
+use function assert;
 use function floatval;
 use function implode;
 use function in_array;
@@ -39,7 +40,9 @@ use function is_bool;
 use function is_numeric;
 use function is_string;
 use function preg_match;
+use function preg_replace;
 use function sprintf;
+use function strtolower;
 use function strval;
 
 abstract class Property implements Entity,
@@ -51,6 +54,11 @@ abstract class Property implements Entity,
 	use TEntityParams;
 	use DoctrineTimestampable\Entities\TEntityCreated;
 	use DoctrineTimestampable\Entities\TEntityUpdated;
+
+	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+	private const MATCH_IP_ADDRESS = '/^((?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])[.]){3}(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$/';
+
+	private const MATCH_MAC_ADDRESS = '/^([0-9a-fA-F][0-9a-fA-F]){1}(:([0-9a-fA-F][0-9a-fA-F])){5,7}$/';
 
 	/**
 	 * @ORM\Id
@@ -435,6 +443,7 @@ abstract class Property implements Entity,
 
 	/**
 	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 */
 	public function setValue(string|int|float|bool|null $value): void
 	{
@@ -444,14 +453,49 @@ abstract class Property implements Entity,
 			);
 		}
 
-		if (is_bool($value)) {
-			$this->value = $value ? '1' : '0';
+		if ($this->getIdentifier() === MetadataTypes\PropertyIdentifier::IDENTIFIER_IP_ADDRESS) {
+			if (!is_string($value)) {
+				throw new Exceptions\InvalidArgument(
+					'Provided property value is not valid value for IP address property',
+				);
+			}
 
-		} elseif ($value !== null) {
-			$this->value = strval($value);
+			if (preg_match(self::MATCH_IP_ADDRESS, $value) === 1) {
+				$this->value = $value;
+			} else {
+				throw new Exceptions\InvalidArgument(
+					'Provided property value is not valid value for IP address property',
+				);
+			}
+		} elseif ($this->getIdentifier() === MetadataTypes\PropertyIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS) {
+			if (!is_string($value)) {
+				throw new Exceptions\InvalidArgument(
+					'Provided property value is not valid value for MAC address property',
+				);
+			}
 
+			$value = preg_replace('/[^a-zA-Z0-9]+/', '', $value);
+			assert(is_string($value));
+			$value = preg_replace('~(..)(?!$)\.?~', '\1:', $value);
+			assert(is_string($value));
+
+			if (preg_match(self::MATCH_MAC_ADDRESS, $value) === 1) {
+				$this->value = strtolower($value);
+			} else {
+				throw new Exceptions\InvalidArgument(
+					'Provided property value is not valid value for MAC address property',
+				);
+			}
 		} else {
-			$this->value = null;
+			if (is_bool($value)) {
+				$this->value = $value ? '1' : '0';
+
+			} elseif ($value !== null) {
+				$this->value = strval($value);
+
+			} else {
+				$this->value = null;
+			}
 		}
 	}
 

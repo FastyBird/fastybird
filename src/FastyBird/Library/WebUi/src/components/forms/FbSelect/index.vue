@@ -177,6 +177,7 @@ export default defineComponent({
 	emits: ['update:modelValue', 'change', 'focus', 'blur', 'change'],
 
 	setup(props: IFbFormSelectProps, context: SetupContext) {
+		// eslint-disable-next-line vue/no-setup-props-destructure
 		const internalValue = ref<string | number | undefined>(props.modelValue);
 		const isFocused = ref<boolean>(false);
 

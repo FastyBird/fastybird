@@ -4,9 +4,9 @@ namespace FastyBird\Connector\FbMqtt\Tests\Cases\Unit\API;
 
 use FastyBird\Connector\FbMqtt\API;
 use FastyBird\Connector\FbMqtt\Entities;
-use FastyBird\Connector\FbMqtt\Tests\Cases\Unit\BaseTestCase;
+use PHPUnit\Framework\TestCase;
 
-final class ApiV1ValidatorTest extends BaseTestCase
+final class ApiV1ValidatorTest extends TestCase
 {
 
 	public function testValidateDevices(): void

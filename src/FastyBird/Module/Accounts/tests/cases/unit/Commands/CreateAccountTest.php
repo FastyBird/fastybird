@@ -4,6 +4,7 @@ namespace FastyBird\Module\Accounts\Tests\Cases\Unit\Commands;
 
 use Contributte\Translation;
 use Doctrine\Persistence;
+use Error;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
 use FastyBird\Module\Accounts\Commands;
 use FastyBird\Module\Accounts\Exceptions;
@@ -32,6 +33,7 @@ final class CreateAccountTest extends DbTestCase
 	 * @throws Exceptions\InvalidState
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
+	 * @throws Error
 	 */
 	public function testExecute(): void
 	{

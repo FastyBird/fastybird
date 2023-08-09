@@ -23,6 +23,7 @@ use FastyBird\Connector\FbMqtt\Entities;
 use FastyBird\Connector\FbMqtt\Exceptions;
 use FastyBird\Connector\FbMqtt\Writers;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
@@ -96,16 +97,50 @@ final class FbMqttV1 extends Client
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function writeProperty(
+	public function writeDeviceProperty(
 		Entities\FbMqttDevice $device,
-		DevicesEntities\Devices\Properties\Dynamic|DevicesEntities\Channels\Properties\Dynamic $property,
+		DevicesEntities\Devices\Properties\Dynamic|MetadataEntities\DevicesModule\DeviceDynamicProperty $property,
 	): Promise\PromiseInterface
 	{
-		if ($property instanceof DevicesEntities\Devices\Properties\Dynamic) {
-			return $this->writeDeviceProperty($device, $property);
+		$state = $this->devicePropertiesStates->getValue($property);
+
+		if (
+			$state?->getExpectedValue() !== null
+			&& $state->isPending() === true
+		) {
+			return $this->publish(
+				$this->apiBuilder->buildDevicePropertyTopic($device, $property),
+				strval(DevicesUtilities\ValueHelper::flattenValue($state->getExpectedValue())),
+			);
 		}
 
-		return $this->writeChannelProperty($device, $property);
+		return Promise\reject(new Exceptions\InvalidArgument('Provided property state is in invalid state'));
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function writeChannelProperty(
+		Entities\FbMqttDevice $device,
+		DevicesEntities\Channels\Channel $channel,
+		DevicesEntities\Channels\Properties\Dynamic|MetadataEntities\DevicesModule\ChannelDynamicProperty $property,
+	): Promise\PromiseInterface
+	{
+		$state = $this->channelPropertiesStates->getValue($property);
+
+		if (
+			$state?->getExpectedValue() !== null
+			&& $state->isPending() === true
+		) {
+			return $this->publish(
+				$this->apiBuilder->buildChannelPropertyTopic($device, $channel, $property),
+				strval(DevicesUtilities\ValueHelper::flattenValue($state->getExpectedValue())),
+			);
+		}
+
+		return Promise\reject(new Exceptions\InvalidArgument('Provided property state is in invalid state'));
 	}
 
 	protected function onConnect(Mqtt\Connection $connection): void
@@ -339,56 +374,6 @@ final class FbMqttV1 extends Client
 
 			$this->consumer->append($entity);
 		}
-	}
-
-	/**
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 */
-	private function writeDeviceProperty(
-		Entities\FbMqttDevice $device,
-		DevicesEntities\Devices\Properties\Dynamic $property,
-	): Promise\PromiseInterface
-	{
-		$state = $this->devicePropertiesStates->getValue($property);
-
-		if (
-			$state?->getExpectedValue() !== null
-			&& $state->isPending() === true
-		) {
-			return $this->publish(
-				$this->apiBuilder->buildDevicePropertyTopic($device, $property),
-				strval(DevicesUtilities\ValueHelper::flattenValue($state->getExpectedValue())),
-			);
-		}
-
-		return Promise\reject(new Exceptions\InvalidArgument('Provided property state is in invalid state'));
-	}
-
-	/**
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 */
-	private function writeChannelProperty(
-		Entities\FbMqttDevice $device,
-		DevicesEntities\Channels\Properties\Dynamic $property,
-	): Promise\PromiseInterface
-	{
-		$state = $this->channelPropertiesStates->getValue($property);
-
-		if (
-			$state?->getExpectedValue() !== null
-			&& $state->isPending() === true
-		) {
-			return $this->publish(
-				$this->apiBuilder->buildChannelPropertyTopic($device, $property->getChannel(), $property),
-				strval(DevicesUtilities\ValueHelper::flattenValue($state->getExpectedValue())),
-			);
-		}
-
-		return Promise\reject(new Exceptions\InvalidArgument('Provided property state is in invalid state'));
 	}
 
 }

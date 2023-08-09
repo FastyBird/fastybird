@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * GetDevicesData.php
+ * GetSubDevicesData.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\NsPanel\Entities\API\Response;
 
 use FastyBird\Connector\NsPanel\Entities;
-use Nette;
+use Orisai\ObjectMapper;
 use stdClass;
 use function array_map;
 
@@ -31,12 +31,16 @@ use function array_map;
 final class GetSubDevicesData implements Entities\API\Entity
 {
 
-	use Nette\SmartObject;
-
 	/**
 	 * @param array<GetSubDevicesDataSubDevice> $devicesList
 	 */
-	public function __construct(private readonly array $devicesList)
+	public function __construct(
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(GetSubDevicesDataSubDevice::class),
+		)]
+		#[ObjectMapper\Modifiers\FieldName('device_list')]
+		private readonly array $devicesList,
+	)
 	{
 	}
 
@@ -64,7 +68,7 @@ final class GetSubDevicesData implements Entities\API\Entity
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->devices_list = array_map(
+		$json->device_list = array_map(
 			static fn (GetSubDevicesDataSubDevice $device): object => $device->toJson(),
 			$this->getDevicesList(),
 		);

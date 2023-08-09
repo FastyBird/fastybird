@@ -23,6 +23,7 @@ use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\Utilities;
 use IPub\DoctrineOrmQuery;
 use Nette;
+use Throwable;
 use function is_array;
 
 /**
@@ -59,31 +60,24 @@ final class ControlsRepository
 	}
 
 	/**
-	 * @phpstan-return array<Entities\Devices\Controls\Control>
+	 * @return array<Entities\Devices\Controls\Control>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
 	public function findAllBy(Queries\FindDeviceControls $queryObject): array
 	{
-		return $this->database->query(
-			function () use ($queryObject): array {
-				/** @var array<Entities\Devices\Controls\Control>|DoctrineOrmQuery\ResultSet<Entities\Devices\Controls\Control> $result */
-				$result = $queryObject->fetch($this->getRepository());
+		try {
+			/** @var array<Entities\Devices\Controls\Control> $result */
+			$result = $this->getResultSet($queryObject)->toArray();
 
-				if (is_array($result)) {
-					return $result;
-				}
-
-				/** @var array<Entities\Devices\Controls\Control> $data */
-				$data = $result->toArray();
-
-				return $data;
-			},
-		);
+			return $result;
+		} catch (Throwable $ex) {
+			throw new Exceptions\InvalidState('Fetch all data by query failed', $ex->getCode(), $ex);
+		}
 	}
 
 	/**
-	 * @phpstan-return DoctrineOrmQuery\ResultSet<Entities\Devices\Controls\Control>
+	 * @return DoctrineOrmQuery\ResultSet<Entities\Devices\Controls\Control>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -91,14 +85,15 @@ final class ControlsRepository
 		Queries\FindDeviceControls $queryObject,
 	): DoctrineOrmQuery\ResultSet
 	{
-		return $this->database->query(
-			function () use ($queryObject): DoctrineOrmQuery\ResultSet {
-				/** @var DoctrineOrmQuery\ResultSet<Entities\Devices\Controls\Control> $result */
-				$result = $queryObject->fetch($this->getRepository());
-
-				return $result;
-			},
+		$result = $this->database->query(
+			fn (): DoctrineOrmQuery\ResultSet|array => $queryObject->fetch($this->getRepository()),
 		);
+
+		if (is_array($result)) {
+			throw new Exceptions\InvalidState('Result set could not be created');
+		}
+
+		return $result;
 	}
 
 	/**

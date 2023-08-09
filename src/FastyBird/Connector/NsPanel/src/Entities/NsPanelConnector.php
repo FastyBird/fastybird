@@ -17,6 +17,7 @@ namespace FastyBird\Connector\NsPanel\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Connector\NsPanel;
+use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -30,16 +31,16 @@ use function is_int;
 class NsPanelConnector extends DevicesEntities\Connectors\Connector
 {
 
-	public const CONNECTOR_TYPE = 'ns-panel';
+	public const TYPE = 'ns-panel';
 
 	public function getType(): string
 	{
-		return self::CONNECTOR_TYPE;
+		return self::TYPE;
 	}
 
 	public function getDiscriminatorName(): string
 	{
-		return self::CONNECTOR_TYPE;
+		return self::TYPE;
 	}
 
 	public function getSource(): MetadataTypes\ConnectorSource
@@ -57,7 +58,7 @@ class NsPanelConnector extends DevicesEntities\Connectors\Connector
 		$property = $this->properties
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::IDENTIFIER_PORT
+				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::PORT
 			)
 			->first();
 
@@ -68,7 +69,32 @@ class NsPanelConnector extends DevicesEntities\Connectors\Connector
 			return $property->getValue();
 		}
 
-		return NsPanel\Constants::DEFAULT_PORT;
+		return NsPanel\Constants::DEFAULT_SERVER_PORT;
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function getClientMode(): Types\ClientMode
+	{
+		$property = $this->properties
+			->filter(
+			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::CLIENT_MODE
+			)
+			->first();
+
+		if (
+			$property instanceof DevicesEntities\Connectors\Properties\Variable
+			&& Types\ClientMode::isValidValue($property->getValue())
+		) {
+			return Types\ClientMode::get($property->getValue());
+		}
+
+		throw new Exceptions\InvalidState('Connector mode is not configured');
 	}
 
 }

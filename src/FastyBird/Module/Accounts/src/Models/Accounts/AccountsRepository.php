@@ -17,12 +17,13 @@ namespace FastyBird\Module\Accounts\Models\Accounts;
 
 use Doctrine\ORM;
 use Doctrine\Persistence;
-use Exception;
 use FastyBird\Module\Accounts\Entities;
+use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\Module\Accounts\Queries;
+use FastyBird\Module\Accounts\Utilities;
 use IPub\DoctrineOrmQuery;
-use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette;
+use Throwable;
 use function is_array;
 
 /**
@@ -38,64 +39,69 @@ final class AccountsRepository
 
 	use Nette\SmartObject;
 
-	/** @phpstan-var ORM\EntityRepository<Entities\Accounts\Account>|null */
+	/** @var ORM\EntityRepository<Entities\Accounts\Account>|null */
 	private ORM\EntityRepository|null $repository = null;
 
-	public function __construct(private readonly Persistence\ManagerRegistry $managerRegistry)
+	public function __construct(
+		private readonly Utilities\Database $database,
+		private readonly Persistence\ManagerRegistry $managerRegistry,
+	)
 	{
 	}
 
 	/**
-	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
-	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws Exceptions\InvalidState
 	 */
 	public function findOneBy(
 		Queries\FindAccounts $queryObject,
 	): Entities\Accounts\Account|null
 	{
-		return $queryObject->fetchOne($this->getRepository());
+		return $this->database->query(
+			fn (): Entities\Accounts\Account|null => $queryObject->fetchOne($this->getRepository()),
+		);
 	}
 
 	/**
-	 * @phpstan-return array<Entities\Accounts\Account>
+	 * @return array<Entities\Accounts\Account>
 	 *
-	 * @throws Exception
-	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws Exceptions\InvalidState
 	 */
 	public function findAllBy(Queries\FindAccounts $queryObject): array
 	{
-		/** @var array<Entities\Accounts\Account>|DoctrineOrmQuery\ResultSet<Entities\Accounts\Account> $result */
-		$result = $queryObject->fetch($this->getRepository());
+		try {
+			/** @var array<Entities\Accounts\Account> $result */
+			$result = $this->getResultSet($queryObject)->toArray();
 
-		if (is_array($result)) {
 			return $result;
+		} catch (Throwable $ex) {
+			throw new Exceptions\InvalidState('Fetch all data by query failed', $ex->getCode(), $ex);
 		}
-
-		/** @var array<Entities\Accounts\Account> $data */
-		$data = $result->toArray();
-
-		return $data;
 	}
 
 	/**
-	 * @phpstan-return DoctrineOrmQuery\ResultSet<Entities\Accounts\Account>
+	 * @return DoctrineOrmQuery\ResultSet<Entities\Accounts\Account>
 	 *
-	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws Exceptions\InvalidState
 	 */
 	public function getResultSet(
 		Queries\FindAccounts $queryObject,
 	): DoctrineOrmQuery\ResultSet
 	{
-		/** @var DoctrineOrmQuery\ResultSet<Entities\Accounts\Account> $result */
-		$result = $queryObject->fetch($this->getRepository());
+		$result = $this->database->query(
+			fn (): DoctrineOrmQuery\ResultSet|array => $queryObject->fetch($this->getRepository()),
+		);
+
+		if (is_array($result)) {
+			throw new Exceptions\InvalidState('Result set could not be created');
+		}
 
 		return $result;
 	}
 
 	/**
-	 * @phpstan-param class-string<Entities\Accounts\Account> $type
+	 * @param class-string<Entities\Accounts\Account> $type
 	 *
-	 * @phpstan-return ORM\EntityRepository<Entities\Accounts\Account>
+	 * @return ORM\EntityRepository<Entities\Accounts\Account>
 	 */
 	private function getRepository(string $type = Entities\Accounts\Account::class): ORM\EntityRepository
 	{

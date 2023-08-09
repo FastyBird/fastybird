@@ -15,10 +15,10 @@
 
 namespace FastyBird\Connector\NsPanel\Consumers;
 
+use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette;
-use Psr\Log;
 use SplObjectStorage;
 use SplQueue;
 use function count;
@@ -48,7 +48,7 @@ final class Messages
 	 */
 	public function __construct(
 		array $consumers,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
+		private readonly NsPanel\Logger $logger,
 	)
 	{
 		$this->consumers = new SplObjectStorage();
@@ -101,6 +101,9 @@ final class Messages
 					'type' => 'consumer',
 				],
 			);
+
+			// Reset queue items
+			$this->queue = new SplQueue();
 
 			return;
 		}

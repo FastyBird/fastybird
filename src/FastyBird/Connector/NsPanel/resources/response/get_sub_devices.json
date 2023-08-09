@@ -1,0 +1,131 @@
+{
+  "$schema" : "http://json-schema.org/draft-07/schema#",
+  "type" : "object",
+  "properties" : {
+    "error" : {
+      "type" : "integer"
+    },
+    "data" : {
+      "type" : "object",
+      "properties" : {
+        "device_list" : {
+          "type" : "array",
+          "uniqueItems" : true,
+          "items" : {
+            "type" : "object",
+            "properties" : {
+              "serial_number" : {
+                "type" : "string"
+              },
+              "third_serial_number" : {
+                "type" : "string"
+              },
+              "service_address" : {
+                "type" : "string"
+              },
+              "name" : {
+                "type" : "string"
+              },
+              "manufacturer" : {
+                "type" : "string"
+              },
+              "model" : {
+                "type" : "string"
+              },
+              "firmware_version" : {
+                "type" : "string"
+              },
+              "hostname" : {
+                "type" : "string"
+              },
+              "mac_address" : {
+                "type" : "string"
+              },
+              "app_name" : {
+                "type" : "string"
+              },
+              "display_category" : {
+                "type" : "string"
+              },
+              "capabilities" : {
+                "type" : "array",
+                "uniqueItems" : true,
+                "items" : {
+                  "type" : "object",
+                  "properties" : {
+                    "capability" : {
+                      "type" : "string"
+                    },
+                    "permission" : {
+                      "type" : "string"
+                    },
+                    "configuration" : {
+                      "type" : "object"
+                    },
+                    "name" : {
+                      "type" : "string"
+                    }
+                  },
+                  "required": [
+                    "capability",
+                    "permission"
+                  ]
+                }
+              },
+              "protocol" : {
+                "type" : "string"
+              },
+              "state" : {
+                "type" : "object"
+              },
+              "tags" : {
+                "type" : "object",
+                "patternProperties" : {
+                  "^[A-Za-z0-9_]$": {
+                    "oneOf" : [
+                      {
+                        "type" : "string"
+                      },
+                      {
+                        "type" : "object",
+                        "patternProperties" : {
+                          "^[A-Za-z0-9_]$": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "online" : {
+                "type" : "boolean"
+              },
+              "subnet" : {
+                "type" : "boolean"
+              }
+            },
+            "required" : [
+              "serial_number",
+              "name",
+              "manufacturer",
+              "model",
+              "firmware_version",
+              "display_category",
+              "capabilities",
+              "online"
+            ]
+          }
+        }
+      }
+    },
+    "message" : {
+      "type" : "string"
+    }
+  },
+  "required" : [
+    "error",
+    "data",
+    "message"
+  ]
+}

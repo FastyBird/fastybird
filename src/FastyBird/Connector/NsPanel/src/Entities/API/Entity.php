@@ -15,6 +15,8 @@
 
 namespace FastyBird\Connector\NsPanel\Entities\API;
 
+use Orisai\ObjectMapper;
+
 /**
  * NS Panel base message data entity interface
  *
@@ -23,7 +25,7 @@ namespace FastyBird\Connector\NsPanel\Entities\API;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-interface Entity
+interface Entity extends ObjectMapper\MappedObject
 {
 
 	/**

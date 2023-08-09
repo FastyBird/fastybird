@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\NsPanel\Entities\API\Response;
 
 use FastyBird\Connector\NsPanel\Entities;
-use Nette;
+use Orisai\ObjectMapper;
 use stdClass;
 
 /**
@@ -30,11 +30,12 @@ use stdClass;
 final class GetSubDevices implements Entities\API\Entity
 {
 
-	use Nette\SmartObject;
-
 	public function __construct(
+		#[ObjectMapper\Rules\IntValue(unsigned: true)]
 		private readonly int $error,
+		#[ObjectMapper\Rules\MappedObjectValue(GetSubDevicesData::class)]
 		private readonly GetSubDevicesData $data,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $message,
 	)
 	{

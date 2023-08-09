@@ -70,6 +70,9 @@ class Control implements Entities\Entity,
 
 	public function __construct(string $name, Entities\Devices\Device $device)
 	{
+		// @phpstan-ignore-next-line
+		$this->id = Uuid\Uuid::uuid4();
+
 		$this->name = $name;
 		$this->device = $device;
 

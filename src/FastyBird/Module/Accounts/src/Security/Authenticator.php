@@ -20,7 +20,6 @@ use FastyBird\Module\Accounts\Entities;
 use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\Module\Accounts\Models;
 use FastyBird\SimpleAuth\Security as SimpleAuthSecurity;
-use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use function is_string;
 
 /**
@@ -57,8 +56,6 @@ final class Authenticator implements SimpleAuthSecurity\IAuthenticator
 	 *
 	 * @return Entities\Identities\Identity
 	 *
-	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
-	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws Exceptions\AccountNotFound
 	 * @throws Exceptions\AuthenticationFailed
 	 * @throws Exceptions\InvalidArgument

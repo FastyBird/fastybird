@@ -87,7 +87,7 @@ class FindConnectorControls extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @phpstan-param ORM\EntityRepository<Entities\Connectors\Controls\Control> $repository
+	 * @param ORM\EntityRepository<Entities\Connectors\Controls\Control> $repository
 	 */
 	protected function doCreateQuery(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{
@@ -101,7 +101,7 @@ class FindConnectorControls extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @phpstan-param ORM\EntityRepository<Entities\Connectors\Controls\Control> $repository
+	 * @param ORM\EntityRepository<Entities\Connectors\Controls\Control> $repository
 	 */
 	private function createBasicDql(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{
@@ -117,7 +117,7 @@ class FindConnectorControls extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @phpstan-param ORM\EntityRepository<Entities\Connectors\Controls\Control> $repository
+	 * @param ORM\EntityRepository<Entities\Connectors\Controls\Control> $repository
 	 */
 	protected function doCreateCountQuery(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{

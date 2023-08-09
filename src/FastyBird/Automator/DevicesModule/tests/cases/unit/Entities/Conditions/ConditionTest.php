@@ -2,6 +2,7 @@
 
 namespace FastyBird\Automator\DevicesModule\Tests\Cases\Unit\Entities\Conditions;
 
+use Error;
 use FastyBird\Automator\DevicesModule\Entities;
 use FastyBird\Automator\DevicesModule\Exceptions;
 use FastyBird\Automator\DevicesModule\Queries;
@@ -25,6 +26,7 @@ final class ConditionTest extends DbTestCase
 	 * @throws Exceptions\InvalidState
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
+	 * @throws Error
 	 */
 	public function testPropertyConditionValidation(): void
 	{

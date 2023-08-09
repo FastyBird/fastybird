@@ -20,13 +20,7 @@
         "fw_version" : {
           "type" : "string"
         }
-      },
-      "required": [
-        "ip",
-        "mac",
-        "domain",
-        "fw_version"
-      ]
+      }
     },
     "message" : {
       "type" : "string"

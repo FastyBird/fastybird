@@ -224,7 +224,7 @@ class Periodic implements Writer
 				) {
 					$this->processedProperties[$property->getPlainId()] = $now;
 
-					$client->writeProperty($device, $property)
+					$client->writeDeviceProperty($device, $property)
 						->then(function () use ($property): void {
 							$this->propertyStateHelper->setValue(
 								$property,
@@ -336,7 +336,7 @@ class Periodic implements Writer
 					) {
 						$this->processedProperties[$property->getPlainId()] = $now;
 
-						$client->writeProperty($device, $property)
+						$client->writeChannelProperty($device, $channel, $property)
 							->then(function () use ($property): void {
 								$this->propertyStateHelper->setValue(
 									$property,

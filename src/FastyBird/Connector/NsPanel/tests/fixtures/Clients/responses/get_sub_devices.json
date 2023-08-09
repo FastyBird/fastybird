@@ -1,0 +1,108 @@
+{
+  "error": 0,
+  "data": {
+    "device_list": [
+      {
+        "serial_number": "a480062416",
+        "name": "Temperature/Humidity Sensor",
+        "manufacturer": "eWeLink",
+        "model": "TH01",
+        "firmware_version": "0.5",
+        "mac_address": "00124b002a5d75b1",
+        "display_category": "temperatureAndHumiditySensor",
+        "capabilities": [
+          {
+            "capability": "temperature",
+            "permission": "read"
+          },
+          {
+            "capability": "humidity",
+            "permission": "read"
+          },
+          {
+            "capability": "battery",
+            "permission": "read"
+          },
+          {
+            "capability": "rssi",
+            "permission": "read"
+          }
+        ],
+        "protocol": "zigbee",
+        "state": {
+          "temperature": {
+            "temperature": 24.969999
+          },
+          "humidity": {
+            "humidity": 52
+          },
+          "battery": {
+            "battery": 100
+          },
+          "rssi": {
+            "rssi": -24
+          }
+        },
+        "tags": {
+          "temperature_unit": "c"
+        },
+        "online": true,
+        "subnet": true
+      },
+      {
+        "serial_number": "3f89afee-146d-4a7f-ba55-bf2f6bcc862c",
+        "third_serial_number": "dfb92f3d-7a92-4a66-84c1-c903e89b13e7",
+        "service_address": "http://10.10.0.141/webhook",
+        "name": "Test Switch",
+        "manufacturer": "Custom manufacturer",
+        "model": "Test model",
+        "firmware_version": "4.2",
+        "display_category": "switch",
+        "capabilities": [
+          {
+            "capability": "power",
+            "permission": "readWrite"
+          },
+          {
+            "capability": "toggle",
+            "permission": "readWrite",
+            "name": "1"
+          },
+          {
+            "capability": "toggle",
+            "permission": "readWrite",
+            "name": "2"
+          },
+          {
+            "capability": "rssi",
+            "permission": "read"
+          }
+        ],
+        "state": {
+          "power": {
+            "powerState": "off"
+          },
+          "toggle": {
+            "1": {
+              "toggleState": "on"
+            },
+            "2": {
+              "toggleState": "off"
+            }
+          },
+          "rssi": {
+            "rssi": -51
+          }
+        },
+        "tags": {
+          "toggle": {
+            "1": "Chanel 1",
+            "2": "Chanel 2"
+          }
+        },
+        "online": true
+      }
+    ]
+  },
+  "message": "success"
+}

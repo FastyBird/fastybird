@@ -235,7 +235,7 @@ class Account implements Entities\Entity,
 		$this->emails = new Common\Collections\ArrayCollection();
 
 		foreach ($emails as $entity) {
-			$this->emails->add($entity);
+			$this->addEmail($entity);
 		}
 	}
 
@@ -273,7 +273,7 @@ class Account implements Entities\Entity,
 		$this->roles = new Common\Collections\ArrayCollection();
 
 		foreach ($roles as $entity) {
-			$this->roles->add($entity);
+			$this->addRole($entity);
 		}
 
 		foreach ($this->roles as $entity) {

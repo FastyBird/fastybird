@@ -108,6 +108,7 @@ export default defineComponent({
 	setup(props: IFbUiSwipeActionsListProps<any>, context: SetupContext) {
 		const container = ref<HTMLElement | null>(null);
 		const elements = ref<InstanceType<typeof FbUiSwipeActionsOut>[]>([]);
+		// eslint-disable-next-line vue/no-setup-props-destructure
 		const innerRevealed = ref<{ [key: number]: TFbUiSwipeActionsOutDir }>(props.revealed || {});
 
 		const onRevealLeft = (index: number): void => {

@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\NsPanel\API;
 
 /**
- * Local LAN API factory
+ * NS Panel LAN API interface factory
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     API

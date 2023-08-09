@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:SonoffConnector!
+ * @package        FastyBird:NsPanelConnector!
  * @subpackage     Helpers
  * @since          1.0.0
  *
@@ -27,7 +27,7 @@ use Nette\Utils;
 /**
  * Useful dynamic property state helpers
  *
- * @package        FastyBird:SonoffConnector!
+ * @package        FastyBird:NsPanelConnector!
  * @subpackage     Helpers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
@@ -73,9 +73,7 @@ final class Property
 	{
 		return $property instanceof DevicesEntities\Devices\Properties\Dynamic || $property instanceof DevicesEntities\Devices\Properties\Mapped
 			? $this->devicePropertiesStateManager->getValue($property)?->getActualValue()
-			: $this->channelPropertiesStateManager->getValue(
-				$property,
-			)?->getActualValue();
+			: $this->channelPropertiesStateManager->getValue($property)?->getActualValue();
 	}
 
 	/**
@@ -90,9 +88,7 @@ final class Property
 	{
 		return $property instanceof DevicesEntities\Devices\Properties\Dynamic || $property instanceof DevicesEntities\Devices\Properties\Mapped
 			? $this->devicePropertiesStateManager->getValue($property)?->getExpectedValue()
-			: $this->channelPropertiesStateManager->getValue(
-				$property,
-			)?->getExpectedValue();
+			: $this->channelPropertiesStateManager->getValue($property)?->getExpectedValue();
 	}
 
 }

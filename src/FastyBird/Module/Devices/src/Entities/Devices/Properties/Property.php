@@ -127,7 +127,7 @@ abstract class Property extends Entities\Property
 		// Process all passed entities...
 		foreach ($children as $entity) {
 			// ...and assign them to collection
-			$this->children->add($entity);
+			$this->addChild($entity);
 		}
 	}
 

@@ -16,11 +16,11 @@
 namespace FastyBird\Connector\NsPanel\Entities\API\Response;
 
 use FastyBird\Connector\NsPanel\Entities;
-use Nette;
+use Orisai\ObjectMapper;
 use stdClass;
 
 /**
- * NS Panel report its status data response definition
+ * NS Panel acquire access token data response definition
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Entities
@@ -30,9 +30,10 @@ use stdClass;
 final class GetGatewayAccessTokenData implements Entities\API\Entity
 {
 
-	use Nette\SmartObject;
-
-	public function __construct(private readonly string $token)
+	public function __construct(
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		private readonly string $token,
+	)
 	{
 	}
 

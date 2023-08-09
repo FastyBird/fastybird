@@ -23,6 +23,7 @@ use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\Utilities;
 use IPub\DoctrineOrmQuery;
 use Nette;
+use Throwable;
 use function is_array;
 
 /**
@@ -49,7 +50,12 @@ final class PropertiesRepository
 	}
 
 	/**
-	 * @phpstan-param class-string<Entities\Channels\Properties\Property> $type
+	 * @template T of Entities\Channels\Properties\Property
+	 *
+	 * @param Queries\FindChannelProperties<T> $queryObject
+	 * @param class-string<T> $type
+	 *
+	 * @return T|null
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -64,9 +70,12 @@ final class PropertiesRepository
 	}
 
 	/**
-	 * @phpstan-param class-string<Entities\Channels\Properties\Property> $type
+	 * @template T of Entities\Channels\Properties\Property
 	 *
-	 * @phpstan-return array<Entities\Channels\Properties\Property>
+	 * @param Queries\FindChannelProperties<T> $queryObject
+	 * @param class-string<T> $type
+	 *
+	 * @return array<T>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -75,27 +84,23 @@ final class PropertiesRepository
 		string $type = Entities\Channels\Properties\Property::class,
 	): array
 	{
-		return $this->database->query(
-			function () use ($queryObject, $type): array {
-				/** @var array<Entities\Channels\Properties\Property>|DoctrineOrmQuery\ResultSet<Entities\Channels\Properties\Property> $result */
-				$result = $queryObject->fetch($this->getRepository($type));
+		try {
+			/** @var array<T> $result */
+			$result = $this->getResultSet($queryObject, $type)->toArray();
 
-				if (is_array($result)) {
-					return $result;
-				}
-
-				/** @var array<Entities\Channels\Properties\Property> $data */
-				$data = $result->toArray();
-
-				return $data;
-			},
-		);
+			return $result;
+		} catch (Throwable $ex) {
+			throw new Exceptions\InvalidState('Fetch all data by query failed', $ex->getCode(), $ex);
+		}
 	}
 
 	/**
-	 * @phpstan-param class-string<Entities\Channels\Properties\Property> $type
+	 * @template T of Entities\Channels\Properties\Property
 	 *
-	 * @phpstan-return DoctrineOrmQuery\ResultSet<Entities\Channels\Properties\Property>
+	 * @param Queries\FindChannelProperties<T> $queryObject
+	 * @param class-string<T> $type
+	 *
+	 * @return DoctrineOrmQuery\ResultSet<T>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -104,20 +109,23 @@ final class PropertiesRepository
 		string $type = Entities\Channels\Properties\Property::class,
 	): DoctrineOrmQuery\ResultSet
 	{
-		return $this->database->query(
-			function () use ($queryObject, $type): DoctrineOrmQuery\ResultSet {
-				/** @var DoctrineOrmQuery\ResultSet<Entities\Channels\Properties\Property> $result */
-				$result = $queryObject->fetch($this->getRepository($type));
-
-				return $result;
-			},
+		$result = $this->database->query(
+			fn (): DoctrineOrmQuery\ResultSet|array => $queryObject->fetch($this->getRepository($type)),
 		);
+
+		if (is_array($result)) {
+			throw new Exceptions\InvalidState('Result set could not be created');
+		}
+
+		return $result;
 	}
 
 	/**
-	 * @param class-string<Entities\Channels\Properties\Property> $type
+	 * @template T of Entities\Channels\Properties\Property
 	 *
-	 * @return ORM\EntityRepository<Entities\Channels\Properties\Property>
+	 * @param class-string<T> $type
+	 *
+	 * @return ORM\EntityRepository<T>
 	 */
 	private function getRepository(string $type): ORM\EntityRepository
 	{
@@ -125,7 +133,10 @@ final class PropertiesRepository
 			$this->repository[$type] = $this->managerRegistry->getRepository($type);
 		}
 
-		return $this->repository[$type];
+		/** @var ORM\EntityRepository<T> $repository */
+		$repository = $this->repository[$type];
+
+		return $repository;
 	}
 
 }

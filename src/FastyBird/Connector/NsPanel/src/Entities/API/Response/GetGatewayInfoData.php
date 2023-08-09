@@ -16,11 +16,11 @@
 namespace FastyBird\Connector\NsPanel\Entities\API\Response;
 
 use FastyBird\Connector\NsPanel\Entities;
-use Nette;
+use Orisai\ObjectMapper;
 use stdClass;
 
 /**
- * NS Panel report its status data response definition
+ * NS Panel report its description data response definition
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Entities
@@ -30,13 +30,17 @@ use stdClass;
 final class GetGatewayInfoData implements Entities\API\Entity
 {
 
-	use Nette\SmartObject;
-
 	public function __construct(
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $ip,
-		private readonly string $mac,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		#[ObjectMapper\Modifiers\FieldName('mac')]
+		private readonly string $macAddress,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $domain,
-		private readonly string $fwVersion,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		#[ObjectMapper\Modifiers\FieldName('fw_version')]
+		private readonly string $firmwareVersion,
 	)
 	{
 	}
@@ -48,7 +52,7 @@ final class GetGatewayInfoData implements Entities\API\Entity
 
 	public function getMacAddress(): string
 	{
-		return $this->mac;
+		return $this->macAddress;
 	}
 
 	public function getDomain(): string
@@ -56,9 +60,9 @@ final class GetGatewayInfoData implements Entities\API\Entity
 		return $this->domain;
 	}
 
-	public function getFwVersion(): string
+	public function getFirmwareVersion(): string
 	{
-		return $this->fwVersion;
+		return $this->firmwareVersion;
 	}
 
 	/**
@@ -70,7 +74,7 @@ final class GetGatewayInfoData implements Entities\API\Entity
 			'ip_address' => $this->getIpAddress(),
 			'mac_address' => $this->getMacAddress(),
 			'domain' => $this->getDomain(),
-			'firmware_version' => $this->getFwVersion(),
+			'firmware_version' => $this->getFirmwareVersion(),
 		];
 	}
 
@@ -80,7 +84,7 @@ final class GetGatewayInfoData implements Entities\API\Entity
 		$json->ip = $this->getIpAddress();
 		$json->mac = $this->getMacAddress();
 		$json->domain = $this->getDomain();
-		$json->fw_version = $this->getFwVersion();
+		$json->fw_version = $this->getFirmwareVersion();
 
 		return $json;
 	}

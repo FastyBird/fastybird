@@ -15,8 +15,11 @@
 
 namespace FastyBird\Connector\NsPanel\Controllers;
 
+use FastyBird\Connector\NsPanel;
+use FastyBird\Connector\NsPanel\Exceptions;
 use Nette;
-use Psr\Log;
+use Nette\Utils;
+use const DIRECTORY_SEPARATOR;
 
 /**
  * API base controller
@@ -31,11 +34,27 @@ abstract class BaseController
 
 	use Nette\SmartObject;
 
-	protected Log\LoggerInterface $logger;
+	protected NsPanel\Logger $logger;
 
-	public function injectLogger(Log\LoggerInterface|null $logger = null): void
+	public function setLogger(NsPanel\Logger $logger): void
 	{
-		$this->logger = $logger ?? new Log\NullLogger();
+		$this->logger = $logger;
+	}
+
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 */
+	protected function getSchema(string $schemaFilename): string
+	{
+		try {
+			$schema = Utils\FileSystem::read(
+				NsPanel\Constants::RESOURCES_FOLDER . DIRECTORY_SEPARATOR . 'request' . DIRECTORY_SEPARATOR . $schemaFilename,
+			);
+		} catch (Nette\IOException) {
+			throw new Exceptions\InvalidArgument('Validation schema for request could not be loaded');
+		}
+
+		return $schema;
 	}
 
 }

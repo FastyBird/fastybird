@@ -1,0 +1,19 @@
+{
+  "event": {
+    "header": {
+      "name": "DeviceStatesChangeReport",
+      "message_id": "__MESSAGE_ID__",
+      "version": "1"
+    },
+    "endpoint": {
+      "serial_number": "3f89afee-146d-4a7f-ba55-bf2f6bcc862c"
+    },
+    "payload": {
+      "state": {
+        "power": {
+          "powerState": "on"
+        }
+      }
+    }
+  }
+}

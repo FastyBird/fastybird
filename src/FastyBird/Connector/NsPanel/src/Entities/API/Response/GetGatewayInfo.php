@@ -16,11 +16,11 @@
 namespace FastyBird\Connector\NsPanel\Entities\API\Response;
 
 use FastyBird\Connector\NsPanel\Entities;
-use Nette;
+use Orisai\ObjectMapper;
 use stdClass;
 
 /**
- * NS Panel report its status response definition
+ * NS Panel report its description response definition
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Entities
@@ -30,11 +30,12 @@ use stdClass;
 final class GetGatewayInfo implements Entities\API\Entity
 {
 
-	use Nette\SmartObject;
-
 	public function __construct(
+		#[ObjectMapper\Rules\IntValue(unsigned: true)]
 		private readonly int $error,
+		#[ObjectMapper\Rules\MappedObjectValue(GetGatewayInfoData::class)]
 		private readonly GetGatewayInfoData $data,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $message,
 	)
 	{

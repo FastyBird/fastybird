@@ -2,6 +2,7 @@
 
 namespace FastyBird\Connector\Shelly\Tests\Cases\Unit\DI;
 
+use Error;
 use FastyBird\Connector\Shelly\Hydrators;
 use FastyBird\Connector\Shelly\Schemas;
 use FastyBird\Connector\Shelly\Tests\Cases\Unit\BaseTestCase;
@@ -14,6 +15,7 @@ final class ShellyExtensionTest extends BaseTestCase
 	/**
 	 * @throws BootstrapExceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
+	 * @throws Error
 	 */
 	public function testServicesRegistration(): void
 	{

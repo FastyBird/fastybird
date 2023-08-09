@@ -2,6 +2,7 @@
 
 namespace FastyBird\Plugin\RabbitMq\Tests\Cases\Unit\Connections;
 
+use Error;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
 use FastyBird\Plugin\RabbitMq\Connections;
 use FastyBird\Plugin\RabbitMq\Tests;
@@ -23,6 +24,7 @@ final class ConnectionTest extends Tests\Cases\Unit\BaseTestCase
 	/**
 	 * @throws BootstrapExceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
+	 * @throws Error
 	 */
 	public function testConfiguredValues(): void
 	{

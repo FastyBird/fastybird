@@ -15,9 +15,7 @@
 
 namespace FastyBird\Connector\NsPanel\Entities\Commands;
 
-use FastyBird\Connector\NsPanel\Entities;
-use Nette;
-use stdClass;
+use Orisai\ObjectMapper;
 
 /**
  * NS Panel info definition
@@ -27,15 +25,20 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class GatewayInfo implements Entities\API\Entity
+final class GatewayInfo implements Entity
 {
 
-	use Nette\SmartObject;
-
 	public function __construct(
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		#[ObjectMapper\Modifiers\FieldName('ip_address')]
 		private readonly string $ipAddress,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		#[ObjectMapper\Modifiers\FieldName('mac_address')]
 		private readonly string $macAddress,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $domain,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		#[ObjectMapper\Modifiers\FieldName('firmware_version')]
 		private readonly string $firmwareVersion,
 	)
 	{
@@ -72,17 +75,6 @@ final class GatewayInfo implements Entities\API\Entity
 			'domain' => $this->getDomain(),
 			'firmware_version' => $this->getFirmwareVersion(),
 		];
-	}
-
-	public function toJson(): object
-	{
-		$json = new stdClass();
-		$json->ip_address = $this->getIpAddress();
-		$json->mac_address = $this->getMacAddress();
-		$json->domain = $this->getDomain();
-		$json->firmware_version = $this->getFirmwareVersion();
-
-		return $json;
 	}
 
 }

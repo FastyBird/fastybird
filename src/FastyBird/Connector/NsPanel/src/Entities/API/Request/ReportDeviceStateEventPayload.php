@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\NsPanel\Entities\API\Request;
 
 use FastyBird\Connector\NsPanel\Entities;
-use Nette;
+use Orisai\ObjectMapper;
 use stdClass;
 
 /**
@@ -30,15 +30,19 @@ use stdClass;
 final class ReportDeviceStateEventPayload implements Entities\API\Entity
 {
 
-	use Nette\SmartObject;
-
-	public function __construct(private readonly bool $online)
+	public function __construct(
+		#[ObjectMapper\Rules\MappedObjectValue(Entities\API\State::class)]
+		private readonly Entities\API\State $state,
+	)
 	{
 	}
 
-	public function isOnline(): bool
+	/**
+	 * @return array<Entities\API\States\State>
+	 */
+	public function getState(): array
 	{
-		return $this->online;
+		return $this->state->getStates();
 	}
 
 	/**
@@ -47,14 +51,14 @@ final class ReportDeviceStateEventPayload implements Entities\API\Entity
 	public function toArray(): array
 	{
 		return [
-			'online' => $this->isOnline(),
+			'state' => $this->state->toArray(),
 		];
 	}
 
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->online = $this->isOnline();
+		$json->state = $this->state->toJson();
 
 		return $json;
 	}

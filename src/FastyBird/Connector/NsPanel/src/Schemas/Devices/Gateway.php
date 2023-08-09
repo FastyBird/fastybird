@@ -20,7 +20,7 @@ use FastyBird\Connector\NsPanel\Schemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 
 /**
- * NS Panel sub-device entity schema
+ * NS Panel gateway entity schema
  *
  * @template T of Entities\Devices\Gateway
  * @extends  Schemas\NsPanelDevice<T>
@@ -35,7 +35,7 @@ final class Gateway extends Schemas\NsPanelDevice
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL . '/device/' . Entities\Devices\Gateway::DEVICE_TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL . '/device/' . Entities\Devices\Gateway::TYPE;
 
 	public function getEntityClass(): string
 	{

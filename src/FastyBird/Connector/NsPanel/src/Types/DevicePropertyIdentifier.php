@@ -33,31 +33,36 @@ class DevicePropertyIdentifier extends Consistence\Enum\Enum
 	/**
 	 * Define device states
 	 */
-	public const IDENTIFIER_STATE = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_STATE;
+	public const STATE = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_STATE;
 
-	public const IDENTIFIER_IP_ADDRESS = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS;
+	public const IP_ADDRESS = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS;
 
-	public const IDENTIFIER_DOMAIN = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_DOMAIN;
+	public const DOMAIN = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_DOMAIN;
 
-	public const IDENTIFIER_MANUFACTURER = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MANUFACTURER;
+	public const MANUFACTURER = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MANUFACTURER;
 
-	public const IDENTIFIER_MODEL = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL;
+	public const MODEL = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL;
 
-	public const IDENTIFIER_MAC_ADDRESS = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS;
+	public const MAC_ADDRESS = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS;
 
-	public const IDENTIFIER_FIRMWARE_VERSION = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_VERSION;
+	public const FIRMWARE_VERSION = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_VERSION;
 
-	public const IDENTIFIER_ACCESS_TOKEN = 'access_token';
+	public const ACCESS_TOKEN = 'access_token';
 
-	public const IDENTIFIER_CATEGORY = 'category';
+	public const CATEGORY = 'category';
 
-	public const IDENTIFIER_GATEWAY_IDENTIFIER = 'gateway_identifier';
+	public const GATEWAY_IDENTIFIER = 'gateway_identifier';
 
-	public const IDENTIFIER_STATUS_READING_DELAY = 'status_reading_delay';
+	public const STATE_READING_DELAY = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_STATE_READING_DELAY;
+
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
 
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }

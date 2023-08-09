@@ -27,7 +27,8 @@ use function in_array;
 /**
  * Find device properties entities query
  *
- * @extends  DoctrineOrmQuery\QueryObject<Entities\Devices\Properties\Property>
+ * @template T of Entities\Devices\Properties\Property
+ * @extends  DoctrineOrmQuery\QueryObject<T>
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Queries
@@ -102,7 +103,7 @@ class FindDeviceProperties extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @phpstan-param ORM\EntityRepository<Entities\Devices\Properties\Property> $repository
+	 * @param ORM\EntityRepository<T> $repository
 	 */
 	protected function doCreateQuery(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{
@@ -116,7 +117,7 @@ class FindDeviceProperties extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @phpstan-param ORM\EntityRepository<Entities\Devices\Properties\Property> $repository
+	 * @param ORM\EntityRepository<T> $repository
 	 */
 	private function createBasicDql(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{
@@ -132,7 +133,7 @@ class FindDeviceProperties extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @phpstan-param ORM\EntityRepository<Entities\Devices\Properties\Property> $repository
+	 * @param ORM\EntityRepository<T> $repository
 	 */
 	protected function doCreateCountQuery(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{

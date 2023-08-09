@@ -42,7 +42,7 @@ class ButtonPayload extends Consistence\Enum\Enum
 
 	public const PAYLOAD_TRIPLE_CLICKED = 'btn_triple_clicked';
 
-	public const PAYLOAD_LONG_CLICKED = 'btn_long-clicked';
+	public const PAYLOAD_LONG_CLICKED = 'btn_long_clicked';
 
 	public const PAYLOAD_EXTRA_LONG_CLICKED = 'btn_extra_long_clicked';
 

@@ -19,7 +19,7 @@ use Consistence;
 use function strval;
 
 /**
- * Toggle capability supported payload types
+ * Power state capability supported payload types
  *
  * @package        FastyBird:MetadataLibrary!
  * @subpackage     Types
@@ -36,9 +36,14 @@ class PowerPayload extends Consistence\Enum\Enum
 
 	public const OFF = 'off';
 
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
+
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }

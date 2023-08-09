@@ -28,6 +28,14 @@ final class Constants
 
 	public const RESOURCES_FOLDER = __DIR__ . '/../resources';
 
-	public const DEFAULT_PORT = 52_323;
+	public const DEFAULT_SERVER_PORT = 52_323;
+
+	public const NS_PANEL_API_VERSION_V1 = '1';
+
+	public const STATE_NAME_KEY = '/^(?P<capability>[a-z\-]+)_(?P<identifier>[a-z0-9_]+)$/';
+
+	public const CHANNEL_IDENTIFIER = '/^(?P<type>[a-z_]+)(?:_(?P<key>[0-9]+){1})?$/';
+
+	public const PROPERTY_TAG_IDENTIFIER = '/^tag_(?P<tag>[a-z_]+)$/';
 
 }

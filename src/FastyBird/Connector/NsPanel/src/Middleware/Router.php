@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\NsPanel\Middleware;
 
+use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Events;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Servers;
@@ -31,9 +32,12 @@ use Nette\Utils;
 use Psr\EventDispatcher;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Log;
 use Ramsey\Uuid;
+use RuntimeException;
 use Throwable;
+use function array_key_exists;
+use function is_array;
+use function strval;
 
 /**
  * Connector HTTP server router middleware
@@ -50,11 +54,37 @@ final class Router
 
 	public function __construct(
 		private readonly SlimRouterRouting\IRouter $router,
+		private readonly NsPanel\Logger $logger,
 		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
 		$this->responseFactory = new SlimRouterHttp\ResponseFactory();
+	}
+
+	private function getMessageId(ServerRequestInterface $request): string
+	{
+		try {
+			$request->getBody()->rewind();
+
+			$requestBody = $request->getBody()->getContents();
+
+			$requestBody = Utils\Json::decode($requestBody, Utils\Json::FORCE_ARRAY);
+
+			if (
+				is_array($requestBody)
+				&& array_key_exists('directive', $requestBody)
+				&& is_array($requestBody['directive'])
+				&& array_key_exists('header', $requestBody['directive'])
+				&& is_array($requestBody['directive']['header'])
+				&& array_key_exists('message_id', $requestBody['directive']['header'])
+			) {
+				return strval($requestBody['directive']['header']['message_id']);
+			}
+		} catch (Utils\JsonException | RuntimeException) {
+			// Could be ignored, something is wrong with request
+		}
+
+		return Uuid\Uuid::uuid4()->toString();
 	}
 
 	/**
@@ -68,7 +98,6 @@ final class Router
 		try {
 			$response = $this->router->handle($request);
 			$response = $response->withHeader('Server', 'FastyBird NS Panel Connector');
-
 		} catch (Exceptions\ServerRequestError $ex) {
 			$this->logger->warning(
 				'Request ended with error',
@@ -90,7 +119,7 @@ final class Router
 				'event' => [
 					'header' => [
 						'name' => Types\Header::ERROR_RESPONSE,
-						'message_id' => Uuid\Uuid::uuid4()->toString(),
+						'message_id' => $this->getMessageId($request),
 						'version' => '1',
 					],
 					'payload' => [
@@ -119,7 +148,7 @@ final class Router
 				'event' => [
 					'header' => [
 						'name' => Types\Header::ERROR_RESPONSE,
-						'message_id' => Uuid\Uuid::uuid4()->toString(),
+						'message_id' => $this->getMessageId($request),
 						'version' => '1',
 					],
 					'payload' => [
@@ -144,7 +173,7 @@ final class Router
 				'event' => [
 					'header' => [
 						'name' => Types\Header::ERROR_RESPONSE,
-						'message_id' => Uuid\Uuid::uuid4()->toString(),
+						'message_id' => $this->getMessageId($request),
 						'version' => '1',
 					],
 					'payload' => [

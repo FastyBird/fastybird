@@ -1,0 +1,22 @@
+{
+  "directive": {
+    "header": {
+      "name": "UpdateDeviceStates",
+      "message_id": "5e9e00d9-1c8c-4960-a22c-576cdafcc07f",
+      "version": "1"
+    },
+    "endpoint": {
+      "serial_number": "c2e2a418-c70c-4363-aa33-8f2de5196bda",
+      "third_serial_number": "5ad7a088-678c-4d27-82a0-3290e816a4d9",
+      "tags": {
+      }
+    },
+    "payload": {
+      "state": {
+        "power": {
+          "powerState": "on"
+        }
+      }
+    }
+  }
+}

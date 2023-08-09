@@ -32,7 +32,7 @@ use function is_string;
 class SubDevice extends Entities\NsPanelDevice
 {
 
-	public const DEVICE_TYPE = 'ns-panel-sub-device';
+	public const TYPE = 'ns-panel-sub-device';
 
 	/**
 	 * @throws Exceptions\InvalidState
@@ -52,26 +52,26 @@ class SubDevice extends Entities\NsPanelDevice
 
 	public function getType(): string
 	{
-		return self::DEVICE_TYPE;
+		return self::TYPE;
 	}
 
 	public function getDiscriminatorName(): string
 	{
-		return self::DEVICE_TYPE;
+		return self::TYPE;
 	}
 
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function getParent(): Gateway
+	public function getGateway(): Gateway
 	{
-		$parent = $this->parents->first();
-
-		if (!$parent instanceof Gateway) {
-			throw new Exceptions\InvalidState('Sub-device have to have parent gateway defined');
+		foreach ($this->parents->toArray() as $parent) {
+			if ($parent instanceof Gateway) {
+				return $parent;
+			}
 		}
 
-		return $parent;
+		throw new Exceptions\InvalidState('Sub-device have to have parent gateway defined');
 	}
 
 	/**
@@ -91,24 +91,24 @@ class SubDevice extends Entities\NsPanelDevice
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getDisplayCategory(): Types\DeviceType
+	public function getDisplayCategory(): Types\Category
 	{
 		$property = $this->properties
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::IDENTIFIER_CATEGORY
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::CATEGORY
 			)
 			->first();
 
 		if (
 			$property instanceof DevicesEntities\Devices\Properties\Variable
 			&& is_string($property->getValue())
-			&& Types\DeviceType::isValidValue($property->getValue())
+			&& Types\Category::isValidValue($property->getValue())
 		) {
-			return Types\DeviceType::get($property->getValue());
+			return Types\Category::get($property->getValue());
 		}
 
-		return Types\DeviceType::get(Types\DeviceType::UNKNOWN);
+		return Types\Category::get(Types\Category::UNKNOWN);
 	}
 
 	/**
@@ -121,7 +121,7 @@ class SubDevice extends Entities\NsPanelDevice
 		$property = $this->properties
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::IDENTIFIER_MANUFACTURER
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::MANUFACTURER
 			)
 			->first();
 
@@ -145,7 +145,7 @@ class SubDevice extends Entities\NsPanelDevice
 		$property = $this->properties
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::IDENTIFIER_MODEL
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::MODEL
 			)
 			->first();
 

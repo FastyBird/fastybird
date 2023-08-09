@@ -72,7 +72,7 @@ class AutomaticTrigger extends Trigger
 		$this->conditions = new Common\Collections\ArrayCollection();
 
 		foreach ($conditions as $entity) {
-			$this->conditions->add($entity);
+			$this->addCondition($entity);
 		}
 	}
 

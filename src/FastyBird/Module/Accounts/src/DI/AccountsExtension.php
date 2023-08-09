@@ -28,6 +28,7 @@ use FastyBird\Module\Accounts\Router;
 use FastyBird\Module\Accounts\Schemas;
 use FastyBird\Module\Accounts\Security;
 use FastyBird\Module\Accounts\Subscribers;
+use FastyBird\Module\Accounts\Utilities;
 use IPub\DoctrineCrud;
 use IPub\SlimRouter\Routing as SlimRouterRouting;
 use Nette\DI;
@@ -209,6 +210,12 @@ class AccountsExtension extends DI\CompilerExtension
 
 		$builder->addDefinition($this->prefix('hydrators.role'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\Roles\Role::class);
+
+		$builder->addDefinition(
+			$this->prefix('utilities.database'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Utilities\Database::class);
 
 		$builder->addDefinition($this->prefix('security.hash'), new DI\Definitions\ServiceDefinition())
 			->setType(Helpers\SecurityHash::class);

@@ -2,6 +2,7 @@
 
 namespace FastyBird\Automator\DevicesModule\Tests\Cases\Unit\Queries;
 
+use Error;
 use FastyBird\Automator\DevicesModule\Entities;
 use FastyBird\Automator\DevicesModule\Exceptions;
 use FastyBird\Automator\DevicesModule\Queries;
@@ -25,6 +26,7 @@ final class FindActionsTest extends DbTestCase
 	 * @throws Exceptions\InvalidState
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
+	 * @throws Error
 	 */
 	public function testFindById(): void
 	{
@@ -45,6 +47,7 @@ final class FindActionsTest extends DbTestCase
 	 * @throws Exceptions\InvalidState
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
+	 * @throws Error
 	 */
 	public function testFindForDevice(): void
 	{
@@ -65,6 +68,7 @@ final class FindActionsTest extends DbTestCase
 	 * @throws Exceptions\InvalidState
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
+	 * @throws Error
 	 */
 	public function testFindForChannel(): void
 	{
@@ -85,6 +89,7 @@ final class FindActionsTest extends DbTestCase
 	 * @throws Exceptions\InvalidState
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
+	 * @throws Error
 	 */
 	public function testFindForChannelProperty(): void
 	{
@@ -105,6 +110,7 @@ final class FindActionsTest extends DbTestCase
 	 * @throws Exceptions\InvalidState
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
+	 * @throws Error
 	 */
 	public function testFindForCombination(): void
 	{

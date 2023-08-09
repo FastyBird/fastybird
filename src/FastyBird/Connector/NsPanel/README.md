@@ -22,20 +22,18 @@ and is licensed under [Apache2](http://www.apache.org/licenses/LICENSE-2.0).
 
 ### Features:
 
-- Full support for 2018 and later models
-- Support for televisions which need PIN authentication
-- Automated device discovery feature, which automatically detects and adds Panasonic Viera televisions to the FastyBird ecosystem
-- Panasonic Viera Connector management for the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) [devices module](https://github.com/FastyBird/devices-module), allowing users to easily manage and monitor Panasonic Viera devices
+- Support for Sonoff NS Panel sub-devices, allowing users to connect and control a wide range of Sonoff devices
+- Support for third-party devices management which could be controlled through NS Panels
+- Ability to map multiple devices into a single NS Panel device
+- Sonoff NS Panel Pro Connector management for the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) [devices module](https://github.com/FastyBird/devices-module), allowing users to easily manage and monitor Sonoff NS Panels
 - Advanced device management features, such as controlling power status, measuring energy consumption, and reading sensor data
 - [{JSON:API}](https://jsonapi.org/) schemas for full API access, providing a standardized and consistent way for developers to access and manipulate Panasonic Viera device data
-- Regular updates with new features and bug fixes, ensuring that the Panasonic Viera Connector is always up-to-date and reliable.
+- Regular updates with new features and bug fixes, ensuring that the Sonoff NS Panel Pro Connector is always up-to-date and reliable.
 
 
 ## Requirements
 
-Sonoff NS Panel PRO connector is tested against PHP 8.1 and require installed [Process Control](https://www.php.net/manual/en/book.pcntl.php),
-[OpenSSL](https://www.php.net/manual/en/book.openssl.php), [SimpleXML](https://www.php.net/manual/en/book.simplexml.php) and [Iconv](https://www.php.net/manual/en/book.iconv.php)
-PHP extensions.
+Sonoff NS Panel PRO connector is tested against PHP 8.1 and require installed [Process Control](https://www.php.net/manual/en/book.pcntl.php) PHP extension.
 
 ## Installation
 
@@ -54,7 +52,7 @@ application under marketplace section.
 
 ## Documentation
 
-Learn how to connect Sonoff NS Panel PRO devices and manage them with [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) system
+Learn how to connect Sonoff NS Panels and manage them with [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) system
 in [documentation](https://github.com/FastyBird/ns-panel-connector/wiki).
 
 ## Feedback

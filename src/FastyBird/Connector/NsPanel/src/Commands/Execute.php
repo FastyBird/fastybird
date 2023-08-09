@@ -17,12 +17,11 @@ namespace FastyBird\Connector\NsPanel\Commands;
 
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
+use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Commands as DevicesCommands;
-use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette\Localization;
 use Ramsey\Uuid;
 use Symfony\Component\Console;
@@ -75,7 +74,7 @@ class Execute extends Console\Command\Command
 						'connector',
 						'c',
 						Input\InputOption::VALUE_OPTIONAL,
-						'Run devices module connector',
+						'Connector ID or identifier',
 						true,
 					),
 				]),
@@ -127,7 +126,7 @@ class Execute extends Console\Command\Command
 		) {
 			$connectorId = $input->getOption('connector');
 
-			$findConnectorQuery = new DevicesQueries\FindConnectors();
+			$findConnectorQuery = new Queries\FindConnectors();
 
 			if (Uuid\Uuid::isValid($connectorId)) {
 				$findConnectorQuery->byId(Uuid\Uuid::fromString($connectorId));
@@ -147,7 +146,7 @@ class Execute extends Console\Command\Command
 		} else {
 			$connectors = [];
 
-			$findConnectorsQuery = new DevicesQueries\FindConnectors();
+			$findConnectorsQuery = new Queries\FindConnectors();
 
 			$systemConnectors = $this->connectorsRepository->findAllBy(
 				$findConnectorsQuery,
@@ -156,12 +155,10 @@ class Execute extends Console\Command\Command
 			usort(
 				$systemConnectors,
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Connectors\Connector $a, DevicesEntities\Connectors\Connector $b): int => $a->getIdentifier() <=> $b->getIdentifier()
+				static fn (Entities\NsPanelConnector $a, Entities\NsPanelConnector $b): int => $a->getIdentifier() <=> $b->getIdentifier()
 			);
 
 			foreach ($systemConnectors as $connector) {
-				assert($connector instanceof Entities\NsPanelConnector);
-
 				$connectors[$connector->getIdentifier()] = $connector->getIdentifier()
 					. ($connector->getName() !== null ? ' [' . $connector->getName() . ']' : '');
 			}
@@ -175,7 +172,7 @@ class Execute extends Console\Command\Command
 			if (count($connectors) === 1) {
 				$connectorIdentifier = array_key_first($connectors);
 
-				$findConnectorQuery = new DevicesQueries\FindConnectors();
+				$findConnectorQuery = new Queries\FindConnectors();
 				$findConnectorQuery->byIdentifier($connectorIdentifier);
 
 				$connector = $this->connectorsRepository->findOneBy(
@@ -232,14 +229,13 @@ class Execute extends Console\Command\Command
 						$identifier = array_search($answer, $connectors, true);
 
 						if ($identifier !== false) {
-							$findConnectorQuery = new DevicesQueries\FindConnectors();
+							$findConnectorQuery = new Queries\FindConnectors();
 							$findConnectorQuery->byIdentifier($identifier);
 
 							$connector = $this->connectorsRepository->findOneBy(
 								$findConnectorQuery,
 								Entities\NsPanelConnector::class,
 							);
-							assert($connector instanceof Entities\NsPanelConnector || $connector === null);
 
 							if ($connector !== null) {
 								return $connector;
@@ -260,8 +256,6 @@ class Execute extends Console\Command\Command
 			}
 		}
 
-		assert($connector instanceof Entities\NsPanelConnector);
-
 		if (!$connector->isEnabled()) {
 			$io->warning($this->translator->translate('//ns-panel-connector.cmd.execute.messages.connector.disabled'));
 
@@ -271,7 +265,7 @@ class Execute extends Console\Command\Command
 		$serviceCmd = $symfonyApp->find(DevicesCommands\Connector::NAME);
 
 		$result = $serviceCmd->run(new Input\ArrayInput([
-			'--connector' => $connector->getPlainId(),
+			'--connector' => $connector->getId()->toString(),
 			'--no-interaction' => true,
 			'--quiet' => true,
 		]), $output);

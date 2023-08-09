@@ -16,9 +16,10 @@
 namespace FastyBird\Connector\NsPanel\Clients;
 
 use FastyBird\Connector\NsPanel\Entities;
+use FastyBird\Connector\NsPanel\Types;
 
 /**
- * Gateway client factory
+ * Connector gateway client factory
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Clients
@@ -27,6 +28,8 @@ use FastyBird\Connector\NsPanel\Entities;
  */
 interface GatewayFactory extends ClientFactory
 {
+
+	public const MODE = Types\ClientMode::GATEWAY;
 
 	public function create(Entities\NsPanelConnector $connector): Gateway;
 

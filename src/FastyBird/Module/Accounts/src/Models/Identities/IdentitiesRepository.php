@@ -17,14 +17,14 @@ namespace FastyBird\Module\Accounts\Models\Identities;
 
 use Doctrine\ORM;
 use Doctrine\Persistence;
-use Exception;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Accounts\Entities;
 use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\Module\Accounts\Queries;
+use FastyBird\Module\Accounts\Utilities;
 use IPub\DoctrineOrmQuery;
-use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette;
+use Throwable;
 use function is_array;
 
 /**
@@ -40,17 +40,19 @@ final class IdentitiesRepository
 
 	use Nette\SmartObject;
 
-	/** @phpstan-var ORM\EntityRepository<Entities\Identities\Identity>|null */
+	/** @var ORM\EntityRepository<Entities\Identities\Identity>|null */
 	private ORM\EntityRepository|null $repository = null;
 
-	public function __construct(private readonly Persistence\ManagerRegistry $managerRegistry)
+	public function __construct(
+		private readonly Utilities\Database $database,
+		private readonly Persistence\ManagerRegistry $managerRegistry,
+	)
 	{
 	}
 
 	/**
-	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
-	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
 	 */
 	public function findOneForAccount(
 		Entities\Accounts\Account $account,
@@ -64,9 +66,8 @@ final class IdentitiesRepository
 	}
 
 	/**
-	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
-	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
 	 */
 	public function findOneByUid(string $uid): Entities\Identities\Identity|null
 	{
@@ -78,56 +79,58 @@ final class IdentitiesRepository
 	}
 
 	/**
-	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
-	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws Exceptions\InvalidState
 	 */
 	public function findOneBy(
 		Queries\FindIdentities $queryObject,
 	): Entities\Identities\Identity|null
 	{
-		return $queryObject->fetchOne($this->getRepository());
+		return $this->database->query(
+			fn (): Entities\Identities\Identity|null => $queryObject->fetchOne($this->getRepository()),
+		);
 	}
 
 	/**
-	 * @phpstan-return array<Entities\Identities\Identity>
+	 * @return array<Entities\Identities\Identity>
 	 *
-	 * @throws Exception
-	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws Exceptions\InvalidState
 	 */
 	public function findAllBy(Queries\FindIdentities $queryObject): array
 	{
-		/** @var array<Entities\Identities\Identity>|DoctrineOrmQuery\ResultSet<Entities\Identities\Identity> $result */
-		$result = $queryObject->fetch($this->getRepository());
+		try {
+			/** @var array<Entities\Identities\Identity> $result */
+			$result = $this->getResultSet($queryObject)->toArray();
 
-		if (is_array($result)) {
 			return $result;
+		} catch (Throwable $ex) {
+			throw new Exceptions\InvalidState('Fetch all data by query failed', $ex->getCode(), $ex);
 		}
-
-		/** @var array<Entities\Identities\Identity> $data */
-		$data = $result->toArray();
-
-		return $data;
 	}
 
 	/**
-	 * @phpstan-return DoctrineOrmQuery\ResultSet<Entities\Identities\Identity>
+	 * @return DoctrineOrmQuery\ResultSet<Entities\Identities\Identity>
 	 *
-	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws Exceptions\InvalidState
 	 */
 	public function getResultSet(
 		Queries\FindIdentities $queryObject,
 	): DoctrineOrmQuery\ResultSet
 	{
-		/** @var DoctrineOrmQuery\ResultSet<Entities\Identities\Identity> $result */
-		$result = $queryObject->fetch($this->getRepository());
+		$result = $this->database->query(
+			fn (): DoctrineOrmQuery\ResultSet|array => $queryObject->fetch($this->getRepository()),
+		);
+
+		if (is_array($result)) {
+			throw new Exceptions\InvalidState('Result set could not be created');
+		}
 
 		return $result;
 	}
 
 	/**
-	 * @phpstan-param class-string<Entities\Identities\Identity> $type
+	 * @param class-string<Entities\Identities\Identity> $type
 	 *
-	 * @phpstan-return ORM\EntityRepository<Entities\Identities\Identity>
+	 * @return ORM\EntityRepository<Entities\Identities\Identity>
 	 */
 	private function getRepository(string $type = Entities\Identities\Identity::class): ORM\EntityRepository
 	{

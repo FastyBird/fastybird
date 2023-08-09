@@ -11,10 +11,7 @@
         "token" : {
           "type" : "string"
         }
-      },
-      "required": [
-        "token"
-      ]
+      }
     },
     "message" : {
       "type" : "string"

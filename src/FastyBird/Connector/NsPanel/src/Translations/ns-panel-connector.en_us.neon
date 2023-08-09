@@ -18,12 +18,14 @@ cmd:
         questions:
             continue: "Would you like to continue?"
             whatToDo: "What would you like to do?"
+            exit: "Do you want to exit?"
 
         messages:
             noConnectors: "No NS Panel connectors registered in system."
             answerNotValid: "Selected answer: \"%s\" is not valid."
 
         deviceType:
+            unknown: "Unknown"
             plug: "Plug"
             switch: "Switch"
             light: "Light"
@@ -39,6 +41,46 @@ cmd:
             camera: "Camera"
             sensor: "Sensor"
 
+        capability:
+            power: "Power"
+            toggle: "Toggle"
+            brightness: "Brightness"
+            color-temperature: "Color Temperature"
+            color-rgb: "Color RGB"
+            percentage: "Percentage"
+            motor-control: "Motor Control"
+            motor-reverse: "Motor Reverse"
+            motor-clb: "Motor Calibration"
+            startup: "Startup"
+            camera-stream: "Camera Stream"
+            detect: "Detect"
+            humidity: "Humidity"
+            temperature: "Temperature"
+            battery: "Battery"
+            press: "Press"
+            rssi: "RSSI"
+
+        protocol:
+            powerState: "Power State"
+            toggleState: "Toggle State"
+            brightness: "Brightness"
+            colorTemperature: "Color Temperature"
+            red: "Color Red"
+            green: "Color Green"
+            blue: "Color Blue"
+            percentage: "Percentage"
+            motorControl: "Motor Control"
+            motorReverse: "Motor Reverse"
+            motorClb: "Motor Calibration"
+            startup: "Startup"
+            streamUrl: "Camera Stream Url"
+            detect: "Detect"
+            humidity: "Humidity"
+            temperature: "Temperature"
+            battery: "Battery"
+            press: "Press"
+            rssi: "Signal RSSI"
+
     initialize:
         title: "NS Panel connector - initialization"
         subtitle: "This action will create|update|delete connector configuration"
@@ -47,6 +89,8 @@ cmd:
             create: "Create new connector configuration"
             update: "Edit existing connector configuration"
             remove: "Delete existing connector configuration"
+            list: "List NS Panel connectors"
+            nothing: "Nothing"
 
         questions:
             create: "Would you like to create new NS Panel connector configuration?"
@@ -57,6 +101,20 @@ cmd:
                 name: "Provide connector name"
             select:
                 connector: "Please select connector to manage"
+                mode: "In what mode should this connector communicate with NS Panels?"
+            changeMode: "Do you want to change connector devices support?"
+
+        answers:
+            mode:
+                gateway: "Only NS Panel gateway mode"
+                device: "Only NS Panel third-party devices mode"
+                both: "Both modes"
+
+        data:
+            name: "Name"
+            panelsCnt: "# NS Panels"
+            subDevicesCnt: "# Sub-devices"
+            devicesCnt: "# Devices"
 
         messages:
             identifier:
@@ -75,96 +133,133 @@ cmd:
 
     devices:
         title: "NS Panel connector - devices management"
-        subtitle: "This action will create|update|delete connector device"
+        subtitle: "This action will manage connector NS Panels and their devices"
 
         actions:
-            create: "Create new connector device"
-            update: "Edit existing connector device"
-            remove: "Delete existing connector device"
-            createService: "Create new device service"
-            updateService: "Edit existing device service"
-            removeService: "Delete existing device service"
-            listServices: "List device services"
-            updateCharacteristic: "Edit existing service characteristic"
-            removeCharacteristic: "Delete existing service characteristic"
-            listCharacteristics: "List service characteristics"
+            create:
+                gateway: "Connect new NS Panel"
+                device: "Create new device"
+                capability: "Create new device capability"
+            update:
+                gateway: "Edit existing NS Panel"
+                device: "Edit existing device"
+                capability: "Edit existing device capability"
+                protocol: "Edit existing capability protocol"
+            remove:
+                gateway: "Delete existing NS Panel"
+                device: "Delete existing device"
+                capability: "Delete existing device capability"
+                protocol: "Delete existing capability protocol"
+            list:
+                gateways: "List NS Panels"
+                devices: "List devices"
+                capabilities: "List device capabilities"
+                protocols: "List capability protocols"
+            manage:
+                gateway: "Manage NS Panel devices"
+                device: "Manage device capabilities"
+                capability: "Manage capability protocols"
             nothing: "Nothing"
 
         questions:
-            create: "Would you like to create new device in connector?"
+            create:
+                gateway: "Would you like to configure new NS Panel?"
+                device: "Would you like to create new device in NS Panel?"
+                capability: "Would you like to configure new device capability?"
             provide:
-                identifier: "Provide device identifier"
+                identifier: "Provide identifier"
                 name: "Provide device name"
-                value: "Provide characteristic value"
+                value: "Provide protocol value"
                 address: "Provide NS Panel local IP address or domain"
-                port: "Provide communication port or leave blank for use dynamic"
             select:
                 connector: "Please select connector under which you want to manage devices"
+                gateway: "Please select NS Panel to manage"
                 device: "Please select device to manage"
+                capability: "Please select device's capability"
+                protocol: "Please select capability's protocol"
                 category: "Please select device category"
-                service: "Please select device's service"
-                characteristic: "Please select service's characteristic"
-                value: "Please select characteristic value"
-                propertyType: "What type of property you want to map?"
+                capabilityType: "What type of device capability you would like to add?"
+                protocolType: "What type of capability protocol you would like to add?"
                 mappedDevice: "Select device for mapping"
-                mappedDeviceProperty: "Select device property for mapping"
                 mappedDeviceChannel: "Select device channel for mapping"
                 mappedChannelProperty: "Select channel property for mapping"
-                requiredCharacteristic: "What type of service characteristic you would like to add?"
-                optionalCharacteristic: "What type of service characteristic you would like to add? (optional)"
                 valueMapping: "Select device value which will be mapped to: %value%"
-            connectCharacteristic: "Connect characteristic with device?"
-            createService: "Would you like to configure new device service?"
-            createAnotherService: "Would you like to configure another device service?"
-            editServices: "Would you like to manage device services?"
-            addCharacteristics: "Would you like to add new characteristics?"
-            connection: "Do you want to change NS Panel connection?"
+                value: "Please select protocol value"
+            isGatewayReady: "Is your NS Panel ready?"
+            regenerateAccessToken: "Would you like to establish new connection with NS Panel?"
+            connectProtocol: "Connect protocol with device?"
 
         answers:
             none: "None"
             true: "True"
             false: "False"
-            deviceProperty: "Device property"
-            channelProperty: "Channel property"
+
+        data:
+            name: "Name"
+            ipAddress: "IP Address"
+            devices: "Devices"
+            category: "Category"
+            capabilities: "Capabilities"
+            type: "Type"
+            protocols: "Protocols"
+            value: "Value"
 
         messages:
-            identifier:
-                used: "This identifier is already used."
-                missing: "Device identifier have to provided."
             create:
+                gateway:
+                    success: "NS Panel \"%name%\" was successfully created."
+                    error: "Something went wrong, NS Panel could not be created. Error was logged."
                 device:
                     success: "Device \"%name%\" was successfully created."
                     error: "Something went wrong, device could not be created. Error was logged."
-                service:
-                    success: "Service \"%name%\" was successfully created."
-                    error: "Something went wrong, service could not be created. Error was logged."
+                capability:
+                    success: "Capability \"%name%\" was successfully created."
+                    error: "Something went wrong, capability could not be created. Error was logged."
+                protocol:
+                    success: "Protocol \"%name%\" was successfully created."
+                    error: "Something went wrong, protocol could not be created. Error was logged."
             update:
+                gateway:
+                    success: "NS Panel \"%name%\" was successfully updated."
+                    error: "Something went wrong, NS Panel could not be updated. Error was logged."
                 device:
                     success: "Device \"%name%\" was successfully updated."
                     error: "Something went wrong, device could not be updated. Error was logged."
-                service:
-                    success: "Service \"%name%\" was successfully updated."
-                    error: "Something went wrong, service could not be updated. Error was logged."
-                characteristic:
-                    success: "Characteristic \"%name%\" was successfully updated."
-                    error: "Something went wrong, characteristic could not be updated. Error was logged."
+                capability:
+                    success: "Capability \"%name%\" was successfully updated."
+                    error: "Something went wrong, capability could not be updated. Error was logged."
+                protocol:
+                    success: "Protocol \"%name%\" was successfully updated."
+                    error: "Something went wrong, protocol could not be updated. Error was logged."
             remove:
+                gateway:
+                    success: "NS Panel \"%name%\" was successfully removed."
+                    error: "Something went wrong, NS Panel could not be removed. Error was logged."
                 device:
                     success: "Device \"%name%\" was successfully removed."
                     error: "Something went wrong, device could not be removed. Error was logged."
-                service:
-                    success: "Service \"%name%\" was successfully removed."
-                    error: "Something went wrong, service could not be removed. Error was logged."
-                characteristic:
-                    success: "Characteristic \"%name%\" was successfully removed."
-                    error: "Something went wrong, characteristic could not be removed. Error was logged."
-            noDevices: "No devices registered in NS Panel connector."
-            noServices: "This device has not configured any service."
-            noCharacteristics: "This device service has not configured any characteristic."
-            serviceNotFound: "Something went wrong, service could not be loaded"
-            characteristicNotFound: "Something went wrong, characteristic could not be loaded"
-            noHardwareDevices: "No devices registered in system"
-            addressNotReachable: "NS Panel with address \"%address\" is not reachable."
+                capability:
+                    success: "Capability \"%name%\" was successfully removed."
+                    error: "Something went wrong, capability could not be removed. Error was logged."
+                protocol:
+                    success: "Protocol \"%name%\" was successfully removed."
+                    error: "Something went wrong, protocol could not be removed. Error was logged."
+            identifier:
+                used: "This identifier is already used."
+                missing: "Identifier have to provided."
+            gateway:
+                prepare: "Now you have to prepare your NS Panel for pairing. Go to Settings, then to About and tap 7 times in a row on Name."
+            accessToken:
+                error: "Could not get NS Panel access token"
+            noGateways: "No NS Panels registered in NS Panel connector."
+            noDevices: "No devices are registered in \"%name%\" NS Panel."
+            noCapabilities: "No capabilities are registered in \"%name%\" device."
+            noProtocols: "This device capability has not configured any protocol."
+            noMultipleCapabilities: "Capability \"%type%\" is already created under this device"
+            noMissingProtocols: "All available protocols for selected capability are configured"
+            noHardwareDevices: "No devices registered in system which could be connected with NS Panel device"
+            addressNotReachable: "NS Panel with address \"%address%\" is not reachable."
+            removeDeviceFromPanelFailed: "Device \"%name%\" could not be removed from NS panel \"%panel%\""
 
     execute:
         title: "NS Panel connector - service"
@@ -180,4 +275,30 @@ cmd:
                 notFound: "Connector was not found in system."
                 disabled: "Connector is disabled. Disabled connector could not be executed."
             noConnectors: "No NS Panel connectors registered in system."
-            error: "Something went wrong, service could not be processed."
+            error: "Something went wrong, capability could not be processed."
+
+    discovery:
+        title: "NS Panel connector - devices discovery"
+        subtitle: "This action will run connector devices discovery"
+
+        questions:
+            execute: "Would you like to discover devices with \"%connector%\" connector"
+            select:
+                connector: "Please select connector to perform discovery"
+
+        data:
+            id: "ID"
+            name: "Name"
+            type: "Type"
+            gateway: "NS Panel"
+
+        messages:
+            connector:
+                notFound: "Connector was not found in system."
+                disabled: "Connector is disabled. Disabled connector could not be executed."
+            noConnectors: "No NS Panel connectors registered in system."
+            starting: "Starting NS Panel connector discovery..."
+            stopping: "Stopping NS Panel connector discovery..."
+            foundDevices: "Found %d new devices"
+            noDevicesFound: "No devices were found"
+            success: "Devices discovery was successfully finished"

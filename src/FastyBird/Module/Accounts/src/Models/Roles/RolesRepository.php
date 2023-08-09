@@ -17,12 +17,13 @@ namespace FastyBird\Module\Accounts\Models\Roles;
 
 use Doctrine\ORM;
 use Doctrine\Persistence;
-use Exception;
 use FastyBird\Module\Accounts\Entities;
+use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\Module\Accounts\Queries;
+use FastyBird\Module\Accounts\Utilities;
 use IPub\DoctrineOrmQuery;
-use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette;
+use Throwable;
 use function is_array;
 
 /**
@@ -38,16 +39,18 @@ final class RolesRepository
 
 	use Nette\SmartObject;
 
-	/** @phpstan-var ORM\EntityRepository<Entities\Roles\Role>|null */
+	/** @var ORM\EntityRepository<Entities\Roles\Role>|null */
 	private ORM\EntityRepository|null $repository = null;
 
-	public function __construct(private readonly Persistence\ManagerRegistry $managerRegistry)
+	public function __construct(
+		private readonly Utilities\Database $database,
+		private readonly Persistence\ManagerRegistry $managerRegistry,
+	)
 	{
 	}
 
 	/**
-	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
-	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws Exceptions\InvalidState
 	 */
 	public function findOneByName(string $keyName): Entities\Roles\Role|null
 	{
@@ -58,56 +61,58 @@ final class RolesRepository
 	}
 
 	/**
-	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
-	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws Exceptions\InvalidState
 	 */
 	public function findOneBy(
 		Queries\FindRoles $queryObject,
 	): Entities\Roles\Role|null
 	{
-		return $queryObject->fetchOne($this->getRepository());
+		return $this->database->query(
+			fn (): Entities\Roles\Role|null => $queryObject->fetchOne($this->getRepository()),
+		);
 	}
 
 	/**
-	 * @phpstan-return array<Entities\Roles\Role>
+	 * @return array<Entities\Roles\Role>
 	 *
-	 * @throws Exception
-	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws Exceptions\InvalidState
 	 */
 	public function findAllBy(Queries\FindRoles $queryObject): array
 	{
-		/** @var array<Entities\Roles\Role>|DoctrineOrmQuery\ResultSet<Entities\Roles\Role> $result */
-		$result = $queryObject->fetch($this->getRepository());
+		try {
+			/** @var array<Entities\Roles\Role> $result */
+			$result = $this->getResultSet($queryObject)->toArray();
 
-		if (is_array($result)) {
 			return $result;
+		} catch (Throwable $ex) {
+			throw new Exceptions\InvalidState('Fetch all data by query failed', $ex->getCode(), $ex);
 		}
-
-		/** @var array<Entities\Roles\Role> $data */
-		$data = $result->toArray();
-
-		return $data;
 	}
 
 	/**
-	 * @phpstan-return DoctrineOrmQuery\ResultSet<Entities\Roles\Role>
+	 * @return DoctrineOrmQuery\ResultSet<Entities\Roles\Role>
 	 *
-	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws Exceptions\InvalidState
 	 */
 	public function getResultSet(
 		Queries\FindRoles $queryObject,
 	): DoctrineOrmQuery\ResultSet
 	{
-		/** @var DoctrineOrmQuery\ResultSet<Entities\Roles\Role> $result */
-		$result = $queryObject->fetch($this->getRepository());
+		$result = $this->database->query(
+			fn (): DoctrineOrmQuery\ResultSet|array => $queryObject->fetch($this->getRepository()),
+		);
+
+		if (is_array($result)) {
+			throw new Exceptions\InvalidState('Result set could not be created');
+		}
 
 		return $result;
 	}
 
 	/**
-	 * @phpstan-param class-string<Entities\Roles\Role> $type
+	 * @param class-string<Entities\Roles\Role> $type
 	 *
-	 * @phpstan-return ORM\EntityRepository<Entities\Roles\Role>
+	 * @return ORM\EntityRepository<Entities\Roles\Role>
 	 */
 	private function getRepository(string $type = Entities\Roles\Role::class): ORM\EntityRepository
 	{

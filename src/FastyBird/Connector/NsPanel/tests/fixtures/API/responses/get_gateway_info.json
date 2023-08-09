@@ -1,0 +1,10 @@
+{
+  "error": 0,
+  "data": {
+    "ip": "127.0.0.1",
+    "mac": "88:12:AC:F1:AE:8A",
+    "domain": "NSPanelPro.local",
+    "fw_version": "1.10.1"
+  },
+  "message": "success"
+}

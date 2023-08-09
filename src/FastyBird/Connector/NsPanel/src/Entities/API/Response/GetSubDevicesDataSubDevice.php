@@ -17,12 +17,15 @@ namespace FastyBird\Connector\NsPanel\Entities\API\Response;
 
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Types;
-use Nette;
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use Orisai\ObjectMapper;
+use Ramsey\Uuid;
 use stdClass;
 use function array_map;
+use function is_array;
 
 /**
- * NS Panel sub-device description - both NS Panel connected & third-party
+ * Get NS Panel sub-devices list data sub-device response definition
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Entities
@@ -32,30 +35,86 @@ use function array_map;
 final class GetSubDevicesDataSubDevice implements Entities\API\Entity
 {
 
-	use Nette\SmartObject;
-
 	/**
 	 * @param array<Entities\API\Capability> $capabilities
-	 * @param array<Entities\API\Statuses\Status> $state
-	 * @param array<string, string> $tags
+	 * @param array<string, string|array<string, string>> $tags
 	 */
 	public function __construct(
-		private readonly string $serial_number,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		#[ObjectMapper\Modifiers\FieldName('serial_number')]
+		private readonly string $serialNumber,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $name,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $manufacturer,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $model,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		#[ObjectMapper\Modifiers\FieldName('firmware_version')]
 		private readonly string $firmwareVersion,
-		private readonly Types\DeviceType $displayCategory,
-		private readonly string|null $thirdSerialNumber = null,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\Category::class)]
+		#[ObjectMapper\Modifiers\FieldName('display_category')]
+		private readonly Types\Category $displayCategory,
+		#[ObjectMapper\Rules\MappedObjectValue(Entities\API\State::class)]
+		private readonly Entities\API\State $state,
+		#[ObjectMapper\Rules\AnyOf([
+			new BootstrapObjectMapper\Rules\UuidValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('third_serial_number')]
+		private readonly Uuid\UuidInterface|null $thirdSerialNumber = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('service_address')]
 		private readonly string|null $serviceAddress = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly string|null $hostname = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('mac_address')]
 		private readonly string|null $macAddress = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('app_name')]
 		private readonly string|null $appName = null,
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(Entities\API\Capability::class),
+		)]
 		private readonly array $capabilities = [],
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly string|null $protocol = null,
-		private readonly array $state = [],
+		#[ObjectMapper\Rules\ArrayOf(
+			item: new ObjectMapper\Rules\AnyOf([
+				new ObjectMapper\Rules\StringValue(),
+				new ObjectMapper\Rules\ArrayOf(
+					item: new ObjectMapper\Rules\StringValue(),
+					key: new ObjectMapper\Rules\AnyOf([
+						new ObjectMapper\Rules\StringValue(),
+						new ObjectMapper\Rules\IntValue(),
+					]),
+				),
+			]),
+			key: new ObjectMapper\Rules\StringValue(),
+		)]
 		private readonly array $tags = [],
+		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $online = false,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\NullValue(),
+		])]
 		private readonly bool|null $subnet = null,
 	)
 	{
@@ -63,7 +122,7 @@ final class GetSubDevicesDataSubDevice implements Entities\API\Entity
 
 	public function getSerialNumber(): string
 	{
-		return $this->serial_number;
+		return $this->serialNumber;
 	}
 
 	public function getName(): string
@@ -86,12 +145,12 @@ final class GetSubDevicesDataSubDevice implements Entities\API\Entity
 		return $this->firmwareVersion;
 	}
 
-	public function getDisplayCategory(): Types\DeviceType
+	public function getDisplayCategory(): Types\Category
 	{
 		return $this->displayCategory;
 	}
 
-	public function getThirdSerialNumber(): string|null
+	public function getThirdSerialNumber(): Uuid\UuidInterface|null
 	{
 		return $this->thirdSerialNumber;
 	}
@@ -130,15 +189,15 @@ final class GetSubDevicesDataSubDevice implements Entities\API\Entity
 	}
 
 	/**
-	 * @return array<Entities\API\Statuses\Status>
+	 * @return array<string|int, Entities\API\States\State>
 	 */
-	public function getStatuses(): array
+	public function getState(): array
 	{
-		return $this->state;
+		return $this->state->getStates();
 	}
 
 	/**
-	 * @return array<string, string>
+	 * @return array<string, string|array<string, string>>
 	 */
 	public function getTags(): array
 	{
@@ -162,7 +221,7 @@ final class GetSubDevicesDataSubDevice implements Entities\API\Entity
 	{
 		return [
 			'serial_number' => $this->getSerialNumber(),
-			'third_serial_number' => $this->getThirdSerialNumber(),
+			'third_serial_number' => $this->getThirdSerialNumber()?->toString(),
 			'service_address' => $this->getServiceAddress(),
 			'name' => $this->getName(),
 			'manufacturer' => $this->getManufacturer(),
@@ -177,10 +236,7 @@ final class GetSubDevicesDataSubDevice implements Entities\API\Entity
 				$this->getCapabilities(),
 			),
 			'protocol' => $this->getProtocol(),
-			'state' => array_map(
-				static fn (Entities\API\Statuses\Status $state): array => $state->toArray(),
-				$this->getStatuses(),
-			),
+			'state' => $this->state->toArray(),
 			'tags' => $this->getTags(),
 			'online' => $this->isOnline(),
 			'subnet' => $this->isInSubnet(),
@@ -189,30 +245,58 @@ final class GetSubDevicesDataSubDevice implements Entities\API\Entity
 
 	public function toJson(): object
 	{
+		$tags = new stdClass();
+
+		foreach ($this->getTags() as $name => $value) {
+			if (is_array($value)) {
+				$tags->{$name} = new stdClass();
+
+				foreach ($value as $subName => $subValue) {
+					$tags->{$name}->{$subName} = $subValue;
+				}
+			} else {
+				$tags->{$name} = $value;
+			}
+		}
+
 		$json = new stdClass();
 		$json->serial_number = $this->getSerialNumber();
-		$json->third_serial_number = $this->getThirdSerialNumber();
-		$json->service_address = $this->getServiceAddress();
+		if ($this->getThirdSerialNumber() !== null) {
+			$json->third_serial_number = $this->getThirdSerialNumber()->toString();
+			$json->service_address = $this->getServiceAddress();
+		}
+
 		$json->name = $this->getName();
 		$json->manufacturer = $this->getManufacturer();
 		$json->model = $this->getModel();
 		$json->firmware_version = $this->getFirmwareVersion();
-		$json->hostname = $this->getHostname();
-		$json->mac_address = $this->getMacAddress();
-		$json->app_name = $this->getAppName();
+		if ($this->getHostname() !== null) {
+			$json->hostname = $this->getHostname();
+		}
+
+		if ($this->getMacAddress() !== null) {
+			$json->mac_address = $this->getMacAddress();
+		}
+
+		if ($this->getAppName() !== null) {
+			$json->app_name = $this->getAppName();
+		}
+
 		$json->display_category = $this->getDisplayCategory()->getValue();
 		$json->capabilities = array_map(
-			static fn (Entities\API\Capability $capability): array => $capability->toArray(),
+			static fn (Entities\API\Capability $capability): object => $capability->toJson(),
 			$this->getCapabilities(),
 		);
-		$json->protocol = $this->getProtocol();
-		$json->state = array_map(
-			static fn (Entities\API\Statuses\Status $state): array => $state->toArray(),
-			$this->getStatuses(),
-		);
-		$json->tags = $this->getTags();
+		if ($this->getThirdSerialNumber() === null) {
+			$json->protocol = $this->getProtocol();
+		}
+
+		$json->state = $this->state->toJson();
+		$json->tags = $tags;
 		$json->online = $this->isOnline();
-		$json->subnet = $this->isInSubnet();
+		if ($this->isInSubnet() !== null) {
+			$json->subnet = $this->isInSubnet();
+		}
 
 		return $json;
 	}

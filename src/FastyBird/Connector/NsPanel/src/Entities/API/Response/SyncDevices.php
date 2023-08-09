@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\NsPanel\Entities\API\Response;
 
 use FastyBird\Connector\NsPanel\Entities;
-use Nette;
+use Orisai\ObjectMapper;
 use stdClass;
 
 /**
@@ -30,29 +30,23 @@ use stdClass;
 final class SyncDevices implements Entities\API\Entity
 {
 
-	use Nette\SmartObject;
-
 	public function __construct(
-		private readonly int $error,
-		private readonly SyncDevicesEvent $data,
-		private readonly string $message,
+		#[ObjectMapper\Rules\MappedObjectValue(Entities\API\Header::class)]
+		private readonly Entities\API\Header $header,
+		#[ObjectMapper\Rules\MappedObjectValue(SyncDevicesPayload::class)]
+		private readonly SyncDevicesPayload $payload,
 	)
 	{
 	}
 
-	public function getError(): int
+	public function getHeader(): Entities\API\Header
 	{
-		return $this->error;
+		return $this->header;
 	}
 
-	public function getData(): SyncDevicesEvent
+	public function getPayload(): SyncDevicesPayload
 	{
-		return $this->data;
-	}
-
-	public function getMessage(): string
-	{
-		return $this->message;
+		return $this->payload;
 	}
 
 	/**
@@ -61,18 +55,16 @@ final class SyncDevices implements Entities\API\Entity
 	public function toArray(): array
 	{
 		return [
-			'error' => $this->getError(),
-			'data' => $this->getData(),
-			'message' => $this->getMessage(),
+			'header' => $this->getHeader()->toArray(),
+			'payload' => $this->getPayload()->toArray(),
 		];
 	}
 
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->error = $this->getError();
-		$json->data = $this->getData()->toJson();
-		$json->message = $this->getMessage();
+		$json->header = $this->getHeader()->toJson();
+		$json->payload = $this->getPayload()->toJson();
 
 		return $json;
 	}

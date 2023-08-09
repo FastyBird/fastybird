@@ -62,9 +62,15 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	public static function getSubscribedEvents(): array
 	{
 		return [
-			Events\StateEntityCreated::class => 'stateCreated',
-			Events\StateEntityUpdated::class => 'stateUpdated',
-			Events\StateEntityDeleted::class => 'stateDeleted',
+			Events\ConnectorPropertyStateEntityCreated::class => 'stateCreated',
+			Events\ConnectorPropertyStateEntityUpdated::class => 'stateUpdated',
+			Events\ConnectorPropertyStateEntityDeleted::class => 'stateDeleted',
+			Events\DevicePropertyStateEntityCreated::class => 'stateCreated',
+			Events\DevicePropertyStateEntityUpdated::class => 'stateUpdated',
+			Events\DevicePropertyStateEntityDeleted::class => 'stateDeleted',
+			Events\ChannelPropertyStateEntityCreated::class => 'stateCreated',
+			Events\ChannelPropertyStateEntityUpdated::class => 'stateUpdated',
+			Events\ChannelPropertyStateEntityDeleted::class => 'stateDeleted',
 		];
 	}
 
@@ -81,7 +87,9 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	 * @throws PhoneExceptions\NoValidCountryException
 	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
-	public function stateCreated(Events\StateEntityCreated $event): void
+	public function stateCreated(
+		Events\ConnectorPropertyStateEntityCreated|Events\DevicePropertyStateEntityCreated|Events\ChannelPropertyStateEntityCreated $event,
+	): void
 	{
 		$this->processEntity($event->getProperty());
 	}
@@ -99,7 +107,9 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	 * @throws PhoneExceptions\NoValidCountryException
 	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
-	public function stateUpdated(Events\StateEntityUpdated $event): void
+	public function stateUpdated(
+		Events\ConnectorPropertyStateEntityUpdated|Events\DevicePropertyStateEntityUpdated|Events\ChannelPropertyStateEntityUpdated $event,
+	): void
 	{
 		$this->processEntity($event->getProperty());
 	}
@@ -117,7 +127,9 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	 * @throws PhoneExceptions\NoValidCountryException
 	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
-	public function stateDeleted(Events\StateEntityDeleted $event): void
+	public function stateDeleted(
+		Events\ConnectorPropertyStateEntityDeleted|Events\DevicePropertyStateEntityDeleted|Events\ChannelPropertyStateEntityDeleted $event,
+	): void
 	{
 		$this->publishEntity($event->getProperty());
 

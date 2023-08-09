@@ -60,7 +60,7 @@ class Channel implements Entities\Entity,
 	use DoctrineTimestampable\Entities\TEntityCreated;
 	use DoctrineTimestampable\Entities\TEntityUpdated;
 
-	public const CHANNEL_TYPE = 'general';
+	public const TYPE = 'general';
 
 	/**
 	 * @ORM\Id
@@ -144,7 +144,7 @@ class Channel implements Entities\Entity,
 
 	public function getType(): string
 	{
-		return self::CHANNEL_TYPE;
+		return self::TYPE;
 	}
 
 	public function getCategory(): MetadataTypes\ChannelCategory
@@ -210,7 +210,7 @@ class Channel implements Entities\Entity,
 		// Process all passed entities...
 		foreach ($properties as $entity) {
 			// ...and assign them to collection
-			$this->properties->add($entity);
+			$this->addProperty($entity);
 		}
 	}
 
@@ -241,7 +241,7 @@ class Channel implements Entities\Entity,
 		// Process all passed entities...
 		foreach ($controls as $entity) {
 			// ...and assign them to collection
-			$this->controls->add($entity);
+			$this->addControl($entity);
 		}
 	}
 

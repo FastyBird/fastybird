@@ -2,6 +2,7 @@
 
 namespace FastyBird\Automator\DevicesModule\Tests\Cases\Unit\DI;
 
+use Error;
 use FastyBird\Automator\DevicesModule\Exceptions;
 use FastyBird\Automator\DevicesModule\Hydrators;
 use FastyBird\Automator\DevicesModule\Schemas;
@@ -19,6 +20,7 @@ final class DevicesModuleExtensionTests extends DbTestCase
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
+	 * @throws Error
 	 */
 	public function testServicesRegistration(): void
 	{

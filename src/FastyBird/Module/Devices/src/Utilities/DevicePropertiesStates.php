@@ -319,7 +319,7 @@ final class DevicePropertiesStates
 					$data->offsetSet(States\Property::VALID_KEY, false);
 
 					$this->logger->error(
-						'Provided property actual value was not valid',
+						'Provided property actual value is not valid',
 						[
 							'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
 							'type' => 'device-properties-states',
@@ -346,7 +346,7 @@ final class DevicePropertiesStates
 					$data->offsetSet(States\Property::VALID_KEY, false);
 
 					$this->logger->error(
-						'Provided property actual value was not valid',
+						'Provided property actual value is not valid',
 						[
 							'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
 							'type' => 'device-properties-states',

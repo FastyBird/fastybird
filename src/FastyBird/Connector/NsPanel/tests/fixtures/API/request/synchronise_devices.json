@@ -1,0 +1,42 @@
+{
+  "event": {
+    "header": {
+      "name": "DiscoveryRequest",
+      "message_id": "__MESSAGE_ID__",
+      "version": "1"
+    },
+    "payload": {
+      "endpoints": [
+        {
+          "third_serial_number": "dfb92f3d-7a92-4a66-84c1-c903e89b13e7",
+          "name": "Test Switch",
+          "manufacturer": "Custom manufacturer",
+          "model": "Test model",
+          "firmware_version": "4.2",
+          "display_category": "switch",
+          "capabilities": [
+            {
+              "capability": "power",
+              "permission": "readWrite"
+            },
+            {
+              "capability": "rssi",
+              "permission": "read"
+            }
+          ],
+          "state": {
+            "power": {
+              "powerState": "off"
+            },
+            "rssi": {
+              "rssi": -51
+            }
+          },
+          "tags": {},
+          "online": true,
+          "service_address": "http://10.10.0.141/webhook"
+        }
+      ]
+    }
+  }
+}

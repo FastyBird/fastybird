@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\NsPanel\Entities\API\Response;
 
 use FastyBird\Connector\NsPanel\Entities;
-use Nette;
+use Orisai\ObjectMapper;
 use stdClass;
 
 /**
@@ -30,29 +30,16 @@ use stdClass;
 final class ReportDeviceState implements Entities\API\Entity
 {
 
-	use Nette\SmartObject;
-
 	public function __construct(
-		private readonly int $error,
-		private readonly ReportDeviceStateEvent $data,
-		private readonly string $message,
+		#[ObjectMapper\Rules\MappedObjectValue(Entities\API\Header::class)]
+		private readonly Entities\API\Header $header,
 	)
 	{
 	}
 
-	public function getError(): int
+	public function getHeader(): Entities\API\Header
 	{
-		return $this->error;
-	}
-
-	public function getData(): ReportDeviceStateEvent
-	{
-		return $this->data;
-	}
-
-	public function getMessage(): string
-	{
-		return $this->message;
+		return $this->header;
 	}
 
 	/**
@@ -61,18 +48,16 @@ final class ReportDeviceState implements Entities\API\Entity
 	public function toArray(): array
 	{
 		return [
-			'error' => $this->getError(),
-			'data' => $this->getData(),
-			'message' => $this->getMessage(),
+			'header' => $this->getHeader()->toArray(),
+			'payload' => [],
 		];
 	}
 
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->error = $this->getError();
-		$json->data = $this->getData()->toJson();
-		$json->message = $this->getMessage();
+		$json->header = $this->getHeader()->toJson();
+		$json->payload = new stdClass();
 
 		return $json;
 	}

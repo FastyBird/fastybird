@@ -16,11 +16,12 @@
 namespace FastyBird\Connector\NsPanel\Clients;
 
 use FastyBird\Connector\NsPanel\Entities;
+use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use React\Promise;
 
 /**
- * Base device client interface
+ * Connector client interface
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Clients
@@ -31,22 +32,23 @@ interface Client
 {
 
 	/**
-	 * Create servers/clients
+	 * Create clients
 	 */
 	public function connect(): void;
 
 	/**
-	 * Destroy servers/clients
+	 * Destroy clients
 	 */
 	public function disconnect(): void;
 
 	/**
-	 * Write thing parameter mapped as channel
+	 * Write data to device
 	 */
 	public function writeChannelProperty(
 		Entities\NsPanelDevice $device,
-		DevicesEntities\Channels\Channel $channel,
-		DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped $property,
+		Entities\NsPanelChannel $channel,
+		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+		DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped|MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelMappedProperty $property,
 	): Promise\PromiseInterface;
 
 }

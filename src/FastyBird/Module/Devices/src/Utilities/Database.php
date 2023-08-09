@@ -44,13 +44,13 @@ final class Database
 	}
 
 	/**
+	 * @template T
+	 *
 	 * @param callable(): T $callback
 	 *
 	 * @return T
 	 *
 	 * @throws Exceptions\InvalidState
-	 *
-	 * @template T
 	 */
 	public function query(callable $callback)
 	{

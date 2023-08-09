@@ -73,8 +73,6 @@ final class DeviceConnection
 				'format' => [
 					MetadataTypes\ConnectionState::STATE_CONNECTED,
 					MetadataTypes\ConnectionState::STATE_DISCONNECTED,
-					MetadataTypes\ConnectionState::STATE_INIT,
-					MetadataTypes\ConnectionState::STATE_READY,
 					MetadataTypes\ConnectionState::STATE_RUNNING,
 					MetadataTypes\ConnectionState::STATE_SLEEPING,
 					MetadataTypes\ConnectionState::STATE_STOPPED,

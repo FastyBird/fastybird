@@ -2,6 +2,7 @@
 
 namespace FastyBird\Module\Devices\Tests\Cases\Unit\Router;
 
+use Error;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
 use FastyBird\Library\Metadata;
 use FastyBird\Module\Devices\Exceptions;
@@ -21,6 +22,13 @@ const VALID_TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJjb20uZmFzdH
 final class RouterTest extends DbTestCase
 {
 
+	/**
+	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Nette\DI\MissingServiceException
+	 * @throws RuntimeException
+	 * @throws Error
+	 */
 	public function setUp(): void
 	{
 		$this->registerNeonConfigurationFile(__DIR__ . '/prefixedRoutes.neon');
@@ -34,6 +42,7 @@ final class RouterTest extends DbTestCase
 	 * @throws InvalidArgumentException
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
+	 * @throws Error
 	 *
 	 * @dataProvider prefixedRoutes
 	 */
