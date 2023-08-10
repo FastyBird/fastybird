@@ -56,7 +56,7 @@ final class Queue
 		);
 	}
 
-	public function consume(): Entities\Messages\Entity|false
+	public function dequeue(): Entities\Messages\Entity|false
 	{
 		$this->queue->rewind();
 

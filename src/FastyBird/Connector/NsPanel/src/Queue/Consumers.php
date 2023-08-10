@@ -67,7 +67,7 @@ final class Consumers
 
 	public function consume(): void
 	{
-		$entity = $this->queue->consume();
+		$entity = $this->queue->dequeue();
 
 		if ($entity === false) {
 			return;

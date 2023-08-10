@@ -160,11 +160,13 @@ final class DiscoveryTest extends DbTestCase
 
 		$eventLoop->run();
 
-		$consumer = $this->getContainer()->getByType(Queue\Queue::class);
+		$queue = $this->getContainer()->getByType(Queue\Queue::class);
 
-		self::assertFalse($consumer->isEmpty());
+		self::assertFalse($queue->isEmpty());
 
-		$consumer->consume();
+		$consumers = $this->getContainer()->getByType(Queue\Consumers::class);
+
+		$consumers->consume();
 
 		$devicesRepository = $this->getContainer()->getByType(DevicesModels\Devices\DevicesRepository::class);
 
