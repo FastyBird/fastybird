@@ -97,7 +97,7 @@ final class Connector implements DevicesConnectors\Connector
 
 		$mode = $this->connector->getClientMode();
 
-		$this->logger->debug(
+		$this->logger->info(
 			'Starting NS Panel connector service',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
@@ -205,7 +205,7 @@ final class Connector implements DevicesConnectors\Connector
 			});
 		}
 
-		$this->logger->debug(
+		$this->logger->info(
 			'NS Panel connector service has been started',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
@@ -226,7 +226,7 @@ final class Connector implements DevicesConnectors\Connector
 	{
 		assert($this->connector instanceof Entities\NsPanelConnector);
 
-		$this->logger->debug(
+		$this->logger->info(
 			'Starting NS Panel connector discovery',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
@@ -259,7 +259,7 @@ final class Connector implements DevicesConnectors\Connector
 			}),
 		);
 
-		$this->logger->debug(
+		$this->logger->info(
 			'NS Panel connector discovery has been started',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
@@ -287,7 +287,7 @@ final class Connector implements DevicesConnectors\Connector
 			$this->eventLoop->cancelTimer($this->consumersTimer);
 		}
 
-		$this->logger->debug(
+		$this->logger->info(
 			'NS Panel connector has been terminated',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
