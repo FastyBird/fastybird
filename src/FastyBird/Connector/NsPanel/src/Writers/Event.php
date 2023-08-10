@@ -138,9 +138,9 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 			$this->entityHelper->create(
 				Entities\Messages\WriteSubDeviceState::class,
 				[
-					$this->connector->getId()->toString(),
-					$device->getId()->toString(),
-					$channel->getId()->toString(),
+					'connector' => $this->connector->getId()->toString(),
+					'device' => $device->getId()->toString(),
+					'channel' => $channel->getId()->toString(),
 				],
 			),
 		);
@@ -176,9 +176,9 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 			$this->entityHelper->create(
 				Entities\Messages\WriteThirdPartyDeviceState::class,
 				[
-					$this->connector->getId()->toString(),
-					$device->getId()->toString(),
-					$channel->getId()->toString(),
+					'connector' => $this->connector->getId()->toString(),
+					'device' => $device->getId()->toString(),
+					'channel' => $channel->getId()->toString(),
 				],
 			),
 		);

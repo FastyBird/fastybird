@@ -53,7 +53,6 @@ final class StoreDeviceState implements Queue\Consumer
 
 	public function __construct(
 		private readonly bool $useExchange,
-		private readonly Helpers\Property $propertyStateHelper,
 		private readonly NsPanel\Logger $logger,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
@@ -176,14 +175,17 @@ final class StoreDeviceState implements Queue\Consumer
 				continue;
 			}
 
-			$this->propertyStateHelper->setValue($property, Utils\ArrayHash::from([
-				DevicesStates\Property::ACTUAL_VALUE_KEY => Helpers\Transformer::transformValueFromDevice(
-					$property->getDataType(),
-					$property->getFormat(),
-					$item->getValue(),
-				),
-				DevicesStates\Property::VALID_KEY => true,
-			]));
+			$this->channelPropertiesStateManager->writeValue(
+				$property,
+				Utils\ArrayHash::from([
+					DevicesStates\Property::ACTUAL_VALUE_KEY => Helpers\Transformer::transformValueFromDevice(
+						$property->getDataType(),
+						$property->getFormat(),
+						$item->getValue(),
+					),
+					DevicesStates\Property::VALID_KEY => true,
+				]),
+			);
 		}
 	}
 

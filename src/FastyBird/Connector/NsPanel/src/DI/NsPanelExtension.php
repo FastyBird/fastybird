@@ -323,12 +323,6 @@ class NsPanelExtension extends DI\CompilerExtension
 		$builder->addDefinition($this->prefix('helpers.loader'), new DI\Definitions\ServiceDefinition())
 			->setType(Helpers\Loader::class);
 
-		$builder->addDefinition($this->prefix('helpers.channel'), new DI\Definitions\ServiceDefinition())
-			->setType(Helpers\Channel::class);
-
-		$builder->addDefinition($this->prefix('helpers.property'), new DI\Definitions\ServiceDefinition())
-			->setType(Helpers\Property::class);
-
 		$builder->addDefinition($this->prefix('helpers.entity'), new DI\Definitions\ServiceDefinition())
 			->setType(Helpers\Entity::class);
 

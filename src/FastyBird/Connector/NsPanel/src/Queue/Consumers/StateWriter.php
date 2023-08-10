@@ -13,17 +13,20 @@
  * @date           16.07.23
  */
 
-namespace FastyBird\Connector\NsPanel\Helpers;
+namespace FastyBird\Connector\NsPanel\Queue\Consumers;
 
+use DateTimeInterface;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use function boolval;
 use function floatval;
 use function intval;
@@ -39,16 +42,12 @@ use function strval;
  * @subpackage     Clients
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
+ *
+ * @property-read DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository
+ * @property-read DevicesUtilities\ChannelPropertiesStates $channelPropertiesStateManager
  */
-final class Channel
+trait StateWriter
 {
-
-	public function __construct(
-		private readonly Helpers\Property $propertyStateHelper,
-		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
-	)
-	{
-	}
 
 	/**
 	 * @return array<mixed>|null
@@ -485,8 +484,8 @@ final class Channel
 	): string|int|float|bool|null
 	{
 		if ($property instanceof DevicesEntities\Channels\Properties\Mapped) {
-			$actualValue = $this->propertyStateHelper->getActualValue($property);
-			$expectedValue = $this->propertyStateHelper->getExpectedValue($property);
+			$actualValue = $this->getActualValue($property);
+			$expectedValue = $this->getExpectedValue($property);
 
 			$value = $expectedValue ?? $actualValue;
 		} else {
@@ -526,6 +525,30 @@ final class Channel
 		}
 
 		return $property;
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function getActualValue(
+		DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped $property,
+	): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
+	{
+		return $this->channelPropertiesStateManager->readValue($property)?->getActualValue();
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function getExpectedValue(
+		DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped $property,
+	): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
+	{
+		return $this->channelPropertiesStateManager->readValue($property)?->getExpectedValue();
 	}
 
 }

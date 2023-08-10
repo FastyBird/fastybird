@@ -275,7 +275,7 @@ cmd:
                 notFound: "Connector was not found in system."
                 disabled: "Connector is disabled. Disabled connector could not be executed."
             noConnectors: "No NS Panel connectors registered in system."
-            error: "Something went wrong, capability could not be processed."
+            error: "Something went wrong, connector was terminated."
 
     discovery:
         title: "NS Panel connector - devices discovery"

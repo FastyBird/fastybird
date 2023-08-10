@@ -48,15 +48,16 @@ use function array_merge;
 final class WriteThirdPartyDeviceState implements Queue\Consumer
 {
 
+	use StateWriter;
 	use Nette\SmartObject;
 
 	private API\LanApi|null $lanApiApi = null;
 
 	public function __construct(
+		protected readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
+		protected readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStateManager,
 		private readonly Queue\Queue $queue,
 		private readonly API\LanApiFactory $lanApiApiFactory,
-		private readonly Helpers\Channel $channelHelper,
-		private readonly Helpers\Property $propertyHelper,
 		private readonly Helpers\Entity $entityHelper,
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
@@ -245,7 +246,7 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 			return true;
 		}
 
-		$mapped = $this->channelHelper->mapChannelToState($channel);
+		$mapped = $this->mapChannelToState($channel);
 
 		if ($mapped === null) {
 			$this->logger->error(
@@ -287,7 +288,7 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 							$state = $this->channelPropertiesStates->getValue($property);
 
 							if ($state?->getExpectedValue() !== null) {
-								$this->propertyHelper->setValue(
+								$this->channelPropertiesStateManager->setValue(
 									$property,
 									Utils\ArrayHash::from([
 										DevicesStates\Property::PENDING_KEY => $now->format(DateTimeInterface::ATOM),
@@ -300,7 +301,7 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 				->otherwise(function (Throwable $ex) use ($entity, $connector, $device, $channel): void {
 					foreach ($channel->getProperties() as $property) {
 						if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
-							$this->propertyHelper->setValue(
+							$this->channelPropertiesStateManager->setValue(
 								$property,
 								Utils\ArrayHash::from([
 									DevicesStates\Property::EXPECTED_VALUE_KEY => null,
