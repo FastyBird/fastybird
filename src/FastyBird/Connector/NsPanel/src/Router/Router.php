@@ -29,6 +29,8 @@ use IPub\SlimRouter\Routing;
 class Router extends Routing\Router
 {
 
+	public const URL_GATEWAY_ID = 'gateway';
+
 	public const URL_DEVICE_ID = 'device';
 
 	public function __construct(
@@ -37,7 +39,10 @@ class Router extends Routing\Router
 	{
 		parent::__construct();
 
-		$this->post('/do-directive/{' . self::URL_DEVICE_ID . '}', [$directiveController, 'process']);
+		$this->post(
+			'/do-directive/{' . self::URL_GATEWAY_ID . '}/{' . self::URL_DEVICE_ID . '}',
+			[$directiveController, 'process'],
+		);
 	}
 
 }

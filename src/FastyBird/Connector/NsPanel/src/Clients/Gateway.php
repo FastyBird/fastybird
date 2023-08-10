@@ -18,29 +18,26 @@ namespace FastyBird\Connector\NsPanel\Clients;
 use DateTimeInterface;
 use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\API;
-use FastyBird\Connector\NsPanel\Consumers;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Queries;
-use FastyBird\Connector\NsPanel\Writers;
+use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use React\EventLoop;
-use React\Promise;
 use Throwable;
 use function array_key_exists;
 use function in_array;
 use function is_string;
 use function preg_match;
+use function strval;
 
 /**
  * Connector gateway client
@@ -53,7 +50,6 @@ use function preg_match;
 final class Gateway implements Client
 {
 
-	use TPropertiesMapper;
 	use Nette\SmartObject;
 
 	private const HANDLER_START_DELAY = 2.0;
@@ -77,16 +73,12 @@ final class Gateway implements Client
 	private EventLoop\TimerInterface|null $handlerTimer = null;
 
 	public function __construct(
-		protected readonly Helpers\Property $propertyStateHelper,
-		protected readonly Helpers\Entity $entityHelper,
-		protected readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly Entities\NsPanelConnector $connector,
-		private readonly Consumers\Messages $consumer,
-		private readonly Writers\Writer $writer,
+		private readonly Queue\Queue $queue,
+		private readonly Helpers\Entity $entityHelper,
 		private readonly NsPanel\Logger $logger,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
-		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		API\LanApiFactory $lanApiApiFactory,
@@ -110,8 +102,6 @@ final class Gateway implements Client
 				$this->registerLoopHandler();
 			},
 		);
-
-		$this->writer->connect($this->connector, $this);
 	}
 
 	public function disconnect(): void
@@ -121,82 +111,6 @@ final class Gateway implements Client
 
 			$this->handlerTimer = null;
 		}
-
-		$this->writer->disconnect($this->connector, $this);
-	}
-
-	/**
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\InvalidArgument
-	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 */
-	public function writeChannelProperty(
-		Entities\NsPanelDevice $device,
-		Entities\NsPanelChannel $channel,
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped|MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelMappedProperty $property,
-	): Promise\PromiseInterface
-	{
-		if (!$device instanceof Entities\Devices\SubDevice) {
-			return Promise\reject(
-				new Exceptions\InvalidArgument('Only sub-device could be updated'),
-			);
-		}
-
-		if (!$property instanceof DevicesEntities\Channels\Properties\Dynamic) {
-			return Promise\reject(
-				new Exceptions\InvalidArgument('Only dynamic properties could be updated'),
-			);
-		}
-
-		if (!$property->isSettable()) {
-			return Promise\reject(new Exceptions\InvalidArgument('Provided property is not writable'));
-		}
-
-		if ($device->getGateway()->getIpAddress() === null || $device->getGateway()->getAccessToken() === null) {
-			return Promise\reject(
-				new Exceptions\InvalidArgument('Device assigned NS Panel is not configured'),
-			);
-		}
-
-		$state = $this->channelPropertiesStates->getValue($property);
-
-		if ($state === null) {
-			return Promise\reject(
-				new Exceptions\InvalidArgument('Property state could not be found. Nothing to write'),
-			);
-		}
-
-		$expectedValue = DevicesUtilities\ValueHelper::flattenValue($state->getExpectedValue());
-
-		if ($expectedValue === null) {
-			return Promise\reject(
-				new Exceptions\InvalidArgument('Property expected value is not set. Nothing to write'),
-			);
-		}
-
-		$mapped = $this->mapChannelToState($channel);
-
-		if ($mapped === null) {
-			return Promise\reject(new Exceptions\InvalidArgument('Device capability state could not be created'));
-		}
-
-		if ($state->isPending() === true) {
-			try {
-				return $this->lanApiApi->setSubDeviceState(
-					$device->getIdentifier(),
-					$mapped,
-					$device->getGateway()->getIpAddress(),
-					$device->getGateway()->getAccessToken(),
-				);
-			} catch (Throwable $ex) {
-				return Promise\reject(new Exceptions\InvalidState('Request could not be handled', $ex->getCode(), $ex));
-			}
-		}
-
-		return Promise\reject(new Exceptions\InvalidArgument('Provided property state is in invalid state'));
 	}
 
 	/**
@@ -259,9 +173,9 @@ final class Gateway implements Client
 			$gateway->getIpAddress() === null
 			|| $gateway->getAccessToken() === null
 		) {
-			$this->consumer->append(
+			$this->queue->append(
 				$this->entityHelper->create(
-					Entities\Messages\DeviceOnline::class,
+					Entities\Messages\StoreDeviceConnectionState::class,
 					[
 						'connector' => $this->connector->getId()->toString(),
 						'identifier' => $gateway->getIdentifier(),
@@ -297,9 +211,9 @@ final class Gateway implements Client
 				->then(function () use ($gateway): void {
 					$this->processedDevicesCommands[$gateway->getIdentifier()][self::CMD_HEARTBEAT] = $this->dateTimeFactory->getNow();
 
-					$this->consumer->append(
+					$this->queue->append(
 						$this->entityHelper->create(
-							Entities\Messages\DeviceOnline::class,
+							Entities\Messages\StoreDeviceConnectionState::class,
 							[
 								'connector' => $this->connector->getId()->toString(),
 								'identifier' => $gateway->getIdentifier(),
@@ -323,6 +237,8 @@ final class Gateway implements Client
 									'id' => $gateway->getId()->toString(),
 								],
 								'request' => [
+									'method' => $ex->getRequest()?->getMethod(),
+									'url' => $ex->getRequest() !== null ? strval($ex->getRequest()->getUri()) : null,
 									'body' => $ex->getRequest()?->getBody()->getContents(),
 								],
 								'response' => [
@@ -331,9 +247,9 @@ final class Gateway implements Client
 							],
 						);
 
-						$this->consumer->append(
+						$this->queue->append(
 							$this->entityHelper->create(
-								Entities\Messages\DeviceOnline::class,
+								Entities\Messages\StoreDeviceConnectionState::class,
 								[
 									'connector' => $this->connector->getId()->toString(),
 									'identifier' => $gateway->getIdentifier(),
@@ -360,9 +276,9 @@ final class Gateway implements Client
 						],
 					);
 
-					$this->consumer->append(
+					$this->queue->append(
 						$this->entityHelper->create(
-							Entities\Messages\DeviceOnline::class,
+							Entities\Messages\StoreDeviceConnectionState::class,
 							[
 								'connector' => $this->connector->getId()->toString(),
 								'identifier' => $gateway->getIdentifier(),
@@ -373,7 +289,7 @@ final class Gateway implements Client
 				});
 		} catch (Throwable $ex) {
 			$this->logger->error(
-				'An unhandled error occur',
+				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 					'type' => 'gateway-client',
@@ -405,9 +321,9 @@ final class Gateway implements Client
 			$gateway->getIpAddress() === null
 			|| $gateway->getAccessToken() === null
 		) {
-			$this->consumer->append(
+			$this->queue->append(
 				$this->entityHelper->create(
-					Entities\Messages\DeviceOnline::class,
+					Entities\Messages\StoreDeviceConnectionState::class,
 					[
 						'connector' => $this->connector->getId()->toString(),
 						'identifier' => $gateway->getIdentifier(),
@@ -443,9 +359,9 @@ final class Gateway implements Client
 				->then(function (Entities\API\Response\GetSubDevices $subDevices) use ($gateway): void {
 					$this->processedDevicesCommands[$gateway->getIdentifier()][self::CMD_STATE] = $this->dateTimeFactory->getNow();
 
-					$this->consumer->append(
+					$this->queue->append(
 						$this->entityHelper->create(
-							Entities\Messages\DeviceOnline::class,
+							Entities\Messages\StoreDeviceConnectionState::class,
 							[
 								'connector' => $this->connector->getId()->toString(),
 								'identifier' => $gateway->getIdentifier(),
@@ -460,9 +376,9 @@ final class Gateway implements Client
 							continue;
 						}
 
-						$this->consumer->append(
+						$this->queue->append(
 							$this->entityHelper->create(
-								Entities\Messages\DeviceOnline::class,
+								Entities\Messages\StoreDeviceConnectionState::class,
 								[
 									'connector' => $this->connector->getId()->toString(),
 									'identifier' => $subDevice->getSerialNumber(),
@@ -496,11 +412,12 @@ final class Gateway implements Client
 							}
 						}
 
-						$this->consumer->append(
+						$this->queue->append(
 							$this->entityHelper->create(
-								Entities\Messages\DeviceState::class,
+								Entities\Messages\StoreDeviceState::class,
 								[
 									'connector' => $this->connector->getId()->toString(),
+									'gateway' => $gateway->getId()->toString(),
 									'identifier' => $subDevice->getSerialNumber(),
 									'state' => $state,
 								],
@@ -523,6 +440,8 @@ final class Gateway implements Client
 									'id' => $gateway->getId()->toString(),
 								],
 								'request' => [
+									'method' => $ex->getRequest()?->getMethod(),
+									'url' => $ex->getRequest() !== null ? strval($ex->getRequest()->getUri()) : null,
 									'body' => $ex->getRequest()?->getBody()->getContents(),
 								],
 								'response' => [
@@ -531,9 +450,9 @@ final class Gateway implements Client
 							],
 						);
 
-						$this->consumer->append(
+						$this->queue->append(
 							$this->entityHelper->create(
-								Entities\Messages\DeviceOnline::class,
+								Entities\Messages\StoreDeviceConnectionState::class,
 								[
 									'connector' => $this->connector->getId()->toString(),
 									'identifier' => $gateway->getIdentifier(),
@@ -560,9 +479,9 @@ final class Gateway implements Client
 						],
 					);
 
-					$this->consumer->append(
+					$this->queue->append(
 						$this->entityHelper->create(
-							Entities\Messages\DeviceOnline::class,
+							Entities\Messages\StoreDeviceConnectionState::class,
 							[
 								'connector' => $this->connector->getId()->toString(),
 								'identifier' => $gateway->getIdentifier(),
@@ -573,7 +492,7 @@ final class Gateway implements Client
 				});
 		} catch (Throwable $ex) {
 			$this->logger->error(
-				'An unhandled error occur',
+				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 					'type' => 'gateway-client',

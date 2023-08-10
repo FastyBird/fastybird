@@ -15,7 +15,7 @@
 
 namespace FastyBird\Library\Metadata\Entities\DevicesModule;
 
-use Exception;
+use FastyBird\Library\Metadata\Exceptions;
 use Nette\Utils;
 use Ramsey\Uuid;
 use function array_map;
@@ -95,7 +95,7 @@ final class DeviceDynamicProperty extends DynamicProperty
 	}
 
 	/**
-	 * @throws Exception
+	 * @throws Exceptions\InvalidState
 	 */
 	public function toArray(): array
 	{
@@ -112,7 +112,7 @@ final class DeviceDynamicProperty extends DynamicProperty
 	/**
 	 * @return array<string, mixed>
 	 *
-	 * @throws Exception
+	 * @throws Exceptions\InvalidState
 	 */
 	public function __serialize(): array
 	{

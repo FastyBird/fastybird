@@ -184,7 +184,10 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 						]),
 					);
 				});
-		} else {
+		} elseif (
+			$property instanceof DevicesEntities\Channels\Properties\Dynamic
+			|| $property instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty
+		) {
 			if ($property->getChannel() instanceof DevicesEntities\Channels\Channel) {
 				$channel = $property->getChannel();
 

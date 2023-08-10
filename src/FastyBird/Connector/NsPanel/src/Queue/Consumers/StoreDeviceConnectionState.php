@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * DeviceOnline.php
+ * SetDeviceConnectionState.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,13 +13,12 @@
  * @date           18.07.23
  */
 
-namespace FastyBird\Connector\NsPanel\Consumers\Messages;
+namespace FastyBird\Connector\NsPanel\Queue\Consumers;
 
 use FastyBird\Connector\NsPanel;
-use FastyBird\Connector\NsPanel\Consumers;
 use FastyBird\Connector\NsPanel\Entities;
-use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Queries;
+use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -39,18 +38,19 @@ use Nette;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceOnline implements Consumers\Consumer
+final class StoreDeviceConnectionState implements Queue\Consumer
 {
 
 	use Nette\SmartObject;
 
 	public function __construct(
-		private readonly Helpers\Property $propertyStateHelper,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
+		private readonly DevicesUtilities\DevicePropertiesStates $devicePropertiesStateManager,
+		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStateManager,
 		private readonly NsPanel\Logger $logger,
 	)
 	{
@@ -63,7 +63,7 @@ final class DeviceOnline implements Consumers\Consumer
 	 */
 	public function consume(Entities\Messages\Entity $entity): bool
 	{
-		if (!$entity instanceof Entities\Messages\DeviceOnline) {
+		if (!$entity instanceof Entities\Messages\StoreDeviceConnectionState) {
 			return false;
 		}
 
@@ -74,6 +74,21 @@ final class DeviceOnline implements Consumers\Consumer
 		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\NsPanelDevice::class);
 
 		if ($device === null) {
+			$this->logger->error(
+				'Device could not be loaded',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'type' => 'device-online-message-consumer',
+					'connector' => [
+						'id' => $entity->getConnector()->toString(),
+					],
+					'device' => [
+						'identifier' => $entity->getIdentifier(),
+					],
+					'data' => $entity->toArray(),
+				],
+			);
+
 			return true;
 		}
 
@@ -100,7 +115,7 @@ final class DeviceOnline implements Consumers\Consumer
 					$findDevicePropertiesQuery,
 					DevicesEntities\Devices\Properties\Dynamic::class,
 				) as $property) {
-					$this->propertyStateHelper->setValue(
+					$this->devicePropertiesStateManager->setValue(
 						$property,
 						Nette\Utils\ArrayHash::from([
 							DevicesStates\Property::VALID_KEY => false,
@@ -121,7 +136,7 @@ final class DeviceOnline implements Consumers\Consumer
 						$findChannelPropertiesQuery,
 						DevicesEntities\Channels\Properties\Dynamic::class,
 					) as $property) {
-						$this->propertyStateHelper->setValue(
+						$this->channelPropertiesStateManager->setValue(
 							$property,
 							Nette\Utils\ArrayHash::from([
 								DevicesStates\Property::VALID_KEY => false,
@@ -159,7 +174,7 @@ final class DeviceOnline implements Consumers\Consumer
 							$findDevicePropertiesQuery,
 							DevicesEntities\Devices\Properties\Dynamic::class,
 						) as $property) {
-							$this->propertyStateHelper->setValue(
+							$this->devicePropertiesStateManager->setValue(
 								$property,
 								Nette\Utils\ArrayHash::from([
 									DevicesStates\Property::VALID_KEY => false,
@@ -183,7 +198,7 @@ final class DeviceOnline implements Consumers\Consumer
 								$findChannelPropertiesQuery,
 								DevicesEntities\Channels\Properties\Dynamic::class,
 							) as $property) {
-								$this->propertyStateHelper->setValue(
+								$this->channelPropertiesStateManager->setValue(
 									$property,
 									Nette\Utils\ArrayHash::from([
 										DevicesStates\Property::VALID_KEY => false,
@@ -218,6 +233,9 @@ final class DeviceOnline implements Consumers\Consumer
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 				'type' => 'device-online-message-consumer',
+				'connector' => [
+					'id' => $entity->getConnector()->toString(),
+				],
 				'device' => [
 					'id' => $device->getId()->toString(),
 				],

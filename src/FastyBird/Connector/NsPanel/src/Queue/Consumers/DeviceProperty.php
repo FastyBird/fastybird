@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ConsumeDeviceProperty.php
+ * DeviceProperty.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,7 +13,7 @@
  * @date           18.07.23
  */
 
-namespace FastyBird\Connector\NsPanel\Consumers\Messages;
+namespace FastyBird\Connector\NsPanel\Queue\Consumers;
 
 use Doctrine\DBAL;
 use FastyBird\Connector\NsPanel;
@@ -43,7 +43,7 @@ use Ramsey\Uuid;
  * @property-read DevicesUtilities\Database $databaseHelper
  * @property-read NsPanel\Logger $logger
  */
-trait ConsumeDeviceProperty
+trait DeviceProperty
 {
 
 	/**
@@ -108,7 +108,7 @@ trait ConsumeDeviceProperty
 				});
 
 				$this->logger->warning(
-					'Device property is not valid type',
+					'Stored device property was not of valid type',
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 						'type' => 'message-consumer',

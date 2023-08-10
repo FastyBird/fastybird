@@ -22,7 +22,7 @@ use Orisai\ObjectMapper;
 use stdClass;
 
 /**
- * Device capability definition
+ * Device capability description definition
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Entities

@@ -16,8 +16,9 @@
 namespace FastyBird\Library\Metadata\Entities\DevicesModule;
 
 use DateTimeInterface;
-use Exception;
+use FastyBird\Library\Metadata\Exceptions;
 use Nette\Utils;
+use Throwable;
 use function array_merge;
 use function is_string;
 
@@ -104,14 +105,18 @@ abstract class DynamicProperty extends Property
 	}
 
 	/**
-	 * @throws Exception
+	 * @throws Exceptions\InvalidState
 	 */
 	public function getPending(): bool|string|null
 	{
 		if (is_string($this->pending)) {
-			$pending = Utils\DateTime::from($this->pending);
+			try {
+				$pending = Utils\DateTime::from($this->pending);
 
-			return $pending->format(DateTimeInterface::ATOM);
+				return $pending->format(DateTimeInterface::ATOM);
+			} catch (Throwable $ex) {
+				throw new Exceptions\InvalidState('Pending value could not be created', $ex->getCode(), $ex);
+			}
 		}
 
 		return $this->pending;
@@ -128,7 +133,7 @@ abstract class DynamicProperty extends Property
 	}
 
 	/**
-	 * @throws Exception
+	 * @throws Exceptions\InvalidState
 	 */
 	public function toArray(): array
 	{
@@ -143,7 +148,7 @@ abstract class DynamicProperty extends Property
 	/**
 	 * @return array<string, mixed>
 	 *
-	 * @throws Exception
+	 * @throws Exceptions\InvalidState
 	 */
 	public function __serialize(): array
 	{

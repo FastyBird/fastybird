@@ -17,16 +17,21 @@ namespace FastyBird\Connector\NsPanel\Connector;
 
 use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Clients;
-use FastyBird\Connector\NsPanel\Consumers;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
+use FastyBird\Connector\NsPanel\Helpers;
+use FastyBird\Connector\NsPanel\Queries;
+use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Connector\NsPanel\Servers;
+use FastyBird\Connector\NsPanel\Writers;
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Connectors as DevicesConnectors;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use FastyBird\Module\Devices\Models as DevicesModels;
 use Nette;
 use Psr\EventDispatcher as PsrEventDispatcher;
 use React\EventLoop;
@@ -55,7 +60,9 @@ final class Connector implements DevicesConnectors\Connector
 
 	private Servers\Server|null $server = null;
 
-	private EventLoop\TimerInterface|null $consumerTimer = null;
+	private Writers\Writer|null $writer = null;
+
+	private EventLoop\TimerInterface|null $consumersTimer = null;
 
 	/**
 	 * @param array<Clients\ClientFactory> $clientsFactories
@@ -65,8 +72,13 @@ final class Connector implements DevicesConnectors\Connector
 		private readonly array $clientsFactories,
 		private readonly Clients\DiscoveryFactory $discoveryClientFactory,
 		private readonly Servers\ServerFactory $serverFactory,
+		private readonly Writers\WriterFactory $writerFactory,
+		private readonly Helpers\Entity $entityHelper,
+		private readonly Queue\Queue $queue,
+		private readonly Queue\Consumers $consumers,
 		private readonly NsPanel\Logger $logger,
-		private readonly Consumers\Messages $consumer,
+		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
@@ -85,7 +97,7 @@ final class Connector implements DevicesConnectors\Connector
 
 		$mode = $this->connector->getClientMode();
 
-		$this->logger->debug(
+		$this->logger->info(
 			'Starting NS Panel connector service',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
@@ -122,14 +134,78 @@ final class Connector implements DevicesConnectors\Connector
 			$this->server->connect();
 		}
 
-		$this->consumerTimer = $this->eventLoop->addPeriodicTimer(
+		$this->writer = $this->writerFactory->create($this->connector);
+		$this->writer->connect();
+
+		$this->consumersTimer = $this->eventLoop->addPeriodicTimer(
 			self::QUEUE_PROCESSING_INTERVAL,
 			async(function (): void {
-				$this->consumer->consume();
+				$this->consumers->consume();
 			}),
 		);
 
-		$this->logger->debug(
+		if (
+			$mode->equalsValue(NsPanel\Types\ClientMode::BOTH)
+			|| $mode->equalsValue(NsPanel\Types\ClientMode::DEVICE)
+		) {
+			$this->eventLoop->addTimer(1, function (): void {
+				$findDevicesQuery = new Queries\FindThirdPartyDevices();
+				$findDevicesQuery->forConnector($this->connector);
+
+				$devices = $this->devicesRepository->findAllBy(
+					$findDevicesQuery,
+					Entities\Devices\ThirdPartyDevice::class,
+				);
+
+				foreach ($devices as $device) {
+					$findChannelsQuery = new Queries\FindChannels();
+					$findChannelsQuery->forDevice($device);
+
+					$channels = $this->channelsRepository->findAllBy(
+						$findChannelsQuery,
+						Entities\NsPanelChannel::class,
+					);
+
+					foreach ($channels as $channel) {
+						try {
+							$this->queue->append(
+								$this->entityHelper->create(
+									Entities\Messages\WriteThirdPartyDeviceState::class,
+									[
+										'connector' => $this->connector->getId()->toString(),
+										'device' => $device->getId()->toString(),
+										'channel' => $channel->getId()->toString(),
+									],
+								),
+							);
+						} catch (Exceptions\Runtime $ex) {
+							$this->logger->error(
+								'Could report device initial state to NS Panel',
+								[
+									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+									'type' => 'write-third-party-device-state-message-consumer',
+									'exception' => BootstrapHelpers\Logger::buildException($ex),
+									'connector' => [
+										'id' => $this->connector->getId()->toString(),
+									],
+									'gateway' => [
+										'id' => $device->getGateway()->getId()->toString(),
+									],
+									'device' => [
+										'id' => $device->getId()->toString(),
+									],
+									'channel' => [
+										'id' => $channel->getId()->toString(),
+									],
+								],
+							);
+						}
+					}
+				}
+			});
+		}
+
+		$this->logger->info(
 			'NS Panel connector service has been started',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
@@ -150,7 +226,7 @@ final class Connector implements DevicesConnectors\Connector
 	{
 		assert($this->connector instanceof Entities\NsPanelConnector);
 
-		$this->logger->debug(
+		$this->logger->info(
 			'Starting NS Panel connector discovery',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
@@ -176,14 +252,14 @@ final class Connector implements DevicesConnectors\Connector
 
 		$this->clients[] = $client;
 
-		$this->consumerTimer = $this->eventLoop->addPeriodicTimer(
+		$this->consumersTimer = $this->eventLoop->addPeriodicTimer(
 			self::QUEUE_PROCESSING_INTERVAL,
 			async(function (): void {
-				$this->consumer->consume();
+				$this->consumers->consume();
 			}),
 		);
 
-		$this->logger->debug(
+		$this->logger->info(
 			'NS Panel connector discovery has been started',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
@@ -203,11 +279,15 @@ final class Connector implements DevicesConnectors\Connector
 			$client->disconnect();
 		}
 
-		if ($this->consumerTimer !== null && $this->consumer->isEmpty()) {
-			$this->eventLoop->cancelTimer($this->consumerTimer);
+		$this->server?->disconnect();
+
+		$this->writer?->disconnect();
+
+		if ($this->consumersTimer !== null && $this->queue->isEmpty()) {
+			$this->eventLoop->cancelTimer($this->consumersTimer);
 		}
 
-		$this->logger->debug(
+		$this->logger->info(
 			'NS Panel connector has been terminated',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
@@ -221,7 +301,7 @@ final class Connector implements DevicesConnectors\Connector
 
 	public function hasUnfinishedTasks(): bool
 	{
-		return !$this->consumer->isEmpty() && $this->consumerTimer !== null;
+		return !$this->queue->isEmpty() && $this->consumersTimer !== null;
 	}
 
 }

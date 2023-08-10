@@ -15,9 +15,6 @@
 
 namespace FastyBird\Connector\NsPanel\Writers;
 
-use FastyBird\Connector\NsPanel\Clients;
-use FastyBird\Connector\NsPanel\Entities;
-
 /**
  * Properties writer interface
  *
@@ -29,14 +26,8 @@ use FastyBird\Connector\NsPanel\Entities;
 interface Writer
 {
 
-	public function connect(
-		Entities\NsPanelConnector $connector,
-		Clients\Client $client,
-	): void;
+	public function connect(): void;
 
-	public function disconnect(
-		Entities\NsPanelConnector $connector,
-		Clients\Client $client,
-	): void;
+	public function disconnect(): void;
 
 }

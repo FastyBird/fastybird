@@ -5,10 +5,10 @@ namespace FastyBird\Connector\NsPanel\Tests\Cases\Unit\Clients;
 use Error;
 use FastyBird\Connector\NsPanel\API;
 use FastyBird\Connector\NsPanel\Clients;
-use FastyBird\Connector\NsPanel\Consumers;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Queries;
+use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Connector\NsPanel\Tests\Cases\Unit\DbTestCase;
 use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
@@ -160,11 +160,13 @@ final class DiscoveryTest extends DbTestCase
 
 		$eventLoop->run();
 
-		$consumer = $this->getContainer()->getByType(Consumers\Messages::class);
+		$queue = $this->getContainer()->getByType(Queue\Queue::class);
 
-		self::assertFalse($consumer->isEmpty());
+		self::assertFalse($queue->isEmpty());
 
-		$consumer->consume();
+		$consumers = $this->getContainer()->getByType(Queue\Consumers::class);
+
+		$consumers->consume();
 
 		$devicesRepository = $this->getContainer()->getByType(DevicesModels\Devices\DevicesRepository::class);
 

@@ -32,13 +32,14 @@ class DevicePropertyStateEntityCreated extends EventDispatcher\Event
 {
 
 	public function __construct(
-		private readonly MetadataEntities\DevicesModule\DeviceDynamicProperty|Entities\Devices\Properties\Dynamic $property,
+		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+		private readonly MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
 		private readonly States\DeviceProperty $state,
 	)
 	{
 	}
-
-	public function getProperty(): MetadataEntities\DevicesModule\DeviceDynamicProperty|Entities\Devices\Properties\Dynamic
+	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+	public function getProperty(): MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped
 	{
 		return $this->property;
 	}

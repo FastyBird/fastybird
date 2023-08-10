@@ -18,11 +18,11 @@ namespace FastyBird\Connector\NsPanel\Clients;
 use Evenement;
 use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\API;
-use FastyBird\Connector\NsPanel\Consumers;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Queries;
+use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -56,11 +56,11 @@ final class Discovery implements Evenement\EventEmitterInterface
 	public function __construct(
 		private readonly Entities\NsPanelConnector $connector,
 		private readonly API\LanApiFactory $lanApiApiFactory,
-		private readonly Consumers\Messages $consumer,
+		private readonly Queue\Queue $queue,
 		private readonly Helpers\Entity $entityHelper,
+		private readonly NsPanel\Logger $logger,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly EventLoop\LoopInterface $eventLoop,
-		private readonly NsPanel\Logger $logger,
 	)
 	{
 	}
@@ -226,9 +226,9 @@ final class Discovery implements Evenement\EventEmitterInterface
 					),
 				);
 
-				$this->consumer->append(
+				$this->queue->append(
 					$this->entityHelper->create(
-						Entities\Messages\DiscoveredSubDevice::class,
+						Entities\Messages\StoreSubDevice::class,
 						array_merge(
 							[
 								'connector' => $this->connector->getId()->toString(),

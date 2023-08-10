@@ -17,15 +17,13 @@ namespace FastyBird\Connector\NsPanel\Clients;
 
 use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\API;
-use FastyBird\Connector\NsPanel\Consumers;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Queries;
+use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Connector\NsPanel\Types;
-use FastyBird\Connector\NsPanel\Writers;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
@@ -42,6 +40,7 @@ use function is_array;
 use function is_string;
 use function preg_match;
 use function sprintf;
+use function strval;
 
 /**
  * Connector third-party device client
@@ -54,33 +53,26 @@ use function sprintf;
 final class Device implements Client
 {
 
-	use TPropertiesMapper;
 	use Nette\SmartObject;
 
 	private API\LanApi $lanApiApi;
 
 	public function __construct(
-		protected readonly Helpers\Property $propertyStateHelper,
-		protected readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly Entities\NsPanelConnector $connector,
-		private readonly Consumers\Messages $consumer,
+		private readonly Queue\Queue $queue,
 		private readonly Helpers\Loader $loader,
 		private readonly Helpers\Entity $entityHelper,
-		private readonly Writers\Writer $writer,
 		private readonly NsPanel\Logger $logger,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		API\LanApiFactory $lanApiApiFactory,
 	)
 	{
-		$this->lanApiApi = $lanApiApiFactory->create(
-			$this->connector->getIdentifier(),
-		);
+		$this->lanApiApi = $lanApiApiFactory->create($this->connector->getIdentifier());
 	}
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Terminate
-	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
@@ -115,9 +107,9 @@ final class Device implements Client
 				if (
 					!array_key_exists($device->getDisplayCategory()->getValue(), (array) $categoriesMetadata)
 				) {
-					$this->consumer->append(
+					$this->queue->append(
 						$this->entityHelper->create(
-							Entities\Messages\DeviceOnline::class,
+							Entities\Messages\StoreDeviceConnectionState::class,
 							[
 								'connector' => $this->connector->getId()->toString(),
 								'identifier' => $device->getGateway()->getIdentifier(),
@@ -145,7 +137,6 @@ final class Device implements Client
 				$deviceCapabilities = [];
 
 				$capabilities = [];
-				$state = [];
 				$tags = [];
 
 				foreach ($device->getChannels() as $channel) {
@@ -169,12 +160,6 @@ final class Device implements Client
 						)->getValue(),
 						'name' => $capabilityName,
 					];
-
-					$mapped = $this->mapChannelToState($channel);
-
-					if ($mapped !== null) {
-						$state = array_merge($state, $mapped);
-					}
 
 					foreach ($channel->getProperties() as $property) {
 						if (
@@ -207,9 +192,9 @@ final class Device implements Client
 
 				// Device have to have configured all required capabilities
 				if (array_diff($requiredCapabilities, $deviceCapabilities) !== []) {
-					$this->consumer->append(
+					$this->queue->append(
 						$this->entityHelper->create(
-							Entities\Messages\DeviceOnline::class,
+							Entities\Messages\StoreDeviceConnectionState::class,
 							[
 								'connector' => $this->connector->getId()->toString(),
 								'identifier' => $device->getIdentifier(),
@@ -226,15 +211,16 @@ final class Device implements Client
 					'name' => $device->getName() ?? $device->getIdentifier(),
 					'display_category' => $device->getDisplayCategory()->getValue(),
 					'capabilities' => $capabilities,
-					'state' => $state,
+					'state' => [],
 					'tags' => $tags,
 					'manufacturer' => $device->getManufacturer(),
 					'model' => $device->getModel(),
 					'firmware_version' => $device->getFirmwareVersion(),
 					'service_address' => sprintf(
-						'http://%s:%d/do-directive/%s',
+						'http://%s:%d/do-directive/%s/%s',
 						Helpers\Network::getLocalAddress(),
 						$device->getConnector()->getPort(),
+						$device->getGateway()->getId()->toString(),
 						$device->getId()->toString(),
 					),
 					'online' => true, // Virtual device is always online
@@ -279,9 +265,9 @@ final class Device implements Client
 								);
 
 								if ($device !== null) {
-									$this->consumer->append(
+									$this->queue->append(
 										$this->entityHelper->create(
-											Entities\Messages\DeviceOnline::class,
+											Entities\Messages\StoreDeviceConnectionState::class,
 											[
 												'connector' => $this->connector->getId()->toString(),
 												'identifier' => $device->getIdentifier(),
@@ -290,11 +276,12 @@ final class Device implements Client
 										),
 									);
 
-									$this->consumer->append(
+									$this->queue->append(
 										$this->entityHelper->create(
-											Entities\Messages\DeviceSynchronisation::class,
+											Entities\Messages\StoreThirdPartyDevice::class,
 											[
 												'connector' => $this->connector->getId()->toString(),
+												'gateway' => $gateway->getId()->toString(),
 												'identifier' => $device->getIdentifier(),
 												'gateway_identifier' => $endpoint->getSerialNumber(),
 											],
@@ -328,6 +315,10 @@ final class Device implements Client
 							if ($ex instanceof Exceptions\LanApiCall) {
 								$extra = [
 									'request' => [
+										'method' => $ex->getRequest()?->getMethod(),
+										'url' => $ex->getRequest() !== null ? strval(
+											$ex->getRequest()->getUri(),
+										) : null,
 										'body' => $ex->getRequest()?->getBody()->getContents(),
 									],
 									'response' => [
@@ -335,9 +326,9 @@ final class Device implements Client
 									],
 								];
 
-								$this->consumer->append(
+								$this->queue->append(
 									$this->entityHelper->create(
-										Entities\Messages\DeviceOnline::class,
+										Entities\Messages\StoreDeviceConnectionState::class,
 										[
 											'connector' => $this->connector->getId()->toString(),
 											'identifier' => $gateway->getIdentifier(),
@@ -347,9 +338,9 @@ final class Device implements Client
 								);
 
 							} else {
-								$this->consumer->append(
+								$this->queue->append(
 									$this->entityHelper->create(
-										Entities\Messages\DeviceOnline::class,
+										Entities\Messages\StoreDeviceConnectionState::class,
 										[
 											'connector' => $this->connector->getId()->toString(),
 											'identifier' => $gateway->getIdentifier(),
@@ -434,6 +425,10 @@ final class Device implements Client
 											if ($ex instanceof Exceptions\LanApiCall) {
 												$extra = [
 													'request' => [
+														'method' => $ex->getRequest()?->getMethod(),
+														'url' => $ex->getRequest() !== null ? strval(
+															$ex->getRequest()->getUri(),
+														) : null,
 														'body' => $ex->getRequest()?->getBody()->getContents(),
 													],
 													'response' => [
@@ -441,9 +436,9 @@ final class Device implements Client
 													],
 												];
 
-												$this->consumer->append(
+												$this->queue->append(
 													$this->entityHelper->create(
-														Entities\Messages\DeviceOnline::class,
+														Entities\Messages\StoreDeviceConnectionState::class,
 														[
 															'connector' => $this->connector->getId()->toString(),
 															'identifier' => $gateway->getIdentifier(),
@@ -453,9 +448,9 @@ final class Device implements Client
 												);
 
 											} else {
-												$this->consumer->append(
+												$this->queue->append(
 													$this->entityHelper->create(
-														Entities\Messages\DeviceOnline::class,
+														Entities\Messages\StoreDeviceConnectionState::class,
 														[
 															'connector' => $this->connector->getId()->toString(),
 															'identifier' => $gateway->getIdentifier(),
@@ -495,6 +490,10 @@ final class Device implements Client
 							if ($ex instanceof Exceptions\LanApiCall) {
 								$extra = [
 									'request' => [
+										'method' => $ex->getRequest()?->getMethod(),
+										'url' => $ex->getRequest() !== null ? strval(
+											$ex->getRequest()->getUri(),
+										) : null,
 										'body' => $ex->getRequest()?->getBody()->getContents(),
 									],
 									'response' => [
@@ -502,9 +501,9 @@ final class Device implements Client
 									],
 								];
 
-								$this->consumer->append(
+								$this->queue->append(
 									$this->entityHelper->create(
-										Entities\Messages\DeviceOnline::class,
+										Entities\Messages\StoreDeviceConnectionState::class,
 										[
 											'connector' => $this->connector->getId()->toString(),
 											'identifier' => $gateway->getIdentifier(),
@@ -514,9 +513,9 @@ final class Device implements Client
 								);
 
 							} else {
-								$this->consumer->append(
+								$this->queue->append(
 									$this->entityHelper->create(
-										Entities\Messages\DeviceOnline::class,
+										Entities\Messages\StoreDeviceConnectionState::class,
 										[
 											'connector' => $this->connector->getId()->toString(),
 											'identifier' => $gateway->getIdentifier(),
@@ -546,10 +545,9 @@ final class Device implements Client
 						});
 				});
 
-				$this->writer->connect($this->connector, $this);
 			} catch (Throwable $ex) {
 				$this->logger->error(
-					'An unhandled error occur',
+					'An unhandled error occurred',
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 						'type' => 'device-client',
@@ -563,9 +561,9 @@ final class Device implements Client
 					],
 				);
 
-				$this->consumer->append(
+				$this->queue->append(
 					$this->entityHelper->create(
-						Entities\Messages\DeviceOnline::class,
+						Entities\Messages\StoreDeviceConnectionState::class,
 						[
 							'connector' => $this->connector->getId()->toString(),
 							'identifier' => $gateway->getIdentifier(),
@@ -585,8 +583,6 @@ final class Device implements Client
 	 */
 	public function disconnect(): void
 	{
-		$this->writer->disconnect($this->connector, $this);
-
 		$findDevicesQuery = new Queries\FindGatewayDevices();
 		$findDevicesQuery->forConnector($this->connector);
 
@@ -606,9 +602,9 @@ final class Device implements Client
 				$findDevicesQuery,
 				Entities\Devices\ThirdPartyDevice::class,
 			) as $device) {
-				$this->consumer->append(
+				$this->queue->append(
 					$this->entityHelper->create(
-						Entities\Messages\DeviceOnline::class,
+						Entities\Messages\StoreDeviceConnectionState::class,
 						[
 							'connector' => $this->connector->getId()->toString(),
 							'identifier' => $device->getIdentifier(),
@@ -658,6 +654,10 @@ final class Device implements Client
 							if ($ex instanceof Exceptions\LanApiCall) {
 								$extra = [
 									'request' => [
+										'method' => $ex->getRequest()?->getMethod(),
+										'url' => $ex->getRequest() !== null ? strval(
+											$ex->getRequest()->getUri(),
+										) : null,
 										'body' => $ex->getRequest()?->getBody()->getContents(),
 									],
 									'response' => [
@@ -686,7 +686,7 @@ final class Device implements Client
 						});
 				} catch (Throwable $ex) {
 					$this->logger->error(
-						'An unhandled error occur',
+						'An unhandled error occurred',
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 							'type' => 'device-client',
@@ -702,9 +702,9 @@ final class Device implements Client
 				}
 			}
 
-			$this->consumer->append(
+			$this->queue->append(
 				$this->entityHelper->create(
-					Entities\Messages\DeviceOnline::class,
+					Entities\Messages\StoreDeviceConnectionState::class,
 					[
 						'connector' => $this->connector->getId()->toString(),
 						'identifier' => $gateway->getIdentifier(),
@@ -712,83 +712,6 @@ final class Device implements Client
 					],
 				),
 			);
-		}
-	}
-
-	/**
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\InvalidArgument
-	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\Runtime
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 */
-	public function writeChannelProperty(
-		Entities\NsPanelDevice $device,
-		Entities\NsPanelChannel $channel,
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped|MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelMappedProperty $property,
-	): Promise\PromiseInterface
-	{
-		if (!$device instanceof Entities\Devices\ThirdPartyDevice) {
-			return Promise\reject(
-				new Exceptions\InvalidArgument('Only third-party device could be updated'),
-			);
-		}
-
-		if ($device->getGateway()->getIpAddress() === null || $device->getGateway()->getAccessToken() === null) {
-			$this->consumer->append(
-				$this->entityHelper->create(
-					Entities\Messages\DeviceOnline::class,
-					[
-						'connector' => $this->connector->getId()->toString(),
-						'identifier' => $device->getGateway()->getIdentifier(),
-						'state' => MetadataTypes\ConnectionState::STATE_ALERT,
-					],
-				),
-			);
-
-			return Promise\reject(
-				new Exceptions\InvalidArgument('Device assigned NS Panel is not configured'),
-			);
-		}
-
-		try {
-			$serialNumber = $device->getGatewayIdentifier();
-
-			if ($serialNumber === null) {
-				$this->consumer->append(
-					$this->entityHelper->create(
-						Entities\Messages\DeviceOnline::class,
-						[
-							'connector' => $this->connector->getId()->toString(),
-							'identifier' => $device->getIdentifier(),
-							'state' => MetadataTypes\ConnectionState::STATE_ALERT,
-						],
-					),
-				);
-
-				return Promise\reject(new Exceptions\InvalidState('Device gateway identifier is not configured'));
-			}
-		} catch (Throwable) {
-			return Promise\reject(new Exceptions\InvalidState('Could not get device gateway identifier'));
-		}
-
-		$mapped = $this->mapChannelToState($channel);
-
-		if ($mapped === null) {
-			return Promise\reject(new Exceptions\InvalidState('Device capability state could not be created'));
-		}
-
-		try {
-			return $this->lanApiApi->reportDeviceState(
-				$serialNumber,
-				$mapped,
-				$device->getGateway()->getIpAddress(),
-				$device->getGateway()->getAccessToken(),
-			);
-		} catch (Throwable $ex) {
-			return Promise\reject(new Exceptions\InvalidState('Request could not be handled', $ex->getCode(), $ex));
 		}
 	}
 

@@ -15,7 +15,7 @@
 
 namespace FastyBird\Library\Metadata\Entities\DevicesModule;
 
-use Exception;
+use FastyBird\Library\Metadata\Exceptions;
 use Ramsey\Uuid;
 use function array_merge;
 
@@ -85,7 +85,7 @@ final class ConnectorDynamicProperty extends DynamicProperty
 	}
 
 	/**
-	 * @throws Exception
+	 * @throws Exceptions\InvalidState
 	 */
 	public function toArray(): array
 	{
@@ -97,7 +97,7 @@ final class ConnectorDynamicProperty extends DynamicProperty
 	/**
 	 * @return array<string, mixed>
 	 *
-	 * @throws Exception
+	 * @throws Exceptions\InvalidState
 	 */
 	public function __serialize(): array
 	{

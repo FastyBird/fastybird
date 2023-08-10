@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * DiscoveredSubDevice.php
+ * StoreSubDevice.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -22,14 +22,14 @@ use Ramsey\Uuid;
 use function array_map;
 
 /**
- * NS Panel discovered sub-device
+ * Store NS Panel sub-device details message entity
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DiscoveredSubDevice implements Entity
+final class StoreSubDevice implements Entity
 {
 
 	/**
@@ -43,7 +43,7 @@ final class DiscoveredSubDevice implements Entity
 		private readonly Uuid\UuidInterface $gateway,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('serial_number')]
-		private readonly string $serialNumber,
+		private readonly string $identifier,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $name,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
@@ -129,9 +129,9 @@ final class DiscoveredSubDevice implements Entity
 		return $this->gateway;
 	}
 
-	public function getSerialNumber(): string
+	public function getIdentifier(): string
 	{
-		return $this->serialNumber;
+		return $this->identifier;
 	}
 
 	public function getName(): string
@@ -221,7 +221,7 @@ final class DiscoveredSubDevice implements Entity
 	public function toArray(): array
 	{
 		return [
-			'serial_number' => $this->getSerialNumber(),
+			'serial_number' => $this->getIdentifier(),
 			'third_serial_number' => $this->getThirdSerialNumber()?->toString(),
 			'service_address' => $this->getServiceAddress(),
 			'name' => $this->getName(),

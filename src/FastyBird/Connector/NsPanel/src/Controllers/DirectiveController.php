@@ -16,11 +16,11 @@
 namespace FastyBird\Connector\NsPanel\Controllers;
 
 use FastyBird\Connector\NsPanel;
-use FastyBird\Connector\NsPanel\Consumers;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Queries;
+use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Connector\NsPanel\Router;
 use FastyBird\Connector\NsPanel\Servers;
 use FastyBird\Connector\NsPanel\Types;
@@ -54,7 +54,7 @@ final class DirectiveController extends BaseController
 	private const SET_DEVICE_STATE_MESSAGE_SCHEMA_FILENAME = 'set_device_state.json';
 
 	public function __construct(
-		private readonly Consumers\Messages $consumer,
+		private readonly Queue\Queue $queue,
 		private readonly Helpers\Entity $entityHelper,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly MetadataSchemas\Validator $schemaValidator,
@@ -82,6 +82,7 @@ final class DirectiveController extends BaseController
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 				'type' => 'characteristics-controller',
 				'request' => [
+					'method' => $request->getMethod(),
 					'address' => $request->getServerParams()['REMOTE_ADDR'],
 					'path' => $request->getUri()->getPath(),
 					'query' => $request->getQueryParams(),
@@ -106,8 +107,11 @@ final class DirectiveController extends BaseController
 
 		$body = $request->getBody()->getContents();
 
+		// At first, try to load gateway
+		$gateway = $this->findGateway($request, $connectorId);
+
 		// At first, try to load device
-		$device = $this->findDevice($request);
+		$device = $this->findDevice($request, $connectorId, $gateway);
 
 		try {
 			$body = $this->schemaValidator->validate(
@@ -178,11 +182,12 @@ final class DirectiveController extends BaseController
 			}
 		}
 
-		$this->consumer->append(
+		$this->queue->append(
 			$this->entityHelper->create(
-				Entities\Messages\DeviceState::class,
+				Entities\Messages\StoreDeviceState::class,
 				[
 					'connector' => $connectorId->toString(),
+					'gateway' => $gateway->getId()->toString(),
 					'identifier' => $device->getIdentifier(),
 					'state' => $state,
 				],
@@ -237,24 +242,55 @@ final class DirectiveController extends BaseController
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\ServerRequestError
 	 */
-	private function findDevice(Message\ServerRequestInterface $request): Entities\Devices\ThirdPartyDevice
+	private function findGateway(
+		Message\ServerRequestInterface $request,
+		Uuid\UuidInterface $connectorId,
+	): Entities\Devices\Gateway
 	{
-		$id = strval($request->getAttribute(Router\Router::URL_DEVICE_ID));
+		$id = strval($request->getAttribute(Router\Router::URL_GATEWAY_ID));
 
-		$connectorId = strval($request->getAttribute(Servers\Http::REQUEST_ATTRIBUTE_CONNECTOR));
+		try {
+			$findQuery = new Queries\FindGatewayDevices();
+			$findQuery->byId(Uuid\Uuid::fromString($id));
+			$findQuery->byConnectorId($connectorId);
 
-		if (!Uuid\Uuid::isValid($connectorId)) {
+			$gateway = $this->devicesRepository->findOneBy($findQuery, Entities\Devices\Gateway::class);
+
+			if ($gateway === null) {
+				throw new Exceptions\ServerRequestError(
+					$request,
+					Types\ServerStatus::get(Types\ServerStatus::ENDPOINT_UNREACHABLE),
+					'Device gateway could could not be found',
+				);
+			}
+		} catch (Uuid\Exception\InvalidUuidStringException) {
 			throw new Exceptions\ServerRequestError(
 				$request,
 				Types\ServerStatus::get(Types\ServerStatus::ENDPOINT_UNREACHABLE),
-				'Connector id could not be determined',
+				'Device gateway could could not be found',
 			);
 		}
+
+		return $gateway;
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\ServerRequestError
+	 */
+	private function findDevice(
+		Message\ServerRequestInterface $request,
+		Uuid\UuidInterface $connectorId,
+		Entities\Devices\Gateway $gateway,
+	): Entities\Devices\ThirdPartyDevice
+	{
+		$id = strval($request->getAttribute(Router\Router::URL_DEVICE_ID));
 
 		try {
 			$findQuery = new Queries\FindThirdPartyDevices();
 			$findQuery->byId(Uuid\Uuid::fromString($id));
-			$findQuery->byConnectorId(Uuid\Uuid::fromString($connectorId));
+			$findQuery->byConnectorId($connectorId);
+			$findQuery->forParent($gateway);
 
 			$device = $this->devicesRepository->findOneBy($findQuery, Entities\Devices\ThirdPartyDevice::class);
 

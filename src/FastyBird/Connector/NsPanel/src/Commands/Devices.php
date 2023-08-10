@@ -260,6 +260,8 @@ class Devices extends Console\Command\Command
 					'type' => 'devices-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'request' => [
+						'method' => $ex->getRequest()?->getMethod(),
+						'url' => $ex->getRequest() !== null ? strval($ex->getRequest()->getUri()) : null,
 						'body' => $ex->getRequest()?->getBody()->getContents(),
 					],
 					'connector' => [
@@ -491,6 +493,8 @@ class Devices extends Console\Command\Command
 						'type' => 'devices-cmd',
 						'exception' => BootstrapHelpers\Logger::buildException($ex),
 						'request' => [
+							'method' => $ex->getRequest()?->getMethod(),
+							'url' => $ex->getRequest() !== null ? strval($ex->getRequest()->getUri()) : null,
 							'body' => $ex->getRequest()?->getBody()->getContents(),
 						],
 						'connector' => [
@@ -3412,6 +3416,8 @@ class Devices extends Console\Command\Command
 								'type' => 'devices-cmd',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'request' => [
+									'method' => $ex->getRequest()?->getMethod(),
+									'url' => $ex->getRequest() !== null ? strval($ex->getRequest()->getUri()) : null,
 									'body' => $ex->getRequest()?->getBody()->getContents(),
 								],
 								'connector' => [

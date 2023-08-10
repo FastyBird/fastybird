@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * DeviceSynchronisation.php
+ * StoreDeviceConnectionState.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -15,35 +15,35 @@
 
 namespace FastyBird\Connector\NsPanel\Entities\Messages;
 
-use Orisai\ObjectMapper;
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Ramsey\Uuid;
 use function array_merge;
 
 /**
- * Device synchronisation message entity
+ * Store device connection state message entity
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceSynchronisation extends Device implements Entity
+final class StoreDeviceConnectionState extends Device implements Entity
 {
 
 	public function __construct(
 		Uuid\UuidInterface $connector,
 		string $identifier,
-		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		#[ObjectMapper\Modifiers\FieldName('gateway_identifier')]
-		private readonly string $gatewayIdentifier,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\ConnectionState::class)]
+		private readonly MetadataTypes\ConnectionState $state,
 	)
 	{
 		parent::__construct($connector, $identifier);
 	}
 
-	public function getGatewayIdentifier(): string
+	public function getState(): MetadataTypes\ConnectionState
 	{
-		return $this->gatewayIdentifier;
+		return $this->state;
 	}
 
 	/**
@@ -52,7 +52,7 @@ final class DeviceSynchronisation extends Device implements Entity
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), [
-			'gateway_identifier' => $this->getGatewayIdentifier(),
+			'state' => $this->getState()->getValue(),
 		]);
 	}
 

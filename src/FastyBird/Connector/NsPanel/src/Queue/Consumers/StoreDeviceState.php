@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * DeviceState.php
+ * StoreDeviceState.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,14 +13,14 @@
  * @date           18.07.23
  */
 
-namespace FastyBird\Connector\NsPanel\Consumers\Messages;
+namespace FastyBird\Connector\NsPanel\Queue\Consumers;
 
 use DateTimeInterface;
 use FastyBird\Connector\NsPanel;
-use FastyBird\Connector\NsPanel\Consumers;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Queries;
+use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Library\Exchange\Entities as ExchangeEntities;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
@@ -39,21 +39,20 @@ use Nette\Utils;
 use function assert;
 
 /**
- * Device state message consumer
+ * Store device state message consumer
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Consumers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceState implements Consumers\Consumer
+final class StoreDeviceState implements Queue\Consumer
 {
 
 	use Nette\SmartObject;
 
 	public function __construct(
 		private readonly bool $useExchange,
-		private readonly Helpers\Property $propertyStateHelper,
 		private readonly NsPanel\Logger $logger,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
@@ -82,7 +81,7 @@ final class DeviceState implements Consumers\Consumer
 	 */
 	public function consume(Entities\Messages\Entity $entity): bool
 	{
-		if (!$entity instanceof Entities\Messages\DeviceState) {
+		if (!$entity instanceof Entities\Messages\StoreDeviceState) {
 			return false;
 		}
 
@@ -93,6 +92,21 @@ final class DeviceState implements Consumers\Consumer
 		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\NsPanelDevice::class);
 
 		if ($device === null) {
+			$this->logger->error(
+				'Device could not be loaded',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'type' => 'store-device-state-message-consumer',
+					'connector' => [
+						'id' => $entity->getConnector()->toString(),
+					],
+					'device' => [
+						'identifier' => $entity->getIdentifier(),
+					],
+					'data' => $entity->toArray(),
+				],
+			);
+
 			return true;
 		}
 
@@ -103,10 +117,13 @@ final class DeviceState implements Consumers\Consumer
 		}
 
 		$this->logger->debug(
-			'Consumed device state message',
+			'Consumed store device state message',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-				'type' => 'device-state-message-consumer',
+				'type' => 'store-device-state-message-consumer',
+				'connector' => [
+					'id' => $entity->getConnector()->toString(),
+				],
 				'device' => [
 					'id' => $device->getId()->toString(),
 				],
@@ -158,14 +175,17 @@ final class DeviceState implements Consumers\Consumer
 				continue;
 			}
 
-			$this->propertyStateHelper->setValue($property, Utils\ArrayHash::from([
-				DevicesStates\Property::ACTUAL_VALUE_KEY => Helpers\Transformer::transformValueFromDevice(
-					$property->getDataType(),
-					$property->getFormat(),
-					$item->getValue(),
-				),
-				DevicesStates\Property::VALID_KEY => true,
-			]));
+			$this->channelPropertiesStateManager->writeValue(
+				$property,
+				Utils\ArrayHash::from([
+					DevicesStates\Property::ACTUAL_VALUE_KEY => Helpers\Transformer::transformValueFromDevice(
+						$property->getDataType(),
+						$property->getFormat(),
+						$item->getValue(),
+					),
+					DevicesStates\Property::VALID_KEY => true,
+				]),
+			);
 		}
 	}
 

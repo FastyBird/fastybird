@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * DeviceOnline.php
+ * StoreDeviceState.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -16,32 +16,48 @@
 namespace FastyBird\Connector\NsPanel\Entities\Messages;
 
 use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
+use function array_map;
 use function array_merge;
 
 /**
- * Device online state message entity
+ * Store device state message entity
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceOnline extends Device implements Entity
+final class StoreDeviceState extends Device implements Entity
 {
 
+	/**
+	 * @param array<CapabilityState> $state
+	 */
 	public function __construct(
 		Uuid\UuidInterface $connector,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $gateway,
 		string $identifier,
-		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\ConnectionState::class)]
-		private readonly MetadataTypes\ConnectionState $state,
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(CapabilityState::class),
+		)]
+		private readonly array $state,
 	)
 	{
 		parent::__construct($connector, $identifier);
 	}
 
-	public function getState(): MetadataTypes\ConnectionState
+	public function getGateway(): Uuid\UuidInterface
+	{
+		return $this->gateway;
+	}
+
+	/**
+	 * @return array<CapabilityState>
+	 */
+	public function getState(): array
 	{
 		return $this->state;
 	}
@@ -52,7 +68,11 @@ final class DeviceOnline extends Device implements Entity
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), [
-			'state' => $this->getState()->getValue(),
+			'gateway' => $this->getGateway()->toString(),
+			'state' => array_map(
+				static fn (CapabilityState $state): array => $state->toArray(),
+				$this->getState(),
+			),
 		]);
 	}
 

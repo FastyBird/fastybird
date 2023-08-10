@@ -896,7 +896,7 @@ final class LanApi
 			'type' => 'lan-api',
 			'request' => [
 				'method' => $request->getMethod(),
-				'url' => $request->getUri(),
+				'url' => strval($request->getUri()),
 				'headers' => $request->getHeaders(),
 				'body' => $request->getContent(),
 			],
@@ -935,7 +935,7 @@ final class LanApi
 								'type' => 'lan-api',
 								'request' => [
 									'method' => $request->getMethod(),
-									'url' => $request->getUri(),
+									'url' => strval($request->getUri()),
 									'headers' => $request->getHeaders(),
 									'body' => $request->getContent(),
 								],
@@ -993,7 +993,7 @@ final class LanApi
 				'type' => 'lan-api',
 				'request' => [
 					'method' => $request->getMethod(),
-					'url' => $request->getUri(),
+					'url' => strval($request->getUri()),
 					'headers' => $request->getHeaders(),
 					'body' => $request->getContent(),
 				],
