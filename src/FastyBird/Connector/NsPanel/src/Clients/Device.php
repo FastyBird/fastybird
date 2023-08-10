@@ -40,6 +40,7 @@ use function is_array;
 use function is_string;
 use function preg_match;
 use function sprintf;
+use function strval;
 
 /**
  * Connector third-party device client
@@ -314,6 +315,10 @@ final class Device implements Client
 							if ($ex instanceof Exceptions\LanApiCall) {
 								$extra = [
 									'request' => [
+										'method' => $ex->getRequest()?->getMethod(),
+										'url' => $ex->getRequest() !== null ? strval(
+											$ex->getRequest()->getUri(),
+										) : null,
 										'body' => $ex->getRequest()?->getBody()->getContents(),
 									],
 									'response' => [
@@ -420,6 +425,10 @@ final class Device implements Client
 											if ($ex instanceof Exceptions\LanApiCall) {
 												$extra = [
 													'request' => [
+														'method' => $ex->getRequest()?->getMethod(),
+														'url' => $ex->getRequest() !== null ? strval(
+															$ex->getRequest()->getUri(),
+														) : null,
 														'body' => $ex->getRequest()?->getBody()->getContents(),
 													],
 													'response' => [
@@ -481,6 +490,10 @@ final class Device implements Client
 							if ($ex instanceof Exceptions\LanApiCall) {
 								$extra = [
 									'request' => [
+										'method' => $ex->getRequest()?->getMethod(),
+										'url' => $ex->getRequest() !== null ? strval(
+											$ex->getRequest()->getUri(),
+										) : null,
 										'body' => $ex->getRequest()?->getBody()->getContents(),
 									],
 									'response' => [
@@ -641,6 +654,10 @@ final class Device implements Client
 							if ($ex instanceof Exceptions\LanApiCall) {
 								$extra = [
 									'request' => [
+										'method' => $ex->getRequest()?->getMethod(),
+										'url' => $ex->getRequest() !== null ? strval(
+											$ex->getRequest()->getUri(),
+										) : null,
 										'body' => $ex->getRequest()?->getBody()->getContents(),
 									],
 									'response' => [

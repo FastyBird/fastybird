@@ -37,6 +37,7 @@ use function array_key_exists;
 use function in_array;
 use function is_string;
 use function preg_match;
+use function strval;
 
 /**
  * Connector gateway client
@@ -236,6 +237,8 @@ final class Gateway implements Client
 									'id' => $gateway->getId()->toString(),
 								],
 								'request' => [
+									'method' => $ex->getRequest()?->getMethod(),
+									'url' => $ex->getRequest() !== null ? strval($ex->getRequest()->getUri()) : null,
 									'body' => $ex->getRequest()?->getBody()->getContents(),
 								],
 								'response' => [
@@ -437,6 +440,8 @@ final class Gateway implements Client
 									'id' => $gateway->getId()->toString(),
 								],
 								'request' => [
+									'method' => $ex->getRequest()?->getMethod(),
+									'url' => $ex->getRequest() !== null ? strval($ex->getRequest()->getUri()) : null,
 									'body' => $ex->getRequest()?->getBody()->getContents(),
 								],
 								'response' => [

@@ -36,6 +36,7 @@ use Nette;
 use Nette\Utils;
 use Throwable;
 use function array_merge;
+use function strval;
 
 /**
  * Write sub-device state to hardware message consumer
@@ -303,6 +304,8 @@ final class WriteSubDeviceState implements Queue\Consumer
 					if ($ex instanceof Exceptions\LanApiCall) {
 						$extra = [
 							'request' => [
+								'method' => $ex->getRequest()?->getMethod(),
+								'url' => $ex->getRequest() !== null ? strval($ex->getRequest()->getUri()) : null,
 								'body' => $ex->getRequest()?->getBody()->getContents(),
 							],
 							'response' => [

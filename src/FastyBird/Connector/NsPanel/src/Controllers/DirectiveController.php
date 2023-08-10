@@ -82,6 +82,7 @@ final class DirectiveController extends BaseController
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 				'type' => 'characteristics-controller',
 				'request' => [
+					'method' => $request->getMethod(),
 					'address' => $request->getServerParams()['REMOTE_ADDR'],
 					'path' => $request->getUri()->getPath(),
 					'query' => $request->getQueryParams(),
