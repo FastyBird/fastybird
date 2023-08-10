@@ -216,9 +216,10 @@ final class Device implements Client
 					'model' => $device->getModel(),
 					'firmware_version' => $device->getFirmwareVersion(),
 					'service_address' => sprintf(
-						'http://%s:%d/do-directive/%s',
+						'http://%s:%d/do-directive/%s/%s',
 						Helpers\Network::getLocalAddress(),
 						$device->getConnector()->getPort(),
+						$device->getGateway()->getId()->toString(),
 						$device->getId()->toString(),
 					),
 					'online' => true, // Virtual device is always online
