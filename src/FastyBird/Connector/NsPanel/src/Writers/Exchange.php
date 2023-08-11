@@ -49,19 +49,19 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 		private readonly Helpers\Entity $entityHelper,
 		private readonly Queue\Queue $queue,
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
-		private readonly ExchangeConsumers\Container $exchangeConsumer,
+		private readonly ExchangeConsumers\Container $consumer,
 	)
 	{
 	}
 
 	public function connect(): void
 	{
-		$this->exchangeConsumer->enable(self::class);
+		$this->consumer->enable(self::class);
 	}
 
 	public function disconnect(): void
 	{
-		$this->exchangeConsumer->disable(self::class);
+		$this->consumer->disable(self::class);
 	}
 
 	/**

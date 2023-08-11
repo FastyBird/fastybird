@@ -92,6 +92,7 @@ class Devices extends Console\Command\Command
 		private readonly API\LanApiFactory $lanApiFactory,
 		private readonly Helpers\Loader $loader,
 		private readonly Helpers\Entity $entityHelper,
+		private readonly NsPanel\Logger $logger,
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Devices\DevicesManager $devicesManager,
@@ -103,7 +104,6 @@ class Devices extends Console\Command\Command
 		private readonly DevicesModels\Channels\Properties\PropertiesManager $channelsPropertiesManager,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 		private readonly Localization\Translator $translator,
-		private readonly NsPanel\Logger $logger,
 		string|null $name = null,
 	)
 	{
@@ -3940,7 +3940,7 @@ class Devices extends Console\Command\Command
 			return $connection;
 		}
 
-		throw new Exceptions\Runtime('Transformer manager could not be loaded');
+		throw new Exceptions\Runtime('Database connection could not be established');
 	}
 
 }

@@ -44,7 +44,7 @@ use function strval;
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *
  * @property-read DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository
- * @property-read DevicesUtilities\ChannelPropertiesStates $channelPropertiesStateManager
+ * @property-read DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager
  */
 trait StateWriter
 {
@@ -536,7 +536,7 @@ trait StateWriter
 		DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped $property,
 	): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
 	{
-		return $this->channelPropertiesStateManager->readValue($property)?->getActualValue();
+		return $this->channelPropertiesStatesManager->readValue($property)?->getActualValue();
 	}
 
 	/**
@@ -548,7 +548,7 @@ trait StateWriter
 		DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped $property,
 	): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
 	{
-		return $this->channelPropertiesStateManager->readValue($property)?->getExpectedValue();
+		return $this->channelPropertiesStatesManager->readValue($property)?->getExpectedValue();
 	}
 
 }

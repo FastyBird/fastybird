@@ -55,19 +55,19 @@ final class Device implements Client
 
 	use Nette\SmartObject;
 
-	private API\LanApi $lanApiApi;
+	private API\LanApi $lanApi;
 
 	public function __construct(
 		private readonly Entities\NsPanelConnector $connector,
+		API\LanApiFactory $lanApiFactory,
 		private readonly Queue\Queue $queue,
 		private readonly Helpers\Loader $loader,
 		private readonly Helpers\Entity $entityHelper,
 		private readonly NsPanel\Logger $logger,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
-		API\LanApiFactory $lanApiApiFactory,
 	)
 	{
-		$this->lanApiApi = $lanApiApiFactory->create($this->connector->getIdentifier());
+		$this->lanApi = $lanApiFactory->create($this->connector->getIdentifier());
 	}
 
 	/**
@@ -233,7 +233,7 @@ final class Device implements Client
 
 			try {
 				if ($syncDevices !== []) {
-					$this->lanApiApi->synchroniseDevices(
+					$this->lanApi->synchroniseDevices(
 						$syncDevices,
 						$ipAddress,
 						$accessToken,
@@ -322,7 +322,7 @@ final class Device implements Client
 										'body' => $ex->getRequest()?->getBody()->getContents(),
 									],
 									'response' => [
-										'body' => $ex->getRequest()?->getBody()->getContents(),
+										'body' => $ex->getResponse()?->getBody()->getContents(),
 									],
 								];
 
@@ -375,7 +375,7 @@ final class Device implements Client
 				}
 
 				$promise->then(function () use ($gateway, $ipAddress, $accessToken): void {
-					$this->lanApiApi->getSubDevices($ipAddress, $accessToken)
+					$this->lanApi->getSubDevices($ipAddress, $accessToken)
 						->then(
 							function (Entities\API\Response\GetSubDevices $response) use ($gateway, $ipAddress, $accessToken): void {
 								foreach ($response->getData()->getDevicesList() as $subDevice) {
@@ -396,7 +396,7 @@ final class Device implements Client
 										continue;
 									}
 
-									$this->lanApiApi->removeDevice(
+									$this->lanApi->removeDevice(
 										$subDevice->getSerialNumber(),
 										$ipAddress,
 										$accessToken,
@@ -432,7 +432,7 @@ final class Device implements Client
 														'body' => $ex->getRequest()?->getBody()->getContents(),
 													],
 													'response' => [
-														'body' => $ex->getRequest()?->getBody()->getContents(),
+														'body' => $ex->getResponse()?->getBody()->getContents(),
 													],
 												];
 
@@ -497,7 +497,7 @@ final class Device implements Client
 										'body' => $ex->getRequest()?->getBody()->getContents(),
 									],
 									'response' => [
-										'body' => $ex->getRequest()?->getBody()->getContents(),
+										'body' => $ex->getResponse()?->getBody()->getContents(),
 									],
 								];
 
@@ -624,7 +624,7 @@ final class Device implements Client
 				}
 
 				try {
-					$this->lanApiApi->reportDeviceOnline(
+					$this->lanApi->reportDeviceOnline(
 						$serialNumber,
 						false,
 						$ipAddress,
@@ -661,7 +661,7 @@ final class Device implements Client
 										'body' => $ex->getRequest()?->getBody()->getContents(),
 									],
 									'response' => [
-										'body' => $ex->getRequest()?->getBody()->getContents(),
+										'body' => $ex->getResponse()?->getBody()->getContents(),
 									],
 								];
 							}

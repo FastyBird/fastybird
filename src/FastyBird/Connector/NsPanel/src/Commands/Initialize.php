@@ -59,6 +59,7 @@ class Initialize extends Console\Command\Command
 	public const NAME = 'fb:ns-panel-connector:initialize';
 
 	public function __construct(
+		private readonly NsPanel\Logger $logger,
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Connectors\ConnectorsManager $connectorsManager,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
@@ -66,7 +67,6 @@ class Initialize extends Console\Command\Command
 		private readonly DevicesModels\Connectors\Properties\PropertiesManager $connectorsPropertiesManager,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 		private readonly Localization\Translator $translator,
-		private readonly NsPanel\Logger $logger,
 		string|null $name = null,
 	)
 	{
@@ -425,10 +425,8 @@ class Initialize extends Console\Command\Command
 	 */
 	private function listConfigurations(Style\SymfonyStyle $io): void
 	{
-		/** @var DevicesQueries\FindConnectors<Entities\NsPanelConnector> $findConnectorsQuery */
 		$findConnectorsQuery = new Queries\FindConnectors();
 
-		/** @var array<Entities\NsPanelConnector> $connectors */
 		$connectors = $this->connectorsRepository->findAllBy($findConnectorsQuery, Entities\NsPanelConnector::class);
 		usort(
 			$connectors,
@@ -713,7 +711,7 @@ class Initialize extends Console\Command\Command
 			return $connection;
 		}
 
-		throw new Exceptions\Runtime('Transformer manager could not be loaded');
+		throw new Exceptions\Runtime('Database connection could not be established');
 	}
 
 }

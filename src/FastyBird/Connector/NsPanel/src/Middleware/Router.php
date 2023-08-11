@@ -53,8 +53,8 @@ final class Router
 	private SlimRouterHttp\ResponseFactory $responseFactory;
 
 	public function __construct(
-		private readonly SlimRouterRouting\IRouter $router,
 		private readonly NsPanel\Logger $logger,
+		private readonly SlimRouterRouting\IRouter $router,
 		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{

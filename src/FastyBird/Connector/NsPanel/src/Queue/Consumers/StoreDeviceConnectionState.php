@@ -31,7 +31,7 @@ use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 
 /**
- * Device online state message consumer
+ * Store device connection state message consumer
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Consumers
@@ -44,14 +44,14 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 	use Nette\SmartObject;
 
 	public function __construct(
+		private readonly NsPanel\Logger $logger,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
-		private readonly DevicesUtilities\DevicePropertiesStates $devicePropertiesStateManager,
-		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStateManager,
-		private readonly NsPanel\Logger $logger,
+		private readonly DevicesUtilities\DevicePropertiesStates $devicePropertiesStatesManager,
+		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
 	)
 	{
 	}
@@ -78,7 +78,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 				'Device could not be loaded',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'device-online-message-consumer',
+					'type' => 'store-device-connection-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
 					],
@@ -115,7 +115,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 					$findDevicePropertiesQuery,
 					DevicesEntities\Devices\Properties\Dynamic::class,
 				) as $property) {
-					$this->devicePropertiesStateManager->setValue(
+					$this->devicePropertiesStatesManager->setValue(
 						$property,
 						Nette\Utils\ArrayHash::from([
 							DevicesStates\Property::VALID_KEY => false,
@@ -136,7 +136,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 						$findChannelPropertiesQuery,
 						DevicesEntities\Channels\Properties\Dynamic::class,
 					) as $property) {
-						$this->channelPropertiesStateManager->setValue(
+						$this->channelPropertiesStatesManager->setValue(
 							$property,
 							Nette\Utils\ArrayHash::from([
 								DevicesStates\Property::VALID_KEY => false,
@@ -174,7 +174,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 							$findDevicePropertiesQuery,
 							DevicesEntities\Devices\Properties\Dynamic::class,
 						) as $property) {
-							$this->devicePropertiesStateManager->setValue(
+							$this->devicePropertiesStatesManager->setValue(
 								$property,
 								Nette\Utils\ArrayHash::from([
 									DevicesStates\Property::VALID_KEY => false,
@@ -198,7 +198,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 								$findChannelPropertiesQuery,
 								DevicesEntities\Channels\Properties\Dynamic::class,
 							) as $property) {
-								$this->channelPropertiesStateManager->setValue(
+								$this->channelPropertiesStatesManager->setValue(
 									$property,
 									Nette\Utils\ArrayHash::from([
 										DevicesStates\Property::VALID_KEY => false,
@@ -232,7 +232,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 			'Consumed device online status message',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-				'type' => 'device-online-message-consumer',
+				'type' => 'store-device-connection-state-message-consumer',
 				'connector' => [
 					'id' => $entity->getConnector()->toString(),
 				],

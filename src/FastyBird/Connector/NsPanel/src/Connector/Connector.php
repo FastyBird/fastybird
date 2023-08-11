@@ -71,11 +71,11 @@ final class Connector implements DevicesConnectors\Connector
 		private readonly DevicesEntities\Connectors\Connector $connector,
 		private readonly array $clientsFactories,
 		private readonly Clients\DiscoveryFactory $discoveryClientFactory,
-		private readonly Servers\ServerFactory $serverFactory,
-		private readonly Writers\WriterFactory $writerFactory,
 		private readonly Helpers\Entity $entityHelper,
 		private readonly Queue\Queue $queue,
 		private readonly Queue\Consumers $consumers,
+		private readonly Servers\ServerFactory $serverFactory,
+		private readonly Writers\WriterFactory $writerFactory,
 		private readonly NsPanel\Logger $logger,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
@@ -236,8 +236,6 @@ final class Connector implements DevicesConnectors\Connector
 				],
 			],
 		);
-
-		$this->server?->disconnect();
 
 		$client = $this->discoveryClientFactory->create($this->connector);
 

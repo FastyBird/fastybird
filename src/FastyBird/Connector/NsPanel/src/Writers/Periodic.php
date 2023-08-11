@@ -77,7 +77,7 @@ class Periodic implements Writer
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
-		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
+		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
 	)
@@ -193,7 +193,7 @@ class Periodic implements Writer
 			);
 
 			foreach ($properties as $property) {
-				$state = $this->channelPropertiesStates->getValue($property);
+				$state = $this->channelPropertiesStatesManager->getValue($property);
 
 				if ($state === null) {
 					continue;
@@ -297,7 +297,7 @@ class Periodic implements Writer
 			);
 
 			foreach ($properties as $property) {
-				$state = $this->channelPropertiesStates->getValue($property);
+				$state = $this->channelPropertiesStatesManager->getValue($property);
 
 				if ($state === null || $state->isValid() === false) {
 					continue;

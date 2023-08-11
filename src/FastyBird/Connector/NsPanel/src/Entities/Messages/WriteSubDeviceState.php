@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\NsPanel\Entities\Messages;
 
 /**
- * Write update sub-device state to hardware message entity
+ * Write updated sub-device state to hardware message entity
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Entities
