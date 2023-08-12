@@ -55,7 +55,7 @@ final class StoreDevice implements Consumer
 		protected readonly DevicesModels\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
 		protected readonly DevicesModels\Devices\Properties\PropertiesManager $devicesPropertiesManager,
 		protected readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
-		protected readonly DevicesModels\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
+		protected readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		protected readonly DevicesModels\Channels\Properties\PropertiesManager $channelsPropertiesManager,
 		protected readonly DevicesUtilities\Database $databaseHelper,
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
@@ -171,16 +171,16 @@ final class StoreDevice implements Consumer
 			$device->getId(),
 			$entity->getModel(),
 			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-			Types\DevicePropertyIdentifier::HARDWARE_MODEL,
-			Helpers\Name::createName(Types\DevicePropertyIdentifier::HARDWARE_MODEL),
+			Types\DevicePropertyIdentifier::MODEL,
+			Helpers\Name::createName(Types\DevicePropertyIdentifier::MODEL),
 		);
 		$this->setDeviceProperty(
 			DevicesEntities\Devices\Properties\Variable::class,
 			$device->getId(),
 			$entity->getManufacturer(),
 			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-			Types\DevicePropertyIdentifier::HARDWARE_MANUFACTURER,
-			Helpers\Name::createName(Types\DevicePropertyIdentifier::HARDWARE_MANUFACTURER),
+			Types\DevicePropertyIdentifier::MANUFACTURER,
+			Helpers\Name::createName(Types\DevicePropertyIdentifier::MANUFACTURER),
 		);
 		$this->setDeviceProperty(
 			DevicesEntities\Devices\Properties\Variable::class,
@@ -195,8 +195,8 @@ final class StoreDevice implements Consumer
 			$device->getId(),
 			$entity->getMacAddress(),
 			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-			Types\DevicePropertyIdentifier::HARDWARE_MAC_ADDRESS,
-			Helpers\Name::createName(Types\DevicePropertyIdentifier::HARDWARE_MAC_ADDRESS),
+			Types\DevicePropertyIdentifier::MAC_ADDRESS,
+			Helpers\Name::createName(Types\DevicePropertyIdentifier::MAC_ADDRESS),
 		);
 		$this->setDeviceProperty(
 			DevicesEntities\Devices\Properties\Variable::class,

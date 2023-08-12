@@ -355,7 +355,7 @@ class Discovery extends Console\Command\Command
 					$foundDevices,
 					$device->getId()->toString(),
 					$device->getName() ?? $device->getIdentifier(),
-					$device->getHardwareModel() ?? 'N/A',
+					$device->getModel() ?? 'N/A',
 					$device->getIpAddress() ?? 'N/A',
 					$isEncrypted ? 'yes' : 'no',
 				]);

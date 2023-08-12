@@ -128,7 +128,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 					&& preg_match(self::MATCH_DEVICE_ID, $data, $matches) === 1
 					&& array_key_exists('usn', $matches)
 				) {
-					var_dump($data);
 					$this->handleDiscoveredDevice(
 						$matches['usn'],
 						$urlParts['host'],
@@ -294,7 +293,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					'model' => trim(sprintf('%s %s', $specs->getModelName(), $specs->getModelNumber())),
 					'manufacturer' => $specs->getManufacturer(),
 					'serial_number' => $specs->getSerialNumber(),
-					'is_encrypted' => $needsAuthorization,
+					'encrypted' => $needsAuthorization,
 					'applications' => $apps !== null ? array_map(
 						static fn (Entities\API\Application $application): array => [
 							'id' => $application->getId(),
@@ -319,7 +318,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$this->entityHelper->create(
 					Entities\Messages\StoreDevice::class,
 					[
-						'connector' => $this->connector->getId(),
+						'connector' => $this->connector->getId()->toString(),
 						'identifier' => $device->getIdentifier(),
 						'ip_address' => $device->getIpAddress(),
 						'port' => $device->getPort(),
@@ -328,7 +327,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 						'manufacturer' => $device->getManufacturer(),
 						'serial_number' => $device->getSerialNumber(),
 						'mac_address' => null,
-						'is_encrypted' => $device->isEncrypted(),
+						'encrypted' => $device->isEncrypted(),
 						'app_id' => null,
 						'encryption_key' => null,
 						'hdmi' => [],

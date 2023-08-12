@@ -34,7 +34,7 @@ use FastyBird\Library\Exchange\DI as ExchangeDI;
 use FastyBird\Module\Devices\DI as DevicesDI;
 use Nette\DI;
 use Nette\Schema;
-use React\EventLoop;
+use React\Socket;
 use stdClass;
 use function assert;
 use const DIRECTORY_SEPARATOR;
@@ -141,12 +141,31 @@ class VieraExtension extends DI\CompilerExtension
 		 * API
 		 */
 
+		$socketConnector = $builder->addDefinition(
+			$this->prefix('clients.socketsConnector'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Socket\Connector::class)
+			->setArguments([
+				'context' => [
+					'dns' => '8.8.8.8',
+					'timeout' => 10,
+					'tls' => [
+						'verify_peer' => false,
+						'verify_peer_name' => false,
+						'check_hostname' => false,
+					],
+				],
+				//'loop' => $builder->getDefinitionByType(EventLoop\LoopInterface::class)
+			]);
+
 		$builder->addFactoryDefinition($this->prefix('api.televisionApi'))
 			->setImplement(API\TelevisionApiFactory::class)
 			->getResultDefinition()
 			->setType(API\TelevisionApi::class)
 			->setArguments([
 				'logger' => $logger,
+				'socketConnector' => $socketConnector,
 			]);
 
 		$builder->addDefinition($this->prefix('api.httpClient'), new DI\Definitions\ServiceDefinition())

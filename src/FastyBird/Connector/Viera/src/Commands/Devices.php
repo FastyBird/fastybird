@@ -394,8 +394,8 @@ class Devices extends Console\Command\Command
 
 			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
-				'identifier' => Types\DevicePropertyIdentifier::HARDWARE_MODEL,
-				'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::HARDWARE_MODEL),
+				'identifier' => Types\DevicePropertyIdentifier::MODEL,
+				'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::MODEL),
 				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 				'value' => trim(sprintf('%s %s', $specs->getModelName(), $specs->getModelNumber())),
 				'device' => $device,
@@ -403,8 +403,8 @@ class Devices extends Console\Command\Command
 
 			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
-				'identifier' => Types\DevicePropertyIdentifier::HARDWARE_MANUFACTURER,
-				'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::HARDWARE_MANUFACTURER),
+				'identifier' => Types\DevicePropertyIdentifier::MANUFACTURER,
+				'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::MANUFACTURER),
 				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 				'value' => $specs->getManufacturer(),
 				'device' => $device,
@@ -422,8 +422,8 @@ class Devices extends Console\Command\Command
 			if ($macAddress !== null) {
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
-					'identifier' => Types\DevicePropertyIdentifier::HARDWARE_MAC_ADDRESS,
-					'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::HARDWARE_MAC_ADDRESS),
+					'identifier' => Types\DevicePropertyIdentifier::MAC_ADDRESS,
+					'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::MAC_ADDRESS),
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 					'value' => $macAddress,
 					'device' => $device,
@@ -753,19 +753,19 @@ class Devices extends Console\Command\Command
 
 		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($device);
-		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::HARDWARE_MODEL);
+		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::MODEL);
 
 		$hardwareModelProperty = $this->devicesPropertiesRepository->findOneBy($findDevicePropertyQuery);
 
 		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($device);
-		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::HARDWARE_MANUFACTURER);
+		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::MANUFACTURER);
 
 		$hardwareManufacturerProperty = $this->devicesPropertiesRepository->findOneBy($findDevicePropertyQuery);
 
 		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($device);
-		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::HARDWARE_MAC_ADDRESS);
+		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::MAC_ADDRESS);
 
 		$macAddressProperty = $this->devicesPropertiesRepository->findOneBy($findDevicePropertyQuery);
 
@@ -1010,8 +1010,8 @@ class Devices extends Console\Command\Command
 			if ($hardwareModelProperty === null) {
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
-					'identifier' => Types\DevicePropertyIdentifier::HARDWARE_MODEL,
-					'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::HARDWARE_MODEL),
+					'identifier' => Types\DevicePropertyIdentifier::MODEL,
+					'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::MODEL),
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 					'value' => trim(sprintf('%s %s', $specs->getModelName(), $specs->getModelNumber())),
 					'device' => $device,
@@ -1025,9 +1025,9 @@ class Devices extends Console\Command\Command
 			if ($hardwareManufacturerProperty === null) {
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
-					'identifier' => Types\DevicePropertyIdentifier::HARDWARE_MODEL,
+					'identifier' => Types\DevicePropertyIdentifier::MODEL,
 					'name' => Helpers\Name::createName(
-						Types\DevicePropertyIdentifier::HARDWARE_MANUFACTURER,
+						Types\DevicePropertyIdentifier::MANUFACTURER,
 					),
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 					'value' => $specs->getManufacturer(),
@@ -1042,8 +1042,8 @@ class Devices extends Console\Command\Command
 			if ($macAddressProperty === null) {
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
-					'identifier' => Types\DevicePropertyIdentifier::HARDWARE_MAC_ADDRESS,
-					'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::HARDWARE_MAC_ADDRESS),
+					'identifier' => Types\DevicePropertyIdentifier::MAC_ADDRESS,
+					'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::MAC_ADDRESS),
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 					'value' => $macAddress,
 					'device' => $device,
@@ -1246,7 +1246,7 @@ class Devices extends Console\Command\Command
 			$table->addRow([
 				$index + 1,
 				$device->getName() ?? $device->getIdentifier(),
-				$device->getHardwareModel() ?? 'N/A',
+				$device->getModel() ?? 'N/A',
 				$device->getIpAddress() ?? 'N/A',
 				$device->isEncrypted() ? 'yes' : 'no',
 			]);

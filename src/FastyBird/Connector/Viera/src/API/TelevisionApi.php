@@ -126,6 +126,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 		private readonly EventLoop\LoopInterface $eventLoop,
 		private readonly Helpers\Entity $entityHelper,
 		private readonly Viera\Logger $logger,
+		private readonly Socket\Connector $socketConnector,
 	)
 	{
 		$this->isEncrypted = $this->appId !== null && $this->encryptionKey !== null;
@@ -957,8 +958,6 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 
 	/**
 	 * @return ($runLoop is false ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : bool)
-	 *
-	 * @throws Exceptions\InvalidState
 	 */
 	public function livenessProbe(
 		float $timeout = 1.5,
@@ -966,20 +965,6 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|bool
 	{
 		$deferred = new Promise\Deferred();
-
-		try {
-			$connector = new Socket\Connector([
-				'dns' => '8.8.8.8',
-				'timeout' => 10,
-				'tls' => [
-					'verify_peer' => false,
-					'verify_peer_name' => false,
-					'check_hostname' => false,
-				],
-			]);
-		} catch (InvalidArgumentException $ex) {
-			throw new Exceptions\InvalidState('Socket connector could not be created', $ex->getCode(), $ex);
-		}
 
 		$result = false;
 
@@ -992,7 +977,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 			}
 		});
 
-		$connector->connect($this->ipAddress . ':' . $this->port)
+		$this->socketConnector->connect($this->ipAddress . ':' . $this->port)
 			->then(function () use ($deferred, $timeoutTimer, $runLoop, &$result): void {
 				$this->eventLoop->cancelTimer($timeoutTimer);
 
@@ -1482,9 +1467,10 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 				),
 			);
 
+			/** @var array<string>|null $sidHeader */
 			$sidHeader = $response->getHeader('SID');
 
-			if ($sidHeader !== []) {
+			if ($sidHeader !== null && $sidHeader !== []) {
 				$this->subscriptionId = array_pop($sidHeader);
 			}
 		} catch (GuzzleHttp\Exception\GuzzleException | Exceptions\TelevisionApiCall) {
@@ -1612,13 +1598,13 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 		return $this->createEntity(
 			Entities\API\DeviceSpecs::class,
 			[
-				'device_type' => $specsResponse->device->offsetGet('deviceType'),
-				'friendly_name' => $specsResponse->device->offsetGet('friendlyName'),
-				'manufacturer' => $specsResponse->device->offsetGet('manufacturer'),
-				'model_name' => $specsResponse->device->offsetGet('modelName'),
-				'model_number' => $specsResponse->device->offsetGet('modelNumber'),
-				'requires_encryption' => $specsResponse->device->offsetGet('requiresEncryption'),
-				'serial_number' => Utils\Strings::substring(strval($specsResponse->device->offsetGet('UDN')), 5),
+				'device_type' => strval($specsResponse->device->deviceType),
+				'friendly_name' => strval($specsResponse->device->friendlyName),
+				'manufacturer' => strval($specsResponse->device->manufacturer),
+				'model_name' => strval($specsResponse->device->modelName),
+				'model_number' => strval($specsResponse->device->modelNumber),
+				'requires_encryption' => strval($specsResponse->device->requiresEncryption) === '1',
+				'serial_number' => Utils\Strings::substring(strval($specsResponse->device->UDN), 5),
 			],
 		);
 	}

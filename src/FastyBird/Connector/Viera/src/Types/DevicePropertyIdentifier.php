@@ -37,11 +37,11 @@ class DevicePropertyIdentifier extends Consistence\Enum\Enum
 
 	public const STATE = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_STATE;
 
-	public const HARDWARE_MODEL = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL;
+	public const MODEL = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL;
 
-	public const HARDWARE_MANUFACTURER = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MANUFACTURER;
+	public const MANUFACTURER = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MANUFACTURER;
 
-	public const HARDWARE_MAC_ADDRESS = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS;
+	public const MAC_ADDRESS = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS;
 
 	public const SERIAL_NUMBER = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_SERIAL_NUMBER;
 
