@@ -288,24 +288,30 @@ class Periodic implements Writer
 		$channels = $this->channelsRepository->findAllBy($findChannelsQuery, Entities\NsPanelChannel::class);
 
 		foreach ($channels as $channel) {
-			$findChannelPropertiesQuery = new DevicesQueries\FindChannelMappedProperties();
+			$findChannelPropertiesQuery = new DevicesQueries\FindChannelProperties();
 			$findChannelPropertiesQuery->forChannel($channel);
 
-			$properties = $this->channelsPropertiesRepository->findAllBy(
-				$findChannelPropertiesQuery,
-				DevicesEntities\Channels\Properties\Mapped::class,
-			);
+			$properties = $this->channelsPropertiesRepository->findAllBy($findChannelPropertiesQuery);
 
 			foreach ($properties as $property) {
-				$state = $this->channelPropertiesStatesManager->getValue($property);
+				if (
+					$property instanceof DevicesEntities\Channels\Properties\Dynamic
+					|| $property instanceof DevicesEntities\Channels\Properties\Mapped
+				) {
+					$state = $this->channelPropertiesStatesManager->getValue($property);
 
-				if ($state === null || $state->isValid() === false) {
-					continue;
-				}
+					if ($state === null || $state->isValid() === false) {
+						continue;
+					}
 
-				$propertyValue = $state->getExpectedValue() ?? $state->getActualValue();
+					$propertyValue = $state->getExpectedValue() ?? $state->getActualValue();
 
-				if ($propertyValue === null) {
+					if ($propertyValue === null) {
+						continue;
+					}
+				} elseif ($property instanceof DevicesEntities\Channels\Properties\Variable) {
+					$propertyValue = $property->getValue();
+				} else {
 					continue;
 				}
 

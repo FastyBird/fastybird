@@ -79,6 +79,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 		if (
 			$entity instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty
 			|| $entity instanceof MetadataEntities\DevicesModule\ChannelMappedProperty
+			|| $entity instanceof MetadataEntities\DevicesModule\ChannelVariableProperty
 		) {
 			$findChannelQuery = new DevicesQueries\FindChannels();
 			$findChannelQuery->byId($entity->getChannel());
@@ -98,7 +99,16 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 			if ($device instanceof Entities\Devices\SubDevice) {
 				assert($channel instanceof Entities\NsPanelChannel);
 
-				if ($entity->getExpectedValue() === null || $entity->getPending() !== true) {
+				if (
+					(
+						$entity instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty
+						|| $entity instanceof MetadataEntities\DevicesModule\ChannelMappedProperty
+					)
+					&& (
+						$entity->getExpectedValue() === null
+						|| $entity->getPending() !== true
+					)
+				) {
 					return;
 				}
 
@@ -107,7 +117,13 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 			} elseif ($device instanceof Entities\Devices\ThirdPartyDevice) {
 				assert($channel instanceof Entities\NsPanelChannel);
 
-				if ($entity->isValid() !== true) {
+				if (
+					(
+						$entity instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty
+						|| $entity instanceof MetadataEntities\DevicesModule\ChannelMappedProperty
+					)
+					&& $entity->isValid() !== true
+				) {
 					return;
 				}
 

@@ -213,11 +213,14 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+		$findChannelPropertyQuery = new DevicesQueries\FindChannelDynamicProperties();
 		$findChannelPropertyQuery->forChannel($channel);
 		$findChannelPropertyQuery->byId($entity->getProperty());
 
-		$property = $this->channelsPropertiesRepository->findOneBy($findChannelPropertyQuery);
+		$property = $this->channelsPropertiesRepository->findOneBy(
+			$findChannelPropertyQuery,
+			DevicesEntities\Channels\Properties\Dynamic::class,
+		);
 
 		if ($property === null) {
 			$this->logger->error(
@@ -244,10 +247,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		if (
-			$property instanceof DevicesEntities\Channels\Properties\Dynamic
-			&& !$property->isSettable()
-		) {
+		if (!$property->isSettable()) {
 			$this->logger->error(
 				'Channel property is not writable',
 				[
@@ -272,42 +272,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
-			$state = $this->channelPropertiesStates->getValue($property);
+		$state = $this->channelPropertiesStates->getValue($property);
 
-			if ($state === null) {
-				return true;
-			}
-
-			$expectedValue = DevicesUtilities\ValueHelper::flattenValue($state->getExpectedValue());
-
-		} elseif ($property instanceof DevicesEntities\Channels\Properties\Variable) {
-			$expectedValue = DevicesUtilities\ValueHelper::flattenValue($property->getValue());
-
-		} else {
-			$this->logger->error(
-				'Unsupported property type',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
-					'type' => 'write-channel-property-state-message-consumer',
-					'connector' => [
-						'id' => $connector->getId()->toString(),
-					],
-					'device' => [
-						'id' => $device->getId()->toString(),
-					],
-					'channel' => [
-						'id' => $channel->getId()->toString(),
-					],
-					'property' => [
-						'id' => $property->getId()->toString(),
-					],
-					'data' => $entity->toArray(),
-				],
-			);
-
+		if ($state === null) {
 			return true;
 		}
+
+		$expectedValue = DevicesUtilities\ValueHelper::flattenValue($state->getExpectedValue());
 
 		if ($expectedValue === null) {
 			return true;
@@ -478,17 +449,15 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			function () use ($connector, $device, $property, $valueToWrite): void {
 				$now = $this->dateTimeFactory->getNow();
 
-				if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
-					$state = $this->channelPropertiesStates->getValue($property);
+				$state = $this->channelPropertiesStates->getValue($property);
 
-					if ($state?->getExpectedValue() !== null) {
-						$this->channelPropertiesStates->setValue(
-							$property,
-							Utils\ArrayHash::from([
-								DevicesStates\Property::PENDING_KEY => $now->format(DateTimeInterface::ATOM),
-							]),
-						);
-					}
+				if ($state?->getExpectedValue() !== null) {
+					$this->channelPropertiesStates->setValue(
+						$property,
+						Utils\ArrayHash::from([
+							DevicesStates\Property::PENDING_KEY => $now->format(DateTimeInterface::ATOM),
+						]),
+					);
 				}
 
 				switch ($property->getIdentifier()) {
@@ -611,15 +580,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				}
 			},
 			function (Throwable $ex) use ($connector, $device, $property): void {
-				if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
-					$this->channelPropertiesStates->setValue(
-						$property,
-						Utils\ArrayHash::from([
-							DevicesStates\Property::EXPECTED_VALUE_KEY => null,
-							DevicesStates\Property::PENDING_KEY => false,
-						]),
-					);
-				}
+				$this->channelPropertiesStates->setValue(
+					$property,
+					Utils\ArrayHash::from([
+						DevicesStates\Property::EXPECTED_VALUE_KEY => null,
+						DevicesStates\Property::PENDING_KEY => false,
+					]),
+				);
 
 				if ($ex->getCode() === 500) {
 					$this->queue->append(

@@ -22,7 +22,6 @@ use FastyBird\Connector\Viera\Queue;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -49,7 +48,6 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 		private readonly Helpers\Entity $entityHelper,
 		private readonly Queue\Queue $queue,
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
-		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly ExchangeConsumers\Container $consumer,
 	)
 	{
@@ -75,10 +73,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 		MetadataEntities\Entity|null $entity,
 	): void
 	{
-		if (
-			$entity instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty
-			|| $entity instanceof MetadataEntities\DevicesModule\ChannelVariableProperty
-		) {
+		if ($entity instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty) {
 			$findChannelQuery = new DevicesQueries\FindChannels();
 			$findChannelQuery->byId($entity->getChannel());
 
@@ -95,21 +90,6 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 				return;
 			}
 
-			$findPropertyQuery = new DevicesQueries\FindChannelProperties();
-			$findPropertyQuery->forChannel($channel);
-			$findPropertyQuery->byId($entity->getId());
-
-			$property = $this->channelsPropertiesRepository->findOneBy($findPropertyQuery);
-
-			if ($property === null) {
-				return;
-			}
-
-			assert(
-				$property instanceof DevicesEntities\Channels\Properties\Dynamic
-				|| $property instanceof DevicesEntities\Channels\Properties\Variable,
-			);
-
 			$this->queue->append(
 				$this->entityHelper->create(
 					Entities\Messages\WriteChannelPropertyState::class,
@@ -117,7 +97,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 						'connector' => $this->connector->getId()->toString(),
 						'device' => $device->getId()->toString(),
 						'channel' => $channel->getId()->toString(),
-						'property' => $property->getId()->toString(),
+						'property' => $entity->getId()->toString(),
 					],
 				),
 			);

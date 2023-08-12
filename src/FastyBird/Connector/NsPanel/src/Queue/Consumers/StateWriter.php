@@ -480,10 +480,13 @@ trait StateWriter
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	private function getPropertyValue(
-		DevicesEntities\Channels\Properties\Mapped|DevicesEntities\Channels\Properties\Variable $property,
+		DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped|DevicesEntities\Channels\Properties\Variable $property,
 	): string|int|float|bool|null
 	{
-		if ($property instanceof DevicesEntities\Channels\Properties\Mapped) {
+		if (
+			$property instanceof DevicesEntities\Channels\Properties\Dynamic
+			|| $property instanceof DevicesEntities\Channels\Properties\Mapped
+		) {
 			$actualValue = $this->getActualValue($property);
 			$expectedValue = $this->getExpectedValue($property);
 
@@ -505,7 +508,7 @@ trait StateWriter
 	private function findProtocolProperty(
 		Entities\NsPanelChannel $channel,
 		Types\Protocol $protocol,
-	): DevicesEntities\Channels\Properties\Mapped|DevicesEntities\Channels\Properties\Variable|null
+	): DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped|DevicesEntities\Channels\Properties\Variable|null
 	{
 		$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
 		$findChannelPropertyQuery->forChannel($channel);
@@ -518,7 +521,8 @@ trait StateWriter
 		}
 
 		if (
-			!$property instanceof DevicesEntities\Channels\Properties\Mapped
+			!$property instanceof DevicesEntities\Channels\Properties\Dynamic
+			&& !$property instanceof DevicesEntities\Channels\Properties\Mapped
 			&& !$property instanceof DevicesEntities\Channels\Properties\Variable
 		) {
 			return null;
