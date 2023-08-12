@@ -74,19 +74,16 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 	private Datagram\SocketInterface|null $sender = null;
 
-	private Multicast\Factory $serverFactory;
-
 	public function __construct(
 		private readonly Entities\VieraConnector $connector,
 		private readonly API\TelevisionApiFactory $televisionApiFactory,
 		private readonly Queue\Queue $queue,
 		private readonly Helpers\Entity $entityHelper,
 		private readonly Viera\Logger $logger,
+		private readonly Multicast\Factory $serverFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
 	)
 	{
-		$this->serverFactory = new Multicast\Factory($this->eventLoop);
-
 		$this->discoveredLocalDevices = new SplObjectStorage();
 	}
 
@@ -131,6 +128,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					&& preg_match(self::MATCH_DEVICE_ID, $data, $matches) === 1
 					&& array_key_exists('usn', $matches)
 				) {
+					var_dump($data);
 					$this->handleDiscoveredDevice(
 						$matches['usn'],
 						$urlParts['host'],

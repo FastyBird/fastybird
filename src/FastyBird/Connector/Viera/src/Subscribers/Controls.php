@@ -76,6 +76,19 @@ final class Controls implements Common\EventSubscriber
 					'connector' => $entity,
 				]));
 			}
+
+			$findConnectorControlQuery = new DevicesQueries\FindConnectorControls();
+			$findConnectorControlQuery->forConnector($entity);
+			$findConnectorControlQuery->byName(Types\ConnectorControlName::DISCOVER);
+
+			$discoverControl = $this->controlsRepository->findOneBy($findConnectorControlQuery);
+
+			if ($discoverControl === null) {
+				$this->controlsManager->create(Utils\ArrayHash::from([
+					'name' => Types\ConnectorControlName::DISCOVER,
+					'connector' => $entity,
+				]));
+			}
 		}
 	}
 

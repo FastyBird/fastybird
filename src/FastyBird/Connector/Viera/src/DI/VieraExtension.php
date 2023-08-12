@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\Viera\DI;
 
+use Clue\React\Multicast;
 use Doctrine\Persistence;
 use FastyBird\Connector\Viera;
 use FastyBird\Connector\Viera\API;
@@ -33,6 +34,7 @@ use FastyBird\Library\Exchange\DI as ExchangeDI;
 use FastyBird\Module\Devices\DI as DevicesDI;
 use Nette\DI;
 use Nette\Schema;
+use React\EventLoop;
 use stdClass;
 use function assert;
 use const DIRECTORY_SEPARATOR;
@@ -112,6 +114,12 @@ class VieraExtension extends DI\CompilerExtension
 		/**
 		 * CLIENTS
 		 */
+
+		$builder->addDefinition(
+			$this->prefix('clients.multicastFactory'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Multicast\Factory::class);
 
 		$builder->addFactoryDefinition($this->prefix('clients.television'))
 			->setImplement(Clients\TelevisionFactory::class)

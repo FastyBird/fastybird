@@ -279,7 +279,7 @@ class Discovery extends Console\Command\Command
 
 		$result = $serviceCmd->run(new Input\ArrayInput([
 			'--connector' => $connector->getId()->toString(),
-			'--mode' => 'discover',
+			'--mode' => DevicesCommands\Connector::MODE_DISCOVER,
 			'--no-interaction' => true,
 			'--quiet' => true,
 		]), $output);

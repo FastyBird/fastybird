@@ -35,6 +35,8 @@ class ConnectorControlName extends Consistence\Enum\Enum
 	 */
 	public const REBOOT = MetadataTypes\ControlName::NAME_REBOOT;
 
+	public const DISCOVER = MetadataTypes\ControlName::NAME_DISCOVER;
+
 	public function __toString(): string
 	{
 		return strval(self::getValue());
