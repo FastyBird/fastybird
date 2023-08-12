@@ -1338,7 +1338,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 		return $deferred->promise();
 	}
 
-	public function subscribeEvents(): bool
+	private function subscribeEvents(): bool
 	{
 		if ($this->eventsServer !== null) {
 			return true;
@@ -1482,7 +1482,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 		return true;
 	}
 
-	public function unsubscribeEvents(): void
+	private function unsubscribeEvents(): void
 	{
 		$this->subscriptionCreated = false;
 
@@ -1658,9 +1658,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 			$appsRaw = strval($appsResponse->X_GetAppListResponse->X_AppList);
 
 		} else {
-			$appsResponse = simplexml_load_string(
-				$this->sanitizeReceivedPayload($body),
-			);
+			$appsResponse = simplexml_load_string($body);
 
 			if (
 				!$appsResponse instanceof SimpleXMLElement
@@ -1754,7 +1752,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 			$devicePort = intval($vectorInfoResponse->X_GetVectorInfoResponse->X_PortNumber);
 
 		} else {
-			$vectorInfoResponse = simplexml_load_string($this->sanitizeReceivedPayload($body));
+			$vectorInfoResponse = simplexml_load_string($body);
 
 			if (
 				!$vectorInfoResponse instanceof SimpleXMLElement

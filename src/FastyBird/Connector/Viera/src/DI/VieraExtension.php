@@ -156,8 +156,8 @@ class VieraExtension extends DI\CompilerExtension
 						'check_hostname' => false,
 					],
 				],
-				//'loop' => $builder->getDefinitionByType(EventLoop\LoopInterface::class)
-			]);
+			])
+			->setAutowired(false);
 
 		$builder->addFactoryDefinition($this->prefix('api.televisionApi'))
 			->setImplement(API\TelevisionApiFactory::class)
