@@ -37,9 +37,7 @@ final class Queue
 	/** @var SplQueue<Entities\Messages\Entity> */
 	private SplQueue $queue;
 
-	public function __construct(
-		private readonly Viera\Logger $logger,
-	)
+	public function __construct(private readonly Viera\Logger $logger)
 	{
 		$this->queue = new SplQueue();
 	}
