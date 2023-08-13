@@ -44,11 +44,11 @@ final class StoreThirdPartyDevice implements Queue\Consumer
 	use Nette\SmartObject;
 
 	public function __construct(
+		protected readonly NsPanel\Logger $logger,
 		protected readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		protected readonly DevicesModels\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
 		protected readonly DevicesModels\Devices\Properties\PropertiesManager $devicesPropertiesManager,
 		protected readonly DevicesUtilities\Database $databaseHelper,
-		private readonly NsPanel\Logger $logger,
 	)
 	{
 	}
@@ -77,7 +77,7 @@ final class StoreThirdPartyDevice implements Queue\Consumer
 				'Device could not be loaded',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'store-sub-device-message-consumer',
+					'type' => 'store-third-party-device-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
 					],

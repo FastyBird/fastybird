@@ -47,15 +47,15 @@ final class StoreSubDevice implements Queue\Consumer
 	use Nette\SmartObject;
 
 	public function __construct(
-		protected readonly DevicesModels\Devices\DevicesManager $devicesManager,
+		protected readonly NsPanel\Logger $logger,
+		protected readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		protected readonly DevicesModels\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
 		protected readonly DevicesModels\Devices\Properties\PropertiesManager $devicesPropertiesManager,
 		protected readonly DevicesUtilities\Database $databaseHelper,
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
-		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Devices\DevicesManager $devicesManager,
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		private readonly DevicesModels\Channels\ChannelsManager $channelsManager,
-		private readonly NsPanel\Logger $logger,
 	)
 	{
 	}

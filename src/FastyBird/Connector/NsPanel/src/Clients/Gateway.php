@@ -68,12 +68,13 @@ final class Gateway implements Client
 	/** @var array<string, array<string, DateTimeInterface|bool>> */
 	private array $processedDevicesCommands = [];
 
-	private API\LanApi $lanApiApi;
+	private API\LanApi $lanApi;
 
 	private EventLoop\TimerInterface|null $handlerTimer = null;
 
 	public function __construct(
 		private readonly Entities\NsPanelConnector $connector,
+		API\LanApiFactory $lanApiFactory,
 		private readonly Queue\Queue $queue,
 		private readonly Helpers\Entity $entityHelper,
 		private readonly NsPanel\Logger $logger,
@@ -81,10 +82,9 @@ final class Gateway implements Client
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
-		API\LanApiFactory $lanApiApiFactory,
 	)
 	{
-		$this->lanApiApi = $lanApiApiFactory->create(
+		$this->lanApi = $lanApiFactory->create(
 			$this->connector->getIdentifier(),
 		);
 	}
@@ -207,7 +207,7 @@ final class Gateway implements Client
 		$this->processedDevicesCommands[$gateway->getIdentifier()][self::CMD_HEARTBEAT] = $this->dateTimeFactory->getNow();
 
 		try {
-			$this->lanApiApi->getGatewayInfo($gateway->getIpAddress())
+			$this->lanApi->getGatewayInfo($gateway->getIpAddress())
 				->then(function () use ($gateway): void {
 					$this->processedDevicesCommands[$gateway->getIdentifier()][self::CMD_HEARTBEAT] = $this->dateTimeFactory->getNow();
 
@@ -355,7 +355,7 @@ final class Gateway implements Client
 		$this->processedDevicesCommands[$gateway->getIdentifier()][self::CMD_STATE] = $this->dateTimeFactory->getNow();
 
 		try {
-			$this->lanApiApi->getSubDevices($gateway->getIpAddress(), $gateway->getAccessToken())
+			$this->lanApi->getSubDevices($gateway->getIpAddress(), $gateway->getAccessToken())
 				->then(function (Entities\API\Response\GetSubDevices $subDevices) use ($gateway): void {
 					$this->processedDevicesCommands[$gateway->getIdentifier()][self::CMD_STATE] = $this->dateTimeFactory->getNow();
 

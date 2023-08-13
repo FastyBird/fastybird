@@ -39,7 +39,7 @@ use function array_merge;
 use function strval;
 
 /**
- * Write third-party device state to hardware message consumer
+ * Write state to third-party device message consumer
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Consumers
@@ -56,16 +56,15 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 
 	public function __construct(
 		protected readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
-		protected readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStateManager,
+		protected readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
 		private readonly Queue\Queue $queue,
 		private readonly API\LanApiFactory $lanApiApiFactory,
 		private readonly Helpers\Entity $entityHelper,
+		private readonly NsPanel\Logger $logger,
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
-		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
-		private readonly NsPanel\Logger $logger,
 	)
 	{
 	}
@@ -286,10 +285,10 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 
 					foreach ($channel->getProperties() as $property) {
 						if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
-							$state = $this->channelPropertiesStates->getValue($property);
+							$state = $this->channelPropertiesStatesManager->getValue($property);
 
 							if ($state?->getExpectedValue() !== null) {
-								$this->channelPropertiesStateManager->setValue(
+								$this->channelPropertiesStatesManager->setValue(
 									$property,
 									Utils\ArrayHash::from([
 										DevicesStates\Property::PENDING_KEY => $now->format(DateTimeInterface::ATOM),
@@ -302,7 +301,7 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 				->otherwise(function (Throwable $ex) use ($entity, $connector, $device, $channel): void {
 					foreach ($channel->getProperties() as $property) {
 						if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
-							$this->channelPropertiesStateManager->setValue(
+							$this->channelPropertiesStatesManager->setValue(
 								$property,
 								Utils\ArrayHash::from([
 									DevicesStates\Property::EXPECTED_VALUE_KEY => null,
@@ -322,7 +321,7 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 								'body' => $ex->getRequest()?->getBody()->getContents(),
 							],
 							'response' => [
-								'body' => $ex->getRequest()?->getBody()->getContents(),
+								'body' => $ex->getResponse()?->getBody()->getContents(),
 							],
 						];
 

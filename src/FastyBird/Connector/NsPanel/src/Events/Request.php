@@ -29,7 +29,9 @@ use Symfony\Contracts\EventDispatcher;
 class Request extends EventDispatcher\Event
 {
 
-	public function __construct(private readonly ServerRequestInterface $request)
+	public function __construct(
+		private readonly ServerRequestInterface $request,
+	)
 	{
 	}
 

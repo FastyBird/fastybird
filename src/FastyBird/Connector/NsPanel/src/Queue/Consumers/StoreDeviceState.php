@@ -58,7 +58,7 @@ final class StoreDeviceState implements Queue\Consumer
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly DevicesModels\Channels\Properties\PropertiesManager $channelsPropertiesManager,
-		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStateManager,
+		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
 		private readonly ExchangeEntities\EntityFactory $entityFactory,
 		private readonly ExchangePublisher\Publisher $publisher,
 	)
@@ -175,7 +175,7 @@ final class StoreDeviceState implements Queue\Consumer
 				continue;
 			}
 
-			$this->channelPropertiesStateManager->writeValue(
+			$this->channelPropertiesStatesManager->writeValue(
 				$property,
 				Utils\ArrayHash::from([
 					DevicesStates\Property::ACTUAL_VALUE_KEY => Helpers\Transformer::transformValueFromDevice(
@@ -306,7 +306,7 @@ final class StoreDeviceState implements Queue\Consumer
 				),
 			);
 		} else {
-			$this->channelPropertiesStateManager->writeValue(
+			$this->channelPropertiesStatesManager->writeValue(
 				$property,
 				Utils\ArrayHash::from([
 					DevicesStates\Property::EXPECTED_VALUE_KEY => $value,

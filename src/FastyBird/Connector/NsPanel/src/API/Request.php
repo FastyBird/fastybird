@@ -44,7 +44,7 @@ class Request extends Psr7\Request
 	)
 	{
 		try {
-			parent::__construct($method, $uri, $headers, $body);
+			parent::__construct($method, $uri, $headers ?? [], $body);
 		} catch (InvalidArgumentException $ex) {
 			throw new Exceptions\InvalidArgument('Request could not be created', $ex->getCode(), $ex);
 		}

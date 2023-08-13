@@ -19,7 +19,7 @@ use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use Ramsey\Uuid;
 
 /**
- * Write update device state to hardware message entity
+ * Write updated device state to hardware message entity
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Entities

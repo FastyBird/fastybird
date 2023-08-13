@@ -29,7 +29,6 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use Nette;
-use React\EventLoop;
 use React\Promise;
 use Throwable;
 use function array_key_exists;
@@ -51,16 +50,13 @@ final class Discovery implements Evenement\EventEmitterInterface
 	use Nette\SmartObject;
 	use Evenement\EventEmitterTrait;
 
-	private EventLoop\TimerInterface|null $handlerTimer = null;
-
 	public function __construct(
 		private readonly Entities\NsPanelConnector $connector,
-		private readonly API\LanApiFactory $lanApiApiFactory,
+		private readonly API\LanApiFactory $lanApiFactory,
 		private readonly Queue\Queue $queue,
 		private readonly Helpers\Entity $entityHelper,
 		private readonly NsPanel\Logger $logger,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
-		private readonly EventLoop\LoopInterface $eventLoop,
 	)
 	{
 	}
@@ -141,10 +137,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 	public function disconnect(): void
 	{
-		if ($this->handlerTimer !== null) {
-			$this->eventLoop->cancelTimer($this->handlerTimer);
-			$this->handlerTimer = null;
-		}
+		// Nothing to do here
 	}
 
 	/**
@@ -158,7 +151,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 	{
 		$deferred = new Promise\Deferred();
 
-		$lanApiApi = $this->lanApiApiFactory->create(
+		$lanApi = $this->lanApiFactory->create(
 			$this->connector->getIdentifier(),
 		);
 
@@ -167,7 +160,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 		}
 
 		try {
-			$lanApiApi->getSubDevices(
+			$lanApi->getSubDevices(
 				$gateway->getIpAddress(),
 				$gateway->getAccessToken(),
 			)

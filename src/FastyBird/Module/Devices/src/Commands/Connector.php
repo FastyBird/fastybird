@@ -62,9 +62,9 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 
 	public const NAME = 'fb:devices-module:connector';
 
-	private const MODE_EXECUTE = 'execute';
+	public const MODE_EXECUTE = 'execute';
 
-	private const MODE_DISCOVER = 'discover';
+	public const MODE_DISCOVER = 'discover';
 
 	private const SHUTDOWN_WAITING_DELAY = 3;
 

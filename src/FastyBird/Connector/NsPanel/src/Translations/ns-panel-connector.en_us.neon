@@ -122,13 +122,13 @@ cmd:
                 missing: "Connector identifier have to be provided."
             create:
                 success: "Connector \"%name%\" was successfully created."
-                error: "Something went wrong, connector could not be created. Error was logged."
+                error: "Something went wrong, connector could not be created. An error was logged."
             update:
                 success: "Connector \"%name%\" was successfully updated."
-                error: "Something went wrong, connector could not be updated. Error was logged."
+                error: "Something went wrong, connector could not be updated. An error was logged."
             remove:
                 success: "Connector \"%name%\" was successfully removed."
-                error: "Something went wrong, connector could not be removed. Error was logged."
+                error: "Something went wrong, connector could not be removed. An error was logged."
             noConnectors: "No NS Panel connectors registered in system."
 
     devices:
@@ -208,42 +208,42 @@ cmd:
             create:
                 gateway:
                     success: "NS Panel \"%name%\" was successfully created."
-                    error: "Something went wrong, NS Panel could not be created. Error was logged."
+                    error: "Something went wrong, NS Panel could not be created. An error was logged."
                 device:
                     success: "Device \"%name%\" was successfully created."
-                    error: "Something went wrong, device could not be created. Error was logged."
+                    error: "Something went wrong, device could not be created. An error was logged."
                 capability:
                     success: "Capability \"%name%\" was successfully created."
-                    error: "Something went wrong, capability could not be created. Error was logged."
+                    error: "Something went wrong, capability could not be created. An error was logged."
                 protocol:
                     success: "Protocol \"%name%\" was successfully created."
-                    error: "Something went wrong, protocol could not be created. Error was logged."
+                    error: "Something went wrong, protocol could not be created. An error was logged."
             update:
                 gateway:
                     success: "NS Panel \"%name%\" was successfully updated."
-                    error: "Something went wrong, NS Panel could not be updated. Error was logged."
+                    error: "Something went wrong, NS Panel could not be updated. An error was logged."
                 device:
                     success: "Device \"%name%\" was successfully updated."
-                    error: "Something went wrong, device could not be updated. Error was logged."
+                    error: "Something went wrong, device could not be updated. An error was logged."
                 capability:
                     success: "Capability \"%name%\" was successfully updated."
-                    error: "Something went wrong, capability could not be updated. Error was logged."
+                    error: "Something went wrong, capability could not be updated. An error was logged."
                 protocol:
                     success: "Protocol \"%name%\" was successfully updated."
-                    error: "Something went wrong, protocol could not be updated. Error was logged."
+                    error: "Something went wrong, protocol could not be updated. An error was logged."
             remove:
                 gateway:
                     success: "NS Panel \"%name%\" was successfully removed."
-                    error: "Something went wrong, NS Panel could not be removed. Error was logged."
+                    error: "Something went wrong, NS Panel could not be removed. An error was logged."
                 device:
                     success: "Device \"%name%\" was successfully removed."
-                    error: "Something went wrong, device could not be removed. Error was logged."
+                    error: "Something went wrong, device could not be removed. An error was logged."
                 capability:
                     success: "Capability \"%name%\" was successfully removed."
-                    error: "Something went wrong, capability could not be removed. Error was logged."
+                    error: "Something went wrong, capability could not be removed. An error was logged."
                 protocol:
                     success: "Protocol \"%name%\" was successfully removed."
-                    error: "Something went wrong, protocol could not be removed. Error was logged."
+                    error: "Something went wrong, protocol could not be removed. An error was logged."
             identifier:
                 used: "This identifier is already used."
                 missing: "Identifier have to provided."
@@ -302,3 +302,4 @@ cmd:
             foundDevices: "Found %d new devices"
             noDevicesFound: "No devices were found"
             success: "Devices discovery was successfully finished"
+            error: "Devices discovery failed. An error was logged."

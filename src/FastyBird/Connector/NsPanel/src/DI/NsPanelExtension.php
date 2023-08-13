@@ -33,6 +33,7 @@ use FastyBird\Connector\NsPanel\Servers;
 use FastyBird\Connector\NsPanel\Subscribers;
 use FastyBird\Connector\NsPanel\Writers;
 use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
+use FastyBird\Library\Exchange\DI as ExchangeDI;
 use FastyBird\Module\Devices\DI as DevicesDI;
 use Nette;
 use Nette\DI;
@@ -104,7 +105,8 @@ class NsPanelExtension extends DI\CompilerExtension
 			$builder->addFactoryDefinition($this->prefix('writers.exchange'))
 				->setImplement(Writers\ExchangeFactory::class)
 				->getResultDefinition()
-				->setType(Writers\Exchange::class);
+				->setType(Writers\Exchange::class)
+				->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATE, false);
 		} elseif ($configuration->writer === Writers\Periodic::NAME) {
 			$builder->addFactoryDefinition($this->prefix('writers.periodic'))
 				->setImplement(Writers\PeriodicFactory::class)

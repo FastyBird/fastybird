@@ -75,9 +75,9 @@ final class LanApi
 	public function __construct(
 		private readonly string $identifier,
 		private readonly HttpClientFactory $httpClientFactory,
-		private readonly MetadataSchemas\Validator $schemaValidator,
 		private readonly Helpers\Entity $entityHelper,
 		private readonly NsPanel\Logger $logger,
+		private readonly MetadataSchemas\Validator $schemaValidator,
 	)
 	{
 	}

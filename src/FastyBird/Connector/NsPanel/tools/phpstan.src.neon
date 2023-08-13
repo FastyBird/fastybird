@@ -12,4 +12,3 @@ parameters:
     ignoreErrors:
         - message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given.#'
         - message: '#^Parameter \#1 \$value of function floatval expects array\|bool\|float\|int\|resource\|string\|null, mixed given.#'
-        - message: '#^Parameter \#3 \$headers of method RingCentral\\Psr7\\Request::__construct\(\) expects array, array\<string, array\<string\>\|string\>\|null given.#'

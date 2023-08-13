@@ -44,7 +44,7 @@ use function strval;
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *
  * @property-read DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository
- * @property-read DevicesUtilities\ChannelPropertiesStates $channelPropertiesStateManager
+ * @property-read DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager
  */
 trait StateWriter
 {
@@ -480,10 +480,13 @@ trait StateWriter
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	private function getPropertyValue(
-		DevicesEntities\Channels\Properties\Mapped|DevicesEntities\Channels\Properties\Variable $property,
+		DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped|DevicesEntities\Channels\Properties\Variable $property,
 	): string|int|float|bool|null
 	{
-		if ($property instanceof DevicesEntities\Channels\Properties\Mapped) {
+		if (
+			$property instanceof DevicesEntities\Channels\Properties\Dynamic
+			|| $property instanceof DevicesEntities\Channels\Properties\Mapped
+		) {
 			$actualValue = $this->getActualValue($property);
 			$expectedValue = $this->getExpectedValue($property);
 
@@ -505,7 +508,7 @@ trait StateWriter
 	private function findProtocolProperty(
 		Entities\NsPanelChannel $channel,
 		Types\Protocol $protocol,
-	): DevicesEntities\Channels\Properties\Mapped|DevicesEntities\Channels\Properties\Variable|null
+	): DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped|DevicesEntities\Channels\Properties\Variable|null
 	{
 		$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
 		$findChannelPropertyQuery->forChannel($channel);
@@ -518,7 +521,8 @@ trait StateWriter
 		}
 
 		if (
-			!$property instanceof DevicesEntities\Channels\Properties\Mapped
+			!$property instanceof DevicesEntities\Channels\Properties\Dynamic
+			&& !$property instanceof DevicesEntities\Channels\Properties\Mapped
 			&& !$property instanceof DevicesEntities\Channels\Properties\Variable
 		) {
 			return null;
@@ -536,7 +540,7 @@ trait StateWriter
 		DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped $property,
 	): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
 	{
-		return $this->channelPropertiesStateManager->readValue($property)?->getActualValue();
+		return $this->channelPropertiesStatesManager->readValue($property)?->getActualValue();
 	}
 
 	/**
@@ -548,7 +552,7 @@ trait StateWriter
 		DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped $property,
 	): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
 	{
-		return $this->channelPropertiesStateManager->readValue($property)?->getExpectedValue();
+		return $this->channelPropertiesStatesManager->readValue($property)?->getExpectedValue();
 	}
 
 }
