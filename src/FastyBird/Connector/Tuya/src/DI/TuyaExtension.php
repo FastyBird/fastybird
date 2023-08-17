@@ -114,12 +114,11 @@ class TuyaExtension extends DI\CompilerExtension
 		 * CLIENTS
 		 */
 
-		$datagramFactory = $builder->addDefinition(
+		$builder->addDefinition(
 			$this->prefix('clients.datagramFactory'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Clients\DatagramFactory::class)
-			->setAutowired(false);
+			->setType(Clients\DatagramFactory::class);
 
 		$builder->addFactoryDefinition($this->prefix('clients.local'))
 			->setImplement(Clients\LocalFactory::class)
@@ -142,7 +141,6 @@ class TuyaExtension extends DI\CompilerExtension
 			->getResultDefinition()
 			->setType(Clients\Discovery::class)
 			->setArguments([
-				'datagramFactory' => $datagramFactory,
 				'logger' => $logger,
 			]);
 
@@ -156,19 +154,17 @@ class TuyaExtension extends DI\CompilerExtension
 		$builder->addDefinition($this->prefix('api.connectionsManager'), new DI\Definitions\ServiceDefinition())
 			->setType(API\ConnectionManager::class);
 
-		$socketClientFactory = $builder->addDefinition(
+		$builder->addDefinition(
 			$this->prefix('api.socketClientFactory'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(API\SocketClientFactory::class)
-			->setAutowired(false);
+			->setType(API\SocketClientFactory::class);
 
-		$webSocketClientFactory = $builder->addDefinition(
+		$builder->addDefinition(
 			$this->prefix('api.webSocketClientFactory'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(API\WebSocketClientFactory::class)
-			->setAutowired(false);
+			->setType(API\WebSocketClientFactory::class);
 
 		$builder->addFactoryDefinition($this->prefix('api.openApi'))
 			->setImplement(API\OpenApiFactory::class)
@@ -183,7 +179,6 @@ class TuyaExtension extends DI\CompilerExtension
 			->getResultDefinition()
 			->setType(API\OpenPulsar::class)
 			->setArguments([
-				'webSocketClientFactory' => $webSocketClientFactory,
 				'logger' => $logger,
 			]);
 
@@ -192,7 +187,6 @@ class TuyaExtension extends DI\CompilerExtension
 			->getResultDefinition()
 			->setType(API\LocalApi::class)
 			->setArguments([
-				'socketClientFactory' => $socketClientFactory,
 				'logger' => $logger,
 			]);
 
@@ -315,10 +309,7 @@ class TuyaExtension extends DI\CompilerExtension
 			->setType(Commands\Execute::class);
 
 		$builder->addDefinition($this->prefix('commands.discovery'), new DI\Definitions\ServiceDefinition())
-			->setType(Commands\Discovery::class)
-			->setArguments([
-				'logger' => $logger,
-			]);
+			->setType(Commands\Discovery::class);
 
 		/**
 		 * CONNECTOR
