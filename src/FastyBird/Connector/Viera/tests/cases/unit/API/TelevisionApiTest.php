@@ -64,7 +64,7 @@ final class TelevisionApiTest extends DbTestCase
 
 		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
 		$httpClientFactory
-			->method('createClient')
+			->method('create')
 			->willReturnCallback(
 				static function (bool $async) use ($httpClient) {
 					self::assertFalse($async);
@@ -162,7 +162,7 @@ final class TelevisionApiTest extends DbTestCase
 
 		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
 		$httpClientFactory
-			->method('createClient')
+			->method('create')
 			->willReturnCallback(
 				static function (bool $async) use ($httpClient) {
 					self::assertFalse($async);
@@ -327,7 +327,7 @@ final class TelevisionApiTest extends DbTestCase
 
 		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
 		$httpClientFactory
-			->method('createClient')
+			->method('create')
 			->willReturnCallback(
 				static function (bool $async) use ($httpClient) {
 					self::assertFalse($async);
@@ -421,7 +421,7 @@ final class TelevisionApiTest extends DbTestCase
 
 		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
 		$httpClientFactory
-			->method('createClient')
+			->method('create')
 			->willReturnCallback(
 				static function (bool $async) use ($httpClient) {
 					self::assertFalse($async);
@@ -515,7 +515,7 @@ final class TelevisionApiTest extends DbTestCase
 
 		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
 		$httpClientFactory
-			->method('createClient')
+			->method('create')
 			->willReturnCallback(
 				static function (bool $async) use ($httpClient) {
 					self::assertFalse($async);
@@ -609,7 +609,7 @@ final class TelevisionApiTest extends DbTestCase
 
 		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
 		$httpClientFactory
-			->method('createClient')
+			->method('create')
 			->willReturnCallback(
 				static function (bool $async) use ($httpClient) {
 					self::assertFalse($async);
@@ -703,7 +703,7 @@ final class TelevisionApiTest extends DbTestCase
 
 		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
 		$httpClientFactory
-			->method('createClient')
+			->method('create')
 			->willReturnCallback(
 				static function (bool $async) use ($httpClient) {
 					self::assertFalse($async);
@@ -797,7 +797,7 @@ final class TelevisionApiTest extends DbTestCase
 
 		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
 		$httpClientFactory
-			->method('createClient')
+			->method('create')
 			->willReturnCallback(
 				static function (bool $async) use ($httpClient) {
 					self::assertFalse($async);
@@ -891,7 +891,7 @@ final class TelevisionApiTest extends DbTestCase
 
 		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
 		$httpClientFactory
-			->method('createClient')
+			->method('create')
 			->willReturnCallback(
 				static function (bool $async) use ($httpClient) {
 					self::assertFalse($async);

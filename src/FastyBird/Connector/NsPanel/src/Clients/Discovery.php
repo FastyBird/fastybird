@@ -203,7 +203,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 		$processedSubDevices = [];
 
 		foreach ($subDevices->getData()->getDevicesList() as $subDevice) {
-			// Ignore third-party sub devices (registered as virtual devices via connector)
+			// Ignore third-party sub-devices (registered as virtual devices via connector)
 			if ($subDevice->getThirdSerialNumber() !== null) {
 				continue;
 			}

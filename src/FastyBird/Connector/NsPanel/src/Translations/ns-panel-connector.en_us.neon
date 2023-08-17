@@ -129,7 +129,6 @@ cmd:
             remove:
                 success: "Connector \"%name%\" was successfully removed."
                 error: "Something went wrong, connector could not be removed. An error was logged."
-            noConnectors: "No NS Panel connectors registered in system."
 
     devices:
         title: "NS Panel connector - devices management"
@@ -274,7 +273,6 @@ cmd:
             connector:
                 notFound: "Connector was not found in system."
                 disabled: "Connector is disabled. Disabled connector could not be executed."
-            noConnectors: "No NS Panel connectors registered in system."
             error: "Something went wrong, connector was terminated."
 
     discovery:
@@ -296,7 +294,6 @@ cmd:
             connector:
                 notFound: "Connector was not found in system."
                 disabled: "Connector is disabled. Disabled connector could not be executed."
-            noConnectors: "No NS Panel connectors registered in system."
             starting: "Starting NS Panel connector discovery..."
             stopping: "Stopping NS Panel connector discovery..."
             foundDevices: "Found %d new devices"

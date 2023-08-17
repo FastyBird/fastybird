@@ -15,11 +15,6 @@
 
 namespace FastyBird\Connector\Tuya\Clients;
 
-use FastyBird\Connector\Tuya\Entities;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
-use FastyBird\Module\Devices\Entities as DevicesEntities;
-use React\Promise;
-
 /**
  * Base client service
  *
@@ -40,14 +35,5 @@ interface Client
 	 * Destroy servers/clients
 	 */
 	public function disconnect(): void;
-
-	/**
-	 * Write data to DPS
-	 */
-	public function writeChannelProperty(
-		Entities\TuyaDevice $device,
-		DevicesEntities\Channels\Channel $channel,
-		DevicesEntities\Channels\Properties\Dynamic|MetadataEntities\DevicesModule\ChannelDynamicProperty $property,
-	): Promise\PromiseInterface;
 
 }

@@ -32,13 +32,18 @@ class OpenPulsarEndpoint extends Consistence\Enum\Enum
 	/**
 	 * Define versions
 	 */
-	public const ENDPOINT_CHINA = 'wss://mqe.tuyacn.com:8285/';
+	public const CHINA = 'wss://mqe.tuyacn.com:8285/';
 
-	public const ENDPOINT_AMERICA = 'wss://mqe.tuyaus.com:8285/';
+	public const AMERICA = 'wss://mqe.tuyaus.com:8285/';
 
-	public const ENDPOINT_EUROPE = 'wss://mqe.tuyaeu.com:8285/';
+	public const EUROPE = 'wss://mqe.tuyaeu.com:8285/';
 
-	public const ENDPOINT_INDIA = 'wss://mqe.tuyain.com:8285/';
+	public const INDIA = 'wss://mqe.tuyain.com:8285/';
+
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
 
 	public function __toString(): string
 	{

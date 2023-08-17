@@ -32,9 +32,14 @@ class ClientMode extends Consistence\Enum\Enum
 	/**
 	 * Define versions
 	 */
-	public const MODE_LOCAL = 'local';
+	public const LOCAL = 'local';
 
-	public const MODE_CLOUD = 'cloud';
+	public const CLOUD = 'cloud';
+
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
 
 	public function __toString(): string
 	{

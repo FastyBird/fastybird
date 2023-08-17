@@ -7,7 +7,7 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:NsPanelConnector!
- * @subpackage     Consumers
+ * @subpackage     Queue
  * @since          1.0.0
  *
  * @date           18.07.23
@@ -42,7 +42,7 @@ use function strval;
  * Write state to sub-device message consumer
  *
  * @package        FastyBird:NsPanelConnector!
- * @subpackage     Consumers
+ * @subpackage     Queue
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
@@ -337,7 +337,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 					}
 
 					$this->logger->error(
-						'Could not report device state to NS Panel',
+						'Could write state to sub-device',
 						array_merge(
 							[
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
@@ -374,7 +374,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 		}
 
 		$this->logger->debug(
-			'Consumed write sub device state message',
+			'Consumed write sub-device state message',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 				'type' => 'write-sub-device-state-message-consumer',

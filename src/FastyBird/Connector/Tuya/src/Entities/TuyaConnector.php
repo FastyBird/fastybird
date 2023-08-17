@@ -30,16 +30,16 @@ use function is_string;
 class TuyaConnector extends DevicesEntities\Connectors\Connector
 {
 
-	public const CONNECTOR_TYPE = 'tuya';
+	public const TYPE = 'tuya';
 
 	public function getType(): string
 	{
-		return self::CONNECTOR_TYPE;
+		return self::TYPE;
 	}
 
 	public function getDiscriminatorName(): string
 	{
-		return self::CONNECTOR_TYPE;
+		return self::TYPE;
 	}
 
 	public function getSource(): MetadataTypes\ConnectorSource
@@ -58,7 +58,7 @@ class TuyaConnector extends DevicesEntities\Connectors\Connector
 		$property = $this->properties
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE
+				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::CLIENT_MODE
 			)
 			->first();
 
@@ -82,7 +82,7 @@ class TuyaConnector extends DevicesEntities\Connectors\Connector
 		$property = $this->properties
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::IDENTIFIER_OPENAPI_ENDPOINT
+				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::OPENAPI_ENDPOINT
 			)
 			->first();
 
@@ -94,7 +94,7 @@ class TuyaConnector extends DevicesEntities\Connectors\Connector
 			return Types\OpenApiEndpoint::get($property->getValue());
 		}
 
-		return Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::ENDPOINT_EUROPE);
+		return Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::EUROPE);
 	}
 
 	/**
@@ -107,7 +107,7 @@ class TuyaConnector extends DevicesEntities\Connectors\Connector
 		$property = $this->properties
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::IDENTIFIER_OPENPULSAR_ENDPOINT
+				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::OPENPULSAR_ENDPOINT
 			)
 			->first();
 
@@ -120,22 +120,22 @@ class TuyaConnector extends DevicesEntities\Connectors\Connector
 		}
 
 		if (
-			$this->getOpenApiEndpoint()->equalsValue(Types\OpenApiEndpoint::ENDPOINT_EUROPE)
-			|| $this->getOpenApiEndpoint()->equalsValue(Types\OpenApiEndpoint::ENDPOINT_EUROPE_MS)
+			$this->getOpenApiEndpoint()->equalsValue(Types\OpenApiEndpoint::EUROPE)
+			|| $this->getOpenApiEndpoint()->equalsValue(Types\OpenApiEndpoint::EUROPE_MS)
 		) {
-			return Types\OpenPulsarEndpoint::get(Types\OpenPulsarEndpoint::ENDPOINT_EUROPE);
+			return Types\OpenPulsarEndpoint::get(Types\OpenPulsarEndpoint::EUROPE);
 		} elseif (
-			$this->getOpenApiEndpoint()->equalsValue(Types\OpenApiEndpoint::ENDPOINT_AMERICA)
-			|| $this->getOpenApiEndpoint()->equalsValue(Types\OpenApiEndpoint::ENDPOINT_AMERICA_AZURE)
+			$this->getOpenApiEndpoint()->equalsValue(Types\OpenApiEndpoint::AMERICA)
+			|| $this->getOpenApiEndpoint()->equalsValue(Types\OpenApiEndpoint::AMERICA_AZURE)
 		) {
-			return Types\OpenPulsarEndpoint::get(Types\OpenPulsarEndpoint::ENDPOINT_AMERICA);
-		} elseif ($this->getOpenApiEndpoint()->equalsValue(Types\OpenApiEndpoint::ENDPOINT_CHINA)) {
-			return Types\OpenPulsarEndpoint::get(Types\OpenPulsarEndpoint::ENDPOINT_CHINA);
-		} elseif ($this->getOpenApiEndpoint()->equalsValue(Types\OpenApiEndpoint::ENDPOINT_INDIA)) {
-			return Types\OpenPulsarEndpoint::get(Types\OpenPulsarEndpoint::ENDPOINT_INDIA);
+			return Types\OpenPulsarEndpoint::get(Types\OpenPulsarEndpoint::AMERICA);
+		} elseif ($this->getOpenApiEndpoint()->equalsValue(Types\OpenApiEndpoint::CHINA)) {
+			return Types\OpenPulsarEndpoint::get(Types\OpenPulsarEndpoint::CHINA);
+		} elseif ($this->getOpenApiEndpoint()->equalsValue(Types\OpenApiEndpoint::INDIA)) {
+			return Types\OpenPulsarEndpoint::get(Types\OpenPulsarEndpoint::INDIA);
 		}
 
-		return Types\OpenPulsarEndpoint::get(Types\OpenPulsarEndpoint::ENDPOINT_EUROPE);
+		return Types\OpenPulsarEndpoint::get(Types\OpenPulsarEndpoint::EUROPE);
 	}
 
 	/**
@@ -148,7 +148,7 @@ class TuyaConnector extends DevicesEntities\Connectors\Connector
 		$property = $this->properties
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::IDENTIFIER_OPENPULSAR_TOPIC
+				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::OPENPULSAR_TOPIC
 			)
 			->first();
 
@@ -160,7 +160,7 @@ class TuyaConnector extends DevicesEntities\Connectors\Connector
 			return Types\OpenPulsarTopic::get($property->getValue());
 		}
 
-		return Types\OpenPulsarTopic::get(Types\OpenPulsarTopic::TOPIC_PROD);
+		return Types\OpenPulsarTopic::get(Types\OpenPulsarTopic::PROD);
 	}
 
 	/**
@@ -173,7 +173,7 @@ class TuyaConnector extends DevicesEntities\Connectors\Connector
 		$property = $this->properties
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::IDENTIFIER_ACCESS_ID
+				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::ACCESS_ID
 			)
 			->first();
 
@@ -197,7 +197,7 @@ class TuyaConnector extends DevicesEntities\Connectors\Connector
 		$property = $this->properties
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::IDENTIFIER_ACCESS_SECRET
+				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::ACCESS_SECRET
 			)
 			->first();
 
@@ -221,7 +221,7 @@ class TuyaConnector extends DevicesEntities\Connectors\Connector
 		$property = $this->properties
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::IDENTIFIER_UID
+				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::UID
 			)
 			->first();
 

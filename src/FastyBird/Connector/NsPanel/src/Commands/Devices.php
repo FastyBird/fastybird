@@ -402,8 +402,7 @@ class Devices extends Console\Command\Command
 
 		$panelInfo = $this->askWhichPanel($io, $connector, $gateway);
 
-		/** @var DevicesQueries\FindDeviceProperties<DevicesEntities\Devices\Properties\Variable> $findDevicePropertyQuery */
-		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+		$findDevicePropertyQuery = new DevicesQueries\FindDeviceVariableProperties();
 		$findDevicePropertyQuery->forDevice($gateway);
 		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IP_ADDRESS);
 
@@ -412,8 +411,7 @@ class Devices extends Console\Command\Command
 			DevicesEntities\Devices\Properties\Variable::class,
 		);
 
-		/** @var DevicesQueries\FindDeviceProperties<DevicesEntities\Devices\Properties\Variable> $findDevicePropertyQuery */
-		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+		$findDevicePropertyQuery = new DevicesQueries\FindDeviceVariableProperties();
 		$findDevicePropertyQuery->forDevice($gateway);
 		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::DOMAIN);
 
@@ -422,8 +420,7 @@ class Devices extends Console\Command\Command
 			DevicesEntities\Devices\Properties\Variable::class,
 		);
 
-		/** @var DevicesQueries\FindDeviceProperties<DevicesEntities\Devices\Properties\Variable> $findDevicePropertyQuery */
-		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+		$findDevicePropertyQuery = new DevicesQueries\FindDeviceVariableProperties();
 		$findDevicePropertyQuery->forDevice($gateway);
 		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::MAC_ADDRESS);
 
@@ -432,8 +429,7 @@ class Devices extends Console\Command\Command
 			DevicesEntities\Devices\Properties\Variable::class,
 		);
 
-		/** @var DevicesQueries\FindDeviceProperties<DevicesEntities\Devices\Properties\Variable> $findDevicePropertyQuery */
-		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+		$findDevicePropertyQuery = new DevicesQueries\FindDeviceVariableProperties();
 		$findDevicePropertyQuery->forDevice($gateway);
 		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::FIRMWARE_VERSION);
 
@@ -509,8 +505,7 @@ class Devices extends Console\Command\Command
 			}
 		}
 
-		/** @var DevicesQueries\FindDeviceProperties<DevicesEntities\Devices\Properties\Variable> $findDevicePropertyQuery */
-		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+		$findDevicePropertyQuery = new DevicesQueries\FindDeviceVariableProperties();
 		$findDevicePropertyQuery->forDevice($gateway);
 		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::ACCESS_TOKEN);
 
@@ -729,8 +724,7 @@ class Devices extends Console\Command\Command
 		]);
 
 		foreach ($devices as $index => $device) {
-			/** @var DevicesQueries\FindDeviceProperties<DevicesEntities\Devices\Properties\Variable> $findDevicePropertyQuery */
-			$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+			$findDevicePropertyQuery = new DevicesQueries\FindDeviceVariableProperties();
 			$findDevicePropertyQuery->forDevice($device);
 			$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IP_ADDRESS);
 

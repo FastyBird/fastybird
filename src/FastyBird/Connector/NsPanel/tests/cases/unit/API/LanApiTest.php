@@ -74,7 +74,7 @@ final class LanApiTest extends DbTestCase
 
 		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
 		$httpClientFactory
-			->method('createClient')
+			->method('create')
 			->willReturn($httpClient);
 
 		$this->mockContainerService(
@@ -160,7 +160,7 @@ final class LanApiTest extends DbTestCase
 
 		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
 		$httpClientFactory
-			->method('createClient')
+			->method('create')
 			->willReturn($httpClient);
 
 		$this->mockContainerService(
@@ -248,7 +248,7 @@ final class LanApiTest extends DbTestCase
 
 		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
 		$httpClientFactory
-			->method('createClient')
+			->method('create')
 			->willReturn($httpClient);
 
 		$this->mockContainerService(
@@ -361,7 +361,7 @@ final class LanApiTest extends DbTestCase
 
 		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
 		$httpClientFactory
-			->method('createClient')
+			->method('create')
 			->willReturn($httpClient);
 
 		$this->mockContainerService(
@@ -511,7 +511,7 @@ final class LanApiTest extends DbTestCase
 
 		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
 		$httpClientFactory
-			->method('createClient')
+			->method('create')
 			->willReturn($httpClient);
 
 		$this->mockContainerService(
@@ -634,7 +634,7 @@ final class LanApiTest extends DbTestCase
 
 		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
 		$httpClientFactory
-			->method('createClient')
+			->method('create')
 			->willReturn($httpClient);
 
 		$this->mockContainerService(
@@ -721,7 +721,7 @@ final class LanApiTest extends DbTestCase
 
 		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
 		$httpClientFactory
-			->method('createClient')
+			->method('create')
 			->willReturn($httpClient);
 
 		$this->mockContainerService(
@@ -844,7 +844,7 @@ final class LanApiTest extends DbTestCase
 
 		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
 		$httpClientFactory
-			->method('createClient')
+			->method('create')
 			->willReturn($httpClient);
 
 		$this->mockContainerService(

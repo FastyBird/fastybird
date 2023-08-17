@@ -146,6 +146,9 @@ class NsPanelExtension extends DI\CompilerExtension
 		 * API
 		 */
 
+		$builder->addDefinition($this->prefix('api.httpClient'), new DI\Definitions\ServiceDefinition())
+			->setType(API\HttpClientFactory::class);
+
 		$builder->addFactoryDefinition($this->prefix('api.lanApi'))
 			->setImplement(API\LanApiFactory::class)
 			->getResultDefinition()
@@ -153,9 +156,6 @@ class NsPanelExtension extends DI\CompilerExtension
 			->setArguments([
 				'logger' => $logger,
 			]);
-
-		$builder->addDefinition($this->prefix('api.httpClient'), new DI\Definitions\ServiceDefinition())
-			->setType(API\HttpClientFactory::class);
 
 		$builder->addFactoryDefinition($this->prefix('server.http'))
 			->setImplement(Servers\HttpFactory::class)

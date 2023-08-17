@@ -15,6 +15,8 @@
 
 namespace FastyBird\Connector\Tuya\Entities\Clients;
 
+use Orisai\ObjectMapper;
+
 /**
  * Tuya base client entity interface
  *
@@ -23,7 +25,7 @@ namespace FastyBird\Connector\Tuya\Entities\Clients;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-interface Entity
+interface Entity extends ObjectMapper\MappedObject
 {
 
 	/**

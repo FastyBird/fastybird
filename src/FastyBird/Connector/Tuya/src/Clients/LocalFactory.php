@@ -29,7 +29,7 @@ use FastyBird\Connector\Tuya\Types;
 interface LocalFactory extends ClientFactory
 {
 
-	public const MODE = Types\ClientMode::MODE_LOCAL;
+	public const MODE = Types\ClientMode::LOCAL;
 
 	public function create(Entities\TuyaConnector $connector): Local;
 

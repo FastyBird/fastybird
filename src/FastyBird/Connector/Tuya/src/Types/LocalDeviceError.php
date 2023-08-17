@@ -32,9 +32,14 @@ class LocalDeviceError extends Consistence\Enum\Enum
 	/**
 	 * Define codes
 	 */
-	public const ERR_PAYLOAD = 'payload';
+	public const PAYLOAD = 'payload';
 
-	public const ERR_DEVICE_TYPE = 'device_type';
+	public const DEVICE_TYPE = 'device_type';
+
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
 
 	public function __toString(): string
 	{

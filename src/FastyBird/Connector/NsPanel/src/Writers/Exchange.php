@@ -18,6 +18,7 @@ namespace FastyBird\Connector\NsPanel\Writers;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
+use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
@@ -25,9 +26,7 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
-use function assert;
 
 /**
  * Exchange based properties writer
@@ -81,10 +80,10 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 			|| $entity instanceof MetadataEntities\DevicesModule\ChannelMappedProperty
 			|| $entity instanceof MetadataEntities\DevicesModule\ChannelVariableProperty
 		) {
-			$findChannelQuery = new DevicesQueries\FindChannels();
+			$findChannelQuery = new Queries\FindChannels();
 			$findChannelQuery->byId($entity->getChannel());
 
-			$channel = $this->channelsRepository->findOneBy($findChannelQuery);
+			$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\NsPanelChannel::class);
 
 			if ($channel === null) {
 				return;
@@ -97,8 +96,6 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 			}
 
 			if ($device instanceof Entities\Devices\SubDevice) {
-				assert($channel instanceof Entities\NsPanelChannel);
-
 				if (
 					(
 						$entity instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty
@@ -115,8 +112,6 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 				$this->writeSubDeviceChannelProperty($device, $channel);
 
 			} elseif ($device instanceof Entities\Devices\ThirdPartyDevice) {
-				assert($channel instanceof Entities\NsPanelChannel);
-
 				if (
 					(
 						$entity instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty

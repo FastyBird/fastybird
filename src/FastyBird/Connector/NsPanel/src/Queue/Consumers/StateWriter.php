@@ -7,7 +7,7 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:NsPanelConnector!
- * @subpackage     Clients
+ * @subpackage     Queue
  * @since          1.0.0
  *
  * @date           16.07.23
@@ -39,7 +39,7 @@ use function strval;
  * Third-party device & sub-device property to state mapper
  *
  * @package        FastyBird:NsPanelConnector!
- * @subpackage     Clients
+ * @subpackage     Queue
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *

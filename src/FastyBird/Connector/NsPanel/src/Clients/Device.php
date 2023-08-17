@@ -30,6 +30,7 @@ use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use Nette;
+use Nette\Utils;
 use React\Promise;
 use Throwable;
 use function array_diff;
@@ -122,11 +123,11 @@ final class Device implements Client
 				}
 
 				if (
-					!$categoriesMetadata[$device->getDisplayCategory()->getValue()] instanceof Nette\Utils\ArrayHash
+					!$categoriesMetadata[$device->getDisplayCategory()->getValue()] instanceof Utils\ArrayHash
 					|| !$categoriesMetadata[$device->getDisplayCategory()->getValue()]->offsetExists('capabilities')
 					|| !$categoriesMetadata[$device->getDisplayCategory()->getValue()]->offsetGet(
 						'capabilities',
-					) instanceof Nette\Utils\ArrayHash
+					) instanceof Utils\ArrayHash
 				) {
 					throw new DevicesExceptions\Terminate('Connector configuration is corrupted');
 				}

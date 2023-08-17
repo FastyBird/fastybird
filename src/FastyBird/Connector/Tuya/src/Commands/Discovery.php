@@ -16,36 +16,29 @@
 namespace FastyBird\Connector\Tuya\Commands;
 
 use DateTimeInterface;
-use FastyBird\Connector\Tuya\Clients;
-use FastyBird\Connector\Tuya\Consumers;
 use FastyBird\Connector\Tuya\Entities;
-use FastyBird\Connector\Tuya\Types;
+use FastyBird\Connector\Tuya\Exceptions;
+use FastyBird\Connector\Tuya\Queries;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Module\Devices\Entities as DevicesEntities;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Module\Devices\Commands as DevicesCommands;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
-use Psr\Log;
+use Nette\Localization;
 use Ramsey\Uuid;
-use React\EventLoop;
 use Symfony\Component\Console;
 use Symfony\Component\Console\Input;
 use Symfony\Component\Console\Output;
 use Symfony\Component\Console\Style;
-use Throwable;
+use function array_key_exists;
 use function array_key_first;
 use function array_search;
 use function array_values;
 use function assert;
 use function count;
-use function intval;
 use function is_string;
-use function React\Async\async;
 use function sprintf;
 use function usort;
-use const SIGINT;
 
 /**
  * Connector devices discovery command
@@ -60,29 +53,13 @@ class Discovery extends Console\Command\Command
 
 	public const NAME = 'fb:tuya-connector:discover';
 
-	private const DISCOVERY_WAITING_INTERVAL = 5.0;
-
-	private const DISCOVERY_MAX_PROCESSING_INTERVAL = 60.0;
-
-	private const QUEUE_PROCESSING_INTERVAL = 0.01;
-
 	private DateTimeInterface|null $executedTime = null;
 
-	private EventLoop\TimerInterface|null $consumerTimer = null;
-
-	private EventLoop\TimerInterface|null $progressBarTimer;
-
-	private Clients\Discovery|null $client = null;
-
 	public function __construct(
-		private readonly Clients\DiscoveryFactory $clientFactory,
-		private readonly Consumers\Messages $consumer,
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
-		private readonly DevicesModels\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
-		private readonly EventLoop\LoopInterface $eventLoop,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
+		private readonly Localization\Translator $translator,
 		string|null $name = null,
 	)
 	{
@@ -103,7 +80,7 @@ class Discovery extends Console\Command\Command
 						'connector',
 						'c',
 						Input\InputOption::VALUE_OPTIONAL,
-						'Run devices module connector',
+						'Connector ID or identifier',
 						true,
 					),
 				]),
@@ -111,20 +88,29 @@ class Discovery extends Console\Command\Command
 	}
 
 	/**
+	 * @throws Console\Exception\ExceptionInterface
 	 * @throws Console\Exception\InvalidArgumentException
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
 	 */
 	protected function execute(Input\InputInterface $input, Output\OutputInterface $output): int
 	{
+		$symfonyApp = $this->getApplication();
+
+		if ($symfonyApp === null) {
+			return Console\Command\Command::FAILURE;
+		}
+
 		$io = new Style\SymfonyStyle($input, $output);
 
-		$io->title('Tuya connector - discovery');
+		$io->title($this->translator->translate('//tuya-connector.cmd.discovery.title'));
 
-		$io->note('This action will run connector devices discovery.');
+		$io->note($this->translator->translate('//tuya-connector.cmd.discovery.subtitle'));
 
 		if ($input->getOption('no-interaction') === false) {
 			$question = new Console\Question\ConfirmationQuestion(
-				'Would you like to continue?',
+				$this->translator->translate('//tuya-connector.cmd.base.questions.continue'),
 				false,
 			);
 
@@ -142,7 +128,7 @@ class Discovery extends Console\Command\Command
 		) {
 			$connectorId = $input->getOption('connector');
 
-			$findConnectorQuery = new DevicesQueries\FindConnectors();
+			$findConnectorQuery = new Queries\FindConnectors();
 
 			if (Uuid\Uuid::isValid($connectorId)) {
 				$findConnectorQuery->byId(Uuid\Uuid::fromString($connectorId));
@@ -151,17 +137,18 @@ class Discovery extends Console\Command\Command
 			}
 
 			$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\TuyaConnector::class);
-			assert($connector instanceof Entities\TuyaConnector || $connector === null);
 
 			if ($connector === null) {
-				$io->warning('Connector was not found in system');
+				$io->warning(
+					$this->translator->translate('//tuya-connector.cmd.discovery.messages.connector.notFound'),
+				);
 
 				return Console\Command\Command::FAILURE;
 			}
 		} else {
 			$connectors = [];
 
-			$findConnectorsQuery = new DevicesQueries\FindConnectors();
+			$findConnectorsQuery = new Queries\FindConnectors();
 
 			$systemConnectors = $this->connectorsRepository->findAllBy(
 				$findConnectorsQuery,
@@ -170,18 +157,16 @@ class Discovery extends Console\Command\Command
 			usort(
 				$systemConnectors,
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Connectors\Connector $a, DevicesEntities\Connectors\Connector $b): int => $a->getIdentifier() <=> $b->getIdentifier()
+				static fn (Entities\TuyaConnector $a, Entities\TuyaConnector $b): int => $a->getIdentifier() <=> $b->getIdentifier()
 			);
 
 			foreach ($systemConnectors as $connector) {
-				assert($connector instanceof Entities\TuyaConnector);
-
 				$connectors[$connector->getIdentifier()] = $connector->getIdentifier()
 					. ($connector->getName() !== null ? ' [' . $connector->getName() . ']' : '');
 			}
 
 			if (count($connectors) === 0) {
-				$io->warning('No connectors registered in system');
+				$io->warning($this->translator->translate('//tuya-connector.cmd.base.messages.noConnectors'));
 
 				return Console\Command\Command::FAILURE;
 			}
@@ -189,26 +174,27 @@ class Discovery extends Console\Command\Command
 			if (count($connectors) === 1) {
 				$connectorIdentifier = array_key_first($connectors);
 
-				$findConnectorQuery = new DevicesQueries\FindConnectors();
+				$findConnectorQuery = new Queries\FindConnectors();
 				$findConnectorQuery->byIdentifier($connectorIdentifier);
 
 				$connector = $this->connectorsRepository->findOneBy(
 					$findConnectorQuery,
 					Entities\TuyaConnector::class,
 				);
-				assert($connector instanceof Entities\TuyaConnector || $connector === null);
 
 				if ($connector === null) {
-					$io->warning('Connector was not found in system');
+					$io->warning(
+						$this->translator->translate('//tuya-connector.cmd.discovery.messages.connector.notFound'),
+					);
 
 					return Console\Command\Command::FAILURE;
 				}
 
 				if ($input->getOption('no-interaction') === false) {
 					$question = new Console\Question\ConfirmationQuestion(
-						sprintf(
-							'Would you like to discover devices with "%s" connector',
-							$connector->getName() ?? $connector->getIdentifier(),
+						$this->translator->translate(
+							'//tuya-connector.cmd.discovery.questions.execute',
+							['connector' => $connector->getName() ?? $connector->getIdentifier()],
 						),
 						false,
 					);
@@ -219,285 +205,155 @@ class Discovery extends Console\Command\Command
 				}
 			} else {
 				$question = new Console\Question\ChoiceQuestion(
-					'Please select connector to perform discovery',
+					$this->translator->translate('//tuya-connector.cmd.discovery.questions.select.connector'),
 					array_values($connectors),
 				);
-
-				$question->setErrorMessage('Selected connector: %s is not valid.');
-
-				$connectorIdentifier = array_search($io->askQuestion($question), $connectors, true);
-
-				if ($connectorIdentifier === false) {
-					$io->error('Something went wrong, connector could not be loaded');
-
-					$this->logger->alert(
-						'Could not read connector identifier from console answer',
-						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-							'type' => 'discovery-cmd',
-						],
-					);
-
-					return Console\Command\Command::FAILURE;
-				}
-
-				$findConnectorQuery = new DevicesQueries\FindConnectors();
-				$findConnectorQuery->byIdentifier($connectorIdentifier);
-
-				$connector = $this->connectorsRepository->findOneBy(
-					$findConnectorQuery,
-					Entities\TuyaConnector::class,
+				$question->setErrorMessage(
+					$this->translator->translate('//tuya-connector.cmd.base.messages.answerNotValid'),
 				);
-				assert($connector instanceof Entities\TuyaConnector || $connector === null);
-			}
+				$question->setValidator(
+					function (string|int|null $answer) use ($connectors): Entities\TuyaConnector {
+						if ($answer === null) {
+							throw new Exceptions\Runtime(
+								sprintf(
+									$this->translator->translate(
+										'//tuya-connector.cmd.base.messages.answerNotValid',
+									),
+									$answer,
+								),
+							);
+						}
 
-			if ($connector === null) {
-				$io->error('Something went wrong, connector could not be loaded');
+						if (array_key_exists($answer, array_values($connectors))) {
+							$answer = array_values($connectors)[$answer];
+						}
 
-				$this->logger->alert(
-					'Connector was not found',
-					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-						'type' => 'discovery-cmd',
-					],
+						$identifier = array_search($answer, $connectors, true);
+
+						if ($identifier !== false) {
+							$findConnectorQuery = new Queries\FindConnectors();
+							$findConnectorQuery->byIdentifier($identifier);
+
+							$connector = $this->connectorsRepository->findOneBy(
+								$findConnectorQuery,
+								Entities\TuyaConnector::class,
+							);
+
+							if ($connector !== null) {
+								return $connector;
+							}
+						}
+
+						throw new Exceptions\Runtime(
+							sprintf(
+								$this->translator->translate('//tuya-connector.cmd.base.messages.answerNotValid'),
+								$answer,
+							),
+						);
+					},
 				);
 
-				return Console\Command\Command::FAILURE;
+				$connector = $io->askQuestion($question);
+				assert($connector instanceof Entities\TuyaConnector);
 			}
 		}
 
 		if (!$connector->isEnabled()) {
-			$io->warning('Connector is disabled. Disabled connector could not be executed');
+			$io->warning(
+				$this->translator->translate('//tuya-connector.cmd.discovery.messages.connector.disabled'),
+			);
 
 			return Console\Command\Command::SUCCESS;
 		}
 
-		$this->client = $this->clientFactory->create($connector);
+		$this->executedTime = $this->dateTimeFactory->getNow();
 
-		$progressBar = new Console\Helper\ProgressBar(
-			$output,
-			intval(self::DISCOVERY_MAX_PROCESSING_INTERVAL * 60),
-		);
+		$serviceCmd = $symfonyApp->find(DevicesCommands\Connector::NAME);
 
-		$progressBar->setFormat('[%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s% %');
+		$result = $serviceCmd->run(new Input\ArrayInput([
+			'--connector' => $connector->getId()->toString(),
+			'--mode' => DevicesCommands\Connector::MODE_DISCOVER,
+			'--no-interaction' => true,
+			'--quiet' => true,
+		]), $output);
 
-		try {
-			$this->eventLoop->addSignal(SIGINT, function () use ($io): void {
-				$this->logger->info(
-					'Stopping Tuya connector discovery...',
-					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-						'type' => 'discovery-cmd',
-					],
-				);
+		if ($result !== Console\Command\Command::SUCCESS) {
+			$io->error($this->translator->translate('//tuya-connector.cmd.execute.messages.error'));
 
-				$io->info('Stopping Tuya connector discovery...');
+			return Console\Command\Command::FAILURE;
+		}
 
-				$this->client?->disconnect();
+		$this->showResults($io, $output, $connector);
 
-				$this->checkAndTerminate();
-			});
+		return Console\Command\Command::SUCCESS;
+	}
 
-			$this->eventLoop->futureTick(
-				async(function () use ($io, $progressBar): void {
-					$this->logger->info(
-						'Starting Tuya connector discovery...',
-						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-							'type' => 'discovery-cmd',
-						],
-					);
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	private function showResults(
+		Style\SymfonyStyle $io,
+		Output\OutputInterface $output,
+		Entities\TuyaConnector $connector,
+	): void
+	{
+		$io->newLine();
 
-					$io->info('Starting Tuya connector discovery...');
+		$table = new Console\Helper\Table($output);
+		$table->setHeaders([
+			'#',
+			$this->translator->translate('//tuya-connector.cmd.discovery.data.id'),
+			$this->translator->translate('//tuya-connector.cmd.discovery.data.name'),
+			$this->translator->translate('//tuya-connector.cmd.discovery.data.type'),
+			$this->translator->translate('//tuya-connector.cmd.discovery.data.ipAddress'),
+		]);
 
-					$progressBar->start();
+		$foundDevices = 0;
 
-					$this->executedTime = $this->dateTimeFactory->getNow();
+		$findDevicesQuery = new Queries\FindDevices();
+		$findDevicesQuery->byConnectorId($connector->getId());
 
-					$this->client?->on('finished', function (): void {
-						$this->client?->disconnect();
+		$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\TuyaDevice::class);
 
-						$this->checkAndTerminate();
-					});
+		foreach ($devices as $device) {
+			$createdAt = $device->getCreatedAt();
 
-					$this->client?->discover();
-				}),
-			);
+			if (
+				$createdAt !== null
+				&& $this->executedTime !== null
+				&& $createdAt->getTimestamp() > $this->executedTime->getTimestamp()
+			) {
+				$foundDevices++;
 
-			$this->consumerTimer = $this->eventLoop->addPeriodicTimer(
-				self::QUEUE_PROCESSING_INTERVAL,
-				async(function (): void {
-					$this->consumer->consume();
-				}),
-			);
+				$table->addRow([
+					$foundDevices,
+					$device->getId()->toString(),
+					$device->getName() ?? $device->getIdentifier(),
+					$device->getModel() ?? 'N/A',
+					$device->getIpAddress() ?? 'N/A',
+				]);
+			}
+		}
 
-			$this->progressBarTimer = $this->eventLoop->addPeriodicTimer(
-				0.1,
-				async(static function () use ($progressBar): void {
-					$progressBar->advance();
-				}),
-			);
+		if ($foundDevices > 0) {
+			$io->newLine();
 
-			$this->eventLoop->addTimer(
-				self::DISCOVERY_MAX_PROCESSING_INTERVAL,
-				async(function (): void {
-					$this->client?->disconnect();
+			$io->info(sprintf(
+				$this->translator->translate('//tuya-connector.cmd.discovery.messages.foundDevices'),
+				$foundDevices,
+			));
 
-					$this->checkAndTerminate();
-				}),
-			);
-
-			$this->eventLoop->run();
-
-			$progressBar->finish();
+			$table->render();
 
 			$io->newLine();
 
-			$findDevicesQuery = new DevicesQueries\FindDevices();
-			$findDevicesQuery->byConnectorId($connector->getId());
-
-			$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\TuyaDevice::class);
-
-			$table = new Console\Helper\Table($output);
-			$table->setHeaders([
-				'#',
-				'ID',
-				'Name',
-				'Type',
-				'IP address',
-			]);
-
-			$foundDevices = 0;
-
-			foreach ($devices as $device) {
-				assert($device instanceof Entities\TuyaDevice);
-
-				$createdAt = $device->getCreatedAt();
-
-				if (
-					$createdAt !== null
-					&& $this->executedTime !== null
-					&& $createdAt->getTimestamp() > $this->executedTime->getTimestamp()
-				) {
-					$foundDevices++;
-
-					$ipAddress = $device->getIpAddress();
-
-					$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
-					$findDevicePropertyQuery->forDevice($device);
-					$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL);
-
-					$hardwareModelProperty = $this->devicePropertiesRepository->findOneBy($findDevicePropertyQuery);
-
-					$table->addRow([
-						$foundDevices,
-						$device->getPlainId(),
-						$device->getName() ?? $device->getIdentifier(),
-						$hardwareModelProperty?->getValue() ?? 'N/A',
-						$ipAddress ?? 'N/A',
-					]);
-				}
-			}
-
-			if ($foundDevices > 0) {
-				$io->newLine();
-
-				$io->info(sprintf('Found %d new devices', $foundDevices));
-
-				$table->render();
-
-				$io->newLine();
-
-			} else {
-				$io->info('No devices were found');
-			}
-
-			$io->success('Devices discovery was successfully finished');
-
-			return Console\Command\Command::SUCCESS;
-		} catch (DevicesExceptions\Terminate $ex) {
-			$this->logger->error(
-				'An error occurred',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-					'type' => 'discovery-cmd',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
-				],
-			);
-
-			$io->error('Something went wrong, discovery could not be finished. Error was logged.');
-
-			$this->client->disconnect();
-
-			$this->eventLoop->stop();
-
-			return Console\Command\Command::FAILURE;
-		} catch (Throwable $ex) {
-			$this->logger->error(
-				'An unhandled error occurred',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-					'type' => 'discovery-cmd',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
-				],
-			);
-
-			$io->error('Something went wrong, discovery could not be finished. Error was logged.');
-
-			$this->client->disconnect();
-
-			$this->eventLoop->stop();
-
-			return Console\Command\Command::FAILURE;
-		}
-	}
-
-	private function checkAndTerminate(): void
-	{
-		if ($this->consumer->isEmpty()) {
-			if ($this->consumerTimer !== null) {
-				$this->eventLoop->cancelTimer($this->consumerTimer);
-			}
-
-			if ($this->progressBarTimer !== null) {
-				$this->eventLoop->cancelTimer($this->progressBarTimer);
-			}
-
-			$this->eventLoop->stop();
-
 		} else {
-			if (
-				$this->executedTime !== null
-				&& $this->dateTimeFactory->getNow()->getTimestamp() - $this->executedTime->getTimestamp() > self::DISCOVERY_MAX_PROCESSING_INTERVAL
-			) {
-				$this->logger->error(
-					'Discovery exceeded reserved time and have been terminated',
-					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-						'type' => 'discovery-cmd',
-					],
-				);
-
-				if ($this->consumerTimer !== null) {
-					$this->eventLoop->cancelTimer($this->consumerTimer);
-				}
-
-				if ($this->progressBarTimer !== null) {
-					$this->eventLoop->cancelTimer($this->progressBarTimer);
-				}
-
-				$this->eventLoop->stop();
-
-				return;
-			}
-
-			$this->eventLoop->addTimer(
-				self::DISCOVERY_WAITING_INTERVAL,
-				async(function (): void {
-					$this->checkAndTerminate();
-				}),
-			);
+			$io->info($this->translator->translate('//tuya-connector.cmd.discovery.messages.noDevicesFound'));
 		}
+
+		$io->success($this->translator->translate('//tuya-connector.cmd.discovery.messages.success'));
 	}
 
 }

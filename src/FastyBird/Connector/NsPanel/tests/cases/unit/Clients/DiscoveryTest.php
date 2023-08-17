@@ -67,7 +67,7 @@ final class DiscoveryTest extends DbTestCase
 
 		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
 		$httpClientFactory
-			->method('createClient')
+			->method('create')
 			->willReturn($httpClient);
 
 		$this->mockContainerService(

@@ -32,9 +32,14 @@ class OpenPulsarTopic extends Consistence\Enum\Enum
 	/**
 	 * Define versions
 	 */
-	public const TOPIC_PROD = 'event';
+	public const PROD = 'event';
 
-	public const TOPIC_TEST = 'event-test';
+	public const TEST = 'event-test';
+
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
 
 	public function __toString(): string
 	{

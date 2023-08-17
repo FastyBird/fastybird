@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\Tuya\Entities\API;
 
-use Nette;
+use Orisai\ObjectMapper;
 
 /**
  * OpenAPI device specifications function entity
@@ -28,11 +28,12 @@ use Nette;
 final class DeviceSpecificationFunction implements Entity
 {
 
-	use Nette\SmartObject;
-
 	public function __construct(
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $code,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $type,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $values,
 	)
 	{

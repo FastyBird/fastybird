@@ -97,9 +97,9 @@ final class DiscoveryTest extends DbTestCase
 				}),
 			);
 
-		$multicastFactory = $this->createMock(Multicast\Factory::class);
+		$multicastFactory = $this->createMock(Clients\MulticastFactory::class);
 		$multicastFactory
-			->method('createSender')
+			->method('create')
 			->willReturn($sender);
 
 		$this->mockContainerService(
@@ -173,7 +173,7 @@ final class DiscoveryTest extends DbTestCase
 
 		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
 		$httpClientFactory
-			->method('createClient')
+			->method('create')
 			->willReturnCallback(
 				static function (bool $async) use ($httpAsyncClient, $httpSyncClient) {
 					if ($async) {
@@ -224,7 +224,12 @@ final class DiscoveryTest extends DbTestCase
 			)
 			->willReturn($socketConnectorPromise);
 
-		$this->mockContainerService(Socket\Connector::class, $socketConnector);
+		$socketClientFactory = $this->createMock(API\SocketClientFactory::class);
+		$socketClientFactory
+			->method('create')
+			->willReturn($socketConnector);
+
+		$this->mockContainerService(API\SocketClientFactory::class, $socketClientFactory);
 
 		$connectorsRepository = $this->getContainer()->getByType(DevicesModels\Connectors\ConnectorsRepository::class);
 

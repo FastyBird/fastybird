@@ -15,8 +15,8 @@
 
 namespace FastyBird\Connector\Tuya\API;
 
-use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Types;
+use FastyBird\Connector\Tuya\ValueObjects;
 
 /**
  * Local device API factory
@@ -30,7 +30,7 @@ interface LocalApiFactory
 {
 
 	/**
-	 * @param array<Entities\Clients\LocalChild> $children
+	 * @param array<ValueObjects\LocalChild> $children
 	 */
 	public function create(
 		string $identifier,

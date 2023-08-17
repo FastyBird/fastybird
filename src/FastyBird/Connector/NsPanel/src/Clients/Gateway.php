@@ -84,9 +84,7 @@ final class Gateway implements Client
 		private readonly EventLoop\LoopInterface $eventLoop,
 	)
 	{
-		$this->lanApi = $lanApiFactory->create(
-			$this->connector->getIdentifier(),
-		);
+		$this->lanApi = $lanApiFactory->create($this->connector->getIdentifier());
 	}
 
 	public function connect(): void
@@ -187,12 +185,12 @@ final class Gateway implements Client
 			return true;
 		}
 
-		if (!array_key_exists($gateway->getIdentifier(), $this->processedDevicesCommands)) {
-			$this->processedDevicesCommands[$gateway->getIdentifier()] = [];
+		if (!array_key_exists($gateway->getId()->toString(), $this->processedDevicesCommands)) {
+			$this->processedDevicesCommands[$gateway->getId()->toString()] = [];
 		}
 
-		if (array_key_exists(self::CMD_HEARTBEAT, $this->processedDevicesCommands[$gateway->getIdentifier()])) {
-			$cmdResult = $this->processedDevicesCommands[$gateway->getIdentifier()][self::CMD_HEARTBEAT];
+		if (array_key_exists(self::CMD_HEARTBEAT, $this->processedDevicesCommands[$gateway->getId()->toString()])) {
+			$cmdResult = $this->processedDevicesCommands[$gateway->getId()->toString()][self::CMD_HEARTBEAT];
 
 			if (
 				$cmdResult instanceof DateTimeInterface
@@ -204,12 +202,12 @@ final class Gateway implements Client
 			}
 		}
 
-		$this->processedDevicesCommands[$gateway->getIdentifier()][self::CMD_HEARTBEAT] = $this->dateTimeFactory->getNow();
+		$this->processedDevicesCommands[$gateway->getId()->toString()][self::CMD_HEARTBEAT] = $this->dateTimeFactory->getNow();
 
 		try {
 			$this->lanApi->getGatewayInfo($gateway->getIpAddress())
 				->then(function () use ($gateway): void {
-					$this->processedDevicesCommands[$gateway->getIdentifier()][self::CMD_HEARTBEAT] = $this->dateTimeFactory->getNow();
+					$this->processedDevicesCommands[$gateway->getId()->toString()][self::CMD_HEARTBEAT] = $this->dateTimeFactory->getNow();
 
 					$this->queue->append(
 						$this->entityHelper->create(
@@ -335,12 +333,12 @@ final class Gateway implements Client
 			return true;
 		}
 
-		if (!array_key_exists($gateway->getIdentifier(), $this->processedDevicesCommands)) {
-			$this->processedDevicesCommands[$gateway->getIdentifier()] = [];
+		if (!array_key_exists($gateway->getId()->toString(), $this->processedDevicesCommands)) {
+			$this->processedDevicesCommands[$gateway->getId()->toString()] = [];
 		}
 
-		if (array_key_exists(self::CMD_STATE, $this->processedDevicesCommands[$gateway->getIdentifier()])) {
-			$cmdResult = $this->processedDevicesCommands[$gateway->getIdentifier()][self::CMD_STATE];
+		if (array_key_exists(self::CMD_STATE, $this->processedDevicesCommands[$gateway->getId()->toString()])) {
+			$cmdResult = $this->processedDevicesCommands[$gateway->getId()->toString()][self::CMD_STATE];
 
 			if (
 				$cmdResult instanceof DateTimeInterface
@@ -352,12 +350,12 @@ final class Gateway implements Client
 			}
 		}
 
-		$this->processedDevicesCommands[$gateway->getIdentifier()][self::CMD_STATE] = $this->dateTimeFactory->getNow();
+		$this->processedDevicesCommands[$gateway->getId()->toString()][self::CMD_STATE] = $this->dateTimeFactory->getNow();
 
 		try {
 			$this->lanApi->getSubDevices($gateway->getIpAddress(), $gateway->getAccessToken())
 				->then(function (Entities\API\Response\GetSubDevices $subDevices) use ($gateway): void {
-					$this->processedDevicesCommands[$gateway->getIdentifier()][self::CMD_STATE] = $this->dateTimeFactory->getNow();
+					$this->processedDevicesCommands[$gateway->getId()->toString()][self::CMD_STATE] = $this->dateTimeFactory->getNow();
 
 					$this->queue->append(
 						$this->entityHelper->create(

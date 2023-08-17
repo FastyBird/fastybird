@@ -20,21 +20,18 @@ use Evenement;
 use FastyBird\Connector\Tuya;
 use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Exceptions;
+use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use InvalidArgumentException;
 use Nette;
 use Nette\Utils;
-use Psr\Log;
 use Ratchet;
 use Ratchet\RFC6455;
 use React\EventLoop;
 use React\Promise;
-use React\Socket;
 use Throwable;
 use function array_keys;
 use function base64_decode;
@@ -88,22 +85,24 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 		private readonly string $identifier,
 		private readonly string $accessId,
 		private readonly string $accessSecret,
+		private readonly Helpers\Entity $entityHelper,
 		private readonly Types\OpenPulsarTopic $topic,
 		private readonly Types\OpenPulsarEndpoint $endpoint,
+		private readonly Tuya\Logger $logger,
+		private readonly WebSocketClientFactory $webSocketClientFactory,
 		private readonly MetadataSchemas\Validator $schemaValidator,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
 	}
 
-	/**
-	 * @throws InvalidArgumentException
-	 * @throws MetadataExceptions\InvalidArgument
-	 */
 	public function connect(): Promise\PromiseInterface
 	{
+		if ($this->isConnected()) {
+			return Promise\resolve();
+		}
+
 		$this->pingTimer = null;
 
 		$this->wsConnection = null;
@@ -114,30 +113,13 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 		$this->lost = null;
 		$this->disconnected = null;
 
-		$reactConnector = new Socket\Connector([
-			'dns' => '8.8.8.8',
-			'timeout' => 10,
-			'tls' => [
-				'verify_peer' => false,
-				'verify_peer_name' => false,
-				'check_hostname' => false,
-			],
-		]);
-
-		$connector = new Ratchet\Client\Connector($this->eventLoop, $reactConnector);
-
 		$deferred = new Promise\Deferred();
 
-		try {
-			$connector(
-				$this->buildWsTopicUrl(),
-				[],
-				[
-					'Connection' => 'Upgrade',
-					'username' => $this->accessId,
-					'password' => $this->generatePassword(),
-				],
-			)
+		$this->webSocketClientFactory->create(
+			$this->buildWsTopicUrl(),
+			$this->accessId,
+			$this->generatePassword(),
+		)
 			->then(function (Ratchet\Client\WebSocket $connection) use ($deferred): void {
 				$this->wsConnection = $connection;
 				$this->connecting = false;
@@ -158,22 +140,14 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 				);
 
 				$connection->on('message', function (RFC6455\Messaging\MessageInterface $message): void {
-					$this->handleWsMessage($message->getPayload());
+					try {
+						$this->handleWsMessage($message->getPayload());
+					} catch (Exceptions\OpenPulsarError $ex) {
+						$this->emit('error', [$ex]);
+					}
 				});
 
 				$connection->on('error', function (Throwable $ex): void {
-					$this->logger->error(
-						'An error occurred on WS server connection',
-						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-							'type' => 'openpulsar-api',
-							'exception' => BootstrapHelpers\Logger::buildException($ex),
-							'connector' => [
-								'identifier' => $this->identifier,
-							],
-						],
-					);
-
 					$this->lost();
 
 					$this->emit('error', [$ex]);
@@ -216,49 +190,15 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 				$deferred->resolve();
 			})
 			->otherwise(function (Throwable $ex) use ($deferred): void {
-				$this->logger->error(
-					'Connection to Tuya WS server failed',
-					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-						'type' => 'openpulsar-api',
-						'exception' => BootstrapHelpers\Logger::buildException($ex),
-						'connector' => [
-							'identifier' => $this->identifier,
-						],
-					],
-				);
-
 				$this->wsConnection = null;
 
 				$this->connecting = false;
 				$this->connected = false;
 
-				$this->emit('error', [$ex]);
-
-				$deferred->reject($ex);
+				$deferred->reject(
+					new Exceptions\OpenPulsarError('Connection to Tuya WS server failed', $ex->getCode(), $ex),
+				);
 			});
-		} catch (Throwable $ex) {
-			$this->wsConnection = null;
-
-			$this->connecting = false;
-			$this->connected = false;
-
-			$this->logger->error(
-				'Connection to Tuya WS could not be created',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-					'type' => 'ws-api',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
-					'connector' => [
-						'identifier' => $this->identifier,
-					],
-				],
-			);
-
-			$this->emit('error', [$ex]);
-
-			$deferred->reject($ex);
-		}
 
 		return $deferred->promise();
 	}
@@ -315,34 +255,18 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\OpenPulsarError
 	 */
 	private function handleWsMessage(string $message): void
 	{
 		try {
 			$message = $this->schemaValidator->validate(
 				$message,
-				$this->getSchemaFilePath(self::WS_MESSAGE_SCHEMA_FILENAME),
+				$this->getSchema(self::WS_MESSAGE_SCHEMA_FILENAME),
 			);
 
-		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData | Exceptions\OpenPulsarHandle $ex) {
-			$this->logger->error(
-				'Could not decode received Tuya WS message',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-					'type' => 'openpulsar-api',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
-					'data' => [
-						'message' => $message,
-						'schema' => self::WS_MESSAGE_SCHEMA_FILENAME,
-					],
-					'connector' => [
-						'identifier' => $this->identifier,
-					],
-				],
-			);
-
-			return;
+		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData | Exceptions\OpenPulsarError $ex) {
+			throw new Exceptions\OpenPulsarError('Could not decode received Tuya WS message', $ex->getCode(), $ex);
 		}
 
 		if ($this->wsConnection !== null && $message->offsetExists('messageId')) {
@@ -354,53 +278,18 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 				$this->wsConnection->send(Utils\Json::encode(['messageId' => $message->offsetGet('messageId')]));
 
 			} catch (Utils\JsonException $ex) {
-				$this->logger->error(
-					'Could not confirm received Tuya WS message',
-					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-						'type' => 'openpulsar-api',
-						'exception' => BootstrapHelpers\Logger::buildException($ex),
-						'data' => [
-							'message' => $message,
-						],
-						'connector' => [
-							'identifier' => $this->identifier,
-						],
-					],
-				);
+				throw new Exceptions\OpenPulsarError('Could not confirm received Tuya WS message', $ex->getCode(), $ex);
 			}
 		}
 
 		if (!$message->offsetExists('payload')) {
-			$this->logger->error(
-				'Received Tuya WS message is invalid',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-					'type' => 'openpulsar-api',
-					'connector' => [
-						'identifier' => $this->identifier,
-					],
-				],
-			);
-
-			return;
+			throw new Exceptions\OpenPulsarError('Received Tuya WS message is invalid');
 		}
 
 		$payload = base64_decode(strval($message->offsetGet('payload')), true);
 
 		if ($payload === false) {
-			$this->logger->error(
-				'Received Tuya WS message payload could not be decoded',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-					'type' => 'openpulsar-api',
-					'connector' => [
-						'identifier' => $this->identifier,
-					],
-				],
-			);
-
-			return;
+			throw new Exceptions\OpenPulsarError('Received Tuya WS message payload could not be decoded');
 		}
 
 		$this->logger->debug(
@@ -420,59 +309,25 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 		try {
 			$payload = $this->schemaValidator->validate(
 				$payload,
-				$this->getSchemaFilePath(self::WS_MESSAGE_PAYLOAD_SCHEMA_FILENAME),
+				$this->getSchema(self::WS_MESSAGE_PAYLOAD_SCHEMA_FILENAME),
 			);
 
-		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData | Exceptions\OpenPulsarHandle $ex) {
-			$this->logger->error(
+		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData | Exceptions\OpenPulsarError $ex) {
+			throw new Exceptions\OpenPulsarError(
 				'Could not decode received Tuya WS message payload',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-					'type' => 'openpulsar-api',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
-					'data' => [
-						'payload' => $payload,
-						'schema' => self::WS_MESSAGE_PAYLOAD_SCHEMA_FILENAME,
-					],
-					'connector' => [
-						'identifier' => $this->identifier,
-					],
-				],
+				$ex->getCode(),
+				$ex,
 			);
-
-			return;
 		}
 
 		if (!$payload->offsetExists('data')) {
-			$this->logger->error(
-				'Received Tuya WS message payload is invalid',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-					'type' => 'openpulsar-api',
-					'connector' => [
-						'identifier' => $this->identifier,
-					],
-				],
-			);
-
-			return;
+			throw new Exceptions\OpenPulsarError('Could not decode received Tuya WS message payload');
 		}
 
 		$data = base64_decode(strval($payload->offsetGet('data')), true);
 
 		if ($data === false) {
-			$this->logger->error(
-				'Received Tuya WS message payload data could not be decoded',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-					'type' => 'openpulsar-api',
-					'connector' => [
-						'identifier' => $this->identifier,
-					],
-				],
-			);
-
-			return;
+			throw new Exceptions\OpenPulsarError('Received Tuya WS message payload data could not be decoded');
 		}
 
 		$decodingKey = Utils\Strings::substring($this->accessSecret, 8, 16);
@@ -485,18 +340,7 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 		);
 
 		if ($decryptedData === false) {
-			$this->logger->error(
-				'Received Tuya WS message payload data could not be decrypted',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-					'type' => 'openpulsar-api',
-					'connector' => [
-						'identifier' => $this->identifier,
-					],
-				],
-			);
-
-			return;
+			throw new Exceptions\OpenPulsarError('Received Tuya WS message payload data could not be decrypted');
 		}
 
 		$this->logger->debug(
@@ -514,27 +358,15 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 		try {
 			$decryptedData = $this->schemaValidator->validate(
 				$decryptedData,
-				$this->getSchemaFilePath(self::WS_MESSAGE_PAYLOAD_DATA_SCHEMA_FILENAME),
+				$this->getSchema(self::WS_MESSAGE_PAYLOAD_DATA_SCHEMA_FILENAME),
 			);
 
-		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData | Exceptions\OpenPulsarHandle $ex) {
-			$this->logger->error(
+		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData | Exceptions\OpenPulsarError $ex) {
+			throw new Exceptions\OpenPulsarError(
 				'Could not decode received Tuya WS message payload data decrypted',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-					'type' => 'openpulsar-api',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
-					'data' => [
-						'data' => $decryptedData,
-						'schema' => self::WS_MESSAGE_PAYLOAD_DATA_SCHEMA_FILENAME,
-					],
-					'connector' => [
-						'identifier' => $this->identifier,
-					],
-				],
+				$ex->getCode(),
+				$ex,
 			);
-
-			return;
 		}
 
 		if (
@@ -554,14 +386,15 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 				}
 
 				if (is_string($status->value) || is_bool($status->value) || is_numeric($status->value)) {
-					$dataPointsStatus = EntityFactory::build(
-						Entities\API\DataPointStatus::class,
-						$status,
-					);
+					$dataPointsStatus = [
+						'code' => $status->offsetGet('code'),
+						'value' => $status->offsetGet('value'),
+						'dps' => $status->offsetExists('dps') ? $status->offsetGet('dps') : null,
+					];
 
 					foreach (array_keys((array) $status) as $key) {
 						if (is_numeric($key)) {
-							$dataPointsStatus->setDps(strval($key));
+							$dataPointsStatus['dps'] = strval($key);
 						}
 					}
 
@@ -569,15 +402,26 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 				}
 			}
 
-			$this->emit(
-				'message',
-				[
-					new Entities\API\DeviceStatus(
-						$decryptedData->devId,
-						$dataPointsStatuses,
-					),
-				],
-			);
+			try {
+				$this->emit(
+					'message',
+					[
+						$this->entityHelper->create(
+							Entities\API\ReportDeviceState::class,
+							[
+								'identifier' => $decryptedData->devId,
+								'data_points' => $dataPointsStatuses,
+							],
+						),
+					],
+				);
+			} catch (Exceptions\Runtime $ex) {
+				throw new Exceptions\OpenPulsarError(
+					'An error occurred, received device data points status could not be converted to entity',
+					$ex->getCode(),
+					$ex,
+				);
+			}
 
 			return;
 		}
@@ -585,25 +429,32 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 		if (
 			$decryptedData->offsetExists('bizCode')
 			&& (
-				$decryptedData->offsetGet('bizCode') === Types\OpenPulsarMessageType::BIZ_CODE_ONLINE
-				|| $decryptedData->offsetGet('bizCode') === Types\OpenPulsarMessageType::BIZ_CODE_OFFLINE
+				$decryptedData->offsetGet('bizCode') === Types\OpenPulsarMessageType::ONLINE
+				|| $decryptedData->offsetGet('bizCode') === Types\OpenPulsarMessageType::OFFLINE
 			)
 		) {
-			$this->emit(
-				'message',
-				[
-					new Entities\API\DeviceState(
-						$decryptedData->devId,
-						$decryptedData->offsetGet(
-							'bizCode',
-						) === Types\OpenPulsarMessageType::BIZ_CODE_ONLINE ? MetadataTypes\ConnectionState::get(
-							MetadataTypes\ConnectionState::STATE_CONNECTED,
-						) : MetadataTypes\ConnectionState::get(
-							MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+			try {
+				$this->emit(
+					'message',
+					[
+						$this->entityHelper->create(
+							Entities\API\ReportDeviceOnline::class,
+							[
+								'identifier' => $decryptedData->devId,
+								'online' => $decryptedData->offsetGet(
+									'bizCode',
+								) === Types\OpenPulsarMessageType::ONLINE,
+							],
 						),
-					),
-				],
-			);
+					],
+				);
+			} catch (Exceptions\Runtime $ex) {
+				throw new Exceptions\OpenPulsarError(
+					'An error occurred, received device online status could not be converted to entity',
+					$ex->getCode(),
+					$ex,
+				);
+			}
 		}
 	}
 
@@ -622,9 +473,9 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @throws Exceptions\OpenPulsarHandle
+	 * @throws Exceptions\OpenPulsarError
 	 */
-	private function getSchemaFilePath(string $schemaFilename): string
+	private function getSchema(string $schemaFilename): string
 	{
 		try {
 			$schema = Utils\FileSystem::read(
@@ -632,7 +483,7 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 			);
 
 		} catch (Nette\IOException) {
-			throw new Exceptions\OpenPulsarHandle('Validation schema for response could not be loaded');
+			throw new Exceptions\OpenPulsarError('Validation schema for response could not be loaded');
 		}
 
 		return $schema;
