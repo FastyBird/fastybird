@@ -2,7 +2,6 @@
 
 namespace FastyBird\Connector\Viera\Tests\Cases\Unit\Clients;
 
-use Clue\React\Multicast;
 use Error;
 use FastyBird\Connector\Viera\API;
 use FastyBird\Connector\Viera\Clients;
