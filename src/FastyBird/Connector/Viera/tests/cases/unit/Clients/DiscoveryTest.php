@@ -9,7 +9,7 @@ use FastyBird\Connector\Viera\Entities;
 use FastyBird\Connector\Viera\Exceptions;
 use FastyBird\Connector\Viera\Queries;
 use FastyBird\Connector\Viera\Queue;
-use FastyBird\Connector\Viera\Tests\Cases\Unit\DbTestCase;
+use FastyBird\Connector\Viera\Tests;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -25,7 +25,7 @@ use React\Socket;
 use RuntimeException;
 use function strval;
 
-final class DiscoveryTest extends DbTestCase
+final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**
