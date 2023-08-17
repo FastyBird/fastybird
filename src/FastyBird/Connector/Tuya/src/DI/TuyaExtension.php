@@ -114,11 +114,12 @@ class TuyaExtension extends DI\CompilerExtension
 		 * CLIENTS
 		 */
 
-		$builder->addDefinition(
+		$datagramFactory = $builder->addDefinition(
 			$this->prefix('clients.datagramFactory'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Clients\DatagramFactory::class);
+			->setType(Clients\DatagramFactory::class)
+			->setAutowired(false);
 
 		$builder->addFactoryDefinition($this->prefix('clients.local'))
 			->setImplement(Clients\LocalFactory::class)
@@ -141,6 +142,7 @@ class TuyaExtension extends DI\CompilerExtension
 			->getResultDefinition()
 			->setType(Clients\Discovery::class)
 			->setArguments([
+				'datagramFactory' => $datagramFactory,
 				'logger' => $logger,
 			]);
 
@@ -154,13 +156,13 @@ class TuyaExtension extends DI\CompilerExtension
 		$builder->addDefinition($this->prefix('api.connectionsManager'), new DI\Definitions\ServiceDefinition())
 			->setType(API\ConnectionManager::class);
 
-		$builder->addDefinition(
+		$socketClientFactory = $builder->addDefinition(
 			$this->prefix('api.socketClientFactory'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(API\SocketClientFactory::class);
 
-		$builder->addDefinition(
+		$webSocketClientFactory = $builder->addDefinition(
 			$this->prefix('api.webSocketClientFactory'),
 			new DI\Definitions\ServiceDefinition(),
 		)
@@ -179,6 +181,7 @@ class TuyaExtension extends DI\CompilerExtension
 			->getResultDefinition()
 			->setType(API\OpenPulsar::class)
 			->setArguments([
+				'webSocketClientFactory' => $webSocketClientFactory,
 				'logger' => $logger,
 			]);
 
@@ -187,6 +190,7 @@ class TuyaExtension extends DI\CompilerExtension
 			->getResultDefinition()
 			->setType(API\LocalApi::class)
 			->setArguments([
+				'socketClientFactory' => $socketClientFactory,
 				'logger' => $logger,
 			]);
 
@@ -324,6 +328,7 @@ class TuyaExtension extends DI\CompilerExtension
 			->getResultDefinition()
 			->setType(Connector\Connector::class)
 			->setArguments([
+				'clientsFactories' => $builder->findByType(Clients\ClientFactory::class),
 				'logger' => $logger,
 			]);
 	}

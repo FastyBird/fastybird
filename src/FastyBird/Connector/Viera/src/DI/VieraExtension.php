@@ -113,11 +113,12 @@ class VieraExtension extends DI\CompilerExtension
 		 * CLIENTS
 		 */
 
-		$builder->addDefinition(
+		$multicastFactory = $builder->addDefinition(
 			$this->prefix('clients.multicastFactory'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Clients\MulticastFactory::class);
+			->setType(Clients\MulticastFactory::class)
+			->setAutowired(false);
 
 		$builder->addFactoryDefinition($this->prefix('clients.television'))
 			->setImplement(Clients\TelevisionFactory::class)
@@ -132,6 +133,7 @@ class VieraExtension extends DI\CompilerExtension
 			->getResultDefinition()
 			->setType(Clients\Discovery::class)
 			->setArguments([
+				'multicastFactory' => $multicastFactory,
 				'logger' => $logger,
 			]);
 
@@ -145,17 +147,19 @@ class VieraExtension extends DI\CompilerExtension
 		$builder->addDefinition($this->prefix('api.connectionsManager'), new DI\Definitions\ServiceDefinition())
 			->setType(API\ConnectionManager::class);
 
-		$builder->addDefinition(
+		$socketClientFactory = $builder->addDefinition(
 			$this->prefix('api.socketClientFactory'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(API\SocketClientFactory::class);
+			->setType(API\SocketClientFactory::class)
+			->setAutowired(false);
 
 		$builder->addFactoryDefinition($this->prefix('api.televisionApi'))
 			->setImplement(API\TelevisionApiFactory::class)
 			->getResultDefinition()
 			->setType(API\TelevisionApi::class)
 			->setArguments([
+				'socketClientFactory' => $socketClientFactory,
 				'logger' => $logger,
 			]);
 

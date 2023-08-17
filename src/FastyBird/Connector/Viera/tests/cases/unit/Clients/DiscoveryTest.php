@@ -103,7 +103,7 @@ final class DiscoveryTest extends DbTestCase
 			->willReturn($sender);
 
 		$this->mockContainerService(
-			Multicast\Factory::class,
+			Clients\MulticastFactory::class,
 			$multicastFactory,
 		);
 
