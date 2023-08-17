@@ -12,7 +12,6 @@ use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Hydrators;
 use FastyBird\Connector\NsPanel\Middleware;
 use FastyBird\Connector\NsPanel\Queue;
-use FastyBird\Connector\NsPanel\Router;
 use FastyBird\Connector\NsPanel\Schemas;
 use FastyBird\Connector\NsPanel\Servers;
 use FastyBird\Connector\NsPanel\Subscribers;
@@ -69,8 +68,6 @@ final class NsPanelExtensionTest extends Tests\Cases\Unit\BaseTestCase
 
 		self::assertNotNull($container->getByType(Helpers\Loader::class, false));
 		self::assertNotNull($container->getByType(Helpers\Entity::class, false));
-
-		self::assertNotNull($container->getByType(Router\Router::class, false));
 
 		self::assertNotNull($container->getByType(Middleware\Router::class, false));
 
