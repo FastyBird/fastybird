@@ -42,30 +42,30 @@ final class LocalDeviceDataPoint implements Entity
 		private readonly MetadataTypes\DataType $dataType,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
-			new ObjectMapper\Rules\NullValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		private readonly string|null $unit,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
-			new ObjectMapper\Rules\NullValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		private readonly string|null $format,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\IntValue(),
 			new ObjectMapper\Rules\FloatValue(),
-			new ObjectMapper\Rules\NullValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		private readonly int|float|null $min,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\IntValue(),
 			new ObjectMapper\Rules\FloatValue(),
-			new ObjectMapper\Rules\NullValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		private readonly int|float|null $max,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\IntValue(),
 			new ObjectMapper\Rules\FloatValue(),
-			new ObjectMapper\Rules\NullValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		private readonly int|float|null $step,
 		#[ObjectMapper\Rules\BoolValue()]

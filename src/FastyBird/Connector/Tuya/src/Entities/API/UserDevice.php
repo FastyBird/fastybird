@@ -37,7 +37,7 @@ final class UserDevice implements Entity
 		private readonly string $id,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
-			new ObjectMapper\Rules\NullValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		private readonly string|null $name,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
@@ -47,18 +47,18 @@ final class UserDevice implements Entity
 		private readonly string $localKey,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
-			new ObjectMapper\Rules\NullValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		private readonly string|null $category,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
-			new ObjectMapper\Rules\NullValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('product_id')]
 		private readonly string|null $productId,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
-			new ObjectMapper\Rules\NullValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('product_name')]
 		private readonly string|null $productName,
@@ -68,7 +68,7 @@ final class UserDevice implements Entity
 		private readonly string $uuid,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
-			new ObjectMapper\Rules\NullValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('owner_id')]
 		private readonly string|null $ownerId,
@@ -80,41 +80,41 @@ final class UserDevice implements Entity
 		private readonly array $status,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\IntValue(unsigned: true),
-			new ObjectMapper\Rules\NullValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('active_time')]
 		private readonly int|null $activeTime,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\IntValue(unsigned: true),
-			new ObjectMapper\Rules\NullValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('create_time')]
 		private readonly int|null $createTime,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\IntValue(unsigned: true),
-			new ObjectMapper\Rules\NullValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('update_time')]
 		private readonly int|null $updateTime,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\IntValue(unsigned: true),
-			new ObjectMapper\Rules\NullValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('biz_type')]
 		private readonly int|null $bizType,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
-			new ObjectMapper\Rules\NullValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		private readonly string|null $icon,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
-			new ObjectMapper\Rules\NullValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		private readonly string|null $ip,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
-			new ObjectMapper\Rules\NullValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('time_zone')]
 		private readonly string|null $timeZone,

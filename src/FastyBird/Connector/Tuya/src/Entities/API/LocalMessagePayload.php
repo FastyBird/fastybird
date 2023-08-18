@@ -35,7 +35,7 @@ final class LocalMessagePayload implements Entity
 		private readonly Types\LocalDeviceCommand $command,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
-			new ObjectMapper\Rules\NullValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		private readonly string|null $payload,
 	)

@@ -33,17 +33,17 @@ final class DeviceFactoryInfos implements Entity
 		private readonly string $id,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
-			new ObjectMapper\Rules\NullValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		private readonly string|null $uuid,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
-			new ObjectMapper\Rules\NullValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		private readonly string|null $sn,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
-			new ObjectMapper\Rules\NullValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		private readonly string|null $mac,
 	)

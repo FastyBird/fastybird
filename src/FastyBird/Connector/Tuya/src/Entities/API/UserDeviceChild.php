@@ -36,17 +36,17 @@ final class UserDeviceChild implements Entity
 		private readonly string $nodeId,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
-			new ObjectMapper\Rules\NullValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		private readonly string|null $name,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
-			new ObjectMapper\Rules\NullValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		private readonly string|null $icon,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
-			new ObjectMapper\Rules\NullValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('product_id')]
 		private readonly string|null $productId,

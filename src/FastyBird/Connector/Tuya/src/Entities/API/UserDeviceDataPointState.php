@@ -40,7 +40,7 @@ final class UserDeviceDataPointState implements Entity
 		private readonly string|int|float|bool $value,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
-			new ObjectMapper\Rules\NullValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		private readonly string|null $type,
 	)

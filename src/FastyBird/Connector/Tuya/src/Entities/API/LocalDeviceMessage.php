@@ -44,7 +44,7 @@ final class LocalDeviceMessage implements Entity
 		private readonly int $sequence,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\IntValue(unsigned: true),
-			new ObjectMapper\Rules\NullValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		private readonly int|null $returnCode,
 		#[ObjectMapper\Rules\AnyOf([
@@ -53,12 +53,12 @@ final class LocalDeviceMessage implements Entity
 			new ObjectMapper\Rules\ArrayOf(
 				new ObjectMapper\Rules\MappedObjectValue(DeviceDataPointState::class),
 			),
-			new ObjectMapper\Rules\NullValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		private readonly string|array|LocalDeviceWifiScan|null $data = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\LocalDeviceError::class),
-			new ObjectMapper\Rules\NullValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		private readonly Types\LocalDeviceError|null $error = null,
 	)
