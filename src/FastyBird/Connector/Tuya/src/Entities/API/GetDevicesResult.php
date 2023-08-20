@@ -34,8 +34,10 @@ class GetDevicesResult implements Entity
 	 */
 	public function __construct(
 		#[ObjectMapper\Rules\BoolValue()]
+		#[ObjectMapper\Modifiers\FieldName('has_more')]
 		private readonly bool $hasMore,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		#[ObjectMapper\Modifiers\FieldName('last_row_key')]
 		private readonly string $lastRowKey,
 		#[ObjectMapper\Rules\IntValue(unsigned: true)]
 		private readonly int $total,

@@ -42,7 +42,7 @@ final class UserDeviceDataPointState implements Entity
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly string|null $type,
+		private readonly string|null $type = null,
 	)
 	{
 	}

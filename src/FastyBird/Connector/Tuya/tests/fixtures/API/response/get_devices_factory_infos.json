@@ -1,0 +1,19 @@
+{
+  "result": [
+    {
+      "id": "bf3e9d85a52b163f940wgx",
+      "mac": "9035eafffeb8f501",
+      "sn": "100048644013EC",
+      "uuid": "9035eafffeb8f501"
+    },
+    {
+      "id": "bfa1a65b1d7f75a9aenvkc",
+      "mac": "fc671f7db8c4",
+      "sn": "NEO2022101800100137",
+      "uuid": "52f41514cef56dbb"
+    }
+  ],
+  "success": true,
+  "t": 1692570695134,
+  "tid": "51e356fc3fa911ee9a70760d0d3c40d3"
+}

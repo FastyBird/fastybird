@@ -1,0 +1,15 @@
+{
+  "result": [
+    {
+      "code": "switch_1",
+      "value": false
+    },
+    {
+      "code": "countdown_1",
+      "value": 0
+    }
+  ],
+  "success": true,
+  "t": 1692566332768,
+  "tid": "29b69c623f9f11ee9a70760d0d3c40d3"
+}

@@ -254,7 +254,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					$client->connect();
 				}
 
-				$result = $client->setDeveceState(
+				$result = $client->setDeviceState(
 					$device->getIdentifier(),
 					$property->getIdentifier(),
 					$expectedValue,

@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Tuya\Entities\API;
 
 use Orisai\ObjectMapper;
+use function array_map;
 
 /**
  * OpenAPI get user device state entity
@@ -28,14 +29,22 @@ use Orisai\ObjectMapper;
 class GetUserDeviceState implements Entity
 {
 
+	/**
+	 * @param array<UserDeviceDataPointState> $result
+	 */
 	public function __construct(
-		#[ObjectMapper\Rules\MappedObjectValue(UserDeviceDataPointState::class)]
-		private readonly UserDeviceDataPointState $result,
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(UserDeviceDataPointState::class),
+		)]
+		private readonly array $result,
 	)
 	{
 	}
 
-	public function getResult(): UserDeviceDataPointState
+	/**
+	 * @return array<UserDeviceDataPointState>
+	 */
+	public function getResult(): array
 	{
 		return $this->result;
 	}
@@ -43,7 +52,10 @@ class GetUserDeviceState implements Entity
 	public function toArray(): array
 	{
 		return [
-			'result' => $this->getResult()->toArray(),
+			'result' => array_map(
+				static fn (UserDeviceDataPointState $status): array => $status->toArray(),
+				$this->getResult(),
+			),
 		];
 	}
 

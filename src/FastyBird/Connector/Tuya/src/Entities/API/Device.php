@@ -133,13 +133,13 @@ final class Device implements Entity
 			new ObjectMapper\Rules\IntValue(unsigned: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		#[ObjectMapper\Modifiers\FieldName('created_time')]
+		#[ObjectMapper\Modifiers\FieldName('create_time')]
 		private readonly int|null $createTime,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\IntValue(unsigned: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		#[ObjectMapper\Modifiers\FieldName('updated_time')]
+		#[ObjectMapper\Modifiers\FieldName('update_time')]
 		private readonly int|null $updateTime,
 		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $online,

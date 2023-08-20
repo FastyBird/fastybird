@@ -712,7 +712,7 @@ final class OpenApi
 	 * @throws Exceptions\OpenApiCall
 	 * @throws Exceptions\OpenApiError
 	 */
-	public function setDeveceState(
+	public function setDeviceState(
 		string $deviceId,
 		string $code,
 		string|int|float|bool $value,
