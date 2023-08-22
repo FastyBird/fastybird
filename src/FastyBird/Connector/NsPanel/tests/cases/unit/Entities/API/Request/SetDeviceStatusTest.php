@@ -4,14 +4,14 @@ namespace FastyBird\Connector\NsPanel\Tests\Cases\Unit\Entities\API\Request;
 
 use Error;
 use FastyBird\Connector\NsPanel\Entities;
-use FastyBird\Connector\NsPanel\Tests\Cases\Unit\BaseTestCase;
+use FastyBird\Connector\NsPanel\Tests;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
 use Nette;
 use Nette\Utils;
 use Orisai\ObjectMapper;
 use function assert;
 
-final class SetDeviceStatusTest extends BaseTestCase
+final class SetDeviceStatusTest extends Tests\Cases\Unit\BaseTestCase
 {
 
 	/**

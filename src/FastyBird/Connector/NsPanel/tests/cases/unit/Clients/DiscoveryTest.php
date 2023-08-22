@@ -9,7 +9,7 @@ use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Queue;
-use FastyBird\Connector\NsPanel\Tests\Cases\Unit\DbTestCase;
+use FastyBird\Connector\NsPanel\Tests;
 use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -22,7 +22,7 @@ use React;
 use React\EventLoop;
 use RuntimeException;
 
-final class DiscoveryTest extends DbTestCase
+final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**
@@ -67,7 +67,7 @@ final class DiscoveryTest extends DbTestCase
 
 		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
 		$httpClientFactory
-			->method('createClient')
+			->method('create')
 			->willReturn($httpClient);
 
 		$this->mockContainerService(

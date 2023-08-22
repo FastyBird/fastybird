@@ -1,0 +1,39 @@
+{
+  "result": {
+    "active_time": 1669988230,
+    "biz_type": 0,
+    "category": "cz",
+    "create_time": 1669988230,
+    "icon": "smart/icon/ay1559701439060fw6BY/90009dc671abcfa1541a9606196ef896.png",
+    "id": "bf3e9d85a52b163f940wgx",
+    "ip": "",
+    "lat": "49.1310",
+    "local_key": "fea74f634dc369c1",
+    "lon": "16.8096",
+    "model": "",
+    "name": "Wall socket - outdoor",
+    "node_id": "9035eafffeb8f501",
+    "online": true,
+    "owner_id": "44154302",
+    "product_id": "pnzfdr9y",
+    "product_name": "Outdoor Socket Adapter",
+    "status": [
+      {
+        "code": "switch_1",
+        "value": false
+      },
+      {
+        "code": "countdown_1",
+        "value": 0
+      }
+    ],
+    "sub": true,
+    "time_zone": "+01:00",
+    "uid": "Bjhq01pE7q4ijNMN",
+    "update_time": 1692402101,
+    "uuid": "9035eafffeb8f501"
+  },
+  "success": true,
+  "t": 1692564875472,
+  "tid": "c50e32a13f9b11ee9a70760d0d3c40d3"
+}

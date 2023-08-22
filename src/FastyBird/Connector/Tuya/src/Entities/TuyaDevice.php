@@ -39,7 +39,7 @@ class TuyaDevice extends DevicesEntities\Devices\Device
 
 	private const STATUS_READING_DELAY = 120.0;
 
-	private self|false|null $gateway = null;
+	private self|null $gateway = null;
 
 	public function getType(): string
 	{
@@ -67,7 +67,7 @@ class TuyaDevice extends DevicesEntities\Devices\Device
 		$property = $this->properties
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::IDENTIFIER_PROTOCOL_VERSION
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::PROTOCOL_VERSION
 			)
 			->first();
 
@@ -81,7 +81,7 @@ class TuyaDevice extends DevicesEntities\Devices\Device
 		throw new Exceptions\InvalidState('Device protocol version is not configured');
 	}
 
-	public function getGateway(): self|false
+	public function getGateway(): self|null
 	{
 		if ($this->gateway === null) {
 			$gateway = $this->parents
@@ -90,7 +90,7 @@ class TuyaDevice extends DevicesEntities\Devices\Device
 
 			assert($gateway instanceof self || $gateway === false);
 
-			$this->gateway = $gateway;
+			$this->gateway = $gateway !== false ? $gateway : null;
 		}
 
 		return $this->gateway;
@@ -106,7 +106,7 @@ class TuyaDevice extends DevicesEntities\Devices\Device
 		$property = $this->properties
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::IDENTIFIER_NODE_ID
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::NODE_ID
 			)
 			->first();
 
@@ -130,7 +130,7 @@ class TuyaDevice extends DevicesEntities\Devices\Device
 		$property = $this->properties
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::IDENTIFIER_GATEWAY_ID
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::GATEWAY_ID
 			)
 			->first();
 
@@ -154,7 +154,7 @@ class TuyaDevice extends DevicesEntities\Devices\Device
 		$property = $this->properties
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::IP_ADDRESS
 			)
 			->first();
 
@@ -178,7 +178,7 @@ class TuyaDevice extends DevicesEntities\Devices\Device
 		$property = $this->properties
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::IDENTIFIER_LOCAL_KEY
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::LOCAL_KEY
 			)
 			->first();
 
@@ -202,7 +202,7 @@ class TuyaDevice extends DevicesEntities\Devices\Device
 		$property = $this->properties
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::IDENTIFIER_ENCRYPTED
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::ENCRYPTED
 			)
 			->first();
 
@@ -228,7 +228,7 @@ class TuyaDevice extends DevicesEntities\Devices\Device
 		$property = $this->properties
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::IDENTIFIER_READ_STATE_EXCLUDE_DPS
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::READ_STATE_EXCLUDE_DPS
 			)
 			->first();
 
@@ -247,12 +247,60 @@ class TuyaDevice extends DevicesEntities\Devices\Device
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getStatusReadingDelay(): float
+	public function getModel(): string|null
 	{
 		$property = $this->properties
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::IDENTIFIER_STATUS_READING_DELAY
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::MODEL
+			)
+			->first();
+
+		if (
+			$property instanceof DevicesEntities\Devices\Properties\Variable
+			&& is_string($property->getValue())
+		) {
+			return $property->getValue();
+		}
+
+		return null;
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function getMacAddress(): string|null
+	{
+		$property = $this->properties
+			->filter(
+			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::MAC_ADDRESS
+			)
+			->first();
+
+		if (
+			$property instanceof DevicesEntities\Devices\Properties\Variable
+			&& is_string($property->getValue())
+		) {
+			return $property->getValue();
+		}
+
+		return null;
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function getStateReadingDelay(): float
+	{
+		$property = $this->properties
+			->filter(
+			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::STATE_READING_DELAY
 			)
 			->first();
 

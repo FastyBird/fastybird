@@ -1,0 +1,29 @@
+{
+  "result": {
+    "active_time": 1640898671,
+    "category": "kg",
+    "category_name": "Switch",
+    "create_time": 1594720605,
+    "gateway_id": "",
+    "icon": "smart/icon/ay1522655691209YPydg/15601526771def4a0a3e0.jpg",
+    "id": "402675772462ab280dae",
+    "ip": "80.78.136.56",
+    "lat": "49.1310",
+    "local_key": "YyGzzRui2Xej4D04",
+    "lon": "16.8096",
+    "model": "ATMS1601",
+    "name": "WiFi Smart Timer",
+    "online": false,
+    "owner_id": "44154302",
+    "product_id": "SJet14RibkVEZDOB",
+    "product_name": "WiFi Smart Timer",
+    "sn": "AVAH29QNK001FA",
+    "sub": false,
+    "time_zone": "+01:00",
+    "update_time": 1671125276,
+    "uuid": "402675772462ab280dae"
+  },
+  "success": true,
+  "t": 1692694794933,
+  "tid": "43208f0640ca11eea9649a766792eea9"
+}

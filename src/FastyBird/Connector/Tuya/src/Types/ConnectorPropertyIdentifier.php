@@ -32,19 +32,24 @@ class ConnectorPropertyIdentifier extends Consistence\Enum\Enum
 	/**
 	 * Define device states
 	 */
-	public const IDENTIFIER_CLIENT_MODE = 'mode';
+	public const CLIENT_MODE = 'mode';
 
-	public const IDENTIFIER_ACCESS_ID = 'access_id';
+	public const ACCESS_ID = 'access_id';
 
-	public const IDENTIFIER_ACCESS_SECRET = 'access_secret';
+	public const ACCESS_SECRET = 'access_secret';
 
-	public const IDENTIFIER_UID = 'uid';
+	public const UID = 'uid';
 
-	public const IDENTIFIER_OPENAPI_ENDPOINT = 'openapi_endpoint';
+	public const OPENAPI_ENDPOINT = 'openapi_endpoint';
 
-	public const IDENTIFIER_OPENPULSAR_ENDPOINT = 'openpulsar_endpoint';
+	public const OPENPULSAR_ENDPOINT = 'openpulsar_endpoint';
 
-	public const IDENTIFIER_OPENPULSAR_TOPIC = 'openpulsar_topic';
+	public const OPENPULSAR_TOPIC = 'openpulsar_topic';
+
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
 
 	public function __toString(): string
 	{

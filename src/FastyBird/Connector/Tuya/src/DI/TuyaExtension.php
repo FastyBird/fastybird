@@ -16,15 +16,15 @@
 namespace FastyBird\Connector\Tuya\DI;
 
 use Doctrine\Persistence;
+use FastyBird\Connector\Tuya;
 use FastyBird\Connector\Tuya\API;
 use FastyBird\Connector\Tuya\Clients;
 use FastyBird\Connector\Tuya\Commands;
 use FastyBird\Connector\Tuya\Connector;
-use FastyBird\Connector\Tuya\Consumers;
 use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Hydrators;
-use FastyBird\Connector\Tuya\Mappers;
+use FastyBird\Connector\Tuya\Queue;
 use FastyBird\Connector\Tuya\Schemas;
 use FastyBird\Connector\Tuya\Subscribers;
 use FastyBird\Connector\Tuya\Writers;
@@ -84,71 +84,49 @@ class TuyaExtension extends DI\CompilerExtension
 		$configuration = $this->getConfig();
 		assert($configuration instanceof stdClass);
 
-		$writer = null;
+		$logger = $builder->addDefinition($this->prefix('logger'), new DI\Definitions\ServiceDefinition())
+			->setType(Tuya\Logger::class)
+			->setAutowired(false);
+
+		/**
+		 * WRITERS
+		 */
 
 		if ($configuration->writer === Writers\Event::NAME) {
-			$writer = $builder->addDefinition($this->prefix('writers.event'), new DI\Definitions\ServiceDefinition())
-				->setType(Writers\Event::class)
-				->setAutowired(false);
+			$builder->addFactoryDefinition($this->prefix('writers.event'))
+				->setImplement(Writers\EventFactory::class)
+				->getResultDefinition()
+				->setType(Writers\Event::class);
 		} elseif ($configuration->writer === Writers\Exchange::NAME) {
-			$writer = $builder->addDefinition($this->prefix('writers.exchange'), new DI\Definitions\ServiceDefinition())
+			$builder->addFactoryDefinition($this->prefix('writers.exchange'))
+				->setImplement(Writers\ExchangeFactory::class)
+				->getResultDefinition()
 				->setType(Writers\Exchange::class)
-				->setAutowired(false)
 				->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATE, false);
 		} elseif ($configuration->writer === Writers\Periodic::NAME) {
-			$writer = $builder->addDefinition($this->prefix('writers.periodic'), new DI\Definitions\ServiceDefinition())
-				->setType(Writers\Periodic::class)
-				->setAutowired(false);
+			$builder->addFactoryDefinition($this->prefix('writers.periodic'))
+				->setImplement(Writers\PeriodicFactory::class)
+				->getResultDefinition()
+				->setType(Writers\Periodic::class);
 		}
 
-		$builder->addFactoryDefinition($this->prefix('api.openApi'))
-			->setImplement(API\OpenApiFactory::class)
-			->getResultDefinition()
-			->setType(API\OpenApi::class);
+		/**
+		 * CLIENTS
+		 */
 
-		$builder->addFactoryDefinition($this->prefix('api.openPulsar'))
-			->setImplement(API\OpenPulsarFactory::class)
-			->getResultDefinition()
-			->setType(API\OpenPulsar::class);
-
-		$builder->addFactoryDefinition($this->prefix('api.local'))
-			->setImplement(API\LocalApiFactory::class)
-			->getResultDefinition()
-			->setType(API\LocalApi::class);
-
-		$builder->addDefinition($this->prefix('api.httpClient'), new DI\Definitions\ServiceDefinition())
-			->setType(API\HttpClientFactory::class);
-
-		$builder->addDefinition(
-			$this->prefix('consumers.discovery.cloudDevice'),
+		$datagramFactory = $builder->addDefinition(
+			$this->prefix('clients.datagramFactory'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Consumers\Messages\CloudDiscovery::class);
-
-		$builder->addDefinition(
-			$this->prefix('consumers.discovery.localDevice'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Consumers\Messages\LocalDiscovery::class);
-
-		$builder->addDefinition($this->prefix('consumers.discovery.status'), new DI\Definitions\ServiceDefinition())
-			->setType(Consumers\Messages\Status::class);
-
-		$builder->addDefinition($this->prefix('consumers.discovery.state'), new DI\Definitions\ServiceDefinition())
-			->setType(Consumers\Messages\State::class);
-
-		$builder->addDefinition($this->prefix('consumers.messages'), new DI\Definitions\ServiceDefinition())
-			->setType(Consumers\Messages::class)
-			->setArguments([
-				'consumers' => $builder->findByType(Consumers\Consumer::class),
-			]);
+			->setType(Clients\DatagramFactory::class)
+			->setAutowired(false);
 
 		$builder->addFactoryDefinition($this->prefix('clients.local'))
 			->setImplement(Clients\LocalFactory::class)
 			->getResultDefinition()
 			->setType(Clients\Local::class)
 			->setArguments([
-				'writer' => $writer,
+				'logger' => $logger,
 			]);
 
 		$builder->addFactoryDefinition($this->prefix('clients.cloud'))
@@ -156,13 +134,137 @@ class TuyaExtension extends DI\CompilerExtension
 			->getResultDefinition()
 			->setType(Clients\Cloud::class)
 			->setArguments([
-				'writer' => $writer,
+				'logger' => $logger,
 			]);
 
 		$builder->addFactoryDefinition($this->prefix('clients.discover'))
 			->setImplement(Clients\DiscoveryFactory::class)
 			->getResultDefinition()
-			->setType(Clients\Discovery::class);
+			->setType(Clients\Discovery::class)
+			->setArguments([
+				'datagramFactory' => $datagramFactory,
+				'logger' => $logger,
+			]);
+
+		/**
+		 * API
+		 */
+
+		$builder->addDefinition($this->prefix('api.httpClientFactory'), new DI\Definitions\ServiceDefinition())
+			->setType(API\HttpClientFactory::class);
+
+		$builder->addDefinition($this->prefix('api.connectionsManager'), new DI\Definitions\ServiceDefinition())
+			->setType(API\ConnectionManager::class);
+
+		$socketClientFactory = $builder->addDefinition(
+			$this->prefix('api.socketClientFactory'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(API\SocketClientFactory::class);
+
+		$webSocketClientFactory = $builder->addDefinition(
+			$this->prefix('api.webSocketClientFactory'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(API\WebSocketClientFactory::class);
+
+		$builder->addFactoryDefinition($this->prefix('api.openApi'))
+			->setImplement(API\OpenApiFactory::class)
+			->getResultDefinition()
+			->setType(API\OpenApi::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
+
+		$builder->addFactoryDefinition($this->prefix('api.openPulsar'))
+			->setImplement(API\OpenPulsarFactory::class)
+			->getResultDefinition()
+			->setType(API\OpenPulsar::class)
+			->setArguments([
+				'webSocketClientFactory' => $webSocketClientFactory,
+				'logger' => $logger,
+			]);
+
+		$builder->addFactoryDefinition($this->prefix('api.local'))
+			->setImplement(API\LocalApiFactory::class)
+			->getResultDefinition()
+			->setType(API\LocalApi::class)
+			->setArguments([
+				'socketClientFactory' => $socketClientFactory,
+				'logger' => $logger,
+			]);
+
+		/**
+		 * MESSAGES QUEUE
+		 */
+
+		$builder->addDefinition(
+			$this->prefix('queue.consumers.store.cloudDevice'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Queue\Consumers\StoreCloudDevice::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
+
+		$builder->addDefinition(
+			$this->prefix('queue.consumers.store.localDevice'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Queue\Consumers\StoreLocalDevice::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
+
+		$builder->addDefinition(
+			$this->prefix('queue.consumers.store.deviceConnectionState'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Queue\Consumers\StoreDeviceConnectionState::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
+
+		$builder->addDefinition(
+			$this->prefix('consumers.messages.store.channelPropertyState'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Queue\Consumers\StoreChannelPropertyState::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
+
+		$builder->addDefinition(
+			$this->prefix('queue.consumers.write.channelPropertyState'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Queue\Consumers\WriteChannelPropertyState::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
+
+		$builder->addDefinition(
+			$this->prefix('queue.consumers'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Queue\Consumers::class)
+			->setArguments([
+				'consumers' => $builder->findByType(Queue\Consumer::class),
+				'logger' => $logger,
+			]);
+
+		$builder->addDefinition(
+			$this->prefix('queue.queue'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Queue\Queue::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
+
+		/**
+		 * SUBSCRIBERS
+		 */
 
 		$builder->addDefinition($this->prefix('subscribers.properties'), new DI\Definitions\ServiceDefinition())
 			->setType(Subscribers\Properties::class);
@@ -170,11 +272,19 @@ class TuyaExtension extends DI\CompilerExtension
 		$builder->addDefinition($this->prefix('subscribers.controls'), new DI\Definitions\ServiceDefinition())
 			->setType(Subscribers\Controls::class);
 
+		/**
+		 * JSON-API SCHEMAS
+		 */
+
 		$builder->addDefinition($this->prefix('schemas.connector.tuya'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\TuyaConnector::class);
 
 		$builder->addDefinition($this->prefix('schemas.device.tuya'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\TuyaDevice::class);
+
+		/**
+		 * JSON-API HYDRATORS
+		 */
 
 		$builder->addDefinition($this->prefix('hydrators.connector.tuya'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\TuyaConnector::class);
@@ -182,32 +292,45 @@ class TuyaExtension extends DI\CompilerExtension
 		$builder->addDefinition($this->prefix('hydrators.device.tuya'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\TuyaDevice::class);
 
-		$builder->addDefinition($this->prefix('helpers.property'), new DI\Definitions\ServiceDefinition())
-			->setType(Helpers\Property::class);
+		/**
+		 * HELPERS
+		 */
 
-		$builder->addDefinition($this->prefix('mappers.dataPoint'), new DI\Definitions\ServiceDefinition())
-			->setType(Mappers\DataPoint::class);
+		$builder->addDefinition($this->prefix('helpers.entity'), new DI\Definitions\ServiceDefinition())
+			->setType(Helpers\Entity::class);
 
-		$builder->addFactoryDefinition($this->prefix('executor.factory'))
+		/**
+		 * COMMANDS
+		 */
+
+		$builder->addDefinition($this->prefix('commands.initialize'), new DI\Definitions\ServiceDefinition())
+			->setType(Commands\Initialize::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
+
+		$builder->addDefinition($this->prefix('commands.execute'), new DI\Definitions\ServiceDefinition())
+			->setType(Commands\Execute::class);
+
+		$builder->addDefinition($this->prefix('commands.discovery'), new DI\Definitions\ServiceDefinition())
+			->setType(Commands\Discovery::class);
+
+		/**
+		 * CONNECTOR
+		 */
+
+		$builder->addFactoryDefinition($this->prefix('connector'))
 			->setImplement(Connector\ConnectorFactory::class)
 			->addTag(
 				DevicesDI\DevicesExtension::CONNECTOR_TYPE_TAG,
-				Entities\TuyaConnector::CONNECTOR_TYPE,
+				Entities\TuyaConnector::TYPE,
 			)
 			->getResultDefinition()
 			->setType(Connector\Connector::class)
 			->setArguments([
 				'clientsFactories' => $builder->findByType(Clients\ClientFactory::class),
+				'logger' => $logger,
 			]);
-
-		$builder->addDefinition($this->prefix('commands.initialize'), new DI\Definitions\ServiceDefinition())
-			->setType(Commands\Initialize::class);
-
-		$builder->addDefinition($this->prefix('commands.discovery'), new DI\Definitions\ServiceDefinition())
-			->setType(Commands\Discovery::class);
-
-		$builder->addDefinition($this->prefix('commands.execute'), new DI\Definitions\ServiceDefinition())
-			->setType(Commands\Execute::class);
 	}
 
 	/**

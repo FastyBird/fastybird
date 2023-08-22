@@ -32,15 +32,20 @@ class DeviceProtocolVersion extends Consistence\Enum\Enum
 	/**
 	 * Define versions
 	 */
-	public const VERSION_V31 = '3.1';
+	public const V31 = '3.1';
 
-	public const VERSION_V32 = '3.2';
+	public const V32 = '3.2';
 
-	public const VERSION_V32_PLUS = '3.2+';
+	public const V32_PLUS = '3.2+';
 
-	public const VERSION_V33 = '3.3';
+	public const V33 = '3.3';
 
-	public const VERSION_V34 = '3.4';
+	public const V34 = '3.4';
+
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
 
 	public function __toString(): string
 	{

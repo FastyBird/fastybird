@@ -15,10 +15,10 @@
 
 namespace FastyBird\Connector\Tuya\Entities\API;
 
-use Nette;
+use Orisai\ObjectMapper;
 
 /**
- * OpenAPI device children entity
+ * OpenAPI user device child entity
  *
  * @package        FastyBird:TuyaConnector!
  * @subpackage     Entities
@@ -28,14 +28,29 @@ use Nette;
 final class UserDeviceChild implements Entity
 {
 
-	use Nette\SmartObject;
-
 	public function __construct(
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $id,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		#[ObjectMapper\Modifiers\FieldName('node_id')]
 		private readonly string $nodeId,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly string|null $name,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly string|null $icon,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('product_id')]
 		private readonly string|null $productId,
+		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $online = false,
 	)
 	{

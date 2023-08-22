@@ -1,0 +1,144 @@
+{
+  "result": [
+    {
+      "active_time": 1669988230,
+      "biz_type": 0,
+      "category": "cz",
+      "create_time": 1669988230,
+      "icon": "smart/icon/ay1559701439060fw6BY/90009dc671abcfa1541a9606196ef896.png",
+      "id": "bf3e9d85a52b163f940wgx",
+      "ip": "",
+      "lat": "49.1310",
+      "local_key": "fea74f634dc369c1",
+      "lon": "16.8096",
+      "model": "",
+      "name": "Wall socket - outdoor",
+      "node_id": "9035eafffeb8f501",
+      "online": true,
+      "owner_id": "44154302",
+      "product_id": "pnzfdr9y",
+      "product_name": "Outdoor Socket Adapter",
+      "status": [
+        {
+          "code": "switch_1",
+          "value": false
+        },
+        {
+          "code": "countdown_1",
+          "value": 0
+        }
+      ],
+      "sub": true,
+      "time_zone": "+01:00",
+      "uid": "Bjhq01pE7q4ijNMN",
+      "update_time": 1692389367,
+      "uuid": "9035eafffeb8f501"
+    },
+    {
+      "active_time": 1669643113,
+      "biz_type": 0,
+      "category": "wg2",
+      "create_time": 1669392668,
+      "icon": "smart/icon/ay1503986080106Gppjy/1d241ba5f7e7b5139ee6bbf2b0eeb11b.png",
+      "id": "bfa1a65b1d7f75a9aenvkc",
+      "ip": "85.160.10.238",
+      "lat": "49.1310",
+      "local_key": "qlD53YUXfxboDFpb",
+      "lon": "16.8096",
+      "model": "NAS-ZW05B0",
+      "name": "NEO Gateway",
+      "online": true,
+      "owner_id": "44154302",
+      "product_id": "be9fookuobd9w8z3",
+      "product_name": "NEO Gateway",
+      "status": [],
+      "sub": false,
+      "time_zone": "+01:00",
+      "uid": "Bjhq01pE7q4ijNMN",
+      "update_time": 1692385165,
+      "uuid": "52f41514cef56dbb"
+    },
+    {
+      "active_time": 1669643114,
+      "biz_type": 0,
+      "category": "ldcg",
+      "create_time": 1669393353,
+      "icon": "smart/icon/ay15327721968035jwx9/9ef66b23e59bd8a8c4da13536be92eb6.png",
+      "id": "bfa51eb7b64c2f5eedradw",
+      "ip": "",
+      "lat": "49.1310",
+      "local_key": "eL255qwTWzj4tJZr",
+      "lon": "16.8096",
+      "model": "ZSS-X-THL",
+      "name": "Living room environment",
+      "node_id": "5c0272fffe037960",
+      "online": true,
+      "owner_id": "44154302",
+      "product_id": "ftdkanlj",
+      "product_name": "Luminance sensor",
+      "status": [
+        {
+          "code": "bright_value",
+          "value": 0
+        },
+        {
+          "code": "battery_percentage",
+          "value": 93
+        },
+        {
+          "code": "temp_current",
+          "value": 281
+        },
+        {
+          "code": "humidity_value",
+          "value": 518
+        },
+        {
+          "code": "bright_sensitivity",
+          "value": 10
+        }
+      ],
+      "sub": true,
+      "time_zone": "+01:00",
+      "uid": "Bjhq01pE7q4ijNMN",
+      "update_time": 1692235573,
+      "uuid": "5c0272fffe037960"
+    },
+    {
+      "active_time": 1640898671,
+      "biz_type": 0,
+      "category": "kg",
+      "create_time": 1594720605,
+      "icon": "smart/icon/ay1522655691209YPydg/15601526771def4a0a3e0.jpg",
+      "id": "402675772462ab280dae",
+      "ip": "80.78.136.56",
+      "lat": "49.1310",
+      "local_key": "YyGzzRui2Xej4D04",
+      "lon": "16.8096",
+      "model": "ATMS1601",
+      "name": "WiFi Smart Timer",
+      "online": false,
+      "owner_id": "44154302",
+      "product_id": "SJet14RibkVEZDOB",
+      "product_name": "WiFi Smart Timer",
+      "status": [
+        {
+          "code": "switch",
+          "value": true
+        },
+        {
+          "code": "countdown_1",
+          "value": 0
+        }
+      ],
+      "sub": false,
+      "time_zone": "+01:00",
+      "uid": "Bjhq01pE7q4ijNMN",
+      "update_time": 1671125276,
+      "uuid": "402675772462ab280dae"
+    }
+  ],
+  "success": true,
+  "t": 1692398127069,
+  "tid": "8706d1cb3e1711ee8298eeefa7b3467e"
+}

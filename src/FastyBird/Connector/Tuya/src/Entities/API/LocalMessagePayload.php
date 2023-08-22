@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Sign.php
+ * LocalMessagePayload.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -16,7 +16,8 @@
 namespace FastyBird\Connector\Tuya\Entities\API;
 
 use FastyBird\Connector\Tuya\Types;
-use Nette;
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use Orisai\ObjectMapper;
 
 /**
  * Local API device message entity
@@ -29,10 +30,13 @@ use Nette;
 final class LocalMessagePayload implements Entity
 {
 
-	use Nette\SmartObject;
-
 	public function __construct(
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\LocalDeviceCommand::class)]
 		private readonly Types\LocalDeviceCommand $command,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly string|null $payload,
 	)
 	{

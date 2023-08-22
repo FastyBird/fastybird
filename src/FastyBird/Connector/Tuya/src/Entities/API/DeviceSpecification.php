@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\Tuya\Entities\API;
 
-use Nette;
+use Orisai\ObjectMapper;
 use function array_map;
 
 /**
@@ -29,15 +29,20 @@ use function array_map;
 final class DeviceSpecification implements Entity
 {
 
-	use Nette\SmartObject;
-
 	/**
 	 * @param array<DeviceSpecificationFunction> $functions
-	 * @param array<DeviceSpecificationStatus> $status
+	 * @param array<DeviceSpecificationState> $status
 	 */
 	public function __construct(
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $category,
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(DeviceSpecificationFunction::class),
+		)]
 		private readonly array $functions,
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(DeviceSpecificationState::class),
+		)]
 		private readonly array $status,
 	)
 	{
@@ -57,7 +62,7 @@ final class DeviceSpecification implements Entity
 	}
 
 	/**
-	 * @return array<DeviceSpecificationStatus>
+	 * @return array<DeviceSpecificationState>
 	 */
 	public function getStatus(): array
 	{
@@ -76,7 +81,7 @@ final class DeviceSpecification implements Entity
 				$this->getFunctions(),
 			),
 			'status' => array_map(
-				static fn (DeviceSpecificationStatus $item): array => $item->toArray(),
+				static fn (DeviceSpecificationState $item): array => $item->toArray(),
 				$this->getStatus(),
 			),
 		];

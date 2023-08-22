@@ -4,7 +4,7 @@ namespace FastyBird\Connector\NsPanel\Tests\Cases\Unit\Entities\API;
 
 use Error;
 use FastyBird\Connector\NsPanel\Entities;
-use FastyBird\Connector\NsPanel\Tests\Cases\Unit\BaseTestCase;
+use FastyBird\Connector\NsPanel\Tests;
 use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
 use Nette;
@@ -12,7 +12,7 @@ use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function assert;
 
-final class HeaderTest extends BaseTestCase
+final class HeaderTest extends Tests\Cases\Unit\BaseTestCase
 {
 
 	/**

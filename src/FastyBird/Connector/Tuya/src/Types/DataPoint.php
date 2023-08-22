@@ -32,9 +32,14 @@ class DataPoint extends Consistence\Enum\Enum
 	/**
 	 * Define versions
 	 */
-	public const DATA_POINT_LOCAL = 'local';
+	public const LOCAL = 'local';
 
-	public const DATA_POINT_CLOUD = 'cloud';
+	public const CLOUD = 'cloud';
+
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
 
 	public function __toString(): string
 	{

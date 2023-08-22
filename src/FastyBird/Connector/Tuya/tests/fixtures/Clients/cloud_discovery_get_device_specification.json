@@ -1,0 +1,32 @@
+{
+  "result": {
+    "category": "kg",
+    "functions": [
+      {
+        "code": "switch",
+        "type": "Boolean",
+        "values": "{}"
+      },
+      {
+        "code": "countdown_1",
+        "type": "Integer",
+        "values": "{\"unit\":\"s\",\"min\":0,\"max\":86400,\"scale\":0,\"step\":1}"
+      }
+    ],
+    "status": [
+      {
+        "code": "switch",
+        "type": "Boolean",
+        "values": "{}"
+      },
+      {
+        "code": "countdown_1",
+        "type": "Integer",
+        "values": "{\"unit\":\"s\",\"min\":0,\"max\":86400,\"scale\":0,\"step\":1}"
+      }
+    ]
+  },
+  "success": true,
+  "t": 1692656038455,
+  "tid": "067b9db2407011eea9649a766792eea9"
+}

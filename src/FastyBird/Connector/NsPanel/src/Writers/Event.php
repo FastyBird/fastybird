@@ -18,6 +18,7 @@ namespace FastyBird\Connector\NsPanel\Writers;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
+use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -25,7 +26,6 @@ use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
 use Symfony\Component\EventDispatcher;
 use function assert;
@@ -90,10 +90,10 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 			$channel = $property->getChannel();
 
 		} else {
-			$findChannelQuery = new DevicesQueries\FindChannels();
+			$findChannelQuery = new Queries\FindChannels();
 			$findChannelQuery->byId($property->getChannel());
 
-			$channel = $this->channelsRepository->findOneBy($findChannelQuery);
+			$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\NsPanelChannel::class);
 		}
 
 		if ($channel === null) {

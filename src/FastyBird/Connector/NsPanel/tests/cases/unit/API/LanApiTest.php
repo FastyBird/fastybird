@@ -7,7 +7,7 @@ use FastyBird\Connector\NsPanel\API;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Queries;
-use FastyBird\Connector\NsPanel\Tests\Cases\Unit\DbTestCase;
+use FastyBird\Connector\NsPanel\Tests;
 use FastyBird\Connector\NsPanel\Tests\Tools;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -22,7 +22,7 @@ use function is_array;
 use function str_replace;
 use function strval;
 
-final class LanApiTest extends DbTestCase
+final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**
@@ -74,7 +74,7 @@ final class LanApiTest extends DbTestCase
 
 		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
 		$httpClientFactory
-			->method('createClient')
+			->method('create')
 			->willReturn($httpClient);
 
 		$this->mockContainerService(
@@ -160,7 +160,7 @@ final class LanApiTest extends DbTestCase
 
 		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
 		$httpClientFactory
-			->method('createClient')
+			->method('create')
 			->willReturn($httpClient);
 
 		$this->mockContainerService(
@@ -248,7 +248,7 @@ final class LanApiTest extends DbTestCase
 
 		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
 		$httpClientFactory
-			->method('createClient')
+			->method('create')
 			->willReturn($httpClient);
 
 		$this->mockContainerService(
@@ -361,7 +361,7 @@ final class LanApiTest extends DbTestCase
 
 		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
 		$httpClientFactory
-			->method('createClient')
+			->method('create')
 			->willReturn($httpClient);
 
 		$this->mockContainerService(
@@ -511,7 +511,7 @@ final class LanApiTest extends DbTestCase
 
 		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
 		$httpClientFactory
-			->method('createClient')
+			->method('create')
 			->willReturn($httpClient);
 
 		$this->mockContainerService(
@@ -634,7 +634,7 @@ final class LanApiTest extends DbTestCase
 
 		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
 		$httpClientFactory
-			->method('createClient')
+			->method('create')
 			->willReturn($httpClient);
 
 		$this->mockContainerService(
@@ -721,7 +721,7 @@ final class LanApiTest extends DbTestCase
 
 		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
 		$httpClientFactory
-			->method('createClient')
+			->method('create')
 			->willReturn($httpClient);
 
 		$this->mockContainerService(
@@ -844,7 +844,7 @@ final class LanApiTest extends DbTestCase
 
 		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
 		$httpClientFactory
-			->method('createClient')
+			->method('create')
 			->willReturn($httpClient);
 
 		$this->mockContainerService(

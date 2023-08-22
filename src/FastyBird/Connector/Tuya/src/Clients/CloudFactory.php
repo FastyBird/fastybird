@@ -29,7 +29,7 @@ use FastyBird\Connector\Tuya\Types;
 interface CloudFactory extends ClientFactory
 {
 
-	public const MODE = Types\ClientMode::MODE_CLOUD;
+	public const MODE = Types\ClientMode::CLOUD;
 
 	public function create(Entities\TuyaConnector $connector): Cloud;
 

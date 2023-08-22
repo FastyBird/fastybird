@@ -1,0 +1,31 @@
+{
+  "result": [
+    {
+      "active_time": 1669988230,
+      "category": "cz",
+      "icon": "smart/icon/ay1559701439060fw6BY/90009dc671abcfa1541a9606196ef896.png",
+      "id": "bf3e9d85a52b163f940wgx",
+      "name": "Wall socket - outdoor",
+      "node_id": "9035eafffeb8f501",
+      "online": true,
+      "owner_id": "44154302",
+      "product_id": "pnzfdr9y",
+      "update_time": 1692402101
+    },
+    {
+      "active_time": 1669643114,
+      "category": "ldcg",
+      "icon": "smart/icon/ay15327721968035jwx9/9ef66b23e59bd8a8c4da13536be92eb6.png",
+      "id": "bfa51eb7b64c2f5eedradw",
+      "name": "Living room environment",
+      "node_id": "5c0272fffe037960",
+      "online": true,
+      "owner_id": "44154302",
+      "product_id": "ftdkanlj",
+      "update_time": 1692235573
+    }
+  ],
+  "success": true,
+  "t": 1692568050457,
+  "tid": "2985574e3fa311ee8298eeefa7b3467e"
+}

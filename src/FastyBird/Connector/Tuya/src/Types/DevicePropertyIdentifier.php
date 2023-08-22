@@ -33,41 +33,46 @@ class DevicePropertyIdentifier extends Consistence\Enum\Enum
 	/**
 	 * Define device states
 	 */
-	public const IDENTIFIER_IP_ADDRESS = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS;
+	public const IP_ADDRESS = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS;
 
-	public const IDENTIFIER_STATE = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_STATE;
+	public const STATE = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_STATE;
 
-	public const IDENTIFIER_HARDWARE_MODEL = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL;
+	public const MODEL = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL;
 
-	public const IDENTIFIER_HARDWARE_MAC_ADDRESS = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS;
+	public const MAC_ADDRESS = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS;
 
-	public const IDENTIFIER_SERIAL_NUMBER = 'serial_number';
+	public const SERIAL_NUMBER = 'serial_number';
 
-	public const IDENTIFIER_PROTOCOL_VERSION = 'protocol_version';
+	public const PROTOCOL_VERSION = 'protocol_version';
 
-	public const IDENTIFIER_LOCAL_KEY = 'local_key';
+	public const LOCAL_KEY = 'local_key';
 
-	public const IDENTIFIER_NODE_ID = 'node_id';
+	public const NODE_ID = 'node_id';
 
-	public const IDENTIFIER_GATEWAY_ID = 'gateway_id';
+	public const GATEWAY_ID = 'gateway_id';
 
-	public const IDENTIFIER_CATEGORY = 'category';
+	public const CATEGORY = 'category';
 
-	public const IDENTIFIER_ICON = 'icon';
+	public const ICON = 'icon';
 
-	public const IDENTIFIER_LATITUDE = 'lat';
+	public const LATITUDE = 'lat';
 
-	public const IDENTIFIER_LONGITUDE = 'lon';
+	public const LONGITUDE = 'lon';
 
-	public const IDENTIFIER_PRODUCT_ID = 'product_id';
+	public const PRODUCT_ID = 'product_id';
 
-	public const IDENTIFIER_PRODUCT_NAME = 'product_name';
+	public const PRODUCT_NAME = 'product_name';
 
-	public const IDENTIFIER_ENCRYPTED = 'encrypted';
+	public const ENCRYPTED = 'encrypted';
 
-	public const IDENTIFIER_STATUS_READING_DELAY = 'status_reading_delay';
+	public const STATE_READING_DELAY = 'state_reading_delay';
 
-	public const IDENTIFIER_READ_STATE_EXCLUDE_DPS = 'read_state_exclude_dps';
+	public const READ_STATE_EXCLUDE_DPS = 'read_state_exclude_dps';
+
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
 
 	public function __toString(): string
 	{

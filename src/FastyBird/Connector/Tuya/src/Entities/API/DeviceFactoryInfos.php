@@ -15,10 +15,10 @@
 
 namespace FastyBird\Connector\Tuya\Entities\API;
 
-use Nette;
+use Orisai\ObjectMapper;
 
 /**
- * OpenAPI device factory info entity
+ * OpenAPI device factory information entity
  *
  * @package        FastyBird:TuyaConnector!
  * @subpackage     Entities
@@ -28,12 +28,23 @@ use Nette;
 final class DeviceFactoryInfos implements Entity
 {
 
-	use Nette\SmartObject;
-
 	public function __construct(
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $id,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly string|null $uuid,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly string|null $sn,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly string|null $mac,
 	)
 	{

@@ -164,7 +164,7 @@ class Execute extends Console\Command\Command
 			}
 
 			if (count($connectors) === 0) {
-				$io->warning($this->translator->translate('//ns-panel-connector.cmd.execute.messages.noConnectors'));
+				$io->warning($this->translator->translate('//ns-panel-connector.cmd.base.messages.noConnectors'));
 
 				return Console\Command\Command::SUCCESS;
 			}

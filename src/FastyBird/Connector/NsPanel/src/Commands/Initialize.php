@@ -237,7 +237,7 @@ class Initialize extends Console\Command\Command
 		$connector = $this->askWhichConnector($io);
 
 		if ($connector === null) {
-			$io->warning($this->translator->translate('//ns-panel-connector.cmd.initialize.messages.noConnectors'));
+			$io->warning($this->translator->translate('//ns-panel-connector.cmd.base.messages.noConnectors'));
 
 			$question = new Console\Question\ConfirmationQuestion(
 				$this->translator->translate('//ns-panel-connector.cmd.initialize.questions.create'),
@@ -369,7 +369,7 @@ class Initialize extends Console\Command\Command
 		$connector = $this->askWhichConnector($io);
 
 		if ($connector === null) {
-			$io->info($this->translator->translate('//ns-panel-connector.cmd.initialize.messages.noConnectors'));
+			$io->info($this->translator->translate('//ns-panel-connector.cmd.base.messages.noConnectors'));
 
 			return;
 		}

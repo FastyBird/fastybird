@@ -908,7 +908,7 @@ final class LanApi
 		if ($async) {
 			try {
 				$this->httpClientFactory
-					->createClient()
+					->create()
 					->send($request)
 					->then(
 						function (Message\ResponseInterface $response) use ($deferred, $request): void {
@@ -971,7 +971,7 @@ final class LanApi
 
 		try {
 			$response = $this->httpClientFactory
-				->createClient(false)
+				->create(false)
 				->send($request);
 
 			try {

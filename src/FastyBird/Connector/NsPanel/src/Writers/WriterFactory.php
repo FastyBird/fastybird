@@ -7,7 +7,7 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:NsPanelConnector!
- * @subpackage     Clients
+ * @subpackage     Writers
  * @since          1.0.0
  *
  * @date           09.08.23
@@ -21,7 +21,7 @@ use FastyBird\Connector\NsPanel\Entities;
  * Device state writer interface factory
  *
  * @package        FastyBird:NsPanelConnector!
- * @subpackage     Clients
+ * @subpackage     Writers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */

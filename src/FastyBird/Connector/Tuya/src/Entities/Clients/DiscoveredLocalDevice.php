@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\Tuya\Entities\Clients;
 
-use Nette;
+use Orisai\ObjectMapper;
 
 /**
  * Discovered local device entity
@@ -28,13 +28,18 @@ use Nette;
 final class DiscoveredLocalDevice implements Entity
 {
 
-	use Nette\SmartObject;
-
 	public function __construct(
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $id,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		#[ObjectMapper\Modifiers\FieldName('ip_address')]
 		private readonly string $ipAddress,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		#[ObjectMapper\Modifiers\FieldName('product_key')]
 		private readonly string $productKey,
+		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $encrypted,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $version,
 	)
 	{

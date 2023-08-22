@@ -10,13 +10,10 @@
  * @subpackage     Writers
  * @since          1.0.0
  *
- * @date           14.12.22
+ * @date           12.07.23
  */
 
 namespace FastyBird\Connector\Tuya\Writers;
-
-use FastyBird\Connector\Tuya\Clients;
-use FastyBird\Connector\Tuya\Entities;
 
 /**
  * Properties writer interface
@@ -29,14 +26,8 @@ use FastyBird\Connector\Tuya\Entities;
 interface Writer
 {
 
-	public function connect(
-		Entities\TuyaConnector $connector,
-		Clients\Client $client,
-	): void;
+	public function connect(): void;
 
-	public function disconnect(
-		Entities\TuyaConnector $connector,
-		Clients\Client $client,
-	): void;
+	public function disconnect(): void;
 
 }
