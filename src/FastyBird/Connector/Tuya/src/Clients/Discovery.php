@@ -46,6 +46,7 @@ use function floatval;
 use function in_array;
 use function is_array;
 use function is_bool;
+use function is_float;
 use function is_numeric;
 use function is_string;
 use function md5;
@@ -224,7 +225,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 				$this->discoveredLocalDevices = new SplObjectStorage();
 
-				if (count($devices) > 0) {
+				if ($devices !== []) {
 					$devices = $this->handleFoundLocalDevices($devices);
 				}
 
@@ -364,14 +365,14 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 	private function handleDiscoveredLocalDevice(string $packet): void
 	{
-		$encryptedPacket = openssl_decrypt(
+		$decryptedPacket = openssl_decrypt(
 			substr($packet, 20, -8),
 			'AES-128-ECB',
 			md5('yGAdlopoPVldABfn', true),
 			OPENSSL_RAW_DATA,
 		);
 
-		if ($encryptedPacket === false) {
+		if ($decryptedPacket === false) {
 			$this->logger->error(
 				'Received invalid packet. Received data could not be decrypted',
 				[
@@ -384,7 +385,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 		}
 
 		try {
-			$decoded = Utils\Json::decode($encryptedPacket, Utils\Json::FORCE_ARRAY);
+			$decoded = Utils\Json::decode($decryptedPacket, Utils\Json::FORCE_ARRAY);
 
 			if (!is_array($decoded)) {
 				$this->logger->error(
@@ -513,8 +514,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 		foreach ($devices as $device) {
 			try {
-				$response = await($apiClient->getDeviceInformation($device->getId()));
-				assert($response instanceof Entities\API\GetDeviceInformation);
+				$response = await($apiClient->getDeviceDetail($device->getId()));
+				assert($response instanceof Entities\API\GetDevice);
 				$deviceInformation = $response->getResult();
 			} catch (Throwable $ex) {
 				$this->logger->error(
@@ -565,8 +566,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 							'model' => $deviceInformation->getModel(),
 							'icon' => $deviceInformation->getIcon(),
 							'category' => $deviceInformation->getCategory(),
-							'lat' => $deviceInformation->getLat(),
-							'lon' => $deviceInformation->getLon(),
+							'latitude' => $deviceInformation->getLat(),
+							'longitude' => $deviceInformation->getLon(),
 							'product_id' => $deviceInformation->getProductId(),
 							'product_name' => $deviceInformation->getProductName(),
 							'sn' => $deviceFactoryInfos?->getSn(),
@@ -612,8 +613,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 				foreach ($children as $child) {
 					try {
-						$response = await($apiClient->getDeviceInformation($child->getId()));
-						assert($response instanceof Entities\API\GetDeviceInformation);
+						$response = await($apiClient->getDeviceDetail($child->getId()));
+						assert($response instanceof Entities\API\GetDevice);
 						$childDeviceInformation = $response->getResult();
 					} catch (Throwable $ex) {
 						$this->logger->error(
@@ -670,8 +671,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 									'model' => $childDeviceInformation->getModel(),
 									'icon' => $childDeviceInformation->getIcon(),
 									'category' => $childDeviceInformation->getCategory(),
-									'lat' => $childDeviceInformation->getLat(),
-									'lon' => $childDeviceInformation->getLon(),
+									'latitude' => $childDeviceInformation->getLat(),
+									'longitude' => $childDeviceInformation->getLon(),
 									'product_id' => $childDeviceInformation->getProductId(),
 									'product_name' => $childDeviceInformation->getProductName(),
 									'sn' => $childDeviceFactoryInfos?->getSn(),
@@ -821,7 +822,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 						'device' => $device->getId(),
 
 						'code' => $dataPointCode,
-						'name' => $dataPointDataType,
+						'name' => $dataPointCode,
 						'data_type' => $dataPointDataType->getValue(),
 						'unit' => $dataPointSpecification->offsetExists('unit')
 							? strval($dataPointSpecification->offsetGet('unit'))
@@ -882,7 +883,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$this->entityHelper->create(
 					Entities\Messages\StoreCloudDevice::class,
 					[
-						'connector' => $this->connector->getId(),
+						'connector' => $this->connector->getId()->toString(),
 						'id' => $device->getId(),
 						'local_key' => $device->getLocalKey(),
 						'ip_address' => $device->getIp(),
@@ -890,8 +891,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 						'model' => $device->getModel(),
 						'icon' => $device->getIcon(),
 						'category' => $device->getCategory(),
-						'lat' => $device->getLat(),
-						'lon' => $device->getLon(),
+						'latitude' => $device->getLat(),
+						'longitude' => $device->getLon(),
 						'product_id' => $device->getProductId(),
 						'product_name' => $device->getProductName(),
 						'sn' => $deviceFactoryInfos?->getSn(),
@@ -900,6 +901,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					],
 				),
 			);
+
 		}
 
 		$apiClient->disconnect();
@@ -964,6 +966,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 						if (is_bool($status->getValue())) {
 							$dataType = Metadata\Types\DataType::get(Metadata\Types\DataType::DATA_TYPE_BOOLEAN);
+						} elseif (is_float($status->getValue())) {
+							$dataType = Metadata\Types\DataType::get(Metadata\Types\DataType::DATA_TYPE_FLOAT);
 						} elseif (is_numeric($status->getValue())) {
 							$dataType = Metadata\Types\DataType::get(Metadata\Types\DataType::DATA_TYPE_INT);
 						} elseif (is_string($status->getValue())) {
@@ -975,7 +979,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 							'code' => $status->getCode(),
 							'name' => $status->getCode(),
-							'data_type' => $dataType,
+							'data_type' => $dataType->getValue(),
 							'unit' => null,
 							'format' => null,
 							'min' => null,

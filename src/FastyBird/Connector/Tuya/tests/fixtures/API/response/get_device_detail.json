@@ -1,9 +1,10 @@
 {
   "result": {
     "active_time": 1669988230,
-    "biz_type": 0,
     "category": "cz",
+    "category_name": "Socket",
     "create_time": 1669988230,
+    "gateway_id": "bfa1a65b1d7f75a9aenvkc",
     "icon": "smart/icon/ay1559701439060fw6BY/90009dc671abcfa1541a9606196ef896.png",
     "id": "bf3e9d85a52b163f940wgx",
     "ip": "",
@@ -17,23 +18,13 @@
     "owner_id": "44154302",
     "product_id": "pnzfdr9y",
     "product_name": "Outdoor Socket Adapter",
-    "status": [
-      {
-        "code": "switch_1",
-        "value": false
-      },
-      {
-        "code": "countdown_1",
-        "value": 0
-      }
-    ],
+    "sn": "100048644013EC",
     "sub": true,
     "time_zone": "+01:00",
-    "uid": "Bjhq01pE7q4ijNMN",
-    "update_time": 1692402101,
+    "update_time": 1692631717,
     "uuid": "9035eafffeb8f501"
   },
   "success": true,
-  "t": 1692564875472,
-  "tid": "c50e32a13f9b11ee9a70760d0d3c40d3"
+  "t": 1692647347310,
+  "tid": "ca243ef5405b11eeb3f09e6a0abc163a"
 }

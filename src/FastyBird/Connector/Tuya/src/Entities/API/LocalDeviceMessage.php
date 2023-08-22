@@ -46,6 +46,7 @@ final class LocalDeviceMessage implements Entity
 			new ObjectMapper\Rules\IntValue(unsigned: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
+		#[ObjectMapper\Modifiers\FieldName('return_code')]
 		private readonly int|null $returnCode,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),

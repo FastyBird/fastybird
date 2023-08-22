@@ -89,7 +89,7 @@ final class OpenApi
 
 	private const GET_DEVICES_FACTORY_INFOS_API_ENDPOINT = '/v1.0/iot-03/devices/factory-infos';
 
-	private const GET_DEVICE_INFORMATION_API_ENDPOINT = '/v1.1/iot-03/devices/%s';
+	private const GET_DEVICE_DETAIL_API_ENDPOINT = '/v1.1/iot-03/devices/%s';
 
 	private const GET_DEVICE_SPECIFICATION_API_ENDPOINT = '/v1.2/iot-03/devices/%s/specification';
 
@@ -117,7 +117,7 @@ final class OpenApi
 
 	private const GET_DEVICES_FACTORY_INFOS_MESSAGE_SCHEMA_FILENAME = 'openapi_get_devices_factory_infos.json';
 
-	private const GET_DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME = 'openapi_get_device_info.json';
+	private const GET_DEVICE_DETAIL_MESSAGE_SCHEMA_FILENAME = 'openapi_get_device_detail.json';
 
 	private const GET_DEVICE_SPECIFICATION_MESSAGE_SCHEMA_FILENAME = 'openapi_get_device_specification.json';
 
@@ -578,15 +578,15 @@ final class OpenApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\GetDeviceInformation)
+	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\GetDevice)
 	 *
 	 * @throws Exceptions\OpenApiCall
 	 * @throws Exceptions\OpenApiError
 	 */
-	public function getDeviceInformation(
+	public function getDeviceDetail(
 		string $deviceId,
 		bool $async = true,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\GetDeviceInformation
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\GetDevice
 	{
 		$deferred = new Promise\Deferred();
 
@@ -596,7 +596,7 @@ final class OpenApi
 
 		$request = $this->createRequest(
 			RequestMethodInterface::METHOD_GET,
-			sprintf(self::GET_DEVICE_INFORMATION_API_ENDPOINT, $deviceId),
+			sprintf(self::GET_DEVICE_DETAIL_API_ENDPOINT, $deviceId),
 		);
 
 		$result = $this->callRequest($request, $async);
@@ -605,7 +605,7 @@ final class OpenApi
 			$result
 				->then(function (Message\ResponseInterface $response) use ($deferred, $request): void {
 					try {
-						$deferred->resolve($this->parseGetDeviceInformation($request, $response));
+						$deferred->resolve($this->parseGetDeviceDetail($request, $response));
 					} catch (Throwable $ex) {
 						$deferred->reject($ex);
 					}
@@ -617,7 +617,7 @@ final class OpenApi
 			return $deferred->promise();
 		}
 
-		return $this->parseGetDeviceInformation($request, $result);
+		return $this->parseGetDeviceDetail($request, $result);
 	}
 
 	/**
@@ -966,14 +966,14 @@ final class OpenApi
 	 * @throws Exceptions\OpenApiCall
 	 * @throws Exceptions\OpenApiError
 	 */
-	private function parseGetDeviceInformation(
+	private function parseGetDeviceDetail(
 		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
-	): Entities\API\GetDeviceInformation
+	): Entities\API\GetDevice
 	{
-		$body = $this->validateResponseBody($request, $response, self::GET_DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME);
+		$body = $this->validateResponseBody($request, $response, self::GET_DEVICE_DETAIL_MESSAGE_SCHEMA_FILENAME);
 
-		return $this->createEntity(Entities\API\GetDeviceInformation::class, $body);
+		return $this->createEntity(Entities\API\GetDevice::class, $body);
 	}
 
 	/**

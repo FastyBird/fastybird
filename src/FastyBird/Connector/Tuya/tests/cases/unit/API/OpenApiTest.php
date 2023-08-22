@@ -18,6 +18,12 @@ use function strval;
 final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 {
 
+	private const ACCESS_ID = 'MftAcceHZL11BpOR';
+
+	private const ACCESS_SECRET = 'dBCQZohQNR2U4rW9';
+
+	private const UID = 'Bjhq01pE7q4ijNMN';
+
 	/**
 	 * @throws BootstrapExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
@@ -80,8 +86,8 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 
 		$openApi = $openApiFactory->create(
 			'testing-connector',
-			'abcdefghijklmn',
-			'opqrstuvwxyz',
+			self::ACCESS_ID,
+			self::ACCESS_SECRET,
 			Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::EUROPE),
 		);
 
@@ -93,7 +99,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 				[
 					'id' => 'bf3e9d85a52b163f940wgx',
 					'name' => 'Wall socket - outdoor',
-					'uid' => 'eu1638804163882cLR8v',
+					'uid' => self::UID,
 					'local_key' => 'fea74f634dc369c1',
 					'category' => 'cz',
 					'product_id' => 'pnzfdr9y',
@@ -125,8 +131,8 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 				[
 					'id' => 'bfa1a65b1d7f75a9aenvkc',
 					'name' => 'NEO Gateway',
-					'uid' => 'eu1638804163882cLR8v',
-					'local_key' => 'fea74f634dc369c1',
+					'uid' => self::UID,
+					'local_key' => 'qlD53YUXfxboDFpb',
 					'category' => 'wg2',
 					'product_id' => 'be9fookuobd9w8z3',
 					'product_name' => 'NEO Gateway',
@@ -146,8 +152,8 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 				[
 					'id' => 'bfa51eb7b64c2f5eedradw',
 					'name' => 'Living room environment',
-					'uid' => 'eu1638804163882cLR8v',
-					'local_key' => 'fea74f634dc369c1',
+					'uid' => self::UID,
+					'local_key' => 'eL255qwTWzj4tJZr',
 					'category' => 'ldcg',
 					'product_id' => 'ftdkanlj',
 					'product_name' => 'Luminance sensor',
@@ -193,8 +199,8 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 				[
 					'id' => '402675772462ab280dae',
 					'name' => 'WiFi Smart Timer',
-					'uid' => 'eu1638804163882cLR8v',
-					'local_key' => '19a61d30d285f6f2',
+					'uid' => self::UID,
+					'local_key' => 'YyGzzRui2Xej4D04',
 					'category' => 'kg',
 					'product_id' => 'SJet14RibkVEZDOB',
 					'product_name' => 'WiFi Smart Timer',
@@ -288,8 +294,8 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 
 		$openApi = $openApiFactory->create(
 			'testing-connector',
-			'abcdefghijklmn',
-			'opqrstuvwxyz',
+			self::ACCESS_ID,
+			self::ACCESS_SECRET,
 			Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::EUROPE),
 		);
 
@@ -379,8 +385,8 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 
 		$openApi = $openApiFactory->create(
 			'testing-connector',
-			'abcdefghijklmn',
-			'opqrstuvwxyz',
+			self::ACCESS_ID,
+			self::ACCESS_SECRET,
 			Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::EUROPE),
 		);
 
@@ -390,7 +396,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 			'result' => [
 				'id' => 'bf3e9d85a52b163f940wgx',
 				'name' => 'Wall socket - outdoor',
-				'uid' => 'eu1638804163882cLR8v',
+				'uid' => self::UID,
 				'local_key' => 'fea74f634dc369c1',
 				'category' => 'cz',
 				'product_id' => 'pnzfdr9y',
@@ -484,8 +490,8 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 
 		$openApi = $openApiFactory->create(
 			'testing-connector',
-			'abcdefghijklmn',
-			'opqrstuvwxyz',
+			self::ACCESS_ID,
+			self::ACCESS_SECRET,
 			Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::EUROPE),
 		);
 
@@ -584,8 +590,8 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 
 		$openApi = $openApiFactory->create(
 			'testing-connector',
-			'abcdefghijklmn',
-			'opqrstuvwxyz',
+			self::ACCESS_ID,
+			self::ACCESS_SECRET,
 			Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::EUROPE),
 		);
 
@@ -669,8 +675,8 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 
 		$openApi = $openApiFactory->create(
 			'testing-connector',
-			'abcdefghijklmn',
-			'opqrstuvwxyz',
+			self::ACCESS_ID,
+			self::ACCESS_SECRET,
 			Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::EUROPE),
 		);
 
@@ -681,7 +687,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 				[
 					'id' => 'bf3e9d85a52b163f940wgx',
 					'node_id' => '9035eafffeb8f501',
-					'name' => 'Zásuvkový adaptér pro venkovní použití',
+					'name' => 'Wall socket - outdoor',
 					'product_id' => 'pnzfdr9y',
 					'icon' => 'smart/icon/ay1559701439060fw6BY/90009dc671abcfa1541a9606196ef896.png',
 					'online' => true,
@@ -689,7 +695,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 				[
 					'id' => 'bfa51eb7b64c2f5eedradw',
 					'node_id' => '5c0272fffe037960',
-					'name' => 'Obývák',
+					'name' => 'Living room environment',
 					'product_id' => 'ftdkanlj',
 					'icon' => 'smart/icon/ay15327721968035jwx9/9ef66b23e59bd8a8c4da13536be92eb6.png',
 					'online' => true,
@@ -719,7 +725,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 						->method('rewind');
 
 					self::assertSame(
-						'https://openapi.tuyaeu.com/v1.3/iot-03/devices?source_id=opqrstuvwxyz&source_type=tuyaUser',
+						'https://openapi.tuyaeu.com/v1.3/iot-03/devices?source_id=' . self::UID . '&source_type=tuyaUser',
 						strval($request->getUri()),
 					);
 
@@ -760,13 +766,13 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 
 		$openApi = $openApiFactory->create(
 			'testing-connector',
-			'abcdefghijklmn',
-			'opqrstuvwxyz',
+			self::ACCESS_ID,
+			self::ACCESS_SECRET,
 			Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::EUROPE),
 		);
 
 		$devices = $openApi->getDevices([
-			'source_id' => 'opqrstuvwxyz',
+			'source_id' => self::UID,
 			'source_type' => 'tuyaUser',
 		], false);
 
@@ -812,7 +818,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 						'name' => 'NEO Gateway',
 						'product_id' => 'be9fookuobd9w8z3',
 						'product_name' => 'NEO Gateway',
-						'local_key' => 'fea74f634dc369c1',
+						'local_key' => 'qlD53YUXfxboDFpb',
 						'sub' => false,
 						'asset_id' => null,
 						'owner_id' => '44154302',
@@ -837,7 +843,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 						'name' => 'Living room environment',
 						'product_id' => 'ftdkanlj',
 						'product_name' => 'Luminance sensor',
-						'local_key' => 'fea74f634dc369c1',
+						'local_key' => 'eL255qwTWzj4tJZr',
 						'sub' => true,
 						'asset_id' => null,
 						'owner_id' => '44154302',
@@ -862,7 +868,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 						'name' => 'WiFi Smart Timer',
 						'product_id' => 'SJet14RibkVEZDOB',
 						'product_name' => 'WiFi Smart Timer',
-						'local_key' => '19a61d30d285f6f2',
+						'local_key' => 'YyGzzRui2Xej4D04',
 						'sub' => false,
 						'asset_id' => null,
 						'owner_id' => '44154302',
@@ -945,8 +951,8 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 
 		$openApi = $openApiFactory->create(
 			'testing-connector',
-			'abcdefghijklmn',
-			'opqrstuvwxyz',
+			self::ACCESS_ID,
+			self::ACCESS_SECRET,
 			Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::EUROPE),
 		);
 
@@ -972,6 +978,435 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 				],
 			],
 		], $devicesInfos->toArray());
+	}
+
+	/**
+	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws DI\MissingServiceException
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\OpenApiCall
+	 * @throws Exceptions\OpenApiError
+	 * @throws RuntimeException
+	 * @throws Error
+	 */
+	public function testGetDeviceDetail(): void
+	{
+		$httpClient = $this->createMock(GuzzleHttp\Client::class);
+		$httpClient
+			->method('send')
+			->willReturnCallback(
+				function (Http\Message\RequestInterface $request): Http\Message\ResponseInterface {
+					$responseBody = $this->createMock(Http\Message\StreamInterface::class);
+					$responseBody
+						->method('rewind');
+
+					self::assertSame(
+						'https://openapi.tuyaeu.com/v1.1/iot-03/devices/bf3e9d85a52b163f940wgx',
+						strval($request->getUri()),
+					);
+
+					$responseBody
+						->method('getContents')
+						->willReturn(
+							Utils\FileSystem::read(
+								__DIR__ . '/../../../fixtures/API/response/get_device_detail.json',
+							),
+						);
+
+					$response = $this->createMock(Http\Message\ResponseInterface::class);
+					$response
+						->method('getBody')
+						->willReturn($responseBody);
+
+					return $response;
+				},
+			);
+
+		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
+		$httpClientFactory
+			->method('create')
+			->willReturnCallback(
+				static function (bool $async) use ($httpClient) {
+					self::assertFalse($async);
+
+					return $httpClient;
+				},
+			);
+
+		$this->mockContainerService(
+			API\HttpClientFactory::class,
+			$httpClientFactory,
+		);
+
+		$openApiFactory = $this->getContainer()->getByType(API\OpenApiFactory::class);
+
+		$openApi = $openApiFactory->create(
+			'testing-connector',
+			self::ACCESS_ID,
+			self::ACCESS_SECRET,
+			Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::EUROPE),
+		);
+
+		$device = $openApi->getDeviceDetail('bf3e9d85a52b163f940wgx', false);
+
+		self::assertSame([
+			'result' => [
+				'id' => 'bf3e9d85a52b163f940wgx',
+				'gateway_id' => 'bfa1a65b1d7f75a9aenvkc',
+				'node_id' => '9035eafffeb8f501',
+				'uuid' => '9035eafffeb8f501',
+				'category' => 'cz',
+				'category_name' => 'Socket',
+				'name' => 'Wall socket - outdoor',
+				'product_id' => 'pnzfdr9y',
+				'product_name' => 'Outdoor Socket Adapter',
+				'local_key' => 'fea74f634dc369c1',
+				'sub' => true,
+				'asset_id' => null,
+				'owner_id' => '44154302',
+				'ip' => null,
+				'lon' => '16.8096',
+				'lat' => '49.1310',
+				'model' => null,
+				'time_zone' => '+01:00',
+				'active_time' => 1_669_988_230,
+				'create_time' => 1_669_988_230,
+				'update_time' => 1_692_631_717,
+				'online' => true,
+				'icon' => 'smart/icon/ay1559701439060fw6BY/90009dc671abcfa1541a9606196ef896.png',
+			],
+		], $device->toArray());
+	}
+
+	/**
+	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws DI\MissingServiceException
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\OpenApiCall
+	 * @throws Exceptions\OpenApiError
+	 * @throws RuntimeException
+	 * @throws Error
+	 */
+	public function testGetDeviceSpecification(): void
+	{
+		$httpClient = $this->createMock(GuzzleHttp\Client::class);
+		$httpClient
+			->method('send')
+			->willReturnCallback(
+				function (Http\Message\RequestInterface $request): Http\Message\ResponseInterface {
+					$responseBody = $this->createMock(Http\Message\StreamInterface::class);
+					$responseBody
+						->method('rewind');
+
+					self::assertSame(
+						'https://openapi.tuyaeu.com/v1.2/iot-03/devices/bf3e9d85a52b163f940wgx/specification',
+						strval($request->getUri()),
+					);
+
+					$responseBody
+						->method('getContents')
+						->willReturn(
+							Utils\FileSystem::read(
+								__DIR__ . '/../../../fixtures/API/response/get_device_specification.json',
+							),
+						);
+
+					$response = $this->createMock(Http\Message\ResponseInterface::class);
+					$response
+						->method('getBody')
+						->willReturn($responseBody);
+
+					return $response;
+				},
+			);
+
+		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
+		$httpClientFactory
+			->method('create')
+			->willReturnCallback(
+				static function (bool $async) use ($httpClient) {
+					self::assertFalse($async);
+
+					return $httpClient;
+				},
+			);
+
+		$this->mockContainerService(
+			API\HttpClientFactory::class,
+			$httpClientFactory,
+		);
+
+		$openApiFactory = $this->getContainer()->getByType(API\OpenApiFactory::class);
+
+		$openApi = $openApiFactory->create(
+			'testing-connector',
+			self::ACCESS_ID,
+			self::ACCESS_SECRET,
+			Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::EUROPE),
+		);
+
+		$deviceSpecification = $openApi->getDeviceSpecification(
+			'bf3e9d85a52b163f940wgx',
+			false,
+		);
+
+		self::assertSame([
+			'result' => [
+				'category' => 'cz',
+				'functions' => [
+					[
+						'code' => 'switch_1',
+						'type' => 'Boolean',
+						'values' => '{}',
+					],
+					[
+						'code' => 'countdown_1',
+						'type' => 'Integer',
+						'values' => '{"unit":"s","min":0,"max":43200,"scale":0,"step":1}',
+					],
+				],
+				'status' => [
+					[
+						'code' => 'switch_1',
+						'type' => 'Boolean',
+						'values' => '{}',
+					],
+					[
+						'code' => 'countdown_1',
+						'type' => 'Integer',
+						'values' => '{"unit":"s","min":0,"max":43200,"scale":0,"step":1}',
+					],
+				],
+
+			],
+		], $deviceSpecification->toArray());
+	}
+
+	/**
+	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws DI\MissingServiceException
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\OpenApiCall
+	 * @throws Exceptions\OpenApiError
+	 * @throws RuntimeException
+	 * @throws Error
+	 */
+	public function testGetDeviceState(): void
+	{
+		$httpClient = $this->createMock(GuzzleHttp\Client::class);
+		$httpClient
+			->method('send')
+			->willReturnCallback(
+				function (Http\Message\RequestInterface $request): Http\Message\ResponseInterface {
+					$responseBody = $this->createMock(Http\Message\StreamInterface::class);
+					$responseBody
+						->method('rewind');
+
+					self::assertSame(
+						'https://openapi.tuyaeu.com/v1.0/iot-03/devices/bf3e9d85a52b163f940wgx/status',
+						strval($request->getUri()),
+					);
+
+					$responseBody
+						->method('getContents')
+						->willReturn(
+							Utils\FileSystem::read(
+								__DIR__ . '/../../../fixtures/API/response/get_device_state.json',
+							),
+						);
+
+					$response = $this->createMock(Http\Message\ResponseInterface::class);
+					$response
+						->method('getBody')
+						->willReturn($responseBody);
+
+					return $response;
+				},
+			);
+
+		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
+		$httpClientFactory
+			->method('create')
+			->willReturnCallback(
+				static function (bool $async) use ($httpClient) {
+					self::assertFalse($async);
+
+					return $httpClient;
+				},
+			);
+
+		$this->mockContainerService(
+			API\HttpClientFactory::class,
+			$httpClientFactory,
+		);
+
+		$openApiFactory = $this->getContainer()->getByType(API\OpenApiFactory::class);
+
+		$openApi = $openApiFactory->create(
+			'testing-connector',
+			self::ACCESS_ID,
+			self::ACCESS_SECRET,
+			Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::EUROPE),
+		);
+
+		$deviceState = $openApi->getDeviceState('bf3e9d85a52b163f940wgx', false);
+
+		self::assertSame([
+			'result' => [
+				[
+					'code' => 'switch_1',
+					'value' => false,
+					'type' => null,
+				],
+				[
+					'code' => 'countdown_1',
+					'value' => 0.0,
+					'type' => null,
+				],
+			],
+		], $deviceState->toArray());
+	}
+
+	/**
+	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws DI\MissingServiceException
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\OpenApiCall
+	 * @throws Exceptions\OpenApiError
+	 * @throws RuntimeException
+	 * @throws Error
+	 */
+	public function testSetDeviceState(): void
+	{
+		$httpClient = $this->createMock(GuzzleHttp\Client::class);
+		$httpClient
+			->method('send')
+			->willReturnCallback(
+				function (Http\Message\RequestInterface $request): Http\Message\ResponseInterface {
+					$responseBody = $this->createMock(Http\Message\StreamInterface::class);
+					$responseBody
+						->method('rewind');
+
+					self::assertSame(
+						'https://openapi.tuyaeu.com/v1.0/iot-03/devices/bf3e9d85a52b163f940wgx/commands',
+						strval($request->getUri()),
+					);
+
+					$responseBody
+						->method('getContents')
+						->willReturn(
+							Utils\FileSystem::read(
+								__DIR__ . '/../../../fixtures/API/response/set_device_state.json',
+							),
+						);
+
+					$response = $this->createMock(Http\Message\ResponseInterface::class);
+					$response
+						->method('getBody')
+						->willReturn($responseBody);
+
+					return $response;
+				},
+			);
+
+		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
+		$httpClientFactory
+			->method('create')
+			->willReturnCallback(
+				static function (bool $async) use ($httpClient) {
+					self::assertFalse($async);
+
+					return $httpClient;
+				},
+			);
+
+		$this->mockContainerService(
+			API\HttpClientFactory::class,
+			$httpClientFactory,
+		);
+
+		$openApiFactory = $this->getContainer()->getByType(API\OpenApiFactory::class);
+
+		$openApi = $openApiFactory->create(
+			'testing-connector',
+			self::ACCESS_ID,
+			self::ACCESS_SECRET,
+			Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::EUROPE),
+		);
+
+		$result = $openApi->setDeviceState('bf3e9d85a52b163f940wgx', 'switch_1', false, false);
+
+		self::assertTrue($result);
+	}
+
+	/**
+	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws DI\MissingServiceException
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\OpenApiCall
+	 * @throws Exceptions\OpenApiError
+	 * @throws RuntimeException
+	 * @throws Error
+	 */
+	public function testConnect(): void
+	{
+		$httpClient = $this->createMock(GuzzleHttp\Client::class);
+		$httpClient
+			->method('send')
+			->willReturnCallback(
+				function (Http\Message\RequestInterface $request): Http\Message\ResponseInterface {
+					$responseBody = $this->createMock(Http\Message\StreamInterface::class);
+					$responseBody
+						->method('rewind');
+
+					self::assertSame(
+						'https://openapi.tuyaeu.com/v1.0/token?grant_type=1',
+						strval($request->getUri()),
+					);
+
+					$responseBody
+						->method('getContents')
+						->willReturn(
+							Utils\FileSystem::read(
+								__DIR__ . '/../../../fixtures/API/response/connect.json',
+							),
+						);
+
+					$response = $this->createMock(Http\Message\ResponseInterface::class);
+					$response
+						->method('getBody')
+						->willReturn($responseBody);
+
+					return $response;
+				},
+			);
+
+		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
+		$httpClientFactory
+			->method('create')
+			->willReturnCallback(
+				static function (bool $async) use ($httpClient) {
+					self::assertFalse($async);
+
+					return $httpClient;
+				},
+			);
+
+		$this->mockContainerService(
+			API\HttpClientFactory::class,
+			$httpClientFactory,
+		);
+
+		$openApiFactory = $this->getContainer()->getByType(API\OpenApiFactory::class);
+
+		$openApi = $openApiFactory->create(
+			'testing-connector',
+			self::ACCESS_ID,
+			self::ACCESS_SECRET,
+			Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::EUROPE),
+		);
+
+		$openApi->connect(false);
 	}
 
 }

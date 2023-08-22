@@ -30,7 +30,7 @@
       ],
       "sub": true,
       "time_zone": "+01:00",
-      "uid": "eu1638804163882cLR8v",
+      "uid": "Bjhq01pE7q4ijNMN",
       "update_time": 1692389367,
       "uuid": "9035eafffeb8f501"
     },
@@ -43,7 +43,7 @@
       "id": "bfa1a65b1d7f75a9aenvkc",
       "ip": "85.160.10.238",
       "lat": "49.1310",
-      "local_key": "fea74f634dc369c1",
+      "local_key": "qlD53YUXfxboDFpb",
       "lon": "16.8096",
       "model": "NAS-ZW05B0",
       "name": "NEO Gateway",
@@ -54,7 +54,7 @@
       "status": [],
       "sub": false,
       "time_zone": "+01:00",
-      "uid": "eu1638804163882cLR8v",
+      "uid": "Bjhq01pE7q4ijNMN",
       "update_time": 1692385165,
       "uuid": "52f41514cef56dbb"
     },
@@ -67,7 +67,7 @@
       "id": "bfa51eb7b64c2f5eedradw",
       "ip": "",
       "lat": "49.1310",
-      "local_key": "fea74f634dc369c1",
+      "local_key": "eL255qwTWzj4tJZr",
       "lon": "16.8096",
       "model": "ZSS-X-THL",
       "name": "Living room environment",
@@ -100,7 +100,7 @@
       ],
       "sub": true,
       "time_zone": "+01:00",
-      "uid": "eu1638804163882cLR8v",
+      "uid": "Bjhq01pE7q4ijNMN",
       "update_time": 1692235573,
       "uuid": "5c0272fffe037960"
     },
@@ -113,7 +113,7 @@
       "id": "402675772462ab280dae",
       "ip": "80.78.136.56",
       "lat": "49.1310",
-      "local_key": "19a61d30d285f6f2",
+      "local_key": "YyGzzRui2Xej4D04",
       "lon": "16.8096",
       "model": "ATMS1601",
       "name": "WiFi Smart Timer",
@@ -133,7 +133,7 @@
       ],
       "sub": false,
       "time_zone": "+01:00",
-      "uid": "eu1638804163882cLR8v",
+      "uid": "Bjhq01pE7q4ijNMN",
       "update_time": 1671125276,
       "uuid": "402675772462ab280dae"
     }

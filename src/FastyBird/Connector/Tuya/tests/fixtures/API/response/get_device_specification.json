@@ -1,0 +1,50 @@
+{
+  "result": {
+    "category": "cz",
+    "functions": [
+      {
+        "code": "switch_1",
+        "lang_config": {
+          "false": "OFF",
+          "true": "ON"
+        },
+        "name": "Switch 1",
+        "type": "Boolean",
+        "values": "{}"
+      },
+      {
+        "code": "countdown_1",
+        "lang_config": {
+          "unit": "s"
+        },
+        "name": "Countdown 1",
+        "type": "Integer",
+        "values": "{\"unit\":\"s\",\"min\":0,\"max\":43200,\"scale\":0,\"step\":1}"
+      }
+    ],
+    "status": [
+      {
+        "code": "switch_1",
+        "lang_config": {
+          "false": "OFF",
+          "true": "ON"
+        },
+        "name": "Switch 1",
+        "type": "Boolean",
+        "values": "{}"
+      },
+      {
+        "code": "countdown_1",
+        "lang_config": {
+          "unit": "s"
+        },
+        "name": "Countdown 1",
+        "type": "Integer",
+        "values": "{\"unit\":\"s\",\"min\":0,\"max\":43200,\"scale\":0,\"step\":1}"
+      }
+    ]
+  },
+  "success": true,
+  "t": 1692647528519,
+  "tid": "3623b897405c11ee8298eeefa7b3467e"
+}

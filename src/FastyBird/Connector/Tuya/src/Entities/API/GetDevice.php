@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * GetDeviceInformation.php
+ * GetDevice.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -18,14 +18,14 @@ namespace FastyBird\Connector\Tuya\Entities\API;
 use Orisai\ObjectMapper;
 
 /**
- * OpenAPI get device information entity
+ * OpenAPI get device detail entity
  *
  * @package        FastyBird:TuyaConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class GetDeviceInformation implements Entity
+class GetDevice implements Entity
 {
 
 	public function __construct(

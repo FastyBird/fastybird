@@ -342,7 +342,7 @@ final class Cloud implements Client
 
 		$this->connectionManager
 			->getCloudApiConnection($this->connector)
-			->getDeviceInformation($device->getIdentifier())
+			->getDeviceDetail($device->getIdentifier())
 			->then(function (Entities\API\Device $deviceInformation) use ($device): void {
 				$this->processedDevicesCommands[$device->getId()->toString()][self::CMD_HEARTBEAT] = $this->dateTimeFactory->getNow();
 

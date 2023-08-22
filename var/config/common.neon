@@ -164,6 +164,7 @@ contributteTranslation:
         - %appDir%/src/FastyBird/Module/Triggers/src/Translations
         - %appDir%/src/FastyBird/Connector/HomeKit/src/Translations
         - %appDir%/src/FastyBird/Connector/NsPanel/src/Translations
+        - %appDir%/src/FastyBird/Connector/Tuya/src/Translations
         - %appDir%/src/FastyBird/Connector/Viera/src/Translations
         - %appDir%/vendor/fastybird/json-api/src/Translations
 
