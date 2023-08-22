@@ -33,12 +33,12 @@ class RollerPayload extends Consistence\Enum\Enum
 
 	public const OPEN = 'open';
 
+	public const CLOSE = 'close';
+
 	public function getValue(): string
 	{
 		return strval(parent::getValue());
 	}
-
-	public const CLOSE = 'close';
 
 	public function __toString(): string
 	{

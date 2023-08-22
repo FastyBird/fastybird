@@ -17,6 +17,7 @@ namespace FastyBird\Connector\Shelly\Consumers\Messages;
 
 use Doctrine\DBAL;
 use FastyBird\Connector\Shelly\Entities;
+use FastyBird\Connector\Shelly\Queries;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
@@ -27,7 +28,6 @@ use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette\Utils;
 use Psr\Log;
 use Ramsey\Uuid;
-use function assert;
 
 /**
  * Device ip address consumer trait
@@ -117,14 +117,13 @@ trait ConsumeDeviceProperty
 		}
 
 		if ($property === null) {
-			$findDeviceQuery = new DevicesQueries\FindDevices();
+			$findDeviceQuery = new Queries\FindDevices();
 			$findDeviceQuery->byId($deviceId);
 
 			$device = $this->devicesRepository->findOneBy(
 				$findDeviceQuery,
 				Entities\ShellyDevice::class,
 			);
-			assert($device instanceof Entities\ShellyDevice || $device === null);
 
 			if ($device === null) {
 				return;

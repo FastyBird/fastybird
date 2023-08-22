@@ -16,13 +16,13 @@
 namespace FastyBird\Connector\Shelly\Commands;
 
 use FastyBird\Connector\Shelly\Entities;
+use FastyBird\Connector\Shelly\Queries;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Commands as DevicesCommands;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Psr\Log;
 use Ramsey\Uuid;
 use Symfony\Component\Console;
@@ -32,7 +32,6 @@ use Symfony\Component\Console\Style;
 use function array_key_first;
 use function array_search;
 use function array_values;
-use function assert;
 use function count;
 use function is_string;
 use function sprintf;
@@ -125,7 +124,7 @@ class Execute extends Console\Command\Command
 		) {
 			$connectorId = $input->getOption('connector');
 
-			$findConnectorQuery = new DevicesQueries\FindConnectors();
+			$findConnectorQuery = new Queries\FindConnectors();
 
 			if (Uuid\Uuid::isValid($connectorId)) {
 				$findConnectorQuery->byId(Uuid\Uuid::fromString($connectorId));
@@ -143,7 +142,7 @@ class Execute extends Console\Command\Command
 		} else {
 			$connectors = [];
 
-			$findConnectorsQuery = new DevicesQueries\FindConnectors();
+			$findConnectorsQuery = new Queries\FindConnectors();
 
 			$systemConnectors = $this->connectorsRepository->findAllBy(
 				$findConnectorsQuery,
@@ -156,8 +155,6 @@ class Execute extends Console\Command\Command
 			);
 
 			foreach ($systemConnectors as $connector) {
-				assert($connector instanceof Entities\ShellyConnector);
-
 				$connectors[$connector->getIdentifier()] = $connector->getIdentifier()
 					. ($connector->getName() !== null ? ' [' . $connector->getName() . ']' : '');
 			}
@@ -171,7 +168,7 @@ class Execute extends Console\Command\Command
 			if (count($connectors) === 1) {
 				$connectorIdentifier = array_key_first($connectors);
 
-				$findConnectorQuery = new DevicesQueries\FindConnectors();
+				$findConnectorQuery = new Queries\FindConnectors();
 				$findConnectorQuery->byIdentifier($connectorIdentifier);
 
 				$connector = $this->connectorsRepository->findOneBy(
@@ -222,7 +219,7 @@ class Execute extends Console\Command\Command
 					return Console\Command\Command::FAILURE;
 				}
 
-				$findConnectorQuery = new DevicesQueries\FindConnectors();
+				$findConnectorQuery = new Queries\FindConnectors();
 				$findConnectorQuery->byIdentifier($connectorIdentifierKey);
 
 				$connector = $this->connectorsRepository->findOneBy(

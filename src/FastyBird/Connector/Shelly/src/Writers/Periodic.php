@@ -19,6 +19,7 @@ use DateTimeInterface;
 use FastyBird\Connector\Shelly\Clients;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Helpers;
+use FastyBird\Connector\Shelly\Queries;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -36,7 +37,6 @@ use Ramsey\Uuid;
 use React\EventLoop;
 use Throwable;
 use function array_key_exists;
-use function assert;
 use function in_array;
 
 /**
@@ -126,12 +126,10 @@ class Periodic implements Writer
 	private function handleCommunication(): void
 	{
 		foreach ($this->clients as $id => $client) {
-			$findDevicesQuery = new DevicesQueries\FindDevices();
+			$findDevicesQuery = new Queries\FindDevices();
 			$findDevicesQuery->byConnectorId(Uuid\Uuid::fromString($id));
 
-			foreach ($this->devicesRepository->findAllBy($findDevicesQuery) as $device) {
-				assert($device instanceof Entities\ShellyDevice);
-
+			foreach ($this->devicesRepository->findAllBy($findDevicesQuery, Entities\ShellyDevice::class) as $device) {
 				if (
 					!in_array($device->getPlainId(), $this->processedDevices, true)
 					&& $this->deviceConnectionManager->getState($device)->equalsValue(

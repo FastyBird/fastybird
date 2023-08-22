@@ -19,6 +19,7 @@ use DateTimeInterface;
 use FastyBird\Connector\Shelly\Clients;
 use FastyBird\Connector\Shelly\Consumers;
 use FastyBird\Connector\Shelly\Entities;
+use FastyBird\Connector\Shelly\Queries;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
@@ -38,7 +39,6 @@ use Throwable;
 use function array_key_first;
 use function array_search;
 use function array_values;
-use function assert;
 use function count;
 use function intval;
 use function is_string;
@@ -142,7 +142,7 @@ class Discover extends Console\Command\Command
 		) {
 			$connectorId = $input->getOption('connector');
 
-			$findConnectorQuery = new DevicesQueries\FindConnectors();
+			$findConnectorQuery = new Queries\FindConnectors();
 
 			if (Uuid\Uuid::isValid($connectorId)) {
 				$findConnectorQuery->byId(Uuid\Uuid::fromString($connectorId));
@@ -151,7 +151,6 @@ class Discover extends Console\Command\Command
 			}
 
 			$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\ShellyConnector::class);
-			assert($connector instanceof Entities\ShellyConnector || $connector === null);
 
 			if ($connector === null) {
 				$io->warning('Connector was not found in system');
@@ -161,7 +160,7 @@ class Discover extends Console\Command\Command
 		} else {
 			$connectors = [];
 
-			$findConnectorsQuery = new DevicesQueries\FindConnectors();
+			$findConnectorsQuery = new Queries\FindConnectors();
 
 			$systemConnectors = $this->connectorsRepository->findAllBy(
 				$findConnectorsQuery,
@@ -174,8 +173,6 @@ class Discover extends Console\Command\Command
 			);
 
 			foreach ($systemConnectors as $connector) {
-				assert($connector instanceof Entities\ShellyConnector);
-
 				$connectors[$connector->getIdentifier()] = $connector->getIdentifier()
 					. ($connector->getName() !== null ? ' [' . $connector->getName() . ']' : '');
 			}
@@ -189,14 +186,13 @@ class Discover extends Console\Command\Command
 			if (count($connectors) === 1) {
 				$connectorIdentifier = array_key_first($connectors);
 
-				$findConnectorQuery = new DevicesQueries\FindConnectors();
+				$findConnectorQuery = new Queries\FindConnectors();
 				$findConnectorQuery->byIdentifier($connectorIdentifier);
 
 				$connector = $this->connectorsRepository->findOneBy(
 					$findConnectorQuery,
 					Entities\ShellyConnector::class,
 				);
-				assert($connector instanceof Entities\ShellyConnector || $connector === null);
 
 				if ($connector === null) {
 					$io->warning('Connector was not found in system');
@@ -241,14 +237,13 @@ class Discover extends Console\Command\Command
 					return Console\Command\Command::FAILURE;
 				}
 
-				$findConnectorQuery = new DevicesQueries\FindConnectors();
+				$findConnectorQuery = new Queries\FindConnectors();
 				$findConnectorQuery->byIdentifier($connectorIdentifier);
 
 				$connector = $this->connectorsRepository->findOneBy(
 					$findConnectorQuery,
 					Entities\ShellyConnector::class,
 				);
-				assert($connector instanceof Entities\ShellyConnector || $connector === null);
 			}
 
 			if ($connector === null) {
@@ -353,7 +348,7 @@ class Discover extends Console\Command\Command
 
 			$io->newLine();
 
-			$findDevicesQuery = new DevicesQueries\FindDevices();
+			$findDevicesQuery = new Queries\FindDevices();
 			$findDevicesQuery->byConnectorId($connector->getId());
 
 			$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\ShellyDevice::class);
@@ -370,8 +365,6 @@ class Discover extends Console\Command\Command
 			$foundDevices = 0;
 
 			foreach ($devices as $device) {
-				assert($device instanceof Entities\ShellyDevice);
-
 				$createdAt = $device->getCreatedAt();
 
 				if (

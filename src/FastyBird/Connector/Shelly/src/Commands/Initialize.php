@@ -20,6 +20,7 @@ use Doctrine\Persistence;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Helpers;
+use FastyBird\Connector\Shelly\Queries;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -160,7 +161,7 @@ class Initialize extends Console\Command\Command
 
 		$question->setValidator(function (string|null $answer) {
 			if ($answer !== '' && $answer !== null) {
-				$findConnectorQuery = new DevicesQueries\FindConnectors();
+				$findConnectorQuery = new Queries\FindConnectors();
 				$findConnectorQuery->byIdentifier($answer);
 
 				if ($this->connectorsRepository->findOneBy(
@@ -182,7 +183,7 @@ class Initialize extends Console\Command\Command
 			for ($i = 1; $i <= 100; $i++) {
 				$identifier = sprintf($identifierPattern, $i);
 
-				$findConnectorQuery = new DevicesQueries\FindConnectors();
+				$findConnectorQuery = new Queries\FindConnectors();
 				$findConnectorQuery->byIdentifier($identifier);
 
 				if ($this->connectorsRepository->findOneBy(
@@ -659,7 +660,7 @@ class Initialize extends Console\Command\Command
 	{
 		$connectors = [];
 
-		$findConnectorsQuery = new DevicesQueries\FindConnectors();
+		$findConnectorsQuery = new Queries\FindConnectors();
 
 		$systemConnectors = $this->connectorsRepository->findAllBy(
 			$findConnectorsQuery,
@@ -672,8 +673,6 @@ class Initialize extends Console\Command\Command
 		);
 
 		foreach ($systemConnectors as $connector) {
-			assert($connector instanceof Entities\ShellyConnector);
-
 			$connectors[$connector->getIdentifier()] = $connector->getIdentifier()
 				. ($connector->getName() !== null ? ' [' . $connector->getName() . ']' : '');
 		}
@@ -700,14 +699,13 @@ class Initialize extends Console\Command\Command
 			$identifier = array_search($answer, $connectors, true);
 
 			if ($identifier !== false) {
-				$findConnectorQuery = new DevicesQueries\FindConnectors();
+				$findConnectorQuery = new Queries\FindConnectors();
 				$findConnectorQuery->byIdentifier($identifier);
 
 				$connector = $this->connectorsRepository->findOneBy(
 					$findConnectorQuery,
 					Entities\ShellyConnector::class,
 				);
-				assert($connector instanceof Entities\ShellyConnector || $connector === null);
 
 				if ($connector !== null) {
 					return $connector;

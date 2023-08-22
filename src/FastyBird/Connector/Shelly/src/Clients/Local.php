@@ -20,6 +20,7 @@ use FastyBird\Connector\Shelly\API;
 use FastyBird\Connector\Shelly\Clients;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
+use FastyBird\Connector\Shelly\Queries;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\Connector\Shelly\Writers;
 use FastyBird\DateTimeFactory;
@@ -30,7 +31,6 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Psr\Log;
@@ -151,17 +151,15 @@ final class Local implements Client
 		}
 
 		try {
-			$findDevicesQuery = new DevicesQueries\FindDevices();
+			$findDevicesQuery = new Queries\FindDevices();
 			$findDevicesQuery->forConnector($this->connector);
 
 			$this->wsClient->connect(
 				array_filter(
 					$this->devicesRepository->findAllBy($findDevicesQuery, Entities\ShellyDevice::class),
-					static function (DevicesEntities\Devices\Device $device): bool {
-						assert($device instanceof Entities\ShellyDevice);
-
-						return $device->getGeneration()->equalsValue(Types\DeviceGeneration::GENERATION_2);
-					},
+					static fn (DevicesEntities\Devices\Device $device): bool => $device->getGeneration()->equalsValue(
+						Types\DeviceGeneration::GENERATION_2,
+					),
 				),
 			);
 		} catch (Throwable $ex) {
@@ -312,12 +310,10 @@ final class Local implements Client
 	 */
 	private function handleCommunication(): void
 	{
-		$findDevicesQuery = new DevicesQueries\FindDevices();
+		$findDevicesQuery = new Queries\FindDevices();
 		$findDevicesQuery->forConnector($this->connector);
 
 		foreach ($this->devicesRepository->findAllBy($findDevicesQuery, Entities\ShellyDevice::class) as $device) {
-			assert($device instanceof Entities\ShellyDevice);
-
 			if (
 				!in_array($device->getPlainId(), $this->processedDevices, true)
 				&& !$this->deviceConnectionManager->getState($device)->equalsValue(

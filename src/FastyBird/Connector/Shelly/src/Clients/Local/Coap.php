@@ -23,6 +23,7 @@ use FastyBird\Connector\Shelly\Clients;
 use FastyBird\Connector\Shelly\Consumers;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
+use FastyBird\Connector\Shelly\Queries;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -393,7 +394,7 @@ final class Coap implements Clients\Client
 		int $sensorIdentifier,
 	): DevicesEntities\Devices\Properties\Dynamic|DevicesEntities\Channels\Properties\Dynamic|null
 	{
-		$findDeviceQuery = new DevicesQueries\FindDevices();
+		$findDeviceQuery = new Queries\FindDevices();
 		$findDeviceQuery->forConnector($this->connector);
 		$findDeviceQuery->startWithIdentifier($deviceIdentifier);
 
