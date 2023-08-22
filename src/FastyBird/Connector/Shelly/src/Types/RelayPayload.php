@@ -29,18 +29,20 @@ use function strval;
 class RelayPayload extends Consistence\Enum\Enum
 {
 
-	/**
-	 * Define device states
-	 */
-	public const PAYLOAD_ON = 'on';
+	public const ON = 'on';
 
-	public const PAYLOAD_OFF = 'off';
+	public const OFF = 'off';
 
-	public const PAYLOAD_TOGGLE = 'toggle';
+	public const TOGGLE = 'toggle';
+
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
 
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }

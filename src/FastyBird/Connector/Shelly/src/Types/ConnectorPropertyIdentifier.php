@@ -29,18 +29,20 @@ use function strval;
 class ConnectorPropertyIdentifier extends Consistence\Enum\Enum
 {
 
-	/**
-	 * Define device states
-	 */
-	public const IDENTIFIER_CLIENT_MODE = 'mode';
+	public const CLIENT_MODE = 'mode';
 
-	public const IDENTIFIER_CLOUD_AUTH_KEY = 'cloud_auth_key';
+	public const CLOUD_AUTH_KEY = 'cloud_auth_key';
 
-	public const IDENTIFIER_CLOUD_SERVER = 'cloud_server';
+	public const CLOUD_SERVER = 'cloud_server';
+
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
 
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }

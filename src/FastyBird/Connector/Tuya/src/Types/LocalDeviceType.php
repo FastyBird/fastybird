@@ -29,9 +29,6 @@ use function strval;
 class LocalDeviceType extends Consistence\Enum\Enum
 {
 
-	/**
-	 * Define codes
-	 */
 	public const DEFAULT = 'default';
 
 	/**
@@ -54,7 +51,7 @@ class LocalDeviceType extends Consistence\Enum\Enum
 
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }

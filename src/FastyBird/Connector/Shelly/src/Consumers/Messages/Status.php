@@ -87,7 +87,7 @@ final class Status implements Consumer
 			$device->getId(),
 			$entity->getIpAddress(),
 			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-			Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS,
+			Types\DevicePropertyIdentifier::IP_ADDRESS,
 		);
 
 		foreach ($entity->getStatuses() as $status) {

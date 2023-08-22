@@ -205,7 +205,7 @@ class Initialize extends Console\Command\Command
 		$cloudAuthKey = null;
 		$cloudServer = null;
 
-		if ($mode->getValue() === Types\ClientMode::MODE_CLOUD) {
+		if ($mode->getValue() === Types\ClientMode::CLOUD) {
 			$cloudAuthKey = $this->askCloudAuthenticationKey($io);
 			$cloudServer = $this->askCloudServerAddress($io);
 		}
@@ -222,24 +222,24 @@ class Initialize extends Console\Command\Command
 
 			$this->propertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-				'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE,
-				'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE),
+				'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE,
+				'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::CLIENT_MODE),
 				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
 				'value' => $mode->getValue(),
 				'format' => [
-					Types\ClientMode::MODE_LOCAL,
-					Types\ClientMode::MODE_CLOUD,
-					Types\ClientMode::MODE_MQTT,
-					Types\ClientMode::MODE_INTEGRATOR,
+					Types\ClientMode::LOCAL,
+					Types\ClientMode::CLOUD,
+					Types\ClientMode::MQTT,
+					Types\ClientMode::INTEGRATOR,
 				],
 				'connector' => $connector,
 			]));
 
-			if ($mode->getValue() === Types\ClientMode::MODE_CLOUD) {
+			if ($mode->getValue() === Types\ClientMode::CLOUD) {
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_CLOUD_AUTH_KEY,
-					'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLOUD_AUTH_KEY),
+					'identifier' => Types\ConnectorPropertyIdentifier::CLOUD_AUTH_KEY,
+					'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::CLOUD_AUTH_KEY),
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 					'value' => $cloudAuthKey,
 					'connector' => $connector,
@@ -247,8 +247,8 @@ class Initialize extends Console\Command\Command
 
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_CLOUD_SERVER,
-					'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLOUD_SERVER),
+					'identifier' => Types\ConnectorPropertyIdentifier::CLOUD_SERVER,
+					'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::CLOUD_SERVER),
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 					'value' => $cloudServer,
 					'connector' => $connector,
@@ -312,7 +312,7 @@ class Initialize extends Console\Command\Command
 
 		$findConnectorPropertyQuery = new DevicesQueries\FindConnectorProperties();
 		$findConnectorPropertyQuery->forConnector($connector);
-		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE);
+		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::CLIENT_MODE);
 
 		$modeProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
@@ -342,12 +342,12 @@ class Initialize extends Console\Command\Command
 		$cloudServerProperty = null;
 
 		if (
-			$modeProperty?->getValue() === Types\ClientMode::MODE_CLOUD
-			|| $mode?->getValue() === Types\ClientMode::MODE_CLOUD
+			$modeProperty?->getValue() === Types\ClientMode::CLOUD
+			|| $mode?->getValue() === Types\ClientMode::CLOUD
 		) {
 			$findConnectorPropertyQuery = new DevicesQueries\FindConnectorProperties();
 			$findConnectorPropertyQuery->forConnector($connector);
-			$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLOUD_AUTH_KEY);
+			$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::CLOUD_AUTH_KEY);
 
 			$cloudAuthKeyProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
@@ -368,7 +368,7 @@ class Initialize extends Console\Command\Command
 
 			$findConnectorPropertyQuery = new DevicesQueries\FindConnectorProperties();
 			$findConnectorPropertyQuery->forConnector($connector);
-			$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLOUD_SERVER);
+			$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::CLOUD_SERVER);
 
 			$cloudServerProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
@@ -426,15 +426,15 @@ class Initialize extends Console\Command\Command
 
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE,
-					'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE),
+					'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE,
+					'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::CLIENT_MODE),
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
 					'value' => $mode->getValue(),
 					'format' => [
-						Types\ClientMode::MODE_LOCAL,
-						Types\ClientMode::MODE_CLOUD,
-						Types\ClientMode::MODE_MQTT,
-						Types\ClientMode::MODE_INTEGRATOR,
+						Types\ClientMode::LOCAL,
+						Types\ClientMode::CLOUD,
+						Types\ClientMode::MQTT,
+						Types\ClientMode::INTEGRATOR,
 					],
 					'connector' => $connector,
 				]));
@@ -445,8 +445,8 @@ class Initialize extends Console\Command\Command
 			}
 
 			if (
-				$modeProperty?->getValue() === Types\ClientMode::MODE_CLOUD
-				|| $mode?->getValue() === Types\ClientMode::MODE_CLOUD
+				$modeProperty?->getValue() === Types\ClientMode::CLOUD
+				|| $mode?->getValue() === Types\ClientMode::CLOUD
 			) {
 				if ($cloudAuthKeyProperty !== null) {
 					$this->propertiesManager->update($cloudAuthKeyProperty, Utils\ArrayHash::from([
@@ -455,9 +455,9 @@ class Initialize extends Console\Command\Command
 				} else {
 					$this->propertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-						'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_CLOUD_AUTH_KEY,
+						'identifier' => Types\ConnectorPropertyIdentifier::CLOUD_AUTH_KEY,
 						'name' => Helpers\Name::createName(
-							Types\ConnectorPropertyIdentifier::IDENTIFIER_CLOUD_AUTH_KEY,
+							Types\ConnectorPropertyIdentifier::CLOUD_AUTH_KEY,
 						),
 						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 						'value' => $cloudAuthKey,
@@ -472,8 +472,8 @@ class Initialize extends Console\Command\Command
 				} else {
 					$this->propertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-						'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_CLOUD_SERVER,
-						'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLOUD_SERVER),
+						'identifier' => Types\ConnectorPropertyIdentifier::CLOUD_SERVER,
+						'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::CLOUD_SERVER),
 						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 						'value' => $cloudServer,
 						'connector' => $connector,
@@ -585,15 +585,15 @@ class Initialize extends Console\Command\Command
 			}
 
 			if ($answer === self::CHOICE_QUESTION_AUTO_MODE || $answer === '0') {
-				return Types\ClientMode::get(Types\ClientMode::MODE_MQTT);
+				return Types\ClientMode::get(Types\ClientMode::MQTT);
 			}
 
 			if ($answer === self::CHOICE_QUESTION_LOCAL_MODE || $answer === '1') {
-				return Types\ClientMode::get(Types\ClientMode::MODE_LOCAL);
+				return Types\ClientMode::get(Types\ClientMode::LOCAL);
 			}
 
 			if ($answer === self::CHOICE_QUESTION_CLOUD_MODE || $answer === '2') {
-				return Types\ClientMode::get(Types\ClientMode::MODE_CLOUD);
+				return Types\ClientMode::get(Types\ClientMode::CLOUD);
 			}
 
 			throw new Exceptions\InvalidState('Selected answer is not valid');

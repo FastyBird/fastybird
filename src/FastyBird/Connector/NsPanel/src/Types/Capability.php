@@ -30,9 +30,6 @@ use function strval;
 class Capability extends Consistence\Enum\Enum
 {
 
-	/**
-	 * Permissions
-	 */
 	public const POWER = 'power';
 
 	public const TOGGLE = 'toggle';

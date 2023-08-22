@@ -385,7 +385,7 @@ class Discover extends Console\Command\Command
 
 					$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
 					$findDevicePropertyQuery->forDevice($device);
-					$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL);
+					$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::MODEL);
 
 					$hardwareModelProperty = $this->devicePropertiesRepository->findOneBy($findDevicePropertyQuery);
 

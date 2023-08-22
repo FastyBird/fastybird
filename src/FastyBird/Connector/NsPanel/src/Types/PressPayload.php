@@ -29,9 +29,6 @@ use function strval;
 class PressPayload extends Consistence\Enum\Enum
 {
 
-	/**
-	 * Define types
-	 */
 	public const SINGLE_PRESS = 'singlePress';
 
 	public const DOUBLE_PRESS = 'doublePress';

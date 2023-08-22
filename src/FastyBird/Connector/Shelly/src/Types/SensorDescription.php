@@ -29,70 +29,72 @@ use function strval;
 class SensorDescription extends Consistence\Enum\Enum
 {
 
-	/**
-	 * Define device states
-	 */
-	public const DESC_MODE = 'mode';
+	public const MODE = 'mode';
 
-	public const DESC_OUTPUT = 'output';
+	public const OUTPUT = 'output';
 
-	public const DESC_ROLLER = 'roller';
+	public const ROLLER = 'roller';
 
-	public const DESC_ROLLER_POSITION = 'rollerPos';
+	public const ROLLER_POSITION = 'rollerPos';
 
-	public const DESC_ROLLER_STOP_REASON = 'rollerStopReason';
+	public const ROLLER_STOP_REASON = 'rollerStopReason';
 
-	public const DESC_ROLLER_POWER = 'rollerPower';
+	public const ROLLER_POWER = 'rollerPower';
 
-	public const DESC_ROLLER_ENERGY = 'rollerEnergy';
+	public const ROLLER_ENERGY = 'rollerEnergy';
 
-	public const DESC_RED = 'red';
+	public const RED = 'red';
 
-	public const DESC_GREEN = 'green';
+	public const GREEN = 'green';
 
-	public const DESC_BLUE = 'blue';
+	public const BLUE = 'blue';
 
-	public const DESC_WHITE = 'white';
+	public const WHITE = 'white';
 
-	public const DESC_WHITE_LEVEL = 'whiteLevel';
+	public const WHITE_LEVEL = 'whiteLevel';
 
-	public const DESC_GAIN = 'gain';
+	public const GAIN = 'gain';
 
-	public const DESC_COLOR_TEMP = 'colorTemp';
+	public const COLOR_TEMP = 'colorTemp';
 
-	public const DESC_BRIGHTNESS = 'brightness';
+	public const BRIGHTNESS = 'brightness';
 
-	public const DESC_EFFECT = 'effect';
+	public const EFFECT = 'effect';
 
-	public const DESC_OVERPOWER = 'overpower';
+	public const OVERPOWER = 'overpower';
 
-	public const DESC_OVERPOWER_VALUE = 'overpowerValue';
+	public const OVERPOWER_VALUE = 'overpowerValue';
 
-	public const DESC_OVERTEMPERATURE = 'overtemp';
+	public const OVERTEMPERATURE = 'overtemp';
 
-	public const DESC_INPUT = 'input';
+	public const INPUT = 'input';
 
-	public const DESC_INPUT_EVENT = 'inputEvent';
+	public const INPUT_EVENT = 'inputEvent';
 
-	public const DESC_INPUT_EVENT_COUNT = 'inputEventCnt';
+	public const INPUT_EVENT_COUNT = 'inputEventCnt';
 
-	public const DESC_ACTIVE_POWER = 'power';
+	public const ACTIVE_POWER = 'power';
 
-	public const DESC_REACTIVE_POWER = 'reactive';
+	public const REACTIVE_POWER = 'reactive';
 
-	public const DESC_ENERGY = 'energy';
+	public const ENERGY = 'energy';
 
-	public const DESC_ENERGY_RETURNED = 'energyReturned';
+	public const ENERGY_RETURNED = 'energyReturned';
 
-	public const DESC_VOLTAGE = 'voltage';
+	public const VOLTAGE = 'voltage';
 
-	public const DESC_CURRENT = 'current';
+	public const CURRENT = 'current';
 
-	public const DESC_POWER_FACTOR = 'powerFactor';
+	public const POWER_FACTOR = 'powerFactor';
+
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
 
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }

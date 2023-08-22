@@ -29,18 +29,20 @@ use function strval;
 class RollerPayload extends Consistence\Enum\Enum
 {
 
-	/**
-	 * Define device states
-	 */
-	public const PAYLOAD_STOP = 'stop';
+	public const STOP = 'stop';
 
-	public const PAYLOAD_OPEN = 'open';
+	public const OPEN = 'open';
 
-	public const PAYLOAD_CLOSE = 'close';
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
+
+	public const CLOSE = 'close';
 
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }

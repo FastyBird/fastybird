@@ -48,7 +48,7 @@ final class DeviceHumidityConfiguration implements Entities\API\Entity
 
 	public function getType(): Types\ComponentType
 	{
-		return Types\ComponentType::get(Types\ComponentType::TYPE_HUMIDITY);
+		return Types\ComponentType::get(Types\ComponentType::HUMIDITY);
 	}
 
 	public function getName(): string|null

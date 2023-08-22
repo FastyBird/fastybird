@@ -56,7 +56,7 @@ final class DeviceSwitchConfiguration implements Entities\API\Entity
 
 	public function getType(): Types\ComponentType
 	{
-		return Types\ComponentType::get(Types\ComponentType::TYPE_SWITCH);
+		return Types\ComponentType::get(Types\ComponentType::SWITCH);
 	}
 
 	public function getName(): string|null

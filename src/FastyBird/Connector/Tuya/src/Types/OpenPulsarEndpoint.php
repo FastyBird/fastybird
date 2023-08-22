@@ -29,9 +29,6 @@ use function strval;
 class OpenPulsarEndpoint extends Consistence\Enum\Enum
 {
 
-	/**
-	 * Define versions
-	 */
 	public const CHINA = 'wss://mqe.tuyacn.com:8285/';
 
 	public const AMERICA = 'wss://mqe.tuyaus.com:8285/';
@@ -47,7 +44,7 @@ class OpenPulsarEndpoint extends Consistence\Enum\Enum
 
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }

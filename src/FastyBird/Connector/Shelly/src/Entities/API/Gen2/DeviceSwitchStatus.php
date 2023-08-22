@@ -62,7 +62,7 @@ final class DeviceSwitchStatus implements Entities\API\Entity
 
 	public function getType(): Types\ComponentType
 	{
-		return Types\ComponentType::get(Types\ComponentType::TYPE_SWITCH);
+		return Types\ComponentType::get(Types\ComponentType::SWITCH);
 	}
 
 	public function getSource(): string|null

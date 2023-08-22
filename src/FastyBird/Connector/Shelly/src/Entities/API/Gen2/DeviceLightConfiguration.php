@@ -53,7 +53,7 @@ final class DeviceLightConfiguration implements Entities\API\Entity
 
 	public function getType(): Types\ComponentType
 	{
-		return Types\ComponentType::get(Types\ComponentType::TYPE_LIGHT);
+		return Types\ComponentType::get(Types\ComponentType::LIGHT);
 	}
 
 	public function getName(): string|null

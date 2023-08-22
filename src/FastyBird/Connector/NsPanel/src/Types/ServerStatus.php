@@ -29,9 +29,6 @@ use function strval;
 class ServerStatus extends Consistence\Enum\Enum
 {
 
-	/**
-	 * Define statuses
-	 */
 	public const SUCCESS = 0;
 
 	public const ENDPOINT_UNREACHABLE = 'ENDPOINT_UNREACHABLE';

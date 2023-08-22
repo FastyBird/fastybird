@@ -52,7 +52,7 @@ final class DeviceTemperatureStatus implements Entities\API\Entity
 
 	public function getType(): Types\ComponentType
 	{
-		return Types\ComponentType::get(Types\ComponentType::TYPE_TEMPERATURE);
+		return Types\ComponentType::get(Types\ComponentType::TEMPERATURE);
 	}
 
 	public function getTemperatureCelsius(): float|string|null

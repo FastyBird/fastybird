@@ -29,9 +29,6 @@ use function strval;
 class ClientMode extends Consistence\Enum\Enum
 {
 
-	/**
-	 * Define versions
-	 */
 	public const GATEWAY = 'gateway';
 
 	public const DEVICE = 'device';
@@ -40,7 +37,7 @@ class ClientMode extends Consistence\Enum\Enum
 
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }

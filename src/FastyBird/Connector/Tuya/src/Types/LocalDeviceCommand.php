@@ -30,9 +30,6 @@ use function strval;
 class LocalDeviceCommand extends Consistence\Enum\Enum
 {
 
-	/**
-	 * Define codes
-	 */
 	public const UDP = 0;
 
 	public const AP_CONFIG = 1;

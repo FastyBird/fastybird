@@ -48,7 +48,7 @@ final class DeviceTemperatureConfiguration implements Entities\API\Entity
 
 	public function getType(): Types\ComponentType
 	{
-		return Types\ComponentType::get(Types\ComponentType::TYPE_TEMPERATURE);
+		return Types\ComponentType::get(Types\ComponentType::TEMPERATURE);
 	}
 
 	public function getName(): string|null

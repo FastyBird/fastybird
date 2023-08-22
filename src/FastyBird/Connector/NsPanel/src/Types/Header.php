@@ -29,9 +29,6 @@ use function strval;
 class Header extends Consistence\Enum\Enum
 {
 
-	/**
-	 * Permissions
-	 */
 	public const RESPONSE = 'Response';
 
 	public const ERROR_RESPONSE = 'ErrorResponse';

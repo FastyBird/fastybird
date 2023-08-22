@@ -355,7 +355,7 @@ final class Http
 					foreach ($channel->getProperties() as $property) {
 						if (Utils\Strings::endsWith(
 							$property->getIdentifier(),
-							'_' . Types\SensorDescription::DESC_INPUT,
+							'_' . Types\SensorDescription::INPUT,
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
@@ -367,7 +367,7 @@ final class Http
 							);
 						} elseif (Utils\Strings::endsWith(
 							$property->getIdentifier(),
-							'_' . Types\SensorDescription::DESC_INPUT_EVENT,
+							'_' . Types\SensorDescription::INPUT_EVENT,
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
@@ -379,7 +379,7 @@ final class Http
 							);
 						} elseif (Utils\Strings::endsWith(
 							$property->getIdentifier(),
-							'_' . Types\SensorDescription::DESC_INPUT_EVENT_COUNT,
+							'_' . Types\SensorDescription::INPUT_EVENT_COUNT,
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
@@ -418,11 +418,11 @@ final class Http
 						if (
 							Utils\Strings::endsWith(
 								$property->getIdentifier(),
-								'_' . Types\SensorDescription::DESC_ACTIVE_POWER,
+								'_' . Types\SensorDescription::ACTIVE_POWER,
 							)
 							|| Utils\Strings::endsWith(
 								$property->getIdentifier(),
-								'_' . Types\SensorDescription::DESC_ROLLER_POWER,
+								'_' . Types\SensorDescription::ROLLER_POWER,
 							)
 						) {
 							$result[] = new Entities\Messages\PropertyStatus(
@@ -437,11 +437,11 @@ final class Http
 							(
 								Utils\Strings::endsWith(
 									$property->getIdentifier(),
-									'_' . Types\SensorDescription::DESC_OVERPOWER,
+									'_' . Types\SensorDescription::OVERPOWER,
 								)
 								|| Utils\Strings::endsWith(
 									$property->getIdentifier(),
-									'_' . Types\SensorDescription::DESC_OVERPOWER_VALUE,
+									'_' . Types\SensorDescription::OVERPOWER_VALUE,
 								)
 							)
 						) {
@@ -466,11 +466,11 @@ final class Http
 						} elseif (
 							Utils\Strings::endsWith(
 								$property->getIdentifier(),
-								'_' . Types\SensorDescription::DESC_ENERGY,
+								'_' . Types\SensorDescription::ENERGY,
 							)
 							|| Utils\Strings::endsWith(
 								$property->getIdentifier(),
-								'_' . Types\SensorDescription::DESC_ROLLER_ENERGY,
+								'_' . Types\SensorDescription::ROLLER_ENERGY,
 							)
 						) {
 							$result[] = new Entities\Messages\PropertyStatus(
@@ -505,14 +505,14 @@ final class Http
 			foreach ($channels as $channel) {
 				if (Utils\Strings::endsWith(
 					$channel->getIdentifier(),
-					Types\BlockDescription::DESC_RELAY . '_' . $index,
+					Types\BlockDescription::RELAY . '_' . $index,
 				)) {
 					$result = [];
 
 					foreach ($channel->getProperties() as $property) {
 						if (Utils\Strings::endsWith(
 							$property->getIdentifier(),
-							'_' . Types\SensorDescription::DESC_OUTPUT,
+							'_' . Types\SensorDescription::OUTPUT,
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
@@ -524,7 +524,7 @@ final class Http
 							);
 						} elseif (Utils\Strings::endsWith(
 							$property->getIdentifier(),
-							'_' . Types\SensorDescription::DESC_OVERPOWER,
+							'_' . Types\SensorDescription::OVERPOWER,
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
@@ -543,13 +543,13 @@ final class Http
 							$result,
 						);
 					}
-				} elseif (Utils\Strings::endsWith($channel->getIdentifier(), Types\BlockDescription::DESC_DEVICE)) {
+				} elseif (Utils\Strings::endsWith($channel->getIdentifier(), Types\BlockDescription::DEVICE)) {
 					$result = [];
 
 					foreach ($channel->getProperties() as $property) {
 						if (Utils\Strings::endsWith(
 							$property->getIdentifier(),
-							'_' . Types\SensorDescription::DESC_OVERTEMPERATURE,
+							'_' . Types\SensorDescription::OVERTEMPERATURE,
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
@@ -581,14 +581,14 @@ final class Http
 			foreach ($channels as $channel) {
 				if (Utils\Strings::endsWith(
 					$channel->getIdentifier(),
-					Types\BlockDescription::DESC_ROLLER . '_' . $index,
+					Types\BlockDescription::ROLLER . '_' . $index,
 				)) {
 					$result = [];
 
 					foreach ($channel->getProperties() as $property) {
 						if (Utils\Strings::endsWith(
 							$property->getIdentifier(),
-							'_' . Types\SensorDescription::DESC_ROLLER,
+							'_' . Types\SensorDescription::ROLLER,
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
@@ -601,7 +601,7 @@ final class Http
 
 						} elseif (Utils\Strings::endsWith(
 							$property->getIdentifier(),
-							'_' . Types\SensorDescription::DESC_ROLLER_POSITION,
+							'_' . Types\SensorDescription::ROLLER_POSITION,
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
@@ -614,7 +614,7 @@ final class Http
 
 						} elseif (Utils\Strings::endsWith(
 							$property->getIdentifier(),
-							'_' . Types\SensorDescription::DESC_ROLLER_STOP_REASON,
+							'_' . Types\SensorDescription::ROLLER_STOP_REASON,
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
@@ -633,13 +633,13 @@ final class Http
 							$result,
 						);
 					}
-				} elseif (Utils\Strings::endsWith($channel->getIdentifier(), Types\BlockDescription::DESC_DEVICE)) {
+				} elseif (Utils\Strings::endsWith($channel->getIdentifier(), Types\BlockDescription::DEVICE)) {
 					$result = [];
 
 					foreach ($channel->getProperties() as $property) {
 						if (Utils\Strings::endsWith(
 							$property->getIdentifier(),
-							'_' . Types\SensorDescription::DESC_OVERTEMPERATURE,
+							'_' . Types\SensorDescription::OVERTEMPERATURE,
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
@@ -671,14 +671,14 @@ final class Http
 			foreach ($channels as $channel) {
 				if (Utils\Strings::endsWith(
 					$channel->getIdentifier(),
-					Types\BlockDescription::DESC_LIGHT . '_' . $index,
+					Types\BlockDescription::LIGHT . '_' . $index,
 				)) {
 					$result = [];
 
 					foreach ($channel->getProperties() as $property) {
 						if (Utils\Strings::endsWith(
 							$property->getIdentifier(),
-							'_' . Types\SensorDescription::DESC_RED,
+							'_' . Types\SensorDescription::RED,
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
@@ -691,7 +691,7 @@ final class Http
 
 						} elseif (Utils\Strings::endsWith(
 							$property->getIdentifier(),
-							'_' . Types\SensorDescription::DESC_GREEN,
+							'_' . Types\SensorDescription::GREEN,
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
@@ -703,7 +703,7 @@ final class Http
 							);
 						} elseif (Utils\Strings::endsWith(
 							$property->getIdentifier(),
-							'_' . Types\SensorDescription::DESC_BLUE,
+							'_' . Types\SensorDescription::BLUE,
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
@@ -715,7 +715,7 @@ final class Http
 							);
 						} elseif (Utils\Strings::endsWith(
 							$property->getIdentifier(),
-							'_' . Types\SensorDescription::DESC_GAIN,
+							'_' . Types\SensorDescription::GAIN,
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
@@ -728,11 +728,11 @@ final class Http
 						} elseif (
 							Utils\Strings::endsWith(
 								$property->getIdentifier(),
-								'_' . Types\SensorDescription::DESC_WHITE,
+								'_' . Types\SensorDescription::WHITE,
 							)
 							|| Utils\Strings::endsWith(
 								$property->getIdentifier(),
-								'_' . Types\SensorDescription::DESC_WHITE_LEVEL,
+								'_' . Types\SensorDescription::WHITE_LEVEL,
 							)
 						) {
 							$result[] = new Entities\Messages\PropertyStatus(
@@ -745,7 +745,7 @@ final class Http
 							);
 						} elseif (Utils\Strings::endsWith(
 							$property->getIdentifier(),
-							'_' . Types\SensorDescription::DESC_EFFECT,
+							'_' . Types\SensorDescription::EFFECT,
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
@@ -757,7 +757,7 @@ final class Http
 							);
 						} elseif (Utils\Strings::endsWith(
 							$property->getIdentifier(),
-							'_' . Types\SensorDescription::DESC_BRIGHTNESS,
+							'_' . Types\SensorDescription::BRIGHTNESS,
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
@@ -769,7 +769,7 @@ final class Http
 							);
 						} elseif (Utils\Strings::endsWith(
 							$property->getIdentifier(),
-							'_' . Types\SensorDescription::DESC_OUTPUT,
+							'_' . Types\SensorDescription::OUTPUT,
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
@@ -803,14 +803,14 @@ final class Http
 			foreach ($channels as $channel) {
 				if (Utils\Strings::endsWith(
 					$channel->getIdentifier(),
-					Types\BlockDescription::DESC_EMETER . '_' . $index,
+					Types\BlockDescription::EMETER . '_' . $index,
 				)) {
 					$result = [];
 
 					foreach ($channel->getProperties() as $property) {
 						if (Utils\Strings::endsWith(
 							$property->getIdentifier(),
-							'_' . Types\SensorDescription::DESC_ACTIVE_POWER,
+							'_' . Types\SensorDescription::ACTIVE_POWER,
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
@@ -823,7 +823,7 @@ final class Http
 
 						} elseif (Utils\Strings::endsWith(
 							$property->getIdentifier(),
-							'_' . Types\SensorDescription::DESC_REACTIVE_POWER,
+							'_' . Types\SensorDescription::REACTIVE_POWER,
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
@@ -836,7 +836,7 @@ final class Http
 
 						} elseif (Utils\Strings::endsWith(
 							$property->getIdentifier(),
-							'_' . Types\SensorDescription::DESC_POWER_FACTOR,
+							'_' . Types\SensorDescription::POWER_FACTOR,
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
@@ -849,7 +849,7 @@ final class Http
 
 						} elseif (Utils\Strings::endsWith(
 							$property->getIdentifier(),
-							'_' . Types\SensorDescription::DESC_CURRENT,
+							'_' . Types\SensorDescription::CURRENT,
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
@@ -862,7 +862,7 @@ final class Http
 
 						} elseif (Utils\Strings::endsWith(
 							$property->getIdentifier(),
-							'_' . Types\SensorDescription::DESC_VOLTAGE,
+							'_' . Types\SensorDescription::VOLTAGE,
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
@@ -875,7 +875,7 @@ final class Http
 
 						} elseif (Utils\Strings::endsWith(
 							$property->getIdentifier(),
-							'_' . Types\SensorDescription::DESC_ENERGY,
+							'_' . Types\SensorDescription::ENERGY,
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
@@ -888,7 +888,7 @@ final class Http
 
 						} elseif (Utils\Strings::endsWith(
 							$property->getIdentifier(),
-							'_' . Types\SensorDescription::DESC_ENERGY_RETURNED,
+							'_' . Types\SensorDescription::ENERGY_RETURNED,
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),

@@ -29,28 +29,30 @@ use function strval;
 class ComponentType extends Consistence\Enum\Enum
 {
 
-	/**
-	 * Define device states
-	 */
-	public const TYPE_SWITCH = 'switch';
+	public const SWITCH = 'switch';
 
-	public const TYPE_COVER = 'cover';
+	public const COVER = 'cover';
 
-	public const TYPE_LIGHT = 'light';
+	public const LIGHT = 'light';
 
-	public const TYPE_INPUT = 'input';
+	public const INPUT = 'input';
 
-	public const TYPE_TEMPERATURE = 'temperature';
+	public const TEMPERATURE = 'temperature';
 
-	public const TYPE_HUMIDITY = 'humidity';
+	public const HUMIDITY = 'humidity';
 
-	public const TYPE_ETHERNET = 'ethernet';
+	public const ETHERNET = 'ethernet';
 
-	public const TYPE_WIFI = 'wifi';
+	public const WIFI = 'wifi';
+
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
 
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }

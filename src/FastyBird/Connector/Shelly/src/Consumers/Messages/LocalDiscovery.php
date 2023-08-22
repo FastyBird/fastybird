@@ -132,51 +132,51 @@ final class LocalDiscovery implements Consumer
 			$device->getId(),
 			$entity->getIpAddress(),
 			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-			Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS,
-			Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS),
+			Types\DevicePropertyIdentifier::IP_ADDRESS,
+			Helpers\Name::createName(Types\DevicePropertyIdentifier::IP_ADDRESS),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getDomain(),
 			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-			Types\DevicePropertyIdentifier::IDENTIFIER_DOMAIN,
-			Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_DOMAIN),
+			Types\DevicePropertyIdentifier::DOMAIN,
+			Helpers\Name::createName(Types\DevicePropertyIdentifier::DOMAIN),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			strval($entity->getGeneration()->getValue()),
 			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
-			Types\DevicePropertyIdentifier::IDENTIFIER_GENERATION,
-			Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_GENERATION),
+			Types\DevicePropertyIdentifier::GENERATION,
+			Helpers\Name::createName(Types\DevicePropertyIdentifier::GENERATION),
 			[Types\DeviceGeneration::GENERATION_1, Types\DeviceGeneration::GENERATION_2],
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->isAuthEnabled(),
 			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN),
-			Types\DevicePropertyIdentifier::IDENTIFIER_AUTH_ENABLED,
-			Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_AUTH_ENABLED),
+			Types\DevicePropertyIdentifier::AUTH_ENABLED,
+			Helpers\Name::createName(Types\DevicePropertyIdentifier::AUTH_ENABLED),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getModel(),
 			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-			Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL,
-			Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL),
+			Types\DevicePropertyIdentifier::MODEL,
+			Helpers\Name::createName(Types\DevicePropertyIdentifier::MODEL),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getMacAddress(),
 			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-			Types\DevicePropertyIdentifier::IDENTIFIER_MAC_ADDRESS,
-			Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_MAC_ADDRESS),
+			Types\DevicePropertyIdentifier::MAC_ADDRESS,
+			Helpers\Name::createName(Types\DevicePropertyIdentifier::MAC_ADDRESS),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getFirmwareVersion(),
 			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-			Types\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_VERSION,
-			Helpers\Name::createName(Types\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_VERSION),
+			Types\DevicePropertyIdentifier::FIRMWARE_VERSION,
+			Helpers\Name::createName(Types\DevicePropertyIdentifier::FIRMWARE_VERSION),
 		);
 
 		foreach ($entity->getChannels() as $channelDescription) {

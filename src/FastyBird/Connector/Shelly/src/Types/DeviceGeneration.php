@@ -29,16 +29,18 @@ use function strval;
 class DeviceGeneration extends Consistence\Enum\Enum
 {
 
-	/**
-	 * Define versions
-	 */
 	public const GENERATION_1 = 'gen1';
 
 	public const GENERATION_2 = 'gen2';
 
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
+
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }

@@ -51,7 +51,7 @@ final class DeviceHumidityStatus implements Entities\API\Entity
 
 	public function getType(): Types\ComponentType
 	{
-		return Types\ComponentType::get(Types\ComponentType::TYPE_HUMIDITY);
+		return Types\ComponentType::get(Types\ComponentType::HUMIDITY);
 	}
 
 	public function getRelativeHumidity(): float|string|null

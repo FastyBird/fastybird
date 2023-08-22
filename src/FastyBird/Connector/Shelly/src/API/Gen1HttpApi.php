@@ -94,17 +94,17 @@ final class Gen1HttpApi extends HttpApi
 	];
 
 	private const WRITABLE_SENSORS = [
-		Types\SensorDescription::DESC_MODE,
-		Types\SensorDescription::DESC_OUTPUT,
-		Types\SensorDescription::DESC_ROLLER,
-		Types\SensorDescription::DESC_RED,
-		Types\SensorDescription::DESC_GREEN,
-		Types\SensorDescription::DESC_BLUE,
-		Types\SensorDescription::DESC_WHITE,
-		Types\SensorDescription::DESC_WHITE_LEVEL,
-		Types\SensorDescription::DESC_GAIN,
-		Types\SensorDescription::DESC_BRIGHTNESS,
-		Types\SensorDescription::DESC_COLOR_TEMP,
+		Types\SensorDescription::MODE,
+		Types\SensorDescription::OUTPUT,
+		Types\SensorDescription::ROLLER,
+		Types\SensorDescription::RED,
+		Types\SensorDescription::GREEN,
+		Types\SensorDescription::BLUE,
+		Types\SensorDescription::WHITE,
+		Types\SensorDescription::WHITE_LEVEL,
+		Types\SensorDescription::GAIN,
+		Types\SensorDescription::BRIGHTNESS,
+		Types\SensorDescription::COLOR_TEMP,
 	];
 
 	public function __construct(
@@ -934,15 +934,15 @@ final class Gen1HttpApi extends HttpApi
 	): MetadataTypes\DataType
 	{
 		if (
-			Utils\Strings::startsWith($block, Types\BlockDescription::DESC_RELAY)
-			&& Utils\Strings::lower($description) === Types\SensorDescription::DESC_OUTPUT
+			Utils\Strings::startsWith($block, Types\BlockDescription::RELAY)
+			&& Utils\Strings::lower($description) === Types\SensorDescription::OUTPUT
 		) {
 			return MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_SWITCH);
 		}
 
 		if (
-			Utils\Strings::startsWith($block, Types\BlockDescription::DESC_LIGHT)
-			&& Utils\Strings::lower($description) === Types\SensorDescription::DESC_OUTPUT
+			Utils\Strings::startsWith($block, Types\BlockDescription::LIGHT)
+			&& Utils\Strings::lower($description) === Types\SensorDescription::OUTPUT
 		) {
 			return MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_SWITCH);
 		}
@@ -962,80 +962,80 @@ final class Gen1HttpApi extends HttpApi
 	): array|null
 	{
 		if (
-			Utils\Strings::startsWith($block, Types\BlockDescription::DESC_RELAY)
-			&& Utils\Strings::lower($description) === Types\SensorDescription::DESC_OUTPUT
+			Utils\Strings::startsWith($block, Types\BlockDescription::RELAY)
+			&& Utils\Strings::lower($description) === Types\SensorDescription::OUTPUT
 		) {
 			return [
 				[
 					[MetadataTypes\DataTypeShort::DATA_TYPE_SWITCH, MetadataTypes\SwitchPayload::PAYLOAD_ON],
 					[MetadataTypes\DataTypeShort::DATA_TYPE_UCHAR, '1'],
-					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\RelayPayload::PAYLOAD_ON],
+					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\RelayPayload::ON],
 				],
 				[
 					[MetadataTypes\DataTypeShort::DATA_TYPE_SWITCH, MetadataTypes\SwitchPayload::PAYLOAD_OFF],
 					[MetadataTypes\DataTypeShort::DATA_TYPE_UCHAR, '0'],
-					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\RelayPayload::PAYLOAD_OFF],
+					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\RelayPayload::OFF],
 				],
 				[
 					[MetadataTypes\DataTypeShort::DATA_TYPE_SWITCH, MetadataTypes\SwitchPayload::PAYLOAD_TOGGLE],
 					null,
-					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\RelayPayload::PAYLOAD_TOGGLE],
+					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\RelayPayload::TOGGLE],
 				],
 			];
 		}
 
 		if (
-			Utils\Strings::startsWith($block, Types\BlockDescription::DESC_ROLLER)
-			&& Utils\Strings::lower($description) === Types\SensorDescription::DESC_ROLLER
+			Utils\Strings::startsWith($block, Types\BlockDescription::ROLLER)
+			&& Utils\Strings::lower($description) === Types\SensorDescription::ROLLER
 		) {
 			return [
 				[
 					[MetadataTypes\DataTypeShort::DATA_TYPE_COVER, MetadataTypes\CoverPayload::PAYLOAD_OPEN],
-					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\RollerPayload::PAYLOAD_OPEN],
+					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\RollerPayload::OPEN],
 					null,
 				],
 				[
 					[MetadataTypes\DataTypeShort::DATA_TYPE_COVER, MetadataTypes\CoverPayload::PAYLOAD_OPENED],
 					null,
-					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\RollerPayload::PAYLOAD_OPEN],
+					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\RollerPayload::OPEN],
 				],
 				[
 					[MetadataTypes\DataTypeShort::DATA_TYPE_COVER, MetadataTypes\CoverPayload::PAYLOAD_CLOSE],
-					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\RollerPayload::PAYLOAD_CLOSE],
+					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\RollerPayload::CLOSE],
 					null,
 				],
 				[
 					[MetadataTypes\DataTypeShort::DATA_TYPE_COVER, MetadataTypes\CoverPayload::PAYLOAD_CLOSED],
 					null,
-					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\RollerPayload::PAYLOAD_CLOSE],
+					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\RollerPayload::CLOSE],
 				],
 				[
 					[MetadataTypes\DataTypeShort::DATA_TYPE_COVER, MetadataTypes\CoverPayload::PAYLOAD_STOP],
-					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\RollerPayload::PAYLOAD_STOP],
+					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\RollerPayload::STOP],
 					null,
 				],
 			];
 		}
 
 		if (
-			Utils\Strings::startsWith($block, Types\BlockDescription::DESC_LIGHT)
-			&& Utils\Strings::lower($description) === Types\SensorDescription::DESC_OUTPUT
+			Utils\Strings::startsWith($block, Types\BlockDescription::LIGHT)
+			&& Utils\Strings::lower($description) === Types\SensorDescription::OUTPUT
 		) {
 			return [
 				[
 					[MetadataTypes\DataTypeShort::DATA_TYPE_SWITCH, MetadataTypes\SwitchPayload::PAYLOAD_ON],
 					[MetadataTypes\DataTypeShort::DATA_TYPE_UCHAR, '1'],
-					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\LightSwitchPayload::PAYLOAD_ON],
+					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\LightSwitchPayload::ON],
 				],
 				[
 					[MetadataTypes\DataTypeShort::DATA_TYPE_SWITCH, MetadataTypes\SwitchPayload::PAYLOAD_OFF],
 					[MetadataTypes\DataTypeShort::DATA_TYPE_UCHAR, '0'],
-					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\LightSwitchPayload::PAYLOAD_OFF],
+					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\LightSwitchPayload::OFF],
 				],
 				[
 					[MetadataTypes\DataTypeShort::DATA_TYPE_SWITCH, MetadataTypes\SwitchPayload::PAYLOAD_TOGGLE],
 					null,
-					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\LightSwitchPayload::PAYLOAD_TOGGLE],
+					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\LightSwitchPayload::TOGGLE],
 				],
 			];
 		}
@@ -1060,19 +1060,19 @@ final class Gen1HttpApi extends HttpApi
 			throw new Exceptions\InvalidState('Property identifier is not valid');
 		}
 
-		if ($propertyMatches['description'] === Types\SensorDescription::DESC_OUTPUT) {
+		if ($propertyMatches['description'] === Types\SensorDescription::OUTPUT) {
 			return 'turn';
 		}
 
-		if ($propertyMatches['description'] === Types\SensorDescription::DESC_ROLLER) {
+		if ($propertyMatches['description'] === Types\SensorDescription::ROLLER) {
 			return 'go';
 		}
 
-		if ($propertyMatches['description'] === Types\SensorDescription::DESC_COLOR_TEMP) {
+		if ($propertyMatches['description'] === Types\SensorDescription::COLOR_TEMP) {
 			return 'temp';
 		}
 
-		if ($propertyMatches['description'] === Types\SensorDescription::DESC_WHITE_LEVEL) {
+		if ($propertyMatches['description'] === Types\SensorDescription::WHITE_LEVEL) {
 			return 'white';
 		}
 

@@ -114,10 +114,10 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 		$mode = $this->connector->getClientMode();
 
-		if ($mode->equalsValue(Types\ClientMode::MODE_CLOUD)) {
+		if ($mode->equalsValue(Types\ClientMode::CLOUD)) {
 			$this->discoverCloudDevices();
 
-		} elseif ($mode->equalsValue(Types\ClientMode::MODE_LOCAL)) {
+		} elseif ($mode->equalsValue(Types\ClientMode::LOCAL)) {
 			$this->discoverLocalDevices();
 		}
 	}
@@ -496,9 +496,9 @@ final class Discovery implements Evenement\EventEmitterInterface
 												. '_'
 												. $component->getId()
 												. '_'
-												. Types\ComponentAttributeType::ATTRIBUTE_ON
+												. Types\ComponentAttributeType::ON
 											),
-											Helpers\Name::createName(Types\ComponentAttributeType::ATTRIBUTE_ON),
+											Helpers\Name::createName(Types\ComponentAttributeType::ON),
 											MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN),
 											null,
 											null,
@@ -518,10 +518,10 @@ final class Discovery implements Evenement\EventEmitterInterface
 												. '_'
 												. $component->getId()
 												. '_'
-												. Types\ComponentAttributeType::ATTRIBUTE_ACTIVE_POWER
+												. Types\ComponentAttributeType::ACTIVE_POWER
 											),
 											Helpers\Name::createName(
-												Types\ComponentAttributeType::ATTRIBUTE_ACTIVE_POWER,
+												Types\ComponentAttributeType::ACTIVE_POWER,
 											),
 											MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
 											'W',
@@ -542,10 +542,10 @@ final class Discovery implements Evenement\EventEmitterInterface
 												. '_'
 												. $component->getId()
 												. '_'
-												. Types\ComponentAttributeType::ATTRIBUTE_POWER_FACTOR
+												. Types\ComponentAttributeType::POWER_FACTOR
 											),
 											Helpers\Name::createName(
-												Types\ComponentAttributeType::ATTRIBUTE_POWER_FACTOR,
+												Types\ComponentAttributeType::POWER_FACTOR,
 											),
 											MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
 											null,
@@ -566,10 +566,10 @@ final class Discovery implements Evenement\EventEmitterInterface
 												. '_'
 												. $component->getId()
 												. '_'
-												. Types\ComponentAttributeType::ATTRIBUTE_ACTIVE_ENERGY
+												. Types\ComponentAttributeType::ACTIVE_ENERGY
 											),
 											Helpers\Name::createName(
-												Types\ComponentAttributeType::ATTRIBUTE_ACTIVE_ENERGY,
+												Types\ComponentAttributeType::ACTIVE_ENERGY,
 											),
 											MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
 											'Wh',
@@ -590,9 +590,9 @@ final class Discovery implements Evenement\EventEmitterInterface
 												. '_'
 												. $component->getId()
 												. '_'
-												. Types\ComponentAttributeType::ATTRIBUTE_CURRENT
+												. Types\ComponentAttributeType::CURRENT
 											),
-											Helpers\Name::createName(Types\ComponentAttributeType::ATTRIBUTE_CURRENT),
+											Helpers\Name::createName(Types\ComponentAttributeType::CURRENT),
 											MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
 											'A',
 											null,
@@ -612,9 +612,9 @@ final class Discovery implements Evenement\EventEmitterInterface
 												. '_'
 												. $component->getId()
 												. '_'
-												. Types\ComponentAttributeType::ATTRIBUTE_VOLTAGE
+												. Types\ComponentAttributeType::VOLTAGE
 											),
-											Helpers\Name::createName(Types\ComponentAttributeType::ATTRIBUTE_VOLTAGE),
+											Helpers\Name::createName(Types\ComponentAttributeType::VOLTAGE),
 											MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
 											'V',
 											null,
@@ -634,9 +634,9 @@ final class Discovery implements Evenement\EventEmitterInterface
 												. '_'
 												. $component->getId()
 												. '_'
-												. Types\ComponentAttributeType::ATTRIBUTE_CELSIUS
+												. Types\ComponentAttributeType::CELSIUS
 											),
-											Helpers\Name::createName(Types\ComponentAttributeType::ATTRIBUTE_CELSIUS),
+											Helpers\Name::createName(Types\ComponentAttributeType::CELSIUS),
 											MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
 											'°C',
 											null,
@@ -658,18 +658,18 @@ final class Discovery implements Evenement\EventEmitterInterface
 												. '_'
 												. $component->getId()
 												. '_'
-												. Types\ComponentAttributeType::ATTRIBUTE_STATE
+												. Types\ComponentAttributeType::STATE
 											),
-											Helpers\Name::createName(Types\ComponentAttributeType::ATTRIBUTE_STATE),
+											Helpers\Name::createName(Types\ComponentAttributeType::STATE),
 											MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
 											null,
 											[
-												Types\CoverPayload::PAYLOAD_OPEN,
-												Types\CoverPayload::PAYLOAD_CLOSED,
-												Types\CoverPayload::PAYLOAD_OPENING,
-												Types\CoverPayload::PAYLOAD_CLOSING,
-												Types\CoverPayload::PAYLOAD_STOPPED,
-												Types\CoverPayload::PAYLOAD_CALIBRATING,
+												Types\CoverPayload::OPEN,
+												Types\CoverPayload::CLOSED,
+												Types\CoverPayload::OPENING,
+												Types\CoverPayload::CLOSING,
+												Types\CoverPayload::STOPPED,
+												Types\CoverPayload::CALIBRATING,
 											],
 											null,
 											true,
@@ -683,9 +683,9 @@ final class Discovery implements Evenement\EventEmitterInterface
 											. '_'
 											. $component->getId()
 											. '_'
-											. Types\ComponentAttributeType::ATTRIBUTE_POSITION
+											. Types\ComponentAttributeType::POSITION
 										),
-										Helpers\Name::createName(Types\ComponentAttributeType::ATTRIBUTE_POSITION),
+										Helpers\Name::createName(Types\ComponentAttributeType::POSITION),
 										MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
 										null,
 										[0, 100],
@@ -704,10 +704,10 @@ final class Discovery implements Evenement\EventEmitterInterface
 												. '_'
 												. $component->getId()
 												. '_'
-												. Types\ComponentAttributeType::ATTRIBUTE_ACTIVE_POWER
+												. Types\ComponentAttributeType::ACTIVE_POWER
 											),
 											Helpers\Name::createName(
-												Types\ComponentAttributeType::ATTRIBUTE_ACTIVE_POWER,
+												Types\ComponentAttributeType::ACTIVE_POWER,
 											),
 											MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
 											'W',
@@ -728,10 +728,10 @@ final class Discovery implements Evenement\EventEmitterInterface
 												. '_'
 												. $component->getId()
 												. '_'
-												. Types\ComponentAttributeType::ATTRIBUTE_POWER_FACTOR
+												. Types\ComponentAttributeType::POWER_FACTOR
 											),
 											Helpers\Name::createName(
-												Types\ComponentAttributeType::ATTRIBUTE_POWER_FACTOR,
+												Types\ComponentAttributeType::POWER_FACTOR,
 											),
 											MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
 											null,
@@ -752,10 +752,10 @@ final class Discovery implements Evenement\EventEmitterInterface
 												. '_'
 												. $component->getId()
 												. '_'
-												. Types\ComponentAttributeType::ATTRIBUTE_ACTIVE_ENERGY
+												. Types\ComponentAttributeType::ACTIVE_ENERGY
 											),
 											Helpers\Name::createName(
-												Types\ComponentAttributeType::ATTRIBUTE_ACTIVE_ENERGY,
+												Types\ComponentAttributeType::ACTIVE_ENERGY,
 											),
 											MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
 											'Wh',
@@ -776,9 +776,9 @@ final class Discovery implements Evenement\EventEmitterInterface
 												. '_'
 												. $component->getId()
 												. '_'
-												. Types\ComponentAttributeType::ATTRIBUTE_CURRENT
+												. Types\ComponentAttributeType::CURRENT
 											),
-											Helpers\Name::createName(Types\ComponentAttributeType::ATTRIBUTE_CURRENT),
+											Helpers\Name::createName(Types\ComponentAttributeType::CURRENT),
 											MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
 											'A',
 											null,
@@ -798,9 +798,9 @@ final class Discovery implements Evenement\EventEmitterInterface
 												. '_'
 												. $component->getId()
 												. '_'
-												. Types\ComponentAttributeType::ATTRIBUTE_VOLTAGE
+												. Types\ComponentAttributeType::VOLTAGE
 											),
-											Helpers\Name::createName(Types\ComponentAttributeType::ATTRIBUTE_VOLTAGE),
+											Helpers\Name::createName(Types\ComponentAttributeType::VOLTAGE),
 											MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
 											'V',
 											null,
@@ -820,9 +820,9 @@ final class Discovery implements Evenement\EventEmitterInterface
 												. '_'
 												. $component->getId()
 												. '_'
-												. Types\ComponentAttributeType::ATTRIBUTE_CELSIUS
+												. Types\ComponentAttributeType::CELSIUS
 											),
-											Helpers\Name::createName(Types\ComponentAttributeType::ATTRIBUTE_CELSIUS),
+											Helpers\Name::createName(Types\ComponentAttributeType::CELSIUS),
 											MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
 											'°C',
 											null,
@@ -844,9 +844,9 @@ final class Discovery implements Evenement\EventEmitterInterface
 												. '_'
 												. $component->getId()
 												. '_'
-												. Types\ComponentAttributeType::ATTRIBUTE_ON
+												. Types\ComponentAttributeType::ON
 											),
-											Helpers\Name::createName(Types\ComponentAttributeType::ATTRIBUTE_ON),
+											Helpers\Name::createName(Types\ComponentAttributeType::ON),
 											MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN),
 											null,
 											null,
@@ -866,10 +866,10 @@ final class Discovery implements Evenement\EventEmitterInterface
 												. '_'
 												. $component->getId()
 												. '_'
-												. Types\ComponentAttributeType::ATTRIBUTE_BRIGHTNESS
+												. Types\ComponentAttributeType::BRIGHTNESS
 											),
 											Helpers\Name::createName(
-												Types\ComponentAttributeType::ATTRIBUTE_BRIGHTNESS,
+												Types\ComponentAttributeType::BRIGHTNESS,
 											),
 											MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
 											null,
@@ -880,7 +880,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 										));
 									}
 								} elseif ($component instanceof Entities\API\Gen2\DeviceInputConfiguration) {
-									if ($component->getInputType()->equalsValue(Types\InputType::TYPE_SWITCH)) {
+									if ($component->getInputType()->equalsValue(Types\InputType::SWITCH)) {
 										$channel->addProperty(new Entities\Messages\PropertyDescription(
 											(
 												$component->getType()->getValue()
@@ -895,7 +895,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 											true,
 											false,
 										));
-									} elseif ($component->getInputType()->equalsValue(Types\InputType::TYPE_BUTTON)) {
+									} elseif ($component->getInputType()->equalsValue(Types\InputType::BUTTON)) {
 										$channel->addProperty(new Entities\Messages\PropertyDescription(
 											(
 												$component->getType()->getValue()
@@ -906,17 +906,17 @@ final class Discovery implements Evenement\EventEmitterInterface
 											MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
 											null,
 											[
-												Types\InputPayload::PAYLOAD_PRESS,
-												Types\InputPayload::PAYLOAD_RELEASE,
-												Types\InputPayload::PAYLOAD_SINGLE_PUSH,
-												Types\InputPayload::PAYLOAD_DOUBLE_PUSH,
-												Types\InputPayload::PAYLOAD_LONG_PUSH,
+												Types\InputPayload::PRESS,
+												Types\InputPayload::RELEASE,
+												Types\InputPayload::SINGLE_PUSH,
+												Types\InputPayload::DOUBLE_PUSH,
+												Types\InputPayload::LONG_PUSH,
 											],
 											null,
 											true,
 											false,
 										));
-									} elseif ($component->getInputType()->equalsValue(Types\InputType::TYPE_ANALOG)) {
+									} elseif ($component->getInputType()->equalsValue(Types\InputType::ANALOG)) {
 										$channel->addProperty(new Entities\Messages\PropertyDescription(
 											(
 												$component->getType()->getValue()
@@ -945,9 +945,9 @@ final class Discovery implements Evenement\EventEmitterInterface
 												. '_'
 												. $component->getId()
 												. '_'
-												. Types\ComponentAttributeType::ATTRIBUTE_CELSIUS
+												. Types\ComponentAttributeType::CELSIUS
 											),
-											Helpers\Name::createName(Types\ComponentAttributeType::ATTRIBUTE_CELSIUS),
+											Helpers\Name::createName(Types\ComponentAttributeType::CELSIUS),
 											MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
 											'°C',
 											null,
@@ -967,10 +967,10 @@ final class Discovery implements Evenement\EventEmitterInterface
 												. '_'
 												. $component->getId()
 												. '_'
-												. Types\ComponentAttributeType::ATTRIBUTE_FAHRENHEIT
+												. Types\ComponentAttributeType::FAHRENHEIT
 											),
 											Helpers\Name::createName(
-												Types\ComponentAttributeType::ATTRIBUTE_FAHRENHEIT,
+												Types\ComponentAttributeType::FAHRENHEIT,
 											),
 											MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
 											'°F',

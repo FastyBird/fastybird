@@ -66,7 +66,7 @@ final class DeviceCoverStatus implements Entities\API\Entity
 
 	public function getType(): Types\ComponentType
 	{
-		return Types\ComponentType::get(Types\ComponentType::TYPE_COVER);
+		return Types\ComponentType::get(Types\ComponentType::COVER);
 	}
 
 	public function getSource(): string

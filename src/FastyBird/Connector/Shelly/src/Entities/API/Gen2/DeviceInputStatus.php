@@ -53,7 +53,7 @@ final class DeviceInputStatus implements Entities\API\Entity
 
 	public function getType(): Types\ComponentType
 	{
-		return Types\ComponentType::get(Types\ComponentType::TYPE_INPUT);
+		return Types\ComponentType::get(Types\ComponentType::INPUT);
 	}
 
 	public function getState(): bool|Types\InputPayload|null

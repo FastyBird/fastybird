@@ -50,7 +50,7 @@ final class DeviceInputConfiguration implements Entities\API\Entity
 
 	public function getType(): Types\ComponentType
 	{
-		return Types\ComponentType::get(Types\ComponentType::TYPE_INPUT);
+		return Types\ComponentType::get(Types\ComponentType::INPUT);
 	}
 
 	public function getName(): string|null
@@ -64,7 +64,7 @@ final class DeviceInputConfiguration implements Entities\API\Entity
 			return Types\InputType::get($this->type);
 		}
 
-		return Types\InputType::get(Types\InputType::TYPE_SWITCH);
+		return Types\InputType::get(Types\InputType::SWITCH);
 	}
 
 	public function isInverted(): bool

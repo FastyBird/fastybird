@@ -61,7 +61,7 @@ trait Gen2
 							. '_'
 							. $component->getId()
 							. '_'
-							. Types\ComponentAttributeType::ATTRIBUTE_ON
+							. Types\ComponentAttributeType::ON
 						),
 					);
 
@@ -83,7 +83,7 @@ trait Gen2
 							. '_'
 							. $component->getId()
 							. '_'
-							. Types\ComponentAttributeType::ATTRIBUTE_STATE
+							. Types\ComponentAttributeType::STATE
 						),
 					);
 
@@ -105,7 +105,7 @@ trait Gen2
 							. '_'
 							. $component->getId()
 							. '_'
-							. Types\ComponentAttributeType::ATTRIBUTE_POSITION
+							. Types\ComponentAttributeType::POSITION
 						),
 					);
 
@@ -127,7 +127,7 @@ trait Gen2
 							. '_'
 							. $component->getId()
 							. '_'
-							. Types\ComponentAttributeType::ATTRIBUTE_ON
+							. Types\ComponentAttributeType::ON
 						),
 					);
 
@@ -149,7 +149,7 @@ trait Gen2
 							. '_'
 							. $component->getId()
 							. '_'
-							. Types\ComponentAttributeType::ATTRIBUTE_BRIGHTNESS
+							. Types\ComponentAttributeType::BRIGHTNESS
 						),
 					);
 
@@ -199,7 +199,7 @@ trait Gen2
 							. '_'
 							. $component->getId()
 							. '_'
-							. Types\ComponentAttributeType::ATTRIBUTE_CELSIUS
+							. Types\ComponentAttributeType::CELSIUS
 						),
 					);
 
@@ -224,7 +224,7 @@ trait Gen2
 							. '_'
 							. $component->getId()
 							. '_'
-							. Types\ComponentAttributeType::ATTRIBUTE_FAHRENHEIT
+							. Types\ComponentAttributeType::FAHRENHEIT
 						),
 					);
 
@@ -277,7 +277,7 @@ trait Gen2
 							. '_'
 							. $component->getId()
 							. '_'
-							. Types\ComponentAttributeType::ATTRIBUTE_ACTIVE_POWER
+							. Types\ComponentAttributeType::ACTIVE_POWER
 						),
 					);
 
@@ -299,7 +299,7 @@ trait Gen2
 							. '_'
 							. $component->getId()
 							. '_'
-							. Types\ComponentAttributeType::ATTRIBUTE_POWER_FACTOR
+							. Types\ComponentAttributeType::POWER_FACTOR
 						),
 					);
 
@@ -321,7 +321,7 @@ trait Gen2
 							. '_'
 							. $component->getId()
 							. '_'
-							. Types\ComponentAttributeType::ATTRIBUTE_ACTIVE_ENERGY
+							. Types\ComponentAttributeType::ACTIVE_ENERGY
 						),
 					);
 
@@ -346,7 +346,7 @@ trait Gen2
 							. '_'
 							. $component->getId()
 							. '_'
-							. Types\ComponentAttributeType::ATTRIBUTE_CURRENT
+							. Types\ComponentAttributeType::CURRENT
 						),
 					);
 
@@ -368,7 +368,7 @@ trait Gen2
 							. '_'
 							. $component->getId()
 							. '_'
-							. Types\ComponentAttributeType::ATTRIBUTE_VOLTAGE
+							. Types\ComponentAttributeType::VOLTAGE
 						),
 					);
 
@@ -390,7 +390,7 @@ trait Gen2
 							. '_'
 							. $component->getId()
 							. '_'
-							. Types\ComponentAttributeType::ATTRIBUTE_CELSIUS
+							. Types\ComponentAttributeType::CELSIUS
 						),
 					);
 

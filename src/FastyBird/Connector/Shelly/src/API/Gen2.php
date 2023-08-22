@@ -66,24 +66,24 @@ trait Gen2
 		}
 
 		if (
-			$componentMatches['component'] === Types\ComponentType::TYPE_SWITCH
-			&& $componentMatches['attribute'] === Types\ComponentAttributeType::ATTRIBUTE_ON
+			$componentMatches['component'] === Types\ComponentType::SWITCH
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::ON
 		) {
 			return self::$SWITCH_SET_METHOD;
 		}
 
 		if (
-			$componentMatches['component'] === Types\ComponentType::TYPE_COVER
-			&& $componentMatches['attribute'] === Types\ComponentAttributeType::ATTRIBUTE_POSITION
+			$componentMatches['component'] === Types\ComponentType::COVER
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::POSITION
 		) {
 			return self::$COVER_GO_TO_POSITION_METHOD;
 		}
 
 		if (
-			$componentMatches['component'] === Types\ComponentType::TYPE_LIGHT
+			$componentMatches['component'] === Types\ComponentType::LIGHT
 			&& (
-				$componentMatches['description'] === Types\ComponentAttributeType::ATTRIBUTE_ON
-				|| $componentMatches['attribute'] === Types\ComponentAttributeType::ATTRIBUTE_BRIGHTNESS
+				$componentMatches['description'] === Types\ComponentAttributeType::ON
+				|| $componentMatches['attribute'] === Types\ComponentAttributeType::BRIGHTNESS
 			)
 		) {
 			return self::$LIGHT_SET_METHOD;
@@ -118,42 +118,42 @@ trait Gen2
 				&& array_key_exists('component', $componentMatches)
 				&& Types\ComponentType::isValidValue($componentMatches['component'])
 			) {
-				if ($componentMatches['component'] === Types\ComponentType::TYPE_SWITCH) {
+				if ($componentMatches['component'] === Types\ComponentType::SWITCH) {
 					$switches[] = EntityFactory::build(
 						Entities\API\Gen2\DeviceSwitchStatus::class,
 						$status,
 					);
-				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_COVER) {
+				} elseif ($componentMatches['component'] === Types\ComponentType::COVER) {
 					$covers[] = EntityFactory::build(
 						Entities\API\Gen2\DeviceCoverStatus::class,
 						$status,
 					);
-				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_LIGHT) {
+				} elseif ($componentMatches['component'] === Types\ComponentType::LIGHT) {
 					$lights[] = EntityFactory::build(
 						Entities\API\Gen2\DeviceLightStatus::class,
 						$status,
 					);
-				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_INPUT) {
+				} elseif ($componentMatches['component'] === Types\ComponentType::INPUT) {
 					$inputs[] = EntityFactory::build(
 						Entities\API\Gen2\DeviceInputStatus::class,
 						$status,
 					);
-				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_TEMPERATURE) {
+				} elseif ($componentMatches['component'] === Types\ComponentType::TEMPERATURE) {
 					$temperature[] = EntityFactory::build(
 						Entities\API\Gen2\DeviceTemperatureStatus::class,
 						$status,
 					);
-				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_HUMIDITY) {
+				} elseif ($componentMatches['component'] === Types\ComponentType::HUMIDITY) {
 					$humidity[] = EntityFactory::build(
 						Entities\API\Gen2\DeviceHumidityStatus::class,
 						$status,
 					);
-				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_ETHERNET) {
+				} elseif ($componentMatches['component'] === Types\ComponentType::ETHERNET) {
 					$ethernet = EntityFactory::build(
 						Entities\API\Gen2\EthernetStatus::class,
 						$status,
 					);
-				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_WIFI) {
+				} elseif ($componentMatches['component'] === Types\ComponentType::WIFI) {
 					$wifi = EntityFactory::build(
 						Entities\API\Gen2\WifiStatus::class,
 						$status,
@@ -199,32 +199,32 @@ trait Gen2
 				&& array_key_exists('component', $componentMatches)
 				&& Types\ComponentType::isValidValue($componentMatches['component'])
 			) {
-				if ($componentMatches['component'] === Types\ComponentType::TYPE_SWITCH) {
+				if ($componentMatches['component'] === Types\ComponentType::SWITCH) {
 					$switches[] = EntityFactory::build(
 						Entities\API\Gen2\DeviceSwitchConfiguration::class,
 						$configuration,
 					);
-				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_COVER) {
+				} elseif ($componentMatches['component'] === Types\ComponentType::COVER) {
 					$covers[] = EntityFactory::build(
 						Entities\API\Gen2\DeviceCoverConfiguration::class,
 						$configuration,
 					);
-				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_LIGHT) {
+				} elseif ($componentMatches['component'] === Types\ComponentType::LIGHT) {
 					$lights[] = EntityFactory::build(
 						Entities\API\Gen2\DeviceLightConfiguration::class,
 						$configuration,
 					);
-				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_INPUT) {
+				} elseif ($componentMatches['component'] === Types\ComponentType::INPUT) {
 					$inputs[] = EntityFactory::build(
 						Entities\API\Gen2\DeviceInputConfiguration::class,
 						$configuration,
 					);
-				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_TEMPERATURE) {
+				} elseif ($componentMatches['component'] === Types\ComponentType::TEMPERATURE) {
 					$temperature[] = EntityFactory::build(
 						Entities\API\Gen2\DeviceTemperatureConfiguration::class,
 						$configuration,
 					);
-				} elseif ($componentMatches['component'] === Types\ComponentType::TYPE_HUMIDITY) {
+				} elseif ($componentMatches['component'] === Types\ComponentType::HUMIDITY) {
 					$humidity[] = EntityFactory::build(
 						Entities\API\Gen2\DeviceHumidityConfiguration::class,
 						$configuration,

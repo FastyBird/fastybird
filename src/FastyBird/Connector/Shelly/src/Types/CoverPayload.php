@@ -29,24 +29,26 @@ use function strval;
 class CoverPayload extends Consistence\Enum\Enum
 {
 
-	/**
-	 * Define device states
-	 */
-	public const PAYLOAD_OPEN = 'open';
+	public const OPEN = 'open';
 
-	public const PAYLOAD_CLOSED = 'closed';
+	public const CLOSED = 'closed';
 
-	public const PAYLOAD_OPENING = 'opening';
+	public const OPENING = 'opening';
 
-	public const PAYLOAD_CLOSING = 'closing';
+	public const CLOSING = 'closing';
 
-	public const PAYLOAD_STOPPED = 'stopped';
+	public const STOPPED = 'stopped';
 
-	public const PAYLOAD_CALIBRATING = 'calibrating';
+	public const CALIBRATING = 'calibrating';
+
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
 
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }

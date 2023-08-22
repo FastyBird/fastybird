@@ -29,9 +29,6 @@ use function strval;
 class Category extends Consistence\Enum\Enum
 {
 
-	/**
-	 * Define types
-	 */
 	public const UNKNOWN = 'unknown';
 
 	public const PLUG = 'plug';

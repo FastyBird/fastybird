@@ -29,9 +29,6 @@ use function strval;
 class OpenApiEndpoint extends Consistence\Enum\Enum
 {
 
-	/**
-	 * Define versions
-	 */
 	public const CHINA = 'https://openapi.tuyacn.com';
 
 	public const AMERICA = 'https://openapi.tuyaus.com';
@@ -51,7 +48,7 @@ class OpenApiEndpoint extends Consistence\Enum\Enum
 
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }
