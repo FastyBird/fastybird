@@ -16,7 +16,6 @@
 namespace FastyBird\Connector\Shelly\Entities\Clients;
 
 use FastyBird\Connector\Shelly\Types;
-use Nette;
 
 /**
  * Discovered local device entity
@@ -28,8 +27,6 @@ use Nette;
  */
 final class DiscoveredLocalDevice implements Entity
 {
-
-	use Nette\SmartObject;
 
 	public function __construct(
 		private readonly Types\DeviceGeneration $generation,

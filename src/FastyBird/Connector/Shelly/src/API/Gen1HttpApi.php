@@ -15,19 +15,15 @@
 
 namespace FastyBird\Connector\Shelly\API;
 
-use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Types;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use Fig\Http\Message\RequestMethodInterface;
 use Fig\Http\Message\StatusCodeInterface;
 use Nette;
 use Nette\Utils;
 use Psr\Http\Message;
-use Psr\Log;
 use React\Promise;
 use RuntimeException;
 use Throwable;
@@ -44,7 +40,6 @@ use function is_string;
 use function preg_match;
 use function sprintf;
 use function strval;
-use const DIRECTORY_SEPARATOR;
 
 /**
  * Generation 1 device http API interface
@@ -59,19 +54,19 @@ final class Gen1HttpApi extends HttpApi
 
 	use Nette\SmartObject;
 
-	private const DEVICE_INFORMATION = 'http://%s/shelly';
+	private const GET_DEVICE_INFORMATION = 'http://%s/shelly';
 
-	private const DEVICE_DESCRIPTION = 'http://%s/cit/d';
+	private const GET_DEVICE_DESCRIPTION = 'http://%s/cit/d';
 
-	private const DEVICE_STATUS = 'http://%s/status';
+	private const GET_DEVICE_STATE = 'http://%s/status';
 
-	private const DEVICE_ACTION = 'http://%s/%s/%s?%s=%s';
+	private const SET_DEVICE_STATE = 'http://%s/%s/%s?%s=%s';
 
-	private const DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME = 'gen1_http_shelly.json';
+	private const GET_DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME = 'gen1_http_shelly.json';
 
-	private const DEVICE_DESCRIPTION_MESSAGE_SCHEMA_FILENAME = 'gen1_http_description.json';
+	private const GET_DEVICE_DESCRIPTION_MESSAGE_SCHEMA_FILENAME = 'gen1_http_description.json';
 
-	private const DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME = 'gen1_http_status.json';
+	private const GET_DEVICE_STATE_MESSAGE_SCHEMA_FILENAME = 'gen1_http_state.json';
 
 	private const CHANNEL_BLOCK = '/^(?P<identifier>[0-9]+)_(?P<description>[a-zA-Z]+)(_(?P<channel>[0-9]+))?$/';
 
@@ -107,15 +102,6 @@ final class Gen1HttpApi extends HttpApi
 		Types\SensorDescription::COLOR_TEMP,
 	];
 
-	public function __construct(
-		private readonly MetadataSchemas\Validator $schemaValidator,
-		HttpClientFactory $httpClientFactory,
-		Log\LoggerInterface $logger = new Log\NullLogger(),
-	)
-	{
-		parent::__construct($httpClientFactory, $logger);
-	}
-
 	/**
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\HttpApiCall
@@ -124,35 +110,24 @@ final class Gen1HttpApi extends HttpApi
 	public function getDeviceInformation(
 		string $address,
 		bool $async = true,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\Gen1\DeviceInformation
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\Gen1\GetDeviceInformation
 	{
-		if ($async) {
-			$deferred = new Promise\Deferred();
+		$deferred = new Promise\Deferred();
 
-			$this->callAsyncRequest(
-				'GET',
-				sprintf(self::DEVICE_INFORMATION, $address),
-			)
-				->then(function (Message\ResponseInterface $response) use ($deferred): void {
+		$request = $this->createRequest(
+			RequestMethodInterface::METHOD_GET,
+			sprintf(self::GET_DEVICE_INFORMATION, $address),
+		);
+
+		$result = $this->callRequest($request, null, null, null, $async);
+
+		if ($result instanceof Promise\PromiseInterface) {
+			$result
+				->then(function (Message\ResponseInterface $response) use ($deferred, $request): void {
 					try {
-						$deferred->resolve($this->parseDeviceInformationResponse($response));
-					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
-						$response->getBody()->rewind();
-
-						$this->logger->error(
-							'Could not decode received payload',
-							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-								'type' => 'gen1-api',
-								'exception' => BootstrapHelpers\Logger::buildException($ex),
-								'response' => [
-									'body' => $response->getBody()->getContents(),
-									'schema' => self::DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME,
-								],
-							],
-						);
-
-						$deferred->reject(new Exceptions\HttpApiCall('Could not decode received response payload'));
+						$deferred->resolve($this->parseGetDeviceInformation($request, $response));
+					} catch (Throwable $ex) {
+						$deferred->reject($ex);
 					}
 				})
 				->otherwise(static function (Throwable $ex) use ($deferred): void {
@@ -162,31 +137,7 @@ final class Gen1HttpApi extends HttpApi
 			return $deferred->promise();
 		}
 
-		$response = $this->callRequest(
-			'GET',
-			sprintf(self::DEVICE_INFORMATION, $address),
-		);
-
-		try {
-			return $this->parseDeviceInformationResponse($response);
-		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
-			$response->getBody()->rewind();
-
-			$this->logger->error(
-				'Could not decode received payload',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-					'type' => 'gen1-api',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
-					'response' => [
-						'body' => $response->getBody()->getContents(),
-						'schema' => self::DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME,
-					],
-				],
-			);
-
-			throw new Exceptions\HttpApiCall('Could not decode received response payload');
-		}
+		return $this->parseGetDeviceInformation($request, $result);
 	}
 
 	/**
@@ -199,41 +150,24 @@ final class Gen1HttpApi extends HttpApi
 		string|null $username,
 		string|null $password,
 		bool $async = true,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\Gen1\DeviceDescription
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\Gen1\GetDeviceDescription
 	{
-		if ($async) {
-			$deferred = new Promise\Deferred();
+		$deferred = new Promise\Deferred();
 
-			$this->callAsyncRequest(
-				'GET',
-				sprintf(self::DEVICE_DESCRIPTION, $address),
-				[],
-				[],
-				null,
-				self::AUTHORIZATION_BASIC,
-				$username,
-				$password,
-			)
-				->then(function (Message\ResponseInterface $response) use ($deferred): void {
+		$request = $this->createRequest(
+			RequestMethodInterface::METHOD_GET,
+			sprintf(self::GET_DEVICE_DESCRIPTION, $address),
+		);
+
+		$result = $this->callRequest($request, self::AUTHORIZATION_BASIC, $username, $password, $async);
+
+		if ($result instanceof Promise\PromiseInterface) {
+			$result
+				->then(function (Message\ResponseInterface $response) use ($deferred, $request): void {
 					try {
-						$deferred->resolve($this->parseDeviceDescriptionResponse($response));
-					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
-						$response->getBody()->rewind();
-
-						$this->logger->error(
-							'Could not decode received payload',
-							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-								'type' => 'gen1-api',
-								'exception' => BootstrapHelpers\Logger::buildException($ex),
-								'response' => [
-									'body' => $response->getBody()->getContents(),
-									'schema' => self::DEVICE_DESCRIPTION_MESSAGE_SCHEMA_FILENAME,
-								],
-							],
-						);
-
-						$deferred->reject(new Exceptions\HttpApiCall('Could not decode received response payload'));
+						$deferred->resolve($this->parseGetDeviceDescription($request, $response));
+					} catch (Throwable $ex) {
+						$deferred->reject($ex);
 					}
 				})
 				->otherwise(static function (Throwable $ex) use ($deferred): void {
@@ -243,37 +177,7 @@ final class Gen1HttpApi extends HttpApi
 			return $deferred->promise();
 		}
 
-		$response = $this->callRequest(
-			'GET',
-			sprintf(self::DEVICE_DESCRIPTION, $address),
-			[],
-			[],
-			null,
-			self::AUTHORIZATION_BASIC,
-			$username,
-			$password,
-		);
-
-		try {
-			return $this->parseDeviceDescriptionResponse($response);
-		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
-			$response->getBody()->rewind();
-
-			$this->logger->error(
-				'Could not decode received payload',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-					'type' => 'gen1-api',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
-					'response' => [
-						'body' => $response->getBody()->getContents(),
-						'schema' => self::DEVICE_DESCRIPTION_MESSAGE_SCHEMA_FILENAME,
-					],
-				],
-			);
-
-			throw new Exceptions\HttpApiCall('Could not decode received response payload');
-		}
+		return $this->parseGetDeviceDescription($request, $result);
 	}
 
 	/**
@@ -281,46 +185,29 @@ final class Gen1HttpApi extends HttpApi
 	 * @throws Exceptions\HttpApiCall
 	 * @throws RuntimeException
 	 */
-	public function getDeviceStatus(
+	public function getDeviceState(
 		string $address,
 		string|null $username,
 		string|null $password,
 		bool $async = true,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\Gen1\DeviceStatus
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\Gen1\GetDeviceState
 	{
-		if ($async) {
-			$deferred = new Promise\Deferred();
+		$deferred = new Promise\Deferred();
 
-			$this->callAsyncRequest(
-				'GET',
-				sprintf(self::DEVICE_STATUS, $address),
-				[],
-				[],
-				null,
-				self::AUTHORIZATION_BASIC,
-				$username,
-				$password,
-			)
-				->then(function (Message\ResponseInterface $response) use ($deferred): void {
+		$request = $this->createRequest(
+			RequestMethodInterface::METHOD_GET,
+			sprintf(self::GET_DEVICE_STATE, $address),
+		);
+
+		$result = $this->callRequest($request, self::AUTHORIZATION_BASIC, $username, $password, $async);
+
+		if ($result instanceof Promise\PromiseInterface) {
+			$result
+				->then(function (Message\ResponseInterface $response) use ($deferred, $request): void {
 					try {
-						$deferred->resolve($this->parseDeviceStatusResponse($response));
-					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
-						$response->getBody()->rewind();
-
-						$this->logger->error(
-							'Could not decode received payload',
-							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-								'type' => 'gen1-api',
-								'exception' => BootstrapHelpers\Logger::buildException($ex),
-								'response' => [
-									'body' => $response->getBody()->getContents(),
-									'schema' => self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME,
-								],
-							],
-						);
-
-						$deferred->reject(new Exceptions\HttpApiCall('Could not decode received response payload'));
+						$deferred->resolve($this->parseGetDeviceStatus($request, $response));
+					} catch (Throwable $ex) {
+						$deferred->reject($ex);
 					}
 				})
 				->otherwise(static function (Throwable $ex) use ($deferred): void {
@@ -330,43 +217,15 @@ final class Gen1HttpApi extends HttpApi
 			return $deferred->promise();
 		}
 
-		$response = $this->callRequest(
-			'GET',
-			sprintf(self::DEVICE_STATUS, $address),
-			[],
-			[],
-			null,
-			self::AUTHORIZATION_BASIC,
-			$username,
-			$password,
-		);
-
-		try {
-			return $this->parseDeviceStatusResponse($response);
-		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
-			$response->getBody()->rewind();
-
-			$this->logger->error(
-				'Could not decode received payload',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-					'type' => 'gen1-api',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
-					'response' => [
-						'body' => $response->getBody()->getContents(),
-						'schema' => self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME,
-					],
-				],
-			);
-
-			throw new Exceptions\HttpApiCall('Could not decode received response payload');
-		}
+		return $this->parseGetDeviceStatus($request, $result);
 	}
 
 	/**
+	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\HttpApiCall
+	 * @throws Exceptions\HttpApiError
 	 */
-	public function setDeviceStatus(
+	public function setDeviceState(
 		string $address,
 		string|null $username,
 		string|null $password,
@@ -382,38 +241,44 @@ final class Gen1HttpApi extends HttpApi
 			|| !array_key_exists('description', $channelMatches)
 			|| !array_key_exists('channel', $channelMatches)
 		) {
-			return Promise\reject(new Exceptions\InvalidState('Channel identifier is not in expected format'));
+			if ($async) {
+				return Promise\reject(new Exceptions\InvalidState('Channel identifier is not in expected format'));
+			}
+
+			throw new Exceptions\InvalidState('Channel identifier is not in expected format');
 		}
 
 		try {
 			$sensorAction = $this->buildSensorAction($sensorIdentifier);
 
 		} catch (Exceptions\InvalidState) {
-			return Promise\reject(new Exceptions\InvalidState('Sensor action could not be created'));
+			if ($async) {
+				return Promise\reject(new Exceptions\InvalidState('Sensor action could not be created'));
+			}
+
+			throw new Exceptions\InvalidState('Sensor action could not be created');
 		}
 
-		if ($async) {
-			$deferred = new Promise\Deferred();
+		$deferred = new Promise\Deferred();
 
-			$this->callAsyncRequest(
-				'GET',
-				sprintf(
-					self::DEVICE_ACTION,
-					$address,
-					$channelMatches['description'],
-					intval($channelMatches['channel']),
-					$sensorAction,
-					$value,
-				),
-				[],
-				[],
-				null,
-				self::AUTHORIZATION_BASIC,
-				$username,
-				$password,
-			)
-				->then(static function () use ($deferred): void {
-					$deferred->resolve();
+		$request = $this->createRequest(
+			RequestMethodInterface::METHOD_GET,
+			sprintf(
+				self::SET_DEVICE_STATE,
+				$address,
+				$channelMatches['description'],
+				intval($channelMatches['channel']),
+				$sensorAction,
+				$value,
+			),
+		);
+
+		$result = $this->callRequest($request, self::AUTHORIZATION_BASIC, $username, $password, $async);
+
+		if ($result instanceof Promise\PromiseInterface) {
+			$result
+				->then(static function (Message\ResponseInterface $response) use ($deferred): void {
+					$deferred->resolve($response->getStatusCode() === StatusCodeInterface::STATUS_OK);
 				})
 				->otherwise(static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);
@@ -422,71 +287,56 @@ final class Gen1HttpApi extends HttpApi
 			return $deferred->promise();
 		}
 
-		$response = $this->callRequest(
-			'GET',
-			sprintf(
-				self::DEVICE_ACTION,
-				$address,
-				$channelMatches['description'],
-				intval($channelMatches['channel']),
-				$sensorAction,
-				$value,
-			),
-			[],
-			[],
-			null,
-			self::AUTHORIZATION_BASIC,
-			$username,
-			$password,
-		);
-
-		return $response->getStatusCode() === StatusCodeInterface::STATUS_OK;
+		return $result->getStatusCode() === StatusCodeInterface::STATUS_OK;
 	}
 
 	/**
-	 * @throws MetadataExceptions\InvalidData
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws RuntimeException
+	 * @throws Exceptions\HttpApiCall
+	 * @throws Exceptions\HttpApiError
 	 */
-	private function parseDeviceInformationResponse(
+	private function parseGetDeviceInformation(
+		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
-	): Entities\API\Gen1\DeviceInformation
+	): Entities\API\Gen1\GetDeviceInformation
 	{
-		$parsedMessage = $this->schemaValidator->validate(
-			$response->getBody()->getContents(),
-			$this->getSchemaFilePath(self::DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME),
+		$body = $this->validateResponseBody(
+			$request,
+			$response,
+			self::GET_DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME,
 		);
 
-		return EntityFactory::build(
-			Entities\API\Gen1\DeviceInformation::class,
-			$parsedMessage,
-		);
+		return $this->createEntity(Entities\API\Gen1\GetDeviceInformation::class, $body);
 	}
 
 	/**
-	 * @throws MetadataExceptions\InvalidData
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws RuntimeException
+	 * @throws Exceptions\HttpApiCall
+	 * @throws Exceptions\HttpApiError
 	 */
-	private function parseDeviceDescriptionResponse(
+	private function parseGetDeviceDescription(
+		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
-	): Entities\API\Gen1\DeviceDescription
+	): Entities\API\Gen1\GetDeviceDescription
 	{
-		$parsedMessage = $this->schemaValidator->validate(
-			$response->getBody()->getContents(),
-			$this->getSchemaFilePath(self::DEVICE_DESCRIPTION_MESSAGE_SCHEMA_FILENAME),
+		$body = $this->validateResponseBody(
+			$request,
+			$response,
+			self::GET_DEVICE_DESCRIPTION_MESSAGE_SCHEMA_FILENAME,
 		);
 
-		if (!$parsedMessage->offsetExists('blk') || !$parsedMessage->offsetExists('sen')) {
-			throw new Exceptions\InvalidState('Received response is not valid');
+		$data = [
+			'blocks' => [],
+		];
+
+		if (!$body->offsetExists('blk') || !$body->offsetExists('sen')) {
+			throw new Exceptions\HttpApiCall(
+				'Received response is not valid',
+				$request,
+				$response,
+			);
 		}
 
-		$blocks = $parsedMessage->offsetGet('blk');
-		$sensors = $parsedMessage->offsetGet('sen');
-
-		$descriptionBlocks = [];
+		$blocks = $body->offsetGet('blk');
+		$sensors = $body->offsetGet('sen');
 
 		if ($blocks instanceof Utils\ArrayHash && $sensors instanceof Utils\ArrayHash) {
 			foreach ($blocks as $block) {
@@ -507,10 +357,11 @@ final class Gen1HttpApi extends HttpApi
 					continue;
 				}
 
-				$blockDescription = new Entities\API\Gen1\DeviceBlockDescription(
-					intval($block->offsetGet('I')),
-					strval($block->offsetGet('D')),
-				);
+				$blockDescription = [
+					'identifier' => intval($block->offsetGet('I')),
+					'description' => strval($block->offsetGet('D')),
+					'sensors' => [],
+				];
 
 				foreach ($sensors as $sensor) {
 					if (
@@ -560,176 +411,216 @@ final class Gen1HttpApi extends HttpApi
 							)) : null,
 						);
 
-						$sensorDescription = new Entities\API\Gen1\BlockSensorDescription(
-							intval($sensor->offsetGet('I')),
-							Types\SensorType::get($sensor->offsetGet('T')),
-							strval($sensor->offsetGet('D')),
-							$sensorRange->getDataType(),
-							array_key_exists(
-								strval($sensor->offsetExists('U')),
-								self::SENSORS_UNIT,
-							) ? self::SENSORS_UNIT[strval($sensor->offsetExists(
-								'U',
-							))] : null,
-							$sensorRange->getFormat(),
-							$sensorRange->getInvalid(),
-							true,
-							in_array($sensor->offsetGet('D'), self::WRITABLE_SENSORS, true),
-						);
-
-						$blockDescription->addSensor($sensorDescription);
+						$blockDescription['sensors'][] = [
+							'identifier' => intval($sensor->offsetGet('I')),
+							'type' => $sensor->offsetGet('T'),
+							'description' => strval($sensor->offsetGet('D')),
+							'data_type' => $sensorRange->getDataType()->getValue(),
+							'unit' => array_key_exists(strval($sensor->offsetExists('U')), self::SENSORS_UNIT)
+								? self::SENSORS_UNIT[strval($sensor->offsetExists('U'))]
+								: null,
+							'format' => $sensorRange->getFormat(),
+							'invalid' => $sensorRange->getInvalid(),
+							'queryable' => true,
+							'settable' => in_array($sensor->offsetGet('D'), self::WRITABLE_SENSORS, true),
+						];
 					}
 				}
 
-				$descriptionBlocks[] = $blockDescription;
+				$data['blocks'][] = $blockDescription;
 			}
 		}
 
-		return new Entities\API\Gen1\DeviceDescription($descriptionBlocks);
+		return $this->createEntity(Entities\API\Gen1\GetDeviceDescription::class, Utils\ArrayHash::from($data));
 	}
 
 	/**
-	 * @throws MetadataExceptions\InvalidData
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws RuntimeException
+	 * @throws Exceptions\HttpApiCall
+	 * @throws Exceptions\HttpApiError
 	 */
-	private function parseDeviceStatusResponse(
+	private function parseGetDeviceStatus(
+		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
-	): Entities\API\Gen1\DeviceStatus
+	): Entities\API\Gen1\GetDeviceState
 	{
-		$parsedMessage = $this->schemaValidator->validate(
-			$response->getBody()->getContents(),
-			$this->getSchemaFilePath(self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME),
+		$body = $this->validateResponseBody(
+			$request,
+			$response,
+			self::GET_DEVICE_STATE_MESSAGE_SCHEMA_FILENAME,
 		);
 
 		$relays = [];
 
 		if (
-			$parsedMessage->offsetExists('relays')
+			$body->offsetExists('relays')
 			&& (
-				is_array($parsedMessage->offsetGet('relays'))
-				|| $parsedMessage->offsetGet('relays') instanceof Utils\ArrayHash
+				is_array($body->offsetGet('relays'))
+				|| $body->offsetGet('relays') instanceof Utils\ArrayHash
 			)
 		) {
-			foreach ($parsedMessage->offsetGet('relays') as $relayStatus) {
+			foreach ($body->offsetGet('relays') as $relayStatus) {
 				assert($relayStatus instanceof Utils\ArrayHash);
 
-				$relays[] = EntityFactory::build(
-					Entities\API\Gen1\DeviceRelayStatus::class,
-					$relayStatus,
-				);
+				$relays[] = [
+					'state' => $relayStatus->offsetGet('ison'),
+					'has_timer' => $relayStatus->offsetGet('hasTimer'),
+					'timer_started' => $relayStatus->offsetGet('timerStarted'),
+					'timer_duration' => $relayStatus->offsetGet('timerDuration'),
+					'timer_remaining' => $relayStatus->offsetGet('timerRemaining'),
+					'overpower' => $relayStatus->offsetGet('overpower'),
+					'overtemperature' => $relayStatus->offsetGet('overtemperature'),
+					'valid' => $relayStatus->offsetGet('isValid'),
+					'source' => $relayStatus->offsetGet('source'),
+				];
 			}
 		}
 
 		$rollers = [];
 
 		if (
-			$parsedMessage->offsetExists('rollers')
+			$body->offsetExists('rollers')
 			&& (
-				is_array($parsedMessage->offsetGet('rollers'))
-				|| $parsedMessage->offsetGet('rollers') instanceof Utils\ArrayHash
+				is_array($body->offsetGet('rollers'))
+				|| $body->offsetGet('rollers') instanceof Utils\ArrayHash
 			)
 		) {
-			foreach ($parsedMessage->offsetGet('rollers') as $rollerStatus) {
+			foreach ($body->offsetGet('rollers') as $rollerStatus) {
 				assert($rollerStatus instanceof Utils\ArrayHash);
 
-				$rollers[] = EntityFactory::build(
-					Entities\API\Gen1\DeviceRollerStatus::class,
-					$rollerStatus,
-				);
+				$rollers[] = [
+					'state' => $rollerStatus->offsetGet('state'),
+					'power' => $rollerStatus->offsetGet('power'),
+					'valid' => $rollerStatus->offsetGet('isValid'),
+					'safety_switch' => $rollerStatus->offsetGet('safetySwitch'),
+					'overtemperature' => $rollerStatus->offsetGet('overtemperature'),
+					'stop_reason' => $rollerStatus->offsetGet('stopReason'),
+					'last_direction' => $rollerStatus->offsetGet('lastDirection'),
+					'current_pos' => $rollerStatus->offsetGet('currentPos'),
+					'calibrating' => $rollerStatus->offsetGet('calibrating'),
+					'positioning' => $rollerStatus->offsetGet('positioning'),
+				];
 			}
 		}
 
 		$inputs = [];
 
 		if (
-			$parsedMessage->offsetExists('inputs')
+			$body->offsetExists('inputs')
 			&& (
-				is_array($parsedMessage->offsetGet('inputs'))
-				|| $parsedMessage->offsetGet('inputs') instanceof Utils\ArrayHash
+				is_array($body->offsetGet('inputs'))
+				|| $body->offsetGet('inputs') instanceof Utils\ArrayHash
 			)
 		) {
-			foreach ($parsedMessage->offsetGet('inputs') as $inputStatus) {
+			foreach ($body->offsetGet('inputs') as $inputStatus) {
 				assert($inputStatus instanceof Utils\ArrayHash);
 
-				$inputs[] = EntityFactory::build(
-					Entities\API\Gen1\DeviceInputStatus::class,
-					$inputStatus,
-				);
+				$inputs[] = [
+					'input' => $inputStatus->offsetGet('input'),
+					'event' => $inputStatus->offsetGet('event'),
+					'event_count' => $inputStatus->offsetGet('eventCnt'),
+					'last_sequence' => $inputStatus->offsetGet('lastSequence'),
+				];
 			}
 		}
 
 		$lights = [];
 
 		if (
-			$parsedMessage->offsetExists('lights')
+			$body->offsetExists('lights')
 			&& (
-				is_array($parsedMessage->offsetGet('lights'))
-				|| $parsedMessage->offsetGet('lights') instanceof Utils\ArrayHash
+				is_array($body->offsetGet('lights'))
+				|| $body->offsetGet('lights') instanceof Utils\ArrayHash
 			)
 		) {
-			foreach ($parsedMessage->offsetGet('lights') as $lightStatus) {
+			foreach ($body->offsetGet('lights') as $lightStatus) {
 				assert($lightStatus instanceof Utils\ArrayHash);
 
-				$lights[] = EntityFactory::build(
-					Entities\API\Gen1\DeviceLightStatus::class,
-					$lightStatus,
-				);
+				$lights[] = [
+					'state' => $lightStatus->offsetGet('ison'),
+					'source' => $lightStatus->offsetGet('source'),
+					'has_timer' => $lightStatus->offsetGet('hasTimer'),
+					'timer_started' => $lightStatus->offsetGet('timerStarted'),
+					'timer_duration' => $lightStatus->offsetGet('timerDuration'),
+					'timer_remaining' => $lightStatus->offsetGet('timerRemaining'),
+					'mode' => $lightStatus->offsetGet('mode'),
+					'red' => $lightStatus->offsetGet('red'),
+					'green' => $lightStatus->offsetGet('green'),
+					'blue' => $lightStatus->offsetGet('blue'),
+					'white' => $lightStatus->offsetGet('white'),
+					'gain' => $lightStatus->offsetGet('gain'),
+					'temperature' => $lightStatus->offsetGet('temp'),
+					'brightness' => $lightStatus->offsetGet('brightness'),
+					'effect' => $lightStatus->offsetGet('effect'),
+					'transition' => $lightStatus->offsetGet('transition'),
+				];
 			}
 		}
 
 		$meters = [];
 
 		if (
-			$parsedMessage->offsetExists('meters')
+			$body->offsetExists('meters')
 			&& (
-				is_array($parsedMessage->offsetGet('meters'))
-				|| $parsedMessage->offsetGet('meters') instanceof Utils\ArrayHash
+				is_array($body->offsetGet('meters'))
+				|| $body->offsetGet('meters') instanceof Utils\ArrayHash
 			)
 		) {
-			foreach ($parsedMessage->offsetGet('meters') as $meterStatus) {
+			foreach ($body->offsetGet('meters') as $meterStatus) {
 				assert($meterStatus instanceof Utils\ArrayHash);
 
-				$meters[] = EntityFactory::build(
-					Entities\API\Gen1\DeviceMeterStatus::class,
-					$meterStatus,
-				);
+				$meters[] = [
+					'power' => $meterStatus->offsetGet('power'),
+					'overpower' => $meterStatus->offsetGet('overpower'),
+					'valid' => $meterStatus->offsetGet('isValid'),
+					'timestamp' => $meterStatus->offsetGet('timestamp'),
+					'counters' => $meterStatus->offsetGet('counters') instanceof Utils\ArrayHash
+						? (array) $meterStatus->offsetGet('counters')
+						: $meterStatus->offsetGet('counters'),
+					'total' => $meterStatus->offsetGet('total'),
+				];
 			}
 		}
 
 		$emeters = [];
 
 		if (
-			$parsedMessage->offsetExists('emeters')
+			$body->offsetExists('emeters')
 			&& (
-				is_array($parsedMessage->offsetGet('emeters'))
-				|| $parsedMessage->offsetGet('emeters') instanceof Utils\ArrayHash
+				is_array($body->offsetGet('emeters'))
+				|| $body->offsetGet('emeters') instanceof Utils\ArrayHash
 			)
 		) {
-			foreach ($parsedMessage->offsetGet('emeters') as $emeterStatus) {
+			foreach ($body->offsetGet('emeters') as $emeterStatus) {
 				assert($emeterStatus instanceof Utils\ArrayHash);
 
-				$emeters[] = EntityFactory::build(
-					Entities\API\Gen1\DeviceEmeterStatus::class,
-					$emeterStatus,
-				);
+				$emeters[] = [
+					'active_power' => $emeterStatus->offsetGet('power'),
+					'power_factor' => $emeterStatus->offsetGet('pf'),
+					'reactive_power' => $emeterStatus->offsetGet('reactive'),
+					'current' => $emeterStatus->offsetGet('current'),
+					'voltage' => $emeterStatus->offsetGet('voltage'),
+					'valid' => $emeterStatus->offsetGet('isValid'),
+					'total' => $emeterStatus->offsetGet('total'),
+					'total_returned' => $emeterStatus->offsetGet('totalReturned'),
+				];
 			}
 		}
 
 		$wifi = null;
 
 		if (
-			$parsedMessage->offsetExists('wifi_sta')
-			&& $parsedMessage->offsetGet('wifi_sta') instanceof Utils\ArrayHash
+			$body->offsetExists('wifi_sta')
+			&& $body->offsetGet('wifi_sta') instanceof Utils\ArrayHash
 		) {
-			$wifi = EntityFactory::build(
-				Entities\API\Gen1\WifiStaStatus::class,
-				$parsedMessage->offsetGet('wifi_sta'),
-			);
+			$wifi = [
+				'connected' => $body->offsetGet('wifi_sta')->offsetGet('connected'),
+				'ssid' => $body->offsetGet('wifi_sta')->offsetGet('ssid'),
+				'rssi' => $body->offsetGet('wifi_sta')->offsetGet('rssi'),
+				'ip' => $body->offsetGet('wifi_sta')->offsetGet('ip'),
+			];
 		}
 
-		return new Entities\API\Gen1\DeviceStatus(
+		return $this->createEntity(Entities\API\Gen1\GetDeviceState::class, Utils\ArrayHash::from([
 			$relays,
 			$rollers,
 			$inputs,
@@ -737,7 +628,7 @@ final class Gen1HttpApi extends HttpApi
 			$meters,
 			$emeters,
 			$wifi,
-		);
+		]));
 	}
 
 	/**
@@ -1077,23 +968,6 @@ final class Gen1HttpApi extends HttpApi
 		}
 
 		return $propertyMatches['description'];
-	}
-
-	/**
-	 * @throws Exceptions\InvalidState
-	 */
-	private function getSchemaFilePath(string $schemaFilename): string
-	{
-		try {
-			$schema = Utils\FileSystem::read(
-				Shelly\Constants::RESOURCES_FOLDER . DIRECTORY_SEPARATOR . $schemaFilename,
-			);
-
-		} catch (Nette\IOException) {
-			throw new Exceptions\InvalidState('Validation schema for response could not be loaded');
-		}
-
-		return $schema;
 	}
 
 }

@@ -32,7 +32,7 @@ final class CoverObstructionDetectionConfigurationBlock implements Entities\API\
 		private readonly bool $enable,
 		private readonly string $direction,
 		private readonly string $action,
-		private readonly float $powerThr,
+		private readonly float $powerThreshold,
 		private readonly float $holdoff,
 	)
 	{
@@ -55,7 +55,7 @@ final class CoverObstructionDetectionConfigurationBlock implements Entities\API\
 
 	public function getPowerThreshold(): float
 	{
-		return $this->powerThr;
+		return $this->powerThreshold;
 	}
 
 	public function getHoldoff(): float

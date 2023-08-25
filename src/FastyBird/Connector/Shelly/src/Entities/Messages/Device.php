@@ -15,7 +15,6 @@
 
 namespace FastyBird\Connector\Shelly\Entities\Messages;
 
-use Nette;
 use Ramsey\Uuid;
 
 /**
@@ -28,8 +27,6 @@ use Ramsey\Uuid;
  */
 abstract class Device implements Entity
 {
-
-	use Nette\SmartObject;
 
 	public function __construct(
 		private readonly Uuid\UuidInterface $connector,

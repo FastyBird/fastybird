@@ -17,7 +17,6 @@ namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Types;
-use Nette;
 
 /**
  * Generation 2 device input configuration entity
@@ -30,8 +29,6 @@ use Nette;
 final class DeviceCoverConfiguration implements Entities\API\Entity
 {
 
-	use Nette\SmartObject;
-
 	public function __construct(
 		private readonly int $id,
 		private readonly string|null $name,
@@ -40,10 +37,10 @@ final class DeviceCoverConfiguration implements Entities\API\Entity
 		private readonly float $powerLimit,
 		private readonly float $voltageLimit,
 		private readonly float $currentLimit,
-		private readonly float $maxtimeOpen,
-		private readonly float $maxtimeClose,
-		private readonly bool $swapInputs,
-		private readonly bool $invertDirections,
+		private readonly float $maximumOpeningTime,
+		private readonly float $maximumClosingTime,
+		private readonly bool $swappedInput,
+		private readonly bool $invertedDirections,
 		private readonly CoverMotorConfigurationBlock|null $motor,
 		private readonly CoverObstructionDetectionConfigurationBlock|null $obstructionDetection,
 		private readonly CoverSafetySwitchConfigurationBlock|null $safetySwitch,
@@ -93,22 +90,22 @@ final class DeviceCoverConfiguration implements Entities\API\Entity
 
 	public function getMaximumOpeningTime(): float
 	{
-		return $this->maxtimeOpen;
+		return $this->maximumOpeningTime;
 	}
 
 	public function getMaximumClosingTime(): float
 	{
-		return $this->maxtimeClose;
+		return $this->maximumClosingTime;
 	}
 
 	public function hasSwappedInputs(): bool
 	{
-		return $this->swapInputs;
+		return $this->swappedInput;
 	}
 
 	public function hasInvertedDirection(): bool
 	{
-		return $this->invertDirections;
+		return $this->invertedDirections;
 	}
 
 	public function getMotor(): CoverMotorConfigurationBlock|null

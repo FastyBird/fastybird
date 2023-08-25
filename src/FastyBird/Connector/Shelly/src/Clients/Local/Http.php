@@ -82,6 +82,7 @@ final class Http
 	/**
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\HttpApiCall
+	 * @throws Exceptions\HttpApiError
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -110,7 +111,7 @@ final class Http
 		$generation = $device->getGeneration();
 
 		if ($generation->equalsValue(Types\DeviceGeneration::GENERATION_1)) {
-			$result = $this->gen1httpApi?->setDeviceStatus(
+			$result = $this->gen1httpApi?->setDeviceState(
 				$address,
 				$device->getUsername(),
 				$device->getPassword(),
@@ -166,7 +167,7 @@ final class Http
 	}
 
 	/**
-	 * @param callable(Entities\API\Gen1\DeviceStatus|Entities\API\Gen2\DeviceStatus $status): void|null $onFulfilled
+	 * @param callable(Entities\API\Gen1\GetDeviceState|Entities\API\Gen2\GetDeviceState $status): void|null $onFulfilled
 	 * @param callable(Throwable $ex): void|null $onRejected
 	 *
 	 * @throws Exceptions\InvalidState
@@ -198,7 +199,7 @@ final class Http
 		$generation = $device->getGeneration();
 
 		if ($generation->equalsValue(Types\DeviceGeneration::GENERATION_1)) {
-			$result = $this->gen1httpApi?->getDeviceStatus(
+			$result = $this->gen1httpApi?->getDeviceState(
 				$address,
 				$device->getUsername(),
 				$device->getPassword(),
@@ -219,7 +220,7 @@ final class Http
 
 		$result
 			->then(
-				function (Entities\API\Gen1\DeviceStatus|Entities\API\Gen2\DeviceStatus $status) use ($device, $onFulfilled): void {
+				function (Entities\API\Gen1\GetDeviceState|Entities\API\Gen2\GetDeviceState $status) use ($device, $onFulfilled): void {
 					$this->consumer->append(
 						new Entities\Messages\DeviceState(
 							$device->getConnector()->getId(),
@@ -228,7 +229,7 @@ final class Http
 						),
 					);
 
-					if ($status instanceof Entities\API\Gen1\DeviceStatus) {
+					if ($status instanceof Entities\API\Gen1\GetDeviceState) {
 						$this->processGen1DeviceStatus($device, $status);
 					} else {
 						$this->processGen2DeviceStatus($device, $status);
@@ -337,7 +338,7 @@ final class Http
 	 */
 	private function processGen1DeviceStatus(
 		Entities\ShellyDevice $device,
-		Entities\API\Gen1\DeviceStatus $status,
+		Entities\API\Gen1\GetDeviceState $status,
 	): void
 	{
 		$statuses = [];

@@ -15,16 +15,23 @@
 
 namespace FastyBird\Connector\Shelly\API;
 
+use FastyBird\Connector\Shelly;
+use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
+use FastyBird\Connector\Shelly\Helpers;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Fig\Http\Message\StatusCodeInterface;
 use GuzzleHttp;
+use InvalidArgumentException;
 use Nette;
 use Nette\Utils;
 use Psr\Http\Message;
 use Psr\Log;
 use React\Http;
 use React\Promise;
+use RuntimeException;
 use Throwable;
 use function array_key_exists;
 use function array_merge;
@@ -33,11 +40,11 @@ use function count;
 use function hash;
 use function http_build_query;
 use function implode;
-use function parse_url;
 use function preg_match_all;
 use function sprintf;
+use function strval;
 use function time;
-use const PHP_URL_PATH;
+use const DIRECTORY_SEPARATOR;
 
 /**
  * Device http api interface
@@ -62,52 +69,209 @@ abstract class HttpApi
 
 	public function __construct(
 		protected readonly HttpClientFactory $httpClientFactory,
+		protected readonly Helpers\Entity $entityHelper,
+		protected readonly MetadataSchemas\Validator $schemaValidator,
 		protected readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
 	}
 
 	/**
-	 * @param array<string, mixed> $params
-	 * @param array<string, mixed> $headers
+	 * @template T of Entities\API\Entity
+	 *
+	 * @param class-string<T> $entity
+	 *
+	 * @return T
+	 *
+	 * @throws Exceptions\HttpApiCall
+	 */
+	protected function createEntity(string $entity, Utils\ArrayHash $data): Entities\API\Entity
+	{
+		try {
+			return $this->entityHelper->create(
+				$entity,
+				(array) Utils\Json::decode(Utils\Json::encode($data), Utils\Json::FORCE_ARRAY),
+			);
+		} catch (Exceptions\Runtime $ex) {
+			throw new Exceptions\HttpApiCall('Could not map data to entity', null, null, $ex->getCode(), $ex);
+		} catch (Utils\JsonException $ex) {
+			throw new Exceptions\HttpApiCall(
+				'Could not create entity from response',
+				null,
+				null,
+				$ex->getCode(),
+				$ex,
+			);
+		}
+	}
+
+	/**
+	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Message\ResponseInterface)
 	 *
 	 * @throws Exceptions\HttpApiCall
 	 */
 	protected function callRequest(
-		string $method,
-		string $path,
-		array $params = [],
-		array $headers = [],
-		string|null $body = null,
+		Request $request,
 		string|null $authorization = null,
 		string|null $username = null,
 		string|null $password = null,
-	): Message\ResponseInterface
+		bool $async = true,
+		bool $handlingAuthentication = false,
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Message\ResponseInterface
 	{
+		$deferred = new Promise\Deferred();
+
 		$this->logger->debug(sprintf(
 			'Request: method = %s url = %s',
-			$method,
-			$path,
+			$request->getMethod(),
+			strval($request->getUri()),
 		), [
 			'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 			'type' => 'http-api',
 			'request' => [
-				'method' => $method,
-				'url' => $path,
-				'params' => $params,
-				'body' => $body,
+				'method' => $request->getMethod(),
+				'path' => strval($request->getUri()),
+				'headers' => $request->getHeaders(),
+				'body' => $request->getContent(),
 			],
 		]);
 
-		if (count($params) > 0) {
-			$path .= '?';
-			$path .= http_build_query($params);
+		if ($async) {
+			if ($authorization === self::AUTHORIZATION_BASIC) {
+				$request->withAddedHeader(
+					self::REQUEST_AUTHORIZATION_HEADER,
+					'Basic ' . base64_encode($username . ':' . $password),
+				);
+			}
+
+			try {
+				$this->httpClientFactory
+					->create()
+					->send($request)
+					->then(
+						function (Message\ResponseInterface $response) use ($deferred, $request): void {
+							try {
+								$responseBody = $response->getBody()->getContents();
+
+								$response->getBody()->rewind();
+							} catch (RuntimeException $ex) {
+								$deferred->reject(
+									new Exceptions\HttpApiCall(
+										'Could not get content from response body',
+										$request,
+										$response,
+										$ex->getCode(),
+										$ex,
+									),
+								);
+
+								return;
+							}
+
+							$this->logger->debug('Received response', [
+								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+								'type' => 'http-api',
+								'request' => [
+									'method' => $request->getMethod(),
+									'url' => strval($request->getUri()),
+									'headers' => $request->getHeaders(),
+									'body' => $request->getContent(),
+								],
+								'response' => [
+									'code' => $response->getStatusCode(),
+									'body' => $responseBody,
+								],
+							]);
+
+							$deferred->resolve($response);
+						},
+						function (Throwable $ex) use ($deferred, $request, $authorization, $username, $password, $handlingAuthentication): void {
+							if (
+								$authorization === self::AUTHORIZATION_DIGEST
+								&& !$handlingAuthentication
+								&& $ex instanceof Http\Message\ResponseException
+								&& $ex->getResponse()->getStatusCode() === StatusCodeInterface::STATUS_UNAUTHORIZED
+								&& $ex->getResponse()->hasHeader(self::RESPONSE_AUTHENTICATION_RESPONSE_HEADER)
+								&& $ex->getResponse()->getHeader(self::RESPONSE_AUTHENTICATION_RESPONSE_HEADER) !== []
+								&& $username !== null
+								&& $password !== null
+							) {
+								$authHeader = $this->parseAuthentication(
+									$request->getMethod(),
+									$request->getUri()->getPath(),
+									$username,
+									$password,
+									$ex->getResponse()->getHeader(self::RESPONSE_AUTHENTICATION_RESPONSE_HEADER)[0],
+								);
+
+								if ($authHeader !== null) {
+									try {
+										$request = $this->createRequest(
+											$request->getMethod(),
+											strval($request->getUri()),
+											[],
+											array_merge(
+												$request->getHeaders(),
+												[
+													self::REQUEST_AUTHORIZATION_HEADER => $authHeader,
+												],
+											),
+											$request->getBody()->getContents(),
+										);
+
+										$this->callRequest(
+											$request,
+											$authorization,
+											null,
+											null,
+											true,
+											true,
+										)
+											->then(
+												static function (Message\ResponseInterface $response) use ($deferred): void {
+													$deferred->resolve($response);
+												},
+											)
+											->otherwise(
+												static function (Throwable $ex) use ($deferred, $request): void {
+													$deferred->reject(
+														new Exceptions\HttpApiCall(
+															'Calling api endpoint failed',
+															$request,
+															null,
+															$ex->getCode(),
+															$ex,
+														),
+													);
+												},
+											);
+
+										return;
+									} catch (Throwable $ex) {
+										$deferred->reject($ex);
+									}
+								}
+							}
+
+							$deferred->reject(
+								new Exceptions\HttpApiCall(
+									'Calling api endpoint failed',
+									$request,
+									null,
+									$ex->getCode(),
+									$ex,
+								),
+							);
+						},
+					);
+			} catch (Throwable $ex) {
+				$deferred->reject($ex);
+			}
+
+			return $deferred->promise();
 		}
 
-		$options = [
-			GuzzleHttp\RequestOptions::HEADERS => $headers,
-			GuzzleHttp\RequestOptions::BODY => $body ?? '',
-		];
+		$options = [];
 
 		if ($authorization === self::AUTHORIZATION_BASIC) {
 			$options[GuzzleHttp\RequestOptions::AUTH] = [$username, $password];
@@ -116,133 +280,80 @@ abstract class HttpApi
 		}
 
 		try {
-			return $this->httpClientFactory->createClient(false)->request($method, $path, $options);
-		} catch (Throwable $ex) {
-			throw new Exceptions\HttpApiCall('Calling api endpoint failed', $ex->getCode(), $ex);
+			$response = $this->httpClientFactory
+				->create(false)
+				->send($request, $options);
+
+			try {
+				$responseBody = $response->getBody()->getContents();
+
+				$response->getBody()->rewind();
+			} catch (RuntimeException $ex) {
+				throw new Exceptions\HttpApiCall(
+					'Could not get content from response body',
+					$request,
+					$response,
+					$ex->getCode(),
+					$ex,
+				);
+			}
+
+			$this->logger->debug('Received response', [
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+				'type' => 'http-api',
+				'request' => [
+					'method' => $request->getMethod(),
+					'url' => strval($request->getUri()),
+					'headers' => $request->getHeaders(),
+					'body' => $request->getContent(),
+				],
+				'response' => [
+					'code' => $response->getStatusCode(),
+					'body' => $responseBody,
+				],
+			]);
+
+			return $response;
+		} catch (GuzzleHttp\Exception\GuzzleException | InvalidArgumentException $ex) {
+			throw new Exceptions\HttpApiCall(
+				'Calling api endpoint failed',
+				$request,
+				null,
+				$ex->getCode(),
+				$ex,
+			);
 		}
 	}
 
 	/**
 	 * @param array<string, mixed> $params
-	 * @param array<string, mixed> $headers
+	 * @param array<string, int|string|array<string>> $headers
+	 *
+	 * @throws Exceptions\HttpApiError
 	 */
-	protected function callAsyncRequest(
+	protected function createRequest(
 		string $method,
-		string $path,
+		string $url,
 		array $params = [],
 		array $headers = [],
 		string|null $body = null,
-		string|null $authorization = null,
-		string|null $username = null,
-		string|null $password = null,
-		bool $handlingAuthentication = false,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface
+	): Request
 	{
-		$deferred = new Promise\Deferred();
-
-		$this->logger->debug(sprintf(
-			'Request: method = %s url = %s',
-			$method,
-			$path,
-		), [
-			'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-			'type' => 'http-api',
-			'request' => [
-				'method' => $method,
-				'url' => $path,
-				'params' => $params,
-				'body' => $body,
-			],
-		]);
-
 		if (count($params) > 0) {
-			$path .= '?';
-			$path .= http_build_query($params);
-		}
-
-		if ($authorization === self::AUTHORIZATION_BASIC) {
-			$headers[self::REQUEST_AUTHORIZATION_HEADER] = 'Basic ' . base64_encode($username . ':' . $password);
+			$url .= '?';
+			$url .= http_build_query($params);
 		}
 
 		try {
-			$this->httpClientFactory->createClient()->request($method, $path, $headers, $body ?? '')
-				->then(
-					static function (Message\ResponseInterface $response) use ($deferred): void {
-						$deferred->resolve($response);
-					},
-					function (Throwable $ex) use (
-						$deferred,
-						$method,
-						$path,
-						$params,
-						$headers,
-						$body,
-						$authorization,
-						$username,
-						$password,
-						$handlingAuthentication,
-					): void {
-						if (
-							$authorization === self::AUTHORIZATION_DIGEST
-							&& !$handlingAuthentication
-							&& $ex instanceof Http\Message\ResponseException
-							&& $ex->getResponse()->getStatusCode() === StatusCodeInterface::STATUS_UNAUTHORIZED
-							&& $ex->getResponse()->hasHeader(self::RESPONSE_AUTHENTICATION_RESPONSE_HEADER)
-							&& count($ex->getResponse()->getHeader(self::RESPONSE_AUTHENTICATION_RESPONSE_HEADER)) > 0
-							&& $username !== null
-							&& $password !== null
-						) {
-							$authHeader = $this->parseAuthentication(
-								$method,
-								$path,
-								$username,
-								$password,
-								$ex->getResponse()->getHeader(self::RESPONSE_AUTHENTICATION_RESPONSE_HEADER)[0],
-							);
-
-							if ($authHeader !== null) {
-								$this->callAsyncRequest(
-									$method,
-									$path,
-									$params,
-									array_merge(
-										$headers,
-										[
-											self::REQUEST_AUTHORIZATION_HEADER => $authHeader,
-										],
-									),
-									$body,
-									$authorization,
-									null,
-									null,
-									true,
-								)
-									->then(
-										static function (Message\ResponseInterface $response) use ($deferred): void {
-											$deferred->resolve($response);
-										},
-									)
-									->otherwise(static function (Throwable $ex) use ($deferred): void {
-										$deferred->reject($ex);
-									});
-
-								return;
-							}
-						}
-
-						$deferred->reject($ex);
-					},
-				);
-		} catch (Throwable $ex) {
-			$deferred->reject($ex);
+			return new Request($method, $url, $headers, $body);
+		} catch (Exceptions\InvalidArgument | Exceptions\Runtime $ex) {
+			throw new Exceptions\HttpApiError('Could not create request instance', $ex->getCode(), $ex);
 		}
-
-		return $deferred->promise();
 	}
 
 	protected function parseAuthentication(
 		string $method,
-		string $url,
+		string $path,
 		string $username,
 		string $password,
 		string $header,
@@ -280,8 +391,6 @@ abstract class HttpApi
 		}
 
 		$nc = 1;
-
-		$path = parse_url($url, PHP_URL_PATH);
 
 		$clientNonce = time();
 
@@ -323,6 +432,81 @@ abstract class HttpApi
 		}
 
 		return 'Digest ' . implode(', ', $digestHeader);
+	}
+
+	/**
+	 * @return ($throw is true ? Utils\ArrayHash : Utils\ArrayHash|false)
+	 *
+	 * @throws Exceptions\HttpApiCall
+	 * @throws Exceptions\HttpApiError
+	 */
+	protected function validateResponseBody(
+		Message\RequestInterface $request,
+		Message\ResponseInterface $response,
+		string $schemaFilename,
+		bool $throw = true,
+	): Utils\ArrayHash|bool
+	{
+		$body = $this->getResponseBody($request, $response);
+
+		try {
+			return $this->schemaValidator->validate(
+				$body,
+				$this->getSchema($schemaFilename),
+			);
+		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+			if ($throw) {
+				throw new Exceptions\HttpApiCall(
+					'Could not validate received response payload',
+					$request,
+					$response,
+					$ex->getCode(),
+					$ex,
+				);
+			}
+
+			return false;
+		}
+	}
+
+	/**
+	 * @throws Exceptions\HttpApiCall
+	 */
+	private function getResponseBody(
+		Message\RequestInterface $request,
+		Message\ResponseInterface $response,
+	): string
+	{
+		try {
+			$response->getBody()->rewind();
+
+			return $response->getBody()->getContents();
+		} catch (RuntimeException $ex) {
+			throw new Exceptions\HttpApiCall(
+				'Could not get content from response body',
+				$request,
+				$response,
+				$ex->getCode(),
+				$ex,
+			);
+		}
+	}
+
+	/**
+	 * @throws Exceptions\HttpApiError
+	 */
+	private function getSchema(string $schemaFilename): string
+	{
+		try {
+			$schema = Utils\FileSystem::read(
+				Shelly\Constants::RESOURCES_FOLDER . DIRECTORY_SEPARATOR . $schemaFilename,
+			);
+
+		} catch (Nette\IOException) {
+			throw new Exceptions\HttpApiError('Validation schema for response could not be loaded');
+		}
+
+		return $schema;
 	}
 
 }

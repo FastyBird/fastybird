@@ -29,7 +29,7 @@ final class CoverMotorConfigurationBlock implements Entities\API\Entity
 {
 
 	public function __construct(
-		private readonly float $idlePowerThr,
+		private readonly float $idlePowerThreshold,
 		private readonly float $idleConfirmPeriod,
 	)
 	{
@@ -37,7 +37,7 @@ final class CoverMotorConfigurationBlock implements Entities\API\Entity
 
 	public function getIdlePowerThreshold(): float
 	{
-		return $this->idlePowerThr;
+		return $this->idlePowerThreshold;
 	}
 
 	public function getIdleConfirmPeriod(): float

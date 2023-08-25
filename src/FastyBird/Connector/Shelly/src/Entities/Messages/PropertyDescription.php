@@ -17,7 +17,6 @@ namespace FastyBird\Connector\Shelly\Entities\Messages;
 
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use Nette;
 
 /**
  * Device or channel property description entity
@@ -29,8 +28,6 @@ use Nette;
  */
 final class PropertyDescription implements Entity
 {
-
-	use Nette\SmartObject;
 
 	/**
 	 * @param array<string>|array<int>|array<float>|array<int, array<int, (string|array<int, string>|null)>>|array<int, (int|null)>|array<int, (float|null)>|array<int, (MetadataTypes\SwitchPayload|string|Types\RelayPayload|null)>|null $format

@@ -45,15 +45,15 @@ trait Gen2
 {
 
 	private function processDeviceStatus(
-		Entities\ShellyDevice $device,
-		Entities\API\Gen2\DeviceStatus $status,
+		Entities\ShellyDevice            $device,
+		Entities\API\Gen2\GetDeviceState $status,
 	): void
 	{
 		$statuses = array_map(
 			function ($component) use ($device): array {
 				$result = [];
 
-				if ($component instanceof Entities\API\Gen2\DeviceSwitchStatus) {
+				if ($component instanceof Entities\API\Gen2\DeviceSwitchState) {
 					$property = $this->findProperty(
 						$device,
 						(
@@ -75,7 +75,7 @@ trait Gen2
 							),
 						);
 					}
-				} elseif ($component instanceof Entities\API\Gen2\DeviceCoverStatus) {
+				} elseif ($component instanceof Entities\API\Gen2\DeviceCoverState) {
 					$property = $this->findProperty(
 						$device,
 						(
@@ -119,7 +119,7 @@ trait Gen2
 							),
 						);
 					}
-				} elseif ($component instanceof Entities\API\Gen2\DeviceLightStatus) {
+				} elseif ($component instanceof Entities\API\Gen2\DeviceLightState) {
 					$property = $this->findProperty(
 						$device,
 						(
@@ -163,7 +163,7 @@ trait Gen2
 							),
 						);
 					}
-				} elseif ($component instanceof Entities\API\Gen2\DeviceInputStatus) {
+				} elseif ($component instanceof Entities\API\Gen2\DeviceInputState) {
 					$property = $this->findProperty(
 						$device,
 						(
@@ -191,7 +191,7 @@ trait Gen2
 							),
 						);
 					}
-				} elseif ($component instanceof Entities\API\Gen2\DeviceTemperatureStatus) {
+				} elseif ($component instanceof Entities\API\Gen2\DeviceTemperatureState) {
 					$property = $this->findProperty(
 						$device,
 						(
@@ -267,8 +267,8 @@ trait Gen2
 				}
 
 				if (
-					$component instanceof Entities\API\Gen2\DeviceSwitchStatus
-					|| $component instanceof Entities\API\Gen2\DeviceCoverStatus
+					$component instanceof Entities\API\Gen2\DeviceSwitchState
+					|| $component instanceof Entities\API\Gen2\DeviceCoverState
 				) {
 					$property = $this->findProperty(
 						$device,
@@ -327,7 +327,7 @@ trait Gen2
 
 					if (
 						$property !== null
-						&& $component->getActiveEnergy() instanceof Entities\API\Gen2\ActiveEnergyStatusBlock
+						&& $component->getActiveEnergy() instanceof Entities\API\Gen2\ActiveEnergyStateBlock
 					) {
 						$result[] = new Entities\Messages\PropertyStatus(
 							$property->getIdentifier(),
@@ -396,7 +396,7 @@ trait Gen2
 
 					if (
 						$property !== null
-						&& $component->getTemperature() instanceof Entities\API\Gen2\TemperatureBlockStatus
+						&& $component->getTemperature() instanceof Entities\API\Gen2\TemperatureBlockState
 					) {
 						$result[] = new Entities\Messages\PropertyStatus(
 							$property->getIdentifier(),

@@ -15,8 +15,6 @@
 
 namespace FastyBird\Connector\Shelly\Entities\Clients;
 
-use Nette;
-
 /**
  * mDNS search result
  *
@@ -27,8 +25,6 @@ use Nette;
  */
 final class MdnsResult
 {
-
-	use Nette\SmartObject;
 
 	/**
 	 * @param array<string, string|int|float|null> $data

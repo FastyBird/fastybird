@@ -17,15 +17,12 @@ namespace FastyBird\Connector\Shelly\API;
 
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Connector\Shelly\Types;
+use Fig\Http\Message\RequestMethodInterface;
 use Fig\Http\Message\StatusCodeInterface;
 use Nette;
 use Nette\Utils;
 use Psr\Http\Message;
-use Psr\Log;
 use React\Promise;
 use RuntimeException;
 use Throwable;
@@ -46,31 +43,31 @@ use function uniqid;
 final class Gen2HttpApi extends HttpApi
 {
 
-	use Gen2;
 	use Nette\SmartObject;
 
-	private const DEVICE_INFORMATION_ENDPOINT = 'http://%s/rpc/Shelly.GetDeviceInfo';
+	private const GET_DEVICE_INFORMATION_ENDPOINT = 'http://%s/rpc/Shelly.GetDeviceInfo';
 
-	private const DEVICE_CONFIGURATION_ENDPOINT = 'http://%s/rpc/Shelly.GetConfig';
+	private const GET_DEVICE_CONFIGURATION_ENDPOINT = 'http://%s/rpc/Shelly.GetConfig';
 
-	private const DEVICE_STATUS_ENDPOINT = 'http://%s/rpc/Shelly.GetStatus';
+	private const GET_DEVICE_STATE_ENDPOINT = 'http://%s/rpc/Shelly.GetStatus';
 
-	private const DEVICE_ACTION_ENDPOINT = 'http://%s/rpc';
+	private const SET_DEVICE_STATE_ENDPOINT = 'http://%s/rpc';
 
-	private const DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME = 'gen2_http_shelly.json';
+	private const GET_DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME = 'gen2_http_shelly.json';
 
-	private const DEVICE_CONFIG_MESSAGE_SCHEMA_FILENAME = 'gen2_http_config.json';
+	private const GET_DEVICE_CONFIG_MESSAGE_SCHEMA_FILENAME = 'gen2_http_config.json';
 
-	private const DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME = 'gen2_http_status.json';
+	private const GET_DEVICE_STATE_MESSAGE_SCHEMA_FILENAME = 'gen2_http_state.json';
 
-	public function __construct(
-		protected readonly MetadataSchemas\Validator $schemaValidator,
-		HttpClientFactory $httpClientFactory,
-		Log\LoggerInterface $logger = new Log\NullLogger(),
-	)
-	{
-		parent::__construct($httpClientFactory, $logger);
-	}
+	private const PROPERTY_COMPONENT = '/^(?P<component>[a-zA-Z]+)_(?P<identifier>[0-9]+)(_(?P<attribute>[a-zA-Z0-9]+))?$/';
+
+	private const COMPONENT_KEY = '/^(?P<component>[a-zA-Z]+)(:(?P<channel>[0-9_]+))?$/';
+
+	private const SWITCH_SET_METHOD = 'Switch.Set';
+
+	private const COVER_GO_TO_POSITION_METHOD = 'Cover.GoToPosition';
+
+	private const LIGHT_SET_METHOD = 'Light.Set';
 
 	/**
 	 * @throws Exceptions\InvalidState
@@ -80,40 +77,24 @@ final class Gen2HttpApi extends HttpApi
 	public function getDeviceInformation(
 		string $address,
 		bool $async = true,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\Gen2\DeviceInformation
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\Gen2\GetDeviceInformation
 	{
-		if ($async) {
-			$deferred = new Promise\Deferred();
+		$deferred = new Promise\Deferred();
 
-			$this->callAsyncRequest(
-				'GET',
-				sprintf(self::DEVICE_INFORMATION_ENDPOINT, $address),
-			)
-				->then(function (Message\ResponseInterface $response) use ($deferred): void {
+		$request = $this->createRequest(
+			RequestMethodInterface::METHOD_GET,
+			sprintf(self::GET_DEVICE_INFORMATION_ENDPOINT, $address),
+		);
+
+		$result = $this->callRequest($request, null, null, null, $async);
+
+		if ($result instanceof Promise\PromiseInterface) {
+			$result
+				->then(function (Message\ResponseInterface $response) use ($deferred, $request): void {
 					try {
-						$entity = $this->parseDeviceInformationResponse(
-							$response->getBody()->getContents(),
-							self::DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME,
-						);
-
-						$deferred->resolve($entity);
-					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
-						$response->getBody()->rewind();
-
-						$this->logger->error(
-							'Could not decode received payload',
-							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-								'type' => 'gen2-api',
-								'exception' => BootstrapHelpers\Logger::buildException($ex),
-								'response' => [
-									'body' => $response->getBody()->getContents(),
-									'schema' => self::DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME,
-								],
-							],
-						);
-
-						$deferred->reject(new Exceptions\HttpApiCall('Could not decode received response payload'));
+						$deferred->resolve($this->parseGetDeviceInformation($request, $response));
+					} catch (Throwable $ex) {
+						$deferred->reject($ex);
 					}
 				})
 				->otherwise(static function (Throwable $ex) use ($deferred): void {
@@ -123,34 +104,7 @@ final class Gen2HttpApi extends HttpApi
 			return $deferred->promise();
 		}
 
-		$response = $this->callRequest(
-			'GET',
-			sprintf(self::DEVICE_INFORMATION_ENDPOINT, $address),
-		);
-
-		try {
-			return $this->parseDeviceInformationResponse(
-				$response->getBody()->getContents(),
-				self::DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME,
-			);
-		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
-			$response->getBody()->rewind();
-
-			$this->logger->error(
-				'Could not decode received payload',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-					'type' => 'gen2-api',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
-					'response' => [
-						'body' => $response->getBody()->getContents(),
-						'schema' => self::DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME,
-					],
-				],
-			);
-
-			throw new Exceptions\HttpApiCall('Could not decode received response payload');
-		}
+		return $this->parseGetDeviceInformation($request, $result);
 	}
 
 	/**
@@ -163,46 +117,24 @@ final class Gen2HttpApi extends HttpApi
 		string|null $username,
 		string|null $password,
 		bool $async = true,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\Gen2\DeviceConfiguration
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\Gen2\GetDeviceConfiguration
 	{
-		if ($async) {
-			$deferred = new Promise\Deferred();
+		$deferred = new Promise\Deferred();
 
-			$this->callAsyncRequest(
-				'GET',
-				sprintf(self::DEVICE_CONFIGURATION_ENDPOINT, $address),
-				[],
-				[],
-				null,
-				self::AUTHORIZATION_DIGEST,
-				$username,
-				$password,
-			)
-				->then(function (Message\ResponseInterface $response) use ($deferred): void {
+		$request = $this->createRequest(
+			RequestMethodInterface::METHOD_GET,
+			sprintf(self::GET_DEVICE_CONFIGURATION_ENDPOINT, $address),
+		);
+
+		$result = $this->callRequest($request, self::AUTHORIZATION_DIGEST, $username, $password, $async);
+
+		if ($result instanceof Promise\PromiseInterface) {
+			$result
+				->then(function (Message\ResponseInterface $response) use ($deferred, $request): void {
 					try {
-						$entity = $this->parseDeviceConfigurationResponse(
-							$response->getBody()->getContents(),
-							self::DEVICE_CONFIG_MESSAGE_SCHEMA_FILENAME,
-						);
-
-						$deferred->resolve($entity);
-					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
-						$response->getBody()->rewind();
-
-						$this->logger->error(
-							'Could not decode received payload',
-							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-								'type' => 'gen2-api',
-								'exception' => BootstrapHelpers\Logger::buildException($ex),
-								'response' => [
-									'body' => $response->getBody()->getContents(),
-									'schema' => self::DEVICE_CONFIG_MESSAGE_SCHEMA_FILENAME,
-								],
-							],
-						);
-
-						$deferred->reject(new Exceptions\HttpApiCall('Could not decode received response payload'));
+						$deferred->resolve($this->parseGetDeviceConfiguration($request, $response));
+					} catch (Throwable $ex) {
+						$deferred->reject($ex);
 					}
 				})
 				->otherwise(static function (Throwable $ex) use ($deferred): void {
@@ -212,40 +144,7 @@ final class Gen2HttpApi extends HttpApi
 			return $deferred->promise();
 		}
 
-		$response = $this->callRequest(
-			'GET',
-			sprintf(self::DEVICE_CONFIGURATION_ENDPOINT, $address),
-			[],
-			[],
-			null,
-			self::AUTHORIZATION_BASIC,
-			$username,
-			$password,
-		);
-
-		try {
-			return $this->parseDeviceConfigurationResponse(
-				$response->getBody()->getContents(),
-				self::DEVICE_CONFIG_MESSAGE_SCHEMA_FILENAME,
-			);
-		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
-			$response->getBody()->rewind();
-
-			$this->logger->error(
-				'Could not decode received payload',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-					'type' => 'gen2-api',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
-					'response' => [
-						'body' => $response->getBody()->getContents(),
-						'schema' => self::DEVICE_CONFIG_MESSAGE_SCHEMA_FILENAME,
-					],
-				],
-			);
-
-			throw new Exceptions\HttpApiCall('Could not decode received response payload');
-		}
+		return $this->parseGetDeviceConfiguration($request, $result);
 	}
 
 	/**
@@ -258,48 +157,24 @@ final class Gen2HttpApi extends HttpApi
 		string|null $username,
 		string|null $password,
 		bool $async = true,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\Gen2\DeviceStatus
+	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\Gen2\GetDeviceState
 	{
-		if ($async) {
-			$deferred = new Promise\Deferred();
+		$deferred = new Promise\Deferred();
 
-			$url = sprintf(self::DEVICE_STATUS_ENDPOINT, $address);
+		$request = $this->createRequest(
+			RequestMethodInterface::METHOD_GET,
+			sprintf(self::GET_DEVICE_STATE_ENDPOINT, $address),
+		);
 
-			$this->callAsyncRequest(
-				'GET',
-				$url,
-				[],
-				[],
-				null,
-				self::AUTHORIZATION_DIGEST,
-				$username,
-				$password,
-			)
-				->then(function (Message\ResponseInterface $response) use ($deferred): void {
+		$result = $this->callRequest($request, self::AUTHORIZATION_DIGEST, $username, $password, $async);
+
+		if ($result instanceof Promise\PromiseInterface) {
+			$result
+				->then(function (Message\ResponseInterface $response) use ($deferred, $request): void {
 					try {
-						$entity = $this->parseDeviceStatusResponse(
-							$response->getBody()->getContents(),
-							self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME,
-						);
-
-						$deferred->resolve($entity);
-					} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
-						$response->getBody()->rewind();
-
-						$this->logger->error(
-							'Could not decode received payload',
-							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-								'type' => 'gen2-api',
-								'exception' => BootstrapHelpers\Logger::buildException($ex),
-								'response' => [
-									'body' => $response->getBody()->getContents(),
-									'schema' => self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME,
-								],
-							],
-						);
-
-						$deferred->reject(new Exceptions\HttpApiCall('Could not decode received response payload'));
+						$deferred->resolve($this->parseGetDeviceState($request, $response));
+					} catch (Throwable $ex) {
+						$deferred->reject($ex);
 					}
 				})
 				->otherwise(static function (Throwable $ex) use ($deferred): void {
@@ -309,44 +184,13 @@ final class Gen2HttpApi extends HttpApi
 			return $deferred->promise();
 		}
 
-		$response = $this->callRequest(
-			'GET',
-			sprintf(self::DEVICE_STATUS_ENDPOINT, $address),
-			[],
-			[],
-			null,
-			self::AUTHORIZATION_BASIC,
-			$username,
-			$password,
-		);
-
-		try {
-			return $this->parseDeviceStatusResponse(
-				$response->getBody()->getContents(),
-				self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME,
-			);
-		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
-			$response->getBody()->rewind();
-
-			$this->logger->error(
-				'Could not decode received payload',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-					'type' => 'gen2-api',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
-					'response' => [
-						'body' => $response->getBody()->getContents(),
-						'schema' => self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME,
-					],
-				],
-			);
-
-			throw new Exceptions\HttpApiCall('Could not decode received response payload');
-		}
+		return $this->parseGetDeviceState($request, $result);
 	}
 
 	/**
+	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\HttpApiCall
+	 * @throws Exceptions\HttpApiError
 	 */
 	public function setDeviceStatus(
 		string $address,
@@ -358,7 +202,7 @@ final class Gen2HttpApi extends HttpApi
 	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|bool
 	{
 		if (
-			preg_match(self::$PROPERTY_COMPONENT, $component, $propertyMatches) !== 1
+			preg_match(self::PROPERTY_COMPONENT, $component, $propertyMatches) !== 1
 			|| !array_key_exists('component', $propertyMatches)
 			|| !array_key_exists('identifier', $propertyMatches)
 			|| !array_key_exists('attribute', $propertyMatches)
@@ -391,31 +235,37 @@ final class Gen2HttpApi extends HttpApi
 				],
 			]);
 		} catch (Utils\JsonException $ex) {
-			return Promise\reject(new Exceptions\InvalidState(
+			if ($async) {
+				return Promise\reject(new Exceptions\InvalidState(
+					'Message body could not be encoded',
+					$ex->getCode(),
+					$ex,
+				));
+			}
+
+			throw new Exceptions\InvalidState(
 				'Message body could not be encoded',
 				$ex->getCode(),
 				$ex,
-			));
+			);
 		}
 
-		if ($async) {
-			$deferred = new Promise\Deferred();
+		$deferred = new Promise\Deferred();
 
-			$this->callAsyncRequest(
-				'POST',
-				sprintf(
-					self::DEVICE_ACTION_ENDPOINT,
-					$address,
-				),
-				[],
-				[],
-				$body,
-				self::AUTHORIZATION_DIGEST,
-				$username,
-				$password,
-			)
-				->then(static function () use ($deferred): void {
-					$deferred->resolve();
+		$request = $this->createRequest(
+			RequestMethodInterface::METHOD_POST,
+			sprintf(self::SET_DEVICE_STATE_ENDPOINT, $address),
+			[],
+			[],
+			$body,
+		);
+
+		$result = $this->callRequest($request, self::AUTHORIZATION_DIGEST, $username, $password, $async);
+
+		if ($result instanceof Promise\PromiseInterface) {
+			$result
+				->then(static function (Message\ResponseInterface $response) use ($deferred): void {
+					$deferred->resolve($response->getStatusCode() === StatusCodeInterface::STATUS_OK);
 				})
 				->otherwise(static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);
@@ -424,21 +274,360 @@ final class Gen2HttpApi extends HttpApi
 			return $deferred->promise();
 		}
 
-		$response = $this->callRequest(
-			'POST',
-			sprintf(
-				self::DEVICE_ACTION_ENDPOINT,
-				$address,
-			),
-			[],
-			[],
-			$body,
-			self::AUTHORIZATION_BASIC,
-			$username,
-			$password,
+		return $result->getStatusCode() === StatusCodeInterface::STATUS_OK;
+	}
+
+	/**
+	 * @throws Exceptions\HttpApiCall
+	 * @throws Exceptions\HttpApiError
+	 */
+	private function parseGetDeviceInformation(
+		Message\RequestInterface $request,
+		Message\ResponseInterface $response,
+	): Entities\API\Gen2\GetDeviceInformation
+	{
+		$body = $this->validateResponseBody(
+			$request,
+			$response,
+			self::GET_DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME,
 		);
 
-		return $response->getStatusCode() === StatusCodeInterface::STATUS_OK;
+		return $this->createEntity(Entities\API\Gen2\GetDeviceInformation::class, $body);
+	}
+
+	/**
+	 * @throws Exceptions\HttpApiCall
+	 * @throws Exceptions\HttpApiError
+	 */
+	private function parseGetDeviceConfiguration(
+		Message\RequestInterface $request,
+		Message\ResponseInterface $response,
+	): Entities\API\Gen2\GetDeviceConfiguration
+	{
+		$body = $this->validateResponseBody(
+			$request,
+			$response,
+			self::GET_DEVICE_CONFIG_MESSAGE_SCHEMA_FILENAME,
+		);
+
+		$switches = $covers = $lights = $inputs = $temperature = $humidity = [];
+
+		foreach ($body as $key => $configuration) {
+			if (
+				$configuration instanceof Utils\ArrayHash
+				&& preg_match(self::COMPONENT_KEY, $key, $componentMatches) === 1
+				&& array_key_exists('component', $componentMatches)
+				&& Types\ComponentType::isValidValue($componentMatches['component'])
+			) {
+				if ($componentMatches['component'] === Types\ComponentType::SWITCH) {
+					$switches[] = [
+						'id' => $configuration->offsetGet('id'),
+						'name' => $configuration->offsetGet('name'),
+						'mode' => $configuration->offsetGet('inMode'),
+						'initial_state' => $configuration->offsetGet('initialState'),
+						'auto_on' => $configuration->offsetGet('autoOn'),
+						'auto_on_delay' => $configuration->offsetGet('autoOnDelay'),
+						'auto_off' => $configuration->offsetGet('autoOff'),
+						'auto_off_delay' => $configuration->offsetGet('autoOffDelay'),
+						'input_id' => $configuration->offsetGet('inputId'),
+						'power_limit' => $configuration->offsetGet('powerLimit'),
+						'voltage_limit' => $configuration->offsetGet('voltageLimit'),
+						'current_limit' => $configuration->offsetGet('currentLimit'),
+					];
+				} elseif ($componentMatches['component'] === Types\ComponentType::COVER) {
+					$covers[] = [
+						'id' => $configuration->offsetGet('id'),
+						'name' => $configuration->offsetGet('name'),
+						'mode' => $configuration->offsetGet('inMode'),
+						'initial_state' => $configuration->offsetGet('initialState'),
+						'power_limit' => $configuration->offsetGet('powerLimit'),
+						'voltage_limit' => $configuration->offsetGet('voltageLimit'),
+						'current_limit' => $configuration->offsetGet('currentLimit'),
+						'motor' => $configuration->offsetGet('motor') instanceof Utils\ArrayHash
+							? [
+								'idle_power_threshold' => $configuration->offsetGet('motor')->offsetGet('idlePowerThr'),
+								'idle_confirm_period' => $configuration->offsetGet('motor')->offsetGet(
+									'idleConfirmPeriod',
+								),
+							]
+							: $configuration->offsetGet('motor'),
+						'maximum_opening_time' => $configuration->offsetGet('maxtimeOpen'),
+						'maximum_closing_time' => $configuration->offsetGet('maxtimeClose'),
+						'swapped_input' => $configuration->offsetGet('swapInputs'),
+						'inverted_directions' => $configuration->offsetGet('invertDirections'),
+						'obstruction_detection' => $configuration->offsetGet(
+							'obstructionDetection',
+						) instanceof Utils\ArrayHash
+							? [
+								'enabled' => $configuration->offsetGet('obstructionDetection')->offsetGet('enable'),
+								'direction' => $configuration->offsetGet('obstructionDetection')->offsetGet(
+									'direction',
+								),
+								'action' => $configuration->offsetGet('obstructionDetection')->offsetGet('action'),
+								'power_threshold' => $configuration->offsetGet('obstructionDetection')->offsetGet(
+									'powerThr',
+								),
+								'holdoff' => $configuration->offsetGet('obstructionDetection')->offsetGet('holdoff'),
+							]
+							: $configuration->offsetGet('obstructionDetection'),
+						'safety_switch' => $configuration->offsetGet('safetySwitch') instanceof Utils\ArrayHash
+							? [
+								'enabled' => $configuration->offsetGet('safetySwitch')->offsetGet('enable'),
+								'direction' => $configuration->offsetGet('safetySwitch')->offsetGet('direction'),
+								'action' => $configuration->offsetGet('safetySwitch')->offsetGet('action'),
+								'allowed_move' => $configuration->offsetGet('safetySwitch')->offsetGet('allowedMove'),
+							]
+							: $configuration->offsetGet('safetySwitch'),
+					];
+				} elseif ($componentMatches['component'] === Types\ComponentType::LIGHT) {
+					$lights[] = [
+						'id' => $configuration->offsetGet('id'),
+						'name' => $configuration->offsetGet('name'),
+						'initial_state' => $configuration->offsetGet('initialState'),
+						'auto_on' => $configuration->offsetGet('autoOn'),
+						'auto_on_delay' => $configuration->offsetGet('autoOnDelay'),
+						'auto_off' => $configuration->offsetGet('autoOff'),
+						'auto_off_delay' => $configuration->offsetGet('autoOffDelay'),
+						'default' => $configuration->offsetGet('default') instanceof Utils\ArrayHash
+							? [
+								'brightness' => $configuration->offsetGet('default')->offsetGet('brightness'),
+							]
+							: $configuration->offsetGet('default'),
+						'night_mode' => $configuration->offsetGet('nightMode') instanceof Utils\ArrayHash
+							? [
+								'enabled' => $configuration->offsetGet('nightMode')->offsetGet('enable'),
+								'brightness' => $configuration->offsetGet('nightMode')->offsetGet('brightness'),
+								'active_between' => $configuration->offsetGet('nightMode')->offsetGet(
+									'activeBetween',
+								) instanceof Utils\ArrayHash
+									? (array) $configuration->offsetGet('nightMode')->offsetGet('activeBetween')
+									: $configuration->offsetGet('nightMode')->offsetGet('activeBetween'),
+							]
+							: $configuration->offsetGet('nightMode'),
+					];
+				} elseif ($componentMatches['component'] === Types\ComponentType::INPUT) {
+					$inputs[] = [
+						'id' => $configuration->offsetGet('id'),
+						'name' => $configuration->offsetGet('name'),
+						'input_type' => $configuration->offsetGet('type'),
+						'inverted' => $configuration->offsetGet('invert'),
+						'factory_reset' => $configuration->offsetGet('factoryReset'),
+						'report_threshold' => $configuration->offsetGet('reportThr'),
+					];
+				} elseif ($componentMatches['component'] === Types\ComponentType::TEMPERATURE) {
+					$temperature[] = [
+						'id' => $configuration->offsetGet('id'),
+						'name' => $configuration->offsetGet('name'),
+						'report_threshold' => $configuration->offsetGet('reportThrC'),
+						'offset' => $configuration->offsetGet('offsetC'),
+					];
+				} elseif ($componentMatches['component'] === Types\ComponentType::HUMIDITY) {
+					$humidity[] = [
+						'id' => $configuration->offsetGet('id'),
+						'name' => $configuration->offsetGet('name'),
+						'report_threshold' => $configuration->offsetGet('reportThr'),
+						'offset' => $configuration->offsetGet('offset'),
+					];
+				}
+			}
+		}
+
+		return $this->createEntity(Entities\API\Gen2\GetDeviceConfiguration::class, Utils\ArrayHash::from([
+			'switches' => $switches,
+			'covers' => $covers,
+			'inputs' => $inputs,
+			'lights' => $lights,
+			'temperature' => $temperature,
+			'humidity' => $humidity,
+		]));
+	}
+
+	/**
+	 * @throws Exceptions\HttpApiCall
+	 * @throws Exceptions\HttpApiError
+	 */
+	private function parseGetDeviceState(
+		Message\RequestInterface $request,
+		Message\ResponseInterface $response,
+	): Entities\API\Gen2\GetDeviceState
+	{
+		$body = $this->validateResponseBody(
+			$request,
+			$response,
+			self::GET_DEVICE_STATE_MESSAGE_SCHEMA_FILENAME,
+		);
+
+		$switches = $covers = $lights = $inputs = $temperature = $humidity = [];
+		$ethernet = $wifi = null;
+
+		foreach ($body as $key => $state) {
+			if (
+				$state instanceof Utils\ArrayHash
+				&& preg_match(self::COMPONENT_KEY, $key, $componentMatches) === 1
+				&& array_key_exists('component', $componentMatches)
+				&& Types\ComponentType::isValidValue($componentMatches['component'])
+			) {
+				if ($componentMatches['component'] === Types\ComponentType::SWITCH) {
+					$switches[] = [
+						'id' => $state->offsetGet('id'),
+						'source' => $state->offsetGet('source'),
+						'output' => $state->offsetGet('output'),
+						'timer_started_at' => $state->offsetGet('timerStartedAt'),
+						'timer_duration' => $state->offsetGet('timerDuration'),
+						'active_power' => $state->offsetGet('apower'),
+						'voltage' => $state->offsetGet('voltage'),
+						'current' => $state->offsetGet('current'),
+						'power_factor' => $state->offsetGet('pf'),
+						'active_energy' => $state->offsetGet('aenergy') instanceof Utils\ArrayHash
+							? [
+								'total' => $state->offsetGet('aenergy')->offsetGet('total'),
+								'by_minute' => $state->offsetGet('aenergy')->offsetGet('byMinute'),
+								'minute_ts' => $state->offsetGet('aenergy')->offsetGet('minuteTs'),
+							]
+							: $state->offsetGet('aenergy'),
+						'temperature' => $state->offsetGet('temperature') instanceof Utils\ArrayHash
+							? [
+								'temperature_celsius' => $state->offsetGet('temperature')->offsetGet('tC'),
+								'temperature_fahrenheit' => $state->offsetGet('temperature')->offsetGet('tF'),
+							]
+							: $state->offsetGet('temperature'),
+						'errors' => $state->offsetGet('errors') instanceof Utils\ArrayHash
+							? (array) $state->offsetGet('errors')
+							: $state->offsetGet('errors'),
+					];
+				} elseif ($componentMatches['component'] === Types\ComponentType::COVER) {
+					$covers[] = [
+						'id' => $state->offsetGet('id'),
+						'source' => $state->offsetGet('source'),
+						'state' => $state->offsetGet('state'),
+						'active_power' => $state->offsetGet('apower'),
+						'voltage' => $state->offsetGet('voltage'),
+						'current' => $state->offsetGet('current'),
+						'power_factor' => $state->offsetGet('pf'),
+						'current_position' => $state->offsetGet('currentPos'),
+						'target_position' => $state->offsetGet('targetPos'),
+						'move_timeout' => $state->offsetGet('moveTimeout'),
+						'move_started_at' => $state->offsetGet('moveStartedAt'),
+						'has_position_control' => $state->offsetGet('posControl'),
+						'active_energy' => $state->offsetGet('aenergy') instanceof Utils\ArrayHash
+							? [
+								'total' => $state->offsetGet('aenergy')->offsetGet('total'),
+								'by_minute' => $state->offsetGet('aenergy')->offsetGet('byMinute'),
+								'minute_ts' => $state->offsetGet('aenergy')->offsetGet('minuteTs'),
+							]
+							: $state->offsetGet('aenergy'),
+						'temperature' => $state->offsetGet('temperature') instanceof Utils\ArrayHash
+							? [
+								'temperature_celsius' => $state->offsetGet('temperature')->offsetGet('tC'),
+								'temperature_fahrenheit' => $state->offsetGet('temperature')->offsetGet('tF'),
+							]
+							: $state->offsetGet('temperature'),
+						'errors' => $state->offsetGet('errors') instanceof Utils\ArrayHash
+							? (array) $state->offsetGet('errors')
+							: $state->offsetGet('errors'),
+					];
+				} elseif ($componentMatches['component'] === Types\ComponentType::LIGHT) {
+					$lights[] = [
+						'id' => $state->offsetGet('id'),
+						'source' => $state->offsetGet('source'),
+						'output' => $state->offsetGet('output'),
+						'brightness' => $state->offsetGet('brightness'),
+						'timer_started_at' => $state->offsetGet('timerStartedAt'),
+						'timer_duration' => $state->offsetGet('timerDuration'),
+					];
+				} elseif ($componentMatches['component'] === Types\ComponentType::INPUT) {
+					$inputs[] = [
+						'id' => $state->offsetGet('id'),
+						'state' => $state->offsetGet('state'),
+						'percent' => $state->offsetGet('percent'),
+						'errors' => $state->offsetGet('errors') instanceof Utils\ArrayHash
+							? (array) $state->offsetGet('errors')
+							: $state->offsetGet('errors'),
+					];
+				} elseif ($componentMatches['component'] === Types\ComponentType::TEMPERATURE) {
+					$temperature[] = [
+						'id' => $state->offsetGet('id'),
+						'temperature_celsius' => $state->offsetGet('tC'),
+						'temperature_fahrenheit' => $state->offsetGet('tF'),
+						'errors' => $state->offsetGet('errors') instanceof Utils\ArrayHash
+							? (array) $state->offsetGet('errors')
+							: $state->offsetGet('errors'),
+					];
+				} elseif ($componentMatches['component'] === Types\ComponentType::HUMIDITY) {
+					$humidity[] = [
+						'id' => $state->offsetGet('id'),
+						'relative_humidity' => $state->offsetGet('rh'),
+						'errors' => $state->offsetGet('errors') instanceof Utils\ArrayHash
+							? (array) $state->offsetGet('errors')
+							: $state->offsetGet('errors'),
+					];
+				} elseif ($componentMatches['component'] === Types\ComponentType::ETHERNET) {
+					$ethernet = [
+						'ip' => $state->offsetGet('ip'),
+					];
+				} elseif ($componentMatches['component'] === Types\ComponentType::WIFI) {
+					$wifi = [
+						'sta_ip' => $state->offsetGet('staIp'),
+						'status' => $state->offsetGet('status'),
+						'ssid' => $state->offsetGet('ssid'),
+						'rssi' => $state->offsetGet('rssi'),
+						'ap_client_count' => $state->offsetGet('apClientCount'),
+					];
+				}
+			}
+		}
+
+		return $this->createEntity(Entities\API\Gen2\GetDeviceState::class, Utils\ArrayHash::from([
+			'switches' => $switches,
+			'covers' => $covers,
+			'inputs' => $inputs,
+			'lights' => $lights,
+			'temperature' => $temperature,
+			'humidity' => $humidity,
+			'ethernet' => $ethernet,
+			'wifi' => $wifi,
+		]));
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
+	private function buildComponentMethod(string $component): string
+	{
+		if (
+			preg_match(self::PROPERTY_COMPONENT, $component, $componentMatches) !== 1
+			|| !array_key_exists('component', $componentMatches)
+			|| !array_key_exists('identifier', $componentMatches)
+			|| !array_key_exists('attribute', $componentMatches)
+		) {
+			throw new Exceptions\InvalidState('Property identifier is not in expected format');
+		}
+
+		if (
+			$componentMatches['component'] === Types\ComponentType::SWITCH
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::ON
+		) {
+			return self::SWITCH_SET_METHOD;
+		}
+
+		if (
+			$componentMatches['component'] === Types\ComponentType::COVER
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::POSITION
+		) {
+			return self::COVER_GO_TO_POSITION_METHOD;
+		}
+
+		if (
+			$componentMatches['component'] === Types\ComponentType::LIGHT
+			&& (
+				$componentMatches['description'] === Types\ComponentAttributeType::ON
+				|| $componentMatches['attribute'] === Types\ComponentAttributeType::BRIGHTNESS
+			)
+		) {
+			return self::LIGHT_SET_METHOD;
+		}
+
+		throw new Exceptions\InvalidState('Property method could not be build');
 	}
 
 }

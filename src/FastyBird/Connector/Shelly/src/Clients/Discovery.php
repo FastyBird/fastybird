@@ -314,10 +314,10 @@ final class Discovery implements Evenement\EventEmitterInterface
 			try {
 				if ($device->getGeneration()->equalsValue(Types\DeviceGeneration::GENERATION_1)) {
 					$deviceInformation = $gen1HttpApi->getDeviceInformation($device->getIpAddress(), false);
-					assert($deviceInformation instanceof Entities\API\Gen1\DeviceInformation);
+					assert($deviceInformation instanceof Entities\API\Gen1\GetDeviceInformation);
 				} elseif ($device->getGeneration()->equalsValue(Types\DeviceGeneration::GENERATION_2)) {
 					$deviceInformation = $gen2HttpApi->getDeviceInformation($device->getIpAddress(), false);
-					assert($deviceInformation instanceof Entities\API\Gen2\DeviceInformation);
+					assert($deviceInformation instanceof Entities\API\Gen2\GetDeviceInformation);
 				} else {
 					continue;
 				}
@@ -353,7 +353,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 						null,
 						false,
 					);
-					assert($deviceDescription instanceof Entities\API\Gen1\DeviceDescription);
+					assert($deviceDescription instanceof Entities\API\Gen1\GetDeviceDescription);
 				} elseif ($device->getGeneration()->equalsValue(Types\DeviceGeneration::GENERATION_2)) {
 					$deviceConfiguration = $gen2HttpApi->getDeviceConfiguration(
 						$device->getIpAddress(),
@@ -361,9 +361,9 @@ final class Discovery implements Evenement\EventEmitterInterface
 						null,
 						false,
 					);
-					assert($deviceConfiguration instanceof Entities\API\Gen2\DeviceConfiguration);
+					assert($deviceConfiguration instanceof Entities\API\Gen2\GetDeviceConfiguration);
 					$deviceStatus = $gen2HttpApi->getDeviceStatus($device->getIpAddress(), null, null, false);
-					assert($deviceStatus instanceof Entities\API\Gen2\DeviceStatus);
+					assert($deviceStatus instanceof Entities\API\Gen2\GetDeviceState);
 				} else {
 					continue;
 				}

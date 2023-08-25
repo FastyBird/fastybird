@@ -16,7 +16,6 @@
 namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
 use FastyBird\Connector\Shelly\Entities;
-use Nette;
 use function array_map;
 
 /**
@@ -29,8 +28,6 @@ use function array_map;
  */
 final class DeviceEvent implements Entities\API\Entity
 {
-
-	use Nette\SmartObject;
 
 	/**
 	 * @param array<int, ComponentEvent> $events
@@ -51,7 +48,7 @@ final class DeviceEvent implements Entities\API\Entity
 	{
 		return [
 			'events' => array_map(
-				static fn (ComponentEvent $status): array => $status->toArray(),
+				static fn (ComponentEvent $state): array => $state->toArray(),
 				$this->getEvents(),
 			),
 		];

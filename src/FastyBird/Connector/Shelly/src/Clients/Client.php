@@ -41,13 +41,4 @@ interface Client
 	 */
 	public function disconnect(): void;
 
-	/**
-	 * Write data to DPS
-	 */
-	public function writeChannelProperty(
-		Entities\ShellyDevice $device,
-		DevicesEntities\Channels\Channel $channel,
-		DevicesEntities\Channels\Properties\Dynamic|MetadataEntities\DevicesModule\ChannelDynamicProperty $property,
-	): Promise\PromiseInterface;
-
 }

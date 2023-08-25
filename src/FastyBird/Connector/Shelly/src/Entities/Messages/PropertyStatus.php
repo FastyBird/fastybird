@@ -16,7 +16,6 @@
 namespace FastyBird\Connector\Shelly\Entities\Messages;
 
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use Nette;
 use function is_scalar;
 use function strval;
 
@@ -30,8 +29,6 @@ use function strval;
  */
 final class PropertyStatus implements Entity
 {
-
-	use Nette\SmartObject;
 
 	public function __construct(
 		private readonly string $identifier,

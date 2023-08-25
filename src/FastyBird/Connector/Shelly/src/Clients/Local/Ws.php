@@ -51,17 +51,17 @@ final class Ws
 
 	private const RECONNECT_COOL_DOWN_TIME = 300.0;
 
-	/** @var array<string, API\WsApi> */
+	/** @var array<string, API\Gen2WsApi> */
 	private array $devicesClients = [];
 
 	public function __construct(
-		private readonly API\WsApiFactory $wsApiFactory,
-		private readonly DateTimeFactory\Factory $dateTimeFactory,
-		protected readonly Consumers\Messages $consumer,
-		protected readonly DevicesModels\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
-		protected readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
+		private readonly API\Gen2WsApiFactory                                     $wsApiFactory,
+		private readonly DateTimeFactory\Factory                                  $dateTimeFactory,
+		protected readonly Consumers\Messages                                     $consumer,
+		protected readonly DevicesModels\Devices\Properties\PropertiesRepository  $devicePropertiesRepository,
+		protected readonly DevicesModels\Channels\ChannelsRepository              $channelsRepository,
 		protected readonly DevicesModels\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
+		private readonly Log\LoggerInterface                                      $logger = new Log\NullLogger(),
 	)
 	{
 	}
@@ -90,6 +90,9 @@ final class Ws
 		}
 	}
 
+	/**
+	 * @throws Exceptions\WsError
+	 */
 	public function writeChannelProperty(
 		Entities\ShellyDevice $device,
 		DevicesEntities\Channels\Properties\Dynamic|MetadataEntities\DevicesModule\ChannelDynamicProperty $property,
@@ -109,11 +112,12 @@ final class Ws
 	}
 
 	/**
-	 * @param callable(Entities\API\Gen2\DeviceStatus $status): void|null $onFulfilled
+	 * @param callable(Entities\API\Gen2\GetDeviceState $status): void|null $onFulfilled
 	 * @param callable(Throwable $ex): void|null $onRejected
 	 *
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\WsError
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -157,7 +161,7 @@ final class Ws
 		}
 
 		$client->readStates()
-			->then(function (Entities\API\Gen2\DeviceStatus $status) use ($device, $onFulfilled): void {
+			->then(function (Entities\API\Gen2\GetDeviceState $status) use ($device, $onFulfilled): void {
 				$this->processDeviceStatus($device, $status);
 
 				if ($onFulfilled !== null) {
@@ -208,7 +212,7 @@ final class Ws
 		$client->on(
 			'message',
 			function (Entities\API\Entity $message) use ($device): void {
-				if ($message instanceof Entities\API\Gen2\DeviceStatus) {
+				if ($message instanceof Entities\API\Gen2\GetDeviceState) {
 					$this->processDeviceStatus($device, $message);
 				}
 			},
@@ -237,7 +241,7 @@ final class Ws
 				);
 
 				$client->readStates()
-					->then(function (Entities\API\Gen2\DeviceStatus $status) use ($device): void {
+					->then(function (Entities\API\Gen2\GetDeviceState $status) use ($device): void {
 						$this->processDeviceStatus($device, $status);
 					})
 					->otherwise(function (Throwable $ex) use ($device): void {
@@ -316,7 +320,7 @@ final class Ws
 		$this->devicesClients[$device->getPlainId()] = $client;
 	}
 
-	private function getDeviceClient(Entities\ShellyDevice $device): API\WsApi|null
+	private function getDeviceClient(Entities\ShellyDevice $device): API\Gen2WsApi|null
 	{
 		return array_key_exists(
 			$device->getPlainId(),

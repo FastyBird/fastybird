@@ -17,7 +17,6 @@ namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Types;
-use Nette;
 
 /**
  * Generation 2 device light configuration entity
@@ -29,8 +28,6 @@ use Nette;
  */
 final class DeviceLightConfiguration implements Entities\API\Entity
 {
-
-	use Nette\SmartObject;
 
 	public function __construct(
 		private readonly int $id,

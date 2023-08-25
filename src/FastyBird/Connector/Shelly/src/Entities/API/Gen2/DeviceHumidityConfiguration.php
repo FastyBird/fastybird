@@ -17,7 +17,6 @@ namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Types;
-use Nette;
 
 /**
  * Generation 2 device humidity configuration entity
@@ -30,12 +29,10 @@ use Nette;
 final class DeviceHumidityConfiguration implements Entities\API\Entity
 {
 
-	use Nette\SmartObject;
-
 	public function __construct(
 		private readonly int $id,
 		private readonly string|null $name,
-		private readonly float|null $reportThr,
+		private readonly float|null $reportThreshold,
 		private readonly float|null $offset,
 	)
 	{
@@ -58,7 +55,7 @@ final class DeviceHumidityConfiguration implements Entities\API\Entity
 
 	public function getReportThreshold(): float|null
 	{
-		return $this->reportThr;
+		return $this->reportThreshold;
 	}
 
 	public function getOffset(): float|null

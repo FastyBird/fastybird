@@ -154,8 +154,8 @@ final class ConnectionManager
 
 	public function __destruct()
 	{
-		foreach ($this->localConnections as $key => $client) {
-			$client->disconnect();
+		foreach ($this->localConnections as $key => $connection) {
+			$connection->disconnect();
 
 			unset($this->localConnections[$key]);
 		}

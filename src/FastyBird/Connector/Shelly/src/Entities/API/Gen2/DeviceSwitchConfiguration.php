@@ -17,7 +17,6 @@ namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Types;
-use Nette;
 
 /**
  * Generation 2 device switch configuration entity
@@ -30,12 +29,10 @@ use Nette;
 final class DeviceSwitchConfiguration implements Entities\API\Entity
 {
 
-	use Nette\SmartObject;
-
 	public function __construct(
 		private readonly int $id,
 		private readonly string|null $name,
-		private readonly string $inMode,
+		private readonly string $mode,
 		private readonly string $initialState,
 		private readonly bool $autoOn,
 		private readonly float $autoOnDelay,
@@ -66,7 +63,7 @@ final class DeviceSwitchConfiguration implements Entities\API\Entity
 
 	public function getMode(): string
 	{
-		return $this->inMode;
+		return $this->mode;
 	}
 
 	public function getInitialState(): string

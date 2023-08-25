@@ -18,7 +18,6 @@ namespace FastyBird\Connector\Shelly\Entities\API\Gen1;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use Nette;
 
 /**
  * Block sensor description entity
@@ -30,8 +29,6 @@ use Nette;
  */
 final class BlockSensorDescription implements Entities\API\Entity
 {
-
-	use Nette\SmartObject;
 
 	/**
 	 * @param array<string>|array<int>|array<float>|array<int, array<int, (string|array<int, string>|null)>>|array<int, (int|null)>|array<int, (float|null)>|array<int, (MetadataTypes\SwitchPayload|string|Types\RelayPayload|null)>|null $format

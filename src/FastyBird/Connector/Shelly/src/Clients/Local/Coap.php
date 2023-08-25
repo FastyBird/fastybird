@@ -72,7 +72,7 @@ final class Coap implements Clients\Client
 
 	private const STATUS_MESSAGE_CODE = 30;
 
-	private const STATUS_MESSAGE_SCHEMA_FILENAME = 'gen1_coap_status.json';
+	private const STATUS_MESSAGE_SCHEMA_FILENAME = 'gen1_coap_state.json';
 
 	private Datagram\SocketInterface|null $server = null;
 

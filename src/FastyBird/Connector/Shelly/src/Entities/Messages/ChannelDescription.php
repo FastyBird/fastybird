@@ -15,7 +15,6 @@
 
 namespace FastyBird\Connector\Shelly\Entities\Messages;
 
-use Nette;
 use function array_map;
 use function array_unique;
 use const SORT_REGULAR;
@@ -30,8 +29,6 @@ use const SORT_REGULAR;
  */
 final class ChannelDescription implements Entity
 {
-
-	use Nette\SmartObject;
 
 	/** @var array<PropertyDescription> */
 	private array $properties;

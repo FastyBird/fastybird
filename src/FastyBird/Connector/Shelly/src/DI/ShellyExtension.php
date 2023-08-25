@@ -148,9 +148,9 @@ class ShellyExtension extends DI\CompilerExtension
 			->setType(API\Gen2HttpApi::class);
 
 		$builder->addFactoryDefinition($this->prefix('api.ws'))
-			->setImplement(API\WsApiFactory::class)
+			->setImplement(API\Gen2WsApiFactory::class)
 			->getResultDefinition()
-			->setType(API\WsApi::class);
+			->setType(API\Gen2WsApi::class);
 
 		$builder->addDefinition($this->prefix('api.httpClient'), new DI\Definitions\ServiceDefinition())
 			->setType(API\HttpClientFactory::class);

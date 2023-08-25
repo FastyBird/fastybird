@@ -62,18 +62,4 @@ final class Mqtt implements Client
 		);
 	}
 
-	/**
-	 * @throws DevicesExceptions\Terminate
-	 */
-	public function writeChannelProperty(
-		Entities\ShellyDevice $device,
-		DevicesEntities\Channels\Channel $channel,
-		DevicesEntities\Channels\Properties\Dynamic|MetadataEntities\DevicesModule\ChannelDynamicProperty $property,
-	): Promise\PromiseInterface
-	{
-		throw new DevicesExceptions\Terminate(
-			sprintf('MQTT client is not implemented for connector %s', $this->connector->getIdentifier()),
-		);
-	}
-
 }
