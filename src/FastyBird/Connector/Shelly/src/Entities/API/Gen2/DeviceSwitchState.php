@@ -36,18 +36,18 @@ final class DeviceSwitchState implements Entities\API\Entity
 	 * @param array<string> $errors
 	 */
 	public function __construct(
-		private readonly int                           $id,
-		private readonly string|null                   $source,
-		private readonly bool|string                   $output,
-		private readonly int|null                      $timerStartedAt,
-		private readonly int|null                      $timerDuration,
-		private readonly float|string                  $activePower,
-		private readonly float|string                  $voltage,
-		private readonly float|string                  $current,
-		private readonly float|string                  $powerFactor,
+		private readonly int $id,
+		private readonly string|null $source,
+		private readonly bool|string $output,
+		private readonly int|null $timerStartedAt,
+		private readonly int|null $timerDuration,
+		private readonly float|string $activePower,
+		private readonly float|string $voltage,
+		private readonly float|string $current,
+		private readonly float|string $powerFactor,
 		private readonly ActiveEnergyStateBlock|string $activeEnergy,
-		private readonly TemperatureBlockState|string  $temperature,
-		private readonly array                         $errors = [],
+		private readonly TemperatureBlockState|string $temperature,
+		private readonly array $errors = [],
 	)
 	{
 	}

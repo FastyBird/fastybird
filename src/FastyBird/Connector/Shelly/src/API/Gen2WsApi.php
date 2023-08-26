@@ -623,7 +623,9 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 				new ObjectMapper\Printers\TypeToStringConverter(),
 			);
 
-			throw new Exceptions\WsError('Message frame could not be created: ' . $errorPrinter->printError($ex));
+			return Promise\reject(
+				new Exceptions\WsError('Message frame could not be created: ' . $errorPrinter->printError($ex)),
+			);
 		}
 
 		$this->sendRequest($messageFrame, $deferred);
@@ -682,7 +684,9 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 				new ObjectMapper\Printers\TypeToStringConverter(),
 			);
 
-			throw new Exceptions\WsError('Message frame could not be created: ' . $errorPrinter->printError($ex));
+			return Promise\reject(
+				new Exceptions\WsError('Message frame could not be created: ' . $errorPrinter->printError($ex)),
+			);
 		}
 
 		$this->sendRequest($messageFrame, $deferred);

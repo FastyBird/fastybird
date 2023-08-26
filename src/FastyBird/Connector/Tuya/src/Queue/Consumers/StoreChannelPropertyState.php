@@ -115,7 +115,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 				'type' => 'store-channel-property-state-message-consumer',
 				'device' => [
-					'id' => $device->getPlainId(),
+					'id' => $device->getId()->toString(),
 				],
 				'data' => $entity->toArray(),
 			],

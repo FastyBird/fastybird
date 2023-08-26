@@ -38,14 +38,14 @@ final class GetDeviceState implements Entities\API\Entity
 	 * @param array<int, DeviceHumidityState> $humidity
 	 */
 	public function __construct(
-		private readonly array              $switches = [],
-		private readonly array              $covers = [],
-		private readonly array              $inputs = [],
-		private readonly array              $lights = [],
-		private readonly array              $temperature = [],
-		private readonly array              $humidity = [],
+		private readonly array $switches = [],
+		private readonly array $covers = [],
+		private readonly array $inputs = [],
+		private readonly array $lights = [],
+		private readonly array $temperature = [],
+		private readonly array $humidity = [],
 		private readonly EthernetState|null $ethernet = null,
-		private readonly WifiState|null     $wifi = null,
+		private readonly WifiState|null $wifi = null,
 	)
 	{
 	}

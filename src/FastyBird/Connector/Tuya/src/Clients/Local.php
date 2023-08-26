@@ -352,6 +352,10 @@ final class Local implements Client
 	 */
 	private function createDeviceClient(Entities\TuyaDevice $device): void
 	{
+		if (array_key_exists($device->getId()->toString(), $this->devicesClients)) {
+			throw new Exceptions\InvalidState('Tuya local device client is already created');
+		}
+
 		unset($this->processedDevicesCommands[$device->getId()->toString()]);
 
 		if ($device->getGatewayId() !== null || $device->getNodeId() !== null) {

@@ -15,11 +15,6 @@
 
 namespace FastyBird\Connector\Shelly\Clients;
 
-use FastyBird\Connector\Shelly\Entities;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
-use FastyBird\Module\Devices\Entities as DevicesEntities;
-use React\Promise;
-
 /**
  * Base device client interface
  *

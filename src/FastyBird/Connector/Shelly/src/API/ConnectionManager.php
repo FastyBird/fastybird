@@ -38,6 +38,8 @@ final class ConnectionManager
 
 	private Gen1HttpApi|null $gen1ApiConnection = null;
 
+	private Gen1Coap|null $gen1CoapApiConnection = null;
+
 	private Gen2HttpApi|null $gen2ApiConnection = null;
 
 	/** @var array<string, Gen2WsApi> */
@@ -45,13 +47,14 @@ final class ConnectionManager
 
 	public function __construct(
 		private readonly Gen1HttpApiFactory $gen1HttpApiFactory,
+		private readonly Gen1CoapFactory $gen1CoapFactory,
 		private readonly Gen2HttpApiFactory $gen2HttpApiFactory,
-		private readonly Gen2WsApiFactory   $wsApiFactory,
+		private readonly Gen2WsApiFactory $wsApiFactory,
 	)
 	{
 	}
 
-	public function getGen1ApiConnection(): Gen1HttpApi
+	public function getGen1HttpApiConnection(): Gen1HttpApi
 	{
 		if ($this->gen1ApiConnection === null) {
 			$this->gen1ApiConnection = $this->gen1HttpApiFactory->create();
@@ -60,7 +63,16 @@ final class ConnectionManager
 		return $this->gen1ApiConnection;
 	}
 
-	public function getGen2ApiConnection(): Gen2HttpApi
+	public function getGen1CoapApiConnection(): Gen1Coap
+	{
+		if ($this->gen1CoapApiConnection === null) {
+			$this->gen1CoapApiConnection = $this->gen1CoapFactory->create();
+		}
+
+		return $this->gen1CoapApiConnection;
+	}
+
+	public function getGen2HttpApiConnection(): Gen2HttpApi
 	{
 		if ($this->gen2ApiConnection === null) {
 			$this->gen2ApiConnection = $this->gen2HttpApiFactory->create();

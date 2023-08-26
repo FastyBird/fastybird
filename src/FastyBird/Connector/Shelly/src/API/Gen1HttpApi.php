@@ -103,6 +103,8 @@ final class Gen1HttpApi extends HttpApi
 	];
 
 	/**
+	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\Gen1\GetDeviceInformation)
+	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\HttpApiCall
 	 * @throws RuntimeException
@@ -141,6 +143,8 @@ final class Gen1HttpApi extends HttpApi
 	}
 
 	/**
+	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\Gen1\GetDeviceDescription)
+	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\HttpApiCall
 	 * @throws RuntimeException
@@ -181,6 +185,8 @@ final class Gen1HttpApi extends HttpApi
 	}
 
 	/**
+	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\Gen1\GetDeviceState)
+	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\HttpApiCall
 	 * @throws RuntimeException
@@ -221,6 +227,8 @@ final class Gen1HttpApi extends HttpApi
 	}
 
 	/**
+	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : bool)
+	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\HttpApiCall
 	 * @throws Exceptions\HttpApiError
