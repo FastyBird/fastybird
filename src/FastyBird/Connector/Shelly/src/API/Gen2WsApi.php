@@ -34,6 +34,7 @@ use Nette;
 use Nette\Utils;
 use Orisai\ObjectMapper;
 use Psr\Log;
+use Ramsey\Uuid;
 use Ratchet;
 use Ratchet\RFC6455;
 use React\EventLoop;
@@ -111,7 +112,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 	private ValueObjects\WsSession|null $session = null;
 
 	public function __construct(
-		private readonly string $identifier,
+		private readonly Uuid\UuidInterface $id,
 		private readonly string|null $ipAddress,
 		private readonly string|null $domain,
 		private readonly string|null $username,
@@ -178,7 +179,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 							'type' => 'ws-api',
 							'device' => [
-								'identifier' => $this->identifier,
+								'id' => $this->id->toString(),
 							],
 						],
 					);
@@ -191,13 +192,13 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 
 							} catch (Utils\JsonException $ex) {
 								$this->logger->debug(
-									'Received message from device could not be parsed',
+									'Received message from device could not be decoded',
 									[
 										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 										'type' => 'ws-api',
 										'exception' => BootstrapHelpers\Logger::buildException($ex),
 										'device' => [
-											'identifier' => $this->identifier,
+											'id' => $this->id->toString(),
 										],
 									],
 								);
@@ -225,9 +226,9 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 										);
 
 										$this->emit('message', [$entity]);
-									} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+									} catch (Exceptions\WsCall | Exceptions\WsError $ex) {
 										$this->logger->error(
-											'Could not decode received payload',
+											'Could not handle received device status message',
 											[
 												'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 												'type' => 'ws-api',
@@ -238,15 +239,17 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 												],
 											],
 										);
+
+										$this->emit('error', [$ex]);
 									}
 								} elseif ($payload->method === self::NOTIFY_EVENT_METHOD) {
 									try {
 										$entity = $this->parseDeviceEventResponse(Utils\Json::encode($payload->params));
 
 										$this->emit('message', [$entity]);
-									} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+									} catch (Exceptions\WsCall | Exceptions\WsError $ex) {
 										$this->logger->error(
-											'Could not decode received payload',
+											'Could not handle received event message',
 											[
 												'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 												'type' => 'ws-api',
@@ -257,6 +260,8 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 												],
 											],
 										);
+
+										$this->emit('error', [$ex]);
 									}
 								} else {
 									$this->logger->warning(
@@ -265,7 +270,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 											'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 											'type' => 'ws-api',
 											'device' => [
-												'identifier' => $this->identifier,
+												'id' => $this->id->toString(),
 											],
 											'response' => [
 												'method' => $payload->method,
@@ -291,9 +296,9 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 										);
 
 										$this->messages[$payload->id]->getDeferred()?->resolve($entity);
-									} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+									} catch (Exceptions\WsCall | Exceptions\WsError $ex) {
 										$this->logger->error(
-											'Could not decode received payload',
+											'Could not handle received response device status message',
 											[
 												'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 												'type' => 'ws-api',
@@ -305,7 +310,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 											],
 										);
 
-										$this->messages[$payload->id]->getDeferred()->reject(
+										$this->messages[$payload->id]->getDeferred()?->reject(
 											new Exceptions\WsCall('Could not decode received payload'),
 										);
 									}
@@ -433,7 +438,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 										'type' => 'ws-api',
 										'device' => [
-											'identifier' => $this->identifier,
+											'id' => $this->id->toString(),
 										],
 										'error' => [
 											'code' => property_exists(
@@ -469,7 +474,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 								'type' => 'ws-api',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'device' => [
-									'identifier' => $this->identifier,
+									'id' => $this->id->toString(),
 								],
 							],
 						);
@@ -490,7 +495,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 									'reason' => $reason,
 								],
 								'device' => [
-									'identifier' => $this->identifier,
+									'id' => $this->id->toString(),
 								],
 							],
 						);
@@ -512,7 +517,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 							'type' => 'ws-api',
 							'exception' => BootstrapHelpers\Logger::buildException($ex),
 							'device' => [
-								'identifier' => $this->identifier,
+								'id' => $this->id->toString(),
 							],
 						],
 					);
@@ -539,7 +544,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 					'type' => 'ws-api',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'device' => [
-						'identifier' => $this->identifier,
+						'id' => $this->id->toString(),
 					],
 				],
 			);
@@ -600,9 +605,6 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 		return $this->lost;
 	}
 
-	/**
-	 * @throws Exceptions\WsError
-	 */
 	public function readStates(): Promise\PromiseInterface
 	{
 		$deferred = new Promise\Deferred();
@@ -628,14 +630,15 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 			);
 		}
 
-		$this->sendRequest($messageFrame, $deferred);
+		try {
+			$this->sendRequest($messageFrame, $deferred);
+		} catch (Exceptions\WsError $ex) {
+			return Promise\reject($ex);
+		}
 
 		return $deferred->promise();
 	}
 
-	/**
-	 * @throws Exceptions\WsError
-	 */
 	public function writeState(
 		string $component,
 		int|float|string|bool $value,
@@ -689,7 +692,11 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 			);
 		}
 
-		$this->sendRequest($messageFrame, $deferred);
+		try {
+			$this->sendRequest($messageFrame, $deferred);
+		} catch (Exceptions\WsError $ex) {
+			return Promise\reject($ex);
+		}
 
 		return $deferred->promise();
 	}

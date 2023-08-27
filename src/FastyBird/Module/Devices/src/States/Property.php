@@ -38,6 +38,10 @@ interface Property
 
 	public const VALID_KEY = 'valid';
 
+	public const CREATED_AT_KEY = 'createdAt';
+
+	public const UPDATED_AT_KEY = '$updatedAt';
+
 	public function getId(): Uuid\UuidInterface;
 
 	public function setActualValue(
@@ -61,6 +65,14 @@ interface Property
 	public function setValid(bool $valid): void;
 
 	public function isValid(): bool;
+
+	public function getCreatedAt(): DateTimeInterface|null;
+
+	public function setCreatedAt(string|null $createdAt = null): void;
+
+	public function getUpdatedAt(): DateTimeInterface|null;
+
+	public function setUpdatedAt(string|null $updatedAt = null): void;
 
 	/**
 	 * @return array<string, mixed>

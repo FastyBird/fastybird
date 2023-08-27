@@ -15,6 +15,8 @@
 
 namespace FastyBird\Connector\Shelly\API;
 
+use Ramsey\Uuid;
+
 /**
  * Generation 2 device websockets API factory
  *
@@ -27,7 +29,7 @@ interface Gen2WsApiFactory
 {
 
 	public function create(
-		string $identifier,
+		Uuid\UuidInterface $id,
 		string|null $ipAddress,
 		string|null $domain,
 		string|null $username,

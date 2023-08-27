@@ -42,7 +42,6 @@ use Throwable;
 use function array_key_exists;
 use function array_map;
 use function array_merge;
-use function assert;
 use function count;
 use function explode;
 use function is_array;
@@ -141,7 +140,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					'type' => 'discovery-client',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'connector' => [
-						'id' => $this->connector->getPlainId(),
+						'id' => $this->connector->getId()->toString(),
 					],
 				],
 			);
@@ -160,7 +159,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'discovery-client',
 						'connector' => [
-							'id' => $this->connector->getPlainId(),
+							'id' => $this->connector->getId()->toString(),
 						],
 					],
 				);
@@ -175,7 +174,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'discovery-client',
 						'connector' => [
-							'id' => $this->connector->getPlainId(),
+							'id' => $this->connector->getId()->toString(),
 						],
 					],
 				);
@@ -232,7 +231,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			}
 
 			if ($serviceIpAddress !== null && $serviceName !== null) {
-				$serviceResult = new Entities\Clients\MdnsResult($serviceIpAddress, $serviceName, $serviceData);
+				$serviceResult = new Shelly\ValueObjects\MdnsResult($serviceIpAddress, $serviceName, $serviceData);
 
 				if (!$this->searchResult->contains($serviceResult)) {
 					$this->searchResult->attach($serviceResult);
@@ -314,10 +313,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 			try {
 				if ($device->getGeneration()->equalsValue(Types\DeviceGeneration::GENERATION_1)) {
 					$deviceInformation = $gen1HttpApi->getDeviceInformation($device->getIpAddress(), false);
-					assert($deviceInformation instanceof Entities\API\Gen1\GetDeviceInformation);
 				} elseif ($device->getGeneration()->equalsValue(Types\DeviceGeneration::GENERATION_2)) {
 					$deviceInformation = $gen2HttpApi->getDeviceInformation($device->getIpAddress(), false);
-					assert($deviceInformation instanceof Entities\API\Gen2\GetDeviceInformation);
 				} else {
 					continue;
 				}
@@ -329,7 +326,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 						'type' => 'discovery-client',
 						'exception' => BootstrapHelpers\Logger::buildException($ex),
 						'connector' => [
-							'id' => $this->connector->getPlainId(),
+							'id' => $this->connector->getId()->toString(),
 						],
 						'device' => [
 							'identifier' => $device->getIdentifier(),
@@ -353,7 +350,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 						null,
 						false,
 					);
-					assert($deviceDescription instanceof Entities\API\Gen1\GetDeviceDescription);
 				} elseif ($device->getGeneration()->equalsValue(Types\DeviceGeneration::GENERATION_2)) {
 					$deviceConfiguration = $gen2HttpApi->getDeviceConfiguration(
 						$device->getIpAddress(),
@@ -361,9 +357,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 						null,
 						false,
 					);
-					assert($deviceConfiguration instanceof Entities\API\Gen2\GetDeviceConfiguration);
 					$deviceStatus = $gen2HttpApi->getDeviceStatus($device->getIpAddress(), null, null, false);
-					assert($deviceStatus instanceof Entities\API\Gen2\GetDeviceState);
 				} else {
 					continue;
 				}
@@ -379,7 +373,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 							'type' => 'discovery-client',
 							'exception' => BootstrapHelpers\Logger::buildException($ex),
 							'connector' => [
-								'id' => $this->connector->getPlainId(),
+								'id' => $this->connector->getId()->toString(),
 							],
 							'device' => [
 								'identifier' => $device->getIdentifier(),
@@ -397,7 +391,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 							'type' => 'discovery-client',
 							'exception' => BootstrapHelpers\Logger::buildException($ex),
 							'connector' => [
-								'id' => $this->connector->getPlainId(),
+								'id' => $this->connector->getId()->toString(),
 							],
 							'device' => [
 								'identifier' => $device->getIdentifier(),
@@ -1031,7 +1025,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 						'type' => 'discovery-client',
 						'exception' => BootstrapHelpers\Logger::buildException($ex),
 						'connector' => [
-							'id' => $this->connector->getPlainId(),
+							'id' => $this->connector->getId()->toString(),
 						],
 						'device' => [
 							'identifier' => $device->getIdentifier(),

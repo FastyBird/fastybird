@@ -92,7 +92,7 @@ final class ConnectionManager
 			assert(is_string($device->getIpAddress()));
 
 			$this->gen2WsApiConnection[$device->getId()->toString()] = $this->wsApiFactory->create(
-				$device->getIdentifier(),
+				$device->getId(),
 				$device->getIpAddress(),
 				$device->getDomain(),
 				$device->getUsername(),

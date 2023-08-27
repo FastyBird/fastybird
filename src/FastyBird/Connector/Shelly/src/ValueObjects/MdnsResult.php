@@ -7,19 +7,19 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ShellyConnector!
- * @subpackage     Entities
+ * @subpackage     ValueObjects
  * @since          1.0.0
  *
  * @date           14.07.22
  */
 
-namespace FastyBird\Connector\Shelly\Entities\Clients;
+namespace FastyBird\Connector\Shelly\ValueObjects;
 
 /**
  * mDNS search result
  *
  * @package        FastyBird:ShellyConnector!
- * @subpackage     Entities
+ * @subpackage     ValueObjects
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */

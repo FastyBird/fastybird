@@ -29,6 +29,7 @@ use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
+use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -36,6 +37,7 @@ use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Fig\Http\Message\StatusCodeInterface;
 use Nette;
 use Nette\Utils;
+use Psr\EventDispatcher as PsrEventDispatcher;
 use Psr\Log;
 use React\EventLoop;
 use React\Promise;
@@ -97,6 +99,7 @@ final class Local implements Client
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
+		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
 	}
@@ -123,7 +126,27 @@ final class Local implements Client
 				$this->processGen1DeviceReportedStatus($message);
 			});
 
-			$gen1CoapClient->on('error', static function (Throwable $ex): void {
+			$gen1CoapClient->on('error', function (Throwable $ex): void {
+				$this->logger->error(
+					'An error occur in CoAP connection',
+					[
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+						'type' => 'local-client',
+						'exception' => BootstrapHelpers\Logger::buildException($ex),
+						'connector' => [
+							'id' => $this->connector->getId()->toString(),
+						],
+					],
+				);
+
+				if (!$ex instanceof Exceptions\CoapError) {
+					$this->dispatcher?->dispatch(
+						new DevicesEvents\TerminateConnector(
+							MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY),
+							'CoAP client triggered an error',
+						),
+					);
+				}
 			});
 		} catch (Throwable $ex) {
 			$this->logger->error(
@@ -133,15 +156,16 @@ final class Local implements Client
 					'type' => 'local-client',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'connector' => [
-						'id' => $this->connector->getPlainId(),
+						'id' => $this->connector->getId()->toString(),
 					],
 				],
 			);
 
-			throw new DevicesExceptions\Terminate(
-				'CoAP client could not be started',
-				$ex->getCode(),
-				$ex,
+			$this->dispatcher?->dispatch(
+				new DevicesEvents\TerminateConnector(
+					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY),
+					'CoAP client could not be started',
+				),
 			);
 		}
 
@@ -153,12 +177,12 @@ final class Local implements Client
 		foreach ($devices as $device) {
 			if ($device->getGeneration()->equalsValue(Types\DeviceGeneration::GENERATION_2)) {
 				try {
-					$this->createGen2DeviceWsClient($device);
+					$client = $this->createGen2DeviceWsClient($device);
 
-					$this->getGen2DeviceWsClient($device)?->connect();
+					$client->connect();
 				} catch (Throwable $ex) {
 					$this->logger->error(
-						'Websockets client could not be started',
+						'Device websocket connection could not be created',
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 							'type' => 'local-client',
@@ -172,10 +196,11 @@ final class Local implements Client
 						],
 					);
 
-					throw new DevicesExceptions\Terminate(
-						'Websockets api client could not be started',
-						$ex->getCode(),
-						$ex,
+					$this->dispatcher?->dispatch(
+						new DevicesEvents\TerminateConnector(
+							MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY),
+							'Websockets api client could not be started',
+						),
 					);
 				}
 			}
@@ -208,7 +233,6 @@ final class Local implements Client
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\HttpApiCall
 	 * @throws Exceptions\HttpApiError
-	 * @throws Exceptions\WsError
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -252,120 +276,89 @@ final class Local implements Client
 		if ($state->isPending() === true) {
 			$deferred = new Promise\Deferred();
 
+			$address = $this->getDeviceAddress($device);
+
+			if ($address === null) {
+				$this->consumer->append(
+					new Entities\Messages\DeviceState(
+						$device->getConnector()->getId(),
+						$device->getIdentifier(),
+						MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_ALERT),
+					),
+				);
+
+				return Promise\reject(
+					new Exceptions\InvalidState('Device is not properly configured. Address is missing'),
+				);
+			}
+
 			if ($device->getGeneration()->equalsValue(Types\DeviceGeneration::GENERATION_2)) {
-				$client = $this->getGen2DeviceWsClient($device);
-
-				if ($client === null || !$client->isConnected()) {
-					$address = $this->getDeviceAddress($device);
-
-					if ($address === null) {
-						$this->consumer->append(
-							new Entities\Messages\DeviceState(
-								$device->getConnector()->getId(),
-								$device->getIdentifier(),
-								MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_ALERT),
-							),
-						);
-
-						return Promise\reject(
-							new Exceptions\InvalidState('Device is not properly configured. Address is missing'),
-						);
-					}
-
-					$this->connectionManager->getGen2HttpApiConnection()->setDeviceStatus(
-						$address,
-						$device->getUsername(),
-						$device->getPassword(),
-						$property->getIdentifier(),
-						$valueToWrite,
-					)
-						->then(static function () use ($deferred): void {
-							$deferred->resolve();
-						})
-						->otherwise(function (Throwable $ex) use ($deferred, $device): void {
-							if ($ex instanceof Exceptions\HttpApiError) {
+				$this->connectionManager->getGen2HttpApiConnection()->setDeviceStatus(
+					$address,
+					$device->getUsername(),
+					$device->getPassword(),
+					$property->getIdentifier(),
+					$valueToWrite,
+				)
+					->then(static function () use ($deferred): void {
+						$deferred->resolve();
+					})
+					->otherwise(function (Throwable $ex) use ($deferred, $device): void {
+						if ($ex instanceof Exceptions\HttpApiError) {
+							$this->consumer->append(
+								new Entities\Messages\DeviceState(
+									$this->connector->getId(),
+									$device->getIdentifier(),
+									MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_ALERT),
+								),
+							);
+						} elseif ($ex instanceof Exceptions\HttpApiCall) {
+							if (
+								$ex->getResponse() !== null
+								&& $ex->getResponse()->getStatusCode() >= StatusCodeInterface::STATUS_BAD_REQUEST
+								&& $ex->getResponse()->getStatusCode() < StatusCodeInterface::STATUS_UNAVAILABLE_FOR_LEGAL_REASONS
+							) {
 								$this->consumer->append(
 									new Entities\Messages\DeviceState(
 										$this->connector->getId(),
 										$device->getIdentifier(),
-										MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_ALERT),
+										MetadataTypes\ConnectionState::get(
+											MetadataTypes\ConnectionState::STATE_ALERT,
+										),
 									),
 								);
-							} elseif ($ex instanceof Exceptions\HttpApiCall) {
-								if (
-									$ex->getResponse() !== null
-									&& $ex->getResponse()->getStatusCode() >= StatusCodeInterface::STATUS_BAD_REQUEST
-									&& $ex->getResponse()->getStatusCode() < StatusCodeInterface::STATUS_UNAVAILABLE_FOR_LEGAL_REASONS
-								) {
-									$this->consumer->append(
-										new Entities\Messages\DeviceState(
-											$this->connector->getId(),
-											$device->getIdentifier(),
-											MetadataTypes\ConnectionState::get(
-												MetadataTypes\ConnectionState::STATE_ALERT,
-											),
-										),
-									);
 
-								} elseif (
-									$ex->getResponse() !== null
-									&& $ex->getResponse()->getStatusCode() >= StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR
-									&& $ex->getResponse()->getStatusCode() < StatusCodeInterface::STATUS_NETWORK_AUTHENTICATION_REQUIRED
-								) {
-									$this->consumer->append(
-										new Entities\Messages\DeviceState(
-											$this->connector->getId(),
-											$device->getIdentifier(),
-											MetadataTypes\ConnectionState::get(
-												MetadataTypes\ConnectionState::STATE_LOST,
-											),
+							} elseif (
+								$ex->getResponse() !== null
+								&& $ex->getResponse()->getStatusCode() >= StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR
+								&& $ex->getResponse()->getStatusCode() < StatusCodeInterface::STATUS_NETWORK_AUTHENTICATION_REQUIRED
+							) {
+								$this->consumer->append(
+									new Entities\Messages\DeviceState(
+										$this->connector->getId(),
+										$device->getIdentifier(),
+										MetadataTypes\ConnectionState::get(
+											MetadataTypes\ConnectionState::STATE_LOST,
 										),
-									);
+									),
+								);
 
-								} else {
-									$this->consumer->append(
-										new Entities\Messages\DeviceState(
-											$this->connector->getId(),
-											$device->getIdentifier(),
-											MetadataTypes\ConnectionState::get(
-												MetadataTypes\ConnectionState::STATE_UNKNOWN,
-											),
+							} else {
+								$this->consumer->append(
+									new Entities\Messages\DeviceState(
+										$this->connector->getId(),
+										$device->getIdentifier(),
+										MetadataTypes\ConnectionState::get(
+											MetadataTypes\ConnectionState::STATE_UNKNOWN,
 										),
-									);
-								}
+									),
+								);
 							}
+						}
 
-							$deferred->reject($ex);
-						});
-				} else {
-					$client->writeState(
-						$property->getIdentifier(),
-						$valueToWrite,
-					)
-						->then(static function () use ($deferred): void {
-							$deferred->resolve();
-						})
-						->otherwise(static function (Throwable $ex) use ($deferred): void {
-							$deferred->reject($ex);
-						});
-				}
+						$deferred->reject($ex);
+					});
 			} elseif ($device->getGeneration()->equalsValue(Types\DeviceGeneration::GENERATION_1)) {
-				$address = $this->getDeviceAddress($device);
-
-				if ($address === null) {
-					$this->consumer->append(
-						new Entities\Messages\DeviceState(
-							$device->getConnector()->getId(),
-							$device->getIdentifier(),
-							MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_ALERT),
-						),
-					);
-
-					return Promise\reject(
-						new Exceptions\InvalidState('Device is not properly configured. Address is missing'),
-					);
-				}
-
 				$this->connectionManager->getGen1HttpApiConnection()->setDeviceState(
 					$address,
 					$device->getUsername(),
@@ -455,11 +448,11 @@ final class Local implements Client
 		$findDevicesQuery->forConnector($this->connector);
 
 		foreach ($this->devicesRepository->findAllBy($findDevicesQuery, Entities\ShellyDevice::class) as $device) {
+			$deviceState = $this->deviceConnectionManager->getState($device);
+
 			if (
-				!in_array($device->getPlainId(), $this->processedDevices, true)
-				&& !$this->deviceConnectionManager->getState($device)->equalsValue(
-					MetadataTypes\ConnectionState::STATE_ALERT,
-				)
+				!in_array($device->getId()->toString(), $this->processedDevices, true)
+				&& !$deviceState->equalsValue(MetadataTypes\ConnectionState::STATE_ALERT)
 			) {
 				$this->processedDevices[] = $device->getId()->toString();
 
@@ -520,47 +513,7 @@ final class Local implements Client
 							$this->dateTimeFactory->getNow()->getTimestamp() - $client->getLastConnectAttempt()->getTimestamp() >= self::RECONNECT_COOL_DOWN_TIME
 						)
 					) {
-						$client
-							->connect()
-							->then(function () use ($device): void {
-								$this->logger->debug(
-									'Connected to Shelly Gen 2 device',
-									[
-										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-										'type' => 'local-client',
-										'connector' => [
-											'id' => $this->connector->getId()->toString(),
-										],
-										'device' => [
-											'id' => $device->getId()->toString(),
-										],
-									],
-								);
-							})
-							->otherwise(function (Throwable $ex) use ($device): void {
-								$this->logger->error(
-									'Shelly Gen 2 device client could not be created',
-									[
-										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-										'type' => 'local-client',
-										'exception' => BootstrapHelpers\Logger::buildException($ex),
-										'connector' => [
-											'id' => $this->connector->getId()->toString(),
-										],
-										'device' => [
-											'id' => $device->getId()->toString(),
-										],
-									],
-								);
-
-								$this->consumer->append(
-									new Entities\Messages\DeviceState(
-										$device->getConnector()->getId(),
-										$device->getIdentifier(),
-										MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_LOST),
-									),
-								);
-							});
+						$client->connect();
 
 					} else {
 						$this->consumer->append(
@@ -577,12 +530,14 @@ final class Local implements Client
 			}
 
 			$client->readStates()
-				->then(function () use ($device): void {
+				->then(function (Entities\API\Gen2\GetDeviceState $response) use ($device): void {
 					$this->processedDevicesCommands[$device->getId()->toString()][self::CMD_STATE] = $this->dateTimeFactory->getNow();
+
+					$this->processGen2DeviceGetState($device, $response);
 				})
 				->otherwise(function (Throwable $ex) use ($device): void {
 					$this->logger->error(
-						'Could not read device status',
+						'Could not read device state',
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 							'type' => 'local-client',
@@ -675,7 +630,7 @@ final class Local implements Client
 					}
 
 					$this->logger->error(
-						'Could not read device status',
+						'Could not read device state',
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 							'type' => 'local-client',
@@ -700,7 +655,7 @@ final class Local implements Client
 	private function createGen2DeviceWsClient(Entities\ShellyDevice $device): API\Gen2WsApi
 	{
 		if (array_key_exists($device->getId()->toString(), $this->gen2DevicesWsClients)) {
-			throw new Exceptions\InvalidState('Generation 2 device WS client is already created');
+			throw new Exceptions\InvalidState('Gen 2 device WS client is already created');
 		}
 
 		unset($this->processedDevicesCommands[$device->getId()->toString()]);
@@ -716,38 +671,41 @@ final class Local implements Client
 			},
 		);
 
-		$client->on('error', function (Throwable $ex) use ($device): void {
-			$this->logger->warning(
-				'Connection with device failed',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-					'type' => 'ws-client',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
-					'device' => [
-						'id' => $device->getPlainId(),
+		$client->on(
+			'error',
+			function (Throwable $ex) use ($device): void {
+				$this->logger->warning(
+					'Connection with Gen 2 device failed',
+					[
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+						'type' => 'local-client',
+						'exception' => BootstrapHelpers\Logger::buildException($ex),
+						'device' => [
+							'id' => $device->getId()->toString(),
+						],
 					],
-				],
-			);
+				);
 
-			$this->consumer->append(
-				new Entities\Messages\DeviceState(
-					$device->getConnector()->getId(),
-					$device->getIdentifier(),
-					MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_DISCONNECTED),
-				),
-			);
-		});
+				$this->consumer->append(
+					new Entities\Messages\DeviceState(
+						$device->getConnector()->getId(),
+						$device->getIdentifier(),
+						MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_DISCONNECTED),
+					),
+				);
+			},
+		);
 
 		$client->on(
 			'connected',
 			function () use ($client, $device): void {
 				$this->logger->debug(
-					'Connected to device',
+					'Connected to Gen 2 device',
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-						'type' => 'ws-client',
+						'type' => 'local-client',
 						'device' => [
-							'id' => $device->getPlainId(),
+							'id' => $device->getId()->toString(),
 						],
 					],
 				);
@@ -774,10 +732,10 @@ final class Local implements Client
 						);
 
 						$this->logger->error(
-							'An error occurred on initial device state reading',
+							'An error occurred on initial Gen 2 device state reading',
 							[
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-								'type' => 'ws-api',
+								'type' => 'local-client',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'device' => [
 									'identifier' => $device->getIdentifier(),
@@ -792,12 +750,12 @@ final class Local implements Client
 			'disconnected',
 			function () use ($device): void {
 				$this->logger->debug(
-					'Disconnected from device',
+					'Disconnected from Gen 2 device',
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-						'type' => 'ws-client',
+						'type' => 'local-client',
 						'device' => [
-							'id' => $device->getPlainId(),
+							'id' => $device->getId()->toString(),
 						],
 					],
 				);
@@ -850,7 +808,7 @@ final class Local implements Client
 			'Device ip address or domain is not configured',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-				'type' => 'http-client',
+				'type' => 'local-client',
 				'device' => [
 					'id' => $device->getId()->toString(),
 				],
@@ -1457,7 +1415,6 @@ final class Local implements Client
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\ParseMessage
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */

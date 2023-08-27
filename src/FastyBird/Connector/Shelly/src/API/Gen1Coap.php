@@ -61,9 +61,9 @@ final class Gen1Coap implements Evenement\EventEmitterInterface
 
 	private const COAP_PORT = 5_683;
 
-	private const STATUS_MESSAGE_CODE = 30;
+	private const STATE_MESSAGE_CODE = 30;
 
-	private const STATUS_MESSAGE_SCHEMA_FILENAME = 'gen1_coap_state.json';
+	private const STATE_MESSAGE_SCHEMA_FILENAME = 'gen1_coap_state.json';
 
 	private Datagram\SocketInterface|null $server = null;
 
@@ -91,20 +91,19 @@ final class Gen1Coap implements Evenement\EventEmitterInterface
 		});
 
 		$this->server->on('error', function (Throwable $ex): void {
-			$this->emit(
-				'error',
-				[new Exceptions\CoapError('An error occurred during handling requests', $ex->getCode(), $ex)],
-			);
+			$this->emit('error', [$ex]);
 		});
 
 		$this->server->on('close', function (): void {
 			$this->logger->debug(
-				'Client CoAP connection was successfully closed',
+				'CoAP connection was successfully closed',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'gen1-coap-api',
 				],
 			);
+
+			$this->emit('closed');
 		});
 	}
 
@@ -137,7 +136,7 @@ final class Gen1Coap implements Evenement\EventEmitterInterface
 
 		$pos = $pos + 4 + $tkl;
 
-		if ($code === self::STATUS_MESSAGE_CODE) {
+		if ($code === self::STATE_MESSAGE_CODE) {
 			$byte = $buffer[$pos];
 			$totDelta = 0;
 
@@ -195,7 +194,7 @@ final class Gen1Coap implements Evenement\EventEmitterInterface
 
 			$this->logger->debug(
 				sprintf(
-					'CoAP Code: %d, Type: %s, Id: %s, Payload: %s',
+					'Received message: CoAP Code: %d, Type: %s, Id: %s, Payload: %s',
 					$code,
 					$deviceType,
 					$deviceIdentifier,
@@ -208,28 +207,25 @@ final class Gen1Coap implements Evenement\EventEmitterInterface
 			);
 
 			if (
-				$this->isValidCoapStatusMessage($message)
+				$this->isValidStatusMessage($message)
 				&& $deviceType !== null
 				&& $deviceIdentifier !== null
 			) {
 				try {
 					$this->handleStatusMessage($deviceIdentifier, $message, $remote);
-				} catch (Exceptions\CoapError $ex) {
-					$this->emit(
-						'error',
-						[new Exceptions\CoapError('Received message could not be handled', $ex->getCode(), $ex)],
-					);
+				} catch (Exceptions\CoapError | Exceptions\InvalidState $ex) {
+					$this->emit('error', [$ex]);
 				}
 			}
 		}
 	}
 
-	private function isValidCoapStatusMessage(string $message): bool
+	private function isValidStatusMessage(string $message): bool
 	{
 		try {
-			$this->validatePayload($message, self::STATUS_MESSAGE_SCHEMA_FILENAME);
+			$this->validatePayload($message, self::STATE_MESSAGE_SCHEMA_FILENAME);
 
-		} catch (Exceptions\CoapError) {
+		} catch (Exceptions\CoapError | Exceptions\InvalidState) {
 			return false;
 		}
 
@@ -238,6 +234,7 @@ final class Gen1Coap implements Evenement\EventEmitterInterface
 
 	/**
 	 * @throws Exceptions\CoapError
+	 * @throws Exceptions\InvalidState
 	 */
 	private function handleStatusMessage(
 		string $deviceIdentifier,
@@ -245,7 +242,7 @@ final class Gen1Coap implements Evenement\EventEmitterInterface
 		string $remote,
 	): void
 	{
-		$parsedMessage = $this->validatePayload($message, self::STATUS_MESSAGE_SCHEMA_FILENAME);
+		$parsedMessage = $this->validatePayload($message, self::STATE_MESSAGE_SCHEMA_FILENAME);
 
 		if (
 			!$parsedMessage->offsetExists('G')
@@ -280,7 +277,7 @@ final class Gen1Coap implements Evenement\EventEmitterInterface
 				),
 			]);
 		} catch (Exceptions\Runtime $ex) {
-			throw new Exceptions\CoapError('Could not map payload to entity', $ex->getCode(), $ex);
+			throw new Exceptions\InvalidState('Could not map payload to entity', $ex->getCode(), $ex);
 		}
 	}
 
@@ -288,6 +285,7 @@ final class Gen1Coap implements Evenement\EventEmitterInterface
 	 * @return ($throw is true ? Utils\ArrayHash : Utils\ArrayHash|false)
 	 *
 	 * @throws Exceptions\CoapError
+	 * @throws Exceptions\InvalidState
 	 */
 	private function validatePayload(
 		string $payload,
@@ -314,7 +312,7 @@ final class Gen1Coap implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @throws Exceptions\CoapError
+	 * @throws Exceptions\InvalidState
 	 */
 	private function getSchema(string $schemaFilename): string
 	{
@@ -324,7 +322,7 @@ final class Gen1Coap implements Evenement\EventEmitterInterface
 			);
 
 		} catch (Nette\IOException) {
-			throw new Exceptions\CoapError('Validation schema for payload could not be loaded');
+			throw new Exceptions\InvalidState('Validation schema for payload could not be loaded');
 		}
 
 		return $schema;

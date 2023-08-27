@@ -70,6 +70,8 @@ final class Gen2HttpApi extends HttpApi
 	private const LIGHT_SET_METHOD = 'Light.Set';
 
 	/**
+	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\Gen2\GetDeviceInformation)
+	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\HttpApiCall
 	 * @throws RuntimeException
@@ -108,6 +110,8 @@ final class Gen2HttpApi extends HttpApi
 	}
 
 	/**
+	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\Gen2\GetDeviceConfiguration)
+	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\HttpApiCall
 	 * @throws RuntimeException
@@ -148,6 +152,8 @@ final class Gen2HttpApi extends HttpApi
 	}
 
 	/**
+	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\Gen2\GetDeviceState)
+	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\HttpApiCall
 	 * @throws RuntimeException
@@ -188,6 +194,8 @@ final class Gen2HttpApi extends HttpApi
 	}
 
 	/**
+	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : bool)
+	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\HttpApiCall
 	 * @throws Exceptions\HttpApiError
