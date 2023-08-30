@@ -22,6 +22,7 @@ use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Queue;
+use FastyBird\Connector\Tuya\Services;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata;
@@ -99,7 +100,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 		private readonly Entities\TuyaConnector $connector,
 		private readonly API\ConnectionManager $connectionManager,
 		private readonly API\LocalApiFactory $localApiFactory,
-		private readonly DatagramFactory $datagramFactory,
+		private readonly Services\DatagramFactory $datagramFactory,
 		private readonly Helpers\Entity $entityHelper,
 		private readonly Queue\Queue $queue,
 		private readonly Tuya\Logger $logger,
@@ -172,9 +173,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 			$deferred = new Promise\Deferred();
 
-			$server = $this->datagramFactory->create()->createServer(
-				self::UDP_BIND_IP . ':' . self::UDP_PORT[$protocolVersion],
-			);
+			$server = $this->datagramFactory->create(self::UDP_BIND_IP, self::UDP_PORT[$protocolVersion]);
 
 			$server
 				->then(function (Datagram\Socket $client) use ($deferred, $protocolVersion): void {

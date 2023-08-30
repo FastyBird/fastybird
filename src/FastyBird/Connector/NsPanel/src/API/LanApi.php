@@ -20,6 +20,7 @@ use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
+use FastyBird\Connector\NsPanel\Services;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -74,7 +75,7 @@ final class LanApi
 
 	public function __construct(
 		private readonly string $identifier,
-		private readonly HttpClientFactory $httpClientFactory,
+		private readonly Services\HttpClientFactory $httpClientFactory,
 		private readonly Helpers\Entity $entityHelper,
 		private readonly NsPanel\Logger $logger,
 		private readonly MetadataSchemas\Validator $schemaValidator,

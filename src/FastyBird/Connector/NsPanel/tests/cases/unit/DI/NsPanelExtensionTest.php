@@ -14,6 +14,7 @@ use FastyBird\Connector\NsPanel\Middleware;
 use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Connector\NsPanel\Schemas;
 use FastyBird\Connector\NsPanel\Servers;
+use FastyBird\Connector\NsPanel\Services;
 use FastyBird\Connector\NsPanel\Subscribers;
 use FastyBird\Connector\NsPanel\Tests;
 use FastyBird\Connector\NsPanel\Writers;
@@ -38,7 +39,8 @@ final class NsPanelExtensionTest extends Tests\Cases\Unit\BaseTestCase
 		self::assertNotNull($container->getByType(Clients\DeviceFactory::class, false));
 		self::assertNotNull($container->getByType(Clients\DiscoveryFactory::class, false));
 
-		self::assertNotNull($container->getByType(API\HttpClientFactory::class, false));
+		self::assertNotNull($container->getByType(Services\HttpClientFactory::class, false));
+
 		self::assertNotNull($container->getByType(API\LanApiFactory::class, false));
 
 		self::assertNotNull($container->getByType(Servers\HttpFactory::class, false));

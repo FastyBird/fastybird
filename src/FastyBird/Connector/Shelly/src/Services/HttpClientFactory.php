@@ -6,27 +6,27 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:VieraConnector!
- * @subpackage     API
+ * @package        FastyBird:ShellyConnector!
+ * @subpackage     Services
  * @since          1.0.0
  *
  * @date           01.07.23
  */
 
-namespace FastyBird\Connector\Viera\API;
+namespace FastyBird\Connector\Shelly\Services;
 
 use GuzzleHttp;
 use InvalidArgumentException;
 use Nette;
 use React\EventLoop;
 use React\Http;
-use React\Socket\Connector;
+use React\Socket;
 
 /**
  * HTTP client factory
  *
- * @package        FastyBird:VieraConnector!
- * @subpackage     API
+ * @package        FastyBird:ShellyConnector!
+ * @subpackage     Services
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
@@ -56,7 +56,7 @@ final class HttpClientFactory
 	{
 		if ($async) {
 			if ($this->asyncClient === null) {
-				$connector = new Connector(
+				$connector = new Socket\Connector(
 					[
 						'timeout' => self::CONNECTION_TIMEOUT,
 					],

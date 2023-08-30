@@ -19,6 +19,7 @@ use FastyBird\Connector\Tuya;
 use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Helpers;
+use FastyBird\Connector\Tuya\Services;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\Connector\Tuya\ValueObjects;
 use FastyBird\DateTimeFactory;
@@ -140,7 +141,7 @@ final class OpenApi
 		private readonly string $lang,
 		private readonly Helpers\Entity $entityHelper,
 		private readonly Types\OpenApiEndpoint $endpoint,
-		private readonly HttpClientFactory $httpClientFactory,
+		private readonly Services\HttpClientFactory $httpClientFactory,
 		private readonly Tuya\Logger $logger,
 		private readonly MetadataSchemas\Validator $schemaValidator,
 		private readonly ObjectMapper\Processing\Processor $objectMapper,

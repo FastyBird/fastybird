@@ -13,7 +13,7 @@
  * @date           13.08.23
  */
 
-namespace FastyBird\Connector\Tuya\API;
+namespace FastyBird\Connector\Tuya\Services;
 
 use InvalidArgumentException;
 use Ratchet\Client;

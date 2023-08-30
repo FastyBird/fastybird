@@ -25,6 +25,7 @@ use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Hydrators;
 use FastyBird\Connector\Shelly\Schemas;
+use FastyBird\Connector\Shelly\Services;
 use FastyBird\Connector\Shelly\Subscribers;
 use FastyBird\Connector\Shelly\Writers;
 use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
@@ -153,7 +154,7 @@ class ShellyExtension extends DI\CompilerExtension
 			->setType(API\Gen2WsApi::class);
 
 		$builder->addDefinition($this->prefix('api.httpClient'), new DI\Definitions\ServiceDefinition())
-			->setType(API\HttpClientFactory::class);
+			->setType(Services\HttpClientFactory::class);
 
 		$builder->addDefinition(
 			$this->prefix('consumers.messages.device.status'),

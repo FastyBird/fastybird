@@ -19,6 +19,7 @@ use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Helpers;
+use FastyBird\Connector\Shelly\Services;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -68,7 +69,7 @@ abstract class HttpApi
 	protected const AUTHORIZATION_DIGEST = 'digest';
 
 	public function __construct(
-		protected readonly HttpClientFactory $httpClientFactory,
+		protected readonly Services\HttpClientFactory $httpClientFactory,
 		protected readonly Helpers\Entity $entityHelper,
 		protected readonly MetadataSchemas\Validator $schemaValidator,
 		protected readonly Log\LoggerInterface $logger = new Log\NullLogger(),

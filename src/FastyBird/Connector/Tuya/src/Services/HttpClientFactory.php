@@ -6,26 +6,26 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:NsPanelConnector!
+ * @package        FastyBird:TuyaConnector!
  * @subpackage     API
  * @since          1.0.0
  *
- * @date           01.07.23
+ * @date           09.07.23
  */
 
-namespace FastyBird\Connector\NsPanel\API;
+namespace FastyBird\Connector\Tuya\Services;
 
 use GuzzleHttp;
 use InvalidArgumentException;
 use Nette;
 use React\EventLoop;
 use React\Http;
-use React\Socket\Connector;
+use React\Socket;
 
 /**
- * API HTTP client factory
+ * HTTP client factory
  *
- * @package        FastyBird:NsPanelConnector!
+ * @package        FastyBird:TuyaConnector!
  * @subpackage     API
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
@@ -56,7 +56,7 @@ final class HttpClientFactory
 	{
 		if ($async) {
 			if ($this->asyncClient === null) {
-				$connector = new Connector(
+				$connector = new Socket\Connector(
 					[
 						'timeout' => self::CONNECTION_TIMEOUT,
 					],

@@ -5,6 +5,7 @@ namespace FastyBird\Connector\Tuya\Tests\Cases\Unit\API;
 use Error;
 use FastyBird\Connector\Tuya\API;
 use FastyBird\Connector\Tuya\Exceptions;
+use FastyBird\Connector\Tuya\Services;
 use FastyBird\Connector\Tuya\Tests;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
@@ -66,7 +67,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 				},
 			);
 
-		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
+		$httpClientFactory = $this->createMock(Services\HttpClientFactory::class);
 		$httpClientFactory
 			->method('create')
 			->willReturnCallback(
@@ -78,7 +79,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 			);
 
 		$this->mockContainerService(
-			API\HttpClientFactory::class,
+			Services\HttpClientFactory::class,
 			$httpClientFactory,
 		);
 
@@ -274,7 +275,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 				},
 			);
 
-		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
+		$httpClientFactory = $this->createMock(Services\HttpClientFactory::class);
 		$httpClientFactory
 			->method('create')
 			->willReturnCallback(
@@ -286,7 +287,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 			);
 
 		$this->mockContainerService(
-			API\HttpClientFactory::class,
+			Services\HttpClientFactory::class,
 			$httpClientFactory,
 		);
 
@@ -365,7 +366,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 				},
 			);
 
-		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
+		$httpClientFactory = $this->createMock(Services\HttpClientFactory::class);
 		$httpClientFactory
 			->method('create')
 			->willReturnCallback(
@@ -377,7 +378,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 			);
 
 		$this->mockContainerService(
-			API\HttpClientFactory::class,
+			Services\HttpClientFactory::class,
 			$httpClientFactory,
 		);
 
@@ -470,7 +471,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 				},
 			);
 
-		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
+		$httpClientFactory = $this->createMock(Services\HttpClientFactory::class);
 		$httpClientFactory
 			->method('create')
 			->willReturnCallback(
@@ -482,7 +483,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 			);
 
 		$this->mockContainerService(
-			API\HttpClientFactory::class,
+			Services\HttpClientFactory::class,
 			$httpClientFactory,
 		);
 
@@ -570,7 +571,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 				},
 			);
 
-		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
+		$httpClientFactory = $this->createMock(Services\HttpClientFactory::class);
 		$httpClientFactory
 			->method('create')
 			->willReturnCallback(
@@ -582,7 +583,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 			);
 
 		$this->mockContainerService(
-			API\HttpClientFactory::class,
+			Services\HttpClientFactory::class,
 			$httpClientFactory,
 		);
 
@@ -655,7 +656,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 				},
 			);
 
-		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
+		$httpClientFactory = $this->createMock(Services\HttpClientFactory::class);
 		$httpClientFactory
 			->method('create')
 			->willReturnCallback(
@@ -667,7 +668,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 			);
 
 		$this->mockContainerService(
-			API\HttpClientFactory::class,
+			Services\HttpClientFactory::class,
 			$httpClientFactory,
 		);
 
@@ -746,7 +747,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 				},
 			);
 
-		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
+		$httpClientFactory = $this->createMock(Services\HttpClientFactory::class);
 		$httpClientFactory
 			->method('create')
 			->willReturnCallback(
@@ -758,7 +759,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 			);
 
 		$this->mockContainerService(
-			API\HttpClientFactory::class,
+			Services\HttpClientFactory::class,
 			$httpClientFactory,
 		);
 
@@ -931,7 +932,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 				},
 			);
 
-		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
+		$httpClientFactory = $this->createMock(Services\HttpClientFactory::class);
 		$httpClientFactory
 			->method('create')
 			->willReturnCallback(
@@ -943,7 +944,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 			);
 
 		$this->mockContainerService(
-			API\HttpClientFactory::class,
+			Services\HttpClientFactory::class,
 			$httpClientFactory,
 		);
 
@@ -1022,7 +1023,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 				},
 			);
 
-		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
+		$httpClientFactory = $this->createMock(Services\HttpClientFactory::class);
 		$httpClientFactory
 			->method('create')
 			->willReturnCallback(
@@ -1034,7 +1035,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 			);
 
 		$this->mockContainerService(
-			API\HttpClientFactory::class,
+			Services\HttpClientFactory::class,
 			$httpClientFactory,
 		);
 
@@ -1120,7 +1121,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 				},
 			);
 
-		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
+		$httpClientFactory = $this->createMock(Services\HttpClientFactory::class);
 		$httpClientFactory
 			->method('create')
 			->willReturnCallback(
@@ -1132,7 +1133,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 			);
 
 		$this->mockContainerService(
-			API\HttpClientFactory::class,
+			Services\HttpClientFactory::class,
 			$httpClientFactory,
 		);
 
@@ -1224,7 +1225,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 				},
 			);
 
-		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
+		$httpClientFactory = $this->createMock(Services\HttpClientFactory::class);
 		$httpClientFactory
 			->method('create')
 			->willReturnCallback(
@@ -1236,7 +1237,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 			);
 
 		$this->mockContainerService(
-			API\HttpClientFactory::class,
+			Services\HttpClientFactory::class,
 			$httpClientFactory,
 		);
 
@@ -1309,7 +1310,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 				},
 			);
 
-		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
+		$httpClientFactory = $this->createMock(Services\HttpClientFactory::class);
 		$httpClientFactory
 			->method('create')
 			->willReturnCallback(
@@ -1321,7 +1322,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 			);
 
 		$this->mockContainerService(
-			API\HttpClientFactory::class,
+			Services\HttpClientFactory::class,
 			$httpClientFactory,
 		);
 
@@ -1381,7 +1382,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 				},
 			);
 
-		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
+		$httpClientFactory = $this->createMock(Services\HttpClientFactory::class);
 		$httpClientFactory
 			->method('create')
 			->willReturnCallback(
@@ -1393,7 +1394,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 			);
 
 		$this->mockContainerService(
-			API\HttpClientFactory::class,
+			Services\HttpClientFactory::class,
 			$httpClientFactory,
 		);
 

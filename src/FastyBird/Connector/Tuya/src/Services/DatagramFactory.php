@@ -13,23 +13,22 @@
  * @date           14.08.23
  */
 
-namespace FastyBird\Connector\Viera\Clients;
+namespace FastyBird\Connector\Tuya\Services;
 
-use Clue\React\Multicast;
 use Nette;
 use React\Datagram;
 use React\EventLoop;
-use RuntimeException;
+use React\Promise;
 
 /**
- * React multicast server factory
+ * React datagram server factory
  *
  * @package        FastyBird:VieraConnector!
  * @subpackage     Clients
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class MulticastFactory
+final class DatagramFactory
 {
 
 	use Nette\SmartObject;
@@ -40,12 +39,9 @@ final class MulticastFactory
 	{
 	}
 
-	/**
-	 * @throws RuntimeException
-	 */
-	public function create(): Datagram\SocketInterface
+	public function create(string $address, int $port): Promise\PromiseInterface
 	{
-		return (new Multicast\Factory($this->eventLoop))->createSender();
+		return (new Datagram\Factory($this->eventLoop))->createServer($address . ':' . $port);
 	}
 
 }

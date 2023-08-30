@@ -3,12 +3,12 @@
 namespace FastyBird\Connector\NsPanel\Tests\Cases\Unit\Clients;
 
 use Error;
-use FastyBird\Connector\NsPanel\API;
 use FastyBird\Connector\NsPanel\Clients;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Queue;
+use FastyBird\Connector\NsPanel\Services;
 use FastyBird\Connector\NsPanel\Tests;
 use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
@@ -65,13 +65,13 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 			->method('send')
 			->willReturn($responsePromise);
 
-		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
+		$httpClientFactory = $this->createMock(Services\HttpClientFactory::class);
 		$httpClientFactory
 			->method('create')
 			->willReturn($httpClient);
 
 		$this->mockContainerService(
-			API\HttpClientFactory::class,
+			Services\HttpClientFactory::class,
 			$httpClientFactory,
 		);
 
