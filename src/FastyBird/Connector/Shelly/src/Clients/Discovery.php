@@ -15,7 +15,6 @@
 
 namespace FastyBird\Connector\Shelly\Clients;
 
-use Clue\React\Multicast;
 use Evenement;
 use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\API;
@@ -23,6 +22,7 @@ use FastyBird\Connector\Shelly\Consumers;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Helpers;
+use FastyBird\Connector\Shelly\Services;
 use FastyBird\Connector\Shelly\Storages;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
@@ -92,6 +92,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 		private readonly Entities\ShellyConnector $connector,
 		private readonly API\Gen1HttpApiFactory $gen1HttpApiFactory,
 		private readonly API\Gen2HttpApiFactory $gen2HttpApiFactory,
+		private readonly Services\MulticastFactory $multicastFactory,
 		private readonly Helpers\Entity $entityHelper,
 		private readonly Consumers\Messages $consumer,
 		private readonly EventLoop\LoopInterface $eventLoop,
@@ -131,10 +132,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 	private function discoverLocalDevices(): void
 	{
-		$factory = new Multicast\Factory($this->eventLoop);
-
 		try {
-			$server = $this->server = $factory->createReceiver(self::MDNS_ADDRESS . ':' . self::MDNS_PORT);
+			$this->server = $this->multicastFactory->create(self::MDNS_ADDRESS, self::MDNS_PORT);
 		} catch (Throwable $ex) {
 			$this->logger->error(
 				'Invalid mDNS question response received',
@@ -256,7 +255,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			}
 		});
 
-		$this->eventLoop->futureTick(function () use ($server): void {
+		$this->eventLoop->futureTick(function (): void {
 			$query = new Dns\Query\Query(
 				'_http._tcp.local',
 				Dns\Model\Message::TYPE_PTR,
@@ -265,14 +264,14 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 			$request = $this->dumper->toBinary(Dns\Model\Message::createRequestForQuery($query));
 
-			$server->send($request, self::MDNS_ADDRESS . ':' . self::MDNS_PORT);
+			$this->server?->send($request, self::MDNS_ADDRESS . ':' . self::MDNS_PORT);
 		});
 
 		// Searching timeout
 		$this->eventLoop->addTimer(
 			self::MDNS_SEARCH_TIMEOUT,
-			function () use ($server): void {
-				$server->close();
+			function (): void {
+				$this->server?->close();
 
 				$this->discoveredLocalDevices->rewind();
 

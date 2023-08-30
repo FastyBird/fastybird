@@ -16,13 +16,12 @@
 namespace FastyBird\Connector\Shelly\API;
 
 use BadMethodCallException;
-use Clue\React\Multicast;
 use Evenement;
 use FastyBird\Connector\Shelly;
-use FastyBird\Connector\Shelly\API;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Helpers;
+use FastyBird\Connector\Shelly\Services;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -30,7 +29,6 @@ use Nette;
 use Nette\Utils;
 use Psr\Log;
 use React\Datagram;
-use React\EventLoop;
 use RuntimeException;
 use Throwable;
 use function count;
@@ -68,9 +66,9 @@ final class Gen1Coap implements Evenement\EventEmitterInterface
 	private Datagram\SocketInterface|null $server = null;
 
 	public function __construct(
+		private readonly Services\MulticastFactory $multicastFactory,
 		private readonly Helpers\Entity $entityHelper,
 		private readonly MetadataSchemas\Validator $schemaValidator,
-		private readonly EventLoop\LoopInterface $eventLoop,
 		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
@@ -82,9 +80,7 @@ final class Gen1Coap implements Evenement\EventEmitterInterface
 	 */
 	public function connect(): void
 	{
-		$factory = new Multicast\Factory($this->eventLoop);
-
-		$this->server = $factory->createReceiver(self::COAP_ADDRESS . ':' . self::COAP_PORT);
+		$this->server = $this->multicastFactory->create(self::COAP_ADDRESS, self::COAP_PORT);
 
 		$this->server->on('message', function ($message, $remote): void {
 			$this->handlePacket($message, $remote);
