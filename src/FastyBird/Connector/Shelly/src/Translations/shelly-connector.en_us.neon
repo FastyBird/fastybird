@@ -6,11 +6,11 @@
 # @license        More in LICENSE.md
 # @copyright      https://www.fastybird.com
 # @author         Adam Kadlec <adam.kadlec@fastybird.com>
-# @package        FastyBird:TuyaConnector!
+# @package        FastyBird:ShellyConnector!
 # @subpackage     Translations
 # @since          1.0.0
 #
-# @date           16.08.23
+# @date           29.08.23
 #
 
 cmd:
@@ -21,51 +21,40 @@ cmd:
             exit: "Do you want to exit?"
 
         messages:
-            noConnectors: "No Tuya connectors registered in system."
+            noConnectors: "No Shelly connectors registered in system."
             answerNotValid: "Selected answer: \"%s\" is not valid."
 
     initialize:
-        title: "Tuya connector - initialization"
+        title: "Shelly connector - initialization"
         subtitle: "This action will create|update|delete connector configuration"
 
         actions:
             create: "Create new connector configuration"
             update: "Edit existing connector configuration"
             remove: "Delete existing connector configuration"
-            list: "List Tuya connectors"
+            list: "List Shelly connectors"
             nothing: "Nothing"
 
         questions:
-            create: "Would you like to create new Tuya connector configuration?"
+            create: "Would you like to create new Shelly connector configuration?"
             disable: "Do you want to disable connector?"
             enable: "Do you want to enable connector?"
             provide:
                 identifier: "Provide connector identifier"
                 name: "Provide connector name"
-                accessId: "Provide cloud authentication Access ID"
-                accessSecret: "Provide cloud authentication Access Secret"
-                uid: "Provide cloud user identification"
+                cloudAuthenticationKey: "Provide cloud authentication key"
+                cloudServerAddress: "Provide cloud server address"
             select:
                 connector: "Please select connector to manage"
-                mode: "In what mode should this connector communicate with Tuya devices?"
-                dataCentre: "Provide which cloud data center you are using?"
+                mode: "In what mode should this connector communicate with Shelly devices?"
             changeMode: "Do you want to change connector devices support?"
-            changeAccessId: "Do you want to change connector cloud Access ID?"
-            changeAccessSecret: "Do you want to change connector cloud Access Secret?"
-            changeUser: "Do you want to change connector cloud user identifier?"
+            changeCloudAuthKey: "Do you want to change connector cloud authentication key?"
+            changeCloudServerAddress: "Do you want to change connector clout server address?"
 
         answers:
             mode:
                 local: "Local network mode"
-                cloud: "Tuya cloud server mode"
-
-            dataCentre:
-                centralEurope: "Central Europe"
-                westernEurope: "Western Europe"
-                westernAmerica: "Western America"
-                easternAmerica: "Eastern America"
-                china: "China"
-                india: "India"
+                cloud: "Shelly cloud server mode"
 
         data:
             name: "Name"
@@ -86,7 +75,7 @@ cmd:
                 error: "Something went wrong, connector could not be removed. An error was logged."
 
     execute:
-        title: "Tuya connector - service"
+        title: "Shelly connector - service"
         subtitle: "This action will run connector service"
 
         questions:
@@ -101,7 +90,7 @@ cmd:
             error: "Something went wrong, connector was terminated."
 
     discovery:
-        title: "Tuya connector - devices discovery"
+        title: "Shelly connector - devices discovery"
         subtitle: "This action will run connector devices discovery"
 
         questions:
@@ -119,8 +108,8 @@ cmd:
             connector:
                 notFound: "Connector was not found in system."
                 disabled: "Connector is disabled. Disabled connector could not be executed."
-            starting: "Starting Tuya connector discovery..."
-            stopping: "Stopping Tuya connector discovery..."
+            starting: "Starting Shelly connector discovery..."
+            stopping: "Stopping Shelly connector discovery..."
             foundDevices: "Found %d new devices"
             noDevicesFound: "No devices were found"
             success: "Devices discovery was successfully finished"

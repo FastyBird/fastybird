@@ -95,6 +95,7 @@ final class PropertyDescription implements Entity
 	{
 		return [
 			'identifier' => $this->getIdentifier(),
+			'name' => $this->getName(),
 			'data_type' => $this->getDataType()->getValue(),
 			'unit' => $this->getUnit(),
 			'format' => $this->getFormat(),

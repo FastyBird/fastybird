@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:MiniServer!
+ * @package        FastyBird:RedisDbTriggersModuleBridge!
  * @subpackage     Models
  * @since          1.0.0
  *
@@ -27,7 +27,7 @@ use Ramsey\Uuid;
 /**
  * Trigger condition state repository
  *
- * @package        FastyBird:MiniServer!
+ * @package        FastyBird:RedisDbTriggersModuleBridge!
  * @subpackage     Models
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

@@ -158,7 +158,7 @@ final class Gen2HttpApi extends HttpApi
 	 * @throws Exceptions\HttpApiCall
 	 * @throws RuntimeException
 	 */
-	public function getDeviceStatus(
+	public function getDeviceState(
 		string $address,
 		string|null $username,
 		string|null $password,

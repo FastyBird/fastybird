@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:MiniServer!
+ * @package        FastyBird:RedisDbTriggersModuleBridge!
  * @subpackage     States
  * @since          1.0.0
  *
@@ -25,7 +25,7 @@ use function array_merge;
 /**
  * Trigger condition state
  *
- * @package        FastyBird:MiniServer!
+ * @package        FastyBird:RedisDbTriggersModuleBridge!
  * @subpackage     States
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

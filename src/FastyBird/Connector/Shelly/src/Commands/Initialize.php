@@ -29,6 +29,7 @@ use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use Nette\Localization;
 use Nette\Utils;
 use Psr\Log;
 use Symfony\Component\Console;
@@ -58,24 +59,14 @@ class Initialize extends Console\Command\Command
 
 	public const NAME = 'fb:shelly-connector:initialize';
 
-	private const CHOICE_QUESTION_CREATE_CONNECTOR = 'Create new connector configuration';
-
-	private const CHOICE_QUESTION_EDIT_CONNECTOR = 'Edit existing connector configuration';
-
-	private const CHOICE_QUESTION_DELETE_CONNECTOR = 'Delete existing connector configuration';
-
-	private const CHOICE_QUESTION_LOCAL_MODE = 'Local network mode';
-
-	private const CHOICE_QUESTION_CLOUD_MODE = 'Cloud server mode';
-
-	private const CHOICE_QUESTION_AUTO_MODE = 'Auto mode';
-
 	public function __construct(
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Connectors\ConnectorsManager $connectorsManager,
 		private readonly DevicesModels\Connectors\Properties\PropertiesRepository $propertiesRepository,
 		private readonly DevicesModels\Connectors\Properties\PropertiesManager $propertiesManager,
+		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
+		private readonly Localization\Translator $translator,
 		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 		string|null $name = null,
 	)
@@ -105,13 +96,13 @@ class Initialize extends Console\Command\Command
 	{
 		$io = new Style\SymfonyStyle($input, $output);
 
-		$io->title('Shelly connector - initialization');
+		$io->title($this->translator->translate('//shelly-connector.cmd.initialize.title'));
 
-		$io->note('This action will create|update|delete connector configuration.');
+		$io->note($this->translator->translate('//shelly-connector.cmd.initialize.subtitle'));
 
 		if ($input->getOption('no-interaction') === false) {
 			$question = new Console\Question\ConfirmationQuestion(
-				'Would you like to continue?',
+				$this->translator->translate('//shelly-connector.cmd.base.questions.continue'),
 				false,
 			);
 
@@ -122,28 +113,7 @@ class Initialize extends Console\Command\Command
 			}
 		}
 
-		$question = new Console\Question\ChoiceQuestion(
-			'What would you like to do?',
-			[
-				0 => self::CHOICE_QUESTION_CREATE_CONNECTOR,
-				1 => self::CHOICE_QUESTION_EDIT_CONNECTOR,
-				2 => self::CHOICE_QUESTION_DELETE_CONNECTOR,
-			],
-		);
-
-		$question->setErrorMessage('Selected answer: "%s" is not valid.');
-
-		$whatToDo = $io->askQuestion($question);
-
-		if ($whatToDo === self::CHOICE_QUESTION_CREATE_CONNECTOR) {
-			$this->createNewConfiguration($io);
-
-		} elseif ($whatToDo === self::CHOICE_QUESTION_EDIT_CONNECTOR) {
-			$this->editExistingConfiguration($io);
-
-		} elseif ($whatToDo === self::CHOICE_QUESTION_DELETE_CONNECTOR) {
-			$this->deleteExistingConfiguration($io);
-		}
+		$this->askInitializeAction($io);
 
 		return Console\Command\Command::SUCCESS;
 	}
@@ -152,15 +122,19 @@ class Initialize extends Console\Command\Command
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function createNewConfiguration(Style\SymfonyStyle $io): void
+	private function createConfiguration(Style\SymfonyStyle $io): void
 	{
 		$mode = $this->askMode($io);
 
-		$question = new Console\Question\Question('Provide connector identifier');
+		$question = new Console\Question\Question(
+			$this->translator->translate('//shelly-connector.cmd.initialize.questions.provide.identifier'),
+		);
 
-		$question->setValidator(function (string|null $answer) {
-			if ($answer !== '' && $answer !== null) {
+		$question->setValidator(function ($answer) {
+			if ($answer !== null) {
 				$findConnectorQuery = new Queries\FindConnectors();
 				$findConnectorQuery->byIdentifier($answer);
 
@@ -168,7 +142,9 @@ class Initialize extends Console\Command\Command
 					$findConnectorQuery,
 					Entities\ShellyConnector::class,
 				) !== null) {
-					throw new Exceptions\Runtime('This identifier is already used');
+					throw new Exceptions\Runtime(
+						$this->translator->translate('//shelly-connector.cmd.initialize.messages.identifier.used'),
+					);
 				}
 			}
 
@@ -196,7 +172,7 @@ class Initialize extends Console\Command\Command
 		}
 
 		if ($identifier === '') {
-			$io->error('Connector identifier have to provided');
+			$io->error($this->translator->translate('//shelly-connector.cmd.initialize.messages.identifier.missing'));
 
 			return;
 		}
@@ -259,10 +235,12 @@ class Initialize extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
-			$io->success(sprintf(
-				'New connector "%s" was successfully created',
-				$connector->getName() ?? $connector->getIdentifier(),
-			));
+			$io->success(
+				$this->translator->translate(
+					'//shelly-connector.cmd.initialize.messages.create.success',
+					['name' => $connector->getName() ?? $connector->getIdentifier()],
+				),
+			);
 		} catch (Throwable $ex) {
 			// Log caught exception
 			$this->logger->error(
@@ -274,7 +252,7 @@ class Initialize extends Console\Command\Command
 				],
 			);
 
-			$io->error('Something went wrong, connector could not be created. Error was logged.');
+			$io->error($this->translator->translate('//shelly-connector.cmd.initialize.messages.create.error'));
 		} finally {
 			// Revert all changes when error occur
 			if ($this->getOrmConnection()->isTransactionActive()) {
@@ -290,22 +268,22 @@ class Initialize extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function editExistingConfiguration(Style\SymfonyStyle $io): void
+	private function editConfiguration(Style\SymfonyStyle $io): void
 	{
 		$connector = $this->askWhichConnector($io);
 
 		if ($connector === null) {
-			$io->warning('No Shelly connectors registered in system');
+			$io->warning($this->translator->translate('//shelly-connector.cmd.base.messages.noConnectors'));
 
 			$question = new Console\Question\ConfirmationQuestion(
-				'Would you like to create new Shelly connector configuration?',
+				$this->translator->translate('//shelly-connector.cmd.initialize.questions.create'),
 				false,
 			);
 
 			$continue = (bool) $io->askQuestion($question);
 
 			if ($continue) {
-				$this->createNewConfiguration($io);
+				$this->createConfiguration($io);
 			}
 
 			return;
@@ -317,25 +295,47 @@ class Initialize extends Console\Command\Command
 
 		$modeProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
-		$mode = null;
-
 		if ($modeProperty === null) {
 			$changeMode = true;
 
 		} else {
 			$question = new Console\Question\ConfirmationQuestion(
-				'Do you want to change connector communication mode?',
+				$this->translator->translate('//shelly-connector.cmd.initialize.questions.changeMode'),
 				false,
 			);
 
 			$changeMode = (bool) $io->askQuestion($question);
 		}
 
+		$mode = null;
+
 		if ($changeMode) {
 			$mode = $this->askMode($io);
 		}
 
 		$name = $this->askName($io, $connector);
+
+		$enabled = $connector->isEnabled();
+
+		if ($connector->isEnabled()) {
+			$question = new Console\Question\ConfirmationQuestion(
+				$this->translator->translate('//shelly-connector.cmd.initialize.questions.disable'),
+				false,
+			);
+
+			if ($io->askQuestion($question) === true) {
+				$enabled = false;
+			}
+		} else {
+			$question = new Console\Question\ConfirmationQuestion(
+				$this->translator->translate('//shelly-connector.cmd.initialize.questions.enable'),
+				false,
+			);
+
+			if ($io->askQuestion($question) === true) {
+				$enabled = true;
+			}
+		}
 
 		$cloudAuthKey = null;
 		$cloudAuthKeyProperty = null;
@@ -356,7 +356,7 @@ class Initialize extends Console\Command\Command
 
 			if ($cloudAuthKeyProperty !== null) {
 				$question = new Console\Question\ConfirmationQuestion(
-					'Do you want to change connector cloud authentication key?',
+					$this->translator->translate('//shelly-connector.cmd.initialize.questions.changeCloudAuthKey'),
 					false,
 				);
 
@@ -377,7 +377,9 @@ class Initialize extends Console\Command\Command
 
 			if ($cloudServerProperty !== null) {
 				$question = new Console\Question\ConfirmationQuestion(
-					'Do you want to change connector clout server address?',
+					$this->translator->translate(
+						'//shelly-connector.cmd.initialize.questions.changeCloudServerAddress',
+					),
 					false,
 				);
 
@@ -386,28 +388,6 @@ class Initialize extends Console\Command\Command
 
 			if ($cloudServerProperty === null || $changeCloudServer) {
 				$cloudServer = $this->askCloudServerAddress($io, $connector);
-			}
-		}
-
-		$enabled = $connector->isEnabled();
-
-		if ($connector->isEnabled()) {
-			$question = new Console\Question\ConfirmationQuestion(
-				'Do you want to disable connector?',
-				false,
-			);
-
-			if ($io->askQuestion($question) === true) {
-				$enabled = false;
-			}
-		} else {
-			$question = new Console\Question\ConfirmationQuestion(
-				'Do you want to enable connector?',
-				false,
-			);
-
-			if ($io->askQuestion($question) === true) {
-				$enabled = true;
 			}
 		}
 
@@ -485,10 +465,12 @@ class Initialize extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
-			$io->success(sprintf(
-				'Connector "%s" was successfully updated',
-				$connector->getName() ?? $connector->getIdentifier(),
-			));
+			$io->success(
+				$this->translator->translate(
+					'//shelly-connector.cmd.initialize.messages.update.success',
+					['name' => $connector->getName() ?? $connector->getIdentifier()],
+				),
+			);
 		} catch (Throwable $ex) {
 			// Log caught exception
 			$this->logger->error(
@@ -500,7 +482,7 @@ class Initialize extends Console\Command\Command
 				],
 			);
 
-			$io->error('Something went wrong, connector could not be updated. Error was logged.');
+			$io->error($this->translator->translate('//shelly-connector.cmd.initialize.messages.update.error'));
 		} finally {
 			// Revert all changes when error occur
 			if ($this->getOrmConnection()->isTransactionActive()) {
@@ -514,18 +496,18 @@ class Initialize extends Console\Command\Command
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 */
-	private function deleteExistingConfiguration(Style\SymfonyStyle $io): void
+	private function deleteConfiguration(Style\SymfonyStyle $io): void
 	{
 		$connector = $this->askWhichConnector($io);
 
 		if ($connector === null) {
-			$io->info('No Shelly connectors registered in system');
+			$io->info($this->translator->translate('//shelly-connector.cmd.base.messages.noConnectors'));
 
 			return;
 		}
 
 		$question = new Console\Question\ConfirmationQuestion(
-			'Would you like to continue?',
+			$this->translator->translate('//shelly-connector.cmd.base.questions.continue'),
 			false,
 		);
 
@@ -544,10 +526,12 @@ class Initialize extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
-			$io->success(sprintf(
-				'Connector "%s" was successfully removed',
-				$connector->getName() ?? $connector->getIdentifier(),
-			));
+			$io->success(
+				$this->translator->translate(
+					'//shelly-connector.cmd.initialize.messages.remove.success',
+					['name' => $connector->getName() ?? $connector->getIdentifier()],
+				),
+			);
 		} catch (Throwable $ex) {
 			// Log caught exception
 			$this->logger->error(
@@ -559,7 +543,7 @@ class Initialize extends Console\Command\Command
 				],
 			);
 
-			$io->error('Something went wrong, connector could not be removed. Error was logged.');
+			$io->error($this->translator->translate('//shelly-connector.cmd.initialize.messages.remove.error'));
 		} finally {
 			// Revert all changes when error occur
 			if ($this->getOrmConnection()->isTransactionActive()) {
@@ -568,36 +552,95 @@ class Initialize extends Console\Command\Command
 		}
 	}
 
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 */
+	private function listConfigurations(Style\SymfonyStyle $io): void
+	{
+		$findConnectorsQuery = new Queries\FindConnectors();
+
+		$connectors = $this->connectorsRepository->findAllBy($findConnectorsQuery, Entities\ShellyConnector::class);
+		usort(
+			$connectors,
+			static function (Entities\ShellyConnector $a, Entities\ShellyConnector $b): int {
+				if ($a->getIdentifier() === $b->getIdentifier()) {
+					return $a->getName() <=> $b->getName();
+				}
+
+				return $a->getIdentifier() <=> $b->getIdentifier();
+			},
+		);
+
+		$table = new Console\Helper\Table($io);
+		$table->setHeaders([
+			'#',
+			$this->translator->translate('//shelly-connector.cmd.initialize.data.name'),
+			$this->translator->translate('//shelly-connector.cmd.initialize.data.devicesCnt'),
+		]);
+
+		foreach ($connectors as $index => $connector) {
+			$findDevicesQuery = new Queries\FindDevices();
+			$findDevicesQuery->forConnector($connector);
+
+			$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\ShellyDevice::class);
+
+			$table->addRow([
+				$index + 1,
+				$connector->getName() ?? $connector->getIdentifier(),
+				count($devices),
+			]);
+		}
+
+		$table->render();
+
+		$io->newLine();
+	}
+
 	private function askMode(Style\SymfonyStyle $io): Types\ClientMode
 	{
 		$question = new Console\Question\ChoiceQuestion(
-			'In what mode should this connector communicate with devices?',
+			$this->translator->translate('//shelly-connector.cmd.initialize.questions.select.mode'),
 			[
-				self::CHOICE_QUESTION_AUTO_MODE,
-				self::CHOICE_QUESTION_LOCAL_MODE,
-				self::CHOICE_QUESTION_CLOUD_MODE,
+				0 => $this->translator->translate('//shelly-connector.cmd.initialize.answers.mode.local'),
+				1 => $this->translator->translate('//shelly-connector.cmd.initialize.answers.mode.cloud'),
 			],
-			0,
+			1,
 		);
-		$question->setErrorMessage('Selected answer: "%s" is not valid.');
-		$question->setValidator(static function (string|null $answer): Types\ClientMode {
+
+		$question->setErrorMessage(
+			$this->translator->translate('//shelly-connector.cmd.base.messages.answerNotValid'),
+		);
+		$question->setValidator(function (string|null $answer): Types\ClientMode {
 			if ($answer === null) {
-				throw new Exceptions\InvalidState('Selected answer is not valid');
+				throw new Exceptions\Runtime(
+					sprintf(
+						$this->translator->translate('//shelly-connector.cmd.base.messages.answerNotValid'),
+						$answer,
+					),
+				);
 			}
 
-			if ($answer === self::CHOICE_QUESTION_AUTO_MODE || $answer === '0') {
-				return Types\ClientMode::get(Types\ClientMode::MQTT);
-			}
-
-			if ($answer === self::CHOICE_QUESTION_LOCAL_MODE || $answer === '1') {
+			if (
+				$answer === $this->translator->translate(
+					'//shelly-connector.cmd.initialize.answers.mode.local',
+				)
+				|| $answer === '0'
+			) {
 				return Types\ClientMode::get(Types\ClientMode::LOCAL);
 			}
 
-			if ($answer === self::CHOICE_QUESTION_CLOUD_MODE || $answer === '2') {
+			if (
+				$answer === $this->translator->translate(
+					'//shelly-connector.cmd.initialize.answers.mode.cloud',
+				)
+				|| $answer === '1'
+			) {
 				return Types\ClientMode::get(Types\ClientMode::CLOUD);
 			}
 
-			throw new Exceptions\InvalidState('Selected answer is not valid');
+			throw new Exceptions\Runtime(
+				sprintf($this->translator->translate('//shelly-connector.cmd.base.messages.answerNotValid'), $answer),
+			);
 		});
 
 		$answer = $io->askQuestion($question);
@@ -608,49 +651,74 @@ class Initialize extends Console\Command\Command
 
 	private function askName(Style\SymfonyStyle $io, Entities\ShellyConnector|null $connector = null): string|null
 	{
-		$question = new Console\Question\Question('Provide connector name', $connector?->getName());
+		$question = new Console\Question\Question(
+			$this->translator->translate('//shelly-connector.cmd.initialize.questions.provide.name'),
+			$connector?->getName(),
+		);
 
 		$name = $io->askQuestion($question);
 
 		return strval($name) === '' ? null : strval($name);
 	}
 
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
 	private function askCloudAuthenticationKey(
 		Style\SymfonyStyle $io,
 		Entities\ShellyConnector|null $connector = null,
-	): string|null
+	): string
 	{
-		$question = new Console\Question\Question('Provide cloud authentication key', $connector?->getName());
-		$question->setValidator(static function (string|null $answer): string {
+		$question = new Console\Question\Question(
+			$this->translator->translate('//shelly-connector.cmd.initialize.questions.provide.cloudAuthenticationKey'),
+			$connector?->getCloudAuthKey(),
+		);
+		$question->setValidator(function (string|null $answer): string {
 			if ($answer === '' || $answer === null) {
-				throw new Exceptions\Runtime('You have to provide valid authentication key');
+				throw new Exceptions\Runtime(
+					sprintf(
+						$this->translator->translate('//shelly-connector.cmd.base.messages.answerNotValid'),
+						$answer,
+					),
+				);
 			}
 
 			return $answer;
 		});
 
-		$key = $io->askQuestion($question);
-
-		return strval($key) === '' ? null : strval($key);
+		return strval($io->askQuestion($question));
 	}
 
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
 	private function askCloudServerAddress(
 		Style\SymfonyStyle $io,
 		Entities\ShellyConnector|null $connector = null,
-	): string|null
+	): string
 	{
-		$question = new Console\Question\Question('Provide cloud server address', $connector?->getName());
-		$question->setValidator(static function (string|null $answer): string {
+		$question = new Console\Question\Question(
+			$this->translator->translate('//shelly-connector.cmd.initialize.questions.provide.cloudServerAddress'),
+			$connector?->getCloudServerAddress(),
+		);
+		$question->setValidator(function (string|null $answer): string {
 			if ($answer === '' || $answer === null) {
-				throw new Exceptions\Runtime('You have to provide valid server address');
+				throw new Exceptions\Runtime(
+					sprintf(
+						$this->translator->translate('//shelly-connector.cmd.base.messages.answerNotValid'),
+						$answer,
+					),
+				);
 			}
 
 			return $answer;
 		});
 
-		$key = $io->askQuestion($question);
-
-		return strval($key) === '' ? null : strval($key);
+		return strval($io->askQuestion($question));
 	}
 
 	/**
@@ -669,7 +737,7 @@ class Initialize extends Console\Command\Command
 		usort(
 			$systemConnectors,
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-			static fn (DevicesEntities\Connectors\Connector $a, DevicesEntities\Connectors\Connector $b): int => $a->getIdentifier() <=> $b->getIdentifier()
+			static fn (Entities\ShellyConnector $a, Entities\ShellyConnector $b): int => $a->getIdentifier() <=> $b->getIdentifier()
 		);
 
 		foreach ($systemConnectors as $connector) {
@@ -682,14 +750,21 @@ class Initialize extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			'Please select connector under which you want to manage devices',
+			$this->translator->translate('//shelly-connector.cmd.initialize.questions.select.connector'),
 			array_values($connectors),
 			count($connectors) === 1 ? 0 : null,
 		);
-		$question->setErrorMessage('Selected connector: "%s" is not valid.');
-		$question->setValidator(function (string|null $answer) use ($connectors): Entities\ShellyConnector {
+		$question->setErrorMessage(
+			$this->translator->translate('//shelly-connector.cmd.base.messages.answerNotValid'),
+		);
+		$question->setValidator(function (string|int|null $answer) use ($connectors): Entities\ShellyConnector {
 			if ($answer === null) {
-				throw new Exceptions\InvalidState('Selected answer is not valid');
+				throw new Exceptions\Runtime(
+					sprintf(
+						$this->translator->translate('//shelly-connector.cmd.base.messages.answerNotValid'),
+						$answer,
+					),
+				);
 			}
 
 			if (array_key_exists($answer, array_values($connectors))) {
@@ -712,13 +787,87 @@ class Initialize extends Console\Command\Command
 				}
 			}
 
-			throw new Exceptions\InvalidState('Selected answer is not valid');
+			throw new Exceptions\Runtime(
+				sprintf(
+					$this->translator->translate('//shelly-connector.cmd.base.messages.answerNotValid'),
+					$answer,
+				),
+			);
 		});
 
 		$connector = $io->askQuestion($question);
 		assert($connector instanceof Entities\ShellyConnector);
 
 		return $connector;
+	}
+
+	/**
+	 * @throws DBAL\Exception
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\Runtime
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	private function askInitializeAction(Style\SymfonyStyle $io): void
+	{
+		$question = new Console\Question\ChoiceQuestion(
+			$this->translator->translate('//shelly-connector.cmd.base.questions.whatToDo'),
+			[
+				0 => $this->translator->translate('//shelly-connector.cmd.initialize.actions.create'),
+				1 => $this->translator->translate('//shelly-connector.cmd.initialize.actions.update'),
+				2 => $this->translator->translate('//shelly-connector.cmd.initialize.actions.remove'),
+				3 => $this->translator->translate('//shelly-connector.cmd.initialize.actions.list'),
+				4 => $this->translator->translate('//shelly-connector.cmd.initialize.actions.nothing'),
+			],
+			4,
+		);
+
+		$question->setErrorMessage(
+			$this->translator->translate('//shelly-connector.cmd.base.messages.answerNotValid'),
+		);
+
+		$whatToDo = $io->askQuestion($question);
+
+		if (
+			$whatToDo === $this->translator->translate(
+				'//shelly-connector.cmd.initialize.actions.create',
+			)
+			|| $whatToDo === '0'
+		) {
+			$this->createConfiguration($io);
+
+			$this->askInitializeAction($io);
+
+		} elseif (
+			$whatToDo === $this->translator->translate(
+				'//shelly-connector.cmd.initialize.actions.update',
+			)
+			|| $whatToDo === '1'
+		) {
+			$this->editConfiguration($io);
+
+			$this->askInitializeAction($io);
+
+		} elseif (
+			$whatToDo === $this->translator->translate(
+				'//shelly-connector.cmd.initialize.actions.remove',
+			)
+			|| $whatToDo === '2'
+		) {
+			$this->deleteConfiguration($io);
+
+			$this->askInitializeAction($io);
+
+		} elseif (
+			$whatToDo === $this->translator->translate(
+				'//shelly-connector.cmd.initialize.actions.list',
+			)
+			|| $whatToDo === '3'
+		) {
+			$this->listConfigurations($io);
+
+			$this->askInitializeAction($io);
+		}
 	}
 
 	/**
@@ -732,7 +881,7 @@ class Initialize extends Console\Command\Command
 			return $connection;
 		}
 
-		throw new Exceptions\Runtime('Transformer manager could not be loaded');
+		throw new Exceptions\Runtime('Database connection could not be established');
 	}
 
 }
