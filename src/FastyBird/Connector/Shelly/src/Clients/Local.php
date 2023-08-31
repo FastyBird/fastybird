@@ -26,7 +26,6 @@ use FastyBird\Connector\Shelly\Queue;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
@@ -40,7 +39,6 @@ use Nette;
 use Nette\Utils;
 use Psr\EventDispatcher as PsrEventDispatcher;
 use React\EventLoop;
-use React\Promise;
 use RuntimeException;
 use Throwable;
 use function array_filter;
@@ -48,7 +46,6 @@ use function array_key_exists;
 use function array_map;
 use function array_merge;
 use function count;
-use function gethostbyname;
 use function in_array;
 use function is_bool;
 use function is_numeric;
@@ -96,7 +93,6 @@ final class Local implements Client
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
-		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
@@ -231,212 +227,6 @@ final class Local implements Client
 
 	/**
 	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\HttpApiCall
-	 * @throws Exceptions\HttpApiError
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 */
-	public function writeChannelProperty(
-		Entities\ShellyDevice $device,
-		DevicesEntities\Channels\Channel $channel,
-		DevicesEntities\Channels\Properties\Dynamic|MetadataEntities\DevicesModule\ChannelDynamicProperty $property,
-	): Promise\PromiseInterface
-	{
-		$state = $this->channelPropertiesStates->getValue($property);
-
-		if ($state === null) {
-			return Promise\reject(
-				new Exceptions\InvalidArgument('Property state could not be found. Nothing to write'),
-			);
-		}
-
-		if (!$property->isSettable()) {
-			return Promise\reject(new Exceptions\InvalidArgument('Provided property is not writable'));
-		}
-
-		if ($state->getExpectedValue() === null) {
-			return Promise\reject(
-				new Exceptions\InvalidArgument('Property expected value is not set. Nothing to write'),
-			);
-		}
-
-		$valueToWrite = Helpers\Transformer::transformValueToDevice(
-			$property->getDataType(),
-			$property->getFormat(),
-			$state->getExpectedValue(),
-		);
-
-		if ($valueToWrite === null) {
-			return Promise\reject(
-				new Exceptions\InvalidArgument('Property expected value could not be transformed to device'),
-			);
-		}
-
-		if ($state->isPending() === true) {
-			$deferred = new Promise\Deferred();
-
-			$address = $this->getDeviceAddress($device);
-
-			if ($address === null) {
-				$this->queue->append(
-					new Entities\Messages\DeviceState(
-						$device->getConnector()->getId(),
-						$device->getIdentifier(),
-						MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_ALERT),
-					),
-				);
-
-				return Promise\reject(
-					new Exceptions\InvalidState('Device is not properly configured. Address is missing'),
-				);
-			}
-
-			if ($device->getGeneration()->equalsValue(Types\DeviceGeneration::GENERATION_2)) {
-				$this->connectionManager->getGen2HttpApiConnection()->setDeviceStatus(
-					$address,
-					$device->getUsername(),
-					$device->getPassword(),
-					$property->getIdentifier(),
-					$valueToWrite,
-				)
-					->then(static function () use ($deferred): void {
-						$deferred->resolve();
-					})
-					->otherwise(function (Throwable $ex) use ($deferred, $device): void {
-						if ($ex instanceof Exceptions\HttpApiError) {
-							$this->queue->append(
-								new Entities\Messages\DeviceState(
-									$this->connector->getId(),
-									$device->getIdentifier(),
-									MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_ALERT),
-								),
-							);
-						} elseif ($ex instanceof Exceptions\HttpApiCall) {
-							if (
-								$ex->getResponse() !== null
-								&& $ex->getResponse()->getStatusCode() >= StatusCodeInterface::STATUS_BAD_REQUEST
-								&& $ex->getResponse()->getStatusCode() < StatusCodeInterface::STATUS_UNAVAILABLE_FOR_LEGAL_REASONS
-							) {
-								$this->queue->append(
-									new Entities\Messages\DeviceState(
-										$this->connector->getId(),
-										$device->getIdentifier(),
-										MetadataTypes\ConnectionState::get(
-											MetadataTypes\ConnectionState::STATE_ALERT,
-										),
-									),
-								);
-
-							} elseif (
-								$ex->getResponse() !== null
-								&& $ex->getResponse()->getStatusCode() >= StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR
-								&& $ex->getResponse()->getStatusCode() < StatusCodeInterface::STATUS_NETWORK_AUTHENTICATION_REQUIRED
-							) {
-								$this->queue->append(
-									new Entities\Messages\DeviceState(
-										$this->connector->getId(),
-										$device->getIdentifier(),
-										MetadataTypes\ConnectionState::get(
-											MetadataTypes\ConnectionState::STATE_LOST,
-										),
-									),
-								);
-
-							} else {
-								$this->queue->append(
-									new Entities\Messages\DeviceState(
-										$this->connector->getId(),
-										$device->getIdentifier(),
-										MetadataTypes\ConnectionState::get(
-											MetadataTypes\ConnectionState::STATE_UNKNOWN,
-										),
-									),
-								);
-							}
-						}
-
-						$deferred->reject($ex);
-					});
-			} elseif ($device->getGeneration()->equalsValue(Types\DeviceGeneration::GENERATION_1)) {
-				$this->connectionManager->getGen1HttpApiConnection()->setDeviceState(
-					$address,
-					$device->getUsername(),
-					$device->getPassword(),
-					$channel->getIdentifier(),
-					$property->getIdentifier(),
-					$valueToWrite,
-				)
-					->then(static function () use ($deferred): void {
-						$deferred->resolve();
-					})
-					->otherwise(function (Throwable $ex) use ($deferred, $device): void {
-						if ($ex instanceof Exceptions\HttpApiError) {
-							$this->queue->append(
-								new Entities\Messages\DeviceState(
-									$this->connector->getId(),
-									$device->getIdentifier(),
-									MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_ALERT),
-								),
-							);
-						} elseif ($ex instanceof Exceptions\HttpApiCall) {
-							if (
-								$ex->getResponse() !== null
-								&& $ex->getResponse()->getStatusCode() >= StatusCodeInterface::STATUS_BAD_REQUEST
-								&& $ex->getResponse()->getStatusCode() < StatusCodeInterface::STATUS_UNAVAILABLE_FOR_LEGAL_REASONS
-							) {
-								$this->queue->append(
-									new Entities\Messages\DeviceState(
-										$this->connector->getId(),
-										$device->getIdentifier(),
-										MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_ALERT),
-									),
-								);
-
-							} elseif (
-								$ex->getResponse() !== null
-								&& $ex->getResponse()->getStatusCode() >= StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR
-								&& $ex->getResponse()->getStatusCode() < StatusCodeInterface::STATUS_NETWORK_AUTHENTICATION_REQUIRED
-							) {
-								$this->queue->append(
-									new Entities\Messages\DeviceState(
-										$this->connector->getId(),
-										$device->getIdentifier(),
-										MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_LOST),
-									),
-								);
-
-							} else {
-								$this->queue->append(
-									new Entities\Messages\DeviceState(
-										$this->connector->getId(),
-										$device->getIdentifier(),
-										MetadataTypes\ConnectionState::get(
-											MetadataTypes\ConnectionState::STATE_UNKNOWN,
-										),
-									),
-								);
-							}
-						}
-
-						$deferred->reject($ex);
-					});
-			} else {
-				return Promise\reject(
-					new Exceptions\InvalidState(
-						'Device is not properly configured. Device generation definition is missing',
-					),
-				);
-			}
-
-			return $deferred->promise();
-		}
-
-		return Promise\reject(new Exceptions\InvalidArgument('Provided property state is in invalid state'));
-	}
-
-	/**
-	 * @throws Exceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -550,7 +340,7 @@ final class Local implements Client
 				});
 
 		} elseif ($device->getGeneration()->equalsValue(Types\DeviceGeneration::GENERATION_1)) {
-			$address = $this->getDeviceAddress($device);
+			$address = $device->getLocalAddress();
 
 			if ($address === null) {
 				$this->queue->append(
@@ -783,39 +573,6 @@ final class Local implements Client
 		)
 			? $this->gen2DevicesWsClients[$device->getId()->toString()]
 			: null;
-	}
-
-	/**
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 */
-	private function getDeviceAddress(Entities\ShellyDevice $device): string|null
-	{
-		$domain = $device->getDomain();
-
-		if ($domain !== null) {
-			return gethostbyname($domain);
-		}
-
-		$ipAddress = $device->getIpAddress();
-
-		if ($ipAddress !== null) {
-			return $ipAddress;
-		}
-
-		$this->logger->error(
-			'Device ip address or domain is not configured',
-			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-				'type' => 'local-client',
-				'device' => [
-					'id' => $device->getId()->toString(),
-				],
-			],
-		);
-
-		return null;
 	}
 
 	/**

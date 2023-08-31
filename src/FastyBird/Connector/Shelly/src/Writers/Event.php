@@ -18,7 +18,6 @@ namespace FastyBird\Connector\Shelly\Writers;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Helpers;
-use FastyBird\Connector\Shelly\Queries;
 use FastyBird\Connector\Shelly\Queue;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
@@ -49,7 +48,6 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 		private readonly Entities\ShellyConnector $connector,
 		private readonly Helpers\Entity $entityHelper,
 		private readonly Queue\Queue $queue,
-		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 	)
 	{
@@ -58,8 +56,6 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 	public static function getSubscribedEvents(): array
 	{
 		return [
-			DevicesEvents\DevicePropertyStateEntityCreated::class => 'stateChanged',
-			DevicesEvents\DevicePropertyStateEntityUpdated::class => 'stateChanged',
 			DevicesEvents\ChannelPropertyStateEntityCreated::class => 'stateChanged',
 			DevicesEvents\ChannelPropertyStateEntityUpdated::class => 'stateChanged',
 		];
@@ -80,8 +76,7 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 	 * @throws Exceptions\Runtime
 	 */
 	public function stateChanged(
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		DevicesEvents\DevicePropertyStateEntityCreated|DevicesEvents\DevicePropertyStateEntityUpdated|DevicesEvents\ChannelPropertyStateEntityCreated|DevicesEvents\ChannelPropertyStateEntityUpdated $event,
+		DevicesEvents\ChannelPropertyStateEntityCreated|DevicesEvents\ChannelPropertyStateEntityUpdated $event,
 	): void
 	{
 		$property = $event->getProperty();
@@ -93,39 +88,6 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 		}
 
 		if (
-			$property instanceof DevicesEntities\Devices\Properties\Dynamic
-			|| $property instanceof MetadataEntities\DevicesModule\DeviceDynamicProperty
-		) {
-			if ($property->getDevice() instanceof DevicesEntities\Devices\Device) {
-				$device = $property->getDevice();
-
-			} else {
-				$findDeviceQuery = new Queries\FindDevices();
-				$findDeviceQuery->byId($property->getDevice());
-
-				$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\ShellyDevice::class);
-			}
-
-			if ($device === null) {
-				return;
-			}
-
-			if (!$device->getConnector()->getId()->equals($this->connector->getId())) {
-				return;
-			}
-
-			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\WriteDevicePropertyState::class,
-					[
-						'connector' => $this->connector->getId()->toString(),
-						'device' => $device->getId()->toString(),
-						'property' => $property->getId()->toString(),
-					],
-				),
-			);
-
-		} elseif (
 			$property instanceof DevicesEntities\Channels\Properties\Dynamic
 			|| $property instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty
 		) {

@@ -23,6 +23,7 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use function floatval;
+use function gethostbyname;
 use function is_bool;
 use function is_numeric;
 use function is_string;
@@ -267,6 +268,28 @@ class ShellyDevice extends DevicesEntities\Devices\Device
 		}
 
 		return self::STATE_READING_DELAY;
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function getLocalAddress(): string|null
+	{
+		$domain = $this->getDomain();
+
+		if ($domain !== null) {
+			return gethostbyname($domain);
+		}
+
+		$ipAddress = $this->getIpAddress();
+
+		if ($ipAddress !== null) {
+			return $ipAddress;
+		}
+
+		return null;
 	}
 
 }

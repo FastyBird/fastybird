@@ -232,6 +232,15 @@ class ShellyExtension extends DI\CompilerExtension
 			]);
 
 		$builder->addDefinition(
+			$this->prefix('queue.consumers.write.channelPropertyState'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Queue\Consumers\WriteChannelPropertyState::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
+
+		$builder->addDefinition(
 			$this->prefix('queue.consumers'),
 			new DI\Definitions\ServiceDefinition(),
 		)

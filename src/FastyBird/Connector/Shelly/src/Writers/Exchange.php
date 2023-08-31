@@ -18,7 +18,6 @@ namespace FastyBird\Connector\Shelly\Writers;
 use Exception;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Helpers;
-use FastyBird\Connector\Shelly\Queries;
 use FastyBird\Connector\Shelly\Queue;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
@@ -48,7 +47,6 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 		private readonly Entities\ShellyConnector $connector,
 		private readonly Helpers\Entity $entityHelper,
 		private readonly Queue\Queue $queue,
-		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		private readonly ExchangeConsumers\Container $consumer,
 	)
@@ -75,32 +73,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 		MetadataEntities\Entity|null $entity,
 	): void
 	{
-		if ($entity instanceof MetadataEntities\DevicesModule\DeviceDynamicProperty) {
-			$findDeviceQuery = new Queries\FindDevices();
-			$findDeviceQuery->byId($entity->getDevice());
-
-			$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\ShellyDevice::class);
-
-			if ($device === null) {
-				return;
-			}
-
-			if (!$device->getConnector()->getId()->equals($this->connector->getId())) {
-				return;
-			}
-
-			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\WriteDevicePropertyState::class,
-					[
-						'connector' => $this->connector->getId()->toString(),
-						'device' => $device->getId()->toString(),
-						'property' => $entity->getId()->toString(),
-					],
-				),
-			);
-
-		} elseif ($entity instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty) {
+		if ($entity instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty) {
 			$findChannelQuery = new DevicesQueries\FindChannels();
 			$findChannelQuery->byId($entity->getChannel());
 
