@@ -34,7 +34,7 @@ use Nette\Utils;
 use function assert;
 
 /**
- * Cloud device discovery message consumer
+ * Store cloud found device details message consumer
  *
  * @package        FastyBird:TuyaConnector!
  * @subpackage     Queue

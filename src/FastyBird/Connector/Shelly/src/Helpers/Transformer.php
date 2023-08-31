@@ -7,13 +7,13 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ShellyConnector!
- * @subpackage     API
+ * @subpackage     Helpers
  * @since          1.0.0
  *
  * @date           17.07.22
  */
 
-namespace FastyBird\Connector\Shelly\API;
+namespace FastyBird\Connector\Shelly\Helpers;
 
 use DateTimeInterface;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -36,7 +36,7 @@ use function strval;
  * Generation 1 devices data transformers
  *
  * @package        FastyBird:ShellyConnector!
- * @subpackage     API
+ * @subpackage     Helpers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */

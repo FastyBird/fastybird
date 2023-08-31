@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ConsumeDeviceProperty.php
+ * DeviceProperty.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,9 +13,10 @@
  * @date           31.08.22
  */
 
-namespace FastyBird\Connector\Shelly\Consumers\Messages;
+namespace FastyBird\Connector\Shelly\Queue\Consumers;
 
 use Doctrine\DBAL;
+use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Queries;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -26,24 +27,23 @@ use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette\Utils;
-use Psr\Log;
 use Ramsey\Uuid;
 
 /**
- * Device ip address consumer trait
+ * Device property consumer trait
  *
  * @package        FastyBird:ShellyConnector!
- * @subpackage     Consumers
+ * @subpackage     Queue
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *
  * @property-read DevicesModels\Devices\DevicesRepository $devicesRepository
- * @property-read DevicesModels\Devices\Properties\PropertiesRepository $propertiesRepository
- * @property-read DevicesModels\Devices\Properties\PropertiesManager $propertiesManager
+ * @property-read DevicesModels\Devices\Properties\PropertiesRepository $devicesPropertiesRepository
+ * @property-read DevicesModels\Devices\Properties\PropertiesManager $devicesPropertiesManager
  * @property-read DevicesUtilities\Database $databaseHelper
- * @property-read Log\LoggerInterface $logger
+ * @property-read Shelly\Logger $logger
  */
-trait ConsumeDeviceProperty
+trait DeviceProperty
 {
 
 	/**
@@ -57,23 +57,25 @@ trait ConsumeDeviceProperty
 	 */
 	private function setDeviceProperty(
 		Uuid\UuidInterface $deviceId,
-		string|bool|null $value,
+		string|bool|int|null $value,
 		MetadataTypes\DataType $dataType,
 		string $identifier,
 		string|null $name = null,
 		array|string|null $format = null,
+		bool $settable = false,
+		bool $queryable = false,
 	): void
 	{
 		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
 		$findDevicePropertyQuery->byDeviceId($deviceId);
 		$findDevicePropertyQuery->byIdentifier($identifier);
 
-		$property = $this->propertiesRepository->findOneBy($findDevicePropertyQuery);
+		$property = $this->devicesPropertiesRepository->findOneBy($findDevicePropertyQuery);
 
 		if ($property !== null && $value === null) {
 			$this->databaseHelper->transaction(
 				function () use ($property): void {
-					$this->propertiesManager->delete($property);
+					$this->devicesPropertiesManager->delete($property);
 				},
 			);
 
@@ -95,23 +97,31 @@ trait ConsumeDeviceProperty
 			$property !== null
 			&& !$property instanceof DevicesEntities\Devices\Properties\Variable
 		) {
-			$this->databaseHelper->transaction(function () use ($property): void {
-				$this->propertiesManager->delete($property);
-			});
+			$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+			$findDevicePropertyQuery->byId($property->getId());
 
-			$this->logger->warning(
-				'Device property is not valid type',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-					'type' => 'message-consumer',
-					'device' => [
-						'id' => $deviceId->toString(),
+			$property = $this->devicesPropertiesRepository->findOneBy($findDevicePropertyQuery);
+
+			if ($property !== null) {
+				$this->databaseHelper->transaction(function () use ($property): void {
+					$this->devicesPropertiesManager->delete($property);
+				});
+
+				$this->logger->warning(
+					'Stored device property was not of valid type',
+					[
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+						'type' => 'message-consumer',
+						'device' => [
+							'id' => $deviceId->toString(),
+						],
+						'property' => [
+							'id' => $property->getId()->toString(),
+							'identifier' => $identifier,
+						],
 					],
-					'property' => [
-						'id' => $property->getPlainId(),
-					],
-				],
-			);
+				);
+			}
 
 			$property = null;
 		}
@@ -130,15 +140,15 @@ trait ConsumeDeviceProperty
 			}
 
 			$property = $this->databaseHelper->transaction(
-				fn (): DevicesEntities\Devices\Properties\Property => $this->propertiesManager->create(
+				fn (): DevicesEntities\Devices\Properties\Property => $this->devicesPropertiesManager->create(
 					Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Devices\Properties\Variable::class,
 						'device' => $device,
 						'identifier' => $identifier,
 						'name' => $name,
 						'dataType' => $dataType,
-						'settable' => false,
-						'queryable' => false,
+						'settable' => $settable,
+						'queryable' => $queryable,
 						'value' => $value,
 						'format' => $format,
 					]),
@@ -146,7 +156,7 @@ trait ConsumeDeviceProperty
 			);
 
 			$this->logger->debug(
-				'Device property was created',
+				'Device variable property was created',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'message-consumer',
@@ -154,17 +164,20 @@ trait ConsumeDeviceProperty
 						'id' => $deviceId->toString(),
 					],
 					'property' => [
-						'id' => $property->getPlainId(),
+						'id' => $property->getId()->toString(),
+						'identifier' => $identifier,
 					],
 				],
 			);
 
 		} else {
 			$property = $this->databaseHelper->transaction(
-				fn (): DevicesEntities\Devices\Properties\Property => $this->propertiesManager->update(
+				fn (): DevicesEntities\Devices\Properties\Property => $this->devicesPropertiesManager->update(
 					$property,
 					Utils\ArrayHash::from([
 						'dataType' => $dataType,
+						'settable' => $settable,
+						'queryable' => $queryable,
 						'value' => $value,
 						'format' => $format,
 					]),
@@ -172,7 +185,7 @@ trait ConsumeDeviceProperty
 			);
 
 			$this->logger->debug(
-				'Device property was updated',
+				'Device variable property was updated',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'message-consumer',
@@ -180,7 +193,8 @@ trait ConsumeDeviceProperty
 						'id' => $deviceId->toString(),
 					],
 					'property' => [
-						'id' => $property->getPlainId(),
+						'id' => $property->getId()->toString(),
+						'identifier' => $identifier,
 					],
 				],
 			);

@@ -16,26 +16,21 @@
 namespace FastyBird\Connector\Shelly\Writers;
 
 use DateTimeInterface;
-use FastyBird\Connector\Shelly\Clients;
 use FastyBird\Connector\Shelly\Entities;
+use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Queries;
+use FastyBird\Connector\Shelly\Queue;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
-use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
-use Nette\Utils;
-use Psr\Log;
-use Ramsey\Uuid;
 use React\EventLoop;
-use Throwable;
 use function array_key_exists;
 use function in_array;
 
@@ -68,31 +63,27 @@ class Periodic implements Writer
 	/** @var array<string, DateTimeInterface> */
 	private array $processedProperties = [];
 
-	/** @var array<string, Clients\Client> */
-	private array $clients = [];
-
 	private EventLoop\TimerInterface|null $handlerTimer = null;
 
 	public function __construct(
-		private readonly Helpers\Property $propertyStateHelper,
+		private readonly Entities\ShellyConnector $connector,
+		private readonly Helpers\Entity $entityHelper,
+		private readonly Queue\Queue $queue,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
+		private readonly DevicesModels\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
+		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
-		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
+		private readonly DevicesUtilities\DevicePropertiesStates $devicePropertiesStatesManager,
+		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
 	}
 
-	public function connect(
-		Entities\ShellyConnector $connector,
-		Clients\Client $client,
-	): void
+	public function connect(): void
 	{
-		$this->clients[$connector->getPlainId()] = $client;
-
 		$this->processedDevices = [];
 		$this->processedProperties = [];
 
@@ -104,14 +95,9 @@ class Periodic implements Writer
 		);
 	}
 
-	public function disconnect(
-		Entities\ShellyConnector $connector,
-		Clients\Client $client,
-	): void
+	public function disconnect(): void
 	{
-		unset($this->clients[$connector->getPlainId()]);
-
-		if ($this->clients === [] && $this->handlerTimer !== null) {
+		if ($this->handlerTimer !== null) {
 			$this->eventLoop->cancelTimer($this->handlerTimer);
 
 			$this->handlerTimer = null;
@@ -120,25 +106,36 @@ class Periodic implements Writer
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	private function handleCommunication(): void
 	{
-		foreach ($this->clients as $id => $client) {
-			$findDevicesQuery = new Queries\FindDevices();
-			$findDevicesQuery->byConnectorId(Uuid\Uuid::fromString($id));
+		$findDevicesQuery = new Queries\FindDevices();
+		$findDevicesQuery->forConnector($this->connector);
 
-			foreach ($this->devicesRepository->findAllBy($findDevicesQuery, Entities\ShellyDevice::class) as $device) {
+		$devices = $this->devicesRepository->findAllBy(
+			$findDevicesQuery,
+			Entities\ShellyDevice::class,
+		);
+
+		foreach ($devices as $device) {
+			if (!in_array($device->getId()->toString(), $this->processedDevices, true)) {
+				$this->processedDevices[] = $device->getId()->toString();
+
 				if (
-					!in_array($device->getPlainId(), $this->processedDevices, true)
-					&& $this->deviceConnectionManager->getState($device)->equalsValue(
-						MetadataTypes\ConnectionState::STATE_CONNECTED,
+					!$this->deviceConnectionManager->getState($device)->equalsValue(
+						MetadataTypes\ConnectionState::STATE_ALERT,
 					)
 				) {
-					$this->processedDevices[] = $device->getPlainId();
+					if ($this->writeDeviceProperty($device)) {
+						$this->registerLoopHandler();
 
-					if ($this->writeChannelsProperty($client, $device)) {
+						return;
+					}
+
+					if ($this->writeChannelsProperty($device)) {
 						$this->registerLoopHandler();
 
 						return;
@@ -154,13 +151,91 @@ class Periodic implements Writer
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function writeChannelsProperty(
-		Clients\Client $client,
-		Entities\ShellyDevice $device,
-	): bool
+	private function writeDeviceProperty(Entities\ShellyDevice $device): bool
+	{
+		$now = $this->dateTimeFactory->getNow();
+
+		$findDevicePropertiesQuery = new DevicesQueries\FindDeviceDynamicProperties();
+		$findDevicePropertiesQuery->forDevice($device);
+
+		$properties = $this->devicesPropertiesRepository->findAllBy(
+			$findDevicePropertiesQuery,
+			DevicesEntities\Devices\Properties\Dynamic::class,
+		);
+
+		foreach ($properties as $property) {
+			$state = $this->devicePropertiesStatesManager->getValue($property);
+
+			if ($state === null) {
+				continue;
+			}
+
+			$expectedValue = DevicesUtilities\ValueHelper::flattenValue($state->getExpectedValue());
+
+			if (
+				$property->isSettable()
+				&& $expectedValue !== null
+				&& $state->isPending() === true
+			) {
+				$debounce = array_key_exists(
+					$property->getId()->toString(),
+					$this->processedProperties,
+				)
+					? $this->processedProperties[$property->getId()->toString()]
+					: false;
+
+				if (
+					$debounce !== false
+					&& (float) $now->format('Uv') - (float) $debounce->format(
+						'Uv',
+					) < self::HANDLER_DEBOUNCE_INTERVAL
+				) {
+					continue;
+				}
+
+				unset($this->processedProperties[$property->getId()->toString()]);
+
+				$pending = $state->getPending();
+
+				if (
+					$pending === true
+					|| (
+						$pending instanceof DateTimeInterface
+						&& (float) $now->format('Uv') - (float) $pending->format('Uv') > self::HANDLER_PENDING_DELAY
+					)
+				) {
+					$this->processedProperties[$property->getId()->toString()] = $now;
+
+					$this->queue->append(
+						$this->entityHelper->create(
+							Entities\Messages\WriteDevicePropertyState::class,
+							[
+								'connector' => $this->connector->getId()->toString(),
+								'device' => $device->getId()->toString(),
+								'property' => $property->getId()->toString(),
+							],
+						),
+					);
+
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\Runtime
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	private function writeChannelsProperty(Entities\ShellyDevice $device): bool
 	{
 		$now = $this->dateTimeFactory->getNow();
 
@@ -170,12 +245,16 @@ class Periodic implements Writer
 		$channels = $this->channelsRepository->findAllBy($findChannelsQuery);
 
 		foreach ($channels as $channel) {
-			foreach ($channel->getProperties() as $property) {
-				if (!$property instanceof DevicesEntities\Channels\Properties\Dynamic) {
-					continue;
-				}
+			$findChannelPropertiesQuery = new DevicesQueries\FindChannelDynamicProperties();
+			$findChannelPropertiesQuery->forChannel($channel);
 
-				$state = $this->channelPropertiesStates->getValue($property);
+			$properties = $this->channelsPropertiesRepository->findAllBy(
+				$findChannelPropertiesQuery,
+				DevicesEntities\Channels\Properties\Dynamic::class,
+			);
+
+			foreach ($properties as $property) {
+				$state = $this->channelPropertiesStatesManager->getValue($property);
 
 				if ($state === null) {
 					continue;
@@ -189,10 +268,10 @@ class Periodic implements Writer
 					&& $state->isPending() === true
 				) {
 					$debounce = array_key_exists(
-						$property->getPlainId(),
+						$property->getId()->toString(),
 						$this->processedProperties,
 					)
-						? $this->processedProperties[$property->getPlainId()]
+						? $this->processedProperties[$property->getId()->toString()]
 						: false;
 
 					if (
@@ -204,7 +283,7 @@ class Periodic implements Writer
 						continue;
 					}
 
-					unset($this->processedProperties[$property->getPlainId()]);
+					unset($this->processedProperties[$property->getId()->toString()]);
 
 					$pending = $state->getPending();
 
@@ -215,51 +294,19 @@ class Periodic implements Writer
 							&& (float) $now->format('Uv') - (float) $pending->format('Uv') > self::HANDLER_PENDING_DELAY
 						)
 					) {
-						$this->processedProperties[$property->getPlainId()] = $now;
+						$this->processedProperties[$property->getId()->toString()] = $now;
 
-						$client->writeChannelProperty($device, $channel, $property)
-							->then(function () use ($property): void {
-								$this->propertyStateHelper->setValue(
-									$property,
-									Utils\ArrayHash::from([
-										DevicesStates\Property::PENDING_KEY => $this->dateTimeFactory->getNow()->format(
-											DateTimeInterface::ATOM,
-										),
-									]),
-								);
-
-								unset($this->processedProperties[$property->getPlainId()]);
-							})
-							->otherwise(function (Throwable $ex) use ($device, $channel, $property): void {
-								$this->logger->error(
-									'Could write new property state',
-									[
-										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-										'type' => 'periodic-writer',
-										'exception' => BootstrapHelpers\Logger::buildException($ex),
-										'connector' => [
-											'id' => $device->getConnector()->getPlainId(),
-										],
-										'device' => [
-											'id' => $device->getPlainId(),
-										],
-										'channel' => [
-											'id' => $channel->getPlainId(),
-										],
-										'property' => [
-											'id' => $property->getPlainId(),
-										],
-									],
-								);
-
-								$this->propertyStateHelper->setValue(
-									$property,
-									Utils\ArrayHash::from([
-										DevicesStates\Property::EXPECTED_VALUE_KEY => null,
-										DevicesStates\Property::PENDING_KEY => false,
-									]),
-								);
-							});
+						$this->queue->append(
+							$this->entityHelper->create(
+								Entities\Messages\WriteChannelPropertyState::class,
+								[
+									'connector' => $this->connector->getId()->toString(),
+									'device' => $device->getId()->toString(),
+									'channel' => $channel->getId()->toString(),
+									'property' => $property->getId()->toString(),
+								],
+							),
+						);
 
 						return true;
 					}

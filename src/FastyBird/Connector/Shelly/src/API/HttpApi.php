@@ -29,7 +29,6 @@ use InvalidArgumentException;
 use Nette;
 use Nette\Utils;
 use Psr\Http\Message;
-use Psr\Log;
 use React\Http;
 use React\Promise;
 use RuntimeException;
@@ -71,8 +70,8 @@ abstract class HttpApi
 	public function __construct(
 		protected readonly Services\HttpClientFactory $httpClientFactory,
 		protected readonly Helpers\Entity $entityHelper,
+		protected readonly Shelly\Logger $logger,
 		protected readonly MetadataSchemas\Validator $schemaValidator,
-		protected readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
 	}

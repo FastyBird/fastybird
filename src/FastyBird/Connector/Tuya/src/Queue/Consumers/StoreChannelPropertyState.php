@@ -33,7 +33,7 @@ use Ramsey\Uuid;
 use function array_key_exists;
 
 /**
- * Device status message consumer
+ * Store channel property state message consumer
  *
  * @package        FastyBird:TuyaConnector!
  * @subpackage     Queue

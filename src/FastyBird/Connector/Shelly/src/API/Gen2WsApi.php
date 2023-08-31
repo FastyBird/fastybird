@@ -33,7 +33,6 @@ use Fig\Http\Message\StatusCodeInterface;
 use Nette;
 use Nette\Utils;
 use Orisai\ObjectMapper;
-use Psr\Log;
 use Ramsey\Uuid;
 use Ratchet;
 use Ratchet\RFC6455;
@@ -118,11 +117,11 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 		private readonly string|null $username,
 		private readonly string|null $password,
 		private readonly Helpers\Entity $entityHelper,
+		private readonly Shelly\Logger $logger,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		private readonly MetadataSchemas\Validator $schemaValidator,
 		private readonly ObjectMapper\Processing\Processor $objectMapper,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
 	}

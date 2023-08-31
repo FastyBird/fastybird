@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Writer.php
+ * WriterFactory.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,24 +10,24 @@
  * @subpackage     Writers
  * @since          1.0.0
  *
- * @date           14.12.22
+ * @date           30.08.23
  */
 
 namespace FastyBird\Connector\Shelly\Writers;
 
+use FastyBird\Connector\Shelly\Entities;
+
 /**
- * Properties writer interface
+ * Device state writer interface factory
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Writers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-interface Writer
+interface WriterFactory
 {
 
-	public function connect(): void;
-
-	public function disconnect(): void;
+	public function create(Entities\ShellyConnector $connector): Writer;
 
 }

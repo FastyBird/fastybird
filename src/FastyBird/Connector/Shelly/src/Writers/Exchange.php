@@ -15,26 +15,18 @@
 
 namespace FastyBird\Connector\Shelly\Writers;
 
-use DateTimeInterface;
 use Exception;
-use FastyBird\Connector\Shelly\Clients;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Helpers;
-use FastyBird\DateTimeFactory;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Connector\Shelly\Queries;
+use FastyBird\Connector\Shelly\Queue;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
-use FastyBird\Module\Devices\States as DevicesStates;
 use Nette;
-use Nette\Utils;
-use Psr\Log;
-use Ramsey\Uuid;
-use Throwable;
 use function assert;
 
 /**
@@ -52,39 +44,25 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 
 	public const NAME = 'exchange';
 
-	/** @var array<string, Clients\Client> */
-	private array $clients = [];
-
 	public function __construct(
-		private readonly Helpers\Property $propertyStateHelper,
-		private readonly DateTimeFactory\Factory $dateTimeFactory,
-		private readonly DevicesModels\Channels\Properties\PropertiesRepository $propertiesRepository,
+		private readonly Entities\ShellyConnector $connector,
+		private readonly Helpers\Entity $entityHelper,
+		private readonly Queue\Queue $queue,
+		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		private readonly ExchangeConsumers\Container $consumer,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
 	}
 
-	public function connect(
-		Entities\ShellyConnector $connector,
-		Clients\Client $client,
-	): void
+	public function connect(): void
 	{
-		$this->clients[$connector->getPlainId()] = $client;
-
 		$this->consumer->enable(self::class);
 	}
 
-	public function disconnect(
-		Entities\ShellyConnector $connector,
-		Clients\Client $client,
-	): void
+	public function disconnect(): void
 	{
-		unset($this->clients[$connector->getPlainId()]);
-
-		if ($this->clients === []) {
-			$this->consumer->disable(self::class);
-		}
+		$this->consumer->disable(self::class);
 	}
 
 	/**
@@ -97,88 +75,59 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 		MetadataEntities\Entity|null $entity,
 	): void
 	{
-		foreach ($this->clients as $id => $client) {
-			$this->processClient(Uuid\Uuid::fromString($id), $source, $entity, $client);
-		}
-	}
+		if ($entity instanceof MetadataEntities\DevicesModule\DeviceDynamicProperty) {
+			$findDeviceQuery = new Queries\FindDevices();
+			$findDeviceQuery->byId($entity->getDevice());
 
-	/**
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exception
-	 */
-	public function processClient(
-		Uuid\UuidInterface $connectorId,
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|MetadataTypes\AutomatorSource $source,
-		MetadataEntities\Entity|null $entity,
-		Clients\Client $client,
-	): void
-	{
-		if ($entity instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty) {
-			if ($entity->getExpectedValue() === null || $entity->getPending() !== true) {
+			$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\ShellyDevice::class);
+
+			if ($device === null) {
 				return;
 			}
 
-			$findPropertyQuery = new DevicesQueries\FindChannelProperties();
-			$findPropertyQuery->byId($entity->getId());
-
-			$property = $this->propertiesRepository->findOneBy($findPropertyQuery);
-
-			if ($property === null) {
+			if (!$device->getConnector()->getId()->equals($this->connector->getId())) {
 				return;
 			}
 
-			assert($property instanceof DevicesEntities\Channels\Properties\Dynamic);
+			$this->queue->append(
+				$this->entityHelper->create(
+					Entities\Messages\WriteDevicePropertyState::class,
+					[
+						'connector' => $this->connector->getId()->toString(),
+						'device' => $device->getId()->toString(),
+						'property' => $entity->getId()->toString(),
+					],
+				),
+			);
 
-			if (!$property->getChannel()->getDevice()->getConnector()->getId()->equals($connectorId)) {
+		} elseif ($entity instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty) {
+			$findChannelQuery = new DevicesQueries\FindChannels();
+			$findChannelQuery->byId($entity->getChannel());
+
+			$channel = $this->channelsRepository->findOneBy($findChannelQuery);
+
+			if ($channel === null) {
 				return;
 			}
 
-			$device = $property->getChannel()->getDevice();
-			$channel = $property->getChannel();
-
+			$device = $channel->getDevice();
 			assert($device instanceof Entities\ShellyDevice);
 
-			$client->writeChannelProperty($device, $channel, $property)
-				->then(function () use ($property): void {
-					$this->propertyStateHelper->setValue(
-						$property,
-						Utils\ArrayHash::from([
-							DevicesStates\Property::PENDING_KEY => $this->dateTimeFactory->getNow()->format(
-								DateTimeInterface::ATOM,
-							),
-						]),
-					);
-				})
-				->otherwise(function (Throwable $ex) use ($connectorId, $device, $channel, $property): void {
-					$this->logger->error(
-						'Could write new property state',
-						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-							'type' => 'exchange-writer',
-							'exception' => BootstrapHelpers\Logger::buildException($ex),
-							'connector' => [
-								'id' => $connectorId->toString(),
-							],
-							'device' => [
-								'id' => $device->getPlainId(),
-							],
-							'channel' => [
-								'id' => $channel->getPlainId(),
-							],
-							'property' => [
-								'id' => $property->getPlainId(),
-							],
-						],
-					);
+			if (!$device->getConnector()->getId()->equals($this->connector->getId())) {
+				return;
+			}
 
-					$this->propertyStateHelper->setValue(
-						$property,
-						Utils\ArrayHash::from([
-							DevicesStates\Property::EXPECTED_VALUE_KEY => null,
-							DevicesStates\Property::PENDING_KEY => false,
-						]),
-					);
-				});
+			$this->queue->append(
+				$this->entityHelper->create(
+					Entities\Messages\WriteChannelPropertyState::class,
+					[
+						'connector' => $this->connector->getId()->toString(),
+						'device' => $device->getId()->toString(),
+						'channel' => $channel->getId()->toString(),
+						'property' => $entity->getId()->toString(),
+					],
+				),
+			);
 		}
 	}
 

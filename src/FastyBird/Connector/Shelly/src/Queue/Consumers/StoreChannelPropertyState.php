@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Status.php
+ * StoreChannelPropertyState.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,13 +13,13 @@
  * @date           20.07.22
  */
 
-namespace FastyBird\Connector\Shelly\Consumers\Messages;
+namespace FastyBird\Connector\Shelly\Queue\Consumers;
 
 use Doctrine\DBAL;
-use FastyBird\Connector\Shelly\Consumers\Consumer;
+use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\Entities;
-use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Queries;
+use FastyBird\Connector\Shelly\Queue\Consumer;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -31,32 +31,32 @@ use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Nette\Utils;
-use Psr\Log;
 
 /**
- * Device status message consumer
+ * Store channel property state message consumer
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Consumers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Status implements Consumer
+final class StoreChannelPropertyState implements Consumer
 {
 
 	use Nette\SmartObject;
-	use ConsumeDeviceProperty;
+	use DeviceProperty;
 
 	public function __construct(
-		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
+		protected readonly Shelly\Logger $logger,
+		protected readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
+		protected readonly DevicesModels\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
+		protected readonly DevicesModels\Devices\Properties\PropertiesManager $devicesPropertiesManager,
+		protected readonly DevicesUtilities\Database $databaseHelper,
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
-		private readonly DevicesModels\Devices\Properties\PropertiesRepository $propertiesRepository,
-		private readonly DevicesModels\Devices\Properties\PropertiesManager $propertiesManager,
-		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
+		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly DevicesModels\Channels\Properties\PropertiesManager $channelsPropertiesManager,
-		private readonly DevicesUtilities\Database $databaseHelper,
-		private readonly Helpers\Property $propertyStateHelper,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
+		private readonly DevicesUtilities\DevicePropertiesStates $devicePropertiesStateManager,
+		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStateManager,
 	)
 	{
 	}
@@ -81,6 +81,21 @@ final class Status implements Consumer
 		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\ShellyDevice::class);
 
 		if ($device === null) {
+			$this->logger->error(
+				'Device could not be loaded',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+					'type' => 'store-channel-property-state-message-consumer',
+					'connector' => [
+						'id' => $entity->getConnector()->toString(),
+					],
+					'device' => [
+						'identifier' => $entity->getIdentifier(),
+					],
+					'data' => $entity->toArray(),
+				],
+			);
+
 			return true;
 		}
 
@@ -97,7 +112,7 @@ final class Status implements Consumer
 				$findDevicePropertyQuery->forDevice($device);
 				$findDevicePropertyQuery->byIdentifier($status->getIdentifier());
 
-				$property = $this->propertiesRepository->findOneBy($findDevicePropertyQuery);
+				$property = $this->devicesPropertiesRepository->findOneBy($findDevicePropertyQuery);
 
 				if ($property === null) {
 					$findChannelsQuery = new DevicesQueries\FindChannels();
@@ -110,7 +125,7 @@ final class Status implements Consumer
 						$findChannelPropertyQuery->forChannel($channel);
 						$findChannelPropertyQuery->byIdentifier($status->getIdentifier());
 
-						$property = $this->channelPropertiesRepository->findOneBy($findChannelPropertyQuery);
+						$property = $this->channelsPropertiesRepository->findOneBy($findChannelPropertyQuery);
 
 						if ($property !== null) {
 							break;
@@ -118,11 +133,15 @@ final class Status implements Consumer
 					}
 				}
 
-				if (
-					$property instanceof DevicesEntities\Devices\Properties\Dynamic
-					|| $property instanceof DevicesEntities\Channels\Properties\Dynamic
-				) {
-					$this->propertyStateHelper->setValue($property, Utils\ArrayHash::from([
+				if ($property instanceof DevicesEntities\Devices\Properties\Dynamic) {
+					$this->devicePropertiesStateManager->setValue($property, Utils\ArrayHash::from([
+						DevicesStates\Property::ACTUAL_VALUE_KEY => $status->getValue(),
+						DevicesStates\Property::VALID_KEY => true,
+					]));
+				}
+
+				if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
+					$this->channelPropertiesStateManager->setValue($property, Utils\ArrayHash::from([
 						DevicesStates\Property::ACTUAL_VALUE_KEY => $status->getValue(),
 						DevicesStates\Property::VALID_KEY => true,
 					]));
@@ -140,10 +159,10 @@ final class Status implements Consumer
 						$findChannelPropertyQuery->forChannel($channel);
 						$findChannelPropertyQuery->byIdentifier($sensor->getIdentifier());
 
-						$property = $this->channelPropertiesRepository->findOneBy($findChannelPropertyQuery);
+						$property = $this->channelsPropertiesRepository->findOneBy($findChannelPropertyQuery);
 
 						if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
-							$this->propertyStateHelper->setValue($property, Utils\ArrayHash::from([
+							$this->channelPropertiesStateManager->setValue($property, Utils\ArrayHash::from([
 								DevicesStates\Property::ACTUAL_VALUE_KEY => $sensor->getValue(),
 								DevicesStates\Property::VALID_KEY => true,
 							]));
@@ -168,9 +187,9 @@ final class Status implements Consumer
 			'Consumed device status message',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-				'type' => 'status-message-consumer',
+				'type' => 'store-channel-property-state-message-consumer',
 				'device' => [
-					'id' => $device->getPlainId(),
+					'id' => $device->getId()->toString(),
 				],
 				'data' => $entity->toArray(),
 			],

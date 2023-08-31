@@ -1,38 +1,34 @@
 <?php declare(strict_types = 1);
 
 /**
- * Messages.php
+ * Consumers.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ShellyConnector!
- * @subpackage     Consumers
+ * @subpackage     Queue
  * @since          1.0.0
  *
- * @date           16.07.22
+ * @date           30.08.23
  */
 
-namespace FastyBird\Connector\Shelly\Consumers;
+namespace FastyBird\Connector\Shelly\Queue;
 
-use FastyBird\Connector\Shelly\Entities;
+use FastyBird\Connector\Shelly;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette;
-use Psr\Log;
 use SplObjectStorage;
-use SplQueue;
-use function count;
-use function sprintf;
 
 /**
- * Clients message consumer proxy
+ * Clients message queue consumers container
  *
  * @package        FastyBird:ShellyConnector!
- * @subpackage     Consumers
+ * @subpackage     Queue
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Messages
+final class Consumers
 {
 
 	use Nette\SmartObject;
@@ -40,52 +36,40 @@ final class Messages
 	/** @var SplObjectStorage<Consumer, null> */
 	private SplObjectStorage $consumers;
 
-	/** @var SplQueue<Entities\Messages\Entity> */
-	private SplQueue $queue;
-
 	/**
 	 * @param array<Consumer> $consumers
 	 */
 	public function __construct(
 		array $consumers,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
+		private readonly Queue $queue,
+		private readonly Shelly\Logger $logger,
 	)
 	{
 		$this->consumers = new SplObjectStorage();
-		$this->queue = new SplQueue();
 
 		foreach ($consumers as $consumer) {
-			$this->consumers->attach($consumer);
+			$this->append($consumer);
 		}
-
-		$this->logger->debug(
-			sprintf('Registered %d messages consumers', count($this->consumers)),
-			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-				'type' => 'consumer',
-			],
-		);
 	}
 
-	public function append(Entities\Messages\Entity $entity): void
+	public function append(Consumer $consumer): void
 	{
-		$this->queue->enqueue($entity);
+		$this->consumers->attach($consumer);
 
 		$this->logger->debug(
-			'Appended new message into consumers queue',
+			'Appended new messages consumer',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-				'type' => 'consumer',
-				'message' => $entity->toArray(),
+				'type' => 'consumers',
 			],
 		);
 	}
 
 	public function consume(): void
 	{
-		$this->queue->rewind();
+		$entity = $this->queue->dequeue();
 
-		if ($this->queue->isEmpty()) {
+		if ($entity === false) {
 			return;
 		}
 
@@ -96,14 +80,12 @@ final class Messages
 				'No consumer is registered, messages could not be consumed',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-					'type' => 'consumer',
+					'type' => 'consumers',
 				],
 			);
 
 			return;
 		}
-
-		$entity = $this->queue->dequeue();
 
 		foreach ($this->consumers as $consumer) {
 			if ($consumer->consume($entity) === true) {
@@ -115,15 +97,10 @@ final class Messages
 			'Message could not be consumed',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-				'type' => 'consumer',
+				'type' => 'consumers',
 				'message' => $entity->toArray(),
 			],
 		);
-	}
-
-	public function isEmpty(): bool
-	{
-		return $this->queue->isEmpty();
 	}
 
 }

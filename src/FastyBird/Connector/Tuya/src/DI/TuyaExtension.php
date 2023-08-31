@@ -122,7 +122,7 @@ class TuyaExtension extends DI\CompilerExtension
 			->setType(Services\DatagramFactory::class)
 			->setAutowired(false);
 
-		$builder->addDefinition($this->prefix('api.httpClientFactory'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition($this->prefix('services.httpClientFactory'), new DI\Definitions\ServiceDefinition())
 			->setType(Services\HttpClientFactory::class);
 
 		$socketClientFactory = $builder->addDefinition(

@@ -7,13 +7,13 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ShellyConnector!
- * @subpackage     Consumers
+ * @subpackage     Queue
  * @since          1.0.0
  *
- * @date           16.07.22
+ * @date           30.08.23
  */
 
-namespace FastyBird\Connector\Shelly\Consumers;
+namespace FastyBird\Connector\Shelly\Queue;
 
 use FastyBird\Connector\Shelly\Entities;
 
@@ -21,7 +21,7 @@ use FastyBird\Connector\Shelly\Entities;
  * Clients messages consumer interface
  *
  * @package        FastyBird:ShellyConnector!
- * @subpackage     Consumers
+ * @subpackage     Queue
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */

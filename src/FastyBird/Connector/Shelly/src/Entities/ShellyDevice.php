@@ -33,18 +33,18 @@ use function is_string;
 class ShellyDevice extends DevicesEntities\Devices\Device
 {
 
-	public const DEVICE_TYPE = 'shelly';
+	public const TYPE = 'shelly';
 
-	private const STATUS_READING_DELAY = 120.0;
+	private const STATE_READING_DELAY = 120.0;
 
 	public function getType(): string
 	{
-		return self::DEVICE_TYPE;
+		return self::TYPE;
 	}
 
 	public function getDiscriminatorName(): string
 	{
-		return self::DEVICE_TYPE;
+		return self::TYPE;
 	}
 
 	public function getSource(): MetadataTypes\ConnectorSource
@@ -266,7 +266,7 @@ class ShellyDevice extends DevicesEntities\Devices\Device
 			return floatval($property->getValue());
 		}
 
-		return self::STATUS_READING_DELAY;
+		return self::STATE_READING_DELAY;
 	}
 
 }

@@ -35,7 +35,7 @@ use function assert;
 use function count;
 
 /**
- * Local device discovery message consumer
+ * Store locally found device details message consumer
  *
  * @package        FastyBird:TuyaConnector!
  * @subpackage     Queue

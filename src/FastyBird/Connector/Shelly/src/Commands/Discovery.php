@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Discover.php
+ * Discovery.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -48,7 +48,7 @@ use function usort;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Discover extends Console\Command\Command
+class Discovery extends Console\Command\Command
 {
 
 	public const NAME = 'fb:shelly-connector:discover';

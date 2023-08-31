@@ -30,16 +30,16 @@ use function is_string;
 class ShellyConnector extends DevicesEntities\Connectors\Connector
 {
 
-	public const CONNECTOR_TYPE = 'shelly';
+	public const TYPE = 'shelly';
 
 	public function getType(): string
 	{
-		return self::CONNECTOR_TYPE;
+		return self::TYPE;
 	}
 
 	public function getDiscriminatorName(): string
 	{
-		return self::CONNECTOR_TYPE;
+		return self::TYPE;
 	}
 
 	public function getSource(): MetadataTypes\ConnectorSource

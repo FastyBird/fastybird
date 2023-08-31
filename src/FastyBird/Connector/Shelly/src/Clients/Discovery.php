@@ -18,10 +18,10 @@ namespace FastyBird\Connector\Shelly\Clients;
 use Evenement;
 use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\API;
-use FastyBird\Connector\Shelly\Consumers;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Helpers;
+use FastyBird\Connector\Shelly\Queue;
 use FastyBird\Connector\Shelly\Services;
 use FastyBird\Connector\Shelly\Storages;
 use FastyBird\Connector\Shelly\Types;
@@ -33,7 +33,6 @@ use Fig\Http\Message\StatusCodeInterface;
 use InvalidArgumentException;
 use Nette;
 use Nette\Utils;
-use Psr\Log;
 use React\Datagram;
 use React\Dns;
 use React\EventLoop;
@@ -94,9 +93,9 @@ final class Discovery implements Evenement\EventEmitterInterface
 		private readonly API\Gen2HttpApiFactory $gen2HttpApiFactory,
 		private readonly Services\MulticastFactory $multicastFactory,
 		private readonly Helpers\Entity $entityHelper,
-		private readonly Consumers\Messages $consumer,
+		private readonly Queue\Queue $queue,
+		private readonly Shelly\Logger $logger,
 		private readonly EventLoop\LoopInterface $eventLoop,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
 		$this->searchResult = new Storages\MdnsResultStorage();
@@ -1076,7 +1075,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					continue;
 				}
 
-				$this->consumer->append($message);
+				$this->queue->append($message);
 			} catch (Throwable $ex) {
 				$this->logger->error(
 					'Could not create discovered device',

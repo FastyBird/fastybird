@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * State.php
+ * StoreDeviceConnectionState.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,12 +13,12 @@
  * @date           12.01.23
  */
 
-namespace FastyBird\Connector\Shelly\Consumers\Messages;
+namespace FastyBird\Connector\Shelly\Queue\Consumers;
 
-use FastyBird\Connector\Shelly\Consumers\Consumer;
+use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\Entities;
-use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Queries;
+use FastyBird\Connector\Shelly\Queue;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -29,28 +29,30 @@ use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
-use Psr\Log;
+use Nette\Utils;
 
 /**
- * Device state message consumer
+ * Store device connection state message consumer
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Consumers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class State implements Consumer
+final class StoreDeviceConnectionState implements Queue\Consumer
 {
 
 	use Nette\SmartObject;
 
 	public function __construct(
-		private readonly Helpers\Property $propertyStateHelper,
+		private readonly Shelly\Logger $logger,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
-		private readonly DevicesModels\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
+		private readonly DevicesModels\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
+		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
+		private readonly DevicesUtilities\DevicePropertiesStates $devicePropertiesStateManager,
+		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStateManager,
 	)
 	{
 	}
@@ -73,6 +75,21 @@ final class State implements Consumer
 		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\ShellyDevice::class);
 
 		if ($device === null) {
+			$this->logger->error(
+				'Device could not be loaded',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+					'type' => 'store-device-connection-state-message-consumer',
+					'connector' => [
+						'id' => $entity->getConnector()->toString(),
+					],
+					'device' => [
+						'identifier' => $entity->getIdentifier(),
+					],
+					'data' => $entity->toArray(),
+				],
+			);
+
 			return true;
 		}
 
@@ -88,21 +105,20 @@ final class State implements Consumer
 
 			if (
 				$entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_DISCONNECTED)
-				|| $entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_STOPPED)
 				|| $entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_LOST)
+				|| $entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_ALERT)
 				|| $entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_UNKNOWN)
 			) {
-				$findDevicePropertiesQuery = new DevicesQueries\FindDeviceProperties();
+				$findDevicePropertiesQuery = new DevicesQueries\FindDeviceDynamicProperties();
 				$findDevicePropertiesQuery->forDevice($device);
 
-				foreach ($this->devicePropertiesRepository->findAllBy($findDevicePropertiesQuery) as $property) {
-					if (!$property instanceof DevicesEntities\Devices\Properties\Dynamic) {
-						continue;
-					}
-
-					$this->propertyStateHelper->setValue(
+				foreach ($this->devicesPropertiesRepository->findAllBy(
+					$findDevicePropertiesQuery,
+					DevicesEntities\Devices\Properties\Dynamic::class,
+				) as $property) {
+					$this->devicePropertiesStateManager->setValue(
 						$property,
-						Nette\Utils\ArrayHash::from([
+						Utils\ArrayHash::from([
 							DevicesStates\Property::VALID_KEY => false,
 						]),
 					);
@@ -114,14 +130,16 @@ final class State implements Consumer
 				$channels = $this->channelsRepository->findAllBy($findChannelsQuery);
 
 				foreach ($channels as $channel) {
-					foreach ($channel->getProperties() as $property) {
-						if (!$property instanceof DevicesEntities\Channels\Properties\Dynamic) {
-							continue;
-						}
+					$findChannelPropertiesQuery = new DevicesQueries\FindChannelDynamicProperties();
+					$findChannelPropertiesQuery->forChannel($channel);
 
-						$this->propertyStateHelper->setValue(
+					foreach ($this->channelsPropertiesRepository->findAllBy(
+						$findChannelPropertiesQuery,
+						DevicesEntities\Channels\Properties\Dynamic::class,
+					) as $property) {
+						$this->channelPropertiesStateManager->setValue(
 							$property,
-							Nette\Utils\ArrayHash::from([
+							Utils\ArrayHash::from([
 								DevicesStates\Property::VALID_KEY => false,
 							]),
 						);
@@ -131,12 +149,15 @@ final class State implements Consumer
 		}
 
 		$this->logger->debug(
-			'Consumed device state message',
+			'Consumed device online status message',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-				'type' => 'state-message-consumer',
+				'type' => 'store-device-connection-state-message-consumer',
+				'connector' => [
+					'id' => $entity->getConnector()->toString(),
+				],
 				'device' => [
-					'id' => $device->getPlainId(),
+					'id' => $device->getId()->toString(),
 				],
 				'data' => $entity->toArray(),
 			],

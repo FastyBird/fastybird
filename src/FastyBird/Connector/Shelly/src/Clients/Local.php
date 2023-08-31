@@ -18,10 +18,11 @@ namespace FastyBird\Connector\Shelly\Clients;
 use DateTimeInterface;
 use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\API;
-use FastyBird\Connector\Shelly\Consumers;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
+use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Queries;
+use FastyBird\Connector\Shelly\Queue;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
@@ -38,7 +39,6 @@ use Fig\Http\Message\StatusCodeInterface;
 use Nette;
 use Nette\Utils;
 use Psr\EventDispatcher as PsrEventDispatcher;
-use Psr\Log;
 use React\EventLoop;
 use React\Promise;
 use RuntimeException;
@@ -89,7 +89,8 @@ final class Local implements Client
 	public function __construct(
 		private readonly Entities\ShellyConnector $connector,
 		private readonly API\ConnectionManager $connectionManager,
-		private readonly Consumers\Messages $consumer,
+		private readonly Queue\Queue $queue,
+		private readonly Shelly\Logger $logger,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
@@ -98,7 +99,6 @@ final class Local implements Client
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
@@ -261,7 +261,7 @@ final class Local implements Client
 			);
 		}
 
-		$valueToWrite = API\Transformer::transformValueToDevice(
+		$valueToWrite = Helpers\Transformer::transformValueToDevice(
 			$property->getDataType(),
 			$property->getFormat(),
 			$state->getExpectedValue(),
@@ -279,7 +279,7 @@ final class Local implements Client
 			$address = $this->getDeviceAddress($device);
 
 			if ($address === null) {
-				$this->consumer->append(
+				$this->queue->append(
 					new Entities\Messages\DeviceState(
 						$device->getConnector()->getId(),
 						$device->getIdentifier(),
@@ -305,7 +305,7 @@ final class Local implements Client
 					})
 					->otherwise(function (Throwable $ex) use ($deferred, $device): void {
 						if ($ex instanceof Exceptions\HttpApiError) {
-							$this->consumer->append(
+							$this->queue->append(
 								new Entities\Messages\DeviceState(
 									$this->connector->getId(),
 									$device->getIdentifier(),
@@ -318,7 +318,7 @@ final class Local implements Client
 								&& $ex->getResponse()->getStatusCode() >= StatusCodeInterface::STATUS_BAD_REQUEST
 								&& $ex->getResponse()->getStatusCode() < StatusCodeInterface::STATUS_UNAVAILABLE_FOR_LEGAL_REASONS
 							) {
-								$this->consumer->append(
+								$this->queue->append(
 									new Entities\Messages\DeviceState(
 										$this->connector->getId(),
 										$device->getIdentifier(),
@@ -333,7 +333,7 @@ final class Local implements Client
 								&& $ex->getResponse()->getStatusCode() >= StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR
 								&& $ex->getResponse()->getStatusCode() < StatusCodeInterface::STATUS_NETWORK_AUTHENTICATION_REQUIRED
 							) {
-								$this->consumer->append(
+								$this->queue->append(
 									new Entities\Messages\DeviceState(
 										$this->connector->getId(),
 										$device->getIdentifier(),
@@ -344,7 +344,7 @@ final class Local implements Client
 								);
 
 							} else {
-								$this->consumer->append(
+								$this->queue->append(
 									new Entities\Messages\DeviceState(
 										$this->connector->getId(),
 										$device->getIdentifier(),
@@ -372,7 +372,7 @@ final class Local implements Client
 					})
 					->otherwise(function (Throwable $ex) use ($deferred, $device): void {
 						if ($ex instanceof Exceptions\HttpApiError) {
-							$this->consumer->append(
+							$this->queue->append(
 								new Entities\Messages\DeviceState(
 									$this->connector->getId(),
 									$device->getIdentifier(),
@@ -385,7 +385,7 @@ final class Local implements Client
 								&& $ex->getResponse()->getStatusCode() >= StatusCodeInterface::STATUS_BAD_REQUEST
 								&& $ex->getResponse()->getStatusCode() < StatusCodeInterface::STATUS_UNAVAILABLE_FOR_LEGAL_REASONS
 							) {
-								$this->consumer->append(
+								$this->queue->append(
 									new Entities\Messages\DeviceState(
 										$this->connector->getId(),
 										$device->getIdentifier(),
@@ -398,7 +398,7 @@ final class Local implements Client
 								&& $ex->getResponse()->getStatusCode() >= StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR
 								&& $ex->getResponse()->getStatusCode() < StatusCodeInterface::STATUS_NETWORK_AUTHENTICATION_REQUIRED
 							) {
-								$this->consumer->append(
+								$this->queue->append(
 									new Entities\Messages\DeviceState(
 										$this->connector->getId(),
 										$device->getIdentifier(),
@@ -407,7 +407,7 @@ final class Local implements Client
 								);
 
 							} else {
-								$this->consumer->append(
+								$this->queue->append(
 									new Entities\Messages\DeviceState(
 										$this->connector->getId(),
 										$device->getIdentifier(),
@@ -516,7 +516,7 @@ final class Local implements Client
 						$client->connect();
 
 					} else {
-						$this->consumer->append(
+						$this->queue->append(
 							new Entities\Messages\DeviceState(
 								$device->getConnector()->getId(),
 								$device->getIdentifier(),
@@ -553,7 +553,7 @@ final class Local implements Client
 			$address = $this->getDeviceAddress($device);
 
 			if ($address === null) {
-				$this->consumer->append(
+				$this->queue->append(
 					new Entities\Messages\DeviceState(
 						$device->getConnector()->getId(),
 						$device->getIdentifier(),
@@ -572,7 +572,7 @@ final class Local implements Client
 				->then(function (Entities\API\Gen1\GetDeviceState $response) use ($device): void {
 					$this->processedDevicesCommands[$device->getId()->toString()][self::CMD_STATE] = $this->dateTimeFactory->getNow();
 
-					$this->consumer->append(
+					$this->queue->append(
 						new Entities\Messages\DeviceState(
 							$this->connector->getId(),
 							$device->getIdentifier(),
@@ -584,7 +584,7 @@ final class Local implements Client
 				})
 				->otherwise(function (Throwable $ex) use ($device): void {
 					if ($ex instanceof Exceptions\HttpApiError) {
-						$this->consumer->append(
+						$this->queue->append(
 							new Entities\Messages\DeviceState(
 								$this->connector->getId(),
 								$device->getIdentifier(),
@@ -597,7 +597,7 @@ final class Local implements Client
 							&& $ex->getResponse()->getStatusCode() >= StatusCodeInterface::STATUS_BAD_REQUEST
 							&& $ex->getResponse()->getStatusCode() < StatusCodeInterface::STATUS_UNAVAILABLE_FOR_LEGAL_REASONS
 						) {
-							$this->consumer->append(
+							$this->queue->append(
 								new Entities\Messages\DeviceState(
 									$this->connector->getId(),
 									$device->getIdentifier(),
@@ -610,7 +610,7 @@ final class Local implements Client
 							&& $ex->getResponse()->getStatusCode() >= StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR
 							&& $ex->getResponse()->getStatusCode() < StatusCodeInterface::STATUS_NETWORK_AUTHENTICATION_REQUIRED
 						) {
-							$this->consumer->append(
+							$this->queue->append(
 								new Entities\Messages\DeviceState(
 									$this->connector->getId(),
 									$device->getIdentifier(),
@@ -619,7 +619,7 @@ final class Local implements Client
 							);
 
 						} else {
-							$this->consumer->append(
+							$this->queue->append(
 								new Entities\Messages\DeviceState(
 									$this->connector->getId(),
 									$device->getIdentifier(),
@@ -686,7 +686,7 @@ final class Local implements Client
 					],
 				);
 
-				$this->consumer->append(
+				$this->queue->append(
 					new Entities\Messages\DeviceState(
 						$device->getConnector()->getId(),
 						$device->getIdentifier(),
@@ -710,7 +710,7 @@ final class Local implements Client
 					],
 				);
 
-				$this->consumer->append(
+				$this->queue->append(
 					new Entities\Messages\DeviceState(
 						$device->getConnector()->getId(),
 						$device->getIdentifier(),
@@ -723,7 +723,7 @@ final class Local implements Client
 						$this->processGen2DeviceGetState($device, $state);
 					})
 					->otherwise(function (Throwable $ex) use ($device): void {
-						$this->consumer->append(
+						$this->queue->append(
 							new Entities\Messages\DeviceState(
 								$device->getConnector()->getId(),
 								$device->getIdentifier(),
@@ -760,7 +760,7 @@ final class Local implements Client
 					],
 				);
 
-				$this->consumer->append(
+				$this->queue->append(
 					new Entities\Messages\DeviceState(
 						$device->getConnector()->getId(),
 						$device->getIdentifier(),
@@ -847,7 +847,7 @@ final class Local implements Client
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								API\Transformer::transformValueFromDevice(
+								Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$input->getInput(),
@@ -859,7 +859,7 @@ final class Local implements Client
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								API\Transformer::transformValueFromDevice(
+								Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$input->getEvent(),
@@ -871,7 +871,7 @@ final class Local implements Client
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								API\Transformer::transformValueFromDevice(
+								Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$input->getEventCnt(),
@@ -915,7 +915,7 @@ final class Local implements Client
 						) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								API\Transformer::transformValueFromDevice(
+								Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$meter->getPower(),
@@ -944,7 +944,7 @@ final class Local implements Client
 							) {
 								$result[] = new Entities\Messages\PropertyStatus(
 									$property->getIdentifier(),
-									API\Transformer::transformValueFromDevice(
+									Helpers\Transformer::transformValueFromDevice(
 										$property->getDataType(),
 										$property->getFormat(),
 										$meter->getOverpower(),
@@ -963,7 +963,7 @@ final class Local implements Client
 						) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								API\Transformer::transformValueFromDevice(
+								Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$meter->getTotal(),
@@ -1004,7 +1004,7 @@ final class Local implements Client
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								API\Transformer::transformValueFromDevice(
+								Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$relay->getState(),
@@ -1016,7 +1016,7 @@ final class Local implements Client
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								API\Transformer::transformValueFromDevice(
+								Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$relay->hasOverpower(),
@@ -1041,7 +1041,7 @@ final class Local implements Client
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								API\Transformer::transformValueFromDevice(
+								Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$relay->hasOvertemperature(),
@@ -1080,7 +1080,7 @@ final class Local implements Client
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								API\Transformer::transformValueFromDevice(
+								Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$roller->getState(),
@@ -1093,7 +1093,7 @@ final class Local implements Client
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								API\Transformer::transformValueFromDevice(
+								Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$roller->getCurrentPosition(),
@@ -1106,7 +1106,7 @@ final class Local implements Client
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								API\Transformer::transformValueFromDevice(
+								Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$roller->getStopReason(),
@@ -1131,7 +1131,7 @@ final class Local implements Client
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								API\Transformer::transformValueFromDevice(
+								Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$roller->hasOvertemperature(),
@@ -1170,7 +1170,7 @@ final class Local implements Client
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								API\Transformer::transformValueFromDevice(
+								Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$light->getRed(),
@@ -1183,7 +1183,7 @@ final class Local implements Client
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								API\Transformer::transformValueFromDevice(
+								Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$light->getGreen(),
@@ -1195,7 +1195,7 @@ final class Local implements Client
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								API\Transformer::transformValueFromDevice(
+								Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$light->getBlue(),
@@ -1207,7 +1207,7 @@ final class Local implements Client
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								API\Transformer::transformValueFromDevice(
+								Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$light->getGain(),
@@ -1225,7 +1225,7 @@ final class Local implements Client
 						) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								API\Transformer::transformValueFromDevice(
+								Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$light->getWhite(),
@@ -1237,7 +1237,7 @@ final class Local implements Client
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								API\Transformer::transformValueFromDevice(
+								Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$light->getEffect(),
@@ -1249,7 +1249,7 @@ final class Local implements Client
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								API\Transformer::transformValueFromDevice(
+								Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$light->getBrightness(),
@@ -1261,7 +1261,7 @@ final class Local implements Client
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								API\Transformer::transformValueFromDevice(
+								Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$light->getState(),
@@ -1302,7 +1302,7 @@ final class Local implements Client
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								API\Transformer::transformValueFromDevice(
+								Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$emeter->getActivePower(),
@@ -1315,7 +1315,7 @@ final class Local implements Client
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								API\Transformer::transformValueFromDevice(
+								Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$emeter->getReactivePower(),
@@ -1328,7 +1328,7 @@ final class Local implements Client
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								API\Transformer::transformValueFromDevice(
+								Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$emeter->getPowerFactor(),
@@ -1341,7 +1341,7 @@ final class Local implements Client
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								API\Transformer::transformValueFromDevice(
+								Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$emeter->getCurrent(),
@@ -1354,7 +1354,7 @@ final class Local implements Client
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								API\Transformer::transformValueFromDevice(
+								Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$emeter->getVoltage(),
@@ -1367,7 +1367,7 @@ final class Local implements Client
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								API\Transformer::transformValueFromDevice(
+								Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$emeter->getTotal(),
@@ -1380,7 +1380,7 @@ final class Local implements Client
 						)) {
 							$result[] = new Entities\Messages\PropertyStatus(
 								$property->getIdentifier(),
-								API\Transformer::transformValueFromDevice(
+								Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$emeter->getTotalReturned(),
@@ -1402,7 +1402,7 @@ final class Local implements Client
 		}
 
 		if (count($states) > 0) {
-			$this->consumer->append(
+			$this->queue->append(
 				new Entities\Messages\DeviceStatus(
 					$device->getConnector()->getId(),
 					$device->getIdentifier(),
@@ -1433,7 +1433,7 @@ final class Local implements Client
 			if ($property !== null) {
 				$states[] = new Entities\Messages\PropertyStatus(
 					$property->getIdentifier(),
-					API\Transformer::transformValueFromDevice(
+					Helpers\Transformer::transformValueFromDevice(
 						$property->getDataType(),
 						$property->getFormat(),
 						$blockState->getValue(),
@@ -1442,7 +1442,7 @@ final class Local implements Client
 			}
 		}
 
-		$this->consumer->append(
+		$this->queue->append(
 			new Entities\Messages\DeviceState(
 				$this->connector->getId(),
 				$state->getIdentifier(),
@@ -1450,7 +1450,7 @@ final class Local implements Client
 			),
 		);
 
-		$this->consumer->append(
+		$this->queue->append(
 			new Entities\Messages\DeviceStatus(
 				$this->connector->getId(),
 				$state->getIdentifier(),
@@ -1484,7 +1484,7 @@ final class Local implements Client
 					if ($property !== null && $component->getOutput() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
 						$result[] = new Entities\Messages\PropertyStatus(
 							$property->getIdentifier(),
-							API\Transformer::transformValueFromDevice(
+							Helpers\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$component->getOutput(),
@@ -1506,7 +1506,7 @@ final class Local implements Client
 					if ($property !== null && $component->getState() instanceof Types\CoverPayload) {
 						$result[] = new Entities\Messages\PropertyStatus(
 							$property->getIdentifier(),
-							API\Transformer::transformValueFromDevice(
+							Helpers\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								strval($component->getState()->getValue()),
@@ -1528,7 +1528,7 @@ final class Local implements Client
 					if ($property !== null) {
 						$result[] = new Entities\Messages\PropertyStatus(
 							$property->getIdentifier(),
-							API\Transformer::transformValueFromDevice(
+							Helpers\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$component->getCurrentPosition(),
@@ -1550,7 +1550,7 @@ final class Local implements Client
 					if ($property !== null && $component->getOutput() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
 						$result[] = new Entities\Messages\PropertyStatus(
 							$property->getIdentifier(),
-							API\Transformer::transformValueFromDevice(
+							Helpers\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$component->getOutput(),
@@ -1572,7 +1572,7 @@ final class Local implements Client
 					if ($property !== null && $component->getBrightness() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
 						$result[] = new Entities\Messages\PropertyStatus(
 							$property->getIdentifier(),
-							API\Transformer::transformValueFromDevice(
+							Helpers\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$component->getBrightness(),
@@ -1600,7 +1600,7 @@ final class Local implements Client
 
 						$result[] = new Entities\Messages\PropertyStatus(
 							$property->getIdentifier(),
-							API\Transformer::transformValueFromDevice(
+							Helpers\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$value,
@@ -1625,7 +1625,7 @@ final class Local implements Client
 					) {
 						$result[] = new Entities\Messages\PropertyStatus(
 							$property->getIdentifier(),
-							API\Transformer::transformValueFromDevice(
+							Helpers\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$component->getTemperatureCelsius(),
@@ -1650,7 +1650,7 @@ final class Local implements Client
 					) {
 						$result[] = new Entities\Messages\PropertyStatus(
 							$property->getIdentifier(),
-							API\Transformer::transformValueFromDevice(
+							Helpers\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$component->getTemperatureFahrenheit(),
@@ -1673,7 +1673,7 @@ final class Local implements Client
 					) {
 						$result[] = new Entities\Messages\PropertyStatus(
 							$property->getIdentifier(),
-							API\Transformer::transformValueFromDevice(
+							Helpers\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$component->getRelativeHumidity(),
@@ -1700,7 +1700,7 @@ final class Local implements Client
 					if ($property !== null && $component->getActivePower() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
 						$result[] = new Entities\Messages\PropertyStatus(
 							$property->getIdentifier(),
-							API\Transformer::transformValueFromDevice(
+							Helpers\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$component->getActivePower(),
@@ -1722,7 +1722,7 @@ final class Local implements Client
 					if ($property !== null && $component->getPowerFactor() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
 						$result[] = new Entities\Messages\PropertyStatus(
 							$property->getIdentifier(),
-							API\Transformer::transformValueFromDevice(
+							Helpers\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$component->getPowerFactor(),
@@ -1747,7 +1747,7 @@ final class Local implements Client
 					) {
 						$result[] = new Entities\Messages\PropertyStatus(
 							$property->getIdentifier(),
-							API\Transformer::transformValueFromDevice(
+							Helpers\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$component->getActiveEnergy()->getTotal(),
@@ -1769,7 +1769,7 @@ final class Local implements Client
 					if ($property !== null && $component->getCurrent() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
 						$result[] = new Entities\Messages\PropertyStatus(
 							$property->getIdentifier(),
-							API\Transformer::transformValueFromDevice(
+							Helpers\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$component->getCurrent(),
@@ -1791,7 +1791,7 @@ final class Local implements Client
 					if ($property !== null && $component->getVoltage() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
 						$result[] = new Entities\Messages\PropertyStatus(
 							$property->getIdentifier(),
-							API\Transformer::transformValueFromDevice(
+							Helpers\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$component->getVoltage(),
@@ -1816,7 +1816,7 @@ final class Local implements Client
 					) {
 						$result[] = new Entities\Messages\PropertyStatus(
 							$property->getIdentifier(),
-							API\Transformer::transformValueFromDevice(
+							Helpers\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$component->getTemperature()->getTemperatureCelsius(),
@@ -1840,7 +1840,7 @@ final class Local implements Client
 		$states = array_filter($states, static fn (array $item): bool => $item !== []);
 		$states = array_merge([], ...$states);
 
-		$this->consumer->append(
+		$this->queue->append(
 			new Entities\Messages\DeviceStatus(
 				$device->getConnector()->getId(),
 				$device->getIdentifier(),

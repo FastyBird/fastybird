@@ -27,7 +27,6 @@ use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette;
 use Nette\Utils;
-use Psr\Log;
 use React\Datagram;
 use RuntimeException;
 use Throwable;
@@ -68,8 +67,8 @@ final class Gen1Coap implements Evenement\EventEmitterInterface
 	public function __construct(
 		private readonly Services\MulticastFactory $multicastFactory,
 		private readonly Helpers\Entity $entityHelper,
+		private readonly Shelly\Logger $logger,
 		private readonly MetadataSchemas\Validator $schemaValidator,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
 	}
