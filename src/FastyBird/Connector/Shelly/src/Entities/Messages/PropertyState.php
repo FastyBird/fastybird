@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * PropertyStatus.php
+ * PropertyState.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -20,14 +20,14 @@ use function is_scalar;
 use function strval;
 
 /**
- * Device or channel property status entity
+ * Device or channel property state entity
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class PropertyStatus implements Entity
+final class PropertyState implements Entity
 {
 
 	public function __construct(

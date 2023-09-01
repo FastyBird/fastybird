@@ -226,7 +226,7 @@ class ShellyExtension extends DI\CompilerExtension
 			$this->prefix('consumers.messages.store.channelPropertyState'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Queue\Consumers\StoreChannelPropertyState::class)
+			->setType(Queue\Consumers\StoreDeviceState::class)
 			->setArguments([
 				'logger' => $logger,
 			]);

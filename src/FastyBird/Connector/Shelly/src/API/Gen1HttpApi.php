@@ -405,19 +405,29 @@ final class Gen1HttpApi extends HttpApi
 						)
 						|| intval($block->offsetGet('I')) === intval($sensor->offsetGet('L'))
 					) {
-						$sensorRange = $this->parseSensorRange(
-							strval($block->offsetGet('D')),
-							strval($sensor->offsetGet('D')),
-							$sensor->offsetExists('R') ? (is_array(
-								$sensor->offsetGet('R'),
-							) || $sensor->offsetGet(
-								'R',
-							) instanceof Utils\ArrayHash ? (array) $sensor->offsetGet(
-								'R',
-							) : strval(
-								$sensor->offsetGet('R'),
-							)) : null,
-						);
+						try {
+							$sensorRange = $this->parseSensorRange(
+								strval($block->offsetGet('D')),
+								strval($sensor->offsetGet('D')),
+								$sensor->offsetExists('R') ? (is_array(
+									$sensor->offsetGet('R'),
+								) || $sensor->offsetGet(
+									'R',
+								) instanceof Utils\ArrayHash ? (array) $sensor->offsetGet(
+									'R',
+								) : strval(
+									$sensor->offsetGet('R'),
+								)) : null,
+							);
+						} catch (Exceptions\Runtime $ex) {
+							throw new Exceptions\HttpApiCall(
+								'Sensor range could not be decoded from response',
+								$request,
+								$response,
+								$ex->getCode(),
+								$ex,
+							);
+						}
 
 						$blockDescription['sensors'][] = [
 							'identifier' => intval($sensor->offsetGet('I')),
@@ -641,6 +651,8 @@ final class Gen1HttpApi extends HttpApi
 
 	/**
 	 * @param string|array<string>|null $rawRange
+	 *
+	 * @throws Exceptions\Runtime
 	 */
 	private function parseSensorRange(
 		string $block,
@@ -662,98 +674,122 @@ final class Gen1HttpApi extends HttpApi
 			$normalValue = $rawRange;
 
 		} else {
-			return new Entities\API\Gen1\SensorRange(
-				$this->adjustSensorDataType(
-					$block,
-					$description,
-					MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UNKNOWN),
-				),
-				$this->adjustSensorFormat($block, $description, null),
-				null,
+			return $this->entityHelper->create(
+				Entities\API\Gen1\SensorRange::class,
+				[
+					'data_type' => $this->adjustSensorDataType(
+						$block,
+						$description,
+						MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UNKNOWN),
+					)->getValue(),
+					'format' => $this->adjustSensorFormat($block, $description, null),
+					'invalid' => null,
+				],
 			);
 		}
 
 		if ($normalValue === '0/1' || $normalValue === '1/0') {
-			return new Entities\API\Gen1\SensorRange(
-				$this->adjustSensorDataType(
-					$block,
-					$description,
-					MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN),
-				),
-				$this->adjustSensorFormat($block, $description, null),
-				$invalidValue,
+			return $this->entityHelper->create(
+				Entities\API\Gen1\SensorRange::class,
+				[
+					'data_type' => $this->adjustSensorDataType(
+						$block,
+						$description,
+						MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN),
+					)->getValue(),
+					'format' => $this->adjustSensorFormat($block, $description, null),
+					'invalid' => $invalidValue,
+				],
 			);
 		}
 
 		if ($normalValue === 'U8') {
-			return new Entities\API\Gen1\SensorRange(
-				$this->adjustSensorDataType(
-					$block,
-					$description,
-					MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
-				),
-				$this->adjustSensorFormat($block, $description, null),
-				$invalidValue,
+			return $this->entityHelper->create(
+				Entities\API\Gen1\SensorRange::class,
+				[
+					'data_type' => $this->adjustSensorDataType(
+						$block,
+						$description,
+						MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
+					)->getValue(),
+					'format' => $this->adjustSensorFormat($block, $description, null),
+					'invalid' => $invalidValue,
+				],
 			);
 		}
 
 		if ($normalValue === 'U16') {
-			return new Entities\API\Gen1\SensorRange(
-				$this->adjustSensorDataType(
-					$block,
-					$description,
-					MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_USHORT),
-				),
-				$this->adjustSensorFormat($block, $description, null),
-				$invalidValue,
+			return $this->entityHelper->create(
+				Entities\API\Gen1\SensorRange::class,
+				[
+					'data_type' => $this->adjustSensorDataType(
+						$block,
+						$description,
+						MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_USHORT),
+					)->getValue(),
+					'format' => $this->adjustSensorFormat($block, $description, null),
+					'invalid' => $invalidValue,
+				],
 			);
 		}
 
 		if ($normalValue === 'U32') {
-			return new Entities\API\Gen1\SensorRange(
-				$this->adjustSensorDataType(
-					$block,
-					$description,
-					MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UINT),
-				),
-				$this->adjustSensorFormat($block, $description, null),
-				$invalidValue,
+			return $this->entityHelper->create(
+				Entities\API\Gen1\SensorRange::class,
+				[
+					'data_type' => $this->adjustSensorDataType(
+						$block,
+						$description,
+						MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UINT),
+					)->getValue(),
+					'format' => $this->adjustSensorFormat($block, $description, null),
+					'invalid' => $invalidValue,
+				],
 			);
 		}
 
 		if ($normalValue === 'I8') {
-			return new Entities\API\Gen1\SensorRange(
-				$this->adjustSensorDataType(
-					$block,
-					$description,
-					MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_CHAR),
-				),
-				$this->adjustSensorFormat($block, $description, null),
-				$invalidValue,
+			return $this->entityHelper->create(
+				Entities\API\Gen1\SensorRange::class,
+				[
+					'data_type' => $this->adjustSensorDataType(
+						$block,
+						$description,
+						MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_CHAR),
+					)->getValue(),
+					'format' => $this->adjustSensorFormat($block, $description, null),
+					'invalid' => $invalidValue,
+				],
 			);
 		}
 
 		if ($normalValue === 'I16') {
-			return new Entities\API\Gen1\SensorRange(
-				$this->adjustSensorDataType(
-					$block,
-					$description,
-					MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_USHORT),
-				),
-				$this->adjustSensorFormat($block, $description, null),
-				$invalidValue,
+			return $this->entityHelper->create(
+				Entities\API\Gen1\SensorRange::class,
+				[
+					'data_type' => $this->adjustSensorDataType(
+						$block,
+						$description,
+						MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_USHORT),
+					)->getValue(),
+					'format' => $this->adjustSensorFormat($block, $description, null),
+					'invalid' => $invalidValue,
+				],
 			);
 		}
 
 		if ($normalValue === 'I32') {
-			return new Entities\API\Gen1\SensorRange(
-				$this->adjustSensorDataType(
-					$block,
-					$description,
-					MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UINT),
-				),
-				$this->adjustSensorFormat($block, $description, null),
-				$invalidValue,
+			return $this->entityHelper->create(
+				Entities\API\Gen1\SensorRange::class,
+				[
+					'data_type' => $this->adjustSensorDataType(
+						$block,
+						$description,
+						MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UINT),
+					)->getValue(),
+					'format' => $this->adjustSensorFormat($block, $description, null),
+					'invalid' => $invalidValue,
+				],
 			);
 		}
 
@@ -765,18 +801,21 @@ final class Gen1HttpApi extends HttpApi
 				&& $normalValueParts[0] === (string) (int) $normalValueParts[0]
 				&& $normalValueParts[1] === (string) (int) $normalValueParts[1]
 			) {
-				return new Entities\API\Gen1\SensorRange(
-					$this->adjustSensorDataType(
-						$block,
-						$description,
-						MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_INT),
-					),
-					$this->adjustSensorFormat(
-						$block,
-						$description,
-						[intval($normalValueParts[0]), intval($normalValueParts[1])],
-					),
-					$invalidValue,
+				return $this->entityHelper->create(
+					Entities\API\Gen1\SensorRange::class,
+					[
+						'data_type' => $this->adjustSensorDataType(
+							$block,
+							$description,
+							MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_INT),
+						)->getValue(),
+						'format' => $this->adjustSensorFormat(
+							$block,
+							$description,
+							[intval($normalValueParts[0]), intval($normalValueParts[1])],
+						),
+						'invalid' => $invalidValue,
+					],
 				);
 			}
 
@@ -785,44 +824,53 @@ final class Gen1HttpApi extends HttpApi
 				&& $normalValueParts[0] === (string) (float) $normalValueParts[0]
 				&& $normalValueParts[1] === (string) (float) $normalValueParts[1]
 			) {
-				return new Entities\API\Gen1\SensorRange(
-					$this->adjustSensorDataType(
-						$block,
-						$description,
-						MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
-					),
-					$this->adjustSensorFormat(
-						$block,
-						$description,
-						[floatval($normalValueParts[0]), floatval($normalValueParts[1])],
-					),
-					$invalidValue,
+				return $this->entityHelper->create(
+					Entities\API\Gen1\SensorRange::class,
+					[
+						'data_type' => $this->adjustSensorDataType(
+							$block,
+							$description,
+							MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+						)->getValue(),
+						'format' => $this->adjustSensorFormat(
+							$block,
+							$description,
+							[floatval($normalValueParts[0]), floatval($normalValueParts[1])],
+						),
+						'invalid' => $invalidValue,
+					],
 				);
 			}
 
-			return new Entities\API\Gen1\SensorRange(
-				$this->adjustSensorDataType(
-					$block,
-					$description,
-					MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
-				),
-				$this->adjustSensorFormat(
-					$block,
-					$description,
-					array_map(static fn (string $item): string => Utils\Strings::trim($item), $normalValueParts),
-				),
-				$invalidValue,
+			return $this->entityHelper->create(
+				Entities\API\Gen1\SensorRange::class,
+				[
+					'data_type' => $this->adjustSensorDataType(
+						$block,
+						$description,
+						MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
+					)->getValue(),
+					'format' => $this->adjustSensorFormat(
+						$block,
+						$description,
+						array_map(static fn (string $item): string => Utils\Strings::trim($item), $normalValueParts),
+					),
+					'invalid' => $invalidValue,
+				],
 			);
 		}
 
-		return new Entities\API\Gen1\SensorRange(
-			$this->adjustSensorDataType(
-				$block,
-				$description,
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UNKNOWN),
-			),
-			$this->adjustSensorFormat($block, $description, null),
-			null,
+		return $this->entityHelper->create(
+			Entities\API\Gen1\SensorRange::class,
+			[
+				'data_type' => $this->adjustSensorDataType(
+					$block,
+					$description,
+					MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UNKNOWN),
+				)->getValue(),
+				'format' => $this->adjustSensorFormat($block, $description, null),
+				'invalid' => null,
+			],
 		);
 	}
 

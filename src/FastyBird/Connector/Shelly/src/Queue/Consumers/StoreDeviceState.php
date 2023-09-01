@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * StoreChannelPropertyState.php
+ * StoreDeviceState.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -33,14 +33,14 @@ use Nette;
 use Nette\Utils;
 
 /**
- * Store channel property state message consumer
+ * Store device state message consumer
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Consumers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class StoreChannelPropertyState implements Consumer
+final class StoreDeviceState implements Consumer
 {
 
 	use Nette\SmartObject;
@@ -70,7 +70,7 @@ final class StoreChannelPropertyState implements Consumer
 	 */
 	public function consume(Entities\Messages\Entity $entity): bool
 	{
-		if (!$entity instanceof Entities\Messages\DeviceStatus) {
+		if (!$entity instanceof Entities\Messages\StoreDeviceState) {
 			return false;
 		}
 
@@ -106,8 +106,8 @@ final class StoreChannelPropertyState implements Consumer
 			Types\DevicePropertyIdentifier::IP_ADDRESS,
 		);
 
-		foreach ($entity->getStatuses() as $status) {
-			if ($status instanceof Entities\Messages\PropertyStatus) {
+		foreach ($entity->getStates() as $status) {
+			if ($status instanceof Entities\Messages\PropertyState) {
 				$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
 				$findDevicePropertyQuery->forDevice($device);
 				$findDevicePropertyQuery->byIdentifier($status->getIdentifier());

@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ChannelStatus.php
+ * ChannelState.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -20,21 +20,21 @@ use function array_unique;
 use const SORT_REGULAR;
 
 /**
- * Device channel status entity
+ * Device channel state entity
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ChannelStatus implements Entity
+final class ChannelState implements Entity
 {
 
-	/** @var array<PropertyStatus> */
+	/** @var array<PropertyState> */
 	private array $sensors;
 
 	/**
-	 * @param array<PropertyStatus> $sensors
+	 * @param array<PropertyState> $sensors
 	 */
 	public function __construct(
 		private readonly string $identifier,
@@ -50,14 +50,14 @@ final class ChannelStatus implements Entity
 	}
 
 	/**
-	 * @return array<PropertyStatus>
+	 * @return array<PropertyState>
 	 */
 	public function getSensors(): array
 	{
 		return $this->sensors;
 	}
 
-	public function addSensor(PropertyStatus $sensor): void
+	public function addSensor(PropertyState $sensor): void
 	{
 		$this->sensors[] = $sensor;
 
@@ -72,7 +72,7 @@ final class ChannelStatus implements Entity
 		return [
 			'identifier' => $this->getIdentifier(),
 			'sensors' => array_map(
-				static fn (PropertyStatus $sensor): array => $sensor->toArray(),
+				static fn (PropertyState $sensor): array => $sensor->toArray(),
 				$this->getSensors(),
 			),
 		];

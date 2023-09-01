@@ -242,13 +242,18 @@ final class Discovery implements Evenement\EventEmitterInterface
 							? Types\DeviceGeneration::get(Types\DeviceGeneration::GENERATION_2)
 							: Types\DeviceGeneration::get(Types\DeviceGeneration::GENERATION_1);
 
-						$this->discoveredLocalDevices->attach(new Entities\Clients\DiscoveredLocalDevice(
-							$generation,
-							Utils\Strings::lower($matches['id']),
-							Utils\Strings::lower($matches['type']),
-							$serviceIpAddress,
-							$serviceDomain,
-						));
+						$this->discoveredLocalDevices->attach(
+							$this->entityHelper->create(
+								Entities\Clients\DiscoveredLocalDevice::class,
+								[
+									'generation' => $generation->getValue(),
+									'id' => Utils\Strings::lower($matches['id']),
+									'type' => Utils\Strings::lower($matches['type']),
+									'ip_address' => $serviceIpAddress,
+									'domain' => $serviceDomain,
+								],
+							),
+						);
 					}
 				}
 			}
@@ -404,7 +409,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					&& $deviceDescription !== null
 				) {
 					$message = $this->entityHelper->create(
-						Entities\Messages\DiscoveredLocalDevice::class,
+						Entities\Messages\StoreLocalDevice::class,
 						[
 							'connector' => $this->connector->getId(),
 							'identifier' => $device->getIdentifier(),
@@ -448,7 +453,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					&& $deviceConfiguration !== null
 				) {
 					$message = $this->entityHelper->create(
-						Entities\Messages\DiscoveredLocalDevice::class,
+						Entities\Messages\StoreLocalDevice::class,
 						[
 							'connector' => $this->connector->getId(),
 							'identifier' => $device->getIdentifier(),

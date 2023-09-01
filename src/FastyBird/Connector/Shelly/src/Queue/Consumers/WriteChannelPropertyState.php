@@ -58,6 +58,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 	public function __construct(
 		private readonly Queue\Queue $queue,
 		private readonly API\ConnectionManager $connectionManager,
+		private readonly Helpers\Entity $entityHelper,
 		private readonly Shelly\Logger $logger,
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
@@ -258,10 +259,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 
 				if ($address === null) {
 					$this->queue->append(
-						new Entities\Messages\DeviceState(
-							$device->getConnector()->getId(),
-							$device->getIdentifier(),
-							MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_ALERT),
+						$this->entityHelper->create(
+							Entities\Messages\StoreDeviceConnectionState::class,
+							[
+								'connector' => $device->getConnector()->getId()->toString(),
+								'identifier' => $device->getIdentifier(),
+								'state' => MetadataTypes\ConnectionState::STATE_ALERT,
+							],
 						),
 					);
 
@@ -314,10 +318,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			}
 		} catch (Throwable $ex) {
 			$this->queue->append(
-				new Entities\Messages\DeviceState(
-					$device->getConnector()->getId(),
-					$device->getIdentifier(),
-					MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_ALERT),
+				$this->entityHelper->create(
+					Entities\Messages\StoreDeviceConnectionState::class,
+					[
+						'connector' => $device->getConnector()->getId()->toString(),
+						'identifier' => $device->getIdentifier(),
+						'state' => MetadataTypes\ConnectionState::STATE_ALERT,
+					],
 				),
 			);
 
@@ -392,10 +399,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						&& $ex->getResponse()->getStatusCode() < StatusCodeInterface::STATUS_UNAVAILABLE_FOR_LEGAL_REASONS
 					) {
 						$this->queue->append(
-							new Entities\Messages\DeviceState(
-								$device->getConnector()->getId(),
-								$device->getIdentifier(),
-								MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_ALERT),
+							$this->entityHelper->create(
+								Entities\Messages\StoreDeviceConnectionState::class,
+								[
+									'connector' => $device->getConnector()->getId()->toString(),
+									'identifier' => $device->getIdentifier(),
+									'state' => MetadataTypes\ConnectionState::STATE_ALERT,
+								],
 							),
 						);
 
@@ -405,39 +415,49 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						&& $ex->getResponse()->getStatusCode() < StatusCodeInterface::STATUS_NETWORK_AUTHENTICATION_REQUIRED
 					) {
 						$this->queue->append(
-							new Entities\Messages\DeviceState(
-								$device->getConnector()->getId(),
-								$device->getIdentifier(),
-								MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_LOST),
+							$this->entityHelper->create(
+								Entities\Messages\StoreDeviceConnectionState::class,
+								[
+									'connector' => $device->getConnector()->getId()->toString(),
+									'identifier' => $device->getIdentifier(),
+									'state' => MetadataTypes\ConnectionState::STATE_LOST,
+								],
 							),
 						);
 
 					} else {
 						$this->queue->append(
-							new Entities\Messages\DeviceState(
-								$device->getConnector()->getId(),
-								$device->getIdentifier(),
-								MetadataTypes\ConnectionState::get(
-									MetadataTypes\ConnectionState::STATE_UNKNOWN,
-								),
+							$this->entityHelper->create(
+								Entities\Messages\StoreDeviceConnectionState::class,
+								[
+									'connector' => $device->getConnector()->getId()->toString(),
+									'identifier' => $device->getIdentifier(),
+									'state' => MetadataTypes\ConnectionState::STATE_UNKNOWN,
+								],
 							),
 						);
 					}
 				} elseif ($ex instanceof Exceptions\HttpApiError) {
 					$this->queue->append(
-						new Entities\Messages\DeviceState(
-							$device->getConnector()->getId(),
-							$device->getIdentifier(),
-							MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_ALERT),
+						$this->entityHelper->create(
+							Entities\Messages\StoreDeviceConnectionState::class,
+							[
+								'connector' => $device->getConnector()->getId()->toString(),
+								'identifier' => $device->getIdentifier(),
+								'state' => MetadataTypes\ConnectionState::STATE_ALERT,
+							],
 						),
 					);
 
 				} else {
 					$this->queue->append(
-						new Entities\Messages\DeviceState(
-							$device->getConnector()->getId(),
-							$device->getIdentifier(),
-							MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_LOST),
+						$this->entityHelper->create(
+							Entities\Messages\StoreDeviceConnectionState::class,
+							[
+								'connector' => $device->getConnector()->getId()->toString(),
+								'identifier' => $device->getIdentifier(),
+								'state' => MetadataTypes\ConnectionState::STATE_LOST,
+							],
 						),
 					);
 				}

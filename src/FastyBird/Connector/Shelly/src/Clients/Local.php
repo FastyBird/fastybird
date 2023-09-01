@@ -87,6 +87,7 @@ final class Local implements Client
 		private readonly Entities\ShellyConnector $connector,
 		private readonly API\ConnectionManager $connectionManager,
 		private readonly Queue\Queue $queue,
+		private readonly Helpers\Entity $entityHelper,
 		private readonly Shelly\Logger $logger,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
@@ -307,10 +308,13 @@ final class Local implements Client
 
 					} else {
 						$this->queue->append(
-							new Entities\Messages\DeviceState(
-								$device->getConnector()->getId(),
-								$device->getIdentifier(),
-								MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_DISCONNECTED),
+							$this->entityHelper->create(
+								Entities\Messages\StoreDeviceConnectionState::class,
+								[
+									'connector' => $device->getConnector()->getId()->toString(),
+									'identifier' => $device->getIdentifier(),
+									'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+								],
 							),
 						);
 					}
@@ -344,10 +348,13 @@ final class Local implements Client
 
 			if ($address === null) {
 				$this->queue->append(
-					new Entities\Messages\DeviceState(
-						$device->getConnector()->getId(),
-						$device->getIdentifier(),
-						MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_ALERT),
+					$this->entityHelper->create(
+						Entities\Messages\StoreDeviceConnectionState::class,
+						[
+							'connector' => $device->getConnector()->getId()->toString(),
+							'identifier' => $device->getIdentifier(),
+							'state' => MetadataTypes\ConnectionState::STATE_ALERT,
+						],
 					),
 				);
 
@@ -363,10 +370,13 @@ final class Local implements Client
 					$this->processedDevicesCommands[$device->getId()->toString()][self::CMD_STATE] = $this->dateTimeFactory->getNow();
 
 					$this->queue->append(
-						new Entities\Messages\DeviceState(
-							$this->connector->getId(),
-							$device->getIdentifier(),
-							MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_CONNECTED),
+						$this->entityHelper->create(
+							Entities\Messages\StoreDeviceConnectionState::class,
+							[
+								'connector' => $device->getConnector()->getId()->toString(),
+								'identifier' => $device->getIdentifier(),
+								'state' => MetadataTypes\ConnectionState::STATE_CONNECTED,
+							],
 						),
 					);
 
@@ -375,10 +385,13 @@ final class Local implements Client
 				->otherwise(function (Throwable $ex) use ($device): void {
 					if ($ex instanceof Exceptions\HttpApiError) {
 						$this->queue->append(
-							new Entities\Messages\DeviceState(
-								$this->connector->getId(),
-								$device->getIdentifier(),
-								MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_ALERT),
+							$this->entityHelper->create(
+								Entities\Messages\StoreDeviceConnectionState::class,
+								[
+									'connector' => $device->getConnector()->getId()->toString(),
+									'identifier' => $device->getIdentifier(),
+									'state' => MetadataTypes\ConnectionState::STATE_ALERT,
+								],
 							),
 						);
 					} elseif ($ex instanceof Exceptions\HttpApiCall) {
@@ -388,10 +401,13 @@ final class Local implements Client
 							&& $ex->getResponse()->getStatusCode() < StatusCodeInterface::STATUS_UNAVAILABLE_FOR_LEGAL_REASONS
 						) {
 							$this->queue->append(
-								new Entities\Messages\DeviceState(
-									$this->connector->getId(),
-									$device->getIdentifier(),
-									MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_ALERT),
+								$this->entityHelper->create(
+									Entities\Messages\StoreDeviceConnectionState::class,
+									[
+										'connector' => $device->getConnector()->getId()->toString(),
+										'identifier' => $device->getIdentifier(),
+										'state' => MetadataTypes\ConnectionState::STATE_ALERT,
+									],
 								),
 							);
 
@@ -401,19 +417,25 @@ final class Local implements Client
 							&& $ex->getResponse()->getStatusCode() < StatusCodeInterface::STATUS_NETWORK_AUTHENTICATION_REQUIRED
 						) {
 							$this->queue->append(
-								new Entities\Messages\DeviceState(
-									$this->connector->getId(),
-									$device->getIdentifier(),
-									MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_LOST),
+								$this->entityHelper->create(
+									Entities\Messages\StoreDeviceConnectionState::class,
+									[
+										'connector' => $device->getConnector()->getId()->toString(),
+										'identifier' => $device->getIdentifier(),
+										'state' => MetadataTypes\ConnectionState::STATE_LOST,
+									],
 								),
 							);
 
 						} else {
 							$this->queue->append(
-								new Entities\Messages\DeviceState(
-									$this->connector->getId(),
-									$device->getIdentifier(),
-									MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_UNKNOWN),
+								$this->entityHelper->create(
+									Entities\Messages\StoreDeviceConnectionState::class,
+									[
+										'connector' => $device->getConnector()->getId()->toString(),
+										'identifier' => $device->getIdentifier(),
+										'state' => MetadataTypes\ConnectionState::STATE_UNKNOWN,
+									],
 								),
 							);
 						}
@@ -477,10 +499,13 @@ final class Local implements Client
 				);
 
 				$this->queue->append(
-					new Entities\Messages\DeviceState(
-						$device->getConnector()->getId(),
-						$device->getIdentifier(),
-						MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_DISCONNECTED),
+					$this->entityHelper->create(
+						Entities\Messages\StoreDeviceConnectionState::class,
+						[
+							'connector' => $device->getConnector()->getId()->toString(),
+							'identifier' => $device->getIdentifier(),
+							'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+						],
 					),
 				);
 			},
@@ -501,10 +526,13 @@ final class Local implements Client
 				);
 
 				$this->queue->append(
-					new Entities\Messages\DeviceState(
-						$device->getConnector()->getId(),
-						$device->getIdentifier(),
-						MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_CONNECTED),
+					$this->entityHelper->create(
+						Entities\Messages\StoreDeviceConnectionState::class,
+						[
+							'connector' => $device->getConnector()->getId()->toString(),
+							'identifier' => $device->getIdentifier(),
+							'state' => MetadataTypes\ConnectionState::STATE_CONNECTED,
+						],
 					),
 				);
 
@@ -514,10 +542,13 @@ final class Local implements Client
 					})
 					->otherwise(function (Throwable $ex) use ($device): void {
 						$this->queue->append(
-							new Entities\Messages\DeviceState(
-								$device->getConnector()->getId(),
-								$device->getIdentifier(),
-								MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_DISCONNECTED),
+							$this->entityHelper->create(
+								Entities\Messages\StoreDeviceConnectionState::class,
+								[
+									'connector' => $device->getConnector()->getId()->toString(),
+									'identifier' => $device->getIdentifier(),
+									'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+								],
 							),
 						);
 
@@ -551,10 +582,13 @@ final class Local implements Client
 				);
 
 				$this->queue->append(
-					new Entities\Messages\DeviceState(
-						$device->getConnector()->getId(),
-						$device->getIdentifier(),
-						MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_DISCONNECTED),
+					$this->entityHelper->create(
+						Entities\Messages\StoreDeviceConnectionState::class,
+						[
+							'connector' => $device->getConnector()->getId()->toString(),
+							'identifier' => $device->getIdentifier(),
+							'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+						],
 					),
 				);
 			},
@@ -577,8 +611,9 @@ final class Local implements Client
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidState
+	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
 	 */
 	private function processGen1DeviceGetState(
 		Entities\ShellyDevice $device,
@@ -602,46 +637,46 @@ final class Local implements Client
 							$property->getIdentifier(),
 							'_' . Types\SensorDescription::INPUT,
 						)) {
-							$result[] = new Entities\Messages\PropertyStatus(
-								$property->getIdentifier(),
-								Helpers\Transformer::transformValueFromDevice(
+							$result[] = [
+								'identifier' => $property->getIdentifier(),
+								'value' => Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$input->getInput(),
 								),
-							);
+							];
 						} elseif (Utils\Strings::endsWith(
 							$property->getIdentifier(),
 							'_' . Types\SensorDescription::INPUT_EVENT,
 						)) {
-							$result[] = new Entities\Messages\PropertyStatus(
-								$property->getIdentifier(),
-								Helpers\Transformer::transformValueFromDevice(
+							$result[] = [
+								'identifier' => $property->getIdentifier(),
+								'value' => Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$input->getEvent(),
 								),
-							);
+							];
 						} elseif (Utils\Strings::endsWith(
 							$property->getIdentifier(),
 							'_' . Types\SensorDescription::INPUT_EVENT_COUNT,
 						)) {
-							$result[] = new Entities\Messages\PropertyStatus(
-								$property->getIdentifier(),
-								Helpers\Transformer::transformValueFromDevice(
+							$result[] = [
+								'identifier' => $property->getIdentifier(),
+								'value' => Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$input->getEventCnt(),
 								),
-							);
+							];
 						}
 					}
 
 					if (count($result) > 0) {
-						$states[] = new Entities\Messages\ChannelStatus(
-							$channel->getIdentifier(),
-							$result,
-						);
+						$states[] = [
+							'identifier' => $channel->getIdentifier(),
+							'sensors' => $result,
+						];
 					}
 
 					break;
@@ -670,14 +705,14 @@ final class Local implements Client
 								'_' . Types\SensorDescription::ROLLER_POWER,
 							)
 						) {
-							$result[] = new Entities\Messages\PropertyStatus(
-								$property->getIdentifier(),
-								Helpers\Transformer::transformValueFromDevice(
+							$result[] = [
+								'identifier' => $property->getIdentifier(),
+								'value' => Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$meter->getPower(),
 								),
-							);
+							];
 						} elseif (
 							(
 								Utils\Strings::endsWith(
@@ -699,14 +734,14 @@ final class Local implements Client
 									&& is_numeric($meter->getOverpower())
 								)
 							) {
-								$result[] = new Entities\Messages\PropertyStatus(
-									$property->getIdentifier(),
-									Helpers\Transformer::transformValueFromDevice(
+								$result[] = [
+									'identifier' => $property->getIdentifier(),
+									'value' => Helpers\Transformer::transformValueFromDevice(
 										$property->getDataType(),
 										$property->getFormat(),
 										$meter->getOverpower(),
 									),
-								);
+								];
 							}
 						} elseif (
 							Utils\Strings::endsWith(
@@ -718,22 +753,22 @@ final class Local implements Client
 								'_' . Types\SensorDescription::ROLLER_ENERGY,
 							)
 						) {
-							$result[] = new Entities\Messages\PropertyStatus(
-								$property->getIdentifier(),
-								Helpers\Transformer::transformValueFromDevice(
+							$result[] = [
+								'identifier' => $property->getIdentifier(),
+								'value' => Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$meter->getTotal(),
 								),
-							);
+							];
 						}
 					}
 
 					if (count($result) > 0) {
-						$states[] = new Entities\Messages\ChannelStatus(
-							$channel->getIdentifier(),
-							$result,
-						);
+						$states[] = [
+							'identifier' => $channel->getIdentifier(),
+							'sensors' => $result,
+						];
 					}
 
 					break;
@@ -759,34 +794,34 @@ final class Local implements Client
 							$property->getIdentifier(),
 							'_' . Types\SensorDescription::OUTPUT,
 						)) {
-							$result[] = new Entities\Messages\PropertyStatus(
-								$property->getIdentifier(),
-								Helpers\Transformer::transformValueFromDevice(
+							$result[] = [
+								'identifier' => $property->getIdentifier(),
+								'value' => Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$relay->getState(),
 								),
-							);
+							];
 						} elseif (Utils\Strings::endsWith(
 							$property->getIdentifier(),
 							'_' . Types\SensorDescription::OVERPOWER,
 						)) {
-							$result[] = new Entities\Messages\PropertyStatus(
-								$property->getIdentifier(),
-								Helpers\Transformer::transformValueFromDevice(
+							$result[] = [
+								'identifier' => $property->getIdentifier(),
+								'value' => Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$relay->hasOverpower(),
 								),
-							);
+							];
 						}
 					}
 
 					if (count($result) > 0) {
-						$states[] = new Entities\Messages\ChannelStatus(
-							$channel->getIdentifier(),
-							$result,
-						);
+						$states[] = [
+							'identifier' => $channel->getIdentifier(),
+							'sensors' => $result,
+						];
 					}
 				} elseif (Utils\Strings::endsWith($channel->getIdentifier(), Types\BlockDescription::DEVICE)) {
 					$result = [];
@@ -796,22 +831,22 @@ final class Local implements Client
 							$property->getIdentifier(),
 							'_' . Types\SensorDescription::OVERTEMPERATURE,
 						)) {
-							$result[] = new Entities\Messages\PropertyStatus(
-								$property->getIdentifier(),
-								Helpers\Transformer::transformValueFromDevice(
+							$result[] = [
+								'identifier' => $property->getIdentifier(),
+								'value' => Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$relay->hasOvertemperature(),
 								),
-							);
+							];
 						}
 					}
 
 					if (count($result) > 0) {
-						$states[] = new Entities\Messages\ChannelStatus(
-							$channel->getIdentifier(),
-							$result,
-						);
+						$states[] = [
+							'identifier' => $channel->getIdentifier(),
+							'sensors' => $result,
+						];
 					}
 				}
 			}
@@ -835,48 +870,48 @@ final class Local implements Client
 							$property->getIdentifier(),
 							'_' . Types\SensorDescription::ROLLER,
 						)) {
-							$result[] = new Entities\Messages\PropertyStatus(
-								$property->getIdentifier(),
-								Helpers\Transformer::transformValueFromDevice(
+							$result[] = [
+								'identifier' => $property->getIdentifier(),
+								'value' => Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$roller->getState(),
 								),
-							);
+							];
 
 						} elseif (Utils\Strings::endsWith(
 							$property->getIdentifier(),
 							'_' . Types\SensorDescription::ROLLER_POSITION,
 						)) {
-							$result[] = new Entities\Messages\PropertyStatus(
-								$property->getIdentifier(),
-								Helpers\Transformer::transformValueFromDevice(
+							$result[] = [
+								'identifier' => $property->getIdentifier(),
+								'value' => Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$roller->getCurrentPosition(),
 								),
-							);
+							];
 
 						} elseif (Utils\Strings::endsWith(
 							$property->getIdentifier(),
 							'_' . Types\SensorDescription::ROLLER_STOP_REASON,
 						)) {
-							$result[] = new Entities\Messages\PropertyStatus(
-								$property->getIdentifier(),
-								Helpers\Transformer::transformValueFromDevice(
+							$result[] = [
+								'identifier' => $property->getIdentifier(),
+								'value' => Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$roller->getStopReason(),
 								),
-							);
+							];
 						}
 					}
 
 					if (count($result) > 0) {
-						$states[] = new Entities\Messages\ChannelStatus(
-							$channel->getIdentifier(),
-							$result,
-						);
+						$states[] = [
+							'identifier' => $channel->getIdentifier(),
+							'sensors' => $result,
+						];
 					}
 				} elseif (Utils\Strings::endsWith($channel->getIdentifier(), Types\BlockDescription::DEVICE)) {
 					$result = [];
@@ -886,22 +921,22 @@ final class Local implements Client
 							$property->getIdentifier(),
 							'_' . Types\SensorDescription::OVERTEMPERATURE,
 						)) {
-							$result[] = new Entities\Messages\PropertyStatus(
-								$property->getIdentifier(),
-								Helpers\Transformer::transformValueFromDevice(
+							$result[] = [
+								'identifier' => $property->getIdentifier(),
+								'value' => Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$roller->hasOvertemperature(),
 								),
-							);
+							];
 						}
 					}
 
 					if (count($result) > 0) {
-						$states[] = new Entities\Messages\ChannelStatus(
-							$channel->getIdentifier(),
-							$result,
-						);
+						$states[] = [
+							'identifier' => $channel->getIdentifier(),
+							'sensors' => $result,
+						];
 					}
 				}
 			}
@@ -925,51 +960,51 @@ final class Local implements Client
 							$property->getIdentifier(),
 							'_' . Types\SensorDescription::RED,
 						)) {
-							$result[] = new Entities\Messages\PropertyStatus(
-								$property->getIdentifier(),
-								Helpers\Transformer::transformValueFromDevice(
+							$result[] = [
+								'identifier' => $property->getIdentifier(),
+								'value' => Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$light->getRed(),
 								),
-							);
+							];
 
 						} elseif (Utils\Strings::endsWith(
 							$property->getIdentifier(),
 							'_' . Types\SensorDescription::GREEN,
 						)) {
-							$result[] = new Entities\Messages\PropertyStatus(
-								$property->getIdentifier(),
-								Helpers\Transformer::transformValueFromDevice(
+							$result[] = [
+								'identifier' => $property->getIdentifier(),
+								'value' => Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$light->getGreen(),
 								),
-							);
+							];
 						} elseif (Utils\Strings::endsWith(
 							$property->getIdentifier(),
 							'_' . Types\SensorDescription::BLUE,
 						)) {
-							$result[] = new Entities\Messages\PropertyStatus(
-								$property->getIdentifier(),
-								Helpers\Transformer::transformValueFromDevice(
+							$result[] = [
+								'identifier' => $property->getIdentifier(),
+								'value' => Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$light->getBlue(),
 								),
-							);
+							];
 						} elseif (Utils\Strings::endsWith(
 							$property->getIdentifier(),
 							'_' . Types\SensorDescription::GAIN,
 						)) {
-							$result[] = new Entities\Messages\PropertyStatus(
-								$property->getIdentifier(),
-								Helpers\Transformer::transformValueFromDevice(
+							$result[] = [
+								'identifier' => $property->getIdentifier(),
+								'value' => Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$light->getGain(),
 								),
-							);
+							];
 						} elseif (
 							Utils\Strings::endsWith(
 								$property->getIdentifier(),
@@ -980,58 +1015,58 @@ final class Local implements Client
 								'_' . Types\SensorDescription::WHITE_LEVEL,
 							)
 						) {
-							$result[] = new Entities\Messages\PropertyStatus(
-								$property->getIdentifier(),
-								Helpers\Transformer::transformValueFromDevice(
+							$result[] = [
+								'identifier' => $property->getIdentifier(),
+								'value' => Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$light->getWhite(),
 								),
-							);
+							];
 						} elseif (Utils\Strings::endsWith(
 							$property->getIdentifier(),
 							'_' . Types\SensorDescription::EFFECT,
 						)) {
-							$result[] = new Entities\Messages\PropertyStatus(
-								$property->getIdentifier(),
-								Helpers\Transformer::transformValueFromDevice(
+							$result[] = [
+								'identifier' => $property->getIdentifier(),
+								'value' => Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$light->getEffect(),
 								),
-							);
+							];
 						} elseif (Utils\Strings::endsWith(
 							$property->getIdentifier(),
 							'_' . Types\SensorDescription::BRIGHTNESS,
 						)) {
-							$result[] = new Entities\Messages\PropertyStatus(
-								$property->getIdentifier(),
-								Helpers\Transformer::transformValueFromDevice(
+							$result[] = [
+								'identifier' => $property->getIdentifier(),
+								'value' => Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$light->getBrightness(),
 								),
-							);
+							];
 						} elseif (Utils\Strings::endsWith(
 							$property->getIdentifier(),
 							'_' . Types\SensorDescription::OUTPUT,
 						)) {
-							$result[] = new Entities\Messages\PropertyStatus(
-								$property->getIdentifier(),
-								Helpers\Transformer::transformValueFromDevice(
+							$result[] = [
+								'identifier' => $property->getIdentifier(),
+								'value' => Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$light->getState(),
 								),
-							);
+							];
 						}
 					}
 
 					if (count($result) > 0) {
-						$states[] = new Entities\Messages\ChannelStatus(
-							$channel->getIdentifier(),
-							$result,
-						);
+						$states[] = [
+							'identifier' => $channel->getIdentifier(),
+							'sensors' => $result,
+						];
 					}
 
 					break;
@@ -1057,100 +1092,100 @@ final class Local implements Client
 							$property->getIdentifier(),
 							'_' . Types\SensorDescription::ACTIVE_POWER,
 						)) {
-							$result[] = new Entities\Messages\PropertyStatus(
-								$property->getIdentifier(),
-								Helpers\Transformer::transformValueFromDevice(
+							$result[] = [
+								'identifier' => $property->getIdentifier(),
+								'value' => Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$emeter->getActivePower(),
 								),
-							);
+							];
 
 						} elseif (Utils\Strings::endsWith(
 							$property->getIdentifier(),
 							'_' . Types\SensorDescription::REACTIVE_POWER,
 						)) {
-							$result[] = new Entities\Messages\PropertyStatus(
-								$property->getIdentifier(),
-								Helpers\Transformer::transformValueFromDevice(
+							$result[] = [
+								'identifier' => $property->getIdentifier(),
+								'value' => Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$emeter->getReactivePower(),
 								),
-							);
+							];
 
 						} elseif (Utils\Strings::endsWith(
 							$property->getIdentifier(),
 							'_' . Types\SensorDescription::POWER_FACTOR,
 						)) {
-							$result[] = new Entities\Messages\PropertyStatus(
-								$property->getIdentifier(),
-								Helpers\Transformer::transformValueFromDevice(
+							$result[] = [
+								'identifier' => $property->getIdentifier(),
+								'value' => Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$emeter->getPowerFactor(),
 								),
-							);
+							];
 
 						} elseif (Utils\Strings::endsWith(
 							$property->getIdentifier(),
 							'_' . Types\SensorDescription::CURRENT,
 						)) {
-							$result[] = new Entities\Messages\PropertyStatus(
-								$property->getIdentifier(),
-								Helpers\Transformer::transformValueFromDevice(
+							$result[] = [
+								'identifier' => $property->getIdentifier(),
+								'value' => Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$emeter->getCurrent(),
 								),
-							);
+							];
 
 						} elseif (Utils\Strings::endsWith(
 							$property->getIdentifier(),
 							'_' . Types\SensorDescription::VOLTAGE,
 						)) {
-							$result[] = new Entities\Messages\PropertyStatus(
-								$property->getIdentifier(),
-								Helpers\Transformer::transformValueFromDevice(
+							$result[] = [
+								'identifier' => $property->getIdentifier(),
+								'value' => Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$emeter->getVoltage(),
 								),
-							);
+							];
 
 						} elseif (Utils\Strings::endsWith(
 							$property->getIdentifier(),
 							'_' . Types\SensorDescription::ENERGY,
 						)) {
-							$result[] = new Entities\Messages\PropertyStatus(
-								$property->getIdentifier(),
-								Helpers\Transformer::transformValueFromDevice(
+							$result[] = [
+								'identifier' => $property->getIdentifier(),
+								'value' => Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$emeter->getTotal(),
 								),
-							);
+							];
 
 						} elseif (Utils\Strings::endsWith(
 							$property->getIdentifier(),
 							'_' . Types\SensorDescription::ENERGY_RETURNED,
 						)) {
-							$result[] = new Entities\Messages\PropertyStatus(
-								$property->getIdentifier(),
-								Helpers\Transformer::transformValueFromDevice(
+							$result[] = [
+								'identifier' => $property->getIdentifier(),
+								'value' => Helpers\Transformer::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$emeter->getTotalReturned(),
 								),
-							);
+							];
 						}
 					}
 
 					if (count($result) > 0) {
-						$states[] = new Entities\Messages\ChannelStatus(
-							$channel->getIdentifier(),
-							$result,
-						);
+						$states[] = [
+							'identifier' => $channel->getIdentifier(),
+							'sensors' => $result,
+						];
 					}
 
 					break;
@@ -1160,11 +1195,14 @@ final class Local implements Client
 
 		if (count($states) > 0) {
 			$this->queue->append(
-				new Entities\Messages\DeviceStatus(
-					$device->getConnector()->getId(),
-					$device->getIdentifier(),
-					$state->getWifi()?->getIp(),
-					$states,
+				$this->entityHelper->create(
+					Entities\Messages\StoreDeviceState::class,
+					[
+						'connector' => $device->getConnector()->getId()->toString(),
+						'identifier' => $device->getIdentifier(),
+						'ip_address' => $state->getWifi()?->getIp(),
+						'state' => $states,
+					],
 				),
 			);
 		}
@@ -1172,6 +1210,7 @@ final class Local implements Client
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -1188,35 +1227,44 @@ final class Local implements Client
 			);
 
 			if ($property !== null) {
-				$states[] = new Entities\Messages\PropertyStatus(
-					$property->getIdentifier(),
-					Helpers\Transformer::transformValueFromDevice(
+				$states[] = [
+					'identifier' => $property->getIdentifier(),
+					'value' => Helpers\Transformer::transformValueFromDevice(
 						$property->getDataType(),
 						$property->getFormat(),
 						$blockState->getValue(),
 					),
-				);
+				];
 			}
 		}
 
 		$this->queue->append(
-			new Entities\Messages\DeviceState(
-				$this->connector->getId(),
-				$state->getIdentifier(),
-				MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_CONNECTED),
+			$this->entityHelper->create(
+				Entities\Messages\StoreDeviceConnectionState::class,
+				[
+					'connector' => $this->connector->getId()->toString(),
+					'identifier' => $state->getIdentifier(),
+					'state' => MetadataTypes\ConnectionState::STATE_CONNECTED,
+				],
 			),
 		);
 
 		$this->queue->append(
-			new Entities\Messages\DeviceStatus(
-				$this->connector->getId(),
-				$state->getIdentifier(),
-				$state->getIpAddress(),
-				$states,
+			$this->entityHelper->create(
+				Entities\Messages\StoreDeviceState::class,
+				[
+					'connector' => $this->connector->getId()->toString(),
+					'identifier' => $state->getIdentifier(),
+					'ip_address' => $state->getIpAddress(),
+					'state' => $states,
+				],
 			),
 		);
 	}
 
+	/**
+	 * @throws Exceptions\Runtime
+	 */
 	private function processGen2DeviceGetState(
 		Entities\ShellyDevice $device,
 		Entities\API\Gen2\GetDeviceState $state,
@@ -1239,14 +1287,14 @@ final class Local implements Client
 					);
 
 					if ($property !== null && $component->getOutput() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
-						$result[] = new Entities\Messages\PropertyStatus(
-							$property->getIdentifier(),
-							Helpers\Transformer::transformValueFromDevice(
+						$result[] = [
+							'identifier' => $property->getIdentifier(),
+							'value' => Helpers\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$component->getOutput(),
 							),
-						);
+						];
 					}
 				} elseif ($component instanceof Entities\API\Gen2\DeviceCoverState) {
 					$property = $this->findGen2DeviceProperty(
@@ -1261,14 +1309,14 @@ final class Local implements Client
 					);
 
 					if ($property !== null && $component->getState() instanceof Types\CoverPayload) {
-						$result[] = new Entities\Messages\PropertyStatus(
-							$property->getIdentifier(),
-							Helpers\Transformer::transformValueFromDevice(
+						$result[] = [
+							'identifier' => $property->getIdentifier(),
+							'value' => Helpers\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								strval($component->getState()->getValue()),
 							),
-						);
+						];
 					}
 
 					$property = $this->findGen2DeviceProperty(
@@ -1283,14 +1331,14 @@ final class Local implements Client
 					);
 
 					if ($property !== null) {
-						$result[] = new Entities\Messages\PropertyStatus(
-							$property->getIdentifier(),
-							Helpers\Transformer::transformValueFromDevice(
+						$result[] = [
+							'identifier' => $property->getIdentifier(),
+							'value' => Helpers\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$component->getCurrentPosition(),
 							),
-						);
+						];
 					}
 				} elseif ($component instanceof Entities\API\Gen2\DeviceLightState) {
 					$property = $this->findGen2DeviceProperty(
@@ -1305,14 +1353,14 @@ final class Local implements Client
 					);
 
 					if ($property !== null && $component->getOutput() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
-						$result[] = new Entities\Messages\PropertyStatus(
-							$property->getIdentifier(),
-							Helpers\Transformer::transformValueFromDevice(
+						$result[] = [
+							'identifier' => $property->getIdentifier(),
+							'value' => Helpers\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$component->getOutput(),
 							),
-						);
+						];
 					}
 
 					$property = $this->findGen2DeviceProperty(
@@ -1327,14 +1375,14 @@ final class Local implements Client
 					);
 
 					if ($property !== null && $component->getBrightness() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
-						$result[] = new Entities\Messages\PropertyStatus(
-							$property->getIdentifier(),
-							Helpers\Transformer::transformValueFromDevice(
+						$result[] = [
+							'identifier' => $property->getIdentifier(),
+							'value' => Helpers\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$component->getBrightness(),
 							),
-						);
+						];
 					}
 				} elseif ($component instanceof Entities\API\Gen2\DeviceInputState) {
 					$property = $this->findGen2DeviceProperty(
@@ -1355,14 +1403,14 @@ final class Local implements Client
 							$value = $component->getPercent();
 						}
 
-						$result[] = new Entities\Messages\PropertyStatus(
-							$property->getIdentifier(),
-							Helpers\Transformer::transformValueFromDevice(
+						$result[] = [
+							'identifier' => $property->getIdentifier(),
+							'value' => Helpers\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$value,
 							),
-						);
+						];
 					}
 				} elseif ($component instanceof Entities\API\Gen2\DeviceTemperatureState) {
 					$property = $this->findGen2DeviceProperty(
@@ -1380,14 +1428,14 @@ final class Local implements Client
 						$property !== null
 						&& $component->getTemperatureCelsius() !== Shelly\Constants::VALUE_NOT_AVAILABLE
 					) {
-						$result[] = new Entities\Messages\PropertyStatus(
-							$property->getIdentifier(),
-							Helpers\Transformer::transformValueFromDevice(
+						$result[] = [
+							'identifier' => $property->getIdentifier(),
+							'value' => Helpers\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$component->getTemperatureCelsius(),
 							),
-						);
+						];
 					}
 
 					$property = $this->findGen2DeviceProperty(
@@ -1405,14 +1453,14 @@ final class Local implements Client
 						$property !== null
 						&& $component->getTemperatureFahrenheit() !== Shelly\Constants::VALUE_NOT_AVAILABLE
 					) {
-						$result[] = new Entities\Messages\PropertyStatus(
-							$property->getIdentifier(),
-							Helpers\Transformer::transformValueFromDevice(
+						$result[] = [
+							'identifier' => $property->getIdentifier(),
+							'value' => Helpers\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$component->getTemperatureFahrenheit(),
 							),
-						);
+						];
 					}
 				} else {
 					$property = $this->findGen2DeviceProperty(
@@ -1428,14 +1476,14 @@ final class Local implements Client
 						$property !== null
 						&& $component->getRelativeHumidity() !== Shelly\Constants::VALUE_NOT_AVAILABLE
 					) {
-						$result[] = new Entities\Messages\PropertyStatus(
-							$property->getIdentifier(),
-							Helpers\Transformer::transformValueFromDevice(
+						$result[] = [
+							'identifier' => $property->getIdentifier(),
+							'value' => Helpers\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$component->getRelativeHumidity(),
 							),
-						);
+						];
 					}
 				}
 
@@ -1455,14 +1503,14 @@ final class Local implements Client
 					);
 
 					if ($property !== null && $component->getActivePower() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
-						$result[] = new Entities\Messages\PropertyStatus(
-							$property->getIdentifier(),
-							Helpers\Transformer::transformValueFromDevice(
+						$result[] = [
+							'identifier' => $property->getIdentifier(),
+							'value' => Helpers\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$component->getActivePower(),
 							),
-						);
+						];
 					}
 
 					$property = $this->findGen2DeviceProperty(
@@ -1477,14 +1525,14 @@ final class Local implements Client
 					);
 
 					if ($property !== null && $component->getPowerFactor() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
-						$result[] = new Entities\Messages\PropertyStatus(
-							$property->getIdentifier(),
-							Helpers\Transformer::transformValueFromDevice(
+						$result[] = [
+							'identifier' => $property->getIdentifier(),
+							'value' => Helpers\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$component->getPowerFactor(),
 							),
-						);
+						];
 					}
 
 					$property = $this->findGen2DeviceProperty(
@@ -1502,14 +1550,14 @@ final class Local implements Client
 						$property !== null
 						&& $component->getActiveEnergy() instanceof Entities\API\Gen2\ActiveEnergyStateBlock
 					) {
-						$result[] = new Entities\Messages\PropertyStatus(
-							$property->getIdentifier(),
-							Helpers\Transformer::transformValueFromDevice(
+						$result[] = [
+							'identifier' => $property->getIdentifier(),
+							'value' => Helpers\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$component->getActiveEnergy()->getTotal(),
 							),
-						);
+						];
 					}
 
 					$property = $this->findGen2DeviceProperty(
@@ -1524,14 +1572,14 @@ final class Local implements Client
 					);
 
 					if ($property !== null && $component->getCurrent() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
-						$result[] = new Entities\Messages\PropertyStatus(
-							$property->getIdentifier(),
-							Helpers\Transformer::transformValueFromDevice(
+						$result[] = [
+							'identifier' => $property->getIdentifier(),
+							'value' => Helpers\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$component->getCurrent(),
 							),
-						);
+						];
 					}
 
 					$property = $this->findGen2DeviceProperty(
@@ -1546,14 +1594,14 @@ final class Local implements Client
 					);
 
 					if ($property !== null && $component->getVoltage() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
-						$result[] = new Entities\Messages\PropertyStatus(
-							$property->getIdentifier(),
-							Helpers\Transformer::transformValueFromDevice(
+						$result[] = [
+							'identifier' => $property->getIdentifier(),
+							'value' => Helpers\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$component->getVoltage(),
 							),
-						);
+						];
 					}
 
 					$property = $this->findGen2DeviceProperty(
@@ -1571,14 +1619,14 @@ final class Local implements Client
 						$property !== null
 						&& $component->getTemperature() instanceof Entities\API\Gen2\TemperatureBlockState
 					) {
-						$result[] = new Entities\Messages\PropertyStatus(
-							$property->getIdentifier(),
-							Helpers\Transformer::transformValueFromDevice(
+						$result[] = [
+							'identifier' => $property->getIdentifier(),
+							'value' => Helpers\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$component->getTemperature()->getTemperatureCelsius(),
 							),
-						);
+						];
 					}
 				}
 
@@ -1598,11 +1646,14 @@ final class Local implements Client
 		$states = array_merge([], ...$states);
 
 		$this->queue->append(
-			new Entities\Messages\DeviceStatus(
-				$device->getConnector()->getId(),
-				$device->getIdentifier(),
-				$state->getEthernet()?->getIp() ?? $state->getWifi()?->getStaIp(),
-				$states,
+			$this->entityHelper->create(
+				Entities\Messages\StoreDeviceState::class,
+				[
+					'connector' => $device->getConnector()->getId()->toString(),
+					'identifier' => $device->getIdentifier(),
+					'ip_address' => $state->getEthernet()?->getIp() ?? $state->getWifi()?->getStaIp(),
+					'state' => $states,
+				],
 			),
 		);
 	}

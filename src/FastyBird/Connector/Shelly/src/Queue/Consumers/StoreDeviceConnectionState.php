@@ -64,7 +64,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 	 */
 	public function consume(Entities\Messages\Entity $entity): bool
 	{
-		if (!$entity instanceof Entities\Messages\DeviceState) {
+		if (!$entity instanceof Entities\Messages\StoreDeviceConnectionState) {
 			return false;
 		}
 

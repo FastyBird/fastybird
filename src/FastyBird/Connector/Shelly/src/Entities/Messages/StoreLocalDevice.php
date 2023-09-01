@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * DiscoveredLocalDevice.php
+ * StoreLocalDevice.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -23,14 +23,14 @@ use function array_unique;
 use const SORT_REGULAR;
 
 /**
- * Device was found via mDNS discovery entity
+ * Discovered local device entity
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DiscoveredLocalDevice extends Device
+final class StoreLocalDevice extends Device
 {
 
 	/** @var array<ChannelDescription> */
