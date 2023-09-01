@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\Shelly\Entities\Messages;
 
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_map;
 use function array_merge;
@@ -36,7 +37,18 @@ final class StoreDeviceState extends Device
 	public function __construct(
 		Uuid\UuidInterface $connector,
 		string $identifier,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('ip_address')]
 		private readonly string|null $ipAddress,
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\AnyOf([
+				new ObjectMapper\Rules\MappedObjectValue(PropertyState::class),
+				new ObjectMapper\Rules\MappedObjectValue(ChannelState::class),
+			]),
+		)]
 		private readonly array $states,
 	)
 	{

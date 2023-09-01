@@ -29,12 +29,19 @@ final class WsSession implements ObjectMapper\MappedObject
 {
 
 	public function __construct(
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $realm,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $username,
+		#[ObjectMapper\Rules\IntValue()]
 		private readonly int $nonce,
+		#[ObjectMapper\Rules\IntValue()]
 		private readonly int $cnonce,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $response,
+		#[ObjectMapper\Rules\IntValue()]
 		private readonly int $nc,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $algorithm,
 	)
 	{

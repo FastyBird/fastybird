@@ -15,7 +15,9 @@
 
 namespace FastyBird\Connector\Shelly\Entities\Messages;
 
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use Orisai\ObjectMapper;
 use function is_scalar;
 use function strval;
 
@@ -31,7 +33,16 @@ final class PropertyState implements Entity
 {
 
 	public function __construct(
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $identifier,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\SwitchPayload::class),
+		])]
 		private readonly float|int|string|bool|MetadataTypes\SwitchPayload|null $value,
 	)
 	{

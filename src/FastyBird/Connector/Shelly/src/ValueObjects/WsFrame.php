@@ -34,10 +34,30 @@ final class WsFrame implements ObjectMapper\MappedObject
 	 * @param array<string, string|int> $auth
 	 */
 	public function __construct(
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $id,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $src,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $method,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\ArrayOf(
+				new ObjectMapper\Rules\MixedValue(),
+				new ObjectMapper\Rules\StringValue(notEmpty: true),
+			),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly array|null $params = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\ArrayOf(
+				new ObjectMapper\Rules\AnyOf([
+					new ObjectMapper\Rules\StringValue(notEmpty: true),
+					new ObjectMapper\Rules\IntValue(),
+				]),
+				new ObjectMapper\Rules\StringValue(notEmpty: true),
+			),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly array|null $auth = null,
 	)
 	{

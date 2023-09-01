@@ -16,6 +16,8 @@
 namespace FastyBird\Connector\Shelly\Entities\Messages;
 
 use FastyBird\Connector\Shelly\Types;
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_map;
 use function array_merge;
@@ -34,7 +36,7 @@ final class StoreLocalDevice extends Device
 {
 
 	/** @var array<ChannelDescription> */
-	private array $channels;
+	private array $filteredChannels;
 
 	/**
 	 * @param array<ChannelDescription> $channels
@@ -42,19 +44,36 @@ final class StoreLocalDevice extends Device
 	public function __construct(
 		Uuid\UuidInterface $connector,
 		string $identifier,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\DeviceGeneration::class)]
 		private readonly Types\DeviceGeneration $generation,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		#[ObjectMapper\Modifiers\FieldName('ip_address')]
 		private readonly string $ipAddress,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly string|null $domain,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $model,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		#[ObjectMapper\Modifiers\FieldName('mac_address')]
 		private readonly string $macAddress,
+		#[ObjectMapper\Rules\BoolValue()]
+		#[ObjectMapper\Modifiers\FieldName('auth_enabled')]
 		private readonly bool $authEnabled,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		#[ObjectMapper\Modifiers\FieldName('firmware_version')]
 		private readonly string $firmwareVersion,
-		array $channels,
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(ChannelDescription::class),
+		)]
+		private readonly array $channels,
 	)
 	{
 		parent::__construct($connector, $identifier);
 
-		$this->channels = array_unique($channels, SORT_REGULAR);
+		$this->filteredChannels = array_unique($this->channels, SORT_REGULAR);
 	}
 
 	public function getGeneration(): Types\DeviceGeneration
@@ -97,7 +116,7 @@ final class StoreLocalDevice extends Device
 	 */
 	public function getChannels(): array
 	{
-		return $this->channels;
+		return $this->filteredChannels;
 	}
 
 	/**

@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\Shelly\Entities\Messages;
 
+use Orisai\ObjectMapper;
 use function array_map;
 use function array_unique;
 use const SORT_REGULAR;
@@ -31,17 +32,21 @@ final class ChannelState implements Entity
 {
 
 	/** @var array<PropertyState> */
-	private array $sensors;
+	private array $filteredSensors;
 
 	/**
 	 * @param array<PropertyState> $sensors
 	 */
 	public function __construct(
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $identifier,
-		array $sensors = [],
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(PropertyState::class),
+		)]
+		private readonly array $sensors = [],
 	)
 	{
-		$this->sensors = array_unique($sensors, SORT_REGULAR);
+		$this->filteredSensors = array_unique($this->sensors, SORT_REGULAR);
 	}
 
 	public function getIdentifier(): string
@@ -54,14 +59,14 @@ final class ChannelState implements Entity
 	 */
 	public function getSensors(): array
 	{
-		return $this->sensors;
+		return $this->filteredSensors;
 	}
 
 	public function addSensor(PropertyState $sensor): void
 	{
-		$this->sensors[] = $sensor;
+		$this->filteredSensors[] = $sensor;
 
-		$this->sensors = array_unique($this->sensors, SORT_REGULAR);
+		$this->filteredSensors = array_unique($this->filteredSensors, SORT_REGULAR);
 	}
 
 	/**

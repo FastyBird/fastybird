@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\Shelly\Entities\Messages;
 
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Ramsey\Uuid;
 use function array_merge;
@@ -33,6 +34,7 @@ final class StoreDeviceConnectionState extends Device
 	public function __construct(
 		Uuid\UuidInterface $connector,
 		string $identifier,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\ConnectionState::class)]
 		private readonly MetadataTypes\ConnectionState $state,
 	)
 	{

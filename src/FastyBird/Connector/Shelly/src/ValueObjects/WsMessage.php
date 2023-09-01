@@ -31,8 +31,17 @@ final class WsMessage implements ObjectMapper\MappedObject
 {
 
 	public function __construct(
+		#[ObjectMapper\Rules\MappedObjectValue(WsFrame::class)]
 		private readonly WsFrame $frame,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\InstanceOfValue(Promise\Deferred::class),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly Promise\Deferred|null $deferred = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\InstanceOfValue(EventLoop\TimerInterface::class),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly EventLoop\TimerInterface|null $timer = null,
 	)
 	{

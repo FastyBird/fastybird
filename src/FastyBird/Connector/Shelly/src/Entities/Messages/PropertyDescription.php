@@ -16,7 +16,9 @@
 namespace FastyBird\Connector\Shelly\Entities\Messages;
 
 use FastyBird\Connector\Shelly\Types;
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use Orisai\ObjectMapper;
 
 /**
  * Device or channel property description entity
@@ -33,13 +35,37 @@ final class PropertyDescription implements Entity
 	 * @param array<string>|array<int>|array<float>|array<int, array<int, (string|array<int, string>|null)>>|array<int, (int|null)>|array<int, (float|null)>|array<int, (MetadataTypes\SwitchPayload|string|Types\RelayPayload|null)>|null $format
 	 */
 	public function __construct(
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $identifier,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly string|null $name,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\DataType::class)]
 		private readonly MetadataTypes\DataType $dataType,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly string|null $unit = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\ArrayOf(
+				new ObjectMapper\Rules\MixedValue(),
+			),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly array|null $format = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly float|int|string|null $invalid = null,
+		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $queryable = false,
+		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $settable = false,
 	)
 	{

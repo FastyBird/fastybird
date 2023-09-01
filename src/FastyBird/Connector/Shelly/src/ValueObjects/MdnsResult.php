@@ -15,6 +15,8 @@
 
 namespace FastyBird\Connector\Shelly\ValueObjects;
 
+use Orisai\ObjectMapper;
+
 /**
  * mDNS search result
  *
@@ -23,15 +25,26 @@ namespace FastyBird\Connector\Shelly\ValueObjects;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class MdnsResult
+final class MdnsResult implements ObjectMapper\MappedObject
 {
 
 	/**
 	 * @param array<string, string|int|float|null> $data
 	 */
 	public function __construct(
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $address,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $name,
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\AnyOf([
+				new ObjectMapper\Rules\StringValue(notEmpty: true),
+				new ObjectMapper\Rules\IntValue(),
+				new ObjectMapper\Rules\FloatValue(),
+				new ObjectMapper\Rules\NullValue(),
+			]),
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+		)]
 		private readonly array $data,
 	)
 	{
