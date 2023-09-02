@@ -62,13 +62,6 @@ final class ChannelState implements Entity
 		return $this->filteredSensors;
 	}
 
-	public function addSensor(PropertyState $sensor): void
-	{
-		$this->filteredSensors[] = $sensor;
-
-		$this->filteredSensors = array_unique($this->filteredSensors, SORT_REGULAR);
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */

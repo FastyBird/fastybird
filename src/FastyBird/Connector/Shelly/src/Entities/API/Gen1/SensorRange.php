@@ -31,7 +31,7 @@ final class SensorRange implements Entities\API\Entity
 {
 
 	/**
-	 * @param array<string>|array<int>|array<float>|array<int, array<int, (string|array<int, string>|null)>>|array<int, (int|null)>|array<int, (float|null)>|array<int, (MetadataTypes\SwitchPayload|string|Types\RelayPayload|null)>|null $format
+	 * @param array<string>|array<int>|array<float>|array<int, array<int, (array<int, string>|null)>>|null $format
 	 */
 	public function __construct(
 		private readonly MetadataTypes\DataType $dataType,
@@ -47,7 +47,7 @@ final class SensorRange implements Entities\API\Entity
 	}
 
 	/**
-	 * @return array<string>|array<int>|array<float>|array<int, array<int, (string|array<int, string>|null)>>|array<int, (int|null)>|array<int, (float|null)>|array<int, (MetadataTypes\SwitchPayload|string|Types\RelayPayload|null)>|null
+	 * @return array<string>|array<int>|array<float>|array<int, array<int, (array<int, string>|null)>>|null
 	 */
 	public function getFormat(): array|null
 	{

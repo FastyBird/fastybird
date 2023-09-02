@@ -64,13 +64,6 @@ final class DeviceBlockDescription implements Entities\API\Entity
 		return $this->sensors;
 	}
 
-	public function addSensor(BlockSensorDescription $sensor): void
-	{
-		$this->sensors[] = $sensor;
-
-		$this->sensors = array_unique($this->sensors, SORT_REGULAR);
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */

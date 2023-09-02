@@ -32,7 +32,7 @@ final class PropertyDescription implements Entity
 {
 
 	/**
-	 * @param array<string>|array<int>|array<float>|array<int, array<int, (string|array<int, string>|null)>>|array<int, (int|null)>|array<int, (float|null)>|array<int, (MetadataTypes\SwitchPayload|string|Types\RelayPayload|null)>|null $format
+	 * @param array<string>|array<int>|array<float>|array<int, array<int, (array<int, string>|null)>>|null $format
 	 */
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
@@ -50,10 +50,23 @@ final class PropertyDescription implements Entity
 		])]
 		private readonly string|null $unit = null,
 		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\ArrayOf(new ObjectMapper\Rules\StringValue(notEmpty: true)),
+			new ObjectMapper\Rules\ArrayOf(new ObjectMapper\Rules\IntValue()),
+			new ObjectMapper\Rules\ArrayOf(new ObjectMapper\Rules\FloatValue()),
 			new ObjectMapper\Rules\ArrayOf(
-				new ObjectMapper\Rules\MixedValue(),
+				new ObjectMapper\Rules\ArrayOf(
+					new ObjectMapper\Rules\ArrayOf(
+						new ObjectMapper\Rules\AnyOf([
+							new ObjectMapper\Rules\StringValue(notEmpty: true),
+							new ObjectMapper\Rules\NullValue(castEmptyString: true),
+						]),
+						new ObjectMapper\Rules\IntValue(),
+					),
+					new ObjectMapper\Rules\IntValue(),
+				),
+				new ObjectMapper\Rules\IntValue(),
 			),
-			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+			new ObjectMapper\Rules\NullValue(),
 		])]
 		private readonly array|null $format = null,
 		#[ObjectMapper\Rules\AnyOf([
@@ -92,7 +105,7 @@ final class PropertyDescription implements Entity
 	}
 
 	/**
-	 * @return array<string>|array<int>|array<float>|array<int, array<int, (string|array<int, string>|null)>>|array<int, (int|null)>|array<int, (float|null)>|array<int, (MetadataTypes\SwitchPayload|string|Types\RelayPayload|null)>|null
+	 * @return array<string>|array<int>|array<float>|array<int, array<int, (array<int, string>|null)>>|null
 	 */
 	public function getFormat(): mixed
 	{

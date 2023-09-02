@@ -409,15 +409,14 @@ final class Gen1HttpApi extends HttpApi
 							$sensorRange = $this->parseSensorRange(
 								strval($block->offsetGet('D')),
 								strval($sensor->offsetGet('D')),
-								$sensor->offsetExists('R') ? (is_array(
-									$sensor->offsetGet('R'),
-								) || $sensor->offsetGet(
-									'R',
-								) instanceof Utils\ArrayHash ? (array) $sensor->offsetGet(
-									'R',
-								) : strval(
-									$sensor->offsetGet('R'),
-								)) : null,
+								$sensor->offsetExists('R')
+									? (
+										is_array($sensor->offsetGet('R'))
+										|| $sensor->offsetGet('R') instanceof Utils\ArrayHash
+											? (array) $sensor->offsetGet('R')
+											: strval($sensor->offsetGet('R'))
+									)
+									: null,
 							);
 						} catch (Exceptions\Runtime $ex) {
 							throw new Exceptions\HttpApiCall(
@@ -900,7 +899,7 @@ final class Gen1HttpApi extends HttpApi
 	/**
 	 * @param array<string>|array<int>|array<float>|null $format
 	 *
-	 * @return array<string>|array<int>|array<float>|array<int, array<int, (string|array<int, string>|null)>>|array<int, (int|null)>|array<int, (float|null)>|array<int, (MetadataTypes\SwitchPayload|string|Types\RelayPayload|null)>|null
+	 * @return array<string>|array<int>|array<float>|array<int, array<int, (array<int, string>|null)>>|null
 	 */
 	private function adjustSensorFormat(
 		string $block,

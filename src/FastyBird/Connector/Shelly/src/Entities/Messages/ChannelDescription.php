@@ -72,13 +72,6 @@ final class ChannelDescription implements Entity
 		return $this->filteredProperties;
 	}
 
-	public function addProperty(PropertyDescription $property): void
-	{
-		$this->filteredProperties[] = $property;
-
-		$this->filteredProperties = array_unique($this->filteredProperties, SORT_REGULAR);
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */
