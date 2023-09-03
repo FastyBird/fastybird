@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Shelly\Entities\API\Gen1;
 
 use FastyBird\Connector\Shelly\Entities;
+use Orisai\ObjectMapper;
 
 /**
  * Generation 1 device input state entity
@@ -29,9 +30,18 @@ final class DeviceInputState implements Entities\API\Entity
 {
 
 	public function __construct(
+		#[ObjectMapper\Rules\IntValue()]
 		private readonly int $input,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $event,
+		#[ObjectMapper\Rules\IntValue()]
+		#[ObjectMapper\Modifiers\FieldName('event_count')]
 		private readonly int $eventCount,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('last_sequence')]
 		private readonly string|null $lastSequence = null,
 	)
 	{

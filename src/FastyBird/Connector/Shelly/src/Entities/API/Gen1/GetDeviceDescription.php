@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Shelly\Entities\API\Gen1;
 
 use FastyBird\Connector\Shelly\Entities;
+use Orisai\ObjectMapper;
 use function array_map;
 use function array_unique;
 use const SORT_REGULAR;
@@ -32,14 +33,19 @@ final class GetDeviceDescription implements Entities\API\Entity
 {
 
 	/** @var array<DeviceBlockDescription> */
-	private array $blocks;
+	private array $filteredBlocks;
 
 	/**
 	 * @param array<DeviceBlockDescription> $blocks
 	 */
-	public function __construct(array $blocks)
+	public function __construct(
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(DeviceBlockDescription::class),
+		)]
+		private readonly array $blocks,
+	)
 	{
-		$this->blocks = array_unique($blocks, SORT_REGULAR);
+		$this->filteredBlocks = array_unique($this->blocks, SORT_REGULAR);
 	}
 
 	/**
@@ -47,7 +53,7 @@ final class GetDeviceDescription implements Entities\API\Entity
 	 */
 	public function getBlocks(): array
 	{
-		return $this->blocks;
+		return $this->filteredBlocks;
 	}
 
 	/**

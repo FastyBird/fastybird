@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Shelly\Entities\API\Gen1;
 
 use FastyBird\Connector\Shelly\Entities;
+use Orisai\ObjectMapper;
 
 /**
  * Generation 1 device energy meter state entity
@@ -29,13 +30,25 @@ final class DeviceEmeterState implements Entities\API\Entity
 {
 
 	public function __construct(
+		#[ObjectMapper\Rules\FloatValue()]
+		#[ObjectMapper\Modifiers\FieldName('active_power')]
 		private readonly float $activePower,
+		#[ObjectMapper\Rules\FloatValue()]
+		#[ObjectMapper\Modifiers\FieldName('power_factor')]
 		private readonly float $powerFactor,
+		#[ObjectMapper\Rules\FloatValue()]
+		#[ObjectMapper\Modifiers\FieldName('reactive_power')]
 		private readonly float $reactivePower,
+		#[ObjectMapper\Rules\FloatValue()]
 		private readonly float $current,
+		#[ObjectMapper\Rules\FloatValue()]
 		private readonly float $voltage,
+		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $valid,
+		#[ObjectMapper\Rules\FloatValue()]
 		private readonly float $total,
+		#[ObjectMapper\Rules\FloatValue()]
+		#[ObjectMapper\Modifiers\FieldName('total_returned')]
 		private readonly float $totalReturned,
 	)
 	{

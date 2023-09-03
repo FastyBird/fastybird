@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Shelly\Entities\API\Gen1;
 
 use FastyBird\Connector\Shelly\Entities;
+use Orisai\ObjectMapper;
 
 /**
  * Generation 1 device light state entity
@@ -29,21 +30,41 @@ final class DeviceLightState implements Entities\API\Entity
 {
 
 	public function __construct(
+		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $state,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $source,
+		#[ObjectMapper\Rules\BoolValue()]
+		#[ObjectMapper\Modifiers\FieldName('has_timer')]
 		private readonly bool $hasTimer,
+		#[ObjectMapper\Rules\IntValue()]
+		#[ObjectMapper\Modifiers\FieldName('timer_started')]
 		private readonly int $timerStarted,
+		#[ObjectMapper\Rules\IntValue()]
+		#[ObjectMapper\Modifiers\FieldName('timer_Duration')]
 		private readonly int $timerDuration,
+		#[ObjectMapper\Rules\IntValue()]
+		#[ObjectMapper\Modifiers\FieldName('timer_remaining')]
 		private readonly int $timerRemaining,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $mode,
+		#[ObjectMapper\Rules\IntValue()]
 		private readonly int $red,
+		#[ObjectMapper\Rules\IntValue()]
 		private readonly int $green,
+		#[ObjectMapper\Rules\IntValue()]
 		private readonly int $blue,
+		#[ObjectMapper\Rules\IntValue()]
 		private readonly int $white,
+		#[ObjectMapper\Rules\IntValue()]
 		private readonly int $gain,
+		#[ObjectMapper\Rules\IntValue()]
 		private readonly int $temperature,
+		#[ObjectMapper\Rules\IntValue()]
 		private readonly int $brightness,
+		#[ObjectMapper\Rules\IntValue()]
 		private readonly int $effect,
+		#[ObjectMapper\Rules\IntValue()]
 		private readonly int $transition,
 	)
 	{

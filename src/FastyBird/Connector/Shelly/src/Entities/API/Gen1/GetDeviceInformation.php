@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Shelly\Entities\API\Gen1;
 
 use FastyBird\Connector\Shelly\Entities;
+use Orisai\ObjectMapper;
 
 /**
  * Generation 1 device information entity
@@ -29,10 +30,15 @@ final class GetDeviceInformation implements Entities\API\Entity
 {
 
 	public function __construct(
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $type,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $mac,
+		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $auth,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $fw,
+		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $longid,
 	)
 	{

@@ -17,7 +17,9 @@ namespace FastyBird\Connector\Shelly\Entities\API\Gen1;
 
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Types;
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use Orisai\ObjectMapper;
 
 /**
  * Block sensor description entity
@@ -34,14 +36,50 @@ final class BlockSensorDescription implements Entities\API\Entity
 	 * @param array<string>|array<int>|array<float>|array<int, array<int, (array<int, string>|null)>>|null $format
 	 */
 	public function __construct(
+		#[ObjectMapper\Rules\IntValue()]
 		private readonly int $identifier,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\SensorType::class)]
 		private readonly Types\SensorType $type,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $description,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\DataType::class)]
+		#[ObjectMapper\Modifiers\FieldName('data_Type')]
 		private readonly MetadataTypes\DataType $dataType,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly string|null $unit = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\ArrayOf(new ObjectMapper\Rules\StringValue(notEmpty: true)),
+			new ObjectMapper\Rules\ArrayOf(new ObjectMapper\Rules\IntValue()),
+			new ObjectMapper\Rules\ArrayOf(new ObjectMapper\Rules\FloatValue()),
+			new ObjectMapper\Rules\ArrayOf(
+				new ObjectMapper\Rules\ArrayOf(
+					new ObjectMapper\Rules\ArrayOf(
+						new ObjectMapper\Rules\AnyOf([
+							new ObjectMapper\Rules\StringValue(notEmpty: true),
+							new ObjectMapper\Rules\NullValue(castEmptyString: true),
+						]),
+						new ObjectMapper\Rules\IntValue(),
+					),
+					new ObjectMapper\Rules\IntValue(),
+				),
+				new ObjectMapper\Rules\IntValue(),
+			),
+			new ObjectMapper\Rules\NullValue(),
+		])]
 		private readonly array|null $format = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly float|int|string|null $invalid = null,
+		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $queryable = false,
+		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $settable = false,
 	)
 	{

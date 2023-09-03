@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Shelly\Entities\API\Gen1;
 
 use FastyBird\Connector\Shelly\Entities;
+use Orisai\ObjectMapper;
 
 /**
  * Generation 1 device roller state entity
@@ -29,15 +30,29 @@ final class DeviceRollerState implements Entities\API\Entity
 {
 
 	public function __construct(
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $state,
+		#[ObjectMapper\Rules\IntValue()]
 		private readonly int $power,
+		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $valid,
+		#[ObjectMapper\Rules\BoolValue()]
+		#[ObjectMapper\Modifiers\FieldName('safety_switch')]
 		private readonly bool $safetySwitch,
+		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $overtemperature,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		#[ObjectMapper\Modifiers\FieldName('stop_reason')]
 		private readonly string $stopReason,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		#[ObjectMapper\Modifiers\FieldName('last_direction')]
 		private readonly string $lastDirection,
+		#[ObjectMapper\Rules\IntValue()]
+		#[ObjectMapper\Modifiers\FieldName('current_pos')]
 		private readonly int $currentPos,
+		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $calibrating,
+		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $positioning,
 	)
 	{

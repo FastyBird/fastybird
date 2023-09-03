@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Shelly\Entities\API\Gen1;
 
 use FastyBird\Connector\Shelly\Entities;
+use Orisai\ObjectMapper;
 
 /**
  * Generation 1 device block state entity
@@ -29,8 +30,15 @@ final class DeviceBlockState implements Entities\API\Entity
 {
 
 	public function __construct(
+		#[ObjectMapper\Rules\IntValue()]
 		private readonly int $block,
+		#[ObjectMapper\Rules\IntValue()]
 		private readonly int $sensor,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+		])]
 		private readonly int|float|string $value,
 	)
 	{

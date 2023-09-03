@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Shelly\Entities\API\Gen1;
 
 use FastyBird\Connector\Shelly\Entities;
+use Orisai\ObjectMapper;
 use function array_map;
 
 /**
@@ -33,8 +34,14 @@ final class ReportDeviceState implements Entities\API\Entity
 	 * @param array<DeviceBlockState> $states
 	 */
 	public function __construct(
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $identifier,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		#[ObjectMapper\Modifiers\FieldName('ip_address')]
 		private readonly string $ipAddress,
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(DeviceBlockState::class),
+		)]
 		private readonly array $states = [],
 	)
 	{

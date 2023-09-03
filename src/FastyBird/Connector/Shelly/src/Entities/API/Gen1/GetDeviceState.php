@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Shelly\Entities\API\Gen1;
 
 use FastyBird\Connector\Shelly\Entities;
+use Orisai\ObjectMapper;
 use function array_map;
 
 /**
@@ -38,12 +39,34 @@ final class GetDeviceState implements Entities\API\Entity
 	 * @param array<int, DeviceEmeterState> $emeters
 	 */
 	public function __construct(
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(DeviceRelayState::class),
+		)]
 		private readonly array $relays = [],
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(DeviceRollerState::class),
+		)]
 		private readonly array $rollers = [],
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(DeviceInputState::class),
+		)]
 		private readonly array $inputs = [],
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(DeviceLightState::class),
+		)]
 		private readonly array $lights = [],
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(DeviceMeterState::class),
+		)]
 		private readonly array $meters = [],
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(DeviceEmeterState::class),
+		)]
 		private readonly array $emeters = [],
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\MappedObjectValue(WifiStaState::class),
+			new ObjectMapper\Rules\NullValue(),
+		])]
 		private readonly WifiStaState|null $wifi = null,
 	)
 	{

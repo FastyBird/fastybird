@@ -19,6 +19,7 @@ use DateTimeInterface;
 use Exception;
 use FastyBird\Connector\Shelly\Entities;
 use Nette\Utils;
+use Orisai\ObjectMapper;
 use function intval;
 
 /**
@@ -36,11 +37,25 @@ final class DeviceMeterState implements Entities\API\Entity
 	 * @param array<float> $counters
 	 */
 	public function __construct(
+		#[ObjectMapper\Rules\FloatValue()]
 		private readonly float $power,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\BoolValue(),
+		])]
 		private readonly float|bool $overpower,
+		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $valid,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly float|null $timestamp,
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\FloatValue(),
+		)]
 		private readonly array $counters,
+		#[ObjectMapper\Rules\FloatValue()]
 		private readonly float $total,
 	)
 	{

@@ -16,7 +16,9 @@
 namespace FastyBird\Connector\Shelly\Entities\API\Gen1;
 
 use FastyBird\Connector\Shelly\Entities;
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use Orisai\ObjectMapper;
 
 /**
  * Parsed sensor range entity
@@ -33,8 +35,35 @@ final class SensorRange implements Entities\API\Entity
 	 * @param array<string>|array<int>|array<float>|array<int, array<int, (array<int, string>|null)>>|null $format
 	 */
 	public function __construct(
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\DataType::class)]
+		#[ObjectMapper\Modifiers\FieldName('data_Type')]
 		private readonly MetadataTypes\DataType $dataType,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\ArrayOf(new ObjectMapper\Rules\StringValue(notEmpty: true)),
+			new ObjectMapper\Rules\ArrayOf(new ObjectMapper\Rules\IntValue()),
+			new ObjectMapper\Rules\ArrayOf(new ObjectMapper\Rules\FloatValue()),
+			new ObjectMapper\Rules\ArrayOf(
+				new ObjectMapper\Rules\ArrayOf(
+					new ObjectMapper\Rules\ArrayOf(
+						new ObjectMapper\Rules\AnyOf([
+							new ObjectMapper\Rules\StringValue(notEmpty: true),
+							new ObjectMapper\Rules\NullValue(castEmptyString: true),
+						]),
+						new ObjectMapper\Rules\IntValue(),
+					),
+					new ObjectMapper\Rules\IntValue(),
+				),
+				new ObjectMapper\Rules\IntValue(),
+			),
+			new ObjectMapper\Rules\NullValue(),
+		])]
 		private readonly array|null $format,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly int|float|string|null $invalid,
 	)
 	{

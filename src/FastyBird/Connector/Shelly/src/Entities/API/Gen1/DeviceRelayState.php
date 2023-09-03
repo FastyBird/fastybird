@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Shelly\Entities\API\Gen1;
 
 use FastyBird\Connector\Shelly\Entities;
+use Orisai\ObjectMapper;
 
 /**
  * Generation 1 device relay state entity
@@ -29,14 +30,30 @@ final class DeviceRelayState implements Entities\API\Entity
 {
 
 	public function __construct(
+		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $state,
+		#[ObjectMapper\Rules\BoolValue()]
+		#[ObjectMapper\Modifiers\FieldName('has_timer')]
 		private readonly bool $hasTimer,
+		#[ObjectMapper\Rules\IntValue()]
+		#[ObjectMapper\Modifiers\FieldName('timer_started')]
 		private readonly int $timerStarted,
+		#[ObjectMapper\Rules\IntValue()]
+		#[ObjectMapper\Modifiers\FieldName('timer_duration')]
 		private readonly int $timerDuration,
+		#[ObjectMapper\Rules\IntValue()]
+		#[ObjectMapper\Modifiers\FieldName('timer_Remaining')]
 		private readonly int $timerRemaining,
+		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $overpower,
+		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $overtemperature,
+		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $valid,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly string|null $source,
 	)
 	{
