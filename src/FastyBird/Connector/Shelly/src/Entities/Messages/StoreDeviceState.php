@@ -76,7 +76,7 @@ final class StoreDeviceState extends Device
 		return array_merge(parent::toArray(), [
 			'ip_address' => $this->getIpAddress(),
 			'states' => array_map(
-				static fn (PropertyState|ChannelState $status): array => $status->toArray(),
+				static fn (PropertyState|ChannelState $state): array => $state->toArray(),
 				$this->getStates(),
 			),
 		]);

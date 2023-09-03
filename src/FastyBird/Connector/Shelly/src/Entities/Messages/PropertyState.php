@@ -15,11 +15,7 @@
 
 namespace FastyBird\Connector\Shelly\Entities\Messages;
 
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Orisai\ObjectMapper;
-use function is_scalar;
-use function strval;
 
 /**
  * Device or channel property state entity
@@ -41,9 +37,8 @@ final class PropertyState implements Entity
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\BoolValue(),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
-			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\SwitchPayload::class),
 		])]
-		private readonly float|int|string|bool|MetadataTypes\SwitchPayload|null $value,
+		private readonly float|int|string|bool|null $value,
 	)
 	{
 	}
@@ -53,7 +48,7 @@ final class PropertyState implements Entity
 		return $this->identifier;
 	}
 
-	public function getValue(): float|int|string|bool|MetadataTypes\SwitchPayload|null
+	public function getValue(): float|int|string|bool|null
 	{
 		return $this->value;
 	}
@@ -65,7 +60,7 @@ final class PropertyState implements Entity
 	{
 		return [
 			'identifier' => $this->getIdentifier(),
-			'value' => is_scalar($this->getValue()) ? $this->getValue() : strval($this->getValue()),
+			'value' => $this->getValue(),
 		];
 	}
 

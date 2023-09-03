@@ -28,27 +28,20 @@ use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Fig\Http\Message\StatusCodeInterface;
 use Nette;
-use Nette\Utils;
 use Psr\EventDispatcher as PsrEventDispatcher;
 use React\EventLoop;
 use RuntimeException;
 use Throwable;
-use function array_filter;
 use function array_key_exists;
-use function array_map;
 use function array_merge;
 use function count;
 use function in_array;
-use function is_bool;
-use function is_numeric;
 use function strval;
 
 /**
@@ -90,9 +83,6 @@ final class Local implements Client
 		private readonly Helpers\Entity $entityHelper,
 		private readonly Shelly\Logger $logger,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
-		private readonly DevicesModels\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
-		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
-		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
@@ -610,10 +600,7 @@ final class Local implements Client
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 */
 	private function processGen1DeviceGetState(
 		Entities\ShellyDevice $device,
@@ -622,574 +609,203 @@ final class Local implements Client
 	{
 		$states = [];
 
-		foreach ($state->getInputs() as $index => $input) {
-			$findChannelsQuery = new DevicesQueries\FindChannels();
-			$findChannelsQuery->forDevice($device);
-
-			$channels = $this->channelsRepository->findAllBy($findChannelsQuery);
-
-			foreach ($channels as $channel) {
-				if (Utils\Strings::endsWith($channel->getIdentifier(), '_' . $index)) {
-					$result = [];
-
-					foreach ($channel->getProperties() as $property) {
-						if (Utils\Strings::endsWith(
-							$property->getIdentifier(),
-							'_' . Types\SensorDescription::INPUT,
-						)) {
-							$result[] = [
-								'identifier' => $property->getIdentifier(),
-								'value' => Helpers\Transformer::transformValueFromDevice(
-									$property->getDataType(),
-									$property->getFormat(),
-									$input->getInput(),
-								),
-							];
-						} elseif (Utils\Strings::endsWith(
-							$property->getIdentifier(),
-							'_' . Types\SensorDescription::INPUT_EVENT,
-						)) {
-							$result[] = [
-								'identifier' => $property->getIdentifier(),
-								'value' => Helpers\Transformer::transformValueFromDevice(
-									$property->getDataType(),
-									$property->getFormat(),
-									$input->getEvent(),
-								),
-							];
-						} elseif (Utils\Strings::endsWith(
-							$property->getIdentifier(),
-							'_' . Types\SensorDescription::INPUT_EVENT_COUNT,
-						)) {
-							$result[] = [
-								'identifier' => $property->getIdentifier(),
-								'value' => Helpers\Transformer::transformValueFromDevice(
-									$property->getDataType(),
-									$property->getFormat(),
-									$input->getEventCnt(),
-								),
-							];
-						}
-					}
-
-					if (count($result) > 0) {
-						$states[] = [
-							'identifier' => $channel->getIdentifier(),
-							'sensors' => $result,
-						];
-					}
-
-					break;
-				}
+		if ($state->getInputs() !== []) {
+			foreach ($state->getInputs() as $index => $input) {
+				$states[] = [
+					'identifier' => Types\BlockDescription::INPUT . '_' . $index,
+					'sensors' => [
+						[
+							'identifier' => '_' . Types\SensorDescription::INPUT,
+							'value' => $input->getInput(),
+						],
+						[
+							'identifier' => '_' . Types\SensorDescription::INPUT_EVENT,
+							'value' => $input->getEvent(),
+						],
+						[
+							'identifier' => '_' . Types\SensorDescription::INPUT_EVENT_COUNT,
+							'value' => $input->getEventCnt(),
+						],
+					],
+				];
 			}
 		}
 
-		foreach ($state->getMeters() as $index => $meter) {
-			$findChannelsQuery = new DevicesQueries\FindChannels();
-			$findChannelsQuery->forDevice($device);
-
-			$channels = $this->channelsRepository->findAllBy($findChannelsQuery);
-
-			foreach ($channels as $channel) {
-				if (Utils\Strings::endsWith($channel->getIdentifier(), '_' . $index)) {
-					$result = [];
-
-					foreach ($channel->getProperties() as $property) {
-						if (
-							Utils\Strings::endsWith(
-								$property->getIdentifier(),
-								'_' . Types\SensorDescription::ACTIVE_POWER,
-							)
-							|| Utils\Strings::endsWith(
-								$property->getIdentifier(),
-								'_' . Types\SensorDescription::ROLLER_POWER,
-							)
-						) {
-							$result[] = [
-								'identifier' => $property->getIdentifier(),
-								'value' => Helpers\Transformer::transformValueFromDevice(
-									$property->getDataType(),
-									$property->getFormat(),
-									$meter->getPower(),
-								),
-							];
-						} elseif (
-							(
-								Utils\Strings::endsWith(
-									$property->getIdentifier(),
-									'_' . Types\SensorDescription::OVERPOWER,
-								)
-								|| Utils\Strings::endsWith(
-									$property->getIdentifier(),
-									'_' . Types\SensorDescription::OVERPOWER_VALUE,
-								)
-							)
-						) {
-							if (
-								(
-									$property->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_BOOLEAN)
-									&& is_bool($meter->getOverpower())
-								) || (
-									!$property->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_BOOLEAN)
-									&& is_numeric($meter->getOverpower())
-								)
-							) {
-								$result[] = [
-									'identifier' => $property->getIdentifier(),
-									'value' => Helpers\Transformer::transformValueFromDevice(
-										$property->getDataType(),
-										$property->getFormat(),
-										$meter->getOverpower(),
-									),
-								];
-							}
-						} elseif (
-							Utils\Strings::endsWith(
-								$property->getIdentifier(),
-								'_' . Types\SensorDescription::ENERGY,
-							)
-							|| Utils\Strings::endsWith(
-								$property->getIdentifier(),
-								'_' . Types\SensorDescription::ROLLER_ENERGY,
-							)
-						) {
-							$result[] = [
-								'identifier' => $property->getIdentifier(),
-								'value' => Helpers\Transformer::transformValueFromDevice(
-									$property->getDataType(),
-									$property->getFormat(),
-									$meter->getTotal(),
-								),
-							];
-						}
-					}
-
-					if (count($result) > 0) {
-						$states[] = [
-							'identifier' => $channel->getIdentifier(),
-							'sensors' => $result,
-						];
-					}
-
-					break;
-				}
+		if ($state->getMeters() !== []) {
+			foreach ($state->getMeters() as $index => $meter) {
+				$states[] = [
+					'identifier' => Types\BlockDescription::METER . '_' . $index,
+					'sensors' => [
+						[
+							'identifier' => '_' . Types\SensorDescription::ACTIVE_POWER,
+							'value' => $meter->getPower(),
+						],
+						[
+							'identifier' => '_' . Types\SensorDescription::ROLLER_POWER,
+							'value' => $meter->getPower(),
+						],
+						[
+							'identifier' => '_' . Types\SensorDescription::OVERPOWER,
+							'value' => $meter->getOverpower(),
+						],
+						[
+							'identifier' => '_' . Types\SensorDescription::OVERPOWER_VALUE,
+							'value' => $meter->getOverpower(),
+						],
+						[
+							'identifier' => '_' . Types\SensorDescription::ENERGY,
+							'value' => $meter->getTotal(),
+						],
+						[
+							'identifier' => '_' . Types\SensorDescription::ROLLER_ENERGY,
+							'value' => $meter->getTotal(),
+						],
+					],
+				];
 			}
 		}
 
-		foreach ($state->getRelays() as $index => $relay) {
-			$findChannelsQuery = new DevicesQueries\FindChannels();
-			$findChannelsQuery->forDevice($device);
+		if ($state->getRelays() !== []) {
+			foreach ($state->getRelays() as $index => $relay) {
+				$states[] = [
+					'identifier' => Types\BlockDescription::RELAY . '_' . $index,
+					'sensors' => [
+						[
+							'identifier' => '_' . Types\SensorDescription::OUTPUT,
+							'value' => $relay->getState(),
+						],
+						[
+							'identifier' => '_' . Types\SensorDescription::OVERPOWER,
+							'value' => $relay->hasOverpower(),
+						],
+					],
+				];
 
-			$channels = $this->channelsRepository->findAllBy($findChannelsQuery);
-
-			foreach ($channels as $channel) {
-				if (Utils\Strings::endsWith(
-					$channel->getIdentifier(),
-					Types\BlockDescription::RELAY . '_' . $index,
-				)) {
-					$result = [];
-
-					foreach ($channel->getProperties() as $property) {
-						if (Utils\Strings::endsWith(
-							$property->getIdentifier(),
-							'_' . Types\SensorDescription::OUTPUT,
-						)) {
-							$result[] = [
-								'identifier' => $property->getIdentifier(),
-								'value' => Helpers\Transformer::transformValueFromDevice(
-									$property->getDataType(),
-									$property->getFormat(),
-									$relay->getState(),
-								),
-							];
-						} elseif (Utils\Strings::endsWith(
-							$property->getIdentifier(),
-							'_' . Types\SensorDescription::OVERPOWER,
-						)) {
-							$result[] = [
-								'identifier' => $property->getIdentifier(),
-								'value' => Helpers\Transformer::transformValueFromDevice(
-									$property->getDataType(),
-									$property->getFormat(),
-									$relay->hasOverpower(),
-								),
-							];
-						}
-					}
-
-					if (count($result) > 0) {
-						$states[] = [
-							'identifier' => $channel->getIdentifier(),
-							'sensors' => $result,
-						];
-					}
-				} elseif (Utils\Strings::endsWith($channel->getIdentifier(), Types\BlockDescription::DEVICE)) {
-					$result = [];
-
-					foreach ($channel->getProperties() as $property) {
-						if (Utils\Strings::endsWith(
-							$property->getIdentifier(),
-							'_' . Types\SensorDescription::OVERTEMPERATURE,
-						)) {
-							$result[] = [
-								'identifier' => $property->getIdentifier(),
-								'value' => Helpers\Transformer::transformValueFromDevice(
-									$property->getDataType(),
-									$property->getFormat(),
-									$relay->hasOvertemperature(),
-								),
-							];
-						}
-					}
-
-					if (count($result) > 0) {
-						$states[] = [
-							'identifier' => $channel->getIdentifier(),
-							'sensors' => $result,
-						];
-					}
-				}
+				$states[] = [
+					'identifier' => Types\BlockDescription::DEVICE,
+					'sensors' => [
+						[
+							'identifier' => '_' . Types\SensorDescription::OVERTEMPERATURE,
+							'value' => $relay->hasOvertemperature(),
+						],
+					],
+				];
 			}
 		}
 
-		foreach ($state->getRollers() as $index => $roller) {
-			$findChannelsQuery = new DevicesQueries\FindChannels();
-			$findChannelsQuery->forDevice($device);
+		if ($state->getRollers() !== []) {
+			foreach ($state->getRollers() as $index => $roller) {
+				$states[] = [
+					'identifier' => Types\BlockDescription::ROLLER . '_' . $index,
+					'sensors' => [
+						[
+							'identifier' => '_' . Types\SensorDescription::ROLLER,
+							'value' => $roller->getState(),
+						],
+						[
+							'identifier' => '_' . Types\SensorDescription::ROLLER_POSITION,
+							'value' => $roller->getCurrentPosition(),
+						],
+						[
+							'identifier' => '_' . Types\SensorDescription::ROLLER_STOP_REASON,
+							'value' => $roller->getStopReason(),
+						],
+					],
+				];
 
-			$channels = $this->channelsRepository->findAllBy($findChannelsQuery);
-
-			foreach ($channels as $channel) {
-				if (Utils\Strings::endsWith(
-					$channel->getIdentifier(),
-					Types\BlockDescription::ROLLER . '_' . $index,
-				)) {
-					$result = [];
-
-					foreach ($channel->getProperties() as $property) {
-						if (Utils\Strings::endsWith(
-							$property->getIdentifier(),
-							'_' . Types\SensorDescription::ROLLER,
-						)) {
-							$result[] = [
-								'identifier' => $property->getIdentifier(),
-								'value' => Helpers\Transformer::transformValueFromDevice(
-									$property->getDataType(),
-									$property->getFormat(),
-									$roller->getState(),
-								),
-							];
-
-						} elseif (Utils\Strings::endsWith(
-							$property->getIdentifier(),
-							'_' . Types\SensorDescription::ROLLER_POSITION,
-						)) {
-							$result[] = [
-								'identifier' => $property->getIdentifier(),
-								'value' => Helpers\Transformer::transformValueFromDevice(
-									$property->getDataType(),
-									$property->getFormat(),
-									$roller->getCurrentPosition(),
-								),
-							];
-
-						} elseif (Utils\Strings::endsWith(
-							$property->getIdentifier(),
-							'_' . Types\SensorDescription::ROLLER_STOP_REASON,
-						)) {
-							$result[] = [
-								'identifier' => $property->getIdentifier(),
-								'value' => Helpers\Transformer::transformValueFromDevice(
-									$property->getDataType(),
-									$property->getFormat(),
-									$roller->getStopReason(),
-								),
-							];
-						}
-					}
-
-					if (count($result) > 0) {
-						$states[] = [
-							'identifier' => $channel->getIdentifier(),
-							'sensors' => $result,
-						];
-					}
-				} elseif (Utils\Strings::endsWith($channel->getIdentifier(), Types\BlockDescription::DEVICE)) {
-					$result = [];
-
-					foreach ($channel->getProperties() as $property) {
-						if (Utils\Strings::endsWith(
-							$property->getIdentifier(),
-							'_' . Types\SensorDescription::OVERTEMPERATURE,
-						)) {
-							$result[] = [
-								'identifier' => $property->getIdentifier(),
-								'value' => Helpers\Transformer::transformValueFromDevice(
-									$property->getDataType(),
-									$property->getFormat(),
-									$roller->hasOvertemperature(),
-								),
-							];
-						}
-					}
-
-					if (count($result) > 0) {
-						$states[] = [
-							'identifier' => $channel->getIdentifier(),
-							'sensors' => $result,
-						];
-					}
-				}
+				$states[] = [
+					'identifier' => Types\BlockDescription::DEVICE,
+					'sensors' => [
+						[
+							'identifier' => '_' . Types\SensorDescription::OVERTEMPERATURE,
+							'value' => $roller->hasOvertemperature(),
+						],
+					],
+				];
 			}
 		}
 
-		foreach ($state->getLights() as $index => $light) {
-			$findChannelsQuery = new DevicesQueries\FindChannels();
-			$findChannelsQuery->forDevice($device);
-
-			$channels = $this->channelsRepository->findAllBy($findChannelsQuery);
-
-			foreach ($channels as $channel) {
-				if (Utils\Strings::endsWith(
-					$channel->getIdentifier(),
-					Types\BlockDescription::LIGHT . '_' . $index,
-				)) {
-					$result = [];
-
-					foreach ($channel->getProperties() as $property) {
-						if (Utils\Strings::endsWith(
-							$property->getIdentifier(),
-							'_' . Types\SensorDescription::RED,
-						)) {
-							$result[] = [
-								'identifier' => $property->getIdentifier(),
-								'value' => Helpers\Transformer::transformValueFromDevice(
-									$property->getDataType(),
-									$property->getFormat(),
-									$light->getRed(),
-								),
-							];
-
-						} elseif (Utils\Strings::endsWith(
-							$property->getIdentifier(),
-							'_' . Types\SensorDescription::GREEN,
-						)) {
-							$result[] = [
-								'identifier' => $property->getIdentifier(),
-								'value' => Helpers\Transformer::transformValueFromDevice(
-									$property->getDataType(),
-									$property->getFormat(),
-									$light->getGreen(),
-								),
-							];
-						} elseif (Utils\Strings::endsWith(
-							$property->getIdentifier(),
-							'_' . Types\SensorDescription::BLUE,
-						)) {
-							$result[] = [
-								'identifier' => $property->getIdentifier(),
-								'value' => Helpers\Transformer::transformValueFromDevice(
-									$property->getDataType(),
-									$property->getFormat(),
-									$light->getBlue(),
-								),
-							];
-						} elseif (Utils\Strings::endsWith(
-							$property->getIdentifier(),
-							'_' . Types\SensorDescription::GAIN,
-						)) {
-							$result[] = [
-								'identifier' => $property->getIdentifier(),
-								'value' => Helpers\Transformer::transformValueFromDevice(
-									$property->getDataType(),
-									$property->getFormat(),
-									$light->getGain(),
-								),
-							];
-						} elseif (
-							Utils\Strings::endsWith(
-								$property->getIdentifier(),
-								'_' . Types\SensorDescription::WHITE,
-							)
-							|| Utils\Strings::endsWith(
-								$property->getIdentifier(),
-								'_' . Types\SensorDescription::WHITE_LEVEL,
-							)
-						) {
-							$result[] = [
-								'identifier' => $property->getIdentifier(),
-								'value' => Helpers\Transformer::transformValueFromDevice(
-									$property->getDataType(),
-									$property->getFormat(),
-									$light->getWhite(),
-								),
-							];
-						} elseif (Utils\Strings::endsWith(
-							$property->getIdentifier(),
-							'_' . Types\SensorDescription::EFFECT,
-						)) {
-							$result[] = [
-								'identifier' => $property->getIdentifier(),
-								'value' => Helpers\Transformer::transformValueFromDevice(
-									$property->getDataType(),
-									$property->getFormat(),
-									$light->getEffect(),
-								),
-							];
-						} elseif (Utils\Strings::endsWith(
-							$property->getIdentifier(),
-							'_' . Types\SensorDescription::BRIGHTNESS,
-						)) {
-							$result[] = [
-								'identifier' => $property->getIdentifier(),
-								'value' => Helpers\Transformer::transformValueFromDevice(
-									$property->getDataType(),
-									$property->getFormat(),
-									$light->getBrightness(),
-								),
-							];
-						} elseif (Utils\Strings::endsWith(
-							$property->getIdentifier(),
-							'_' . Types\SensorDescription::OUTPUT,
-						)) {
-							$result[] = [
-								'identifier' => $property->getIdentifier(),
-								'value' => Helpers\Transformer::transformValueFromDevice(
-									$property->getDataType(),
-									$property->getFormat(),
-									$light->getState(),
-								),
-							];
-						}
-					}
-
-					if (count($result) > 0) {
-						$states[] = [
-							'identifier' => $channel->getIdentifier(),
-							'sensors' => $result,
-						];
-					}
-
-					break;
-				}
+		if ($state->getLights() !== []) {
+			foreach ($state->getLights() as $index => $light) {
+				$states[] = [
+					'identifier' => Types\BlockDescription::LIGHT . '_' . $index,
+					'sensors' => [
+						[
+							'identifier' => '_' . Types\SensorDescription::RED,
+							'value' => $light->getGreen(),
+						],
+						[
+							'identifier' => '_' . Types\SensorDescription::GREEN,
+							'value' => $light->getGreen(),
+						],
+						[
+							'identifier' => '_' . Types\SensorDescription::BLUE,
+							'value' => $light->getBlue(),
+						],
+						[
+							'identifier' => '_' . Types\SensorDescription::GAIN,
+							'value' => $light->getGain(),
+						],
+						[
+							'identifier' => '_' . Types\SensorDescription::WHITE,
+							'value' => $light->getWhite(),
+						],
+						[
+							'identifier' => '_' . Types\SensorDescription::WHITE_LEVEL,
+							'value' => $light->getWhite(),
+						],
+						[
+							'identifier' => '_' . Types\SensorDescription::EFFECT,
+							'value' => $light->getEffect(),
+						],
+						[
+							'identifier' => '_' . Types\SensorDescription::BRIGHTNESS,
+							'value' => $light->getBrightness(),
+						],
+						[
+							'identifier' => '_' . Types\SensorDescription::OUTPUT,
+							'value' => $light->getState(),
+						],
+					],
+				];
 			}
 		}
 
-		foreach ($state->getEmeters() as $index => $emeter) {
-			$findChannelsQuery = new DevicesQueries\FindChannels();
-			$findChannelsQuery->forDevice($device);
-
-			$channels = $this->channelsRepository->findAllBy($findChannelsQuery);
-
-			foreach ($channels as $channel) {
-				if (Utils\Strings::endsWith(
-					$channel->getIdentifier(),
-					Types\BlockDescription::EMETER . '_' . $index,
-				)) {
-					$result = [];
-
-					foreach ($channel->getProperties() as $property) {
-						if (Utils\Strings::endsWith(
-							$property->getIdentifier(),
-							'_' . Types\SensorDescription::ACTIVE_POWER,
-						)) {
-							$result[] = [
-								'identifier' => $property->getIdentifier(),
-								'value' => Helpers\Transformer::transformValueFromDevice(
-									$property->getDataType(),
-									$property->getFormat(),
-									$emeter->getActivePower(),
-								),
-							];
-
-						} elseif (Utils\Strings::endsWith(
-							$property->getIdentifier(),
-							'_' . Types\SensorDescription::REACTIVE_POWER,
-						)) {
-							$result[] = [
-								'identifier' => $property->getIdentifier(),
-								'value' => Helpers\Transformer::transformValueFromDevice(
-									$property->getDataType(),
-									$property->getFormat(),
-									$emeter->getReactivePower(),
-								),
-							];
-
-						} elseif (Utils\Strings::endsWith(
-							$property->getIdentifier(),
-							'_' . Types\SensorDescription::POWER_FACTOR,
-						)) {
-							$result[] = [
-								'identifier' => $property->getIdentifier(),
-								'value' => Helpers\Transformer::transformValueFromDevice(
-									$property->getDataType(),
-									$property->getFormat(),
-									$emeter->getPowerFactor(),
-								),
-							];
-
-						} elseif (Utils\Strings::endsWith(
-							$property->getIdentifier(),
-							'_' . Types\SensorDescription::CURRENT,
-						)) {
-							$result[] = [
-								'identifier' => $property->getIdentifier(),
-								'value' => Helpers\Transformer::transformValueFromDevice(
-									$property->getDataType(),
-									$property->getFormat(),
-									$emeter->getCurrent(),
-								),
-							];
-
-						} elseif (Utils\Strings::endsWith(
-							$property->getIdentifier(),
-							'_' . Types\SensorDescription::VOLTAGE,
-						)) {
-							$result[] = [
-								'identifier' => $property->getIdentifier(),
-								'value' => Helpers\Transformer::transformValueFromDevice(
-									$property->getDataType(),
-									$property->getFormat(),
-									$emeter->getVoltage(),
-								),
-							];
-
-						} elseif (Utils\Strings::endsWith(
-							$property->getIdentifier(),
-							'_' . Types\SensorDescription::ENERGY,
-						)) {
-							$result[] = [
-								'identifier' => $property->getIdentifier(),
-								'value' => Helpers\Transformer::transformValueFromDevice(
-									$property->getDataType(),
-									$property->getFormat(),
-									$emeter->getTotal(),
-								),
-							];
-
-						} elseif (Utils\Strings::endsWith(
-							$property->getIdentifier(),
-							'_' . Types\SensorDescription::ENERGY_RETURNED,
-						)) {
-							$result[] = [
-								'identifier' => $property->getIdentifier(),
-								'value' => Helpers\Transformer::transformValueFromDevice(
-									$property->getDataType(),
-									$property->getFormat(),
-									$emeter->getTotalReturned(),
-								),
-							];
-						}
-					}
-
-					if (count($result) > 0) {
-						$states[] = [
-							'identifier' => $channel->getIdentifier(),
-							'sensors' => $result,
-						];
-					}
-
-					break;
-				}
+		if ($state->getEmeters() !== []) {
+			foreach ($state->getEmeters() as $index => $emeter) {
+				$states[] = [
+					'identifier' => Types\BlockDescription::ROLLER . '_' . $index,
+					'sensors' => [
+						[
+							'identifier' => '_' . Types\SensorDescription::ACTIVE_POWER,
+							'value' => $emeter->getActivePower(),
+						],
+						[
+							'identifier' => '_' . Types\SensorDescription::REACTIVE_POWER,
+							'value' => $emeter->getReactivePower(),
+						],
+						[
+							'identifier' => '_' . Types\SensorDescription::POWER_FACTOR,
+							'value' => $emeter->getPowerFactor(),
+						],
+						[
+							'identifier' => '_' . Types\SensorDescription::CURRENT,
+							'value' => $emeter->getCurrent(),
+						],
+						[
+							'identifier' => '_' . Types\SensorDescription::VOLTAGE,
+							'value' => $emeter->getVoltage(),
+						],
+						[
+							'identifier' => '_' . Types\SensorDescription::ENERGY,
+							'value' => $emeter->getTotal(),
+						],
+						[
+							'identifier' => '_' . Types\SensorDescription::ENERGY_RETURNED,
+							'value' => $emeter->getTotalReturned(),
+						],
+					],
+				];
 			}
 		}
 
@@ -1201,7 +817,7 @@ final class Local implements Client
 						'connector' => $device->getConnector()->getId()->toString(),
 						'identifier' => $device->getIdentifier(),
 						'ip_address' => $state->getWifi()?->getIp(),
-						'state' => $states,
+						'states' => $states,
 					],
 				),
 			);
@@ -1209,10 +825,7 @@ final class Local implements Client
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function processGen1DeviceReportedStatus(
 		Entities\API\Gen1\ReportDeviceState $state,
@@ -1221,21 +834,10 @@ final class Local implements Client
 		$states = [];
 
 		foreach ($state->getStates() as $blockState) {
-			$property = $this->findGen1DeviceProperty(
-				$state->getIdentifier(),
-				$blockState->getSensor(),
-			);
-
-			if ($property !== null) {
-				$states[] = [
-					'identifier' => $property->getIdentifier(),
-					'value' => Helpers\Transformer::transformValueFromDevice(
-						$property->getDataType(),
-						$property->getFormat(),
-						$blockState->getValue(),
-					),
-				];
-			}
+			$states[] = [
+				'identifier' => $blockState->getSensor() . '_',
+				'value' => $blockState->getValue(),
+			];
 		}
 
 		$this->queue->append(
@@ -1249,17 +851,19 @@ final class Local implements Client
 			),
 		);
 
-		$this->queue->append(
-			$this->entityHelper->create(
-				Entities\Messages\StoreDeviceState::class,
-				[
-					'connector' => $this->connector->getId()->toString(),
-					'identifier' => $state->getIdentifier(),
-					'ip_address' => $state->getIpAddress(),
-					'state' => $states,
-				],
-			),
-		);
+		if (count($states) > 0) {
+			$this->queue->append(
+				$this->entityHelper->create(
+					Entities\Messages\StoreDeviceState::class,
+					[
+						'connector' => $this->connector->getId()->toString(),
+						'identifier' => $state->getIdentifier(),
+						'ip_address' => $state->getIpAddress(),
+						'states' => $states,
+					],
+				),
+			);
+		}
 	}
 
 	/**
@@ -1270,479 +874,242 @@ final class Local implements Client
 		Entities\API\Gen2\GetDeviceState $state,
 	): void
 	{
-		$states = array_map(
-			function ($component) use ($device): array {
-				$result = [];
+		$states = [];
 
-				if ($component instanceof Entities\API\Gen2\DeviceSwitchState) {
-					$property = $this->findGen2DeviceProperty(
-						$device,
-						(
+		if ($state->getSwitches() !== []) {
+			foreach ($state->getSwitches() as $component) {
+				if ($component->getOutput() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
+					$states[] = [
+						'identifier' => (
 							$component->getType()->getValue()
 							. '_'
 							. $component->getId()
 							. '_'
 							. Types\ComponentAttributeType::ON
 						),
-					);
+						'value' => $component->getOutput(),
+					];
+				}
+			}
+		}
 
-					if ($property !== null && $component->getOutput() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
-						$result[] = [
-							'identifier' => $property->getIdentifier(),
-							'value' => Helpers\Transformer::transformValueFromDevice(
-								$property->getDataType(),
-								$property->getFormat(),
-								$component->getOutput(),
-							),
-						];
-					}
-				} elseif ($component instanceof Entities\API\Gen2\DeviceCoverState) {
-					$property = $this->findGen2DeviceProperty(
-						$device,
-						(
+		if ($state->getCovers() !== []) {
+			foreach ($state->getCovers() as $component) {
+				if ($component->getState() instanceof Types\CoverPayload) {
+					$states[] = [
+						'identifier' => (
 							$component->getType()->getValue()
 							. '_'
 							. $component->getId()
 							. '_'
 							. Types\ComponentAttributeType::STATE
 						),
-					);
+						'value' => $component->getState()->getValue(),
+					];
+				}
 
-					if ($property !== null && $component->getState() instanceof Types\CoverPayload) {
-						$result[] = [
-							'identifier' => $property->getIdentifier(),
-							'value' => Helpers\Transformer::transformValueFromDevice(
-								$property->getDataType(),
-								$property->getFormat(),
-								strval($component->getState()->getValue()),
-							),
-						];
-					}
+				$states[] = [
+					'identifier' => (
+						$component->getType()->getValue()
+						. '_'
+						. $component->getId()
+						. '_'
+						. Types\ComponentAttributeType::POSITION
+					),
+					'value' => $component->getCurrentPosition(),
+				];
+			}
+		}
 
-					$property = $this->findGen2DeviceProperty(
-						$device,
-						(
-							$component->getType()->getValue()
-							. '_'
-							. $component->getId()
-							. '_'
-							. Types\ComponentAttributeType::POSITION
-						),
-					);
-
-					if ($property !== null) {
-						$result[] = [
-							'identifier' => $property->getIdentifier(),
-							'value' => Helpers\Transformer::transformValueFromDevice(
-								$property->getDataType(),
-								$property->getFormat(),
-								$component->getCurrentPosition(),
-							),
-						];
-					}
-				} elseif ($component instanceof Entities\API\Gen2\DeviceLightState) {
-					$property = $this->findGen2DeviceProperty(
-						$device,
-						(
+		if ($state->getLights() !== []) {
+			foreach ($state->getLights() as $component) {
+				if ($component->getOutput() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
+					$states[] = [
+						'identifier' => (
 							$component->getType()->getValue()
 							. '_'
 							. $component->getId()
 							. '_'
 							. Types\ComponentAttributeType::ON
 						),
-					);
+						'value' => $component->getOutput(),
+					];
+				}
 
-					if ($property !== null && $component->getOutput() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
-						$result[] = [
-							'identifier' => $property->getIdentifier(),
-							'value' => Helpers\Transformer::transformValueFromDevice(
-								$property->getDataType(),
-								$property->getFormat(),
-								$component->getOutput(),
-							),
-						];
-					}
+				$states[] = [
+					'identifier' => (
+						$component->getType()->getValue()
+						. '_'
+						. $component->getId()
+						. '_'
+						. Types\ComponentAttributeType::BRIGHTNESS
+					),
+					'value' => $component->getBrightness(),
+				];
+			}
+		}
 
-					$property = $this->findGen2DeviceProperty(
-						$device,
-						(
-							$component->getType()->getValue()
-							. '_'
-							. $component->getId()
-							. '_'
-							. Types\ComponentAttributeType::BRIGHTNESS
-						),
-					);
+		if ($state->getInputs() !== []) {
+			foreach ($state->getInputs() as $component) {
+				if ($component->getState() instanceof Types\InputPayload) {
+					$value = strval($component->getState()->getValue());
+				} elseif ($component->getState() !== null) {
+					$value = $component->getState();
+				} else {
+					$value = $component->getPercent();
+				}
 
-					if ($property !== null && $component->getBrightness() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
-						$result[] = [
-							'identifier' => $property->getIdentifier(),
-							'value' => Helpers\Transformer::transformValueFromDevice(
-								$property->getDataType(),
-								$property->getFormat(),
-								$component->getBrightness(),
-							),
-						];
-					}
-				} elseif ($component instanceof Entities\API\Gen2\DeviceInputState) {
-					$property = $this->findGen2DeviceProperty(
-						$device,
-						(
-							$component->getType()->getValue()
-							. '_'
-							. $component->getId()
-						),
-					);
+				$states[] = [
+					'identifier' => (
+						$component->getType()->getValue()
+						. '_'
+						. $component->getId()
+					),
+					'value' => $value,
+				];
+			}
+		}
 
-					if ($property !== null) {
-						if ($component->getState() instanceof Types\InputPayload) {
-							$value = strval($component->getState()->getValue());
-						} elseif ($component->getState() !== null) {
-							$value = $component->getState();
-						} else {
-							$value = $component->getPercent();
-						}
-
-						$result[] = [
-							'identifier' => $property->getIdentifier(),
-							'value' => Helpers\Transformer::transformValueFromDevice(
-								$property->getDataType(),
-								$property->getFormat(),
-								$value,
-							),
-						];
-					}
-				} elseif ($component instanceof Entities\API\Gen2\DeviceTemperatureState) {
-					$property = $this->findGen2DeviceProperty(
-						$device,
-						(
+		if ($state->getTemperature() !== []) {
+			foreach ($state->getTemperature() as $component) {
+				if ($component->getTemperatureCelsius() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
+					$states[] = [
+						'identifier' => (
 							$component->getType()->getValue()
 							. '_'
 							. $component->getId()
 							. '_'
 							. Types\ComponentAttributeType::CELSIUS
 						),
-					);
+						'value' => $component->getTemperatureCelsius(),
+					];
+				}
 
-					if (
-						$property !== null
-						&& $component->getTemperatureCelsius() !== Shelly\Constants::VALUE_NOT_AVAILABLE
-					) {
-						$result[] = [
-							'identifier' => $property->getIdentifier(),
-							'value' => Helpers\Transformer::transformValueFromDevice(
-								$property->getDataType(),
-								$property->getFormat(),
-								$component->getTemperatureCelsius(),
-							),
-						];
-					}
-
-					$property = $this->findGen2DeviceProperty(
-						$device,
-						(
+				if ($component->getTemperatureFahrenheit() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
+					$states[] = [
+						'identifier' => (
 							$component->getType()->getValue()
 							. '_'
 							. $component->getId()
 							. '_'
 							. Types\ComponentAttributeType::FAHRENHEIT
 						),
-					);
+						'value' => $component->getTemperatureFahrenheit(),
+					];
+				}
+			}
+		}
 
-					if (
-						$property !== null
-						&& $component->getTemperatureFahrenheit() !== Shelly\Constants::VALUE_NOT_AVAILABLE
-					) {
-						$result[] = [
-							'identifier' => $property->getIdentifier(),
-							'value' => Helpers\Transformer::transformValueFromDevice(
-								$property->getDataType(),
-								$property->getFormat(),
-								$component->getTemperatureFahrenheit(),
-							),
-						];
-					}
-				} else {
-					$property = $this->findGen2DeviceProperty(
-						$device,
-						(
+		if ($state->getHumidity() !== []) {
+			foreach ($state->getHumidity() as $component) {
+				if ($component->getRelativeHumidity() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
+					$states[] = [
+						'identifier' => (
 							$component->getType()->getValue()
 							. '_'
 							. $component->getId()
 						),
-					);
-
-					if (
-						$property !== null
-						&& $component->getRelativeHumidity() !== Shelly\Constants::VALUE_NOT_AVAILABLE
-					) {
-						$result[] = [
-							'identifier' => $property->getIdentifier(),
-							'value' => Helpers\Transformer::transformValueFromDevice(
-								$property->getDataType(),
-								$property->getFormat(),
-								$component->getRelativeHumidity(),
-							),
-						];
-					}
+						'value' => $component->getRelativeHumidity(),
+					];
 				}
+			}
+		}
 
-				if (
-					$component instanceof Entities\API\Gen2\DeviceSwitchState
-					|| $component instanceof Entities\API\Gen2\DeviceCoverState
-				) {
-					$property = $this->findGen2DeviceProperty(
-						$device,
-						(
+		if ($state->getSwitches() !== [] || $state->getCovers() !== []) {
+			foreach (array_merge($state->getSwitches(), $state->getCovers()) as $component) {
+				if ($component->getActivePower() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
+					$states[] = [
+						'identifier' => (
 							$component->getType()->getValue()
 							. '_'
 							. $component->getId()
 							. '_'
 							. Types\ComponentAttributeType::ACTIVE_POWER
 						),
-					);
+						'value' => $component->getActivePower(),
+					];
+				}
 
-					if ($property !== null && $component->getActivePower() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
-						$result[] = [
-							'identifier' => $property->getIdentifier(),
-							'value' => Helpers\Transformer::transformValueFromDevice(
-								$property->getDataType(),
-								$property->getFormat(),
-								$component->getActivePower(),
-							),
-						];
-					}
-
-					$property = $this->findGen2DeviceProperty(
-						$device,
-						(
+				if ($component->getPowerFactor() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
+					$states[] = [
+						'identifier' => (
 							$component->getType()->getValue()
 							. '_'
 							. $component->getId()
 							. '_'
 							. Types\ComponentAttributeType::POWER_FACTOR
 						),
-					);
+						'value' => $component->getPowerFactor(),
+					];
+				}
 
-					if ($property !== null && $component->getPowerFactor() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
-						$result[] = [
-							'identifier' => $property->getIdentifier(),
-							'value' => Helpers\Transformer::transformValueFromDevice(
-								$property->getDataType(),
-								$property->getFormat(),
-								$component->getPowerFactor(),
-							),
-						];
-					}
-
-					$property = $this->findGen2DeviceProperty(
-						$device,
-						(
+				if ($component->getActiveEnergy() instanceof Entities\API\Gen2\ActiveEnergyStateBlock) {
+					$states[] = [
+						'identifier' => (
 							$component->getType()->getValue()
 							. '_'
 							. $component->getId()
 							. '_'
 							. Types\ComponentAttributeType::ACTIVE_ENERGY
 						),
-					);
+						'value' => $component->getActiveEnergy()->getTotal(),
+					];
+				}
 
-					if (
-						$property !== null
-						&& $component->getActiveEnergy() instanceof Entities\API\Gen2\ActiveEnergyStateBlock
-					) {
-						$result[] = [
-							'identifier' => $property->getIdentifier(),
-							'value' => Helpers\Transformer::transformValueFromDevice(
-								$property->getDataType(),
-								$property->getFormat(),
-								$component->getActiveEnergy()->getTotal(),
-							),
-						];
-					}
-
-					$property = $this->findGen2DeviceProperty(
-						$device,
-						(
+				if ($component->getCurrent() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
+					$states[] = [
+						'identifier' => (
 							$component->getType()->getValue()
 							. '_'
 							. $component->getId()
 							. '_'
 							. Types\ComponentAttributeType::CURRENT
 						),
-					);
+						'value' => $component->getCurrent(),
+					];
+				}
 
-					if ($property !== null && $component->getCurrent() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
-						$result[] = [
-							'identifier' => $property->getIdentifier(),
-							'value' => Helpers\Transformer::transformValueFromDevice(
-								$property->getDataType(),
-								$property->getFormat(),
-								$component->getCurrent(),
-							),
-						];
-					}
-
-					$property = $this->findGen2DeviceProperty(
-						$device,
-						(
+				if ($component->getVoltage() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
+					$states[] = [
+						'identifier' => (
 							$component->getType()->getValue()
 							. '_'
 							. $component->getId()
 							. '_'
 							. Types\ComponentAttributeType::VOLTAGE
 						),
-					);
+						'value' => $component->getVoltage(),
+					];
+				}
 
-					if ($property !== null && $component->getVoltage() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
-						$result[] = [
-							'identifier' => $property->getIdentifier(),
-							'value' => Helpers\Transformer::transformValueFromDevice(
-								$property->getDataType(),
-								$property->getFormat(),
-								$component->getVoltage(),
-							),
-						];
-					}
-
-					$property = $this->findGen2DeviceProperty(
-						$device,
-						(
+				if ($component->getTemperature() instanceof Entities\API\Gen2\TemperatureBlockState) {
+					$states[] = [
+						'identifier' => (
 							$component->getType()->getValue()
 							. '_'
 							. $component->getId()
 							. '_'
 							. Types\ComponentAttributeType::CELSIUS
 						),
-					);
-
-					if (
-						$property !== null
-						&& $component->getTemperature() instanceof Entities\API\Gen2\TemperatureBlockState
-					) {
-						$result[] = [
-							'identifier' => $property->getIdentifier(),
-							'value' => Helpers\Transformer::transformValueFromDevice(
-								$property->getDataType(),
-								$property->getFormat(),
-								$component->getTemperature()->getTemperatureCelsius(),
-							),
-						];
-					}
-				}
-
-				return $result;
-			},
-			array_merge(
-				$state->getSwitches(),
-				$state->getCovers(),
-				$state->getInputs(),
-				$state->getLights(),
-				$state->getTemperature(),
-				$state->getHumidity(),
-			),
-		);
-
-		$states = array_filter($states, static fn (array $item): bool => $item !== []);
-		$states = array_merge([], ...$states);
-
-		$this->queue->append(
-			$this->entityHelper->create(
-				Entities\Messages\StoreDeviceState::class,
-				[
-					'connector' => $device->getConnector()->getId()->toString(),
-					'identifier' => $device->getIdentifier(),
-					'ip_address' => $state->getEthernet()?->getIp() ?? $state->getWifi()?->getStaIp(),
-					'state' => $states,
-				],
-			),
-		);
-	}
-
-	/**
-	 * @throws DevicesExceptions\InvalidState
-	 */
-	public function findGen1DeviceProperty(
-		string $deviceIdentifier,
-		int $sensorIdentifier,
-	): DevicesEntities\Devices\Properties\Dynamic|DevicesEntities\Channels\Properties\Dynamic|null
-	{
-		$findDeviceQuery = new Queries\FindDevices();
-		$findDeviceQuery->forConnector($this->connector);
-		$findDeviceQuery->startWithIdentifier($deviceIdentifier);
-
-		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\ShellyDevice::class);
-
-		if ($device === null) {
-			return null;
-		}
-
-		$findChannelsQuery = new DevicesQueries\FindChannels();
-		$findChannelsQuery->forDevice($device);
-
-		$channels = $this->channelsRepository->findAllBy($findChannelsQuery);
-
-		foreach ($channels as $channel) {
-			foreach ($channel->getProperties() as $property) {
-				if (
-					$property instanceof DevicesEntities\Channels\Properties\Dynamic
-					&& Utils\Strings::startsWith($property->getIdentifier(), strval($sensorIdentifier))
-				) {
-					return $property;
+						'value' => $component->getTemperature()->getTemperatureCelsius(),
+					];
 				}
 			}
 		}
 
-		$findDevicePropertiesQuery = new DevicesQueries\FindDeviceProperties();
-		$findDevicePropertiesQuery->forDevice($device);
-
-		foreach ($this->devicePropertiesRepository->findAllBy($findDevicePropertiesQuery) as $property) {
-			if (
-				$property instanceof DevicesEntities\Devices\Properties\Dynamic
-				&& Utils\Strings::startsWith($property->getIdentifier(), strval($sensorIdentifier))
-			) {
-				return $property;
-			}
+		if (count($states) > 0) {
+			$this->queue->append(
+				$this->entityHelper->create(
+					Entities\Messages\StoreDeviceState::class,
+					[
+						'connector' => $device->getConnector()->getId()->toString(),
+						'identifier' => $device->getIdentifier(),
+						'ip_address' => $state->getEthernet()?->getIp() ?? $state->getWifi()?->getStaIp(),
+						'states' => $states,
+					],
+				),
+			);
 		}
-
-		return null;
-	}
-
-	/**
-	 * @throws DevicesExceptions\InvalidState
-	 */
-	private function findGen2DeviceProperty(
-		Entities\ShellyDevice $device,
-		string $propertyIdentifier,
-	): DevicesEntities\Devices\Properties\Dynamic|DevicesEntities\Channels\Properties\Dynamic|null
-	{
-		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
-		$findDevicePropertyQuery->forDevice($device);
-		$findDevicePropertyQuery->byIdentifier($propertyIdentifier);
-
-		$property = $this->devicePropertiesRepository->findOneBy($findDevicePropertyQuery);
-
-		if ($property instanceof DevicesEntities\Devices\Properties\Dynamic) {
-			return $property;
-		}
-
-		$findChannelsQuery = new DevicesQueries\FindChannels();
-		$findChannelsQuery->forDevice($device);
-
-		$channels = $this->channelsRepository->findAllBy($findChannelsQuery);
-
-		foreach ($channels as $channel) {
-			$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
-			$findChannelPropertyQuery->forChannel($channel);
-			$findChannelPropertyQuery->byIdentifier($propertyIdentifier);
-
-			$property = $this->channelPropertiesRepository->findOneBy($findChannelPropertyQuery);
-
-			if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
-				return $property;
-			}
-		}
-
-		return null;
 	}
 
 	private function registerLoopHandler(): void

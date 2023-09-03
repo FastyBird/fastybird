@@ -37,6 +37,8 @@ class BlockDescription extends Consistence\Enum\Enum
 
 	public const INPUT = 'input';
 
+	public const METER = 'meter';
+
 	public const EMETER = 'emeter';
 
 	public const DEVICE = 'device';

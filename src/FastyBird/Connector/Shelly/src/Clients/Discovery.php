@@ -459,12 +459,12 @@ final class Discovery implements Evenement\EventEmitterInterface
 									'properties' => array_map(
 										static fn (Entities\API\Gen1\BlockSensorDescription $sensor): array => [
 											'identifier' => (
-														$sensor->getIdentifier()
-														. '_'
-														. $sensor->getType()->getValue()
-														. '_'
-														. $sensor->getDescription()
-													),
+												$sensor->getIdentifier()
+												. '_'
+												. $sensor->getType()->getValue()
+												. '_'
+												. $sensor->getDescription()
+											),
 											'name' => Helpers\Name::createName($sensor->getDescription()),
 											'data_type' => $sensor->getDataType()->getValue(),
 											'unit' => $sensor->getUnit(),

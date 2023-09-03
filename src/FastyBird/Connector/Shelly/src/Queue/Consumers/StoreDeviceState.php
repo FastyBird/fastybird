@@ -18,8 +18,9 @@ namespace FastyBird\Connector\Shelly\Queue\Consumers;
 use Doctrine\DBAL;
 use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\Entities;
+use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Queries;
-use FastyBird\Connector\Shelly\Queue\Consumer;
+use FastyBird\Connector\Shelly\Queue;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -40,7 +41,7 @@ use Nette\Utils;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class StoreDeviceState implements Consumer
+final class StoreDeviceState implements Queue\Consumer
 {
 
 	use Nette\SmartObject;
@@ -106,15 +107,49 @@ final class StoreDeviceState implements Consumer
 			Types\DevicePropertyIdentifier::IP_ADDRESS,
 		);
 
-		foreach ($entity->getStates() as $status) {
-			if ($status instanceof Entities\Messages\PropertyState) {
+		foreach ($entity->getStates() as $state) {
+			if ($state instanceof Entities\Messages\PropertyState) {
 				$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
 				$findDevicePropertyQuery->forDevice($device);
-				$findDevicePropertyQuery->byIdentifier($status->getIdentifier());
+
+				if (Utils\Strings::startsWith($state->getIdentifier(), '_')) {
+					$findDevicePropertyQuery->startWithIdentifier($state->getIdentifier());
+				} elseif (Utils\Strings::endsWith($state->getIdentifier(), '_')) {
+					$findDevicePropertyQuery->endWithIdentifier($state->getIdentifier());
+				} else {
+					$findDevicePropertyQuery->byIdentifier($state->getIdentifier());
+				}
 
 				$property = $this->devicesPropertiesRepository->findOneBy($findDevicePropertyQuery);
 
-				if ($property === null) {
+				if ($property !== null) {
+					if ($property instanceof DevicesEntities\Devices\Properties\Dynamic) {
+						$this->devicePropertiesStateManager->setValue($property, Utils\ArrayHash::from([
+							DevicesStates\Property::ACTUAL_VALUE_KEY => Helpers\Transformer::transformValueFromDevice(
+								$property->getDataType(),
+								$property->getFormat(),
+								$state->getValue(),
+							),
+							DevicesStates\Property::VALID_KEY => true,
+						]));
+
+					} elseif ($property instanceof DevicesEntities\Devices\Properties\Variable) {
+						$this->databaseHelper->transaction(
+							function () use ($property, $state): void {
+								$this->devicesPropertiesManager->update(
+									$property,
+									Utils\ArrayHash::from([
+										'value' => Helpers\Transformer::transformValueFromDevice(
+											$property->getDataType(),
+											$property->getFormat(),
+											$state->getValue(),
+										),
+									]),
+								);
+							},
+						);
+					}
+				} else {
 					$findChannelsQuery = new DevicesQueries\FindChannels();
 					$findChannelsQuery->forDevice($device);
 
@@ -123,47 +158,85 @@ final class StoreDeviceState implements Consumer
 					foreach ($channels as $channel) {
 						$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
 						$findChannelPropertyQuery->forChannel($channel);
-						$findChannelPropertyQuery->byIdentifier($status->getIdentifier());
+
+						if (Utils\Strings::startsWith($state->getIdentifier(), '_')) {
+							$findChannelPropertyQuery->startWithIdentifier($state->getIdentifier());
+						} elseif (Utils\Strings::endsWith($state->getIdentifier(), '_')) {
+							$findChannelPropertyQuery->endWithIdentifier($state->getIdentifier());
+						} else {
+							$findChannelPropertyQuery->byIdentifier($state->getIdentifier());
+						}
 
 						$property = $this->channelsPropertiesRepository->findOneBy($findChannelPropertyQuery);
 
 						if ($property !== null) {
+							if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
+								$this->channelPropertiesStateManager->setValue($property, Utils\ArrayHash::from([
+									DevicesStates\Property::ACTUAL_VALUE_KEY => Helpers\Transformer::transformValueFromDevice(
+										$property->getDataType(),
+										$property->getFormat(),
+										$state->getValue(),
+									),
+									DevicesStates\Property::VALID_KEY => true,
+								]));
+
+							} elseif ($property instanceof DevicesEntities\Channels\Properties\Variable) {
+								$this->databaseHelper->transaction(
+									function () use ($property, $state): void {
+										$this->channelsPropertiesManager->update(
+											$property,
+											Utils\ArrayHash::from([
+												'value' => Helpers\Transformer::transformValueFromDevice(
+													$property->getDataType(),
+													$property->getFormat(),
+													$state->getValue(),
+												),
+											]),
+										);
+									},
+								);
+							}
+
 							break;
 						}
 					}
 				}
-
-				if ($property instanceof DevicesEntities\Devices\Properties\Dynamic) {
-					$this->devicePropertiesStateManager->setValue($property, Utils\ArrayHash::from([
-						DevicesStates\Property::ACTUAL_VALUE_KEY => $status->getValue(),
-						DevicesStates\Property::VALID_KEY => true,
-					]));
-				}
-
-				if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
-					$this->channelPropertiesStateManager->setValue($property, Utils\ArrayHash::from([
-						DevicesStates\Property::ACTUAL_VALUE_KEY => $status->getValue(),
-						DevicesStates\Property::VALID_KEY => true,
-					]));
-				}
 			} else {
 				$findChannelQuery = new DevicesQueries\FindChannels();
 				$findChannelQuery->forDevice($device);
-				$findChannelQuery->byIdentifier($status->getIdentifier());
+
+				if (Utils\Strings::startsWith($state->getIdentifier(), '_')) {
+					$findChannelQuery->startWithIdentifier($state->getIdentifier());
+				} elseif (Utils\Strings::endsWith($state->getIdentifier(), '_')) {
+					$findChannelQuery->endWithIdentifier($state->getIdentifier());
+				} else {
+					$findChannelQuery->byIdentifier($state->getIdentifier());
+				}
 
 				$channel = $this->channelsRepository->findOneBy($findChannelQuery);
 
 				if ($channel !== null) {
-					foreach ($status->getSensors() as $sensor) {
+					foreach ($state->getSensors() as $sensor) {
 						$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
 						$findChannelPropertyQuery->forChannel($channel);
-						$findChannelPropertyQuery->byIdentifier($sensor->getIdentifier());
+
+						if (Utils\Strings::startsWith($state->getIdentifier(), '_')) {
+							$findChannelPropertyQuery->startWithIdentifier($state->getIdentifier());
+						} elseif (Utils\Strings::endsWith($state->getIdentifier(), '_')) {
+							$findChannelPropertyQuery->endWithIdentifier($state->getIdentifier());
+						} else {
+							$findChannelPropertyQuery->byIdentifier($state->getIdentifier());
+						}
 
 						$property = $this->channelsPropertiesRepository->findOneBy($findChannelPropertyQuery);
 
 						if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
 							$this->channelPropertiesStateManager->setValue($property, Utils\ArrayHash::from([
-								DevicesStates\Property::ACTUAL_VALUE_KEY => $sensor->getValue(),
+								DevicesStates\Property::ACTUAL_VALUE_KEY => Helpers\Transformer::transformValueFromDevice(
+									$property->getDataType(),
+									$property->getFormat(),
+									$sensor->getValue(),
+								),
 								DevicesStates\Property::VALID_KEY => true,
 							]));
 						} elseif ($property instanceof DevicesEntities\Channels\Properties\Variable) {
@@ -172,7 +245,11 @@ final class StoreDeviceState implements Consumer
 									$this->channelsPropertiesManager->update(
 										$property,
 										Utils\ArrayHash::from([
-											'value' => $sensor->getValue(),
+											'value' => Helpers\Transformer::transformValueFromDevice(
+												$property->getDataType(),
+												$property->getFormat(),
+												$sensor->getValue(),
+											),
 										]),
 									);
 								},
