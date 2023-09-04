@@ -223,7 +223,7 @@ class ShellyExtension extends DI\CompilerExtension
 			]);
 
 		$builder->addDefinition(
-			$this->prefix('consumers.messages.store.channelPropertyState'),
+			$this->prefix('queue.consumers.store.deviceState'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Queue\Consumers\StoreDeviceState::class)
