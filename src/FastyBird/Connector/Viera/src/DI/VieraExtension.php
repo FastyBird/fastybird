@@ -191,7 +191,7 @@ class VieraExtension extends DI\CompilerExtension
 			]);
 
 		$builder->addDefinition(
-			$this->prefix('consumers.messages.store.channelPropertyState'),
+			$this->prefix('queue.consumers.store.channelPropertyState'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Queue\Consumers\StoreChannelPropertyState::class)
