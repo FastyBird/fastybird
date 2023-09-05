@@ -114,12 +114,11 @@ class ShellyExtension extends DI\CompilerExtension
 		 * SERVICES & FACTORIES
 		 */
 
-		$datagramFactory = $builder->addDefinition(
+		$builder->addDefinition(
 			$this->prefix('services.multicastFactory'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Services\MulticastFactory::class)
-			->setAutowired(false);
+			->setType(Services\MulticastFactory::class);
 
 		$builder->addDefinition($this->prefix('services.httpClientFactory'), new DI\Definitions\ServiceDefinition())
 			->setType(Services\HttpClientFactory::class);
@@ -139,25 +138,18 @@ class ShellyExtension extends DI\CompilerExtension
 		$builder->addFactoryDefinition($this->prefix('clients.cloud'))
 			->setImplement(Clients\CloudFactory::class)
 			->getResultDefinition()
-			->setType(Clients\Cloud::class)
-			->setArguments([
-				'logger' => $logger,
-			]);
+			->setType(Clients\Cloud::class);
 
 		$builder->addFactoryDefinition($this->prefix('clients.mqtt'))
 			->setImplement(Clients\MqttFactory::class)
 			->getResultDefinition()
-			->setType(Clients\Mqtt::class)
-			->setArguments([
-				'logger' => $logger,
-			]);
+			->setType(Clients\Mqtt::class);
 
 		$builder->addFactoryDefinition($this->prefix('clients.discover'))
 			->setImplement(Clients\DiscoveryFactory::class)
 			->getResultDefinition()
 			->setType(Clients\Discovery::class)
 			->setArguments([
-				'datagramFactory' => $datagramFactory,
 				'logger' => $logger,
 			]);
 

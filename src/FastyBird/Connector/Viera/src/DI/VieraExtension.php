@@ -114,22 +114,20 @@ class VieraExtension extends DI\CompilerExtension
 		 * SERVICES & FACTORIES
 		 */
 
-		$multicastFactory = $builder->addDefinition(
+		$builder->addDefinition(
 			$this->prefix('services.multicastFactory'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Services\MulticastFactory::class)
-			->setAutowired(false);
+			->setType(Services\MulticastFactory::class);
 
 		$builder->addDefinition($this->prefix('services.httpClientFactory'), new DI\Definitions\ServiceDefinition())
 			->setType(Services\HttpClientFactory::class);
 
-		$socketClientFactory = $builder->addDefinition(
+		$builder->addDefinition(
 			$this->prefix('services.socketClientFactory'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Services\SocketClientFactory::class)
-			->setAutowired(false);
+			->setType(Services\SocketClientFactory::class);
 
 		/**
 		 * CLIENTS
@@ -148,7 +146,6 @@ class VieraExtension extends DI\CompilerExtension
 			->getResultDefinition()
 			->setType(Clients\Discovery::class)
 			->setArguments([
-				'multicastFactory' => $multicastFactory,
 				'logger' => $logger,
 			]);
 
@@ -164,7 +161,6 @@ class VieraExtension extends DI\CompilerExtension
 			->getResultDefinition()
 			->setType(API\TelevisionApi::class)
 			->setArguments([
-				'socketClientFactory' => $socketClientFactory,
 				'logger' => $logger,
 			]);
 

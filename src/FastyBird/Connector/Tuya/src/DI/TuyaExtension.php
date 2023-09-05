@@ -115,23 +115,22 @@ class TuyaExtension extends DI\CompilerExtension
 		 * SERVICES & FACTORIES
 		 */
 
-		$datagramFactory = $builder->addDefinition(
+		$builder->addDefinition(
 			$this->prefix('services.datagramFactory'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Services\DatagramFactory::class)
-			->setAutowired(false);
+			->setType(Services\DatagramFactory::class);
 
 		$builder->addDefinition($this->prefix('services.httpClientFactory'), new DI\Definitions\ServiceDefinition())
 			->setType(Services\HttpClientFactory::class);
 
-		$socketClientFactory = $builder->addDefinition(
+		$builder->addDefinition(
 			$this->prefix('services.socketClientFactory'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Services\SocketClientFactory::class);
 
-		$webSocketClientFactory = $builder->addDefinition(
+		$builder->addDefinition(
 			$this->prefix('services.webSocketClientFactory'),
 			new DI\Definitions\ServiceDefinition(),
 		)
@@ -162,7 +161,6 @@ class TuyaExtension extends DI\CompilerExtension
 			->getResultDefinition()
 			->setType(Clients\Discovery::class)
 			->setArguments([
-				'datagramFactory' => $datagramFactory,
 				'logger' => $logger,
 			]);
 
@@ -186,7 +184,6 @@ class TuyaExtension extends DI\CompilerExtension
 			->getResultDefinition()
 			->setType(API\OpenPulsar::class)
 			->setArguments([
-				'webSocketClientFactory' => $webSocketClientFactory,
 				'logger' => $logger,
 			]);
 
@@ -195,7 +192,6 @@ class TuyaExtension extends DI\CompilerExtension
 			->getResultDefinition()
 			->setType(API\LocalApi::class)
 			->setArguments([
-				'socketClientFactory' => $socketClientFactory,
 				'logger' => $logger,
 			]);
 
