@@ -476,7 +476,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 
 		$queue = $this->getContainer()->getByType(Queue\Queue::class);
 
-		//self::assertFalse($queue->isEmpty());
+		self::assertFalse($queue->isEmpty());
 
 		$consumers = $this->getContainer()->getByType(Queue\Consumers::class);
 
