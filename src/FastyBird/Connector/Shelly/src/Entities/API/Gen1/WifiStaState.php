@@ -30,7 +30,7 @@ final class WifiStaState implements Entities\API\Entity
 {
 
 	public function __construct(
-		#[ObjectMapper\Rules\BoolValue()]
+		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
 		private readonly bool $connected,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),

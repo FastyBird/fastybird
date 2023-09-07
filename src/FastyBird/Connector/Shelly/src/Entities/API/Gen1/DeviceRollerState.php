@@ -34,12 +34,12 @@ final class DeviceRollerState implements Entities\API\Entity
 		private readonly string $state,
 		#[ObjectMapper\Rules\IntValue()]
 		private readonly int $power,
-		#[ObjectMapper\Rules\BoolValue()]
+		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
 		private readonly bool $valid,
-		#[ObjectMapper\Rules\BoolValue()]
+		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
 		#[ObjectMapper\Modifiers\FieldName('safety_switch')]
 		private readonly bool $safetySwitch,
-		#[ObjectMapper\Rules\BoolValue()]
+		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
 		private readonly bool $overtemperature,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('stop_reason')]
@@ -50,9 +50,9 @@ final class DeviceRollerState implements Entities\API\Entity
 		#[ObjectMapper\Rules\IntValue()]
 		#[ObjectMapper\Modifiers\FieldName('current_pos')]
 		private readonly int $currentPos,
-		#[ObjectMapper\Rules\BoolValue()]
+		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
 		private readonly bool $calibrating,
-		#[ObjectMapper\Rules\BoolValue()]
+		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
 		private readonly bool $positioning,
 	)
 	{

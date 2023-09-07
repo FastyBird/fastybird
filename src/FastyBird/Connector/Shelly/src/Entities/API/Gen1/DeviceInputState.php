@@ -32,7 +32,7 @@ final class DeviceInputState implements Entities\API\Entity
 	public function __construct(
 		#[ObjectMapper\Rules\IntValue()]
 		private readonly int $input,
-		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		#[ObjectMapper\Rules\StringValue()]
 		private readonly string $event,
 		#[ObjectMapper\Rules\IntValue()]
 		#[ObjectMapper\Modifiers\FieldName('event_count')]

@@ -31,9 +31,6 @@ use const SORT_REGULAR;
 final class ChannelState implements Entity
 {
 
-	/** @var array<PropertyState> */
-	private array $filteredSensors;
-
 	/**
 	 * @param array<PropertyState> $sensors
 	 */
@@ -46,7 +43,6 @@ final class ChannelState implements Entity
 		private readonly array $sensors = [],
 	)
 	{
-		$this->filteredSensors = array_unique($this->sensors, SORT_REGULAR);
 	}
 
 	public function getIdentifier(): string
@@ -59,7 +55,7 @@ final class ChannelState implements Entity
 	 */
 	public function getSensors(): array
 	{
-		return $this->filteredSensors;
+		return array_unique($this->sensors, SORT_REGULAR);
 	}
 
 	/**

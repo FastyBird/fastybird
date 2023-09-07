@@ -55,13 +55,16 @@ final class PropertyDescription implements Entity
 			new ObjectMapper\Rules\ArrayOf(new ObjectMapper\Rules\FloatValue()),
 			new ObjectMapper\Rules\ArrayOf(
 				new ObjectMapper\Rules\ArrayOf(
-					new ObjectMapper\Rules\ArrayOf(
-						new ObjectMapper\Rules\AnyOf([
-							new ObjectMapper\Rules\StringValue(notEmpty: true),
-							new ObjectMapper\Rules\NullValue(castEmptyString: true),
-						]),
-						new ObjectMapper\Rules\IntValue(),
-					),
+					new ObjectMapper\Rules\AnyOf([
+						new ObjectMapper\Rules\ArrayOf(
+							new ObjectMapper\Rules\AnyOf([
+								new ObjectMapper\Rules\StringValue(notEmpty: true),
+								new ObjectMapper\Rules\NullValue(castEmptyString: true),
+							]),
+							new ObjectMapper\Rules\IntValue(),
+						),
+						new ObjectMapper\Rules\NullValue(),
+					]),
 					new ObjectMapper\Rules\IntValue(),
 				),
 				new ObjectMapper\Rules\IntValue(),

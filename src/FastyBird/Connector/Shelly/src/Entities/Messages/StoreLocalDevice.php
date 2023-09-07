@@ -35,9 +35,6 @@ use const SORT_REGULAR;
 final class StoreLocalDevice extends Device
 {
 
-	/** @var array<ChannelDescription> */
-	private array $filteredChannels;
-
 	/**
 	 * @param array<ChannelDescription> $channels
 	 */
@@ -72,8 +69,6 @@ final class StoreLocalDevice extends Device
 	)
 	{
 		parent::__construct($connector, $identifier);
-
-		$this->filteredChannels = array_unique($this->channels, SORT_REGULAR);
 	}
 
 	public function getGeneration(): Types\DeviceGeneration
@@ -116,7 +111,7 @@ final class StoreLocalDevice extends Device
 	 */
 	public function getChannels(): array
 	{
-		return $this->filteredChannels;
+		return array_unique($this->channels, SORT_REGULAR);
 	}
 
 	/**

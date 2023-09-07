@@ -32,9 +32,6 @@ use const SORT_REGULAR;
 final class DeviceBlockDescription implements Entities\API\Entity
 {
 
-	/** @var array<BlockSensorDescription> */
-	private array $filteredSensors;
-
 	/**
 	 * @param array<BlockSensorDescription> $sensors
 	 */
@@ -49,7 +46,6 @@ final class DeviceBlockDescription implements Entities\API\Entity
 		private readonly array $sensors = [],
 	)
 	{
-		$this->filteredSensors = array_unique($this->sensors, SORT_REGULAR);
 	}
 
 	public function getIdentifier(): int
@@ -67,7 +63,7 @@ final class DeviceBlockDescription implements Entities\API\Entity
 	 */
 	public function getSensors(): array
 	{
-		return $this->filteredSensors;
+		return array_unique($this->sensors, SORT_REGULAR);
 	}
 
 	/**

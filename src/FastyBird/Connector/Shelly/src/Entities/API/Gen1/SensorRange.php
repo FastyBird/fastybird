@@ -36,7 +36,7 @@ final class SensorRange implements Entities\API\Entity
 	 */
 	public function __construct(
 		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\DataType::class)]
-		#[ObjectMapper\Modifiers\FieldName('data_Type')]
+		#[ObjectMapper\Modifiers\FieldName('data_type')]
 		private readonly MetadataTypes\DataType $dataType,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\ArrayOf(new ObjectMapper\Rules\StringValue(notEmpty: true)),
@@ -44,13 +44,16 @@ final class SensorRange implements Entities\API\Entity
 			new ObjectMapper\Rules\ArrayOf(new ObjectMapper\Rules\FloatValue()),
 			new ObjectMapper\Rules\ArrayOf(
 				new ObjectMapper\Rules\ArrayOf(
-					new ObjectMapper\Rules\ArrayOf(
-						new ObjectMapper\Rules\AnyOf([
-							new ObjectMapper\Rules\StringValue(notEmpty: true),
-							new ObjectMapper\Rules\NullValue(castEmptyString: true),
-						]),
-						new ObjectMapper\Rules\IntValue(),
-					),
+					new ObjectMapper\Rules\AnyOf([
+						new ObjectMapper\Rules\ArrayOf(
+							new ObjectMapper\Rules\AnyOf([
+								new ObjectMapper\Rules\StringValue(notEmpty: true),
+								new ObjectMapper\Rules\NullValue(castEmptyString: true),
+							]),
+							new ObjectMapper\Rules\IntValue(),
+						),
+						new ObjectMapper\Rules\NullValue(),
+					]),
 					new ObjectMapper\Rules\IntValue(),
 				),
 				new ObjectMapper\Rules\IntValue(),

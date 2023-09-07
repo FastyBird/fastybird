@@ -30,18 +30,18 @@ final class DeviceLightState implements Entities\API\Entity
 {
 
 	public function __construct(
-		#[ObjectMapper\Rules\BoolValue()]
+		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
 		private readonly bool $state,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $source,
-		#[ObjectMapper\Rules\BoolValue()]
+		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
 		#[ObjectMapper\Modifiers\FieldName('has_timer')]
 		private readonly bool $hasTimer,
 		#[ObjectMapper\Rules\IntValue()]
 		#[ObjectMapper\Modifiers\FieldName('timer_started')]
 		private readonly int $timerStarted,
 		#[ObjectMapper\Rules\IntValue()]
-		#[ObjectMapper\Modifiers\FieldName('timer_Duration')]
+		#[ObjectMapper\Modifiers\FieldName('timer_duration')]
 		private readonly int $timerDuration,
 		#[ObjectMapper\Rules\IntValue()]
 		#[ObjectMapper\Modifiers\FieldName('timer_remaining')]

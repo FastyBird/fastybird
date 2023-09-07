@@ -34,12 +34,12 @@ final class GetDeviceInformation implements Entities\API\Entity
 		private readonly string $type,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $mac,
-		#[ObjectMapper\Rules\BoolValue()]
+		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
 		private readonly bool $auth,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $fw,
-		#[ObjectMapper\Rules\BoolValue()]
-		private readonly bool $longid,
+		#[ObjectMapper\Rules\IntValue(unsigned: true)]
+		private readonly int $longid,
 	)
 	{
 	}
@@ -64,7 +64,7 @@ final class GetDeviceInformation implements Entities\API\Entity
 		return $this->fw;
 	}
 
-	public function hasLongIdentifier(): bool
+	public function getLongIdentifier(): int
 	{
 		return $this->longid;
 	}
@@ -79,7 +79,7 @@ final class GetDeviceInformation implements Entities\API\Entity
 			'mac_address' => $this->getMacAddress(),
 			'has_authentication' => $this->hasAuthentication(),
 			'firmware' => $this->getFirmware(),
-			'long_identifier' => $this->hasLongIdentifier(),
+			'long_identifier' => $this->getLongIdentifier(),
 		];
 	}
 

@@ -43,7 +43,7 @@ final class DeviceEmeterState implements Entities\API\Entity
 		private readonly float $current,
 		#[ObjectMapper\Rules\FloatValue()]
 		private readonly float $voltage,
-		#[ObjectMapper\Rules\BoolValue()]
+		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
 		private readonly bool $valid,
 		#[ObjectMapper\Rules\FloatValue()]
 		private readonly float $total,

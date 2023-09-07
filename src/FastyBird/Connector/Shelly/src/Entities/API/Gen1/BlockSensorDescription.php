@@ -43,7 +43,7 @@ final class BlockSensorDescription implements Entities\API\Entity
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $description,
 		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\DataType::class)]
-		#[ObjectMapper\Modifiers\FieldName('data_Type')]
+		#[ObjectMapper\Modifiers\FieldName('data_type')]
 		private readonly MetadataTypes\DataType $dataType,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
@@ -56,13 +56,16 @@ final class BlockSensorDescription implements Entities\API\Entity
 			new ObjectMapper\Rules\ArrayOf(new ObjectMapper\Rules\FloatValue()),
 			new ObjectMapper\Rules\ArrayOf(
 				new ObjectMapper\Rules\ArrayOf(
-					new ObjectMapper\Rules\ArrayOf(
-						new ObjectMapper\Rules\AnyOf([
-							new ObjectMapper\Rules\StringValue(notEmpty: true),
-							new ObjectMapper\Rules\NullValue(castEmptyString: true),
-						]),
-						new ObjectMapper\Rules\IntValue(),
-					),
+					new ObjectMapper\Rules\AnyOf([
+						new ObjectMapper\Rules\ArrayOf(
+							new ObjectMapper\Rules\AnyOf([
+								new ObjectMapper\Rules\StringValue(notEmpty: true),
+								new ObjectMapper\Rules\NullValue(castEmptyString: true),
+							]),
+							new ObjectMapper\Rules\IntValue(),
+						),
+						new ObjectMapper\Rules\NullValue(),
+					]),
 					new ObjectMapper\Rules\IntValue(),
 				),
 				new ObjectMapper\Rules\IntValue(),
@@ -77,9 +80,9 @@ final class BlockSensorDescription implements Entities\API\Entity
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		private readonly float|int|string|null $invalid = null,
-		#[ObjectMapper\Rules\BoolValue()]
+		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
 		private readonly bool $queryable = false,
-		#[ObjectMapper\Rules\BoolValue()]
+		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
 		private readonly bool $settable = false,
 	)
 	{

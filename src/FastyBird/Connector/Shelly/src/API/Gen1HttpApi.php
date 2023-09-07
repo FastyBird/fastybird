@@ -480,13 +480,13 @@ final class Gen1HttpApi extends HttpApi
 
 				$relays[] = [
 					'state' => $relayStatus->offsetGet('ison'),
-					'has_timer' => $relayStatus->offsetGet('hasTimer'),
-					'timer_started' => $relayStatus->offsetGet('timerStarted'),
-					'timer_duration' => $relayStatus->offsetGet('timerDuration'),
-					'timer_remaining' => $relayStatus->offsetGet('timerRemaining'),
+					'has_timer' => $relayStatus->offsetGet('has_timer'),
+					'timer_started' => $relayStatus->offsetGet('timer_started'),
+					'timer_duration' => $relayStatus->offsetGet('timer_duration'),
+					'timer_remaining' => $relayStatus->offsetGet('timer_remaining'),
 					'overpower' => $relayStatus->offsetGet('overpower'),
 					'overtemperature' => $relayStatus->offsetGet('overtemperature'),
-					'valid' => $relayStatus->offsetGet('isValid'),
+					'valid' => $relayStatus->offsetGet('is_valid'),
 					'source' => $relayStatus->offsetGet('source'),
 				];
 			}
@@ -507,12 +507,12 @@ final class Gen1HttpApi extends HttpApi
 				$rollers[] = [
 					'state' => $rollerStatus->offsetGet('state'),
 					'power' => $rollerStatus->offsetGet('power'),
-					'valid' => $rollerStatus->offsetGet('isValid'),
-					'safety_switch' => $rollerStatus->offsetGet('safetySwitch'),
+					'valid' => $rollerStatus->offsetGet('is_valid'),
+					'safety_switch' => $rollerStatus->offsetGet('safety_switch'),
 					'overtemperature' => $rollerStatus->offsetGet('overtemperature'),
-					'stop_reason' => $rollerStatus->offsetGet('stopReason'),
-					'last_direction' => $rollerStatus->offsetGet('lastDirection'),
-					'current_pos' => $rollerStatus->offsetGet('currentPos'),
+					'stop_reason' => $rollerStatus->offsetGet('stop_reason'),
+					'last_direction' => $rollerStatus->offsetGet('last_direction'),
+					'current_pos' => $rollerStatus->offsetGet('current_pos'),
 					'calibrating' => $rollerStatus->offsetGet('calibrating'),
 					'positioning' => $rollerStatus->offsetGet('positioning'),
 				];
@@ -534,8 +534,8 @@ final class Gen1HttpApi extends HttpApi
 				$inputs[] = [
 					'input' => $inputStatus->offsetGet('input'),
 					'event' => $inputStatus->offsetGet('event'),
-					'event_count' => $inputStatus->offsetGet('eventCnt'),
-					'last_sequence' => $inputStatus->offsetGet('lastSequence'),
+					'event_count' => $inputStatus->offsetGet('event_cnt'),
+					'last_sequence' => $inputStatus->offsetGet('last_sequence'),
 				];
 			}
 		}
@@ -555,10 +555,10 @@ final class Gen1HttpApi extends HttpApi
 				$lights[] = [
 					'state' => $lightStatus->offsetGet('ison'),
 					'source' => $lightStatus->offsetGet('source'),
-					'has_timer' => $lightStatus->offsetGet('hasTimer'),
-					'timer_started' => $lightStatus->offsetGet('timerStarted'),
-					'timer_duration' => $lightStatus->offsetGet('timerDuration'),
-					'timer_remaining' => $lightStatus->offsetGet('timerRemaining'),
+					'has_timer' => $lightStatus->offsetGet('has_timer'),
+					'timer_started' => $lightStatus->offsetGet('timer_started'),
+					'timer_duration' => $lightStatus->offsetGet('timer_duration'),
+					'timer_remaining' => $lightStatus->offsetGet('timer_remaining'),
 					'mode' => $lightStatus->offsetGet('mode'),
 					'red' => $lightStatus->offsetGet('red'),
 					'green' => $lightStatus->offsetGet('green'),
@@ -588,7 +588,7 @@ final class Gen1HttpApi extends HttpApi
 				$meters[] = [
 					'power' => $meterStatus->offsetGet('power'),
 					'overpower' => $meterStatus->offsetGet('overpower'),
-					'valid' => $meterStatus->offsetGet('isValid'),
+					'valid' => $meterStatus->offsetGet('is_valid'),
 					'timestamp' => $meterStatus->offsetGet('timestamp'),
 					'counters' => $meterStatus->offsetGet('counters') instanceof Utils\ArrayHash
 						? (array) $meterStatus->offsetGet('counters')
@@ -616,9 +616,9 @@ final class Gen1HttpApi extends HttpApi
 					'reactive_power' => $emeterStatus->offsetGet('reactive'),
 					'current' => $emeterStatus->offsetGet('current'),
 					'voltage' => $emeterStatus->offsetGet('voltage'),
-					'valid' => $emeterStatus->offsetGet('isValid'),
+					'valid' => $emeterStatus->offsetGet('is_valid'),
 					'total' => $emeterStatus->offsetGet('total'),
-					'total_returned' => $emeterStatus->offsetGet('totalReturned'),
+					'total_returned' => $emeterStatus->offsetGet('total_returned'),
 				];
 			}
 		}
@@ -638,13 +638,13 @@ final class Gen1HttpApi extends HttpApi
 		}
 
 		return $this->createEntity(Entities\API\Gen1\GetDeviceState::class, Utils\ArrayHash::from([
-			$relays,
-			$rollers,
-			$inputs,
-			$lights,
-			$meters,
-			$emeters,
-			$wifi,
+			'relays' => $relays,
+			'rollers' => $rollers,
+			'inputs' => $inputs,
+			'lights' => $lights,
+			'meters' => $meters,
+			'emeters' => $emeters,
+			'wifi' => $wifi,
 		]));
 	}
 

@@ -31,9 +31,6 @@ use const SORT_REGULAR;
 final class ChannelDescription implements Entity
 {
 
-	/** @var array<PropertyDescription> */
-	private array $filteredProperties;
-
 	/**
 	 * @param array<PropertyDescription> $properties
 	 */
@@ -51,7 +48,6 @@ final class ChannelDescription implements Entity
 		private readonly array $properties = [],
 	)
 	{
-		$this->filteredProperties = array_unique($this->properties, SORT_REGULAR);
 	}
 
 	public function getIdentifier(): string
@@ -69,7 +65,7 @@ final class ChannelDescription implements Entity
 	 */
 	public function getProperties(): array
 	{
-		return $this->filteredProperties;
+		return array_unique($this->properties, SORT_REGULAR);
 	}
 
 	/**

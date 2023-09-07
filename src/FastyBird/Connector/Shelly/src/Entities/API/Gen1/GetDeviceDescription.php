@@ -32,9 +32,6 @@ use const SORT_REGULAR;
 final class GetDeviceDescription implements Entities\API\Entity
 {
 
-	/** @var array<DeviceBlockDescription> */
-	private array $filteredBlocks;
-
 	/**
 	 * @param array<DeviceBlockDescription> $blocks
 	 */
@@ -45,7 +42,6 @@ final class GetDeviceDescription implements Entities\API\Entity
 		private readonly array $blocks,
 	)
 	{
-		$this->filteredBlocks = array_unique($this->blocks, SORT_REGULAR);
 	}
 
 	/**
@@ -53,7 +49,7 @@ final class GetDeviceDescription implements Entities\API\Entity
 	 */
 	public function getBlocks(): array
 	{
-		return $this->filteredBlocks;
+		return array_unique($this->blocks, SORT_REGULAR);
 	}
 
 	/**
