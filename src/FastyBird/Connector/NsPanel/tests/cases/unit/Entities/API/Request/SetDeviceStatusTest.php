@@ -22,7 +22,7 @@ final class SetDeviceStatusTest extends Tests\Cases\Unit\BaseTestCase
 	 * @throws Utils\JsonException
 	 * @throws Error
 	 */
-	public function XtestCreateEntity(): void
+	public function testCreateEntity(): void
 	{
 		$container = $this->createContainer();
 

@@ -19,7 +19,7 @@ final class StatesRepositoryTest extends TestCase
 	 * @throws Exceptions\InvalidState
 	 * @throws InvalidArgumentException
 	 */
-	public function XtestFetchEntity(): void
+	public function testFetchEntity(): void
 	{
 		$id = Uuid\Uuid::uuid4();
 

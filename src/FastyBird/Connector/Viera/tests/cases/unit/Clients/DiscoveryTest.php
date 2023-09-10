@@ -38,7 +38,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function XtestDiscover(): void
+	public function testDiscover(): void
 	{
 		$sender = $this->createMock(Datagram\SocketInterface::class);
 		$sender

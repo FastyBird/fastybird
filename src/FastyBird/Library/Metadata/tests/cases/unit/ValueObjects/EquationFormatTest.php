@@ -13,7 +13,7 @@ final class EquationFormatTest extends BaseTestCase
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 */
-	public function XtestFromString(): void
+	public function testFromString(): void
 	{
 		$valueObject = new ValueObjects\EquationFormat('equation:x=10y + 2');
 

@@ -23,7 +23,7 @@ final class TransformerTest extends BaseTestCase
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws Error
 	 */
-	public function XtestBytesToUnsignedIntBigEndian(): void
+	public function testBytesToUnsignedIntBigEndian(): void
 	{
 		$container = $this->createContainer();
 
@@ -74,7 +74,7 @@ final class TransformerTest extends BaseTestCase
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws Error
 	 */
-	public function XtestBytesToUnsignedIntLittleEndian(): void
+	public function testBytesToUnsignedIntLittleEndian(): void
 	{
 		$container = $this->createContainer();
 
@@ -125,7 +125,7 @@ final class TransformerTest extends BaseTestCase
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws Error
 	 */
-	public function XtestBytesToSignedIntBigEndian(): void
+	public function testBytesToSignedIntBigEndian(): void
 	{
 		$container = $this->createContainer();
 
@@ -188,7 +188,7 @@ final class TransformerTest extends BaseTestCase
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws Error
 	 */
-	public function XtestBytesToSignedIntLittleEndian(): void
+	public function testBytesToSignedIntLittleEndian(): void
 	{
 		$container = $this->createContainer();
 
@@ -251,7 +251,7 @@ final class TransformerTest extends BaseTestCase
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws Error
 	 */
-	public function XtestBytesToUnsignedInt32BigEndian(): void
+	public function testBytesToUnsignedInt32BigEndian(): void
 	{
 		$container = $this->createContainer();
 
@@ -308,7 +308,7 @@ final class TransformerTest extends BaseTestCase
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws Error
 	 */
-	public function XtestBytesToFloatBigEndian(): void
+	public function testBytesToFloatBigEndian(): void
 	{
 		$container = $this->createContainer();
 
@@ -335,7 +335,7 @@ final class TransformerTest extends BaseTestCase
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws Error
 	 */
-	public function XtestUnsignedIntToBytesBigEndian(): void
+	public function testUnsignedIntToBytesBigEndian(): void
 	{
 		$container = $this->createContainer();
 
@@ -373,7 +373,7 @@ final class TransformerTest extends BaseTestCase
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws Error
 	 */
-	public function XtestUnsignedIntToBytesLittleEndian(): void
+	public function testUnsignedIntToBytesLittleEndian(): void
 	{
 		$container = $this->createContainer();
 
@@ -411,7 +411,7 @@ final class TransformerTest extends BaseTestCase
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws Error
 	 */
-	public function XtestSignedIntToBytesBigEndian(): void
+	public function testSignedIntToBytesBigEndian(): void
 	{
 		$container = $this->createContainer();
 
@@ -457,7 +457,7 @@ final class TransformerTest extends BaseTestCase
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws Error
 	 */
-	public function XtestSignedInt32ToBytesBigEndian(): void
+	public function testSignedInt32ToBytesBigEndian(): void
 	{
 		$container = $this->createContainer();
 
@@ -499,7 +499,7 @@ final class TransformerTest extends BaseTestCase
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws Error
 	 */
-	public function XtestFloatToBytesBigEndian(): void
+	public function testFloatToBytesBigEndian(): void
 	{
 		$container = $this->createContainer();
 

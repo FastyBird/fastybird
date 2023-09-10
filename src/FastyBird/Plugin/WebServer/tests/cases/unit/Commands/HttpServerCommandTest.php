@@ -23,7 +23,7 @@ final class HttpServerCommandTest extends TestCase
 	 * @throws Console\Exception\LogicException
 	 * @throws Console\Exception\CommandNotFoundException
 	 */
-	public function XtestExecute(): void
+	public function testExecute(): void
 	{
 		$promise = $this->createMock(Promise\PromiseInterface::class);
 		$promise

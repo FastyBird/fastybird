@@ -17,7 +17,7 @@ final class HomeKitExtensionTest extends BaseTestCase
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws Error
 	 */
-	public function XtestServicesRegistration(): void
+	public function testServicesRegistration(): void
 	{
 		$container = $this->createContainer();
 

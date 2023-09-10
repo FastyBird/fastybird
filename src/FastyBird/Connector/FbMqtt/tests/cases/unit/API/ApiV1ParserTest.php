@@ -22,7 +22,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	 *
 	 * @dataProvider parseDeviceAttributesProvider
 	 */
-	public function XtestParseDeviceAttribute(
+	public function testParseDeviceAttribute(
 		string $topic,
 		string $payload,
 		array $expected,
@@ -94,7 +94,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	 *
 	 * @dataProvider parseDeviceHardwareInfoProvider
 	 */
-	public function XtestParseDeviceHardwareInfo(
+	public function testParseDeviceHardwareInfo(
 		string $topic,
 		string $payload,
 		array $expected,
@@ -166,7 +166,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	 *
 	 * @dataProvider parseDeviceFirmwareInfoProvider
 	 */
-	public function XtestParseDeviceFirmwareInfo(
+	public function testParseDeviceFirmwareInfo(
 		string $topic,
 		string $payload,
 		array $expected,
@@ -220,7 +220,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	 *
 	 * @dataProvider parseDevicePropertiesProvider
 	 */
-	public function XtestParseDeviceProperties(
+	public function testParseDeviceProperties(
 		string $topic,
 		string $payload,
 		array $expected,
@@ -266,7 +266,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	 *
 	 * @dataProvider parseDevicePropertiesAttributesProvider
 	 */
-	public function XtestParseDevicePropertiesAttributes(
+	public function testParseDevicePropertiesAttributes(
 		string $topic,
 		string $payload,
 		array $expected,
@@ -332,7 +332,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	 *
 	 * @dataProvider parseDeviceAttributesInvalidProvider
 	 */
-	public function XtestParseDeviceAttributeNotValid(
+	public function testParseDeviceAttributeNotValid(
 		string $topic,
 		string $exception,
 		string $message,
@@ -373,7 +373,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	 *
 	 * @dataProvider parseDeviceHardwareInfoInvalidProvider
 	 */
-	public function XtestParseDeviceHardwareInfoNotValid(
+	public function testParseDeviceHardwareInfoNotValid(
 		string $topic,
 		string $exception,
 		string $message,
@@ -414,7 +414,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	 *
 	 * @dataProvider parseDeviceFirmwareInfoInvalidProvider
 	 */
-	public function XtestParseDeviceFirmwareInfoNotValid(
+	public function testParseDeviceFirmwareInfoNotValid(
 		string $topic,
 		string $exception,
 		string $message,
@@ -455,7 +455,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	 *
 	 * @dataProvider parseChannelAttributesProvider
 	 */
-	public function XtestParseChannelAttributes(
+	public function testParseChannelAttributes(
 		string $topic,
 		string $payload,
 		array $expected,
@@ -521,7 +521,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	 *
 	 * @dataProvider parseChannelPropertiesProvider
 	 */
-	public function XtestParseChannelProperties(
+	public function testParseChannelProperties(
 		string $topic,
 		string $payload,
 		array $expected,
@@ -568,7 +568,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	 *
 	 * @dataProvider parseChannelPropertiesAttributesProvider
 	 */
-	public function XtestParseChannelPropertiesAttributes(
+	public function testParseChannelPropertiesAttributes(
 		string $topic,
 		string $payload,
 		array $expected,
@@ -637,7 +637,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	 *
 	 * @dataProvider parseChannelAttributesInvalidProvider
 	 */
-	public function XtestParseChannelAttributeNotValid(
+	public function testParseChannelAttributeNotValid(
 		string $topic,
 		string $exception,
 		string $message,

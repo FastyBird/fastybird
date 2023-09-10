@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 final class ConnectionTest extends TestCase
 {
 
-	public function XtestDefaultValues(): void
+	public function testDefaultValues(): void
 	{
 		$config = new Connections\Connection('db.name', '127.0.0.1', 5_984);
 

@@ -13,7 +13,7 @@ final class MetadataExtensionTest extends BaseTestCase
 	/**
 	 * @throws Nette\DI\MissingServiceException
 	 */
-	public function XtestCompilersServices(): void
+	public function testCompilersServices(): void
 	{
 		self::assertNotNull($this->container->getByType(Loaders\SchemaLoader::class, false));
 		self::assertNotNull($this->container->getByType(Loaders\MetadataLoader::class, false));

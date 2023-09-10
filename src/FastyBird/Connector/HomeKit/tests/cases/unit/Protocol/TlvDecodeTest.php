@@ -16,7 +16,7 @@ final class TlvDecodeTest extends TestCase
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 */
-	public function XtestDecode(): void
+	public function testDecode(): void
 	{
 		$tlvTool = new Protocol\Tlv();
 
@@ -49,7 +49,7 @@ final class TlvDecodeTest extends TestCase
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 */
-	public function XtestDecodeWithMerge(): void
+	public function testDecodeWithMerge(): void
 	{
 		$tlvTool = new Protocol\Tlv();
 
@@ -116,7 +116,7 @@ final class TlvDecodeTest extends TestCase
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 */
-	public function XtestDecodeSeparated(): void
+	public function testDecodeSeparated(): void
 	{
 		$tlvTool = new Protocol\Tlv();
 
@@ -168,7 +168,7 @@ final class TlvDecodeTest extends TestCase
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 */
-	public function XtestDecodeInvalidStateValue(): void
+	public function testDecodeInvalidStateValue(): void
 	{
 		$tlvTool = new Protocol\Tlv();
 
@@ -186,7 +186,7 @@ final class TlvDecodeTest extends TestCase
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 */
-	public function XtestDecodeInvalidContentSize(): void
+	public function testDecodeInvalidContentSize(): void
 	{
 		$tlvTool = new Protocol\Tlv();
 
@@ -207,7 +207,7 @@ final class TlvDecodeTest extends TestCase
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 */
-	public function XtestDecodeInvalidContentValue(): void
+	public function testDecodeInvalidContentValue(): void
 	{
 		$tlvTool = new Protocol\Tlv();
 

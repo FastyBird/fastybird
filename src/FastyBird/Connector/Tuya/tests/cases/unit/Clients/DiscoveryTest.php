@@ -68,7 +68,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function XtestDiscoverCloudDevices(): void
+	public function testDiscoverCloudDevices(): void
 	{
 		$httpAsyncClient = $this->createMock(React\Http\Io\Transaction::class);
 		$httpAsyncClient
@@ -237,7 +237,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function XtestDiscoverLocalDevices(): void
+	public function testDiscoverLocalDevices(): void
 	{
 		$localApiApi = $this->createMock(API\LocalApi::class);
 		$localApiApi

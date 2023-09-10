@@ -19,7 +19,7 @@ final class ValueHelperTest extends TestCase
 	 *
 	 * @dataProvider normalizeValue
 	 */
-	public function XtestNormalizeValue(
+	public function testNormalizeValue(
 		MetadataTypes\DataType $dataType,
 		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
@@ -39,7 +39,7 @@ final class ValueHelperTest extends TestCase
 	 *
 	 * @dataProvider normalizeReadValue
 	 */
-	public function XtestNormalizeReadValue(
+	public function testNormalizeReadValue(
 		MetadataTypes\DataType $dataType,
 		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
@@ -60,7 +60,7 @@ final class ValueHelperTest extends TestCase
 	 *
 	 * @dataProvider normalizeWriteValue
 	 */
-	public function XtestNormalizeWriteValue(
+	public function testNormalizeWriteValue(
 		MetadataTypes\DataType $dataType,
 		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong

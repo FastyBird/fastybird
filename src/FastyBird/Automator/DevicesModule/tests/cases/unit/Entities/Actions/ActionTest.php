@@ -28,7 +28,7 @@ final class ActionTest extends DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function XtestValidation(): void
+	public function testValidation(): void
 	{
 		$repository = $this->getContainer()->getByType(TriggersModels\Actions\ActionsRepository::class);
 

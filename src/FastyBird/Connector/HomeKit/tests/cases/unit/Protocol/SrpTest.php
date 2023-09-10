@@ -127,7 +127,7 @@ final class SrpTest extends TestCase
 	/**
 	 * @throws Math\Exception\NumberFormatException
 	 */
-	public function XtestServerPasswordVerifier(): void
+	public function testServerPasswordVerifier(): void
 	{
 		$serverPasswordVerifier = Math\BigInteger::fromBytes(
 			(string) hex2bin(str_replace(' ', '', self::TEST_SERVER_PASSWORD_VERIFIER)),
@@ -143,7 +143,7 @@ final class SrpTest extends TestCase
 	/**
 	 * @throws Math\Exception\NumberFormatException
 	 */
-	public function XtestServerPublicKey(): void
+	public function testServerPublicKey(): void
 	{
 		$serverPublicKey = Math\BigInteger::fromBytes(
 			(string) hex2bin(str_replace(' ', '', self::TEST_SERVER_PUBLIC_KEY)),
@@ -159,7 +159,7 @@ final class SrpTest extends TestCase
 	/**
 	 * @throws Math\Exception\NumberFormatException
 	 */
-	public function XtestRandomScramblingParameter(): void
+	public function testRandomScramblingParameter(): void
 	{
 		$randomScramblingParameter = Math\BigInteger::fromBytes(
 			(string) hex2bin(str_replace(' ', '', self::TEST_RANDOM_SCRAMBLING_PARAMETER)),
@@ -176,7 +176,7 @@ final class SrpTest extends TestCase
 	/**
 	 * @throws Math\Exception\NumberFormatException
 	 */
-	public function XtestPremasteredSecret(): void
+	public function testPremasteredSecret(): void
 	{
 		$premasteredSecret = Math\BigInteger::fromBytes(
 			(string) hex2bin(str_replace(' ', '', self::TEST_PREMASTER_SECRET)),
@@ -190,7 +190,7 @@ final class SrpTest extends TestCase
 		);
 	}
 
-	public function XtestSessionKey(): void
+	public function testSessionKey(): void
 	{
 		self::assertNotNull($this->srp->getSessionKey());
 		self::assertEquals(
@@ -199,7 +199,7 @@ final class SrpTest extends TestCase
 		);
 	}
 
-	public function XtestSessionKeyClientProof(): void
+	public function testSessionKeyClientProof(): void
 	{
 		self::assertNotNull($this->srp->getClientProof());
 		self::assertEquals(
@@ -208,7 +208,7 @@ final class SrpTest extends TestCase
 		);
 	}
 
-	public function XtestSessionKeyServerProof(): void
+	public function testSessionKeyServerProof(): void
 	{
 		self::assertNotNull($this->srp->getServerProof());
 		self::assertEquals(
@@ -217,7 +217,7 @@ final class SrpTest extends TestCase
 		);
 	}
 
-	public function XtestSalt(): void
+	public function testSalt(): void
 	{
 		self::assertEquals(
 			(string) hex2bin(str_replace(' ', '', self::TEST_SALT)),
@@ -225,7 +225,7 @@ final class SrpTest extends TestCase
 		);
 	}
 
-	public function XtestVerifyProof(): void
+	public function testVerifyProof(): void
 	{
 		self::assertTrue(
 			$this->srp->verifyProof(

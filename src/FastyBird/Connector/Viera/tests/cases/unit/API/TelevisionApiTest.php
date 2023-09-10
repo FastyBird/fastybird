@@ -27,7 +27,7 @@ final class TelevisionApiTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function XtestGetSpecs(): void
+	public function testGetSpecs(): void
 	{
 		$httpClient = $this->createMock(GuzzleHttp\Client::class);
 		$httpClient
@@ -105,7 +105,7 @@ final class TelevisionApiTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function XtestGetApps(): void
+	public function testGetApps(): void
 	{
 		$httpClient = $this->createMock(GuzzleHttp\Client::class);
 		$httpClient
@@ -270,7 +270,7 @@ final class TelevisionApiTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function XtestGetVectorInfo(): void
+	public function testGetVectorInfo(): void
 	{
 		$httpClient = $this->createMock(GuzzleHttp\Client::class);
 		$httpClient
@@ -363,7 +363,7 @@ final class TelevisionApiTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function XtestGetVolume(): void
+	public function testGetVolume(): void
 	{
 		$httpClient = $this->createMock(GuzzleHttp\Client::class);
 		$httpClient
@@ -457,7 +457,7 @@ final class TelevisionApiTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function XtestSetVolume(): void
+	public function testSetVolume(): void
 	{
 		$httpClient = $this->createMock(GuzzleHttp\Client::class);
 		$httpClient
@@ -551,7 +551,7 @@ final class TelevisionApiTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function XtestGetMute(): void
+	public function testGetMute(): void
 	{
 		$httpClient = $this->createMock(GuzzleHttp\Client::class);
 		$httpClient
@@ -645,7 +645,7 @@ final class TelevisionApiTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function XtestSetMute(): void
+	public function testSetMute(): void
 	{
 		$httpClient = $this->createMock(GuzzleHttp\Client::class);
 		$httpClient
@@ -739,7 +739,7 @@ final class TelevisionApiTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function XtestSendKey(): void
+	public function testSendKey(): void
 	{
 		$httpClient = $this->createMock(GuzzleHttp\Client::class);
 		$httpClient
@@ -833,7 +833,7 @@ final class TelevisionApiTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function XtestLaunchApplication(): void
+	public function testLaunchApplication(): void
 	{
 		$httpClient = $this->createMock(GuzzleHttp\Client::class);
 		$httpClient

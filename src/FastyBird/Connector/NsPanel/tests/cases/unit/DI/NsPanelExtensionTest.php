@@ -29,7 +29,7 @@ final class NsPanelExtensionTest extends Tests\Cases\Unit\BaseTestCase
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws Error
 	 */
-	public function XtestServicesRegistration(): void
+	public function testServicesRegistration(): void
 	{
 		$container = $this->createContainer();
 

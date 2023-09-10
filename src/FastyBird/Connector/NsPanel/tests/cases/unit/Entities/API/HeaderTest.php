@@ -21,7 +21,7 @@ final class HeaderTest extends Tests\Cases\Unit\BaseTestCase
 	 * @throws ObjectMapper\Exception\InvalidData
 	 * @throws Error
 	 */
-	public function XtestCreateEntity(): void
+	public function testCreateEntity(): void
 	{
 		$container = $this->createContainer();
 

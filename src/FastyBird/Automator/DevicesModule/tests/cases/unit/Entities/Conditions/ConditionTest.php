@@ -28,7 +28,7 @@ final class ConditionTest extends DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function XtestPropertyConditionValidation(): void
+	public function testPropertyConditionValidation(): void
 	{
 		$repository = $this->getContainer()->getByType(TriggersModels\Conditions\ConditionsRepository::class);
 

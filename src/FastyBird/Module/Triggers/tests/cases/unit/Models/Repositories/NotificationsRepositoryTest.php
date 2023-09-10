@@ -29,7 +29,7 @@ final class NotificationsRepositoryTest extends DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function XtestReadOne(): void
+	public function testReadOne(): void
 	{
 		$repository = $this->getContainer()->getByType(Models\Notifications\NotificationsRepository::class);
 
@@ -59,7 +59,7 @@ final class NotificationsRepositoryTest extends DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function XtestReadResultSet(): void
+	public function testReadResultSet(): void
 	{
 		$repository = $this->getContainer()->getByType(Models\Notifications\NotificationsRepository::class);
 

@@ -21,7 +21,7 @@ final class CryptoTest extends TestCase
 	 * @throws Exceptions\Decrypt
 	 * @throws Exceptions\Encrypt
 	 */
-	public function XtestEncodeDecode(): void
+	public function testEncodeDecode(): void
 	{
 		$challengeKey = 'vdj1PiHp9lJ3OhhzSbqNRw==';
 

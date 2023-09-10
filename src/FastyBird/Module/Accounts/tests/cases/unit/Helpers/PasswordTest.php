@@ -12,7 +12,7 @@ final class PasswordTest extends TestCase
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function XtestPassword(): void
+	public function testPassword(): void
 	{
 		$password = new Helpers\Password(null, 'somePassword');
 		$hashedPassword = new Helpers\Password($password->getHash(), null, $password->getSalt());

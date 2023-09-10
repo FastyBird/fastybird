@@ -18,7 +18,7 @@ final class WebServerExtensionTest extends BaseTestCase
 	/**
 	 * @throws Nette\DI\MissingServiceException
 	 */
-	public function XtestCompilersServices(): void
+	public function testCompilersServices(): void
 	{
 		self::assertNotNull($this->container->getByType(Application\Application::class, false));
 

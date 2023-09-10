@@ -28,7 +28,7 @@ final class FindConditionsTest extends DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function XtestFindById(): void
+	public function testFindById(): void
 	{
 		$repository = $this->getContainer()->getByType(Models\Conditions\ConditionsRepository::class);
 

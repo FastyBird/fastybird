@@ -34,7 +34,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function XtestGetUserDevices(): void
+	public function testGetUserDevices(): void
 	{
 		$httpClient = $this->createMock(GuzzleHttp\Client::class);
 		$httpClient
@@ -242,7 +242,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function XtestGetUserDevicesFactoryInfos(): void
+	public function testGetUserDevicesFactoryInfos(): void
 	{
 		$httpClient = $this->createMock(GuzzleHttp\Client::class);
 		$httpClient
@@ -333,7 +333,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function XtestGetUserDeviceDetail(): void
+	public function testGetUserDeviceDetail(): void
 	{
 		$httpClient = $this->createMock(GuzzleHttp\Client::class);
 		$httpClient
@@ -438,7 +438,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function XtestGetUserDeviceSpecifications(): void
+	public function testGetUserDeviceSpecifications(): void
 	{
 		$httpClient = $this->createMock(GuzzleHttp\Client::class);
 		$httpClient
@@ -538,7 +538,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function XtestGetUserDeviceState(): void
+	public function testGetUserDeviceState(): void
 	{
 		$httpClient = $this->createMock(GuzzleHttp\Client::class);
 		$httpClient
@@ -623,7 +623,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function XtestGetUserDeviceChildren(): void
+	public function testGetUserDeviceChildren(): void
 	{
 		$httpClient = $this->createMock(GuzzleHttp\Client::class);
 		$httpClient
@@ -714,7 +714,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function XtestGetDevices(): void
+	public function testGetDevices(): void
 	{
 		$httpClient = $this->createMock(GuzzleHttp\Client::class);
 		$httpClient
@@ -899,7 +899,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function XtestGetDevicesFactoryInfos(): void
+	public function testGetDevicesFactoryInfos(): void
 	{
 		$httpClient = $this->createMock(GuzzleHttp\Client::class);
 		$httpClient
@@ -990,7 +990,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function XtestGetDeviceDetail(): void
+	public function testGetDeviceDetail(): void
 	{
 		$httpClient = $this->createMock(GuzzleHttp\Client::class);
 		$httpClient
@@ -1088,7 +1088,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function XtestGetDeviceSpecification(): void
+	public function testGetDeviceSpecification(): void
 	{
 		$httpClient = $this->createMock(GuzzleHttp\Client::class);
 		$httpClient
@@ -1192,7 +1192,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function XtestGetDeviceState(): void
+	public function testGetDeviceState(): void
 	{
 		$httpClient = $this->createMock(GuzzleHttp\Client::class);
 		$httpClient
@@ -1277,7 +1277,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function XtestSetDeviceState(): void
+	public function testSetDeviceState(): void
 	{
 		$httpClient = $this->createMock(GuzzleHttp\Client::class);
 		$httpClient
@@ -1349,7 +1349,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function XtestConnect(): void
+	public function testConnect(): void
 	{
 		$httpClient = $this->createMock(GuzzleHttp\Client::class);
 		$httpClient

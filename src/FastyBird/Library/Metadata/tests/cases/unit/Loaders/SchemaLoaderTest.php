@@ -13,7 +13,7 @@ final class SchemaLoaderTest extends BaseTestCase
 	 * @throws Metadata\Exceptions\FileNotFound
 	 * @throws Metadata\Exceptions\InvalidArgument
 	 */
-	public function XtestValidateValidInput(): void
+	public function testValidateValidInput(): void
 	{
 		$loader = new Loaders\SchemaLoader();
 

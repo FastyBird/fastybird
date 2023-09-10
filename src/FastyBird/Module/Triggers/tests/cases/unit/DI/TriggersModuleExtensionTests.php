@@ -28,7 +28,7 @@ final class TriggersModuleExtensionTests extends DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function XtestServicesRegistration(): void
+	public function testServicesRegistration(): void
 	{
 		self::assertNotNull($this->getContainer()->getByType(Commands\Initialize::class, false));
 

@@ -27,7 +27,7 @@ final class EmailEntityTest extends DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function XtestChangeDefault(): void
+	public function testChangeDefault(): void
 	{
 		$repository = $this->getContainer()->getByType(Models\Emails\EmailsRepository::class);
 

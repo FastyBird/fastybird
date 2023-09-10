@@ -36,7 +36,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function XtestDiscover(): void
+	public function testDiscover(): void
 	{
 		$responseBody = $this->createMock(Http\Message\StreamInterface::class);
 		$responseBody
