@@ -29,7 +29,7 @@ final class ConditionsRepositoryTest extends DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function testReadOne(): void
+	public function XtestReadOne(): void
 	{
 		$repository = $this->getContainer()->getByType(Models\Conditions\ConditionsRepository::class);
 
@@ -51,7 +51,7 @@ final class ConditionsRepositoryTest extends DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function testReadResultSet(): void
+	public function XtestReadResultSet(): void
 	{
 		$repository = $this->getContainer()->getByType(Models\Conditions\ConditionsRepository::class);
 

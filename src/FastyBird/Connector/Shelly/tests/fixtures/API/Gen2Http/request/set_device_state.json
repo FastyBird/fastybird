@@ -1,0 +1,8 @@
+{
+  "id": "__MESSAGE_ID__",
+  "method": "Switch.Set",
+  "params": {
+    "id": 0,
+    "on": false
+  }
+}

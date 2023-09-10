@@ -32,22 +32,23 @@ final class DeviceRollerState implements Entities\API\Entity
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $state,
-		#[ObjectMapper\Rules\IntValue()]
-		private readonly int $power,
+		#[ObjectMapper\Rules\FloatValue()]
+		private readonly float $power,
 		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
+		#[ObjectMapper\Modifiers\FieldName('is_valid')]
 		private readonly bool $valid,
 		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
 		#[ObjectMapper\Modifiers\FieldName('safety_switch')]
 		private readonly bool $safetySwitch,
 		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
 		private readonly bool $overtemperature,
-		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		#[ObjectMapper\Rules\ArrayEnumValue(cases: ['normal', 'safety_switch', 'obstacle', 'overpower'])]
 		#[ObjectMapper\Modifiers\FieldName('stop_reason')]
 		private readonly string $stopReason,
-		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		#[ObjectMapper\Rules\ArrayEnumValue(cases: ['open', 'close'])]
 		#[ObjectMapper\Modifiers\FieldName('last_direction')]
 		private readonly string $lastDirection,
-		#[ObjectMapper\Rules\IntValue()]
+		#[ObjectMapper\Rules\IntValue(min: 0, max: 100, unsigned: true)]
 		#[ObjectMapper\Modifiers\FieldName('current_pos')]
 		private readonly int $currentPos,
 		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
@@ -63,7 +64,7 @@ final class DeviceRollerState implements Entities\API\Entity
 		return $this->state;
 	}
 
-	public function getPower(): int
+	public function getPower(): float
 	{
 		return $this->power;
 	}

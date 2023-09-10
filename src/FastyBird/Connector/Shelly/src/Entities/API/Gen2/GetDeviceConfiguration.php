@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
 use FastyBird\Connector\Shelly\Entities;
+use Orisai\ObjectMapper;
 use function array_map;
 
 /**
@@ -38,11 +39,29 @@ final class GetDeviceConfiguration implements Entities\API\Entity
 	 * @param array<int, DeviceHumidityConfiguration> $humidity
 	 */
 	public function __construct(
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(DeviceSwitchConfiguration::class),
+		)]
 		private readonly array $switches = [],
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(DeviceCoverConfiguration::class),
+		)]
 		private readonly array $covers = [],
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(DeviceInputConfiguration::class),
+		)]
 		private readonly array $inputs = [],
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(DeviceLightConfiguration::class),
+		)]
 		private readonly array $lights = [],
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(DeviceTemperatureConfiguration::class),
+		)]
 		private readonly array $temperature = [],
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(DeviceHumidityConfiguration::class),
+		)]
 		private readonly array $humidity = [],
 	)
 	{

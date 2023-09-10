@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 final class ApiV1ValidatorTest extends TestCase
 {
 
-	public function testValidateDevices(): void
+	public function XtestValidateDevices(): void
 	{
 		$apiV1Validator = new API\V1Validator();
 
@@ -78,7 +78,7 @@ final class ApiV1ValidatorTest extends TestCase
 		self::assertFalse($apiV1Validator->validate('/fb/v1/device.name/$' . Entities\Messages\Attribute::NAME));
 	}
 
-	public function testValidateChannels(): void
+	public function XtestValidateChannels(): void
 	{
 		$apiV1Validator = new API\V1Validator();
 

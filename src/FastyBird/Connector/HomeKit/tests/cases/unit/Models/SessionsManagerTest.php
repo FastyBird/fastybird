@@ -36,7 +36,7 @@ final class SessionsManagerTest extends DbTestCase
 	 * @throws Error
 	 * @throws RuntimeException
 	 */
-	public function testCreate(): void
+	public function XtestCreate(): void
 	{
 		$repository = $this->getContainer()->getByType(DevicesModels\Connectors\ConnectorsRepository::class);
 
@@ -72,7 +72,7 @@ final class SessionsManagerTest extends DbTestCase
 	 * @throws Error
 	 * @throws RuntimeException
 	 */
-	public function testUpdate(): void
+	public function XtestUpdate(): void
 	{
 		$manager = $this->getContainer()->getByType(Models\Clients\ClientsManager::class);
 

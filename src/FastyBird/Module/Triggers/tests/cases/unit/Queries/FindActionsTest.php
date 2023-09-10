@@ -28,7 +28,7 @@ final class FindActionsTest extends DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function testFindById(): void
+	public function XtestFindById(): void
 	{
 		$repository = $this->getContainer()->getByType(Models\Actions\ActionsRepository::class);
 

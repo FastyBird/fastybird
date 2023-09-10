@@ -17,7 +17,8 @@ namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Types;
-use function is_string;
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use Orisai\ObjectMapper;
 
 /**
  * Generation 2 device input state entity
@@ -34,9 +35,23 @@ final class DeviceInputState implements Entities\API\Entity
 	 * @param array<string> $errors
 	 */
 	public function __construct(
+		#[ObjectMapper\Rules\IntValue(unsigned: true)]
 		private readonly int $id,
-		private readonly string|bool|null $state,
+		#[ObjectMapper\Rules\AnyOf([
+			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\InputPayload::class),
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		private readonly Types\InputPayload|bool|null $state,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\IntValue(min: 0, max: 100, unsigned: true),
+			new ObjectMapper\Rules\NullValue(),
+		])]
 		private readonly int|null $percent,
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\IntValue(unsigned: true),
+		)]
 		private readonly array $errors = [],
 	)
 	{
@@ -52,16 +67,8 @@ final class DeviceInputState implements Entities\API\Entity
 		return Types\ComponentType::get(Types\ComponentType::INPUT);
 	}
 
-	public function getState(): bool|Types\InputPayload|null
+	public function getState(): Types\InputPayload|bool|null
 	{
-		if (is_string($this->state)) {
-			if (Types\InputPayload::isValidValue($this->state)) {
-				return Types\InputPayload::get($this->state);
-			}
-
-			return null;
-		}
-
 		return $this->state;
 	}
 

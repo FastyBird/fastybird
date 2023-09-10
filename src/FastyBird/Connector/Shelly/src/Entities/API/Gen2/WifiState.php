@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
 use FastyBird\Connector\Shelly\Entities;
+use Orisai\ObjectMapper;
 
 /**
  * Generation 2 device wifi state entity
@@ -29,10 +30,29 @@ final class WifiState implements Entities\API\Entity
 {
 
 	public function __construct(
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('sta_ip')]
 		private readonly string|null $staIp,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $status,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly string|null $ssid,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly int|null $rssi,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('ap_client_count')]
 		private readonly int|null $apClientCount,
 	)
 	{

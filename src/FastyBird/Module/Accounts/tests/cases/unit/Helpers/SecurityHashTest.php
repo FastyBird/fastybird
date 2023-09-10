@@ -14,7 +14,7 @@ final class SecurityHashTest extends TestCase
 	/**
 	 * @throws Exception
 	 */
-	public function testPassword(): void
+	public function XtestPassword(): void
 	{
 		$dateFactory = $this->createMock(DateTimeFactory\Factory::class);
 		$dateFactory

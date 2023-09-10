@@ -17,6 +17,7 @@ namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Types;
+use Orisai\ObjectMapper;
 
 /**
  * Generation 2 device humidity configuration entity
@@ -30,9 +31,23 @@ final class DeviceHumidityConfiguration implements Entities\API\Entity
 {
 
 	public function __construct(
+		#[ObjectMapper\Rules\IntValue(unsigned: true)]
 		private readonly int $id,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly string|null $name,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\FloatValue(castNumericString: true),
+			new ObjectMapper\Rules\NullValue(),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('report_thr')]
 		private readonly float|null $reportThreshold,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\FloatValue(castNumericString: true),
+			new ObjectMapper\Rules\NullValue(),
+		])]
 		private readonly float|null $offset,
 	)
 	{

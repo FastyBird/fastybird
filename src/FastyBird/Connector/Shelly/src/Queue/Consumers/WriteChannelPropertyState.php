@@ -294,7 +294,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				}
 
 				if ($device->getGeneration()->equalsValue(Types\DeviceGeneration::GENERATION_2)) {
-					$result = $this->connectionManager->getGen2HttpApiConnection()->setDeviceStatus(
+					$result = $this->connectionManager->getGen2HttpApiConnection()->setDeviceState(
 						$address,
 						$device->getUsername(),
 						$device->getPassword(),

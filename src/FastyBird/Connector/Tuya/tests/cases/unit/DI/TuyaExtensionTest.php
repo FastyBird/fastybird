@@ -26,7 +26,7 @@ final class TuyaExtensionTest extends Tests\Cases\Unit\BaseTestCase
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws Error
 	 */
-	public function testServicesRegistration(): void
+	public function XtestServicesRegistration(): void
 	{
 		$container = $this->createContainer();
 

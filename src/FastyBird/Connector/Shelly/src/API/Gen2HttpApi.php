@@ -27,6 +27,7 @@ use React\Promise;
 use RuntimeException;
 use Throwable;
 use function array_key_exists;
+use function array_merge;
 use function intval;
 use function preg_match;
 use function sprintf;
@@ -200,7 +201,7 @@ final class Gen2HttpApi extends HttpApi
 	 * @throws Exceptions\HttpApiCall
 	 * @throws Exceptions\HttpApiError
 	 */
-	public function setDeviceStatus(
+	public function setDeviceState(
 		string $address,
 		string|null $username,
 		string|null $password,
@@ -328,114 +329,31 @@ final class Gen2HttpApi extends HttpApi
 				&& Types\ComponentType::isValidValue($componentMatches['component'])
 			) {
 				if ($componentMatches['component'] === Types\ComponentType::SWITCH) {
-					$switches[] = [
-						'id' => $configuration->offsetGet('id'),
-						'name' => $configuration->offsetGet('name'),
-						'mode' => $configuration->offsetGet('inMode'),
-						'initial_state' => $configuration->offsetGet('initialState'),
-						'auto_on' => $configuration->offsetGet('autoOn'),
-						'auto_on_delay' => $configuration->offsetGet('autoOnDelay'),
-						'auto_off' => $configuration->offsetGet('autoOff'),
-						'auto_off_delay' => $configuration->offsetGet('autoOffDelay'),
-						'input_id' => $configuration->offsetGet('inputId'),
-						'power_limit' => $configuration->offsetGet('powerLimit'),
-						'voltage_limit' => $configuration->offsetGet('voltageLimit'),
-						'current_limit' => $configuration->offsetGet('currentLimit'),
-					];
+					$switches[] = (array) $configuration;
 				} elseif ($componentMatches['component'] === Types\ComponentType::COVER) {
-					$covers[] = [
-						'id' => $configuration->offsetGet('id'),
-						'name' => $configuration->offsetGet('name'),
-						'mode' => $configuration->offsetGet('inMode'),
-						'initial_state' => $configuration->offsetGet('initialState'),
-						'power_limit' => $configuration->offsetGet('powerLimit'),
-						'voltage_limit' => $configuration->offsetGet('voltageLimit'),
-						'current_limit' => $configuration->offsetGet('currentLimit'),
-						'motor' => $configuration->offsetGet('motor') instanceof Utils\ArrayHash
-							? [
-								'idle_power_threshold' => $configuration->offsetGet('motor')->offsetGet('idlePowerThr'),
-								'idle_confirm_period' => $configuration->offsetGet('motor')->offsetGet(
-									'idleConfirmPeriod',
-								),
-							]
-							: $configuration->offsetGet('motor'),
-						'maximum_opening_time' => $configuration->offsetGet('maxtimeOpen'),
-						'maximum_closing_time' => $configuration->offsetGet('maxtimeClose'),
-						'swapped_input' => $configuration->offsetGet('swapInputs'),
-						'inverted_directions' => $configuration->offsetGet('invertDirections'),
-						'obstruction_detection' => $configuration->offsetGet(
-							'obstructionDetection',
-						) instanceof Utils\ArrayHash
-							? [
-								'enabled' => $configuration->offsetGet('obstructionDetection')->offsetGet('enable'),
-								'direction' => $configuration->offsetGet('obstructionDetection')->offsetGet(
-									'direction',
-								),
-								'action' => $configuration->offsetGet('obstructionDetection')->offsetGet('action'),
-								'power_threshold' => $configuration->offsetGet('obstructionDetection')->offsetGet(
-									'powerThr',
-								),
-								'holdoff' => $configuration->offsetGet('obstructionDetection')->offsetGet('holdoff'),
-							]
-							: $configuration->offsetGet('obstructionDetection'),
-						'safety_switch' => $configuration->offsetGet('safetySwitch') instanceof Utils\ArrayHash
-							? [
-								'enabled' => $configuration->offsetGet('safetySwitch')->offsetGet('enable'),
-								'direction' => $configuration->offsetGet('safetySwitch')->offsetGet('direction'),
-								'action' => $configuration->offsetGet('safetySwitch')->offsetGet('action'),
-								'allowed_move' => $configuration->offsetGet('safetySwitch')->offsetGet('allowedMove'),
-							]
-							: $configuration->offsetGet('safetySwitch'),
-					];
+					$covers[] = array_merge(
+						(array) $configuration,
+						[
+							'motor' => (array) $configuration->offsetGet('motor'),
+							'obstruction_detection' => (array) $configuration->offsetGet('obstruction_detection'),
+							'safety_switch' => (array) $configuration->offsetGet('safety_switch'),
+						],
+					);
 				} elseif ($componentMatches['component'] === Types\ComponentType::LIGHT) {
-					$lights[] = [
-						'id' => $configuration->offsetGet('id'),
-						'name' => $configuration->offsetGet('name'),
-						'initial_state' => $configuration->offsetGet('initialState'),
-						'auto_on' => $configuration->offsetGet('autoOn'),
-						'auto_on_delay' => $configuration->offsetGet('autoOnDelay'),
-						'auto_off' => $configuration->offsetGet('autoOff'),
-						'auto_off_delay' => $configuration->offsetGet('autoOffDelay'),
-						'default' => $configuration->offsetGet('default') instanceof Utils\ArrayHash
-							? [
-								'brightness' => $configuration->offsetGet('default')->offsetGet('brightness'),
-							]
-							: $configuration->offsetGet('default'),
-						'night_mode' => $configuration->offsetGet('nightMode') instanceof Utils\ArrayHash
-							? [
-								'enabled' => $configuration->offsetGet('nightMode')->offsetGet('enable'),
-								'brightness' => $configuration->offsetGet('nightMode')->offsetGet('brightness'),
-								'active_between' => $configuration->offsetGet('nightMode')->offsetGet(
-									'activeBetween',
-								) instanceof Utils\ArrayHash
-									? (array) $configuration->offsetGet('nightMode')->offsetGet('activeBetween')
-									: $configuration->offsetGet('nightMode')->offsetGet('activeBetween'),
-							]
-							: $configuration->offsetGet('nightMode'),
-					];
+					$lights[] = array_merge(
+						(array) $configuration,
+						[
+							'default' => (array) $configuration->offsetGet('default'),
+							'night_mode' => (array) $configuration->offsetGet('night_mode'),
+							'safety_switch' => (array) $configuration->offsetGet('safety_switch'),
+						],
+					);
 				} elseif ($componentMatches['component'] === Types\ComponentType::INPUT) {
-					$inputs[] = [
-						'id' => $configuration->offsetGet('id'),
-						'name' => $configuration->offsetGet('name'),
-						'input_type' => $configuration->offsetGet('type'),
-						'inverted' => $configuration->offsetGet('invert'),
-						'factory_reset' => $configuration->offsetGet('factoryReset'),
-						'report_threshold' => $configuration->offsetGet('reportThr'),
-					];
+					$inputs[] = (array) $configuration;
 				} elseif ($componentMatches['component'] === Types\ComponentType::TEMPERATURE) {
-					$temperature[] = [
-						'id' => $configuration->offsetGet('id'),
-						'name' => $configuration->offsetGet('name'),
-						'report_threshold' => $configuration->offsetGet('reportThrC'),
-						'offset' => $configuration->offsetGet('offsetC'),
-					];
+					$temperature[] = (array) $configuration;
 				} elseif ($componentMatches['component'] === Types\ComponentType::HUMIDITY) {
-					$humidity[] = [
-						'id' => $configuration->offsetGet('id'),
-						'name' => $configuration->offsetGet('name'),
-						'report_threshold' => $configuration->offsetGet('reportThr'),
-						'offset' => $configuration->offsetGet('offset'),
-					];
+					$humidity[] = (array) $configuration;
 				}
 			}
 		}
@@ -476,111 +394,50 @@ final class Gen2HttpApi extends HttpApi
 				&& Types\ComponentType::isValidValue($componentMatches['component'])
 			) {
 				if ($componentMatches['component'] === Types\ComponentType::SWITCH) {
-					$switches[] = [
-						'id' => $state->offsetGet('id'),
-						'source' => $state->offsetGet('source'),
-						'output' => $state->offsetGet('output'),
-						'timer_started_at' => $state->offsetGet('timerStartedAt'),
-						'timer_duration' => $state->offsetGet('timerDuration'),
-						'active_power' => $state->offsetGet('apower'),
-						'voltage' => $state->offsetGet('voltage'),
-						'current' => $state->offsetGet('current'),
-						'power_factor' => $state->offsetGet('pf'),
-						'active_energy' => $state->offsetGet('aenergy') instanceof Utils\ArrayHash
-							? [
-								'total' => $state->offsetGet('aenergy')->offsetGet('total'),
-								'by_minute' => $state->offsetGet('aenergy')->offsetGet('byMinute'),
-								'minute_ts' => $state->offsetGet('aenergy')->offsetGet('minuteTs'),
-							]
-							: $state->offsetGet('aenergy'),
-						'temperature' => $state->offsetGet('temperature') instanceof Utils\ArrayHash
-							? [
-								'temperature_celsius' => $state->offsetGet('temperature')->offsetGet('tC'),
-								'temperature_fahrenheit' => $state->offsetGet('temperature')->offsetGet('tF'),
-							]
-							: $state->offsetGet('temperature'),
-						'errors' => $state->offsetGet('errors') instanceof Utils\ArrayHash
-							? (array) $state->offsetGet('errors')
-							: $state->offsetGet('errors'),
-					];
+					$switches[] = array_merge(
+						(array) $state,
+						[
+							'aenergy' => (array) $state->offsetGet('aenergy'),
+							'temperature' => (array) $state->offsetGet('temperature'),
+							'errors' => (array) $state->offsetGet('errors'),
+						],
+					);
 				} elseif ($componentMatches['component'] === Types\ComponentType::COVER) {
-					$covers[] = [
-						'id' => $state->offsetGet('id'),
-						'source' => $state->offsetGet('source'),
-						'state' => $state->offsetGet('state'),
-						'active_power' => $state->offsetGet('apower'),
-						'voltage' => $state->offsetGet('voltage'),
-						'current' => $state->offsetGet('current'),
-						'power_factor' => $state->offsetGet('pf'),
-						'current_position' => $state->offsetGet('currentPos'),
-						'target_position' => $state->offsetGet('targetPos'),
-						'move_timeout' => $state->offsetGet('moveTimeout'),
-						'move_started_at' => $state->offsetGet('moveStartedAt'),
-						'has_position_control' => $state->offsetGet('posControl'),
-						'active_energy' => $state->offsetGet('aenergy') instanceof Utils\ArrayHash
-							? [
-								'total' => $state->offsetGet('aenergy')->offsetGet('total'),
-								'by_minute' => $state->offsetGet('aenergy')->offsetGet('byMinute'),
-								'minute_ts' => $state->offsetGet('aenergy')->offsetGet('minuteTs'),
-							]
-							: $state->offsetGet('aenergy'),
-						'temperature' => $state->offsetGet('temperature') instanceof Utils\ArrayHash
-							? [
-								'temperature_celsius' => $state->offsetGet('temperature')->offsetGet('tC'),
-								'temperature_fahrenheit' => $state->offsetGet('temperature')->offsetGet('tF'),
-							]
-							: $state->offsetGet('temperature'),
-						'errors' => $state->offsetGet('errors') instanceof Utils\ArrayHash
-							? (array) $state->offsetGet('errors')
-							: $state->offsetGet('errors'),
-					];
+					$covers[] = array_merge(
+						(array) $state,
+						[
+							'aenergy' => (array) $state->offsetGet('aenergy'),
+							'temperature' => (array) $state->offsetGet('temperature'),
+							'errors' => (array) $state->offsetGet('errors'),
+						],
+					);
 				} elseif ($componentMatches['component'] === Types\ComponentType::LIGHT) {
-					$lights[] = [
-						'id' => $state->offsetGet('id'),
-						'source' => $state->offsetGet('source'),
-						'output' => $state->offsetGet('output'),
-						'brightness' => $state->offsetGet('brightness'),
-						'timer_started_at' => $state->offsetGet('timerStartedAt'),
-						'timer_duration' => $state->offsetGet('timerDuration'),
-					];
+					$lights[] = (array) $state;
 				} elseif ($componentMatches['component'] === Types\ComponentType::INPUT) {
-					$inputs[] = [
-						'id' => $state->offsetGet('id'),
-						'state' => $state->offsetGet('state'),
-						'percent' => $state->offsetGet('percent'),
-						'errors' => $state->offsetGet('errors') instanceof Utils\ArrayHash
-							? (array) $state->offsetGet('errors')
-							: $state->offsetGet('errors'),
-					];
+					$inputs[] = array_merge(
+						(array) $state,
+						[
+							'errors' => (array) $state->offsetGet('errors'),
+						],
+					);
 				} elseif ($componentMatches['component'] === Types\ComponentType::TEMPERATURE) {
-					$temperature[] = [
-						'id' => $state->offsetGet('id'),
-						'temperature_celsius' => $state->offsetGet('tC'),
-						'temperature_fahrenheit' => $state->offsetGet('tF'),
-						'errors' => $state->offsetGet('errors') instanceof Utils\ArrayHash
-							? (array) $state->offsetGet('errors')
-							: $state->offsetGet('errors'),
-					];
+					$temperature[] = array_merge(
+						(array) $state,
+						[
+							'errors' => (array) $state->offsetGet('errors'),
+						],
+					);
 				} elseif ($componentMatches['component'] === Types\ComponentType::HUMIDITY) {
-					$humidity[] = [
-						'id' => $state->offsetGet('id'),
-						'relative_humidity' => $state->offsetGet('rh'),
-						'errors' => $state->offsetGet('errors') instanceof Utils\ArrayHash
-							? (array) $state->offsetGet('errors')
-							: $state->offsetGet('errors'),
-					];
+					$humidity[] = array_merge(
+						(array) $state,
+						[
+							'errors' => (array) $state->offsetGet('errors'),
+						],
+					);
 				} elseif ($componentMatches['component'] === Types\ComponentType::ETHERNET) {
-					$ethernet = [
-						'ip' => $state->offsetGet('ip'),
-					];
+					$ethernet = (array) $state;
 				} elseif ($componentMatches['component'] === Types\ComponentType::WIFI) {
-					$wifi = [
-						'sta_ip' => $state->offsetGet('staIp'),
-						'status' => $state->offsetGet('status'),
-						'ssid' => $state->offsetGet('ssid'),
-						'rssi' => $state->offsetGet('rssi'),
-						'ap_client_count' => $state->offsetGet('apClientCount'),
-					];
+					$wifi = (array) $state;
 				}
 			}
 		}

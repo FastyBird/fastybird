@@ -31,36 +31,38 @@ final class DeviceLightState implements Entities\API\Entity
 
 	public function __construct(
 		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
+		#[ObjectMapper\Modifiers\FieldName('ison')]
 		private readonly bool $state,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $source,
 		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
 		#[ObjectMapper\Modifiers\FieldName('has_timer')]
 		private readonly bool $hasTimer,
-		#[ObjectMapper\Rules\IntValue()]
+		#[ObjectMapper\Rules\FloatValue()]
 		#[ObjectMapper\Modifiers\FieldName('timer_started')]
-		private readonly int $timerStarted,
-		#[ObjectMapper\Rules\IntValue()]
+		private readonly float $timerStarted,
+		#[ObjectMapper\Rules\FloatValue()]
 		#[ObjectMapper\Modifiers\FieldName('timer_duration')]
-		private readonly int $timerDuration,
-		#[ObjectMapper\Rules\IntValue()]
+		private readonly float $timerDuration,
+		#[ObjectMapper\Rules\FloatValue()]
 		#[ObjectMapper\Modifiers\FieldName('timer_remaining')]
-		private readonly int $timerRemaining,
-		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		private readonly float $timerRemaining,
+		#[ObjectMapper\Rules\ArrayEnumValue(cases: ['color', 'white'])]
 		private readonly string $mode,
-		#[ObjectMapper\Rules\IntValue()]
+		#[ObjectMapper\Rules\IntValue(min: 0, max: 255, unsigned: true)]
 		private readonly int $red,
-		#[ObjectMapper\Rules\IntValue()]
+		#[ObjectMapper\Rules\IntValue(min: 0, max: 255, unsigned: true)]
 		private readonly int $green,
-		#[ObjectMapper\Rules\IntValue()]
+		#[ObjectMapper\Rules\IntValue(min: 0, max: 255, unsigned: true)]
 		private readonly int $blue,
-		#[ObjectMapper\Rules\IntValue()]
+		#[ObjectMapper\Rules\IntValue(min: 0, max: 255, unsigned: true)]
 		private readonly int $white,
-		#[ObjectMapper\Rules\IntValue()]
+		#[ObjectMapper\Rules\IntValue(min: 0, max: 255, unsigned: true)]
 		private readonly int $gain,
-		#[ObjectMapper\Rules\IntValue()]
+		#[ObjectMapper\Rules\IntValue(min: 2700, max: 6500, unsigned: true)]
+		#[ObjectMapper\Modifiers\FieldName('temp')]
 		private readonly int $temperature,
-		#[ObjectMapper\Rules\IntValue()]
+		#[ObjectMapper\Rules\IntValue(min: 0, max: 100, unsigned: true)]
 		private readonly int $brightness,
 		#[ObjectMapper\Rules\IntValue()]
 		private readonly int $effect,
@@ -85,17 +87,17 @@ final class DeviceLightState implements Entities\API\Entity
 		return $this->hasTimer;
 	}
 
-	public function getTimerStarted(): int
+	public function getTimerStarted(): float
 	{
 		return $this->timerStarted;
 	}
 
-	public function getTimerDuration(): int
+	public function getTimerDuration(): float
 	{
 		return $this->timerDuration;
 	}
 
-	public function getTimerRemaining(): int
+	public function getTimerRemaining(): float
 	{
 		return $this->timerRemaining;
 	}

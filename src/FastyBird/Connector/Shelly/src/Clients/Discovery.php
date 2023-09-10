@@ -509,10 +509,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 									if ($component instanceof Entities\API\Gen2\DeviceSwitchConfiguration) {
 										$status = $deviceStatus?->findSwitch($component->getId());
 
-										if (
-											$status === null
-											|| $status->getOutput() !== Shelly\Constants::VALUE_NOT_AVAILABLE
-										) {
+										if ($status === null) {
 											$channel['properties'][] = [
 												'identifier' => (
 													$component->getType()->getValue()
@@ -583,7 +580,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 										if (
 											$status === null
-											|| $status->getActiveEnergy() !== Shelly\Constants::VALUE_NOT_AVAILABLE
+											|| $status->getActiveEnergy() instanceof Entities\API\Gen2\ActiveEnergyStateBlock
 										) {
 											$channel['properties'][] = [
 												'identifier' => (
@@ -655,7 +652,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 										if (
 											$status === null
-											|| $status->getTemperature() !== Shelly\Constants::VALUE_NOT_AVAILABLE
+											|| $status->getTemperature() instanceof Entities\API\Gen2\TemperatureBlockState
 										) {
 											$channel['properties'][] = [
 												'identifier' => (
@@ -679,10 +676,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 									} elseif ($component instanceof Entities\API\Gen2\DeviceCoverConfiguration) {
 										$status = $deviceStatus?->findCover($component->getId());
 
-										if (
-											$status === null
-											|| $status->getState() !== Shelly\Constants::VALUE_NOT_AVAILABLE
-										) {
+										if ($status === null) {
 											$channel['properties'][] = [
 												'identifier' => (
 													$component->getType()->getValue()
@@ -779,7 +773,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 										if (
 											$status === null
-											|| $status->getActiveEnergy() !== Shelly\Constants::VALUE_NOT_AVAILABLE
+											|| $status->getActiveEnergy() instanceof Entities\API\Gen2\ActiveEnergyStateBlock
 										) {
 											$channel['properties'][] = [
 												'identifier' => (
@@ -851,7 +845,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 										if (
 											$status === null
-											|| $status->getTemperature() !== Shelly\Constants::VALUE_NOT_AVAILABLE
+											|| $status->getTemperature() instanceof Entities\API\Gen2\TemperatureBlockState
 										) {
 											$channel['properties'][] = [
 												'identifier' => (
@@ -875,10 +869,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 									} elseif ($component instanceof Entities\API\Gen2\DeviceLightConfiguration) {
 										$status = $deviceStatus?->findLight($component->getId());
 
-										if (
-											$status === null
-											|| $status->getOutput() !== Shelly\Constants::VALUE_NOT_AVAILABLE
-										) {
+										if ($status === null) {
 											$channel['properties'][] = [
 												'identifier' => (
 													$component->getType()->getValue()

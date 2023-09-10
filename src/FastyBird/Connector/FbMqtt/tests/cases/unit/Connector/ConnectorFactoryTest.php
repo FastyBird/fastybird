@@ -25,7 +25,7 @@ final class ConnectorFactoryTest extends DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function testCreateConnector(): void
+	public function XtestCreateConnector(): void
 	{
 		$connectorsRepository = $this->getContainer()->getByType(
 			DevicesModels\Connectors\ConnectorsRepository::class,

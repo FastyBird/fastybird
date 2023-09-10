@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
 use FastyBird\Connector\Shelly\Entities;
+use Orisai\ObjectMapper;
 use function array_map;
 
 /**
@@ -38,13 +39,39 @@ final class GetDeviceState implements Entities\API\Entity
 	 * @param array<int, DeviceHumidityState> $humidity
 	 */
 	public function __construct(
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(DeviceSwitchState::class),
+		)]
 		private readonly array $switches = [],
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(DeviceCoverState::class),
+		)]
 		private readonly array $covers = [],
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(DeviceInputState::class),
+		)]
 		private readonly array $inputs = [],
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(DeviceLightState::class),
+		)]
 		private readonly array $lights = [],
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(DeviceTemperatureState::class),
+		)]
 		private readonly array $temperature = [],
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(DeviceHumidityState::class),
+		)]
 		private readonly array $humidity = [],
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\MappedObjectValue(class: EthernetState::class),
+			new ObjectMapper\Rules\NullValue(),
+		])]
 		private readonly EthernetState|null $ethernet = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\MappedObjectValue(class: WifiState::class),
+			new ObjectMapper\Rules\NullValue(),
+		])]
 		private readonly WifiState|null $wifi = null,
 	)
 	{

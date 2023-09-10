@@ -17,9 +17,11 @@ namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
 use DateTimeInterface;
 use Exception;
+use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Types;
 use Nette\Utils;
+use Orisai\ObjectMapper;
 use function intval;
 
 /**
@@ -34,12 +36,29 @@ final class DeviceLightState implements Entities\API\Entity
 {
 
 	public function __construct(
+		#[ObjectMapper\Rules\IntValue(unsigned: true)]
 		private readonly int $id,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $source,
-		private readonly bool|string $output,
+		#[ObjectMapper\Rules\BoolValue()]
+		private readonly bool $output,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\ArrayEnumValue(cases: [Shelly\Constants::VALUE_NOT_AVAILABLE]),
+		])]
 		private readonly int|string $brightness,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\NullValue(),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('timer_started_at')]
 		private readonly float|null $timerStartedAt,
-		private readonly int|null $timerDuration,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\NullValue(),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('timer_duration')]
+		private readonly float|null $timerDuration,
 	)
 	{
 	}
@@ -59,7 +78,7 @@ final class DeviceLightState implements Entities\API\Entity
 		return $this->source;
 	}
 
-	public function getOutput(): bool|string
+	public function getOutput(): bool
 	{
 		return $this->output;
 	}
@@ -81,7 +100,7 @@ final class DeviceLightState implements Entities\API\Entity
 		return null;
 	}
 
-	public function getTimerDuration(): int|null
+	public function getTimerDuration(): float|null
 	{
 		return $this->timerDuration;
 	}

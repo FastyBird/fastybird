@@ -31,24 +31,26 @@ final class DeviceRelayState implements Entities\API\Entity
 
 	public function __construct(
 		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
+		#[ObjectMapper\Modifiers\FieldName('ison')]
 		private readonly bool $state,
 		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
 		#[ObjectMapper\Modifiers\FieldName('has_timer')]
 		private readonly bool $hasTimer,
-		#[ObjectMapper\Rules\IntValue()]
+		#[ObjectMapper\Rules\FloatValue()]
 		#[ObjectMapper\Modifiers\FieldName('timer_started')]
-		private readonly int $timerStarted,
-		#[ObjectMapper\Rules\IntValue()]
+		private readonly float $timerStarted,
+		#[ObjectMapper\Rules\FloatValue()]
 		#[ObjectMapper\Modifiers\FieldName('timer_duration')]
-		private readonly int $timerDuration,
-		#[ObjectMapper\Rules\IntValue()]
+		private readonly float $timerDuration,
+		#[ObjectMapper\Rules\FloatValue()]
 		#[ObjectMapper\Modifiers\FieldName('timer_remaining')]
-		private readonly int $timerRemaining,
+		private readonly float $timerRemaining,
 		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
 		private readonly bool $overpower,
 		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
 		private readonly bool $overtemperature,
 		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
+		#[ObjectMapper\Modifiers\FieldName('is_valid')]
 		private readonly bool $valid,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
@@ -69,17 +71,17 @@ final class DeviceRelayState implements Entities\API\Entity
 		return $this->hasTimer;
 	}
 
-	public function getTimerStarted(): int
+	public function getTimerStarted(): float
 	{
 		return $this->timerStarted;
 	}
 
-	public function getTimerDuration(): int
+	public function getTimerDuration(): float
 	{
 		return $this->timerDuration;
 	}
 
-	public function getTimerRemaining(): int
+	public function getTimerRemaining(): float
 	{
 		return $this->timerRemaining;
 	}

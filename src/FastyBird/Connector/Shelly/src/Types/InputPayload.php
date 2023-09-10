@@ -37,6 +37,8 @@ class InputPayload extends Consistence\Enum\Enum
 
 	public const DOUBLE_PUSH = 'double_push';
 
+	public const TRIPLE_PUSH = 'triple_push';
+
 	public const LONG_PUSH = 'long_push';
 
 	public function getValue(): string

@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
 use FastyBird\Connector\Shelly\Entities;
+use Orisai\ObjectMapper;
 use function array_map;
 
 /**
@@ -32,7 +33,13 @@ final class DeviceEvent implements Entities\API\Entity
 	/**
 	 * @param array<int, ComponentEvent> $events
 	 */
-	public function __construct(private readonly array $events = [])
+	public function __construct(
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(class: ComponentEvent::class),
+			new ObjectMapper\Rules\IntValue(unsigned: true),
+		)]
+		private readonly array $events = [],
+	)
 	{
 	}
 

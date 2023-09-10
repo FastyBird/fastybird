@@ -35,7 +35,7 @@ final class DeviceInputState implements Entities\API\Entity
 		#[ObjectMapper\Rules\StringValue()]
 		private readonly string $event,
 		#[ObjectMapper\Rules\IntValue()]
-		#[ObjectMapper\Modifiers\FieldName('event_count')]
+		#[ObjectMapper\Modifiers\FieldName('event_cnt')]
 		private readonly int $eventCount,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),

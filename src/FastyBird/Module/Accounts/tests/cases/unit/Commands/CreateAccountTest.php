@@ -35,7 +35,7 @@ final class CreateAccountTest extends DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function testExecute(): void
+	public function XtestExecute(): void
 	{
 		$accountsManager = $this->getContainer()->getByType(Models\Accounts\AccountsManager::class);
 

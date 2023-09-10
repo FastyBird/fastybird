@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
 use FastyBird\Connector\Shelly\Entities;
+use Orisai\ObjectMapper;
 
 /**
  * Generation 2 device switch or cover component temperature state entity
@@ -29,7 +30,17 @@ final class TemperatureBlockState implements Entities\API\Entity
 {
 
 	public function __construct(
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\NullValue(),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('tC')]
 		private readonly float|null $temperatureCelsius,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\NullValue(),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('tF')]
 		private readonly float|null $temperatureFahrenheit,
 	)
 	{

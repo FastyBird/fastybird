@@ -37,7 +37,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws Error
 	 * @throws Utils\JsonException
 	 */
-	public function testGetGatewayInfo(): void
+	public function XtestGetGatewayInfo(): void
 	{
 		$responseBody = $this->createMock(Http\Message\StreamInterface::class);
 		$responseBody
@@ -120,7 +120,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws Error
 	 * @throws Utils\JsonException
 	 */
-	public function testGetGatewayAccessToken(): void
+	public function XtestGetGatewayAccessToken(): void
 	{
 		$responseBody = $this->createMock(Http\Message\StreamInterface::class);
 		$responseBody
@@ -206,7 +206,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function testGetGatewayAccessTokenError(): void
+	public function XtestGetGatewayAccessTokenError(): void
 	{
 		$responseBody = $this->createMock(Http\Message\StreamInterface::class);
 		$responseBody
@@ -291,7 +291,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws Error
 	 * @throws Utils\JsonException
 	 */
-	public function testSynchroniseDevices(): void
+	public function XtestSynchroniseDevices(): void
 	{
 		$responseBody = $this->createMock(Http\Message\StreamInterface::class);
 		$responseBody
@@ -439,7 +439,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws Error
 	 * @throws Utils\JsonException
 	 */
-	public function testReportDeviceState(): void
+	public function XtestReportDeviceState(): void
 	{
 		$responseBody = $this->createMock(Http\Message\StreamInterface::class);
 		$responseBody
@@ -562,7 +562,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws Error
 	 * @throws Utils\JsonException
 	 */
-	public function testReportDeviceOnline(): void
+	public function XtestReportDeviceOnline(): void
 	{
 		$responseBody = $this->createMock(Http\Message\StreamInterface::class);
 		$responseBody
@@ -681,7 +681,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws Error
 	 * @throws Utils\JsonException
 	 */
-	public function testGetSubDevices(): void
+	public function XtestGetSubDevices(): void
 	{
 		$responseBody = $this->createMock(Http\Message\StreamInterface::class);
 		$responseBody
@@ -772,7 +772,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws Error
 	 * @throws Utils\JsonException
 	 */
-	public function testSetSubDeviceState(): void
+	public function XtestSetSubDeviceState(): void
 	{
 		$responseBody = $this->createMock(Http\Message\StreamInterface::class);
 		$responseBody

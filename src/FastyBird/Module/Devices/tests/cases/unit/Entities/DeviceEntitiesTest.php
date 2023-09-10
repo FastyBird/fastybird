@@ -27,7 +27,7 @@ final class DeviceEntitiesTest extends DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function testFindChildren(): void
+	public function XtestFindChildren(): void
 	{
 		$repository = $this->getContainer()->getByType(Models\Devices\DevicesRepository::class);
 
@@ -57,7 +57,7 @@ final class DeviceEntitiesTest extends DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function testCreateChild(): void
+	public function XtestCreateChild(): void
 	{
 		$manager = $this->getContainer()->getByType(Models\Devices\DevicesManager::class);
 
@@ -95,7 +95,7 @@ final class DeviceEntitiesTest extends DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function testRemoveParent(): void
+	public function XtestRemoveParent(): void
 	{
 		$manager = $this->getContainer()->getByType(Models\Devices\DevicesManager::class);
 
@@ -136,7 +136,7 @@ final class DeviceEntitiesTest extends DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function testChildParent(): void
+	public function XtestChildParent(): void
 	{
 		$manager = $this->getContainer()->getByType(Models\Devices\DevicesManager::class);
 

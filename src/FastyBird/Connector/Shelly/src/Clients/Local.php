@@ -878,35 +878,31 @@ final class Local implements Client
 
 		if ($state->getSwitches() !== []) {
 			foreach ($state->getSwitches() as $component) {
-				if ($component->getOutput() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
-					$states[] = [
-						'identifier' => (
-							$component->getType()->getValue()
-							. '_'
-							. $component->getId()
-							. '_'
-							. Types\ComponentAttributeType::ON
-						),
-						'value' => $component->getOutput(),
-					];
-				}
+				$states[] = [
+					'identifier' => (
+						$component->getType()->getValue()
+						. '_'
+						. $component->getId()
+						. '_'
+						. Types\ComponentAttributeType::ON
+					),
+					'value' => $component->getOutput(),
+				];
 			}
 		}
 
 		if ($state->getCovers() !== []) {
 			foreach ($state->getCovers() as $component) {
-				if ($component->getState() instanceof Types\CoverPayload) {
-					$states[] = [
-						'identifier' => (
-							$component->getType()->getValue()
-							. '_'
-							. $component->getId()
-							. '_'
-							. Types\ComponentAttributeType::STATE
-						),
-						'value' => $component->getState()->getValue(),
-					];
-				}
+				$states[] = [
+					'identifier' => (
+						$component->getType()->getValue()
+						. '_'
+						. $component->getId()
+						. '_'
+						. Types\ComponentAttributeType::STATE
+					),
+					'value' => $component->getState()->getValue(),
+				];
 
 				$states[] = [
 					'identifier' => (
@@ -923,29 +919,29 @@ final class Local implements Client
 
 		if ($state->getLights() !== []) {
 			foreach ($state->getLights() as $component) {
-				if ($component->getOutput() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
-					$states[] = [
-						'identifier' => (
-							$component->getType()->getValue()
-							. '_'
-							. $component->getId()
-							. '_'
-							. Types\ComponentAttributeType::ON
-						),
-						'value' => $component->getOutput(),
-					];
-				}
-
 				$states[] = [
 					'identifier' => (
 						$component->getType()->getValue()
 						. '_'
 						. $component->getId()
 						. '_'
-						. Types\ComponentAttributeType::BRIGHTNESS
+						. Types\ComponentAttributeType::ON
 					),
-					'value' => $component->getBrightness(),
+					'value' => $component->getOutput(),
 				];
+
+				if ($component->getBrightness() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
+					$states[] = [
+						'identifier' => (
+							$component->getType()->getValue()
+							. '_'
+							. $component->getId()
+							. '_'
+							. Types\ComponentAttributeType::BRIGHTNESS
+						),
+						'value' => $component->getBrightness(),
+					];
+				}
 			}
 		}
 

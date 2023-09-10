@@ -31,11 +31,13 @@
         },
         "invert": {
           "type": "boolean",
-          "description": "(only for type switch, button) True if the logical state of the associated input is inverted, false otherwise. For the change to be applied, the physical switch has to be toggled once after invert is set"
+          "description": "(only for type switch, button) True if the logical state of the associated input is inverted, false otherwise. For the change to be applied, the physical switch has to be toggled once after invert is set",
+          "default": false
         },
         "factory_reset": {
           "type": "boolean",
-          "description": "(only for type switch, button) True if input-triggered factory reset option is enabled, false otherwise (shown if applicable)"
+          "description": "(only for type switch, button) True if input-triggered factory reset option is enabled, false otherwise (shown if applicable)",
+          "default": false
         },
         "report_thr": {
           "oneOf": [
@@ -92,23 +94,28 @@
             "on",
             "restore_last",
             "match_input"
-          ]
+          ],
+          "default": "off"
         },
         "auto_on": {
           "type": "boolean",
-          "description": "True if the 'Automatic ON' function is enabled, false otherwise"
+          "description": "True if the 'Automatic ON' function is enabled, false otherwise",
+          "default": false
         },
         "auto_on_delay": {
           "type": "number",
-          "description": "Seconds to pass until the component is switched back on"
+          "description": "Seconds to pass until the component is switched back on",
+          "default": 0
         },
         "auto_off": {
           "type": "boolean",
-          "description": "True if the 'Automatic OFF' function is enabled, false otherwise"
+          "description": "True if the 'Automatic OFF' function is enabled, false otherwise",
+          "default": false
         },
         "auto_off_delay": {
           "type": "number",
-          "description": "Seconds to pass until the component is switched back off"
+          "description": "Seconds to pass until the component is switched back off",
+          "default": 0
         },
         "input_id": {
           "oneOf": [
@@ -190,8 +197,7 @@
             "single",
             "dual",
             "detached"
-          ],
-          "default": "dual"
+          ]
         },
         "initial_state": {
           "type": "string",
@@ -205,15 +211,18 @@
         },
         "power_limit": {
           "type": "number",
-          "description": "Watts, limit that must be exceeded to trigger an overpower error"
+          "description": "Watts, limit that must be exceeded to trigger an overpower error",
+          "default": 0
         },
         "voltage_limit": {
           "type": "number",
-          "description": "Volts, limit that must be exceeded to trigger an overvoltage error"
+          "description": "Volts, limit that must be exceeded to trigger an overvoltage error",
+          "default": 0
         },
         "current_limit": {
           "type": "number",
-          "description": "Amperes, limit that must be exceeded to trigger an overcurrent error"
+          "description": "Amperes, limit that must be exceeded to trigger an overcurrent error",
+          "default": 0
         },
         "motor": {
           "type": "object",
@@ -277,7 +286,7 @@
               ],
               "default": "stop"
             },
-              "power_thr": {
+            "power_thr": {
               "type": "number",
               "description": "Watts, power consumption above this threshold should be interpreted as objects obstructing Cover movement. This property is editable at any time, but note that during the cover calibration procedure (Cover.Calibrate), power_thr will be automatically set to the peak power consumption + 15%, overwriting the current value. The automatic setup of power_thr during calibration will only start tracking power values when the holdoff time (see below) has elapsed",
               "default": 1000
@@ -372,26 +381,31 @@
         },
         "auto_on": {
           "type": "boolean",
-          "description": "True if the 'Automatic ON' function is enabled, false otherwise"
+          "description": "True if the 'Automatic ON' function is enabled, false otherwise",
+          "default": false
         },
         "auto_on_delay": {
           "type": "number",
-          "description": "Seconds to pass until the component is switched back on"
+          "description": "Seconds to pass until the component is switched back on",
+          "default": 0
         },
         "auto_off": {
           "type": "boolean",
-          "description": "True if the 'Automatic OFF' function is enabled, false otherwise"
+          "description": "True if the 'Automatic OFF' function is enabled, false otherwise",
+          "default": false
         },
         "auto_off_delay": {
           "type": "number",
-          "description": "Seconds to pass until the component is switched back off"
+          "description": "Seconds to pass until the component is switched back off",
+          "default": 0
         },
         "default": {
           "type": "object",
           "properties": {
             "brightness": {
               "type": "number",
-              "description": "Brightness level (in percent) after power on"
+              "description": "Brightness level (in percent) after power on",
+              "default": 100
             }
           }
         },
@@ -405,7 +419,8 @@
             },
             "brightness": {
               "type": "number",
-              "description": "Brightness level limit when night mode is active"
+              "description": "Brightness level limit when night mode is active",
+              "default": 100
             },
             "active_between": {
               "type": "array",
@@ -445,7 +460,7 @@
               "type": "null"
             },
             {
-              "type": "string"
+              "type": "number"
             }
           ],
           "description": "Temperature report threshold in Celsius. Accepted range is device-specific, default [0.5..5.0]C unless specified otherwise",
@@ -457,7 +472,7 @@
               "type": "null"
             },
             {
-              "type": "string"
+              "type": "number"
             }
           ],
           "description": "Offset in Celsius to be applied to the measured temperature. Accepted range is device-specific, default [-50.0 .. 50.0] unless specified otherwise",
@@ -488,12 +503,28 @@
           "default": null
         },
         "report_thr": {
-          "type": "number",
-          "description": "Humidity report threshold in %. Accepted range is device-specific, default [1.0..20.0]% unless specified otherwise"
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "description": "Humidity report threshold in %. Accepted range is device-specific, default [1.0..20.0]% unless specified otherwise",
+          "default": null
         },
         "offset": {
-          "type": "number",
-          "description": "Humidity offset in %. Value is applied to measured humidity. Accepted range is device-specific, default [-50.0..50.0]% unless specified otherwise"
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "description": "Humidity offset in %. Value is applied to measured humidity. Accepted range is device-specific, default [-50.0..50.0]% unless specified otherwise",
+          "default": null
         }
       },
       "required": [

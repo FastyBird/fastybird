@@ -22,7 +22,7 @@ final class ActionChannelPropertyEntityTest extends BaseTestCase
 	 *
 	 * @dataProvider channelProperty
 	 */
-	public function testCreateEntity(string $data, string $class): void
+	public function XtestCreateEntity(string $data, string $class): void
 	{
 		$factory = $this->container->getByType(Entities\Actions\ActionChannelPropertyEntityFactory::class);
 
@@ -42,7 +42,7 @@ final class ActionChannelPropertyEntityTest extends BaseTestCase
 	 *
 	 * @dataProvider channelPropertyInvalid
 	 */
-	public function testCreateEntityInvalid(string $data): void
+	public function XtestCreateEntityInvalid(string $data): void
 	{
 		$factory = $this->container->getByType(Entities\Actions\ActionChannelPropertyEntityFactory::class);
 

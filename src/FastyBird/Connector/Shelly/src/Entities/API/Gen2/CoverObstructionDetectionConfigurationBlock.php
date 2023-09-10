@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
 use FastyBird\Connector\Shelly\Entities;
+use Orisai\ObjectMapper;
 
 /**
  * Generation 2 device cover component obstruction detection configuration entity
@@ -29,10 +30,16 @@ final class CoverObstructionDetectionConfigurationBlock implements Entities\API\
 {
 
 	public function __construct(
+		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $enable,
+		#[ObjectMapper\Rules\ArrayEnumValue(cases: ['open', 'closed', 'both'])]
 		private readonly string $direction,
+		#[ObjectMapper\Rules\ArrayEnumValue(cases: ['stop', 'reverse'])]
 		private readonly string $action,
+		#[ObjectMapper\Rules\FloatValue()]
+		#[ObjectMapper\Modifiers\FieldName('power_thr')]
 		private readonly float $powerThreshold,
+		#[ObjectMapper\Rules\FloatValue()]
 		private readonly float $holdoff,
 	)
 	{

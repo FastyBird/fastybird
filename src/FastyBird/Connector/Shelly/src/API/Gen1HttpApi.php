@@ -478,17 +478,7 @@ final class Gen1HttpApi extends HttpApi
 			foreach ($body->offsetGet('relays') as $relayStatus) {
 				assert($relayStatus instanceof Utils\ArrayHash);
 
-				$relays[] = [
-					'state' => $relayStatus->offsetGet('ison'),
-					'has_timer' => $relayStatus->offsetGet('has_timer'),
-					'timer_started' => $relayStatus->offsetGet('timer_started'),
-					'timer_duration' => $relayStatus->offsetGet('timer_duration'),
-					'timer_remaining' => $relayStatus->offsetGet('timer_remaining'),
-					'overpower' => $relayStatus->offsetGet('overpower'),
-					'overtemperature' => $relayStatus->offsetGet('overtemperature'),
-					'valid' => $relayStatus->offsetGet('is_valid'),
-					'source' => $relayStatus->offsetGet('source'),
-				];
+				$relays[] = (array) $relayStatus;
 			}
 		}
 
@@ -504,18 +494,7 @@ final class Gen1HttpApi extends HttpApi
 			foreach ($body->offsetGet('rollers') as $rollerStatus) {
 				assert($rollerStatus instanceof Utils\ArrayHash);
 
-				$rollers[] = [
-					'state' => $rollerStatus->offsetGet('state'),
-					'power' => $rollerStatus->offsetGet('power'),
-					'valid' => $rollerStatus->offsetGet('is_valid'),
-					'safety_switch' => $rollerStatus->offsetGet('safety_switch'),
-					'overtemperature' => $rollerStatus->offsetGet('overtemperature'),
-					'stop_reason' => $rollerStatus->offsetGet('stop_reason'),
-					'last_direction' => $rollerStatus->offsetGet('last_direction'),
-					'current_pos' => $rollerStatus->offsetGet('current_pos'),
-					'calibrating' => $rollerStatus->offsetGet('calibrating'),
-					'positioning' => $rollerStatus->offsetGet('positioning'),
-				];
+				$rollers[] = (array) $rollerStatus;
 			}
 		}
 
@@ -531,12 +510,7 @@ final class Gen1HttpApi extends HttpApi
 			foreach ($body->offsetGet('inputs') as $inputStatus) {
 				assert($inputStatus instanceof Utils\ArrayHash);
 
-				$inputs[] = [
-					'input' => $inputStatus->offsetGet('input'),
-					'event' => $inputStatus->offsetGet('event'),
-					'event_count' => $inputStatus->offsetGet('event_cnt'),
-					'last_sequence' => $inputStatus->offsetGet('last_sequence'),
-				];
+				$inputs[] = (array) $inputStatus;
 			}
 		}
 
@@ -552,24 +526,7 @@ final class Gen1HttpApi extends HttpApi
 			foreach ($body->offsetGet('lights') as $lightStatus) {
 				assert($lightStatus instanceof Utils\ArrayHash);
 
-				$lights[] = [
-					'state' => $lightStatus->offsetGet('ison'),
-					'source' => $lightStatus->offsetGet('source'),
-					'has_timer' => $lightStatus->offsetGet('has_timer'),
-					'timer_started' => $lightStatus->offsetGet('timer_started'),
-					'timer_duration' => $lightStatus->offsetGet('timer_duration'),
-					'timer_remaining' => $lightStatus->offsetGet('timer_remaining'),
-					'mode' => $lightStatus->offsetGet('mode'),
-					'red' => $lightStatus->offsetGet('red'),
-					'green' => $lightStatus->offsetGet('green'),
-					'blue' => $lightStatus->offsetGet('blue'),
-					'white' => $lightStatus->offsetGet('white'),
-					'gain' => $lightStatus->offsetGet('gain'),
-					'temperature' => $lightStatus->offsetGet('temp'),
-					'brightness' => $lightStatus->offsetGet('brightness'),
-					'effect' => $lightStatus->offsetGet('effect'),
-					'transition' => $lightStatus->offsetGet('transition'),
-				];
+				$lights[] = (array) $lightStatus;
 			}
 		}
 
@@ -585,16 +542,7 @@ final class Gen1HttpApi extends HttpApi
 			foreach ($body->offsetGet('meters') as $meterStatus) {
 				assert($meterStatus instanceof Utils\ArrayHash);
 
-				$meters[] = [
-					'power' => $meterStatus->offsetGet('power'),
-					'overpower' => $meterStatus->offsetGet('overpower'),
-					'valid' => $meterStatus->offsetGet('is_valid'),
-					'timestamp' => $meterStatus->offsetGet('timestamp'),
-					'counters' => $meterStatus->offsetGet('counters') instanceof Utils\ArrayHash
-						? (array) $meterStatus->offsetGet('counters')
-						: $meterStatus->offsetGet('counters'),
-					'total' => $meterStatus->offsetGet('total'),
-				];
+				$meters[] = (array) $meterStatus;
 			}
 		}
 
@@ -610,16 +558,7 @@ final class Gen1HttpApi extends HttpApi
 			foreach ($body->offsetGet('emeters') as $emeterStatus) {
 				assert($emeterStatus instanceof Utils\ArrayHash);
 
-				$emeters[] = [
-					'active_power' => $emeterStatus->offsetGet('power'),
-					'power_factor' => $emeterStatus->offsetGet('pf'),
-					'reactive_power' => $emeterStatus->offsetGet('reactive'),
-					'current' => $emeterStatus->offsetGet('current'),
-					'voltage' => $emeterStatus->offsetGet('voltage'),
-					'valid' => $emeterStatus->offsetGet('is_valid'),
-					'total' => $emeterStatus->offsetGet('total'),
-					'total_returned' => $emeterStatus->offsetGet('total_returned'),
-				];
+				$emeters[] = (array) $emeterStatus;
 			}
 		}
 
@@ -629,12 +568,7 @@ final class Gen1HttpApi extends HttpApi
 			$body->offsetExists('wifi_sta')
 			&& $body->offsetGet('wifi_sta') instanceof Utils\ArrayHash
 		) {
-			$wifi = [
-				'connected' => $body->offsetGet('wifi_sta')->offsetGet('connected'),
-				'ssid' => $body->offsetGet('wifi_sta')->offsetGet('ssid'),
-				'rssi' => $body->offsetGet('wifi_sta')->offsetGet('rssi'),
-				'ip' => $body->offsetGet('wifi_sta')->offsetGet('ip'),
-			];
+			$wifi = (array) $body->offsetGet('wifi_sta');
 		}
 
 		return $this->createEntity(Entities\API\Gen1\GetDeviceState::class, Utils\ArrayHash::from([

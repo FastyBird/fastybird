@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
 use FastyBird\Connector\Shelly\Entities;
+use Orisai\ObjectMapper;
 
 /**
  * Generation 2 device light component night mode configuration entity
@@ -32,8 +33,15 @@ final class LightNightModeConfigurationBlock implements Entities\API\Entity
 	 * @param array<string> $activeBetween
 	 */
 	public function __construct(
+		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $enable,
+		#[ObjectMapper\Rules\IntValue(min: 0, max: 100, unsigned: true)]
 		private readonly int $brightness,
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\IntValue(unsigned: true),
+		)]
+		#[ObjectMapper\Modifiers\FieldName('active_between')]
 		private readonly array $activeBetween,
 	)
 	{

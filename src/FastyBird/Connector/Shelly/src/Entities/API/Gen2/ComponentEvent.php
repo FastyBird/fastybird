@@ -19,6 +19,7 @@ use DateTimeInterface;
 use Exception;
 use FastyBird\Connector\Shelly\Entities;
 use Nette\Utils;
+use Orisai\ObjectMapper;
 use function intval;
 
 /**
@@ -33,9 +34,13 @@ final class ComponentEvent implements Entities\API\Entity
 {
 
 	public function __construct(
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $component,
+		#[ObjectMapper\Rules\IntValue(unsigned: true)]
 		private readonly int $id,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $event,
+		#[ObjectMapper\Rules\FloatValue(unsigned: true)]
 		private readonly float $timestamp,
 	)
 	{

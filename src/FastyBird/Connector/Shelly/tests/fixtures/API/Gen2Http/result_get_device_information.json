@@ -1,0 +1,11 @@
+{
+  "application": "Plus1PM",
+  "authentication": false,
+  "authentication_domain": null,
+  "firmware": "20230228-092432/0.14.0-g69c7f16",
+  "generation": 2,
+  "id": "shellyplus1pm-083af2024158",
+  "mac_address": "083AF2024158",
+  "model": "SNSW-001P16EU",
+  "version": "0.14.0"
+}

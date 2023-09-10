@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
 use FastyBird\Connector\Shelly\Entities;
+use Orisai\ObjectMapper;
 
 /**
  * Generation 2 device ethernet state entity
@@ -28,7 +29,13 @@ use FastyBird\Connector\Shelly\Entities;
 final class EthernetState implements Entities\API\Entity
 {
 
-	public function __construct(private readonly string|null $ip)
+	public function __construct(
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		private readonly string|null $ip,
+	)
 	{
 	}
 

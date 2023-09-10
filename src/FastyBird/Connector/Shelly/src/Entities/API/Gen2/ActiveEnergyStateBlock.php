@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
 use FastyBird\Connector\Shelly\Entities;
+use Orisai\ObjectMapper;
 
 /**
  * Generation 2 device switch or cover component temperature state entity
@@ -32,8 +33,16 @@ final class ActiveEnergyStateBlock implements Entities\API\Entity
 	 * @param array<float> $byMinute
 	 */
 	public function __construct(
+		#[ObjectMapper\Rules\FloatValue()]
 		private readonly float $total,
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\IntValue(unsigned: true),
+		)]
+		#[ObjectMapper\Modifiers\FieldName('by_minute')]
 		private readonly array $byMinute,
+		#[ObjectMapper\Rules\IntValue()]
+		#[ObjectMapper\Modifiers\FieldName('minute_ts')]
 		private readonly int $minuteTs,
 	)
 	{

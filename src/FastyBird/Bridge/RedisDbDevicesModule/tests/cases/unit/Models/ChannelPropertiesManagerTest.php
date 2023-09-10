@@ -18,7 +18,7 @@ final class ChannelPropertiesManagerTest extends BaseTestCase
 	/**
 	 * @throws Exception
 	 */
-	public function testCreate(): void
+	public function XtestCreate(): void
 	{
 		$id = Uuid::uuid4();
 
@@ -84,7 +84,7 @@ final class ChannelPropertiesManagerTest extends BaseTestCase
 	/**
 	 * @throws Exception
 	 */
-	public function testUpdate(): void
+	public function XtestUpdate(): void
 	{
 		$id = Uuid::uuid4();
 

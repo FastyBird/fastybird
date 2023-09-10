@@ -31,19 +31,20 @@ final class DeviceEmeterState implements Entities\API\Entity
 
 	public function __construct(
 		#[ObjectMapper\Rules\FloatValue()]
-		#[ObjectMapper\Modifiers\FieldName('active_power')]
+		#[ObjectMapper\Modifiers\FieldName('power')]
 		private readonly float $activePower,
 		#[ObjectMapper\Rules\FloatValue()]
-		#[ObjectMapper\Modifiers\FieldName('power_factor')]
+		#[ObjectMapper\Modifiers\FieldName('pf')]
 		private readonly float $powerFactor,
 		#[ObjectMapper\Rules\FloatValue()]
-		#[ObjectMapper\Modifiers\FieldName('reactive_power')]
+		#[ObjectMapper\Modifiers\FieldName('reactive')]
 		private readonly float $reactivePower,
 		#[ObjectMapper\Rules\FloatValue()]
 		private readonly float $current,
 		#[ObjectMapper\Rules\FloatValue()]
 		private readonly float $voltage,
 		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
+		#[ObjectMapper\Modifiers\FieldName('is_valid')]
 		private readonly bool $valid,
 		#[ObjectMapper\Rules\FloatValue()]
 		private readonly float $total,

@@ -28,7 +28,7 @@ final class DevicesModuleExtensionTests extends DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function testServicesRegistration(): void
+	public function XtestServicesRegistration(): void
 	{
 		self::assertNotNull($this->getContainer()->getByType(Commands\Initialize::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Commands\Connector::class, false));

@@ -45,6 +45,7 @@ final class DeviceMeterState implements Entities\API\Entity
 		])]
 		private readonly float|bool $overpower,
 		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
+		#[ObjectMapper\Modifiers\FieldName('is_valid')]
 		private readonly bool $valid,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\FloatValue(),

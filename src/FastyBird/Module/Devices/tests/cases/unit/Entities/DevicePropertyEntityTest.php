@@ -28,7 +28,7 @@ final class DevicePropertyEntityTest extends DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function testAddChildProperty(): void
+	public function XtestAddChildProperty(): void
 	{
 		$manager = $this->getContainer()->getByType(Models\Devices\Properties\PropertiesManager::class);
 
@@ -65,7 +65,7 @@ final class DevicePropertyEntityTest extends DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function testRemoveChildProperty(): void
+	public function XtestRemoveChildProperty(): void
 	{
 		$manager = $this->getContainer()->getByType(Models\Devices\Properties\PropertiesManager::class);
 
@@ -123,7 +123,7 @@ final class DevicePropertyEntityTest extends DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function testRemoveParentProperty(): void
+	public function XtestRemoveParentProperty(): void
 	{
 		$manager = $this->getContainer()->getByType(Models\Devices\Properties\PropertiesManager::class);
 

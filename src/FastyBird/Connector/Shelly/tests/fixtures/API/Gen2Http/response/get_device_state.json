@@ -1,0 +1,66 @@
+{
+  "ble": {},
+  "cloud": {
+    "connected": true
+  },
+  "input:0": {
+    "id": 0,
+    "state": false
+  },
+  "mqtt": {
+    "connected": false
+  },
+  "switch:0": {
+    "id": 0,
+    "source": "init",
+    "output": false,
+    "apower": 0.0,
+    "voltage": 236.7,
+    "current": 0.000,
+    "aenergy": {
+      "total": 0.000,
+      "by_minute": [
+        0.000,
+        0.000,
+        0.000
+      ],
+      "minute_ts": 1694335283
+    },
+    "temperature": {
+      "tC": 55.1,
+      "tF": 131.1
+    }
+  },
+  "sys": {
+    "mac": "083AF2024158",
+    "restart_required": false,
+    "time": "10:41",
+    "unixtime": 1694335285,
+    "uptime": 514361,
+    "ram_size": 234460,
+    "ram_free": 156608,
+    "fs_size": 458752,
+    "fs_free": 90112,
+    "cfg_rev": 14,
+    "kvs_rev": 1,
+    "schedule_rev": 0,
+    "webhook_rev": 0,
+    "available_updates": {
+      "beta": {
+        "version": "1.0.2-beta3"
+      },
+      "stable": {
+        "version": "1.0.0"
+      }
+    }
+  },
+  "wifi": {
+    "sta_ip": "10.10.0.100",
+    "status": "got ip",
+    "ssid": "WifiNetworkName",
+    "rssi": -61
+  },
+  "ws": {
+    "connected": false
+  }
+}

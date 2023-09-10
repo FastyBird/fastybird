@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
 use FastyBird\Connector\Shelly\Entities;
+use Orisai\ObjectMapper;
 
 /**
  * Generation 2 device cover component safety switch configuration entity
@@ -29,9 +30,17 @@ final class CoverSafetySwitchConfigurationBlock implements Entities\API\Entity
 {
 
 	public function __construct(
+		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $enable,
+		#[ObjectMapper\Rules\ArrayEnumValue(cases: ['open', 'closed', 'both'])]
 		private readonly string $direction,
+		#[ObjectMapper\Rules\ArrayEnumValue(cases: ['stop', 'reverse', 'pause'])]
 		private readonly string $action,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\ArrayEnumValue(cases: ['reverse']),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('allowed_move')]
 		private readonly string|null $allowedMove,
 	)
 	{
