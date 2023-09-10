@@ -67,17 +67,8 @@
           "default": null
         },
         "output": {
-          "oneOf": [
-            {
-              "type": "string",
-              "enum": ["n/a"]
-            },
-            {
-              "type": "boolean"
-            }
-          ],
+          "type": "boolean",
           "description": "true if the output channel is currently on, false otherwise",
-          "default": "n/a"
         },
         "timer_started_at": {
           "oneOf": [
@@ -155,6 +146,19 @@
           "description": "Last measured power factor (shown if applicable)",
           "default": "n/a"
         },
+        "freq": {
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "description": "Last measured network frequency in Hz (shown if applicable)",
+          "default": "n/a"
+        },
         "aenergy": {
           "oneOf": [
             {
@@ -227,7 +231,8 @@
           "description": "Error conditions occurred. May contain overtemp, overpower, overvoltage, (shown if at least one error is present)",
           "items": {
             "type": "string"
-          }
+          },
+          "default": []
         }
       },
       "required": [
@@ -307,6 +312,19 @@
             }
           ],
           "description": "Last measured power factor (shown if applicable)",
+          "default": "n/a"
+        },
+        "freq": {
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "description": "Last measured network frequency in Hz (shown if applicable)",
           "default": "n/a"
         },
         "aenergy": {
@@ -417,7 +435,8 @@
           "description": "Error conditions occurred. May contain overtemp, overpower, overvoltage, (shown if at least one error is present)",
           "items": {
             "type": "string"
-          }
+          },
+          "default": []
         }
       },
       "required": [
@@ -436,17 +455,8 @@
           "description": "Source of the last command, for example: init, WS_in, http, ..."
         },
         "output": {
-          "oneOf": [
-            {
-              "type": "string",
-              "enum": ["n/a"]
-            },
-            {
-              "type": "boolean"
-            }
-          ],
-          "description": "True if the output channel is currently on, false otherwise",
-          "default": "n/a"
+          "type": "boolean",
+          "description": "True if the output channel is currently on, false otherwise"
         },
         "brightness": {
           "oneOf": [
@@ -535,7 +545,8 @@
           "description": "Shown only if at least one error is present. May contain out_of_range, read when there is problem reading sensor",
           "items": {
             "type": "string"
-          }
+          },
+          "default": []
         }
       },
       "required": [
@@ -570,7 +581,8 @@
           "description": "Shown only if at least one error is present. May contain out_of_range, read when there is problem reading sensor",
           "items": {
             "type": "string"
-          }
+          },
+          "default": []
         }
       },
       "required": [
