@@ -59,7 +59,7 @@ final class DeviceLightState implements Entities\API\Entity
 		private readonly int $white,
 		#[ObjectMapper\Rules\IntValue(min: 0, max: 255, unsigned: true)]
 		private readonly int $gain,
-		#[ObjectMapper\Rules\IntValue(min: 2700, max: 6500, unsigned: true)]
+		#[ObjectMapper\Rules\IntValue(min: 2_700, max: 6_500, unsigned: true)]
 		#[ObjectMapper\Modifiers\FieldName('temp')]
 		private readonly int $temperature,
 		#[ObjectMapper\Rules\IntValue(min: 0, max: 100, unsigned: true)]

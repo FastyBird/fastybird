@@ -16,6 +16,8 @@ use Nette\DI;
 use Nette\Utils;
 use Psr\Http;
 use RuntimeException;
+use function is_array;
+use function str_replace;
 use function strval;
 
 final class Gen2HttpApiTest extends Tests\Cases\Unit\DbTestCase
@@ -240,7 +242,6 @@ final class Gen2HttpApiTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\HttpApiCall
 	 * @throws Exceptions\HttpApiError
-	 * @throws Utils\JsonException
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
