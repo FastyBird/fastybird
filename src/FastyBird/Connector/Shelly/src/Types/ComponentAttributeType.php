@@ -29,36 +29,38 @@ use function strval;
 class ComponentAttributeType extends Consistence\Enum\Enum
 {
 
-	/**
-	 * Define device states
-	 */
-	public const ATTRIBUTE_ON = 'on';
+	public const ON = 'on';
 
-	public const ATTRIBUTE_STATE = 'state';
+	public const STATE = 'state';
 
-	public const ATTRIBUTE_POSITION = 'pos';
+	public const POSITION = 'pos';
 
-	public const ATTRIBUTE_BRIGHTNESS = 'brightness';
+	public const BRIGHTNESS = 'brightness';
 
-	public const ATTRIBUTE_CELSIUS = 'celsius';
+	public const CELSIUS = 'celsius';
 
-	public const ATTRIBUTE_FAHRENHEIT = 'fahrenheit';
+	public const FAHRENHEIT = 'fahrenheit';
 
-	public const ATTRIBUTE_HUMIDITY = 'humidity';
+	public const HUMIDITY = 'humidity';
 
-	public const ATTRIBUTE_ACTIVE_POWER = 'active_power';
+	public const ACTIVE_POWER = 'active_power';
 
-	public const ATTRIBUTE_POWER_FACTOR = 'power_factor';
+	public const POWER_FACTOR = 'power_factor';
 
-	public const ATTRIBUTE_ACTIVE_ENERGY = 'active_energy';
+	public const ACTIVE_ENERGY = 'active_energy';
 
-	public const ATTRIBUTE_CURRENT = 'current';
+	public const CURRENT = 'current';
 
-	public const ATTRIBUTE_VOLTAGE = 'voltage';
+	public const VOLTAGE = 'voltage';
+
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
 
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }

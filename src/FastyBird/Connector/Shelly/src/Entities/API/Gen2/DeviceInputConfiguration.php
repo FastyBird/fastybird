@@ -17,7 +17,8 @@ namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Types;
-use Nette;
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use Orisai\ObjectMapper;
 
 /**
  * Generation 2 device input configuration entity
@@ -30,15 +31,28 @@ use Nette;
 final class DeviceInputConfiguration implements Entities\API\Entity
 {
 
-	use Nette\SmartObject;
-
 	public function __construct(
+		#[ObjectMapper\Rules\IntValue(unsigned: true)]
 		private readonly int $id,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly string|null $name,
-		private readonly string $type,
-		private readonly bool $invert,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\InputType::class)]
+		private readonly Types\InputType $type,
+		#[ObjectMapper\Rules\BoolValue()]
+		#[ObjectMapper\Modifiers\FieldName('invert')]
+		private readonly bool $inverted,
+		#[ObjectMapper\Rules\BoolValue()]
+		#[ObjectMapper\Modifiers\FieldName('factory_reset')]
 		private readonly bool $factoryReset,
-		private readonly int|null $reportThr,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\NullValue(),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('report_thr')]
+		private readonly int|null $reportThreshold,
 	)
 	{
 	}
@@ -50,7 +64,7 @@ final class DeviceInputConfiguration implements Entities\API\Entity
 
 	public function getType(): Types\ComponentType
 	{
-		return Types\ComponentType::get(Types\ComponentType::TYPE_INPUT);
+		return Types\ComponentType::get(Types\ComponentType::INPUT);
 	}
 
 	public function getName(): string|null
@@ -60,16 +74,12 @@ final class DeviceInputConfiguration implements Entities\API\Entity
 
 	public function getInputType(): Types\InputType
 	{
-		if (Types\InputType::isValidValue($this->type)) {
-			return Types\InputType::get($this->type);
-		}
-
-		return Types\InputType::get(Types\InputType::TYPE_SWITCH);
+		return $this->type;
 	}
 
 	public function isInverted(): bool
 	{
-		return $this->invert;
+		return $this->inverted;
 	}
 
 	public function hasFactoryReset(): bool
@@ -79,7 +89,7 @@ final class DeviceInputConfiguration implements Entities\API\Entity
 
 	public function getReportThreshold(): int|null
 	{
-		return $this->reportThr;
+		return $this->reportThreshold;
 	}
 
 	/**

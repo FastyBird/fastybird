@@ -35,7 +35,7 @@ use function assert;
 use function count;
 
 /**
- * Local device discovery message consumer
+ * Store locally found device details message consumer
  *
  * @package        FastyBird:TuyaConnector!
  * @subpackage     Queue
@@ -308,10 +308,10 @@ final class StoreLocalDevice implements Queue\Consumer
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 							'type' => 'store-local-device-message-consumer',
 							'device' => [
-								'id' => $device->getPlainId(),
+								'id' => $device->getId()->toString(),
 							],
 							'channel' => [
-								'id' => $channel->getPlainId(),
+								'id' => $channel->getId()->toString(),
 							],
 						],
 					);
@@ -362,7 +362,7 @@ final class StoreLocalDevice implements Queue\Consumer
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 				'type' => 'store-local-device-message-consumer',
 				'device' => [
-					'id' => $device->getPlainId(),
+					'id' => $device->getId()->toString(),
 				],
 				'data' => $entity->toArray(),
 			],

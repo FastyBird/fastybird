@@ -29,9 +29,6 @@ use function strval;
 class Protocol extends Consistence\Enum\Enum
 {
 
-	/**
-	 * Permissions
-	 */
 	public const POWER_STATE = 'powerState';
 
 	public const TOGGLE_STATE = 'toggleState';

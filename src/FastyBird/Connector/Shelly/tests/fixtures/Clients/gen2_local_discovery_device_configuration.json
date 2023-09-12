@@ -1,0 +1,146 @@
+{
+  "ble": {
+    "enable": false,
+    "rpc": {
+      "enable": true
+    },
+    "observer": {
+      "enable": false
+    }
+  },
+  "cloud": {
+    "enable": true,
+    "server": "shelly-33-eu.shelly.cloud:6022/jrpc"
+  },
+  "input:0": {
+    "id": 0,
+    "name": null,
+    "type": "switch",
+    "invert": false,
+    "factory_reset": true
+  },
+  "input:1": {
+    "id": 1,
+    "name": null,
+    "type": "switch",
+    "invert": false,
+    "factory_reset": true
+  },
+  "mqtt": {
+    "enable": false,
+    "server": null,
+    "client_id": "shellyplus2pm-441793ad07e8",
+    "user": null,
+    "topic_prefix": "shellyplus2pm-441793ad07e8",
+    "rpc_ntf": true,
+    "status_ntf": false,
+    "use_client_cert": false,
+    "enable_rpc": true,
+    "enable_control": true
+  },
+  "switch:0": {
+    "id": 0,
+    "name": "Topení obývák",
+    "in_mode": "follow",
+    "initial_state": "off",
+    "auto_on": false,
+    "auto_on_delay": 60.00,
+    "auto_off": false,
+    "auto_off_delay": 60.00,
+    "power_limit": 2800,
+    "voltage_limit": 280,
+    "undervoltage_limit": 0,
+    "autorecover_voltage_errors": false,
+    "current_limit": 10.000
+  },
+  "switch:1": {
+    "id": 1,
+    "name": "Topení kuchyně",
+    "in_mode": "follow",
+    "initial_state": "match_input",
+    "auto_on": false,
+    "auto_on_delay": 60.00,
+    "auto_off": false,
+    "auto_off_delay": 60.00,
+    "power_limit": 2800,
+    "voltage_limit": 280,
+    "undervoltage_limit": 0,
+    "autorecover_voltage_errors": false,
+    "current_limit": 10.000
+  },
+  "sys": {
+    "device": {
+      "name": null,
+      "mac": "441793AD07E8",
+      "fw_id": "20230228-092425/0.14.0-g69c7f16",
+      "discoverable": true,
+      "eco_mode": false,
+      "profile": "switch",
+      "addon_type": null
+    },
+    "location": {
+      "tz": "Europe/Prague",
+      "lat": 50.048290,
+      "lon": 14.455530
+    },
+    "debug": {
+      "mqtt": {
+        "enable": false
+      },
+      "websocket": {
+        "enable": false
+      },
+      "udp": {
+        "addr": null
+      }
+    },
+    "ui_data": {},
+    "rpc_udp": {
+      "dst_addr": null,
+      "listen_port": null
+    },
+    "sntp": {
+      "server": "time.google.com"
+    },
+    "cfg_rev": 14
+  },
+  "wifi": {
+    "ap": {
+      "ssid": "ShellyPlus2PM-441793AD07E8",
+      "is_open": true,
+      "enable": false,
+      "range_extender": {
+        "enable": false
+      }
+    },
+    "sta": {
+      "ssid": "FastyBird.com",
+      "is_open": false,
+      "enable": true,
+      "ipv4mode": "dhcp",
+      "ip": null,
+      "netmask": null,
+      "gw": null,
+      "nameserver": null
+    },
+    "sta1": {
+      "ssid": null,
+      "is_open": true,
+      "enable": false,
+      "ipv4mode": "dhcp",
+      "ip": null,
+      "netmask": null,
+      "gw": null,
+      "nameserver": null
+    },
+    "roam": {
+      "rssi_thr": -80,
+      "interval": 60
+    }
+  },
+  "ws": {
+    "enable": false,
+    "server": null,
+    "ssl_ca": "ca.pem"
+  }
+}

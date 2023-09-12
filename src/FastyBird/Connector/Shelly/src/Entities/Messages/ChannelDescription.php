@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\Shelly\Entities\Messages;
 
-use Nette;
+use Orisai\ObjectMapper;
 use function array_map;
 use function array_unique;
 use const SORT_REGULAR;
@@ -31,21 +31,23 @@ use const SORT_REGULAR;
 final class ChannelDescription implements Entity
 {
 
-	use Nette\SmartObject;
-
-	/** @var array<PropertyDescription> */
-	private array $properties;
-
 	/**
 	 * @param array<PropertyDescription> $properties
 	 */
 	public function __construct(
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $identifier,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly string|null $name,
-		array $properties = [],
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(PropertyDescription::class),
+		)]
+		private readonly array $properties = [],
 	)
 	{
-		$this->properties = array_unique($properties, SORT_REGULAR);
 	}
 
 	public function getIdentifier(): string
@@ -63,14 +65,7 @@ final class ChannelDescription implements Entity
 	 */
 	public function getProperties(): array
 	{
-		return $this->properties;
-	}
-
-	public function addProperty(PropertyDescription $property): void
-	{
-		$this->properties[] = $property;
-
-		$this->properties = array_unique($this->properties, SORT_REGULAR);
+		return array_unique($this->properties, SORT_REGULAR);
 	}
 
 	/**

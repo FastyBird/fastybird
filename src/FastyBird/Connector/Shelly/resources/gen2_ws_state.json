@@ -1,0 +1,677 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "patternProperties": {
+    "^input:[0-9]$": {
+      "properties": {
+        "id": {
+          "type": "number",
+          "description": "Id of the Input component instance"
+        },
+        "state": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "(only for type switch, button) State of the input (null if the input instance is stateless, i.e. for type button)",
+          "default": null
+        },
+        "percent": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "description": "(only for type analog) Analog value in percent (null if valid value could not be obtained)",
+          "default": null
+        },
+        "errors": {
+          "type": "array",
+          "description": "Shown only if at least one error is present. May contain out_of_range, read",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "^switch:[0-9]$": {
+      "properties": {
+        "id": {
+          "type": "number",
+          "description": "Id of the Switch component instance"
+        },
+        "source": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "Source of the last command, for example: init, WS_in, http, ...",
+          "default": null
+        },
+        "output": {
+          "type": "boolean",
+          "description": "true if the output channel is currently on, false otherwise",
+        },
+        "timer_started_at": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "description": "Unix timestamp, start time of the timer (in UTC) (shown if the timer is triggered)",
+          "default": null
+        },
+        "timer_duration": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "description": "Duration of the timer in seconds (shown if the timer is triggered)",
+          "default": null
+        },
+        "apower": {
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "description": "Last measured instantaneous active power (in Watts) delivered to the attached load (shown if applicable)",
+          "default": "n/a"
+        },
+        "voltage": {
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "description": "Last measured voltage in Volts (shown if applicable)",
+          "default": "n/a"
+        },
+        "current": {
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "description": "Last measured current in Amperes (shown if applicable)",
+          "default": "n/a"
+        },
+        "pf": {
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "description": "Last measured power factor (shown if applicable)",
+          "default": "n/a"
+        },
+        "freq": {
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "description": "Last measured network frequency in Hz (shown if applicable)",
+          "default": "n/a"
+        },
+        "aenergy": {
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            },
+            {
+              "type": "object"
+            }
+          ],
+          "properties": {
+            "total": {
+              "type": "number",
+              "description": "Total energy consumed in Watt-hours"
+            },
+            "by_minute": {
+              "type": "array",
+              "description": "Energy consumption by minute (in Milliwatt-hours) for the last three minutes (the lower the index of the element in the array, the closer to the current moment the minute)",
+              "items": {
+                "type": "number"
+              }
+            },
+            "minute_ts": {
+              "type": "number",
+              "description": "Unix timestamp of the first second of the last minute (in UTC)"
+            }
+          },
+          "default": "n/a"
+        },
+        "temperature": {
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            },
+            {
+              "type": "object"
+            }
+          ],
+          "properties": {
+            "tC": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "description": "Temperature in Celsius (null if temperature is out of the measurement range)",
+              "default": null
+            },
+            "tF": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "description": "Temperature in Fahrenheit (null if temperature is out of the measurement",
+              "default": null
+            }
+          },
+          "default": "n/a"
+        },
+        "errors": {
+          "type": "array",
+          "description": "Error conditions occurred. May contain overtemp, overpower, overvoltage, (shown if at least one error is present)",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        }
+      },
+      "required": [
+        "id",
+        "output"
+      ]
+    },
+    "^cover:[0-9]$": {
+      "properties": {
+        "id": {
+          "type": "number",
+          "description": "The numeric ID of the Cover component instance"
+        },
+        "source": {
+          "type": "string",
+          "description": "Source of the last command"
+        },
+        "state": {
+          "type": "string",
+          "description": "One of open (Cover is fully open), closed (Cover is fully closed), opening (Cover is actively opening), closing (Cover is actively closing), stopped (Cover is not moving, and is neither fully open nor fully closed, or the open/close state is unknown), calibrating (Cover is performing a calibration procedure)",
+          "enum": [
+            "open",
+            "closed",
+            "opening",
+            "closing",
+            "stopped",
+            "calibrating"
+          ]
+        },
+        "apower": {
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "description": "Active power in Watts",
+          "default": "n/a"
+        },
+        "voltage": {
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "description": "Last measured voltage in Volts (shown if applicable)",
+          "default": "n/a"
+        },
+        "current": {
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "description": "Last measured current in Amperes (shown if applicable)",
+          "default": "n/a"
+        },
+        "pf": {
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "description": "Last measured power factor (shown if applicable)",
+          "default": "n/a"
+        },
+        "freq": {
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "description": "Last measured network frequency in Hz (shown if applicable)",
+          "default": "n/a"
+        },
+        "aenergy": {
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            },
+            {
+              "type": "object"
+            }
+          ],
+          "properties": {
+            "total": {
+              "type": "number",
+              "description": "Total energy consumed in Watt-hours"
+            },
+            "by_minute": {
+              "type": "array",
+              "description": "Energy consumption by minute (in Milliwatt-hours) for the last three minutes (the lower the index of the element in the array, the closer to the current moment the minute)",
+              "items": {
+                "type": "number"
+              }
+            },
+            "minute_ts": {
+              "type": "number",
+              "description": "Unix timestamp of the first second of the last minute (in UTC)"
+            }
+          },
+          "default": "n/a"
+        },
+        "current_pos": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "description": "Only present if Cover is calibrated. Represents current position in percent from 0 (fully closed) to 100 (fully open); null if position is unknown",
+          "default": null
+        },
+        "target_pos": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "description": "Only present if Cover is calibrated and is actively moving to a requested position in either open or close directions. Represents the target position in percent from 0 (fully closed) to 100 (fully open); null if target position has been reached or the movement was cancelled",
+          "default": null
+        },
+        "move_timeout": {
+          "type": "number",
+          "description": "Seconds, only present if Cover is actively moving in either open or close directions. Cover will automatically stop after the timeout expires"
+        },
+        "move_started_at": {
+          "type": "number",
+          "description": "Only present if Cover is actively moving in either open or close directions. Represents the time at which the movement has begun"
+        },
+        "pos_control": {
+          "type": "boolean",
+          "description": "False if Cover is not calibrated and only discrete open/close is possible; true if Cover is calibrated and can be commanded to go to arbitrary positions between fully open and fully closed"
+        },
+        "temperature": {
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            },
+            {
+              "type": "object"
+            }
+          ],
+          "properties": {
+            "tC": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "description": "Temperature in Celsius (null if temperature is out of the measurement range)",
+              "default": null
+            },
+            "tF": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "description": "Temperature in Fahrenheit (null if temperature is out of the measurement",
+              "default": null
+            }
+          },
+          "default": "n/a"
+        },
+        "errors": {
+          "type": "array",
+          "description": "Error conditions occurred. May contain overtemp, overpower, overvoltage, (shown if at least one error is present)",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        }
+      },
+      "required": [
+        "id",
+        "state"
+      ]
+    },
+    "^light:[0-9]$": {
+      "properties": {
+        "id": {
+          "type": "number",
+          "description": "The numeric ID of the Cover component instance"
+        },
+        "source": {
+          "type": "string",
+          "description": "Source of the last command, for example: init, WS_in, http, ..."
+        },
+        "output": {
+          "type": "boolean",
+          "description": "True if the output channel is currently on, false otherwise"
+        },
+        "brightness": {
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            },
+            {
+              "type": "object"
+            }
+          ],
+          "description": "Current brightness level (in percent)",
+          "default": "n/a"
+        },
+        "timer_started_at": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "description": "Unix timestamp, start time of the timer (in UTC) (shown if the timer is triggered)",
+          "default": null
+        },
+        "timer_duration": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "description": "Duration of the timer in seconds (shown if the timer is triggered)",
+          "default": null
+        }
+      },
+      "required": [
+        "id",
+        "output"
+      ]
+    },
+    "^temperature:[0-9]$": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number",
+          "description": "Id of the Temperature component instance"
+        },
+        "tC": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            }
+          ],
+          "description": "Temperature in Celsius (null if valid value could not be obtained)",
+          "default": "n/a"
+        },
+        "tF": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            }
+          ],
+          "description": "Temperature in Fahrenheit (null if valid value could not be obtained)",
+          "default": "n/a"
+        },
+        "errors": {
+          "type": "array",
+          "description": "Shown only if at least one error is present. May contain out_of_range, read when there is problem reading sensor",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "^humidity:[0-9]$": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number",
+          "description": "Id of the Humidity component instance"
+        },
+        "rh": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            }
+          ],
+          "description": "Relative humidity in % (null if valid value could not be obtained)",
+          "default": "n/a"
+        },
+        "errors": {
+          "type": "array",
+          "description": "Shown only if at least one error is present. May contain out_of_range, read when there is problem reading sensor",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        }
+      },
+      "required": [
+        "id"
+      ]
+    }
+  },
+  "properties": {
+    "wifi": {
+      "type": "object",
+      "properties": {
+        "sta_ip": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "Ip of the device in the network (null if disconnected)",
+          "default": null
+        },
+        "status": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "Status of the connection. Range of values: disconnected, connecting, connected, got ip",
+          "default": null
+        },
+        "ssid": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "Ssid of the network (null if disconnected)",
+          "default": null
+        },
+        "rssi": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "description": "Strength of the signal in dBms",
+          "default": null
+        },
+        "ap_client_count": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "description": "Number of clients connected to the access point. Present only when AP is enabled and range extender functionality is present and enabled.",
+          "default": null
+        }
+      }
+    },
+    "ethernet": {
+      "type": "object",
+      "properties": {
+        "ip": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "IP of the device in the network",
+          "default": null
+        }
+      }
+    }
+  }
+}

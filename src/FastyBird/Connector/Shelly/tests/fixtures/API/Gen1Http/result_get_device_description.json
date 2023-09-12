@@ -1,0 +1,466 @@
+{
+  "blocks": [
+    {
+      "description": "light_0",
+      "identifier": 1,
+      "sensors": [
+        {
+          "data_type": "switch",
+          "description": "output",
+          "format": [
+            [
+              [
+                "sw",
+                "switch_on"
+              ],
+              [
+                "u8",
+                "1"
+              ],
+              [
+                "s",
+                "on"
+              ]
+            ],
+            [
+              [
+                "sw",
+                "switch_off"
+              ],
+              [
+                "u8",
+                "0"
+              ],
+              [
+                "s",
+                "off"
+              ]
+            ],
+            [
+              [
+                "sw",
+                "switch_toggle"
+              ],
+              null,
+              [
+                "s",
+                "toggle"
+              ]
+            ]
+          ],
+          "identifier": 1101,
+          "invalid": null,
+          "queryable": true,
+          "settable": true,
+          "type": "S",
+          "unit": null
+        },
+        {
+          "data_type": "int",
+          "description": "brightness",
+          "format": [
+            0,
+            100
+          ],
+          "identifier": 5101,
+          "invalid": null,
+          "queryable": true,
+          "settable": true,
+          "type": "S",
+          "unit": null
+        },
+        {
+          "data_type": "int",
+          "description": "power",
+          "format": [
+            0,
+            288
+          ],
+          "identifier": 4101,
+          "invalid": -1,
+          "queryable": true,
+          "settable": true,
+          "type": "P",
+          "unit": null
+        },
+        {
+          "data_type": "uint",
+          "description": "energy",
+          "format": null,
+          "identifier": 4103,
+          "invalid": -1,
+          "queryable": true,
+          "settable": true,
+          "type": "E",
+          "unit": null
+        }
+      ]
+    },
+    {
+      "description": "light_1",
+      "identifier": 2,
+      "sensors": [
+        {
+          "data_type": "switch",
+          "description": "output",
+          "format": [
+            [
+              [
+                "sw",
+                "switch_on"
+              ],
+              [
+                "u8",
+                "1"
+              ],
+              [
+                "s",
+                "on"
+              ]
+            ],
+            [
+              [
+                "sw",
+                "switch_off"
+              ],
+              [
+                "u8",
+                "0"
+              ],
+              [
+                "s",
+                "off"
+              ]
+            ],
+            [
+              [
+                "sw",
+                "switch_toggle"
+              ],
+              null,
+              [
+                "s",
+                "toggle"
+              ]
+            ]
+          ],
+          "identifier": 1201,
+          "invalid": null,
+          "queryable": true,
+          "settable": true,
+          "type": "S",
+          "unit": null
+        },
+        {
+          "data_type": "int",
+          "description": "brightness",
+          "format": [
+            0,
+            100
+          ],
+          "identifier": 5201,
+          "invalid": null,
+          "queryable": true,
+          "settable": true,
+          "type": "S",
+          "unit": null
+        },
+        {
+          "data_type": "int",
+          "description": "power",
+          "format": [
+            0,
+            288
+          ],
+          "identifier": 4201,
+          "invalid": -1,
+          "queryable": true,
+          "settable": true,
+          "type": "P",
+          "unit": null
+        },
+        {
+          "data_type": "uint",
+          "description": "energy",
+          "format": null,
+          "identifier": 4203,
+          "invalid": -1,
+          "queryable": true,
+          "settable": true,
+          "type": "E",
+          "unit": null
+        }
+      ]
+    },
+    {
+      "description": "light_2",
+      "identifier": 3,
+      "sensors": [
+        {
+          "data_type": "switch",
+          "description": "output",
+          "format": [
+            [
+              [
+                "sw",
+                "switch_on"
+              ],
+              [
+                "u8",
+                "1"
+              ],
+              [
+                "s",
+                "on"
+              ]
+            ],
+            [
+              [
+                "sw",
+                "switch_off"
+              ],
+              [
+                "u8",
+                "0"
+              ],
+              [
+                "s",
+                "off"
+              ]
+            ],
+            [
+              [
+                "sw",
+                "switch_toggle"
+              ],
+              null,
+              [
+                "s",
+                "toggle"
+              ]
+            ]
+          ],
+          "identifier": 1301,
+          "invalid": null,
+          "queryable": true,
+          "settable": true,
+          "type": "S",
+          "unit": null
+        },
+        {
+          "data_type": "int",
+          "description": "brightness",
+          "format": [
+            0,
+            100
+          ],
+          "identifier": 5301,
+          "invalid": null,
+          "queryable": true,
+          "settable": true,
+          "type": "S",
+          "unit": null
+        },
+        {
+          "data_type": "int",
+          "description": "power",
+          "format": [
+            0,
+            288
+          ],
+          "identifier": 4301,
+          "invalid": -1,
+          "queryable": true,
+          "settable": true,
+          "type": "P",
+          "unit": null
+        },
+        {
+          "data_type": "uint",
+          "description": "energy",
+          "format": null,
+          "identifier": 4303,
+          "invalid": -1,
+          "queryable": true,
+          "settable": true,
+          "type": "E",
+          "unit": null
+        }
+      ]
+    },
+    {
+      "description": "light_3",
+      "identifier": 4,
+      "sensors": [
+        {
+          "data_type": "switch",
+          "description": "output",
+          "format": [
+            [
+              [
+                "sw",
+                "switch_on"
+              ],
+              [
+                "u8",
+                "1"
+              ],
+              [
+                "s",
+                "on"
+              ]
+            ],
+            [
+              [
+                "sw",
+                "switch_off"
+              ],
+              [
+                "u8",
+                "0"
+              ],
+              [
+                "s",
+                "off"
+              ]
+            ],
+            [
+              [
+                "sw",
+                "switch_toggle"
+              ],
+              null,
+              [
+                "s",
+                "toggle"
+              ]
+            ]
+          ],
+          "identifier": 1401,
+          "invalid": null,
+          "queryable": true,
+          "settable": true,
+          "type": "S",
+          "unit": null
+        },
+        {
+          "data_type": "int",
+          "description": "brightness",
+          "format": [
+            0,
+            100
+          ],
+          "identifier": 5401,
+          "invalid": null,
+          "queryable": true,
+          "settable": true,
+          "type": "S",
+          "unit": null
+        },
+        {
+          "data_type": "int",
+          "description": "power",
+          "format": [
+            0,
+            288
+          ],
+          "identifier": 4401,
+          "invalid": -1,
+          "queryable": true,
+          "settable": true,
+          "type": "P",
+          "unit": null
+        },
+        {
+          "data_type": "uint",
+          "description": "energy",
+          "format": null,
+          "identifier": 4403,
+          "invalid": -1,
+          "queryable": true,
+          "settable": true,
+          "type": "E",
+          "unit": null
+        }
+      ]
+    },
+    {
+      "description": "device",
+      "identifier": 5,
+      "sensors": [
+        {
+          "data_type": "ushort",
+          "description": "cfgChanged",
+          "format": null,
+          "identifier": 9103,
+          "invalid": null,
+          "queryable": true,
+          "settable": true,
+          "type": "EVC",
+          "unit": null
+        },
+        {
+          "data_type": "bool",
+          "description": "overpower",
+          "format": null,
+          "identifier": 6102,
+          "invalid": -1,
+          "queryable": true,
+          "settable": true,
+          "type": "A",
+          "unit": null
+        },
+        {
+          "data_type": "bool",
+          "description": "input",
+          "format": null,
+          "identifier": 2101,
+          "invalid": null,
+          "queryable": true,
+          "settable": true,
+          "type": "S",
+          "unit": null
+        },
+        {
+          "data_type": "enum",
+          "description": "inputEvent",
+          "format": [
+            "S",
+            "L"
+          ],
+          "identifier": 2102,
+          "invalid": null,
+          "queryable": true,
+          "settable": true,
+          "type": "EV",
+          "unit": null
+        },
+        {
+          "data_type": "ushort",
+          "description": "inputEventCnt",
+          "format": null,
+          "identifier": 2103,
+          "invalid": null,
+          "queryable": true,
+          "settable": true,
+          "type": "EVC",
+          "unit": null
+        },
+        {
+          "data_type": "enum",
+          "description": "mode",
+          "format": [
+            "color",
+            "white"
+          ],
+          "identifier": 9101,
+          "invalid": null,
+          "queryable": true,
+          "settable": true,
+          "type": "S",
+          "unit": null
+        }
+      ]
+    }
+  ]
+}

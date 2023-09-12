@@ -26,6 +26,7 @@ use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Hydrators;
 use FastyBird\Connector\Tuya\Queue;
 use FastyBird\Connector\Tuya\Schemas;
+use FastyBird\Connector\Tuya\Services;
 use FastyBird\Connector\Tuya\Subscribers;
 use FastyBird\Connector\Tuya\Writers;
 use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
@@ -111,15 +112,33 @@ class TuyaExtension extends DI\CompilerExtension
 		}
 
 		/**
-		 * CLIENTS
+		 * SERVICES & FACTORIES
 		 */
 
-		$datagramFactory = $builder->addDefinition(
-			$this->prefix('clients.datagramFactory'),
+		$builder->addDefinition(
+			$this->prefix('services.datagramFactory'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Clients\DatagramFactory::class)
-			->setAutowired(false);
+			->setType(Services\DatagramFactory::class);
+
+		$builder->addDefinition($this->prefix('services.httpClientFactory'), new DI\Definitions\ServiceDefinition())
+			->setType(Services\HttpClientFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('services.socketClientFactory'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Services\SocketClientFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('services.webSocketClientFactory'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Services\WebSocketClientFactory::class);
+
+		/**
+		 * CLIENTS
+		 */
 
 		$builder->addFactoryDefinition($this->prefix('clients.local'))
 			->setImplement(Clients\LocalFactory::class)
@@ -142,7 +161,6 @@ class TuyaExtension extends DI\CompilerExtension
 			->getResultDefinition()
 			->setType(Clients\Discovery::class)
 			->setArguments([
-				'datagramFactory' => $datagramFactory,
 				'logger' => $logger,
 			]);
 
@@ -150,23 +168,8 @@ class TuyaExtension extends DI\CompilerExtension
 		 * API
 		 */
 
-		$builder->addDefinition($this->prefix('api.httpClientFactory'), new DI\Definitions\ServiceDefinition())
-			->setType(API\HttpClientFactory::class);
-
 		$builder->addDefinition($this->prefix('api.connectionsManager'), new DI\Definitions\ServiceDefinition())
 			->setType(API\ConnectionManager::class);
-
-		$socketClientFactory = $builder->addDefinition(
-			$this->prefix('api.socketClientFactory'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(API\SocketClientFactory::class);
-
-		$webSocketClientFactory = $builder->addDefinition(
-			$this->prefix('api.webSocketClientFactory'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(API\WebSocketClientFactory::class);
 
 		$builder->addFactoryDefinition($this->prefix('api.openApi'))
 			->setImplement(API\OpenApiFactory::class)
@@ -181,7 +184,6 @@ class TuyaExtension extends DI\CompilerExtension
 			->getResultDefinition()
 			->setType(API\OpenPulsar::class)
 			->setArguments([
-				'webSocketClientFactory' => $webSocketClientFactory,
 				'logger' => $logger,
 			]);
 
@@ -190,7 +192,6 @@ class TuyaExtension extends DI\CompilerExtension
 			->getResultDefinition()
 			->setType(API\LocalApi::class)
 			->setArguments([
-				'socketClientFactory' => $socketClientFactory,
 				'logger' => $logger,
 			]);
 
@@ -226,7 +227,7 @@ class TuyaExtension extends DI\CompilerExtension
 			]);
 
 		$builder->addDefinition(
-			$this->prefix('consumers.messages.store.channelPropertyState'),
+			$this->prefix('queue.consumers.store.channelPropertyState'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Queue\Consumers\StoreChannelPropertyState::class)

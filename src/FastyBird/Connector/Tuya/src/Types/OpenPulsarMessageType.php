@@ -29,9 +29,6 @@ use function strval;
 class OpenPulsarMessageType extends Consistence\Enum\Enum
 {
 
-	/**
-	 * Define versions
-	 */
 	public const ONLINE = 'online';
 
 	public const OFFLINE = 'offline';
@@ -71,7 +68,7 @@ class OpenPulsarMessageType extends Consistence\Enum\Enum
 
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }

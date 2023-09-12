@@ -17,7 +17,7 @@ namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Types;
-use Nette;
+use Orisai\ObjectMapper;
 
 /**
  * Generation 2 device input configuration entity
@@ -30,22 +30,57 @@ use Nette;
 final class DeviceCoverConfiguration implements Entities\API\Entity
 {
 
-	use Nette\SmartObject;
-
 	public function __construct(
+		#[ObjectMapper\Rules\IntValue(unsigned: true)]
 		private readonly int $id,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly string|null $name,
+		#[ObjectMapper\Rules\ArrayEnumValue(cases: ['single', 'dual', 'detached'])]
+		#[ObjectMapper\Modifiers\FieldName('in_mode')]
 		private readonly string $mode,
+		#[ObjectMapper\Rules\ArrayEnumValue(cases: ['open', 'closed', 'stopped'])]
+		#[ObjectMapper\Modifiers\FieldName('initial_state')]
 		private readonly string $initialState,
+		#[ObjectMapper\Rules\FloatValue()]
+		#[ObjectMapper\Modifiers\FieldName('power_limit')]
 		private readonly float $powerLimit,
+		#[ObjectMapper\Rules\FloatValue()]
+		#[ObjectMapper\Modifiers\FieldName('voltage_limit')]
 		private readonly float $voltageLimit,
+		#[ObjectMapper\Rules\FloatValue()]
+		#[ObjectMapper\Modifiers\FieldName('current_limit')]
 		private readonly float $currentLimit,
-		private readonly float $maxtimeOpen,
-		private readonly float $maxtimeClose,
-		private readonly bool $swapInputs,
-		private readonly bool $invertDirections,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\MappedObjectValue(class: CoverMotorConfigurationBlock::class),
+			new ObjectMapper\Rules\NullValue(),
+		])]
 		private readonly CoverMotorConfigurationBlock|null $motor,
+		#[ObjectMapper\Rules\FloatValue()]
+		#[ObjectMapper\Modifiers\FieldName('maxtime_open')]
+		private readonly float $maximumOpeningTime,
+		#[ObjectMapper\Rules\FloatValue()]
+		#[ObjectMapper\Modifiers\FieldName('maxtime_close')]
+		private readonly float $maximumClosingTime,
+		#[ObjectMapper\Rules\BoolValue()]
+		#[ObjectMapper\Modifiers\FieldName('swap_inputs')]
+		private readonly bool $swappedInput,
+		#[ObjectMapper\Rules\BoolValue()]
+		#[ObjectMapper\Modifiers\FieldName('invert_directions')]
+		private readonly bool $invertedDirections,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\MappedObjectValue(class: CoverObstructionDetectionConfigurationBlock::class),
+			new ObjectMapper\Rules\NullValue(),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('obstruction_detection')]
 		private readonly CoverObstructionDetectionConfigurationBlock|null $obstructionDetection,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\MappedObjectValue(class: CoverSafetySwitchConfigurationBlock::class),
+			new ObjectMapper\Rules\NullValue(),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('safety_switch')]
 		private readonly CoverSafetySwitchConfigurationBlock|null $safetySwitch,
 	)
 	{
@@ -58,7 +93,7 @@ final class DeviceCoverConfiguration implements Entities\API\Entity
 
 	public function getType(): Types\ComponentType
 	{
-		return Types\ComponentType::get(Types\ComponentType::TYPE_COVER);
+		return Types\ComponentType::get(Types\ComponentType::COVER);
 	}
 
 	public function getName(): string|null
@@ -93,22 +128,22 @@ final class DeviceCoverConfiguration implements Entities\API\Entity
 
 	public function getMaximumOpeningTime(): float
 	{
-		return $this->maxtimeOpen;
+		return $this->maximumOpeningTime;
 	}
 
 	public function getMaximumClosingTime(): float
 	{
-		return $this->maxtimeClose;
+		return $this->maximumClosingTime;
 	}
 
 	public function hasSwappedInputs(): bool
 	{
-		return $this->swapInputs;
+		return $this->swappedInput;
 	}
 
 	public function hasInvertedDirection(): bool
 	{
-		return $this->invertDirections;
+		return $this->invertedDirections;
 	}
 
 	public function getMotor(): CoverMotorConfigurationBlock|null

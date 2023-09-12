@@ -1,0 +1,13 @@
+{
+  "ison": true,
+  "source": "http",
+  "has_timer": false,
+  "timer_started": 0,
+  "timer_duration": 0,
+  "timer_remaining": 0,
+  "mode": "white",
+  "brightness": 5,
+  "transition": 0,
+  "power": 0.00,
+  "overpower": false
+}

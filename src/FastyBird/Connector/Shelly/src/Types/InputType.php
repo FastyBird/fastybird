@@ -29,18 +29,20 @@ use function strval;
 class InputType extends Consistence\Enum\Enum
 {
 
-	/**
-	 * Define device states
-	 */
-	public const TYPE_SWITCH = 'switch';
+	public const SWITCH = 'switch';
 
-	public const TYPE_BUTTON = 'button';
+	public const BUTTON = 'button';
 
-	public const TYPE_ANALOG = 'analog';
+	public const ANALOG = 'analog';
+
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
 
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }

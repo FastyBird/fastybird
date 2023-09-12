@@ -29,9 +29,6 @@ use function strval;
 class DataPoint extends Consistence\Enum\Enum
 {
 
-	/**
-	 * Define versions
-	 */
 	public const LOCAL = 'local';
 
 	public const CLOUD = 'cloud';
@@ -43,7 +40,7 @@ class DataPoint extends Consistence\Enum\Enum
 
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }

@@ -1,0 +1,34 @@
+{
+  "covers": [],
+  "humidity": [],
+  "inputs": [
+    {
+      "factory_reset": true,
+      "id": 0,
+      "input_type": "switch",
+      "inverted": false,
+      "name": null,
+      "report_threshold": null,
+      "type": "input"
+    }
+  ],
+  "lights": [],
+  "switches": [
+    {
+      "auto_off": false,
+      "auto_off_delay": 60,
+      "auto_on": false,
+      "auto_on_delay": 60,
+      "current_limit": 16,
+      "id": 0,
+      "initial_state": "off",
+      "input_id": null,
+      "mode": "follow",
+      "name": "Shelly device",
+      "power_limit": 4480,
+      "type": "switch",
+      "voltage_limit": 280
+    }
+  ],
+  "temperature": []
+}

@@ -50,6 +50,7 @@ cmd:
                 mode: "In what mode should this connector communicate with Tuya devices?"
                 dataCentre: "Provide which cloud data center you are using?"
             changeMode: "Do you want to change connector devices support?"
+            changeAccessId: "Do you want to change connector cloud Access ID?"
             changeAccessSecret: "Do you want to change connector cloud Access Secret?"
             changeUser: "Do you want to change connector cloud user identifier?"
 

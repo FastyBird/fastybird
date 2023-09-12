@@ -29,9 +29,6 @@ use function strval;
 class MotorControlPayload extends Consistence\Enum\Enum
 {
 
-	/**
-	 * Define types
-	 */
 	public const OPEN = 'open';
 
 	public const CLOSE = 'close';

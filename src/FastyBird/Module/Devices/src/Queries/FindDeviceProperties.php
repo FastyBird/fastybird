@@ -57,6 +57,20 @@ class FindDeviceProperties extends DoctrineOrmQuery\QueryObject
 		};
 	}
 
+	public function startWithIdentifier(string $identifier): void
+	{
+		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($identifier): void {
+			$qb->andWhere('p.identifier LIKE :identifier')->setParameter('identifier', $identifier . '%');
+		};
+	}
+
+	public function endWithIdentifier(string $identifier): void
+	{
+		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($identifier): void {
+			$qb->andWhere('p.identifier LIKE :identifier')->setParameter('identifier', '%' . $identifier);
+		};
+	}
+
 	public function forDevice(Entities\Devices\Device $device): void
 	{
 		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($device): void {

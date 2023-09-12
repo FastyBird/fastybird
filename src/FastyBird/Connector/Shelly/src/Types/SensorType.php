@@ -29,38 +29,40 @@ use function strval;
 class SensorType extends Consistence\Enum\Enum
 {
 
-	/**
-	 * Define device states
-	 */
-	public const TYPE_ALARM = 'A';
+	public const ALARM = 'A';
 
-	public const TYPE_BATTERY_LEVEL = 'B';
+	public const BATTERY_LEVEL = 'B';
 
-	public const TYPE_CONCENTRATION = 'C';
+	public const CONCENTRATION = 'C';
 
-	public const TYPE_ENERGY = 'E';
+	public const ENERGY = 'E';
 
-	public const TYPE_EVENT = 'EV';
+	public const EVENT = 'EV';
 
-	public const TYPE_EVENT_COUNTER = 'EVC';
+	public const EVENT_COUNTER = 'EVC';
 
-	public const TYPE_HUMIDITY = 'H';
+	public const HUMIDITY = 'H';
 
-	public const TYPE_CURRENT = 'I';
+	public const CURRENT = 'I';
 
-	public const TYPE_LUMINOSITY = 'L';
+	public const LUMINOSITY = 'L';
 
-	public const TYPE_POWER = 'P';
+	public const POWER = 'P';
 
-	public const TYPE_STATUS = 'S';
+	public const STATUS = 'S';
 
-	public const TYPE_TEMPERATURE = 'T';
+	public const TEMPERATURE = 'T';
 
-	public const TYPE_VOLTAGE = 'V';
+	public const VOLTAGE = 'V';
+
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
 
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }

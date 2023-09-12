@@ -29,9 +29,6 @@ use function strval;
 class Permission extends Consistence\Enum\Enum
 {
 
-	/**
-	 * Permissions
-	 */
 	public const READ = 'read';
 
 	public const WRITE = 'write';

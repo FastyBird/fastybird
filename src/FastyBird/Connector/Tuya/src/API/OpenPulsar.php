@@ -21,6 +21,7 @@ use FastyBird\Connector\Tuya;
 use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Helpers;
+use FastyBird\Connector\Tuya\Services;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -89,7 +90,7 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 		private readonly Types\OpenPulsarTopic $topic,
 		private readonly Types\OpenPulsarEndpoint $endpoint,
 		private readonly Tuya\Logger $logger,
-		private readonly WebSocketClientFactory $webSocketClientFactory,
+		private readonly Services\WebSocketClientFactory $webSocketClientFactory,
 		private readonly MetadataSchemas\Validator $schemaValidator,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,

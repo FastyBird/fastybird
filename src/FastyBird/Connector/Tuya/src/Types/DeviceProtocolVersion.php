@@ -29,9 +29,6 @@ use function strval;
 class DeviceProtocolVersion extends Consistence\Enum\Enum
 {
 
-	/**
-	 * Define versions
-	 */
 	public const V31 = '3.1';
 
 	public const V32 = '3.2';
@@ -49,7 +46,7 @@ class DeviceProtocolVersion extends Consistence\Enum\Enum
 
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }

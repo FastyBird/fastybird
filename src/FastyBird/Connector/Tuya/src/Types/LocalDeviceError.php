@@ -29,9 +29,6 @@ use function strval;
 class LocalDeviceError extends Consistence\Enum\Enum
 {
 
-	/**
-	 * Define codes
-	 */
 	public const PAYLOAD = 'payload';
 
 	public const DEVICE_TYPE = 'device_type';
@@ -43,7 +40,7 @@ class LocalDeviceError extends Consistence\Enum\Enum
 
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }

@@ -17,7 +17,7 @@ namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Types;
-use Nette;
+use Orisai\ObjectMapper;
 
 /**
  * Generation 2 device temperature configuration entity
@@ -30,13 +30,26 @@ use Nette;
 final class DeviceTemperatureConfiguration implements Entities\API\Entity
 {
 
-	use Nette\SmartObject;
-
 	public function __construct(
+		#[ObjectMapper\Rules\IntValue(unsigned: true)]
 		private readonly int $id,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly string|null $name,
-		private readonly float|null $reportThrC,
-		private readonly float|null $offsetC,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\FloatValue(castNumericString: true),
+			new ObjectMapper\Rules\NullValue(),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('report_thr_C')]
+		private readonly float|null $reportThreshold,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\FloatValue(castNumericString: true),
+			new ObjectMapper\Rules\NullValue(),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('offset_C')]
+		private readonly float|null $offset,
 	)
 	{
 	}
@@ -48,7 +61,7 @@ final class DeviceTemperatureConfiguration implements Entities\API\Entity
 
 	public function getType(): Types\ComponentType
 	{
-		return Types\ComponentType::get(Types\ComponentType::TYPE_TEMPERATURE);
+		return Types\ComponentType::get(Types\ComponentType::TEMPERATURE);
 	}
 
 	public function getName(): string|null
@@ -58,12 +71,12 @@ final class DeviceTemperatureConfiguration implements Entities\API\Entity
 
 	public function getReportThreshold(): float|null
 	{
-		return $this->reportThrC;
+		return $this->reportThreshold;
 	}
 
 	public function getOffset(): float|null
 	{
-		return $this->offsetC;
+		return $this->offset;
 	}
 
 	/**

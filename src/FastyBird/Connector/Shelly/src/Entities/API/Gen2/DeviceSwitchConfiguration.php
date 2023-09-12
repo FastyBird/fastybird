@@ -17,7 +17,7 @@ namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Types;
-use Nette;
+use Orisai\ObjectMapper;
 
 /**
  * Generation 2 device switch configuration entity
@@ -30,20 +30,55 @@ use Nette;
 final class DeviceSwitchConfiguration implements Entities\API\Entity
 {
 
-	use Nette\SmartObject;
-
 	public function __construct(
+		#[ObjectMapper\Rules\IntValue(unsigned: true)]
 		private readonly int $id,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly string|null $name,
-		private readonly string $inMode,
+		#[ObjectMapper\Rules\ArrayEnumValue(cases: ['momentary', 'follow', 'flip', 'detached'])]
+		#[ObjectMapper\Modifiers\FieldName('in_mode')]
+		private readonly string $mode,
+		#[ObjectMapper\Rules\ArrayEnumValue(cases: ['off', 'on', 'restore_last', 'match_input'])]
+		#[ObjectMapper\Modifiers\FieldName('initial_state')]
 		private readonly string $initialState,
+		#[ObjectMapper\Rules\BoolValue()]
+		#[ObjectMapper\Modifiers\FieldName('auto_on')]
 		private readonly bool $autoOn,
+		#[ObjectMapper\Rules\FloatValue()]
+		#[ObjectMapper\Modifiers\FieldName('auto_on_delay')]
 		private readonly float $autoOnDelay,
+		#[ObjectMapper\Rules\BoolValue()]
+		#[ObjectMapper\Modifiers\FieldName('auto_off')]
 		private readonly bool $autoOff,
+		#[ObjectMapper\Rules\FloatValue()]
+		#[ObjectMapper\Modifiers\FieldName('auto_off_delay')]
 		private readonly float $autoOffDelay,
-		private readonly float|null $inputId,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\IntValue(unsigned: true),
+			new ObjectMapper\Rules\NullValue(),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('input_id')]
+		private readonly int|null $inputId,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\NullValue(),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('power_limit')]
 		private readonly float|null $powerLimit,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\NullValue(),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('voltage_limit')]
 		private readonly float|null $voltageLimit,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\NullValue(),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('current_limit')]
 		private readonly float|null $currentLimit,
 	)
 	{
@@ -56,7 +91,7 @@ final class DeviceSwitchConfiguration implements Entities\API\Entity
 
 	public function getType(): Types\ComponentType
 	{
-		return Types\ComponentType::get(Types\ComponentType::TYPE_SWITCH);
+		return Types\ComponentType::get(Types\ComponentType::SWITCH);
 	}
 
 	public function getName(): string|null
@@ -66,7 +101,7 @@ final class DeviceSwitchConfiguration implements Entities\API\Entity
 
 	public function getMode(): string
 	{
-		return $this->inMode;
+		return $this->mode;
 	}
 
 	public function getInitialState(): string
@@ -94,7 +129,7 @@ final class DeviceSwitchConfiguration implements Entities\API\Entity
 		return $this->autoOffDelay;
 	}
 
-	public function getInputId(): float|null
+	public function getInputId(): int|null
 	{
 		return $this->inputId;
 	}

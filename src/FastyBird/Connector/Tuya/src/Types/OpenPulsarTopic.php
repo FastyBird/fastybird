@@ -29,9 +29,6 @@ use function strval;
 class OpenPulsarTopic extends Consistence\Enum\Enum
 {
 
-	/**
-	 * Define versions
-	 */
 	public const PROD = 'event';
 
 	public const TEST = 'event-test';
@@ -43,7 +40,7 @@ class OpenPulsarTopic extends Consistence\Enum\Enum
 
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }

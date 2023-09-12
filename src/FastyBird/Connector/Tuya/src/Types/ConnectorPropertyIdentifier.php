@@ -29,9 +29,6 @@ use function strval;
 class ConnectorPropertyIdentifier extends Consistence\Enum\Enum
 {
 
-	/**
-	 * Define device states
-	 */
 	public const CLIENT_MODE = 'mode';
 
 	public const ACCESS_ID = 'access_id';
@@ -53,7 +50,7 @@ class ConnectorPropertyIdentifier extends Consistence\Enum\Enum
 
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }

@@ -15,6 +15,7 @@
 
 namespace FastyBird\Module\Devices\Utilities;
 
+use DateTimeInterface;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities;
@@ -127,6 +128,36 @@ final class DeviceConnection
 		}
 
 		return MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_UNKNOWN);
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function getLostAt(
+		Entities\Devices\Device $device,
+	): DateTimeInterface|null
+	{
+		$findDevicePropertyQuery = new Queries\FindDeviceProperties();
+		$findDevicePropertyQuery->forDevice($device);
+		$findDevicePropertyQuery->byIdentifier(MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_STATE);
+
+		$property = $this->repository->findOneBy($findDevicePropertyQuery);
+
+		if ($property instanceof Entities\Devices\Properties\Dynamic) {
+			$state = $this->propertiesStates->readValue($property);
+
+			if (
+				$state?->getActualValue() !== null
+				&& MetadataTypes\ConnectionState::isValidValue($state->getActualValue())
+				&& $state->getActualValue() === MetadataTypes\ConnectionState::STATE_LOST
+			) {
+				return $state->getUpdatedAt();
+			}
+		}
+
+		return null;
 	}
 
 }

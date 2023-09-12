@@ -30,6 +30,7 @@ use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Connector\NsPanel\Router;
 use FastyBird\Connector\NsPanel\Schemas;
 use FastyBird\Connector\NsPanel\Servers;
+use FastyBird\Connector\NsPanel\Services;
 use FastyBird\Connector\NsPanel\Subscribers;
 use FastyBird\Connector\NsPanel\Writers;
 use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
@@ -143,11 +144,15 @@ class NsPanelExtension extends DI\CompilerExtension
 			]);
 
 		/**
-		 * API
+		 * SERVICES & FACTORIES
 		 */
 
-		$builder->addDefinition($this->prefix('api.httpClient'), new DI\Definitions\ServiceDefinition())
-			->setType(API\HttpClientFactory::class);
+		$builder->addDefinition($this->prefix('services.httpClient'), new DI\Definitions\ServiceDefinition())
+			->setType(Services\HttpClientFactory::class);
+
+		/**
+		 * API
+		 */
 
 		$builder->addFactoryDefinition($this->prefix('api.lanApi'))
 			->setImplement(API\LanApiFactory::class)

@@ -41,8 +41,8 @@ final class Name
 	public static function createName(string $identifier): string|null
 	{
 		if (
-			$identifier === Types\ComponentAttributeType::ATTRIBUTE_CELSIUS
-			|| $identifier === Types\ComponentAttributeType::ATTRIBUTE_FAHRENHEIT
+			$identifier === Types\ComponentAttributeType::CELSIUS
+			|| $identifier === Types\ComponentAttributeType::FAHRENHEIT
 		) {
 			return 'Temperature';
 		}

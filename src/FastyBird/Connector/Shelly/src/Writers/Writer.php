@@ -15,9 +15,6 @@
 
 namespace FastyBird\Connector\Shelly\Writers;
 
-use FastyBird\Connector\Shelly\Clients;
-use FastyBird\Connector\Shelly\Entities;
-
 /**
  * Properties writer interface
  *
@@ -29,14 +26,8 @@ use FastyBird\Connector\Shelly\Entities;
 interface Writer
 {
 
-	public function connect(
-		Entities\ShellyConnector $connector,
-		Clients\Client $client,
-	): void;
+	public function connect(): void;
 
-	public function disconnect(
-		Entities\ShellyConnector $connector,
-		Clients\Client $client,
-	): void;
+	public function disconnect(): void;
 
 }

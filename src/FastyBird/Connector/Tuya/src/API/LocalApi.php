@@ -22,6 +22,7 @@ use FastyBird\Connector\Tuya;
 use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Helpers;
+use FastyBird\Connector\Tuya\Services;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\Connector\Tuya\ValueObjects;
 use FastyBird\DateTimeFactory;
@@ -155,7 +156,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 		private readonly string $ipAddress,
 		private readonly Types\DeviceProtocolVersion $protocolVersion,
 		private readonly array $children,
-		private readonly SocketClientFactory $socketClientFactory,
+		private readonly Services\SocketClientFactory $socketClientFactory,
 		private readonly Helpers\Entity $entityHelper,
 		private readonly Tuya\Logger $logger,
 		private readonly MetadataSchemas\Validator $schemaValidator,

@@ -18,8 +18,8 @@ namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 use DateTimeInterface;
 use Exception;
 use FastyBird\Connector\Shelly\Entities;
-use Nette;
 use Nette\Utils;
+use Orisai\ObjectMapper;
 use function intval;
 
 /**
@@ -33,13 +33,15 @@ use function intval;
 final class ComponentEvent implements Entities\API\Entity
 {
 
-	use Nette\SmartObject;
-
 	public function __construct(
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $component,
+		#[ObjectMapper\Rules\IntValue(unsigned: true)]
 		private readonly int $id,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $event,
-		private readonly float $ts,
+		#[ObjectMapper\Rules\FloatValue(unsigned: true)]
+		private readonly float $timestamp,
 	)
 	{
 	}
@@ -64,7 +66,7 @@ final class ComponentEvent implements Entities\API\Entity
 	 */
 	public function getTimestamp(): DateTimeInterface
 	{
-		return Utils\DateTime::from(intval($this->ts));
+		return Utils\DateTime::from(intval($this->timestamp));
 	}
 
 	/**

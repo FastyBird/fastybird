@@ -32,7 +32,7 @@ use Nette;
 use Nette\Utils;
 
 /**
- * Device state message consumer
+ * Store device connection state message consumer
  *
  * @package        FastyBird:TuyaConnector!
  * @subpackage     Queue

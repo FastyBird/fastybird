@@ -10,6 +10,7 @@ use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Queries;
 use FastyBird\Connector\Tuya\Queue;
+use FastyBird\Connector\Tuya\Services;
 use FastyBird\Connector\Tuya\Tests;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\DateTimeFactory;
@@ -147,7 +148,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 				},
 			);
 
-		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
+		$httpClientFactory = $this->createMock(Services\HttpClientFactory::class);
 		$httpClientFactory
 			->method('create')
 			->willReturnCallback(
@@ -161,7 +162,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 			);
 
 		$this->mockContainerService(
-			API\HttpClientFactory::class,
+			Services\HttpClientFactory::class,
 			$httpClientFactory,
 		);
 
@@ -308,17 +309,17 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 			$localApiFactory,
 		);
 
-		$datagramFactory = $this->createMock(Datagram\Factory::class);
-		$datagramFactory
-			->method('createServer')
+		$datagramFactoryService = $this->createMock(Services\DatagramFactory::class);
+		$datagramFactoryService
+			->method('create')
 			->willReturnCallback(
-				function (string $address): Promise\ExtendedPromiseInterface {
+				function (string $address, int $port): Promise\ExtendedPromiseInterface {
 					$datagramClient = $this->createMock(Datagram\Socket::class);
 					$datagramClient
 						->method('on')
 						->willReturnCallback(
-							static function (string $eventName, callable $callback) use ($address): void {
-								if ($address === '0.0.0.0:6667') {
+							static function (string $eventName, callable $callback) use ($address, $port): void {
+								if ($address === '0.0.0.0' && $port === 6_667) {
 									// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 									$body = '{"ip":"10.10.0.10","gwId":"402675772462ab280dae","active":2,"ablilty":0,"encrypt":true,"productKey":"keyytm9ujajn77ce","version":"3.3","lan_cap":5000,"lan_seq":56,"token":true}';
 
@@ -354,12 +355,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 				},
 			);
 
-		$datagramFactoryService = $this->createMock(Clients\DatagramFactory::class);
-		$datagramFactoryService
-			->method('create')
-			->willReturn($datagramFactory);
-
-		$this->mockContainerService(Clients\DatagramFactory::class, $datagramFactoryService);
+		$this->mockContainerService(Services\DatagramFactory::class, $datagramFactoryService);
 
 		$httpAsyncClient = $this->createMock(React\Http\Io\Transaction::class);
 		$httpAsyncClient
@@ -434,7 +430,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 				},
 			);
 
-		$httpClientFactory = $this->createMock(API\HttpClientFactory::class);
+		$httpClientFactory = $this->createMock(Services\HttpClientFactory::class);
 		$httpClientFactory
 			->method('create')
 			->willReturnCallback(
@@ -448,7 +444,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 			);
 
 		$this->mockContainerService(
-			API\HttpClientFactory::class,
+			Services\HttpClientFactory::class,
 			$httpClientFactory,
 		);
 

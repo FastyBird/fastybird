@@ -15,6 +15,8 @@
 
 namespace FastyBird\Connector\Shelly\Entities\Messages;
 
+use Orisai\ObjectMapper;
+
 /**
  * Shelly base message data entity interface
  *
@@ -23,7 +25,7 @@ namespace FastyBird\Connector\Shelly\Entities\Messages;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-interface Entity
+interface Entity extends ObjectMapper\MappedObject
 {
 
 	/**

@@ -30,9 +30,6 @@ use function strval;
 class DevicePropertyIdentifier extends Consistence\Enum\Enum
 {
 
-	/**
-	 * Define device states
-	 */
 	public const STATE = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_STATE;
 
 	public const IP_ADDRESS = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS;

@@ -29,9 +29,6 @@ use function strval;
 class MotorCalibrationPayload extends Consistence\Enum\Enum
 {
 
-	/**
-	 * Define types
-	 */
 	public const CALIBRATION = 'calibration';
 
 	public const NORMAL = 'normal';

@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
 use FastyBird\Connector\Shelly\Entities;
+use Orisai\ObjectMapper;
 
 /**
  * Generation 2 device cover component motor configuration entity
@@ -29,7 +30,11 @@ final class CoverMotorConfigurationBlock implements Entities\API\Entity
 {
 
 	public function __construct(
-		private readonly float $idlePowerThr,
+		#[ObjectMapper\Rules\FloatValue()]
+		#[ObjectMapper\Modifiers\FieldName('idle_power_thr')]
+		private readonly float $idlePowerThreshold,
+		#[ObjectMapper\Rules\FloatValue()]
+		#[ObjectMapper\Modifiers\FieldName('idle_confirm_period')]
 		private readonly float $idleConfirmPeriod,
 	)
 	{
@@ -37,7 +42,7 @@ final class CoverMotorConfigurationBlock implements Entities\API\Entity
 
 	public function getIdlePowerThreshold(): float
 	{
-		return $this->idlePowerThr;
+		return $this->idlePowerThreshold;
 	}
 
 	public function getIdleConfirmPeriod(): float

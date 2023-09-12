@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
 use FastyBird\Connector\Shelly\Entities;
+use Orisai\ObjectMapper;
 
 /**
  * Generation 2 device light component default configuration entity
@@ -28,7 +29,10 @@ use FastyBird\Connector\Shelly\Entities;
 final class LightDefaultConfigurationBlock implements Entities\API\Entity
 {
 
-	public function __construct(private readonly int $brightness)
+	public function __construct(
+		#[ObjectMapper\Rules\IntValue(min: 0, max: 100, unsigned: true)]
+		private readonly int $brightness,
+	)
 	{
 	}
 

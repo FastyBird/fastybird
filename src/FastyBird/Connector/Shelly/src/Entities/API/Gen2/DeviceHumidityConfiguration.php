@@ -17,7 +17,7 @@ namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Types;
-use Nette;
+use Orisai\ObjectMapper;
 
 /**
  * Generation 2 device humidity configuration entity
@@ -30,12 +30,24 @@ use Nette;
 final class DeviceHumidityConfiguration implements Entities\API\Entity
 {
 
-	use Nette\SmartObject;
-
 	public function __construct(
+		#[ObjectMapper\Rules\IntValue(unsigned: true)]
 		private readonly int $id,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly string|null $name,
-		private readonly float|null $reportThr,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\FloatValue(castNumericString: true),
+			new ObjectMapper\Rules\NullValue(),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('report_thr')]
+		private readonly float|null $reportThreshold,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\FloatValue(castNumericString: true),
+			new ObjectMapper\Rules\NullValue(),
+		])]
 		private readonly float|null $offset,
 	)
 	{
@@ -48,7 +60,7 @@ final class DeviceHumidityConfiguration implements Entities\API\Entity
 
 	public function getType(): Types\ComponentType
 	{
-		return Types\ComponentType::get(Types\ComponentType::TYPE_HUMIDITY);
+		return Types\ComponentType::get(Types\ComponentType::HUMIDITY);
 	}
 
 	public function getName(): string|null
@@ -58,7 +70,7 @@ final class DeviceHumidityConfiguration implements Entities\API\Entity
 
 	public function getReportThreshold(): float|null
 	{
-		return $this->reportThr;
+		return $this->reportThreshold;
 	}
 
 	public function getOffset(): float|null

@@ -29,24 +29,28 @@ use function strval;
 class BlockDescription extends Consistence\Enum\Enum
 {
 
-	/**
-	 * Define device states
-	 */
-	public const DESC_RELAY = 'relay';
+	public const RELAY = 'relay';
 
-	public const DESC_ROLLER = 'roller';
+	public const ROLLER = 'roller';
 
-	public const DESC_LIGHT = 'light';
+	public const LIGHT = 'light';
 
-	public const DESC_INPUT = 'input';
+	public const INPUT = 'input';
 
-	public const DESC_EMETER = 'emeter';
+	public const METER = 'meter';
 
-	public const DESC_DEVICE = 'device';
+	public const EMETER = 'emeter';
+
+	public const DEVICE = 'device';
+
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
 
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }

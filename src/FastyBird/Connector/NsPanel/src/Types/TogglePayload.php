@@ -29,9 +29,6 @@ use function strval;
 class TogglePayload extends Consistence\Enum\Enum
 {
 
-	/**
-	 * Define types
-	 */
 	public const ON = 'on';
 
 	public const OFF = 'off';

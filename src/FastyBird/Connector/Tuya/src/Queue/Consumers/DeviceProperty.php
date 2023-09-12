@@ -30,7 +30,7 @@ use Nette\Utils;
 use Ramsey\Uuid;
 
 /**
- * Device ip address consumer trait
+ * Device property consumer trait
  *
  * @package        FastyBird:TuyaConnector!
  * @subpackage     Queue

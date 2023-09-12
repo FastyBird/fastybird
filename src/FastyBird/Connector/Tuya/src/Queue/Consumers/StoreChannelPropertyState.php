@@ -33,7 +33,7 @@ use Ramsey\Uuid;
 use function array_key_exists;
 
 /**
- * Device status message consumer
+ * Store channel property state message consumer
  *
  * @package        FastyBird:TuyaConnector!
  * @subpackage     Queue
@@ -115,7 +115,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 				'type' => 'store-channel-property-state-message-consumer',
 				'device' => [
-					'id' => $device->getPlainId(),
+					'id' => $device->getId()->toString(),
 				],
 				'data' => $entity->toArray(),
 			],

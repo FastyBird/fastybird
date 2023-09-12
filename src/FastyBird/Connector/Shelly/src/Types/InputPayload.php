@@ -29,22 +29,26 @@ use function strval;
 class InputPayload extends Consistence\Enum\Enum
 {
 
-	/**
-	 * Define device states
-	 */
-	public const PAYLOAD_PRESS = 'btn_down';
+	public const PRESS = 'btn_down';
 
-	public const PAYLOAD_RELEASE = 'btn_up';
+	public const RELEASE = 'btn_up';
 
-	public const PAYLOAD_SINGLE_PUSH = 'single_push';
+	public const SINGLE_PUSH = 'single_push';
 
-	public const PAYLOAD_DOUBLE_PUSH = 'double_push';
+	public const DOUBLE_PUSH = 'double_push';
 
-	public const PAYLOAD_LONG_PUSH = 'long_push';
+	public const TRIPLE_PUSH = 'triple_push';
+
+	public const LONG_PUSH = 'long_push';
+
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
 
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }

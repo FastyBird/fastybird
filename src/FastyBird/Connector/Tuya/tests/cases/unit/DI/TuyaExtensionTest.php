@@ -11,6 +11,7 @@ use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Hydrators;
 use FastyBird\Connector\Tuya\Queue;
 use FastyBird\Connector\Tuya\Schemas;
+use FastyBird\Connector\Tuya\Services;
 use FastyBird\Connector\Tuya\Subscribers;
 use FastyBird\Connector\Tuya\Tests;
 use FastyBird\Connector\Tuya\Writers;
@@ -35,7 +36,11 @@ final class TuyaExtensionTest extends Tests\Cases\Unit\BaseTestCase
 		self::assertNotNull($container->getByType(Clients\CloudFactory::class, false));
 		self::assertNotNull($container->getByType(Clients\DiscoveryFactory::class, false));
 
-		self::assertNotNull($container->getByType(API\HttpClientFactory::class, false));
+		self::assertNotNull($container->getByType(Services\DatagramFactory::class, false));
+		self::assertNotNull($container->getByType(Services\HttpClientFactory::class, false));
+		self::assertNotNull($container->getByType(Services\SocketClientFactory::class, false));
+		self::assertNotNull($container->getByType(Services\WebSocketClientFactory::class, false));
+
 		self::assertNotNull($container->getByType(API\ConnectionManager::class, false));
 		self::assertNotNull($container->getByType(API\OpenApiFactory::class, false));
 		self::assertNotNull($container->getByType(API\OpenPulsarFactory::class, false));

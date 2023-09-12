@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\Shelly\Entities\API\Gen1;
 
 use FastyBird\Connector\Shelly\Entities;
-use Nette;
+use Orisai\ObjectMapper;
 use function array_map;
 use function array_unique;
 use const SORT_REGULAR;
@@ -32,21 +32,20 @@ use const SORT_REGULAR;
 final class DeviceBlockDescription implements Entities\API\Entity
 {
 
-	use Nette\SmartObject;
-
-	/** @var array<BlockSensorDescription> */
-	private array $sensors;
-
 	/**
 	 * @param array<BlockSensorDescription> $sensors
 	 */
 	public function __construct(
+		#[ObjectMapper\Rules\IntValue()]
 		private readonly int $identifier,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $description,
-		array $sensors = [],
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(BlockSensorDescription::class),
+		)]
+		private readonly array $sensors = [],
 	)
 	{
-		$this->sensors = array_unique($sensors, SORT_REGULAR);
 	}
 
 	public function getIdentifier(): int
@@ -64,14 +63,7 @@ final class DeviceBlockDescription implements Entities\API\Entity
 	 */
 	public function getSensors(): array
 	{
-		return $this->sensors;
-	}
-
-	public function addSensor(BlockSensorDescription $sensor): void
-	{
-		$this->sensors[] = $sensor;
-
-		$this->sensors = array_unique($this->sensors, SORT_REGULAR);
+		return array_unique($this->sensors, SORT_REGULAR);
 	}
 
 	/**

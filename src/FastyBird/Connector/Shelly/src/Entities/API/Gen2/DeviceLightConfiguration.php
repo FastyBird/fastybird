@@ -17,7 +17,7 @@ namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Types;
-use Nette;
+use Orisai\ObjectMapper;
 
 /**
  * Generation 2 device light configuration entity
@@ -30,17 +30,39 @@ use Nette;
 final class DeviceLightConfiguration implements Entities\API\Entity
 {
 
-	use Nette\SmartObject;
-
 	public function __construct(
+		#[ObjectMapper\Rules\IntValue(unsigned: true)]
 		private readonly int $id,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly string|null $name,
+		#[ObjectMapper\Rules\ArrayEnumValue(cases: ['off', 'on', 'restore_last', 'match_input'])]
+		#[ObjectMapper\Modifiers\FieldName('initial_state')]
 		private readonly string $initialState,
+		#[ObjectMapper\Rules\BoolValue()]
+		#[ObjectMapper\Modifiers\FieldName('auto_on')]
 		private readonly bool $autoOn,
+		#[ObjectMapper\Rules\IntValue()]
+		#[ObjectMapper\Modifiers\FieldName('auto_on_delay')]
 		private readonly int $autoOnDelay,
+		#[ObjectMapper\Rules\BoolValue()]
+		#[ObjectMapper\Modifiers\FieldName('auto_off')]
 		private readonly bool $autoOff,
+		#[ObjectMapper\Rules\IntValue()]
+		#[ObjectMapper\Modifiers\FieldName('auto_off_delay')]
 		private readonly int $autoOffDelay,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\MappedObjectValue(class: LightDefaultConfigurationBlock::class),
+			new ObjectMapper\Rules\NullValue(),
+		])]
 		private readonly LightDefaultConfigurationBlock|null $default,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\MappedObjectValue(class: LightNightModeConfigurationBlock::class),
+			new ObjectMapper\Rules\NullValue(),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('night_mode')]
 		private readonly LightNightModeConfigurationBlock|null $nightMode,
 	)
 	{
@@ -53,7 +75,7 @@ final class DeviceLightConfiguration implements Entities\API\Entity
 
 	public function getType(): Types\ComponentType
 	{
-		return Types\ComponentType::get(Types\ComponentType::TYPE_LIGHT);
+		return Types\ComponentType::get(Types\ComponentType::LIGHT);
 	}
 
 	public function getName(): string|null

@@ -16,9 +16,9 @@
 namespace FastyBird\Connector\Shelly\Entities\API\Gen1;
 
 use FastyBird\Connector\Shelly\Entities;
-use FastyBird\Connector\Shelly\Types;
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use Nette;
+use Orisai\ObjectMapper;
 
 /**
  * Parsed sensor range entity
@@ -31,14 +31,42 @@ use Nette;
 final class SensorRange implements Entities\API\Entity
 {
 
-	use Nette\SmartObject;
-
 	/**
-	 * @param array<string>|array<int>|array<float>|array<int, array<int, (string|array<int, string>|null)>>|array<int, (int|null)>|array<int, (float|null)>|array<int, (MetadataTypes\SwitchPayload|string|Types\RelayPayload|null)>|null $format
+	 * @param array<string>|array<int>|array<float>|array<int, array<int, (array<int, string>|null)>>|null $format
 	 */
 	public function __construct(
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\DataType::class)]
+		#[ObjectMapper\Modifiers\FieldName('data_type')]
 		private readonly MetadataTypes\DataType $dataType,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\ArrayOf(new ObjectMapper\Rules\StringValue(notEmpty: true)),
+			new ObjectMapper\Rules\ArrayOf(new ObjectMapper\Rules\IntValue()),
+			new ObjectMapper\Rules\ArrayOf(new ObjectMapper\Rules\FloatValue()),
+			new ObjectMapper\Rules\ArrayOf(
+				new ObjectMapper\Rules\ArrayOf(
+					new ObjectMapper\Rules\AnyOf([
+						new ObjectMapper\Rules\ArrayOf(
+							new ObjectMapper\Rules\AnyOf([
+								new ObjectMapper\Rules\StringValue(notEmpty: true),
+								new ObjectMapper\Rules\NullValue(castEmptyString: true),
+							]),
+							new ObjectMapper\Rules\IntValue(),
+						),
+						new ObjectMapper\Rules\NullValue(),
+					]),
+					new ObjectMapper\Rules\IntValue(),
+				),
+				new ObjectMapper\Rules\IntValue(),
+			),
+			new ObjectMapper\Rules\NullValue(),
+		])]
 		private readonly array|null $format,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly int|float|string|null $invalid,
 	)
 	{
@@ -50,7 +78,7 @@ final class SensorRange implements Entities\API\Entity
 	}
 
 	/**
-	 * @return array<string>|array<int>|array<float>|array<int, array<int, (string|array<int, string>|null)>>|array<int, (int|null)>|array<int, (float|null)>|array<int, (MetadataTypes\SwitchPayload|string|Types\RelayPayload|null)>|null
+	 * @return array<string>|array<int>|array<float>|array<int, array<int, (array<int, string>|null)>>|null
 	 */
 	public function getFormat(): array|null
 	{

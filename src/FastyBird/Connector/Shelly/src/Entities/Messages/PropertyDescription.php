@@ -15,9 +15,9 @@
 
 namespace FastyBird\Connector\Shelly\Entities\Messages;
 
-use FastyBird\Connector\Shelly\Types;
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use Nette;
+use Orisai\ObjectMapper;
 
 /**
  * Device or channel property description entity
@@ -30,19 +30,58 @@ use Nette;
 final class PropertyDescription implements Entity
 {
 
-	use Nette\SmartObject;
-
 	/**
-	 * @param array<string>|array<int>|array<float>|array<int, array<int, (string|array<int, string>|null)>>|array<int, (int|null)>|array<int, (float|null)>|array<int, (MetadataTypes\SwitchPayload|string|Types\RelayPayload|null)>|null $format
+	 * @param array<string>|array<int>|array<float>|array<int, array<int, (array<int, string>|null)>>|null $format
 	 */
 	public function __construct(
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $identifier,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly string|null $name,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\DataType::class)]
+		#[ObjectMapper\Modifiers\FieldName('data_type')]
 		private readonly MetadataTypes\DataType $dataType,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly string|null $unit = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\ArrayOf(new ObjectMapper\Rules\StringValue(notEmpty: true)),
+			new ObjectMapper\Rules\ArrayOf(new ObjectMapper\Rules\IntValue()),
+			new ObjectMapper\Rules\ArrayOf(new ObjectMapper\Rules\FloatValue()),
+			new ObjectMapper\Rules\ArrayOf(
+				new ObjectMapper\Rules\ArrayOf(
+					new ObjectMapper\Rules\AnyOf([
+						new ObjectMapper\Rules\ArrayOf(
+							new ObjectMapper\Rules\AnyOf([
+								new ObjectMapper\Rules\StringValue(notEmpty: true),
+								new ObjectMapper\Rules\NullValue(castEmptyString: true),
+							]),
+							new ObjectMapper\Rules\IntValue(),
+						),
+						new ObjectMapper\Rules\NullValue(),
+					]),
+					new ObjectMapper\Rules\IntValue(),
+				),
+				new ObjectMapper\Rules\IntValue(),
+			),
+			new ObjectMapper\Rules\NullValue(),
+		])]
 		private readonly array|null $format = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly float|int|string|null $invalid = null,
+		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $queryable = false,
+		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $settable = false,
 	)
 	{
@@ -69,7 +108,7 @@ final class PropertyDescription implements Entity
 	}
 
 	/**
-	 * @return array<string>|array<int>|array<float>|array<int, array<int, (string|array<int, string>|null)>>|array<int, (int|null)>|array<int, (float|null)>|array<int, (MetadataTypes\SwitchPayload|string|Types\RelayPayload|null)>|null
+	 * @return array<string>|array<int>|array<float>|array<int, array<int, (array<int, string>|null)>>|null
 	 */
 	public function getFormat(): mixed
 	{
@@ -98,6 +137,7 @@ final class PropertyDescription implements Entity
 	{
 		return [
 			'identifier' => $this->getIdentifier(),
+			'name' => $this->getName(),
 			'data_type' => $this->getDataType()->getValue(),
 			'unit' => $this->getUnit(),
 			'format' => $this->getFormat(),

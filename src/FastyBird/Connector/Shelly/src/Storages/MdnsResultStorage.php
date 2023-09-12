@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\Shelly\Storages;
 
-use FastyBird\Connector\Shelly\Entities\Clients\MdnsResult;
+use FastyBird\Connector\Shelly\ValueObjects;
 use Nette;
 use SplObjectStorage;
 use function serialize;
@@ -23,7 +23,7 @@ use function serialize;
 /**
  * mDNS search results storage
  *
- * @extends SplObjectStorage<MdnsResult, null>
+ * @extends SplObjectStorage<ValueObjects\MdnsResult, null>
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Storages
@@ -35,7 +35,7 @@ class MdnsResultStorage extends SplObjectStorage
 	use Nette\SmartObject;
 
 	/**
-	 * @phpstan-param MdnsResult $object
+	 * @phpstan-param ValueObjects\MdnsResult $object
 	 */
 	public function getHash(object $object): string
 	{

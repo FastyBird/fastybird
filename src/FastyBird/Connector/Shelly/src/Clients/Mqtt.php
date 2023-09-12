@@ -16,11 +16,8 @@
 namespace FastyBird\Connector\Shelly\Clients;
 
 use FastyBird\Connector\Shelly\Entities;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
-use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Nette;
-use React\Promise;
 use function sprintf;
 
 /**
@@ -56,20 +53,6 @@ final class Mqtt implements Client
 	 * @throws DevicesExceptions\Terminate
 	 */
 	public function disconnect(): void
-	{
-		throw new DevicesExceptions\Terminate(
-			sprintf('MQTT client is not implemented for connector %s', $this->connector->getIdentifier()),
-		);
-	}
-
-	/**
-	 * @throws DevicesExceptions\Terminate
-	 */
-	public function writeChannelProperty(
-		Entities\ShellyDevice $device,
-		DevicesEntities\Channels\Channel $channel,
-		DevicesEntities\Channels\Properties\Dynamic|MetadataEntities\DevicesModule\ChannelDynamicProperty $property,
-	): Promise\PromiseInterface
 	{
 		throw new DevicesExceptions\Terminate(
 			sprintf('MQTT client is not implemented for connector %s', $this->connector->getIdentifier()),

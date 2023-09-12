@@ -375,7 +375,7 @@ class Initialize extends Console\Command\Command
 
 		} else {
 			$question = new Console\Question\ConfirmationQuestion(
-				'Do you want to change connector cloud Access ID?',
+				$this->translator->translate('//tuya-connector.cmd.initialize.questions.changeAccessId'),
 				false,
 			);
 

@@ -17,8 +17,9 @@ namespace FastyBird\Connector\Shelly\Entities\API\Gen1;
 
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Types;
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use Nette;
+use Orisai\ObjectMapper;
 
 /**
  * Block sensor description entity
@@ -31,20 +32,57 @@ use Nette;
 final class BlockSensorDescription implements Entities\API\Entity
 {
 
-	use Nette\SmartObject;
-
 	/**
-	 * @param array<string>|array<int>|array<float>|array<int, array<int, (string|array<int, string>|null)>>|array<int, (int|null)>|array<int, (float|null)>|array<int, (MetadataTypes\SwitchPayload|string|Types\RelayPayload|null)>|null $format
+	 * @param array<string>|array<int>|array<float>|array<int, array<int, (array<int, string>|null)>>|null $format
 	 */
 	public function __construct(
+		#[ObjectMapper\Rules\IntValue()]
 		private readonly int $identifier,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\SensorType::class)]
 		private readonly Types\SensorType $type,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $description,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\DataType::class)]
+		#[ObjectMapper\Modifiers\FieldName('data_type')]
 		private readonly MetadataTypes\DataType $dataType,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly string|null $unit = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\ArrayOf(new ObjectMapper\Rules\StringValue(notEmpty: true)),
+			new ObjectMapper\Rules\ArrayOf(new ObjectMapper\Rules\IntValue()),
+			new ObjectMapper\Rules\ArrayOf(new ObjectMapper\Rules\FloatValue()),
+			new ObjectMapper\Rules\ArrayOf(
+				new ObjectMapper\Rules\ArrayOf(
+					new ObjectMapper\Rules\AnyOf([
+						new ObjectMapper\Rules\ArrayOf(
+							new ObjectMapper\Rules\AnyOf([
+								new ObjectMapper\Rules\StringValue(notEmpty: true),
+								new ObjectMapper\Rules\NullValue(castEmptyString: true),
+							]),
+							new ObjectMapper\Rules\IntValue(),
+						),
+						new ObjectMapper\Rules\NullValue(),
+					]),
+					new ObjectMapper\Rules\IntValue(),
+				),
+				new ObjectMapper\Rules\IntValue(),
+			),
+			new ObjectMapper\Rules\NullValue(),
+		])]
 		private readonly array|null $format = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly float|int|string|null $invalid = null,
+		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
 		private readonly bool $queryable = false,
+		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
 		private readonly bool $settable = false,
 	)
 	{
@@ -76,7 +114,7 @@ final class BlockSensorDescription implements Entities\API\Entity
 	}
 
 	/**
-	 * @return array<string>|array<int>|array<float>|array<int, array<int, (string|array<int, string>|null)>>|array<int, (int|null)>|array<int, (float|null)>|array<int, (MetadataTypes\SwitchPayload|string|Types\RelayPayload|null)>|null
+	 * @return array<string>|array<int>|array<float>|array<int, array<int, (array<int, string>|null)>>|null
 	 */
 	public function getFormat(): mixed
 	{
