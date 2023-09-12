@@ -1,0 +1,93 @@
+{
+  "ble": {},
+  "cloud": {
+    "connected": true
+  },
+  "input:0": {
+    "id": 0,
+    "state": false
+  },
+  "input:1": {
+    "id": 1,
+    "state": false
+  },
+  "mqtt": {
+    "connected": false
+  },
+  "switch:0": {
+    "id": 0,
+    "source": "init",
+    "output": false,
+    "apower": 0.0,
+    "voltage": 241.5,
+    "current": 0.000,
+    "pf": 0.00,
+    "aenergy": {
+      "total": 0.000,
+      "by_minute": [
+        0.000,
+        0.000,
+        0.000
+      ],
+      "minute_ts": 1694508595
+    },
+    "temperature": {
+      "tC": 55.4,
+      "tF": 131.8
+    }
+  },
+  "switch:1": {
+    "id": 1,
+    "source": "init",
+    "output": false,
+    "apower": 0.0,
+    "voltage": 241.6,
+    "current": 0.000,
+    "pf": 0.00,
+    "aenergy": {
+      "total": 0.000,
+      "by_minute": [
+        0.000,
+        0.000,
+        0.000
+      ],
+      "minute_ts": 1694508595
+    },
+    "temperature": {
+      "tC": 55.4,
+      "tF": 131.8
+    }
+  },
+  "sys": {
+    "mac": "441793AD07E8",
+    "restart_required": false,
+    "time": "10:49",
+    "unixtime": 1694508597,
+    "uptime": 687679,
+    "ram_size": 233308,
+    "ram_free": 152812,
+    "fs_size": 458752,
+    "fs_free": 90112,
+    "cfg_rev": 14,
+    "kvs_rev": 0,
+    "schedule_rev": 0,
+    "webhook_rev": 0,
+    "available_updates": {
+      "beta": {
+        "version": "1.0.2-beta3"
+      },
+      "stable": {
+        "version": "0.14.1"
+      }
+    }
+  },
+  "wifi": {
+    "sta_ip": "10.10.0.37",
+    "status": "got ip",
+    "ssid": "FastyBird.com",
+    "rssi": -63
+  },
+  "ws": {
+    "connected": false
+  }
+}
