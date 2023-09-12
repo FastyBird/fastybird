@@ -33,7 +33,7 @@ jobs:
 
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
 
       - name: "Setup PHP cache environment"
         id: "extcache"
@@ -107,7 +107,7 @@ jobs:
 
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
 
       - name: "Setup PHP cache environment"
         id: "extcache"
@@ -190,7 +190,7 @@ jobs:
 
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
 
       - name : "Setup MySQL"
         uses : "mirromutth/mysql-action@v1.1"
@@ -257,7 +257,7 @@ jobs:
 
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
 
       - name : "Setup MySQL"
         uses : "mirromutth/mysql-action@v1.1"
@@ -325,7 +325,7 @@ jobs:
 
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
 
       - name : "Setup MySQL"
         uses : "mirromutth/mysql-action@v1.1"
@@ -408,7 +408,7 @@ jobs:
 
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
 
       - name: "Setup PHP cache environment"
         id: "extcache"
