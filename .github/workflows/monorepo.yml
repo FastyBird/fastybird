@@ -30,7 +30,7 @@ jobs:
 
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
 
       - name: "Read matrix configuration"
         id: "set-matrix"
@@ -52,7 +52,7 @@ jobs:
 
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
 
       - name: "Monorepo Split of ${{ matrix.package.name }}"
         if: "!startsWith(github.ref, 'refs/tags/')"
