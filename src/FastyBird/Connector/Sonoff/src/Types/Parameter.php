@@ -29,6 +29,16 @@ use function strval;
 class Parameter extends Consistence\Enum\Enum
 {
 
+	public const STATUS_LED = 'sledOnline';
+
+	public const FIRMWARE_VERSION = 'fwVersion';
+
+	public const RSSI = 'rssi';
+
+	public const SSID = 'ssid';
+
+	public const BSSID = 'bssid';
+
 	public const SWITCH = 'switch';
 
 	public const STARTUP = 'startup';
@@ -42,14 +52,6 @@ class Parameter extends Consistence\Enum\Enum
 	public const MAXIMUM_BRIGHTNESS = 'brightMax';
 
 	public const MODE = 'mode';
-
-	public const STATUS_LED = 'sledOnline';
-
-	public const FIRMWARE_VERSION = 'fwVersion';
-
-	public const RSSI = 'rssi';
-
-	public const SSID = 'ssid';
 
 	public const POWER = 'power';
 

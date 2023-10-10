@@ -251,7 +251,9 @@ final class StoreDevice implements Consumer
 							Utils\ArrayHash::from([
 								'entity' => DevicesEntities\Devices\Properties\Dynamic::class,
 								'device' => $device,
-								'identifier' => $parameter->getIdentifier(),
+								'identifier' => Helpers\Transformer::deviceParameterToProperty(
+									$parameter->getIdentifier(),
+								),
 								'name' => $parameter->getName(),
 								'dataType' => $parameter->getDataType(),
 								'settable' => $parameter->isSettable(),

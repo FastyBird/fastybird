@@ -97,10 +97,14 @@ final class Transformer
 			return Types\DevicePropertyIdentifier::SSID;
 		}
 
+		if ($identifier === Types\Parameter::BSSID) {
+			return Types\DevicePropertyIdentifier::HARDWARE_MAC_ADDRESS;
+		}
+
 		return $identifier;
 	}
 
-	public static function devicePropertyToParameterName(string $identifier): string
+	public static function devicePropertyToParameter(string $identifier): string
 	{
 		if ($identifier === Types\DevicePropertyIdentifier::STATUS_LED) {
 			return Types\Parameter::STATUS_LED;
@@ -116,6 +120,10 @@ final class Transformer
 
 		if ($identifier === Types\DevicePropertyIdentifier::SSID) {
 			return Types\Parameter::SSID;
+		}
+
+		if ($identifier === Types\DevicePropertyIdentifier::HARDWARE_MAC_ADDRESS) {
+			return Types\Parameter::BSSID;
 		}
 
 		return $identifier;

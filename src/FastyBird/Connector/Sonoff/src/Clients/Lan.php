@@ -412,7 +412,7 @@ final class Lan extends ClientProcess implements Client
 
 		if ($event->getData()->getBssid() !== null) {
 			$states[] = [
-				Types\PropertyParameter::NAME => Types\DevicePropertyIdentifier::HARDWARE_MAC_ADDRESS,
+				Types\PropertyParameter::NAME => Types\Parameter::BSSID,
 				Types\PropertyParameter::VALUE => $event->getData()->getBssid(),
 			];
 		}

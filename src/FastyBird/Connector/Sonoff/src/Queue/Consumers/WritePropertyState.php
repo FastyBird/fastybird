@@ -284,6 +284,11 @@ final class WritePropertyState implements Queue\Consumer
 		}
 
 		$group = $outlet = null;
+		$parameter = $property->getIdentifier();
+
+		if ($property instanceof DevicesEntities\Devices\Properties\Dynamic) {
+			$parameter = Helpers\Transformer::devicePropertyToParameter($parameter);
+		}
 
 		if ($channel !== null) {
 			if (preg_match(Sonoff\Constants::CHANNEL_GROUP, $channel->getIdentifier(), $matches) === 1) {
@@ -292,14 +297,11 @@ final class WritePropertyState implements Queue\Consumer
 				}
 
 				if ($outlet !== null) {
-					if ($property->getIdentifier() === Types\Parameter::SWITCH) {
+					if ($parameter === Types\Parameter::SWITCH) {
 						$group = Types\ChannelGroup::SWITCHES;
-					} elseif ($property->getIdentifier() === Types\Parameter::STARTUP) {
+					} elseif ($parameter === Types\Parameter::STARTUP) {
 						$group = Types\ChannelGroup::CONFIGURE;
-					} elseif (
-						$property->getIdentifier() === Types\Parameter::PULSE
-						|| $property->getIdentifier() === Types\Parameter::PULSE_WIDTH
-					) {
+					} elseif ($parameter === Types\Parameter::PULSE || $parameter === Types\Parameter::PULSE_WIDTH) {
 						$group = Types\ChannelGroup::PULSES;
 					}
 				}
@@ -317,7 +319,7 @@ final class WritePropertyState implements Queue\Consumer
 						$device->getIdentifier(),
 						$device->getIpAddress(),
 						$device->getPort(),
-						$property->getIdentifier(),
+						$parameter,
 						$expectedValue,
 						$group,
 						$outlet,
@@ -326,12 +328,12 @@ final class WritePropertyState implements Queue\Consumer
 							$deferred->resolve(true);
 						})
 						->otherwise(
-							function () use ($deferred, $connector, $device, $property, $expectedValue, $group, $outlet): void {
+							function () use ($deferred, $connector, $device, $parameter, $expectedValue, $group, $outlet): void {
 								$client = $this->connectionManager->getCloudApiConnection($connector);
 
 								$client->setThingState(
 									$device->getIdentifier(),
-									$property->getIdentifier(),
+									$parameter,
 									$expectedValue,
 									$group,
 									$outlet,
@@ -349,7 +351,7 @@ final class WritePropertyState implements Queue\Consumer
 
 					$client->setThingState(
 						$device->getIdentifier(),
-						$property->getIdentifier(),
+						$parameter,
 						$expectedValue,
 						$group,
 						$outlet,
@@ -372,7 +374,7 @@ final class WritePropertyState implements Queue\Consumer
 
 				$result = $client->setThingState(
 					$device->getIdentifier(),
-					$property->getIdentifier(),
+					$parameter,
 					$expectedValue,
 					$group,
 					$outlet,
@@ -388,7 +390,7 @@ final class WritePropertyState implements Queue\Consumer
 					$device->getIdentifier(),
 					$device->getIpAddress(),
 					$device->getPort(),
-					$property->getIdentifier(),
+					$parameter,
 					$expectedValue,
 					$group,
 					$outlet,
