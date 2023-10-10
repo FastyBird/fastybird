@@ -32,7 +32,6 @@ use FastyBird\Connector\Tuya\Writers;
 use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
 use FastyBird\Library\Exchange\DI as ExchangeDI;
 use FastyBird\Module\Devices\DI as DevicesDI;
-use Nette;
 use Nette\DI;
 use Nette\Schema;
 use stdClass;
@@ -57,7 +56,6 @@ class TuyaExtension extends DI\CompilerExtension
 		string $extensionName = self::NAME,
 	): void
 	{
-		// @phpstan-ignore-next-line
 		$config->onCompile[] = static function (
 			BootstrapBoot\Configurator $config,
 			DI\Compiler $compiler,
@@ -335,7 +333,7 @@ class TuyaExtension extends DI\CompilerExtension
 	}
 
 	/**
-	 * @throws Nette\DI\MissingServiceException
+	 * @throws DI\MissingServiceException
 	 */
 	public function beforeCompile(): void
 	{

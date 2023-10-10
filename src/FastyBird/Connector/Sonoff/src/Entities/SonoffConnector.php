@@ -31,16 +31,16 @@ use function is_string;
 class SonoffConnector extends DevicesEntities\Connectors\Connector
 {
 
-	public const CONNECTOR_TYPE = 'sonoff';
+	public const TYPE = 'sonoff';
 
 	public function getType(): string
 	{
-		return self::CONNECTOR_TYPE;
+		return self::TYPE;
 	}
 
 	public function getDiscriminatorName(): string
 	{
-		return self::CONNECTOR_TYPE;
+		return self::TYPE;
 	}
 
 	public function getSource(): MetadataTypes\ConnectorSource
@@ -59,7 +59,7 @@ class SonoffConnector extends DevicesEntities\Connectors\Connector
 		$property = $this->properties
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE
+				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::CLIENT_MODE
 			)
 			->first();
 
@@ -83,7 +83,7 @@ class SonoffConnector extends DevicesEntities\Connectors\Connector
 		$property = $this->properties
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::IDENTIFIER_USERNAME
+				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::USERNAME
 			)
 			->first();
 
@@ -107,7 +107,7 @@ class SonoffConnector extends DevicesEntities\Connectors\Connector
 		$property = $this->properties
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::IDENTIFIER_PASSWORD
+				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::PASSWORD
 			)
 			->first();
 
@@ -131,7 +131,7 @@ class SonoffConnector extends DevicesEntities\Connectors\Connector
 		$property = $this->properties
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::IDENTIFIER_APP_ID
+				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::APP_ID
 			)
 			->first();
 
@@ -155,7 +155,7 @@ class SonoffConnector extends DevicesEntities\Connectors\Connector
 		$property = $this->properties
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::IDENTIFIER_APP_SECRET
+				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::APP_SECRET
 			)
 			->first();
 
@@ -179,7 +179,7 @@ class SonoffConnector extends DevicesEntities\Connectors\Connector
 		$property = $this->properties
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::IDENTIFIER_REGION
+				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::REGION
 			)
 			->first();
 
@@ -191,7 +191,55 @@ class SonoffConnector extends DevicesEntities\Connectors\Connector
 			return Types\Region::get($property->getValue());
 		}
 
-		return Types\Region::get(Types\Region::REGION_EUROPE);
+		return Types\Region::get(Types\Region::EUROPE);
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function getGatewayId(): string|null
+	{
+		$property = $this->properties
+			->filter(
+			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::GATEWAY_ID
+			)
+			->first();
+
+		if (
+			$property instanceof DevicesEntities\Connectors\Properties\Variable
+			&& is_string($property->getValue())
+		) {
+			return $property->getValue();
+		}
+
+		return null;
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function getGatewayApiKey(): string|null
+	{
+		$property = $this->properties
+			->filter(
+			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::GATEWAY_API_KEY
+			)
+			->first();
+
+		if (
+			$property instanceof DevicesEntities\Connectors\Properties\Variable
+			&& is_string($property->getValue())
+		) {
+			return $property->getValue();
+		}
+
+		return null;
 	}
 
 }

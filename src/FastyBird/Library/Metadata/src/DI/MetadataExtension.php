@@ -37,7 +37,6 @@ class MetadataExtension extends DI\CompilerExtension
 		string $extensionName = 'fbMetadataLibrary',
 	): void
 	{
-		// @phpstan-ignore-next-line
 		$config->onCompile[] = static function (
 			BootstrapBoot\Configurator $config,
 			DI\Compiler $compiler,
