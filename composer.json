@@ -99,10 +99,10 @@
         "vlucas/phpdotenv": "^5.4"
     },
     "require-dev": {
-        "brianium/paratest": "^7.1",
+        "brianium/paratest": "^7.3",
         "dg/bypass-finals": "^1.4",
         "doctrine/orm": "2.15.*",
-        "infection/infection": "^0.26",
+        "infection/infection": "^0.27",
         "ipub/websockets": "^1.5",
         "latte/latte": "^3.0",
         "mockery/mockery": "^1.4",
