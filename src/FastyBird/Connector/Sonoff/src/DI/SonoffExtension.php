@@ -198,7 +198,7 @@ class SonoffExtension extends DI\CompilerExtension
 			]);
 
 		$builder->addDefinition(
-			$this->prefix('queue.consumers.store.parametersState'),
+			$this->prefix('queue.consumers.store.parametersStates'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Queue\Consumers\StoreParametersStates::class)

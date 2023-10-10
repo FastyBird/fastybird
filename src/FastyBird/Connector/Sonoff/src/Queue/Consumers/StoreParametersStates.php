@@ -52,8 +52,9 @@ final class StoreParametersStates implements Consumer
 		private readonly DevicesModels\Devices\Properties\PropertiesManager $devicesPropertiesManager,
 		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
 		private readonly DevicesModels\Channels\Properties\PropertiesManager $channelsPropertiesManager,
+		private readonly DevicesUtilities\DevicePropertiesStates $devicePropertiesStateManager,
+		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStateManager,
 		private readonly DevicesUtilities\Database $databaseHelper,
-		private readonly Helpers\Property $propertyStateHelper,
 	)
 	{
 	}
@@ -90,7 +91,7 @@ final class StoreParametersStates implements Consumer
 				$property = $this->devicePropertiesRepository->findOneBy($findDevicePropertyQuery);
 
 				if ($property instanceof DevicesEntities\Devices\Properties\Dynamic) {
-					$this->propertyStateHelper->setValue($property, Utils\ArrayHash::from([
+					$this->devicePropertiesStateManager->setValue($property, Utils\ArrayHash::from([
 						DevicesStates\Property::ACTUAL_VALUE_KEY => Helpers\Transformer::transformValueFromDevice(
 							$property->getDataType(),
 							$property->getFormat(),
@@ -129,7 +130,7 @@ final class StoreParametersStates implements Consumer
 					$property = $this->channelPropertiesRepository->findOneBy($findChannelPropertyQuery);
 
 					if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
-						$this->propertyStateHelper->setValue($property, Utils\ArrayHash::from([
+						$this->channelPropertiesStateManager->setValue($property, Utils\ArrayHash::from([
 							DevicesStates\Property::ACTUAL_VALUE_KEY => Helpers\Transformer::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
