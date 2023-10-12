@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\Sonoff\Clients;
 
+use BadMethodCallException;
 use FastyBird\Connector\Sonoff\Entities;
 use FastyBird\Connector\Sonoff\Exceptions;
 use FastyBird\DateTimeFactory;
@@ -71,6 +72,7 @@ final class Auto extends ClientProcess implements Client
 	}
 
 	/**
+	 * @throws BadMethodCallException
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\CloudApiCall
 	 * @throws InvalidArgumentException

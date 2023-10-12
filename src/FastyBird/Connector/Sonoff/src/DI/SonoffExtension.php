@@ -116,6 +116,18 @@ class SonoffExtension extends DI\CompilerExtension
 		$builder->addDefinition($this->prefix('services.httpClientFactory'), new DI\Definitions\ServiceDefinition())
 			->setType(Services\HttpClientFactory::class);
 
+		$builder->addDefinition(
+			$this->prefix('services.webSocketClientFactory'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Services\WebSocketClientFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('services.multicastFactory'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Services\MulticastFactory::class);
+
 		/**
 		 * CLIENTS
 		 */

@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\Sonoff\Clients;
 
+use BadMethodCallException;
 use Evenement;
 use FastyBird\Connector\Sonoff;
 use FastyBird\Connector\Sonoff\API;
@@ -31,6 +32,7 @@ use Nette;
 use Nette\Utils;
 use React\EventLoop;
 use React\Promise;
+use RuntimeException;
 use SplObjectStorage;
 use stdClass;
 use Throwable;
@@ -214,7 +216,9 @@ final class Discovery implements Evenement\EventEmitterInterface
 	}
 
 	/**
+	 * @throws BadMethodCallException
 	 * @throws Exceptions\InvalidState
+	 * @throws RuntimeException
 	 */
 	private function discoverLanDevices(): Promise\PromiseInterface
 	{

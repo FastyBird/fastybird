@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\Sonoff\API;
 
-use Clue\React\Multicast;
+use BadMethodCallException;
 use Evenement;
 use FastyBird\Connector\Sonoff;
 use FastyBird\Connector\Sonoff\Entities;
@@ -107,6 +107,7 @@ final class LanApi
 
 	public function __construct(
 		private readonly Services\HttpClientFactory $httpClientFactory,
+		private readonly Services\MulticastFactory $multicastFactory,
 		private readonly Helpers\Entity $entityHelper,
 		private readonly Sonoff\Logger $logger,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
@@ -119,17 +120,13 @@ final class LanApi
 	}
 
 	/**
+	 * @throws BadMethodCallException
 	 * @throws Exceptions\InvalidState
+	 * @throws RuntimeException
 	 */
 	public function connect(): void
 	{
-		$factory = new Multicast\Factory($this->eventLoop);
-
-		try {
-			$this->server = $factory->createReceiver(self::MDNS_ADDRESS . ':' . self::MDNS_PORT);
-		} catch (Throwable $ex) {
-			throw new Exceptions\InvalidState('Could not create mDNS server', $ex->getCode(), $ex);
-		}
+		$this->server = $this->multicastFactory->create(self::MDNS_ADDRESS, self::MDNS_PORT);
 
 		$this->server->on('message', function ($message): void {
 			try {

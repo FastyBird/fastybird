@@ -37,6 +37,8 @@ final class SonoffExtensionTest extends Tests\Cases\Unit\BaseTestCase
 		self::assertNotNull($container->getByType(Clients\DiscoveryFactory::class, false));
 
 		self::assertNotNull($container->getByType(Services\HttpClientFactory::class, false));
+		self::assertNotNull($container->getByType(Services\MulticastFactory::class, false));
+		self::assertNotNull($container->getByType(Services\WebSocketClientFactory::class, false));
 
 		self::assertNotNull($container->getByType(API\ConnectionManager::class, false));
 		self::assertNotNull($container->getByType(API\CloudApiFactory::class, false));

@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\Sonoff\Connector;
 
+use BadMethodCallException;
 use FastyBird\Connector\Sonoff;
 use FastyBird\Connector\Sonoff\Clients;
 use FastyBird\Connector\Sonoff\Entities;
@@ -76,6 +77,7 @@ final class Connector implements DevicesConnectors\Connector
 	}
 
 	/**
+	 * @throws BadMethodCallException
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\CloudApiCall

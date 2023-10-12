@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\Sonoff\Clients;
 
+use BadMethodCallException;
 use FastyBird\Connector\Sonoff;
 use FastyBird\Connector\Sonoff\API;
 use FastyBird\Connector\Sonoff\Entities;
@@ -34,6 +35,7 @@ use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Psr\EventDispatcher;
 use React\EventLoop;
 use React\Promise;
+use RuntimeException;
 use Throwable;
 use function in_array;
 
@@ -76,10 +78,12 @@ final class Lan extends ClientProcess implements Client
 	}
 
 	/**
+	 * @throws BadMethodCallException
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws RuntimeException
 	 */
 	public function connect(): void
 	{

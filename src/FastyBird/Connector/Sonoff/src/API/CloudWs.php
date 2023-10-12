@@ -40,7 +40,6 @@ use Ratchet;
 use Ratchet\RFC6455;
 use React\EventLoop;
 use React\Promise;
-use React\Socket;
 use RuntimeException;
 use stdClass;
 use Throwable;
@@ -114,6 +113,7 @@ final class CloudWs implements Evenement\EventEmitterInterface
 		private readonly string $apiKey,
 		private readonly Types\Region $region,
 		private readonly Services\HttpClientFactory $httpClientFactory,
+		private readonly Services\WebSocketClientFactory $webSocketClientFactory,
 		private readonly Helpers\Entity $entityHelper,
 		private readonly Sonoff\Logger $logger,
 		private readonly MetadataSchemas\Validator $schemaValidator,
@@ -137,15 +137,6 @@ final class CloudWs implements Evenement\EventEmitterInterface
 		try {
 			$socketsSettings = $this->login();
 
-			$reactConnector = new Socket\Connector([
-				'dns' => '8.8.8.8',
-				'timeout' => 10,
-				'tls' => [
-					'verify_peer' => false,
-					'verify_peer_name' => false,
-					'check_hostname' => false,
-				],
-			]);
 		} catch (Exceptions\CloudWsCall $ex) {
 			return Promise\reject($ex);
 		} catch (Throwable $ex) {
@@ -154,135 +145,119 @@ final class CloudWs implements Evenement\EventEmitterInterface
 			);
 		}
 
-		$connector = new Ratchet\Client\Connector($this->eventLoop, $reactConnector);
-
 		$deferred = new Promise\Deferred();
 
-		try {
-			$connector('wss://' . $socketsSettings->getDomain() . ':' . $socketsSettings->getPort() . '/api/ws')
-				->then(function (Ratchet\Client\WebSocket $connection) use ($deferred): void {
-					$this->connection = $connection;
+		$this->webSocketClientFactory
+			->create('wss://' . $socketsSettings->getDomain() . ':' . $socketsSettings->getPort() . '/api/ws')
+			->then(function (Ratchet\Client\WebSocket $connection) use ($deferred): void {
+				$this->connection = $connection;
 
-					$this->doWsHandshake()
-						->then(
-							function (Entities\API\Sockets\ApplicationHandshake $response): void {
-								$this->connecting = false;
-								$this->connected = true;
+				$this->doWsHandshake()
+					->then(
+						function (Entities\API\Sockets\ApplicationHandshake $response): void {
+							$this->connecting = false;
+							$this->connected = true;
 
-								$this->lost = null;
-								$this->disconnected = null;
+							$this->lost = null;
+							$this->disconnected = null;
 
-								$this->logger->debug(
-									'Connected to Sonoff sockets server',
-									[
-										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
-										'type' => 'cloud-ws',
-									],
-								);
-
-								if ($response->getConfig()->hasHeartbeat()) {
-									$this->pingTimer = $this->eventLoop->addPeriodicTimer(
-										$response->getConfig()->getHeartbeatInterval(),
-										async(function (): void {
-											$this->connection?->send(new RFC6455\Messaging\Frame(
-												'ping',
-												true,
-												RFC6455\Messaging\Frame::OP_PING,
-											));
-										}),
-									);
-								}
-							},
-							function (Throwable $ex): void {
-								$this->connection = null;
-
-								$this->connecting = false;
-								$this->connected = false;
-
-								$this->emit(
-									'error',
-									[
-										new Exceptions\InvalidState(
-											'Handshake with Sonoff sockets server failed',
-											$ex->getCode(),
-											$ex,
-										),
-									],
-								);
-							},
-						);
-
-					$connection->on('message', function (RFC6455\Messaging\MessageInterface $message): void {
-						$this->handleMessage($message->getPayload());
-					});
-
-					$connection->on('error', function (Throwable $ex): void {
-						$this->lost();
-
-						$this->emit(
-							'error',
-							[
-								new Exceptions\InvalidState(
-									'An error occurred on Sonoff sockets server connection',
-									$ex->getCode(),
-									$ex,
-								),
-							],
-						);
-					});
-
-					$connection->on('close', function ($code = null, $reason = null): void {
-						$this->logger->debug(
-							'Connection to Sonoff sockets server was closed',
-							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
-								'type' => 'cloud-ws',
-								'connection' => [
-									'code' => $code,
-									'reason' => $reason,
+							$this->logger->debug(
+								'Connected to Sonoff sockets server',
+								[
+									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
+									'type' => 'cloud-ws',
 								],
-							],
-						);
+							);
 
-						$this->disconnect();
+							if ($response->getConfig()->hasHeartbeat()) {
+								$this->pingTimer = $this->eventLoop->addPeriodicTimer(
+									$response->getConfig()->getHeartbeatInterval(),
+									async(function (): void {
+										$this->connection?->send(new RFC6455\Messaging\Frame(
+											'ping',
+											true,
+											RFC6455\Messaging\Frame::OP_PING,
+										));
+									}),
+								);
+							}
+						},
+						function (Throwable $ex): void {
+							$this->connection = null;
 
-						$this->emit('disconnected');
-					});
+							$this->connecting = false;
+							$this->connected = false;
 
-					$this->emit('connected');
+							$this->emit(
+								'error',
+								[
+									new Exceptions\InvalidState(
+										'Handshake with Sonoff sockets server failed',
+										$ex->getCode(),
+										$ex,
+									),
+								],
+							);
+						},
+					);
 
-					$deferred->resolve();
-				})
-				->otherwise(function (Throwable $ex) use ($deferred): void {
-					$this->connection = null;
+				$connection->on('message', function (RFC6455\Messaging\MessageInterface $message): void {
+					$this->handleMessage($message->getPayload());
+				});
 
-					$this->connecting = false;
-					$this->connected = false;
+				$connection->on('error', function (Throwable $ex): void {
+					$this->lost();
 
-					$this->emit('error', [$ex]);
-
-					$deferred->reject(
-						new Exceptions\InvalidState(
-							'Connection to Sonoff sockets server failed',
-							$ex->getCode(),
-							$ex,
-						),
+					$this->emit(
+						'error',
+						[
+							new Exceptions\InvalidState(
+								'An error occurred on Sonoff sockets server connection',
+								$ex->getCode(),
+								$ex,
+							),
+						],
 					);
 				});
-		} catch (Throwable $ex) {
-			$this->connection = null;
 
-			$this->connecting = false;
-			$this->connected = false;
+				$connection->on('close', function ($code = null, $reason = null): void {
+					$this->logger->debug(
+						'Connection to Sonoff sockets server was closed',
+						[
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
+							'type' => 'cloud-ws',
+							'connection' => [
+								'code' => $code,
+								'reason' => $reason,
+							],
+						],
+					);
 
-			$deferred->reject(
-				new Exceptions\InvalidState(
-					'Connection to Sonoff sockets server not be created',
-					$ex->getCode(),
-					$ex,
-				),
-			);
-		}
+					$this->disconnect();
+
+					$this->emit('disconnected');
+				});
+
+				$this->emit('connected');
+
+				$deferred->resolve();
+			})
+			->otherwise(function (Throwable $ex) use ($deferred): void {
+				$this->connection = null;
+
+				$this->connecting = false;
+				$this->connected = false;
+
+				$this->emit('error', [$ex]);
+
+				$deferred->reject(
+					new Exceptions\InvalidState(
+						'Connection to Sonoff sockets server failed',
+						$ex->getCode(),
+						$ex,
+					),
+				);
+			});
 
 		return $deferred->promise();
 	}
