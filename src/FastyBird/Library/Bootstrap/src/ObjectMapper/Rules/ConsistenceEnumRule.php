@@ -77,6 +77,10 @@ final class ConsistenceEnumRule implements ObjectMapper\Rules\Rule
 	{
 		$class = $args->class;
 
+		if ($value instanceof Enum && $value::class === $class) {
+			return $value;
+		}
+
 		if (
 			$args->allowUnknown
 			&& (

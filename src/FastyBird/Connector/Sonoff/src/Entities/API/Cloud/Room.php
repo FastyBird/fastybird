@@ -34,7 +34,7 @@ final class Room implements Entities\API\Entity
 		private readonly string $id,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $name,
-		#[ObjectMapper\Rules\IntValue(unsigned: true)]
+		#[ObjectMapper\Rules\IntValue()]
 		private readonly int $index,
 	)
 	{

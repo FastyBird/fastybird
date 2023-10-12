@@ -36,7 +36,7 @@ final class DeviceState implements Entities\API\Entity
 			new ObjectMapper\Rules\ObjectValue(),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		private readonly Entities\Uuid\Entity|null $state = null,
+		private readonly Entities\Uiid\Entity|null $state = null,
 	)
 	{
 	}
@@ -46,7 +46,7 @@ final class DeviceState implements Entities\API\Entity
 		return $this->deviceId;
 	}
 
-	public function getState(): Entities\Uuid\Entity|null
+	public function getState(): Entities\Uiid\Entity|null
 	{
 		return $this->state;
 	}

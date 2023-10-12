@@ -50,8 +50,11 @@ final class DiscoveredCloudDevice implements Entity
 		private readonly string|null $description,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $brandName,
-		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $brandLogo,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		private readonly string|null $brandLogo,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $productModel,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
@@ -102,7 +105,7 @@ final class DiscoveredCloudDevice implements Entity
 		return $this->brandName;
 	}
 
-	public function getBrandLogo(): string
+	public function getBrandLogo(): string|null
 	{
 		return $this->brandLogo;
 	}

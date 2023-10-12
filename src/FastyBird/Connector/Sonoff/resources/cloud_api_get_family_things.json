@@ -78,6 +78,13 @@
                     "params": {
                       "type": "object",
                       "description": "Group status"
+                    },
+                    "denyFeatures": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "default": []
                     }
                   },
                   "required": [
@@ -132,7 +139,8 @@
                               "type": "string"
                             }
                           ],
-                          "description": "Factory notes"
+                          "description": "Factory notes",
+                          "default": null
                         },
                         "manufacturer": {
                           "type": "string",
@@ -161,7 +169,6 @@
                         "model",
                         "ui",
                         "uiid",
-                        "description",
                         "manufacturer",
                         "mac",
                         "apmac",
@@ -373,6 +380,13 @@
                     "gsmInfoData": {
                       "type": "object",
                       "description": "Sim card status object of GSM device"
+                    },
+                    "denyFeatures": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "default": []
                     }
                   },
                   "required": [

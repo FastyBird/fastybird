@@ -139,6 +139,8 @@ class Parameter extends Consistence\Enum\Enum
 
 	public const BRIGHTNESS = 'bright';
 
+	public const BRIGHTNESS_2 = 'brightness';
+
 	public const BATTERY = 'battery';
 
 	public const LAST_UPDATE_TIME = 'lastUpdateTime';

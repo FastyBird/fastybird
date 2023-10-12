@@ -357,7 +357,7 @@ final class Lan extends ClientProcess implements Client
 
 			if ($event->getData()->getBrightness() !== null) {
 				$states[] = [
-					Types\PropertyParameter::NAME => Types\Parameter::BRIGHTNESS,
+					Types\PropertyParameter::NAME => Types\Parameter::BRIGHTNESS_2,
 					Types\PropertyParameter::VALUE => $event->getData()->getBrightness(),
 					Types\PropertyParameter::GROUP => Types\ParameterGroup::LIGHT,
 				];
@@ -489,7 +489,7 @@ final class Lan extends ClientProcess implements Client
 
 			if ($info->getBrightness() !== null) {
 				$states[] = [
-					Types\PropertyParameter::NAME => Types\Parameter::BRIGHTNESS,
+					Types\PropertyParameter::NAME => Types\Parameter::BRIGHTNESS_2,
 					Types\PropertyParameter::VALUE => $info->getBrightness(),
 					Types\PropertyParameter::GROUP => Types\ParameterGroup::LIGHT,
 				];

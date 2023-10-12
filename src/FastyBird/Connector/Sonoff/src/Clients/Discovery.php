@@ -39,12 +39,14 @@ use function array_map;
 use function assert;
 use function count;
 use function get_object_vars;
+use function in_array;
 use function intval;
 use function is_array;
 use function method_exists;
 use function property_exists;
 use function React\Async\async;
 use function React\Async\await;
+use function sprintf;
 use const DIRECTORY_SEPARATOR;
 
 /**
@@ -308,6 +310,10 @@ final class Discovery implements Evenement\EventEmitterInterface
 					// TODO: Not supported now
 				} else {
 					if (property_exists($configuration, 'properties') && property_exists($configuration, 'length')) {
+						if (in_array($identifier, $device->getDenyFeatures(), true)) {
+							continue;
+						}
+
 						$count = intval($configuration->length);
 
 						if ($identifier === Types\ChannelGroup::SWITCHES) {
@@ -358,6 +364,16 @@ final class Discovery implements Evenement\EventEmitterInterface
 							}
 						}
 					} else {
+						if (
+							in_array($identifier, $device->getDenyFeatures(), true)
+							|| (
+								$identifier === Types\Parameter::STATUS_LED
+								&& in_array('sled', $device->getDenyFeatures(), true)
+							)
+						) {
+							continue;
+						}
+
 						$parameters[] = [
 							'group' => property_exists($configuration, 'group') ? $configuration->group : $identifier,
 							'identifier' => $identifier,
@@ -394,9 +410,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 		}
 	}
 
-	/**
-	 * @throws Exceptions\Runtime
-	 */
 	private function handleFoundDevices(): void
 	{
 		$this->discoveredDevices->rewind();
@@ -408,42 +421,54 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$localConfiguration = $this->foundLocalDevices[$device->getId()];
 			}
 
-			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\StoreDevice::class,
+			try {
+				$this->queue->append(
+					$this->entityHelper->create(
+						Entities\Messages\StoreDevice::class,
+						[
+							'connector' => $this->connector->getId(),
+							'id' => $device->getId(),
+							'apiKey' => $device->getApiKey(),
+							'deviceKey' => $device->getDeviceKey(),
+							'uiid' => $device->getUiid(),
+							'name' => $device->getName(),
+							'description' => $device->getDescription(),
+							'brandName' => $device->getBrandName(),
+							'brandLogo' => $device->getBrandLogo(),
+							'productModel' => $device->getProductModel(),
+							'model' => $device->getModel(),
+							'mac' => $device->getMac(),
+							'ipAddress' => $localConfiguration?->getIpAddress(),
+							'domain' => $localConfiguration?->getDomain(),
+							'port' => $localConfiguration?->getPort(),
+							'parameters' => array_map(
+							// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+								static fn (Entities\Clients\DiscoveredDeviceParameter $parameter): array => [
+									'group' => $parameter->getGroup(),
+									'identifier' => $parameter->getIdentifier(),
+									'name' => $parameter->getName(),
+									'type' => $parameter->getType(),
+									'dataType' => $parameter->getDataType(),
+									'format' => $parameter->getFormat(),
+									'settable' => $parameter->isSettable(),
+									'queryable' => $parameter->isQueryable(),
+								],
+								$device->getParameters(),
+							),
+						],
+					),
+				);
+			} catch (Exceptions\Runtime $ex) {
+				$this->logger->error(
+					'Found device could not be attached to processing queue',
 					[
-						'connector' => $this->connector->getId(),
-						'id' => $device->getId(),
-						'apiKey' => $device->getApiKey(),
-						'deviceKey' => $device->getDeviceKey(),
-						'uiid' => $device->getUiid(),
-						'name' => $device->getName(),
-						'description' => $device->getDescription(),
-						'brandName' => $device->getBrandName(),
-						'brandLogo' => $device->getBrandLogo(),
-						'productModel' => $device->getProductModel(),
-						'model' => $device->getModel(),
-						'mac' => $device->getMac(),
-						'ipAddress' => $localConfiguration?->getIpAddress(),
-						'domain' => $localConfiguration?->getDomain(),
-						'port' => $localConfiguration?->getPort(),
-						'parameters' => array_map(
-						// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-							static fn (Entities\Clients\DiscoveredDeviceParameter $parameter): array => [
-								'group' => $parameter->getGroup(),
-								'identifier' => $parameter->getIdentifier(),
-								'name' => $parameter->getName(),
-								'type' => Types\ParameterType::get($parameter->getType()),
-								'dataType' => $parameter->getDataType(),
-								'format' => $parameter->getFormat(),
-								'settable' => $parameter->isSettable(),
-								'queryable' => $parameter->isQueryable(),
-							],
-							$device->getParameters(),
-						),
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
+						'type' => 'discovery-client',
+						'exception' => BootstrapHelpers\Logger::buildException($ex),
+						'device' => $device->toArray(),
 					],
-				),
-			);
+				);
+			}
 		}
 	}
 
@@ -454,7 +479,10 @@ final class Discovery implements Evenement\EventEmitterInterface
 	{
 		try {
 			$mapping = Utils\FileSystem::read(
-				Sonoff\Constants::RESOURCES_FOLDER . DIRECTORY_SEPARATOR . 'uiid' . DIRECTORY_SEPARATOR . 'uiid' . $uiid . '_mapping.json',
+				Sonoff\Constants::RESOURCES_FOLDER . DIRECTORY_SEPARATOR . 'uiid' . DIRECTORY_SEPARATOR . sprintf(
+					'uiid%d_mapping.json',
+					$uiid,
+				),
 			);
 
 		} catch (Nette\IOException) {

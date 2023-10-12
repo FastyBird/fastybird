@@ -41,7 +41,7 @@ final class Home implements Entities\API\Entity
 		private readonly string $apiKey,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $name,
-		#[ObjectMapper\Rules\IntValue(unsigned: true)]
+		#[ObjectMapper\Rules\IntValue()]
 		private readonly int $index,
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(Room::class),

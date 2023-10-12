@@ -167,6 +167,7 @@ contributteTranslation:
         - %appDir%/src/FastyBird/Connector/HomeKit/src/Translations
         - %appDir%/src/FastyBird/Connector/NsPanel/src/Translations
         - %appDir%/src/FastyBird/Connector/Shelly/src/Translations
+        - %appDir%/src/FastyBird/Connector/Sonoff/src/Translations
         - %appDir%/src/FastyBird/Connector/Tuya/src/Translations
         - %appDir%/src/FastyBird/Connector/Viera/src/Translations
         # OTHER LIBRARIES

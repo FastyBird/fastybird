@@ -91,6 +91,8 @@ final class CloudApi implements Evenement\EventEmitterInterface
 
 	private const ADD_THIRD_PARTY_DEVICE_MESSAGE_SCHEMA_FILENAME = 'cloud_api_add_third_party_device.json';
 
+	private const API_ERROR = 'cloud_api_error.json';
+
 	private const ACCESS_TOKEN_VALID_TIME = 30 * 24 * 60 * 60;
 
 	private string|null $accessToken = null;
@@ -279,7 +281,7 @@ final class CloudApi implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : ($itemType is 3 ? Entities\API\Cloud\Device : Entities\API\Cloud\Group))
+	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : ($itemType is 3 ? Entities\API\Cloud\Group : Entities\API\Cloud\Device))
 	 *
 	 * @throws Exceptions\CloudApiCall
 	 */
@@ -804,15 +806,9 @@ final class CloudApi implements Evenement\EventEmitterInterface
 			assert($data instanceof Utils\ArrayHash);
 
 			if (in_array($item->offsetGet('itemType'), [1, 2], true)) {
-				$devices[] = $this->createEntity(
-					Entities\API\Cloud\Device::class,
-					$data,
-				);
+				$devices[] = $data;
 			} elseif ($item->offsetGet('itemType') === 3) {
-				$groups[] = $this->createEntity(
-					Entities\API\Cloud\Group::class,
-					$data,
-				);
+				$groups[] = $data;
 			}
 		}
 
@@ -1183,6 +1179,22 @@ final class CloudApi implements Evenement\EventEmitterInterface
 								],
 							]);
 
+							$error = $this->validateResponseBody($request, $response, self::API_ERROR, false);
+
+							if ($error !== false) {
+								$errorCode = $error->offsetGet('error');
+
+								if ($errorCode !== 0) {
+									$deferred->reject(new Exceptions\CloudApiCall(
+										sprintf('Calling api endpoint failed: %s', strval($error->offsetGet('msg'))),
+										$request,
+										$response,
+									));
+
+									return;
+								}
+							}
+
 							$deferred->resolve($response);
 						},
 						static function (Throwable $ex) use ($deferred, $request): void {
@@ -1211,6 +1223,20 @@ final class CloudApi implements Evenement\EventEmitterInterface
 
 			try {
 				$responseBody = $response->getBody()->getContents();
+
+				$error = $this->validateResponseBody($request, $response, self::API_ERROR, false);
+
+				if ($error !== false) {
+					$errorCode = $error->offsetGet('error');
+
+					if ($errorCode !== 0) {
+						throw new Exceptions\CloudApiCall(
+							sprintf('Calling api endpoint failed: %s', strval($error->offsetGet('msg'))),
+							$request,
+							$response,
+						);
+					}
+				}
 
 				$response->getBody()->rewind();
 			} catch (RuntimeException $ex) {

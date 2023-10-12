@@ -16,7 +16,9 @@
 namespace FastyBird\Connector\Sonoff\Entities\API\Cloud;
 
 use FastyBird\Connector\Sonoff\Entities;
+use Nette\Utils;
 use Orisai\ObjectMapper;
+use function array_map;
 
 /**
  * User home group entity
@@ -29,6 +31,9 @@ use Orisai\ObjectMapper;
 final class Group implements Entities\API\Entity
 {
 
+	/**
+	 * @param array<string> $denyFeatures
+	 */
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $id,
@@ -40,7 +45,11 @@ final class Group implements Entities\API\Entity
 			new ObjectMapper\Rules\ObjectValue(),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		private readonly Entities\Uuid\Entity|null $state = null,
+		private readonly Entities\Uiid\Entity|null $state = null,
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+		)]
+		private readonly array $denyFeatures = [],
 	)
 	{
 	}
@@ -60,9 +69,17 @@ final class Group implements Entities\API\Entity
 		return $this->mainDeviceId;
 	}
 
-	public function getState(): Entities\Uuid\Entity|null
+	public function getState(): Entities\Uiid\Entity|null
 	{
 		return $this->state;
+	}
+
+	/**
+	 * @return array<string>
+	 */
+	public function getDenyFeatures(): array
+	{
+		return array_map(static fn (string $item): string => Utils\Strings::lower($item), $this->denyFeatures);
 	}
 
 	/**
@@ -75,6 +92,7 @@ final class Group implements Entities\API\Entity
 			'name' => $this->getName(),
 			'main_device_id' => $this->getMainDeviceId(),
 			'state' => $this->getState()?->toArray(),
+			'deny_features' => $this->getDenyFeatures(),
 		];
 	}
 

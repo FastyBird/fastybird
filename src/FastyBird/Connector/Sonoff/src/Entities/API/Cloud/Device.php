@@ -16,7 +16,9 @@
 namespace FastyBird\Connector\Sonoff\Entities\API\Cloud;
 
 use FastyBird\Connector\Sonoff\Entities;
+use Nette\Utils;
 use Orisai\ObjectMapper;
+use function array_map;
 
 /**
  * User device entity
@@ -29,6 +31,9 @@ use Orisai\ObjectMapper;
 final class Device implements Entities\API\Entity
 {
 
+	/**
+	 * @param array<string> $denyFeatures
+	 */
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $name,
@@ -42,8 +47,11 @@ final class Device implements Entities\API\Entity
 		private readonly DeviceExtra $extra,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $brandName,
-		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $brandLogo,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		private readonly string|null $brandLogo,
 		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $showBrand,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
@@ -68,7 +76,11 @@ final class Device implements Entities\API\Entity
 			new ObjectMapper\Rules\ObjectValue(),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		private readonly Entities\Uuid\Entity|null $state = null,
+		private readonly Entities\Uiid\Entity|null $state = null,
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+		)]
+		private readonly array $denyFeatures = [],
 	)
 	{
 	}
@@ -98,7 +110,7 @@ final class Device implements Entities\API\Entity
 		return $this->brandName;
 	}
 
-	public function getBrandLogo(): string
+	public function getBrandLogo(): string|null
 	{
 		return $this->brandLogo;
 	}
@@ -133,9 +145,17 @@ final class Device implements Entities\API\Entity
 		return $this->settings;
 	}
 
-	public function getState(): Entities\Uuid\Entity|null
+	public function getState(): Entities\Uiid\Entity|null
 	{
 		return $this->state;
+	}
+
+	/**
+	 * @return array<string>
+	 */
+	public function getDenyFeatures(): array
+	{
+		return array_map(static fn (string $item): string => Utils\Strings::lower($item), $this->denyFeatures);
 	}
 
 	/**
@@ -156,6 +176,7 @@ final class Device implements Entities\API\Entity
 			'configuration' => $this->getConfiguration()?->toArray(),
 			'settings' => $this->getSettings()?->toArray(),
 			'state' => $this->getState()?->toArray(),
+			'deny_features' => $this->getDenyFeatures(),
 		];
 	}
 

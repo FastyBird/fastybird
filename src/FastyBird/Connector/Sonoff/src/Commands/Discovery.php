@@ -291,7 +291,6 @@ class Discovery extends Console\Command\Command
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -333,7 +332,7 @@ class Discovery extends Console\Command\Command
 					$foundDevices,
 					$device->getId()->toString(),
 					$device->getName() ?? $device->getIdentifier(),
-					$device->getUiid(),
+					$device->getModel(),
 					$device->getIpAddress() ?? 'N/A',
 				]);
 			}
