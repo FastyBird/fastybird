@@ -41,7 +41,7 @@ final class Entity
 {
 
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-	private const KNOW_UUID_TYPES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 14, 15, 16, 17, 18, 19, 22, 24, 25, 27, 28, 29, 30, 31, 32, 33, 34, 36, 44, 52, 57, 59, 77, 78, 81, 82, 83, 84, 102, 103, 104, 107];
+	private const KNOW_UUID_TYPES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 14, 15, 16, 17, 18, 19, 22, 24, 25, 27, 28, 29, 30, 31, 32, 33, 34, 36, 44, 52, 57, 59, 77, 78, 81, 82, 83, 84, 102, 103, 104, 107, 195, 1_770, 1_771];
 
 	public function __construct(
 		private readonly ObjectMapper\Processing\Processor $entityMapper,

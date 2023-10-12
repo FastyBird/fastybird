@@ -346,20 +346,23 @@ final class Discovery implements Evenement\EventEmitterInterface
 								assert($subConfiguration instanceof stdClass);
 
 								$parameters[] = [
-									'group' => (property_exists(
-										$subConfiguration,
-										'group',
-									) ? $subConfiguration->group : $subIdentifier) . '_' . $i,
+									'group' => (
+										property_exists($subConfiguration, 'group')
+											? $subConfiguration->group
+											: $subIdentifier
+										) . '_' . $i,
 									'identifier' => $subIdentifier,
 									'name' => $subConfiguration->name,
 									'type' => $subConfiguration->type,
 									'dataType' => $subConfiguration->data_type,
-									'format' => property_exists(
-										$subConfiguration,
-										'format',
-									) ? $subConfiguration->format : null,
+									'format' => property_exists($subConfiguration, 'format')
+										? $subConfiguration->format
+										: null,
 									'settable' => $subConfiguration->settable,
 									'queryable' => $subConfiguration->queryable,
+									'scale' => property_exists($subConfiguration, 'scale')
+										? $subConfiguration->scale
+										: null,
 								];
 							}
 						}
@@ -383,6 +386,9 @@ final class Discovery implements Evenement\EventEmitterInterface
 							'format' => property_exists($configuration, 'format') ? $configuration->format : null,
 							'settable' => $configuration->settable,
 							'queryable' => $configuration->queryable,
+							'scale' => property_exists($configuration, 'scale')
+								? $configuration->scale
+								: null,
 						];
 					}
 				}
@@ -452,6 +458,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 									'format' => $parameter->getFormat(),
 									'settable' => $parameter->isSettable(),
 									'queryable' => $parameter->isQueryable(),
+									'scale' => $parameter->getScale(),
 								],
 								$device->getParameters(),
 							),

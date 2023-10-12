@@ -74,6 +74,11 @@ final class DiscoveredDeviceParameter implements Entities\Messages\Entity
 		private readonly bool $settable,
 		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $queryable,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\IntValue(unsigned: true),
+			new ObjectMapper\Rules\NullValue(),
+		])]
+		private readonly int|null $scale,
 	)
 	{
 	}
@@ -121,6 +126,11 @@ final class DiscoveredDeviceParameter implements Entities\Messages\Entity
 		return $this->queryable;
 	}
 
+	public function getScale(): int|null
+	{
+		return $this->scale;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -135,6 +145,7 @@ final class DiscoveredDeviceParameter implements Entities\Messages\Entity
 			'format' => $this->getFormat(),
 			'settable' => $this->isSettable(),
 			'queryable' => $this->isQueryable(),
+			'scale' => $this->getScale(),
 		];
 	}
 

@@ -259,6 +259,7 @@ final class StoreDevice implements Consumer
 								'settable' => $parameter->isSettable(),
 								'queryable' => $parameter->isQueryable(),
 								'format' => $parameter->getFormat(),
+								'scale' => $parameter->getScale(),
 							]),
 						),
 					);
@@ -288,6 +289,7 @@ final class StoreDevice implements Consumer
 								'settable' => $parameter->isSettable(),
 								'queryable' => $parameter->isQueryable(),
 								'format' => $parameter->getFormat(),
+								'scale' => $parameter->getScale(),
 							]),
 						),
 					);
@@ -356,6 +358,7 @@ final class StoreDevice implements Consumer
 							'format' => $parameter->getFormat(),
 							'queryable' => $parameter->isQueryable(),
 							'settable' => $parameter->isSettable(),
+							'scale' => $parameter->getScale(),
 						]));
 
 						$this->logger->debug(
@@ -382,6 +385,7 @@ final class StoreDevice implements Consumer
 							'format' => $parameter->getFormat(),
 							'queryable' => $parameter->isQueryable(),
 							'settable' => $parameter->isSettable(),
+							'scale' => $parameter->getScale(),
 						]));
 
 						$this->logger->debug(
