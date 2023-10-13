@@ -51,6 +51,7 @@ use function http_build_query;
 use function implode;
 use function intval;
 use function is_array;
+use function is_numeric;
 use function is_string;
 use function preg_match;
 use function random_bytes;
