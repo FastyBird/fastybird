@@ -46,6 +46,10 @@ final class UuidRule implements ObjectMapper\Rules\Rule
 		ObjectMapper\Context\FieldContext $context,
 	): Uuid\UuidInterface
 	{
+		if ($value instanceof Uuid\UuidInterface) {
+			return $value;
+		}
+
 		if (!is_string($value) || !Uuid\Uuid::isValid($value)) {
 			throw ObjectMapper\Exception\ValueDoesNotMatch::create(
 				$this->createType($args, $context),

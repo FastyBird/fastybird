@@ -65,7 +65,6 @@ class DevicesExtension extends DI\CompilerExtension
 		string $extensionName = self::NAME,
 	): void
 	{
-		// @phpstan-ignore-next-line
 		$config->onCompile[] = static function (
 			BootstrapBoot\Configurator $config,
 			DI\Compiler $compiler,
