@@ -499,6 +499,7 @@ final class LanApi
 		$body = $this->validateResponseBody($request, $response, self::GET_DEVICE_INFO_MESSAGE_SCHEMA_FILENAME);
 
 		$error = $body->offsetGet('error');
+		assert(is_numeric($error));
 
 		$data = $body->offsetGet('data');
 		assert($data instanceof Utils\ArrayHash);
@@ -526,6 +527,7 @@ final class LanApi
 		$body = $this->validateResponseBody($request, $response, self::SET_DEVICE_STATE_MESSAGE_SCHEMA_FILENAME);
 
 		$error = $body->offsetGet('error');
+		assert(is_numeric($error));
 
 		$data = $body->offsetGet('data');
 		assert($data instanceof Utils\ArrayHash);
