@@ -23,6 +23,7 @@ use Nette;
 use Nette\DI;
 use function assert;
 use function is_bool;
+use function is_string;
 
 /**
  * Exchange plugin extension container
@@ -36,6 +37,8 @@ class ExchangeExtension extends DI\CompilerExtension
 {
 
 	public const CONSUMER_STATE = 'consumer_state';
+
+	public const CONSUMER_ROUTING_KEY = 'consumer_routing_key';
 
 	public static function register(
 		BootstrapBoot\Configurator $config,
@@ -97,10 +100,14 @@ class ExchangeExtension extends DI\CompilerExtension
 					$consumerService->setAutowired(false);
 
 					$consumerStatus = $consumerService->getTag(self::CONSUMER_STATE);
+					assert(is_bool($consumerStatus) || $consumerStatus === null);
+					$consumerRoutingKey = $consumerService->getTag(self::CONSUMER_ROUTING_KEY);
+					assert(is_string($consumerRoutingKey) || $consumerRoutingKey === null);
 
-					$consumerProxyService->addSetup('?->register(?, ?)', [
+					$consumerProxyService->addSetup('?->register(?, ?, ?)', [
 						'@self',
 						$consumerService,
+						$consumerRoutingKey ?? null,
 						$consumerStatus ?? true,
 					]);
 				}
