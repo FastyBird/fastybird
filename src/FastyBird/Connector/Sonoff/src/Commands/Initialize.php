@@ -18,7 +18,6 @@ namespace FastyBird\Connector\Sonoff\Commands;
 use Doctrine\DBAL;
 use Doctrine\Persistence;
 use FastyBird\Connector\Sonoff;
-use FastyBird\Connector\Sonoff\API;
 use FastyBird\Connector\Sonoff\Entities;
 use FastyBird\Connector\Sonoff\Exceptions;
 use FastyBird\Connector\Sonoff\Helpers;
@@ -61,7 +60,6 @@ class Initialize extends Console\Command\Command
 	public const NAME = 'fb:sonoff-connector:initialize';
 
 	public function __construct(
-		private readonly API\ConnectionManager $connectionManager,
 		private readonly Sonoff\Logger $logger,
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Connectors\ConnectorsManager $connectorsManager,
@@ -188,15 +186,6 @@ class Initialize extends Console\Command\Command
 
 		$dataCentre = $this->askCloudApiEndpoint($io);
 
-		$registerGateway = false;
-
-		if (
-			$mode->equalsValue(Types\ClientMode::AUTO)
-			|| $mode->equalsValue(Types\ClientMode::CLOUD)
-		) {
-			$registerGateway = $this->askRegisterGateway($io);
-		}
-
 		try {
 			// Start transaction connection to the database
 			$this->getOrmConnection()->beginTransaction();
@@ -250,30 +239,6 @@ class Initialize extends Console\Command\Command
 				],
 				'connector' => $connector,
 			]));
-
-			if ($registerGateway) {
-				$gatewaySettings = $this->connectionManager
-					->getCloudApiConnection($connector)
-					->addThirdPartyDevice($connector->getId()->toString(), false);
-
-				$this->propertiesManager->create(Utils\ArrayHash::from([
-					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::GATEWAY_API_KEY,
-					'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::GATEWAY_API_KEY),
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-					'value' => $gatewaySettings->getApiKey(),
-					'connector' => $connector,
-				]));
-
-				$this->propertiesManager->create(Utils\ArrayHash::from([
-					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::GATEWAY_ID,
-					'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::GATEWAY_ID),
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-					'value' => $gatewaySettings->getDeviceId(),
-					'connector' => $connector,
-				]));
-			}
 
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
@@ -426,26 +391,6 @@ class Initialize extends Console\Command\Command
 			$password = $this->askPassword($io);
 		}
 
-		$registerGateway = false;
-
-		if (
-			$connector->getGatewayId() === null &&
-			(
-				$mode !== null &&
-				(
-					$mode->equalsValue(Types\ClientMode::AUTO)
-					|| $mode->equalsValue(Types\ClientMode::CLOUD)
-				)
-				|| $modeProperty !== null &&
-				(
-					$modeProperty->getValue() === Types\ClientMode::AUTO
-					|| $modeProperty->getValue() === Types\ClientMode::CLOUD
-				)
-			)
-		) {
-			$registerGateway = $this->askRegisterGateway($io, $connector);
-		}
-
 		try {
 			// Start transaction connection to the database
 			$this->getOrmConnection()->beginTransaction();
@@ -512,56 +457,6 @@ class Initialize extends Console\Command\Command
 				$this->propertiesManager->update($passwordProperty, Utils\ArrayHash::from([
 					'value' => $password,
 				]));
-			}
-
-			if ($registerGateway) {
-				$gatewaySettings = $this->connectionManager
-					->getCloudApiConnection($connector)
-					->addThirdPartyDevice($connector->getId()->toString(), false);
-
-				$findConnectorPropertyQuery = new DevicesQueries\FindConnectorProperties();
-				$findConnectorPropertyQuery->forConnector($connector);
-				$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::GATEWAY_API_KEY);
-
-				$gatewayApiKeyProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
-
-				if ($gatewayApiKeyProperty === null) {
-					$this->propertiesManager->create(Utils\ArrayHash::from([
-						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-						'identifier' => Types\ConnectorPropertyIdentifier::GATEWAY_API_KEY,
-						'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::GATEWAY_API_KEY),
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-						'value' => $gatewaySettings->getApiKey(),
-						'connector' => $connector,
-					]));
-
-				} else {
-					$this->propertiesManager->update($gatewayApiKeyProperty, Utils\ArrayHash::from([
-						'value' => $gatewaySettings->getApiKey(),
-					]));
-				}
-
-				$findConnectorPropertyQuery = new DevicesQueries\FindConnectorProperties();
-				$findConnectorPropertyQuery->forConnector($connector);
-				$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::GATEWAY_ID);
-
-				$gatewayDeviceIdProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
-
-				if ($gatewayDeviceIdProperty === null) {
-					$this->propertiesManager->create(Utils\ArrayHash::from([
-						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-						'identifier' => Types\ConnectorPropertyIdentifier::GATEWAY_ID,
-						'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::GATEWAY_ID),
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-						'value' => $gatewaySettings->getDeviceId(),
-						'connector' => $connector,
-					]));
-
-				} else {
-					$this->propertiesManager->update($gatewayDeviceIdProperty, Utils\ArrayHash::from([
-						'value' => $gatewaySettings->getDeviceId(),
-					]));
-				}
 			}
 
 			// Commit all changes into database
@@ -890,21 +785,6 @@ class Initialize extends Console\Command\Command
 		assert($answer instanceof Types\CloudApiEndpoint);
 
 		return $answer;
-	}
-
-	/**
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 */
-	private function askRegisterGateway(Style\SymfonyStyle $io, Entities\SonoffConnector|null $connector = null): bool
-	{
-		$question = new Console\Question\ConfirmationQuestion(
-			$this->translator->translate('//sonoff-connector.cmd.initialize.questions.enableGateway'),
-			$connector?->getGatewayId() !== null,
-		);
-
-		return (bool) $io->askQuestion($question);
 	}
 
 	/**

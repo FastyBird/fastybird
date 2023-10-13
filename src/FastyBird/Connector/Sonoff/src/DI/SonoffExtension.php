@@ -156,6 +156,14 @@ class SonoffExtension extends DI\CompilerExtension
 				'logger' => $logger,
 			]);
 
+		$builder->addFactoryDefinition($this->prefix('clients.gateway'))
+			->setImplement(Clients\GatewayFactory::class)
+			->getResultDefinition()
+			->setType(Clients\Gateway::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
+
 		/**
 		 * API
 		 */

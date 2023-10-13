@@ -38,6 +38,8 @@ class ClientMode extends Consistence\Enum\Enum
 
 	public const AUTO = 'auto';
 
+	public const GATEWAY = 'gateway';
+
 	public function getValue(): string
 	{
 		return strval(parent::getValue());

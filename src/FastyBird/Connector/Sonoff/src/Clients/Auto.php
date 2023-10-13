@@ -122,6 +122,7 @@ final class Auto extends ClientProcess implements Client
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\CloudApiCall
+	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\LanApiCall
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument

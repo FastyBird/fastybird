@@ -123,11 +123,16 @@ class SonoffConnector extends DevicesEntities\Connectors\Connector
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function getAppId(): string
 	{
+		if ($this->getClientMode()->equalsValue(Types\ClientMode::GATEWAY)) {
+			return Sonoff\Constants::COOLKIT_APP_ID;
+		}
+
 		$property = $this->properties
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
@@ -147,11 +152,16 @@ class SonoffConnector extends DevicesEntities\Connectors\Connector
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function getAppSecret(): string
 	{
+		if ($this->getClientMode()->equalsValue(Types\ClientMode::GATEWAY)) {
+			return Sonoff\Constants::COOLKIT_APP_SECRET;
+		}
+
 		$property = $this->properties
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
