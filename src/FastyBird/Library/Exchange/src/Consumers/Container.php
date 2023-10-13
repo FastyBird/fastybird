@@ -16,6 +16,7 @@
 namespace FastyBird\Library\Exchange\Consumers;
 
 use FastyBird\Library\Exchange\Events;
+use FastyBird\Library\Exchange\Exceptions;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Psr\EventDispatcher as PsrEventDispatcher;
@@ -32,7 +33,7 @@ use SplObjectStorage;
 class Container implements Consumer
 {
 
-	/** @var SplObjectStorage<Consumer, bool> */
+	/** @var SplObjectStorage<Consumer, Info> */
 	private SplObjectStorage $consumers;
 
 	public function __construct(
@@ -54,9 +55,15 @@ class Container implements Consumer
 
 		while ($this->consumers->valid()) {
 			$consumer = $this->consumers->current();
-			$status = $this->consumers->getInfo();
+			$info = $this->consumers->getInfo();
 
-			if ($status) {
+			if (
+				$info->isEnabled()
+				&& (
+					$info->getRoutingKey() === null
+					|| $info->getRoutingKey()->equals($routingKey)
+				)
+			) {
 				$consumer->consume($source, $routingKey, $entity);
 			}
 
@@ -66,10 +73,17 @@ class Container implements Consumer
 		$this->dispatcher?->dispatch(new Events\AfterMessageConsumed($source, $routingKey, $entity));
 	}
 
-	public function register(Consumer $consumer, bool $status = true): void
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 */
+	public function register(Consumer $consumer, string|null $routingKey, bool $status = true): void
 	{
+		if ($routingKey !== null && !MetadataTypes\RoutingKey::isValidValue($routingKey)) {
+			throw new Exceptions\InvalidArgument('Provided routing key is not valid');
+		}
+
 		if (!$this->consumers->contains($consumer)) {
-			$this->consumers->attach($consumer, $status);
+			$this->consumers->attach($consumer, new Info(MetadataTypes\RoutingKey::get($routingKey), $status));
 		}
 	}
 
@@ -82,12 +96,12 @@ class Container implements Consumer
 
 		while ($this->consumers->valid()) {
 			$consumer = $this->consumers->current();
-			$status = $this->consumers->getInfo();
+			$info = $this->consumers->getInfo();
 
 			if ($consumer::class === $name) {
-				if (!$status) {
+				if (!$info->isEnabled()) {
 					$this->consumers->detach($consumer);
-					$this->consumers->attach($consumer, true);
+					$this->consumers->attach($consumer, new Info($info->getRoutingKey(), true));
 				}
 
 				return;
@@ -106,12 +120,12 @@ class Container implements Consumer
 
 		while ($this->consumers->valid()) {
 			$consumer = $this->consumers->current();
-			$status = $this->consumers->getInfo();
+			$info = $this->consumers->getInfo();
 
 			if ($consumer::class === $name) {
-				if ($status) {
+				if ($info->isEnabled()) {
 					$this->consumers->detach($consumer);
-					$this->consumers->attach($consumer, false);
+					$this->consumers->attach($consumer, new Info($info->getRoutingKey(), false));
 				}
 
 				return;
