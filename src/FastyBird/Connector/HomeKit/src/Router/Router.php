@@ -37,33 +37,28 @@ class Router extends Routing\Router
 	{
 		parent::__construct();
 
+		// Pairing process requests
+		$this->post('/pair-setup', [$pairingController, 'setup']);
+		$this->post('/pair-verify', [$pairingController, 'verify']);
+		$this->post('/pairings', [$pairingController, 'pairings']);
+
 		$this->group(
-			'/homekit-connector',
-			static function (Routing\RouteCollector $group) use ($pairingController, $accessoriesController, $characteristicsController): void {
-				// Pairing process requests
-				$group->post('/pair-setup', [$pairingController, 'setup']);
-				$group->post('/pair-verify', [$pairingController, 'verify']);
-				$group->post('/pairings', [$pairingController, 'pairings']);
-
-				$group->group(
-					'/accessories',
-					static function (Routing\RouteCollector $group) use ($accessoriesController): void {
-						$group->get('', [$accessoriesController, 'index']);
-					},
-				);
-				$group->post('/resource', [$accessoriesController, 'resource']);
-				$group->post('/identify', [$accessoriesController, 'identify']);
-
-				$group->group(
-					'/characteristics',
-					static function (Routing\RouteCollector $group) use ($characteristicsController): void {
-						$group->get('', [$characteristicsController, 'index']);
-						$group->put('', [$characteristicsController, 'update']);
-					},
-				);
-				$group->put('/prepare', [$characteristicsController, 'prepare']);
+			'/accessories',
+			static function (Routing\RouteCollector $group) use ($accessoriesController): void {
+				$group->get('', [$accessoriesController, 'index']);
 			},
 		);
+		$this->post('/resource', [$accessoriesController, 'resource']);
+		$this->post('/identify', [$accessoriesController, 'identify']);
+
+		$this->group(
+			'/characteristics',
+			static function (Routing\RouteCollector $group) use ($characteristicsController): void {
+				$group->get('', [$characteristicsController, 'index']);
+				$group->put('', [$characteristicsController, 'update']);
+			},
+		);
+		$this->put('/prepare', [$characteristicsController, 'prepare']);
 	}
 
 }
