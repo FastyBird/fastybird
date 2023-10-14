@@ -83,7 +83,10 @@ class Container implements Consumer
 		}
 
 		if (!$this->consumers->contains($consumer)) {
-			$this->consumers->attach($consumer, new Info(MetadataTypes\RoutingKey::get($routingKey), $status));
+			$this->consumers->attach(
+				$consumer,
+				new Info($routingKey !== null ? MetadataTypes\RoutingKey::get($routingKey) : null, $status),
+			);
 		}
 	}
 
