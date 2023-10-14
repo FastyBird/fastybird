@@ -29,7 +29,6 @@ use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use Nette;
 use Nette\Utils;
-use Psr\Log;
 use React\Datagram;
 use React\Dns;
 use React\EventLoop;
@@ -93,8 +92,8 @@ final class Mdns implements Server
 	public function __construct(
 		private readonly HomeKit\Entities\HomeKitConnector $connector,
 		private readonly EventLoop\LoopInterface $eventLoop,
+		private readonly HomeKit\Logger $logger,
 		private readonly DevicesModels\Connectors\Properties\PropertiesManager $connectorsPropertiesManager,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
 		$this->parser = new Dns\Protocol\Parser();

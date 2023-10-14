@@ -246,10 +246,7 @@ final class PairingController extends BaseController
 
 			$tlvEntry = array_pop($tlv);
 
-			$requestedState = array_key_exists(
-				Types\TlvCode::STATE,
-				$tlvEntry,
-			)
+			$requestedState = array_key_exists(Types\TlvCode::STATE, $tlvEntry)
 				? $tlvEntry[Types\TlvCode::STATE]
 				: null;
 
@@ -371,10 +368,7 @@ final class PairingController extends BaseController
 
 			$tlvEntry = array_pop($tlv);
 
-			$requestedState = array_key_exists(
-				Types\TlvCode::STATE,
-				$tlvEntry,
-			)
+			$requestedState = array_key_exists(Types\TlvCode::STATE, $tlvEntry)
 				? $tlvEntry[Types\TlvCode::STATE]
 				: null;
 
@@ -463,10 +457,7 @@ final class PairingController extends BaseController
 
 			$tlvEntry = array_pop($tlv);
 
-			$requestedState = array_key_exists(
-				Types\TlvCode::STATE,
-				$tlvEntry,
-			)
+			$requestedState = array_key_exists(Types\TlvCode::STATE, $tlvEntry)
 				? $tlvEntry[Types\TlvCode::STATE]
 				: null;
 			$method = array_key_exists(Types\TlvCode::METHOD, $tlvEntry)

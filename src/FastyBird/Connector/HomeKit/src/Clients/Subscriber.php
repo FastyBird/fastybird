@@ -15,12 +15,12 @@
 
 namespace FastyBird\Connector\HomeKit\Clients;
 
+use FastyBird\Connector\HomeKit;
 use FastyBird\Connector\HomeKit\Servers;
 use FastyBird\Connector\HomeKit\Types;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette;
 use Nette\Utils;
-use Psr\Log;
 use React\EventLoop;
 use React\Socket;
 use SplObjectStorage;
@@ -56,8 +56,8 @@ final class Subscriber
 	private array $subscriptions;
 
 	public function __construct(
+		private readonly HomeKit\Logger $logger,
 		private readonly EventLoop\LoopInterface $eventLoop,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
 		$this->connections = new SplObjectStorage();

@@ -16,12 +16,12 @@
 namespace FastyBird\Connector\HomeKit\Writers;
 
 use Exception;
+use FastyBird\Connector\HomeKit;
 use FastyBird\Connector\HomeKit\Clients;
 use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Protocol;
 use FastyBird\Connector\HomeKit\Queries;
-use FastyBird\Connector\HomeKit\Servers;
 use FastyBird\Connector\HomeKit\Types;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
@@ -29,12 +29,12 @@ use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
+use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
-use Psr\Log;
-use function array_key_exists;
+use Psr\EventDispatcher as PsrEventDispatcher;
 use function intval;
 
 /**
@@ -52,35 +52,28 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 
 	public const NAME = 'exchange';
 
-	/** @var array<string, array<Servers\Server>> */
-	private array $servers = [];
-
 	public function __construct(
+		private readonly Entities\HomeKitConnector $connector,
 		private readonly Protocol\Driver $accessoryDriver,
 		private readonly Clients\Subscriber $subscriber,
+		private readonly HomeKit\Logger $logger,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly ExchangeConsumers\Container $consumer,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
+		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
 	}
 
-	public function connect(Entities\HomeKitConnector $connector, array $servers): void
+	public function connect(): void
 	{
-		$this->servers[$connector->getId()->toString()] = $servers;
-
 		$this->consumer->enable(self::class);
 	}
 
-	public function disconnect(Entities\HomeKitConnector $connector, array $servers): void
+	public function disconnect(): void
 	{
-		unset($this->servers[$connector->getId()->toString()]);
-
-		if ($this->servers === []) {
-			$this->consumer->disable(self::class);
-		}
+		$this->consumer->disable(self::class);
 	}
 
 	/**
@@ -131,7 +124,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 					return;
 				}
 
-				if (!array_key_exists($device->getConnector()->getId()->toString(), $this->servers)) {
+				if (!$device->getConnector()->getId()->equals($this->connector->getId())) {
 					return;
 				}
 
@@ -160,7 +153,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 					return;
 				}
 
-				if (!array_key_exists($channel->getDevice()->getConnector()->getId()->toString(), $this->servers)) {
+				if (!$channel->getDevice()->getConnector()->getId()->equals($this->connector->getId())) {
 					return;
 				}
 
@@ -187,7 +180,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 
 			$this->processProperty($entity, $accessory);
 		} elseif ($entity instanceof MetadataEntities\DevicesModule\ConnectorVariableProperty) {
-			if (!array_key_exists($entity->getConnector()->toString(), $this->servers)) {
+			if (!$entity->getConnector()->equals($this->connector->getId())) {
 				return;
 			}
 
@@ -195,19 +188,21 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 				$entity->getIdentifier() === Types\ConnectorPropertyIdentifier::PAIRED
 				|| $entity->getIdentifier() === Types\ConnectorPropertyIdentifier::CONFIG_VERSION
 			) {
-				foreach ($this->servers[$entity->getConnector()->toString()] as $server) {
-					if ($server instanceof Servers\Mdns) {
-						$server->refresh($entity);
-					}
-				}
+				$this->dispatcher?->dispatch(
+					new DevicesEvents\TerminateConnector(
+						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT),
+						'Connector configuration changed, services have to restarted',
+					),
+				);
 			}
 
 			if ($entity->getIdentifier() === Types\ConnectorPropertyIdentifier::SHARED_KEY) {
-				foreach ($this->servers[$entity->getConnector()->toString()] as $server) {
-					if ($server instanceof Servers\Http) {
-						$server->setSharedKey($entity);
-					}
-				}
+				$this->dispatcher?->dispatch(
+					new DevicesEvents\TerminateConnector(
+						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT),
+						'Connector shared key changed, services have to restarted',
+					),
+				);
 			}
 		}
 	}
