@@ -416,7 +416,7 @@ final class Mdns implements Server
 				'priority' => '0',
 				'weight' => '0',
 				'port' => (string) $this->connector->getPort(),
-				'target' => $hostName . '-' . $shortMacAddress . '.local',
+				'target' => $hostName . '-' . $shortMacAddress . '.local/homekit-connector',
 			],
 		);
 
