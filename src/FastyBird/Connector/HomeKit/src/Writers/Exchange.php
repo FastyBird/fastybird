@@ -20,6 +20,7 @@ use FastyBird\Connector\HomeKit\Clients;
 use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Protocol;
+use FastyBird\Connector\HomeKit\Queries;
 use FastyBird\Connector\HomeKit\Servers;
 use FastyBird\Connector\HomeKit\Types;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
@@ -68,14 +69,14 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 
 	public function connect(Entities\HomeKitConnector $connector, array $servers): void
 	{
-		$this->servers[$connector->getPlainId()] = $servers;
+		$this->servers[$connector->getId()->toString()] = $servers;
 
 		$this->consumer->enable(self::class);
 	}
 
 	public function disconnect(Entities\HomeKitConnector $connector, array $servers): void
 	{
-		unset($this->servers[$connector->getPlainId()]);
+		unset($this->servers[$connector->getId()->toString()]);
 
 		if ($this->servers === []) {
 			$this->consumer->disable(self::class);
@@ -107,7 +108,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 				$entity instanceof MetadataEntities\DevicesModule\DeviceMappedProperty
 				|| $entity instanceof MetadataEntities\DevicesModule\DeviceVariableProperty
 			) {
-				$findDeviceQuery = new DevicesQueries\FindDevices();
+				$findDeviceQuery = new Queries\FindDevices();
 				$findDeviceQuery->byId($entity->getDevice());
 
 				$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\HomeKitDevice::class);
@@ -130,13 +131,13 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 					return;
 				}
 
-				if (!array_key_exists($device->getConnector()->getPlainId(), $this->servers)) {
+				if (!array_key_exists($device->getConnector()->getId()->toString(), $this->servers)) {
 					return;
 				}
 
 				$accessory = $this->accessoryDriver->findAccessory($entity->getDevice());
 			} else {
-				$findChannelQuery = new DevicesQueries\FindChannels();
+				$findChannelQuery = new Queries\FindChannels();
 				$findChannelQuery->byId($entity->getChannel());
 
 				$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\HomeKitChannel::class);
@@ -159,7 +160,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 					return;
 				}
 
-				if (!array_key_exists($channel->getDevice()->getConnector()->getPlainId(), $this->servers)) {
+				if (!array_key_exists($channel->getDevice()->getConnector()->getId()->toString(), $this->servers)) {
 					return;
 				}
 
@@ -191,8 +192,8 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 			}
 
 			if (
-				$entity->getIdentifier() === Types\ConnectorPropertyIdentifier::IDENTIFIER_PAIRED
-				|| $entity->getIdentifier() === Types\ConnectorPropertyIdentifier::IDENTIFIER_CONFIG_VERSION
+				$entity->getIdentifier() === Types\ConnectorPropertyIdentifier::PAIRED
+				|| $entity->getIdentifier() === Types\ConnectorPropertyIdentifier::CONFIG_VERSION
 			) {
 				foreach ($this->servers[$entity->getConnector()->toString()] as $server) {
 					if ($server instanceof Servers\Mdns) {
@@ -201,7 +202,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 				}
 			}
 
-			if ($entity->getIdentifier() === Types\ConnectorPropertyIdentifier::IDENTIFIER_SHARED_KEY) {
+			if ($entity->getIdentifier() === Types\ConnectorPropertyIdentifier::SHARED_KEY) {
 				foreach ($this->servers[$entity->getConnector()->toString()] as $server) {
 					if ($server instanceof Servers\Http) {
 						$server->setSharedKey($entity);
@@ -257,16 +258,16 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 									'type' => 'event-writer',
 									'exception' => BootstrapHelpers\Logger::buildException($ex),
 									'connector' => [
-										'id' => $accessory->getDevice()->getConnector()->getPlainId(),
+										'id' => $accessory->getDevice()->getConnector()->getId()->toString(),
 									],
 									'device' => [
-										'id' => $accessory->getDevice()->getPlainId(),
+										'id' => $accessory->getDevice()->getId()->toString(),
 									],
 									'channel' => [
-										'id' => $service->getChannel()?->getPlainId(),
+										'id' => $service->getChannel()?->getId()->toString(),
 									],
 									'property' => [
-										'id' => $characteristic->getProperty()->getPlainId(),
+										'id' => $characteristic->getProperty()->getId()->toString(),
 									],
 									'hap' => $accessory->toHap(),
 								],
@@ -323,16 +324,16 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 							'type' => 'exchange-writer',
 							'connector' => [
-								'id' => $accessory->getDevice()->getConnector()->getPlainId(),
+								'id' => $accessory->getDevice()->getConnector()->getId()->toString(),
 							],
 							'device' => [
-								'id' => $accessory->getDevice()->getPlainId(),
+								'id' => $accessory->getDevice()->getId()->toString(),
 							],
 							'channel' => [
-								'id' => $service->getChannel()?->getPlainId(),
+								'id' => $service->getChannel()?->getId()->toString(),
 							],
 							'property' => [
-								'id' => $characteristic->getProperty()?->getPlainId(),
+								'id' => $characteristic->getProperty()?->getId()->toString(),
 							],
 							'hap' => $accessory->toHap(),
 						],

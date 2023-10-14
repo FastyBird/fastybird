@@ -247,11 +247,11 @@ final class Subscriber
 
 		try {
 			$content = Utils\Json::encode([
-				Types\Representation::REPR_CHARS => [
+				Types\Representation::CHARS => [
 					[
-						Types\Representation::REPR_AID => $aid,
-						Types\Representation::REPR_IID => $iid,
-						Types\Representation::REPR_VALUE => $value,
+						Types\Representation::AID => $aid,
+						Types\Representation::IID => $iid,
+						Types\Representation::VALUE => $value,
 					],
 				],
 			]);

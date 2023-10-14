@@ -221,7 +221,7 @@ final class SecureConnection extends Evenement\EventEmitter implements Socket\Co
 					'type' => 'secure-connection',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'connector' => [
-						'id' => $this->connector->getPlainId(),
+						'id' => $this->connector->getId()->toString(),
 					],
 				],
 			);
@@ -272,7 +272,7 @@ final class SecureConnection extends Evenement\EventEmitter implements Socket\Co
 					'type' => 'secure-connection',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'connector' => [
-						'id' => $this->connector->getPlainId(),
+						'id' => $this->connector->getId()->toString(),
 					],
 				],
 			);

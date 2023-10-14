@@ -86,7 +86,7 @@ final class Router
 
 			$response = $response->withHeader('Content-Type', Servers\Http::JSON_CONTENT_TYPE);
 			$response = $response->withBody(SlimRouter\Http\Stream::fromBodyString(Utils\Json::encode([
-				Types\Representation::REPR_STATUS => $ex->getError()->getValue(),
+				Types\Representation::STATUS => $ex->getError()->getValue(),
 			])));
 		} catch (SlimRouterExceptions\HttpException $ex) {
 			$this->logger->warning(
@@ -106,7 +106,7 @@ final class Router
 
 			$response = $response->withHeader('Content-Type', Servers\Http::JSON_CONTENT_TYPE);
 			$response = $response->withBody(SlimRouter\Http\Stream::fromBodyString(Utils\Json::encode([
-				Types\Representation::REPR_STATUS => Types\ServerStatus::STATUS_SERVICE_COMMUNICATION_FAILURE,
+				Types\Representation::STATUS => Types\ServerStatus::SERVICE_COMMUNICATION_FAILURE,
 			])));
 		} catch (Throwable $ex) {
 			$this->logger->error(
@@ -122,7 +122,7 @@ final class Router
 
 			$response = $response->withHeader('Content-Type', Servers\Http::JSON_CONTENT_TYPE);
 			$response = $response->withBody(SlimRouter\Http\Stream::fromBodyString(Utils\Json::encode([
-				Types\Representation::REPR_STATUS => Types\ServerStatus::STATUS_SERVICE_COMMUNICATION_FAILURE,
+				Types\Representation::STATUS => Types\ServerStatus::SERVICE_COMMUNICATION_FAILURE,
 			])));
 		}
 

@@ -72,12 +72,12 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 
 	public function connect(Entities\HomeKitConnector $connector, array $servers): void
 	{
-		$this->connectors[$connector->getPlainId()] = $connector;
+		$this->connectors[$connector->getId()->toString()] = $connector;
 	}
 
 	public function disconnect(Entities\HomeKitConnector $connector, array $servers): void
 	{
-		unset($this->connectors[$connector->getPlainId()]);
+		unset($this->connectors[$connector->getId()->toString()]);
 	}
 
 	/**
@@ -105,7 +105,7 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 
 		if (
 			!array_key_exists(
-				$property->getChannel()->getDevice()->getConnector()->getPlainId(),
+				$property->getChannel()->getDevice()->getConnector()->getId()->toString(),
 				$this->connectors,
 			)
 		) {
@@ -165,16 +165,16 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 								'type' => 'event-writer',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'connector' => [
-									'id' => $accessory->getDevice()->getConnector()->getPlainId(),
+									'id' => $accessory->getDevice()->getConnector()->getId()->toString(),
 								],
 								'device' => [
-									'id' => $accessory->getDevice()->getPlainId(),
+									'id' => $accessory->getDevice()->getId()->toString(),
 								],
 								'channel' => [
-									'id' => $service->getChannel()?->getPlainId(),
+									'id' => $service->getChannel()?->getId()->toString(),
 								],
 								'property' => [
-									'id' => $characteristic->getProperty()->getPlainId(),
+									'id' => $characteristic->getProperty()->getId()->toString(),
 								],
 								'hap' => $accessory->toHap(),
 							],
@@ -225,16 +225,16 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 							'type' => 'event-writer',
 							'connector' => [
-								'id' => $accessory->getDevice()->getConnector()->getPlainId(),
+								'id' => $accessory->getDevice()->getConnector()->getId()->toString(),
 							],
 							'device' => [
-								'id' => $accessory->getDevice()->getPlainId(),
+								'id' => $accessory->getDevice()->getId()->toString(),
 							],
 							'channel' => [
-								'id' => $service->getChannel()?->getPlainId(),
+								'id' => $service->getChannel()?->getId()->toString(),
 							],
 							'property' => [
-								'id' => $characteristic->getProperty()?->getPlainId(),
+								'id' => $characteristic->getProperty()?->getId()->toString(),
 							],
 							'hap' => $accessory->toHap(),
 						],

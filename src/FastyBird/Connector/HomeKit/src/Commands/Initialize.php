@@ -20,6 +20,7 @@ use Doctrine\Persistence;
 use FastyBird\Connector\HomeKit;
 use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Exceptions;
+use FastyBird\Connector\HomeKit\Queries;
 use FastyBird\Connector\HomeKit\Types;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -155,7 +156,7 @@ class Initialize extends Console\Command\Command
 
 		$question->setValidator(function ($answer) {
 			if ($answer !== null) {
-				$findConnectorQuery = new DevicesQueries\FindConnectors();
+				$findConnectorQuery = new Queries\FindConnectors();
 				$findConnectorQuery->byIdentifier($answer);
 
 				if ($this->connectorsRepository->findOneBy(
@@ -179,7 +180,7 @@ class Initialize extends Console\Command\Command
 			for ($i = 1; $i <= 100; $i++) {
 				$identifier = sprintf($identifierPattern, $i);
 
-				$findConnectorQuery = new DevicesQueries\FindConnectors();
+				$findConnectorQuery = new Queries\FindConnectors();
 				$findConnectorQuery->byIdentifier($identifier);
 
 				if ($this->connectorsRepository->findOneBy(
@@ -213,7 +214,7 @@ class Initialize extends Console\Command\Command
 
 			$this->propertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-				'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_PORT,
+				'identifier' => Types\ConnectorPropertyIdentifier::PORT,
 				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
 				'value' => $port,
 				'connector' => $connector,
@@ -304,7 +305,7 @@ class Initialize extends Console\Command\Command
 
 		$findConnectorPropertyQuery = new DevicesQueries\FindConnectorProperties();
 		$findConnectorPropertyQuery->forConnector($connector);
-		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_PORT);
+		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::PORT);
 
 		$portProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
@@ -320,7 +321,7 @@ class Initialize extends Console\Command\Command
 			if ($portProperty === null) {
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_PORT,
+					'identifier' => Types\ConnectorPropertyIdentifier::PORT,
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
 					'value' => $port,
 					'connector' => $connector,
@@ -455,7 +456,7 @@ class Initialize extends Console\Command\Command
 			}
 
 			$findConnectorPropertiesQuery = new DevicesQueries\FindConnectorProperties();
-			$findConnectorPropertiesQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_PORT);
+			$findConnectorPropertiesQuery->byIdentifier(Types\ConnectorPropertyIdentifier::PORT);
 
 			$properties = $this->propertiesRepository->findAllBy(
 				$findConnectorPropertiesQuery,
@@ -492,7 +493,7 @@ class Initialize extends Console\Command\Command
 	{
 		$connectors = [];
 
-		$findConnectorsQuery = new DevicesQueries\FindConnectors();
+		$findConnectorsQuery = new Queries\FindConnectors();
 
 		$systemConnectors = $this->connectorsRepository->findAllBy(
 			$findConnectorsQuery,
@@ -505,8 +506,6 @@ class Initialize extends Console\Command\Command
 		);
 
 		foreach ($systemConnectors as $connector) {
-			assert($connector instanceof Entities\HomeKitConnector);
-
 			$connectors[$connector->getIdentifier()] = $connector->getIdentifier()
 				. ($connector->getName() !== null ? ' [' . $connector->getName() . ']' : '');
 		}
@@ -540,14 +539,13 @@ class Initialize extends Console\Command\Command
 			$identifier = array_search($answer, $connectors, true);
 
 			if ($identifier !== false) {
-				$findConnectorQuery = new DevicesQueries\FindConnectors();
+				$findConnectorQuery = new Queries\FindConnectors();
 				$findConnectorQuery->byIdentifier($identifier);
 
 				$connector = $this->connectorsRepository->findOneBy(
 					$findConnectorQuery,
 					Entities\HomeKitConnector::class,
 				);
-				assert($connector instanceof Entities\HomeKitConnector || $connector === null);
 
 				if ($connector !== null) {
 					return $connector;

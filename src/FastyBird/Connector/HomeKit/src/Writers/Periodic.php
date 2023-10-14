@@ -20,6 +20,7 @@ use FastyBird\Connector\HomeKit\Clients;
 use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Protocol;
+use FastyBird\Connector\HomeKit\Queries;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -27,13 +28,11 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Psr\Log;
 use React\EventLoop;
 use function array_key_exists;
-use function assert;
 use function in_array;
 use function intval;
 
@@ -83,7 +82,7 @@ class Periodic implements Writer
 
 	public function connect(Entities\HomeKitConnector $connector, array $servers): void
 	{
-		$this->connectors[$connector->getPlainId()] = $connector;
+		$this->connectors[$connector->getId()->toString()] = $connector;
 
 		$this->processedDevices = [];
 		$this->processedProperties = [];
@@ -98,7 +97,7 @@ class Periodic implements Writer
 
 	public function disconnect(Entities\HomeKitConnector $connector, array $servers): void
 	{
-		unset($this->connectors[$connector->getPlainId()]);
+		unset($this->connectors[$connector->getId()->toString()]);
 
 		if ($this->connectors === [] && $this->handlerTimer !== null) {
 			$this->eventLoop->cancelTimer($this->handlerTimer);
@@ -115,20 +114,18 @@ class Periodic implements Writer
 	private function handleCommunication(): void
 	{
 		foreach ($this->connectors as $connector) {
-			$findDevicesQuery = new DevicesQueries\FindDevices();
+			$findDevicesQuery = new Queries\FindDevices();
 			$findDevicesQuery->forConnector($connector);
 
 			foreach ($this->devicesRepository->findAllBy($findDevicesQuery, Entities\HomeKitDevice::class) as $device) {
-				assert($device instanceof Entities\HomeKitDevice);
-
 				$accessory = $this->accessoryDriver->findAccessory($device->getId());
 
 				if (!$accessory instanceof Entities\Protocol\Device) {
 					continue;
 				}
 
-				if (!in_array($device->getPlainId(), $this->processedDevices, true)) {
-					$this->processedDevices[] = $device->getPlainId();
+				if (!in_array($device->getId()->toString(), $this->processedDevices, true)) {
+					$this->processedDevices[] = $device->getId()->toString();
 
 					if ($this->writeCharacteristic($accessory)) {
 						$this->registerLoopHandler();
@@ -160,10 +157,10 @@ class Periodic implements Writer
 				foreach ($service->getCharacteristics() as $characteristic) {
 					if ($characteristic->getProperty() instanceof DevicesEntities\Channels\Properties\Mapped) {
 						$debounce = array_key_exists(
-							$characteristic->getProperty()->getPlainId(),
+							$characteristic->getProperty()->getId()->toString(),
 							$this->processedProperties,
 						)
-							? $this->processedProperties[$characteristic->getProperty()->getPlainId()]
+							? $this->processedProperties[$characteristic->getProperty()->getId()->toString()]
 							: false;
 
 						if (
@@ -175,7 +172,7 @@ class Periodic implements Writer
 							continue;
 						}
 
-						$this->processedProperties[$characteristic->getProperty()->getPlainId()] = $now;
+						$this->processedProperties[$characteristic->getProperty()->getId()->toString()] = $now;
 
 						$state = $this->channelsPropertiesStates->readValue($characteristic->getProperty());
 
@@ -198,16 +195,16 @@ class Periodic implements Writer
 									'type' => 'event-writer',
 									'exception' => BootstrapHelpers\Logger::buildException($ex),
 									'connector' => [
-										'id' => $accessory->getDevice()->getConnector()->getPlainId(),
+										'id' => $accessory->getDevice()->getConnector()->getId()->toString(),
 									],
 									'device' => [
-										'id' => $accessory->getDevice()->getPlainId(),
+										'id' => $accessory->getDevice()->getId()->toString(),
 									],
 									'channel' => [
-										'id' => $service->getChannel()->getPlainId(),
+										'id' => $service->getChannel()->getId()->toString(),
 									],
 									'property' => [
-										'id' => $characteristic->getProperty()->getPlainId(),
+										'id' => $characteristic->getProperty()->getId()->toString(),
 									],
 									'hap' => $accessory->toHap(),
 								],
@@ -264,16 +261,16 @@ class Periodic implements Writer
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 								'type' => 'periodic-writer',
 								'connector' => [
-									'id' => $accessory->getDevice()->getConnector()->getPlainId(),
+									'id' => $accessory->getDevice()->getConnector()->getId()->toString(),
 								],
 								'device' => [
-									'id' => $accessory->getDevice()->getPlainId(),
+									'id' => $accessory->getDevice()->getId()->toString(),
 								],
 								'channel' => [
-									'id' => $service->getChannel()->getPlainId(),
+									'id' => $service->getChannel()->getId()->toString(),
 								],
 								'property' => [
-									'id' => $characteristic->getProperty()?->getPlainId(),
+									'id' => $characteristic->getProperty()?->getId()->toString(),
 								],
 								'hap' => $accessory->toHap(),
 							],
