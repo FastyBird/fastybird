@@ -35,9 +35,4 @@ abstract class Entity
 		return $this->id;
 	}
 
-	public function getPlainId(): string
-	{
-		return $this->id->toString();
-	}
-
 }
