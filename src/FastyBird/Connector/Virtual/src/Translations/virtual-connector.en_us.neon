@@ -1,0 +1,79 @@
+#
+# Connector translations
+#
+# @language       en_US
+#
+# @license        More in LICENSE.md
+# @copyright      https://www.fastybird.com
+# @author         Adam Kadlec <adam.kadlec@fastybird.com>
+# @package        FastyBird:VirtualConnector!
+# @subpackage     Translations
+# @since          1.0.0
+#
+# @date           18.10.23
+#
+
+cmd:
+    base:
+        questions:
+            continue: "Would you like to continue?"
+            whatToDo: "What would you like to do?"
+            exit: "Do you want to exit?"
+
+        messages:
+            noConnectors: "No Virtual connectors registered in system."
+            answerNotValid: "Selected answer: \"%s\" is not valid."
+
+    initialize:
+        title: "Virtual connector - initialization"
+        subtitle: "This action will create|update|delete connector configuration"
+
+        actions:
+            create: "Create new connector configuration"
+            update: "Edit existing connector configuration"
+            remove: "Delete existing connector configuration"
+            list: "List Virtual connectors"
+            nothing: "Nothing"
+
+        questions:
+            create: "Would you like to create new Virtual connector configuration?"
+            disable: "Do you want to disable connector?"
+            enable: "Do you want to enable connector?"
+            provide:
+                identifier: "Provide connector identifier"
+                name: "Provide connector name"
+            select:
+                connector: "Please select connector to manage"
+
+        data:
+            name: "Name"
+            devicesCnt: "# Devices"
+
+        messages:
+            identifier:
+                used: "This identifier is already used."
+                missing: "Connector identifier have to be provided."
+            create:
+                success: "Connector \"%name%\" was successfully created."
+                error: "Something went wrong, connector could not be created. An error was logged."
+            update:
+                success: "Connector \"%name%\" was successfully updated."
+                error: "Something went wrong, connector could not be updated. An error was logged."
+            remove:
+                success: "Connector \"%name%\" was successfully removed."
+                error: "Something went wrong, connector could not be removed. An error was logged."
+
+    execute:
+        title: "Virtual connector - service"
+        subtitle: "This action will run connector service"
+
+        questions:
+            execute: "Would you like to execute \"%connector%\" connector"
+            select:
+                connector: "Please select connector to execute"
+
+        messages:
+            connector:
+                notFound: "Connector was not found in system."
+                disabled: "Connector is disabled. Disabled connector could not be executed."
+            error: "Something went wrong, connector was terminated."

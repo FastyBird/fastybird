@@ -61,6 +61,7 @@ extensions:
     fbSonoffConnector                   : FastyBird\Connector\Sonoff\DI\SonoffExtension
     fbTuyaConnector                     : FastyBird\Connector\Tuya\DI\TuyaExtension
     fbVieraConnector                    : FastyBird\Connector\Viera\DI\VieraExtension
+    fbVirtualConnector                  : FastyBird\Connector\Virtual\DI\VirtualExtension
     # FastyBird bridges
     fbRedisDbDevicesModuleBridge        : FastyBird\Bridge\RedisDbDevicesModule\DI\RedisDbDevicesModuleExtension
     fbRedisDbTriggersModuleBridge       : FastyBird\Bridge\RedisDbTriggersModule\DI\RedisDbTriggersModuleExtension
@@ -170,6 +171,7 @@ contributteTranslation:
         - %appDir%/src/FastyBird/Connector/Sonoff/src/Translations
         - %appDir%/src/FastyBird/Connector/Tuya/src/Translations
         - %appDir%/src/FastyBird/Connector/Viera/src/Translations
+        - %appDir%/src/FastyBird/Connector/Virtual/src/Translations
         # OTHER LIBRARIES
         - %appDir%/vendor/fastybird/json-api/src/Translations
 

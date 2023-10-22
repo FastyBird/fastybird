@@ -15,12 +15,9 @@
 
 namespace FastyBird\Module\Devices\Entities\Channels\Properties;
 
-use DateTimeInterface;
 use Doctrine\Common;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
@@ -99,9 +96,9 @@ abstract class Property extends Entities\Property
 		return $this->parent;
 	}
 
-	public function setParent(self $device): void
+	public function setParent(self $property): void
 	{
-		$this->parent = $device;
+		$this->parent = $property;
 	}
 
 	public function removeParent(): void
@@ -153,17 +150,6 @@ abstract class Property extends Entities\Property
 		return $this->channel;
 	}
 
-	public function isSettable(): bool
-	{
-		if (
-			$this->getParent() !== null && !$this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_MAPPED)
-		) {
-			return $this->getParent()->isSettable();
-		}
-
-		return parent::isSettable();
-	}
-
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
@@ -171,190 +157,14 @@ abstract class Property extends Entities\Property
 	public function setSettable(bool $settable): void
 	{
 		if (
-			$this->getParent() !== null && !$this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_MAPPED)
+			$this->getParent() !== null
+			&& $settable
+			&& !$this->getParent()->isSettable()
 		) {
-			throw new Exceptions\InvalidState('Settable setter is allowed only for parent');
+			throw new Exceptions\InvalidState('Parent property is not settable');
 		}
 
 		parent::setSettable($settable);
-	}
-
-	public function isQueryable(): bool
-	{
-		if (
-			$this->getParent() !== null && !$this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_MAPPED)
-		) {
-			return $this->getParent()->isQueryable();
-		}
-
-		return parent::isQueryable();
-	}
-
-	/**
-	 * @throws Exceptions\InvalidArgument
-	 * @throws Exceptions\InvalidState
-	 */
-	public function setQueryable(bool $queryable): void
-	{
-		if (
-			$this->getParent() !== null && !$this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_MAPPED)
-		) {
-			throw new Exceptions\InvalidState('Queryable setter is allowed only for parent');
-		}
-
-		parent::setQueryable($queryable);
-	}
-
-	public function getDataType(): MetadataTypes\DataType
-	{
-		if (
-			$this->getParent() !== null && !$this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_MAPPED)
-		) {
-			return $this->getParent()->getDataType();
-		}
-
-		return parent::getDataType();
-	}
-
-	/**
-	 * @throws Exceptions\InvalidState
-	 */
-	public function setDataType(MetadataTypes\DataType $dataType): void
-	{
-		if (
-			$this->getParent() !== null && !$this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_MAPPED)
-		) {
-			throw new Exceptions\InvalidState('Data type setter is allowed only for parent');
-		}
-
-		parent::setDataType($dataType);
-	}
-
-	public function getUnit(): string|null
-	{
-		if (
-			$this->getParent() !== null && !$this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_MAPPED)
-		) {
-			return $this->getParent()->getUnit();
-		}
-
-		return parent::getUnit();
-	}
-
-	/**
-	 * @throws Exceptions\InvalidState
-	 */
-	public function setUnit(string|null $unit): void
-	{
-		if (
-			$this->getParent() !== null && !$this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_MAPPED)
-		) {
-			throw new Exceptions\InvalidState('Value unit setter is allowed only for parent');
-		}
-
-		parent::setUnit($unit);
-	}
-
-	public function getFormat(): MetadataValueObjects\StringEnumFormat|MetadataValueObjects\NumberRangeFormat|MetadataValueObjects\CombinedEnumFormat|MetadataValueObjects\EquationFormat|null
-	{
-		if (
-			$this->getParent() !== null && !$this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_MAPPED)
-		) {
-			return $this->getParent()->getFormat();
-		}
-
-		return parent::getFormat();
-	}
-
-	/**
-	 * @throws Exceptions\InvalidArgument
-	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 */
-	public function setFormat(array|string|null $format): void
-	{
-		if (
-			$this->getParent() !== null && !$this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_MAPPED)
-		) {
-			throw new Exceptions\InvalidState('Value format setter is allowed only for parent');
-		}
-
-		parent::setFormat($format);
-	}
-
-	public function getInvalid(): float|int|string|null
-	{
-		if (
-			$this->getParent() !== null && !$this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_MAPPED)
-		) {
-			return $this->getParent()->getInvalid();
-		}
-
-		return parent::getInvalid();
-	}
-
-	/**
-	 * @throws Exceptions\InvalidState
-	 */
-	public function setInvalid(string|null $invalid): void
-	{
-		if (
-			$this->getParent() !== null && !$this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_MAPPED)
-		) {
-			throw new Exceptions\InvalidState('Invalid value setter is allowed only for parent');
-		}
-
-		parent::setInvalid($invalid);
-	}
-
-	public function getScale(): int|null
-	{
-		if (
-			$this->getParent() !== null && !$this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_MAPPED)
-		) {
-			return $this->getParent()->getScale();
-		}
-
-		return parent::getScale();
-	}
-
-	/**
-	 * @throws Exceptions\InvalidState
-	 */
-	public function setScale(int|null $scale): void
-	{
-		if (
-			$this->getParent() !== null && !$this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_MAPPED)
-		) {
-			throw new Exceptions\InvalidState('Number of decimals setter is allowed only for parent');
-		}
-
-		parent::setScale($scale);
-	}
-
-	public function getDefault(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
-	{
-		if (
-			$this->getParent() !== null && !$this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_MAPPED)
-		) {
-			return $this->getParent()->getDefault();
-		}
-
-		return parent::getDefault();
-	}
-
-	/**
-	 * @throws Exceptions\InvalidState
-	 */
-	public function setDefault(string|null $default): void
-	{
-		if (
-			$this->getParent() !== null && !$this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_MAPPED)
-		) {
-			throw new Exceptions\InvalidState('Default value setter is allowed only for parent');
-		}
-
-		parent::setDefault($default);
 	}
 
 	/**

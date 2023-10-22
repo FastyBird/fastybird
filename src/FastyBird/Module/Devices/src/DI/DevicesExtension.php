@@ -198,6 +198,9 @@ class DevicesExtension extends DI\CompilerExtension
 		$builder->addDefinition($this->prefix('subscribers.entities'), new DI\Definitions\ServiceDefinition())
 			->setType(Subscribers\ModuleEntities::class);
 
+		$builder->addDefinition($this->prefix('subscribers.variableProperties'), new DI\Definitions\ServiceDefinition())
+			->setType(Subscribers\VariablePropertiesEntities::class);
+
 		$builder->addDefinition($this->prefix('subscribers.states'), new DI\Definitions\ServiceDefinition())
 			->setType(Subscribers\StateEntities::class);
 

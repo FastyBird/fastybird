@@ -18,7 +18,6 @@ namespace FastyBird\Module\Devices\Subscribers;
 use Doctrine\Common;
 use Doctrine\ORM;
 use Doctrine\Persistence;
-use Exception;
 use FastyBird\Library\Exchange\Entities as ExchangeEntities;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
@@ -29,7 +28,6 @@ use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Utilities;
-use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use IPub\Phone\Exceptions as PhoneExceptions;
 use Nette;
 use Nette\Utils;
@@ -84,8 +82,6 @@ final class ModuleEntities implements Common\EventSubscriber
 	/**
 	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
 	 *
-	 * @throws DoctrineOrmQueryExceptions\QueryException
-	 * @throws Exception
 	 * @throws Exceptions\InvalidState
 	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\FileNotFound
@@ -114,8 +110,6 @@ final class ModuleEntities implements Common\EventSubscriber
 	/**
 	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
 	 *
-	 * @throws DoctrineOrmQueryExceptions\QueryException
-	 * @throws Exception
 	 * @throws ExchangeExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\FileNotFound
@@ -158,8 +152,6 @@ final class ModuleEntities implements Common\EventSubscriber
 	/**
 	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
 	 *
-	 * @throws DoctrineOrmQueryExceptions\QueryException
-	 * @throws Exception
 	 * @throws ExchangeExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\FileNotFound
