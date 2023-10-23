@@ -35,6 +35,7 @@ use function array_key_exists;
 use function array_sum;
 use function assert;
 use function count;
+use function in_array;
 use function is_bool;
 use function is_float;
 use function is_string;
@@ -74,7 +75,7 @@ class Thermostat implements Driver
 	private DateTimeInterface|null $connectedAt = null;
 
 	public function __construct(
-		private readonly Entities\Devices\Thermostat $device,
+		private readonly Entities\VirtualDevice $device,
 		private readonly Helpers\Entity $entityHelper,
 		private readonly Queue\Queue $queue,
 		private readonly Virtual\Logger $logger,
@@ -82,6 +83,8 @@ class Thermostat implements Driver
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 	)
 	{
+		assert($this->device instanceof Entities\Devices\Thermostat);
+
 		$this->mode = Types\ThermostatMode::get(Types\ThermostatMode::MANUAL);
 		$this->hvacMode = Types\HvacMode::get(Types\HvacMode::OFF);
 	}
@@ -94,6 +97,8 @@ class Thermostat implements Driver
 	 */
 	public function connect(): Promise\PromiseInterface
 	{
+		assert($this->device instanceof Entities\Devices\Thermostat);
+
 		foreach ($this->device->getActors() as $actor) {
 			$state = $this->channelPropertiesStatesManager->readValue($actor);
 
@@ -183,6 +188,8 @@ class Thermostat implements Driver
 	 */
 	public function disconnect(): Promise\PromiseInterface
 	{
+		assert($this->device instanceof Entities\Devices\Thermostat);
+
 		$this->setActorState(false, false);
 
 		$this->actualTemperature = [];
@@ -217,6 +224,8 @@ class Thermostat implements Driver
 	 */
 	public function process(): Promise\PromiseInterface
 	{
+		assert($this->device instanceof Entities\Devices\Thermostat);
+
 		if (!$this->isOpeningsClosed()) {
 			$this->setActorState(false, false);
 
@@ -339,6 +348,8 @@ class Thermostat implements Driver
 		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $expectedValue,
 	): Promise\PromiseInterface
 	{
+		assert($this->device instanceof Entities\Devices\Thermostat);
+
 		if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
 			if ($property->getChannel()->getIdentifier() === Types\ChannelIdentifier::THERMOSTAT) {
 				if (
@@ -367,6 +378,8 @@ class Thermostat implements Driver
 		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $actualValue,
 	): Promise\PromiseInterface
 	{
+		assert($this->device instanceof Entities\Devices\Thermostat);
+
 		if ($property instanceof DevicesEntities\Channels\Properties\Mapped) {
 			if ($property->getChannel()->getIdentifier() === Types\ChannelIdentifier::ACTORS) {
 				if (
@@ -419,6 +432,8 @@ class Thermostat implements Driver
 	 */
 	private function setActorState(bool $heaters, bool $coolers): void
 	{
+		assert($this->device instanceof Entities\Devices\Thermostat);
+
 		$this->setHeaterState($heaters);
 		$this->setCoolerState($coolers);
 
@@ -455,6 +470,8 @@ class Thermostat implements Driver
 	 */
 	private function setHeaterState(bool $state): void
 	{
+		assert($this->device instanceof Entities\Devices\Thermostat);
+
 		if ($state && $this->isFloorOverHeating()) {
 			$this->setHeaterState(false);
 
@@ -509,6 +526,8 @@ class Thermostat implements Driver
 	 */
 	private function setCoolerState(bool $state): void
 	{
+		assert($this->device instanceof Entities\Devices\Thermostat);
+
 		foreach ($this->device->getActors() as $actor) {
 			assert($actor instanceof DevicesEntities\Channels\Properties\Mapped);
 
@@ -546,6 +565,8 @@ class Thermostat implements Driver
 	 */
 	private function isFloorOverHeating(): bool
 	{
+		assert($this->device instanceof Entities\Devices\Thermostat);
+
 		if ($this->device->hasFloorSensors()) {
 			$maxFloorActualTemp = max(
 				array_filter($this->actualFloorTemperature, static fn (float|null $temp): bool => $temp !== null),
@@ -561,10 +582,8 @@ class Thermostat implements Driver
 
 	private function isOpeningsClosed(): bool
 	{
-		foreach ($this->openingsState as $state) {
-			if ($state === true) {
-				return false;
-			}
+		if (in_array(true, $this->openingsState, true)) {
+			return false;
 		}
 
 		return true;
