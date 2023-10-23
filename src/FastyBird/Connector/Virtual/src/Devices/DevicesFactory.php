@@ -28,6 +28,6 @@ use FastyBird\Connector\Virtual\Entities;
 interface DevicesFactory
 {
 
-	public function create(Entities\VirtualConnector $device): Devices;
+	public function create(Entities\VirtualConnector $connector): Devices;
 
 }
