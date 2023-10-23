@@ -347,6 +347,12 @@ class VirtualExtension extends DI\CompilerExtension
 				'logger' => $logger,
 			]);
 
+		$builder->addDefinition($this->prefix('commands.device'), new DI\Definitions\ServiceDefinition())
+			->setType(Commands\Devices::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
+
 		$builder->addDefinition($this->prefix('commands.execute'), new DI\Definitions\ServiceDefinition())
 			->setType(Commands\Execute::class);
 
