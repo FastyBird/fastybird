@@ -21,7 +21,8 @@ use FastyBird\Module\Devices\Hydrators as DevicesHydrators;
 /**
  * Virtual channel entity hydrator
  *
- * @extends DevicesHydrators\Channels\Channel<Entities\VirtualChannel>
+ * @template  T of Entities\VirtualChannel
+ * @extends   DevicesHydrators\Channels\Channel<T>
  *
  * @package        FastyBird:VirtualConnector!
  * @subpackage     Hydrators

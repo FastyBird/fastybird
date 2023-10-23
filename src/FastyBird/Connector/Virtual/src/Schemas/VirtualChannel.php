@@ -16,13 +16,13 @@
 namespace FastyBird\Connector\Virtual\Schemas;
 
 use FastyBird\Connector\Virtual\Entities;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Schemas as DevicesSchemas;
 
 /**
  * Virtual channel entity schema
  *
- * @extends DevicesSchemas\Channels\Channel<Entities\VirtualChannel>
+ * @template T of Entities\VirtualChannel
+ * @extends  DevicesSchemas\Channels\Channel<T>
  *
  * @package        FastyBird:VirtualConnector!
  * @subpackage     Schemas
