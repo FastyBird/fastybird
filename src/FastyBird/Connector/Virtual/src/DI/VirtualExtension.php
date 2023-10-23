@@ -112,15 +112,18 @@ class VirtualExtension extends DI\CompilerExtension
 		 * DRIVERS
 		 */
 
-		$builder->addDefinition($this->prefix('drivers.manager'), new DI\Definitions\ServiceDefinition())
-			->setType(Drivers\DriversManager::class);
-
 		$builder->addFactoryDefinition($this->prefix('drivers.thermostat'))
 			->setImplement(Drivers\ThermostatFactory::class)
 			->getResultDefinition()
 			->setType(Drivers\Thermostat::class)
 			->setArguments([
 				'logger' => $logger,
+			]);
+
+		$builder->addDefinition($this->prefix('drivers.manager'), new DI\Definitions\ServiceDefinition())
+			->setType(Drivers\DriversManager::class)
+			->setArguments([
+				'driversFactories' => $builder->findByType(Drivers\DriverFactory::class),
 			]);
 
 		/**
