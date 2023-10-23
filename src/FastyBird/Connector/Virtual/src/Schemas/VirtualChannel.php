@@ -28,22 +28,7 @@ use FastyBird\Module\Devices\Schemas as DevicesSchemas;
  * @subpackage     Schemas
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class VirtualChannel extends DevicesSchemas\Channels\Channel
+abstract class VirtualChannel extends DevicesSchemas\Channels\Channel
 {
-
-	/**
-	 * Define entity schema type string
-	 */
-	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL . '/channel/' . Entities\VirtualChannel::TYPE;
-
-	public function getEntityClass(): string
-	{
-		return Entities\VirtualChannel::class;
-	}
-
-	public function getType(): string
-	{
-		return self::SCHEMA_TYPE;
-	}
 
 }

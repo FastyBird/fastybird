@@ -206,17 +206,35 @@ class VirtualExtension extends DI\CompilerExtension
 		$builder->addDefinition($this->prefix('schemas.connector.virtual'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\VirtualConnector::class);
 
-		$builder->addDefinition($this->prefix('schemas.device.virtual'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\VirtualDevice::class);
-
-		$builder->addDefinition(
-			$this->prefix('schemas.device.virtual.thermostat'),
-			new DI\Definitions\ServiceDefinition(),
-		)
+		$builder->addDefinition($this->prefix('schemas.device.virtual.thermostat'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\Devices\Thermostat::class);
 
-		$builder->addDefinition($this->prefix('schemas.channel.virtual'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\VirtualChannel::class);
+		$builder->addDefinition($this->prefix('schemas.channel.virtual.actors'), new DI\Definitions\ServiceDefinition())
+			->setType(Schemas\Channels\Actors::class);
+
+		$builder->addDefinition($this->prefix('schemas.channel.virtual.presetAntiFreeze'), new DI\Definitions\ServiceDefinition())
+			->setType(Schemas\Channels\PresetAntiFreeze::class);
+
+		$builder->addDefinition($this->prefix('schemas.channel.virtual.presetAway'), new DI\Definitions\ServiceDefinition())
+			->setType(Schemas\Channels\PresetAway::class);
+
+		$builder->addDefinition($this->prefix('schemas.channel.virtual.presetComfort'), new DI\Definitions\ServiceDefinition())
+			->setType(Schemas\Channels\PresetComfort::class);
+
+		$builder->addDefinition($this->prefix('schemas.channel.virtual.presetEco'), new DI\Definitions\ServiceDefinition())
+			->setType(Schemas\Channels\PresetEco::class);
+
+		$builder->addDefinition($this->prefix('schemas.channel.virtual.presetHome'), new DI\Definitions\ServiceDefinition())
+			->setType(Schemas\Channels\PresetHome::class);
+
+		$builder->addDefinition($this->prefix('schemas.channel.virtual.presetSleep'), new DI\Definitions\ServiceDefinition())
+			->setType(Schemas\Channels\PresetSleep::class);
+
+		$builder->addDefinition($this->prefix('schemas.channel.virtual.sensors'), new DI\Definitions\ServiceDefinition())
+			->setType(Schemas\Channels\Sensors::class);
+
+		$builder->addDefinition($this->prefix('schemas.channel.virtual.thermostat'), new DI\Definitions\ServiceDefinition())
+			->setType(Schemas\Channels\Thermostat::class);
 
 		/**
 		 * JSON-API HYDRATORS
@@ -225,17 +243,35 @@ class VirtualExtension extends DI\CompilerExtension
 		$builder->addDefinition($this->prefix('hydrators.connector.virtual'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\VirtualConnector::class);
 
-		$builder->addDefinition($this->prefix('hydrators.device.virtual'), new DI\Definitions\ServiceDefinition())
-			->setType(Hydrators\VirtualDevice::class);
-
-		$builder->addDefinition(
-			$this->prefix('hydrators.device.virtual.thermostat'),
-			new DI\Definitions\ServiceDefinition(),
-		)
+		$builder->addDefinition($this->prefix('hydrators.device.virtual.thermostat'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\Devices\Thermostat::class);
 
-		$builder->addDefinition($this->prefix('hydrators.channel.virtual'), new DI\Definitions\ServiceDefinition())
-			->setType(Hydrators\VirtualChannel::class);
+		$builder->addDefinition($this->prefix('hydrators.channel.virtual.actors'), new DI\Definitions\ServiceDefinition())
+			->setType(Hydrators\Channels\Actors::class);
+
+		$builder->addDefinition($this->prefix('hydrators.channel.virtual.presetAntiFreeze'), new DI\Definitions\ServiceDefinition())
+			->setType(Hydrators\Channels\PresetAntiFreeze::class);
+
+		$builder->addDefinition($this->prefix('hydrators.channel.virtual.presetAway'), new DI\Definitions\ServiceDefinition())
+			->setType(Hydrators\Channels\PresetAway::class);
+
+		$builder->addDefinition($this->prefix('hydrators.channel.virtual.presetComfort'), new DI\Definitions\ServiceDefinition())
+			->setType(Hydrators\Channels\PresetComfort::class);
+
+		$builder->addDefinition($this->prefix('hydrators.channel.virtual.presetEco'), new DI\Definitions\ServiceDefinition())
+			->setType(Hydrators\Channels\PresetEco::class);
+
+		$builder->addDefinition($this->prefix('hydrators.channel.virtual.presetHome'), new DI\Definitions\ServiceDefinition())
+			->setType(Hydrators\Channels\PresetHome::class);
+
+		$builder->addDefinition($this->prefix('hydrators.channel.virtual.presetSleep'), new DI\Definitions\ServiceDefinition())
+			->setType(Hydrators\Channels\PresetSleep::class);
+
+		$builder->addDefinition($this->prefix('hydrators.channel.virtual.sensors'), new DI\Definitions\ServiceDefinition())
+			->setType(Hydrators\Channels\Sensors::class);
+
+		$builder->addDefinition($this->prefix('hydrators.channel.virtual.thermostat'), new DI\Definitions\ServiceDefinition())
+			->setType(Hydrators\Channels\Thermostat::class);
 
 		/**
 		 * HELPERS

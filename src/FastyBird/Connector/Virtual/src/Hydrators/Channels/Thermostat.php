@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * VirtualChannel.php
+ * Thermostat.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,29 +10,29 @@
  * @subpackage     Hydrators
  * @since          1.0.0
  *
- * @date           20.10.23
+ * @date           23.10.23
  */
 
-namespace FastyBird\Connector\Virtual\Hydrators;
+namespace FastyBird\Connector\Virtual\Hydrators\Channels;
 
 use FastyBird\Connector\Virtual\Entities;
-use FastyBird\Module\Devices\Hydrators as DevicesHydrators;
+use FastyBird\Connector\Virtual\Hydrators;
 
 /**
- * Virtual channel entity hydrator
+ * Virtual thermostat channel entity hydrator
  *
- * @extends DevicesHydrators\Channels\Channel<Entities\VirtualChannel>
+ * @extends Hydrators\VirtualChannel<Entities\Channels\Thermostat>
  *
  * @package        FastyBird:VirtualConnector!
  * @subpackage     Hydrators
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-abstract class VirtualChannel extends DevicesHydrators\Channels\Channel
+final class Thermostat extends Hydrators\VirtualChannel
 {
 
 	public function getEntityName(): string
 	{
-		return Entities\VirtualChannel::class;
+		return Entities\Channels\Thermostat::class;
 	}
 
 }
