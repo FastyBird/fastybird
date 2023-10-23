@@ -582,11 +582,7 @@ class Thermostat implements Driver
 
 	private function isOpeningsClosed(): bool
 	{
-		if (in_array(true, $this->openingsState, true)) {
-			return false;
-		}
-
-		return true;
+		return !in_array(true, $this->openingsState, true);
 	}
 
 }
