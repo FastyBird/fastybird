@@ -1,6 +1,7 @@
 <template>
 	<transition :name="animation ? 'fb-theme-ui-loading-box-bounce' : 'none'">
 		<div
+			v-if="animation"
 			:data-variant="variant"
 			:data-size="size"
 			:data-full-screen="fullScreen"
