@@ -72,6 +72,8 @@ class Thermostat implements Driver
 
 	private Types\HvacMode $hvacMode;
 
+	private bool $connected = false;
+
 	private DateTimeInterface|null $connectedAt = null;
 
 	public function __construct(
@@ -98,6 +100,18 @@ class Thermostat implements Driver
 	public function connect(): Promise\PromiseInterface
 	{
 		assert($this->device instanceof Entities\Devices\Thermostat);
+
+		if (
+			!$this->device->hasSensors()
+			|| (
+				!$this->device->hasHeaters()
+				&& !$this->device->hasCoolers()
+			)
+		) {
+			return Promise\reject(
+				new Exceptions\InvalidState('Thermostat has not configured all required actors or sensors'),
+			);
+		}
 
 		foreach ($this->device->getActors() as $actor) {
 			$state = $this->channelPropertiesStatesManager->readValue($actor);
@@ -174,6 +188,7 @@ class Thermostat implements Driver
 			}
 		}
 
+		$this->connected = true;
 		$this->connectedAt = $this->dateTimeFactory->getNow();
 
 		return Promise\resolve(true);
@@ -202,7 +217,7 @@ class Thermostat implements Driver
 
 	public function isConnected(): bool
 	{
-		return $this->connectedAt !== null;
+		return $this->connected && $this->connectedAt !== null;
 	}
 
 	public function isConnecting(): bool
@@ -243,6 +258,8 @@ class Thermostat implements Driver
 		if ($targetTemp === null) {
 			$this->setActorState(false, false);
 
+			$this->connected = false;
+
 			return Promise\reject(new Exceptions\InvalidState('Target temperature is not configured'));
 		}
 
@@ -262,6 +279,8 @@ class Thermostat implements Driver
 			if (!$this->device->hasHeaters()) {
 				$this->setActorState(false, false);
 
+				$this->connected = false;
+
 				return Promise\reject(new Exceptions\InvalidState('Thermostat has not configured any heater actor'));
 			}
 
@@ -273,6 +292,8 @@ class Thermostat implements Driver
 		} elseif ($this->hvacMode->equalsValue(Types\HvacMode::COOL)) {
 			if (!$this->device->hasCoolers()) {
 				$this->setActorState(false, false);
+
+				$this->connected = false;
 
 				return Promise\reject(new Exceptions\InvalidState('Thermostat has not configured any cooler actor'));
 			}
@@ -293,6 +314,8 @@ class Thermostat implements Driver
 				|| $heatingThresholdTemp > $targetTemp
 				|| $coolingThresholdTemp < $targetTemp
 			) {
+				$this->connected = false;
+
 				return Promise\reject(
 					new Exceptions\InvalidState('Heating and cooling threshold temperature is wrongly configured'),
 				);

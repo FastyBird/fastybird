@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * PresetSleep.php
+ * Preset.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -19,20 +19,20 @@ use FastyBird\Connector\Virtual\Entities;
 use FastyBird\Connector\Virtual\Hydrators;
 
 /**
- * Virtual sleep preset channel entity hydrator
+ * Virtual thermostat preset channel entity hydrator
  *
- * @extends Hydrators\VirtualChannel<Entities\Channels\PresetSleep>
+ * @extends Hydrators\VirtualChannel<Entities\Channels\Preset>
  *
  * @package        FastyBird:VirtualConnector!
  * @subpackage     Hydrators
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class PresetSleep extends Hydrators\VirtualChannel
+final class Preset extends Hydrators\VirtualChannel
 {
 
 	public function getEntityName(): string
 	{
-		return Entities\Channels\PresetSleep::class;
+		return Entities\Channels\Preset::class;
 	}
 
 }

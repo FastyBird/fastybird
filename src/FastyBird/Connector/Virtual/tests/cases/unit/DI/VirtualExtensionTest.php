@@ -45,24 +45,14 @@ final class VirtualExtensionTest extends Tests\Cases\Unit\BaseTestCase
 		self::assertNotNull($container->getByType(Schemas\Channels\Thermostat::class, false));
 		self::assertNotNull($container->getByType(Schemas\Channels\Actors::class, false));
 		self::assertNotNull($container->getByType(Schemas\Channels\Sensors::class, false));
-		self::assertNotNull($container->getByType(Schemas\Channels\PresetAntiFreeze::class, false));
-		self::assertNotNull($container->getByType(Schemas\Channels\PresetAway::class, false));
-		self::assertNotNull($container->getByType(Schemas\Channels\PresetComfort::class, false));
-		self::assertNotNull($container->getByType(Schemas\Channels\PresetEco::class, false));
-		self::assertNotNull($container->getByType(Schemas\Channels\PresetHome::class, false));
-		self::assertNotNull($container->getByType(Schemas\Channels\PresetSleep::class, false));
+		self::assertNotNull($container->getByType(Schemas\Channels\Preset::class, false));
 
 		self::assertNotNull($container->getByType(Hydrators\VirtualConnector::class, false));
 		self::assertNotNull($container->getByType(Hydrators\Devices\Thermostat::class, false));
 		self::assertNotNull($container->getByType(Hydrators\Channels\Thermostat::class, false));
 		self::assertNotNull($container->getByType(Hydrators\Channels\Actors::class, false));
 		self::assertNotNull($container->getByType(Hydrators\Channels\Sensors::class, false));
-		self::assertNotNull($container->getByType(Hydrators\Channels\PresetAntiFreeze::class, false));
-		self::assertNotNull($container->getByType(Hydrators\Channels\PresetAway::class, false));
-		self::assertNotNull($container->getByType(Hydrators\Channels\PresetComfort::class, false));
-		self::assertNotNull($container->getByType(Hydrators\Channels\PresetEco::class, false));
-		self::assertNotNull($container->getByType(Hydrators\Channels\PresetHome::class, false));
-		self::assertNotNull($container->getByType(Hydrators\Channels\PresetSleep::class, false));
+		self::assertNotNull($container->getByType(Hydrators\Channels\Preset::class, false));
 
 		self::assertNotNull($container->getByType(Devices\DevicesFactory::class, false));
 

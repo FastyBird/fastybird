@@ -216,40 +216,10 @@ class VirtualExtension extends DI\CompilerExtension
 			->setType(Schemas\Channels\Actors::class);
 
 		$builder->addDefinition(
-			$this->prefix('schemas.channel.virtual.presetAntiFreeze'),
+			$this->prefix('schemas.channel.virtual.preset'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Schemas\Channels\PresetAntiFreeze::class);
-
-		$builder->addDefinition(
-			$this->prefix('schemas.channel.virtual.presetAway'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Schemas\Channels\PresetAway::class);
-
-		$builder->addDefinition(
-			$this->prefix('schemas.channel.virtual.presetComfort'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Schemas\Channels\PresetComfort::class);
-
-		$builder->addDefinition(
-			$this->prefix('schemas.channel.virtual.presetEco'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Schemas\Channels\PresetEco::class);
-
-		$builder->addDefinition(
-			$this->prefix('schemas.channel.virtual.presetHome'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Schemas\Channels\PresetHome::class);
-
-		$builder->addDefinition(
-			$this->prefix('schemas.channel.virtual.presetSleep'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Schemas\Channels\PresetSleep::class);
+			->setType(Schemas\Channels\Preset::class);
 
 		$builder->addDefinition(
 			$this->prefix('schemas.channel.virtual.sensors'),
@@ -283,40 +253,10 @@ class VirtualExtension extends DI\CompilerExtension
 			->setType(Hydrators\Channels\Actors::class);
 
 		$builder->addDefinition(
-			$this->prefix('hydrators.channel.virtual.presetAntiFreeze'),
+			$this->prefix('hydrators.channel.virtual.preset'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Hydrators\Channels\PresetAntiFreeze::class);
-
-		$builder->addDefinition(
-			$this->prefix('hydrators.channel.virtual.presetAway'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Hydrators\Channels\PresetAway::class);
-
-		$builder->addDefinition(
-			$this->prefix('hydrators.channel.virtual.presetComfort'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Hydrators\Channels\PresetComfort::class);
-
-		$builder->addDefinition(
-			$this->prefix('hydrators.channel.virtual.presetEco'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Hydrators\Channels\PresetEco::class);
-
-		$builder->addDefinition(
-			$this->prefix('hydrators.channel.virtual.presetHome'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Hydrators\Channels\PresetHome::class);
-
-		$builder->addDefinition(
-			$this->prefix('hydrators.channel.virtual.presetSleep'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Hydrators\Channels\PresetSleep::class);
+			->setType(Hydrators\Channels\Preset::class);
 
 		$builder->addDefinition(
 			$this->prefix('hydrators.channel.virtual.sensors'),
@@ -347,10 +287,23 @@ class VirtualExtension extends DI\CompilerExtension
 				'logger' => $logger,
 			]);
 
+		$thermostatCmd = $builder->addDefinition(
+			$this->prefix('commands.device.thermostat'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Commands\Devices\Thermostat::class)
+			->setArguments([
+				'logger' => $logger,
+			])
+			->setAutowired(false);
+
 		$builder->addDefinition($this->prefix('commands.device'), new DI\Definitions\ServiceDefinition())
 			->setType(Commands\Devices::class)
 			->setArguments([
 				'logger' => $logger,
+				'commands' => [
+					Entities\Devices\Thermostat::TYPE => $thermostatCmd,
+				],
 			]);
 
 		$builder->addDefinition($this->prefix('commands.execute'), new DI\Definitions\ServiceDefinition())

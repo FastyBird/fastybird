@@ -10,7 +10,7 @@
  * @subpackage     Commands
  * @since          1.0.0
  *
- * @date           18.06.23
+ * @date           23.10.23
  */
 
 namespace FastyBird\Connector\Virtual\Commands;
@@ -56,8 +56,12 @@ class Devices extends Console\Command\Command
 
 	public const NAME = 'fb:virtual-connector:devices';
 
+	/**
+	 * @param array<string, Console\Command\Command> $commands
+	 */
 	public function __construct(
 		private readonly Virtual\Logger $logger,
+		private readonly array $commands,
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Devices\DevicesManager $devicesManager,
@@ -81,6 +85,7 @@ class Devices extends Console\Command\Command
 
 	/**
 	 * @throws Console\Exception\InvalidArgumentException
+	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
@@ -92,6 +97,16 @@ class Devices extends Console\Command\Command
 	 */
 	protected function execute(Input\InputInterface $input, Output\OutputInterface $output): int
 	{
+		$symfonyApp = $this->getApplication();
+
+		if ($symfonyApp === null) {
+			return Console\Command\Command::FAILURE;
+		}
+
+		foreach ($this->commands as $command) {
+			$symfonyApp->add($command);
+		}
+
 		$io = new Style\SymfonyStyle($input, $output);
 
 		$io->title($this->translator->translate('//virtual-connector.cmd.devices.title'));
@@ -119,19 +134,61 @@ class Devices extends Console\Command\Command
 			return Console\Command\Command::SUCCESS;
 		}
 
-		$this->askConnectorAction($io, $connector);
+		$this->askConnectorAction($input, $output, $io, $connector);
 
 		return Console\Command\Command::SUCCESS;
 	}
 
-	private function createDevice(Style\SymfonyStyle $io, Entities\VirtualConnector $connector): void
+	/**
+	 * @throws Console\Exception\InvalidArgumentException
+	 * @throws Console\Exception\ExceptionInterface
+	 * @throws DevicesExceptions\InvalidState
+	 */
+	private function createDevice(
+		Input\InputInterface $input,
+		Output\OutputInterface $output,
+		Style\SymfonyStyle $io,
+		Entities\VirtualConnector $connector,
+	): void
 	{
-		// TODO: Implement
+		$serviceCmd = $this->askWhichDeviceType($io);
+
+		if ($serviceCmd === null) {
+			return;
+		}
+
+		$serviceCmd->run(new Input\ArrayInput([
+			'--action' => Virtual\Commands\Devices\Device::ACTION_CREATE,
+			'--connector' => $connector->getId()->toString(),
+			'--no-interaction' => $input->getOption('no-interaction'),
+			'--quiet' => $input->getOption('quiet'),
+		]), $output);
 	}
 
-	private function editDevice(Style\SymfonyStyle $io, Entities\VirtualConnector $connector): void
+	/**
+	 * @throws Console\Exception\InvalidArgumentException
+	 * @throws Console\Exception\ExceptionInterface
+	 * @throws DevicesExceptions\InvalidState
+	 */
+	private function editDevice(
+		Input\InputInterface $input,
+		Output\OutputInterface $output,
+		Style\SymfonyStyle $io,
+		Entities\VirtualConnector $connector,
+	): void
 	{
-		// TODO: Implement
+		$serviceCmd = $this->askWhichDeviceType($io);
+
+		if ($serviceCmd === null) {
+			return;
+		}
+
+		$serviceCmd->run(new Input\ArrayInput([
+			'--action' => Virtual\Commands\Devices\Device::ACTION_EDIT,
+			'--connector' => $connector->getId()->toString(),
+			'--no-interaction' => $input->getOption('no-interaction'),
+			'--quiet' => $input->getOption('quiet'),
+		]), $output);
 	}
 
 	/**
@@ -171,7 +228,7 @@ class Devices extends Console\Command\Command
 
 			$io->success(
 				$this->translator->translate(
-					'//virtual-connector.cmd.devices.messages.remove.success',
+					'//virtual-connector.cmd.devices.messages.remove.device.success',
 					['name' => $device->getName() ?? $device->getIdentifier()],
 				),
 			);
@@ -401,7 +458,67 @@ class Devices extends Console\Command\Command
 		return $device;
 	}
 
+	private function askWhichDeviceType(
+		Style\SymfonyStyle $io,
+	): Console\Command\Command|null
+	{
+		$types = [];
+
+		foreach ($this->commands as $type => $command) {
+			$types[$type] = $this->translator->translate('//virtual-connector.cmd.devices.answers.types.' . $type);
+		}
+
+		if ($this->commands === []) {
+			return null;
+		}
+
+		$question = new Console\Question\ChoiceQuestion(
+			$this->translator->translate('//virtual-connector.cmd.devices.questions.select.type'),
+			array_values($types),
+			count($types) === 1 ? 0 : null,
+		);
+		$question->setErrorMessage(
+			$this->translator->translate('//virtual-connector.cmd.base.messages.answerNotValid'),
+		);
+		$question->setValidator(
+			function (string|int|null $answer) use ($types): Console\Command\Command {
+				if ($answer === null) {
+					throw new Exceptions\Runtime(
+						sprintf(
+							$this->translator->translate('//virtual-connector.cmd.base.messages.answerNotValid'),
+							$answer,
+						),
+					);
+				}
+
+				if (array_key_exists($answer, array_values($types))) {
+					$answer = array_values($types)[$answer];
+				}
+
+				$type = array_search($answer, $types, true);
+
+				if ($type !== false && array_key_exists($type, $this->commands)) {
+					return $this->commands[$type];
+				}
+
+				throw new Exceptions\Runtime(
+					sprintf(
+						$this->translator->translate('//virtual-connector.cmd.base.messages.answerNotValid'),
+						$answer,
+					),
+				);
+			},
+		);
+
+		$command = $io->askQuestion($question);
+		assert($command instanceof Console\Command\Command);
+
+		return $command;
+	}
+
 	/**
+	 * @throws Console\Exception\InvalidArgumentException
+	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
@@ -410,6 +527,8 @@ class Devices extends Console\Command\Command
 	 * @throws RuntimeException
 	 */
 	private function askConnectorAction(
+		Input\InputInterface $input,
+		Output\OutputInterface $output,
 		Style\SymfonyStyle $io,
 		Entities\VirtualConnector $connector,
 	): void
@@ -438,9 +557,9 @@ class Devices extends Console\Command\Command
 			)
 			|| $whatToDo === '0'
 		) {
-			$this->createDevice($io, $connector);
+			$this->createDevice($input, $output, $io, $connector);
 
-			$this->askConnectorAction($io, $connector);
+			$this->askConnectorAction($input, $output, $io, $connector);
 
 		} elseif (
 			$whatToDo === $this->translator->translate(
@@ -448,9 +567,9 @@ class Devices extends Console\Command\Command
 			)
 			|| $whatToDo === '1'
 		) {
-			$this->editDevice($io, $connector);
+			$this->editDevice($input, $output, $io, $connector);
 
-			$this->askConnectorAction($io, $connector);
+			$this->askConnectorAction($input, $output, $io, $connector);
 
 		} elseif (
 			$whatToDo === $this->translator->translate(
@@ -460,7 +579,7 @@ class Devices extends Console\Command\Command
 		) {
 			$this->deleteDevice($io, $connector);
 
-			$this->askConnectorAction($io, $connector);
+			$this->askConnectorAction($input, $output, $io, $connector);
 
 		} elseif (
 			$whatToDo === $this->translator->translate(
@@ -470,7 +589,7 @@ class Devices extends Console\Command\Command
 		) {
 			$this->listDevices($io, $connector);
 
-			$this->askConnectorAction($io, $connector);
+			$this->askConnectorAction($input, $output, $io, $connector);
 		}
 	}
 

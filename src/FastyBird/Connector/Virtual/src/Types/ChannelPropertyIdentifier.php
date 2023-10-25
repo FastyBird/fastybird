@@ -39,10 +39,6 @@ class ChannelPropertyIdentifier extends Consistence\Enum\Enum
 
 	public const FLOOR_SENSOR = 'floor_sensor';
 
-	public const MINIMUM_ALLOWED_TEMPERATURE = 'min_allowed_temperature';
-
-	public const MAXIMUM_ALLOWED_TEMPERATURE = 'max_allowed_temperature';
-
 	public const MAXIMUM_FLOOR_TEMPERATURE = 'max_floor_temperature';
 
 	public const ACTUAL_FLOOR_TEMPERATURE = 'actual_floor_temperature';

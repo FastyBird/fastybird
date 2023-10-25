@@ -25,10 +25,22 @@ use function floatval;
 use function is_numeric;
 
 /**
- * @ORM\MappedSuperclass
+ * @ORM\Entity
  */
-abstract class Preset extends Entities\VirtualChannel
+class Preset extends Entities\VirtualChannel
 {
+
+	public const TYPE = 'virtual-thermostat-preset';
+
+	public function getType(): string
+	{
+		return self::TYPE;
+	}
+
+	public function getDiscriminatorName(): string
+	{
+		return self::TYPE;
+	}
 
 	/**
 	 * @throws DevicesExceptions\InvalidState

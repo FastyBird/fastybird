@@ -220,28 +220,6 @@ class Thermostat extends Entities\VirtualDevice
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getAllowedMinimumTemp(): float
-	{
-		return $this->getThermostat()->getAllowedMinimumTemp();
-	}
-
-	/**
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 */
-	public function getAllowedMaximumTemp(): float
-	{
-		return $this->getThermostat()->getAllowedMaximumTemp();
-	}
-
-	/**
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 */
 	public function getMinimumCycleDuration(): float|null
 	{
 		return $this->getThermostat()->getMinimumCycleDuration();
@@ -341,6 +319,17 @@ class Thermostat extends Entities\VirtualDevice
 				Utils\Strings::startsWith($property->getIdentifier(), Types\ChannelPropertyIdentifier::TARGET_SENSOR)
 				|| Utils\Strings::startsWith($property->getIdentifier(), Types\ChannelPropertyIdentifier::FLOOR_SENSOR),
 		);
+	}
+
+	public function hasSensors(): bool
+	{
+		return array_filter(
+			$this->getSensors(),
+			static fn ($sensor): bool => Utils\Strings::startsWith(
+				$sensor->getIdentifier(),
+				Types\ChannelPropertyIdentifier::TARGET_SENSOR,
+			)
+		) !== [];
 	}
 
 	public function hasFloorSensors(): bool
