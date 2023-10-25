@@ -5,15 +5,22 @@
 		@after-enter="afterEnter"
 		@leave="leave"
 	>
-		<slot />
+		<slot v-if="show" />
 	</transition>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, PropType } from 'vue';
 
 export default defineComponent({
 	name: 'FbUiTransitionExpand',
+
+	props: {
+		show: {
+			type: Boolean as PropType<boolean>,
+			default: true,
+		},
+	},
 
 	setup() {
 		const enter = (element: HTMLElement): void => {
