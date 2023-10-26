@@ -331,7 +331,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						[
 							'connector' => $connector->getId()->toString(),
 							'identifier' => $device->getIdentifier(),
-							'state' => MetadataTypes\ConnectionState::STATE_LOST,
+							'state' => MetadataTypes\ConnectionState::STATE_ALERT,
 						],
 					),
 				);
@@ -339,7 +339,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				$this->logger->error(
 					'Could write state to device',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
 						'type' => 'write-sub-device-state-message-consumer',
 						'exception' => BootstrapHelpers\Logger::buildException($ex),
 						'connector' => [

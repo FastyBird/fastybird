@@ -237,7 +237,7 @@ class Devices extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
 					'type' => 'devices-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],

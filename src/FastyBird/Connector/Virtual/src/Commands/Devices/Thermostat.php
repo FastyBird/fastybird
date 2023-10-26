@@ -76,6 +76,7 @@ class Thermostat extends Device
 		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Devices\DevicesManager $devicesManager,
+		private readonly DevicesModels\Devices\Properties\PropertiesManager $devicesPropertiesManager,
 		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
 		private readonly DevicesModels\Channels\ChannelsManager $channelsManager,
 		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
@@ -175,29 +176,6 @@ class Thermostat extends Device
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\InvalidState
-	 */
-	private function findIdentifier(DevicesEntities\Channels\Channel $channel, string $prefix): string
-	{
-		$identifierPattern = $prefix . '_%d';
-
-		for ($i = 1; $i <= 100; $i++) {
-			$identifier = sprintf($identifierPattern, $i);
-
-			$findChannelPropertiesQuery = new DevicesQueries\FindChannelProperties();
-			$findChannelPropertiesQuery->forChannel($channel);
-			$findChannelPropertiesQuery->byIdentifier($identifier);
-
-			if ($this->channelsPropertiesRepository->getResultSet($findChannelPropertiesQuery)->isEmpty()) {
-				return $identifier;
-			}
-		}
-
-		throw new Exceptions\InvalidState('Identifier could not be created');
-	}
-
-	/**
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exception
@@ -270,6 +248,14 @@ class Thermostat extends Device
 				'name' => $name,
 			]));
 			assert($device instanceof Entities\Devices\Thermostat);
+
+			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
+				'entity' => DevicesEntities\Devices\Properties\Variable::class,
+				'identifier' => Virtual\Types\DevicePropertyIdentifier::MODEL,
+				'device' => $device,
+				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+				'value' => Entities\Devices\Thermostat::TYPE,
+			]));
 
 			$modes = $this->askThermostatModes($io);
 
@@ -350,7 +336,7 @@ class Thermostat extends Device
 					$this->channelsPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Channels\Properties\Mapped::class,
 						'parent' => $heater,
-						'identifier' => $this->findIdentifier(
+						'identifier' => $this->findChannelPropertyIdentifier(
 							$actorsChannel,
 							Virtual\Types\ChannelPropertyIdentifier::HEATER,
 						),
@@ -394,7 +380,7 @@ class Thermostat extends Device
 					$this->channelsPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Channels\Properties\Mapped::class,
 						'parent' => $cooler,
-						'identifier' => $this->findIdentifier(
+						'identifier' => $this->findChannelPropertyIdentifier(
 							$actorsChannel,
 							Virtual\Types\ChannelPropertyIdentifier::COOLER,
 						),
@@ -445,7 +431,7 @@ class Thermostat extends Device
 					$this->channelsPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Channels\Properties\Mapped::class,
 						'parent' => $opening,
-						'identifier' => $this->findIdentifier(
+						'identifier' => $this->findChannelPropertyIdentifier(
 							$openingsChannel,
 							Virtual\Types\ChannelPropertyIdentifier::SENSOR,
 						),
@@ -491,7 +477,7 @@ class Thermostat extends Device
 				$this->channelsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Channels\Properties\Mapped::class,
 					'parent' => $sensor,
-					'identifier' => $this->findIdentifier(
+					'identifier' => $this->findChannelPropertyIdentifier(
 						$sensorsChannel,
 						Virtual\Types\ChannelPropertyIdentifier::TARGET_SENSOR,
 					),
@@ -540,7 +526,7 @@ class Thermostat extends Device
 					$this->channelsPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Channels\Properties\Mapped::class,
 						'parent' => $sensor,
-						'identifier' => $this->findIdentifier(
+						'identifier' => $this->findChannelPropertyIdentifier(
 							$sensorsChannel,
 							Virtual\Types\ChannelPropertyIdentifier::FLOOR_SENSOR,
 						),
@@ -745,7 +731,7 @@ class Thermostat extends Device
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
 					'type' => 'devices-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -817,7 +803,7 @@ class Thermostat extends Device
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
 					'type' => 'devices-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -1885,6 +1871,29 @@ class Thermostat extends Device
 		assert($device instanceof Entities\Devices\Thermostat);
 
 		return $device;
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
+	 */
+	private function findChannelPropertyIdentifier(DevicesEntities\Channels\Channel $channel, string $prefix): string
+	{
+		$identifierPattern = $prefix . '_%d';
+
+		for ($i = 1; $i <= 100; $i++) {
+			$identifier = sprintf($identifierPattern, $i);
+
+			$findChannelPropertiesQuery = new DevicesQueries\FindChannelProperties();
+			$findChannelPropertiesQuery->forChannel($channel);
+			$findChannelPropertiesQuery->byIdentifier($identifier);
+
+			if ($this->channelsPropertiesRepository->getResultSet($findChannelPropertiesQuery)->isEmpty()) {
+				return $identifier;
+			}
+		}
+
+		throw new Exceptions\InvalidState('Channel property identifier could not be created');
 	}
 
 }

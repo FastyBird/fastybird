@@ -199,7 +199,7 @@ class Devices
 									[
 										'connector' => $device->getConnector()->getId(),
 										'device' => $device->getId(),
-										'state' => MetadataTypes\ConnectionState::STATE_LOST,
+										'state' => MetadataTypes\ConnectionState::STATE_ALERT,
 									],
 								),
 							);
@@ -231,7 +231,7 @@ class Devices
 		if (
 			$cmdResult instanceof DateTimeInterface
 			&& (
-				$this->dateTimeFactory->getNow()->getTimestamp() - $cmdResult->getTimestamp() < $device->getStateReadingDelay()
+				$this->dateTimeFactory->getNow()->getTimestamp() - $cmdResult->getTimestamp() < $device->getStateProcessingDelay()
 			)
 		) {
 			return false;

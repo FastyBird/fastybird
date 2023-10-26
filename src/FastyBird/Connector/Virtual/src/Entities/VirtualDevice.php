@@ -32,7 +32,7 @@ class VirtualDevice extends DevicesEntities\Devices\Device
 
 	public const TYPE = 'virtual';
 
-	private const STATE_READING_DELAY = 120.0;
+	private const STATE_PROCESSING_DELAY = 120.0;
 
 	public function getType(): string
 	{
@@ -70,12 +70,12 @@ class VirtualDevice extends DevicesEntities\Devices\Device
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getStateReadingDelay(): float
+	public function getStateProcessingDelay(): float
 	{
 		$property = $this->properties
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::STATE_READING_DELAY
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::STATE_PROCESSING_DELAY
 			)
 			->first();
 
@@ -86,7 +86,7 @@ class VirtualDevice extends DevicesEntities\Devices\Device
 			return floatval($property->getValue());
 		}
 
-		return self::STATE_READING_DELAY;
+		return self::STATE_PROCESSING_DELAY;
 	}
 
 }

@@ -34,9 +34,11 @@ class DevicePropertyIdentifier extends Consistence\Enum\Enum
 
 	public const MANUFACTURER = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MANUFACTURER;
 
+	public const MAC_ADDRESS = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS;
+
 	public const MODEL = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL;
 
-	public const STATE_READING_DELAY = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_STATE_READING_DELAY;
+	public const STATE_PROCESSING_DELAY = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_STATE_PROCESSING_DELAY;
 
 	public function getValue(): string
 	{

@@ -18,6 +18,7 @@ namespace FastyBird\Connector\Virtual\Subscribers;
 use Doctrine\Common;
 use Doctrine\ORM;
 use Doctrine\Persistence;
+use FastyBird\Connector\Virtual;
 use FastyBird\Connector\Virtual\Entities;
 use FastyBird\Connector\Virtual\Helpers;
 use FastyBird\Connector\Virtual\Types;
@@ -103,7 +104,6 @@ final class Properties implements Common\EventSubscriber
 				'device' => $entity,
 				'entity' => DevicesEntities\Devices\Properties\Dynamic::class,
 				'identifier' => Types\DevicePropertyIdentifier::STATE,
-				'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::STATE),
 				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
 				'unit' => null,
 				'format' => [
@@ -114,6 +114,64 @@ final class Properties implements Common\EventSubscriber
 				],
 				'settable' => false,
 				'queryable' => false,
+			]));
+		}
+
+		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+		$findDevicePropertyQuery->forDevice($entity);
+		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::MANUFACTURER);
+
+		$manufacturerProperty = $this->propertiesRepository->findOneBy($findDevicePropertyQuery);
+
+		if (
+			$manufacturerProperty !== null
+			&& !$manufacturerProperty instanceof DevicesEntities\Devices\Properties\Variable
+		) {
+			$this->propertiesManager->delete($manufacturerProperty);
+
+			$manufacturerProperty = null;
+		}
+
+		if ($manufacturerProperty === null) {
+			$this->propertiesManager->create(Utils\ArrayHash::from([
+				'connector' => $entity,
+				'entity' => DevicesEntities\Devices\Properties\Variable::class,
+				'identifier' => Types\DevicePropertyIdentifier::MANUFACTURER,
+				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+				'unit' => null,
+				'format' => null,
+				'settable' => false,
+				'queryable' => false,
+				'value' => Virtual\Constants::MANUFACTURER,
+			]));
+		}
+
+		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+		$findDevicePropertyQuery->forDevice($entity);
+		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::MAC_ADDRESS);
+
+		$macAddressProperty = $this->propertiesRepository->findOneBy($findDevicePropertyQuery);
+
+		if (
+			$macAddressProperty !== null
+			&& !$macAddressProperty instanceof DevicesEntities\Devices\Properties\Variable
+		) {
+			$this->propertiesManager->delete($macAddressProperty);
+
+			$macAddressProperty = null;
+		}
+
+		if ($macAddressProperty === null) {
+			$this->propertiesManager->create(Utils\ArrayHash::from([
+				'connector' => $entity,
+				'entity' => DevicesEntities\Devices\Properties\Variable::class,
+				'identifier' => Types\DevicePropertyIdentifier::MAC_ADDRESS,
+				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+				'unit' => null,
+				'format' => null,
+				'settable' => false,
+				'queryable' => false,
+				'value' => Helpers\Drivers::generateMacAddress(),
 			]));
 		}
 	}
