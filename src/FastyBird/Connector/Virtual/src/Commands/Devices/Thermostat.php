@@ -1113,7 +1113,11 @@ class Thermostat extends Device
 		);
 
 		if (!$property instanceof DevicesEntities\Channels\Properties\Dynamic) {
-			$io->error($this->translator->translate('//virtual-connector.cmd.devices.thermostat.messages.property.notSupported'));
+			$io->error(
+				$this->translator->translate(
+					'//virtual-connector.cmd.devices.thermostat.messages.property.notSupported',
+				),
+			);
 
 			return $this->askActor($io, $ignoredIds, $allowedDataTypes, $property);
 		}
@@ -1144,7 +1148,11 @@ class Thermostat extends Device
 		);
 
 		if (!$property instanceof DevicesEntities\Channels\Properties\Dynamic) {
-			$io->error($this->translator->translate('//virtual-connector.cmd.devices.thermostat.messages.property.notSupported'));
+			$io->error(
+				$this->translator->translate(
+					'//virtual-connector.cmd.devices.thermostat.messages.property.notSupported',
+				),
+			);
 
 			return $this->askSensor($io, $ignoredIds, $allowedDataTypes, $property);
 		}
@@ -1647,7 +1655,9 @@ class Thermostat extends Device
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//virtual-connector.cmd.devices.thermostat.questions.select.mappedDeviceChannel'),
+			$this->translator->translate(
+				'//virtual-connector.cmd.devices.thermostat.questions.select.mappedDeviceChannel',
+			),
 			array_values($channels),
 			$default,
 		);
@@ -1749,7 +1759,9 @@ class Thermostat extends Device
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//virtual-connector.cmd.devices.thermostat.questions.select.mappedChannelProperty'),
+			$this->translator->translate(
+				'//virtual-connector.cmd.devices.thermostat.questions.select.mappedChannelProperty',
+			),
 			array_values($properties),
 			$default,
 		);
