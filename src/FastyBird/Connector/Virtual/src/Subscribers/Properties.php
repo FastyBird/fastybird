@@ -134,7 +134,7 @@ final class Properties implements Common\EventSubscriber
 
 		if ($manufacturerProperty === null) {
 			$this->propertiesManager->create(Utils\ArrayHash::from([
-				'connector' => $entity,
+				'device' => $entity,
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
 				'identifier' => Types\DevicePropertyIdentifier::MANUFACTURER,
 				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
@@ -163,7 +163,7 @@ final class Properties implements Common\EventSubscriber
 
 		if ($macAddressProperty === null) {
 			$this->propertiesManager->create(Utils\ArrayHash::from([
-				'connector' => $entity,
+				'device' => $entity,
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
 				'identifier' => Types\DevicePropertyIdentifier::MAC_ADDRESS,
 				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),

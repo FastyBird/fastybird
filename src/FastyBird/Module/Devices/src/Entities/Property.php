@@ -139,7 +139,7 @@ abstract class Property implements Entity,
 
 	/**
 	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="integer", name="property_step", nullable=true, options={"default": null})
+	 * @ORM\Column(type="float", name="property_step", nullable=true, options={"default": null})
 	 */
 	protected float|null $step = null;
 

@@ -139,13 +139,21 @@ cmd:
                     mappedDevice: "Select device for mapping"
                     mappedDeviceChannel: "Select device channel for mapping"
                     mappedChannelProperty: "Select channel property for mapping"
+                    preset: "Please select thermostat supported presets (multipole answers available)"
                 provide:
                     targetTemperature:
                         manual: "Provide target temperature value for manual mode"
+                        away: "Provide target temperature value for AWAY mode"
+                        eco: "Provide target temperature value for ECO mode"
+                        home: "Provide target temperature value for HOME mode"
+                        comfort: "Provide target temperature value for COMFORT mode"
+                        sleep: "Provide target temperature value for SLEEP mode"
+                        anti_freeze: "Provide target temperature value for ANTI FREEZE mode"
                     maximumFloorTemperature: "Provide maximum allowed floor temperature"
                     heatingThresholdTemperature: "Provide heating threshold temperature"
                     coolingThresholdTemperature: "Provide cooling threshold temperature"
                 useOpenings: "Do you want to configure openings sensors? Like windows, doors, etc."
+                useFloorSensor: "Do you want to configure floor temperature sensors?"
                 addAnotherHeater: "Do you want to add another heater actor?"
                 addAnotherCooler: "Do you want to add another cooler actor?"
                 addAnotherOpening: "Do you want to add another opnening sensor?"
@@ -157,6 +165,13 @@ cmd:
                     heat: "Heating"
                     cool: "Cooling"
                     auto: "Auto - heat and cool according to temerature"
+                preset:
+                    away: "Away"
+                    eco: "Eco"
+                    home: "Home"
+                    comfort: "Comfort"
+                    sleep: "Sleep"
+                    anti_freeze: "Anti freeze"
 
             messages:
                 noHardwareDevices: "No devices registered in system"

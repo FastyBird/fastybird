@@ -50,7 +50,7 @@ final class ConnectorDynamicProperty extends DynamicProperty
 		array|null $format = null,
 		string|int|float|null $invalid = null,
 		int|null $scale = null,
-		int|null $step = null,
+		float|null $step = null,
 		float|bool|int|string|null $actualValue = null,
 		float|bool|int|string|null $previousValue = null,
 		float|bool|int|string|null $expectedValue = null,

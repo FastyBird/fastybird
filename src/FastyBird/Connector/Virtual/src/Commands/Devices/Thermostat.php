@@ -959,13 +959,15 @@ class Thermostat extends Device
 		$default = array_filter(
 			array_unique(array_map(static fn ($item): int|null => match ($item) {
 					Virtual\Types\ThermostatMode::AWAY => 0,
-					Virtual\Types\ThermostatMode::HOME => 1,
-					Virtual\Types\ThermostatMode::COMFORT => 2,
-					Virtual\Types\ThermostatMode::SLEEP => 3,
-					Virtual\Types\ThermostatMode::ANTI_FREEZE => 4,
+					Virtual\Types\ThermostatMode::ECO => 1,
+					Virtual\Types\ThermostatMode::HOME => 2,
+					Virtual\Types\ThermostatMode::COMFORT => 3,
+					Virtual\Types\ThermostatMode::SLEEP => 4,
+					Virtual\Types\ThermostatMode::ANTI_FREEZE => 5,
 					default => null,
 			}, $format?->toArray() ?? [
 				Virtual\Types\ThermostatMode::AWAY,
+				Virtual\Types\ThermostatMode::ECO,
 				Virtual\Types\ThermostatMode::HOME,
 				Virtual\Types\ThermostatMode::COMFORT,
 				Virtual\Types\ThermostatMode::SLEEP,
@@ -979,6 +981,9 @@ class Thermostat extends Device
 			[
 				$this->translator->translate(
 					'//virtual-connector.cmd.devices.thermostat.answers.preset.' . Virtual\Types\ThermostatMode::AWAY,
+				),
+				$this->translator->translate(
+					'//virtual-connector.cmd.devices.thermostat.answers.preset.' . Virtual\Types\ThermostatMode::ECO,
 				),
 				$this->translator->translate(
 					'//virtual-connector.cmd.devices.thermostat.answers.preset.' . Virtual\Types\ThermostatMode::HOME,
@@ -1018,43 +1023,52 @@ class Thermostat extends Device
 					)
 					|| $item === '0'
 				) {
-					$presets[] = Virtual\Types\HvacMode::HEAT;
+					$presets[] = Virtual\Types\ThermostatMode::AWAY;
+				}
+
+				if (
+					$item === $this->translator->translate(
+						'//virtual-connector.cmd.devices.thermostat.answers.preset.' . Virtual\Types\ThermostatMode::ECO,
+					)
+					|| $item === '1'
+				) {
+					$presets[] = Virtual\Types\ThermostatMode::ECO;
 				}
 
 				if (
 					$item === $this->translator->translate(
 						'//virtual-connector.cmd.devices.thermostat.answers.preset.' . Virtual\Types\ThermostatMode::HOME,
 					)
-					|| $item === '1'
+					|| $item === '2'
 				) {
-					$presets[] = Virtual\Types\HvacMode::COOL;
+					$presets[] = Virtual\Types\ThermostatMode::HOME;
 				}
 
 				if (
 					$item === $this->translator->translate(
 						'//virtual-connector.cmd.devices.thermostat.answers.preset.' . Virtual\Types\ThermostatMode::COMFORT,
 					)
-					|| $item === '2'
+					|| $item === '3'
 				) {
-					$presets[] = Virtual\Types\HvacMode::AUTO;
+					$presets[] = Virtual\Types\ThermostatMode::COMFORT;
 				}
 
 				if (
 					$item === $this->translator->translate(
 						'//virtual-connector.cmd.devices.thermostat.answers.preset.' . Virtual\Types\ThermostatMode::SLEEP,
 					)
-					|| $item === '3'
+					|| $item === '4'
 				) {
-					$presets[] = Virtual\Types\HvacMode::AUTO;
+					$presets[] = Virtual\Types\ThermostatMode::SLEEP;
 				}
 
 				if (
 					$item === $this->translator->translate(
 						'//virtual-connector.cmd.devices.thermostat.answers.preset.' . Virtual\Types\ThermostatMode::ANTI_FREEZE,
 					)
-					|| $item === '4'
+					|| $item === '5'
 				) {
-					$presets[] = Virtual\Types\HvacMode::AUTO;
+					$presets[] = Virtual\Types\ThermostatMode::ANTI_FREEZE;
 				}
 			}
 
@@ -1099,7 +1113,7 @@ class Thermostat extends Device
 		);
 
 		if (!$property instanceof DevicesEntities\Channels\Properties\Dynamic) {
-			$io->error($this->translator->translate('//virtual-connector.cmd.devices.messages.property.notSupported'));
+			$io->error($this->translator->translate('//virtual-connector.cmd.devices.thermostat.messages.property.notSupported'));
 
 			return $this->askActor($io, $ignoredIds, $allowedDataTypes, $property);
 		}
@@ -1130,7 +1144,7 @@ class Thermostat extends Device
 		);
 
 		if (!$property instanceof DevicesEntities\Channels\Properties\Dynamic) {
-			$io->error($this->translator->translate('//virtual-connector.cmd.devices.messages.property.notSupported'));
+			$io->error($this->translator->translate('//virtual-connector.cmd.devices.thermostat.messages.property.notSupported'));
 
 			return $this->askSensor($io, $ignoredIds, $allowedDataTypes, $property);
 		}
@@ -1152,7 +1166,7 @@ class Thermostat extends Device
 	{
 		$question = new Console\Question\Question(
 			$this->translator->translate(
-				'//virtual-connector.cmd.devices.thermostat.questions.provide.targetTemperature',
+				'//virtual-connector.cmd.devices.thermostat.questions.provide.targetTemperature.' . $thermostatMode->getValue(),
 			),
 			$device?->getTargetTemp($thermostatMode),
 		);
@@ -1633,7 +1647,7 @@ class Thermostat extends Device
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//virtual-connector.cmd.devices.questions.select.mappedDeviceChannel'),
+			$this->translator->translate('//virtual-connector.cmd.devices.thermostat.questions.select.mappedDeviceChannel'),
 			array_values($channels),
 			$default,
 		);
@@ -1703,7 +1717,14 @@ class Thermostat extends Device
 				!$property instanceof DevicesEntities\Channels\Properties\Dynamic
 				&& !$property instanceof DevicesEntities\Channels\Properties\Variable
 				|| in_array($property->getId()->toString(), $ignoredIds, true)
-				|| $onlyType !== null && !$property instanceof $onlyType
+				|| (
+					$onlyType !== null
+					&& !$property instanceof $onlyType
+				)
+				|| (
+					$allowedDataTypes !== null
+					&& !in_array($property->getDataType(), $allowedDataTypes, true)
+				)
 			) {
 				continue;
 			}
@@ -1728,7 +1749,7 @@ class Thermostat extends Device
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//virtual-connector.cmd.devices.questions.select.mappedChannelProperty'),
+			$this->translator->translate('//virtual-connector.cmd.devices.thermostat.questions.select.mappedChannelProperty'),
 			array_values($properties),
 			$default,
 		);
@@ -1819,7 +1840,7 @@ class Thermostat extends Device
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//virtual-connector.cmd.devices.questions.select.device'),
+			$this->translator->translate('//virtual-connector.cmd.devices.thermostat.questions.select.device'),
 			array_values($devices),
 			count($devices) === 1 ? 0 : null,
 		);
