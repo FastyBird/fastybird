@@ -28,6 +28,7 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use FastyBird\Module\Devices\Helpers as DevicesHelpers;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette\Localization;
@@ -1388,15 +1389,36 @@ class Thermostat extends Device
 					$findChannelPropertiesQuery = new DevicesQueries\FindChannelDynamicProperties();
 					$findChannelPropertiesQuery->forChannel($channel);
 
-					if (
-						$this->channelsPropertiesRepository->getResultSet(
+					if ($allowedDataTypes === null) {
+						if (
+							$this->channelsPropertiesRepository->getResultSet(
+								$findChannelPropertiesQuery,
+								DevicesEntities\Channels\Properties\Dynamic::class,
+							)->count() > 0
+						) {
+							$hasProperty = true;
+
+							break;
+						}
+					} else {
+						$properties = $this->channelsPropertiesRepository->findAllBy(
 							$findChannelPropertiesQuery,
 							DevicesEntities\Channels\Properties\Dynamic::class,
-						)->count() > 0
-					) {
-						$hasProperty = true;
+						);
+						$properties = array_filter(
+							$properties,
+							static fn (DevicesEntities\Channels\Properties\Dynamic $property): bool => in_array(
+								$property->getDataType(),
+								$allowedDataTypes,
+								true,
+							),
+						);
 
-						break;
+						if ($properties !== []) {
+							$hasProperty = true;
+
+							break;
+						}
 					}
 				}
 
@@ -1404,15 +1426,36 @@ class Thermostat extends Device
 					$findChannelPropertiesQuery = new DevicesQueries\FindChannelVariableProperties();
 					$findChannelPropertiesQuery->forChannel($channel);
 
-					if (
-						$this->channelsPropertiesRepository->getResultSet(
+					if ($allowedDataTypes === null) {
+						if (
+							$this->channelsPropertiesRepository->getResultSet(
+								$findChannelPropertiesQuery,
+								DevicesEntities\Channels\Properties\Variable::class,
+							)->count() > 0
+						) {
+							$hasProperty = true;
+
+							break;
+						}
+					} else {
+						$properties = $this->channelsPropertiesRepository->findAllBy(
 							$findChannelPropertiesQuery,
 							DevicesEntities\Channels\Properties\Variable::class,
-						)->count() > 0
-					) {
-						$hasProperty = true;
+						);
+						$properties = array_filter(
+							$properties,
+							static fn (DevicesEntities\Channels\Properties\Variable $property): bool => in_array(
+								$property->getDataType(),
+								$allowedDataTypes,
+								true,
+							),
+						);
 
-						break;
+						if ($properties !== []) {
+							$hasProperty = true;
+
+							break;
+						}
 					}
 				}
 			}
@@ -1518,13 +1561,32 @@ class Thermostat extends Device
 				$findChannelPropertiesQuery = new DevicesQueries\FindChannelDynamicProperties();
 				$findChannelPropertiesQuery->forChannel($channel);
 
-				if (
-					$this->channelsPropertiesRepository->getResultSet(
+				if ($allowedDataTypes === null) {
+					if (
+						$this->channelsPropertiesRepository->getResultSet(
+							$findChannelPropertiesQuery,
+							DevicesEntities\Channels\Properties\Dynamic::class,
+						)->count() > 0
+					) {
+						$hasProperty = true;
+					}
+				} else {
+					$properties = $this->channelsPropertiesRepository->findAllBy(
 						$findChannelPropertiesQuery,
 						DevicesEntities\Channels\Properties\Dynamic::class,
-					)->count() > 0
-				) {
-					$hasProperty = true;
+					);
+					$properties = array_filter(
+						$properties,
+						static fn (DevicesEntities\Channels\Properties\Dynamic $property): bool => in_array(
+							$property->getDataType(),
+							$allowedDataTypes,
+							true,
+						),
+					);
+
+					if ($properties !== []) {
+						$hasProperty = true;
+					}
 				}
 			}
 
@@ -1532,13 +1594,32 @@ class Thermostat extends Device
 				$findChannelPropertiesQuery = new DevicesQueries\FindChannelVariableProperties();
 				$findChannelPropertiesQuery->forChannel($channel);
 
-				if (
-					$this->channelsPropertiesRepository->getResultSet(
+				if ($allowedDataTypes === null) {
+					if (
+						$this->channelsPropertiesRepository->getResultSet(
+							$findChannelPropertiesQuery,
+							DevicesEntities\Channels\Properties\Variable::class,
+						)->count() > 0
+					) {
+						$hasProperty = true;
+					}
+				} else {
+					$properties = $this->channelsPropertiesRepository->findAllBy(
 						$findChannelPropertiesQuery,
 						DevicesEntities\Channels\Properties\Variable::class,
-					)->count() > 0
-				) {
-					$hasProperty = true;
+					);
+					$properties = array_filter(
+						$properties,
+						static fn (DevicesEntities\Channels\Properties\Variable $property): bool => in_array(
+							$property->getDataType(),
+							$allowedDataTypes,
+							true,
+						),
+					);
+
+					if ($properties !== []) {
+						$hasProperty = true;
+					}
 				}
 			}
 
@@ -1644,7 +1725,7 @@ class Thermostat extends Device
 			$properties[$property->getIdentifier()] = sprintf(
 				'%s%s',
 				$property->getIdentifier(),
-				($property->getName() !== null ? ' [' . $property->getName() . ']' : ''),
+				' [' . ($property->getName() ?? DevicesHelpers\Name::createName($property->getIdentifier())) . ']',
 			);
 		}
 
