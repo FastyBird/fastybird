@@ -115,12 +115,12 @@ final class DevicePropertiesStates
 	{
 		if (is_array($property)) {
 			foreach ($property as $item) {
-				$this->writeValue($item, Utils\ArrayHash::from([
+				$this->setValue($item, Utils\ArrayHash::from([
 					States\Property::VALID_KEY => $state,
 				]));
 			}
 		} else {
-			$this->writeValue($property, Utils\ArrayHash::from([
+			$this->setValue($property, Utils\ArrayHash::from([
 				States\Property::VALID_KEY => $state,
 			]));
 		}
