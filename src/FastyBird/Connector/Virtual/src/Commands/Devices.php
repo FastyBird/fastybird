@@ -154,6 +154,8 @@ class Devices extends Console\Command\Command
 		$serviceCmd = $this->askWhichDeviceType($io);
 
 		if ($serviceCmd === null) {
+			$this->translator->translate('//virtual-connector.cmd.devices.messages.noService');
+
 			return;
 		}
 
@@ -177,15 +179,37 @@ class Devices extends Console\Command\Command
 		Entities\VirtualConnector $connector,
 	): void
 	{
-		$serviceCmd = $this->askWhichDeviceType($io);
+		$device = $this->askWhichDevice($io, $connector);
 
-		if ($serviceCmd === null) {
+		if ($device === null) {
+			$io->warning($this->translator->translate('//virtual-connector.cmd.devices.messages.noDevices'));
+
+			$question = new Console\Question\ConfirmationQuestion(
+				$this->translator->translate('//virtual-connector.cmd.devices.questions.create.device'),
+				false,
+			);
+
+			$continue = (bool) $io->askQuestion($question);
+
+			if ($continue) {
+				$this->createDevice($input, $output, $io, $connector);
+			}
+
 			return;
 		}
+
+		if (!array_key_exists($device->getType(), $this->commands)) {
+			$this->translator->translate('//virtual-connector.cmd.devices.messages.noService');
+
+			return;
+		}
+
+		$serviceCmd = $this->commands[$device->getType()];
 
 		$serviceCmd->run(new Input\ArrayInput([
 			'--action' => Virtual\Commands\Devices\Device::ACTION_EDIT,
 			'--connector' => $connector->getId()->toString(),
+			'--device' => $device->getId()->toString(),
 			'--no-interaction' => $input->getOption('no-interaction'),
 			'--quiet' => $input->getOption('quiet'),
 		]), $output);

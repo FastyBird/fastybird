@@ -35,12 +35,14 @@ use function array_key_exists;
 use function array_sum;
 use function assert;
 use function count;
+use function floatval;
 use function in_array;
 use function is_bool;
-use function is_float;
+use function is_numeric;
 use function is_string;
 use function max;
 use function min;
+use function preg_match;
 
 /**
  * Thermostat service
@@ -60,6 +62,9 @@ class Thermostat implements Driver
 	private array $coolers = [];
 
 	/** @var array<string, float|null> */
+	private array $targetTemperature = [];
+
+	/** @var array<string, float|null> */
 	private array $actualTemperature = [];
 
 	/** @var array<string, float|null> */
@@ -68,14 +73,17 @@ class Thermostat implements Driver
 	/** @var array<string, bool|null> */
 	private array $openingsState = [];
 
-	private Types\ThermostatMode $mode;
+	private Types\ThermostatMode|null $presetMode = null;
 
-	private Types\HvacMode $hvacMode;
+	private Types\HvacMode|null $hvacMode = null;
 
 	private bool $connected = false;
 
 	private DateTimeInterface|null $connectedAt = null;
 
+	/**
+	 * @param Entities\Devices\Thermostat $device
+	 */
 	public function __construct(
 		private readonly Entities\VirtualDevice $device,
 		private readonly Helpers\Entity $entityHelper,
@@ -85,10 +93,6 @@ class Thermostat implements Driver
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 	)
 	{
-		assert($this->device instanceof Entities\Devices\Thermostat);
-
-		$this->mode = Types\ThermostatMode::get(Types\ThermostatMode::MANUAL);
-		$this->hvacMode = Types\HvacMode::get(Types\HvacMode::OFF);
 	}
 
 	/**
@@ -99,8 +103,6 @@ class Thermostat implements Driver
 	 */
 	public function connect(): Promise\PromiseInterface
 	{
-		assert($this->device instanceof Entities\Devices\Thermostat);
-
 		if (
 			!$this->device->hasSensors()
 			|| (
@@ -155,15 +157,15 @@ class Thermostat implements Driver
 			);
 
 			if (Utils\Strings::startsWith($sensor->getIdentifier(), Types\ChannelPropertyIdentifier::FLOOR_SENSOR)) {
-				$this->actualFloorTemperature[$sensor->getId()->toString()] = is_float($actualValue)
-					? $actualValue
+				$this->actualFloorTemperature[$sensor->getId()->toString()] = is_numeric($actualValue)
+					? floatval($actualValue)
 					: null;
 			} elseif (Utils\Strings::startsWith(
 				$sensor->getIdentifier(),
 				Types\ChannelPropertyIdentifier::TARGET_SENSOR,
 			)) {
-				$this->actualTemperature[$sensor->getId()->toString()] = is_float($actualValue)
-					? $actualValue
+				$this->actualTemperature[$sensor->getId()->toString()] = is_numeric($actualValue)
+					? floatval($actualValue)
 					: null;
 			}
 		}
@@ -188,6 +190,34 @@ class Thermostat implements Driver
 			}
 		}
 
+		foreach ($this->device->getPresetModes() as $mode) {
+			$property = $this->device->getTargetTemp(Types\ThermostatMode::get($mode));
+
+			if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
+				$state = $this->channelPropertiesStatesManager->readValue($property);
+
+				if (is_numeric($state?->getActualValue())) {
+					$this->targetTemperature[$mode] = floatval($state->getActualValue());
+				}
+			}
+		}
+
+		if ($this->device->getHvacMode() !== null) {
+			$state = $this->channelPropertiesStatesManager->readValue($this->device->getHvacMode());
+
+			if ($state !== null && Types\HvacMode::isValidValue($state->getActualValue())) {
+				$this->hvacMode = Types\HvacMode::get($state->getActualValue());
+			}
+		}
+
+		if ($this->device->getPresetMode() !== null) {
+			$state = $this->channelPropertiesStatesManager->readValue($this->device->getPresetMode());
+
+			if ($state !== null && Types\ThermostatMode::isValidValue($state->getActualValue())) {
+				$this->presetMode = Types\ThermostatMode::get($state->getActualValue());
+			}
+		}
+
 		$this->connected = true;
 		$this->connectedAt = $this->dateTimeFactory->getNow();
 
@@ -203,8 +233,6 @@ class Thermostat implements Driver
 	 */
 	public function disconnect(): Promise\PromiseInterface
 	{
-		assert($this->device instanceof Entities\Devices\Thermostat);
-
 		$this->setActorState(false, false);
 
 		$this->actualTemperature = [];
@@ -239,12 +267,18 @@ class Thermostat implements Driver
 	 */
 	public function process(): Promise\PromiseInterface
 	{
-		assert($this->device instanceof Entities\Devices\Thermostat);
-
 		if (!$this->isOpeningsClosed()) {
 			$this->setActorState(false, false);
 
 			return Promise\resolve(true);
+		}
+
+		if ($this->hvacMode === null || $this->presetMode === null) {
+			$this->setActorState(false, false);
+
+			$this->connected = false;
+
+			return Promise\reject(new Exceptions\InvalidState('Thermostat mode is not configured'));
 		}
 
 		if ($this->hvacMode->equalsValue(Types\HvacMode::OFF)) {
@@ -253,15 +287,18 @@ class Thermostat implements Driver
 			return Promise\resolve(true);
 		}
 
-		$targetTemp = $this->device->getTargetTemp($this->mode);
-
-		if ($targetTemp === null) {
+		if (
+			!array_key_exists($this->presetMode->getValue(), $this->targetTemperature)
+			|| $this->targetTemperature[$this->presetMode->getValue()] === null
+		) {
 			$this->setActorState(false, false);
 
 			$this->connected = false;
 
 			return Promise\reject(new Exceptions\InvalidState('Target temperature is not configured'));
 		}
+
+		$targetTemp = $this->targetTemperature[$this->presetMode->getValue()];
 
 		$measuredTemp = array_filter($this->actualTemperature, static fn (float|null $temp): bool => $temp !== null);
 		$measuredFloorTemp = array_filter(
@@ -304,8 +341,8 @@ class Thermostat implements Driver
 				$this->setActorState(false, false);
 			}
 		} elseif ($this->hvacMode->equalsValue(Types\HvacMode::AUTO)) {
-			$heatingThresholdTemp = $this->device->getHeatingThresholdTemp($this->mode);
-			$coolingThresholdTemp = $this->device->getCoolingThresholdTemp($this->mode);
+			$heatingThresholdTemp = $this->device->getHeatingThresholdTemp($this->presetMode);
+			$coolingThresholdTemp = $this->device->getCoolingThresholdTemp($this->presetMode);
 
 			if (
 				$heatingThresholdTemp === null
@@ -340,7 +377,9 @@ class Thermostat implements Driver
 					'device' => $this->device->getId(),
 					'channel' => $this->device->getThermostat()->getId(),
 					'property' => Types\ChannelPropertyIdentifier::ACTUAL_TEMPERATURE,
-					'value' => $measuredTemp !== [] ? array_sum($measuredTemp) / count($measuredTemp) : null,
+					'value' => $measuredTemp !== []
+						? array_sum($measuredTemp) / count($measuredTemp)
+						: null,
 				],
 			),
 		);
@@ -354,9 +393,9 @@ class Thermostat implements Driver
 						'device' => $this->device->getId(),
 						'channel' => $this->device->getThermostat()->getId(),
 						'property' => Types\ChannelPropertyIdentifier::ACTUAL_FLOOR_TEMPERATURE,
-						'value' => $measuredFloorTemp !== [] ? array_sum($measuredFloorTemp) / count(
-							$measuredFloorTemp,
-						) : null,
+						'value' => $measuredFloorTemp !== []
+							? array_sum($measuredFloorTemp) / count($measuredFloorTemp)
+							: null,
 					],
 				),
 			);
@@ -365,35 +404,123 @@ class Thermostat implements Driver
 		return Promise\resolve();
 	}
 
+	/**
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\Runtime
+	 */
 	public function writeState(
 		DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Devices\Properties\Dynamic $property,
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $expectedValue,
 	): Promise\PromiseInterface
 	{
-		assert($this->device instanceof Entities\Devices\Thermostat);
-
 		if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
 			if ($property->getChannel()->getIdentifier() === Types\ChannelIdentifier::THERMOSTAT) {
-				if (
-					$property->getIdentifier() === Types\ChannelPropertyIdentifier::PRESET_MODE
-					&& is_string($expectedValue)
-					&& Types\ThermostatMode::isValidValue($expectedValue)
-				) {
-					$this->mode = Types\ThermostatMode::get($expectedValue);
-				}
+				if ($property->getIdentifier() === Types\ChannelPropertyIdentifier::PRESET_MODE) {
+					if (
+						is_string($expectedValue)
+						&& Types\ThermostatMode::isValidValue($expectedValue)
+					) {
+						$this->presetMode = Types\ThermostatMode::get($expectedValue);
 
+						$this->queue->append(
+							$this->entityHelper->create(
+								Entities\Messages\StoreChannelPropertyState::class,
+								[
+									'connector' => $this->device->getConnector()->getId(),
+									'device' => $this->device->getId(),
+									'channel' => $this->device->getThermostat()->getId(),
+									'property' => $property->getId(),
+									'value' => $expectedValue,
+								],
+							),
+						);
+
+						return Promise\resolve(true);
+					} else {
+						return Promise\reject(new Exceptions\InvalidArgument('Provided value is not valid'));
+					}
+				} elseif ($property->getIdentifier() === Types\ChannelPropertyIdentifier::HVAC_MODE) {
+					if (
+						is_string($expectedValue)
+						&& Types\HvacMode::isValidValue($expectedValue)
+					) {
+						$this->hvacMode = Types\HvacMode::get($expectedValue);
+
+						$this->queue->append(
+							$this->entityHelper->create(
+								Entities\Messages\StoreChannelPropertyState::class,
+								[
+									'connector' => $this->device->getConnector()->getId(),
+									'device' => $this->device->getId(),
+									'channel' => $this->device->getThermostat()->getId(),
+									'property' => $property->getId(),
+									'value' => $expectedValue,
+								],
+							),
+						);
+
+						return Promise\resolve(true);
+					} else {
+						return Promise\reject(new Exceptions\InvalidArgument('Provided value is not valid'));
+					}
+				} elseif ($property->getIdentifier() === Types\ChannelPropertyIdentifier::TARGET_TEMPERATURE) {
+					if (is_numeric($expectedValue)) {
+						$this->targetTemperature[Types\ThermostatMode::MANUAL] = floatval($expectedValue);
+
+						$this->queue->append(
+							$this->entityHelper->create(
+								Entities\Messages\StoreChannelPropertyState::class,
+								[
+									'connector' => $this->device->getConnector()->getId(),
+									'device' => $this->device->getId(),
+									'channel' => $this->device->getThermostat()->getId(),
+									'property' => $property->getId(),
+									'value' => $expectedValue,
+								],
+							),
+						);
+
+						return Promise\resolve(true);
+					} else {
+						return Promise\reject(new Exceptions\InvalidArgument('Provided value is not valid'));
+					}
+				}
+			} elseif (
+				preg_match(
+					Virtual\Constants::PRESET_CHANNEL_PATTERN,
+					$property->getChannel()->getIdentifier(),
+					$matches,
+				) === 1
+				&& in_array('preset', $matches, true)
+			) {
 				if (
-					$property->getIdentifier() === Types\ChannelPropertyIdentifier::HVAC_MODE
-					&& is_string($expectedValue)
-					&& Types\HvacMode::isValidValue($expectedValue)
+					Types\ThermostatMode::isValidValue($matches['preset'])
+					&& is_numeric($expectedValue)
 				) {
-					$this->hvacMode = Types\HvacMode::get($expectedValue);
+					$this->targetTemperature[$matches['preset']] = floatval($expectedValue);
+
+					$this->queue->append(
+						$this->entityHelper->create(
+							Entities\Messages\StoreChannelPropertyState::class,
+							[
+								'connector' => $this->device->getConnector()->getId(),
+								'device' => $this->device->getId(),
+								'channel' => $property->getChannel()->getId(),
+								'property' => $property->getId(),
+								'value' => $expectedValue,
+							],
+						),
+					);
+
+					return Promise\resolve(true);
+				} else {
+					return Promise\reject(new Exceptions\InvalidArgument('Provided value is not valid'));
 				}
 			}
 		}
 
-		return Promise\resolve(true);
+		return Promise\reject(new Exceptions\InvalidArgument('Provided property is unsupported'));
 	}
 
 	public function notifyState(
@@ -401,8 +528,6 @@ class Thermostat implements Driver
 		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $actualValue,
 	): Promise\PromiseInterface
 	{
-		assert($this->device instanceof Entities\Devices\Thermostat);
-
 		if ($property instanceof DevicesEntities\Channels\Properties\Mapped) {
 			if ($property->getChannel()->getIdentifier() === Types\ChannelIdentifier::ACTORS) {
 				if (
@@ -411,11 +536,14 @@ class Thermostat implements Driver
 				) {
 					$this->heaters[$property->getId()->toString()] = $actualValue;
 
+					return Promise\resolve(true);
 				} elseif (
 					Utils\Strings::startsWith($property->getIdentifier(), Types\ChannelPropertyIdentifier::COOLER)
 					&& (is_bool($actualValue) || $actualValue === null)
 				) {
 					$this->coolers[$property->getId()->toString()] = $actualValue;
+
+					return Promise\resolve(true);
 				}
 			} elseif ($property->getChannel()->getIdentifier() === Types\ChannelIdentifier::SENSORS) {
 				if (
@@ -423,15 +551,18 @@ class Thermostat implements Driver
 						$property->getIdentifier(),
 						Types\ChannelPropertyIdentifier::TARGET_SENSOR,
 					)
-					&& (is_float($actualValue) || $actualValue === null)
+					&& (is_numeric($actualValue) || $actualValue === null)
 				) {
-					$this->actualTemperature[$property->getId()->toString()] = $actualValue;
+					$this->actualTemperature[$property->getId()->toString()] = floatval($actualValue);
 
+					return Promise\resolve(true);
 				} elseif (
 					Utils\Strings::startsWith($property->getIdentifier(), Types\ChannelPropertyIdentifier::FLOOR_SENSOR)
-					&& (is_float($actualValue) || $actualValue === null)
+					&& (is_numeric($actualValue) || $actualValue === null)
 				) {
-					$this->actualFloorTemperature[$property->getId()->toString()] = $actualValue;
+					$this->actualFloorTemperature[$property->getId()->toString()] = floatval($actualValue);
+
+					return Promise\resolve(true);
 				}
 			} elseif ($property->getChannel()->getIdentifier() === Types\ChannelIdentifier::OPENINGS) {
 				if (
@@ -439,11 +570,13 @@ class Thermostat implements Driver
 					&& (is_bool($actualValue) || $actualValue === null)
 				) {
 					$this->openingsState[$property->getId()->toString()] = $actualValue;
+
+					return Promise\resolve(true);
 				}
 			}
 		}
 
-		return Promise\resolve(true);
+		return Promise\reject(new Exceptions\InvalidArgument('Provided property is unsupported'));
 	}
 
 	/**
@@ -455,8 +588,6 @@ class Thermostat implements Driver
 	 */
 	private function setActorState(bool $heaters, bool $coolers): void
 	{
-		assert($this->device instanceof Entities\Devices\Thermostat);
-
 		$this->setHeaterState($heaters);
 		$this->setCoolerState($coolers);
 
@@ -493,8 +624,6 @@ class Thermostat implements Driver
 	 */
 	private function setHeaterState(bool $state): void
 	{
-		assert($this->device instanceof Entities\Devices\Thermostat);
-
 		if ($state && $this->isFloorOverHeating()) {
 			$this->setHeaterState(false);
 
@@ -549,8 +678,6 @@ class Thermostat implements Driver
 	 */
 	private function setCoolerState(bool $state): void
 	{
-		assert($this->device instanceof Entities\Devices\Thermostat);
-
 		foreach ($this->device->getActors() as $actor) {
 			assert($actor instanceof DevicesEntities\Channels\Properties\Mapped);
 
@@ -588,8 +715,6 @@ class Thermostat implements Driver
 	 */
 	private function isFloorOverHeating(): bool
 	{
-		assert($this->device instanceof Entities\Devices\Thermostat);
-
 		if ($this->device->hasFloorSensors()) {
 			$maxFloorActualTemp = max(
 				array_filter($this->actualFloorTemperature, static fn (float|null $temp): bool => $temp !== null),

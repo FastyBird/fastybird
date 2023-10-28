@@ -42,12 +42,7 @@ class Preset extends Entities\VirtualChannel
 		return self::TYPE;
 	}
 
-	/**
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 */
-	public function getTargetTemp(): float|null
+	public function getTargetTemp(): DevicesEntities\Channels\Properties\Dynamic|null
 	{
 		$property = $this->properties
 			->filter(
@@ -56,11 +51,8 @@ class Preset extends Entities\VirtualChannel
 			)
 			->first();
 
-		if (
-			$property instanceof DevicesEntities\Channels\Properties\Variable
-			&& is_numeric($property->getValue())
-		) {
-			return floatval($property->getValue());
+		if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
+			return $property;
 		}
 
 		return null;

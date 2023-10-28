@@ -421,7 +421,7 @@ abstract class Property implements Entity,
 	{
 		if (!$this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_VARIABLE)) {
 			throw new Exceptions\InvalidState(
-				sprintf('Value is not allowed for property type: %s', strval($this->getType()->getValue())),
+				sprintf('Reading value is not allowed for property type: %s', strval($this->getType()->getValue())),
 			);
 		}
 
@@ -449,7 +449,11 @@ abstract class Property implements Entity,
 	{
 		if (!$this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_VARIABLE)) {
 			throw new Exceptions\InvalidState(
-				sprintf('Value is not allowed for property type: %s', strval($this->getType()->getValue())),
+				sprintf(
+					'Writing value is not allowed for property type: %s:%s',
+					strval($this->getType()->getValue()),
+					$this->getIdentifier(),
+				),
 			);
 		}
 
@@ -508,7 +512,10 @@ abstract class Property implements Entity,
 	{
 		if (!$this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_VARIABLE)) {
 			throw new Exceptions\InvalidState(
-				sprintf('Value is not allowed for property type: %s', strval($this->getType()->getValue())),
+				sprintf(
+					'Reading default value is not allowed for property type: %s',
+					strval($this->getType()->getValue()),
+				),
 			);
 		}
 
@@ -535,7 +542,10 @@ abstract class Property implements Entity,
 	{
 		if (!$this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_VARIABLE)) {
 			throw new Exceptions\InvalidState(
-				sprintf('Default value is not allowed for property type: %s', strval($this->getType()->getValue())),
+				sprintf(
+					'Writing default value is not allowed for property type: %s',
+					strval($this->getType()->getValue()),
+				),
 			);
 		}
 

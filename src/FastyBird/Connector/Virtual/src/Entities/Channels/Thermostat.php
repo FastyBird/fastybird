@@ -42,14 +42,39 @@ class Thermostat extends Entities\VirtualChannel
 		return self::TYPE;
 	}
 
-	/**
-	 * Thermostat target temperature to be reached
-	 *
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 */
-	public function getTargetTemp(): float|null
+	public function getHvacMode(): DevicesEntities\Channels\Properties\Dynamic|null
+	{
+		$property = $this->properties
+			->filter(
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Channels\Properties\Property $property): bool => $property->getIdentifier() === Types\ChannelPropertyIdentifier::HVAC_MODE
+			)
+			->first();
+
+		if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
+			return $property;
+		}
+
+		return null;
+	}
+
+	public function getPresetMode(): DevicesEntities\Channels\Properties\Dynamic|null
+	{
+		$property = $this->properties
+			->filter(
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Channels\Properties\Property $property): bool => $property->getIdentifier() === Types\ChannelPropertyIdentifier::PRESET_MODE
+			)
+			->first();
+
+		if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
+			return $property;
+		}
+
+		return null;
+	}
+
+	public function getTargetTemp(): DevicesEntities\Channels\Properties\Dynamic|null
 	{
 		$property = $this->properties
 			->filter(
@@ -58,11 +83,8 @@ class Thermostat extends Entities\VirtualChannel
 			)
 			->first();
 
-		if (
-			$property instanceof DevicesEntities\Channels\Properties\Variable
-			&& is_numeric($property->getValue())
-		) {
-			return floatval($property->getValue());
+		if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
+			return $property;
 		}
 
 		return null;
