@@ -321,9 +321,9 @@ class Thermostat implements Driver
 				return Promise\reject(new Exceptions\InvalidState('Thermostat has not configured any heater actor'));
 			}
 
-			if ($targetTempHigh >= $maxActualTemp) {
+			if ($maxActualTemp >= $targetTempHigh) {
 				$this->setActorState(false, false);
-			} elseif ($targetTempLow <= $minActualTemp) {
+			} elseif ($minActualTemp <= $targetTempLow) {
 				$this->setActorState(true, false);
 			}
 		} elseif ($this->hvacMode->equalsValue(Types\HvacMode::COOL)) {
@@ -335,9 +335,9 @@ class Thermostat implements Driver
 				return Promise\reject(new Exceptions\InvalidState('Thermostat has not configured any cooler actor'));
 			}
 
-			if ($targetTempHigh >= $maxActualTemp) {
+			if ($maxActualTemp >= $targetTempHigh) {
 				$this->setActorState(false, true);
-			} elseif ($targetTempLow <= $minActualTemp) {
+			} elseif ($minActualTemp <= $targetTempLow) {
 				$this->setActorState(false, false);
 			}
 		} elseif ($this->hvacMode->equalsValue(Types\HvacMode::AUTO)) {
@@ -354,18 +354,28 @@ class Thermostat implements Driver
 				$this->connected = false;
 
 				return Promise\reject(
-					new Exceptions\InvalidState('Heating and cooling threshold temperature is wrongly configured'),
+					new Exceptions\InvalidState('Heating and cooling threshold temperatures are wrongly configured'),
 				);
 			}
 
 			if ($minActualTemp <= $heatingThresholdTemp) {
 				$this->setActorState(true, false);
-			} elseif ($targetTempHigh > $maxActualTemp) {
-				$this->setActorState(false, false);
-			} elseif ($targetTempLow > $minActualTemp) {
-				$this->setActorState(false, false);
 			} elseif ($maxActualTemp >= $coolingThresholdTemp) {
 				$this->setActorState(false, true);
+			} elseif (
+				$this->isHeating()
+				&& !$this->isCooling()
+				&& $maxActualTemp >= $targetTempHigh
+			) {
+				$this->setActorState(false, false);
+			} elseif (
+				!$this->isHeating()
+				&& $this->isCooling()
+				&& $minActualTemp <= $targetTempLow
+			) {
+				$this->setActorState(false, false);
+			} elseif ($this->isHeating() && $this->isCooling()) {
+				$this->setActorState(false, false);
 			}
 		}
 
@@ -594,7 +604,7 @@ class Thermostat implements Driver
 		$state = Types\HvacState::INACTIVE;
 
 		if ($heaters && !$coolers) {
-			$state = Types\HvacState::HEATING;
+			$state = $this->isFloorOverHeating() ? Types\HvacState::OFF : Types\HvacState::HEATING;
 		} elseif (!$heaters && $coolers) {
 			$state = Types\HvacState::COOLING;
 		} elseif (!$heaters && !$coolers) {
@@ -655,7 +665,19 @@ class Thermostat implements Driver
 				array_key_exists($actor->getId()->toString(), $this->heaters)
 				&& $this->heaters[$actor->getId()->toString()] === $state
 			) {
-				continue;
+				$this->logger->debug(
+					'Keeping heater same state',
+					[
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
+						'type' => 'thermostat-driver',
+						'connector' => [
+							'id' => $this->device->getConnector()->getId()->toString(),
+						],
+						'device' => [
+							'id' => $this->device->getId()->toString(),
+						],
+					],
+				);
 			}
 
 			$this->queue->append(
@@ -689,7 +711,19 @@ class Thermostat implements Driver
 				array_key_exists($actor->getId()->toString(), $this->coolers)
 				&& $this->coolers[$actor->getId()->toString()] === $state
 			) {
-				continue;
+				$this->logger->debug(
+					'Keeping cooler same state',
+					[
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
+						'type' => 'thermostat-driver',
+						'connector' => [
+							'id' => $this->device->getConnector()->getId()->toString(),
+						],
+						'device' => [
+							'id' => $this->device->getId()->toString(),
+						],
+					],
+				);
 			}
 
 			$this->queue->append(
@@ -705,6 +739,16 @@ class Thermostat implements Driver
 				),
 			);
 		}
+	}
+
+	private function isHeating(): bool
+	{
+		return in_array(true, $this->heaters, true);
+	}
+
+	private function isCooling(): bool
+	{
+		return in_array(true, $this->coolers, true);
 	}
 
 	/**
