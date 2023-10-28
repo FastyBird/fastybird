@@ -179,6 +179,8 @@
             "FastyBird\\Connector\\Viera\\Tests\\Cases\\Unit\\": "src/FastyBird/Connector/Viera/tests/cases/unit",
             "FastyBird\\Connector\\Viera\\Tests\\Tools\\": "src/FastyBird/Connector/Viera/tests/tools",
             "FastyBird\\Connector\\Virtual\\Tests\\Cases\\Unit\\": "src/FastyBird/Connector/Virtual/tests/cases/unit",
+            "FastyBird\\Connector\\Virtual\\Tests\\Fixtures\\": "src/FastyBird/Connector/Virtual/tests/fixtures",
+            "FastyBird\\Connector\\Virtual\\Tests\\Fixtures\\Dummy\\": "src/FastyBird/Connector/Virtual/tests/fixtures/dummy",
             "FastyBird\\Connector\\Virtual\\Tests\\Tools\\": "src/FastyBird/Connector/Virtual/tests/tools",
             "FastyBird\\Library\\Bootstrap\\Tests\\Cases\\Unit\\": "src/FastyBird/Library/Bootstrap/tests/cases/unit",
             "FastyBird\\Library\\Exchange\\Tests\\Cases\\Unit\\": "src/FastyBird/Library/Exchange/tests/cases/unit",

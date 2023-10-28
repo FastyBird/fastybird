@@ -1,8 +1,8 @@
 <?php declare(strict_types = 1);
 
-namespace FastyBird\Module\Devices\Tests\Fixtures\Dummy;
+namespace FastyBird\Connector\Virtual\Tests\Fixtures\Dummy;
 
-use FastyBird\Module\Devices\States;
+use FastyBird\Module\Devices\States as DevicesStates;
 use Ramsey\Uuid;
 use RuntimeException;
 
@@ -12,7 +12,7 @@ class DummyStateRepository
 	/**
 	 * @throws RuntimeException
 	 */
-	public function findOne(Uuid\UuidInterface $id): States\Property|null
+	public function findOne(Uuid\UuidInterface $id): DevicesStates\Property|null
 	{
 		throw new RuntimeException('This is dummy service');
 	}

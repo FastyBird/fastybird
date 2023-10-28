@@ -1,8 +1,8 @@
 <?php declare(strict_types = 1);
 
-namespace FastyBird\Module\Devices\Tests\Fixtures\Dummy;
+namespace FastyBird\Connector\Virtual\Tests\Fixtures\Dummy;
 
-use FastyBird\Module\Devices\States;
+use FastyBird\Module\Devices\States as DevicesStates;
 use Nette\Utils;
 use Ramsey\Uuid;
 use RuntimeException;
@@ -13,7 +13,7 @@ class DummyStatesManager
 	/**
 	 * @throws RuntimeException
 	 */
-	public function create(Uuid\UuidInterface $id, Utils\ArrayHash $values): States\Property
+	public function create(Uuid\UuidInterface $id, Utils\ArrayHash $values): DevicesStates\Property
 	{
 		throw new RuntimeException('This is dummy service');
 	}
@@ -21,7 +21,7 @@ class DummyStatesManager
 	/**
 	 * @throws RuntimeException
 	 */
-	public function update(States\Property $state, Utils\ArrayHash $values): States\Property
+	public function update(DevicesStates\Property $state, Utils\ArrayHash $values): DevicesStates\Property
 	{
 		throw new RuntimeException('This is dummy service');
 	}
@@ -29,7 +29,7 @@ class DummyStatesManager
 	/**
 	 * @throws RuntimeException
 	 */
-	public function updateState(States\Property $state, Utils\ArrayHash $values): States\Property
+	public function updateState(DevicesStates\Property $state, Utils\ArrayHash $values): DevicesStates\Property
 	{
 		throw new RuntimeException('This is dummy service');
 	}
@@ -37,7 +37,7 @@ class DummyStatesManager
 	/**
 	 * @throws RuntimeException
 	 */
-	public function delete(States\Property $state): bool
+	public function delete(DevicesStates\Property $state): bool
 	{
 		throw new RuntimeException('This is dummy service');
 	}

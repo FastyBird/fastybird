@@ -22,6 +22,7 @@ and is licensed under [Apache2](http://www.apache.org/licenses/LICENSE-2.0).
 
 ### Features:
 
+- Virtual device driver interface for developers
 - Full support for all devices from other connectors
 - Rich devices management for creating virtual devices
 - FastyBird Virtual Connector management for the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) [devices module](https://github.com/FastyBird/devices-module), allowing users to easily manage and monitor virtual devices
@@ -31,8 +32,7 @@ and is licensed under [Apache2](http://www.apache.org/licenses/LICENSE-2.0).
 
 ## Requirements
 
-FastyBird Virtual connector is tested against PHP 8.1 and require installed [Process Control](https://www.php.net/manual/en/book.pcntl.php),
-[OpenSSL](https://www.php.net/manual/en/book.openssl.php), [SimpleXML](https://www.php.net/manual/en/book.simplexml.php) and [Iconv](https://www.php.net/manual/en/book.iconv.php)
+FastyBird Virtual connector is tested against PHP 8.1 and require installed [Process Control](https://www.php.net/manual/en/book.pcntl.php)
 PHP extensions.
 
 ## Installation

@@ -45,6 +45,20 @@ services:
       type: React\EventLoop\LoopInterface
     }
 
+    -
+        factory: FastyBird\Connector\Virtual\Tests\Fixtures\Dummy\DummyConnectorFactory
+        tags: [connector_type: dummy]
+    - {factory: FastyBird\Connector\Virtual\Tests\Fixtures\Dummy\DummyConnectorSchema}
+    - {factory: FastyBird\Connector\Virtual\Tests\Fixtures\Dummy\DummyDeviceSchema}
+
+decorator:
+    Doctrine\Persistence\Mapping\Driver\MappingDriverChain:
+        setup:
+            - addDriver(@nettrineOrmAnnotations.annotationDriver, 'FastyBird\Connector\Virtual\Tests\Fixtures\Dummy')
+    Doctrine\ORM\Mapping\Driver\AnnotationDriver:
+        setup:
+            - addPaths([%appDir%/fixtures/dummy])
+
 contributteTranslation:
     locales:
         default: en_US
@@ -93,7 +107,9 @@ nettrineOrm:
         proxyDir: %tempDir%/cache/doctrine.proxies
 
 nettrineOrmAnnotations:
-    mapping: []
+    mapping: [
+        FastyBird\Connector\Virtual\Tests\Fixtures\Dummy: %appDir%/fixtures/dummy
+    ]
 
 fbSimpleAuth:
     token:

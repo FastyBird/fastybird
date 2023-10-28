@@ -94,6 +94,13 @@ fbJsonApi:
     meta:
         copyright: FastyBird s.r.o
 
+# WS server
+###########
+ipubWebsockets:
+    server:
+        address: %sockets.address%
+        port: %sockets.port%
+
 # Redis exchange
 ################
 fbRedisDbPlugin:
@@ -121,27 +128,45 @@ fbWebServerPlugin:
         port: %server.port%
         certificate: %server.certificate%
 
-# Accounts module
-#################
+# Modules
+#########
 fbAccountsModule:
     apiPrefix: %api.prefixed.modules%
 
-# Devices module
-################
 fbDevicesModule:
     apiPrefix: %api.prefixed.modules%
 
-# Triggers module
-#################
 fbTriggersModule:
     apiPrefix: %api.prefixed.modules%
 
-# WS server
-###########
-ipubWebsockets:
-    server:
-        address: %sockets.address%
-        port: %sockets.port%
+# Connectors
+############
+fbFbMqttConnector:
+    writer: %connectors.writers%
+
+fbHomeKitConnector:
+    writer: %connectors.writers%
+
+fbModbusConnector:
+    writer: %connectors.writers%
+
+fbNsPanelConnector:
+    writer: %connectors.writers%
+
+fbShellyConnector:
+    writer: %connectors.writers%
+
+fbSonoffConnector:
+    writer: %connectors.writers%
+
+fbTuyaConnector:
+    writer: %connectors.writers%
+
+fbVieraConnector:
+    writer: %connectors.writers%
+
+fbVirtualConnector:
+    writer: %connectors.writers%
 
 # Application
 #############
