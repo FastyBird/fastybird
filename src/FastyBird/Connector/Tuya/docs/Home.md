@@ -55,7 +55,7 @@ If you have trouble following these instructions, please create an issue or pull
 
 From side menu select cloud platform:
 
-![Tuya platfrom menu](https://github.com/FastyBird/tuya-connector/blob/main/docs/_media/tuya_select_cloud.png)
+![Tuya platform menu](https://github.com/FastyBird/tuya-connector/blob/main/docs/_media/tuya_select_cloud.png)
 
 And now click on "Create Cloud Project" button:
 
