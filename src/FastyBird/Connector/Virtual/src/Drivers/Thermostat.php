@@ -267,24 +267,12 @@ class Thermostat implements Driver
 	 */
 	public function process(): Promise\PromiseInterface
 	{
-		if (!$this->isOpeningsClosed()) {
-			$this->setActorState(false, false);
-
-			return Promise\resolve(true);
-		}
-
 		if ($this->hvacMode === null || $this->presetMode === null) {
 			$this->setActorState(false, false);
 
 			$this->connected = false;
 
 			return Promise\reject(new Exceptions\InvalidState('Thermostat mode is not configured'));
-		}
-
-		if ($this->hvacMode->equalsValue(Types\HvacMode::OFF)) {
-			$this->setActorState(false, false);
-
-			return Promise\resolve(true);
 		}
 
 		if (
@@ -300,7 +288,21 @@ class Thermostat implements Driver
 
 		$targetTemp = $this->targetTemperature[$this->presetMode->getValue()];
 
-		$measuredTemp = array_filter($this->actualTemperature, static fn (float|null $temp): bool => $temp !== null);
+		$targetTempLow = $targetTemp - ($this->device->getLowTargetTempTolerance() ?? 0);
+		$targetTempHigh = $targetTemp + ($this->device->getHighTargetTempTolerance() ?? 0);
+
+		if ($targetTempLow > $targetTempHigh) {
+			$this->setActorState(false, false);
+
+			$this->connected = false;
+
+			return Promise\reject(new Exceptions\InvalidState('Target temperature boundaries are wrongly configured'));
+		}
+
+		$measuredTemp = array_filter(
+			$this->actualTemperature,
+			static fn (float|null $temp): bool => $temp !== null,
+		);
 		$measuredFloorTemp = array_filter(
 			$this->actualFloorTemperature,
 			static fn (float|null $temp): bool => $temp !== null,
@@ -309,8 +311,55 @@ class Thermostat implements Driver
 		$minActualTemp = min($measuredTemp);
 		$maxActualTemp = max($measuredTemp);
 
-		$targetTempLow = $targetTemp - ($this->device->getLowTargetTempTolerance() ?? 0);
-		$targetTempHigh = $targetTemp + ($this->device->getHighTargetTempTolerance() ?? 0);
+		$this->queue->append(
+			$this->entityHelper->create(
+				Entities\Messages\StoreChannelPropertyState::class,
+				[
+					'connector' => $this->device->getConnector()->getId(),
+					'device' => $this->device->getId(),
+					'channel' => $this->device->getThermostat()->getId(),
+					'property' => Types\ChannelPropertyIdentifier::ACTUAL_TEMPERATURE,
+					'value' => $measuredTemp !== []
+						? array_sum($measuredTemp) / count($measuredTemp)
+						: null,
+				],
+			),
+		);
+
+		if ($this->device->hasFloorSensors()) {
+			$this->queue->append(
+				$this->entityHelper->create(
+					Entities\Messages\StoreChannelPropertyState::class,
+					[
+						'connector' => $this->device->getConnector()->getId(),
+						'device' => $this->device->getId(),
+						'channel' => $this->device->getThermostat()->getId(),
+						'property' => Types\ChannelPropertyIdentifier::ACTUAL_FLOOR_TEMPERATURE,
+						'value' => $measuredFloorTemp !== []
+							? array_sum($measuredFloorTemp) / count($measuredFloorTemp)
+							: null,
+					],
+				),
+			);
+		}
+
+		if (!$this->isOpeningsClosed()) {
+			$this->setActorState(false, false);
+
+			return Promise\resolve(true);
+		}
+
+		if ($this->hvacMode->equalsValue(Types\HvacMode::OFF)) {
+			$this->setActorState(false, false);
+
+			return Promise\resolve(true);
+		}
+
+		if ($this->isFloorOverHeating()) {
+			$this->setActorState(false, $this->isCooling());
+
+			return Promise\resolve(true);
+		}
 
 		if ($this->hvacMode->equalsValue(Types\HvacMode::HEAT)) {
 			if (!$this->device->hasHeaters()) {
@@ -377,38 +426,6 @@ class Thermostat implements Driver
 			} elseif ($this->isHeating() && $this->isCooling()) {
 				$this->setActorState(false, false);
 			}
-		}
-
-		$this->queue->append(
-			$this->entityHelper->create(
-				Entities\Messages\StoreChannelPropertyState::class,
-				[
-					'connector' => $this->device->getConnector()->getId(),
-					'device' => $this->device->getId(),
-					'channel' => $this->device->getThermostat()->getId(),
-					'property' => Types\ChannelPropertyIdentifier::ACTUAL_TEMPERATURE,
-					'value' => $measuredTemp !== []
-						? array_sum($measuredTemp) / count($measuredTemp)
-						: null,
-				],
-			),
-		);
-
-		if ($this->device->hasFloorSensors()) {
-			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\StoreChannelPropertyState::class,
-					[
-						'connector' => $this->device->getConnector()->getId(),
-						'device' => $this->device->getId(),
-						'channel' => $this->device->getThermostat()->getId(),
-						'property' => Types\ChannelPropertyIdentifier::ACTUAL_FLOOR_TEMPERATURE,
-						'value' => $measuredFloorTemp !== []
-							? array_sum($measuredFloorTemp) / count($measuredFloorTemp)
-							: null,
-					],
-				),
-			);
 		}
 
 		return Promise\resolve();
@@ -598,13 +615,21 @@ class Thermostat implements Driver
 	 */
 	private function setActorState(bool $heaters, bool $coolers): void
 	{
+		if (!$this->device->hasHeaters()) {
+			$heaters = false;
+		}
+
+		if (!$this->device->hasCoolers()) {
+			$coolers = false;
+		}
+
 		$this->setHeaterState($heaters);
 		$this->setCoolerState($coolers);
 
 		$state = Types\HvacState::INACTIVE;
 
 		if ($heaters && !$coolers) {
-			$state = $this->isFloorOverHeating() ? Types\HvacState::OFF : Types\HvacState::HEATING;
+			$state = Types\HvacState::HEATING;
 		} elseif (!$heaters && $coolers) {
 			$state = Types\HvacState::COOLING;
 		} elseif (!$heaters && !$coolers) {
@@ -661,25 +686,6 @@ class Thermostat implements Driver
 				continue;
 			}
 
-			if (
-				array_key_exists($actor->getId()->toString(), $this->heaters)
-				&& $this->heaters[$actor->getId()->toString()] === $state
-			) {
-				$this->logger->debug(
-					'Keeping heater same state',
-					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
-						'type' => 'thermostat-driver',
-						'connector' => [
-							'id' => $this->device->getConnector()->getId()->toString(),
-						],
-						'device' => [
-							'id' => $this->device->getId()->toString(),
-						],
-					],
-				);
-			}
-
 			$this->queue->append(
 				$this->entityHelper->create(
 					Entities\Messages\StoreChannelPropertyState::class,
@@ -705,25 +711,6 @@ class Thermostat implements Driver
 
 			if (!Utils\Strings::startsWith($actor->getIdentifier(), Types\ChannelPropertyIdentifier::COOLER)) {
 				continue;
-			}
-
-			if (
-				array_key_exists($actor->getId()->toString(), $this->coolers)
-				&& $this->coolers[$actor->getId()->toString()] === $state
-			) {
-				$this->logger->debug(
-					'Keeping cooler same state',
-					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
-						'type' => 'thermostat-driver',
-						'connector' => [
-							'id' => $this->device->getConnector()->getId()->toString(),
-						],
-						'device' => [
-							'id' => $this->device->getId()->toString(),
-						],
-					],
-				);
 			}
 
 			$this->queue->append(
