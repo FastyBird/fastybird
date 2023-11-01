@@ -42,6 +42,7 @@
         "contributte/monolog": "^0.5",
         "contributte/translation": "^2.0",
         "cweagans/composer-patches": "^1.7",
+        "doctrine/orm": "2.15.*",
         "endroid/qr-code": "4.5",
         "evenement/evenement": "^3.0",
         "fastybird/datetime-factory": "^0.6",
@@ -86,6 +87,7 @@
         "react/http": "^1.7",
         "react/promise": "~2.2",
         "react/socket": "^1.12",
+        "ringcentral/psr7": "^1.3",
         "sabre/xml": "^4.0",
         "sentry/sdk": "^3.1",
         "simplito/elliptic-php": "^1.0",
@@ -101,7 +103,6 @@
     "require-dev": {
         "brianium/paratest": "^7.3",
         "dg/bypass-finals": "^1.4",
-        "doctrine/orm": "2.15.*",
         "infection/infection": "^0.27",
         "ipub/websockets": "^1.5",
         "latte/latte": "^3.0",
@@ -136,6 +137,7 @@
             "FastyBird\\Connector\\Sonoff\\": "src/FastyBird/Connector/Sonoff/src/",
             "FastyBird\\Connector\\Tuya\\": "src/FastyBird/Connector/Tuya/src/",
             "FastyBird\\Connector\\Viera\\": "src/FastyBird/Connector/Viera/src/",
+            "FastyBird\\Connector\\Virtual\\": "src/FastyBird/Connector/Virtual/src/",
             "FastyBird\\Library\\Bootstrap\\": "src/FastyBird/Library/Bootstrap/src/",
             "FastyBird\\Library\\Exchange\\": "src/FastyBird/Library/Exchange/src/",
             "FastyBird\\Library\\Metadata\\": "src/FastyBird/Library/Metadata/src/",
@@ -176,6 +178,10 @@
             "FastyBird\\Connector\\Tuya\\Tests\\Tools\\": "src/FastyBird/Connector/Tuya/tests/tools",
             "FastyBird\\Connector\\Viera\\Tests\\Cases\\Unit\\": "src/FastyBird/Connector/Viera/tests/cases/unit",
             "FastyBird\\Connector\\Viera\\Tests\\Tools\\": "src/FastyBird/Connector/Viera/tests/tools",
+            "FastyBird\\Connector\\Virtual\\Tests\\Cases\\Unit\\": "src/FastyBird/Connector/Virtual/tests/cases/unit",
+            "FastyBird\\Connector\\Virtual\\Tests\\Fixtures\\": "src/FastyBird/Connector/Virtual/tests/fixtures",
+            "FastyBird\\Connector\\Virtual\\Tests\\Fixtures\\Dummy\\": "src/FastyBird/Connector/Virtual/tests/fixtures/dummy",
+            "FastyBird\\Connector\\Virtual\\Tests\\Tools\\": "src/FastyBird/Connector/Virtual/tests/tools",
             "FastyBird\\Library\\Bootstrap\\Tests\\Cases\\Unit\\": "src/FastyBird/Library/Bootstrap/tests/cases/unit",
             "FastyBird\\Library\\Exchange\\Tests\\Cases\\Unit\\": "src/FastyBird/Library/Exchange/tests/cases/unit",
             "FastyBird\\Library\\Metadata\\Tests\\Cases\\Unit\\": "src/FastyBird/Library/Metadata/tests/cases/unit",
@@ -206,12 +212,6 @@
     "extra": {
         "enable-patching": false,
         "patches": {
-            "nettrine/orm": {
-                "Enable connection overrides": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/nettrine-orm-src-managerregistry-php.patch"
-            },
-            "react/event-loop": {
-                "Bug: Use native return type": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/react-event-loop-src-loop-php.patch"
-            },
             "dg/bypass-finals": {
                 "Bug: mkdir check": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/dg-bypass-finals-src-nativewrapper-php.patch"
             },
@@ -219,8 +219,14 @@
                 "Bug: Ramsey uuid not working - Part 1": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/doctrine-orm-lib-doctrine-orm-persisters-entity-basicentitypersister-php.patch",
                 "Bug: Ramsey uuid not working - Part 2": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/doctrine-orm-lib-doctrine-orm-persisters-entity-joinedsubclasspersister-php.patch"
             },
+            "nettrine/orm": {
+                "Enable connection overrides": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/nettrine-orm-src-managerregistry-php.patch"
+            },
             "ramsey/uuid-doctrine": {
                 "Bug: Ramsey uuid conversion fallback": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/ramsey-uuid-doctrine-src-uuidbinarytype-php.patch"
+            },
+            "react/event-loop": {
+                "Bug: Use native return type": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/react-event-loop-src-loop-php.patch"
             }
         }
     },
@@ -266,6 +272,7 @@
         "fastybird/triggers-module": "self.version",
         "fastybird/tuya-connector": "self.version",
         "fastybird/viera-connector": "self.version",
+        "fastybird/virtual-connector": "self.version",
         "fastybird/web-server-plugin": "self.version",
         "fastybird/ws-server-plugin": "self.version"
     },

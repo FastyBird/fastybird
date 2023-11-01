@@ -76,6 +76,11 @@
   },
   {
     "organization": "FastyBird",
+    "name": "virtual-connector",
+    "local-path": "src/FastyBird/Connector/Virtual"
+  },
+  {
+    "organization": "FastyBird",
     "name": "couchdb-plugin",
     "local-path": "src/FastyBird/Plugin/CouchDb"
   },

@@ -71,7 +71,7 @@ abstract class Property implements Entities\Entity, Entities\Owner
 		array|string|null $format = null,
 		float|int|string|null $invalid = null,
 		private readonly int|null $scale = null,
-		private readonly int|null $step = null,
+		private readonly float|null $step = null,
 		string|null $owner = null,
 	)
 	{
@@ -145,7 +145,7 @@ abstract class Property implements Entities\Entity, Entities\Owner
 		return $this->scale;
 	}
 
-	public function getStep(): int|null
+	public function getStep(): float|null
 	{
 		return $this->step;
 	}

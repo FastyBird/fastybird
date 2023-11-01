@@ -466,7 +466,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					'Channel state could not be written into device',
 					array_merge(
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 							'type' => 'write-sub-device-state-message-consumer',
 							'exception' => BootstrapHelpers\Logger::buildException($ex),
 							'connector' => [

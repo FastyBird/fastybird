@@ -803,7 +803,7 @@ class Initialize extends Console\Command\Command
 			return $connection;
 		}
 
-		throw new Exceptions\Runtime('Transformer manager could not be loaded');
+		throw new Exceptions\Runtime('Database connection could not be established');
 	}
 
 }

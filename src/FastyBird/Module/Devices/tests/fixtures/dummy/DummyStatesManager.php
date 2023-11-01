@@ -10,24 +10,36 @@ use RuntimeException;
 class DummyStatesManager
 {
 
+	/**
+	 * @throws RuntimeException
+	 */
 	public function create(Uuid\UuidInterface $id, Utils\ArrayHash $values): States\Property
 	{
-		throw new RuntimeException('Thi is dummy service');
+		throw new RuntimeException('This is dummy service');
 	}
 
+	/**
+	 * @throws RuntimeException
+	 */
 	public function update(States\Property $state, Utils\ArrayHash $values): States\Property
 	{
-		throw new RuntimeException('Thi is dummy service');
+		throw new RuntimeException('This is dummy service');
 	}
 
+	/**
+	 * @throws RuntimeException
+	 */
 	public function updateState(States\Property $state, Utils\ArrayHash $values): States\Property
 	{
-		throw new RuntimeException('Thi is dummy service');
+		throw new RuntimeException('This is dummy service');
 	}
 
+	/**
+	 * @throws RuntimeException
+	 */
 	public function delete(States\Property $state): bool
 	{
-		throw new RuntimeException('Thi is dummy service');
+		throw new RuntimeException('This is dummy service');
 	}
 
 }

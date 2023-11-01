@@ -49,7 +49,7 @@ abstract class VariableProperty extends Property
 		array|null $format = null,
 		string|int|float|null $invalid = null,
 		int|null $scale = null,
-		int|null $step = null,
+		float|null $step = null,
 		float|bool|int|string|null $value = null,
 		float|bool|int|string|null $default = null,
 		string|null $owner = null,

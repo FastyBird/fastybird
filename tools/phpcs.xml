@@ -65,6 +65,11 @@
                 <element key="src/FastyBird/Connector/Viera/tests/cases/unit" value="FastyBird\Connector\Viera\Tests\Cases\Unit"/>
                 <element key="src/FastyBird/Connector/Viera/tests/tools" value="FastyBird\Connector\Viera\Tests\Tools"/>
 
+                <element key="src/FastyBird/Connector/Virtual/src" value="FastyBird\Connector\Virtual"/>
+                <element key="src/FastyBird/Connector/Virtual/tests/cases/unit" value="FastyBird\Connector\Virtual\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Connector/Virtual/tests/fixtures/dummy" value="FastyBird\Connector\Virtual\Tests\Fixtures\Dummy"/>
+                <element key="src/FastyBird/Connector/Virtual/tests/tools" value="FastyBird\Connector\Virtual\Tests\Tools"/>
+
                 <element key="src/FastyBird/Library/Bootstrap/src" value="FastyBird\Library\Bootstrap"/>
                 <element key="src/FastyBird/Library/Bootstrap/tests/cases/unit" value="FastyBird\Library\Bootstrap\Tests\Cases\Unit"/>
 
