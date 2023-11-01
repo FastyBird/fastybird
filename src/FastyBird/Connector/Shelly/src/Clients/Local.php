@@ -878,6 +878,10 @@ final class Local implements Client
 
 		if ($state->getSwitches() !== []) {
 			foreach ($state->getSwitches() as $component) {
+				if ($component->getOutput() === null) {
+					continue;
+				}
+
 				$states[] = [
 					'identifier' => (
 						$component->getType()->getValue()
@@ -893,42 +897,48 @@ final class Local implements Client
 
 		if ($state->getCovers() !== []) {
 			foreach ($state->getCovers() as $component) {
-				$states[] = [
-					'identifier' => (
-						$component->getType()->getValue()
-						. '_'
-						. $component->getId()
-						. '_'
-						. Types\ComponentAttributeType::STATE
-					),
-					'value' => $component->getState()->getValue(),
-				];
+				if ($component->getState() === null) {
+					$states[] = [
+						'identifier' => (
+							$component->getType()->getValue()
+							. '_'
+							. $component->getId()
+							. '_'
+							. Types\ComponentAttributeType::STATE
+						),
+						'value' => $component->getState()->getValue(),
+					];
+				}
 
-				$states[] = [
-					'identifier' => (
-						$component->getType()->getValue()
-						. '_'
-						. $component->getId()
-						. '_'
-						. Types\ComponentAttributeType::POSITION
-					),
-					'value' => $component->getCurrentPosition(),
-				];
+				if ($component->getCurrentPosition() === null) {
+					$states[] = [
+						'identifier' => (
+							$component->getType()->getValue()
+							. '_'
+							. $component->getId()
+							. '_'
+							. Types\ComponentAttributeType::POSITION
+						),
+						'value' => $component->getCurrentPosition(),
+					];
+				}
 			}
 		}
 
 		if ($state->getLights() !== []) {
 			foreach ($state->getLights() as $component) {
-				$states[] = [
-					'identifier' => (
-						$component->getType()->getValue()
-						. '_'
-						. $component->getId()
-						. '_'
-						. Types\ComponentAttributeType::ON
-					),
-					'value' => $component->getOutput(),
-				];
+				if ($component->getOutput() === null) {
+					$states[] = [
+						'identifier' => (
+							$component->getType()->getValue()
+							. '_'
+							. $component->getId()
+							. '_'
+							. Types\ComponentAttributeType::ON
+						),
+						'value' => $component->getOutput(),
+					];
+				}
 
 				if ($component->getBrightness() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
 					$states[] = [

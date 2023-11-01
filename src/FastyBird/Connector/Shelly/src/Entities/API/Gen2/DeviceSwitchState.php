@@ -46,8 +46,11 @@ final class DeviceSwitchState implements Entities\API\Entity
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		private readonly string|null $source,
-		#[ObjectMapper\Rules\BoolValue()]
-		private readonly bool $output,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\NullValue(),
+		])]
+		private readonly bool|null $output,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\NullValue(),
@@ -123,7 +126,7 @@ final class DeviceSwitchState implements Entities\API\Entity
 		return $this->source;
 	}
 
-	public function getOutput(): bool
+	public function getOutput(): bool|null
 	{
 		return $this->output;
 	}

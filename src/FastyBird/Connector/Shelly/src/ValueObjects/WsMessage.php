@@ -31,7 +31,7 @@ final class WsMessage implements ObjectMapper\MappedObject
 {
 
 	public function __construct(
-		#[ObjectMapper\Rules\MappedObjectValue(WsFrame::class)]
+		#[ObjectMapper\Rules\InstanceOfValue(WsFrame::class)]
 		private readonly WsFrame $frame,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\InstanceOfValue(Promise\Deferred::class),

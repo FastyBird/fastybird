@@ -42,10 +42,16 @@ final class DeviceCoverState implements Entities\API\Entity
 	public function __construct(
 		#[ObjectMapper\Rules\IntValue(unsigned: true)]
 		private readonly int $id,
-		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $source,
-		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\CoverPayload::class)]
-		private readonly Types\CoverPayload $state,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		private readonly string|null $source,
+		#[ObjectMapper\Rules\AnyOf([
+			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\CoverPayload::class),
+			new ObjectMapper\Rules\NullValue(),
+		])]
+		private readonly Types\CoverPayload|null $state,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\ArrayEnumValue(cases: [Shelly\Constants::VALUE_NOT_AVAILABLE]),
@@ -131,12 +137,12 @@ final class DeviceCoverState implements Entities\API\Entity
 		return Types\ComponentType::get(Types\ComponentType::COVER);
 	}
 
-	public function getSource(): string
+	public function getSource(): string|null
 	{
 		return $this->source;
 	}
 
-	public function getState(): Types\CoverPayload
+	public function getState(): Types\CoverPayload|null
 	{
 		return $this->state;
 	}
@@ -227,7 +233,7 @@ final class DeviceCoverState implements Entities\API\Entity
 			'id' => $this->getId(),
 			'type' => $this->getType()->getValue(),
 			'source' => $this->getSource(),
-			'state' => $this->getState()->getValue(),
+			'state' => $this->getState()?->getValue(),
 			'active_power' => $this->getActivePower(),
 			'voltage' => $this->getVoltage(),
 			'current' => $this->getCurrent(),

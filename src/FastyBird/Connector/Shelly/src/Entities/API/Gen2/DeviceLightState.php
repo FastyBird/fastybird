@@ -38,10 +38,16 @@ final class DeviceLightState implements Entities\API\Entity
 	public function __construct(
 		#[ObjectMapper\Rules\IntValue(unsigned: true)]
 		private readonly int $id,
-		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $source,
-		#[ObjectMapper\Rules\BoolValue()]
-		private readonly bool $output,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		private readonly string|null $source,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\NullValue(),
+		])]
+		private readonly bool|null $output,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\IntValue(),
 			new ObjectMapper\Rules\ArrayEnumValue(cases: [Shelly\Constants::VALUE_NOT_AVAILABLE]),
@@ -73,12 +79,12 @@ final class DeviceLightState implements Entities\API\Entity
 		return Types\ComponentType::get(Types\ComponentType::LIGHT);
 	}
 
-	public function getSource(): string
+	public function getSource(): string|null
 	{
 		return $this->source;
 	}
 
-	public function getOutput(): bool
+	public function getOutput(): bool|null
 	{
 		return $this->output;
 	}

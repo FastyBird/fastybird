@@ -774,46 +774,17 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 				&& Types\ComponentType::isValidValue($componentMatches['component'])
 			) {
 				if ($componentMatches['component'] === Types\ComponentType::SWITCH) {
-					$switches[] = array_merge(
-						(array) $state,
-						[
-							'aenergy' => (array) $state->offsetGet('aenergy'),
-							'temperature' => (array) $state->offsetGet('temperature'),
-							'errors' => (array) $state->offsetGet('errors'),
-						],
-					);
+					$switches[] = (array) $state;
 				} elseif ($componentMatches['component'] === Types\ComponentType::COVER) {
-					$covers[] = array_merge(
-						(array) $state,
-						[
-							'aenergy' => (array) $state->offsetGet('aenergy'),
-							'temperature' => (array) $state->offsetGet('temperature'),
-							'errors' => (array) $state->offsetGet('errors'),
-						],
-					);
+					$covers[] = (array) $state;
 				} elseif ($componentMatches['component'] === Types\ComponentType::LIGHT) {
 					$lights[] = (array) $state;
 				} elseif ($componentMatches['component'] === Types\ComponentType::INPUT) {
-					$inputs[] = array_merge(
-						(array) $state,
-						[
-							'errors' => (array) $state->offsetGet('errors'),
-						],
-					);
+					$inputs[] = (array) $state;
 				} elseif ($componentMatches['component'] === Types\ComponentType::TEMPERATURE) {
-					$temperature[] = array_merge(
-						(array) $state,
-						[
-							'errors' => (array) $state->offsetGet('errors'),
-						],
-					);
+					$temperature[] = (array) $state;
 				} elseif ($componentMatches['component'] === Types\ComponentType::HUMIDITY) {
-					$humidity[] = array_merge(
-						(array) $state,
-						[
-							'errors' => (array) $state->offsetGet('errors'),
-						],
-					);
+					$humidity[] = (array) $state;
 				} elseif ($componentMatches['component'] === Types\ComponentType::ETHERNET) {
 					$ethernet = (array) $state;
 				} elseif ($componentMatches['component'] === Types\ComponentType::WIFI) {
