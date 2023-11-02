@@ -31,7 +31,7 @@ final class PropertyDescription implements Entity
 {
 
 	/**
-	 * @param array<string>|array<int>|array<float>|array<int, array<int, (array<int, string>|null)>>|null $format
+	 * @param array<string>|array<int>|array<float>|array<int, array<int, (array<int, bool|string>|null)>>|null $format
 	 */
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
@@ -58,6 +58,7 @@ final class PropertyDescription implements Entity
 					new ObjectMapper\Rules\AnyOf([
 						new ObjectMapper\Rules\ArrayOf(
 							new ObjectMapper\Rules\AnyOf([
+								new ObjectMapper\Rules\BoolValue(castBoolLike: true),
 								new ObjectMapper\Rules\StringValue(notEmpty: true),
 								new ObjectMapper\Rules\NullValue(castEmptyString: true),
 							]),
