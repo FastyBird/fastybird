@@ -80,7 +80,7 @@ final class DirectiveController extends BaseController
 			'Requested updating of characteristics of selected accessories',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-				'type' => 'characteristics-controller',
+				'type' => 'directive-controller',
 				'request' => [
 					'method' => $request->getMethod(),
 					'address' => $request->getServerParams()['REMOTE_ADDR'],

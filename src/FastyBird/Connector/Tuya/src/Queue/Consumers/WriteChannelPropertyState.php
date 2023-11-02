@@ -476,7 +476,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					array_merge(
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-							'type' => 'write-sub-device-state-message-consumer',
+							'type' => 'write-channel-property-state-message-consumer',
 							'exception' => BootstrapHelpers\Logger::buildException($ex),
 							'connector' => [
 								'id' => $connector->getId()->toString(),

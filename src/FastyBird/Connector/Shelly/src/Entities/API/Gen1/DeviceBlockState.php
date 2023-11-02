@@ -38,8 +38,9 @@ final class DeviceBlockState implements Entities\API\Entity
 			new ObjectMapper\Rules\IntValue(),
 			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly int|float|string $value,
+		private readonly int|float|string|null $value,
 	)
 	{
 	}
@@ -54,7 +55,7 @@ final class DeviceBlockState implements Entities\API\Entity
 		return $this->sensor;
 	}
 
-	public function getValue(): float|int|string
+	public function getValue(): float|int|string|null
 	{
 		return $this->value;
 	}

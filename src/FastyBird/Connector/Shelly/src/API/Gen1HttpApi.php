@@ -833,7 +833,7 @@ final class Gen1HttpApi extends HttpApi
 	/**
 	 * @param array<string>|array<int>|array<float>|null $format
 	 *
-	 * @return array<string>|array<int>|array<float>|array<int, array<int, (array<int, string>|null)>>|null
+	 * @return array<string>|array<int>|array<float>|array<int, array<int, (array<int, bool|string>|null)>>|null
 	 */
 	private function adjustSensorFormat(
 		string $block,
@@ -848,12 +848,12 @@ final class Gen1HttpApi extends HttpApi
 			return [
 				[
 					[MetadataTypes\DataTypeShort::DATA_TYPE_SWITCH, MetadataTypes\SwitchPayload::PAYLOAD_ON],
-					[MetadataTypes\DataTypeShort::DATA_TYPE_UCHAR, '1'],
+					[MetadataTypes\DataTypeShort::DATA_TYPE_BOOLEAN, true],
 					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\RelayPayload::ON],
 				],
 				[
 					[MetadataTypes\DataTypeShort::DATA_TYPE_SWITCH, MetadataTypes\SwitchPayload::PAYLOAD_OFF],
-					[MetadataTypes\DataTypeShort::DATA_TYPE_UCHAR, '0'],
+					[MetadataTypes\DataTypeShort::DATA_TYPE_BOOLEAN, false],
 					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\RelayPayload::OFF],
 				],
 				[
@@ -904,12 +904,12 @@ final class Gen1HttpApi extends HttpApi
 			return [
 				[
 					[MetadataTypes\DataTypeShort::DATA_TYPE_SWITCH, MetadataTypes\SwitchPayload::PAYLOAD_ON],
-					[MetadataTypes\DataTypeShort::DATA_TYPE_UCHAR, '1'],
+					[MetadataTypes\DataTypeShort::DATA_TYPE_BOOLEAN, true],
 					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\LightSwitchPayload::ON],
 				],
 				[
 					[MetadataTypes\DataTypeShort::DATA_TYPE_SWITCH, MetadataTypes\SwitchPayload::PAYLOAD_OFF],
-					[MetadataTypes\DataTypeShort::DATA_TYPE_UCHAR, '0'],
+					[MetadataTypes\DataTypeShort::DATA_TYPE_BOOLEAN, false],
 					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\LightSwitchPayload::OFF],
 				],
 				[

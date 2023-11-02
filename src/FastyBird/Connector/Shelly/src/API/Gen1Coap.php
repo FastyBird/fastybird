@@ -35,6 +35,7 @@ use function explode;
 use function is_array;
 use function mb_convert_encoding;
 use function pack;
+use function preg_replace;
 use function sprintf;
 use function str_replace;
 use function unpack;
@@ -266,7 +267,7 @@ final class Gen1Coap implements Evenement\EventEmitterInterface
 					Entities\API\Gen1\ReportDeviceState::class,
 					[
 						'identifier' => $deviceIdentifier,
-						'ip_address' => $remote,
+						'ip_address' => preg_replace('/(:[0-9]+)+$/', '', $remote),
 						'states' => $statuses,
 					],
 				),

@@ -84,6 +84,8 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return false;
 		}
 
+		$now = $this->dateTimeFactory->getNow();
+
 		$findConnectorQuery = new Queries\FindConnectors();
 		$findConnectorQuery->byId($entity->getConnector());
 
@@ -241,17 +243,30 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$expectedValue = DevicesUtilities\ValueHelper::flattenValue(
-			Helpers\Transformer::transformValueToDevice(
-				$property->getDataType(),
-				$property->getFormat(),
-				$state->getExpectedValue(),
-			),
+		$expectedValue = DevicesUtilities\ValueHelper::transformValueToDevice(
+			$property->getDataType(),
+			$property->getFormat(),
+			$state->getExpectedValue(),
 		);
 
 		if ($expectedValue === null) {
+			$this->channelPropertiesStatesManager->setValue(
+				$property,
+				Utils\ArrayHash::from([
+					DevicesStates\Property::EXPECTED_VALUE_KEY => null,
+					DevicesStates\Property::PENDING_KEY => null,
+				]),
+			);
+
 			return true;
 		}
+
+		$this->channelPropertiesStatesManager->setValue(
+			$property,
+			Utils\ArrayHash::from([
+				DevicesStates\Property::PENDING_KEY => $now->format(DateTimeInterface::ATOM),
+			]),
+		);
 
 		try {
 			if ($connector->getClientMode()->equalsValue(Types\ClientMode::LOCAL)) {
@@ -354,19 +369,27 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		}
 
 		$result->then(
-			function () use ($property): void {
-				$now = $this->dateTimeFactory->getNow();
-
-				$state = $this->channelPropertiesStatesManager->getValue($property);
-
-				if ($state?->getExpectedValue() !== null) {
-					$this->channelPropertiesStatesManager->setValue(
-						$property,
-						Utils\ArrayHash::from([
-							DevicesStates\Property::PENDING_KEY => $now->format(DateTimeInterface::ATOM),
-						]),
-					);
-				}
+			function () use ($connector, $device, $channel, $property, $entity): void {
+				$this->logger->debug(
+					'Channel state was successfully sent to device',
+					[
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+						'type' => 'write-channel-property-state-message-consumer',
+						'connector' => [
+							'id' => $connector->getId()->toString(),
+						],
+						'device' => [
+							'id' => $device->getId()->toString(),
+						],
+						'channel' => [
+							'id' => $channel->getId()->toString(),
+						],
+						'property' => [
+							'id' => $property->getId()->toString(),
+						],
+						'data' => $entity->toArray(),
+					],
+				);
 			},
 			function (Throwable $ex) use ($connector, $device, $channel, $property, $entity): void {
 				$this->channelPropertiesStatesManager->setValue(
@@ -467,7 +490,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					array_merge(
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-							'type' => 'write-sub-device-state-message-consumer',
+							'type' => 'write-channel-property-state-message-consumer',
 							'exception' => BootstrapHelpers\Logger::buildException($ex),
 							'connector' => [
 								'id' => $connector->getId()->toString(),

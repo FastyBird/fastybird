@@ -265,7 +265,7 @@ abstract class Property implements Entity,
 	}
 
 	/**
-	 * @param string|array<int, string>|array<int, string|int|float|array<int, string|int|float>|Utils\ArrayHash|null>|array<int, array<int, string|array<int, string|int|float|bool>|Utils\ArrayHash|null>>|null $format
+	 * @param string|array<int, string>|array<int, bool|string|int|float|array<int, bool|string|int|float>|Utils\ArrayHash|null>|array<int, array<int, string|array<int, string|int|float|bool>|Utils\ArrayHash|null>>|null $format
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
@@ -445,7 +445,9 @@ abstract class Property implements Entity,
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 */
-	public function setValue(string|int|float|bool|null $value): void
+	public function setValue(
+		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
+	): void
 	{
 		if (!$this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_VARIABLE)) {
 			throw new Exceptions\InvalidState(
@@ -456,6 +458,8 @@ abstract class Property implements Entity,
 				),
 			);
 		}
+
+		$value = Utilities\ValueHelper::flattenValue($value);
 
 		if ($this->getIdentifier() === MetadataTypes\PropertyIdentifier::IDENTIFIER_IP_ADDRESS) {
 			if (!is_string($value)) {

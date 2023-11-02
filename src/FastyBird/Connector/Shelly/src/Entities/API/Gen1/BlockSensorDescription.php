@@ -33,7 +33,7 @@ final class BlockSensorDescription implements Entities\API\Entity
 {
 
 	/**
-	 * @param array<string>|array<int>|array<float>|array<int, array<int, (array<int, string>|null)>>|null $format
+	 * @param array<string>|array<int>|array<float>|array<int, array<int, (array<int, bool|string>|null)>>|null $format
 	 */
 	public function __construct(
 		#[ObjectMapper\Rules\IntValue()]
@@ -59,6 +59,7 @@ final class BlockSensorDescription implements Entities\API\Entity
 					new ObjectMapper\Rules\AnyOf([
 						new ObjectMapper\Rules\ArrayOf(
 							new ObjectMapper\Rules\AnyOf([
+								new ObjectMapper\Rules\BoolValue(castBoolLike: true),
 								new ObjectMapper\Rules\StringValue(notEmpty: true),
 								new ObjectMapper\Rules\NullValue(castEmptyString: true),
 							]),
@@ -114,7 +115,7 @@ final class BlockSensorDescription implements Entities\API\Entity
 	}
 
 	/**
-	 * @return array<string>|array<int>|array<float>|array<int, array<int, (array<int, string>|null)>>|null
+	 * @return array<string>|array<int>|array<float>|array<int, array<int, (array<int, bool|string>|null)>>|null
 	 */
 	public function getFormat(): mixed
 	{

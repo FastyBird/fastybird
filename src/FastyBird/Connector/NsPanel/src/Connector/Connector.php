@@ -183,7 +183,7 @@ final class Connector implements DevicesConnectors\Connector
 								'Could report device initial state to NS Panel',
 								[
 									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-									'type' => 'write-third-party-device-state-message-consumer',
+									'type' => 'connector',
 									'exception' => BootstrapHelpers\Logger::buildException($ex),
 									'connector' => [
 										'id' => $this->connector->getId()->toString(),

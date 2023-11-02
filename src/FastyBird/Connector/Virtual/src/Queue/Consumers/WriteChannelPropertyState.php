@@ -340,7 +340,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					'Could write state to device',
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
-						'type' => 'write-sub-device-state-message-consumer',
+						'type' => 'write-channel-property-state-message-consumer',
 						'exception' => BootstrapHelpers\Logger::buildException($ex),
 						'connector' => [
 							'id' => $connector->getId()->toString(),

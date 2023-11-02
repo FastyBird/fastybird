@@ -67,8 +67,16 @@
           "default": null
         },
         "output": {
-          "type": "boolean",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "boolean"
+            }
+          ],
           "description": "true if the output channel is currently on, false otherwise",
+          "default": null
         },
         "timer_started_at": {
           "oneOf": [
@@ -236,8 +244,7 @@
         }
       },
       "required": [
-        "id",
-        "output"
+        "id"
       ]
     },
     "^cover:[0-9]$": {
@@ -247,20 +254,36 @@
           "description": "The numeric ID of the Cover component instance"
         },
         "source": {
-          "type": "string",
-          "description": "Source of the last command"
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "Source of the last command",
+          "default": null
         },
         "state": {
-          "type": "string",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "enum": [
+                "open",
+                "closed",
+                "opening",
+                "closing",
+                "stopped",
+                "calibrating"
+              ]
+            }
+          ],
           "description": "One of open (Cover is fully open), closed (Cover is fully closed), opening (Cover is actively opening), closing (Cover is actively closing), stopped (Cover is not moving, and is neither fully open nor fully closed, or the open/close state is unknown), calibrating (Cover is performing a calibration procedure)",
-          "enum": [
-            "open",
-            "closed",
-            "opening",
-            "closing",
-            "stopped",
-            "calibrating"
-          ]
+          "default": null
         },
         "apower": {
           "oneOf": [
@@ -440,8 +463,7 @@
         }
       },
       "required": [
-        "id",
-        "state"
+        "id"
       ]
     },
     "^light:[0-9]$": {
@@ -451,12 +473,28 @@
           "description": "The numeric ID of the Cover component instance"
         },
         "source": {
-          "type": "string",
-          "description": "Source of the last command, for example: init, WS_in, http, ..."
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "Source of the last command, for example: init, WS_in, http, ...",
+          "default": null
         },
         "output": {
-          "type": "boolean",
-          "description": "True if the output channel is currently on, false otherwise"
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "boolean"
+            }
+          ],
+          "description": "True if the output channel is currently on, false otherwise",
+          "default": null
         },
         "brightness": {
           "oneOf": [
@@ -497,8 +535,7 @@
         }
       },
       "required": [
-        "id",
-        "output"
+        "id"
       ]
     },
     "^temperature:[0-9]$": {
