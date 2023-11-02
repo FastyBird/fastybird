@@ -55,8 +55,6 @@ class Periodic implements Writer
 
 	private const HANDLER_PROCESSING_INTERVAL = 0.01;
 
-	private const HANDLER_PENDING_DELAY = 2_000.0;
-
 	/** @var array<string> */
 	private array $processedDevices = [];
 
@@ -177,7 +175,7 @@ class Periodic implements Writer
 				if (
 					$property->isSettable()
 					&& $expectedValue !== null
-					&& $state->isPending() === true
+					&& $state->getPending() === true
 				) {
 					$debounce = array_key_exists(
 						$property->getId()->toString(),
@@ -195,33 +193,23 @@ class Periodic implements Writer
 						continue;
 					}
 
+					$this->processedProperties[$property->getId()->toString()] = $now;
+
+					$this->queue->append(
+						$this->entityHelper->create(
+							Entities\Messages\WriteChannelPropertyState::class,
+							[
+								'connector' => $this->connector->getId()->toString(),
+								'device' => $device->getId()->toString(),
+								'channel' => $channel->getId()->toString(),
+								'property' => $property->getId()->toString(),
+							],
+						),
+					);
+
+					return true;
+				} else {
 					unset($this->processedProperties[$property->getId()->toString()]);
-
-					$pending = $state->getPending();
-
-					if (
-						$pending === true
-						|| (
-							$pending instanceof DateTimeInterface
-							&& (float) $now->format('Uv') - (float) $pending->format('Uv') > self::HANDLER_PENDING_DELAY
-						)
-					) {
-						$this->processedProperties[$property->getId()->toString()] = $now;
-
-						$this->queue->append(
-							$this->entityHelper->create(
-								Entities\Messages\WriteChannelPropertyState::class,
-								[
-									'connector' => $this->connector->getId()->toString(),
-									'device' => $device->getId()->toString(),
-									'channel' => $channel->getId()->toString(),
-									'property' => $property->getId()->toString(),
-								],
-							),
-						);
-
-						return true;
-					}
 				}
 			}
 		}

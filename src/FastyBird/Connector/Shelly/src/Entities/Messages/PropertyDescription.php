@@ -109,7 +109,7 @@ final class PropertyDescription implements Entity
 	}
 
 	/**
-	 * @return array<string>|array<int>|array<float>|array<int, array<int, (array<int, string>|null)>>|null
+	 * @return array<string>|array<int>|array<float>|array<int, array<int, (array<int, bool|string>|null)>>|null
 	 */
 	public function getFormat(): mixed
 	{
