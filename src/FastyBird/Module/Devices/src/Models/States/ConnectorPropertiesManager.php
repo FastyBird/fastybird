@@ -101,7 +101,7 @@ final class ConnectorPropertiesManager
 				$updatedState,
 				Utils\ArrayHash::from([
 					States\Property::EXPECTED_VALUE_KEY => null,
-					States\Property::PENDING_KEY => null,
+					States\Property::PENDING_KEY => false,
 				]),
 			);
 		}

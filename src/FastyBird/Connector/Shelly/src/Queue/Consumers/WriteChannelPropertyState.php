@@ -254,7 +254,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				$property,
 				Utils\ArrayHash::from([
 					DevicesStates\Property::EXPECTED_VALUE_KEY => null,
-					DevicesStates\Property::PENDING_KEY => null,
+					DevicesStates\Property::PENDING_KEY => false,
 				]),
 			);
 

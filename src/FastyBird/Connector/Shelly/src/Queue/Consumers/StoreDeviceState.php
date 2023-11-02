@@ -112,9 +112,9 @@ final class StoreDeviceState implements Queue\Consumer
 				$findDevicePropertyQuery->forDevice($device);
 
 				if (Utils\Strings::startsWith($state->getIdentifier(), '_')) {
-					$findDevicePropertyQuery->startWithIdentifier($state->getIdentifier());
-				} elseif (Utils\Strings::endsWith($state->getIdentifier(), '_')) {
 					$findDevicePropertyQuery->endWithIdentifier($state->getIdentifier());
+				} elseif (Utils\Strings::endsWith($state->getIdentifier(), '_')) {
+					$findDevicePropertyQuery->startWithIdentifier($state->getIdentifier());
 				} else {
 					$findDevicePropertyQuery->byIdentifier($state->getIdentifier());
 				}
@@ -159,9 +159,9 @@ final class StoreDeviceState implements Queue\Consumer
 						$findChannelPropertyQuery->forChannel($channel);
 
 						if (Utils\Strings::startsWith($state->getIdentifier(), '_')) {
-							$findChannelPropertyQuery->startWithIdentifier($state->getIdentifier());
-						} elseif (Utils\Strings::endsWith($state->getIdentifier(), '_')) {
 							$findChannelPropertyQuery->endWithIdentifier($state->getIdentifier());
+						} elseif (Utils\Strings::endsWith($state->getIdentifier(), '_')) {
+							$findChannelPropertyQuery->startWithIdentifier($state->getIdentifier());
 						} else {
 							$findChannelPropertyQuery->byIdentifier($state->getIdentifier());
 						}
