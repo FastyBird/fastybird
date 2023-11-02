@@ -374,7 +374,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					'Channel state was successfully sent to device',
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-						'type' => 'write-sub-device-state-message-consumer',
+						'type' => 'write-channel-property-state-message-consumer',
 						'connector' => [
 							'id' => $connector->getId()->toString(),
 						],
@@ -490,7 +490,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					array_merge(
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-							'type' => 'write-sub-device-state-message-consumer',
+							'type' => 'write-channel-property-state-message-consumer',
 							'exception' => BootstrapHelpers\Logger::buildException($ex),
 							'connector' => [
 								'id' => $connector->getId()->toString(),

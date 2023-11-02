@@ -85,7 +85,7 @@ final class StoreDeviceState implements Queue\Consumer
 				'Device could not be loaded',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-					'type' => 'store-channel-property-state-message-consumer',
+					'type' => 'store-device-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
 					],
@@ -263,7 +263,7 @@ final class StoreDeviceState implements Queue\Consumer
 			'Consumed device status message',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-				'type' => 'store-channel-property-state-message-consumer',
+				'type' => 'store-device-state-message-consumer',
 				'device' => [
 					'id' => $device->getId()->toString(),
 				],
