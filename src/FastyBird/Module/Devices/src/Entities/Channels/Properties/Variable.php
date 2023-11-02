@@ -40,7 +40,9 @@ class Variable extends Property
 		return parent::getValue();
 	}
 
-	public function setValue(string|int|float|bool|null $value): void
+	public function setValue(
+		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
+	): void
 	{
 		if ($this->getParent() !== null) {
 			throw new Exceptions\InvalidState('Value setter is allowed only for parent');

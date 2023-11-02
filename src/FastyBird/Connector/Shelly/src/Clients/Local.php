@@ -612,7 +612,7 @@ final class Local implements Client
 		if ($state->getInputs() !== []) {
 			foreach ($state->getInputs() as $index => $input) {
 				$states[] = [
-					'identifier' => Types\BlockDescription::INPUT . '_' . $index,
+					'identifier' => '_' . Types\BlockDescription::INPUT . '_' . $index,
 					'sensors' => [
 						[
 							'identifier' => '_' . Types\SensorDescription::INPUT,
@@ -634,7 +634,7 @@ final class Local implements Client
 		if ($state->getMeters() !== []) {
 			foreach ($state->getMeters() as $index => $meter) {
 				$states[] = [
-					'identifier' => Types\BlockDescription::METER . '_' . $index,
+					'identifier' => '_' . Types\BlockDescription::METER . '_' . $index,
 					'sensors' => [
 						[
 							'identifier' => '_' . Types\SensorDescription::ACTIVE_POWER,
@@ -668,7 +668,7 @@ final class Local implements Client
 		if ($state->getRelays() !== []) {
 			foreach ($state->getRelays() as $index => $relay) {
 				$states[] = [
-					'identifier' => Types\BlockDescription::RELAY . '_' . $index,
+					'identifier' => '_' . Types\BlockDescription::RELAY . '_' . $index,
 					'sensors' => [
 						[
 							'identifier' => '_' . Types\SensorDescription::OUTPUT,
@@ -682,7 +682,7 @@ final class Local implements Client
 				];
 
 				$states[] = [
-					'identifier' => Types\BlockDescription::DEVICE,
+					'identifier' => '_' . Types\BlockDescription::DEVICE,
 					'sensors' => [
 						[
 							'identifier' => '_' . Types\SensorDescription::OVERTEMPERATURE,
@@ -696,7 +696,7 @@ final class Local implements Client
 		if ($state->getRollers() !== []) {
 			foreach ($state->getRollers() as $index => $roller) {
 				$states[] = [
-					'identifier' => Types\BlockDescription::ROLLER . '_' . $index,
+					'identifier' => '_' . Types\BlockDescription::ROLLER . '_' . $index,
 					'sensors' => [
 						[
 							'identifier' => '_' . Types\SensorDescription::ROLLER,
@@ -714,7 +714,7 @@ final class Local implements Client
 				];
 
 				$states[] = [
-					'identifier' => Types\BlockDescription::DEVICE,
+					'identifier' => '_' . Types\BlockDescription::DEVICE,
 					'sensors' => [
 						[
 							'identifier' => '_' . Types\SensorDescription::OVERTEMPERATURE,
@@ -728,7 +728,7 @@ final class Local implements Client
 		if ($state->getLights() !== []) {
 			foreach ($state->getLights() as $index => $light) {
 				$states[] = [
-					'identifier' => Types\BlockDescription::LIGHT . '_' . $index,
+					'identifier' => '_' . Types\BlockDescription::LIGHT . '_' . $index,
 					'sensors' => [
 						[
 							'identifier' => '_' . Types\SensorDescription::RED,
@@ -774,7 +774,7 @@ final class Local implements Client
 		if ($state->getEmeters() !== []) {
 			foreach ($state->getEmeters() as $index => $emeter) {
 				$states[] = [
-					'identifier' => Types\BlockDescription::ROLLER . '_' . $index,
+					'identifier' => '_' . Types\BlockDescription::ROLLER . '_' . $index,
 					'sensors' => [
 						[
 							'identifier' => '_' . Types\SensorDescription::ACTIVE_POWER,
@@ -897,7 +897,7 @@ final class Local implements Client
 
 		if ($state->getCovers() !== []) {
 			foreach ($state->getCovers() as $component) {
-				if ($component->getState() === null) {
+				if ($component->getState() !== null) {
 					$states[] = [
 						'identifier' => (
 							$component->getType()->getValue()
@@ -910,7 +910,7 @@ final class Local implements Client
 					];
 				}
 
-				if ($component->getCurrentPosition() === null) {
+				if ($component->getCurrentPosition() !== null) {
 					$states[] = [
 						'identifier' => (
 							$component->getType()->getValue()
@@ -927,7 +927,7 @@ final class Local implements Client
 
 		if ($state->getLights() !== []) {
 			foreach ($state->getLights() as $component) {
-				if ($component->getOutput() === null) {
+				if ($component->getOutput() !== null) {
 					$states[] = [
 						'identifier' => (
 							$component->getType()->getValue()

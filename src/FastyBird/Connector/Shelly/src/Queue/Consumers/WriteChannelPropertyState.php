@@ -241,12 +241,10 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$expectedValue = DevicesUtilities\ValueHelper::flattenValue(
-			Helpers\Transformer::transformValueToDevice(
-				$property->getDataType(),
-				$property->getFormat(),
-				$state->getExpectedValue(),
-			),
+		$expectedValue = DevicesUtilities\ValueHelper::transformValueToDevice(
+			$property->getDataType(),
+			$property->getFormat(),
+			$state->getExpectedValue(),
 		);
 
 		if ($expectedValue === null) {

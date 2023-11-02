@@ -41,7 +41,6 @@ use React\Promise;
 use stdClass;
 use Throwable;
 use function array_key_exists;
-use function array_merge;
 use function gethostbyname;
 use function hash;
 use function implode;

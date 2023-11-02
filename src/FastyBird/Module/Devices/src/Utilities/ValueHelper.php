@@ -24,11 +24,13 @@ use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
 use FastyBird\Module\Devices\Exceptions;
 use Nette\Utils;
 use function array_filter;
+use function array_values;
 use function count;
 use function floatval;
 use function implode;
 use function in_array;
 use function intval;
+use function is_bool;
 use function is_float;
 use function is_int;
 use function is_numeric;
@@ -47,6 +49,12 @@ use const DATE_ATOM;
  */
 final class ValueHelper
 {
+
+	private const DATE_FORMAT = 'Y-m-d';
+
+	private const TIME_FORMAT = 'H:i:sP';
+
+	private const BOOL_TRUE_VALUES = ['true', 't', 'yes', 'y', '1', 'on'];
 
 	/**
 	 * @throws Exceptions\InvalidState
@@ -104,11 +112,11 @@ final class ValueHelper
 
 			return floatval(self::flattenValue($value));
 		} elseif ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_STRING)) {
-			return $value;
+			return strval(self::flattenValue($value));
 		} elseif ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BOOLEAN)) {
 			return in_array(
 				Utils\Strings::lower(strval(self::flattenValue($value))),
-				['true', 't', 'yes', 'y', '1', 'on'],
+				self::BOOL_TRUE_VALUES,
 				true,
 			);
 		} elseif ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_DATE)) {
@@ -116,7 +124,7 @@ final class ValueHelper
 				return $value;
 			}
 
-			$value = Utils\DateTime::createFromFormat('Y-m-d', strval(self::flattenValue($value)));
+			$value = Utils\DateTime::createFromFormat(self::DATE_FORMAT, strval(self::flattenValue($value)));
 
 			return $value === false ? null : $value;
 		} elseif ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_TIME)) {
@@ -124,7 +132,7 @@ final class ValueHelper
 				return $value;
 			}
 
-			$value = Utils\DateTime::createFromFormat('H:i:sP', strval(self::flattenValue($value)));
+			$value = Utils\DateTime::createFromFormat(self::TIME_FORMAT, strval(self::flattenValue($value)));
 
 			return $value === false ? null : $value;
 		} elseif ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_DATETIME)) {
@@ -135,113 +143,130 @@ final class ValueHelper
 			$value = Utils\DateTime::createFromFormat(DateTimeInterface::ATOM, strval(self::flattenValue($value)));
 
 			return $value === false ? null : $value;
-		} elseif ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)) {
-			if ($value instanceof MetadataTypes\ButtonPayload) {
-				return $value;
+		} elseif (
+			$dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)
+			|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SWITCH)
+			|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_COVER)
+			|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_ENUM)
+		) {
+			/** @var class-string<MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload>|null $payloadClass */
+			$payloadClass = null;
+
+			if ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)) {
+				$payloadClass = MetadataTypes\ButtonPayload::class;
+			} elseif ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SWITCH)) {
+				$payloadClass = MetadataTypes\SwitchPayload::class;
+			} elseif ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_COVER)) {
+				$payloadClass = MetadataTypes\CoverPayload::class;
 			}
 
-			if (MetadataTypes\ButtonPayload::isValidValue(strval(self::flattenValue($value)))) {
-				return MetadataTypes\ButtonPayload::get(strval(self::flattenValue($value)));
-			}
-
-			throw new Exceptions\InvalidState(
-				sprintf(
-					'Provided value "%s" is not in valid rage: %s',
-					strval(self::flattenValue($value)),
-					implode(', ', (array) MetadataTypes\ButtonPayload::getAvailableValues()),
-				),
-			);
-		} elseif ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SWITCH)) {
-			if ($value instanceof MetadataTypes\SwitchPayload) {
-				return $value;
-			}
-
-			if (MetadataTypes\SwitchPayload::isValidValue(strval(self::flattenValue($value)))) {
-				return MetadataTypes\SwitchPayload::get(strval(self::flattenValue($value)));
-			}
-
-			throw new Exceptions\InvalidState(
-				sprintf(
-					'Provided value "%s" is not in valid rage: %s',
-					strval(self::flattenValue($value)),
-					implode(', ', (array) MetadataTypes\SwitchPayload::getAvailableValues()),
-				),
-			);
-		} elseif ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_COVER)) {
-			if ($value instanceof MetadataTypes\CoverPayload) {
-				return $value;
-			}
-
-			if (MetadataTypes\CoverPayload::isValidValue(strval(self::flattenValue($value)))) {
-				return MetadataTypes\CoverPayload::get(strval(self::flattenValue($value)));
-			}
-
-			throw new Exceptions\InvalidState(
-				sprintf(
-					'Provided value "%s" is not in valid rage: %s',
-					strval(self::flattenValue($value)),
-					implode(', ', (array) MetadataTypes\CoverPayload::getAvailableValues()),
-				),
-			);
-		} elseif ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_ENUM)) {
 			if ($format instanceof MetadataValueObjects\StringEnumFormat) {
-				$filtered = array_filter(
+				$filtered = array_values(array_filter(
 					$format->getItems(),
-					static fn (string $item): bool => Utils\Strings::lower(
-						strval(self::flattenValue($value)),
-					) === Utils\Strings::lower(
-						strval($item),
-					)
-				);
+					static fn (string $item): bool => self::compareValues($value, $item),
+				));
 
 				if (count($filtered) === 1) {
-					return $value;
+					if (
+						$payloadClass !== null
+						&& (
+							$dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)
+							|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SWITCH)
+							|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_COVER)
+						)
+					) {
+						return $payloadClass::isValidValue(self::flattenValue($value))
+							? $payloadClass::get(self::flattenValue($value))
+							: null;
+					} else {
+						return strval(self::flattenValue($value));
+					}
 				}
 
 				throw new Exceptions\InvalidState(
 					sprintf(
 						'Provided value "%s" is not in valid rage: %s',
 						strval(self::flattenValue($value)),
-						strval($format),
+						implode(', ', $format->toArray()),
 					),
 				);
 			} elseif ($format instanceof MetadataValueObjects\CombinedEnumFormat) {
-				$filtered = array_filter(
+				$filtered = array_values(array_filter(
 					$format->getItems(),
 					static function (array $item) use ($value): bool {
-						$filteredInner = array_filter(
-							$item,
-							static function (MetadataValueObjects\CombinedEnumFormatItem|null $part) use ($value): bool {
-								if ($part === null) {
-									return false;
-								}
+						if ($item[0] === null) {
+							return false;
+						}
 
-								return Utils\Strings::lower(
-									strval(self::flattenValue($value)),
-								) === Utils\Strings::lower(
-									strval(self::flattenValue($part->getValue())),
-								);
-							},
+						return self::compareValues(
+							$item[0]->getValue(),
+							self::normalizeEnumItemValue($item[0]->getDataType(), $value),
 						);
-
-						return count($filteredInner) === 1;
 					},
-				);
+				));
 
-				if (count($filtered) === 1) {
-					return $value;
+				if (
+					count($filtered) === 1
+					&& $filtered[0][0] instanceof MetadataValueObjects\CombinedEnumFormatItem
+				) {
+					if (
+						$payloadClass !== null
+						&& (
+							$dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)
+							|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SWITCH)
+							|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_COVER)
+						)
+					) {
+						return $payloadClass::isValidValue(self::flattenValue($filtered[0][0]->getValue()))
+							? $payloadClass::get(self::flattenValue($filtered[0][0]->getValue()))
+							: null;
+					}
+
+					return strval(self::flattenValue($filtered[0][0]->getValue()));
 				}
 
-				throw new Exceptions\InvalidState(
-					sprintf(
-						'Provided value "%s" is not in valid rage: %s',
-						strval(self::flattenValue($value)),
-						strval($format),
-					),
-				);
-			}
+				try {
+					throw new Exceptions\InvalidState(
+						sprintf(
+							'Provided value "%s" is not in valid rage: %s',
+							strval(self::flattenValue($value)),
+							Utils\Json::encode($format->toArray()),
+						),
+					);
+				} catch (Utils\JsonException $ex) {
+					throw new Exceptions\InvalidState(
+						sprintf(
+							'Provided value "%s" is not in valid rage. Value format could not be converted to error',
+							strval(self::flattenValue($value)),
+						),
+						$ex->getCode(),
+						$ex,
+					);
+				}
+			} else {
+				if (
+					$payloadClass !== null
+					&& (
+						$dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)
+						|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SWITCH)
+						|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_COVER)
+					)
+				) {
+					if ($payloadClass::isValidValue(self::flattenValue($value))) {
+						return $payloadClass::get(self::flattenValue($value));
+					}
 
-			return null;
+					throw new Exceptions\InvalidState(
+						sprintf(
+							'Provided value "%s" is not in valid rage: %s',
+							strval(self::flattenValue($value)),
+							implode(', ', (array) $payloadClass::getAvailableValues()),
+						),
+					);
+				}
+
+				return strval(self::flattenValue($value));
+			}
 		}
 
 		return $value;
@@ -368,6 +393,365 @@ final class ValueHelper
 		}
 
 		return $value;
+	}
+
+	/**
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public static function transformValueFromDevice(
+		MetadataTypes\DataType $dataType,
+		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+		MetadataValueObjects\StringEnumFormat|MetadataValueObjects\NumberRangeFormat|MetadataValueObjects\CombinedEnumFormat|MetadataValueObjects\EquationFormat|null $format,
+		string|int|float|bool|null $value,
+	): float|int|string|bool|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
+	{
+		if ($value === null) {
+			return null;
+		}
+
+		if ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BOOLEAN)) {
+			return in_array(Utils\Strings::lower(strval($value)), self::BOOL_TRUE_VALUES, true);
+		}
+
+		if ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_FLOAT)) {
+			$floatValue = floatval($value);
+
+			if ($format instanceof MetadataValueObjects\NumberRangeFormat) {
+				if ($format->getMin() !== null && $format->getMin() > $floatValue) {
+					return null;
+				}
+
+				if ($format->getMax() !== null && $format->getMax() < $floatValue) {
+					return null;
+				}
+			}
+
+			return $floatValue;
+		}
+
+		if (
+			$dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_UCHAR)
+			|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_CHAR)
+			|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_USHORT)
+			|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SHORT)
+			|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_UINT)
+			|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_INT)
+		) {
+			$intValue = intval($value);
+
+			if ($format instanceof MetadataValueObjects\NumberRangeFormat) {
+				if ($format->getMin() !== null && $format->getMin() > $intValue) {
+					return null;
+				}
+
+				if ($format->getMax() !== null && $format->getMax() < $intValue) {
+					return null;
+				}
+			}
+
+			return $intValue;
+		}
+
+		if (
+			$dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)
+			|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SWITCH)
+			|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_COVER)
+			|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_ENUM)
+		) {
+			/** @var class-string<MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload>|null $payloadClass */
+			$payloadClass = null;
+
+			if ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)) {
+				$payloadClass = MetadataTypes\ButtonPayload::class;
+			} elseif ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SWITCH)) {
+				$payloadClass = MetadataTypes\SwitchPayload::class;
+			} elseif ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_COVER)) {
+				$payloadClass = MetadataTypes\CoverPayload::class;
+			}
+
+			if ($format instanceof MetadataValueObjects\StringEnumFormat) {
+				$filtered = array_values(array_filter(
+					$format->getItems(),
+					static fn (string $item): bool => self::compareValues($value, $item),
+				));
+
+				if (count($filtered) === 1) {
+					if (
+						$payloadClass !== null
+						&& (
+							$dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)
+							|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SWITCH)
+							|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_COVER)
+						)
+					) {
+						return $payloadClass::isValidValue(self::flattenValue($value))
+							? $payloadClass::get(self::flattenValue($value))
+							: null;
+					}
+
+					return strval($value);
+				}
+
+				return null;
+			} elseif ($format instanceof MetadataValueObjects\CombinedEnumFormat) {
+				$filtered = array_values(array_filter(
+					$format->getItems(),
+					static function (array $item) use ($value): bool {
+						if ($item[1] === null) {
+							return false;
+						}
+
+						return self::compareValues(
+							$item[1]->getValue(),
+							self::normalizeEnumItemValue($item[1]->getDataType(), $value),
+						);
+					},
+				));
+
+				if (
+					count($filtered) === 1
+					&& $filtered[0][0] instanceof MetadataValueObjects\CombinedEnumFormatItem
+				) {
+					if (
+						$payloadClass !== null
+						&& (
+							$dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)
+							|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SWITCH)
+							|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_COVER)
+						)
+					) {
+						return $payloadClass::isValidValue(self::flattenValue($filtered[0][0]->getValue()))
+							? $payloadClass::get(self::flattenValue($filtered[0][0]->getValue()))
+							: null;
+					}
+
+					return strval($filtered[0][0]->getValue());
+				}
+
+				return null;
+			} else {
+				if ($payloadClass !== null && $payloadClass::isValidValue(self::flattenValue($value))) {
+					return $payloadClass::get(self::flattenValue($value));
+				}
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public static function transformValueToDevice(
+		MetadataTypes\DataType $dataType,
+		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+		MetadataValueObjects\StringEnumFormat|MetadataValueObjects\NumberRangeFormat|MetadataValueObjects\CombinedEnumFormat|MetadataValueObjects\EquationFormat|null $format,
+		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
+	): string|int|float|bool|null
+	{
+		if ($value === null) {
+			return null;
+		}
+
+		if ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BOOLEAN)) {
+			if (is_bool($value)) {
+				return $value;
+			}
+
+			return null;
+		}
+
+		if ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_DATE)) {
+			if ($value instanceof DateTime) {
+				return $value->format(self::DATE_FORMAT);
+			}
+
+			$value = Utils\DateTime::createFromFormat(self::DATE_FORMAT, strval(self::flattenValue($value)));
+
+			return $value === false ? null : $value->format(self::DATE_FORMAT);
+		}
+
+		if ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_TIME)) {
+			if ($value instanceof DateTime) {
+				return $value->format(self::TIME_FORMAT);
+			}
+
+			$value = Utils\DateTime::createFromFormat(self::TIME_FORMAT, strval(self::flattenValue($value)));
+
+			return $value === false ? null : $value->format(self::TIME_FORMAT);
+		}
+
+		if ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_DATETIME)) {
+			if ($value instanceof DateTime) {
+				return $value->format(DateTimeInterface::ATOM);
+			}
+
+			$value = Utils\DateTime::createFromFormat(DateTimeInterface::ATOM, strval(self::flattenValue($value)));
+
+			return $value === false ? null : $value->format(DateTimeInterface::ATOM);
+		}
+
+		if (
+			$dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)
+			|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SWITCH)
+			|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_COVER)
+			|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_ENUM)
+		) {
+			/** @var class-string<MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload>|null $payloadClass */
+			$payloadClass = null;
+
+			if ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)) {
+				$payloadClass = MetadataTypes\ButtonPayload::class;
+			} elseif ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SWITCH)) {
+				$payloadClass = MetadataTypes\SwitchPayload::class;
+			} elseif ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_COVER)) {
+				$payloadClass = MetadataTypes\CoverPayload::class;
+			}
+
+			if ($format instanceof MetadataValueObjects\StringEnumFormat) {
+				$filtered = array_values(array_filter(
+					$format->getItems(),
+					static fn (string $item): bool => self::compareValues($value, $item),
+				));
+
+				if (count($filtered) === 1) {
+					return strval(self::flattenValue($value));
+				}
+
+				return null;
+			} elseif ($format instanceof MetadataValueObjects\CombinedEnumFormat) {
+				$filtered = array_values(array_filter(
+					$format->getItems(),
+					static function (array $item) use ($value): bool {
+						if ($item[0] === null) {
+							return false;
+						}
+
+						return self::compareValues(
+							$item[0]->getValue(),
+							self::normalizeEnumItemValue($item[0]->getDataType(), $value),
+						);
+					},
+				));
+
+				if (
+					count($filtered) === 1
+					&& $filtered[0][2] instanceof MetadataValueObjects\CombinedEnumFormatItem
+				) {
+					return self::flattenValue($filtered[0][2]->getValue());
+				}
+
+				return null;
+			} else {
+				if ($payloadClass !== null) {
+					if ($value instanceof $payloadClass) {
+						return strval($value->getValue());
+					}
+
+					return $payloadClass::isValidValue(self::flattenValue($value))
+						? strval(self::flattenValue($value))
+						: null;
+				}
+			}
+		}
+
+		return self::flattenValue($value);
+	}
+
+	private static function normalizeEnumItemValue(
+		MetadataTypes\DataTypeShort|null $dataType,
+		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
+	): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
+	{
+		if ($dataType === null) {
+			return $value;
+		}
+
+		if (
+			$dataType->equalsValue(MetadataTypes\DataTypeShort::DATA_TYPE_CHAR)
+			|| $dataType->equalsValue(MetadataTypes\DataTypeShort::DATA_TYPE_UCHAR)
+			|| $dataType->equalsValue(MetadataTypes\DataTypeShort::DATA_TYPE_SHORT)
+			|| $dataType->equalsValue(MetadataTypes\DataTypeShort::DATA_TYPE_USHORT)
+			|| $dataType->equalsValue(MetadataTypes\DataTypeShort::DATA_TYPE_INT)
+			|| $dataType->equalsValue(MetadataTypes\DataTypeShort::DATA_TYPE_UINT)
+		) {
+			return intval(self::flattenValue($value));
+		} elseif ($dataType->equalsValue(MetadataTypes\DataTypeShort::DATA_TYPE_FLOAT)) {
+			return floatval(self::flattenValue($value));
+		} elseif ($dataType->equalsValue(MetadataTypes\DataTypeShort::DATA_TYPE_STRING)) {
+			return strval(self::flattenValue($value));
+		} elseif ($dataType->equalsValue(MetadataTypes\DataTypeShort::DATA_TYPE_BOOLEAN)) {
+			return in_array(
+				Utils\Strings::lower(strval(self::flattenValue($value))),
+				self::BOOL_TRUE_VALUES,
+				true,
+			);
+		} elseif ($dataType->equalsValue(MetadataTypes\DataTypeShort::DATA_TYPE_BUTTON)) {
+			if ($value instanceof MetadataTypes\ButtonPayload) {
+				return $value;
+			}
+
+			return MetadataTypes\ButtonPayload::isValidValue(self::flattenValue($value))
+				? MetadataTypes\ButtonPayload::get(self::flattenValue($value))
+				: false;
+		} elseif ($dataType->equalsValue(MetadataTypes\DataTypeShort::DATA_TYPE_SWITCH)) {
+			if ($value instanceof MetadataTypes\SwitchPayload) {
+				return $value;
+			}
+
+			return MetadataTypes\SwitchPayload::isValidValue(self::flattenValue($value))
+				? MetadataTypes\SwitchPayload::get(self::flattenValue($value))
+				: false;
+		} elseif ($dataType->equalsValue(MetadataTypes\DataTypeShort::DATA_TYPE_COVER)) {
+			if ($value instanceof MetadataTypes\CoverPayload) {
+				return $value;
+			}
+
+			return MetadataTypes\CoverPayload::isValidValue(self::flattenValue($value))
+				? MetadataTypes\CoverPayload::get(self::flattenValue($value))
+				: false;
+		} elseif ($dataType->equalsValue(MetadataTypes\DataTypeShort::DATA_TYPE_DATE)) {
+			if ($value instanceof DateTime) {
+				return $value;
+			}
+
+			$value = Utils\DateTime::createFromFormat(self::DATE_FORMAT, strval(self::flattenValue($value)));
+
+			return $value === false ? null : $value;
+		} elseif ($dataType->equalsValue(MetadataTypes\DataTypeShort::DATA_TYPE_TIME)) {
+			if ($value instanceof DateTime) {
+				return $value;
+			}
+
+			$value = Utils\DateTime::createFromFormat(self::TIME_FORMAT, strval(self::flattenValue($value)));
+
+			return $value === false ? null : $value;
+		} elseif ($dataType->equalsValue(MetadataTypes\DataTypeShort::DATA_TYPE_DATETIME)) {
+			if ($value instanceof DateTime) {
+				return $value;
+			}
+
+			$value = Utils\DateTime::createFromFormat(DateTimeInterface::ATOM, strval(self::flattenValue($value)));
+
+			return $value === false ? null : $value;
+		}
+
+		return $value;
+	}
+
+	private static function compareValues(
+		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $left,
+		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $right,
+	): bool
+	{
+		if ($left === $right) {
+			return true;
+		}
+
+		$left = Utils\Strings::lower(strval(self::flattenValue($left)));
+		$right = Utils\Strings::lower(strval(self::flattenValue($right)));
+
+		return $left === $right;
 	}
 
 }

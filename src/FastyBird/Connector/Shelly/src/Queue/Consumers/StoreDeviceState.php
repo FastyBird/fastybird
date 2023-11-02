@@ -18,7 +18,6 @@ namespace FastyBird\Connector\Shelly\Queue\Consumers;
 use Doctrine\DBAL;
 use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\Entities;
-use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Queries;
 use FastyBird\Connector\Shelly\Queue;
 use FastyBird\Connector\Shelly\Types;
@@ -125,7 +124,7 @@ final class StoreDeviceState implements Queue\Consumer
 				if ($property !== null) {
 					if ($property instanceof DevicesEntities\Devices\Properties\Dynamic) {
 						$this->devicePropertiesStateManager->setValue($property, Utils\ArrayHash::from([
-							DevicesStates\Property::ACTUAL_VALUE_KEY => Helpers\Transformer::transformValueFromDevice(
+							DevicesStates\Property::ACTUAL_VALUE_KEY => DevicesUtilities\ValueHelper::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$state->getValue(),
@@ -139,7 +138,7 @@ final class StoreDeviceState implements Queue\Consumer
 								$this->devicesPropertiesManager->update(
 									$property,
 									Utils\ArrayHash::from([
-										'value' => Helpers\Transformer::transformValueFromDevice(
+										'value' => DevicesUtilities\ValueHelper::transformValueFromDevice(
 											$property->getDataType(),
 											$property->getFormat(),
 											$state->getValue(),
@@ -172,7 +171,7 @@ final class StoreDeviceState implements Queue\Consumer
 						if ($property !== null) {
 							if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
 								$this->channelPropertiesStateManager->setValue($property, Utils\ArrayHash::from([
-									DevicesStates\Property::ACTUAL_VALUE_KEY => Helpers\Transformer::transformValueFromDevice(
+									DevicesStates\Property::ACTUAL_VALUE_KEY => DevicesUtilities\ValueHelper::transformValueFromDevice(
 										$property->getDataType(),
 										$property->getFormat(),
 										$state->getValue(),
@@ -186,7 +185,7 @@ final class StoreDeviceState implements Queue\Consumer
 										$this->channelsPropertiesManager->update(
 											$property,
 											Utils\ArrayHash::from([
-												'value' => Helpers\Transformer::transformValueFromDevice(
+												'value' => DevicesUtilities\ValueHelper::transformValueFromDevice(
 													$property->getDataType(),
 													$property->getFormat(),
 													$state->getValue(),
@@ -206,9 +205,9 @@ final class StoreDeviceState implements Queue\Consumer
 				$findChannelQuery->forDevice($device);
 
 				if (Utils\Strings::startsWith($state->getIdentifier(), '_')) {
-					$findChannelQuery->startWithIdentifier($state->getIdentifier());
-				} elseif (Utils\Strings::endsWith($state->getIdentifier(), '_')) {
 					$findChannelQuery->endWithIdentifier($state->getIdentifier());
+				} elseif (Utils\Strings::endsWith($state->getIdentifier(), '_')) {
+					$findChannelQuery->startWithIdentifier($state->getIdentifier());
 				} else {
 					$findChannelQuery->byIdentifier($state->getIdentifier());
 				}
@@ -220,19 +219,19 @@ final class StoreDeviceState implements Queue\Consumer
 						$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
 						$findChannelPropertyQuery->forChannel($channel);
 
-						if (Utils\Strings::startsWith($state->getIdentifier(), '_')) {
-							$findChannelPropertyQuery->startWithIdentifier($state->getIdentifier());
-						} elseif (Utils\Strings::endsWith($state->getIdentifier(), '_')) {
-							$findChannelPropertyQuery->endWithIdentifier($state->getIdentifier());
+						if (Utils\Strings::startsWith($sensor->getIdentifier(), '_')) {
+							$findChannelPropertyQuery->endWithIdentifier($sensor->getIdentifier());
+						} elseif (Utils\Strings::endsWith($sensor->getIdentifier(), '_')) {
+							$findChannelPropertyQuery->startWithIdentifier($sensor->getIdentifier());
 						} else {
-							$findChannelPropertyQuery->byIdentifier($state->getIdentifier());
+							$findChannelPropertyQuery->byIdentifier($sensor->getIdentifier());
 						}
 
 						$property = $this->channelsPropertiesRepository->findOneBy($findChannelPropertyQuery);
 
 						if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
 							$this->channelPropertiesStateManager->setValue($property, Utils\ArrayHash::from([
-								DevicesStates\Property::ACTUAL_VALUE_KEY => Helpers\Transformer::transformValueFromDevice(
+								DevicesStates\Property::ACTUAL_VALUE_KEY => DevicesUtilities\ValueHelper::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$sensor->getValue(),
@@ -245,7 +244,7 @@ final class StoreDeviceState implements Queue\Consumer
 									$this->channelsPropertiesManager->update(
 										$property,
 										Utils\ArrayHash::from([
-											'value' => Helpers\Transformer::transformValueFromDevice(
+											'value' => DevicesUtilities\ValueHelper::transformValueFromDevice(
 												$property->getDataType(),
 												$property->getFormat(),
 												$sensor->getValue(),
