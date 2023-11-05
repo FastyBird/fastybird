@@ -1,7 +1,7 @@
 {
   "name": "@fastybird/fastybird",
   "private": true,
-  "version": "1.0.0-dev.17",
+  "version": "1.0.0-dev.18",
   "description": "Repository for FastyBird packages development",
   "keywords": [
     "fastybird",
