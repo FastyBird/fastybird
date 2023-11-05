@@ -312,7 +312,7 @@ jobs:
           php php-coveralls.phar --verbose --config tools/.coveralls.yml
 
   tests-mutations:
-    name: "Test for mutants"
+    name: "Code tests for mutants"
     runs-on: "${{ matrix.operating-system }}"
 
     strategy:
@@ -376,7 +376,7 @@ jobs:
           restore-keys: "php-infection-${{ runner.os }}"
 
   tests-mutations-upload:
-    name: "Test for mutants"
+    name: "Code tests mutants upload"
     runs-on: "${{ matrix.operating-system }}"
     needs: [ "tests-mutations" ]
 
@@ -386,9 +386,14 @@ jobs:
         operating-system: [ "ubuntu-latest" ]
       fail-fast: false
 
-    if: "github.event_name == 'push'"
-
     steps:
+      - name: "Cache Infection data"
+        uses: "actions/cache@v3"
+        with:
+          path: "var/tools/Infection"
+          key: "php-infection-${{ runner.os }}"
+          restore-keys: "php-infection-${{ runner.os }}"
+
       - name: "Mutation tests with report"
         env:
           STRYKER_DASHBOARD_API_KEY: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}
