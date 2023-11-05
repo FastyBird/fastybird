@@ -1,6 +1,6 @@
 {
   "name": "@fastybird/triggers-module",
-  "version": "1.0.0-dev.18",
+  "version": "1.0.0-dev.19",
   "type": "module",
   "description": "FastyBird IoT module for triggers management & basic automation logic",
   "keywords": [
@@ -58,8 +58,8 @@
     "pretty:write": "prettier assets --write"
   },
   "dependencies": {
-    "@fastybird/metadata-library": "^1.0.0-dev.18",
-    "@fastybird/web-ui-library": "^1.0.0-dev.18",
+    "@fastybird/metadata-library": "^1.0.0-dev.19",
+    "@fastybird/web-ui-library": "^1.0.0-dev.19",
     "@fortawesome/vue-fontawesome": "^2.0.9",
     "ajv": "^8.11",
     "axios": "^1.2.0",
