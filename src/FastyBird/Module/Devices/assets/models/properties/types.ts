@@ -1,6 +1,6 @@
 import { TJsonaModel } from 'jsona/lib/JsonaTypes';
 
-import { DataType, PropertyCategory } from '@fastybird/metadata-library';
+import { ButtonPayload, CoverPayload, DataType, PropertyCategory, SwitchPayload } from '@fastybird/metadata-library';
 
 // COMMANDS
 // ========
@@ -32,17 +32,18 @@ export interface IProperty {
 	dataType: DataType;
 	unit: string | null;
 	format: string[] | (string | null)[][] | (number | null)[] | string | null;
-	invalid: string | number | null;
+	invalid: string | number | boolean | null;
 	scale: number | null;
 	step: number | null;
 
 	// Static property
-	value: string | number | boolean | Date | null;
+	value: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | Date | null;
 
 	/* Dynamic property start */
-	actualValue: string | number | boolean | Date | null;
-	expectedValue: string | number | boolean | Date | null;
-	pending: boolean | Date | null;
+	actualValue: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | Date | null;
+	expectedValue: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | Date | null;
+	pending: boolean | Date;
+	isValid: boolean;
 
 	command: PropertyCommandState | null;
 	lastResult: PropertyCommandResult | null;
@@ -70,17 +71,18 @@ export interface IPropertyRecordFactoryPayload {
 	dataType: DataType;
 	unit?: string | null;
 	format?: string[] | (string | null)[][] | (number | null)[] | string | null;
-	invalid?: string | number | null;
+	invalid?: string | number | boolean | null;
 	scale?: number | null;
 	step?: number | null;
 
 	// Static property
-	value?: string | number | boolean | Date | null;
+	value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | Date | null;
 
 	/* Dynamic property start */
-	actualValue?: string | number | boolean | Date | null;
-	expectedValue?: string | number | boolean | Date | null;
-	pending?: boolean | Date | null;
+	actualValue?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | Date | null;
+	expectedValue?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | Date | null;
+	pending?: boolean | Date;
+	isValid?: boolean;
 
 	command?: PropertyCommandState | null;
 	lastResult?: PropertyCommandResult | null;
@@ -108,7 +110,7 @@ export interface IPropertiesAddActionPayload {
 		dataType: DataType;
 		unit?: string | null;
 		format?: string[] | (string | null)[][] | (number | null)[] | string | null;
-		invalid?: string | number | null;
+		invalid?: string | number | boolean | null;
 		scale?: number | null;
 		step?: number | null;
 
@@ -128,17 +130,18 @@ export interface IPropertiesEditActionPayload {
 		dataType?: DataType;
 		unit?: string | null;
 		format?: string[] | (string | null)[][] | (number | null)[] | string | null;
-		invalid?: string | number | null;
+		invalid?: string | number | boolean | null;
 		scale?: number | null;
 		step?: number | null;
 
 		// Static property
-		value?: string | number | boolean | Date | null;
+		value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | Date | null;
 
 		/* Dynamic property start */
-		actualValue?: string | number | boolean | Date | null;
-		expectedValue?: string | number | boolean | Date | null;
-		pending?: boolean | Date | null;
+		actualValue?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | Date | null;
+		expectedValue?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | Date | null;
+		pending?: boolean | Date;
+		isValid?: boolean;
 
 		command?: PropertyCommandState | null;
 		lastResult?: PropertyCommandResult | null;
@@ -151,9 +154,10 @@ export interface IPropertiesSetStateActionPayload {
 	id: string;
 
 	data: {
-		actualValue?: string | number | boolean | Date | null;
-		expectedValue?: string | number | boolean | Date | null;
-		pending?: boolean | Date | null;
+		actualValue?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | Date | null;
+		expectedValue?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | Date | null;
+		pending?: boolean | Date;
+		isValid?: boolean;
 
 		command?: PropertyCommandState | null;
 		lastResult?: PropertyCommandResult | null;
@@ -176,15 +180,16 @@ export interface IPropertyResponseModel extends TJsonaModel {
 	dataType: DataType;
 	unit: string | null;
 	format: string[] | (string | null)[][] | (number | null)[] | string | null;
-	invalid: string | number | null;
+	invalid: string | number | boolean | null;
 	scale: number | null;
 	step: number | null;
 
-	value: string | number | boolean | Date | null;
+	value: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | Date | null;
 
-	actualValue: string | number | boolean | Date | null;
-	expectedValue: string | number | boolean | Date | null;
-	pending: boolean | Date | null;
+	actualValue: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | Date | null;
+	expectedValue: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | Date | null;
+	pending: boolean | Date;
+	isValid: boolean;
 
 	// Relations
 	relationshipNames: string[];

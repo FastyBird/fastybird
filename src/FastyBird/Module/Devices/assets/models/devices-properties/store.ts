@@ -85,7 +85,8 @@ const recordFactory = async (data: IDevicePropertyRecordFactoryPayload): Promise
 		value: get(data, 'value', null),
 		actualValue: get(data, 'actualValue', null),
 		expectedValue: get(data, 'expectedValue', null),
-		pending: get(data, 'pending', null),
+		pending: get(data, 'pending', false),
+		isValid: get(data, 'isValid', false),
 		command: get(data, 'command', null),
 		lastResult: get(data, 'lastResult', null),
 		backupValue: get(data, 'backup', null),
@@ -649,6 +650,7 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 								expectedValue: body.expected_value,
 								value: body.value,
 								pending: body.pending,
+								isValid: body.is_valid,
 								deviceId: body.device,
 							},
 						});
