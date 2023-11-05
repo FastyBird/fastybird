@@ -18,7 +18,6 @@ namespace FastyBird\Module\Devices\Schemas\Connectors\Properties;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities;
-use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Schemas;
 use FastyBird\Module\Devices\Utilities;
 use Neomerx\JsonApi;
