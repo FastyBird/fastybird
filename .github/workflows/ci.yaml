@@ -391,7 +391,7 @@ jobs:
           custom-cache-key: "${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}"
 
       - name: "Mutation tests"
-        run: "make mutations-tests -d pcov.directory=${{ matrix.package.local-path }}"
+        run: "make mutations-tests ARGS='-d pcov.directory=${{ matrix.package.local-path }}'"
 
       - name: "Cache Infection data"
         uses: "actions/cache@v3"
