@@ -70,6 +70,6 @@ PRE_PHP=XDEBUG_MODE=off
 
 PHPUNIT_COMMAND="vendor/bin/paratest" -c $(PHPUNIT_CONFIG) --runner=WrapperRunner -p$(LOGICAL_CORES)
 PHPUNIT_COVERAGE=php -d pcov.enabled=1 -d pcov.directory=./src $(PHPUNIT_COMMAND)
-PHPUNIT_MUTATIONS=php -d pcov.enabled=1 $(PHPUNIT_COMMAND)
+PHPUNIT_MUTATIONS=php -d pcov.enabled=1 -d pcov.directory=./src $(PHPUNIT_COMMAND)
 
 LOGICAL_CORES=$(shell nproc || sysctl -n hw.logicalcpu || echo 4)

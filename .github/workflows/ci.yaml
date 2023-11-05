@@ -20,29 +20,6 @@ env:
   COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.ORGANIZATION_ACCESS_TOKEN }}"}}'
 
 jobs:
-  build_matrix:
-    name: "Create list of packages for split"
-    runs-on: "${{ matrix.operating-system }}"
-
-    strategy:
-      fail-fast: false
-      matrix:
-        operating-system: [ "ubuntu-latest" ]
-
-    # This step is needed, so the output gets to the next defined job
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.content }}
-
-    steps:
-      - name: "Checkout"
-        uses: "actions/checkout@v4"
-
-      - name: "Read matrix configuration"
-        id: "set-matrix"
-        uses: "juliangruber/read-file-action@v1"
-        with:
-          path: "./.github/workflows/monorepo-matrix.json"
-
   qa:
     name: "Code quality assurance"
     runs-on: "${{ matrix.operating-system }}"
@@ -337,13 +314,11 @@ jobs:
   tests-mutations:
     name: "Test for mutants"
     runs-on: "${{ matrix.operating-system }}"
-    needs: [ "build_matrix" ]
 
     strategy:
       matrix:
         php-version: [ "8.2" ]
         operating-system: [ "ubuntu-latest" ]
-        package: ${{fromJson(needs.build_matrix.outputs.matrix)}}
       fail-fast: false
 
     steps:
@@ -391,14 +366,14 @@ jobs:
           custom-cache-key: "${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}"
 
       - name: "Mutation tests"
-        run: "make mutations-tests ARGS='-d pcov.directory=${{ matrix.package.local-path }}'"
+        run: "make mutations-tests"
 
       - name: "Cache Infection data"
         uses: "actions/cache@v3"
         with:
           path: "var/tools/Infection"
-          key: "php-infection-${{ runner.os }}-${{ matrix.package.name }}"
-          restore-keys: "php-infection-${{ runner.os }}-${{ matrix.package.name }}"
+          key: "php-infection-${{ runner.os }}"
+          restore-keys: "php-infection-${{ runner.os }}"
 
   tests-mutations-upload:
     name: "Test for mutants"
