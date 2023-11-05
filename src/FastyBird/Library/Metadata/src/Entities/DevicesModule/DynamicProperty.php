@@ -50,8 +50,8 @@ abstract class DynamicProperty extends Property
 		string $category,
 		string $identifier,
 		string|null $name,
-		bool $settable,
-		bool $queryable,
+		private readonly bool $settable,
+		private readonly bool $queryable,
 		string $dataType,
 		string|null $unit = null,
 		array|null $format = null,
@@ -72,8 +72,6 @@ abstract class DynamicProperty extends Property
 			$category,
 			$identifier,
 			$name,
-			$settable,
-			$queryable,
 			$dataType,
 			$unit,
 			$format,
@@ -87,6 +85,16 @@ abstract class DynamicProperty extends Property
 		$this->previousValue = $previousValue;
 		$this->expectedValue = $expectedValue;
 		$this->pending = $pending;
+	}
+
+	public function isSettable(): bool
+	{
+		return $this->settable;
+	}
+
+	public function isQueryable(): bool
+	{
+		return $this->queryable;
 	}
 
 	public function getActualValue(): float|bool|int|string|null
@@ -138,6 +146,8 @@ abstract class DynamicProperty extends Property
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), [
+			'settable' => $this->isSettable(),
+			'queryable' => $this->isQueryable(),
 			'actual_value' => $this->getActualValue(),
 			'expected_value' => $this->getExpectedValue(),
 			'pending' => $this->getPending(),

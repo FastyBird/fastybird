@@ -210,7 +210,6 @@
         }
     },
     "extra": {
-        "enable-patching": false,
         "patches": {
             "dg/bypass-finals": {
                 "Bug: mkdir check": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/dg-bypass-finals-src-nativewrapper-php.patch"
@@ -228,7 +227,8 @@
             "react/event-loop": {
                 "Bug: Use native return type": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/react-event-loop-src-loop-php.patch"
             }
-        }
+        },
+        "enable-patching": false
     },
     "config": {
         "sort-packages": true,

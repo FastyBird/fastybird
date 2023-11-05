@@ -44,7 +44,7 @@ class Property extends RedisDbStates\State implements DevicesStates\Property
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 	private bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $expectedValue = null;
 
-	private bool|string|null $pending = null;
+	private bool|string $pending = false;
 
 	/** @var bool */
 	private bool|null $valid = null;
@@ -105,10 +105,10 @@ class Property extends RedisDbStates\State implements DevicesStates\Property
 
 	public function isPending(): bool
 	{
-		return $this->pending !== null ? is_bool($this->pending) ? $this->pending : true : false;
+		return is_bool($this->pending) ? $this->pending : true;
 	}
 
-	public function getPending(): bool|DateTimeInterface|null
+	public function getPending(): bool|DateTimeInterface
 	{
 		if (is_string($this->pending)) {
 			return Utils\DateTime::createFromFormat(DateTimeInterface::ATOM, $this->pending);
@@ -117,7 +117,7 @@ class Property extends RedisDbStates\State implements DevicesStates\Property
 		return $this->pending;
 	}
 
-	public function setPending(bool|string|null $pending = null): void
+	public function setPending(bool|string $pending = false): void
 	{
 		$this->pending = $pending;
 	}

@@ -1,39 +1,41 @@
 {
-  "$schema" : "https://json-schema.org/draft/2020-12/schema",
-  "type" : "object",
-  "properties" : {
-    "action" : {
-      "type" : "string",
-      "enum" : [
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "action": {
+      "type": "string",
+      "enum": [
         "set"
       ]
     },
-    "connector" : {
-      "type" : "string",
-      "description" : "Connector unique uuid v4 identifier"
+    "connector": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Connector unique uuid v4 identifier"
     },
-    "control" : {
-      "type" : "string",
-      "description" : "Control unique uuid v4 identifier"
+    "control": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Control unique uuid v4 identifier"
     },
-    "expected_value" : {
-      "oneOf" : [
+    "expected_value": {
+      "oneOf": [
         {
-          "type" : "null"
+          "type": "null"
         },
         {
-          "type" : "string"
+          "type": "string"
         },
         {
-          "type" : "number"
+          "type": "number"
         },
         {
-          "type" : "boolean"
+          "type": "boolean"
         }
       ]
     }
   },
-  "required" : [
+  "required": [
     "action",
     "connector",
     "control"

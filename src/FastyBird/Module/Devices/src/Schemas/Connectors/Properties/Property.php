@@ -48,9 +48,9 @@ abstract class Property extends JsonApiSchemas\JsonApi
 	}
 
 	/**
-	 * @phpstan-param T $resource
+	 * @param T $resource
 	 *
-	 * @phpstan-return iterable<string, (string|bool|int|float|array<string>|array<int, (int|float|array<int, (string|int|float|null)>|null)>|array<int, array<int, (string|array<int, (string|int|float|bool)>|null)>>|null)>
+	 * @return iterable<string, (string|bool|int|float|array<string>|array<int, (int|float|array<int, (string|int|float|null)>|null)>|array<int, array<int, (string|array<int, (string|int|float|bool)>|null)>>|null)>
 	 *
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -66,8 +66,6 @@ abstract class Property extends JsonApiSchemas\JsonApi
 			'category' => strval($resource->getCategory()->getValue()),
 			'identifier' => $resource->getIdentifier(),
 			'name' => $resource->getName(),
-			'settable' => $resource->isSettable(),
-			'queryable' => $resource->isQueryable(),
 			'data_type' => strval($resource->getDataType()->getValue()),
 			'unit' => $resource->getUnit(),
 			'format' => $resource->getFormat()?->getValue(),
@@ -78,7 +76,7 @@ abstract class Property extends JsonApiSchemas\JsonApi
 	}
 
 	/**
-	 * @phpstan-param T $resource
+	 * @param T $resource
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -100,9 +98,9 @@ abstract class Property extends JsonApiSchemas\JsonApi
 	}
 
 	/**
-	 * @phpstan-param T $resource
+	 * @param T $resource
 	 *
-	 * @phpstan-return iterable<string, mixed>
+	 * @return iterable<string, mixed>
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -121,7 +119,7 @@ abstract class Property extends JsonApiSchemas\JsonApi
 	}
 
 	/**
-	 * @phpstan-param T $resource
+	 * @param T $resource
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */

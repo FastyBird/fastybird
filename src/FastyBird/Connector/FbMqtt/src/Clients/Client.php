@@ -145,7 +145,6 @@ abstract class Client
 	 * Connects to a broker
 	 *
 	 * @throws InvalidArgumentException
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */

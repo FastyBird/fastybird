@@ -1,63 +1,67 @@
 {
-  "$schema" : "https://json-schema.org/draft/2020-12/schema",
-  "type" : "object",
-  "properties" : {
-    "id" : {
-      "type" : "string",
-      "description" : "Entity unique uuid v4 identifier"
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Entity unique uuid v4 identifier"
     },
-    "type" : {
-      "type" : "string",
-      "description" : "Connector type"
+    "type": {
+      "type": "string",
+      "description": "Connector type"
     },
-    "category" : {
-      "type" : "string",
-      "enum": ["generic"],
-      "description" : "Connector category"
+    "category": {
+      "type": "string",
+      "enum": [
+        "generic"
+      ],
+      "description": "Connector category"
     },
-    "identifier" : {
-      "type" : "string",
-      "description" : "Unique human readable identifier"
+    "identifier": {
+      "type": "string",
+      "description": "Unique human readable identifier"
     },
-    "name" : {
-      "oneOf" : [
+    "name": {
+      "oneOf": [
         {
-          "type" : "null"
+          "type": "null"
         },
         {
-          "type" : "string"
+          "type": "string"
         }
       ],
-      "default" : null
+      "default": null
     },
-    "comment" : {
-      "oneOf" : [
+    "comment": {
+      "oneOf": [
         {
-          "type" : "null"
+          "type": "null"
         },
         {
-          "type" : "string"
+          "type": "string"
         }
       ],
-      "default" : null
+      "default": null
     },
-    "enabled" : {
-      "type" : "boolean",
-      "default" : false
+    "enabled": {
+      "type": "boolean",
+      "default": false
     },
-    "owner" : {
-      "oneOf" : [
+    "owner": {
+      "oneOf": [
         {
-          "type" : "null"
+          "type": "null"
         },
         {
-          "type" : "string"
+          "type": "string",
+          "format": "uuid"
         }
       ],
-      "description" : "Entity owner uuid v4 identifier"
+      "description": "Entity owner uuid v4 identifier"
     }
   },
-  "required" : [
+  "required": [
     "id",
     "type",
     "category",

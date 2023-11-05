@@ -21,7 +21,6 @@ use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
-use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Ramsey\Uuid;
 use function is_string;
 
@@ -71,7 +70,6 @@ class ThirdPartyDevice extends Entities\NsPanelDevice
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -96,7 +94,6 @@ class ThirdPartyDevice extends Entities\NsPanelDevice
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -120,7 +117,6 @@ class ThirdPartyDevice extends Entities\NsPanelDevice
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -144,7 +140,6 @@ class ThirdPartyDevice extends Entities\NsPanelDevice
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -168,7 +163,6 @@ class ThirdPartyDevice extends Entities\NsPanelDevice
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */

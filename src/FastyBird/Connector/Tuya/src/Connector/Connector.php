@@ -205,7 +205,6 @@ final class Connector implements DevicesConnectors\Connector
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */

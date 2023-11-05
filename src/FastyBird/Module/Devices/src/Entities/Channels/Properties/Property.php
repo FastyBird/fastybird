@@ -19,7 +19,6 @@ use Doctrine\Common;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Entities;
-use FastyBird\Module\Devices\Exceptions;
 use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
 use Nette\Utils;
 use Ramsey\Uuid;
@@ -151,44 +150,20 @@ abstract class Property extends Entities\Property
 	}
 
 	/**
-	 * @throws Exceptions\InvalidArgument
-	 * @throws Exceptions\InvalidState
-	 */
-	public function setSettable(bool $settable): void
-	{
-		if (
-			$this->getParent() !== null
-			&& $settable
-			&& !$this->getParent()->isSettable()
-		) {
-			throw new Exceptions\InvalidState('Parent property is not settable');
-		}
-
-		parent::setSettable($settable);
-	}
-
-	/**
 	 * {@inheritDoc}
 	 */
 	public function toArray(): array
 	{
-		$children = [];
-
-		foreach ($this->getChildren() as $child) {
-			$children[] = $child->getPlainId();
-		}
-
 		return array_merge(parent::toArray(), [
-			'channel' => $this->getChannel()->getPlainId(),
-			'parent' => $this->getParent()?->getPlainId(),
-			'children' => $children,
+			'channel' => $this->getChannel()->getId()->toString(),
+			'device' => $this->getChannel()->getDevice()->getId()->toString(),
+			'connector' => $this->getChannel()->getDevice()->getConnector()->getId()->toString(),
 
 			'owner' => $this->getChannel()->getDevice()->getOwnerId(),
 		]);
 	}
 
 	/**
-	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Utils\JsonException

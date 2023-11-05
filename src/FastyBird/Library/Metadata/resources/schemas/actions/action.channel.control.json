@@ -1,43 +1,46 @@
 {
-  "$schema" : "https://json-schema.org/draft/2020-12/schema",
-  "type" : "object",
-  "properties" : {
-    "action" : {
-      "type" : "string",
-      "enum" : [
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "action": {
+      "type": "string",
+      "enum": [
         "set"
       ]
     },
-    "device" : {
-      "type" : "string",
-      "description" : "Device unique uuid v4 identifier"
+    "device": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Device unique uuid v4 identifier"
     },
-    "channel" : {
-      "type" : "string",
-      "description" : "Channel unique uuid v4 identifier"
+    "channel": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Channel unique uuid v4 identifier"
     },
-    "control" : {
-      "type" : "string",
-      "description" : "Channel control unique uuid v4 identifier"
+    "control": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Channel control unique uuid v4 identifier"
     },
-    "expected_value" : {
-      "oneOf" : [
+    "expected_value": {
+      "oneOf": [
         {
-          "type" : "null"
+          "type": "null"
         },
         {
-          "type" : "string"
+          "type": "string"
         },
         {
-          "type" : "number"
+          "type": "number"
         },
         {
-          "type" : "boolean"
+          "type": "boolean"
         }
       ]
     }
   },
-  "required" : [
+  "required": [
     "action",
     "device",
     "channel",

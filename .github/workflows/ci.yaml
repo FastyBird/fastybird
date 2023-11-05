@@ -312,7 +312,7 @@ jobs:
           php php-coveralls.phar --verbose --config tools/.coveralls.yml
 
   tests-mutations:
-    name: "Test for mutants"
+    name: "Code tests for mutants"
     runs-on: "${{ matrix.operating-system }}"
 
     strategy:
@@ -362,26 +362,84 @@ jobs:
 
       - name: "Setup composer & install dependencies"
         uses: "ramsey/composer-install@v2"
-        timeout-minutes: 120
         with:
           dependency-versions: "highest"
           composer-options: "${{ env.composer-options }}"
           custom-cache-key: "${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}"
 
       - name: "Mutation tests"
-        timeout-minutes: 120
         run: "make mutations-tests"
 
       - name: "Cache Infection data"
         uses: "actions/cache@v3"
-        timeout-minutes: 120
         with:
-          path: "var/tools/Infection"
+          path: "var/tools"
+          key: "php-infection-${{ runner.os }}"
+          restore-keys: "php-infection-${{ runner.os }}"
+
+  tests-mutations-upload:
+    name: "Code tests mutants upload"
+    runs-on: "${{ matrix.operating-system }}"
+    needs: [ "tests-mutations" ]
+
+    strategy:
+      matrix:
+        php-version: [ "8.2" ]
+        operating-system: [ "ubuntu-latest" ]
+      fail-fast: false
+
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v4"
+
+      - name : "Setup MySQL"
+        uses : "mirromutth/mysql-action@v1.1"
+        with :
+          mysql version : "5.7"
+          mysql database : "testdb"
+          mysql root password : "root"
+
+      - name: "Setup PHP cache environment"
+        id: "extcache"
+        uses: "shivammathur/cache-extensions@v1"
+        with:
+          php-version: "${{ matrix.php-version }}"
+          extensions: "${{ env.extensions }}"
+          key: "${{ env.cache-version }}"
+
+      - name: "Cache PHP extensions"
+        uses: "actions/cache@v3"
+        with:
+          path: "${{ steps.extcache.outputs.dir }}"
+          key: "${{ steps.extcache.outputs.key }}"
+          restore-keys: "${{ steps.extcache.outputs.key }}"
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          php-version: "${{ matrix.php-version }}"
+          extensions: "${{ env.extensions }}"
+          tools: "composer:${{ env.composer-version }}"
+          coverage: "pcov"
+
+      - name: "Setup problem matchers for PHP"
+        run: 'echo "::add-matcher::${{ runner.tool_cache }}/php.json"'
+
+      - name: "Setup composer & install dependencies"
+        uses: "ramsey/composer-install@v2"
+        with:
+          dependency-versions: "highest"
+          composer-options: "${{ env.composer-options }}"
+          custom-cache-key: "${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}"
+
+      - name: "Cache Infection data"
+        uses: "actions/cache@v3"
+        with:
+          path: "var/tools"
           key: "php-infection-${{ runner.os }}"
           restore-keys: "php-infection-${{ runner.os }}"
 
       - name: "Mutation tests with report"
-        timeout-minutes: 120
         env:
           STRYKER_DASHBOARD_API_KEY: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}
         shell: "bash"
@@ -389,10 +447,9 @@ jobs:
 
       - name: "Upload logs"
         uses: "actions/upload-artifact@v2"
-        timeout-minutes: 120
         with:
           name: "Logs - Mutations"
-          path: "var/coverage/mutations/infection.log"
+          path: "var/tools/Coverage/mutations/infection.log"
           if-no-files-found: "ignore"
 
   lint:

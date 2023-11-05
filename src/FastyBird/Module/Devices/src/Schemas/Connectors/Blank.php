@@ -22,7 +22,8 @@ use FastyBird\Module\Devices\Schemas;
 /**
  * Modbus connector entity schema
  *
- * @extends Connector<Entities\Connectors\Blank>
+ * @template T of Entities\Connectors\Blank
+ * @extends Connector<T>
  *
  * @package         FastyBird:DevicesModule!
  * @subpackage      Schemas

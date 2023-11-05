@@ -6,8 +6,6 @@
       "type": "variable",
       "identifier": "battery",
       "name": "battery",
-      "settable": false,
-      "queryable": false,
       "data_type": "enum",
       "unit": null,
       "format": [

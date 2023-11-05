@@ -1701,8 +1701,6 @@ class Devices extends Console\Command\Command
 				'channel' => $channel,
 				'dataType' => $dataType,
 				'format' => $format,
-				'settable' => false,
-				'queryable' => false,
 				'value' => $value,
 				'invalid' => $protocolMetadata->offsetExists('invalid_value')
 					? $protocolMetadata->offsetGet('invalid_value')
@@ -1839,8 +1837,6 @@ class Devices extends Console\Command\Command
 						'channel' => $channel,
 						'dataType' => $dataType,
 						'format' => $format,
-						'settable' => false,
-						'queryable' => false,
 						'value' => $value,
 						'invalid' => $protocolMetadata->offsetExists('invalid_value')
 							? $protocolMetadata->offsetGet('invalid_value')
@@ -2029,7 +2025,6 @@ class Devices extends Console\Command\Command
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState

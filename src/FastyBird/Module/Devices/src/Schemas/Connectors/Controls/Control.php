@@ -27,7 +27,8 @@ use Neomerx\JsonApi;
 /**
  * Connector control entity schema
  *
- * @extends JsonApiSchemas\JsonApi<Entities\Connectors\Controls\Control>
+ * @template T of Entities\Connectors\Controls\Control
+ * @extends JsonApiSchemas\JsonApi<T>
  *
  * @package         FastyBird:DevicesModule!
  * @subpackage      Schemas
@@ -61,9 +62,9 @@ final class Control extends JsonApiSchemas\JsonApi
 	}
 
 	/**
-	 * @phpstan-param Entities\Connectors\Controls\Control $resource
+	 * @param T $resource
 	 *
-	 * @phpstan-return iterable<string, string|bool|null>
+	 * @return iterable<string, string|bool|null>
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -78,7 +79,7 @@ final class Control extends JsonApiSchemas\JsonApi
 	}
 
 	/**
-	 * @phpstan-param Entities\Connectors\Controls\Control $resource
+	 * @param T $resource
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -98,9 +99,9 @@ final class Control extends JsonApiSchemas\JsonApi
 	}
 
 	/**
-	 * @phpstan-param Entities\Connectors\Controls\Control $resource
+	 * @param T $resource
 	 *
-	 * @phpstan-return iterable<string, mixed>
+	 * @return iterable<string, mixed>
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -119,7 +120,7 @@ final class Control extends JsonApiSchemas\JsonApi
 	}
 
 	/**
-	 * @phpstan-param Entities\Connectors\Controls\Control $resource
+	 * @param T $resource
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */

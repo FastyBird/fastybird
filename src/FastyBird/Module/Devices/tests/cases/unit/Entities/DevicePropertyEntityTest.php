@@ -44,13 +44,13 @@ final class DevicePropertyEntityTest extends DbTestCase
 		self::assertSame('status_led', $parent->getIdentifier());
 
 		$child = $manager->create(Utils\ArrayHash::from([
-			'entity' => Entities\Devices\Properties\Variable::class,
+			'entity' => Entities\Devices\Properties\Mapped::class,
 			'identifier' => 'new-child-property',
 			'device' => $parent->getDevice(),
 			'parent' => $parent,
 		]));
 
-		self::assertTrue($child instanceof Entities\Devices\Properties\Variable);
+		self::assertTrue($child instanceof Entities\Devices\Properties\Mapped);
 		self::assertSame('new-child-property', $child->getIdentifier());
 		self::assertSame($parent, $child->getParent());
 	}
@@ -81,13 +81,13 @@ final class DevicePropertyEntityTest extends DbTestCase
 		self::assertSame('status_led', $parent->getIdentifier());
 
 		$child = $manager->create(Utils\ArrayHash::from([
-			'entity' => Entities\Devices\Properties\Variable::class,
+			'entity' => Entities\Devices\Properties\Mapped::class,
 			'identifier' => 'new-child-property',
 			'device' => $parent->getDevice(),
 			'parent' => $parent,
 		]));
 
-		self::assertTrue($child instanceof Entities\Devices\Properties\Variable);
+		self::assertTrue($child instanceof Entities\Devices\Properties\Mapped);
 		self::assertSame('new-child-property', $child->getIdentifier());
 		self::assertSame($parent, $child->getParent());
 
@@ -139,13 +139,13 @@ final class DevicePropertyEntityTest extends DbTestCase
 		self::assertSame('status_led', $parent->getIdentifier());
 
 		$child = $manager->create(Utils\ArrayHash::from([
-			'entity' => Entities\Devices\Properties\Variable::class,
+			'entity' => Entities\Devices\Properties\Mapped::class,
 			'identifier' => 'new-child-property',
 			'device' => $parent->getDevice(),
 			'parent' => $parent,
 		]));
 
-		self::assertTrue($child instanceof Entities\Devices\Properties\Variable);
+		self::assertTrue($child instanceof Entities\Devices\Properties\Mapped);
 		self::assertSame('new-child-property', $child->getIdentifier());
 		self::assertSame($parent, $child->getParent());
 
@@ -155,7 +155,7 @@ final class DevicePropertyEntityTest extends DbTestCase
 		$child = $repository->findOneBy($findQuery);
 
 		self::assertIsObject($child);
-		self::assertTrue($child instanceof Entities\Devices\Properties\Variable);
+		self::assertTrue($child instanceof Entities\Devices\Properties\Mapped);
 
 		$findQuery = new Queries\FindDeviceProperties();
 		$findQuery->byIdentifier('status_led');

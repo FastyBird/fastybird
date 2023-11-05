@@ -21,7 +21,6 @@ use FastyBird\Connector\FbMqtt\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
-use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use function is_int;
 use function is_string;
 
@@ -55,7 +54,6 @@ class FbMqttConnector extends DevicesEntities\Connectors\Connector
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -80,7 +78,6 @@ class FbMqttConnector extends DevicesEntities\Connectors\Connector
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -104,7 +101,6 @@ class FbMqttConnector extends DevicesEntities\Connectors\Connector
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -128,7 +124,6 @@ class FbMqttConnector extends DevicesEntities\Connectors\Connector
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -152,7 +147,6 @@ class FbMqttConnector extends DevicesEntities\Connectors\Connector
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -176,7 +170,6 @@ class FbMqttConnector extends DevicesEntities\Connectors\Connector
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */

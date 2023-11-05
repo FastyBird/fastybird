@@ -1,53 +1,56 @@
 {
-  "$schema" : "https://json-schema.org/draft/2020-12/schema",
-  "type" : "object",
-  "properties" : {
-    "id" : {
-      "type" : "string",
-      "description" : "Entity unique uuid v4 identifier"
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Entity unique uuid v4 identifier"
     },
-    "type" : {
-      "type" : "string",
-      "enum" : [
+    "type": {
+      "type": "string",
+      "enum": [
         "email",
         "sms"
       ]
     },
-    "enabled" : {
-      "type" : "boolean",
-      "default" : false
+    "enabled": {
+      "type": "boolean",
+      "default": false
     },
-    "trigger" : {
-      "type" : "string",
-      "description" : "Trigger unique uuid v4 identifier"
+    "trigger": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Trigger unique uuid v4 identifier"
     },
-    "owner" : {
-      "oneOf" : [
+    "owner": {
+      "oneOf": [
         {
-          "type" : "null"
+          "type": "null"
         },
         {
-          "type" : "string"
+          "type": "string",
+          "format": "uuid"
         }
       ],
-      "description" : "Entity owner uuid v4 identifier"
+      "description": "Entity owner uuid v4 identifier"
     }
   },
-  "if" : {
-    "properties" : {
-      "type" : {
-        "const" : "email"
+  "if": {
+    "properties": {
+      "type": {
+        "const": "email"
       }
     }
   },
-  "then" : {
-    "properties" : {
-      "email" : {
-        "type" : "string",
-        "description" : "Valid email address"
+  "then": {
+    "properties": {
+      "email": {
+        "type": "string",
+        "description": "Valid email address"
       }
     },
-    "required" : [
+    "required": [
       "id",
       "type",
       "enabled",
@@ -55,22 +58,22 @@
       "email"
     ]
   },
-  "else" : {
-    "if" : {
-      "properties" : {
-        "type" : {
-          "const" : "sms"
+  "else": {
+    "if": {
+      "properties": {
+        "type": {
+          "const": "sms"
         }
       }
     },
-    "then" : {
-      "properties" : {
-        "phone" : {
-          "type" : "string",
-          "description" : "Internation phone number"
+    "then": {
+      "properties": {
+        "phone": {
+          "type": "string",
+          "description": "Internation phone number"
         }
       },
-      "required" : [
+      "required": [
         "id",
         "type",
         "enabled",
@@ -78,8 +81,8 @@
         "phone"
       ]
     },
-    "else" : {
-      "required" : [
+    "else": {
+      "required": [
         "id",
         "type",
         "enabled",

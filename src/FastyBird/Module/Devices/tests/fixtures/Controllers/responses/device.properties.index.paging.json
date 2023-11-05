@@ -22,8 +22,6 @@
         "category": "generic",
         "identifier": "hardware_model",
         "name": null,
-        "settable": false,
-        "queryable": false,
         "data_type": "string",
         "unit": null,
         "format": null,
@@ -42,12 +40,6 @@
             "type": "com.fastybird.devices-module/device/blank",
             "id": "69786d15-fd0c-4d9f-9378-33287c2009fa"
           }
-        },
-        "parent": {
-          "links": {
-            "self": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/06599b74-0236-4a98-99c8-c459a3cdb6a4/relationships/parent"
-          },
-          "data": null
         },
         "children": {
           "links": {

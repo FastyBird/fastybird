@@ -20,7 +20,6 @@ use FastyBird\Connector\Virtual\Entities;
 use FastyBird\Connector\Virtual\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
-use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use function floatval;
 use function is_numeric;
 
@@ -59,7 +58,6 @@ class Preset extends Entities\VirtualChannel
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -83,7 +81,6 @@ class Preset extends Entities\VirtualChannel
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */

@@ -52,9 +52,9 @@ abstract class Connector extends JsonApiSchemas\JsonApi
 	}
 
 	/**
-	 * @phpstan-param T $resource
+	 * @param T $resource
 	 *
-	 * @phpstan-return iterable<string, (string|array<string>|bool|null)>
+	 * @return iterable<string, (string|array<string>|bool|null)>
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -74,7 +74,7 @@ abstract class Connector extends JsonApiSchemas\JsonApi
 	}
 
 	/**
-	 * @phpstan-param T $resource
+	 * @param T $resource
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -93,9 +93,9 @@ abstract class Connector extends JsonApiSchemas\JsonApi
 	}
 
 	/**
-	 * @phpstan-param T $resource
+	 * @param T $resource
 	 *
-	 * @phpstan-return iterable<string, mixed>
+	 * @return iterable<string, mixed>
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -124,7 +124,7 @@ abstract class Connector extends JsonApiSchemas\JsonApi
 	}
 
 	/**
-	 * @phpstan-param T $resource
+	 * @param T $resource
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -167,7 +167,7 @@ abstract class Connector extends JsonApiSchemas\JsonApi
 	}
 
 	/**
-	 * @phpstan-param T $resource
+	 * @param T $resource
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */

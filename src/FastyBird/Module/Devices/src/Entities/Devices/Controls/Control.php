@@ -95,10 +95,11 @@ class Control implements Entities\Entity,
 	public function toArray(): array
 	{
 		return [
-			'id' => $this->getPlainId(),
+			'id' => $this->getId()->toString(),
 			'name' => $this->getName(),
 
-			'device' => $this->getDevice()->getPlainId(),
+			'device' => $this->getDevice()->getId()->toString(),
+			'connector' => $this->getDevice()->getConnector()->getId()->toString(),
 
 			'owner' => $this->getDevice()->getOwnerId(),
 		];

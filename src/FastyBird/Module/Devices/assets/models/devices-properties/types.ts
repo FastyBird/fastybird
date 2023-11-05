@@ -1,7 +1,7 @@
 import { TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships } from 'jsona/lib/JsonaTypes';
 import { _GettersTree } from 'pinia';
 
-import { DataType, PropertyCategory } from '@fastybird/metadata-library';
+import { ButtonPayload, CoverPayload, DataType, PropertyCategory, SwitchPayload } from '@fastybird/metadata-library';
 
 import {
 	IDevice,
@@ -159,15 +159,16 @@ interface IDevicePropertyResponseDataAttributes {
 	data_type: DataType;
 	unit: string | null;
 	format: string[] | (string | null)[][] | (number | null)[] | string | null;
-	invalid: string | number | null;
+	invalid: string | number | boolean | null;
 	scale: number | null;
 	step: number | null;
 
-	value: string | number | boolean | null;
+	value: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | Date | null;
 
-	actual_value: string | number | boolean | null;
-	expected_value: string | number | boolean | null;
-	pending: boolean | Date | null;
+	actual_value: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | Date | null;
+	expected_value: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | Date | null;
+	pending: boolean | Date;
+	isValid: boolean;
 }
 
 interface IDevicePropertyResponseDataRelationships extends TJsonApiRelationships {

@@ -27,7 +27,7 @@ use Throwable;
  * Useful database utilities
  *
  * @package        FastyBird:DevicesModule!
- * @subpackage     Helpers
+ * @subpackage     Utilities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */

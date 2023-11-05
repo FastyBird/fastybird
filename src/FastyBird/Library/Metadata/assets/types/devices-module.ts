@@ -1,4 +1,4 @@
-import { ButtonPayload, DataType, SwitchPayload } from '@/types/types';
+import { ButtonPayload, CoverPayload, DataType, SwitchPayload } from '@/types/types';
 
 export enum PropertyType {
 	DYNAMIC = 'dynamic',
@@ -144,13 +144,14 @@ export interface ConnectorPropertyEntity {
 	data_type: DataType;
 	unit: string | null;
 	format: string[] | (string | null)[][] | (number | null)[] | string | null;
-	invalid: string | number | null;
+	invalid: string | number | boolean | null;
 	scale: number | null;
 	step: number | null;
-	value?: string | number | boolean | null;
-	actual_value?: string | number | boolean | ButtonPayload | SwitchPayload | null;
-	expected_value?: string | number | boolean | ButtonPayload | SwitchPayload | null;
-	pending?: boolean;
+	value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | Date | null;
+	actual_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | Date | null;
+	expected_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | Date | null;
+	pending?: boolean | Date;
+	is_valid?: boolean;
 	connector: string;
 	owner: string | null;
 }
@@ -186,13 +187,14 @@ export interface DevicePropertyEntity {
 	data_type: DataType;
 	unit: string | null;
 	format: string[] | (string | null)[][] | (number | null)[] | string | null;
-	invalid: string | number | null;
+	invalid: string | number | boolean | null;
 	scale: number | null;
 	step: number | null;
-	value?: string | number | boolean | null;
-	actual_value?: string | number | boolean | ButtonPayload | SwitchPayload | null;
-	expected_value?: string | number | boolean | ButtonPayload | SwitchPayload | null;
-	pending?: boolean;
+	value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | Date | null;
+	actual_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | Date | null;
+	expected_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | Date | null;
+	pending?: boolean | Date;
+	is_valid?: boolean;
 	device: string;
 	children: string[];
 	owner: string | null;
@@ -227,13 +229,14 @@ export interface ChannelPropertyEntity {
 	data_type: DataType;
 	unit: string | null;
 	format: string[] | (string | null)[][] | (number | null)[] | string | null;
-	invalid: string | number | null;
+	invalid: string | number | boolean | null;
 	scale: number | null;
 	step: number | null;
-	value?: string | number | boolean | null;
-	actual_value?: string | number | boolean | ButtonPayload | SwitchPayload | null;
-	expected_value?: string | number | boolean | ButtonPayload | SwitchPayload | null;
-	pending?: boolean;
+	value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | Date | null;
+	actual_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | Date | null;
+	expected_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | Date | null;
+	pending?: boolean | Date;
+	is_valid?: boolean;
 	channel: string;
 	children: string[];
 	owner: string | null;

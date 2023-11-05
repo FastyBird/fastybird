@@ -26,6 +26,7 @@ use IPub\DoctrineDynamicDiscriminatorMap\Entities as DoctrineDynamicDiscriminato
 use IPub\DoctrineTimestampable;
 use Nette\Utils;
 use Ramsey\Uuid;
+use function array_map;
 
 /**
  * @ORM\Entity
@@ -294,13 +295,26 @@ abstract class Connector implements Entities\Entity,
 	public function toArray(): array
 	{
 		return [
-			'id' => $this->getPlainId(),
+			'id' => $this->getId()->toString(),
 			'type' => $this->getType(),
 			'category' => $this->getCategory()->getValue(),
 			'identifier' => $this->getIdentifier(),
 			'name' => $this->getName(),
 			'comment' => $this->getComment(),
 			'enabled' => $this->isEnabled(),
+
+			'properties' => array_map(
+				static fn (Entities\Connectors\Properties\Property $property): string => $property->getId()->toString(),
+				$this->getProperties(),
+			),
+			'controls' => array_map(
+				static fn (Entities\Connectors\Controls\Control $control): string => $control->getId()->toString(),
+				$this->getControls(),
+			),
+			'devices' => array_map(
+				static fn (Entities\Devices\Device $device): string => $device->getId()->toString(),
+				$this->getDevices(),
+			),
 
 			'owner' => $this->getOwnerId(),
 		];

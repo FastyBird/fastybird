@@ -85,7 +85,8 @@ const recordFactory = async (data: IConnectorPropertyRecordFactoryPayload): Prom
 		value: get(data, 'value', null),
 		actualValue: get(data, 'actualValue', null),
 		expectedValue: get(data, 'expectedValue', null),
-		pending: get(data, 'pending', null),
+		pending: get(data, 'pending', false),
+		isValid: get(data, 'isValid', false),
 		command: get(data, 'command', null),
 		lastResult: get(data, 'lastResult', null),
 		backupValue: get(data, 'backup', null),
@@ -568,6 +569,7 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 								expectedValue: body.expected_value,
 								value: body.value,
 								pending: body.pending,
+								isValid: body.is_valid,
 								connectorId: body.connector,
 							},
 						});

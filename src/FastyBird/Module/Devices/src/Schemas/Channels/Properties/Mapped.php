@@ -15,21 +15,28 @@
 
 namespace FastyBird\Module\Devices\Schemas\Channels\Properties;
 
+use DateTimeInterface;
+use Exception;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
+use FastyBird\Module\Devices\Router;
 use FastyBird\Module\Devices\Schemas;
 use FastyBird\Module\Devices\Utilities;
+use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use IPub\SlimRouter\Routing;
 use Neomerx\JsonApi;
 use function array_merge;
+use function is_bool;
 
 /**
  * Channel property entity schema
  *
- * @extends Property<Entities\Channels\Properties\Mapped>
+ * @template T of Entities\Channels\Properties\Mapped
+ * @extends Property<T>
  *
  * @package         FastyBird:DevicesModule!
  * @subpackage      Schemas
@@ -63,9 +70,9 @@ final class Mapped extends Property
 	}
 
 	/**
-	 * @phpstan-param Entities\Channels\Properties\Mapped $resource
+	 * @param T $resource
 	 *
-	 * @phpstan-return iterable<string, (string|bool|int|float|array<string>|array<int, (int|float|array<int, (string|int|float|null)>|null)>|array<int, array<int, (string|array<int, (string|int|float|bool)>|null)>>|null)>
+	 * @return iterable<string, (string|bool|int|float|array<string>|array<int, (int|float|array<int, (string|int|float|null)>|null)>|array<int, array<int, (string|array<int, (string|int|float|bool)>|null)>>|null)>
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
@@ -83,14 +90,101 @@ final class Mapped extends Property
 		return $resource->getParent() instanceof Entities\Channels\Properties\Dynamic ? array_merge(
 			(array) parent::getAttributes($resource, $context),
 			[
+				'settable' => $resource->isSettable(),
+				'queryable' => $resource->isQueryable(),
 				'actual_value' => Utilities\ValueHelper::flattenValue($state?->getActualValue()),
 				'expected_value' => Utilities\ValueHelper::flattenValue($state?->getExpectedValue()),
-				'pending' => $state !== null && $state->isPending(),
+				'pending' => $state !== null ? (is_bool($state->getPending())
+					? $state->getPending() : $state->getPending()->format(DateTimeInterface::ATOM))
+					: null,
+				'is_valid' => $state !== null && $state->isValid(),
 			],
 		) : array_merge((array) parent::getAttributes($resource, $context), [
 			'value' => Utilities\ValueHelper::flattenValue($resource->getValue()),
 			'default' => Utilities\ValueHelper::flattenValue($resource->getDefault()),
 		]);
+	}
+
+	/**
+	 * @param T $resource
+	 *
+	 * @return iterable<string, mixed>
+	 *
+	 * @throws Exception
+	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 *
+	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
+	 */
+	public function getRelationships(
+		$resource,
+		JsonApi\Contracts\Schema\ContextInterface $context,
+	): iterable
+	{
+		return array_merge((array) parent::getRelationships($resource, $context), [
+			self::RELATIONSHIPS_PARENT => [
+				self::RELATIONSHIP_DATA => $resource->getParent(),
+				self::RELATIONSHIP_LINKS_SELF => true,
+				self::RELATIONSHIP_LINKS_RELATED => true,
+			],
+		]);
+	}
+
+	/**
+	 * @param T $resource
+	 *
+	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
+	 */
+	public function getRelationshipRelatedLink(
+		$resource,
+		string $name,
+	): JsonApi\Contracts\Schema\LinkInterface
+	{
+		if ($name === self::RELATIONSHIPS_PARENT) {
+			return new JsonApi\Schema\Link(
+				false,
+				$this->router->urlFor(
+					Devices\Constants::ROUTE_NAME_CHANNEL_PROPERTY,
+					[
+						Router\ApiRoutes::URL_DEVICE_ID => $resource->getChannel()->getDevice()->getPlainId(),
+						Router\ApiRoutes::URL_CHANNEL_ID => $resource->getChannel()->getPlainId(),
+						Router\ApiRoutes::URL_ITEM_ID => $resource->getPlainId(),
+					],
+				),
+				false,
+			);
+		}
+
+		return parent::getRelationshipRelatedLink($resource, $name);
+	}
+
+	/**
+	 * @param T $resource
+	 *
+	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
+	 */
+	public function getRelationshipSelfLink(
+		$resource,
+		string $name,
+	): JsonApi\Contracts\Schema\LinkInterface
+	{
+		if ($name === self::RELATIONSHIPS_PARENT) {
+			return new JsonApi\Schema\Link(
+				false,
+				$this->router->urlFor(
+					Devices\Constants::ROUTE_NAME_CHANNEL_PROPERTY_RELATIONSHIP,
+					[
+						Router\ApiRoutes::URL_DEVICE_ID => $resource->getChannel()->getDevice()->getPlainId(),
+						Router\ApiRoutes::URL_CHANNEL_ID => $resource->getChannel()->getPlainId(),
+						Router\ApiRoutes::URL_ITEM_ID => $resource->getPlainId(),
+						Router\ApiRoutes::RELATION_ENTITY => $name,
+
+					],
+				),
+				false,
+			);
+		}
+
+		return parent::getRelationshipSelfLink($resource, $name);
 	}
 
 }

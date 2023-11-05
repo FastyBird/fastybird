@@ -64,8 +64,6 @@ abstract class Property implements Entities\Entity, Entities\Owner
 		string $category,
 		private readonly string $identifier,
 		private readonly string|null $name,
-		private readonly bool $settable,
-		private readonly bool $queryable,
 		string $dataType,
 		private readonly string|null $unit = null,
 		array|string|null $format = null,
@@ -110,16 +108,6 @@ abstract class Property implements Entities\Entity, Entities\Owner
 		return $this->name;
 	}
 
-	public function isSettable(): bool
-	{
-		return $this->settable;
-	}
-
-	public function isQueryable(): bool
-	{
-		return $this->queryable;
-	}
-
 	public function getDataType(): Types\DataType
 	{
 		return $this->dataType;
@@ -161,8 +149,6 @@ abstract class Property implements Entities\Entity, Entities\Owner
 			'category' => $this->getCategory()->getValue(),
 			'identifier' => $this->getIdentifier(),
 			'name' => $this->getName(),
-			'queryable' => $this->isQueryable(),
-			'settable' => $this->isSettable(),
 			'data_type' => $this->getDataType()->getValue(),
 			'unit' => $this->getUnit(),
 			'format' => $this->getFormat()?->getValue(),

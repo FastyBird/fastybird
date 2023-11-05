@@ -26,6 +26,7 @@ use IPub\DoctrineDynamicDiscriminatorMap\Entities as DoctrineDynamicDiscriminato
 use IPub\DoctrineTimestampable;
 use Nette\Utils;
 use Ramsey\Uuid;
+use function array_map;
 use function strval;
 
 /**
@@ -393,30 +394,37 @@ abstract class Device implements Entities\Entity,
 	 */
 	public function toArray(): array
 	{
-		$children = [];
-
-		foreach ($this->getChildren() as $child) {
-			$children[] = $child->getPlainId();
-		}
-
-		$parents = [];
-
-		foreach ($this->getParents() as $parent) {
-			$parents[] = $parent->getPlainId();
-		}
-
 		return [
-			'id' => $this->getPlainId(),
+			'id' => $this->getId()->toString(),
 			'type' => $this->getType(),
 			'category' => $this->getCategory()->getValue(),
 			'identifier' => $this->getIdentifier(),
 			'name' => $this->getName(),
 			'comment' => $this->getComment(),
 
-			'connector' => $this->getConnector()->getPlainId(),
+			'connector' => $this->getConnector()->getId()->toString(),
 
-			'parents' => $parents,
-			'children' => $children,
+			'parents' => array_map(
+				static fn (self $parent): string => $parent->getId()->toString(),
+				$this->getParents(),
+			),
+			'children' => array_map(
+				static fn (self $child): string => $child->getId()->toString(),
+				$this->getChildren(),
+			),
+
+			'properties' => array_map(
+				static fn (Entities\Devices\Properties\Property $property): string => $property->getId()->toString(),
+				$this->getProperties(),
+			),
+			'controls' => array_map(
+				static fn (Entities\Devices\Controls\Control $control): string => $control->getId()->toString(),
+				$this->getControls(),
+			),
+			'channels' => array_map(
+				static fn (Entities\Channels\Channel $channel): string => $channel->getId()->toString(),
+				$this->getChannels(),
+			),
 
 			'owner' => $this->getOwnerId(),
 		];

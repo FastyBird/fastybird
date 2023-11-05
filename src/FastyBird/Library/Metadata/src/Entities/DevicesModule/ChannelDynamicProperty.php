@@ -32,7 +32,10 @@ use function array_merge;
 final class ChannelDynamicProperty extends DynamicProperty
 {
 
-	use TChannelProperty;
+	private Uuid\UuidInterface $channel;
+
+	/** @var array<Uuid\UuidInterface> */
+	private array $children;
 
 	/**
 	 * @param array<int, string>|array<int, string|int|float|array<int, string|int|float>|null>|array<int, array<int, string|array<int, string|int|float|bool>|null>>|null $format
@@ -58,7 +61,6 @@ final class ChannelDynamicProperty extends DynamicProperty
 		float|bool|int|string|null $expectedValue = null,
 		bool|string|null $pending = null,
 		bool|null $valid = null,
-		string|null $parent = null,
 		array|Utils\ArrayHash $children = [],
 		string|null $owner = null,
 	)
@@ -86,11 +88,23 @@ final class ChannelDynamicProperty extends DynamicProperty
 		);
 
 		$this->channel = Uuid\Uuid::fromString($channel);
-		$this->parent = $parent !== null ? Uuid\Uuid::fromString($parent) : null;
 		$this->children = array_map(
 			static fn (string $item): Uuid\UuidInterface => Uuid\Uuid::fromString($item),
 			(array) $children,
 		);
+	}
+
+	public function getChannel(): Uuid\UuidInterface
+	{
+		return $this->channel;
+	}
+
+	/**
+	 * @return array<Uuid\UuidInterface>
+	 */
+	public function getChildren(): array
+	{
+		return $this->children;
 	}
 
 	/**
@@ -100,7 +114,6 @@ final class ChannelDynamicProperty extends DynamicProperty
 	{
 		return array_merge(parent::toArray(), [
 			'channel' => $this->getChannel()->toString(),
-			'parent' => $this->getParent()?->toString(),
 			'children' => array_map(
 				static fn (Uuid\UuidInterface $child): string => $child->toString(),
 				$this->getChildren(),

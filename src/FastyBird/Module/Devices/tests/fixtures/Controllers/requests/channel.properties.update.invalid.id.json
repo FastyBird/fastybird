@@ -13,7 +13,8 @@
       "invalid": null,
       "actual_value": null,
       "expected_value": null,
-      "pending": false
+      "pending": false,
+      "is_valid": false
     }
   }
 }

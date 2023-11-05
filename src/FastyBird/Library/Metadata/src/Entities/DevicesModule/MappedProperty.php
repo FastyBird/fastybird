@@ -55,8 +55,8 @@ abstract class MappedProperty extends Property
 		string $category,
 		string $identifier,
 		string|null $name,
-		bool $settable,
-		bool $queryable,
+		private readonly bool|null $settable,
+		private readonly bool|null $queryable,
 		string $dataType,
 		string|null $unit = null,
 		array|null $format = null,
@@ -79,8 +79,6 @@ abstract class MappedProperty extends Property
 			$category,
 			$identifier,
 			$name,
-			$settable,
-			$queryable,
 			$dataType,
 			$unit,
 			$format,
@@ -97,6 +95,16 @@ abstract class MappedProperty extends Property
 
 		$this->value = $value;
 		$this->default = $default;
+	}
+
+	public function isSettable(): bool
+	{
+		return $this->settable ?? false;
+	}
+
+	public function isQueryable(): bool
+	{
+		return $this->queryable ?? false;
 	}
 
 	public function getActualValue(): float|bool|int|string|null
@@ -158,6 +166,8 @@ abstract class MappedProperty extends Property
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), [
+			'settable' => $this->isSettable(),
+			'queryable' => $this->isQueryable(),
 			'actual_value' => $this->getActualValue(),
 			'expected_value' => $this->getExpectedValue(),
 			'pending' => $this->getPending(),

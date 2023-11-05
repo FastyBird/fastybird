@@ -30,7 +30,7 @@ use function array_merge;
 final class ConnectorDynamicProperty extends DynamicProperty
 {
 
-	use TConnectorProperty;
+	private Uuid\UuidInterface $connector;
 
 	/**
 	 * @param array<int, string>|array<int, string|int|float|array<int, string|int|float>|null>|array<int, array<int, string|array<int, string|int|float|bool>|null>>|null $format
@@ -82,6 +82,11 @@ final class ConnectorDynamicProperty extends DynamicProperty
 		);
 
 		$this->connector = Uuid\Uuid::fromString($connector);
+	}
+
+	public function getConnector(): Uuid\UuidInterface
+	{
+		return $this->connector;
 	}
 
 	/**
