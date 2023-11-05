@@ -85,6 +85,19 @@ export enum SwitchPayload {
 	TOGGLE = 'switch_toggle',
 }
 
+export enum CoverPayload {
+	OPEN = 'cover_open',
+	OPENING = 'cover_opening',
+	OPENED = 'cover_opened',
+	CLOSE = 'cover_close',
+	CLOSING = 'cover_closing',
+	CLOSED = 'cover_closed',
+	STOP = 'cover_stop',
+	STOPPED = 'cover_stopped',
+	CALIBRATE = 'cover_calibrate',
+	CALIBRATING = 'cover_calibrating',
+}
+
 export enum ButtonPayload {
 	PRESSED = 'btn_pressed',
 	RELEASED = 'btn_released',
@@ -146,8 +159,8 @@ export interface DevicePropertyAction {
 	action: PropertyAction;
 	device: string;
 	property: string;
-	expected_value?: string | number | boolean | ButtonPayload | SwitchPayload;
-	actual_value?: string | number | boolean | ButtonPayload | SwitchPayload;
+	expected_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload;
+	actual_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload;
 	pending?: boolean;
 }
 
@@ -156,7 +169,7 @@ export interface ChannelPropertyAction {
 	device: string;
 	channel: string;
 	property: string;
-	expected_value?: string | number | boolean | ButtonPayload | SwitchPayload;
-	actual_value?: string | number | boolean | ButtonPayload | SwitchPayload;
+	expected_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload;
+	actual_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload;
 	pending?: boolean;
 }

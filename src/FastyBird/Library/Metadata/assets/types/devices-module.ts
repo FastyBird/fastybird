@@ -1,4 +1,4 @@
-import { ButtonPayload, DataType, SwitchPayload } from '@/types/types';
+import { ButtonPayload, CoverPayload, DataType, SwitchPayload } from '@/types/types';
 
 export enum PropertyType {
 	DYNAMIC = 'dynamic',
@@ -148,9 +148,10 @@ export interface ConnectorPropertyEntity {
 	scale: number | null;
 	step: number | null;
 	value?: string | number | boolean | null;
-	actual_value?: string | number | boolean | ButtonPayload | SwitchPayload | null;
-	expected_value?: string | number | boolean | ButtonPayload | SwitchPayload | null;
-	pending?: boolean;
+	actual_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | null;
+	expected_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | null;
+	pending?: boolean | string;
+	is_valid?: boolean;
 	connector: string;
 	owner: string | null;
 }
@@ -190,9 +191,10 @@ export interface DevicePropertyEntity {
 	scale: number | null;
 	step: number | null;
 	value?: string | number | boolean | null;
-	actual_value?: string | number | boolean | ButtonPayload | SwitchPayload | null;
-	expected_value?: string | number | boolean | ButtonPayload | SwitchPayload | null;
-	pending?: boolean;
+	actual_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | null;
+	expected_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | null;
+	pending?: boolean | string;
+	is_valid?: boolean;
 	device: string;
 	children: string[];
 	owner: string | null;
@@ -231,9 +233,10 @@ export interface ChannelPropertyEntity {
 	scale: number | null;
 	step: number | null;
 	value?: string | number | boolean | null;
-	actual_value?: string | number | boolean | ButtonPayload | SwitchPayload | null;
-	expected_value?: string | number | boolean | ButtonPayload | SwitchPayload | null;
-	pending?: boolean;
+	actual_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | null;
+	expected_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | null;
+	pending?: boolean | string;
+	is_valid?: boolean;
 	channel: string;
 	children: string[];
 	owner: string | null;
