@@ -15,6 +15,7 @@
 
 namespace FastyBird\Module\Devices\Schemas\Connectors\Properties;
 
+use DateTimeInterface;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities;
@@ -24,11 +25,13 @@ use FastyBird\Module\Devices\Utilities;
 use IPub\SlimRouter\Routing;
 use Neomerx\JsonApi;
 use function array_merge;
+use function is_bool;
 
 /**
  * Connector property entity schema
  *
- * @extends Property<Entities\Connectors\Properties\Dynamic>
+ * @template T of Entities\Connectors\Properties\Dynamic
+ * @extends Property<T>
  *
  * @package         FastyBird:DevicesModule!
  * @subpackage      Schemas
@@ -61,9 +64,9 @@ final class Dynamic extends Property
 	}
 
 	/**
-	 * @phpstan-param Entities\Connectors\Properties\Dynamic $resource
+	 * @param T $resource
 	 *
-	 * @phpstan-return iterable<string, (string|bool|int|float|array<string>|array<int, (int|float|array<int, (string|int|float|null)>|null)>|array<int, array<int, (string|array<int, (string|int|float|bool)>|null)>>|null)>
+	 * @return iterable<string, (string|bool|int|float|array<string>|array<int, (int|float|array<int, (string|int|float|null)>|null)>|array<int, array<int, (string|array<int, (string|int|float|bool)>|null)>>|null)>
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
@@ -79,9 +82,14 @@ final class Dynamic extends Property
 		$state = $this->connectorPropertiesStates->readValue($resource);
 
 		return array_merge((array) parent::getAttributes($resource, $context), [
+			'settable' => $resource->isSettable(),
+			'queryable' => $resource->isQueryable(),
 			'actual_value' => Utilities\ValueHelper::flattenValue($state?->getActualValue()),
 			'expected_value' => Utilities\ValueHelper::flattenValue($state?->getExpectedValue()),
-			'pending' => $state !== null && $state->isPending(),
+			'pending' => $state !== null ? (is_bool($state->getPending())
+				? $state->getPending() : $state->getPending()->format(DateTimeInterface::ATOM))
+				: null,
+			'is_valid' => $state !== null && $state->isValid(),
 		]);
 	}
 

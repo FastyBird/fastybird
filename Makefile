@@ -47,7 +47,7 @@ mutations: ## Check code for mutants
 
 mutations-tests:
 	mkdir -p var/coverage
-	$(PRE_PHP) $(PHPUNIT_COVERAGE) --coverage-xml=var/coverage/xml --log-junit=var/coverage/junit.xml
+	$(PRE_PHP) $(PHPUNIT_MUTATIONS) --coverage-xml=var/coverage/xml --log-junit=var/coverage/junit.xml
 
 mutations-infection:
 	$(PRE_PHP) vendor/bin/infection \
@@ -70,5 +70,6 @@ PRE_PHP=XDEBUG_MODE=off
 
 PHPUNIT_COMMAND="vendor/bin/paratest" -c $(PHPUNIT_CONFIG) --runner=WrapperRunner -p$(LOGICAL_CORES)
 PHPUNIT_COVERAGE=php -d pcov.enabled=1 -d pcov.directory=./src $(PHPUNIT_COMMAND)
+PHPUNIT_MUTATIONS=php -d pcov.enabled=1 -d $(PHPUNIT_COMMAND)
 
 LOGICAL_CORES=$(shell nproc || sysctl -n hw.logicalcpu || echo 4)

@@ -15,13 +15,18 @@
 
 namespace FastyBird\Module\Devices\Entities\Channels\Properties;
 
+use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Utilities;
 use Ramsey\Uuid;
 use function array_merge;
+use function assert;
+use function sprintf;
+use function strval;
 
 /**
  * @ORM\Entity
@@ -49,28 +54,158 @@ class Mapped extends Property
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function getParent(): Property
+	public function getParent(): Dynamic|Variable
 	{
 		if ($this->parent === null) {
 			throw new Exceptions\InvalidState('Mapped property can\'t be without parent property');
 		}
 
+		assert($this->parent instanceof Dynamic || $this->parent instanceof Variable);
+
 		return $this->parent;
 	}
 
 	/**
+	 * @throws Exceptions\InvalidState
+	 */
+	public function getChildren(): array
+	{
+		throw new Exceptions\InvalidState(
+			sprintf('Reading children is not allowed for property type: %s', strval($this->getType()->getValue())),
+		);
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
+	public function setChildren(array $children): void
+	{
+		throw new Exceptions\InvalidState(
+			sprintf('Assigning children is not allowed for property type: %s', strval($this->getType()->getValue())),
+		);
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
+	public function addChild(Property $child): void
+	{
+		throw new Exceptions\InvalidState(
+			sprintf('Adding child is not allowed for property type: %s', strval($this->getType()->getValue())),
+		);
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
+	public function removeChild(Property $child): void
+	{
+		throw new Exceptions\InvalidState(
+			sprintf('Removing child is not allowed for property type: %s', strval($this->getType()->getValue())),
+		);
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
+	public function setSettable(bool $settable): void
+	{
+		if (!$this->getParent() instanceof Dynamic) {
+			throw new Exceptions\InvalidState('Settable flag is allowed only for dynamic parent properties');
+		}
+
+		parent::setSettable($settable);
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
+	public function isSettable(): bool
+	{
+		if (!$this->getParent() instanceof Dynamic) {
+			throw new Exceptions\InvalidState('Settable flag is allowed only for dynamic parent properties');
+		}
+
+		return parent::isSettable();
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
+	public function setQueryable(bool $queryable): void
+	{
+		if (!$this->getParent() instanceof Dynamic) {
+			throw new Exceptions\InvalidState('Queryable flag is allowed only for dynamic parent properties');
+		}
+
+		parent::setQueryable($queryable);
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
+	public function isQueryable(): bool
+	{
+		if (!$this->getParent() instanceof Dynamic) {
+			throw new Exceptions\InvalidState('Queryable flag is allowed only for dynamic parent properties');
+		}
+
+		return parent::isQueryable();
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+	public function getValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
+	{
+		if (!$this->getParent() instanceof Variable) {
+			throw new Exceptions\InvalidState('Reading value is allowed only for variable parent properties');
+		}
+
+		return $this->getParent()->getValue();
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
+	public function setValue(
+		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
+	): void
+	{
+		if (!$this->getParent() instanceof Variable) {
+			throw new Exceptions\InvalidState('Setting value is allowed only for variable parent properties');
+		}
+
+		throw new Exceptions\InvalidState('Value setter is allowed only for parent');
+	}
+
+	/**
 	 * {@inheritDoc}
+	 *
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function toArray(): array
 	{
 		if ($this->getParent() instanceof Entities\Channels\Properties\Variable) {
 			return array_merge(parent::toArray(), [
+				'parent' => $this->getParent()->getId()->toString(),
+
 				'default' => Utilities\ValueHelper::flattenValue($this->getDefault()),
 				'value' => Utilities\ValueHelper::flattenValue($this->getValue()),
 			]);
 		}
 
-		return parent::toArray();
+		return array_merge(parent::toArray(), [
+			'parent' => $this->getParent()->getId()->toString(),
+
+			'settable' => $this->isSettable(),
+			'queryable' => $this->isQueryable(),
+		]);
 	}
 
 }

@@ -29,7 +29,7 @@ use function array_merge;
 final class ConnectorVariableProperty extends VariableProperty
 {
 
-	use TConnectorProperty;
+	private Uuid\UuidInterface $connector;
 
 	/**
 	 * @param array<int, string>|array<int, string|int|float|array<int, string|int|float>|null>|array<int, array<int, string|array<int, string|int|float|bool>|null>>|null $format
@@ -41,8 +41,6 @@ final class ConnectorVariableProperty extends VariableProperty
 		string $category,
 		string $identifier,
 		string|null $name,
-		bool $settable,
-		bool $queryable,
 		string $dataType,
 		string|null $unit = null,
 		array|null $format = null,
@@ -60,8 +58,6 @@ final class ConnectorVariableProperty extends VariableProperty
 			$category,
 			$identifier,
 			$name,
-			$settable,
-			$queryable,
 			$dataType,
 			$unit,
 			$format,
@@ -74,6 +70,11 @@ final class ConnectorVariableProperty extends VariableProperty
 		);
 
 		$this->connector = Uuid\Uuid::fromString($connector);
+	}
+
+	public function getConnector(): Uuid\UuidInterface
+	{
+		return $this->connector;
 	}
 
 	public function toArray(): array

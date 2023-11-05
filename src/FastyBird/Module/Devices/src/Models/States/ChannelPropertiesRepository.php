@@ -53,13 +53,13 @@ final class ChannelPropertiesRepository
 			throw new Exceptions\NotImplemented('Channel properties state repository is not registered');
 		}
 
-		if ($property->getParent() !== null) {
+		if (
+			$property instanceof MetadataEntities\DevicesModule\ChannelMappedProperty
+			|| $property instanceof Entities\Channels\Properties\Mapped
+		) {
 			$parent = $property->getParent();
 
-			if (
-				$parent instanceof Entities\Channels\Properties\Dynamic
-				|| $parent instanceof Entities\Channels\Properties\Mapped
-			) {
+			if ($parent instanceof Entities\Channels\Properties\Dynamic) {
 				return $this->findOne($parent);
 			} elseif ($parent instanceof Uuid\UuidInterface) {
 				return $this->findOneById($parent);

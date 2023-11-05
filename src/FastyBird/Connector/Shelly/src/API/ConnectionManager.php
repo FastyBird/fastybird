@@ -17,7 +17,6 @@ namespace FastyBird\Connector\Shelly\API;
 
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Nette;
 use function array_key_exists;
 use function assert;
@@ -82,7 +81,6 @@ final class ConnectionManager
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */

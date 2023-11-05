@@ -348,8 +348,6 @@ final class Properties implements Common\EventSubscriber
 					'dataType' => $dataType,
 					'unit' => $unit,
 					'format' => $format,
-					'settable' => false,
-					'queryable' => false,
 					'value' => -40,
 				]));
 			} else {

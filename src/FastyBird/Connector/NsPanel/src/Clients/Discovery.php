@@ -141,7 +141,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */

@@ -68,9 +68,9 @@ class Channel extends JsonApiSchemas\JsonApi
 	}
 
 	/**
-	 * @phpstan-param T $resource
+	 * @param T $resource
 	 *
-	 * @phpstan-return iterable<string, (string|array<string>|null)>
+	 * @return iterable<string, (string|array<string>|null)>
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -88,7 +88,7 @@ class Channel extends JsonApiSchemas\JsonApi
 	}
 
 	/**
-	 * @phpstan-param T $resource
+	 * @param T $resource
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -108,9 +108,9 @@ class Channel extends JsonApiSchemas\JsonApi
 	}
 
 	/**
-	 * @phpstan-param T $resource
+	 * @param T $resource
 	 *
-	 * @phpstan-return iterable<string, mixed>
+	 * @return iterable<string, mixed>
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -139,7 +139,7 @@ class Channel extends JsonApiSchemas\JsonApi
 	}
 
 	/**
-	 * @phpstan-param T $resource
+	 * @param T $resource
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -195,7 +195,7 @@ class Channel extends JsonApiSchemas\JsonApi
 	}
 
 	/**
-	 * @phpstan-param T $resource
+	 * @param T $resource
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */

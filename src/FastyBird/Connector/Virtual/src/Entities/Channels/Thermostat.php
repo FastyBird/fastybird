@@ -20,7 +20,6 @@ use FastyBird\Connector\Virtual\Entities;
 use FastyBird\Connector\Virtual\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
-use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use function floatval;
 use function is_numeric;
 
@@ -91,7 +90,6 @@ class Thermostat extends Entities\VirtualChannel
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -115,7 +113,6 @@ class Thermostat extends Entities\VirtualChannel
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -141,7 +138,6 @@ class Thermostat extends Entities\VirtualChannel
 	/**
 	 * Maximum allowed temperature measured with floor sensor
 	 *
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -167,7 +163,6 @@ class Thermostat extends Entities\VirtualChannel
 	/**
 	 * Set a minimum amount of time that the actor will be turned on or off
 	 *
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -194,7 +189,6 @@ class Thermostat extends Entities\VirtualChannel
 	 * Minimum temperature value to be cooler actor turned on (hysteresis low value)
 	 * For example, if the target temperature is 25 and the tolerance is 0.5 the heater will start when the sensor equals or goes below 24.5
 	 *
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -221,7 +215,6 @@ class Thermostat extends Entities\VirtualChannel
 	 * Maximum temperature value to be cooler actor turned on (hysteresis high value)
 	 * For example, if the target temperature is 25 and the tolerance is 0.5 the heater will stop when the sensor equals or goes above 25.5
 	 *
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */

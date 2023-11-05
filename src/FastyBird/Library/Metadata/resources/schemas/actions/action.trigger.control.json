@@ -1,39 +1,41 @@
 {
-  "$schema" : "https://json-schema.org/draft/2020-12/schema",
-  "type" : "object",
-  "properties" : {
-    "action" : {
-      "type" : "string",
-      "enum" : [
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "action": {
+      "type": "string",
+      "enum": [
         "set"
       ]
     },
-    "trigger" : {
-      "type" : "string",
-      "description" : "Trigger unique uuid v4 identifier"
+    "trigger": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Trigger unique uuid v4 identifier"
     },
-    "control" : {
-      "type" : "string",
-      "description" : "Trigger control unique uuid v4 identifier"
+    "control": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Trigger control unique uuid v4 identifier"
     },
-    "expected_value" : {
-      "oneOf" : [
+    "expected_value": {
+      "oneOf": [
         {
-          "type" : "null"
+          "type": "null"
         },
         {
-          "type" : "string"
+          "type": "string"
         },
         {
-          "type" : "number"
+          "type": "number"
         },
         {
-          "type" : "boolean"
+          "type": "boolean"
         }
       ]
     }
   },
-  "required" : [
+  "required": [
     "action",
     "trigger",
     "control"

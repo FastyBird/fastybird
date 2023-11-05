@@ -41,7 +41,6 @@ use function is_numeric;
 use function is_string;
 use function preg_match;
 use function preg_replace;
-use function sprintf;
 use function strtolower;
 use function strval;
 
@@ -207,15 +206,8 @@ abstract class Property implements Entity,
 		return $this->settable;
 	}
 
-	/**
-	 * @throws Exceptions\InvalidArgument
-	 */
 	public function setSettable(bool $settable): void
 	{
-		if ($settable && $this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_VARIABLE)) {
-			throw new Exceptions\InvalidArgument('Variable type property can not be settable');
-		}
-
 		$this->settable = $settable;
 	}
 
@@ -224,15 +216,8 @@ abstract class Property implements Entity,
 		return $this->queryable;
 	}
 
-	/**
-	 * @throws Exceptions\InvalidArgument
-	 */
 	public function setQueryable(bool $queryable): void
 	{
-		if ($queryable && $this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_VARIABLE)) {
-			throw new Exceptions\InvalidArgument('Variable type property can not be queryable');
-		}
-
 		$this->queryable = $queryable;
 	}
 
@@ -413,18 +398,11 @@ abstract class Property implements Entity,
 	}
 
 	/**
-	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function getValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
 	{
-		if (!$this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_VARIABLE)) {
-			throw new Exceptions\InvalidState(
-				sprintf('Reading value is not allowed for property type: %s', strval($this->getType()->getValue())),
-			);
-		}
-
 		if ($this->value === null) {
 			return null;
 		}
@@ -442,23 +420,12 @@ abstract class Property implements Entity,
 	}
 
 	/**
-	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 */
 	public function setValue(
 		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
 	): void
 	{
-		if (!$this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_VARIABLE)) {
-			throw new Exceptions\InvalidState(
-				sprintf(
-					'Writing value is not allowed for property type: %s:%s',
-					strval($this->getType()->getValue()),
-					$this->getIdentifier(),
-				),
-			);
-		}
-
 		$value = Utilities\ValueHelper::flattenValue($value);
 
 		if ($this->getIdentifier() === MetadataTypes\PropertyIdentifier::IDENTIFIER_IP_ADDRESS) {
@@ -508,21 +475,11 @@ abstract class Property implements Entity,
 	}
 
 	/**
-	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function getDefault(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
 	{
-		if (!$this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_VARIABLE)) {
-			throw new Exceptions\InvalidState(
-				sprintf(
-					'Reading default value is not allowed for property type: %s',
-					strval($this->getType()->getValue()),
-				),
-			);
-		}
-
 		if ($this->default === null) {
 			return null;
 		}
@@ -539,40 +496,25 @@ abstract class Property implements Entity,
 		}
 	}
 
-	/**
-	 * @throws Exceptions\InvalidState
-	 */
 	public function setDefault(string|null $default): void
 	{
-		if (!$this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_VARIABLE)) {
-			throw new Exceptions\InvalidState(
-				sprintf(
-					'Writing default value is not allowed for property type: %s',
-					strval($this->getType()->getValue()),
-				),
-			);
-		}
-
 		$this->default = $default;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function toArray(): array
 	{
 		$data = [
-			'id' => $this->getPlainId(),
+			'id' => $this->getId()->toString(),
 			'type' => $this->getType()->getValue(),
 			'category' => $this->getCategory()->getValue(),
 			'identifier' => $this->getIdentifier(),
 			'name' => $this->getName(),
-			'settable' => $this->isSettable(),
-			'queryable' => $this->isQueryable(),
 			'data_type' => $this->getDataType()->getValue(),
 			'unit' => $this->getUnit(),
 			'format' => $this->getFormat()?->getValue(),
@@ -585,6 +527,11 @@ abstract class Property implements Entity,
 			return array_merge($data, [
 				'default' => Utilities\ValueHelper::flattenValue($this->getDefault()),
 				'value' => Utilities\ValueHelper::flattenValue($this->getValue()),
+			]);
+		} elseif ($this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_DYNAMIC)) {
+			return array_merge($data, [
+				'settable' => $this->isSettable(),
+				'queryable' => $this->isQueryable(),
 			]);
 		}
 

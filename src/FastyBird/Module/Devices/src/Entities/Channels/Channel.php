@@ -25,6 +25,7 @@ use IPub\DoctrineDynamicDiscriminatorMap\Entities as DoctrineDynamicDiscriminato
 use IPub\DoctrineTimestampable;
 use Nette\Utils;
 use Ramsey\Uuid;
+use function array_map;
 
 /**
  * @ORM\Entity
@@ -260,14 +261,23 @@ class Channel implements Entities\Entity,
 	public function toArray(): array
 	{
 		return [
-			'id' => $this->getPlainId(),
+			'id' => $this->getId()->toString(),
 			'type' => $this->getType(),
 			'category' => $this->getCategory()->getValue(),
 			'identifier' => $this->getIdentifier(),
 			'name' => $this->getName(),
 			'comment' => $this->getComment(),
 
-			'device' => $this->getDevice()->getPlainId(),
+			'properties' => array_map(
+				static fn (Entities\Channels\Properties\Property $property): string => $property->getId()->toString(),
+				$this->getProperties(),
+			),
+			'controls' => array_map(
+				static fn (Entities\Channels\Controls\Control $control): string => $control->getId()->toString(),
+				$this->getControls(),
+			),
+			'device' => $this->getDevice()->getId()->toString(),
+			'connector' => $this->getDevice()->getConnector()->getId()->toString(),
 
 			'owner' => $this->getDevice()->getOwnerId(),
 		];

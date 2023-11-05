@@ -68,7 +68,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	}
 
 	/**
-	 * @phpstan-param WebSocketsWAMP\Entities\Topics\ITopic<mixed> $topic
+	 * @param WebSocketsWAMP\Entities\Topics\ITopic<mixed> $topic
 	 */
 	public function actionSubscribe(
 		WebSocketsWAMP\Entities\Clients\IClient $client,
@@ -188,8 +188,8 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	}
 
 	/**
-	 * @phpstan-param array<string, mixed> $args
-	 * @phpstan-param WebSocketsWAMP\Entities\Topics\ITopic<mixed> $topic
+	 * @param array<string, mixed> $args
+	 * @param WebSocketsWAMP\Entities\Topics\ITopic<mixed> $topic
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState

@@ -48,7 +48,6 @@ final class ChannelPropertiesManager
 	}
 
 	/**
-	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\NotImplemented
 	 *
 	 * @interal
@@ -60,10 +59,6 @@ final class ChannelPropertiesManager
 	{
 		if ($this->manager === null) {
 			throw new Exceptions\NotImplemented('Channel properties state manager is not registered');
-		}
-
-		if ($property->getParent() !== null) {
-			throw new Exceptions\InvalidState('Child property can\'t have state');
 		}
 
 		if (
@@ -85,7 +80,6 @@ final class ChannelPropertiesManager
 	}
 
 	/**
-	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\NotImplemented
 	 *
 	 * @interal
@@ -98,10 +92,6 @@ final class ChannelPropertiesManager
 	{
 		if ($this->manager === null) {
 			throw new Exceptions\NotImplemented('Channel properties state manager is not registered');
-		}
-
-		if ($property->getParent() !== null) {
-			throw new Exceptions\InvalidState('Child property can\'t have state');
 		}
 
 		$updatedState = $this->manager->update($state, $values);
@@ -122,7 +112,6 @@ final class ChannelPropertiesManager
 	}
 
 	/**
-	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\NotImplemented
 	 *
 	 * @interal
@@ -133,10 +122,6 @@ final class ChannelPropertiesManager
 	{
 		if ($this->manager === null || $this->repository === null) {
 			throw new Exceptions\NotImplemented('Channel properties state manager is not registered');
-		}
-
-		if ($property->getParent() !== null) {
-			throw new Exceptions\InvalidState('Child property can\'t have state');
 		}
 
 		$state = $this->repository->findOne($property);

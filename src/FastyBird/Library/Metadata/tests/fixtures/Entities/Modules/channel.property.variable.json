@@ -4,8 +4,6 @@
   "category": "generic",
   "identifier": "property-identifier",
   "name": null,
-  "settable": true,
-  "queryable": false,
   "data_type": "enum",
   "unit": null,
   "format": ["one", "two", "three"],

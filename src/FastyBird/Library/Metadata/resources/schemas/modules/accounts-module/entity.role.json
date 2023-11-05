@@ -1,43 +1,45 @@
 {
-  "$schema" : "https://json-schema.org/draft/2020-12/schema",
-  "type" : "object",
-  "properties" : {
-    "id" : {
-      "type" : "string",
-      "description" : "Entity unique uuid v4 identifier"
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Entity unique uuid v4 identifier"
     },
-    "name" : {
-      "type" : "string"
+    "name": {
+      "type": "string"
     },
-    "comment" : {
-      "type" : "string"
+    "comment": {
+      "type": "string"
     },
-    "anonymous" : {
-      "type" : "boolean",
-      "default" : false
+    "anonymous": {
+      "type": "boolean",
+      "default": false
     },
-    "authenticated" : {
-      "type" : "boolean",
-      "default" : false
+    "authenticated": {
+      "type": "boolean",
+      "default": false
     },
-    "administrator" : {
-      "type" : "boolean",
-      "default" : false
+    "administrator": {
+      "type": "boolean",
+      "default": false
     },
-    "parent" : {
-      "oneOf" : [
+    "parent": {
+      "oneOf": [
         {
-          "type" : "null"
+          "type": "null"
         },
         {
-          "type" : "string"
+          "type": "string",
+          "format": "uuid"
         }
       ],
-      "description" : "Parent role unique uuid v4 identifier",
-      "default" : null
+      "description": "Parent role unique uuid v4 identifier",
+      "default": null
     }
   },
-  "required" : [
+  "required": [
     "id",
     "name",
     "comment",

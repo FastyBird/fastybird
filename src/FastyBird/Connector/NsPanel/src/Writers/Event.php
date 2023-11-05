@@ -147,7 +147,6 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState

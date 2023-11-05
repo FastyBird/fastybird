@@ -32,7 +32,10 @@ use function array_merge;
 final class DeviceDynamicProperty extends DynamicProperty
 {
 
-	use TDeviceProperty;
+	private Uuid\UuidInterface $device;
+
+	/** @var array<Uuid\UuidInterface> */
+	private array $children;
 
 	/**
 	 * @param array<int, string>|array<int, string|int|float|array<int, string|int|float>|null>|array<int, array<int, string|array<int, string|int|float|bool>|null>>|null $format
@@ -59,7 +62,6 @@ final class DeviceDynamicProperty extends DynamicProperty
 		float|bool|int|string|null $expectedValue = null,
 		bool|string|null $pending = null,
 		bool|null $valid = null,
-		string|null $parent = null,
 		array|Utils\ArrayHash $children = [],
 		string|null $owner = null,
 	)
@@ -87,11 +89,23 @@ final class DeviceDynamicProperty extends DynamicProperty
 		);
 
 		$this->device = Uuid\Uuid::fromString($device);
-		$this->parent = $parent !== null ? Uuid\Uuid::fromString($parent) : null;
 		$this->children = array_map(
 			static fn (string $item): Uuid\UuidInterface => Uuid\Uuid::fromString($item),
 			(array) $children,
 		);
+	}
+
+	public function getDevice(): Uuid\UuidInterface
+	{
+		return $this->device;
+	}
+
+	/**
+	 * @return array<Uuid\UuidInterface>
+	 */
+	public function getChildren(): array
+	{
+		return $this->children;
 	}
 
 	/**
@@ -101,7 +115,6 @@ final class DeviceDynamicProperty extends DynamicProperty
 	{
 		return array_merge(parent::toArray(), [
 			'device' => $this->getDevice()->toString(),
-			'parent' => $this->getParent()?->toString(),
 			'children' => array_map(
 				static fn (Uuid\UuidInterface $child): string => $child->toString(),
 				$this->getChildren(),

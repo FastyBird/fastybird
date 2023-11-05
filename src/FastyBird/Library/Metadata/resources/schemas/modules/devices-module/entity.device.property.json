@@ -4,19 +4,8 @@
   "properties" : {
     "id" : {
       "type" : "string",
+      "format": "uuid",
       "description" : "Entity unique uuid v4 identifier"
-    },
-    "parent" : {
-      "oneOf" : [
-        {
-          "type" : "null"
-        },
-        {
-          "type" : "string"
-        }
-      ],
-      "description" : "Entity parent unique uuid v4 identifier",
-      "default" : null
     },
     "type" : {
       "type" : "string",
@@ -45,14 +34,6 @@
         }
       ],
       "default" : null
-    },
-    "settable" : {
-      "type" : "boolean",
-      "default" : false
-    },
-    "queryable" : {
-      "type" : "boolean",
-      "default" : false
     },
     "data_type" : {
       "type" : "string",
@@ -237,16 +218,8 @@
     },
     "device" : {
       "type" : "string",
+      "format": "uuid",
       "description" : "Device unique uuid v4 identifier"
-    },
-    "children" : {
-      "type" : "array",
-      "uniqueItems" : true,
-      "items" : {
-        "type" : "string"
-      },
-      "description" : "Entity children uuid v4 identifiers",
-      "default" : []
     },
     "owner" : {
       "oneOf" : [
@@ -254,7 +227,8 @@
           "type" : "null"
         },
         {
-          "type" : "string"
+          "type" : "string",
+          "format": "uuid"
         }
       ],
       "description" : "Entity owner uuid v4 identifier"
@@ -269,6 +243,24 @@
   },
   "then" : {
     "properties" : {
+      "children" : {
+        "type" : "array",
+        "uniqueItems" : true,
+        "items" : {
+          "type" : "string",
+          "format": "uuid"
+        },
+        "description" : "Entity children uuid v4 identifiers",
+        "default" : []
+      },
+      "settable" : {
+        "type" : "boolean",
+        "default" : false
+      },
+      "queryable" : {
+        "type" : "boolean",
+        "default" : false
+      },
       "actual_value" : {
         "oneOf" : [
           {
@@ -304,25 +296,16 @@
       "pending" : {
         "oneOf" : [
           {
-            "type" : "string"
+            "type" : "string",
+            "format": "date-time"
           },
           {
             "type" : "boolean"
-          },
-          {
-            "type" : "null"
           }
         ]
       },
       "valid" : {
-        "oneOf" : [
-          {
-            "type" : "null"
-          },
-          {
-            "type" : "boolean"
-          }
-        ]
+        "type" : "boolean"
       }
     },
     "required" : [
@@ -338,7 +321,8 @@
       "invalid",
       "scale",
       "step",
-      "device"
+      "device",
+      "children"
     ]
   },
   "else" : {
@@ -351,6 +335,16 @@
     },
     "then" : {
       "properties" : {
+        "children" : {
+          "type" : "array",
+          "uniqueItems" : true,
+          "items" : {
+            "type" : "string",
+            "format": "uuid"
+          },
+          "description" : "Entity children uuid v4 identifiers",
+          "default" : []
+        },
         "value" : {
           "oneOf" : [
             {
@@ -389,8 +383,6 @@
         "type",
         "category",
         "identifier",
-        "settable",
-        "queryable",
         "data_type",
         "unit",
         "format",
@@ -399,11 +391,33 @@
         "step",
         "value",
         "default",
-        "device"
+        "device",
+        "children"
       ]
     },
     "else" : {
       "properties" : {
+        "parent" : {
+          "oneOf" : [
+            {
+              "type" : "null"
+            },
+            {
+              "type" : "string",
+              "format": "uuid"
+            }
+          ],
+          "description" : "Entity parent unique uuid v4 identifier",
+          "default" : null
+        },
+        "settable" : {
+          "type" : "boolean",
+          "default" : false
+        },
+        "queryable" : {
+          "type" : "boolean",
+          "default" : false
+        },
         "actual_value" : {
           "oneOf" : [
             {
@@ -439,25 +453,16 @@
         "pending" : {
           "oneOf" : [
             {
-              "type" : "string"
+              "type" : "string",
+              "format": "date-time"
             },
             {
               "type" : "boolean"
-            },
-            {
-              "type" : "null"
             }
           ]
         },
         "valid" : {
-          "oneOf" : [
-            {
-              "type" : "null"
-            },
-            {
-              "type" : "boolean"
-            }
-          ]
+          "type" : "boolean"
         },
         "value" : {
           "oneOf" : [
@@ -497,15 +502,14 @@
         "type",
         "category",
         "identifier",
-        "settable",
-        "queryable",
         "data_type",
         "unit",
         "format",
         "invalid",
         "scale",
         "step",
-        "device"
+        "device",
+        "parent"
       ]
     }
   }

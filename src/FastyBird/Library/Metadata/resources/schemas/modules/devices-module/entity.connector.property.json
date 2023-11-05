@@ -1,62 +1,44 @@
 {
-  "$schema" : "https://json-schema.org/draft/2020-12/schema",
-  "type" : "object",
-  "properties" : {
-    "id" : {
-      "type" : "string",
-      "description" : "Entity unique uuid v4 identifier"
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Entity unique uuid v4 identifier"
     },
-    "parent" : {
-      "oneOf" : [
-        {
-          "type" : "null"
-        },
-        {
-          "type" : "string"
-        }
-      ],
-      "description" : "Entity parent unique uuid v4 identifier",
-      "default" : null
-    },
-    "type" : {
-      "type" : "string",
-      "enum" : [
+    "type": {
+      "type": "string",
+      "enum": [
         "variable",
-        "dynamic",
-        "mapped"
+        "dynamic"
       ]
     },
-    "category" : {
-      "type" : "string",
-      "enum": ["generic"],
-      "description" : "Property category"
+    "category": {
+      "type": "string",
+      "enum": [
+        "generic"
+      ],
+      "description": "Property category"
     },
-    "identifier" : {
-      "type" : "string",
-      "description" : "Unique human readable identifier"
+    "identifier": {
+      "type": "string",
+      "description": "Unique human readable identifier"
     },
-    "name" : {
-      "oneOf" : [
+    "name": {
+      "oneOf": [
         {
-          "type" : "null"
+          "type": "null"
         },
         {
-          "type" : "string"
+          "type": "string"
         }
       ],
-      "default" : null
+      "default": null
     },
-    "settable" : {
-      "type" : "boolean",
-      "default" : false
-    },
-    "queryable" : {
-      "type" : "boolean",
-      "default" : false
-    },
-    "data_type" : {
-      "type" : "string",
-      "enum" : [
+    "data_type": {
+      "type": "string",
+      "enum": [
         "char",
         "uchar",
         "short",
@@ -76,48 +58,48 @@
         "unknown"
       ]
     },
-    "unit" : {
-      "oneOf" : [
+    "unit": {
+      "oneOf": [
         {
-          "type" : "null"
+          "type": "null"
         },
         {
-          "type" : "string"
+          "type": "string"
         }
       ],
-      "default" : null
+      "default": null
     },
-    "format" : {
-      "oneOf" : [
+    "format": {
+      "oneOf": [
         {
-          "type" : "null"
+          "type": "null"
         },
         {
-          "type" : "array",
-          "uniqueItems" : true,
-          "items" : {
-            "type" : "string"
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
           }
         },
         {
-          "type" : "array",
-          "uniqueItems" : true,
-          "items" : {
-            "type" : "array",
-            "items" : {
-              "oneOf" : [
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "array",
+            "items": {
+              "oneOf": [
                 {
-                  "type" : "null"
+                  "type": "null"
                 },
                 {
-                  "type" : "string"
+                  "type": "string"
                 },
                 {
                   "type": "array",
-                  "prefixItems" : [
+                  "prefixItems": [
                     {
-                      "type" : "string",
-                      "enum" : [
+                      "type": "string",
+                      "enum": [
                         "i8",
                         "u8",
                         "i16",
@@ -132,45 +114,45 @@
                       ]
                     },
                     {
-                      "oneOf" : [
+                      "oneOf": [
                         {
-                          "type" : "string"
+                          "type": "string"
                         },
                         {
-                          "type" : "number"
+                          "type": "number"
                         },
                         {
-                          "type" : "boolean"
+                          "type": "boolean"
                         }
                       ]
                     }
                   ],
-                  "minItems" : 2,
-                  "maxItems" : 2
+                  "minItems": 2,
+                  "maxItems": 2
                 }
               ]
             },
-            "minItems" : 3,
-            "maxItems" : 3
+            "minItems": 3,
+            "maxItems": 3
           }
         },
         {
-          "type" : "array",
-          "uniqueItems" : true,
-          "items" : {
-            "oneOf" : [
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "oneOf": [
               {
-                "type" : "null"
+                "type": "null"
               },
               {
-                "type" : "number"
+                "type": "number"
               },
               {
                 "type": "array",
-                "prefixItems" : [
+                "prefixItems": [
                   {
-                    "type" : "string",
-                    "enum" : [
+                    "type": "string",
+                    "enum": [
                       "i8",
                       "u8",
                       "i16",
@@ -181,151 +163,143 @@
                     ]
                   },
                   {
-                    "type" : "number"
+                    "type": "number"
                   }
                 ],
-                "minItems" : 2,
-                "maxItems" : 2
+                "minItems": 2,
+                "maxItems": 2
               }
             ]
           },
-          "minItems" : 2,
-          "maxItems" : 2
+          "minItems": 2,
+          "maxItems": 2
         },
         {
-          "type" : "string",
-          "pattern" : "^equation:(?:(?:x=)(?<equation_x>(?:(?:[\\dy]?)*(?:[\\+\\-\\^\\*\\/\\(\\)])*(?:\\s)*)*)){1}(?::(?:(?:y=)(?<equation_y>(?:(?:[\\dx]?)*(?:[\\+\\-\\^\\*\\/\\(\\)])*(?:\\s)*)*))){0,1}$"
+          "type": "string",
+          "pattern": "^equation:(?:(?:x=)(?<equation_x>(?:(?:[\\dy]?)*(?:[\\+\\-\\^\\*\\/\\(\\)])*(?:\\s)*)*)){1}(?::(?:(?:y=)(?<equation_y>(?:(?:[\\dx]?)*(?:[\\+\\-\\^\\*\\/\\(\\)])*(?:\\s)*)*))){0,1}$"
         }
       ],
-      "default" : null
+      "default": null
     },
-    "invalid" : {
-      "oneOf" : [
+    "invalid": {
+      "oneOf": [
         {
-          "type" : "null"
+          "type": "null"
         },
         {
-          "type" : "string"
+          "type": "string"
         },
         {
-          "type" : "number"
+          "type": "number"
         }
       ],
-      "default" : null
+      "default": null
     },
-    "scale" : {
-      "oneOf" : [
+    "scale": {
+      "oneOf": [
         {
-          "type" : "null"
+          "type": "null"
         },
         {
-          "type" : "number"
+          "type": "number"
         }
       ],
-      "default" : null
+      "default": null
     },
-    "step" : {
-      "oneOf" : [
+    "step": {
+      "oneOf": [
         {
-          "type" : "null"
+          "type": "null"
         },
         {
-          "type" : "number"
+          "type": "number"
         }
       ],
-      "default" : null
+      "default": null
     },
-    "connector" : {
-      "type" : "string",
-      "description" : "Connector unique uuid v4 identifier"
+    "connector": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Connector unique uuid v4 identifier"
     },
-    "children" : {
-      "type" : "array",
-      "uniqueItems" : true,
-      "items" : {
-        "type" : "string"
-      },
-      "description" : "Entity children uuid v4 identifiers",
-      "default" : []
-    },
-    "owner" : {
-      "oneOf" : [
+    "owner": {
+      "oneOf": [
         {
-          "type" : "null"
+          "type": "null"
         },
         {
-          "type" : "string"
+          "type": "string",
+          "format": "uuid"
         }
       ],
-      "description" : "Entity owner uuid v4 identifier"
+      "description": "Entity owner uuid v4 identifier"
     }
   },
-  "if" : {
-    "properties" : {
-      "type" : {
-        "const" : "dynamic"
+  "if": {
+    "properties": {
+      "type": {
+        "const": "dynamic"
       }
     }
   },
-  "then" : {
-    "properties" : {
-      "actual_value" : {
-        "oneOf" : [
+  "then": {
+    "properties": {
+      "settable": {
+        "type": "boolean",
+        "default": false
+      },
+      "queryable": {
+        "type": "boolean",
+        "default": false
+      },
+      "actual_value": {
+        "oneOf": [
           {
-            "type" : "string"
+            "type": "string"
           },
           {
-            "type" : "number"
+            "type": "number"
           },
           {
-            "type" : "boolean"
+            "type": "boolean"
           },
           {
-            "type" : "null"
+            "type": "null"
           }
         ]
       },
-      "expected_value" : {
-        "oneOf" : [
+      "expected_value": {
+        "oneOf": [
           {
-            "type" : "string"
+            "type": "string"
           },
           {
-            "type" : "number"
+            "type": "number"
           },
           {
-            "type" : "boolean"
+            "type": "boolean"
           },
           {
-            "type" : "null"
+            "type": "null"
           }
         ]
       },
-      "pending" : {
-        "oneOf" : [
+      "pending": {
+        "oneOf": [
           {
-            "type" : "string"
+            "type": "string",
+            "format": "date-time"
           },
           {
-            "type" : "boolean"
-          },
-          {
-            "type" : "null"
+            "type": "boolean"
           }
         ]
       },
-      "valid" : {
-        "oneOf" : [
-          {
-            "type" : "null"
-          },
-          {
-            "type" : "boolean"
-          }
-        ]
+      "valid": {
+        "type": "boolean"
       }
     },
-    "required" : [
+    "required": [
       "id",
       "type",
       "category",
@@ -341,172 +315,55 @@
       "connector"
     ]
   },
-  "else" : {
-    "if" : {
-      "properties" : {
-        "type" : {
-          "const" : "variable"
-        }
+  "else": {
+    "properties": {
+      "value": {
+        "oneOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "number"
+          },
+          {
+            "type": "boolean"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "default": {
+        "oneOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "number"
+          },
+          {
+            "type": "boolean"
+          },
+          {
+            "type": "null"
+          }
+        ]
       }
     },
-    "then" : {
-      "properties" : {
-        "value" : {
-          "oneOf" : [
-            {
-              "type" : "string"
-            },
-            {
-              "type" : "number"
-            },
-            {
-              "type" : "boolean"
-            },
-            {
-              "type" : "null"
-            }
-          ]
-        },
-        "default" : {
-          "oneOf" : [
-            {
-              "type" : "string"
-            },
-            {
-              "type" : "number"
-            },
-            {
-              "type" : "boolean"
-            },
-            {
-              "type" : "null"
-            }
-          ]
-        }
-      },
-      "required" : [
-        "id",
-        "type",
-        "category",
-        "identifier",
-        "settable",
-        "queryable",
-        "data_type",
-        "unit",
-        "format",
-        "invalid",
-        "scale",
-        "step",
-        "value",
-        "default",
-        "connector"
-      ]
-    },
-    "else" : {
-      "properties" : {
-        "actual_value" : {
-          "oneOf" : [
-            {
-              "type" : "string"
-            },
-            {
-              "type" : "number"
-            },
-            {
-              "type" : "boolean"
-            },
-            {
-              "type" : "null"
-            }
-          ]
-        },
-        "expected_value" : {
-          "oneOf" : [
-            {
-              "type" : "string"
-            },
-            {
-              "type" : "number"
-            },
-            {
-              "type" : "boolean"
-            },
-            {
-              "type" : "null"
-            }
-          ]
-        },
-        "pending" : {
-          "oneOf" : [
-            {
-              "type" : "string"
-            },
-            {
-              "type" : "boolean"
-            },
-            {
-              "type" : "null"
-            }
-          ]
-        },
-        "valid" : {
-          "oneOf" : [
-            {
-              "type" : "null"
-            },
-            {
-              "type" : "boolean"
-            }
-          ]
-        },
-        "value" : {
-          "oneOf" : [
-            {
-              "type" : "string"
-            },
-            {
-              "type" : "number"
-            },
-            {
-              "type" : "boolean"
-            },
-            {
-              "type" : "null"
-            }
-          ]
-        },
-        "default" : {
-          "oneOf" : [
-            {
-              "type" : "string"
-            },
-            {
-              "type" : "number"
-            },
-            {
-              "type" : "boolean"
-            },
-            {
-              "type" : "null"
-            }
-          ]
-        }
-      },
-      "required" : [
-        "id",
-        "type",
-        "category",
-        "identifier",
-        "settable",
-        "queryable",
-        "data_type",
-        "unit",
-        "format",
-        "invalid",
-        "scale",
-        "step",
-        "connector"
-      ]
-    }
+    "required": [
+      "id",
+      "type",
+      "category",
+      "identifier",
+      "data_type",
+      "unit",
+      "format",
+      "invalid",
+      "scale",
+      "step",
+      "value",
+      "default",
+      "connector"
+    ]
   }
 }

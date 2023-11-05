@@ -22,7 +22,8 @@ use FastyBird\Module\Devices\Schemas;
 /**
  * Blank device entity schema
  *
- * @extends Device<Entities\Devices\Blank>
+ * @template T of Entities\Devices\Blank
+ * @extends Device<T>
  *
  * @package         FastyBird:DevicesModule!
  * @subpackage      Schemas

@@ -66,9 +66,9 @@ abstract class Device extends JsonApiSchemas\JsonApi
 	}
 
 	/**
-	 * @phpstan-param T $resource
+	 * @param T $resource
 	 *
-	 * @phpstan-return iterable<string, string|bool|null>
+	 * @return iterable<string, string|bool|null>
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -88,7 +88,7 @@ abstract class Device extends JsonApiSchemas\JsonApi
 	}
 
 	/**
-	 * @phpstan-param T $resource
+	 * @param T $resource
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -107,9 +107,9 @@ abstract class Device extends JsonApiSchemas\JsonApi
 	}
 
 	/**
-	 * @phpstan-param T $resource
+	 * @param T $resource
 	 *
-	 * @phpstan-return iterable<string, mixed>
+	 * @return iterable<string, mixed>
 	 *
 	 * @throws Exception
 	 * @throws DoctrineOrmQueryExceptions\QueryException
@@ -156,7 +156,7 @@ abstract class Device extends JsonApiSchemas\JsonApi
 	}
 
 	/**
-	 * @phpstan-param T $resource
+	 * @param T $resource
 	 *
 	 * @throws Exception
 	 * @throws DoctrineOrmQueryExceptions\QueryException
@@ -255,7 +255,7 @@ abstract class Device extends JsonApiSchemas\JsonApi
 	}
 
 	/**
-	 * @phpstan-param T $resource
+	 * @param T $resource
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -290,7 +290,7 @@ abstract class Device extends JsonApiSchemas\JsonApi
 	}
 
 	/**
-	 * @phpstan-return array<Entities\Channels\Channel>
+	 * @return array<Entities\Channels\Channel>
 	 *
 	 * @throws Exception
 	 * @throws DoctrineOrmQueryExceptions\QueryException
@@ -304,7 +304,7 @@ abstract class Device extends JsonApiSchemas\JsonApi
 	}
 
 	/**
-	 * @phpstan-return array<Entities\Devices\Device>
+	 * @return array<Entities\Devices\Device>
 	 *
 	 * @throws Exception
 	 * @throws DoctrineOrmQueryExceptions\QueryException
@@ -318,7 +318,7 @@ abstract class Device extends JsonApiSchemas\JsonApi
 	}
 
 	/**
-	 * @phpstan-return array<Entities\Devices\Device>
+	 * @return array<Entities\Devices\Device>
 	 *
 	 * @throws Exception
 	 * @throws DoctrineOrmQueryExceptions\QueryException

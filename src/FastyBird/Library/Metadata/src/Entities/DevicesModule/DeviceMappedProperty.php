@@ -16,9 +16,7 @@
 namespace FastyBird\Library\Metadata\Entities\DevicesModule;
 
 use FastyBird\Library\Metadata\Exceptions;
-use Nette\Utils;
 use Ramsey\Uuid;
-use function array_map;
 use function array_merge;
 
 /**
@@ -32,12 +30,13 @@ use function array_merge;
 final class DeviceMappedProperty extends MappedProperty
 {
 
-	use TDeviceProperty;
+	private Uuid\UuidInterface $device;
+
+	private Uuid\UuidInterface|null $parent;
 
 	/**
 	 * @param array<int, string>|array<int, string|int|float|array<int, string|int|float>|null>|array<int, array<int, string|array<int, string|int|float|bool>|null>>|null $format
 	 * @param bool|null $pending
-	 * @param array<int, string>|Utils\ArrayHash<string> $children
 	 */
 	public function __construct(
 		string $id,
@@ -62,7 +61,6 @@ final class DeviceMappedProperty extends MappedProperty
 		float|bool|int|string|null $value = null,
 		float|bool|int|string|null $default = null,
 		string|null $parent = null,
-		array|Utils\ArrayHash $children = [],
 		string|null $owner = null,
 	)
 	{
@@ -92,10 +90,16 @@ final class DeviceMappedProperty extends MappedProperty
 
 		$this->device = Uuid\Uuid::fromString($device);
 		$this->parent = $parent !== null ? Uuid\Uuid::fromString($parent) : null;
-		$this->children = array_map(
-			static fn (string $item): Uuid\UuidInterface => Uuid\Uuid::fromString($item),
-			(array) $children,
-		);
+	}
+
+	public function getDevice(): Uuid\UuidInterface
+	{
+		return $this->device;
+	}
+
+	public function getParent(): Uuid\UuidInterface|null
+	{
+		return $this->parent;
 	}
 
 	/**
@@ -106,10 +110,6 @@ final class DeviceMappedProperty extends MappedProperty
 		return array_merge(parent::toArray(), [
 			'device' => $this->getDevice()->toString(),
 			'parent' => $this->getParent()?->toString(),
-			'children' => array_map(
-				static fn (Uuid\UuidInterface $child): string => $child->toString(),
-				$this->getChildren(),
-			),
 		]);
 	}
 

@@ -21,7 +21,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: [ "8.1" ]
         operating-system: [ "ubuntu-latest" ]
 
     # This step is needed, so the output gets to the next defined job
@@ -46,7 +45,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: [ "8.1" ]
         operating-system: [ "ubuntu-latest" ]
         package: ${{fromJson(needs.build_matrix.outputs.matrix)}}
 

@@ -20,6 +20,29 @@ env:
   COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.ORGANIZATION_ACCESS_TOKEN }}"}}'
 
 jobs:
+  build_matrix:
+    name: "Create list of packages for split"
+    runs-on: "${{ matrix.operating-system }}"
+
+    strategy:
+      fail-fast: false
+      matrix:
+        operating-system: [ "ubuntu-latest" ]
+
+    # This step is needed, so the output gets to the next defined job
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.content }}
+
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v4"
+
+      - name: "Read matrix configuration"
+        id: "set-matrix"
+        uses: "juliangruber/read-file-action@v1"
+        with:
+          path: "./.github/workflows/monorepo-matrix.json"
+
   qa:
     name: "Code quality assurance"
     runs-on: "${{ matrix.operating-system }}"
@@ -314,14 +337,14 @@ jobs:
   tests-mutations:
     name: "Test for mutants"
     runs-on: "${{ matrix.operating-system }}"
+    needs: [ "build_matrix" ]
 
     strategy:
       matrix:
         php-version: [ "8.2" ]
         operating-system: [ "ubuntu-latest" ]
+        package: ${{fromJson(needs.build_matrix.outputs.matrix)}}
       fail-fast: false
-
-    if: "github.event_name == 'push'"
 
     steps:
       - name: "Checkout"
@@ -362,26 +385,36 @@ jobs:
 
       - name: "Setup composer & install dependencies"
         uses: "ramsey/composer-install@v2"
-        timeout-minutes: 120
         with:
           dependency-versions: "highest"
           composer-options: "${{ env.composer-options }}"
           custom-cache-key: "${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}"
 
       - name: "Mutation tests"
-        timeout-minutes: 120
-        run: "make mutations-tests"
+        run: "make mutations-tests pcov.directory=${{ matrix.package.local-path }}"
 
       - name: "Cache Infection data"
         uses: "actions/cache@v3"
-        timeout-minutes: 120
         with:
           path: "var/tools/Infection"
-          key: "php-infection-${{ runner.os }}"
-          restore-keys: "php-infection-${{ runner.os }}"
+          key: "php-infection-${{ runner.os }}-${{ matrix.package.name }}"
+          restore-keys: "php-infection-${{ runner.os }}-${{ matrix.package.name }}"
 
+  tests-mutations-upload:
+    name: "Test for mutants"
+    runs-on: "${{ matrix.operating-system }}"
+    needs: [ "tests-mutations" ]
+
+    strategy:
+      matrix:
+        php-version: [ "8.2" ]
+        operating-system: [ "ubuntu-latest" ]
+      fail-fast: false
+
+    if: "github.event_name == 'push'"
+
+    steps:
       - name: "Mutation tests with report"
-        timeout-minutes: 120
         env:
           STRYKER_DASHBOARD_API_KEY: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}
         shell: "bash"
@@ -389,7 +422,6 @@ jobs:
 
       - name: "Upload logs"
         uses: "actions/upload-artifact@v2"
-        timeout-minutes: 120
         with:
           name: "Logs - Mutations"
           path: "var/coverage/mutations/infection.log"

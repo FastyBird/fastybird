@@ -1,87 +1,96 @@
 {
-  "$schema" : "https://json-schema.org/draft/2020-12/schema",
-  "type" : "object",
-  "properties" : {
-    "id" : {
-      "type" : "string",
-      "description" : "Entity unique uuid v4 identifier"
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Entity unique uuid v4 identifier"
     },
-    "type" : {
-      "type" : "string",
-      "description" : "Device type"
+    "type": {
+      "type": "string",
+      "description": "Device type"
     },
-    "category" : {
-      "type" : "string",
-      "enum": ["generic"],
-      "description" : "Device category"
+    "category": {
+      "type": "string",
+      "enum": [
+        "generic"
+      ],
+      "description": "Device category"
     },
-    "identifier" : {
-      "type" : "string",
-      "description" : "Unique human readable identifier"
+    "identifier": {
+      "type": "string",
+      "description": "Unique human readable identifier"
     },
-    "name" : {
-      "oneOf" : [
+    "name": {
+      "oneOf": [
         {
-          "type" : "null"
+          "type": "null"
         },
         {
-          "type" : "string"
+          "type": "string"
         }
       ],
-      "default" : null
+      "default": null
     },
-    "comment" : {
-      "oneOf" : [
+    "comment": {
+      "oneOf": [
         {
-          "type" : "null"
+          "type": "null"
         },
         {
-          "type" : "string"
+          "type": "string"
         }
       ],
-      "default" : null
+      "default": null
     },
-    "connector" : {
-      "type" : "string",
-      "description" : "Entity connector uuid v4 identifier"
+    "connector": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Entity connector uuid v4 identifier"
     },
-    "parents" : {
-      "type" : "array",
-      "uniqueItems" : true,
-      "items" : {
-        "type" : "string"
+    "parents": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "format": "uuid"
       },
-      "description" : "Entity parents uuid v4 identifiers",
-      "default" : []
+      "description": "Entity parents uuid v4 identifiers",
+      "default": []
     },
-    "children" : {
-      "type" : "array",
-      "uniqueItems" : true,
-      "items" : {
-        "type" : "string"
+    "children": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "format": "uuid"
       },
-      "description" : "Entity children uuid v4 identifiers",
-      "default" : []
+      "description": "Entity children uuid v4 identifiers",
+      "default": []
     },
-    "owner" : {
-      "oneOf" : [
+    "owner": {
+      "oneOf": [
         {
-          "type" : "null"
+          "type": "null"
         },
         {
-          "type" : "string"
+          "type": "string",
+          "format": "uuid"
         }
       ],
-      "description" : "Entity owner uuid v4 identifier"
+      "description": "Entity owner uuid v4 identifier"
     }
   },
-  "required" : [
+  "required": [
     "id",
     "type",
     "category",
     "identifier",
     "name",
     "comment",
-    "connector"
+    "connector",
+    "parents",
+    "children"
   ]
 }

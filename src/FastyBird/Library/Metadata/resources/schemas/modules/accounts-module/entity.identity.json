@@ -1,32 +1,34 @@
 {
-  "$schema" : "https://json-schema.org/draft/2020-12/schema",
-  "type" : "object",
-  "properties" : {
-    "id" : {
-      "type" : "string",
-      "description" : "Entity unique uuid v4 identifier"
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Entity unique uuid v4 identifier"
     },
-    "state" : {
-      "type" : "string",
-      "enum" : [
+    "state": {
+      "type": "string",
+      "enum": [
         "active",
         "blocked",
         "deleted",
         "invalid"
       ]
     },
-    "uid" : {
-      "type" : "string"
+    "uid": {
+      "type": "string"
     },
-    "hash" : {
-      "type" : "string"
+    "hash": {
+      "type": "string"
     },
-    "account" : {
-      "type" : "string",
-      "description" : "Identity owner account unique uuid v4 identifier"
+    "account": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Identity owner account unique uuid v4 identifier"
     }
   },
-  "required" : [
+  "required": [
     "id",
     "state",
     "uid",

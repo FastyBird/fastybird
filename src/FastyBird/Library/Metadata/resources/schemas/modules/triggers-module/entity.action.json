@@ -1,69 +1,72 @@
 {
-  "$schema" : "https://json-schema.org/draft/2020-12/schema",
-  "type" : "object",
-  "properties" : {
-    "id" : {
-      "type" : "string",
-      "description" : "Entity unique uuid v4 identifier"
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Entity unique uuid v4 identifier"
     },
-    "type" : {
-      "type" : "string"
+    "type": {
+      "type": "string"
     },
-    "enabled" : {
-      "type" : "boolean",
-      "default" : false
+    "enabled": {
+      "type": "boolean",
+      "default": false
     },
-    "is_triggered" : {
-      "oneOf" : [
+    "is_triggered": {
+      "oneOf": [
         {
-          "type" : "null"
+          "type": "null"
         },
         {
-          "type" : "boolean"
+          "type": "boolean"
         }
       ],
-      "default" : null
+      "default": null
     },
-    "trigger" : {
-      "type" : "string",
-      "description" : "Trigger unique uuid v4 identifier"
+    "trigger": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Trigger unique uuid v4 identifier"
     },
-    "owner" : {
-      "oneOf" : [
+    "owner": {
+      "oneOf": [
         {
-          "type" : "null"
+          "type": "null"
         },
         {
-          "type" : "string"
+          "type": "string",
+          "format": "uuid"
         }
       ],
-      "description" : "Entity owner uuid v4 identifier"
+      "description": "Entity owner uuid v4 identifier"
     }
   },
-  "if" : {
-    "properties" : {
-      "type" : {
-        "const" : "channel_property"
+  "if": {
+    "properties": {
+      "type": {
+        "const": "channel_property"
       }
     }
   },
-  "then" : {
-    "properties" : {
-      "device" : {
-        "type" : "string"
+  "then": {
+    "properties": {
+      "device": {
+        "type": "string"
       },
-      "channel" : {
-        "type" : "string"
+      "channel": {
+        "type": "string"
       },
-      "property" : {
-        "type" : "string"
+      "property": {
+        "type": "string"
       },
-      "value" : {
-        "type" : "string",
-        "description" : "Value to be sent to the device"
+      "value": {
+        "type": "string",
+        "description": "Value to be sent to the device"
       }
     },
-    "required" : [
+    "required": [
       "id",
       "type",
       "enabled",
@@ -74,28 +77,28 @@
       "value"
     ]
   },
-  "else" : {
-    "if" : {
-      "properties" : {
-        "type" : {
-          "const" : "device_property"
+  "else": {
+    "if": {
+      "properties": {
+        "type": {
+          "const": "device_property"
         }
       }
     },
-    "then" : {
-      "properties" : {
-        "device" : {
-          "type" : "string"
+    "then": {
+      "properties": {
+        "device": {
+          "type": "string"
         },
-        "property" : {
-          "type" : "string"
+        "property": {
+          "type": "string"
         },
-        "value" : {
-          "type" : "string",
-          "description" : "Value to be sent to the device"
+        "value": {
+          "type": "string",
+          "description": "Value to be sent to the device"
         }
       },
-      "required" : [
+      "required": [
         "id",
         "type",
         "enabled",
@@ -105,8 +108,8 @@
         "value"
       ]
     },
-    "else" : {
-      "required" : [
+    "else": {
+      "required": [
         "id",
         "type",
         "enabled",

@@ -53,13 +53,13 @@ final class DevicePropertiesRepository
 			throw new Exceptions\NotImplemented('Device properties state repository is not registered');
 		}
 
-		if ($property->getParent() !== null) {
+		if (
+			$property instanceof MetadataEntities\DevicesModule\DeviceMappedProperty
+			|| $property instanceof Entities\Devices\Properties\Mapped
+		) {
 			$parent = $property->getParent();
 
-			if (
-				$parent instanceof Entities\Devices\Properties\Dynamic
-				|| $parent instanceof Entities\Devices\Properties\Mapped
-			) {
+			if ($parent instanceof Entities\Devices\Properties\Dynamic) {
 				return $this->findOne($parent);
 			} elseif ($parent instanceof Uuid\UuidInterface) {
 				return $this->findOneById($parent);

@@ -17,8 +17,6 @@
         "category": "generic",
         "identifier": "hardware_manufacturer",
         "name": null,
-        "settable": false,
-        "queryable": false,
         "data_type": "string",
         "unit": null,
         "format": null,
@@ -37,12 +35,6 @@
             "type": "com.fastybird.devices-module/device/blank",
             "id": "69786d15-fd0c-4d9f-9378-33287c2009fa"
           }
-        },
-        "parent": {
-          "links": {
-            "self": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/03164a6d-9628-460c-95cc-90e6216332d9/relationships/parent"
-          },
-          "data": null
         },
         "children": {
           "links": {
@@ -68,8 +60,6 @@
         "category": "generic",
         "identifier": "hardware_model",
         "name": null,
-        "settable": false,
-        "queryable": false,
         "data_type": "string",
         "unit": null,
         "format": null,
@@ -88,12 +78,6 @@
             "type": "com.fastybird.devices-module/device/blank",
             "id": "69786d15-fd0c-4d9f-9378-33287c2009fa"
           }
-        },
-        "parent": {
-          "links": {
-            "self": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/06599b74-0236-4a98-99c8-c459a3cdb6a4/relationships/parent"
-          },
-          "data": null
         },
         "children": {
           "links": {
@@ -119,8 +103,6 @@
         "category": "generic",
         "identifier": "hardware_version",
         "name": null,
-        "settable": false,
-        "queryable": false,
         "data_type": "string",
         "unit": null,
         "format": null,
@@ -139,12 +121,6 @@
             "type": "com.fastybird.devices-module/device/blank",
             "id": "69786d15-fd0c-4d9f-9378-33287c2009fa"
           }
-        },
-        "parent": {
-          "links": {
-            "self": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/090df4f2-5f23-4118-a2bd-6f0646cf2a70/relationships/parent"
-          },
-          "data": null
         },
         "children": {
           "links": {
@@ -170,8 +146,6 @@
         "category": "generic",
         "identifier": "hardware_mac_address",
         "name": null,
-        "settable": false,
-        "queryable": false,
         "data_type": "string",
         "unit": null,
         "format": null,
@@ -190,12 +164,6 @@
             "type": "com.fastybird.devices-module/device/blank",
             "id": "69786d15-fd0c-4d9f-9378-33287c2009fa"
           }
-        },
-        "parent": {
-          "links": {
-            "self": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/0e771233-fd53-43dd-bd24-cda3303f902e/relationships/parent"
-          },
-          "data": null
         },
         "children": {
           "links": {
@@ -221,8 +189,6 @@
         "category": "generic",
         "identifier": "firmware_manufacturer",
         "name": null,
-        "settable": false,
-        "queryable": false,
         "data_type": "string",
         "unit": null,
         "format": null,
@@ -241,12 +207,6 @@
             "type": "com.fastybird.devices-module/device/blank",
             "id": "69786d15-fd0c-4d9f-9378-33287c2009fa"
           }
-        },
-        "parent": {
-          "links": {
-            "self": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/0eb39dae-ef88-4bb5-a9ea-94b0b788101f/relationships/parent"
-          },
-          "data": null
         },
         "children": {
           "links": {
@@ -282,7 +242,8 @@
         "step": null,
         "actual_value": null,
         "expected_value": null,
-        "pending": false
+        "pending": false,
+        "is_valid": false
       },
       "relationships": {
         "device": {
@@ -293,12 +254,6 @@
             "type": "com.fastybird.devices-module/device/blank",
             "id": "69786d15-fd0c-4d9f-9378-33287c2009fa"
           }
-        },
-        "parent": {
-          "links": {
-            "self": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/28bc0d38-2f7c-4a71-aa74-27b102f8df4c/relationships/parent"
-          },
-          "data": null
         },
         "children": {
           "links": {
@@ -324,8 +279,6 @@
         "category": "generic",
         "identifier": "password",
         "name": "password",
-        "settable": false,
-        "queryable": false,
         "data_type": "string",
         "unit": null,
         "format": null,
@@ -344,12 +297,6 @@
             "type": "com.fastybird.devices-module/device/blank",
             "id": "69786d15-fd0c-4d9f-9378-33287c2009fa"
           }
-        },
-        "parent": {
-          "links": {
-            "self": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/3134ba8e-f134-4bf2-9c80-c977c4deb0fb/relationships/parent"
-          },
-          "data": null
         },
         "children": {
           "links": {
@@ -375,8 +322,6 @@
         "category": "generic",
         "identifier": "status_led",
         "name": "status_led",
-        "settable": false,
-        "queryable": false,
         "data_type": "enum",
         "unit": null,
         "format": [
@@ -398,12 +343,6 @@
             "type": "com.fastybird.devices-module/device/blank",
             "id": "69786d15-fd0c-4d9f-9378-33287c2009fa"
           }
-        },
-        "parent": {
-          "links": {
-            "self": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/3ff0029f-7fe3-405e-a3ef-edaad08e2ffa/relationships/parent"
-          },
-          "data": null
         },
         "children": {
           "links": {
@@ -439,7 +378,8 @@
         "step": null,
         "actual_value": null,
         "expected_value": null,
-        "pending": false
+        "pending": false,
+        "is_valid": false
       },
       "relationships": {
         "device": {
@@ -450,12 +390,6 @@
             "type": "com.fastybird.devices-module/device/blank",
             "id": "69786d15-fd0c-4d9f-9378-33287c2009fa"
           }
-        },
-        "parent": {
-          "links": {
-            "self": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/bbcccf8c-33ab-431b-a795-d7bb38b6b6db/relationships/parent"
-          },
-          "data": null
         },
         "children": {
           "links": {
@@ -481,8 +415,6 @@
         "category": "generic",
         "identifier": "username",
         "name": "username",
-        "settable": false,
-        "queryable": false,
         "data_type": "string",
         "unit": null,
         "format": null,
@@ -501,12 +433,6 @@
             "type": "com.fastybird.devices-module/device/blank",
             "id": "69786d15-fd0c-4d9f-9378-33287c2009fa"
           }
-        },
-        "parent": {
-          "links": {
-            "self": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/c747cfdd-654c-4e50-9715-6d14dbf20552/relationships/parent"
-          },
-          "data": null
         },
         "children": {
           "links": {

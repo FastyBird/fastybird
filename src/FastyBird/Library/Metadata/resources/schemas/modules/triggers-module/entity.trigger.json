@@ -1,81 +1,83 @@
 {
-  "$schema" : "https://json-schema.org/draft/2020-12/schema",
-  "type" : "object",
-  "properties" : {
-    "id" : {
-      "type" : "string",
-      "description" : "Entity unique uuid v4 identifier"
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Entity unique uuid v4 identifier"
     },
-    "type" : {
-      "type" : "string",
-      "enum" : [
+    "type": {
+      "type": "string",
+      "enum": [
         "manual",
         "automatic"
       ]
     },
-    "name" : {
-      "type" : "string"
+    "name": {
+      "type": "string"
     },
-    "comment" : {
-      "oneOf" : [
+    "comment": {
+      "oneOf": [
         {
-          "type" : "null"
+          "type": "null"
         },
         {
-          "type" : "string"
+          "type": "string"
         }
       ],
-      "default" : null
+      "default": null
     },
-    "enabled" : {
-      "type" : "boolean",
-      "default" : false
+    "enabled": {
+      "type": "boolean",
+      "default": false
     },
-    "is_triggered" : {
-      "oneOf" : [
+    "is_triggered": {
+      "oneOf": [
         {
-          "type" : "null"
+          "type": "null"
         },
         {
-          "type" : "boolean"
+          "type": "boolean"
         }
       ],
-      "default" : null
+      "default": null
     },
-    "owner" : {
-      "oneOf" : [
+    "owner": {
+      "oneOf": [
         {
-          "type" : "null"
+          "type": "null"
         },
         {
-          "type" : "string"
+          "type": "string",
+          "format": "uuid"
         }
       ],
-      "description" : "Entity owner uuid v4 identifier"
+      "description": "Entity owner uuid v4 identifier"
     }
   },
-  "if" : {
-    "properties" : {
-      "type" : {
-        "const" : "automatic"
+  "if": {
+    "properties": {
+      "type": {
+        "const": "automatic"
       }
     }
   },
-  "then" : {
-    "properties" : {
-      "is_fulfilled" : {
-        "oneOf" : [
+  "then": {
+    "properties": {
+      "is_fulfilled": {
+        "oneOf": [
           {
-            "type" : "null"
+            "type": "null"
           },
           {
-            "type" : "boolean"
+            "type": "boolean"
           }
         ],
-        "default" : null
+        "default": null
       }
     },
-    "required" : [
+    "required": [
       "id",
       "type",
       "name",
@@ -83,8 +85,8 @@
       "enabled"
     ]
   },
-  "else" : {
-    "required" : [
+  "else": {
+    "required": [
       "id",
       "type",
       "name",

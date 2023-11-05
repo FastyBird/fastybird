@@ -1,63 +1,65 @@
 {
-  "$schema" : "https://json-schema.org/draft/2020-12/schema",
-  "type" : "object",
-  "properties" : {
-    "action" : {
-      "type" : "string",
-      "enum" : [
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "action": {
+      "type": "string",
+      "enum": [
         "get",
         "set"
       ]
     },
-    "connector" : {
-      "type" : "string",
-      "description" : "Connector unique uuid v4 identifier"
+    "connector": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Connector unique uuid v4 identifier"
     },
-    "property" : {
-      "type" : "string",
-      "description" : "Connector property unique uuid v4 identifier"
+    "property": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Connector property unique uuid v4 identifier"
     }
   },
-  "if" : {
-    "properties" : {
-      "action" : {
-        "const" : "get"
+  "if": {
+    "properties": {
+      "action": {
+        "const": "get"
       }
     }
   },
-  "then" : {
-    "required" : [
+  "then": {
+    "required": [
       "action",
       "connector",
       "property"
     ]
   },
-  "else" : {
-    "if" : {
-      "properties" : {
-        "action" : {
-          "const" : "set"
+  "else": {
+    "if": {
+      "properties": {
+        "action": {
+          "const": "set"
         }
       }
     },
-    "then" : {
-      "properties" : {
-        "expected_value" : {
-          "oneOf" : [
+    "then": {
+      "properties": {
+        "expected_value": {
+          "oneOf": [
             {
-              "type" : "string"
+              "type": "string"
             },
             {
-              "type" : "number"
+              "type": "number"
             },
             {
-              "type" : "boolean"
+              "type": "boolean"
             }
           ],
-          "description" : "Property value to be written into property"
+          "description": "Property value to be written into property"
         }
       },
-      "required" : [
+      "required": [
         "action",
         "connector",
         "property",

@@ -15,10 +15,13 @@
 
 namespace FastyBird\Module\Devices\Entities\Devices\Properties;
 
-use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions;
+use function array_map;
+use function array_merge;
+use function sprintf;
+use function strval;
 
 /**
  * @ORM\Entity
@@ -30,25 +33,80 @@ class Variable extends Property
 	{
 		return MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::TYPE_VARIABLE);
 	}
-	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-	public function getValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
-	{
-		if ($this->getParent() !== null) {
-			return $this->getParent()->getValue();
-		}
 
-		return parent::getValue();
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
+	public function getParent(): Property|null
+	{
+		throw new Exceptions\InvalidState(
+			sprintf('Parent could not be read for property type: %s', strval($this->getType()->getValue())),
+		);
 	}
 
-	public function setValue(
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
-	): void
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
+	public function setParent(Property $property): void
 	{
-		if ($this->getParent() !== null) {
-			throw new Exceptions\InvalidState('Value setter is allowed only for parent');
-		}
+		throw new Exceptions\InvalidState(
+			sprintf('Parent could not be assigned for property type: %s', strval($this->getType()->getValue())),
+		);
+	}
 
-		parent::setValue($value);
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
+	public function removeParent(): void
+	{
+		throw new Exceptions\InvalidState(
+			sprintf('Parent could not be unassigned for property type: %s', strval($this->getType()->getValue())),
+		);
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
+	public function setSettable(bool $settable): void
+	{
+		throw new Exceptions\InvalidState('Settable flag is allowed only for dynamic properties');
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
+	public function isSettable(): bool
+	{
+		throw new Exceptions\InvalidState('Settable flag is allowed only for dynamic properties');
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
+	public function setQueryable(bool $queryable): void
+	{
+		throw new Exceptions\InvalidState('Queryable flag is allowed only for dynamic properties');
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
+	public function isQueryable(): bool
+	{
+		throw new Exceptions\InvalidState('Queryable flag is allowed only for dynamic properties');
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function toArray(): array
+	{
+		return array_merge(parent::toArray(), [
+			'children' => array_map(
+				static fn (Property $child): string => $child->getId()->toString(),
+				$this->getChildren(),
+			),
+		]);
 	}
 
 }

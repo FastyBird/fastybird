@@ -27,7 +27,8 @@ use function array_merge;
 /**
  * Connector property entity schema
  *
- * @extends Property<Entities\Connectors\Properties\Variable>
+ * @template T of Entities\Connectors\Properties\Variable
+ * @extends Property<T>
  *
  * @package         FastyBird:DevicesModule!
  * @subpackage      Schemas
@@ -52,11 +53,10 @@ final class Variable extends Property
 	}
 
 	/**
-	 * @phpstan-param Entities\Connectors\Properties\Variable $resource
+	 * @param T $resource
 	 *
-	 * @phpstan-return iterable<string, (string|bool|int|float|array<string>|array<int, (int|float|array<int, (string|int|float|null)>|null)>|array<int, array<int, (string|array<int, (string|int|float|bool)>|null)>>|null)>
+	 * @return iterable<string, (string|bool|int|float|array<string>|array<int, (int|float|array<int, (string|int|float|null)>|null)>|array<int, array<int, (string|array<int, (string|int|float|bool)>|null)>>|null)>
 	 *
-	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 *

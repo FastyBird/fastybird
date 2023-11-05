@@ -26,7 +26,8 @@
       "step": null,
       "actual_value": null,
       "expected_value": null,
-      "pending": false
+      "pending": false,
+      "is_valid": false
     },
     "relationships": {
       "device": {
@@ -37,12 +38,6 @@
           "type": "com.fastybird.devices-module/device/blank",
           "id": "69786d15-fd0c-4d9f-9378-33287c2009fa"
         }
-      },
-      "parent": {
-        "links": {
-          "self": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/28bc0d38-2f7c-4a71-aa74-27b102f8df4c/relationships/parent"
-        },
-        "data": null
       },
       "children": {
         "links": {

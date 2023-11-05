@@ -148,7 +148,6 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState

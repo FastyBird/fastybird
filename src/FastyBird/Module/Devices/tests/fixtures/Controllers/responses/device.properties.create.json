@@ -16,8 +16,6 @@
       "category": "generic",
       "identifier": "battery",
       "name": "battery",
-      "settable": false,
-      "queryable": false,
       "data_type": "enum",
       "unit": null,
       "format": [
@@ -40,12 +38,6 @@
           "type": "com.fastybird.devices-module/device/blank",
           "id": "69786d15-fd0c-4d9f-9378-33287c2009fa"
         }
-      },
-      "parent": {
-        "links": {
-          "self": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties/50b0fd41-0a6e-44f0-b513-c536208afccf/relationships/parent"
-        },
-        "data": null
       },
       "children": {
         "links": {

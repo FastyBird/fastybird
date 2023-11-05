@@ -27,7 +27,6 @@ use FastyBird\Module\Devices\Schemas;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use IPub\SlimRouter\Routing;
 use Neomerx\JsonApi;
-use function count;
 use function strval;
 
 /**
@@ -53,16 +52,16 @@ abstract class Property extends JsonApiSchemas\JsonApi
 	public const RELATIONSHIPS_CHILDREN = 'children';
 
 	public function __construct(
-		private readonly Routing\IRouter $router,
-		private readonly Models\Devices\Properties\PropertiesRepository $propertiesRepository,
+		protected readonly Routing\IRouter $router,
+		protected readonly Models\Devices\Properties\PropertiesRepository $propertiesRepository,
 	)
 	{
 	}
 
 	/**
-	 * @phpstan-param T $resource
+	 * @param T $resource
 	 *
-	 * @phpstan-return iterable<string, (string|bool|int|float|array<string>|array<int, (int|float|array<int, (string|int|float|null)>|null)>|array<int, array<int, (string|array<int, (string|int|float|bool)>|null)>>|null)>
+	 * @return iterable<string, (string|bool|int|float|array<string>|array<int, (int|float|array<int, (string|int|float|null)>|null)>|array<int, array<int, (string|array<int, (string|int|float|bool)>|null)>>|null)>
 	 *
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -78,8 +77,6 @@ abstract class Property extends JsonApiSchemas\JsonApi
 			'category' => strval($resource->getCategory()->getValue()),
 			'identifier' => $resource->getIdentifier(),
 			'name' => $resource->getName(),
-			'settable' => $resource->isSettable(),
-			'queryable' => $resource->isQueryable(),
 			'data_type' => strval($resource->getDataType()->getValue()),
 			'unit' => $resource->getUnit(),
 			'format' => $resource->getFormat()?->getValue(),
@@ -90,7 +87,7 @@ abstract class Property extends JsonApiSchemas\JsonApi
 	}
 
 	/**
-	 * @phpstan-param T $resource
+	 * @param T $resource
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -110,12 +107,9 @@ abstract class Property extends JsonApiSchemas\JsonApi
 	}
 
 	/**
-	 * @phpstan-param T $resource
+	 * @param T $resource
 	 *
-	 * @phpstan-return iterable<string, mixed>
-	 *
-	 * @throws Exception
-	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @return iterable<string, mixed>
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -130,21 +124,11 @@ abstract class Property extends JsonApiSchemas\JsonApi
 				self::RELATIONSHIP_LINKS_SELF => false,
 				self::RELATIONSHIP_LINKS_RELATED => true,
 			],
-			self::RELATIONSHIPS_PARENT => [
-				self::RELATIONSHIP_DATA => $resource->getParent(),
-				self::RELATIONSHIP_LINKS_SELF => true,
-				self::RELATIONSHIP_LINKS_RELATED => $resource->getParent() !== null,
-			],
-			self::RELATIONSHIPS_CHILDREN => [
-				self::RELATIONSHIP_DATA => $this->getChildren($resource),
-				self::RELATIONSHIP_LINKS_SELF => true,
-				self::RELATIONSHIP_LINKS_RELATED => true,
-			],
 		];
 	}
 
 	/**
-	 * @phpstan-param T $resource
+	 * @param T $resource
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -164,77 +148,18 @@ abstract class Property extends JsonApiSchemas\JsonApi
 				),
 				false,
 			);
-		} elseif ($name === self::RELATIONSHIPS_PARENT && $resource->getParent() !== null) {
-			return new JsonApi\Schema\Link(
-				false,
-				$this->router->urlFor(
-					Devices\Constants::ROUTE_NAME_DEVICE_PROPERTY,
-					[
-						Router\ApiRoutes::URL_DEVICE_ID => $resource->getDevice()->getPlainId(),
-						Router\ApiRoutes::URL_ITEM_ID => $resource->getPlainId(),
-					],
-				),
-				false,
-			);
-		} elseif ($name === self::RELATIONSHIPS_CHILDREN) {
-			return new JsonApi\Schema\Link(
-				false,
-				$this->router->urlFor(
-					Devices\Constants::ROUTE_NAME_DEVICE_PROPERTY_CHILDREN,
-					[
-						Router\ApiRoutes::URL_DEVICE_ID => $resource->getDevice()->getPlainId(),
-						Router\ApiRoutes::URL_PROPERTY_ID => $resource->getPlainId(),
-					],
-				),
-				true,
-				[
-					'count' => count($resource->getChildren()),
-				],
-			);
 		}
 
 		return parent::getRelationshipRelatedLink($resource, $name);
 	}
 
 	/**
-	 * @phpstan-param T $resource
-	 *
-	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
-	 */
-	public function getRelationshipSelfLink(
-		$resource,
-		string $name,
-	): JsonApi\Contracts\Schema\LinkInterface
-	{
-		if (
-			$name === self::RELATIONSHIPS_CHILDREN
-			|| $name === self::RELATIONSHIPS_PARENT
-		) {
-			return new JsonApi\Schema\Link(
-				false,
-				$this->router->urlFor(
-					Devices\Constants::ROUTE_NAME_DEVICE_PROPERTY_RELATIONSHIP,
-					[
-						Router\ApiRoutes::URL_DEVICE_ID => $resource->getDevice()->getPlainId(),
-						Router\ApiRoutes::URL_ITEM_ID => $resource->getPlainId(),
-						Router\ApiRoutes::RELATION_ENTITY => $name,
-
-					],
-				),
-				false,
-			);
-		}
-
-		return parent::getRelationshipSelfLink($resource, $name);
-	}
-
-	/**
-	 * @phpstan-return array<Entities\Devices\Properties\Property>
+	 * @return array<Entities\Devices\Properties\Property>
 	 *
 	 * @throws Exception
 	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 */
-	private function getChildren(Entities\Devices\Properties\Property $property): array
+	protected function getChildren(Entities\Devices\Properties\Property $property): array
 	{
 		$findQuery = new Queries\FindDeviceProperties();
 		$findQuery->forParent($property);

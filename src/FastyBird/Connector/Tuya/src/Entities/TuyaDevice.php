@@ -21,7 +21,6 @@ use FastyBird\Connector\Tuya\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
-use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use function assert;
 use function explode;
 use function floatval;
@@ -57,7 +56,6 @@ class TuyaDevice extends DevicesEntities\Devices\Device
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -97,7 +95,6 @@ class TuyaDevice extends DevicesEntities\Devices\Device
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -121,7 +118,6 @@ class TuyaDevice extends DevicesEntities\Devices\Device
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -145,7 +141,6 @@ class TuyaDevice extends DevicesEntities\Devices\Device
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -169,7 +164,6 @@ class TuyaDevice extends DevicesEntities\Devices\Device
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -193,7 +187,6 @@ class TuyaDevice extends DevicesEntities\Devices\Device
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -219,7 +212,6 @@ class TuyaDevice extends DevicesEntities\Devices\Device
 	/**
 	 * @return array<string>
 	 *
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -243,7 +235,6 @@ class TuyaDevice extends DevicesEntities\Devices\Device
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -267,7 +258,6 @@ class TuyaDevice extends DevicesEntities\Devices\Device
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -291,7 +281,6 @@ class TuyaDevice extends DevicesEntities\Devices\Device
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */

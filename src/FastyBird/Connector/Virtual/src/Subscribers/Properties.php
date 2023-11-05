@@ -140,8 +140,6 @@ final class Properties implements Common\EventSubscriber
 				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 				'unit' => null,
 				'format' => null,
-				'settable' => false,
-				'queryable' => false,
 				'value' => Virtual\Constants::MANUFACTURER,
 			]));
 		}
@@ -169,8 +167,6 @@ final class Properties implements Common\EventSubscriber
 				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 				'unit' => null,
 				'format' => null,
-				'settable' => false,
-				'queryable' => false,
 				'value' => Helpers\Drivers::generateMacAddress(),
 			]));
 		}
