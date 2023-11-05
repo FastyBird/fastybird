@@ -69,7 +69,7 @@ jobs:
           custom-cache-key: "${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}"
 
       - name: "Setup node"
-        uses: "actions/setup-node@v3"
+        uses: "actions/setup-node@v4"
         with:
           node-version: "${{ matrix.node-version }}"
 
@@ -143,7 +143,7 @@ jobs:
           custom-cache-key: "${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}"
 
       - name: "Setup node"
-        uses: "actions/setup-node@v3"
+        uses: "actions/setup-node@v4"
         with:
           node-version: "${{ matrix.node-version }}"
 
@@ -220,7 +220,7 @@ jobs:
         run: "make tests"
 
       - name: "Upload logs"
-        uses: "actions/upload-artifact@v2"
+        uses: "actions/upload-artifact@v3"
         with:
           name: "Logs - Tests (${{ matrix.operating-system }}, ${{ matrix.php-version }})"
           path: "var/log"
@@ -354,7 +354,7 @@ jobs:
         run: "make mutations-infection ARGS='--logger-github'"
 
       - name: "Upload logs"
-        uses: "actions/upload-artifact@v2"
+        uses: "actions/upload-artifact@v3"
         with:
           name: "Logs - Mutations"
           path: "var/coverage/mutations/infection.log"
@@ -409,7 +409,7 @@ jobs:
           custom-cache-key: "${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}"
 
       - name: "Setup node"
-        uses: "actions/setup-node@v3"
+        uses: "actions/setup-node@v4"
         with:
           node-version: "${{ matrix.node-version }}"
 
@@ -449,7 +449,7 @@ jobs:
         uses: "actions/checkout@v4"
 
       - name: "Install node"
-        uses: "actions/setup-node@v3"
+        uses: "actions/setup-node@v4"
         with:
           node-version: "${{ matrix.node-version }}"
           registry-url: "https://registry.npmjs.org"
@@ -461,7 +461,7 @@ jobs:
         run: "yarn build"
 
       - name: "Upload build result"
-        uses: "actions/upload-artifact@v2"
+        uses: "actions/upload-artifact@v3"
         with:
           name: js-dist
           path: dist
@@ -481,7 +481,7 @@ jobs:
         uses: "actions/checkout@v4"
 
       - name: "Install node"
-        uses: "actions/setup-node@v3"
+        uses: "actions/setup-node@v4"
         with:
           node-version: "${{ matrix.node-version }}"
           registry-url: "https://registry.npmjs.org"
@@ -547,7 +547,7 @@ jobs:
         uses: "actions/checkout@v4"
 
       - name: "Install node"
-        uses: "actions/setup-node@v3"
+        uses: "actions/setup-node@v4"
         with:
           node-version: "${{ matrix.node-version }}"
           registry-url: "https://npm.pkg.github.com"

@@ -28,7 +28,7 @@ jobs:
         uses: "actions/checkout@v4"
 
       - name: "Setup node"
-        uses: "actions/setup-node@v3"
+        uses: "actions/setup-node@v4"
         with:
           node-version: "${{ matrix.node-version }}"
 
@@ -65,7 +65,7 @@ jobs:
         uses: "actions/checkout@v4"
 
       - name: "Setup node"
-        uses: "actions/setup-node@v3"
+        uses: "actions/setup-node@v4"
         with:
           node-version: "${{ matrix.node-version }}"
 
@@ -105,7 +105,7 @@ jobs:
         uses: "actions/checkout@v4"
 
       - name: "Setup node"
-        uses: "actions/setup-node@v3"
+        uses: "actions/setup-node@v4"
         with:
           node-version: "${{ matrix.node-version }}"
 
@@ -142,7 +142,7 @@ jobs:
         uses: "actions/checkout@v4"
 
       - name: "Install node"
-        uses: "actions/setup-node@v3"
+        uses: "actions/setup-node@v4"
         with:
           node-version: "${{ matrix.node-version }}"
           registry-url: "https://registry.npmjs.org"
@@ -208,7 +208,7 @@ jobs:
         uses: "actions/checkout@v4"
 
       - name: "Install node"
-        uses: "actions/setup-node@v3"
+        uses: "actions/setup-node@v4"
         with:
           node-version: "${{ matrix.node-version }}"
           registry-url: "https://npm.pkg.github.com"
@@ -282,7 +282,7 @@ jobs:
           persist-credentials: false
 
       - name: "Setup node"
-        uses: "actions/setup-node@v3"
+        uses: "actions/setup-node@v4"
         with:
           node-version: "${{ matrix.node-version }}"
 
