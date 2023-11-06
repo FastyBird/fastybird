@@ -54,10 +54,10 @@ final class StoreChannelPropertyState implements Queue\Consumer
 	public function __construct(
 		private readonly bool $useExchange,
 		private readonly Virtual\Logger $logger,
-		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
-		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
-		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
-		private readonly DevicesModels\Channels\Properties\PropertiesManager $channelsPropertiesManager,
+		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Entities\Channels\ChannelsRepository $channelsRepository,
+		private readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
+		private readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStateManager,
 		private readonly ExchangeEntities\EntityFactory $entityFactory,
 		private readonly ExchangePublisher\Publisher $publisher,
@@ -66,6 +66,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
@@ -183,10 +184,11 @@ final class StoreChannelPropertyState implements Queue\Consumer
 		}
 
 		$valueToStore = $entity->getValue();
-		$valueToStore = Helpers\Transformer::normalizeValue(
+		$valueToStore = DevicesUtilities\ValueHelper::normalizeValue(
 			$property->getDataType(),
-			$property->getFormat(),
 			$valueToStore,
+			$property->getFormat(),
+			$property->getInvalid(),
 		);
 
 		if ($property instanceof DevicesEntities\Channels\Properties\Mapped) {

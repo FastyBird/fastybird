@@ -43,7 +43,7 @@ use const DATE_ATOM;
  * Value helpers
  *
  * @package        FastyBird:DevicesModule!
- * @subpackage     Helpers
+ * @subpackage     Utilities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
@@ -57,7 +57,7 @@ final class ValueHelper
 	private const BOOL_TRUE_VALUES = ['true', 't', 'yes', 'y', '1', 'on'];
 
 	/**
-	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	public static function normalizeValue(
@@ -140,9 +140,16 @@ final class ValueHelper
 				return $value;
 			}
 
-			$value = Utils\DateTime::createFromFormat(DateTimeInterface::ATOM, strval(self::flattenValue($value)));
+			$formatted = Utils\DateTime::createFromFormat(DateTimeInterface::ATOM, strval(self::flattenValue($value)));
 
-			return $value === false ? null : $value;
+			if ($formatted === false) {
+				$formatted = Utils\DateTime::createFromFormat(
+					DateTimeInterface::RFC3339_EXTENDED,
+					strval(self::flattenValue($value)),
+				);
+			}
+
+			return $formatted === false ? null : $formatted;
 		} elseif (
 			$dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)
 			|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SWITCH)
@@ -183,7 +190,7 @@ final class ValueHelper
 					}
 				}
 
-				throw new Exceptions\InvalidState(
+				throw new Exceptions\InvalidArgument(
 					sprintf(
 						'Provided value "%s" is not in valid rage: %s',
 						strval(self::flattenValue($value)),
@@ -226,7 +233,7 @@ final class ValueHelper
 				}
 
 				try {
-					throw new Exceptions\InvalidState(
+					throw new Exceptions\InvalidArgument(
 						sprintf(
 							'Provided value "%s" is not in valid rage: %s',
 							strval(self::flattenValue($value)),
@@ -234,7 +241,7 @@ final class ValueHelper
 						),
 					);
 				} catch (Utils\JsonException $ex) {
-					throw new Exceptions\InvalidState(
+					throw new Exceptions\InvalidArgument(
 						sprintf(
 							'Provided value "%s" is not in valid rage. Value format could not be converted to error',
 							strval(self::flattenValue($value)),
@@ -256,7 +263,7 @@ final class ValueHelper
 						return $payloadClass::get(self::flattenValue($value));
 					}
 
-					throw new Exceptions\InvalidState(
+					throw new Exceptions\InvalidArgument(
 						sprintf(
 							'Provided value "%s" is not in valid rage: %s',
 							strval(self::flattenValue($value)),
@@ -273,7 +280,7 @@ final class ValueHelper
 	}
 
 	/**
-	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	public static function normalizeReadValue(
@@ -329,7 +336,7 @@ final class ValueHelper
 	}
 
 	/**
-	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	public static function normalizeWriteValue(
@@ -586,9 +593,16 @@ final class ValueHelper
 				return $value->format(DateTimeInterface::ATOM);
 			}
 
-			$value = Utils\DateTime::createFromFormat(DateTimeInterface::ATOM, strval(self::flattenValue($value)));
+			$formatted = Utils\DateTime::createFromFormat(DateTimeInterface::ATOM, strval(self::flattenValue($value)));
 
-			return $value === false ? null : $value->format(DateTimeInterface::ATOM);
+			if ($formatted === false) {
+				$formatted = Utils\DateTime::createFromFormat(
+					DateTimeInterface::RFC3339_EXTENDED,
+					strval(self::flattenValue($value)),
+				);
+			}
+
+			return $formatted === false ? null : $formatted->format(DateTimeInterface::ATOM);
 		}
 
 		if (
@@ -731,9 +745,16 @@ final class ValueHelper
 				return $value;
 			}
 
-			$value = Utils\DateTime::createFromFormat(DateTimeInterface::ATOM, strval(self::flattenValue($value)));
+			$formatted = Utils\DateTime::createFromFormat(DateTimeInterface::ATOM, strval(self::flattenValue($value)));
 
-			return $value === false ? null : $value;
+			if ($formatted === false) {
+				$formatted = Utils\DateTime::createFromFormat(
+					DateTimeInterface::RFC3339_EXTENDED,
+					strval(self::flattenValue($value)),
+				);
+			}
+
+			return $formatted === false ? null : $formatted;
 		}
 
 		return $value;

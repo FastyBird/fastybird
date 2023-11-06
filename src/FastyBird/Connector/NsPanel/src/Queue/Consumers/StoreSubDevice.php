@@ -48,14 +48,14 @@ final class StoreSubDevice implements Queue\Consumer
 
 	public function __construct(
 		protected readonly NsPanel\Logger $logger,
-		protected readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
-		protected readonly DevicesModels\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
-		protected readonly DevicesModels\Devices\Properties\PropertiesManager $devicesPropertiesManager,
+		protected readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
+		protected readonly DevicesModels\Entities\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
+		protected readonly DevicesModels\Entities\Devices\Properties\PropertiesManager $devicesPropertiesManager,
 		protected readonly DevicesUtilities\Database $databaseHelper,
-		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
-		private readonly DevicesModels\Devices\DevicesManager $devicesManager,
-		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
-		private readonly DevicesModels\Channels\ChannelsManager $channelsManager,
+		private readonly DevicesModels\Entities\Connectors\ConnectorsRepository $connectorsRepository,
+		private readonly DevicesModels\Entities\Devices\DevicesManager $devicesManager,
+		private readonly DevicesModels\Entities\Channels\ChannelsRepository $channelsRepository,
+		private readonly DevicesModels\Entities\Channels\ChannelsManager $channelsManager,
 	)
 	{
 	}
@@ -209,35 +209,35 @@ final class StoreSubDevice implements Queue\Consumer
 			$entity->getManufacturer(),
 			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 			Types\DevicePropertyIdentifier::MANUFACTURER,
-			Helpers\Name::createName(Types\DevicePropertyIdentifier::MANUFACTURER),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MANUFACTURER),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getModel(),
 			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 			Types\DevicePropertyIdentifier::MODEL,
-			Helpers\Name::createName(Types\DevicePropertyIdentifier::MODEL),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MODEL),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getFirmwareVersion(),
 			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 			Types\DevicePropertyIdentifier::FIRMWARE_VERSION,
-			Helpers\Name::createName(Types\DevicePropertyIdentifier::FIRMWARE_VERSION),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::FIRMWARE_VERSION),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getDisplayCategory()->getValue(),
 			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 			Types\DevicePropertyIdentifier::CATEGORY,
-			Helpers\Name::createName(Types\DevicePropertyIdentifier::CATEGORY),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::CATEGORY),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getMacAddress(),
 			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 			Types\DevicePropertyIdentifier::MAC_ADDRESS,
-			Helpers\Name::createName(Types\DevicePropertyIdentifier::MAC_ADDRESS),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MAC_ADDRESS),
 		);
 
 		foreach ($entity->getCapabilities() as $capability) {

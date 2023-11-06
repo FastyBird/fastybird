@@ -32,9 +32,9 @@ use function strval;
  * @template T of Entities\Channels\Channel
  * @extends  JsonApiSchemas\JsonApi<T>
  *
- * @package         FastyBird:DevicesModule!
- * @subpackage      Schemas
- * @author          Adam Kadlec <adam.kadlec@fastybird.com>
+ * @package        FastyBird:DevicesModule!
+ * @subpackage     Schemas
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 class Channel extends JsonApiSchemas\JsonApi
 {

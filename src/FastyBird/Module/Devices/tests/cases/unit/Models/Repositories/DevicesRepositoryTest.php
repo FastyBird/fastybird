@@ -25,7 +25,7 @@ final class DevicesRepositoryTest extends DbTestCase
 	 */
 	public function testReadOne(): void
 	{
-		$repository = $this->getContainer()->getByType(Models\Devices\DevicesRepository::class);
+		$repository = $this->getContainer()->getByType(Models\Entities\Devices\DevicesRepository::class);
 
 		$findQuery = new Queries\FindDevices();
 		$findQuery->byIdentifier('first-device');
@@ -54,7 +54,7 @@ final class DevicesRepositoryTest extends DbTestCase
 	 */
 	public function testReadResultSet(): void
 	{
-		$repository = $this->getContainer()->getByType(Models\Devices\DevicesRepository::class);
+		$repository = $this->getContainer()->getByType(Models\Entities\Devices\DevicesRepository::class);
 
 		$findQuery = new Queries\FindDevices();
 

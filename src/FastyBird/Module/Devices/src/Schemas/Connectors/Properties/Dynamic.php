@@ -33,9 +33,9 @@ use function is_bool;
  * @template T of Entities\Connectors\Properties\Dynamic
  * @extends Property<T>
  *
- * @package         FastyBird:DevicesModule!
- * @subpackage      Schemas
- * @author          Adam Kadlec <adam.kadlec@fastybird.com>
+ * @package        FastyBird:DevicesModule!
+ * @subpackage     Schemas
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 final class Dynamic extends Property
 {

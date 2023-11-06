@@ -15,12 +15,14 @@
 
 namespace FastyBird\Connector\Tuya\Queue\Consumers;
 
+use Doctrine\DBAL;
 use FastyBird\Connector\Tuya;
 use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Queries;
 use FastyBird\Connector\Tuya\Queue;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -31,6 +33,9 @@ use Nette;
 use Nette\Utils;
 use Ramsey\Uuid;
 use function array_key_exists;
+use function array_merge;
+use function assert;
+use function strval;
 
 /**
  * Store channel property state message consumer
@@ -50,16 +55,21 @@ final class StoreChannelPropertyState implements Queue\Consumer
 
 	public function __construct(
 		private readonly Tuya\Logger $logger,
-		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
-		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
-		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
+		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Entities\Channels\ChannelsRepository $channelsRepository,
+		private readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
+		private readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStateManager,
+		private readonly DevicesUtilities\Database $databaseHelper,
 	)
 	{
 	}
 
 	/**
+	 * @throws DBAL\Exception
+	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws DevicesExceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -102,8 +112,49 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			);
 
 			if ($property !== null) {
+				try {
+					$valueToStore = DevicesUtilities\ValueHelper::normalizeValue(
+						$property->getDataType(),
+						$dataPoint->getValue(),
+						$property->getFormat(),
+						$property->getInvalid(),
+					);
+				} catch (DevicesExceptions\InvalidArgument $ex) {
+					$format = $property->getFormat();
+
+					if (
+						$property->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_ENUM)
+						&& $dataPoint->getValue() !== null
+						&& $format instanceof MetadataValueObjects\StringEnumFormat
+					) {
+						$property = $this->databaseHelper->transaction(
+							function () use ($dataPoint, $property, $format): DevicesEntities\Channels\Properties\Dynamic {
+								$updated = $this->channelsPropertiesManager->update($property, Utils\ArrayHash::from([
+									'format' => array_merge(
+										$format->toArray(),
+										[Utils\Strings::lower(strval($dataPoint->getValue()))],
+									),
+								]));
+								assert($updated instanceof DevicesEntities\Channels\Properties\Dynamic);
+
+								return $updated;
+							},
+						);
+
+						$valueToStore = DevicesUtilities\ValueHelper::normalizeValue(
+							$property->getDataType(),
+							$dataPoint->getValue(),
+							$property->getFormat(),
+							$property->getInvalid(),
+						);
+
+					} else {
+						throw $ex;
+					}
+				}
+
 				$this->channelPropertiesStateManager->setValue($property, Utils\ArrayHash::from([
-					DevicesStates\Property::ACTUAL_VALUE_KEY => $dataPoint->getValue(),
+					DevicesStates\Property::ACTUAL_VALUE_KEY => $valueToStore,
 					DevicesStates\Property::VALID_KEY => true,
 				]));
 			}

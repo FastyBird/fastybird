@@ -18,7 +18,6 @@ namespace FastyBird\Connector\Shelly\Queue\Consumers;
 use Doctrine\DBAL;
 use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\Entities;
-use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Queries;
 use FastyBird\Connector\Shelly\Queue;
 use FastyBird\Connector\Shelly\Types;
@@ -50,16 +49,16 @@ final class StoreLocalDevice implements Queue\Consumer
 
 	public function __construct(
 		protected readonly Shelly\Logger $logger,
-		protected readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
-		protected readonly DevicesModels\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
-		protected readonly DevicesModels\Devices\Properties\PropertiesManager $devicesPropertiesManager,
+		protected readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
+		protected readonly DevicesModels\Entities\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
+		protected readonly DevicesModels\Entities\Devices\Properties\PropertiesManager $devicesPropertiesManager,
 		protected readonly DevicesUtilities\Database $databaseHelper,
-		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
-		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
-		private readonly DevicesModels\Channels\Properties\PropertiesManager $channelsPropertiesManager,
-		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
-		private readonly DevicesModels\Devices\DevicesManager $devicesManager,
-		private readonly DevicesModels\Channels\ChannelsManager $channelsManager,
+		private readonly DevicesModels\Entities\Channels\ChannelsRepository $channelsRepository,
+		private readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
+		private readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager,
+		private readonly DevicesModels\Entities\Connectors\ConnectorsRepository $connectorsRepository,
+		private readonly DevicesModels\Entities\Devices\DevicesManager $devicesManager,
+		private readonly DevicesModels\Entities\Channels\ChannelsManager $channelsManager,
 	)
 	{
 	}
@@ -129,21 +128,21 @@ final class StoreLocalDevice implements Queue\Consumer
 			$entity->getIpAddress(),
 			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 			Types\DevicePropertyIdentifier::IP_ADDRESS,
-			Helpers\Name::createName(Types\DevicePropertyIdentifier::IP_ADDRESS),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::IP_ADDRESS),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getDomain(),
 			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 			Types\DevicePropertyIdentifier::DOMAIN,
-			Helpers\Name::createName(Types\DevicePropertyIdentifier::DOMAIN),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::DOMAIN),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			strval($entity->getGeneration()->getValue()),
 			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
 			Types\DevicePropertyIdentifier::GENERATION,
-			Helpers\Name::createName(Types\DevicePropertyIdentifier::GENERATION),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::GENERATION),
 			[Types\DeviceGeneration::GENERATION_1, Types\DeviceGeneration::GENERATION_2],
 		);
 		$this->setDeviceProperty(
@@ -151,28 +150,28 @@ final class StoreLocalDevice implements Queue\Consumer
 			$entity->isAuthEnabled(),
 			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN),
 			Types\DevicePropertyIdentifier::AUTH_ENABLED,
-			Helpers\Name::createName(Types\DevicePropertyIdentifier::AUTH_ENABLED),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::AUTH_ENABLED),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getModel(),
 			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 			Types\DevicePropertyIdentifier::MODEL,
-			Helpers\Name::createName(Types\DevicePropertyIdentifier::MODEL),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MODEL),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getMacAddress(),
 			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 			Types\DevicePropertyIdentifier::MAC_ADDRESS,
-			Helpers\Name::createName(Types\DevicePropertyIdentifier::MAC_ADDRESS),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MAC_ADDRESS),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getFirmwareVersion(),
 			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 			Types\DevicePropertyIdentifier::FIRMWARE_VERSION,
-			Helpers\Name::createName(Types\DevicePropertyIdentifier::FIRMWARE_VERSION),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::FIRMWARE_VERSION),
 		);
 
 		foreach ($entity->getChannels() as $channelDescription) {

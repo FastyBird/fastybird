@@ -35,9 +35,9 @@ use function strval;
  * @template T of Entities\Channels\Properties\Property
  * @extends  JsonApiSchemas\JsonApi<T>
  *
- * @package         FastyBird:DevicesModule!
- * @subpackage      Schemas
- * @author          Adam Kadlec <adam.kadlec@fastybird.com>
+ * @package        FastyBird:DevicesModule!
+ * @subpackage     Schemas
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 abstract class Property extends JsonApiSchemas\JsonApi
 {
@@ -53,7 +53,7 @@ abstract class Property extends JsonApiSchemas\JsonApi
 
 	public function __construct(
 		protected readonly Routing\IRouter $router,
-		protected readonly Models\Channels\Properties\PropertiesRepository $propertiesRepository,
+		protected readonly Models\Entities\Channels\Properties\PropertiesRepository $propertiesRepository,
 	)
 	{
 	}

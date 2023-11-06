@@ -45,8 +45,8 @@ final class DeviceControlsV1 extends BaseV1
 	use Controllers\Finders\TDevice;
 
 	public function __construct(
-		protected readonly Models\Devices\DevicesRepository $devicesRepository,
-		private readonly Models\Devices\Controls\ControlsRepository $deviceControlsRepository,
+		protected readonly Models\Entities\Devices\DevicesRepository $devicesRepository,
+		private readonly Models\Entities\Devices\Controls\ControlsRepository $deviceControlsRepository,
 	)
 	{
 	}

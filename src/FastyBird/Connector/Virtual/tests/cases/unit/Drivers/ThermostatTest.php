@@ -38,7 +38,7 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 	 */
 	public function testConnect(): void
 	{
-		$devicesRepository = $this->getContainer()->getByType(DevicesModels\Devices\DevicesRepository::class);
+		$devicesRepository = $this->getContainer()->getByType(DevicesModels\Entities\Devices\DevicesRepository::class);
 
 		$findDeviceQuery = new Queries\FindThermostatDevices();
 		$findDeviceQuery->byIdentifier('thermostat-office');
@@ -112,7 +112,7 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 			$storeChannelPropertyStateConsumer,
 		);
 
-		$devicesRepository = $this->getContainer()->getByType(DevicesModels\Devices\DevicesRepository::class);
+		$devicesRepository = $this->getContainer()->getByType(DevicesModels\Entities\Devices\DevicesRepository::class);
 
 		$findDeviceQuery = new Queries\FindThermostatDevices();
 		$findDeviceQuery->byIdentifier('thermostat-office');

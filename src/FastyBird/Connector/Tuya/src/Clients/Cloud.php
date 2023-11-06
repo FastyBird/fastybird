@@ -77,7 +77,7 @@ final class Cloud implements Client
 		private readonly Queue\Queue $queue,
 		private readonly Helpers\Entity $entityHelper,
 		private readonly Tuya\Logger $logger,
-		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
@@ -340,7 +340,7 @@ final class Cloud implements Client
 		$this->connectionManager
 			->getCloudApiConnection($this->connector)
 			->getDeviceDetail($device->getIdentifier())
-			->then(function (Entities\API\Device $deviceInformation) use ($device): void {
+			->then(function (Entities\API\GetDevice $detail) use ($device): void {
 				$this->processedDevicesCommands[$device->getId()->toString()][self::CMD_HEARTBEAT] = $this->dateTimeFactory->getNow();
 
 				$this->queue->append(
@@ -349,7 +349,7 @@ final class Cloud implements Client
 						[
 							'connector' => $device->getConnector()->getId()->toString(),
 							'identifier' => $device->getIdentifier(),
-							'state' => $deviceInformation->isOnline()
+							'state' => $detail->getResult()->isOnline()
 								? MetadataTypes\ConnectionState::STATE_CONNECTED
 								: MetadataTypes\ConnectionState::STATE_DISCONNECTED,
 						],

@@ -29,7 +29,6 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
-use FastyBird\Module\Devices\Helpers as DevicesHelpers;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\States as DevicesStates;
@@ -78,15 +77,15 @@ class Thermostat extends Device
 
 	public function __construct(
 		private readonly Virtual\Logger $logger,
-		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
-		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
-		private readonly DevicesModels\Devices\DevicesManager $devicesManager,
-		private readonly DevicesModels\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
-		private readonly DevicesModels\Devices\Properties\PropertiesManager $devicesPropertiesManager,
-		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
-		private readonly DevicesModels\Channels\ChannelsManager $channelsManager,
-		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
-		private readonly DevicesModels\Channels\Properties\PropertiesManager $channelsPropertiesManager,
+		private readonly DevicesModels\Entities\Connectors\ConnectorsRepository $connectorsRepository,
+		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Entities\Devices\DevicesManager $devicesManager,
+		private readonly DevicesModels\Entities\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
+		private readonly DevicesModels\Entities\Devices\Properties\PropertiesManager $devicesPropertiesManager,
+		private readonly DevicesModels\Entities\Channels\ChannelsRepository $channelsRepository,
+		private readonly DevicesModels\Entities\Channels\ChannelsManager $channelsManager,
+		private readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
+		private readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
 		Persistence\ManagerRegistry $managerRegistry,
 		Localization\Translator $translator,
@@ -2840,7 +2839,7 @@ class Thermostat extends Device
 			$properties[$property->getIdentifier()] = sprintf(
 				'%s%s',
 				$property->getIdentifier(),
-				' [' . ($property->getName() ?? DevicesHelpers\Name::createName($property->getIdentifier())) . ']',
+				' [' . ($property->getName() ?? DevicesUtilities\Name::createName($property->getIdentifier())) . ']',
 			);
 		}
 

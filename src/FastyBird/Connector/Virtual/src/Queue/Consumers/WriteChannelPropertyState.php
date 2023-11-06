@@ -56,10 +56,10 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		private readonly Drivers\DriversManager $driversManager,
 		private readonly Helpers\Entity $entityHelper,
 		private readonly Virtual\Logger $logger,
-		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
-		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
-		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
-		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
+		private readonly DevicesModels\Entities\Connectors\ConnectorsRepository $connectorsRepository,
+		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Entities\Channels\ChannelsRepository $channelsRepository,
+		private readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 	)
@@ -67,6 +67,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
@@ -248,10 +249,11 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$valueToWrite = Helpers\Transformer::fromMappedParent($property, $valueToWrite);
 		}
 
-		$valueToWrite = Helpers\Transformer::normalizeValue(
+		$valueToWrite = DevicesUtilities\ValueHelper::normalizeValue(
 			$property->getDataType(),
-			$property->getFormat(),
 			$valueToWrite,
+			$property->getFormat(),
+			$property->getInvalid(),
 		);
 
 		try {

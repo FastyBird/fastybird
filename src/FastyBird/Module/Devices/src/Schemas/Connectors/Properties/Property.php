@@ -31,9 +31,9 @@ use function strval;
  * @template T of Entities\Connectors\Properties\Property
  * @extends  JsonApiSchemas\JsonApi<T>
  *
- * @package         FastyBird:DevicesModule!
- * @subpackage      Schemas
- * @author          Adam Kadlec <adam.kadlec@fastybird.com>
+ * @package        FastyBird:DevicesModule!
+ * @subpackage     Schemas
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 abstract class Property extends JsonApiSchemas\JsonApi
 {

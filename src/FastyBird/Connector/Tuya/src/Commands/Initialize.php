@@ -20,7 +20,6 @@ use Doctrine\Persistence;
 use FastyBird\Connector\Tuya;
 use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Exceptions;
-use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Queries;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
@@ -30,6 +29,7 @@ use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette\Localization;
 use Nette\Utils;
 use Symfony\Component\Console;
@@ -61,11 +61,11 @@ class Initialize extends Console\Command\Command
 
 	public function __construct(
 		private readonly Tuya\Logger $logger,
-		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
-		private readonly DevicesModels\Connectors\ConnectorsManager $connectorsManager,
-		private readonly DevicesModels\Connectors\Properties\PropertiesRepository $propertiesRepository,
-		private readonly DevicesModels\Connectors\Properties\PropertiesManager $propertiesManager,
-		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Entities\Connectors\ConnectorsRepository $connectorsRepository,
+		private readonly DevicesModels\Entities\Connectors\ConnectorsManager $connectorsManager,
+		private readonly DevicesModels\Entities\Connectors\Properties\PropertiesRepository $propertiesRepository,
+		private readonly DevicesModels\Entities\Connectors\Properties\PropertiesManager $propertiesManager,
+		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 		private readonly Localization\Translator $translator,
 		string|null $name = null,
@@ -204,7 +204,7 @@ class Initialize extends Console\Command\Command
 			$this->propertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 				'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE,
-				'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::CLIENT_MODE),
+				'name' => DevicesUtilities\Name::createName(Types\ConnectorPropertyIdentifier::CLIENT_MODE),
 				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
 				'value' => $mode->getValue(),
 				'format' => [Types\ClientMode::LOCAL, Types\ClientMode::CLOUD],
@@ -214,7 +214,7 @@ class Initialize extends Console\Command\Command
 			$this->propertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 				'identifier' => Types\ConnectorPropertyIdentifier::ACCESS_ID,
-				'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::ACCESS_ID),
+				'name' => DevicesUtilities\Name::createName(Types\ConnectorPropertyIdentifier::ACCESS_ID),
 				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 				'value' => $accessId,
 				'connector' => $connector,
@@ -223,7 +223,7 @@ class Initialize extends Console\Command\Command
 			$this->propertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 				'identifier' => Types\ConnectorPropertyIdentifier::ACCESS_SECRET,
-				'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::ACCESS_SECRET),
+				'name' => DevicesUtilities\Name::createName(Types\ConnectorPropertyIdentifier::ACCESS_SECRET),
 				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 				'value' => $accessSecret,
 				'connector' => $connector,
@@ -232,7 +232,7 @@ class Initialize extends Console\Command\Command
 			$this->propertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 				'identifier' => Types\ConnectorPropertyIdentifier::OPENAPI_ENDPOINT,
-				'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::OPENAPI_ENDPOINT),
+				'name' => DevicesUtilities\Name::createName(Types\ConnectorPropertyIdentifier::OPENAPI_ENDPOINT),
 				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
 				'value' => $dataCentre->getValue(),
 				'format' => [
@@ -250,7 +250,7 @@ class Initialize extends Console\Command\Command
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::UID,
-					'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::UID),
+					'name' => DevicesUtilities\Name::createName(Types\ConnectorPropertyIdentifier::UID),
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 					'value' => $uid,
 					'connector' => $connector,
@@ -460,7 +460,7 @@ class Initialize extends Console\Command\Command
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE,
-					'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::CLIENT_MODE),
+					'name' => DevicesUtilities\Name::createName(Types\ConnectorPropertyIdentifier::CLIENT_MODE),
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
 					'value' => $mode->getValue(),
 					'format' => [Types\ClientMode::LOCAL, Types\ClientMode::CLOUD],
@@ -480,7 +480,7 @@ class Initialize extends Console\Command\Command
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::ACCESS_ID,
-					'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::ACCESS_ID),
+					'name' => DevicesUtilities\Name::createName(Types\ConnectorPropertyIdentifier::ACCESS_ID),
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 					'value' => $accessId,
 					'connector' => $connector,
@@ -499,7 +499,7 @@ class Initialize extends Console\Command\Command
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::ACCESS_SECRET,
-					'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::ACCESS_SECRET),
+					'name' => DevicesUtilities\Name::createName(Types\ConnectorPropertyIdentifier::ACCESS_SECRET),
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 					'value' => $accessSecret,
 					'connector' => $connector,
@@ -527,7 +527,7 @@ class Initialize extends Console\Command\Command
 					$this->propertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 						'identifier' => Types\ConnectorPropertyIdentifier::UID,
-						'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::UID),
+						'name' => DevicesUtilities\Name::createName(Types\ConnectorPropertyIdentifier::UID),
 						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 						'value' => $uid,
 						'connector' => $connector,

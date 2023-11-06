@@ -28,6 +28,7 @@ use FastyBird\Connector\Shelly\Types;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Fig\Http\Message\StatusCodeInterface;
 use InvalidArgumentException;
 use Nette;
@@ -454,7 +455,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 							'channels' => array_map(
 								static fn (Entities\API\Gen1\DeviceBlockDescription $block): array => [
 									'identifier' => $block->getIdentifier() . '_' . $block->getDescription(),
-									'name' => Helpers\Name::createName($block->getDescription()),
+									'name' => DevicesUtilities\Name::createName($block->getDescription()),
 									'properties' => array_map(
 										static fn (Entities\API\Gen1\BlockSensorDescription $sensor): array => [
 											'identifier' => (
@@ -464,7 +465,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 												. '_'
 												. $sensor->getDescription()
 											),
-											'name' => Helpers\Name::createName($sensor->getDescription()),
+											'name' => DevicesUtilities\Name::createName($sensor->getDescription()),
 											'data_type' => $sensor->getDataType()->getValue(),
 											'unit' => $sensor->getUnit(),
 											'format' => $sensor->getFormat(),
@@ -499,7 +500,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 								static function ($component) use ($deviceStatus): array {
 									$channel = [
 										'identifier' => $component->getType()->getValue() . '_' . $component->getId(),
-										'name' => $component->getName() ?? Helpers\Name::createName(
+										'name' => $component->getName() ?? DevicesUtilities\Name::createName(
 											strval($component->getType()->getValue()),
 										),
 										'properties' => [],
@@ -517,7 +518,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 													. '_'
 													. Types\ComponentAttributeType::ON
 												),
-												'name' => Helpers\Name::createName(
+												'name' => DevicesUtilities\Name::createName(
 													Types\ComponentAttributeType::ON,
 												),
 												'data_type' => MetadataTypes\DataType::DATA_TYPE_BOOLEAN,
@@ -541,7 +542,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 													. '_'
 													. Types\ComponentAttributeType::ACTIVE_POWER
 												),
-												'name' => Helpers\Name::createName(
+												'name' => DevicesUtilities\Name::createName(
 													Types\ComponentAttributeType::ACTIVE_POWER,
 												),
 												'data_type' => MetadataTypes\DataType::DATA_TYPE_FLOAT,
@@ -565,7 +566,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 													. '_'
 													. Types\ComponentAttributeType::POWER_FACTOR
 												),
-												'name' => Helpers\Name::createName(
+												'name' => DevicesUtilities\Name::createName(
 													Types\ComponentAttributeType::POWER_FACTOR,
 												),
 												'data_type' => MetadataTypes\DataType::DATA_TYPE_FLOAT,
@@ -589,7 +590,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 													. '_'
 													. Types\ComponentAttributeType::ACTIVE_ENERGY
 												),
-												'name' => Helpers\Name::createName(
+												'name' => DevicesUtilities\Name::createName(
 													Types\ComponentAttributeType::ACTIVE_ENERGY,
 												),
 												'data_type' => MetadataTypes\DataType::DATA_TYPE_FLOAT,
@@ -613,7 +614,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 													. '_'
 													. Types\ComponentAttributeType::CURRENT
 												),
-												'name' => Helpers\Name::createName(
+												'name' => DevicesUtilities\Name::createName(
 													Types\ComponentAttributeType::CURRENT,
 												),
 												'data_type' => MetadataTypes\DataType::DATA_TYPE_FLOAT,
@@ -637,7 +638,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 													. '_'
 													. Types\ComponentAttributeType::VOLTAGE
 												),
-												'name' => Helpers\Name::createName(
+												'name' => DevicesUtilities\Name::createName(
 													Types\ComponentAttributeType::VOLTAGE,
 												),
 												'data_type' => MetadataTypes\DataType::DATA_TYPE_FLOAT,
@@ -661,7 +662,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 													. '_'
 													. Types\ComponentAttributeType::CELSIUS
 												),
-												'name' => Helpers\Name::createName(
+												'name' => DevicesUtilities\Name::createName(
 													Types\ComponentAttributeType::CELSIUS,
 												),
 												'data_type' => MetadataTypes\DataType::DATA_TYPE_FLOAT,
@@ -684,7 +685,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 													. '_'
 													. Types\ComponentAttributeType::STATE
 												),
-												'name' => Helpers\Name::createName(
+												'name' => DevicesUtilities\Name::createName(
 													Types\ComponentAttributeType::STATE,
 												),
 												'data_type' => MetadataTypes\DataType::DATA_TYPE_ENUM,
@@ -711,7 +712,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 												. '_'
 												. Types\ComponentAttributeType::POSITION
 											),
-											'name' => Helpers\Name::createName(
+											'name' => DevicesUtilities\Name::createName(
 												Types\ComponentAttributeType::POSITION,
 											),
 											'data_type' => MetadataTypes\DataType::DATA_TYPE_UCHAR,
@@ -734,7 +735,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 													. '_'
 													. Types\ComponentAttributeType::ACTIVE_POWER
 												),
-												'name' => Helpers\Name::createName(
+												'name' => DevicesUtilities\Name::createName(
 													Types\ComponentAttributeType::ACTIVE_POWER,
 												),
 												'data_type' => MetadataTypes\DataType::DATA_TYPE_FLOAT,
@@ -758,7 +759,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 													. '_'
 													. Types\ComponentAttributeType::POWER_FACTOR
 												),
-												'name' => Helpers\Name::createName(
+												'name' => DevicesUtilities\Name::createName(
 													Types\ComponentAttributeType::POWER_FACTOR,
 												),
 												'data_type' => MetadataTypes\DataType::DATA_TYPE_FLOAT,
@@ -782,7 +783,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 													. '_'
 													. Types\ComponentAttributeType::ACTIVE_ENERGY
 												),
-												'name' => Helpers\Name::createName(
+												'name' => DevicesUtilities\Name::createName(
 													Types\ComponentAttributeType::ACTIVE_ENERGY,
 												),
 												'data_type' => MetadataTypes\DataType::DATA_TYPE_FLOAT,
@@ -806,7 +807,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 													. '_'
 													. Types\ComponentAttributeType::CURRENT
 												),
-												'name' => Helpers\Name::createName(
+												'name' => DevicesUtilities\Name::createName(
 													Types\ComponentAttributeType::CURRENT,
 												),
 												'data_type' => MetadataTypes\DataType::DATA_TYPE_FLOAT,
@@ -830,7 +831,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 													. '_'
 													. Types\ComponentAttributeType::VOLTAGE
 												),
-												'name' => Helpers\Name::createName(
+												'name' => DevicesUtilities\Name::createName(
 													Types\ComponentAttributeType::VOLTAGE,
 												),
 												'data_type' => MetadataTypes\DataType::DATA_TYPE_FLOAT,
@@ -854,7 +855,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 													. '_'
 													. Types\ComponentAttributeType::CELSIUS
 												),
-												'name' => Helpers\Name::createName(
+												'name' => DevicesUtilities\Name::createName(
 													Types\ComponentAttributeType::CELSIUS,
 												),
 												'data_type' => MetadataTypes\DataType::DATA_TYPE_FLOAT,
@@ -877,7 +878,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 													. '_'
 													. Types\ComponentAttributeType::ON
 												),
-												'name' => Helpers\Name::createName(
+												'name' => DevicesUtilities\Name::createName(
 													Types\ComponentAttributeType::ON,
 												),
 												'data_type' => MetadataTypes\DataType::DATA_TYPE_BOOLEAN,
@@ -901,7 +902,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 													. '_'
 													. Types\ComponentAttributeType::BRIGHTNESS
 												),
-												'name' => Helpers\Name::createName(
+												'name' => DevicesUtilities\Name::createName(
 													Types\ComponentAttributeType::BRIGHTNESS,
 												),
 												'data_type' => MetadataTypes\DataType::DATA_TYPE_UCHAR,
@@ -980,7 +981,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 													. '_'
 													. Types\ComponentAttributeType::CELSIUS
 												),
-												'name' => Helpers\Name::createName(
+												'name' => DevicesUtilities\Name::createName(
 													Types\ComponentAttributeType::CELSIUS,
 												),
 												'data_type' => MetadataTypes\DataType::DATA_TYPE_FLOAT,
@@ -1004,7 +1005,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 													. '_'
 													. Types\ComponentAttributeType::FAHRENHEIT
 												),
-												'name' => Helpers\Name::createName(
+												'name' => DevicesUtilities\Name::createName(
 													Types\ComponentAttributeType::FAHRENHEIT,
 												),
 												'data_type' => MetadataTypes\DataType::DATA_TYPE_FLOAT,

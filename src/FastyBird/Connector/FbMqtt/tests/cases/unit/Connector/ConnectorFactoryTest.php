@@ -28,7 +28,7 @@ final class ConnectorFactoryTest extends DbTestCase
 	public function testCreateConnector(): void
 	{
 		$connectorsRepository = $this->getContainer()->getByType(
-			DevicesModels\Connectors\ConnectorsRepository::class,
+			DevicesModels\Entities\Connectors\ConnectorsRepository::class,
 		);
 
 		$factory = $this->getContainer()->getByType(Connector\ConnectorFactory::class);

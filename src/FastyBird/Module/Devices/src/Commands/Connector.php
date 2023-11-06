@@ -91,13 +91,13 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 	 * @param array<ExchangeExchange\Factory> $exchangeFactories
 	 */
 	public function __construct(
-		private readonly Models\Connectors\ConnectorsRepository $connectorsRepository,
-		private readonly Models\Connectors\Properties\PropertiesRepository $connectorsPropertiesRepository,
-		private readonly Models\Connectors\Controls\ControlsRepository $connectorsControlsRepository,
-		private readonly Models\Devices\DevicesRepository $devicesRepository,
-		private readonly Models\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
-		private readonly Models\Channels\ChannelsRepository $channelsRepository,
-		private readonly Models\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
+		private readonly Models\Entities\Connectors\ConnectorsRepository $connectorsRepository,
+		private readonly Models\Entities\Connectors\Properties\PropertiesRepository $connectorsPropertiesRepository,
+		private readonly Models\Entities\Connectors\Controls\ControlsRepository $connectorsControlsRepository,
+		private readonly Models\Entities\Devices\DevicesRepository $devicesRepository,
+		private readonly Models\Entities\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
+		private readonly Models\Entities\Channels\ChannelsRepository $channelsRepository,
+		private readonly Models\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly Utilities\ConnectorConnection $connectorConnectionManager,
 		private readonly Utilities\DeviceConnection $deviceConnectionManager,
 		private readonly Utilities\ConnectorPropertiesStates $connectorPropertiesStateManager,

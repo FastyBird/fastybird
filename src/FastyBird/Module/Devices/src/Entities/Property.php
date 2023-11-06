@@ -414,7 +414,7 @@ abstract class Property implements Entity,
 				$this->getFormat(),
 				$this->getInvalid(),
 			);
-		} catch (Exceptions\InvalidState) {
+		} catch (Exceptions\InvalidArgument) {
 			return null;
 		}
 	}
@@ -491,7 +491,7 @@ abstract class Property implements Entity,
 				$this->getFormat(),
 				$this->getInvalid(),
 			);
-		} catch (Exceptions\InvalidState) {
+		} catch (Exceptions\InvalidArgument) {
 			return null;
 		}
 	}

@@ -52,9 +52,9 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 {
 
 	public function __construct(
-		private readonly Models\Connectors\Properties\PropertiesRepository $connectorPropertiesRepository,
-		private readonly Models\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
-		private readonly Models\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
+		private readonly Models\Entities\Connectors\Properties\PropertiesRepository $connectorPropertiesRepository,
+		private readonly Models\Entities\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
+		private readonly Models\Entities\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
 		private readonly Utilities\ConnectorPropertiesStates $connectorPropertiesStates,
 		private readonly Utilities\DevicePropertiesStates $devicePropertiesStates,
 		private readonly Utilities\ChannelPropertiesStates $channelPropertiesStates,

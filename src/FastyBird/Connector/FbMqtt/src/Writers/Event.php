@@ -59,8 +59,8 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 	public function __construct(
 		private readonly Helpers\Property $propertyStateHelper,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
-		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
-		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
+		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Entities\Channels\ChannelsRepository $channelsRepository,
 		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{

@@ -59,10 +59,10 @@ final class ChannelPropertiesV1 extends BaseV1
 	use Controllers\Finders\TChannelProperty;
 
 	public function __construct(
-		protected readonly Models\Devices\DevicesRepository $devicesRepository,
-		protected readonly Models\Channels\ChannelsRepository $channelsRepository,
-		protected readonly Models\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
-		protected readonly Models\Channels\Properties\PropertiesManager $channelPropertiesManager,
+		protected readonly Models\Entities\Devices\DevicesRepository $devicesRepository,
+		protected readonly Models\Entities\Channels\ChannelsRepository $channelsRepository,
+		protected readonly Models\Entities\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
+		protected readonly Models\Entities\Channels\Properties\PropertiesManager $channelPropertiesManager,
 	)
 	{
 	}

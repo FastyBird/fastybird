@@ -24,7 +24,7 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
-use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Models\Entities\Channels\Properties\PropertiesRepository;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use function boolval;
@@ -43,7 +43,7 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *
- * @property-read DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository
+ * @property-read PropertiesRepository $channelsPropertiesRepository
  * @property-read DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager
  */
 trait StateWriter
@@ -495,7 +495,7 @@ trait StateWriter
 			$value = $property->getValue();
 		}
 
-		return Helpers\Transformer::transformValueToDevice(
+		return DevicesUtilities\ValueHelper::transformValueToDevice(
 			$property->getDataType(),
 			$property->getFormat(),
 			$value,

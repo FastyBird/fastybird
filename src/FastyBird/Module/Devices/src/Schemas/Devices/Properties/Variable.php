@@ -34,9 +34,9 @@ use function count;
  * @template T of Entities\Devices\Properties\Variable
  * @extends Property<T>
  *
- * @package         FastyBird:DevicesModule!
- * @subpackage      Schemas
- * @author          Adam Kadlec <adam.kadlec@fastybird.com>
+ * @package        FastyBird:DevicesModule!
+ * @subpackage     Schemas
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 final class Variable extends Property
 {

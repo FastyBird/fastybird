@@ -42,8 +42,8 @@ final class VariablePropertiesEntities implements Common\EventSubscriber
 
 	public function __construct(
 		private readonly ORM\EntityManagerInterface $entityManager,
-		private readonly Models\Devices\Properties\PropertiesManager $devicesPropertiesManager,
-		private readonly Models\Channels\Properties\PropertiesManager $channelsPropertiesManager,
+		private readonly Models\Entities\Devices\Properties\PropertiesManager $devicesPropertiesManager,
+		private readonly Models\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager,
 	)
 	{
 	}

@@ -55,15 +55,15 @@ final class WriteSubDeviceState implements Queue\Consumer
 	private API\LanApi|null $lanApiApi = null;
 
 	public function __construct(
-		protected readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
+		protected readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		protected readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
 		private readonly Queue\Queue $queue,
 		private readonly API\LanApiFactory $lanApiApiFactory,
 		private readonly Helpers\Entity $entityHelper,
 		private readonly NsPanel\Logger $logger,
-		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
-		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
-		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
+		private readonly DevicesModels\Entities\Connectors\ConnectorsRepository $connectorsRepository,
+		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Entities\Channels\ChannelsRepository $channelsRepository,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 	)
 	{

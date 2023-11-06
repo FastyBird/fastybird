@@ -703,7 +703,7 @@ final class Gen1HttpApi extends HttpApi
 					'data_type' => $this->adjustSensorDataType(
 						$block,
 						$description,
-						MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_USHORT),
+						MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_SHORT),
 					)->getValue(),
 					'format' => $this->adjustSensorFormat($block, $description, null),
 					'invalid' => $invalidValue,
@@ -718,7 +718,7 @@ final class Gen1HttpApi extends HttpApi
 					'data_type' => $this->adjustSensorDataType(
 						$block,
 						$description,
-						MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UINT),
+						MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_INT),
 					)->getValue(),
 					'format' => $this->adjustSensorFormat($block, $description, null),
 					'invalid' => $invalidValue,

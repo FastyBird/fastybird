@@ -45,8 +45,8 @@ final class ConnectorControlsV1 extends BaseV1
 	use Controllers\Finders\TConnector;
 
 	public function __construct(
-		protected readonly Models\Connectors\ConnectorsRepository $connectorsRepository,
-		private readonly Models\Connectors\Controls\ControlsRepository $connectorControlsRepository,
+		protected readonly Models\Entities\Connectors\ConnectorsRepository $connectorsRepository,
+		private readonly Models\Entities\Connectors\Controls\ControlsRepository $connectorControlsRepository,
 	)
 	{
 	}

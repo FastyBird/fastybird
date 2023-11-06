@@ -65,7 +65,7 @@ final class Device implements Client
 		private readonly Helpers\Loader $loader,
 		private readonly Helpers\Entity $entityHelper,
 		private readonly NsPanel\Logger $logger,
-		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
 	)
 	{
 		$this->lanApi = $lanApiFactory->create($this->connector->getIdentifier());

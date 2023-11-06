@@ -28,6 +28,7 @@ use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use IPub\DoctrineCrud;
 use Nette;
 use Nette\Utils;
@@ -52,12 +53,12 @@ final class Properties implements Common\EventSubscriber
 
 	public function __construct(
 		private readonly Helpers\Loader $loader,
-		private readonly DevicesModels\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
-		private readonly DevicesModels\Devices\Properties\PropertiesManager $devicesPropertiesManager,
-		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
-		private readonly DevicesModels\Channels\ChannelsManager $channelsManager,
-		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
-		private readonly DevicesModels\Channels\Properties\PropertiesManager $channelsPropertiesManager,
+		private readonly DevicesModels\Entities\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
+		private readonly DevicesModels\Entities\Devices\Properties\PropertiesManager $devicesPropertiesManager,
+		private readonly DevicesModels\Entities\Channels\ChannelsRepository $channelsRepository,
+		private readonly DevicesModels\Entities\Channels\ChannelsManager $channelsManager,
+		private readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
+		private readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager,
 	)
 	{
 	}
@@ -146,7 +147,7 @@ final class Properties implements Common\EventSubscriber
 				'device' => $device,
 				'entity' => DevicesEntities\Devices\Properties\Dynamic::class,
 				'identifier' => Types\DevicePropertyIdentifier::STATE,
-				'name' => Helpers\Name::createName(Types\DevicePropertyIdentifier::STATE),
+				'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::STATE),
 				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
 				'unit' => null,
 				'format' => $enumValues,
@@ -343,7 +344,6 @@ final class Properties implements Common\EventSubscriber
 				$this->channelsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Channels\Properties\Variable::class,
 					'identifier' => Helpers\Name::convertProtocolToProperty($protocol),
-					'name' => Helpers\Name::createName(Helpers\Name::convertProtocolToProperty($protocol)),
 					'channel' => $channel,
 					'dataType' => $dataType,
 					'unit' => $unit,
@@ -355,7 +355,6 @@ final class Properties implements Common\EventSubscriber
 					'channel' => $channel,
 					'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 					'identifier' => Helpers\Name::convertProtocolToProperty($protocol),
-					'name' => Helpers\Name::createName(Helpers\Name::convertProtocolToProperty($protocol)),
 					'dataType' => $dataType,
 					'unit' => $unit,
 					'format' => $format,

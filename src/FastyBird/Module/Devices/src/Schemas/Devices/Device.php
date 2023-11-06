@@ -35,9 +35,9 @@ use function strval;
  * @template T of Entities\Devices\Device
  * @extends  JsonApiSchemas\JsonApi<T>
  *
- * @package          FastyBird:DevicesModule!
- * @subpackage       Schemas
- * @author           Adam Kadlec <adam.kadlec@fastybird.com>
+ * @package        FastyBird:DevicesModule!
+ * @subpackage     Schemas
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 abstract class Device extends JsonApiSchemas\JsonApi
 {
@@ -58,8 +58,8 @@ abstract class Device extends JsonApiSchemas\JsonApi
 	public const RELATIONSHIPS_CHILDREN = 'children';
 
 	public function __construct(
-		protected readonly Models\Devices\DevicesRepository $devicesRepository,
-		protected readonly Models\Channels\ChannelsRepository $channelsRepository,
+		protected readonly Models\Entities\Devices\DevicesRepository $devicesRepository,
+		protected readonly Models\Entities\Channels\ChannelsRepository $channelsRepository,
 		protected readonly Routing\IRouter $router,
 	)
 	{

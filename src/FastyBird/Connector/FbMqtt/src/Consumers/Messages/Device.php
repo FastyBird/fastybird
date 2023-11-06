@@ -47,14 +47,14 @@ final class Device implements Consumers\Consumer
 	use Nette\SmartObject;
 
 	public function __construct(
-		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
-		private readonly DevicesModels\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
-		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
-		private readonly DevicesModels\Devices\DevicesManager $devicesManager,
-		private readonly DevicesModels\Devices\Properties\PropertiesManager $devicePropertiesManager,
-		private readonly DevicesModels\Devices\Controls\ControlsRepository $deviceControlsRepository,
-		private readonly DevicesModels\Devices\Controls\ControlsManager $deviceControlsManager,
-		private readonly DevicesModels\Channels\ChannelsManager $channelsManager,
+		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Entities\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
+		private readonly DevicesModels\Entities\Channels\ChannelsRepository $channelsRepository,
+		private readonly DevicesModels\Entities\Devices\DevicesManager $devicesManager,
+		private readonly DevicesModels\Entities\Devices\Properties\PropertiesManager $devicePropertiesManager,
+		private readonly DevicesModels\Entities\Devices\Controls\ControlsRepository $deviceControlsRepository,
+		private readonly DevicesModels\Entities\Devices\Controls\ControlsManager $deviceControlsManager,
+		private readonly DevicesModels\Entities\Channels\ChannelsManager $channelsManager,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DevicesUtilities\Database $databaseHelper,
 		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),

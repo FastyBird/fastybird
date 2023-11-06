@@ -83,7 +83,9 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 			$httpClientFactory,
 		);
 
-		$connectorsRepository = $this->getContainer()->getByType(DevicesModels\Connectors\ConnectorsRepository::class);
+		$connectorsRepository = $this->getContainer()->getByType(
+			DevicesModels\Entities\Connectors\ConnectorsRepository::class,
+		);
 
 		$findConnectorQuery = new Queries\FindConnectors();
 		$findConnectorQuery->byIdentifier('ns-panel');
@@ -169,7 +171,9 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 			$httpClientFactory,
 		);
 
-		$connectorsRepository = $this->getContainer()->getByType(DevicesModels\Connectors\ConnectorsRepository::class);
+		$connectorsRepository = $this->getContainer()->getByType(
+			DevicesModels\Entities\Connectors\ConnectorsRepository::class,
+		);
 
 		$findConnectorQuery = new Queries\FindConnectors();
 		$findConnectorQuery->byIdentifier('ns-panel');
@@ -257,7 +261,9 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 			$httpClientFactory,
 		);
 
-		$connectorsRepository = $this->getContainer()->getByType(DevicesModels\Connectors\ConnectorsRepository::class);
+		$connectorsRepository = $this->getContainer()->getByType(
+			DevicesModels\Entities\Connectors\ConnectorsRepository::class,
+		);
 
 		$findConnectorQuery = new Queries\FindConnectors();
 		$findConnectorQuery->byIdentifier('ns-panel');
@@ -370,7 +376,9 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 			$httpClientFactory,
 		);
 
-		$connectorsRepository = $this->getContainer()->getByType(DevicesModels\Connectors\ConnectorsRepository::class);
+		$connectorsRepository = $this->getContainer()->getByType(
+			DevicesModels\Entities\Connectors\ConnectorsRepository::class,
+		);
 
 		$findConnectorQuery = new Queries\FindConnectors();
 		$findConnectorQuery->byIdentifier('ns-panel');
@@ -520,7 +528,9 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 			$httpClientFactory,
 		);
 
-		$connectorsRepository = $this->getContainer()->getByType(DevicesModels\Connectors\ConnectorsRepository::class);
+		$connectorsRepository = $this->getContainer()->getByType(
+			DevicesModels\Entities\Connectors\ConnectorsRepository::class,
+		);
 
 		$findConnectorQuery = new Queries\FindConnectors();
 		$findConnectorQuery->byIdentifier('ns-panel');
@@ -643,7 +653,9 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 			$httpClientFactory,
 		);
 
-		$connectorsRepository = $this->getContainer()->getByType(DevicesModels\Connectors\ConnectorsRepository::class);
+		$connectorsRepository = $this->getContainer()->getByType(
+			DevicesModels\Entities\Connectors\ConnectorsRepository::class,
+		);
 
 		$findConnectorQuery = new Queries\FindConnectors();
 		$findConnectorQuery->byIdentifier('ns-panel');
@@ -730,7 +742,9 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 			$httpClientFactory,
 		);
 
-		$connectorsRepository = $this->getContainer()->getByType(DevicesModels\Connectors\ConnectorsRepository::class);
+		$connectorsRepository = $this->getContainer()->getByType(
+			DevicesModels\Entities\Connectors\ConnectorsRepository::class,
+		);
 
 		$findConnectorQuery = new Queries\FindConnectors();
 		$findConnectorQuery->byIdentifier('ns-panel');
@@ -853,7 +867,9 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 			$httpClientFactory,
 		);
 
-		$connectorsRepository = $this->getContainer()->getByType(DevicesModels\Connectors\ConnectorsRepository::class);
+		$connectorsRepository = $this->getContainer()->getByType(
+			DevicesModels\Entities\Connectors\ConnectorsRepository::class,
+		);
 
 		$findConnectorQuery = new Queries\FindConnectors();
 		$findConnectorQuery->byIdentifier('ns-panel');

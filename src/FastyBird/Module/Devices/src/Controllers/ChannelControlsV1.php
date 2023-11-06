@@ -46,9 +46,9 @@ final class ChannelControlsV1 extends BaseV1
 	use Controllers\Finders\TChannel;
 
 	public function __construct(
-		protected readonly Models\Devices\DevicesRepository $devicesRepository,
-		protected readonly Models\Channels\ChannelsRepository $channelsRepository,
-		protected readonly Models\Channels\Controls\ControlsRepository $channelControlsRepository,
+		protected readonly Models\Entities\Devices\DevicesRepository $devicesRepository,
+		protected readonly Models\Entities\Channels\ChannelsRepository $channelsRepository,
+		protected readonly Models\Entities\Channels\Controls\ControlsRepository $channelControlsRepository,
 	)
 	{
 	}

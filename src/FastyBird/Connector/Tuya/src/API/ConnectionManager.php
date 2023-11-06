@@ -54,7 +54,7 @@ final class ConnectionManager
 		private readonly LocalApiFactory $localApiFactory,
 		private readonly OpenApiFactory $openApiFactory,
 		private readonly OpenPulsarFactory $openPulsarFactory,
-		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
 		private readonly ObjectMapper\Processing\Processor $objectMapper,
 	)
 	{

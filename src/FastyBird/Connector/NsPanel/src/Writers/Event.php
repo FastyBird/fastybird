@@ -49,7 +49,7 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 		private readonly Entities\NsPanelConnector $connector,
 		private readonly Helpers\Entity $entityHelper,
 		private readonly Queue\Queue $queue,
-		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
+		private readonly DevicesModels\Entities\Channels\ChannelsRepository $channelsRepository,
 	)
 	{
 	}

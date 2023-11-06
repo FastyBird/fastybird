@@ -56,7 +56,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 		private readonly Queue\Queue $queue,
 		private readonly Helpers\Entity $entityHelper,
 		private readonly NsPanel\Logger $logger,
-		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
 	)
 	{
 	}

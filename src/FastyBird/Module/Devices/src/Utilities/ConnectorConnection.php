@@ -40,8 +40,8 @@ final class ConnectorConnection
 	use Nette\SmartObject;
 
 	public function __construct(
-		private readonly Models\Connectors\Properties\PropertiesRepository $repository,
-		private readonly Models\Connectors\Properties\PropertiesManager $manager,
+		private readonly Models\Entities\Connectors\Properties\PropertiesRepository $repository,
+		private readonly Models\Entities\Connectors\Properties\PropertiesManager $manager,
 		private readonly ConnectorPropertiesStates $propertiesStates,
 	)
 	{

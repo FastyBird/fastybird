@@ -59,9 +59,9 @@ final class ConnectorPropertiesV1 extends BaseV1
 	use Controllers\Finders\TConnector;
 
 	public function __construct(
-		protected readonly Models\Connectors\ConnectorsRepository $connectorsRepository,
-		protected readonly Models\Connectors\Properties\PropertiesRepository $connectorPropertiesRepository,
-		protected readonly Models\Connectors\Properties\PropertiesManager $connectorPropertiesManager,
+		protected readonly Models\Entities\Connectors\ConnectorsRepository $connectorsRepository,
+		protected readonly Models\Entities\Connectors\Properties\PropertiesRepository $connectorPropertiesRepository,
+		protected readonly Models\Entities\Connectors\Properties\PropertiesManager $connectorPropertiesManager,
 	)
 	{
 	}

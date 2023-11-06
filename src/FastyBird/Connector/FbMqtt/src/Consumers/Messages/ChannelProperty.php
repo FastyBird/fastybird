@@ -49,10 +49,10 @@ final class ChannelProperty implements Consumers\Consumer
 	use TProperty;
 
 	public function __construct(
-		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
-		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
-		private readonly DevicesModels\Channels\Properties\PropertiesRepository $propertiesRepository,
-		private readonly DevicesModels\Channels\Properties\PropertiesManager $propertiesManager,
+		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Entities\Channels\ChannelsRepository $channelsRepository,
+		private readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $propertiesRepository,
+		private readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $propertiesManager,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly DevicesUtilities\Database $databaseHelper,
 		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),

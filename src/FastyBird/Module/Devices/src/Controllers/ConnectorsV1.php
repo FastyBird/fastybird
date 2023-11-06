@@ -48,11 +48,11 @@ class ConnectorsV1 extends BaseV1
 {
 
 	public function __construct(
-		private readonly Models\Connectors\ConnectorsRepository $connectorsRepository,
-		private readonly Models\Connectors\Properties\PropertiesRepository $propertiesRepository,
-		private readonly Models\Connectors\Controls\ControlsRepository $controlsRepository,
-		private readonly Models\Devices\DevicesRepository $devicesRepository,
-		private readonly Models\Connectors\ConnectorsManager $connectorsManager,
+		private readonly Models\Entities\Connectors\ConnectorsRepository $connectorsRepository,
+		private readonly Models\Entities\Connectors\Properties\PropertiesRepository $propertiesRepository,
+		private readonly Models\Entities\Connectors\Controls\ControlsRepository $controlsRepository,
+		private readonly Models\Entities\Devices\DevicesRepository $devicesRepository,
+		private readonly Models\Entities\Connectors\ConnectorsManager $connectorsManager,
 	)
 	{
 	}
