@@ -7,13 +7,13 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:DevicesModule!
- * @subpackage     Helpers
+ * @subpackage     Utilities
  * @since          1.0.0
  *
  * @date           26.10.23
  */
 
-namespace FastyBird\Module\Devices\Helpers;
+namespace FastyBird\Module\Devices\Utilities;
 
 use function array_map;
 use function explode;
@@ -30,7 +30,7 @@ use function ucfirst;
  * Useful name helpers
  *
  * @package        FastyBird:DevicesModule!
- * @subpackage     Helpers
+ * @subpackage     Utilities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
@@ -51,6 +51,18 @@ final class Name
 		$transformed = array_map(static function (string $part): string {
 			if (in_array(strtolower($part), ['ip', 'mac', 'id', 'uid'], true)) {
 				return strtoupper($part);
+			}
+
+			if (strtolower($part) === 'cfg') {
+				return 'configuration';
+			}
+
+			if (strtolower($part) === 'cnt') {
+				return 'count';
+			}
+
+			if (strtolower($part) === 'ext') {
+				return 'external';
 			}
 
 			return $part;

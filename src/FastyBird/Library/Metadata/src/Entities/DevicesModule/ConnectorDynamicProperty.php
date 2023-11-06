@@ -34,7 +34,6 @@ final class ConnectorDynamicProperty extends DynamicProperty
 
 	/**
 	 * @param array<int, string>|array<int, string|int|float|array<int, string|int|float>|null>|array<int, array<int, string|array<int, string|int|float|bool>|null>>|null $format
-	 * @param bool|null $pending
 	 */
 	public function __construct(
 		string $id,
@@ -54,8 +53,8 @@ final class ConnectorDynamicProperty extends DynamicProperty
 		float|bool|int|string|null $actualValue = null,
 		float|bool|int|string|null $previousValue = null,
 		float|bool|int|string|null $expectedValue = null,
-		bool|string|null $pending = null,
-		bool|null $valid = null,
+		bool|string $pending = false,
+		bool $valid = false,
 		string|null $owner = null,
 	)
 	{

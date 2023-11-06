@@ -14,7 +14,7 @@ final class ValueHelperTest extends TestCase
 {
 
 	/**
-	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 *
 	 * @dataProvider normalizeValue
@@ -34,7 +34,7 @@ final class ValueHelperTest extends TestCase
 	}
 
 	/**
-	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 *
 	 * @dataProvider normalizeReadValue
@@ -55,7 +55,7 @@ final class ValueHelperTest extends TestCase
 	}
 
 	/**
-	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 *
 	 * @dataProvider normalizeWriteValue

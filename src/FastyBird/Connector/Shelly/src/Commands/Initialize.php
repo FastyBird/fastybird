@@ -20,7 +20,6 @@ use Doctrine\Persistence;
 use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
-use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Queries;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
@@ -30,6 +29,7 @@ use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette\Localization;
 use Nette\Utils;
 use Symfony\Component\Console;
@@ -200,7 +200,7 @@ class Initialize extends Console\Command\Command
 			$this->propertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 				'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE,
-				'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::CLIENT_MODE),
+				'name' => DevicesUtilities\Name::createName(Types\ConnectorPropertyIdentifier::CLIENT_MODE),
 				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
 				'value' => $mode->getValue(),
 				'format' => [
@@ -216,7 +216,7 @@ class Initialize extends Console\Command\Command
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::CLOUD_AUTH_KEY,
-					'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::CLOUD_AUTH_KEY),
+					'name' => DevicesUtilities\Name::createName(Types\ConnectorPropertyIdentifier::CLOUD_AUTH_KEY),
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 					'value' => $cloudAuthKey,
 					'connector' => $connector,
@@ -225,7 +225,7 @@ class Initialize extends Console\Command\Command
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::CLOUD_SERVER,
-					'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::CLOUD_SERVER),
+					'name' => DevicesUtilities\Name::createName(Types\ConnectorPropertyIdentifier::CLOUD_SERVER),
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 					'value' => $cloudServer,
 					'connector' => $connector,
@@ -408,7 +408,7 @@ class Initialize extends Console\Command\Command
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE,
-					'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::CLIENT_MODE),
+					'name' => DevicesUtilities\Name::createName(Types\ConnectorPropertyIdentifier::CLIENT_MODE),
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
 					'value' => $mode->getValue(),
 					'format' => [
@@ -437,7 +437,7 @@ class Initialize extends Console\Command\Command
 					$this->propertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 						'identifier' => Types\ConnectorPropertyIdentifier::CLOUD_AUTH_KEY,
-						'name' => Helpers\Name::createName(
+						'name' => DevicesUtilities\Name::createName(
 							Types\ConnectorPropertyIdentifier::CLOUD_AUTH_KEY,
 						),
 						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
@@ -454,7 +454,7 @@ class Initialize extends Console\Command\Command
 					$this->propertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 						'identifier' => Types\ConnectorPropertyIdentifier::CLOUD_SERVER,
-						'name' => Helpers\Name::createName(Types\ConnectorPropertyIdentifier::CLOUD_SERVER),
+						'name' => DevicesUtilities\Name::createName(Types\ConnectorPropertyIdentifier::CLOUD_SERVER),
 						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 						'value' => $cloudServer,
 						'connector' => $connector,

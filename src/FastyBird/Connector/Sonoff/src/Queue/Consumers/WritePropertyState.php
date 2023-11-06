@@ -272,7 +272,7 @@ final class WritePropertyState implements Queue\Consumer
 		}
 
 		$expectedValue = DevicesUtilities\ValueHelper::flattenValue(
-			Helpers\Transformer::transformValueToDevice(
+			DevicesUtilities\ValueHelper::transformValueToDevice(
 				$property->getDataType(),
 				$property->getFormat(),
 				$state->getExpectedValue(),

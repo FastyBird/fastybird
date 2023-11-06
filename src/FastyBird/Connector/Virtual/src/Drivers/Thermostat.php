@@ -96,6 +96,7 @@ class Thermostat implements Driver
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
@@ -124,10 +125,11 @@ class Thermostat implements Driver
 				$actualValue = Helpers\Transformer::fromMappedParent($actor, $actualValue);
 			}
 
-			$actualValue = Helpers\Transformer::normalizeValue(
+			$actualValue = DevicesUtilities\ValueHelper::normalizeValue(
 				$actor->getDataType(),
-				$actor->getFormat(),
 				$actualValue,
+				$actor->getFormat(),
+				$actor->getInvalid(),
 			);
 
 			if (Utils\Strings::startsWith($actor->getIdentifier(), Types\ChannelPropertyIdentifier::HEATER)) {
@@ -150,10 +152,11 @@ class Thermostat implements Driver
 				$actualValue = Helpers\Transformer::fromMappedParent($sensor, $actualValue);
 			}
 
-			$actualValue = Helpers\Transformer::normalizeValue(
+			$actualValue = DevicesUtilities\ValueHelper::normalizeValue(
 				$sensor->getDataType(),
-				$sensor->getFormat(),
 				$actualValue,
+				$sensor->getFormat(),
+				$sensor->getInvalid(),
 			);
 
 			if (Utils\Strings::startsWith($sensor->getIdentifier(), Types\ChannelPropertyIdentifier::FLOOR_SENSOR)) {
@@ -179,10 +182,11 @@ class Thermostat implements Driver
 				$actualValue = Helpers\Transformer::fromMappedParent($opening, $actualValue);
 			}
 
-			$actualValue = Helpers\Transformer::normalizeValue(
+			$actualValue = DevicesUtilities\ValueHelper::normalizeValue(
 				$opening->getDataType(),
-				$opening->getFormat(),
 				$actualValue,
+				$opening->getFormat(),
+				$opening->getInvalid(),
 			);
 
 			if (Utils\Strings::startsWith($opening->getIdentifier(), Types\ChannelPropertyIdentifier::SENSOR)) {

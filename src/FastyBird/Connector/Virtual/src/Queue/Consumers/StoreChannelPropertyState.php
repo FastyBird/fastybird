@@ -66,6 +66,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
@@ -183,10 +184,11 @@ final class StoreChannelPropertyState implements Queue\Consumer
 		}
 
 		$valueToStore = $entity->getValue();
-		$valueToStore = Helpers\Transformer::normalizeValue(
+		$valueToStore = DevicesUtilities\ValueHelper::normalizeValue(
 			$property->getDataType(),
-			$property->getFormat(),
 			$valueToStore,
+			$property->getFormat(),
+			$property->getInvalid(),
 		);
 
 		if ($property instanceof DevicesEntities\Channels\Properties\Mapped) {

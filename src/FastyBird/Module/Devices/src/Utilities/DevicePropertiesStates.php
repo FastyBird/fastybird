@@ -187,7 +187,7 @@ final class DevicePropertiesStates
 							);
 						}
 					}
-				} catch (Exceptions\InvalidState $ex) {
+				} catch (Exceptions\InvalidArgument $ex) {
 					$this->devicePropertiesStatesManager->update($property, $state, Utils\ArrayHash::from([
 						States\Property::ACTUAL_VALUE_KEY => null,
 						States\Property::VALID_KEY => false,
@@ -229,7 +229,7 @@ final class DevicePropertiesStates
 							);
 						}
 					}
-				} catch (Exceptions\InvalidState $ex) {
+				} catch (Exceptions\InvalidArgument $ex) {
 					$this->devicePropertiesStatesManager->update($property, $state, Utils\ArrayHash::from([
 						States\Property::EXPECTED_VALUE_KEY => null,
 						States\Property::PENDING_KEY => false,
@@ -314,7 +314,7 @@ final class DevicePropertiesStates
 							),
 						),
 					);
-				} catch (Exceptions\InvalidState $ex) {
+				} catch (Exceptions\InvalidArgument $ex) {
 					$data->offsetSet(States\Property::ACTUAL_VALUE_KEY, null);
 					$data->offsetSet(States\Property::VALID_KEY, false);
 
@@ -341,7 +341,7 @@ final class DevicePropertiesStates
 							),
 						),
 					);
-				} catch (Exceptions\InvalidState $ex) {
+				} catch (Exceptions\InvalidArgument $ex) {
 					$data->offsetSet(States\Property::ACTUAL_VALUE_KEY, null);
 					$data->offsetSet(States\Property::VALID_KEY, false);
 
@@ -373,7 +373,7 @@ final class DevicePropertiesStates
 							),
 						),
 					);
-				} catch (Exceptions\InvalidState $ex) {
+				} catch (Exceptions\InvalidArgument $ex) {
 					$data->offsetSet(States\Property::EXPECTED_VALUE_KEY, null);
 					$data->offsetSet(States\Property::PENDING_KEY, false);
 
@@ -400,7 +400,7 @@ final class DevicePropertiesStates
 							),
 						),
 					);
-				} catch (Exceptions\InvalidState $ex) {
+				} catch (Exceptions\InvalidArgument $ex) {
 					$data->offsetSet(States\Property::EXPECTED_VALUE_KEY, null);
 					$data->offsetSet(States\Property::PENDING_KEY, false);
 

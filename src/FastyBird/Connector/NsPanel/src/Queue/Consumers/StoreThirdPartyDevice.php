@@ -18,7 +18,6 @@ namespace FastyBird\Connector\NsPanel\Queue\Consumers;
 use Doctrine\DBAL;
 use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Entities;
-use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Connector\NsPanel\Types;
@@ -99,7 +98,7 @@ final class StoreThirdPartyDevice implements Queue\Consumer
 			$entity->getGatewayIdentifier(),
 			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 			Types\DevicePropertyIdentifier::GATEWAY_IDENTIFIER,
-			Helpers\Name::createName(Types\DevicePropertyIdentifier::GATEWAY_IDENTIFIER),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::GATEWAY_IDENTIFIER),
 		);
 
 		$this->logger->debug(

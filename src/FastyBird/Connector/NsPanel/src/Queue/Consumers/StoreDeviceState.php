@@ -178,10 +178,10 @@ final class StoreDeviceState implements Queue\Consumer
 			$this->channelPropertiesStatesManager->writeValue(
 				$property,
 				Utils\ArrayHash::from([
-					DevicesStates\Property::ACTUAL_VALUE_KEY => Helpers\Transformer::transformValueFromDevice(
+					DevicesStates\Property::ACTUAL_VALUE_KEY => DevicesUtilities\ValueHelper::transformValueFromDevice(
 						$property->getDataType(),
 						$property->getFormat(),
-						$item->getValue(),
+						DevicesUtilities\ValueHelper::flattenValue($item->getValue()),
 					),
 					DevicesStates\Property::VALID_KEY => true,
 				]),
@@ -242,10 +242,10 @@ final class StoreDeviceState implements Queue\Consumer
 				|| $property instanceof DevicesEntities\Channels\Properties\Variable,
 			);
 
-			$value = Helpers\Transformer::transformValueFromDevice(
+			$value = DevicesUtilities\ValueHelper::transformValueFromDevice(
 				$property->getDataType(),
 				$property->getFormat(),
-				$item->getValue(),
+				DevicesUtilities\ValueHelper::flattenValue($item->getValue()),
 			);
 
 			$this->writeProperty($device, $channel, $property, $value);
@@ -270,7 +270,7 @@ final class StoreDeviceState implements Queue\Consumer
 		Entities\Devices\ThirdPartyDevice $device,
 		Entities\NsPanelChannel $channel,
 		DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped|DevicesEntities\Channels\Properties\Variable $property,
-		float|int|string|bool|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|DateTimeInterface|null $value,
+		float|int|string|bool|MetadataTypes\ButtonPayload|MetadataTypes\CoverPayload|MetadataTypes\SwitchPayload|DateTimeInterface|null $value,
 	): void
 	{
 		if ($property instanceof DevicesEntities\Channels\Properties\Variable) {

@@ -340,7 +340,7 @@ final class Cloud implements Client
 		$this->connectionManager
 			->getCloudApiConnection($this->connector)
 			->getDeviceDetail($device->getIdentifier())
-			->then(function (Entities\API\Device $deviceInformation) use ($device): void {
+			->then(function (Entities\API\GetDevice $detail) use ($device): void {
 				$this->processedDevicesCommands[$device->getId()->toString()][self::CMD_HEARTBEAT] = $this->dateTimeFactory->getNow();
 
 				$this->queue->append(
@@ -349,7 +349,7 @@ final class Cloud implements Client
 						[
 							'connector' => $device->getConnector()->getId()->toString(),
 							'identifier' => $device->getIdentifier(),
-							'state' => $deviceInformation->isOnline()
+							'state' => $detail->getResult()->isOnline()
 								? MetadataTypes\ConnectionState::STATE_CONNECTED
 								: MetadataTypes\ConnectionState::STATE_DISCONNECTED,
 						],

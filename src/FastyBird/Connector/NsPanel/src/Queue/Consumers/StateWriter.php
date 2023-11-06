@@ -495,7 +495,7 @@ trait StateWriter
 			$value = $property->getValue();
 		}
 
-		return Helpers\Transformer::transformValueToDevice(
+		return DevicesUtilities\ValueHelper::transformValueToDevice(
 			$property->getDataType(),
 			$property->getFormat(),
 			$value,

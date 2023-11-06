@@ -284,7 +284,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$valueToWrite = Helpers\Transformer::transformValueToDevice(
+		$valueToWrite = DevicesUtilities\ValueHelper::transformValueToDevice(
 			$property->getDataType(),
 			$property->getFormat(),
 			$expectedValue,

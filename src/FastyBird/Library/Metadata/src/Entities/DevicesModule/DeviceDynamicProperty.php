@@ -39,7 +39,6 @@ final class DeviceDynamicProperty extends DynamicProperty
 
 	/**
 	 * @param array<int, string>|array<int, string|int|float|array<int, string|int|float>|null>|array<int, array<int, string|array<int, string|int|float|bool>|null>>|null $format
-	 * @param bool|null $pending
 	 * @param array<int, string>|Utils\ArrayHash<string> $children
 	 */
 	public function __construct(
@@ -60,8 +59,8 @@ final class DeviceDynamicProperty extends DynamicProperty
 		float|bool|int|string|null $actualValue = null,
 		float|bool|int|string|null $previousValue = null,
 		float|bool|int|string|null $expectedValue = null,
-		bool|string|null $pending = null,
-		bool|null $valid = null,
+		bool|string $pending = false,
+		bool $valid = false,
 		array|Utils\ArrayHash $children = [],
 		string|null $owner = null,
 	)

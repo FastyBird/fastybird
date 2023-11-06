@@ -29,7 +29,6 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
-use FastyBird\Module\Devices\Helpers as DevicesHelpers;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\States as DevicesStates;
@@ -2840,7 +2839,7 @@ class Thermostat extends Device
 			$properties[$property->getIdentifier()] = sprintf(
 				'%s%s',
 				$property->getIdentifier(),
-				' [' . ($property->getName() ?? DevicesHelpers\Name::createName($property->getIdentifier())) . ']',
+				' [' . ($property->getName() ?? DevicesUtilities\Name::createName($property->getIdentifier())) . ']',
 			);
 		}
 

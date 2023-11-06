@@ -67,6 +67,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
@@ -248,10 +249,11 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$valueToWrite = Helpers\Transformer::fromMappedParent($property, $valueToWrite);
 		}
 
-		$valueToWrite = Helpers\Transformer::normalizeValue(
+		$valueToWrite = DevicesUtilities\ValueHelper::normalizeValue(
 			$property->getDataType(),
-			$property->getFormat(),
 			$valueToWrite,
+			$property->getFormat(),
+			$property->getInvalid(),
 		);
 
 		try {

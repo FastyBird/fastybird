@@ -18,7 +18,6 @@ namespace FastyBird\Connector\Sonoff\Queue\Consumers;
 use Doctrine\DBAL;
 use FastyBird\Connector\Sonoff;
 use FastyBird\Connector\Sonoff\Entities;
-use FastyBird\Connector\Sonoff\Helpers;
 use FastyBird\Connector\Sonoff\Queue\Consumer;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -92,7 +91,7 @@ final class StoreParametersStates implements Consumer
 
 				if ($property instanceof DevicesEntities\Devices\Properties\Dynamic) {
 					$this->devicePropertiesStateManager->setValue($property, Utils\ArrayHash::from([
-						DevicesStates\Property::ACTUAL_VALUE_KEY => Helpers\Transformer::transformValueFromDevice(
+						DevicesStates\Property::ACTUAL_VALUE_KEY => DevicesUtilities\ValueHelper::transformValueFromDevice(
 							$property->getDataType(),
 							$property->getFormat(),
 							$parameter->getValue(),
@@ -105,7 +104,7 @@ final class StoreParametersStates implements Consumer
 							$this->devicesPropertiesManager->update(
 								$property,
 								Utils\ArrayHash::from([
-									'value' => Helpers\Transformer::transformValueFromDevice(
+									'value' => DevicesUtilities\ValueHelper::transformValueFromDevice(
 										$property->getDataType(),
 										$property->getFormat(),
 										$parameter->getValue(),
@@ -131,7 +130,7 @@ final class StoreParametersStates implements Consumer
 
 					if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
 						$this->channelPropertiesStateManager->setValue($property, Utils\ArrayHash::from([
-							DevicesStates\Property::ACTUAL_VALUE_KEY => Helpers\Transformer::transformValueFromDevice(
+							DevicesStates\Property::ACTUAL_VALUE_KEY => DevicesUtilities\ValueHelper::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$parameter->getValue(),
@@ -144,7 +143,7 @@ final class StoreParametersStates implements Consumer
 								$this->channelsPropertiesManager->update(
 									$property,
 									Utils\ArrayHash::from([
-										'value' => Helpers\Transformer::transformValueFromDevice(
+										'value' => DevicesUtilities\ValueHelper::transformValueFromDevice(
 											$property->getDataType(),
 											$property->getFormat(),
 											$parameter->getValue(),

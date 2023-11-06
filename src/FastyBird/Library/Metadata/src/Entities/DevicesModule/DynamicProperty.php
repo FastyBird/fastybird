@@ -20,6 +20,7 @@ use FastyBird\Library\Metadata\Exceptions;
 use Nette\Utils;
 use Throwable;
 use function array_merge;
+use function is_bool;
 use function is_string;
 
 /**
@@ -32,14 +33,6 @@ use function is_string;
  */
 abstract class DynamicProperty extends Property
 {
-
-	private string|int|bool|float|null $actualValue;
-
-	private string|int|bool|float|null $previousValue;
-
-	private string|int|bool|float|null $expectedValue;
-
-	private string|bool|null $pending;
 
 	/**
 	 * @param array<int, string>|array<int, string|int|float|array<int, string|int|float>|null>|array<int, array<int, string|array<int, string|int|float|bool>|null>>|null $format
@@ -58,11 +51,11 @@ abstract class DynamicProperty extends Property
 		string|int|float|null $invalid = null,
 		int|null $scale = null,
 		float|null $step = null,
-		float|bool|int|string|null $actualValue = null,
-		float|bool|int|string|null $previousValue = null,
-		float|bool|int|string|null $expectedValue = null,
-		bool|string|null $pending = null,
-		private readonly bool|null $valid = null,
+		private readonly float|bool|int|string|null $actualValue = null,
+		private readonly float|bool|int|string|null $previousValue = null,
+		private readonly float|bool|int|string|null $expectedValue = null,
+		private readonly bool|string $pending = false,
+		private readonly bool $valid = false,
 		string|null $owner = null,
 	)
 	{
@@ -80,11 +73,6 @@ abstract class DynamicProperty extends Property
 			$step,
 			$owner,
 		);
-
-		$this->actualValue = $actualValue;
-		$this->previousValue = $previousValue;
-		$this->expectedValue = $expectedValue;
-		$this->pending = $pending;
 	}
 
 	public function isSettable(): bool
@@ -115,7 +103,7 @@ abstract class DynamicProperty extends Property
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function getPending(): bool|string|null
+	public function getPending(): bool|string
 	{
 		if (is_string($this->pending)) {
 			try {
@@ -130,12 +118,12 @@ abstract class DynamicProperty extends Property
 		return $this->pending;
 	}
 
-	public function isPending(): bool|null
+	public function isPending(): bool
 	{
-		return $this->pending !== null;
+		return is_bool($this->pending) ? $this->pending : true;
 	}
 
-	public function isValid(): bool|null
+	public function isValid(): bool
 	{
 		return $this->valid;
 	}

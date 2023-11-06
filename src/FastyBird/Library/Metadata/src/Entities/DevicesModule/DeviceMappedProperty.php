@@ -36,7 +36,6 @@ final class DeviceMappedProperty extends MappedProperty
 
 	/**
 	 * @param array<int, string>|array<int, string|int|float|array<int, string|int|float>|null>|array<int, array<int, string|array<int, string|int|float|bool>|null>>|null $format
-	 * @param bool|null $pending
 	 */
 	public function __construct(
 		string $id,
@@ -56,8 +55,8 @@ final class DeviceMappedProperty extends MappedProperty
 		float|bool|int|string|null $actualValue = null,
 		float|bool|int|string|null $previousValue = null,
 		float|bool|int|string|null $expectedValue = null,
-		bool|string|null $pending = null,
-		bool|null $valid = null,
+		bool|string $pending = false,
+		bool $valid = false,
 		float|bool|int|string|null $value = null,
 		float|bool|int|string|null $default = null,
 		string|null $parent = null,

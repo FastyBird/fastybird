@@ -59,8 +59,8 @@ final class ChannelDynamicProperty extends DynamicProperty
 		float|bool|int|string|null $actualValue = null,
 		float|bool|int|string|null $previousValue = null,
 		float|bool|int|string|null $expectedValue = null,
-		bool|string|null $pending = null,
-		bool|null $valid = null,
+		bool|string $pending = false,
+		bool $valid = false,
 		array|Utils\ArrayHash $children = [],
 		string|null $owner = null,
 	)
