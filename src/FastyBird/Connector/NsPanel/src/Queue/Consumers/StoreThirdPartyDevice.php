@@ -44,9 +44,9 @@ final class StoreThirdPartyDevice implements Queue\Consumer
 
 	public function __construct(
 		protected readonly NsPanel\Logger $logger,
-		protected readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
-		protected readonly DevicesModels\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
-		protected readonly DevicesModels\Devices\Properties\PropertiesManager $devicesPropertiesManager,
+		protected readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
+		protected readonly DevicesModels\Entities\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
+		protected readonly DevicesModels\Entities\Devices\Properties\PropertiesManager $devicesPropertiesManager,
 		protected readonly DevicesUtilities\Database $databaseHelper,
 	)
 	{

@@ -77,8 +77,8 @@ final class Connector implements DevicesConnectors\Connector
 		private readonly Servers\ServerFactory $serverFactory,
 		private readonly Writers\WriterFactory $writerFactory,
 		private readonly NsPanel\Logger $logger,
-		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
-		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
+		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Entities\Channels\ChannelsRepository $channelsRepository,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)

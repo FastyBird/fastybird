@@ -58,9 +58,9 @@ final class DevicePropertiesV1 extends BaseV1
 	use Controllers\Finders\TDeviceProperty;
 
 	public function __construct(
-		protected readonly Models\Devices\DevicesRepository $devicesRepository,
-		private readonly Models\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
-		protected readonly Models\Devices\Properties\PropertiesManager $devicePropertiesManager,
+		protected readonly Models\Entities\Devices\DevicesRepository $devicesRepository,
+		private readonly Models\Entities\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
+		protected readonly Models\Entities\Devices\Properties\PropertiesManager $devicePropertiesManager,
 	)
 	{
 	}

@@ -41,8 +41,8 @@ final class DeviceConnection
 	use Nette\SmartObject;
 
 	public function __construct(
-		private readonly Models\Devices\Properties\PropertiesRepository $repository,
-		private readonly Models\Devices\Properties\PropertiesManager $manager,
+		private readonly Models\Entities\Devices\Properties\PropertiesRepository $repository,
+		private readonly Models\Entities\Devices\Properties\PropertiesManager $manager,
 		private readonly DevicePropertiesStates $propertiesStates,
 	)
 	{

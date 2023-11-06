@@ -60,11 +60,11 @@ class Initialize extends Console\Command\Command
 
 	public function __construct(
 		private readonly NsPanel\Logger $logger,
-		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
-		private readonly DevicesModels\Connectors\ConnectorsManager $connectorsManager,
-		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
-		private readonly DevicesModels\Connectors\Properties\PropertiesRepository $connectorsPropertiesRepository,
-		private readonly DevicesModels\Connectors\Properties\PropertiesManager $connectorsPropertiesManager,
+		private readonly DevicesModels\Entities\Connectors\ConnectorsRepository $connectorsRepository,
+		private readonly DevicesModels\Entities\Connectors\ConnectorsManager $connectorsManager,
+		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Entities\Connectors\Properties\PropertiesRepository $connectorsPropertiesRepository,
+		private readonly DevicesModels\Entities\Connectors\Properties\PropertiesManager $connectorsPropertiesManager,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 		private readonly Localization\Translator $translator,
 		string|null $name = null,

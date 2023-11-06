@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * PropertiesRepository.php
+ * ConnectorsRepository.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,10 +10,10 @@
  * @subpackage     Models
  * @since          1.0.0
  *
- * @date           21.11.18
+ * @date           16.04.21
  */
 
-namespace FastyBird\Module\Devices\Models\Channels\Properties;
+namespace FastyBird\Module\Devices\Models\Entities\Connectors;
 
 use Doctrine\ORM;
 use Doctrine\Persistence;
@@ -27,19 +27,19 @@ use Throwable;
 use function is_array;
 
 /**
- * Device channel property structure repository
+ * Connector repository
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Models
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class PropertiesRepository
+final class ConnectorsRepository
 {
 
 	use Nette\SmartObject;
 
-	/** @var array<ORM\EntityRepository<Entities\Channels\Properties\Property>> */
+	/** @var array<ORM\EntityRepository<Entities\Connectors\Connector>> */
 	private array $repository = [];
 
 	public function __construct(
@@ -50,9 +50,9 @@ final class PropertiesRepository
 	}
 
 	/**
-	 * @template T of Entities\Channels\Properties\Property
+	 * @template T of Entities\Connectors\Connector
 	 *
-	 * @param Queries\FindChannelProperties<T> $queryObject
+	 * @param Queries\FindConnectors<T> $queryObject
 	 * @param class-string<T> $type
 	 *
 	 * @return T|null
@@ -60,19 +60,19 @@ final class PropertiesRepository
 	 * @throws Exceptions\InvalidState
 	 */
 	public function findOneBy(
-		Queries\FindChannelProperties $queryObject,
-		string $type = Entities\Channels\Properties\Property::class,
-	): Entities\Channels\Properties\Property|null
+		Queries\FindConnectors $queryObject,
+		string $type = Entities\Connectors\Connector::class,
+	): Entities\Connectors\Connector|null
 	{
 		return $this->database->query(
-			fn (): Entities\Channels\Properties\Property|null => $queryObject->fetchOne($this->getRepository($type)),
+			fn (): Entities\Connectors\Connector|null => $queryObject->fetchOne($this->getRepository($type)),
 		);
 	}
 
 	/**
-	 * @template T of Entities\Channels\Properties\Property
+	 * @template T of Entities\Connectors\Connector
 	 *
-	 * @param Queries\FindChannelProperties<T> $queryObject
+	 * @param Queries\FindConnectors<T> $queryObject
 	 * @param class-string<T> $type
 	 *
 	 * @return array<T>
@@ -80,8 +80,8 @@ final class PropertiesRepository
 	 * @throws Exceptions\InvalidState
 	 */
 	public function findAllBy(
-		Queries\FindChannelProperties $queryObject,
-		string $type = Entities\Channels\Properties\Property::class,
+		Queries\FindConnectors $queryObject,
+		string $type = Entities\Connectors\Connector::class,
 	): array
 	{
 		try {
@@ -95,9 +95,9 @@ final class PropertiesRepository
 	}
 
 	/**
-	 * @template T of Entities\Channels\Properties\Property
+	 * @template T of Entities\Connectors\Connector
 	 *
-	 * @param Queries\FindChannelProperties<T> $queryObject
+	 * @param Queries\FindConnectors<T> $queryObject
 	 * @param class-string<T> $type
 	 *
 	 * @return DoctrineOrmQuery\ResultSet<T>
@@ -105,8 +105,8 @@ final class PropertiesRepository
 	 * @throws Exceptions\InvalidState
 	 */
 	public function getResultSet(
-		Queries\FindChannelProperties $queryObject,
-		string $type = Entities\Channels\Properties\Property::class,
+		Queries\FindConnectors $queryObject,
+		string $type = Entities\Connectors\Connector::class,
 	): DoctrineOrmQuery\ResultSet
 	{
 		$result = $this->database->query(
@@ -121,7 +121,7 @@ final class PropertiesRepository
 	}
 
 	/**
-	 * @template T of Entities\Channels\Properties\Property
+	 * @template T of Entities\Connectors\Connector
 	 *
 	 * @param class-string<T> $type
 	 *

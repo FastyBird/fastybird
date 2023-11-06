@@ -13,7 +13,7 @@
  * @date           08.02.22
  */
 
-namespace FastyBird\Module\Devices\Models\Connectors\Properties;
+namespace FastyBird\Module\Devices\Models\Entities\Connectors\Properties;
 
 use Doctrine\ORM;
 use Doctrine\Persistence;

@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ConnectorsRepository.php
+ * DevicesRepository.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,10 +10,10 @@
  * @subpackage     Models
  * @since          1.0.0
  *
- * @date           16.04.21
+ * @date           28.07.18
  */
 
-namespace FastyBird\Module\Devices\Models\Connectors;
+namespace FastyBird\Module\Devices\Models\Entities\Devices;
 
 use Doctrine\ORM;
 use Doctrine\Persistence;
@@ -27,19 +27,19 @@ use Throwable;
 use function is_array;
 
 /**
- * Connector repository
+ * Device repository
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Models
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ConnectorsRepository
+final class DevicesRepository
 {
 
 	use Nette\SmartObject;
 
-	/** @var array<ORM\EntityRepository<Entities\Connectors\Connector>> */
+	/** @var array<ORM\EntityRepository<Entities\Devices\Device>> */
 	private array $repository = [];
 
 	public function __construct(
@@ -50,9 +50,9 @@ final class ConnectorsRepository
 	}
 
 	/**
-	 * @template T of Entities\Connectors\Connector
+	 * @template T of Entities\Devices\Device
 	 *
-	 * @param Queries\FindConnectors<T> $queryObject
+	 * @param Queries\FindDevices<T> $queryObject
 	 * @param class-string<T> $type
 	 *
 	 * @return T|null
@@ -60,19 +60,19 @@ final class ConnectorsRepository
 	 * @throws Exceptions\InvalidState
 	 */
 	public function findOneBy(
-		Queries\FindConnectors $queryObject,
-		string $type = Entities\Connectors\Connector::class,
-	): Entities\Connectors\Connector|null
+		Queries\FindDevices $queryObject,
+		string $type = Entities\Devices\Device::class,
+	): Entities\Devices\Device|null
 	{
 		return $this->database->query(
-			fn (): Entities\Connectors\Connector|null => $queryObject->fetchOne($this->getRepository($type)),
+			fn (): Entities\Devices\Device|null => $queryObject->fetchOne($this->getRepository($type)),
 		);
 	}
 
 	/**
-	 * @template T of Entities\Connectors\Connector
+	 * @template T of Entities\Devices\Device
 	 *
-	 * @param Queries\FindConnectors<T> $queryObject
+	 * @param Queries\FindDevices<T> $queryObject
 	 * @param class-string<T> $type
 	 *
 	 * @return array<T>
@@ -80,8 +80,8 @@ final class ConnectorsRepository
 	 * @throws Exceptions\InvalidState
 	 */
 	public function findAllBy(
-		Queries\FindConnectors $queryObject,
-		string $type = Entities\Connectors\Connector::class,
+		Queries\FindDevices $queryObject,
+		string $type = Entities\Devices\Device::class,
 	): array
 	{
 		try {
@@ -95,9 +95,9 @@ final class ConnectorsRepository
 	}
 
 	/**
-	 * @template T of Entities\Connectors\Connector
+	 * @template T of Entities\Devices\Device
 	 *
-	 * @param Queries\FindConnectors<T> $queryObject
+	 * @param Queries\FindDevices<T> $queryObject
 	 * @param class-string<T> $type
 	 *
 	 * @return DoctrineOrmQuery\ResultSet<T>
@@ -105,8 +105,8 @@ final class ConnectorsRepository
 	 * @throws Exceptions\InvalidState
 	 */
 	public function getResultSet(
-		Queries\FindConnectors $queryObject,
-		string $type = Entities\Connectors\Connector::class,
+		Queries\FindDevices $queryObject,
+		string $type = Entities\Devices\Device::class,
 	): DoctrineOrmQuery\ResultSet
 	{
 		$result = $this->database->query(
@@ -121,7 +121,7 @@ final class ConnectorsRepository
 	}
 
 	/**
-	 * @template T of Entities\Connectors\Connector
+	 * @template T of Entities\Devices\Device
 	 *
 	 * @param class-string<T> $type
 	 *

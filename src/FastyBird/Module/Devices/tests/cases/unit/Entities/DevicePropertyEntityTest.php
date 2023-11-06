@@ -30,9 +30,9 @@ final class DevicePropertyEntityTest extends DbTestCase
 	 */
 	public function testAddChildProperty(): void
 	{
-		$manager = $this->getContainer()->getByType(Models\Devices\Properties\PropertiesManager::class);
+		$manager = $this->getContainer()->getByType(Models\Entities\Devices\Properties\PropertiesManager::class);
 
-		$repository = $this->getContainer()->getByType(Models\Devices\Properties\PropertiesRepository::class);
+		$repository = $this->getContainer()->getByType(Models\Entities\Devices\Properties\PropertiesRepository::class);
 
 		$findQuery = new Queries\FindDeviceProperties();
 		$findQuery->byIdentifier('status_led');
@@ -67,9 +67,9 @@ final class DevicePropertyEntityTest extends DbTestCase
 	 */
 	public function testRemoveChildProperty(): void
 	{
-		$manager = $this->getContainer()->getByType(Models\Devices\Properties\PropertiesManager::class);
+		$manager = $this->getContainer()->getByType(Models\Entities\Devices\Properties\PropertiesManager::class);
 
-		$repository = $this->getContainer()->getByType(Models\Devices\Properties\PropertiesRepository::class);
+		$repository = $this->getContainer()->getByType(Models\Entities\Devices\Properties\PropertiesRepository::class);
 
 		$findQuery = new Queries\FindDeviceProperties();
 		$findQuery->byIdentifier('status_led');
@@ -125,9 +125,9 @@ final class DevicePropertyEntityTest extends DbTestCase
 	 */
 	public function testRemoveParentProperty(): void
 	{
-		$manager = $this->getContainer()->getByType(Models\Devices\Properties\PropertiesManager::class);
+		$manager = $this->getContainer()->getByType(Models\Entities\Devices\Properties\PropertiesManager::class);
 
-		$repository = $this->getContainer()->getByType(Models\Devices\Properties\PropertiesRepository::class);
+		$repository = $this->getContainer()->getByType(Models\Entities\Devices\Properties\PropertiesRepository::class);
 
 		$findQuery = new Queries\FindDeviceProperties();
 		$findQuery->byIdentifier('status_led');

@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ConnectorsManager.php
+ * DevicesManager.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,10 +10,10 @@
  * @subpackage     Models
  * @since          1.0.0
  *
- * @date           16.04.21
+ * @date           28.07.18
  */
 
-namespace FastyBird\Module\Devices\Models\Connectors;
+namespace FastyBird\Module\Devices\Models\Entities\Devices;
 
 use Evenement;
 use FastyBird\Module\Devices;
@@ -26,32 +26,30 @@ use Nette\Utils;
 use function assert;
 
 /**
- * Connectors entities manager
+ * Device entities manager
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Models
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ConnectorsManager extends Evenement\EventEmitter implements Evenement\EventEmitterInterface
+final class DevicesManager extends Evenement\EventEmitter implements Evenement\EventEmitterInterface
 {
 
 	use Nette\SmartObject;
 
 	/**
-	 * @param DoctrineCrudCrud\IEntityCrud<Entities\Connectors\Connector> $entityCrud
+	 * @param DoctrineCrudCrud\IEntityCrud<Entities\Devices\Device> $entityCrud
 	 */
 	public function __construct(private readonly DoctrineCrudCrud\IEntityCrud $entityCrud)
 	{
 		// Transformer CRUD for handling entities
 	}
 
-	public function create(
-		Utils\ArrayHash $values,
-	): Entities\Connectors\Connector
+	public function create(Utils\ArrayHash $values): Entities\Devices\Device
 	{
 		$entity = $this->entityCrud->getEntityCreator()->create($values);
-		assert($entity instanceof Entities\Connectors\Connector);
+		assert($entity instanceof Entities\Devices\Device);
 
 		$this->emit(Devices\Constants::EVENT_ENTITY_CREATED, [$entity]);
 
@@ -62,12 +60,12 @@ final class ConnectorsManager extends Evenement\EventEmitter implements Evenemen
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 */
 	public function update(
-		Entities\Connectors\Connector $entity,
+		Entities\Devices\Device $entity,
 		Utils\ArrayHash $values,
-	): Entities\Connectors\Connector
+	): Entities\Devices\Device
 	{
 		$entity = $this->entityCrud->getEntityUpdater()->update($values, $entity);
-		assert($entity instanceof Entities\Connectors\Connector);
+		assert($entity instanceof Entities\Devices\Device);
 
 		$this->emit(Devices\Constants::EVENT_ENTITY_UPDATED, [$entity]);
 
@@ -77,7 +75,7 @@ final class ConnectorsManager extends Evenement\EventEmitter implements Evenemen
 	/**
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 */
-	public function delete(Entities\Connectors\Connector $entity): bool
+	public function delete(Entities\Devices\Device $entity): bool
 	{
 		// Delete entity from database
 		$result = $this->entityCrud->getEntityDeleter()->delete($entity);

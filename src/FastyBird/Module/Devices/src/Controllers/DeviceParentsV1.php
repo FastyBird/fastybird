@@ -41,7 +41,7 @@ final class DeviceParentsV1 extends BaseV1
 	use Controllers\Finders\TDevice;
 
 	public function __construct(
-		protected readonly Models\Devices\DevicesRepository $devicesRepository,
+		protected readonly Models\Entities\Devices\DevicesRepository $devicesRepository,
 	)
 	{
 	}

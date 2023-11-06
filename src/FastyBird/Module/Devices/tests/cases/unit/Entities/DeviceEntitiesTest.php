@@ -29,7 +29,7 @@ final class DeviceEntitiesTest extends DbTestCase
 	 */
 	public function testFindChildren(): void
 	{
-		$repository = $this->getContainer()->getByType(Models\Devices\DevicesRepository::class);
+		$repository = $this->getContainer()->getByType(Models\Entities\Devices\DevicesRepository::class);
 
 		$findQuery = new Queries\FindDevices();
 		$findQuery->byIdentifier('first-device');
@@ -59,9 +59,9 @@ final class DeviceEntitiesTest extends DbTestCase
 	 */
 	public function testCreateChild(): void
 	{
-		$manager = $this->getContainer()->getByType(Models\Devices\DevicesManager::class);
+		$manager = $this->getContainer()->getByType(Models\Entities\Devices\DevicesManager::class);
 
-		$repository = $this->getContainer()->getByType(Models\Devices\DevicesRepository::class);
+		$repository = $this->getContainer()->getByType(Models\Entities\Devices\DevicesRepository::class);
 
 		$findQuery = new Queries\FindDevices();
 		$findQuery->byIdentifier('first-device');
@@ -97,9 +97,9 @@ final class DeviceEntitiesTest extends DbTestCase
 	 */
 	public function testRemoveParent(): void
 	{
-		$manager = $this->getContainer()->getByType(Models\Devices\DevicesManager::class);
+		$manager = $this->getContainer()->getByType(Models\Entities\Devices\DevicesManager::class);
 
-		$repository = $this->getContainer()->getByType(Models\Devices\DevicesRepository::class);
+		$repository = $this->getContainer()->getByType(Models\Entities\Devices\DevicesRepository::class);
 
 		$findQuery = new Queries\FindDevices();
 		$findQuery->byIdentifier('first-device');
@@ -138,9 +138,9 @@ final class DeviceEntitiesTest extends DbTestCase
 	 */
 	public function testChildParent(): void
 	{
-		$manager = $this->getContainer()->getByType(Models\Devices\DevicesManager::class);
+		$manager = $this->getContainer()->getByType(Models\Entities\Devices\DevicesManager::class);
 
-		$repository = $this->getContainer()->getByType(Models\Devices\DevicesRepository::class);
+		$repository = $this->getContainer()->getByType(Models\Entities\Devices\DevicesRepository::class);
 
 		$findQuery = new Queries\FindDevices();
 		$findQuery->byIdentifier('child-device');

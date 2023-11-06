@@ -56,12 +56,12 @@ class DevicesV1 extends BaseV1
 	use Controllers\Finders\TDevice;
 
 	public function __construct(
-		protected readonly Models\Devices\DevicesRepository $devicesRepository,
-		protected readonly Models\Devices\DevicesManager $devicesManager,
-		protected readonly Models\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
-		protected readonly Models\Devices\Controls\ControlsRepository $deviceControlsRepository,
-		protected readonly Models\Channels\ChannelsRepository $channelsRepository,
-		protected readonly Models\Channels\ChannelsManager $channelsManager,
+		protected readonly Models\Entities\Devices\DevicesRepository $devicesRepository,
+		protected readonly Models\Entities\Devices\DevicesManager $devicesManager,
+		protected readonly Models\Entities\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
+		protected readonly Models\Entities\Devices\Controls\ControlsRepository $deviceControlsRepository,
+		protected readonly Models\Entities\Channels\ChannelsRepository $channelsRepository,
+		protected readonly Models\Entities\Channels\ChannelsManager $channelsManager,
 	)
 	{
 	}

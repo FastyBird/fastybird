@@ -25,9 +25,9 @@ use FastyBird\Module\Devices\Schemas;
  * @template T of Entities\Connectors\Blank
  * @extends Connector<T>
  *
- * @package         FastyBird:DevicesModule!
- * @subpackage      Schemas
- * @author          Adam Kadlec <adam.kadlec@fastybird.com>
+ * @package        FastyBird:DevicesModule!
+ * @subpackage     Schemas
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 final class Blank extends Connector
 {

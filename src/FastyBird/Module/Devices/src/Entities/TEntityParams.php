@@ -31,7 +31,7 @@ use function trim;
  * Transformer params field trait
  *
  * @package        FastyBird:DevicesModule!
- * @subpackage     Devices
+ * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */

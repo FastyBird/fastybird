@@ -16,7 +16,6 @@
 namespace FastyBird\Connector\Shelly\Helpers;
 
 use FastyBird\Connector\Shelly\Entities;
-use FastyBird\Connector\Shelly\Entities\API\Entity as T;
 use FastyBird\Connector\Shelly\Exceptions;
 use Orisai\ObjectMapper;
 

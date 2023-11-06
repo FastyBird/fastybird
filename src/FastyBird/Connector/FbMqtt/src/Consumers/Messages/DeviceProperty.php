@@ -50,9 +50,9 @@ final class DeviceProperty implements Consumers\Consumer
 	use TProperty;
 
 	public function __construct(
-		private readonly DevicesModels\Devices\DevicesRepository $deviceRepository,
-		private readonly DevicesModels\Devices\Properties\PropertiesRepository $propertiesRepository,
-		private readonly DevicesModels\Devices\Properties\PropertiesManager $propertiesManager,
+		private readonly DevicesModels\Entities\Devices\DevicesRepository $deviceRepository,
+		private readonly DevicesModels\Entities\Devices\Properties\PropertiesRepository $propertiesRepository,
+		private readonly DevicesModels\Entities\Devices\Properties\PropertiesManager $propertiesManager,
 		private readonly DevicesUtilities\DevicePropertiesStates $devicePropertiesStates,
 		private readonly DevicesUtilities\Database $databaseHelper,
 		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),

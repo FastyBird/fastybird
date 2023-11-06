@@ -43,9 +43,9 @@ final class ExtensionAttribute implements Consumers\Consumer
 	use Nette\SmartObject;
 
 	public function __construct(
-		private readonly DevicesModels\Devices\DevicesRepository $deviceRepository,
-		private readonly DevicesModels\Devices\Properties\PropertiesRepository $propertiesRepository,
-		private readonly DevicesModels\Devices\Properties\PropertiesManager $propertiesManager,
+		private readonly DevicesModels\Entities\Devices\DevicesRepository $deviceRepository,
+		private readonly DevicesModels\Entities\Devices\Properties\PropertiesRepository $propertiesRepository,
+		private readonly DevicesModels\Entities\Devices\Properties\PropertiesManager $propertiesManager,
 		private readonly DevicesUtilities\Database $databaseHelper,
 		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)

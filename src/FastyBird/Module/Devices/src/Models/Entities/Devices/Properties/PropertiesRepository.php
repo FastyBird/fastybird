@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * DevicesRepository.php
+ * PropertiesRepository.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,10 +10,10 @@
  * @subpackage     Models
  * @since          1.0.0
  *
- * @date           28.07.18
+ * @date           21.11.18
  */
 
-namespace FastyBird\Module\Devices\Models\Devices;
+namespace FastyBird\Module\Devices\Models\Entities\Devices\Properties;
 
 use Doctrine\ORM;
 use Doctrine\Persistence;
@@ -27,19 +27,19 @@ use Throwable;
 use function is_array;
 
 /**
- * Device repository
+ * Device channel property structure repository
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Models
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DevicesRepository
+final class PropertiesRepository
 {
 
 	use Nette\SmartObject;
 
-	/** @var array<ORM\EntityRepository<Entities\Devices\Device>> */
+	/** @var array<ORM\EntityRepository<Entities\Devices\Properties\Property>> */
 	private array $repository = [];
 
 	public function __construct(
@@ -50,9 +50,9 @@ final class DevicesRepository
 	}
 
 	/**
-	 * @template T of Entities\Devices\Device
+	 * @template T of Entities\Devices\Properties\Property
 	 *
-	 * @param Queries\FindDevices<T> $queryObject
+	 * @param Queries\FindDeviceProperties<T> $queryObject
 	 * @param class-string<T> $type
 	 *
 	 * @return T|null
@@ -60,28 +60,28 @@ final class DevicesRepository
 	 * @throws Exceptions\InvalidState
 	 */
 	public function findOneBy(
-		Queries\FindDevices $queryObject,
-		string $type = Entities\Devices\Device::class,
-	): Entities\Devices\Device|null
+		Queries\FindDeviceProperties $queryObject,
+		string $type = Entities\Devices\Properties\Property::class,
+	): Entities\Devices\Properties\Property|null
 	{
 		return $this->database->query(
-			fn (): Entities\Devices\Device|null => $queryObject->fetchOne($this->getRepository($type)),
+			fn (): Entities\Devices\Properties\Property|null => $queryObject->fetchOne($this->getRepository($type)),
 		);
 	}
 
 	/**
-	 * @template T of Entities\Devices\Device
+	 * @template T of Entities\Devices\Properties\Property
 	 *
-	 * @param Queries\FindDevices<T> $queryObject
+	 * @param Queries\FindDeviceProperties<T> $queryObject
 	 * @param class-string<T> $type
 	 *
-	 * @return array<T>
+	 * @return  array<T>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
 	public function findAllBy(
-		Queries\FindDevices $queryObject,
-		string $type = Entities\Devices\Device::class,
+		Queries\FindDeviceProperties $queryObject,
+		string $type = Entities\Devices\Properties\Property::class,
 	): array
 	{
 		try {
@@ -95,9 +95,9 @@ final class DevicesRepository
 	}
 
 	/**
-	 * @template T of Entities\Devices\Device
+	 * @template T of Entities\Devices\Properties\Property
 	 *
-	 * @param Queries\FindDevices<T> $queryObject
+	 * @param Queries\FindDeviceProperties<T> $queryObject
 	 * @param class-string<T> $type
 	 *
 	 * @return DoctrineOrmQuery\ResultSet<T>
@@ -105,8 +105,8 @@ final class DevicesRepository
 	 * @throws Exceptions\InvalidState
 	 */
 	public function getResultSet(
-		Queries\FindDevices $queryObject,
-		string $type = Entities\Devices\Device::class,
+		Queries\FindDeviceProperties $queryObject,
+		string $type = Entities\Devices\Properties\Property::class,
 	): DoctrineOrmQuery\ResultSet
 	{
 		$result = $this->database->query(
@@ -121,7 +121,7 @@ final class DevicesRepository
 	}
 
 	/**
-	 * @template T of Entities\Devices\Device
+	 * @template T of Entities\Devices\Properties\Property
 	 *
 	 * @param class-string<T> $type
 	 *

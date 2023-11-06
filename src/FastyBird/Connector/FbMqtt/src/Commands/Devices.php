@@ -61,9 +61,9 @@ class Devices extends Console\Command\Command
 	private const CHOICE_QUESTION_DELETE_DEVICE = 'Delete existing connector device';
 
 	public function __construct(
-		private readonly DevicesModels\Connectors\ConnectorsRepository $connectorsRepository,
-		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
-		private readonly DevicesModels\Devices\DevicesManager $devicesManager,
+		private readonly DevicesModels\Entities\Connectors\ConnectorsRepository $connectorsRepository,
+		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Entities\Devices\DevicesManager $devicesManager,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 		string|null $name = null,

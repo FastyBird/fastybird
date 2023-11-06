@@ -13,7 +13,7 @@
  * @date           02.11.18
  */
 
-namespace FastyBird\Module\Devices\Models\Devices\Properties;
+namespace FastyBird\Module\Devices\Models\Entities\Channels\Properties;
 
 use Evenement;
 use FastyBird\Module\Devices;
@@ -26,7 +26,7 @@ use Nette\Utils;
 use function assert;
 
 /**
- * Devices properties entities manager
+ * Channels properties entities manager
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Models
@@ -39,7 +39,7 @@ final class PropertiesManager extends Evenement\EventEmitter implements Evenemen
 	use Nette\SmartObject;
 
 	/**
-	 * @param DoctrineCrudCrud\IEntityCrud<Entities\Devices\Properties\Property> $entityCrud
+	 * @param DoctrineCrudCrud\IEntityCrud<Entities\Channels\Properties\Property> $entityCrud
 	 */
 	public function __construct(private readonly DoctrineCrudCrud\IEntityCrud $entityCrud)
 	{
@@ -48,10 +48,10 @@ final class PropertiesManager extends Evenement\EventEmitter implements Evenemen
 
 	public function create(
 		Utils\ArrayHash $values,
-	): Entities\Devices\Properties\Property
+	): Entities\Channels\Properties\Property
 	{
 		$entity = $this->entityCrud->getEntityCreator()->create($values);
-		assert($entity instanceof Entities\Devices\Properties\Property);
+		assert($entity instanceof Entities\Channels\Properties\Property);
 
 		$this->emit(Devices\Constants::EVENT_ENTITY_CREATED, [$entity]);
 
@@ -62,12 +62,12 @@ final class PropertiesManager extends Evenement\EventEmitter implements Evenemen
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 */
 	public function update(
-		Entities\Devices\Properties\Property $entity,
+		Entities\Channels\Properties\Property $entity,
 		Utils\ArrayHash $values,
-	): Entities\Devices\Properties\Property
+	): Entities\Channels\Properties\Property
 	{
 		$entity = $this->entityCrud->getEntityUpdater()->update($values, $entity);
-		assert($entity instanceof Entities\Devices\Properties\Property);
+		assert($entity instanceof Entities\Channels\Properties\Property);
 
 		$this->emit(Devices\Constants::EVENT_ENTITY_UPDATED, [$entity]);
 
@@ -77,7 +77,7 @@ final class PropertiesManager extends Evenement\EventEmitter implements Evenemen
 	/**
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 */
-	public function delete(Entities\Devices\Properties\Property $entity): bool
+	public function delete(Entities\Channels\Properties\Property $entity): bool
 	{
 		// Delete entity from database
 		$result = $this->entityCrud->getEntityDeleter()->delete($entity);

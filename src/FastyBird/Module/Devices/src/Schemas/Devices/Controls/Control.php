@@ -30,9 +30,9 @@ use Neomerx\JsonApi;
  * @template T of Entities\Devices\Controls\Control
  * @extends JsonApiSchemas\JsonApi<T>
  *
- * @package         FastyBird:DevicesModule!
- * @subpackage      Schemas
- * @author          Adam Kadlec <adam.kadlec@fastybird.com>
+ * @package        FastyBird:DevicesModule!
+ * @subpackage     Schemas
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 final class Control extends JsonApiSchemas\JsonApi
 {

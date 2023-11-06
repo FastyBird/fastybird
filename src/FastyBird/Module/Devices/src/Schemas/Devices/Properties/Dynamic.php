@@ -39,9 +39,9 @@ use function is_bool;
  * @template T of Entities\Devices\Properties\Dynamic
  * @extends Property<T>
  *
- * @package         FastyBird:DevicesModule!
- * @subpackage      Schemas
- * @author          Adam Kadlec <adam.kadlec@fastybird.com>
+ * @package        FastyBird:DevicesModule!
+ * @subpackage     Schemas
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 final class Dynamic extends Property
 {
@@ -53,7 +53,7 @@ final class Dynamic extends Property
 
 	public function __construct(
 		Routing\IRouter $router,
-		Models\Devices\Properties\PropertiesRepository $propertiesRepository,
+		Models\Entities\Devices\Properties\PropertiesRepository $propertiesRepository,
 		private readonly Utilities\DevicePropertiesStates $devicePropertiesStates,
 	)
 	{

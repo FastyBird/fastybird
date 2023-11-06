@@ -43,7 +43,7 @@ use const DATE_ATOM;
  * Value helpers
  *
  * @package        FastyBird:DevicesModule!
- * @subpackage     Helpers
+ * @subpackage     Utilities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */

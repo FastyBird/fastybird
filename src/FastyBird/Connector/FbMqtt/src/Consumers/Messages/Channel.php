@@ -46,13 +46,13 @@ final class Channel implements Consumers\Consumer
 	use Nette\SmartObject;
 
 	public function __construct(
-		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
-		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
-		private readonly DevicesModels\Channels\ChannelsManager $channelsManager,
-		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
-		private readonly DevicesModels\Channels\Properties\PropertiesManager $channelPropertiesManager,
-		private readonly DevicesModels\Channels\Controls\ControlsRepository $channelControlsRepository,
-		private readonly DevicesModels\Channels\Controls\ControlsManager $channelControlsManager,
+		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Entities\Channels\ChannelsRepository $channelsRepository,
+		private readonly DevicesModels\Entities\Channels\ChannelsManager $channelsManager,
+		private readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
+		private readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelPropertiesManager,
+		private readonly DevicesModels\Entities\Channels\Controls\ControlsRepository $channelControlsRepository,
+		private readonly DevicesModels\Entities\Channels\Controls\ControlsManager $channelControlsManager,
 		private readonly DevicesUtilities\Database $databaseHelper,
 		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)

@@ -45,12 +45,12 @@ final class StoreParametersStates implements Consumer
 
 	public function __construct(
 		private readonly Sonoff\Logger $logger,
-		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
-		private readonly DevicesModels\Channels\ChannelsRepository $channelsRepository,
-		private readonly DevicesModels\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
-		private readonly DevicesModels\Devices\Properties\PropertiesManager $devicesPropertiesManager,
-		private readonly DevicesModels\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
-		private readonly DevicesModels\Channels\Properties\PropertiesManager $channelsPropertiesManager,
+		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Entities\Channels\ChannelsRepository $channelsRepository,
+		private readonly DevicesModels\Entities\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
+		private readonly DevicesModels\Entities\Devices\Properties\PropertiesManager $devicesPropertiesManager,
+		private readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
+		private readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager,
 		private readonly DevicesUtilities\DevicePropertiesStates $devicePropertiesStateManager,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStateManager,
 		private readonly DevicesUtilities\Database $databaseHelper,

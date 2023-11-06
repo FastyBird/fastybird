@@ -29,9 +29,9 @@ use function array_merge;
  * @template T of Entities\Connectors\Properties\Variable
  * @extends Property<T>
  *
- * @package         FastyBird:DevicesModule!
- * @subpackage      Schemas
- * @author          Adam Kadlec <adam.kadlec@fastybird.com>
+ * @package        FastyBird:DevicesModule!
+ * @subpackage     Schemas
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 final class Variable extends Property
 {

@@ -13,7 +13,7 @@
  * @date           29.09.21
  */
 
-namespace FastyBird\Module\Devices\Models\Connectors\Controls;
+namespace FastyBird\Module\Devices\Models\Entities\Channels\Controls;
 
 use Doctrine\ORM;
 use Doctrine\Persistence;
@@ -27,7 +27,7 @@ use Throwable;
 use function is_array;
 
 /**
- * Connector control structure repository
+ * Device channel control structure repository
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Models
@@ -39,7 +39,7 @@ final class ControlsRepository
 
 	use Nette\SmartObject;
 
-	/** @var ORM\EntityRepository<Entities\Connectors\Controls\Control>|null */
+	/** @var ORM\EntityRepository<Entities\Channels\Controls\Control>|null */
 	private ORM\EntityRepository|null $repository = null;
 
 	public function __construct(
@@ -52,22 +52,22 @@ final class ControlsRepository
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function findOneBy(Queries\FindConnectorControls $queryObject): Entities\Connectors\Controls\Control|null
+	public function findOneBy(Queries\FindChannelControls $queryObject): Entities\Channels\Controls\Control|null
 	{
 		return $this->database->query(
-			fn (): Entities\Connectors\Controls\Control|null => $queryObject->fetchOne($this->getRepository()),
+			fn (): Entities\Channels\Controls\Control|null => $queryObject->fetchOne($this->getRepository()),
 		);
 	}
 
 	/**
-	 * @return array<Entities\Connectors\Controls\Control>
+	 * @return array<Entities\Channels\Controls\Control>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
-	public function findAllBy(Queries\FindConnectorControls $queryObject): array
+	public function findAllBy(Queries\FindChannelControls $queryObject): array
 	{
 		try {
-			/** @var array<Entities\Connectors\Controls\Control> $result */
+			/** @var array<Entities\Channels\Controls\Control> $result */
 			$result = $this->getResultSet($queryObject)->toArray();
 
 			return $result;
@@ -77,12 +77,12 @@ final class ControlsRepository
 	}
 
 	/**
-	 * @return DoctrineOrmQuery\ResultSet<Entities\Connectors\Controls\Control>
+	 * @return DoctrineOrmQuery\ResultSet<Entities\Channels\Controls\Control>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
 	public function getResultSet(
-		Queries\FindConnectorControls $queryObject,
+		Queries\FindChannelControls $queryObject,
 	): DoctrineOrmQuery\ResultSet
 	{
 		$result = $this->database->query(
@@ -97,11 +97,11 @@ final class ControlsRepository
 	}
 
 	/**
-	 * @param class-string<Entities\Connectors\Controls\Control> $type
+	 * @param class-string<Entities\Channels\Controls\Control> $type
 	 *
-	 * @return ORM\EntityRepository<Entities\Connectors\Controls\Control>
+	 * @return ORM\EntityRepository<Entities\Channels\Controls\Control>
 	 */
-	private function getRepository(string $type = Entities\Connectors\Controls\Control::class): ORM\EntityRepository
+	private function getRepository(string $type = Entities\Channels\Controls\Control::class): ORM\EntityRepository
 	{
 		if ($this->repository === null) {
 			$this->repository = $this->managerRegistry->getRepository($type);

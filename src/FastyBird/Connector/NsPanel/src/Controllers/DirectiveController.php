@@ -56,7 +56,7 @@ final class DirectiveController extends BaseController
 	public function __construct(
 		private readonly Queue\Queue $queue,
 		private readonly Helpers\Entity $entityHelper,
-		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
 		private readonly MetadataSchemas\Validator $schemaValidator,
 	)
 	{

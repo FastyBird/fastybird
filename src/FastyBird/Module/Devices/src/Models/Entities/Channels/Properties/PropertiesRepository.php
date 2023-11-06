@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ChannelsRepository.php
+ * PropertiesRepository.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,10 +10,10 @@
  * @subpackage     Models
  * @since          1.0.0
  *
- * @date           23.04.17
+ * @date           21.11.18
  */
 
-namespace FastyBird\Module\Devices\Models\Channels;
+namespace FastyBird\Module\Devices\Models\Entities\Channels\Properties;
 
 use Doctrine\ORM;
 use Doctrine\Persistence;
@@ -27,19 +27,19 @@ use Throwable;
 use function is_array;
 
 /**
- * Channel repository
+ * Device channel property structure repository
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Models
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ChannelsRepository
+final class PropertiesRepository
 {
 
 	use Nette\SmartObject;
 
-	/** @var array<ORM\EntityRepository<Entities\Channels\Channel>> */
+	/** @var array<ORM\EntityRepository<Entities\Channels\Properties\Property>> */
 	private array $repository = [];
 
 	public function __construct(
@@ -50,9 +50,9 @@ final class ChannelsRepository
 	}
 
 	/**
-	 * @template T of Entities\Channels\Channel
+	 * @template T of Entities\Channels\Properties\Property
 	 *
-	 * @param Queries\FindChannels<T> $queryObject
+	 * @param Queries\FindChannelProperties<T> $queryObject
 	 * @param class-string<T> $type
 	 *
 	 * @return T|null
@@ -60,19 +60,19 @@ final class ChannelsRepository
 	 * @throws Exceptions\InvalidState
 	 */
 	public function findOneBy(
-		Queries\FindChannels $queryObject,
-		string $type = Entities\Channels\Channel::class,
-	): Entities\Channels\Channel|null
+		Queries\FindChannelProperties $queryObject,
+		string $type = Entities\Channels\Properties\Property::class,
+	): Entities\Channels\Properties\Property|null
 	{
 		return $this->database->query(
-			fn (): Entities\Channels\Channel|null => $queryObject->fetchOne($this->getRepository($type)),
+			fn (): Entities\Channels\Properties\Property|null => $queryObject->fetchOne($this->getRepository($type)),
 		);
 	}
 
 	/**
-	 * @template T of Entities\Channels\Channel
+	 * @template T of Entities\Channels\Properties\Property
 	 *
-	 * @param Queries\FindChannels<T> $queryObject
+	 * @param Queries\FindChannelProperties<T> $queryObject
 	 * @param class-string<T> $type
 	 *
 	 * @return array<T>
@@ -80,8 +80,8 @@ final class ChannelsRepository
 	 * @throws Exceptions\InvalidState
 	 */
 	public function findAllBy(
-		Queries\FindChannels $queryObject,
-		string $type = Entities\Channels\Channel::class,
+		Queries\FindChannelProperties $queryObject,
+		string $type = Entities\Channels\Properties\Property::class,
 	): array
 	{
 		try {
@@ -95,9 +95,9 @@ final class ChannelsRepository
 	}
 
 	/**
-	 * @template T of Entities\Channels\Channel
+	 * @template T of Entities\Channels\Properties\Property
 	 *
-	 * @param Queries\FindChannels<T> $queryObject
+	 * @param Queries\FindChannelProperties<T> $queryObject
 	 * @param class-string<T> $type
 	 *
 	 * @return DoctrineOrmQuery\ResultSet<T>
@@ -105,8 +105,8 @@ final class ChannelsRepository
 	 * @throws Exceptions\InvalidState
 	 */
 	public function getResultSet(
-		Queries\FindChannels $queryObject,
-		string $type = Entities\Channels\Channel::class,
+		Queries\FindChannelProperties $queryObject,
+		string $type = Entities\Channels\Properties\Property::class,
 	): DoctrineOrmQuery\ResultSet
 	{
 		$result = $this->database->query(
@@ -121,7 +121,7 @@ final class ChannelsRepository
 	}
 
 	/**
-	 * @template T of Entities\Channels\Channel
+	 * @template T of Entities\Channels\Properties\Property
 	 *
 	 * @param class-string<T> $type
 	 *

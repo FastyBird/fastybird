@@ -36,10 +36,10 @@ use function in_array;
 /**
  * States messages subscriber
  *
- * @package         FastyBird:DevicesModule!
- * @subpackage      Consumers
+ * @package        FastyBird:DevicesModule!
+ * @subpackage     Consumers
  *
- * @author          Adam Kadlec <adam.kadlec@fastybird.com>
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 final class State implements ExchangeConsumers\Consumer
 {
@@ -53,9 +53,9 @@ final class State implements ExchangeConsumers\Consumer
 	public function __construct(
 		private readonly ExchangePublisher\Publisher $publisher,
 		private readonly ExchangeEntities\EntityFactory $entityFactory,
-		private readonly Models\Connectors\Properties\PropertiesRepository $connectorPropertiesRepository,
-		private readonly Models\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
-		private readonly Models\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
+		private readonly Models\Entities\Connectors\Properties\PropertiesRepository $connectorPropertiesRepository,
+		private readonly Models\Entities\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
+		private readonly Models\Entities\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
 		private readonly Utilities\ConnectorPropertiesStates $connectorPropertiesStates,
 		private readonly Utilities\DevicePropertiesStates $devicePropertiesStates,
 		private readonly Utilities\ChannelPropertiesStates $channelPropertiesStates,

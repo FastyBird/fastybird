@@ -13,7 +13,7 @@
  * @date           09.06.19
  */
 
-namespace FastyBird\Module\Devices\Models\Devices\Controls;
+namespace FastyBird\Module\Devices\Models\Entities\Devices\Controls;
 
 use Evenement;
 use FastyBird\Module\Devices;

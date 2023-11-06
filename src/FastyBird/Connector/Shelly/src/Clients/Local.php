@@ -82,7 +82,7 @@ final class Local implements Client
 		private readonly Queue\Queue $queue,
 		private readonly Helpers\Entity $entityHelper,
 		private readonly Shelly\Logger $logger,
-		private readonly DevicesModels\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,

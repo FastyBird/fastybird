@@ -186,7 +186,9 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 			$httpClientFactory,
 		);
 
-		$connectorsRepository = $this->getContainer()->getByType(DevicesModels\Connectors\ConnectorsRepository::class);
+		$connectorsRepository = $this->getContainer()->getByType(
+			DevicesModels\Entities\Connectors\ConnectorsRepository::class,
+		);
 
 		$findConnectorQuery = new Queries\FindConnectors();
 		$findConnectorQuery->byIdentifier('shelly-local');
@@ -220,7 +222,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 
 		$consumers->consume();
 
-		$devicesRepository = $this->getContainer()->getByType(DevicesModels\Devices\DevicesRepository::class);
+		$devicesRepository = $this->getContainer()->getByType(DevicesModels\Entities\Devices\DevicesRepository::class);
 
 		$findDeviceQuery = new Queries\FindDevices();
 		$findDeviceQuery->forConnector($connector);
@@ -236,7 +238,9 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 		self::assertSame('SHRGBW2', $device->getModel());
 		self::assertSame('c4:5b:be:e4:c9:26', $device->getMacAddress());
 
-		$channelsRepository = $this->getContainer()->getByType(DevicesModels\Channels\ChannelsRepository::class);
+		$channelsRepository = $this->getContainer()->getByType(
+			DevicesModels\Entities\Channels\ChannelsRepository::class,
+		);
 
 		$findChannelsQuery = new DevicesQueries\FindChannels();
 		$findChannelsQuery->forDevice($device);
@@ -387,7 +391,9 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 			$httpClientFactory,
 		);
 
-		$connectorsRepository = $this->getContainer()->getByType(DevicesModels\Connectors\ConnectorsRepository::class);
+		$connectorsRepository = $this->getContainer()->getByType(
+			DevicesModels\Entities\Connectors\ConnectorsRepository::class,
+		);
 
 		$findConnectorQuery = new Queries\FindConnectors();
 		$findConnectorQuery->byIdentifier('shelly-local');
@@ -421,7 +427,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 
 		$consumers->consume();
 
-		$devicesRepository = $this->getContainer()->getByType(DevicesModels\Devices\DevicesRepository::class);
+		$devicesRepository = $this->getContainer()->getByType(DevicesModels\Entities\Devices\DevicesRepository::class);
 
 		$findDeviceQuery = new Queries\FindDevices();
 		$findDeviceQuery->forConnector($connector);
@@ -437,7 +443,9 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 		self::assertSame('SNSW-102P16EU', $device->getModel());
 		self::assertSame('44:17:93:ad:07:e8', $device->getMacAddress());
 
-		$channelsRepository = $this->getContainer()->getByType(DevicesModels\Channels\ChannelsRepository::class);
+		$channelsRepository = $this->getContainer()->getByType(
+			DevicesModels\Entities\Channels\ChannelsRepository::class,
+		);
 
 		$findChannelsQuery = new DevicesQueries\FindChannels();
 		$findChannelsQuery->forDevice($device);

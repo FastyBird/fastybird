@@ -35,35 +35,49 @@ final class DevicesModuleExtensionTests extends DbTestCase
 
 		self::assertNotNull($this->getContainer()->getByType(Middleware\Access::class, false));
 
-		self::assertNotNull($this->getContainer()->getByType(Models\Devices\DevicesRepository::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Models\Entities\Devices\DevicesRepository::class, false));
 		self::assertNotNull(
-			$this->getContainer()->getByType(Models\Devices\Properties\PropertiesRepository::class, false),
-		);
-		self::assertNotNull($this->getContainer()->getByType(Models\Devices\Controls\ControlsRepository::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Models\Channels\ChannelsRepository::class, false));
-		self::assertNotNull(
-			$this->getContainer()->getByType(Models\Channels\Properties\PropertiesRepository::class, false),
+			$this->getContainer()->getByType(Models\Entities\Devices\Properties\PropertiesRepository::class, false),
 		);
 		self::assertNotNull(
-			$this->getContainer()->getByType(Models\Channels\Controls\ControlsRepository::class, false),
+			$this->getContainer()->getByType(Models\Entities\Devices\Controls\ControlsRepository::class, false),
 		);
-		self::assertNotNull($this->getContainer()->getByType(Models\Connectors\ConnectorsRepository::class, false));
 		self::assertNotNull(
-			$this->getContainer()->getByType(Models\Connectors\Controls\ControlsRepository::class, false),
+			$this->getContainer()->getByType(Models\Entities\Channels\ChannelsRepository::class, false),
+		);
+		self::assertNotNull(
+			$this->getContainer()->getByType(Models\Entities\Channels\Properties\PropertiesRepository::class, false),
+		);
+		self::assertNotNull(
+			$this->getContainer()->getByType(Models\Entities\Channels\Controls\ControlsRepository::class, false),
+		);
+		self::assertNotNull(
+			$this->getContainer()->getByType(Models\Entities\Connectors\ConnectorsRepository::class, false),
+		);
+		self::assertNotNull(
+			$this->getContainer()->getByType(Models\Entities\Connectors\Controls\ControlsRepository::class, false),
 		);
 
-		self::assertNotNull($this->getContainer()->getByType(Models\Devices\DevicesManager::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Models\Entities\Devices\DevicesManager::class, false));
 		self::assertNotNull(
-			$this->getContainer()->getByType(Models\Devices\Properties\PropertiesManager::class, false),
+			$this->getContainer()->getByType(Models\Entities\Devices\Properties\PropertiesManager::class, false),
 		);
-		self::assertNotNull($this->getContainer()->getByType(Models\Devices\Controls\ControlsManager::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Models\Channels\ChannelsManager::class, false));
 		self::assertNotNull(
-			$this->getContainer()->getByType(Models\Channels\Properties\PropertiesManager::class, false),
+			$this->getContainer()->getByType(Models\Entities\Devices\Controls\ControlsManager::class, false),
 		);
-		self::assertNotNull($this->getContainer()->getByType(Models\Channels\Controls\ControlsManager::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Models\Connectors\ConnectorsManager::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Models\Connectors\Controls\ControlsManager::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Models\Entities\Channels\ChannelsManager::class, false));
+		self::assertNotNull(
+			$this->getContainer()->getByType(Models\Entities\Channels\Properties\PropertiesManager::class, false),
+		);
+		self::assertNotNull(
+			$this->getContainer()->getByType(Models\Entities\Channels\Controls\ControlsManager::class, false),
+		);
+		self::assertNotNull(
+			$this->getContainer()->getByType(Models\Entities\Connectors\ConnectorsManager::class, false),
+		);
+		self::assertNotNull(
+			$this->getContainer()->getByType(Models\Entities\Connectors\Controls\ControlsManager::class, false),
+		);
 
 		self::assertNotNull(
 			$this->getContainer()->getByType(Models\States\ConnectorPropertiesRepository::class, false),

@@ -13,7 +13,7 @@
  * @date           29.09.21
  */
 
-namespace FastyBird\Module\Devices\Models\Devices\Controls;
+namespace FastyBird\Module\Devices\Models\Entities\Devices\Controls;
 
 use Doctrine\ORM;
 use Doctrine\Persistence;
