@@ -47,6 +47,7 @@ use function explode;
 use function is_array;
 use function is_string;
 use function preg_match;
+use function React\Async\async;
 use function React\Async\await;
 use function strval;
 
@@ -304,7 +305,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 		// Searching timeout
 		$this->eventLoop->addTimer(
 			self::MDNS_SEARCH_TIMEOUT,
-			function (): void {
+			async(function (): void {
 				$this->server?->close();
 
 				$this->discoveredLocalDevices->rewind();
@@ -322,7 +323,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				}
 
 				$this->emit('finished', [$devices]);
-			},
+			}),
 		);
 	}
 

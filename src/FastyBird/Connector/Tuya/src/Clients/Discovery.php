@@ -293,11 +293,11 @@ final class Discovery implements Evenement\EventEmitterInterface
 							$devices,
 						),
 					)
-					->then(function (Entities\API\GetDevicesFactoryInfos $response) use ($devices): void {
+					->then(async(function (Entities\API\GetDevicesFactoryInfos $response) use ($devices): void {
 						$devices = $this->handleFoundCloudDevices($devices, $response->getResult());
 
 						$this->emit('finished', [$devices]);
-					})
+					}))
 					->otherwise(function (Throwable $ex): void {
 						if ($ex instanceof Exceptions\OpenApiError) {
 							$this->logger->warning(
