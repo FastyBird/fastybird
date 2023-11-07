@@ -87,7 +87,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 			DevicesModels\Entities\Connectors\ConnectorsRepository::class,
 		);
 
-		$findConnectorQuery = new Queries\FindConnectors();
+		$findConnectorQuery = new Queries\Entities\FindConnectors();
 		$findConnectorQuery->byIdentifier('ns-panel');
 
 		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\NsPanelConnector::class);
@@ -175,7 +175,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 			DevicesModels\Entities\Connectors\ConnectorsRepository::class,
 		);
 
-		$findConnectorQuery = new Queries\FindConnectors();
+		$findConnectorQuery = new Queries\Entities\FindConnectors();
 		$findConnectorQuery->byIdentifier('ns-panel');
 
 		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\NsPanelConnector::class);
@@ -265,7 +265,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 			DevicesModels\Entities\Connectors\ConnectorsRepository::class,
 		);
 
-		$findConnectorQuery = new Queries\FindConnectors();
+		$findConnectorQuery = new Queries\Entities\FindConnectors();
 		$findConnectorQuery->byIdentifier('ns-panel');
 
 		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\NsPanelConnector::class);
@@ -380,7 +380,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 			DevicesModels\Entities\Connectors\ConnectorsRepository::class,
 		);
 
-		$findConnectorQuery = new Queries\FindConnectors();
+		$findConnectorQuery = new Queries\Entities\FindConnectors();
 		$findConnectorQuery->byIdentifier('ns-panel');
 
 		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\NsPanelConnector::class);
@@ -532,7 +532,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 			DevicesModels\Entities\Connectors\ConnectorsRepository::class,
 		);
 
-		$findConnectorQuery = new Queries\FindConnectors();
+		$findConnectorQuery = new Queries\Entities\FindConnectors();
 		$findConnectorQuery->byIdentifier('ns-panel');
 
 		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\NsPanelConnector::class);
@@ -657,7 +657,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 			DevicesModels\Entities\Connectors\ConnectorsRepository::class,
 		);
 
-		$findConnectorQuery = new Queries\FindConnectors();
+		$findConnectorQuery = new Queries\Entities\FindConnectors();
 		$findConnectorQuery->byIdentifier('ns-panel');
 
 		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\NsPanelConnector::class);
@@ -746,7 +746,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 			DevicesModels\Entities\Connectors\ConnectorsRepository::class,
 		);
 
-		$findConnectorQuery = new Queries\FindConnectors();
+		$findConnectorQuery = new Queries\Entities\FindConnectors();
 		$findConnectorQuery->byIdentifier('ns-panel');
 
 		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\NsPanelConnector::class);
@@ -871,7 +871,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 			DevicesModels\Entities\Connectors\ConnectorsRepository::class,
 		);
 
-		$findConnectorQuery = new Queries\FindConnectors();
+		$findConnectorQuery = new Queries\Entities\FindConnectors();
 		$findConnectorQuery->byIdentifier('ns-panel');
 
 		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\NsPanelConnector::class);

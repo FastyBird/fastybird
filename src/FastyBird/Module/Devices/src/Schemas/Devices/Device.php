@@ -297,7 +297,7 @@ abstract class Device extends JsonApiSchemas\JsonApi
 	 */
 	private function getChannels(Entities\Devices\Device $device): array
 	{
-		$findQuery = new Queries\FindChannels();
+		$findQuery = new Queries\Entities\FindChannels();
 		$findQuery->forDevice($device);
 
 		return $this->channelsRepository->findAllBy($findQuery);
@@ -311,7 +311,7 @@ abstract class Device extends JsonApiSchemas\JsonApi
 	 */
 	private function getParents(Entities\Devices\Device $device): array
 	{
-		$findQuery = new Queries\FindDevices();
+		$findQuery = new Queries\Entities\FindDevices();
 		$findQuery->forChild($device);
 
 		return $this->devicesRepository->findAllBy($findQuery);
@@ -325,7 +325,7 @@ abstract class Device extends JsonApiSchemas\JsonApi
 	 */
 	private function getChildren(Entities\Devices\Device $device): array
 	{
-		$findQuery = new Queries\FindDevices();
+		$findQuery = new Queries\Entities\FindDevices();
 		$findQuery->forParent($device);
 
 		return $this->devicesRepository->findAllBy($findQuery);

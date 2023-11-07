@@ -65,28 +65,28 @@ class RedisDbTriggersModuleExtension extends DI\CompilerExtension
 			$this->prefix('models.actionsRepository'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\ActionsRepository::class)
+			->setType(Models\States\ActionsRepository::class)
 			->setArguments(['database' => $configuration->database]);
 
 		$builder->addDefinition(
 			$this->prefix('models.conditionsRepository'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\ConditionsRepository::class)
+			->setType(Models\States\ConditionsRepository::class)
 			->setArguments(['database' => $configuration->database]);
 
 		$builder->addDefinition(
 			$this->prefix('models.actionsManager'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\ActionsManager::class)
+			->setType(Models\States\ActionsManager::class)
 			->setArguments(['database' => $configuration->database]);
 
 		$builder->addDefinition(
 			$this->prefix('models.conditionsManager'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\ConditionsManager::class)
+			->setType(Models\States\ConditionsManager::class)
 			->setArguments(['database' => $configuration->database]);
 	}
 

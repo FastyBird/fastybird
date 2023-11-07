@@ -31,9 +31,9 @@ final class NotificationsRepositoryTest extends DbTestCase
 	 */
 	public function testReadOne(): void
 	{
-		$repository = $this->getContainer()->getByType(Models\Notifications\NotificationsRepository::class);
+		$repository = $this->getContainer()->getByType(Models\Entities\Notifications\NotificationsRepository::class);
 
-		$findQuery = new Queries\FindNotifications();
+		$findQuery = new Queries\Entities\FindNotifications();
 		$findQuery->byId(Uuid\Uuid::fromString('05f28df9-5f19-4923-b3f8-b9090116dadc'));
 
 		$entity = $repository->findOneBy($findQuery);
@@ -41,7 +41,7 @@ final class NotificationsRepositoryTest extends DbTestCase
 		self::assertIsObject($entity);
 		self::assertTrue($entity instanceof Entities\Notifications\EmailNotification);
 
-		$findQuery = new Queries\FindNotifications();
+		$findQuery = new Queries\Entities\FindNotifications();
 		$findQuery->byId(Uuid\Uuid::fromString('4fe1019c-f49e-4cbf-83e6-20b394e76317'));
 
 		$entity = $repository->findOneBy($findQuery);
@@ -61,9 +61,9 @@ final class NotificationsRepositoryTest extends DbTestCase
 	 */
 	public function testReadResultSet(): void
 	{
-		$repository = $this->getContainer()->getByType(Models\Notifications\NotificationsRepository::class);
+		$repository = $this->getContainer()->getByType(Models\Entities\Notifications\NotificationsRepository::class);
 
-		$findQuery = new Queries\FindNotifications();
+		$findQuery = new Queries\Entities\FindNotifications();
 
 		$resultSet = $repository->getResultSet($findQuery);
 

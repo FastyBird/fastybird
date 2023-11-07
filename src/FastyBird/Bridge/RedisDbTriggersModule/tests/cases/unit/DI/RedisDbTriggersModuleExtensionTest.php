@@ -14,10 +14,10 @@ final class RedisDbTriggersModuleExtensionTest extends BaseTestCase
 	 */
 	public function testServicesRegistration(): void
 	{
-		self::assertNotNull($this->container->getByType(Models\ActionsRepository::class, false));
-		self::assertNotNull($this->container->getByType(Models\ActionsManager::class, false));
-		self::assertNotNull($this->container->getByType(Models\ConditionsRepository::class, false));
-		self::assertNotNull($this->container->getByType(Models\ConditionsManager::class, false));
+		self::assertNotNull($this->container->getByType(Models\States\ActionsRepository::class, false));
+		self::assertNotNull($this->container->getByType(Models\States\ActionsManager::class, false));
+		self::assertNotNull($this->container->getByType(Models\States\ConditionsRepository::class, false));
+		self::assertNotNull($this->container->getByType(Models\States\ConditionsManager::class, false));
 	}
 
 }

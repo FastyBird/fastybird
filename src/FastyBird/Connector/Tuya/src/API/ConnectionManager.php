@@ -72,7 +72,7 @@ final class ConnectionManager
 		assert($connector instanceof Entities\TuyaConnector);
 
 		if (!array_key_exists($device->getId()->toString(), $this->localConnections)) {
-			$findChildrenDevicesQuery = new Queries\FindDevices();
+			$findChildrenDevicesQuery = new Queries\Entities\FindDevices();
 			$findChildrenDevicesQuery->forParent($device);
 
 			$children = $this->devicesRepository->findAllBy($findChildrenDevicesQuery, Entities\TuyaDevice::class);

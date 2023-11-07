@@ -76,14 +76,14 @@ final class StoreLocalDevice implements Queue\Consumer
 			return false;
 		}
 
-		$findDeviceQuery = new Queries\FindDevices();
+		$findDeviceQuery = new Queries\Entities\FindDevices();
 		$findDeviceQuery->byConnectorId($entity->getConnector());
 		$findDeviceQuery->byIdentifier($entity->getIdentifier());
 
 		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\ShellyDevice::class);
 
 		if ($device === null) {
-			$findConnectorQuery = new Queries\FindConnectors();
+			$findConnectorQuery = new Queries\Entities\FindConnectors();
 			$findConnectorQuery->byId($entity->getConnector());
 
 			$connector = $this->connectorsRepository->findOneBy(
@@ -175,7 +175,7 @@ final class StoreLocalDevice implements Queue\Consumer
 		);
 
 		foreach ($entity->getChannels() as $channelDescription) {
-			$findChannelQuery = new DevicesQueries\FindChannels();
+			$findChannelQuery = new DevicesQueries\Entities\FindChannels();
 			$findChannelQuery->forDevice($device);
 			$findChannelQuery->byIdentifier($channelDescription->getIdentifier());
 
@@ -199,7 +199,7 @@ final class StoreLocalDevice implements Queue\Consumer
 			);
 
 			foreach ($channelDescription->getProperties() as $propertyDescription) {
-				$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+				$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
 				$findChannelPropertyQuery->forChannel($channel);
 				$findChannelPropertyQuery->byIdentifier($propertyDescription->getIdentifier());
 

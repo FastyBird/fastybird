@@ -115,7 +115,7 @@ class Periodic implements Writer
 	 */
 	private function handleCommunication(): void
 	{
-		$findDevicesQuery = new Queries\FindSubDevices();
+		$findDevicesQuery = new Queries\Entities\FindSubDevices();
 		$findDevicesQuery->forConnector($this->connector);
 
 		$subDevices = $this->devicesRepository->findAllBy(
@@ -123,7 +123,7 @@ class Periodic implements Writer
 			Entities\Devices\SubDevice::class,
 		);
 
-		$findDevicesQuery = new Queries\FindThirdPartyDevices();
+		$findDevicesQuery = new Queries\Entities\FindThirdPartyDevices();
 		$findDevicesQuery->forConnector($this->connector);
 
 		$thirdPartyDevices = $this->devicesRepository->findAllBy(
@@ -178,13 +178,13 @@ class Periodic implements Writer
 	{
 		$now = $this->dateTimeFactory->getNow();
 
-		$findChannelsQuery = new Queries\FindChannels();
+		$findChannelsQuery = new Queries\Entities\FindChannels();
 		$findChannelsQuery->forDevice($device);
 
 		$channels = $this->channelsRepository->findAllBy($findChannelsQuery, Entities\NsPanelChannel::class);
 
 		foreach ($channels as $channel) {
-			$findChannelPropertiesQuery = new DevicesQueries\FindChannelDynamicProperties();
+			$findChannelPropertiesQuery = new DevicesQueries\Entities\FindChannelDynamicProperties();
 			$findChannelPropertiesQuery->forChannel($channel);
 
 			$properties = $this->channelsPropertiesRepository->findAllBy(
@@ -282,13 +282,13 @@ class Periodic implements Writer
 			return false;
 		}
 
-		$findChannelsQuery = new Queries\FindChannels();
+		$findChannelsQuery = new Queries\Entities\FindChannels();
 		$findChannelsQuery->forDevice($device);
 
 		$channels = $this->channelsRepository->findAllBy($findChannelsQuery, Entities\NsPanelChannel::class);
 
 		foreach ($channels as $channel) {
-			$findChannelPropertiesQuery = new DevicesQueries\FindChannelProperties();
+			$findChannelPropertiesQuery = new DevicesQueries\Entities\FindChannelProperties();
 			$findChannelPropertiesQuery->forChannel($channel);
 
 			$properties = $this->channelsPropertiesRepository->findAllBy($findChannelPropertiesQuery);

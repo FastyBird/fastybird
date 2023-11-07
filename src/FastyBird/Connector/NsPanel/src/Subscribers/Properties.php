@@ -109,7 +109,7 @@ final class Properties implements Common\EventSubscriber
 	 */
 	private function processDeviceProperties(Entities\NsPanelDevice $device): void
 	{
-		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($device);
 		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::STATE);
 
@@ -168,7 +168,7 @@ final class Properties implements Common\EventSubscriber
 	 */
 	private function processRequiredCapability(Entities\Devices\ThirdPartyDevice $device): void
 	{
-		$findChannelQuery = new Queries\FindChannels();
+		$findChannelQuery = new Queries\Entities\FindChannels();
 		$findChannelQuery->forDevice($device);
 		$findChannelQuery->byIdentifier(
 			Helpers\Name::convertCapabilityToChannel(Types\Capability::get(Types\Capability::RSSI)),
@@ -318,7 +318,7 @@ final class Properties implements Common\EventSubscriber
 		string|null $invalidValue = null,
 	): void
 	{
-		$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+		$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
 		$findChannelPropertyQuery->forChannel($channel);
 		$findChannelPropertyQuery->byIdentifier(Helpers\Name::convertProtocolToProperty($protocol));
 

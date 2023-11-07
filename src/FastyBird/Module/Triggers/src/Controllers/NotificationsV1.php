@@ -57,9 +57,9 @@ final class NotificationsV1 extends BaseV1
 	use Controllers\Finders\TTrigger;
 
 	public function __construct(
-		private readonly Models\Triggers\TriggersRepository $triggersRepository,
-		private readonly Models\Notifications\NotificationsRepository $notificationsRepository,
-		private readonly Models\Notifications\NotificationsManager $notificationsManager,
+		private readonly Models\Entities\Triggers\TriggersRepository $triggersRepository,
+		private readonly Models\Entities\Notifications\NotificationsRepository $notificationsRepository,
+		private readonly Models\Entities\Notifications\NotificationsManager $notificationsManager,
 	)
 	{
 	}
@@ -76,7 +76,7 @@ final class NotificationsV1 extends BaseV1
 		// At first, try to load trigger
 		$trigger = $this->findTrigger(strval($request->getAttribute(Router\Routes::URL_TRIGGER_ID)));
 
-		$findQuery = new Queries\FindNotifications();
+		$findQuery = new Queries\Entities\FindNotifications();
 		$findQuery->forTrigger($trigger);
 
 		$rows = $this->notificationsRepository->getResultSet($findQuery);
@@ -408,7 +408,7 @@ final class NotificationsV1 extends BaseV1
 	): Entities\Notifications\Notification
 	{
 		try {
-			$findQuery = new Queries\FindNotifications();
+			$findQuery = new Queries\Entities\FindNotifications();
 			$findQuery->byId(Uuid\Uuid::fromString($id));
 			$findQuery->forTrigger($trigger);
 

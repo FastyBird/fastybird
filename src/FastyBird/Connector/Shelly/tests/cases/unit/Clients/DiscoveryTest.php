@@ -190,7 +190,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 			DevicesModels\Entities\Connectors\ConnectorsRepository::class,
 		);
 
-		$findConnectorQuery = new Queries\FindConnectors();
+		$findConnectorQuery = new Queries\Entities\FindConnectors();
 		$findConnectorQuery->byIdentifier('shelly-local');
 
 		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\ShellyConnector::class);
@@ -224,7 +224,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 
 		$devicesRepository = $this->getContainer()->getByType(DevicesModels\Entities\Devices\DevicesRepository::class);
 
-		$findDeviceQuery = new Queries\FindDevices();
+		$findDeviceQuery = new Queries\Entities\FindDevices();
 		$findDeviceQuery->forConnector($connector);
 		$findDeviceQuery->byIdentifier('c45bbee4c926-shellyrgbw2');
 
@@ -242,7 +242,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 			DevicesModels\Entities\Channels\ChannelsRepository::class,
 		);
 
-		$findChannelsQuery = new DevicesQueries\FindChannels();
+		$findChannelsQuery = new DevicesQueries\Entities\FindChannels();
 		$findChannelsQuery->forDevice($device);
 
 		$channels = $channelsRepository->findAllBy($findChannelsQuery);
@@ -395,7 +395,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 			DevicesModels\Entities\Connectors\ConnectorsRepository::class,
 		);
 
-		$findConnectorQuery = new Queries\FindConnectors();
+		$findConnectorQuery = new Queries\Entities\FindConnectors();
 		$findConnectorQuery->byIdentifier('shelly-local');
 
 		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\ShellyConnector::class);
@@ -429,7 +429,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 
 		$devicesRepository = $this->getContainer()->getByType(DevicesModels\Entities\Devices\DevicesRepository::class);
 
-		$findDeviceQuery = new Queries\FindDevices();
+		$findDeviceQuery = new Queries\Entities\FindDevices();
 		$findDeviceQuery->forConnector($connector);
 		$findDeviceQuery->byIdentifier('441793ad07e8-shellyplus2pm');
 
@@ -447,7 +447,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 			DevicesModels\Entities\Channels\ChannelsRepository::class,
 		);
 
-		$findChannelsQuery = new DevicesQueries\FindChannels();
+		$findChannelsQuery = new DevicesQueries\Entities\FindChannels();
 		$findChannelsQuery->forDevice($device);
 
 		$channels = $channelsRepository->findAllBy($findChannelsQuery);

@@ -26,7 +26,7 @@ use Ramsey\Uuid;
 
 /**
  * @property-read Localization\ITranslator $translator
- * @property-read Models\Triggers\TriggersRepository $triggersRepository
+ * @property-read Models\Entities\Triggers\TriggersRepository $triggersRepository
  */
 trait TTrigger
 {
@@ -38,7 +38,7 @@ trait TTrigger
 	protected function findTrigger(string $id): Entities\Triggers\Trigger
 	{
 		try {
-			$findQuery = new Queries\FindTriggers();
+			$findQuery = new Queries\Entities\FindTriggers();
 			$findQuery->byId(Uuid\Uuid::fromString($id));
 
 			$trigger = $this->triggersRepository->findOneBy($findQuery);

@@ -29,7 +29,7 @@ use function strval;
 
 /**
  * @property-read Localization\ITranslator $translator
- * @property-read Models\Roles\RolesRepository $rolesRepository
+ * @property-read Models\Entities\Roles\RolesRepository $rolesRepository
  */
 trait TRole
 {
@@ -50,7 +50,7 @@ trait TRole
 			);
 		}
 
-		$findQuery = new Queries\FindRoles();
+		$findQuery = new Queries\Entities\FindRoles();
 		$findQuery->byId(Uuid\Uuid::fromString(strval($request->getAttribute(Router\Routes::URL_ITEM_ID))));
 
 		$role = $this->rolesRepository->findOneBy($findQuery);

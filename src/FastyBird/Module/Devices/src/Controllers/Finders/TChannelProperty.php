@@ -41,7 +41,7 @@ trait TChannelProperty
 	): Entities\Channels\Properties\Property
 	{
 		try {
-			$findQuery = new Queries\FindChannelProperties();
+			$findQuery = new Queries\Entities\FindChannelProperties();
 			$findQuery->forChannel($channel);
 			$findQuery->byId(Uuid\Uuid::fromString($id));
 

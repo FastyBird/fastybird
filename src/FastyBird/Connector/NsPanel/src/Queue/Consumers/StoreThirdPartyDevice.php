@@ -65,7 +65,7 @@ final class StoreThirdPartyDevice implements Queue\Consumer
 			return false;
 		}
 
-		$findDeviceQuery = new Queries\FindThirdPartyDevices();
+		$findDeviceQuery = new Queries\Entities\FindThirdPartyDevices();
 		$findDeviceQuery->byConnectorId($entity->getConnector());
 		$findDeviceQuery->byIdentifier($entity->getIdentifier());
 

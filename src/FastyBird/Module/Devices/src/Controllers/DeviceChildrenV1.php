@@ -58,7 +58,7 @@ final class DeviceChildrenV1 extends BaseV1
 		// At first, try to load device
 		$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
 
-		$findQuery = new Queries\FindDevices();
+		$findQuery = new Queries\Entities\FindDevices();
 		$findQuery->forParent($device);
 
 		$children = $this->devicesRepository->getResultSet($findQuery);

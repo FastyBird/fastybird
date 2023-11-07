@@ -80,7 +80,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 			|| $entity instanceof MetadataEntities\DevicesModule\ChannelMappedProperty
 			|| $entity instanceof MetadataEntities\DevicesModule\ChannelVariableProperty
 		) {
-			$findChannelQuery = new Queries\FindChannels();
+			$findChannelQuery = new Queries\Entities\FindChannels();
 			$findChannelQuery->byId($entity->getChannel());
 
 			$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\NsPanelChannel::class);

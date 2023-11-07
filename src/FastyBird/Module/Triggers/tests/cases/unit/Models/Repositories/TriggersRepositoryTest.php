@@ -31,9 +31,9 @@ final class TriggersRepositoryTest extends DbTestCase
 	 */
 	public function testReadOne(): void
 	{
-		$repository = $this->getContainer()->getByType(Models\Triggers\TriggersRepository::class);
+		$repository = $this->getContainer()->getByType(Models\Entities\Triggers\TriggersRepository::class);
 
-		$findQuery = new Queries\FindTriggers();
+		$findQuery = new Queries\Entities\FindTriggers();
 		$findQuery->byId(Uuid\Uuid::fromString('0b48dfbc-fac2-4292-88dc-7981a121602d'));
 
 		$entity = $repository->findOneBy($findQuery);
@@ -54,9 +54,9 @@ final class TriggersRepositoryTest extends DbTestCase
 	 */
 	public function testReadResultSet(): void
 	{
-		$repository = $this->getContainer()->getByType(Models\Triggers\TriggersRepository::class);
+		$repository = $this->getContainer()->getByType(Models\Entities\Triggers\TriggersRepository::class);
 
-		$findQuery = new Queries\FindTriggers();
+		$findQuery = new Queries\Entities\FindTriggers();
 
 		$resultSet = $repository->getResultSet($findQuery);
 

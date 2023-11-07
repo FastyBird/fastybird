@@ -52,7 +52,9 @@ final class ControlsRepository
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function findOneBy(Queries\FindChannelControls $queryObject): Entities\Channels\Controls\Control|null
+	public function findOneBy(
+		Queries\Entities\FindChannelControls $queryObject,
+	): Entities\Channels\Controls\Control|null
 	{
 		return $this->database->query(
 			fn (): Entities\Channels\Controls\Control|null => $queryObject->fetchOne($this->getRepository()),
@@ -64,7 +66,7 @@ final class ControlsRepository
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
-	public function findAllBy(Queries\FindChannelControls $queryObject): array
+	public function findAllBy(Queries\Entities\FindChannelControls $queryObject): array
 	{
 		try {
 			/** @var array<Entities\Channels\Controls\Control> $result */
@@ -82,7 +84,7 @@ final class ControlsRepository
 	 * @throws Exceptions\InvalidState
 	 */
 	public function getResultSet(
-		Queries\FindChannelControls $queryObject,
+		Queries\Entities\FindChannelControls $queryObject,
 	): DoctrineOrmQuery\ResultSet
 	{
 		$result = $this->database->query(

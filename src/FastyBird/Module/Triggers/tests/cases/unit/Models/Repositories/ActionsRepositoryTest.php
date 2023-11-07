@@ -31,9 +31,9 @@ final class ActionsRepositoryTest extends DbTestCase
 	 */
 	public function testReadOne(): void
 	{
-		$repository = $this->getContainer()->getByType(Models\Actions\ActionsRepository::class);
+		$repository = $this->getContainer()->getByType(Models\Entities\Actions\ActionsRepository::class);
 
-		$findQuery = new Queries\FindActions();
+		$findQuery = new Queries\Entities\FindActions();
 		$findQuery->byId(Uuid\Uuid::fromString('4aa84028-d8b7-4128-95b2-295763634aa4'));
 
 		$entity = $repository->findOneBy($findQuery);
@@ -53,9 +53,9 @@ final class ActionsRepositoryTest extends DbTestCase
 	 */
 	public function testReadResultSet(): void
 	{
-		$repository = $this->getContainer()->getByType(Models\Actions\ActionsRepository::class);
+		$repository = $this->getContainer()->getByType(Models\Entities\Actions\ActionsRepository::class);
 
-		$findQuery = new Queries\FindActions();
+		$findQuery = new Queries\Entities\FindActions();
 
 		$resultSet = $repository->getResultSet($findQuery);
 

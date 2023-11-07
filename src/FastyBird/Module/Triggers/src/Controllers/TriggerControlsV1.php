@@ -47,8 +47,8 @@ final class TriggerControlsV1 extends BaseV1
 	use Controllers\Finders\TTrigger;
 
 	public function __construct(
-		private readonly Models\Triggers\TriggersRepository $triggersRepository,
-		private readonly Models\Triggers\Controls\ControlsRepository $controlRepository,
+		private readonly Models\Entities\Triggers\TriggersRepository $triggersRepository,
+		private readonly Models\Entities\Triggers\Controls\ControlsRepository $controlRepository,
 	)
 	{
 	}
@@ -73,7 +73,7 @@ final class TriggerControlsV1 extends BaseV1
 			);
 		}
 
-		$findQuery = new Queries\FindTriggerControls();
+		$findQuery = new Queries\Entities\FindTriggerControls();
 		$findQuery->forTrigger($trigger);
 
 		$controls = $this->controlRepository->getResultSet($findQuery);
@@ -104,7 +104,7 @@ final class TriggerControlsV1 extends BaseV1
 		}
 
 		if (Uuid\Uuid::isValid(strval($request->getAttribute(Router\Routes::URL_ITEM_ID)))) {
-			$findQuery = new Queries\FindTriggerControls();
+			$findQuery = new Queries\Entities\FindTriggerControls();
 			$findQuery->forTrigger($trigger);
 			$findQuery->byId(Uuid\Uuid::fromString(strval($request->getAttribute(Router\Routes::URL_ITEM_ID))));
 
@@ -148,7 +148,7 @@ final class TriggerControlsV1 extends BaseV1
 		$relationEntity = strtolower(strval($request->getAttribute(Router\Routes::RELATION_ENTITY)));
 
 		if (Uuid\Uuid::isValid(strval($request->getAttribute(Router\Routes::URL_ITEM_ID)))) {
-			$findQuery = new Queries\FindTriggerControls();
+			$findQuery = new Queries\Entities\FindTriggerControls();
 			$findQuery->forTrigger($trigger);
 			$findQuery->byId(Uuid\Uuid::fromString(strval($request->getAttribute(Router\Routes::URL_ITEM_ID))));
 

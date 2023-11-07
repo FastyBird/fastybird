@@ -44,7 +44,7 @@ final class ChannelPropertiesRepositoryTest extends BaseTestCase
 
 		$this->mockContainerService(RedisDbClient\Client::class, $redisDbClient);
 
-		$repository = $this->container->getByType(Models\ChannelPropertiesRepository::class);
+		$repository = $this->container->getByType(Models\States\ChannelPropertiesRepository::class);
 
 		$state = $repository->findOneById($id);
 
@@ -85,7 +85,7 @@ final class ChannelPropertiesRepositoryTest extends BaseTestCase
 
 		$this->mockContainerService(RedisDbClient\Client::class, $redisDbClient);
 
-		$repository = $this->container->getByType(Models\ChannelPropertiesRepository::class);
+		$repository = $this->container->getByType(Models\States\ChannelPropertiesRepository::class);
 
 		$property = $this->createMock(DevicesEntities\Channels\Properties\Dynamic::class);
 		$property

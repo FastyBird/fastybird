@@ -119,7 +119,7 @@ final class Gateway implements Client
 	 */
 	private function handleCommunication(): void
 	{
-		$findDevicesQuery = new Queries\FindGatewayDevices();
+		$findDevicesQuery = new Queries\Entities\FindGatewayDevices();
 		$findDevicesQuery->forConnector($this->connector);
 
 		foreach ($this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\Gateway::class) as $device) {

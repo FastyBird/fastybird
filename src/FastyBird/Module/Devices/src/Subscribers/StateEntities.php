@@ -271,7 +271,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 			|| $property instanceof Entities\Devices\Properties\Dynamic
 			|| $property instanceof Entities\Devices\Properties\Mapped
 		) {
-			$findDevicePropertiesQuery = new Queries\FindDeviceMappedProperties();
+			$findDevicePropertiesQuery = new Queries\Entities\FindDeviceMappedProperties();
 			$findDevicePropertiesQuery->byParentId($property->getId());
 
 			return $this->devicePropertiesRepository->findAllBy(
@@ -284,7 +284,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 			|| $property instanceof Entities\Channels\Properties\Dynamic
 			|| $property instanceof Entities\Channels\Properties\Mapped
 		) {
-			$findDevicePropertiesQuery = new Queries\FindChannelMappedProperties();
+			$findDevicePropertiesQuery = new Queries\Entities\FindChannelMappedProperties();
 			$findDevicePropertiesQuery->byParentId($property->getId());
 
 			return $this->channelPropertiesRepository->findAllBy(

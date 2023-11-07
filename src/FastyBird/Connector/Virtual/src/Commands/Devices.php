@@ -281,7 +281,7 @@ class Devices extends Console\Command\Command
 	 */
 	private function listDevices(Style\SymfonyStyle $io, Entities\VirtualConnector $connector): void
 	{
-		$findDevicesQuery = new Queries\FindDevices();
+		$findDevicesQuery = new Queries\Entities\FindDevices();
 		$findDevicesQuery->forConnector($connector);
 
 		$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\VirtualDevice::class);
@@ -323,7 +323,7 @@ class Devices extends Console\Command\Command
 	{
 		$connectors = [];
 
-		$findConnectorsQuery = new Queries\FindConnectors();
+		$findConnectorsQuery = new Queries\Entities\FindConnectors();
 
 		$systemConnectors = $this->connectorsRepository->findAllBy(
 			$findConnectorsQuery,
@@ -369,7 +369,7 @@ class Devices extends Console\Command\Command
 			$identifier = array_search($answer, $connectors, true);
 
 			if ($identifier !== false) {
-				$findConnectorQuery = new Queries\FindConnectors();
+				$findConnectorQuery = new Queries\Entities\FindConnectors();
 				$findConnectorQuery->byIdentifier($identifier);
 
 				$connector = $this->connectorsRepository->findOneBy(
@@ -406,7 +406,7 @@ class Devices extends Console\Command\Command
 	{
 		$devices = [];
 
-		$findDevicesQuery = new Queries\FindDevices();
+		$findDevicesQuery = new Queries\Entities\FindDevices();
 		$findDevicesQuery->forConnector($connector);
 
 		$connectorDevices = $this->devicesRepository->findAllBy(
@@ -453,7 +453,7 @@ class Devices extends Console\Command\Command
 				$identifier = array_search($answer, $devices, true);
 
 				if ($identifier !== false) {
-					$findDeviceQuery = new Queries\FindDevices();
+					$findDeviceQuery = new Queries\Entities\FindDevices();
 					$findDeviceQuery->byIdentifier($identifier);
 					$findDeviceQuery->forConnector($connector);
 

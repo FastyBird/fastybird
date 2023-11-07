@@ -161,7 +161,7 @@ abstract class Property extends JsonApiSchemas\JsonApi
 	 */
 	protected function getChildren(Entities\Devices\Properties\Property $property): array
 	{
-		$findQuery = new Queries\FindDeviceProperties();
+		$findQuery = new Queries\Entities\FindDeviceProperties();
 		$findQuery->forParent($property);
 
 		return $this->propertiesRepository->findAllBy($findQuery);

@@ -119,7 +119,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 				return;
 			}
 
-			$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+			$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
 			$findDevicePropertyQuery->byId($entity->getId());
 
 			$property = $this->devicePropertiesRepository->findOneBy($findDevicePropertyQuery);
@@ -181,7 +181,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 				return;
 			}
 
-			$findDevicePropertyQuery = new DevicesQueries\FindChannelProperties();
+			$findDevicePropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
 			$findDevicePropertyQuery->byId($entity->getId());
 
 			$property = $this->channelPropertiesRepository->findOneBy($findDevicePropertyQuery);

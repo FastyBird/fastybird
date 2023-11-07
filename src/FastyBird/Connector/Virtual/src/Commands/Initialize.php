@@ -126,7 +126,7 @@ class Initialize extends Console\Command\Command
 
 		$question->setValidator(function ($answer) {
 			if ($answer !== null) {
-				$findConnectorQuery = new Queries\FindConnectors();
+				$findConnectorQuery = new Queries\Entities\FindConnectors();
 				$findConnectorQuery->byIdentifier($answer);
 
 				if ($this->connectorsRepository->findOneBy(
@@ -150,7 +150,7 @@ class Initialize extends Console\Command\Command
 			for ($i = 1; $i <= 100; $i++) {
 				$identifier = sprintf($identifierPattern, $i);
 
-				$findConnectorQuery = new Queries\FindConnectors();
+				$findConnectorQuery = new Queries\Entities\FindConnectors();
 				$findConnectorQuery->byIdentifier($identifier);
 
 				if ($this->connectorsRepository->findOneBy(
@@ -363,7 +363,7 @@ class Initialize extends Console\Command\Command
 	 */
 	private function listConfigurations(Style\SymfonyStyle $io): void
 	{
-		$findConnectorsQuery = new Queries\FindConnectors();
+		$findConnectorsQuery = new Queries\Entities\FindConnectors();
 
 		$connectors = $this->connectorsRepository->findAllBy($findConnectorsQuery, Entities\VirtualConnector::class);
 		usort(
@@ -385,7 +385,7 @@ class Initialize extends Console\Command\Command
 		]);
 
 		foreach ($connectors as $index => $connector) {
-			$findDevicesQuery = new Queries\FindDevices();
+			$findDevicesQuery = new Queries\Entities\FindDevices();
 			$findDevicesQuery->forConnector($connector);
 
 			$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\VirtualDevice::class);
@@ -421,7 +421,7 @@ class Initialize extends Console\Command\Command
 	{
 		$connectors = [];
 
-		$findConnectorsQuery = new Queries\FindConnectors();
+		$findConnectorsQuery = new Queries\Entities\FindConnectors();
 
 		$systemConnectors = $this->connectorsRepository->findAllBy(
 			$findConnectorsQuery,
@@ -467,7 +467,7 @@ class Initialize extends Console\Command\Command
 			$identifier = array_search($answer, $connectors, true);
 
 			if ($identifier !== false) {
-				$findConnectorQuery = new Queries\FindConnectors();
+				$findConnectorQuery = new Queries\Entities\FindConnectors();
 				$findConnectorQuery->byIdentifier($identifier);
 
 				$connector = $this->connectorsRepository->findOneBy(

@@ -52,8 +52,8 @@ final class RolesV1 extends BaseV1
 	use Controllers\Finders\TRole;
 
 	public function __construct(
-		private readonly Models\Roles\RolesRepository $rolesRepository,
-		private readonly Models\Roles\RolesManager $rolesManager,
+		private readonly Models\Entities\Roles\RolesRepository $rolesRepository,
+		private readonly Models\Entities\Roles\RolesManager $rolesManager,
 		private readonly Hydrators\Roles\Role $roleHydrator,
 	)
 	{
@@ -68,7 +68,7 @@ final class RolesV1 extends BaseV1
 		Message\ResponseInterface $response,
 	): Message\ResponseInterface
 	{
-		$findQuery = new Queries\FindRoles();
+		$findQuery = new Queries\Entities\FindRoles();
 
 		$roles = $this->rolesRepository->getResultSet($findQuery);
 

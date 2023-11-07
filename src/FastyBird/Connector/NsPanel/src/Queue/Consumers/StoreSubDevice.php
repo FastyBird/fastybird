@@ -73,7 +73,7 @@ final class StoreSubDevice implements Queue\Consumer
 			return false;
 		}
 
-		$findDeviceQuery = new Queries\FindGatewayDevices();
+		$findDeviceQuery = new Queries\Entities\FindGatewayDevices();
 		$findDeviceQuery->byConnectorId($entity->getConnector());
 		$findDeviceQuery->byId($entity->getGateway());
 
@@ -101,7 +101,7 @@ final class StoreSubDevice implements Queue\Consumer
 			return true;
 		}
 
-		$findDeviceQuery = new Queries\FindSubDevices();
+		$findDeviceQuery = new Queries\Entities\FindSubDevices();
 		$findDeviceQuery->byConnectorId($entity->getConnector());
 		$findDeviceQuery->forParent($parent);
 		$findDeviceQuery->byIdentifier($entity->getIdentifier());
@@ -109,7 +109,7 @@ final class StoreSubDevice implements Queue\Consumer
 		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\SubDevice::class);
 
 		if ($device === null) {
-			$findConnectorQuery = new Queries\FindConnectors();
+			$findConnectorQuery = new Queries\Entities\FindConnectors();
 			$findConnectorQuery->byId($entity->getConnector());
 
 			$connector = $this->connectorsRepository->findOneBy(
@@ -251,7 +251,7 @@ final class StoreSubDevice implements Queue\Consumer
 					$identifier .= '_' . $capability->getName();
 				}
 
-				$findChannelQuery = new Queries\FindChannels();
+				$findChannelQuery = new Queries\Entities\FindChannels();
 				$findChannelQuery->byIdentifier($identifier);
 				$findChannelQuery->forDevice($device);
 
@@ -293,7 +293,7 @@ final class StoreSubDevice implements Queue\Consumer
 			if ($tag === Types\Capability::TOGGLE && is_array($value)) {
 				$this->databaseHelper->transaction(function () use ($entity, $parent, $device, $value): void {
 					foreach ($value as $key => $name) {
-						$findChannelQuery = new Queries\FindChannels();
+						$findChannelQuery = new Queries\Entities\FindChannels();
 						$findChannelQuery->byIdentifier(
 							Helpers\Name::convertCapabilityToChannel(
 								Types\Capability::get(Types\Capability::TOGGLE),

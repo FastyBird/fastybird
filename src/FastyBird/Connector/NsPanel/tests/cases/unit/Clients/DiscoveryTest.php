@@ -79,7 +79,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 			DevicesModels\Entities\Connectors\ConnectorsRepository::class,
 		);
 
-		$findConnectorQuery = new Queries\FindConnectors();
+		$findConnectorQuery = new Queries\Entities\FindConnectors();
 		$findConnectorQuery->byIdentifier('ns-panel');
 
 		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\NsPanelConnector::class);
@@ -172,7 +172,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 
 		$devicesRepository = $this->getContainer()->getByType(DevicesModels\Entities\Devices\DevicesRepository::class);
 
-		$findDeviceQuery = new Queries\FindSubDevices();
+		$findDeviceQuery = new Queries\Entities\FindSubDevices();
 		$findDeviceQuery->forConnector($connector);
 		$findDeviceQuery->byIdentifier('a480062416');
 
@@ -187,7 +187,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 			DevicesModels\Entities\Channels\ChannelsRepository::class,
 		);
 
-		$findChannelsQuery = new Queries\FindChannels();
+		$findChannelsQuery = new Queries\Entities\FindChannels();
 		$findChannelsQuery->forDevice($device);
 
 		$channels = $channelsRepository->findAllBy($findChannelsQuery, Entities\NsPanelChannel::class);

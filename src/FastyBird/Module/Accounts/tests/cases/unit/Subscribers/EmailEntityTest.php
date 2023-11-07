@@ -29,9 +29,9 @@ final class EmailEntityTest extends DbTestCase
 	 */
 	public function testChangeDefault(): void
 	{
-		$repository = $this->getContainer()->getByType(Models\Emails\EmailsRepository::class);
+		$repository = $this->getContainer()->getByType(Models\Entities\Emails\EmailsRepository::class);
 
-		$manager = $this->getContainer()->getByType(Models\Emails\EmailsManager::class);
+		$manager = $this->getContainer()->getByType(Models\Entities\Emails\EmailsManager::class);
 
 		$defaultEmail = $repository->findOneByAddress('john.doe@fastybird.com');
 
@@ -51,10 +51,10 @@ final class EmailEntityTest extends DbTestCase
 		self::assertNotNull($defaultEmail);
 		self::assertFalse($defaultEmail->isDefault());
 
-		$findEntityQuery = new Queries\FindIdentities();
+		$findEntityQuery = new Queries\Entities\FindIdentities();
 		$findEntityQuery->forAccount($defaultEmail->getAccount());
 
-		$repository = $this->getContainer()->getByType(Models\Identities\IdentitiesRepository::class);
+		$repository = $this->getContainer()->getByType(Models\Entities\Identities\IdentitiesRepository::class);
 
 		$identity = $repository->findOneBy($findEntityQuery);
 

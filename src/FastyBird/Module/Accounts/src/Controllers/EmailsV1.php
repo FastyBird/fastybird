@@ -61,9 +61,9 @@ final class EmailsV1 extends BaseV1
 
 	public function __construct(
 		private readonly Hydrators\Emails\Email $emailHydrator,
-		protected readonly Models\Emails\EmailsRepository $emailsRepository,
-		private readonly Models\Emails\EmailsManager $emailsManager,
-		protected readonly Models\Accounts\AccountsRepository $accountsRepository,
+		protected readonly Models\Entities\Emails\EmailsRepository $emailsRepository,
+		private readonly Models\Entities\Emails\EmailsManager $emailsManager,
+		protected readonly Models\Entities\Accounts\AccountsRepository $accountsRepository,
 		private readonly Helpers\SecurityHash $securityHash,
 	)
 	{
@@ -78,7 +78,7 @@ final class EmailsV1 extends BaseV1
 		Message\ResponseInterface $response,
 	): Message\ResponseInterface
 	{
-		$findQuery = new Queries\FindEmails();
+		$findQuery = new Queries\Entities\FindEmails();
 		$findQuery->forAccount($this->findAccount($request));
 
 		$emails = $this->emailsRepository->getResultSet($findQuery);

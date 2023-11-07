@@ -20,6 +20,7 @@ use Doctrine\Persistence;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Queries;
+use FastyBird\Module\Devices\Queries\Entities\FindConnectorProperties;
 use FastyBird\Module\Devices\Utilities;
 use IPub\DoctrineOrmQuery;
 use Nette;
@@ -52,7 +53,7 @@ final class PropertiesRepository
 	/**
 	 * @template T of Entities\Connectors\Properties\Property
 	 *
-	 * @param Queries\FindConnectorProperties<T> $queryObject
+	 * @param FindConnectorProperties<T> $queryObject
 	 * @param class-string<T> $type
 	 *
 	 * @return T|null
@@ -60,7 +61,7 @@ final class PropertiesRepository
 	 * @throws Exceptions\InvalidState
 	 */
 	public function findOneBy(
-		Queries\FindConnectorProperties $queryObject,
+		Queries\Entities\FindConnectorProperties $queryObject,
 		string $type = Entities\Connectors\Properties\Property::class,
 	): Entities\Connectors\Properties\Property|null
 	{
@@ -72,7 +73,7 @@ final class PropertiesRepository
 	/**
 	 * @template T of Entities\Connectors\Properties\Property
 	 *
-	 * @param Queries\FindConnectorProperties<T> $queryObject
+	 * @param FindConnectorProperties<T> $queryObject
 	 * @param class-string<T> $type
 	 *
 	 * @return array<T>
@@ -80,7 +81,7 @@ final class PropertiesRepository
 	 * @throws Exceptions\InvalidState
 	 */
 	public function findAllBy(
-		Queries\FindConnectorProperties $queryObject,
+		Queries\Entities\FindConnectorProperties $queryObject,
 		string $type = Entities\Connectors\Properties\Property::class,
 	): array
 	{
@@ -97,7 +98,7 @@ final class PropertiesRepository
 	/**
 	 * @template T of Entities\Connectors\Properties\Property
 	 *
-	 * @param Queries\FindConnectorProperties<T> $queryObject
+	 * @param FindConnectorProperties<T> $queryObject
 	 * @param class-string<T> $type
 	 *
 	 * @return DoctrineOrmQuery\ResultSet<T>
@@ -105,7 +106,7 @@ final class PropertiesRepository
 	 * @throws Exceptions\InvalidState
 	 */
 	public function getResultSet(
-		Queries\FindConnectorProperties $queryObject,
+		Queries\Entities\FindConnectorProperties $queryObject,
 		string $type = Entities\Connectors\Properties\Property::class,
 	): DoctrineOrmQuery\ResultSet
 	{

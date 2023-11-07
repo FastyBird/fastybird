@@ -46,7 +46,7 @@ class Create extends Console\Command\Command
 	public const NAME = 'fb:api-key:create';
 
 	public function __construct(
-		private readonly Models\KeysManager $keysManager,
+		private readonly Models\Entities\KeysManager $keysManager,
 		string|null $name = null,
 		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)

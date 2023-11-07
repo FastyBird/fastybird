@@ -64,7 +64,7 @@ final class Controls implements Common\EventSubscriber
 
 		// Check for valid entity
 		if ($entity instanceof Entities\FbMqttConnector) {
-			$findConnectorControlQuery = new DevicesQueries\FindConnectorControls();
+			$findConnectorControlQuery = new DevicesQueries\Entities\FindConnectorControls();
 			$findConnectorControlQuery->forConnector($entity);
 			$findConnectorControlQuery->byName(Types\ConnectorControlName::NAME_REBOOT);
 

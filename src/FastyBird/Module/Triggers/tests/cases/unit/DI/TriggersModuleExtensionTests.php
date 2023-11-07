@@ -32,21 +32,31 @@ final class TriggersModuleExtensionTests extends DbTestCase
 	{
 		self::assertNotNull($this->getContainer()->getByType(Commands\Initialize::class, false));
 
-		self::assertNotNull($this->getContainer()->getByType(Models\Triggers\TriggersRepository::class, false));
 		self::assertNotNull(
-			$this->getContainer()->getByType(Models\Triggers\Controls\ControlsRepository::class, false),
+			$this->getContainer()->getByType(Models\Entities\Triggers\TriggersRepository::class, false),
 		);
-		self::assertNotNull($this->getContainer()->getByType(Models\Actions\ActionsRepository::class, false));
 		self::assertNotNull(
-			$this->getContainer()->getByType(Models\Notifications\NotificationsRepository::class, false),
+			$this->getContainer()->getByType(Models\Entities\Triggers\Controls\ControlsRepository::class, false),
 		);
-		self::assertNotNull($this->getContainer()->getByType(Models\Conditions\ConditionsRepository::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Models\Entities\Actions\ActionsRepository::class, false));
+		self::assertNotNull(
+			$this->getContainer()->getByType(Models\Entities\Notifications\NotificationsRepository::class, false),
+		);
+		self::assertNotNull(
+			$this->getContainer()->getByType(Models\Entities\Conditions\ConditionsRepository::class, false),
+		);
 
-		self::assertNotNull($this->getContainer()->getByType(Models\Triggers\TriggersManager::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Models\Triggers\Controls\ControlsManager::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Models\Actions\ActionsManager::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Models\Notifications\NotificationsManager::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Models\Conditions\ConditionsManager::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Models\Entities\Triggers\TriggersManager::class, false));
+		self::assertNotNull(
+			$this->getContainer()->getByType(Models\Entities\Triggers\Controls\ControlsManager::class, false),
+		);
+		self::assertNotNull($this->getContainer()->getByType(Models\Entities\Actions\ActionsManager::class, false));
+		self::assertNotNull(
+			$this->getContainer()->getByType(Models\Entities\Notifications\NotificationsManager::class, false),
+		);
+		self::assertNotNull(
+			$this->getContainer()->getByType(Models\Entities\Conditions\ConditionsManager::class, false),
+		);
 
 		self::assertNotNull($this->getContainer()->getByType(Models\States\ActionsRepository::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Models\States\ConditionsRepository::class, false));

@@ -510,7 +510,7 @@ trait StateWriter
 		Types\Protocol $protocol,
 	): DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped|DevicesEntities\Channels\Properties\Variable|null
 	{
-		$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+		$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
 		$findChannelPropertyQuery->forChannel($channel);
 		$findChannelPropertyQuery->byIdentifier(Helpers\Name::convertProtocolToProperty($protocol));
 

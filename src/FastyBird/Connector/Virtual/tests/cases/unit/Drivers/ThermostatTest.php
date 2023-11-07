@@ -40,7 +40,7 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 	{
 		$devicesRepository = $this->getContainer()->getByType(DevicesModels\Entities\Devices\DevicesRepository::class);
 
-		$findDeviceQuery = new Queries\FindThermostatDevices();
+		$findDeviceQuery = new Queries\Entities\FindThermostatDevices();
 		$findDeviceQuery->byIdentifier('thermostat-office');
 
 		$device = $devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\Thermostat::class);
@@ -114,7 +114,7 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 
 		$devicesRepository = $this->getContainer()->getByType(DevicesModels\Entities\Devices\DevicesRepository::class);
 
-		$findDeviceQuery = new Queries\FindThermostatDevices();
+		$findDeviceQuery = new Queries\Entities\FindThermostatDevices();
 		$findDeviceQuery->byIdentifier('thermostat-office');
 
 		$device = $devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\Thermostat::class);

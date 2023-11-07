@@ -74,7 +74,7 @@ final class Properties implements Common\EventSubscriber
 			return;
 		}
 
-		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($entity);
 		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::STATE);
 
@@ -117,7 +117,7 @@ final class Properties implements Common\EventSubscriber
 			]));
 		}
 
-		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($entity);
 		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::MANUFACTURER);
 
@@ -144,7 +144,7 @@ final class Properties implements Common\EventSubscriber
 			]));
 		}
 
-		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($entity);
 		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::MAC_ADDRESS);
 

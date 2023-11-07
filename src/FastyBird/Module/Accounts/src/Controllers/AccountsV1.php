@@ -58,9 +58,9 @@ final class AccountsV1 extends BaseV1
 
 	public function __construct(
 		private readonly Hydrators\Accounts\Account $accountHydrator,
-		private readonly Models\Accounts\AccountsRepository $accountsRepository,
-		private readonly Models\Accounts\AccountsManager $accountsManager,
-		private readonly Models\Identities\IdentitiesManager $identitiesManager,
+		private readonly Models\Entities\Accounts\AccountsRepository $accountsRepository,
+		private readonly Models\Entities\Accounts\AccountsManager $accountsManager,
+		private readonly Models\Entities\Identities\IdentitiesManager $identitiesManager,
 	)
 	{
 	}
@@ -73,7 +73,7 @@ final class AccountsV1 extends BaseV1
 		Message\ResponseInterface $response,
 	): Message\ResponseInterface
 	{
-		$findQuery = new Queries\FindAccounts();
+		$findQuery = new Queries\Entities\FindAccounts();
 
 		$accounts = $this->accountsRepository->getResultSet($findQuery);
 
@@ -413,7 +413,7 @@ final class AccountsV1 extends BaseV1
 			);
 		}
 
-		$findQuery = new Queries\FindAccounts();
+		$findQuery = new Queries\Entities\FindAccounts();
 		$findQuery->byId(Uuid\Uuid::fromString(strval($request->getAttribute(Router\Routes::URL_ITEM_ID))));
 
 		$account = $this->accountsRepository->findOneBy($findQuery);

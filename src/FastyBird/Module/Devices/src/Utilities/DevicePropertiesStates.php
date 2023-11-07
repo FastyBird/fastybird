@@ -141,7 +141,7 @@ final class DevicePropertiesStates
 				throw new Exceptions\InvalidState('Parent identifier for mapped property is missing');
 			}
 
-			$findDevicePropertyQuery = new Queries\FindDeviceProperties();
+			$findDevicePropertyQuery = new Queries\Entities\FindDeviceProperties();
 			$findDevicePropertyQuery->byId($property->getParent());
 
 			$parent = $this->devicePropertiesRepository->findOneBy($findDevicePropertyQuery);
@@ -278,7 +278,7 @@ final class DevicePropertiesStates
 				throw new Exceptions\InvalidState('Parent identifier for mapped property is missing');
 			}
 
-			$findPropertyQuery = new Queries\FindDeviceProperties();
+			$findPropertyQuery = new Queries\Entities\FindDeviceProperties();
 			$findPropertyQuery->byId($property->getParent());
 
 			$parent = $this->devicePropertiesRepository->findOneBy($findPropertyQuery);

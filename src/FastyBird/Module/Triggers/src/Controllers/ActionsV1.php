@@ -57,9 +57,9 @@ final class ActionsV1 extends BaseV1
 	use Controllers\Finders\TTrigger;
 
 	public function __construct(
-		private readonly Models\Triggers\TriggersRepository $triggersRepository,
-		private readonly Models\Actions\ActionsRepository $actionsRepository,
-		private readonly Models\Actions\ActionsManager $actionsManager,
+		private readonly Models\Entities\Triggers\TriggersRepository $triggersRepository,
+		private readonly Models\Entities\Actions\ActionsRepository $actionsRepository,
+		private readonly Models\Entities\Actions\ActionsManager $actionsManager,
 	)
 	{
 	}
@@ -76,7 +76,7 @@ final class ActionsV1 extends BaseV1
 		// At first, try to load trigger
 		$trigger = $this->findTrigger(strval($request->getAttribute(Router\Routes::URL_TRIGGER_ID)));
 
-		$findQuery = new Queries\FindActions();
+		$findQuery = new Queries\Entities\FindActions();
 		$findQuery->forTrigger($trigger);
 
 		$rows = $this->actionsRepository->getResultSet($findQuery);
@@ -387,7 +387,7 @@ final class ActionsV1 extends BaseV1
 	): Entities\Actions\Action
 	{
 		try {
-			$findQuery = new Queries\FindActions();
+			$findQuery = new Queries\Entities\FindActions();
 			$findQuery->byId(Uuid\Uuid::fromString($id));
 			$findQuery->forTrigger($trigger);
 

@@ -90,7 +90,7 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 			$channel = $property->getChannel();
 
 		} else {
-			$findChannelQuery = new Queries\FindChannels();
+			$findChannelQuery = new Queries\Entities\FindChannels();
 			$findChannelQuery->byId($property->getChannel());
 
 			$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\NsPanelChannel::class);

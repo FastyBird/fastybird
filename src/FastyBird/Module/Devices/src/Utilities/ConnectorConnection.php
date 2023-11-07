@@ -57,7 +57,7 @@ final class ConnectorConnection
 		MetadataTypes\ConnectionState $state,
 	): bool
 	{
-		$findConnectorPropertyQuery = new Queries\FindConnectorProperties();
+		$findConnectorPropertyQuery = new Queries\Entities\FindConnectorProperties();
 		$findConnectorPropertyQuery->forConnector($connector);
 		$findConnectorPropertyQuery->byIdentifier(MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_STATE);
 
@@ -106,7 +106,7 @@ final class ConnectorConnection
 		Entities\Connectors\Connector $connector,
 	): MetadataTypes\ConnectionState
 	{
-		$findPropertyQuery = new Queries\FindConnectorProperties();
+		$findPropertyQuery = new Queries\Entities\FindConnectorProperties();
 		$findPropertyQuery->forConnector($connector);
 		$findPropertyQuery->byIdentifier(MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_STATE);
 

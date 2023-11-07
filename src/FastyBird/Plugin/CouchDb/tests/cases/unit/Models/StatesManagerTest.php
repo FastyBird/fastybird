@@ -76,7 +76,7 @@ final class StatesManagerTest extends TestCase
 
 		$dateTimeFactory = $this->createMock(DateTimeFactory\Factory::class);
 
-		$manager = new Models\StatesManager($couchDbConnection, $dateTimeFactory, Fixtures\CustomState::class);
+		$manager = new Models\States\StatesManager($couchDbConnection, $dateTimeFactory, Fixtures\CustomState::class);
 
 		$state = $manager->create($id, Utils\ArrayHash::from($data));
 
@@ -149,7 +149,7 @@ final class StatesManagerTest extends TestCase
 
 		$dateTimeFactory = $this->createMock(DateTimeFactory\Factory::class);
 
-		$manager = new Models\StatesManager($couchDbConnection, $dateTimeFactory, Fixtures\CustomState::class);
+		$manager = new Models\States\StatesManager($couchDbConnection, $dateTimeFactory, Fixtures\CustomState::class);
 
 		$original = States\StateFactory::create(Fixtures\CustomState::class, $document);
 
@@ -208,7 +208,7 @@ final class StatesManagerTest extends TestCase
 
 		$dateTimeFactory = $this->createMock(DateTimeFactory\Factory::class);
 
-		$manager = new Models\StatesManager($couchDbConnection, $dateTimeFactory, Fixtures\CustomState::class);
+		$manager = new Models\States\StatesManager($couchDbConnection, $dateTimeFactory, Fixtures\CustomState::class);
 
 		$original = States\StateFactory::create(Fixtures\CustomState::class, $document);
 

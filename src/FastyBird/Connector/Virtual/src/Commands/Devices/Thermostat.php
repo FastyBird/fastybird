@@ -159,7 +159,7 @@ class Thermostat extends Device
 			return Console\Command\Command::FAILURE;
 		}
 
-		$findConnectorsQuery = new Queries\FindConnectors();
+		$findConnectorsQuery = new Queries\Entities\FindConnectors();
 		$findConnectorsQuery->byId(Uuid\Uuid::fromString(strval($connector)));
 
 		$connector = $this->connectorsRepository->findOneBy($findConnectorsQuery, Entities\VirtualConnector::class);
@@ -190,7 +190,7 @@ class Thermostat extends Device
 					return Console\Command\Command::FAILURE;
 				}
 
-				$findDeviceQuery = new Queries\FindThermostatDevices();
+				$findDeviceQuery = new Queries\Entities\FindThermostatDevices();
 				$findDeviceQuery->forConnector($connector);
 				$findDeviceQuery->byId(Uuid\Uuid::fromString(strval($device)));
 
@@ -237,7 +237,7 @@ class Thermostat extends Device
 
 		$question->setValidator(function (string|null $answer) {
 			if ($answer !== '' && $answer !== null) {
-				$findDeviceQuery = new Queries\FindDevices();
+				$findDeviceQuery = new Queries\Entities\FindDevices();
 				$findDeviceQuery->byIdentifier($answer);
 
 				if (
@@ -262,7 +262,7 @@ class Thermostat extends Device
 			for ($i = 1; $i <= 100; $i++) {
 				$identifier = sprintf($identifierPattern, $i);
 
-				$findDeviceQuery = new Queries\FindDevices();
+				$findDeviceQuery = new Queries\Entities\FindDevices();
 				$findDeviceQuery->byIdentifier($identifier);
 
 				if (
@@ -1025,13 +1025,13 @@ class Thermostat extends Device
 	 */
 	private function editThermostat(Style\SymfonyStyle $io, Entities\Devices\Thermostat $device): void
 	{
-		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($device);
 		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::MODEL);
 
 		$deviceModelProperty = $this->devicesPropertiesRepository->findOneBy($findDevicePropertyQuery);
 
-		$findChannelQuery = new Queries\FindThermostatChannels();
+		$findChannelQuery = new Queries\Entities\FindThermostatChannels();
 		$findChannelQuery->forDevice($device);
 		$findChannelQuery->byIdentifier(Types\ChannelIdentifier::THERMOSTAT);
 
@@ -1045,55 +1045,55 @@ class Thermostat extends Device
 		$heatingThresholdTempProperty = $coolingThresholdTempProperty = null;
 
 		if ($thermostatChannel !== null) {
-			$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+			$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
 			$findChannelPropertyQuery->forChannel($thermostatChannel);
 			$findChannelPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::HVAC_MODE);
 
 			$hvacModeProperty = $this->channelsPropertiesRepository->findOneBy($findChannelPropertyQuery);
 
-			$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+			$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
 			$findChannelPropertyQuery->forChannel($thermostatChannel);
 			$findChannelPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::HVAC_STATE);
 
 			$hvacStateProperty = $this->channelsPropertiesRepository->findOneBy($findChannelPropertyQuery);
 
-			$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+			$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
 			$findChannelPropertyQuery->forChannel($thermostatChannel);
 			$findChannelPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::MAXIMUM_FLOOR_TEMPERATURE);
 
 			$maxFloorTempProperty = $this->channelsPropertiesRepository->findOneBy($findChannelPropertyQuery);
 
-			$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+			$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
 			$findChannelPropertyQuery->forChannel($thermostatChannel);
 			$findChannelPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::ACTUAL_FLOOR_TEMPERATURE);
 
 			$actualFloorTempProperty = $this->channelsPropertiesRepository->findOneBy($findChannelPropertyQuery);
 
-			$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+			$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
 			$findChannelPropertyQuery->forChannel($thermostatChannel);
 			$findChannelPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::TARGET_TEMPERATURE);
 
 			$targetTempProperty = $this->channelsPropertiesRepository->findOneBy($findChannelPropertyQuery);
 
-			$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+			$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
 			$findChannelPropertyQuery->forChannel($thermostatChannel);
 			$findChannelPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::ACTUAL_TEMPERATURE);
 
 			$actualTempProperty = $this->channelsPropertiesRepository->findOneBy($findChannelPropertyQuery);
 
-			$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+			$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
 			$findChannelPropertyQuery->forChannel($thermostatChannel);
 			$findChannelPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::HEATING_THRESHOLD_TEMPERATURE);
 
 			$heatingThresholdTempProperty = $this->channelsPropertiesRepository->findOneBy($findChannelPropertyQuery);
 
-			$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+			$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
 			$findChannelPropertyQuery->forChannel($thermostatChannel);
 			$findChannelPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::COOLING_THRESHOLD_TEMPERATURE);
 
 			$coolingThresholdTempProperty = $this->channelsPropertiesRepository->findOneBy($findChannelPropertyQuery);
 
-			$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+			$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
 			$findChannelPropertyQuery->forChannel($thermostatChannel);
 			$findChannelPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::PRESET_MODE);
 
@@ -1393,7 +1393,7 @@ class Thermostat extends Device
 					continue;
 				}
 
-				$findPresetChannelQuery = new Queries\FindPresetChannels();
+				$findPresetChannelQuery = new Queries\Entities\FindPresetChannels();
 				$findPresetChannelQuery->forDevice($device);
 				$findPresetChannelQuery->byIdentifier('preset_' . $preset);
 
@@ -1750,7 +1750,7 @@ class Thermostat extends Device
 			return;
 		}
 
-		$findChannelQuery = new Queries\FindPresetChannels();
+		$findChannelQuery = new Queries\Entities\FindPresetChannels();
 		$findChannelQuery->forDevice($device);
 		$findChannelQuery->endWithIdentifier($preset->getValue());
 
@@ -1759,19 +1759,19 @@ class Thermostat extends Device
 		$targetTempProperty = $heatingThresholdTempProperty = $coolingThresholdTempProperty = null;
 
 		if ($channel !== null) {
-			$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+			$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
 			$findChannelPropertyQuery->forChannel($channel);
 			$findChannelPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::TARGET_TEMPERATURE);
 
 			$targetTempProperty = $this->channelsPropertiesRepository->findOneBy($findChannelPropertyQuery);
 
-			$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+			$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
 			$findChannelPropertyQuery->forChannel($channel);
 			$findChannelPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::HEATING_THRESHOLD_TEMPERATURE);
 
 			$heatingThresholdTempProperty = $this->channelsPropertiesRepository->findOneBy($findChannelPropertyQuery);
 
-			$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+			$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
 			$findChannelPropertyQuery->forChannel($channel);
 			$findChannelPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::COOLING_THRESHOLD_TEMPERATURE);
 
@@ -2469,7 +2469,7 @@ class Thermostat extends Device
 			$connectedDevice = $connectedProperty->getChannel()->getDevice();
 		}
 
-		$findDevicesQuery = new DevicesQueries\FindDevices();
+		$findDevicesQuery = new DevicesQueries\Entities\FindDevices();
 
 		$systemDevices = $this->devicesRepository->findAllBy($findDevicesQuery);
 		usort(
@@ -2482,7 +2482,7 @@ class Thermostat extends Device
 				continue;
 			}
 
-			$findChannelsQuery = new DevicesQueries\FindChannels();
+			$findChannelsQuery = new DevicesQueries\Entities\FindChannels();
 			$findChannelsQuery->forDevice($device);
 
 			$channels = $this->channelsRepository->findAllBy($findChannelsQuery);
@@ -2491,7 +2491,7 @@ class Thermostat extends Device
 
 			foreach ($channels as $channel) {
 				if ($onlyType === null || $onlyType === DevicesEntities\Channels\Properties\Dynamic::class) {
-					$findChannelPropertiesQuery = new DevicesQueries\FindChannelDynamicProperties();
+					$findChannelPropertiesQuery = new DevicesQueries\Entities\FindChannelDynamicProperties();
 					$findChannelPropertiesQuery->forChannel($channel);
 
 					if ($allowedDataTypes === null) {
@@ -2528,7 +2528,7 @@ class Thermostat extends Device
 				}
 
 				if ($onlyType === null || $onlyType === DevicesEntities\Channels\Properties\Variable::class) {
-					$findChannelPropertiesQuery = new DevicesQueries\FindChannelVariableProperties();
+					$findChannelPropertiesQuery = new DevicesQueries\Entities\FindChannelVariableProperties();
 					$findChannelPropertiesQuery->forChannel($channel);
 
 					if ($allowedDataTypes === null) {
@@ -2620,7 +2620,7 @@ class Thermostat extends Device
 			$identifier = array_search($answer, $devices, true);
 
 			if ($identifier !== false) {
-				$findDeviceQuery = new DevicesQueries\FindDevices();
+				$findDeviceQuery = new DevicesQueries\Entities\FindDevices();
 				$findDeviceQuery->byId(Uuid\Uuid::fromString($identifier));
 
 				$device = $this->devicesRepository->findOneBy($findDeviceQuery);
@@ -2643,7 +2643,7 @@ class Thermostat extends Device
 
 		$channels = [];
 
-		$findChannelsQuery = new DevicesQueries\FindChannels();
+		$findChannelsQuery = new DevicesQueries\Entities\FindChannels();
 		$findChannelsQuery->forDevice($device);
 		$findChannelsQuery->withProperties();
 
@@ -2663,7 +2663,7 @@ class Thermostat extends Device
 			$hasProperty = false;
 
 			if ($onlyType === null || $onlyType === DevicesEntities\Channels\Properties\Dynamic::class) {
-				$findChannelPropertiesQuery = new DevicesQueries\FindChannelDynamicProperties();
+				$findChannelPropertiesQuery = new DevicesQueries\Entities\FindChannelDynamicProperties();
 				$findChannelPropertiesQuery->forChannel($channel);
 
 				if ($allowedDataTypes === null) {
@@ -2696,7 +2696,7 @@ class Thermostat extends Device
 			}
 
 			if ($onlyType === null || $onlyType === DevicesEntities\Channels\Properties\Variable::class) {
-				$findChannelPropertiesQuery = new DevicesQueries\FindChannelVariableProperties();
+				$findChannelPropertiesQuery = new DevicesQueries\Entities\FindChannelVariableProperties();
 				$findChannelPropertiesQuery->forChannel($channel);
 
 				if ($allowedDataTypes === null) {
@@ -2779,7 +2779,7 @@ class Thermostat extends Device
 				$identifier = array_search($answer, $channels, true);
 
 				if ($identifier !== false) {
-					$findChannelQuery = new DevicesQueries\FindChannels();
+					$findChannelQuery = new DevicesQueries\Entities\FindChannels();
 					$findChannelQuery->byIdentifier($identifier);
 					$findChannelQuery->forDevice($device);
 
@@ -2804,7 +2804,7 @@ class Thermostat extends Device
 
 		$properties = [];
 
-		$findDevicePropertiesQuery = new DevicesQueries\FindChannelProperties();
+		$findDevicePropertiesQuery = new DevicesQueries\Entities\FindChannelProperties();
 		$findDevicePropertiesQuery->forChannel($channel);
 
 		$channelProperties = $this->channelsPropertiesRepository->findAllBy($findDevicePropertiesQuery);
@@ -2884,7 +2884,7 @@ class Thermostat extends Device
 				$identifier = array_search($answer, $properties, true);
 
 				if ($identifier !== false) {
-					$findPropertyQuery = new DevicesQueries\FindChannelProperties();
+					$findPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
 					$findPropertyQuery->byIdentifier($identifier);
 					$findPropertyQuery->forChannel($channel);
 
@@ -3079,7 +3079,7 @@ class Thermostat extends Device
 	{
 		$actors = [];
 
-		$findChannelsQuery = new Queries\FindActorChannels();
+		$findChannelsQuery = new Queries\Entities\FindActorChannels();
 		$findChannelsQuery->forDevice($device);
 
 		$channel = $this->channelsRepository->findOneBy($findChannelsQuery, Entities\Channels\Actors::class);
@@ -3088,7 +3088,7 @@ class Thermostat extends Device
 			return null;
 		}
 
-		$findChannelPropertiesQuery = new DevicesQueries\FindChannelMappedProperties();
+		$findChannelPropertiesQuery = new DevicesQueries\Entities\FindChannelMappedProperties();
 		$findChannelPropertiesQuery->forChannel($channel);
 
 		$channelActors = $this->channelsPropertiesRepository->findAllBy(
@@ -3140,7 +3140,7 @@ class Thermostat extends Device
 				$identifier = array_search($answer, $actors, true);
 
 				if ($identifier !== false) {
-					$findChannelPropertiesQuery = new DevicesQueries\FindChannelMappedProperties();
+					$findChannelPropertiesQuery = new DevicesQueries\Entities\FindChannelMappedProperties();
 					$findChannelPropertiesQuery->byIdentifier($identifier);
 					$findChannelPropertiesQuery->forChannel($channel);
 
@@ -3179,7 +3179,7 @@ class Thermostat extends Device
 	{
 		$sensors = [];
 
-		$findChannelsQuery = new Queries\FindSensorChannels();
+		$findChannelsQuery = new Queries\Entities\FindSensorChannels();
 		$findChannelsQuery->forDevice($device);
 
 		$channel = $this->channelsRepository->findOneBy($findChannelsQuery, Entities\Channels\Sensors::class);
@@ -3188,7 +3188,7 @@ class Thermostat extends Device
 			return null;
 		}
 
-		$findChannelPropertiesQuery = new DevicesQueries\FindChannelMappedProperties();
+		$findChannelPropertiesQuery = new DevicesQueries\Entities\FindChannelMappedProperties();
 		$findChannelPropertiesQuery->forChannel($channel);
 
 		$channelActors = $this->channelsPropertiesRepository->findAllBy(
@@ -3240,7 +3240,7 @@ class Thermostat extends Device
 				$identifier = array_search($answer, $sensors, true);
 
 				if ($identifier !== false) {
-					$findChannelPropertiesQuery = new DevicesQueries\FindChannelMappedProperties();
+					$findChannelPropertiesQuery = new DevicesQueries\Entities\FindChannelMappedProperties();
 					$findChannelPropertiesQuery->byIdentifier($identifier);
 					$findChannelPropertiesQuery->forChannel($channel);
 
@@ -3312,7 +3312,7 @@ class Thermostat extends Device
 		for ($i = 1; $i <= 100; $i++) {
 			$identifier = sprintf($identifierPattern, $i);
 
-			$findChannelPropertiesQuery = new DevicesQueries\FindChannelProperties();
+			$findChannelPropertiesQuery = new DevicesQueries\Entities\FindChannelProperties();
 			$findChannelPropertiesQuery->forChannel($channel);
 			$findChannelPropertiesQuery->byIdentifier($identifier);
 

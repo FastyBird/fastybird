@@ -29,7 +29,7 @@ use function strval;
 
 /**
  * @property-read Localization\ITranslator $translator
- * @property-read Models\Identities\IdentitiesRepository $identitiesRepository
+ * @property-read Models\Entities\Identities\IdentitiesRepository $identitiesRepository
  */
 trait TIdentity
 {
@@ -51,7 +51,7 @@ trait TIdentity
 			);
 		}
 
-		$findQuery = new Queries\FindIdentities();
+		$findQuery = new Queries\Entities\FindIdentities();
 		$findQuery->byId(Uuid\Uuid::fromString(strval($request->getAttribute(Router\Routes::URL_ITEM_ID))));
 
 		if ($account !== null) {

@@ -85,7 +85,7 @@ final class StoreDeviceState implements Queue\Consumer
 			return false;
 		}
 
-		$findDeviceQuery = new Queries\FindDevices();
+		$findDeviceQuery = new Queries\Entities\FindDevices();
 		$findDeviceQuery->byConnectorId($entity->getConnector());
 		$findDeviceQuery->byIdentifier($entity->getIdentifier());
 
@@ -147,7 +147,7 @@ final class StoreDeviceState implements Queue\Consumer
 	): void
 	{
 		foreach ($state as $item) {
-			$findChannelQuery = new Queries\FindChannels();
+			$findChannelQuery = new Queries\Entities\FindChannels();
 			$findChannelQuery->forDevice($device);
 			$findChannelQuery->byIdentifier(
 				Helpers\Name::convertCapabilityToChannel($item->getCapability(), $item->getIdentifier()),
@@ -162,7 +162,7 @@ final class StoreDeviceState implements Queue\Consumer
 				continue;
 			}
 
-			$findChannelPropertiesQuery = new DevicesQueries\FindChannelDynamicProperties();
+			$findChannelPropertiesQuery = new DevicesQueries\Entities\FindChannelDynamicProperties();
 			$findChannelPropertiesQuery->forChannel($channel);
 			$findChannelPropertiesQuery->byIdentifier(Helpers\Name::convertProtocolToProperty($item->getProtocol()));
 
@@ -211,7 +211,7 @@ final class StoreDeviceState implements Queue\Consumer
 	): void
 	{
 		foreach ($state as $item) {
-			$findChannelQuery = new Queries\FindChannels();
+			$findChannelQuery = new Queries\Entities\FindChannels();
 			$findChannelQuery->forDevice($device);
 			$findChannelQuery->byIdentifier(
 				Helpers\Name::convertCapabilityToChannel($item->getCapability(), $item->getIdentifier()),
@@ -226,7 +226,7 @@ final class StoreDeviceState implements Queue\Consumer
 				continue;
 			}
 
-			$findChannelPropertiesQuery = new DevicesQueries\FindChannelProperties();
+			$findChannelPropertiesQuery = new DevicesQueries\Entities\FindChannelProperties();
 			$findChannelPropertiesQuery->forChannel($channel);
 			$findChannelPropertiesQuery->byIdentifier(Helpers\Name::convertProtocolToProperty($item->getProtocol()));
 

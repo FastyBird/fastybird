@@ -18,8 +18,8 @@ final class ApiKeyExtensionTest extends BaseTestCase
 	{
 		self::assertNotNull($this->container->getByType(Commands\Create::class, false));
 
-		self::assertNotNull($this->container->getByType(Models\KeyRepository::class, false));
-		self::assertNotNull($this->container->getByType(Models\KeysManager::class, false));
+		self::assertNotNull($this->container->getByType(Models\Entities\KeyRepository::class, false));
+		self::assertNotNull($this->container->getByType(Models\Entities\KeysManager::class, false));
 
 		self::assertNotNull($this->container->getByType(Middleware\Validator::class, false));
 	}

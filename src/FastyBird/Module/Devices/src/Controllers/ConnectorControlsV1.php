@@ -63,7 +63,7 @@ final class ConnectorControlsV1 extends BaseV1
 		// At first, try to load connector
 		$connector = $this->findConnector(strval($request->getAttribute(Router\ApiRoutes::URL_CONNECTOR_ID)));
 
-		$findQuery = new Queries\FindConnectorControls();
+		$findQuery = new Queries\Entities\FindConnectorControls();
 		$findQuery->forConnector($connector);
 
 		$controls = $this->connectorControlsRepository->getResultSet($findQuery);
@@ -85,7 +85,7 @@ final class ConnectorControlsV1 extends BaseV1
 		$connector = $this->findConnector(strval($request->getAttribute(Router\ApiRoutes::URL_CONNECTOR_ID)));
 
 		if (Uuid\Uuid::isValid(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)))) {
-			$findQuery = new Queries\FindConnectorControls();
+			$findQuery = new Queries\Entities\FindConnectorControls();
 			$findQuery->forConnector($connector);
 			$findQuery->byId(Uuid\Uuid::fromString(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID))));
 
@@ -120,7 +120,7 @@ final class ConnectorControlsV1 extends BaseV1
 		$relationEntity = Utils\Strings::lower(strval($request->getAttribute(Router\ApiRoutes::RELATION_ENTITY)));
 
 		if (Uuid\Uuid::isValid(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)))) {
-			$findQuery = new Queries\FindConnectorControls();
+			$findQuery = new Queries\Entities\FindConnectorControls();
 			$findQuery->forConnector($connector);
 			$findQuery->byId(Uuid\Uuid::fromString(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID))));
 

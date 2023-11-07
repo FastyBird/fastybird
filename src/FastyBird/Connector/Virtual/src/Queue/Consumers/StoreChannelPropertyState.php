@@ -79,7 +79,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			return false;
 		}
 
-		$findDeviceQuery = new Queries\FindDevices();
+		$findDeviceQuery = new Queries\Entities\FindDevices();
 		$findDeviceQuery->byConnectorId($entity->getConnector());
 		$findDeviceQuery->byId($entity->getDevice());
 
@@ -112,7 +112,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$findChannelQuery = new DevicesQueries\FindChannels();
+		$findChannelQuery = new DevicesQueries\Entities\FindChannels();
 		$findChannelQuery->forDevice($device);
 		$findChannelQuery->byId($entity->getChannel());
 
@@ -145,7 +145,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$findPropertyQuery = new DevicesQueries\FindChannelProperties();
+		$findPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
 		$findPropertyQuery->forChannel($channel);
 
 		if (is_string($entity->getProperty())) {

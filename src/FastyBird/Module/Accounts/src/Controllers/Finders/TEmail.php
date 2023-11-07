@@ -29,7 +29,7 @@ use function strval;
 
 /**
  * @property-read Localization\ITranslator $translator
- * @property-read Models\Emails\EmailsRepository $emailsRepository
+ * @property-read Models\Entities\Emails\EmailsRepository $emailsRepository
  */
 trait TEmail
 {
@@ -51,7 +51,7 @@ trait TEmail
 			);
 		}
 
-		$findQuery = new Queries\FindEmails();
+		$findQuery = new Queries\Entities\FindEmails();
 		$findQuery->byId(Uuid\Uuid::fromString(strval($request->getAttribute(Router\Routes::URL_ITEM_ID))));
 
 		if ($account !== null) {

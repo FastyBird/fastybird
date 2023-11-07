@@ -156,7 +156,7 @@ final class Local implements Client
 			);
 		}
 
-		$findDevicesQuery = new Queries\FindDevices();
+		$findDevicesQuery = new Queries\Entities\FindDevices();
 		$findDevicesQuery->forConnector($this->connector);
 
 		$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\ShellyDevice::class);
@@ -225,7 +225,7 @@ final class Local implements Client
 	 */
 	private function handleCommunication(): void
 	{
-		$findDevicesQuery = new Queries\FindDevices();
+		$findDevicesQuery = new Queries\Entities\FindDevices();
 		$findDevicesQuery->forConnector($this->connector);
 
 		foreach ($this->devicesRepository->findAllBy($findDevicesQuery, Entities\ShellyDevice::class) as $device) {

@@ -33,7 +33,7 @@ final class ConnectorFactoryTest extends DbTestCase
 
 		$factory = $this->getContainer()->getByType(Connector\ConnectorFactory::class);
 
-		$findConnectorQuery = new DevicesQueries\FindConnectors();
+		$findConnectorQuery = new DevicesQueries\Entities\FindConnectors();
 		$findConnectorQuery->byId(Uuid\Uuid::fromString('17c59Dfa-2edd-438e-8c49f-aa4e38e5a5e'));
 
 		$connector = $connectorsRepository->findOneBy($findConnectorQuery);

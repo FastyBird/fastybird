@@ -20,6 +20,7 @@ use Doctrine\Persistence;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Queries;
+use FastyBird\Module\Devices\Queries\Entities\FindConnectors;
 use FastyBird\Module\Devices\Utilities;
 use IPub\DoctrineOrmQuery;
 use Nette;
@@ -52,7 +53,7 @@ final class ConnectorsRepository
 	/**
 	 * @template T of Entities\Connectors\Connector
 	 *
-	 * @param Queries\FindConnectors<T> $queryObject
+	 * @param FindConnectors<T> $queryObject
 	 * @param class-string<T> $type
 	 *
 	 * @return T|null
@@ -60,7 +61,7 @@ final class ConnectorsRepository
 	 * @throws Exceptions\InvalidState
 	 */
 	public function findOneBy(
-		Queries\FindConnectors $queryObject,
+		Queries\Entities\FindConnectors $queryObject,
 		string $type = Entities\Connectors\Connector::class,
 	): Entities\Connectors\Connector|null
 	{
@@ -72,7 +73,7 @@ final class ConnectorsRepository
 	/**
 	 * @template T of Entities\Connectors\Connector
 	 *
-	 * @param Queries\FindConnectors<T> $queryObject
+	 * @param FindConnectors<T> $queryObject
 	 * @param class-string<T> $type
 	 *
 	 * @return array<T>
@@ -80,7 +81,7 @@ final class ConnectorsRepository
 	 * @throws Exceptions\InvalidState
 	 */
 	public function findAllBy(
-		Queries\FindConnectors $queryObject,
+		Queries\Entities\FindConnectors $queryObject,
 		string $type = Entities\Connectors\Connector::class,
 	): array
 	{
@@ -97,7 +98,7 @@ final class ConnectorsRepository
 	/**
 	 * @template T of Entities\Connectors\Connector
 	 *
-	 * @param Queries\FindConnectors<T> $queryObject
+	 * @param FindConnectors<T> $queryObject
 	 * @param class-string<T> $type
 	 *
 	 * @return DoctrineOrmQuery\ResultSet<T>
@@ -105,7 +106,7 @@ final class ConnectorsRepository
 	 * @throws Exceptions\InvalidState
 	 */
 	public function getResultSet(
-		Queries\FindConnectors $queryObject,
+		Queries\Entities\FindConnectors $queryObject,
 		string $type = Entities\Connectors\Connector::class,
 	): DoctrineOrmQuery\ResultSet
 	{

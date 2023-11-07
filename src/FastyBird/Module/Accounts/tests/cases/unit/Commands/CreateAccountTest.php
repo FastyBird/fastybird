@@ -37,17 +37,19 @@ final class CreateAccountTest extends DbTestCase
 	 */
 	public function testExecute(): void
 	{
-		$accountsManager = $this->getContainer()->getByType(Models\Accounts\AccountsManager::class);
+		$accountsManager = $this->getContainer()->getByType(Models\Entities\Accounts\AccountsManager::class);
 
-		$emailsRepository = $this->getContainer()->getByType(Models\Emails\EmailsRepository::class);
+		$emailsRepository = $this->getContainer()->getByType(Models\Entities\Emails\EmailsRepository::class);
 
-		$emailsManager = $this->getContainer()->getByType(Models\Emails\EmailsManager::class);
+		$emailsManager = $this->getContainer()->getByType(Models\Entities\Emails\EmailsManager::class);
 
-		$identitiesManager = $this->getContainer()->getByType(Models\Identities\IdentitiesManager::class);
+		$identitiesManager = $this->getContainer()->getByType(Models\Entities\Identities\IdentitiesManager::class);
 
-		$rolesRepository = $this->getContainer()->getByType(Models\Roles\RolesRepository::class);
+		$rolesRepository = $this->getContainer()->getByType(Models\Entities\Roles\RolesRepository::class);
 
-		$identitiesRepository = $this->getContainer()->getByType(Models\Identities\IdentitiesRepository::class);
+		$identitiesRepository = $this->getContainer()->getByType(
+			Models\Entities\Identities\IdentitiesRepository::class,
+		);
 
 		$translator = $this->getContainer()->getByType(Translation\Translator::class);
 
@@ -77,7 +79,7 @@ final class CreateAccountTest extends DbTestCase
 
 		self::assertSame(0, $result);
 
-		$findEmailQuery = new Queries\FindEmails();
+		$findEmailQuery = new Queries\Entities\FindEmails();
 		$findEmailQuery->byAddress('rocky@balboa.com');
 
 		$email = $emailsRepository->findOneBy($findEmailQuery);
@@ -85,7 +87,7 @@ final class CreateAccountTest extends DbTestCase
 		self::assertNotNull($email);
 		self::assertSame('Balboa Rocky', $email->getAccount()->getName());
 
-		$findIdentity = new Queries\FindIdentities();
+		$findIdentity = new Queries\Entities\FindIdentities();
 		$findIdentity->byUid('rocky@balboa.com');
 
 		$identity = $identitiesRepository->findOneBy($findIdentity);

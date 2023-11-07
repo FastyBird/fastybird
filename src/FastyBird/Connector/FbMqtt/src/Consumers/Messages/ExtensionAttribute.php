@@ -63,7 +63,7 @@ final class ExtensionAttribute implements Consumers\Consumer
 			return false;
 		}
 
-		$findDeviceQuery = new DevicesQueries\FindDevices();
+		$findDeviceQuery = new DevicesQueries\Entities\FindDevices();
 		$findDeviceQuery->byConnectorId($entity->getConnector());
 		$findDeviceQuery->byIdentifier($entity->getDevice());
 
@@ -135,7 +135,7 @@ final class ExtensionAttribute implements Consumers\Consumer
 			return true;
 		}
 
-		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($device);
 		$findDevicePropertyQuery->byIdentifier($propertyIdentifier);
 

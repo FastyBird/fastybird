@@ -65,7 +65,7 @@ class ConnectorsV1 extends BaseV1
 		Message\ResponseInterface $response,
 	): Message\ResponseInterface
 	{
-		$findQuery = new Queries\FindConnectors();
+		$findQuery = new Queries\Entities\FindConnectors();
 
 		$connectors = $this->connectorsRepository->getResultSet($findQuery);
 
@@ -168,12 +168,12 @@ class ConnectorsV1 extends BaseV1
 		$relationEntity = Utils\Strings::lower(strval($request->getAttribute(Router\ApiRoutes::RELATION_ENTITY)));
 
 		if ($relationEntity === Schemas\Connectors\Connector::RELATIONSHIPS_DEVICES) {
-			$findDevicesQuery = new Queries\FindDevices();
+			$findDevicesQuery = new Queries\Entities\FindDevices();
 			$findDevicesQuery->forConnector($connector);
 
 			return $this->buildResponse($request, $response, $this->devicesRepository->findAllBy($findDevicesQuery));
 		} elseif ($relationEntity === Schemas\Connectors\Connector::RELATIONSHIPS_PROPERTIES) {
-			$findConnectorPropertiesQuery = new Queries\FindConnectorProperties();
+			$findConnectorPropertiesQuery = new Queries\Entities\FindConnectorProperties();
 			$findConnectorPropertiesQuery->forConnector($connector);
 
 			return $this->buildResponse(
@@ -182,7 +182,7 @@ class ConnectorsV1 extends BaseV1
 				$this->propertiesRepository->findAllBy($findConnectorPropertiesQuery),
 			);
 		} elseif ($relationEntity === Schemas\Connectors\Connector::RELATIONSHIPS_CONTROLS) {
-			$findConnectorControlsQuery = new Queries\FindConnectorControls();
+			$findConnectorControlsQuery = new Queries\Entities\FindConnectorControls();
 			$findConnectorControlsQuery->forConnector($connector);
 
 			return $this->buildResponse(
@@ -202,7 +202,7 @@ class ConnectorsV1 extends BaseV1
 	protected function findConnector(string $id): Entities\Connectors\Connector
 	{
 		try {
-			$findQuery = new Queries\FindConnectors();
+			$findQuery = new Queries\Entities\FindConnectors();
 			$findQuery->byId(Uuid\Uuid::fromString($id));
 
 			$connector = $this->connectorsRepository->findOneBy($findQuery);

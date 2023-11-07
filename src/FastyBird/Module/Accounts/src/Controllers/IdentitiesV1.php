@@ -60,9 +60,9 @@ final class IdentitiesV1 extends BaseV1
 
 	public function __construct(
 		private readonly Hydrators\Identities\Identity $identityHydrator,
-		protected readonly Models\Identities\IdentitiesRepository $identitiesRepository,
-		private readonly Models\Identities\IdentitiesManager $identitiesManager,
-		protected readonly Models\Accounts\AccountsRepository $accountsRepository,
+		protected readonly Models\Entities\Identities\IdentitiesRepository $identitiesRepository,
+		private readonly Models\Entities\Identities\IdentitiesManager $identitiesManager,
+		protected readonly Models\Entities\Accounts\AccountsRepository $accountsRepository,
 	)
 	{
 	}
@@ -78,7 +78,7 @@ final class IdentitiesV1 extends BaseV1
 		Message\ResponseInterface $response,
 	): Message\ResponseInterface
 	{
-		$findQuery = new Queries\FindIdentities();
+		$findQuery = new Queries\Entities\FindIdentities();
 		$findQuery->forAccount($this->findAccount($request));
 
 		$identities = $this->identitiesRepository->getResultSet($findQuery);

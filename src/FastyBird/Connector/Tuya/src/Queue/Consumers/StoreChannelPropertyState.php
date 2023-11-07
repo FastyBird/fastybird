@@ -79,7 +79,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			return false;
 		}
 
-		$findDeviceQuery = new Queries\FindDevices();
+		$findDeviceQuery = new Queries\Entities\FindDevices();
 		$findDeviceQuery->byConnectorId($entity->getConnector());
 		$findDeviceQuery->byIdentifier($entity->getIdentifier());
 
@@ -187,7 +187,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 		$key = $deviceIdentifier . '-' . $dataPointIdentifier;
 
 		if (array_key_exists($key, $this->dataPointsToProperties)) {
-			$findPropertyQuery = new DevicesQueries\FindChannelProperties();
+			$findPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
 			$findPropertyQuery->byId($this->dataPointsToProperties[$key]);
 
 			$property = $this->channelsPropertiesRepository->findOneBy(
@@ -218,7 +218,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 		string $dataPointIdentifier,
 	): DevicesEntities\Channels\Properties\Dynamic|null
 	{
-		$findDeviceQuery = new Queries\FindDevices();
+		$findDeviceQuery = new Queries\Entities\FindDevices();
 		$findDeviceQuery->byConnectorId($connector);
 		$findDeviceQuery->byIdentifier($deviceIdentifier);
 
@@ -228,7 +228,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			return null;
 		}
 
-		$findChannelsQuery = new DevicesQueries\FindChannels();
+		$findChannelsQuery = new DevicesQueries\Entities\FindChannels();
 		$findChannelsQuery->forDevice($device);
 
 		$channels = $this->channelsRepository->findAllBy($findChannelsQuery);

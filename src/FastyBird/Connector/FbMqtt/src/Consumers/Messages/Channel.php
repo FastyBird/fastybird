@@ -70,7 +70,7 @@ final class Channel implements Consumers\Consumer
 			return false;
 		}
 
-		$findDeviceQuery = new DevicesQueries\FindDevices();
+		$findDeviceQuery = new DevicesQueries\Entities\FindDevices();
 		$findDeviceQuery->byIdentifier($entity->getDevice());
 
 		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\FbMqttDevice::class);
@@ -90,7 +90,7 @@ final class Channel implements Consumers\Consumer
 			return true;
 		}
 
-		$findChannelQuery = new DevicesQueries\FindChannels();
+		$findChannelQuery = new DevicesQueries\Entities\FindChannels();
 		$findChannelQuery->forDevice($device);
 		$findChannelQuery->byIdentifier($entity->getChannel());
 
@@ -161,7 +161,7 @@ final class Channel implements Consumers\Consumer
 	): void
 	{
 		foreach ($properties as $propertyName) {
-			$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+			$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
 			$findChannelPropertyQuery->forChannel($channel);
 			$findChannelPropertyQuery->byIdentifier($propertyName);
 
@@ -177,7 +177,7 @@ final class Channel implements Consumers\Consumer
 			}
 		}
 
-		$findChannelPropertiesQuery = new DevicesQueries\FindChannelProperties();
+		$findChannelPropertiesQuery = new DevicesQueries\Entities\FindChannelProperties();
 		$findChannelPropertiesQuery->forChannel($channel);
 
 		// Cleanup for unused properties
@@ -200,7 +200,7 @@ final class Channel implements Consumers\Consumer
 	): void
 	{
 		foreach ($controls as $controlName) {
-			$findChannelControlQuery = new DevicesQueries\FindChannelControls();
+			$findChannelControlQuery = new DevicesQueries\Entities\FindChannelControls();
 			$findChannelControlQuery->forChannel($channel);
 			$findChannelControlQuery->byName($controlName);
 
@@ -212,7 +212,7 @@ final class Channel implements Consumers\Consumer
 			}
 		}
 
-		$findChannelControlQuery = new DevicesQueries\FindChannelControls();
+		$findChannelControlQuery = new DevicesQueries\Entities\FindChannelControls();
 		$findChannelControlQuery->forChannel($channel);
 
 		// Cleanup for unused control

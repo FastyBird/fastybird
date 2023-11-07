@@ -78,7 +78,7 @@ final class ChannelProperty implements Consumers\Consumer
 			return false;
 		}
 
-		$findDeviceQuery = new DevicesQueries\FindDevices();
+		$findDeviceQuery = new DevicesQueries\Entities\FindDevices();
 		$findDeviceQuery->byConnectorId($entity->getConnector());
 		$findDeviceQuery->byIdentifier($entity->getDevice());
 
@@ -99,7 +99,7 @@ final class ChannelProperty implements Consumers\Consumer
 			return true;
 		}
 
-		$findChannelQuery = new DevicesQueries\FindChannels();
+		$findChannelQuery = new DevicesQueries\Entities\FindChannels();
 		$findChannelQuery->forDevice($device);
 		$findChannelQuery->byIdentifier($entity->getChannel());
 
@@ -123,7 +123,7 @@ final class ChannelProperty implements Consumers\Consumer
 			return true;
 		}
 
-		$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+		$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
 		$findChannelPropertyQuery->forChannel($channel);
 		$findChannelPropertyQuery->byIdentifier($entity->getProperty());
 

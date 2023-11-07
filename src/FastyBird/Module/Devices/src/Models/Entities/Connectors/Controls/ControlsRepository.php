@@ -52,7 +52,9 @@ final class ControlsRepository
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function findOneBy(Queries\FindConnectorControls $queryObject): Entities\Connectors\Controls\Control|null
+	public function findOneBy(
+		Queries\Entities\FindConnectorControls $queryObject,
+	): Entities\Connectors\Controls\Control|null
 	{
 		return $this->database->query(
 			fn (): Entities\Connectors\Controls\Control|null => $queryObject->fetchOne($this->getRepository()),
@@ -64,7 +66,7 @@ final class ControlsRepository
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
-	public function findAllBy(Queries\FindConnectorControls $queryObject): array
+	public function findAllBy(Queries\Entities\FindConnectorControls $queryObject): array
 	{
 		try {
 			/** @var array<Entities\Connectors\Controls\Control> $result */
@@ -82,7 +84,7 @@ final class ControlsRepository
 	 * @throws Exceptions\InvalidState
 	 */
 	public function getResultSet(
-		Queries\FindConnectorControls $queryObject,
+		Queries\Entities\FindConnectorControls $queryObject,
 	): DoctrineOrmQuery\ResultSet
 	{
 		$result = $this->database->query(

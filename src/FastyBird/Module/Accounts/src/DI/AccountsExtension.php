@@ -100,32 +100,32 @@ class AccountsExtension extends DI\CompilerExtension
 			->setType(Commands\Initialize::class);
 
 		$builder->addDefinition($this->prefix('models.accountsRepository'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Accounts\AccountsRepository::class);
+			->setType(Models\Entities\Accounts\AccountsRepository::class);
 
 		$builder->addDefinition($this->prefix('models.emailsRepository'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Emails\EmailsRepository::class);
+			->setType(Models\Entities\Emails\EmailsRepository::class);
 
 		$builder->addDefinition($this->prefix('models.identitiesRepository'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Identities\IdentitiesRepository::class);
+			->setType(Models\Entities\Identities\IdentitiesRepository::class);
 
 		$builder->addDefinition($this->prefix('models.rolesRepository'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Roles\RolesRepository::class);
+			->setType(Models\Entities\Roles\RolesRepository::class);
 
 		// Database managers
 		$builder->addDefinition($this->prefix('models.accountsManager'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Accounts\AccountsManager::class)
+			->setType(Models\Entities\Accounts\AccountsManager::class)
 			->setArgument('entityCrud', '__placeholder__');
 
 		$builder->addDefinition($this->prefix('models.emailsManager'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Emails\EmailsManager::class)
+			->setType(Models\Entities\Emails\EmailsManager::class)
 			->setArgument('entityCrud', '__placeholder__');
 
 		$builder->addDefinition($this->prefix('models.identitiesManager'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Identities\IdentitiesManager::class)
+			->setType(Models\Entities\Identities\IdentitiesManager::class)
 			->setArgument('entityCrud', '__placeholder__');
 
 		$builder->addDefinition($this->prefix('models.rolesManager'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Roles\RolesManager::class)
+			->setType(Models\Entities\Roles\RolesManager::class)
 			->setArgument('entityCrud', '__placeholder__');
 
 		$builder->addDefinition($this->prefix('subscribers.entities'), new DI\Definitions\ServiceDefinition())
@@ -289,13 +289,13 @@ class AccountsExtension extends DI\CompilerExtension
 			'createService' . ucfirst($this->name) . '__models__accountsManager',
 		);
 		$accountsManagerService->setBody(
-			'return new ' . Models\Accounts\AccountsManager::class
+			'return new ' . Models\Entities\Accounts\AccountsManager::class
 			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Accounts\Account::class . '\'));',
 		);
 
 		$emailsManagerService = $class->getMethod('createService' . ucfirst($this->name) . '__models__emailsManager');
 		$emailsManagerService->setBody(
-			'return new ' . Models\Emails\EmailsManager::class
+			'return new ' . Models\Entities\Emails\EmailsManager::class
 			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Emails\Email::class . '\'));',
 		);
 
@@ -303,13 +303,13 @@ class AccountsExtension extends DI\CompilerExtension
 			'createService' . ucfirst($this->name) . '__models__identitiesManager',
 		);
 		$identitiesManagerService->setBody(
-			'return new ' . Models\Identities\IdentitiesManager::class
+			'return new ' . Models\Entities\Identities\IdentitiesManager::class
 			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Identities\Identity::class . '\'));',
 		);
 
 		$rolesManagerService = $class->getMethod('createService' . ucfirst($this->name) . '__models__rolesManager');
 		$rolesManagerService->setBody(
-			'return new ' . Models\Roles\RolesManager::class
+			'return new ' . Models\Entities\Roles\RolesManager::class
 			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Roles\Role::class . '\'));',
 		);
 	}

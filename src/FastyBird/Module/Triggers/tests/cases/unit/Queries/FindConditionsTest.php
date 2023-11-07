@@ -30,9 +30,9 @@ final class FindConditionsTest extends DbTestCase
 	 */
 	public function testFindById(): void
 	{
-		$repository = $this->getContainer()->getByType(Models\Conditions\ConditionsRepository::class);
+		$repository = $this->getContainer()->getByType(Models\Entities\Conditions\ConditionsRepository::class);
 
-		$findQuery = new Queries\FindConditions();
+		$findQuery = new Queries\Entities\FindConditions();
 		$findQuery->byId(Uuid\Uuid::fromString('2726f19c-7759-440e-b6f5-8c3306692fa2'));
 
 		$entity = $repository->findOneBy($findQuery);

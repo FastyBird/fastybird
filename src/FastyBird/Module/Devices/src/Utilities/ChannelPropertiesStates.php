@@ -141,7 +141,7 @@ final class ChannelPropertiesStates
 				throw new Exceptions\InvalidState('Parent identifier for mapped property is missing');
 			}
 
-			$findPropertyQuery = new Queries\FindChannelProperties();
+			$findPropertyQuery = new Queries\Entities\FindChannelProperties();
 			$findPropertyQuery->byId($property->getParent());
 
 			$parent = $this->channelPropertiesRepository->findOneBy($findPropertyQuery);
@@ -278,7 +278,7 @@ final class ChannelPropertiesStates
 				throw new Exceptions\InvalidState('Parent identifier for mapped property is missing');
 			}
 
-			$findPropertyQuery = new Queries\FindChannelProperties();
+			$findPropertyQuery = new Queries\Entities\FindChannelProperties();
 			$findPropertyQuery->byId($property->getParent());
 
 			$parent = $this->channelPropertiesRepository->findOneBy($findPropertyQuery);

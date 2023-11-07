@@ -47,8 +47,8 @@ final class PublicV1 extends BaseV1
 	use Controllers\Finders\TIdentity;
 
 	public function __construct(
-		protected readonly Models\Identities\IdentitiesRepository $identitiesRepository,
-		private readonly Models\Accounts\AccountsManager $accountsManager,
+		protected readonly Models\Entities\Identities\IdentitiesRepository $identitiesRepository,
+		private readonly Models\Entities\Accounts\AccountsManager $accountsManager,
 		private readonly Helpers\SecurityHash $securityHash,
 	)
 	{
@@ -112,7 +112,7 @@ final class PublicV1 extends BaseV1
 			);
 		}
 
-		$findQuery = new Queries\FindIdentities();
+		$findQuery = new Queries\Entities\FindIdentities();
 		$findQuery->byUid((string) $attributes->get('uid'));
 
 		$identity = $this->identitiesRepository->findOneBy($findQuery);

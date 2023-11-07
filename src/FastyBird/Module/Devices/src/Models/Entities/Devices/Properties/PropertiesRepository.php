@@ -20,6 +20,7 @@ use Doctrine\Persistence;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Queries;
+use FastyBird\Module\Devices\Queries\Entities\FindDeviceProperties;
 use FastyBird\Module\Devices\Utilities;
 use IPub\DoctrineOrmQuery;
 use Nette;
@@ -52,7 +53,7 @@ final class PropertiesRepository
 	/**
 	 * @template T of Entities\Devices\Properties\Property
 	 *
-	 * @param Queries\FindDeviceProperties<T> $queryObject
+	 * @param FindDeviceProperties<T> $queryObject
 	 * @param class-string<T> $type
 	 *
 	 * @return T|null
@@ -60,7 +61,7 @@ final class PropertiesRepository
 	 * @throws Exceptions\InvalidState
 	 */
 	public function findOneBy(
-		Queries\FindDeviceProperties $queryObject,
+		Queries\Entities\FindDeviceProperties $queryObject,
 		string $type = Entities\Devices\Properties\Property::class,
 	): Entities\Devices\Properties\Property|null
 	{
@@ -72,7 +73,7 @@ final class PropertiesRepository
 	/**
 	 * @template T of Entities\Devices\Properties\Property
 	 *
-	 * @param Queries\FindDeviceProperties<T> $queryObject
+	 * @param FindDeviceProperties<T> $queryObject
 	 * @param class-string<T> $type
 	 *
 	 * @return  array<T>
@@ -80,7 +81,7 @@ final class PropertiesRepository
 	 * @throws Exceptions\InvalidState
 	 */
 	public function findAllBy(
-		Queries\FindDeviceProperties $queryObject,
+		Queries\Entities\FindDeviceProperties $queryObject,
 		string $type = Entities\Devices\Properties\Property::class,
 	): array
 	{
@@ -97,7 +98,7 @@ final class PropertiesRepository
 	/**
 	 * @template T of Entities\Devices\Properties\Property
 	 *
-	 * @param Queries\FindDeviceProperties<T> $queryObject
+	 * @param FindDeviceProperties<T> $queryObject
 	 * @param class-string<T> $type
 	 *
 	 * @return DoctrineOrmQuery\ResultSet<T>
@@ -105,7 +106,7 @@ final class PropertiesRepository
 	 * @throws Exceptions\InvalidState
 	 */
 	public function getResultSet(
-		Queries\FindDeviceProperties $queryObject,
+		Queries\Entities\FindDeviceProperties $queryObject,
 		string $type = Entities\Devices\Properties\Property::class,
 	): DoctrineOrmQuery\ResultSet
 	{

@@ -79,10 +79,10 @@ class CouchDbExtension extends DI\CompilerExtension
 			]);
 
 		$builder->addDefinition($this->prefix('model.statesManager'))
-			->setType(Models\StatesManager::class);
+			->setType(Models\States\StatesManager::class);
 
 		$builder->addDefinition($this->prefix('model.stateRepository'))
-			->setType(Models\StatesRepository::class);
+			->setType(Models\States\StatesRepository::class);
 	}
 
 }

@@ -56,8 +56,8 @@ final class AccountEntity implements Common\EventSubscriber
 	];
 
 	public function __construct(
-		private readonly Models\Accounts\AccountsRepository $accountsRepository,
-		private readonly Models\Roles\RolesRepository $rolesRepository,
+		private readonly Models\Entities\Accounts\AccountsRepository $accountsRepository,
+		private readonly Models\Entities\Roles\RolesRepository $rolesRepository,
 	)
 	{
 	}
@@ -157,7 +157,7 @@ final class AccountEntity implements Common\EventSubscriber
 		$roles = [];
 
 		foreach ($roleNames as $roleName) {
-			$findRole = new Queries\FindRoles();
+			$findRole = new Queries\Entities\FindRoles();
 			$findRole->byName($roleName);
 
 			$role = $this->rolesRepository->findOneBy($findRole);
@@ -177,7 +177,7 @@ final class AccountEntity implements Common\EventSubscriber
 	 */
 	private function getAdministrator(): Entities\Accounts\Account|null
 	{
-		$findRole = new Queries\FindRoles();
+		$findRole = new Queries\Entities\FindRoles();
 		$findRole->byName(SimpleAuth\Constants::ROLE_ADMINISTRATOR);
 
 		$role = $this->rolesRepository->findOneBy($findRole);
@@ -188,7 +188,7 @@ final class AccountEntity implements Common\EventSubscriber
 			);
 		}
 
-		$findAccount = new Queries\FindAccounts();
+		$findAccount = new Queries\Entities\FindAccounts();
 		$findAccount->inRole($role);
 
 		return $this->accountsRepository->findOneBy($findAccount);
