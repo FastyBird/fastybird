@@ -46,9 +46,21 @@ final class Device implements Entities\Entity, Entities\Owner
 	/** @var array<Uuid\UuidInterface> */
 	private array $children;
 
+	/** @var array<Uuid\UuidInterface> */
+	private array $properties;
+
+	/** @var array<Uuid\UuidInterface> */
+	private array $controls;
+
+	/** @var array<Uuid\UuidInterface> */
+	private array $channels;
+
 	/**
 	 * @param array<string>|Utils\ArrayHash<string> $parents
 	 * @param array<string>|Utils\ArrayHash<string> $children
+	 * @param array<string>|Utils\ArrayHash<string> $properties
+	 * @param array<string>|Utils\ArrayHash<string> $controls
+	 * @param array<string>|Utils\ArrayHash<string> $channels
 	 */
 	public function __construct(
 		string $id,
@@ -60,6 +72,9 @@ final class Device implements Entities\Entity, Entities\Owner
 		array|Utils\ArrayHash $children,
 		private readonly string|null $name = null,
 		private readonly string|null $comment = null,
+		array|Utils\ArrayHash $properties = [],
+		array|Utils\ArrayHash $controls = [],
+		array|Utils\ArrayHash $channels = [],
 		string|null $owner = null,
 	)
 	{
@@ -73,6 +88,18 @@ final class Device implements Entities\Entity, Entities\Owner
 		$this->children = array_map(
 			static fn (string $item): Uuid\UuidInterface => Uuid\Uuid::fromString($item),
 			(array) $children,
+		);
+		$this->properties = array_map(
+			static fn (string $id): Uuid\UuidInterface => Uuid\Uuid::fromString($id),
+			(array) $properties,
+		);
+		$this->controls = array_map(
+			static fn (string $id): Uuid\UuidInterface => Uuid\Uuid::fromString($id),
+			(array) $controls,
+		);
+		$this->channels = array_map(
+			static fn (string $id): Uuid\UuidInterface => Uuid\Uuid::fromString($id),
+			(array) $channels,
 		);
 		$this->owner = $owner !== null ? Uuid\Uuid::fromString($owner) : null;
 	}
@@ -128,6 +155,30 @@ final class Device implements Entities\Entity, Entities\Owner
 		return $this->children;
 	}
 
+	/**
+	 * @return array<Uuid\UuidInterface>
+	 */
+	public function getProperties(): array
+	{
+		return $this->properties;
+	}
+
+	/**
+	 * @return array<Uuid\UuidInterface>
+	 */
+	public function getControls(): array
+	{
+		return $this->controls;
+	}
+
+	/**
+	 * @return array<Uuid\UuidInterface>
+	 */
+	public function getChannels(): array
+	{
+		return $this->channels;
+	}
+
 	public function toArray(): array
 	{
 		return [
@@ -139,12 +190,24 @@ final class Device implements Entities\Entity, Entities\Owner
 			'comment' => $this->getComment(),
 			'connector' => $this->getConnector()->toString(),
 			'parents' => array_map(
-				static fn (Uuid\UuidInterface $parent): string => $parent->toString(),
+				static fn (Uuid\UuidInterface $id): string => $id->toString(),
 				$this->getParents(),
 			),
 			'children' => array_map(
-				static fn (Uuid\UuidInterface $child): string => $child->toString(),
+				static fn (Uuid\UuidInterface $id): string => $id->toString(),
 				$this->getChildren(),
+			),
+			'properties' => array_map(
+				static fn (Uuid\UuidInterface $id): string => $id->toString(),
+				$this->getProperties(),
+			),
+			'controls' => array_map(
+				static fn (Uuid\UuidInterface $id): string => $id->toString(),
+				$this->getControls(),
+			),
+			'channels' => array_map(
+				static fn (Uuid\UuidInterface $id): string => $id->toString(),
+				$this->getChannels(),
 			),
 			'owner' => $this->getOwner()?->toString(),
 		];

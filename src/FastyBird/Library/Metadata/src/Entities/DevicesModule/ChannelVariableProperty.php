@@ -101,7 +101,7 @@ final class ChannelVariableProperty extends VariableProperty
 		return array_merge(parent::toArray(), [
 			'channel' => $this->getChannel()->toString(),
 			'children' => array_map(
-				static fn (Uuid\UuidInterface $child): string => $child->toString(),
+				static fn (Uuid\UuidInterface $id): string => $id->toString(),
 				$this->getChildren(),
 			),
 		]);
