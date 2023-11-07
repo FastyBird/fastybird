@@ -53,8 +53,8 @@ final class AccountIdentitiesV1 extends BaseV1
 	use Controllers\Finders\TIdentity;
 
 	public function __construct(
-		protected readonly Models\Identities\IdentitiesRepository $identitiesRepository,
-		private readonly Models\Identities\IdentitiesManager $identitiesManager,
+		protected readonly Models\Entities\Identities\IdentitiesRepository $identitiesRepository,
+		private readonly Models\Entities\Identities\IdentitiesManager $identitiesManager,
 	)
 	{
 	}
@@ -71,7 +71,7 @@ final class AccountIdentitiesV1 extends BaseV1
 		Message\ResponseInterface $response,
 	): Message\ResponseInterface
 	{
-		$findQuery = new Queries\FindIdentities();
+		$findQuery = new Queries\Entities\FindIdentities();
 		$findQuery->forAccount($this->findAccount());
 
 		$identities = $this->identitiesRepository->getResultSet($findQuery);

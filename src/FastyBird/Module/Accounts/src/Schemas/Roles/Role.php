@@ -52,7 +52,7 @@ final class Role extends JsonApis\JsonApi
 	public const RELATIONSHIPS_CHILDREN = 'children';
 
 	public function __construct(
-		private readonly Models\Roles\RolesRepository $rolesRepository,
+		private readonly Models\Entities\Roles\RolesRepository $rolesRepository,
 		private readonly Routing\IRouter $router,
 	)
 	{
@@ -220,7 +220,7 @@ final class Role extends JsonApis\JsonApi
 	 */
 	private function getChildren(Entities\Roles\Role $resource): array
 	{
-		$findQuery = new Queries\FindRoles();
+		$findQuery = new Queries\Entities\FindRoles();
 		$findQuery->forParent($resource);
 
 		return $this->rolesRepository->findAllBy($findQuery);

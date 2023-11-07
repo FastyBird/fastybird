@@ -41,7 +41,7 @@ trait TDeviceProperty
 	): Entities\Devices\Properties\Property
 	{
 		try {
-			$findQuery = new Queries\FindDeviceProperties();
+			$findQuery = new Queries\Entities\FindDeviceProperties();
 			$findQuery->forDevice($device);
 			$findQuery->byId(Uuid\Uuid::fromString($id));
 

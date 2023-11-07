@@ -65,42 +65,42 @@ class RedisDbDevicesModuleExtension extends DI\CompilerExtension
 			$this->prefix('models.connectorPropertyRepository'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\ConnectorPropertiesRepository::class)
+			->setType(Models\States\ConnectorPropertiesRepository::class)
 			->setArguments(['database' => $configuration->database]);
 
 		$builder->addDefinition(
 			$this->prefix('models.devicePropertyRepository'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\DevicePropertiesRepository::class)
+			->setType(Models\States\DevicePropertiesRepository::class)
 			->setArguments(['database' => $configuration->database]);
 
 		$builder->addDefinition(
 			$this->prefix('models.channelPropertyRepository'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\ChannelPropertiesRepository::class)
+			->setType(Models\States\ChannelPropertiesRepository::class)
 			->setArguments(['database' => $configuration->database]);
 
 		$builder->addDefinition(
 			$this->prefix('models.connectorPropertiesManager'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\ConnectorPropertiesManager::class)
+			->setType(Models\States\ConnectorPropertiesManager::class)
 			->setArguments(['database' => $configuration->database]);
 
 		$builder->addDefinition(
 			$this->prefix('models.devicePropertiesManager'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\DevicePropertiesManager::class)
+			->setType(Models\States\DevicePropertiesManager::class)
 			->setArguments(['database' => $configuration->database]);
 
 		$builder->addDefinition(
 			$this->prefix('models.channelPropertiesManager'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\ChannelPropertiesManager::class)
+			->setType(Models\States\ChannelPropertiesManager::class)
 			->setArguments(['database' => $configuration->database]);
 	}
 

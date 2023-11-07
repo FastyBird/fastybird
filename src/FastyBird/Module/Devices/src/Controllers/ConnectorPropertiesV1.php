@@ -78,7 +78,7 @@ final class ConnectorPropertiesV1 extends BaseV1
 		// At first, try to load connector
 		$connector = $this->findConnector(strval($request->getAttribute(Router\ApiRoutes::URL_CONNECTOR_ID)));
 
-		$findQuery = new Queries\FindConnectorProperties();
+		$findQuery = new Queries\Entities\FindConnectorProperties();
 		$findQuery->forConnector($connector);
 
 		$properties = $this->connectorPropertiesRepository->getResultSet($findQuery);
@@ -389,7 +389,7 @@ final class ConnectorPropertiesV1 extends BaseV1
 	): Entities\Connectors\Properties\Property
 	{
 		try {
-			$findQuery = new Queries\FindConnectorProperties();
+			$findQuery = new Queries\Entities\FindConnectorProperties();
 			$findQuery->forConnector($connector);
 			$findQuery->byId(Uuid\Uuid::fromString($id));
 

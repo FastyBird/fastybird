@@ -30,9 +30,9 @@ final class ConditionTest extends DbTestCase
 	 */
 	public function testTimeConditionValidation(): void
 	{
-		$repository = $this->getContainer()->getByType(TriggersModels\Conditions\ConditionsRepository::class);
+		$repository = $this->getContainer()->getByType(TriggersModels\Entities\Conditions\ConditionsRepository::class);
 
-		$findQuery = new TriggersQueries\FindConditions();
+		$findQuery = new TriggersQueries\Entities\FindConditions();
 		$findQuery->byId(Uuid\Uuid::fromString('09c453b3-c55f-4050-8f1c-b50f8d5728c2'));
 
 		$entity = $repository->findOneBy($findQuery);

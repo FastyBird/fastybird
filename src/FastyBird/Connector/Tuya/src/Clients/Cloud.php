@@ -270,7 +270,7 @@ final class Cloud implements Client
 			$this->connectionManager->getCloudApiConnection($this->connector)->connect(false);
 		}
 
-		$findDevicesQuery = new Queries\FindDevices();
+		$findDevicesQuery = new Queries\Entities\FindDevices();
 		$findDevicesQuery->forConnector($this->connector);
 
 		foreach ($this->devicesRepository->findAllBy($findDevicesQuery, Entities\TuyaDevice::class) as $device) {

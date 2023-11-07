@@ -46,7 +46,7 @@ final class AccountV1 extends BaseV1
 
 	public function __construct(
 		private readonly Hydrators\Accounts\ProfileAccount $accountHydrator,
-		private readonly Models\Accounts\AccountsManager $accountsManager,
+		private readonly Models\Entities\Accounts\AccountsManager $accountsManager,
 	)
 	{
 	}

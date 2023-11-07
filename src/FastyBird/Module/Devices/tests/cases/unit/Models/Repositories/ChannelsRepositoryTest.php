@@ -27,7 +27,7 @@ final class ChannelsRepositoryTest extends DbTestCase
 	{
 		$repository = $this->getContainer()->getByType(Models\Entities\Channels\ChannelsRepository::class);
 
-		$findQuery = new Queries\FindChannels();
+		$findQuery = new Queries\Entities\FindChannels();
 		$findQuery->byIdentifier('channel-one');
 
 		$entity = $repository->findOneBy($findQuery);
@@ -48,7 +48,7 @@ final class ChannelsRepositoryTest extends DbTestCase
 	{
 		$repository = $this->getContainer()->getByType(Models\Entities\Channels\ChannelsRepository::class);
 
-		$findQuery = new Queries\FindChannels();
+		$findQuery = new Queries\Entities\FindChannels();
 
 		$resultSet = $repository->getResultSet($findQuery);
 

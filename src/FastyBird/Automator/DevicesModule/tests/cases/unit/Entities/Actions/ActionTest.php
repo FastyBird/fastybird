@@ -30,9 +30,9 @@ final class ActionTest extends DbTestCase
 	 */
 	public function testValidation(): void
 	{
-		$repository = $this->getContainer()->getByType(TriggersModels\Actions\ActionsRepository::class);
+		$repository = $this->getContainer()->getByType(TriggersModels\Entities\Actions\ActionsRepository::class);
 
-		$findQuery = new Queries\FindActions();
+		$findQuery = new Queries\Entities\FindActions();
 		$findQuery->byId(Uuid\Uuid::fromString('4aa84028-d8b7-4128-95b2-295763634aa4'));
 
 		$entity = $repository->findOneBy($findQuery);

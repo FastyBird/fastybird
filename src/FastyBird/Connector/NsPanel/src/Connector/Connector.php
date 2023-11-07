@@ -148,7 +148,7 @@ final class Connector implements DevicesConnectors\Connector
 			|| $mode->equalsValue(NsPanel\Types\ClientMode::DEVICE)
 		) {
 			$this->eventLoop->addTimer(1, function (): void {
-				$findDevicesQuery = new Queries\FindThirdPartyDevices();
+				$findDevicesQuery = new Queries\Entities\FindThirdPartyDevices();
 				$findDevicesQuery->forConnector($this->connector);
 
 				$devices = $this->devicesRepository->findAllBy(
@@ -157,7 +157,7 @@ final class Connector implements DevicesConnectors\Connector
 				);
 
 				foreach ($devices as $device) {
-					$findChannelsQuery = new Queries\FindChannels();
+					$findChannelsQuery = new Queries\Entities\FindChannels();
 					$findChannelsQuery->forDevice($device);
 
 					$channels = $this->channelsRepository->findAllBy(

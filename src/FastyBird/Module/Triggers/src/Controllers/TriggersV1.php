@@ -56,8 +56,8 @@ final class TriggersV1 extends BaseV1
 	use Controllers\Finders\TTrigger;
 
 	public function __construct(
-		private readonly Models\Triggers\TriggersRepository $triggersRepository,
-		private readonly Models\Triggers\TriggersManager $triggersManager,
+		private readonly Models\Entities\Triggers\TriggersRepository $triggersRepository,
+		private readonly Models\Entities\Triggers\TriggersManager $triggersManager,
 	)
 	{
 	}
@@ -70,7 +70,7 @@ final class TriggersV1 extends BaseV1
 		Message\ResponseInterface $response,
 	): Message\ResponseInterface
 	{
-		$findQuery = new Queries\FindTriggers();
+		$findQuery = new Queries\Entities\FindTriggers();
 
 		$triggers = $this->triggersRepository->getResultSet($findQuery);
 

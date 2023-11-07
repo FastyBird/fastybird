@@ -31,7 +31,7 @@ use function strval;
 /**
  * @property-read Localization\ITranslator $translator
  * @property-read Security\User $user
- * @property-read Models\Accounts\AccountsRepository $accountsRepository
+ * @property-read Models\Entities\Accounts\AccountsRepository $accountsRepository
  */
 trait TAccount
 {
@@ -52,7 +52,7 @@ trait TAccount
 			);
 		}
 
-		$findQuery = new Queries\FindAccounts();
+		$findQuery = new Queries\Entities\FindAccounts();
 		$findQuery->byId(Uuid\Uuid::fromString(strval($request->getAttribute(Router\Routes::URL_ACCOUNT_ID))));
 
 		$account = $this->accountsRepository->findOneBy($findQuery);

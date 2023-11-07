@@ -86,7 +86,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 		);
 
 		try {
-			$findDevicesProperties = new Queries\FindDeviceProperties();
+			$findDevicesProperties = new Queries\Entities\FindDeviceProperties();
 
 			$devicesProperties = $this->devicePropertiesRepository->getResultSet($findDevicesProperties);
 
@@ -118,7 +118,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				]));
 			}
 
-			$findChannelsProperties = new Queries\FindChannelProperties();
+			$findChannelsProperties = new Queries\Entities\FindChannelProperties();
 
 			$channelsProperties = $this->channelPropertiesRepository->getResultSet($findChannelsProperties);
 
@@ -150,7 +150,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				]));
 			}
 
-			$findConnectorsProperties = new Queries\FindConnectorProperties();
+			$findConnectorsProperties = new Queries\Entities\FindConnectorProperties();
 
 			$connectorsProperties = $this->connectorPropertiesRepository->getResultSet($findConnectorsProperties);
 
@@ -321,7 +321,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	): void
 	{
 		if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_SET)) {
-			$findConnectorPropertyQuery = new Queries\FindConnectorProperties();
+			$findConnectorPropertyQuery = new Queries\Entities\FindConnectorProperties();
 			$findConnectorPropertyQuery->byId($entity->getProperty());
 
 			$property = $this->connectorPropertiesRepository->findOneBy($findConnectorPropertyQuery);
@@ -338,7 +338,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				]),
 			);
 		} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
-			$findConnectorPropertyQuery = new Queries\FindConnectorProperties();
+			$findConnectorPropertyQuery = new Queries\Entities\FindConnectorProperties();
 			$findConnectorPropertyQuery->byId($entity->getProperty());
 
 			$property = $this->connectorPropertiesRepository->findOneBy($findConnectorPropertyQuery);
@@ -397,7 +397,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	): void
 	{
 		if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_SET)) {
-			$findConnectorPropertyQuery = new Queries\FindDeviceProperties();
+			$findConnectorPropertyQuery = new Queries\Entities\FindDeviceProperties();
 			$findConnectorPropertyQuery->byId($entity->getProperty());
 
 			$property = $this->devicePropertiesRepository->findOneBy($findConnectorPropertyQuery);
@@ -417,7 +417,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				]),
 			);
 		} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
-			$findConnectorPropertyQuery = new Queries\FindDeviceProperties();
+			$findConnectorPropertyQuery = new Queries\Entities\FindDeviceProperties();
 			$findConnectorPropertyQuery->byId($entity->getProperty());
 
 			$property = $this->devicePropertiesRepository->findOneBy($findConnectorPropertyQuery);
@@ -476,7 +476,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	): void
 	{
 		if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_SET)) {
-			$findConnectorPropertyQuery = new Queries\FindChannelProperties();
+			$findConnectorPropertyQuery = new Queries\Entities\FindChannelProperties();
 			$findConnectorPropertyQuery->byId($entity->getProperty());
 
 			$property = $this->channelPropertiesRepository->findOneBy($findConnectorPropertyQuery);
@@ -496,7 +496,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				]),
 			);
 		} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
-			$findConnectorPropertyQuery = new Queries\FindChannelProperties();
+			$findConnectorPropertyQuery = new Queries\Entities\FindChannelProperties();
 			$findConnectorPropertyQuery->byId($entity->getProperty());
 
 			$property = $this->channelPropertiesRepository->findOneBy($findConnectorPropertyQuery);

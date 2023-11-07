@@ -38,7 +38,6 @@
         "clue/redis-react": "^3@dev",
         "contributte/console": "^0.9",
         "contributte/event-dispatcher": "^0.8",
-        "contributte/flysystem": "^0.3",
         "contributte/monolog": "^0.5",
         "contributte/translation": "^2.0",
         "cweagans/composer-patches": "^1.7",
@@ -91,6 +90,7 @@
         "sabre/xml": "^4.0",
         "sentry/sdk": "^3.1",
         "simplito/elliptic-php": "^1.0",
+        "softcreatr/jsonpath": "^0.8",
         "sunrise/http-message": "^3.0",
         "symfony/console": "^5.0|^6.0",
         "symfony/dependency-injection": "^5.0",
@@ -210,6 +210,7 @@
         }
     },
     "extra": {
+        "enable-patching": false,
         "patches": {
             "dg/bypass-finals": {
                 "Bug: mkdir check": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/dg-bypass-finals-src-nativewrapper-php.patch"
@@ -227,8 +228,7 @@
             "react/event-loop": {
                 "Bug: Use native return type": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/react-event-loop-src-loop-php.patch"
             }
-        },
-        "enable-patching": false
+        }
     },
     "config": {
         "sort-packages": true,

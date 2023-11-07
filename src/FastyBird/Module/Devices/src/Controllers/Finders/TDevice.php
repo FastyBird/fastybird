@@ -38,7 +38,7 @@ trait TDevice
 	protected function findDevice(string $id): Entities\Devices\Device
 	{
 		try {
-			$findQuery = new Queries\FindDevices();
+			$findQuery = new Queries\Entities\FindDevices();
 			$findQuery->byId(Uuid\Uuid::fromString($id));
 
 			$device = $this->devicesRepository->findOneBy($findQuery);

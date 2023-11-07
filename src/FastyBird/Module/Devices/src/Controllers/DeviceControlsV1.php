@@ -63,7 +63,7 @@ final class DeviceControlsV1 extends BaseV1
 		// At first, try to load device
 		$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
 
-		$findQuery = new Queries\FindDeviceControls();
+		$findQuery = new Queries\Entities\FindDeviceControls();
 		$findQuery->forDevice($device);
 
 		$controls = $this->deviceControlsRepository->getResultSet($findQuery);
@@ -85,7 +85,7 @@ final class DeviceControlsV1 extends BaseV1
 		$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
 
 		if (Uuid\Uuid::isValid(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)))) {
-			$findQuery = new Queries\FindDeviceControls();
+			$findQuery = new Queries\Entities\FindDeviceControls();
 			$findQuery->forDevice($device);
 			$findQuery->byId(Uuid\Uuid::fromString(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID))));
 
@@ -120,7 +120,7 @@ final class DeviceControlsV1 extends BaseV1
 		$relationEntity = Utils\Strings::lower(strval($request->getAttribute(Router\ApiRoutes::RELATION_ENTITY)));
 
 		if (Uuid\Uuid::isValid(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)))) {
-			$findQuery = new Queries\FindDeviceControls();
+			$findQuery = new Queries\Entities\FindDeviceControls();
 			$findQuery->forDevice($device);
 			$findQuery->byId(Uuid\Uuid::fromString(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID))));
 

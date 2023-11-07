@@ -65,7 +65,7 @@ final class ChannelPropertyChildrenV1 extends BaseV1
 		// & property
 		$property = $this->findProperty(strval($request->getAttribute(Router\ApiRoutes::URL_PROPERTY_ID)), $channel);
 
-		$findQuery = new Queries\FindChannelProperties();
+		$findQuery = new Queries\Entities\FindChannelProperties();
 		$findQuery->forParent($property);
 
 		$children = $this->channelPropertiesRepository->getResultSet($findQuery);

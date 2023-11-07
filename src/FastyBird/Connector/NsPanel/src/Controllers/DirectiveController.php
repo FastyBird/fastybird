@@ -250,7 +250,7 @@ final class DirectiveController extends BaseController
 		$id = strval($request->getAttribute(Router\Router::URL_GATEWAY_ID));
 
 		try {
-			$findQuery = new Queries\FindGatewayDevices();
+			$findQuery = new Queries\Entities\FindGatewayDevices();
 			$findQuery->byId(Uuid\Uuid::fromString($id));
 			$findQuery->byConnectorId($connectorId);
 
@@ -287,7 +287,7 @@ final class DirectiveController extends BaseController
 		$id = strval($request->getAttribute(Router\Router::URL_DEVICE_ID));
 
 		try {
-			$findQuery = new Queries\FindThirdPartyDevices();
+			$findQuery = new Queries\Entities\FindThirdPartyDevices();
 			$findQuery->byId(Uuid\Uuid::fromString($id));
 			$findQuery->byConnectorId($connectorId);
 			$findQuery->forParent($gateway);

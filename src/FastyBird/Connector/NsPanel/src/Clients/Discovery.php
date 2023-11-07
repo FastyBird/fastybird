@@ -99,7 +99,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				],
 			);
 
-			$findDevicesQuery = new Queries\FindGatewayDevices();
+			$findDevicesQuery = new Queries\Entities\FindGatewayDevices();
 			$findDevicesQuery->forConnector($this->connector);
 
 			foreach ($this->devicesRepository->findAllBy(

@@ -23,8 +23,8 @@ final class RedisDbExtensionTest extends BaseTestCase
 		self::assertNotNull($this->container->getByType(Clients\Client::class, false));
 		self::assertNotNull($this->container->getByType(Clients\Factory::class, false));
 
-		self::assertNotNull($this->container->getByType(Models\StatesManagerFactory::class, false));
-		self::assertNotNull($this->container->getByType(Models\StatesRepositoryFactory::class, false));
+		self::assertNotNull($this->container->getByType(Models\States\StatesManagerFactory::class, false));
+		self::assertNotNull($this->container->getByType(Models\States\StatesRepositoryFactory::class, false));
 
 		self::assertNotNull($this->container->getByType(Handlers\Message::class, false));
 

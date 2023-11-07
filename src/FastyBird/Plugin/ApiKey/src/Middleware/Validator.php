@@ -45,7 +45,7 @@ final class Validator implements MiddlewareInterface
 	private const API_KEY_HEADER = 'X-Api-Key';
 
 	public function __construct(
-		private readonly Models\KeyRepository $keyRepository,
+		private readonly Models\Entities\KeyRepository $keyRepository,
 		private readonly Localization\Translator $translator,
 	)
 	{

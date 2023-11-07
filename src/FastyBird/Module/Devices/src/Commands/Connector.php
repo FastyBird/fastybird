@@ -294,7 +294,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 		) {
 			$connectorId = $input->getOption('connector');
 
-			$findConnectorQuery = new Queries\FindConnectors();
+			$findConnectorQuery = new Queries\Entities\FindConnectors();
 
 			if (Uuid\Uuid::isValid($connectorId)) {
 				$findConnectorQuery->byId(Uuid\Uuid::fromString($connectorId));
@@ -314,11 +314,11 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 		} else {
 			$connectors = [];
 
-			$findConnectorsQuery = new Queries\FindConnectors();
+			$findConnectorsQuery = new Queries\Entities\FindConnectors();
 
 			foreach ($this->connectorsRepository->findAllBy($findConnectorsQuery) as $connector) {
 				if ($this->mode === self::MODE_DISCOVER) {
-					$findConnectorControlQuery = new Queries\FindConnectorControls();
+					$findConnectorControlQuery = new Queries\Entities\FindConnectorControls();
 					$findConnectorControlQuery->forConnector($connector);
 					$findConnectorControlQuery->byName(MetadataTypes\ControlName::NAME_DISCOVER);
 
@@ -367,7 +367,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 				return;
 			}
 
-			$findConnectorQuery = new Queries\FindConnectors();
+			$findConnectorQuery = new Queries\Entities\FindConnectors();
 			$findConnectorQuery->byIdentifier($connectorIdentifierKey);
 
 			$this->connector = $this->connectorsRepository->findOneBy($findConnectorQuery);
@@ -395,7 +395,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 		}
 
 		if ($this->mode === self::MODE_DISCOVER) {
-			$findConnectorControlQuery = new Queries\FindConnectorControls();
+			$findConnectorControlQuery = new Queries\Entities\FindConnectorControls();
 			$findConnectorControlQuery->forConnector($this->connector);
 			$findConnectorControlQuery->byName(MetadataTypes\ControlName::NAME_DISCOVER);
 
@@ -616,7 +616,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 		MetadataTypes\ConnectionState $state,
 	): void
 	{
-		$findConnectorPropertiesQuery = new Queries\FindConnectorDynamicProperties();
+		$findConnectorPropertiesQuery = new Queries\Entities\FindConnectorDynamicProperties();
 		$findConnectorPropertiesQuery->forConnector($connector);
 
 		foreach ($this->connectorsPropertiesRepository->findAllBy(
@@ -626,7 +626,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 			$this->connectorPropertiesStateManager->setValidState($property, false);
 		}
 
-		$findDevicesQuery = new Queries\FindDevices();
+		$findDevicesQuery = new Queries\Entities\FindDevices();
 		$findDevicesQuery->byConnectorId($connector->getId());
 
 		foreach ($this->devicesRepository->findAllBy($findDevicesQuery) as $device) {
@@ -646,7 +646,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 	{
 		$this->deviceConnectionManager->setState($device, $state);
 
-		$findDevicePropertiesQuery = new Queries\FindDeviceDynamicProperties();
+		$findDevicePropertiesQuery = new Queries\Entities\FindDeviceDynamicProperties();
 		$findDevicePropertiesQuery->forDevice($device);
 
 		foreach ($this->devicesPropertiesRepository->findAllBy(
@@ -656,11 +656,11 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 			$this->devicePropertiesStateManager->setValidState($property, false);
 		}
 
-		$findChannelsQuery = new Queries\FindChannels();
+		$findChannelsQuery = new Queries\Entities\FindChannels();
 		$findChannelsQuery->forDevice($device);
 
 		foreach ($this->channelsRepository->findAllBy($findChannelsQuery) as $channel) {
-			$findChannelPropertiesQuery = new Queries\FindChannelDynamicProperties();
+			$findChannelPropertiesQuery = new Queries\Entities\FindChannelDynamicProperties();
 			$findChannelPropertiesQuery->forChannel($channel);
 
 			foreach ($this->channelsPropertiesRepository->findAllBy(
@@ -671,7 +671,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 			}
 		}
 
-		$findChildrenQuery = new Queries\FindDevices();
+		$findChildrenQuery = new Queries\Entities\FindDevices();
 		$findChildrenQuery->forParent($device);
 
 		foreach ($this->devicesRepository->findAllBy($findChildrenQuery) as $child) {

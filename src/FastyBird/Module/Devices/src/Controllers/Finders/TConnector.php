@@ -38,7 +38,7 @@ trait TConnector
 	protected function findConnector(string $id): Entities\Connectors\Connector
 	{
 		try {
-			$findQuery = new Queries\FindConnectors();
+			$findQuery = new Queries\Entities\FindConnectors();
 			$findQuery->byId(Uuid\Uuid::fromString($id));
 
 			$connector = $this->connectorsRepository->findOneBy($findQuery);

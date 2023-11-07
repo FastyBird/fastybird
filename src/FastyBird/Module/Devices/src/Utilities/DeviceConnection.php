@@ -58,7 +58,7 @@ final class DeviceConnection
 		MetadataTypes\ConnectionState $state,
 	): bool
 	{
-		$findDevicePropertyQuery = new Queries\FindDeviceProperties();
+		$findDevicePropertyQuery = new Queries\Entities\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($device);
 		$findDevicePropertyQuery->byIdentifier(MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_STATE);
 
@@ -110,7 +110,7 @@ final class DeviceConnection
 		Entities\Devices\Device $device,
 	): MetadataTypes\ConnectionState
 	{
-		$findDevicePropertyQuery = new Queries\FindDeviceProperties();
+		$findDevicePropertyQuery = new Queries\Entities\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($device);
 		$findDevicePropertyQuery->byIdentifier(MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_STATE);
 
@@ -139,7 +139,7 @@ final class DeviceConnection
 		Entities\Devices\Device $device,
 	): DateTimeInterface|null
 	{
-		$findDevicePropertyQuery = new Queries\FindDeviceProperties();
+		$findDevicePropertyQuery = new Queries\Entities\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($device);
 		$findDevicePropertyQuery->byIdentifier(MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_STATE);
 

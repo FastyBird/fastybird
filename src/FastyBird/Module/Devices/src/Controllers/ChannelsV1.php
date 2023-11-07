@@ -76,7 +76,7 @@ final class ChannelsV1 extends BaseV1
 		// At first, try to load device
 		$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
 
-		$findQuery = new Queries\FindChannels();
+		$findQuery = new Queries\Entities\FindChannels();
 		$findQuery->forDevice($device);
 
 		$channels = $this->channelsRepository->getResultSet($findQuery);
@@ -364,7 +364,7 @@ final class ChannelsV1 extends BaseV1
 		$relationEntity = Utils\Strings::lower(strval($request->getAttribute(Router\ApiRoutes::RELATION_ENTITY)));
 
 		if ($relationEntity === Schemas\Channels\Channel::RELATIONSHIPS_PROPERTIES) {
-			$findChannelPropertiesQuery = new Queries\FindChannelProperties();
+			$findChannelPropertiesQuery = new Queries\Entities\FindChannelProperties();
 			$findChannelPropertiesQuery->forChannel($channel);
 
 			return $this->buildResponse(
@@ -373,7 +373,7 @@ final class ChannelsV1 extends BaseV1
 				$this->channelPropertiesRepository->findAllBy($findChannelPropertiesQuery),
 			);
 		} elseif ($relationEntity === Schemas\Channels\Channel::RELATIONSHIPS_CONTROLS) {
-			$findChannelControlsQuery = new Queries\FindChannelControls();
+			$findChannelControlsQuery = new Queries\Entities\FindChannelControls();
 			$findChannelControlsQuery->forChannel($channel);
 
 			return $this->buildResponse(

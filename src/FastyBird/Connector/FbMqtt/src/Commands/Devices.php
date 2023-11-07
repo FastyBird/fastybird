@@ -154,7 +154,7 @@ class Devices extends Console\Command\Command
 
 		$question->setValidator(function (string|null $answer) {
 			if ($answer !== '' && $answer !== null) {
-				$findDeviceQuery = new DevicesQueries\FindDevices();
+				$findDeviceQuery = new DevicesQueries\Entities\FindDevices();
 				$findDeviceQuery->byIdentifier($answer);
 
 				if (
@@ -175,7 +175,7 @@ class Devices extends Console\Command\Command
 			for ($i = 1; $i <= 100; $i++) {
 				$identifier = sprintf($identifierPattern, $i);
 
-				$findDeviceQuery = new DevicesQueries\FindDevices();
+				$findDeviceQuery = new DevicesQueries\Entities\FindDevices();
 				$findDeviceQuery->byIdentifier($identifier);
 
 				if (
@@ -373,7 +373,7 @@ class Devices extends Console\Command\Command
 	{
 		$connectors = [];
 
-		$findConnectorsQuery = new DevicesQueries\FindConnectors();
+		$findConnectorsQuery = new DevicesQueries\Entities\FindConnectors();
 
 		$systemConnectors = $this->connectorsRepository->findAllBy(
 			$findConnectorsQuery,
@@ -414,7 +414,7 @@ class Devices extends Console\Command\Command
 			$identifier = array_search($answer, $connectors, true);
 
 			if ($identifier !== false) {
-				$findConnectorQuery = new DevicesQueries\FindConnectors();
+				$findConnectorQuery = new DevicesQueries\Entities\FindConnectors();
 				$findConnectorQuery->byIdentifier($identifier);
 
 				$connector = $this->connectorsRepository->findOneBy(
@@ -447,7 +447,7 @@ class Devices extends Console\Command\Command
 	{
 		$devices = [];
 
-		$findDevicesQuery = new DevicesQueries\FindDevices();
+		$findDevicesQuery = new DevicesQueries\Entities\FindDevices();
 		$findDevicesQuery->forConnector($connector);
 
 		$connectorDevices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\FbMqttDevice::class);
@@ -485,7 +485,7 @@ class Devices extends Console\Command\Command
 			$identifier = array_search($answer, $devices, true);
 
 			if ($identifier !== false) {
-				$findDeviceQuery = new DevicesQueries\FindDevices();
+				$findDeviceQuery = new DevicesQueries\Entities\FindDevices();
 				$findDeviceQuery->byIdentifier($identifier);
 				$findDeviceQuery->forConnector($connector);
 

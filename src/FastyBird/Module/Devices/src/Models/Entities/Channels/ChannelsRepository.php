@@ -20,6 +20,7 @@ use Doctrine\Persistence;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Queries;
+use FastyBird\Module\Devices\Queries\Entities\FindChannels;
 use FastyBird\Module\Devices\Utilities;
 use IPub\DoctrineOrmQuery;
 use Nette;
@@ -52,7 +53,7 @@ final class ChannelsRepository
 	/**
 	 * @template T of Entities\Channels\Channel
 	 *
-	 * @param Queries\FindChannels<T> $queryObject
+	 * @param FindChannels<T> $queryObject
 	 * @param class-string<T> $type
 	 *
 	 * @return T|null
@@ -60,7 +61,7 @@ final class ChannelsRepository
 	 * @throws Exceptions\InvalidState
 	 */
 	public function findOneBy(
-		Queries\FindChannels $queryObject,
+		Queries\Entities\FindChannels $queryObject,
 		string $type = Entities\Channels\Channel::class,
 	): Entities\Channels\Channel|null
 	{
@@ -72,7 +73,7 @@ final class ChannelsRepository
 	/**
 	 * @template T of Entities\Channels\Channel
 	 *
-	 * @param Queries\FindChannels<T> $queryObject
+	 * @param FindChannels<T> $queryObject
 	 * @param class-string<T> $type
 	 *
 	 * @return array<T>
@@ -80,7 +81,7 @@ final class ChannelsRepository
 	 * @throws Exceptions\InvalidState
 	 */
 	public function findAllBy(
-		Queries\FindChannels $queryObject,
+		Queries\Entities\FindChannels $queryObject,
 		string $type = Entities\Channels\Channel::class,
 	): array
 	{
@@ -97,7 +98,7 @@ final class ChannelsRepository
 	/**
 	 * @template T of Entities\Channels\Channel
 	 *
-	 * @param Queries\FindChannels<T> $queryObject
+	 * @param FindChannels<T> $queryObject
 	 * @param class-string<T> $type
 	 *
 	 * @return DoctrineOrmQuery\ResultSet<T>
@@ -105,7 +106,7 @@ final class ChannelsRepository
 	 * @throws Exceptions\InvalidState
 	 */
 	public function getResultSet(
-		Queries\FindChannels $queryObject,
+		Queries\Entities\FindChannels $queryObject,
 		string $type = Entities\Channels\Channel::class,
 	): DoctrineOrmQuery\ResultSet
 	{

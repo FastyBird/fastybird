@@ -66,13 +66,13 @@ final class StatesRepositoryTest extends TestCase
 	}
 
 	/**
-	 * @phpstan-return Models\StatesRepository<States\State>
+	 * @phpstan-return Models\States\StatesRepository<States\State>
 	 */
 	private function createRepository(
 		Clients\Client&MockObject\MockObject $redisClient,
-	): Models\StatesRepository
+	): Models\States\StatesRepository
 	{
-		return new Models\StatesRepository($redisClient);
+		return new Models\States\StatesRepository($redisClient);
 	}
 
 }

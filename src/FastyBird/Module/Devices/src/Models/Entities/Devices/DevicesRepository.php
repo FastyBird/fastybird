@@ -20,6 +20,7 @@ use Doctrine\Persistence;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Queries;
+use FastyBird\Module\Devices\Queries\Entities\FindDevices;
 use FastyBird\Module\Devices\Utilities;
 use IPub\DoctrineOrmQuery;
 use Nette;
@@ -52,7 +53,7 @@ final class DevicesRepository
 	/**
 	 * @template T of Entities\Devices\Device
 	 *
-	 * @param Queries\FindDevices<T> $queryObject
+	 * @param FindDevices<T> $queryObject
 	 * @param class-string<T> $type
 	 *
 	 * @return T|null
@@ -60,7 +61,7 @@ final class DevicesRepository
 	 * @throws Exceptions\InvalidState
 	 */
 	public function findOneBy(
-		Queries\FindDevices $queryObject,
+		Queries\Entities\FindDevices $queryObject,
 		string $type = Entities\Devices\Device::class,
 	): Entities\Devices\Device|null
 	{
@@ -72,7 +73,7 @@ final class DevicesRepository
 	/**
 	 * @template T of Entities\Devices\Device
 	 *
-	 * @param Queries\FindDevices<T> $queryObject
+	 * @param FindDevices<T> $queryObject
 	 * @param class-string<T> $type
 	 *
 	 * @return array<T>
@@ -80,7 +81,7 @@ final class DevicesRepository
 	 * @throws Exceptions\InvalidState
 	 */
 	public function findAllBy(
-		Queries\FindDevices $queryObject,
+		Queries\Entities\FindDevices $queryObject,
 		string $type = Entities\Devices\Device::class,
 	): array
 	{
@@ -97,7 +98,7 @@ final class DevicesRepository
 	/**
 	 * @template T of Entities\Devices\Device
 	 *
-	 * @param Queries\FindDevices<T> $queryObject
+	 * @param FindDevices<T> $queryObject
 	 * @param class-string<T> $type
 	 *
 	 * @return DoctrineOrmQuery\ResultSet<T>
@@ -105,7 +106,7 @@ final class DevicesRepository
 	 * @throws Exceptions\InvalidState
 	 */
 	public function getResultSet(
-		Queries\FindDevices $queryObject,
+		Queries\Entities\FindDevices $queryObject,
 		string $type = Entities\Devices\Device::class,
 	): DoctrineOrmQuery\ResultSet
 	{

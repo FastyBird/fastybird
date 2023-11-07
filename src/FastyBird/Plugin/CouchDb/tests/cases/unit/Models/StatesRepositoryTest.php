@@ -69,13 +69,13 @@ final class StatesRepositoryTest extends TestCase
 	}
 
 	/**
-	 * @phpstan-return Models\StatesRepository<States\State>
+	 * @phpstan-return Models\States\StatesRepository<States\State>
 	 */
 	private function createRepository(
 		Connections\Connection $couchClient,
-	): Models\StatesRepository
+	): Models\States\StatesRepository
 	{
-		return new Models\StatesRepository($couchClient);
+		return new Models\States\StatesRepository($couchClient);
 	}
 
 }

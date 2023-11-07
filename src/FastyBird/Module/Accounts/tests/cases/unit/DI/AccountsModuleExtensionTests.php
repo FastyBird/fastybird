@@ -39,15 +39,21 @@ final class AccountsModuleExtensionTests extends DbTestCase
 		self::assertNotNull($this->getContainer()->getByType(Subscribers\AccountEntity::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Subscribers\EmailEntity::class, false));
 
-		self::assertNotNull($this->getContainer()->getByType(Models\Accounts\AccountsRepository::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Models\Emails\EmailsRepository::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Models\Identities\IdentitiesRepository::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Models\Roles\RolesRepository::class, false));
+		self::assertNotNull(
+			$this->getContainer()->getByType(Models\Entities\Accounts\AccountsRepository::class, false),
+		);
+		self::assertNotNull($this->getContainer()->getByType(Models\Entities\Emails\EmailsRepository::class, false));
+		self::assertNotNull(
+			$this->getContainer()->getByType(Models\Entities\Identities\IdentitiesRepository::class, false),
+		);
+		self::assertNotNull($this->getContainer()->getByType(Models\Entities\Roles\RolesRepository::class, false));
 
-		self::assertNotNull($this->getContainer()->getByType(Models\Accounts\AccountsManager::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Models\Emails\EmailsManager::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Models\Identities\IdentitiesManager::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Models\Roles\RolesManager::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Models\Entities\Accounts\AccountsManager::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Models\Entities\Emails\EmailsManager::class, false));
+		self::assertNotNull(
+			$this->getContainer()->getByType(Models\Entities\Identities\IdentitiesManager::class, false),
+		);
+		self::assertNotNull($this->getContainer()->getByType(Models\Entities\Roles\RolesManager::class, false));
 
 		self::assertNotNull($this->getContainer()->getByType(Controllers\AccountV1::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Controllers\AccountEmailsV1::class, false));

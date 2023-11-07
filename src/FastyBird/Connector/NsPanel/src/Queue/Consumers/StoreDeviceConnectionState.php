@@ -66,7 +66,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 			return false;
 		}
 
-		$findDeviceQuery = new Queries\FindDevices();
+		$findDeviceQuery = new Queries\Entities\FindDevices();
 		$findDeviceQuery->byConnectorId($entity->getConnector());
 		$findDeviceQuery->byIdentifier($entity->getIdentifier());
 
@@ -107,7 +107,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 				|| $entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_ALERT)
 				|| $entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_UNKNOWN)
 			) {
-				$findDevicePropertiesQuery = new DevicesQueries\FindDeviceDynamicProperties();
+				$findDevicePropertiesQuery = new DevicesQueries\Entities\FindDeviceDynamicProperties();
 				$findDevicePropertiesQuery->forDevice($device);
 
 				foreach ($this->devicesPropertiesRepository->findAllBy(
@@ -117,13 +117,13 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 					$this->devicePropertiesStatesManager->setValidState($property, false);
 				}
 
-				$findChannelsQuery = new Queries\FindChannels();
+				$findChannelsQuery = new Queries\Entities\FindChannels();
 				$findChannelsQuery->forDevice($device);
 
 				$channels = $this->channelsRepository->findAllBy($findChannelsQuery, Entities\NsPanelChannel::class);
 
 				foreach ($channels as $channel) {
-					$findChannelPropertiesQuery = new DevicesQueries\FindChannelDynamicProperties();
+					$findChannelPropertiesQuery = new DevicesQueries\Entities\FindChannelDynamicProperties();
 					$findChannelPropertiesQuery->forChannel($channel);
 
 					foreach ($this->channelsPropertiesRepository->findAllBy(
@@ -136,7 +136,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 			}
 
 			if ($device instanceof Entities\Devices\Gateway) {
-				$findChildrenDevicesQuery = new Queries\FindSubDevices();
+				$findChildrenDevicesQuery = new Queries\Entities\FindSubDevices();
 				$findChildrenDevicesQuery->forParent($device);
 
 				$children = $this->devicesRepository->findAllBy(
@@ -156,7 +156,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 						|| $entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_ALERT)
 						|| $entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_UNKNOWN)
 					) {
-						$findDevicePropertiesQuery = new DevicesQueries\FindDeviceDynamicProperties();
+						$findDevicePropertiesQuery = new DevicesQueries\Entities\FindDeviceDynamicProperties();
 						$findDevicePropertiesQuery->forDevice($child);
 
 						foreach ($this->devicesPropertiesRepository->findAllBy(
@@ -166,7 +166,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 							$this->devicePropertiesStatesManager->setValidState($property, false);
 						}
 
-						$findChannelsQuery = new Queries\FindChannels();
+						$findChannelsQuery = new Queries\Entities\FindChannels();
 						$findChannelsQuery->forDevice($child);
 
 						$channels = $this->channelsRepository->findAllBy(
@@ -175,7 +175,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 						);
 
 						foreach ($channels as $channel) {
-							$findChannelPropertiesQuery = new DevicesQueries\FindChannelDynamicProperties();
+							$findChannelPropertiesQuery = new DevicesQueries\Entities\FindChannelDynamicProperties();
 							$findChannelPropertiesQuery->forChannel($channel);
 
 							foreach ($this->channelsPropertiesRepository->findAllBy(
@@ -189,7 +189,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 				}
 
 				if ($entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_ALERT)) {
-					$findChildrenDevicesQuery = new Queries\FindThirdPartyDevices();
+					$findChildrenDevicesQuery = new Queries\Entities\FindThirdPartyDevices();
 					$findChildrenDevicesQuery->forParent($device);
 
 					$children = $this->devicesRepository->findAllBy(

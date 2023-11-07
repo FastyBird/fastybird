@@ -89,7 +89,7 @@ final class State implements ExchangeConsumers\Consumer
 		if (in_array($routingKey->getValue(), self::PROPERTIES_ACTIONS_ROUTING_KEYS, true)) {
 			if ($entity instanceof MetadataEntities\Actions\ActionConnectorProperty) {
 				if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_SET)) {
-					$findConnectorPropertyQuery = new Queries\FindConnectorProperties();
+					$findConnectorPropertyQuery = new Queries\Entities\FindConnectorProperties();
 					$findConnectorPropertyQuery->byId($entity->getProperty());
 
 					$property = $this->connectorPropertiesRepository->findOneBy($findConnectorPropertyQuery);
@@ -106,7 +106,7 @@ final class State implements ExchangeConsumers\Consumer
 						]),
 					);
 				} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
-					$findConnectorPropertyQuery = new Queries\FindConnectorProperties();
+					$findConnectorPropertyQuery = new Queries\Entities\FindConnectorProperties();
 					$findConnectorPropertyQuery->byId($entity->getProperty());
 
 					$property = $this->connectorPropertiesRepository->findOneBy($findConnectorPropertyQuery);
@@ -139,7 +139,7 @@ final class State implements ExchangeConsumers\Consumer
 				}
 			} elseif ($entity instanceof MetadataEntities\Actions\ActionDeviceProperty) {
 				if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_SET)) {
-					$findConnectorPropertyQuery = new Queries\FindDeviceProperties();
+					$findConnectorPropertyQuery = new Queries\Entities\FindDeviceProperties();
 					$findConnectorPropertyQuery->byId($entity->getProperty());
 
 					$property = $this->devicePropertiesRepository->findOneBy($findConnectorPropertyQuery);
@@ -159,7 +159,7 @@ final class State implements ExchangeConsumers\Consumer
 						]),
 					);
 				} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
-					$findConnectorPropertyQuery = new Queries\FindDeviceProperties();
+					$findConnectorPropertyQuery = new Queries\Entities\FindDeviceProperties();
 					$findConnectorPropertyQuery->byId($entity->getProperty());
 
 					$property = $this->devicePropertiesRepository->findOneBy($findConnectorPropertyQuery);
@@ -192,7 +192,7 @@ final class State implements ExchangeConsumers\Consumer
 				}
 			} elseif ($entity instanceof MetadataEntities\Actions\ActionChannelProperty) {
 				if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_SET)) {
-					$findConnectorPropertyQuery = new Queries\FindChannelProperties();
+					$findConnectorPropertyQuery = new Queries\Entities\FindChannelProperties();
 					$findConnectorPropertyQuery->byId($entity->getProperty());
 
 					$property = $this->channelPropertiesRepository->findOneBy($findConnectorPropertyQuery);
@@ -212,7 +212,7 @@ final class State implements ExchangeConsumers\Consumer
 						]),
 					);
 				} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
-					$findConnectorPropertyQuery = new Queries\FindChannelProperties();
+					$findConnectorPropertyQuery = new Queries\Entities\FindChannelProperties();
 					$findConnectorPropertyQuery->byId($entity->getProperty());
 
 					$property = $this->channelPropertiesRepository->findOneBy($findConnectorPropertyQuery);

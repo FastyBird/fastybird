@@ -76,14 +76,14 @@ final class StoreLocalDevice implements Queue\Consumer
 			return false;
 		}
 
-		$findDeviceQuery = new Queries\FindDevices();
+		$findDeviceQuery = new Queries\Entities\FindDevices();
 		$findDeviceQuery->byConnectorId($entity->getConnector());
 		$findDeviceQuery->byIdentifier($entity->getId());
 
 		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\TuyaDevice::class);
 
 		if ($device === null) {
-			$findConnectorQuery = new Queries\FindConnectors();
+			$findConnectorQuery = new Queries\Entities\FindConnectors();
 			$findConnectorQuery->byId($entity->getConnector());
 
 			$connector = $this->connectorsRepository->findOneBy(
@@ -148,7 +148,7 @@ final class StoreLocalDevice implements Queue\Consumer
 		}
 
 		if ($entity->getGateway() !== null) {
-			$findParentDeviceQuery = new Queries\FindDevices();
+			$findParentDeviceQuery = new Queries\Entities\FindDevices();
 			$findParentDeviceQuery->byConnectorId($entity->getConnector());
 			$findParentDeviceQuery->byIdentifier($entity->getGateway());
 
@@ -289,7 +289,7 @@ final class StoreLocalDevice implements Queue\Consumer
 
 		if (count($entity->getDataPoints()) > 0) {
 			$this->databaseHelper->transaction(function () use ($entity, $device): bool {
-				$findChannelQuery = new DevicesQueries\FindChannels();
+				$findChannelQuery = new DevicesQueries\Entities\FindChannels();
 				$findChannelQuery->byIdentifier(Types\DataPoint::LOCAL);
 				$findChannelQuery->forDevice($device);
 
@@ -317,7 +317,7 @@ final class StoreLocalDevice implements Queue\Consumer
 				}
 
 				foreach ($entity->getDataPoints() as $dataPoint) {
-					$findChannelPropertyQuery = new DevicesQueries\FindChannelDynamicProperties();
+					$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelDynamicProperties();
 					$findChannelPropertyQuery->forChannel($channel);
 					$findChannelPropertyQuery->byIdentifier($dataPoint->getCode());
 

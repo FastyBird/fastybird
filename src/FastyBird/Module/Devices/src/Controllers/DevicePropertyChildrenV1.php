@@ -62,7 +62,7 @@ final class DevicePropertyChildrenV1 extends BaseV1
 		// & property
 		$property = $this->findProperty(strval($request->getAttribute(Router\ApiRoutes::URL_PROPERTY_ID)), $device);
 
-		$findQuery = new Queries\FindDeviceProperties();
+		$findQuery = new Queries\Entities\FindDeviceProperties();
 		$findQuery->forParent($property);
 
 		$children = $this->devicePropertiesRepository->getResultSet($findQuery);

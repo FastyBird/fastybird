@@ -184,7 +184,7 @@ class Devices extends Console\Command\Command
 
 		$question->setValidator(function (string|null $answer) {
 			if ($answer !== '' && $answer !== null) {
-				$findDeviceQuery = new Queries\FindDevices();
+				$findDeviceQuery = new Queries\Entities\FindDevices();
 				$findDeviceQuery->byIdentifier($answer);
 
 				if (
@@ -402,7 +402,7 @@ class Devices extends Console\Command\Command
 
 		$panelInfo = $this->askWhichPanel($io, $connector, $gateway);
 
-		$findDevicePropertyQuery = new DevicesQueries\FindDeviceVariableProperties();
+		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceVariableProperties();
 		$findDevicePropertyQuery->forDevice($gateway);
 		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IP_ADDRESS);
 
@@ -411,7 +411,7 @@ class Devices extends Console\Command\Command
 			DevicesEntities\Devices\Properties\Variable::class,
 		);
 
-		$findDevicePropertyQuery = new DevicesQueries\FindDeviceVariableProperties();
+		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceVariableProperties();
 		$findDevicePropertyQuery->forDevice($gateway);
 		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::DOMAIN);
 
@@ -420,7 +420,7 @@ class Devices extends Console\Command\Command
 			DevicesEntities\Devices\Properties\Variable::class,
 		);
 
-		$findDevicePropertyQuery = new DevicesQueries\FindDeviceVariableProperties();
+		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceVariableProperties();
 		$findDevicePropertyQuery->forDevice($gateway);
 		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::MAC_ADDRESS);
 
@@ -429,7 +429,7 @@ class Devices extends Console\Command\Command
 			DevicesEntities\Devices\Properties\Variable::class,
 		);
 
-		$findDevicePropertyQuery = new DevicesQueries\FindDeviceVariableProperties();
+		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceVariableProperties();
 		$findDevicePropertyQuery->forDevice($gateway);
 		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::FIRMWARE_VERSION);
 
@@ -505,7 +505,7 @@ class Devices extends Console\Command\Command
 			}
 		}
 
-		$findDevicePropertyQuery = new DevicesQueries\FindDeviceVariableProperties();
+		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceVariableProperties();
 		$findDevicePropertyQuery->forDevice($gateway);
 		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::ACCESS_TOKEN);
 
@@ -699,7 +699,7 @@ class Devices extends Console\Command\Command
 	 */
 	private function listGateways(Style\SymfonyStyle $io, Entities\NsPanelConnector $connector): void
 	{
-		$findDevicesQuery = new Queries\FindGatewayDevices();
+		$findDevicesQuery = new Queries\Entities\FindGatewayDevices();
 		$findDevicesQuery->forConnector($connector);
 
 		/** @var array<Entities\Devices\Gateway> $devices */
@@ -724,7 +724,7 @@ class Devices extends Console\Command\Command
 		]);
 
 		foreach ($devices as $index => $device) {
-			$findDevicePropertyQuery = new DevicesQueries\FindDeviceVariableProperties();
+			$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceVariableProperties();
 			$findDevicePropertyQuery->forDevice($device);
 			$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IP_ADDRESS);
 
@@ -733,7 +733,7 @@ class Devices extends Console\Command\Command
 				DevicesEntities\Devices\Properties\Variable::class,
 			);
 
-			$findDevicesQuery = new Queries\FindDevices();
+			$findDevicesQuery = new Queries\Entities\FindDevices();
 			$findDevicesQuery->forParent($device);
 
 			$table->addRow([
@@ -819,7 +819,7 @@ class Devices extends Console\Command\Command
 
 		$question->setValidator(function (string|null $answer) {
 			if ($answer !== '' && $answer !== null) {
-				$findDeviceQuery = new Queries\FindDevices();
+				$findDeviceQuery = new Queries\Entities\FindDevices();
 				$findDeviceQuery->byIdentifier($answer);
 
 				if (
@@ -1112,7 +1112,7 @@ class Devices extends Console\Command\Command
 	 */
 	private function listDevices(Style\SymfonyStyle $io, Entities\Devices\Gateway $gateway): void
 	{
-		$findDevicesQuery = new Queries\FindThirdPartyDevices();
+		$findDevicesQuery = new Queries\Entities\FindThirdPartyDevices();
 		$findDevicesQuery->forParent($gateway);
 
 		/** @var array<Entities\NsPanelDevice> $devices */
@@ -1141,7 +1141,7 @@ class Devices extends Console\Command\Command
 				$device instanceof Entities\Devices\ThirdPartyDevice || $device instanceof Entities\Devices\SubDevice,
 			);
 
-			$findChannelsQuery = new Queries\FindChannels();
+			$findChannelsQuery = new Queries\Entities\FindChannels();
 			$findChannelsQuery->forDevice($device);
 
 			$table->addRow([
@@ -1297,7 +1297,7 @@ class Devices extends Console\Command\Command
 		} else {
 			$identifier = Helpers\Name::convertCapabilityToChannel($capability);
 
-			$findChannelQuery = new Queries\FindChannels();
+			$findChannelQuery = new Queries\Entities\FindChannels();
 			$findChannelQuery->forDevice($device);
 			$findChannelQuery->byIdentifier($identifier);
 
@@ -1438,7 +1438,7 @@ class Devices extends Console\Command\Command
 		$missingProtocols = [];
 
 		foreach ($protocols as $protocol) {
-			$findPropertyQuery = new DevicesQueries\FindChannelVariableProperties();
+			$findPropertyQuery = new DevicesQueries\Entities\FindChannelVariableProperties();
 			$findPropertyQuery->forChannel($channel);
 			$findPropertyQuery->byIdentifier(
 				Helpers\Name::convertProtocolToProperty(Types\Protocol::get($protocol)),
@@ -1563,7 +1563,7 @@ class Devices extends Console\Command\Command
 	 */
 	private function listCapabilities(Style\SymfonyStyle $io, Entities\Devices\ThirdPartyDevice $device): void
 	{
-		$findChannelsQuery = new Queries\FindChannels();
+		$findChannelsQuery = new Queries\Entities\FindChannels();
 		$findChannelsQuery->forDevice($device);
 
 		/** @var array<Entities\NsPanelChannel> $deviceChannels */
@@ -1588,7 +1588,7 @@ class Devices extends Console\Command\Command
 		]);
 
 		foreach ($deviceChannels as $index => $channel) {
-			$findChannelPropertiesQuery = new DevicesQueries\FindChannelProperties();
+			$findChannelPropertiesQuery = new DevicesQueries\Entities\FindChannelProperties();
 			$findChannelPropertiesQuery->forChannel($channel);
 
 			$table->addRow([
@@ -1934,7 +1934,7 @@ class Devices extends Console\Command\Command
 			}
 		}
 
-		$findChannelPropertiesQuery = new DevicesQueries\FindChannelProperties();
+		$findChannelPropertiesQuery = new DevicesQueries\Entities\FindChannelProperties();
 		$findChannelPropertiesQuery->forChannel($channel);
 
 		if (count($this->channelsPropertiesRepository->findAllBy($findChannelPropertiesQuery)) > 0) {
@@ -1951,7 +1951,7 @@ class Devices extends Console\Command\Command
 	 */
 	private function listProtocols(Style\SymfonyStyle $io, Entities\NsPanelChannel $channel): void
 	{
-		$findPropertiesQuery = new DevicesQueries\FindChannelProperties();
+		$findPropertiesQuery = new DevicesQueries\Entities\FindChannelProperties();
 		$findPropertiesQuery->forChannel($channel);
 
 		$channelProperties = $this->channelsPropertiesRepository->findAllBy($findPropertiesQuery);
@@ -2470,7 +2470,7 @@ class Devices extends Console\Command\Command
 				) {
 					$allowMultiple = $metadata[$type]->offsetGet('multiple');
 
-					$findChannelQuery = new Queries\FindChannels();
+					$findChannelQuery = new Queries\Entities\FindChannels();
 					$findChannelQuery->forDevice($device);
 					$findChannelQuery->byIdentifier(
 						Helpers\Name::convertCapabilityToChannel(Types\Capability::get($type)),
@@ -2498,7 +2498,7 @@ class Devices extends Console\Command\Command
 					) {
 						$allowMultiple = $metadata[$type]->offsetGet('multiple');
 
-						$findChannelQuery = new Queries\FindChannels();
+						$findChannelQuery = new Queries\Entities\FindChannels();
 						$findChannelQuery->forDevice($device);
 						$findChannelQuery->byIdentifier(
 							Helpers\Name::convertCapabilityToChannel(Types\Capability::get($type)),
@@ -2615,7 +2615,7 @@ class Devices extends Console\Command\Command
 				$protocolsMetadata->offsetExists($type)
 				&& $protocolsMetadata->offsetGet($type) instanceof Utils\ArrayHash
 			) {
-				$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+				$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
 				$findChannelPropertyQuery->forChannel($channel);
 				$findChannelPropertyQuery->byIdentifier(
 					Helpers\Name::convertProtocolToProperty(Types\Protocol::get($type)),
@@ -2688,7 +2688,7 @@ class Devices extends Console\Command\Command
 		$connectedChannel = $connectedProperty?->getChannel();
 		$connectedDevice = $connectedProperty?->getChannel()->getDevice();
 
-		$findDevicesQuery = new DevicesQueries\FindDevices();
+		$findDevicesQuery = new DevicesQueries\Entities\FindDevices();
 
 		$systemDevices = $this->devicesRepository->findAllBy($findDevicesQuery);
 		usort(
@@ -2750,7 +2750,7 @@ class Devices extends Console\Command\Command
 			$identifier = array_search($answer, $devices, true);
 
 			if ($identifier !== false) {
-				$findDeviceQuery = new DevicesQueries\FindDevices();
+				$findDeviceQuery = new DevicesQueries\Entities\FindDevices();
 				$findDeviceQuery->byId(Uuid\Uuid::fromString($identifier));
 
 				$device = $this->devicesRepository->findOneBy($findDeviceQuery);
@@ -2773,7 +2773,7 @@ class Devices extends Console\Command\Command
 
 		$channels = [];
 
-		$findChannelsQuery = new DevicesQueries\FindChannels();
+		$findChannelsQuery = new DevicesQueries\Entities\FindChannels();
 		$findChannelsQuery->forDevice($device);
 		$findChannelsQuery->withProperties();
 
@@ -2835,7 +2835,7 @@ class Devices extends Console\Command\Command
 				$identifier = array_search($answer, $channels, true);
 
 				if ($identifier !== false) {
-					$findChannelQuery = new DevicesQueries\FindChannels();
+					$findChannelQuery = new DevicesQueries\Entities\FindChannels();
 					$findChannelQuery->byIdentifier($identifier);
 					$findChannelQuery->forDevice($device);
 
@@ -2860,7 +2860,7 @@ class Devices extends Console\Command\Command
 
 		$properties = [];
 
-		$findDevicePropertiesQuery = new DevicesQueries\FindChannelDynamicProperties();
+		$findDevicePropertiesQuery = new DevicesQueries\Entities\FindChannelDynamicProperties();
 		$findDevicePropertiesQuery->forChannel($channel);
 
 		$channelProperties = $this->channelsPropertiesRepository->findAllBy(
@@ -2924,7 +2924,7 @@ class Devices extends Console\Command\Command
 				$identifier = array_search($answer, $properties, true);
 
 				if ($identifier !== false) {
-					$findPropertyQuery = new DevicesQueries\FindChannelDynamicProperties();
+					$findPropertyQuery = new DevicesQueries\Entities\FindChannelDynamicProperties();
 					$findPropertyQuery->byIdentifier($identifier);
 					$findPropertyQuery->forChannel($channel);
 
@@ -3460,7 +3460,7 @@ class Devices extends Console\Command\Command
 	{
 		$connectors = [];
 
-		$findConnectorsQuery = new Queries\FindConnectors();
+		$findConnectorsQuery = new Queries\Entities\FindConnectors();
 
 		$systemConnectors = $this->connectorsRepository->findAllBy(
 			$findConnectorsQuery,
@@ -3506,7 +3506,7 @@ class Devices extends Console\Command\Command
 			$identifier = array_search($answer, $connectors, true);
 
 			if ($identifier !== false) {
-				$findConnectorQuery = new Queries\FindConnectors();
+				$findConnectorQuery = new Queries\Entities\FindConnectors();
 				$findConnectorQuery->byIdentifier($identifier);
 
 				$connector = $this->connectorsRepository->findOneBy(
@@ -3543,7 +3543,7 @@ class Devices extends Console\Command\Command
 	{
 		$gateways = [];
 
-		$findDevicesQuery = new Queries\FindGatewayDevices();
+		$findDevicesQuery = new Queries\Entities\FindGatewayDevices();
 		$findDevicesQuery->forConnector($connector);
 
 		$connectorDevices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\Gateway::class);
@@ -3587,7 +3587,7 @@ class Devices extends Console\Command\Command
 				$identifier = array_search($answer, $gateways, true);
 
 				if ($identifier !== false) {
-					$findDeviceQuery = new Queries\FindGatewayDevices();
+					$findDeviceQuery = new Queries\Entities\FindGatewayDevices();
 					$findDeviceQuery->byIdentifier($identifier);
 					$findDeviceQuery->forConnector($connector);
 
@@ -3624,7 +3624,7 @@ class Devices extends Console\Command\Command
 	{
 		$devices = [];
 
-		$findDevicesQuery = new Queries\FindThirdPartyDevices();
+		$findDevicesQuery = new Queries\Entities\FindThirdPartyDevices();
 		$findDevicesQuery->forConnector($connector);
 		$findDevicesQuery->forParent($gateway);
 
@@ -3672,7 +3672,7 @@ class Devices extends Console\Command\Command
 				$identifier = array_search($answer, $devices, true);
 
 				if ($identifier !== false) {
-					$findDeviceQuery = new Queries\FindThirdPartyDevices();
+					$findDeviceQuery = new Queries\Entities\FindThirdPartyDevices();
 					$findDeviceQuery->byIdentifier($identifier);
 					$findDeviceQuery->forConnector($connector);
 					$findDeviceQuery->forParent($gateway);
@@ -3712,7 +3712,7 @@ class Devices extends Console\Command\Command
 	{
 		$channels = [];
 
-		$findChannelsQuery = new Queries\FindChannels();
+		$findChannelsQuery = new Queries\Entities\FindChannels();
 		$findChannelsQuery->forDevice($device);
 
 		$deviceChannels = $this->channelsRepository->findAllBy($findChannelsQuery, Entities\NsPanelChannel::class);
@@ -3756,7 +3756,7 @@ class Devices extends Console\Command\Command
 				$identifier = array_search($answer, $channels, true);
 
 				if ($identifier !== false) {
-					$findChannelQuery = new Queries\FindChannels();
+					$findChannelQuery = new Queries\Entities\FindChannels();
 					$findChannelQuery->forDevice($device);
 					$findChannelQuery->byIdentifier($identifier);
 
@@ -3792,7 +3792,7 @@ class Devices extends Console\Command\Command
 	{
 		$properties = [];
 
-		$findChannelPropertiesQuery = new DevicesQueries\FindChannelProperties();
+		$findChannelPropertiesQuery = new DevicesQueries\Entities\FindChannelProperties();
 		$findChannelPropertiesQuery->forChannel($channel);
 
 		$channelProperties = $this->channelsPropertiesRepository->findAllBy($findChannelPropertiesQuery);
@@ -3838,7 +3838,7 @@ class Devices extends Console\Command\Command
 				$identifier = array_search($answer, $properties, true);
 
 				if ($identifier !== false) {
-					$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+					$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
 					$findChannelPropertyQuery->forChannel($channel);
 					$findChannelPropertyQuery->byIdentifier($identifier);
 
@@ -3881,7 +3881,7 @@ class Devices extends Console\Command\Command
 		for ($i = 1; $i <= 100; $i++) {
 			$identifier = sprintf($pattern, $i);
 
-			$findDeviceQuery = new Queries\FindDevices();
+			$findDeviceQuery = new Queries\Entities\FindDevices();
 			$findDeviceQuery->forConnector($connector);
 			$findDeviceQuery->byIdentifier($identifier);
 
@@ -3904,7 +3904,7 @@ class Devices extends Console\Command\Command
 		for ($i = 1; $i <= 100; $i++) {
 			$identifier = Helpers\Name::convertCapabilityToChannel(Types\Capability::get($type), $i);
 
-			$findChannelQuery = new Queries\FindChannels();
+			$findChannelQuery = new Queries\Entities\FindChannels();
 			$findChannelQuery->forDevice($device);
 			$findChannelQuery->byIdentifier($identifier);
 

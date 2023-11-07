@@ -59,10 +59,10 @@ class ApiKeyExtension extends DI\CompilerExtension
 		$builder = $this->getContainerBuilder();
 
 		$builder->addDefinition($this->prefix('models.keysRepository'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\KeyRepository::class);
+			->setType(Models\Entities\KeyRepository::class);
 
 		$builder->addDefinition($this->prefix('models.keysManager'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\KeysManager::class)
+			->setType(Models\Entities\KeysManager::class)
 			->setArgument('entityCrud', '__placeholder__');
 
 		$builder->addDefinition($this->prefix('commands.create'), new DI\Definitions\ServiceDefinition())
@@ -117,7 +117,7 @@ class ApiKeyExtension extends DI\CompilerExtension
 
 		$devicesManagerService = $class->getMethod('createService' . ucfirst($this->name) . '__models__keysManager');
 		$devicesManagerService->setBody(
-			'return new ' . Models\KeysManager::class
+			'return new ' . Models\Entities\KeysManager::class
 			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Key::class . '\'));',
 		);
 	}

@@ -78,7 +78,7 @@ final class DeviceProperty implements Consumers\Consumer
 			return false;
 		}
 
-		$findDeviceQuery = new DevicesQueries\FindDevices();
+		$findDeviceQuery = new DevicesQueries\Entities\FindDevices();
 		$findDeviceQuery->byConnectorId($entity->getConnector());
 		$findDeviceQuery->byIdentifier($entity->getDevice());
 
@@ -99,7 +99,7 @@ final class DeviceProperty implements Consumers\Consumer
 			return true;
 		}
 
-		$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($device);
 		$findDevicePropertyQuery->byIdentifier($entity->getProperty());
 
@@ -125,7 +125,7 @@ final class DeviceProperty implements Consumers\Consumer
 
 		if ($entity->getValue() !== FbMqtt\Constants::VALUE_NOT_SET) {
 			if ($property instanceof DevicesEntities\Devices\Properties\Variable) {
-				$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+				$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
 				$findDevicePropertyQuery->byId($property->getId());
 
 				$property = $this->propertiesRepository->findOneBy($findDevicePropertyQuery);

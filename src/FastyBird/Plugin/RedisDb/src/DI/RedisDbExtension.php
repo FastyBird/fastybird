@@ -100,10 +100,10 @@ class RedisDbExtension extends DI\CompilerExtension
 			]);
 
 		$builder->addDefinition($this->prefix('models.statesManagerFactory'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\StatesManagerFactory::class);
+			->setType(Models\States\StatesManagerFactory::class);
 
 		$builder->addDefinition($this->prefix('models.statesRepositoryFactory'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\StatesRepositoryFactory::class);
+			->setType(Models\States\StatesRepositoryFactory::class);
 
 		$builder->addDefinition($this->prefix('handlers.message'), new DI\Definitions\ServiceDefinition())
 			->setType(Handlers\Message::class);

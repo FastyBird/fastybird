@@ -39,7 +39,7 @@ final class RoleChildrenV1 extends BaseV1
 
 	use Controllers\Finders\TRole;
 
-	public function __construct(private readonly Models\Roles\RolesRepository $rolesRepository)
+	public function __construct(private readonly Models\Entities\Roles\RolesRepository $rolesRepository)
 	{
 	}
 
@@ -57,7 +57,7 @@ final class RoleChildrenV1 extends BaseV1
 		// At first, try to load role
 		$role = $this->findRole($request);
 
-		$findQuery = new Queries\FindRoles();
+		$findQuery = new Queries\Entities\FindRoles();
 		$findQuery->forParent($role);
 
 		$children = $this->rolesRepository->getResultSet($findQuery);

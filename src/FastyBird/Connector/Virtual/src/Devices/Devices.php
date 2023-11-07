@@ -115,7 +115,7 @@ class Devices
 	 */
 	private function handleDevices(): void
 	{
-		$findDevicesQuery = new Queries\FindDevices();
+		$findDevicesQuery = new Queries\Entities\FindDevices();
 		$findDevicesQuery->forConnector($this->connector);
 
 		foreach ($this->devicesRepository->findAllBy($findDevicesQuery, Entities\VirtualDevice::class) as $device) {

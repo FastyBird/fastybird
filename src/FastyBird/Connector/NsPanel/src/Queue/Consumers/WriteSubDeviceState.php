@@ -83,7 +83,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 			return false;
 		}
 
-		$findConnectorQuery = new Queries\FindConnectors();
+		$findConnectorQuery = new Queries\Entities\FindConnectors();
 		$findConnectorQuery->byId($entity->getConnector());
 
 		$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\NsPanelConnector::class);
@@ -110,7 +110,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 			return true;
 		}
 
-		$findDeviceQuery = new Queries\FindSubDevices();
+		$findDeviceQuery = new Queries\Entities\FindSubDevices();
 		$findDeviceQuery->forConnector($connector);
 		$findDeviceQuery->byId($entity->getDevice());
 
@@ -177,7 +177,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 			return true;
 		}
 
-		$findChannelQuery = new Queries\FindChannels();
+		$findChannelQuery = new Queries\Entities\FindChannels();
 		$findChannelQuery->forDevice($device);
 		$findChannelQuery->byId($entity->getChannel());
 

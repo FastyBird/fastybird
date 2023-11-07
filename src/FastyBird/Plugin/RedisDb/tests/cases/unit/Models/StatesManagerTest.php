@@ -47,7 +47,7 @@ final class StatesManagerTest extends TestCase
 
 		$dateTimeFactory = $this->createMock(DateTimeFactory\Factory::class);
 
-		$manager = new Models\StatesManager($redisClient, $dateTimeFactory, Fixtures\CustomState::class);
+		$manager = new Models\States\StatesManager($redisClient, $dateTimeFactory, Fixtures\CustomState::class);
 
 		$state = $manager->create($id, Utils\ArrayHash::from($data));
 
@@ -93,7 +93,7 @@ final class StatesManagerTest extends TestCase
 
 		$dateTimeFactory = $this->createMock(DateTimeFactory\Factory::class);
 
-		$manager = new Models\StatesManager($redisClient, $dateTimeFactory, Fixtures\CustomState::class);
+		$manager = new Models\States\StatesManager($redisClient, $dateTimeFactory, Fixtures\CustomState::class);
 
 		$original = States\StateFactory::create(Fixtures\CustomState::class, Utils\Json::encode($originalData));
 
@@ -130,7 +130,7 @@ final class StatesManagerTest extends TestCase
 
 		$dateTimeFactory = $this->createMock(DateTimeFactory\Factory::class);
 
-		$manager = new Models\StatesManager($redisClient, $dateTimeFactory, Fixtures\CustomState::class);
+		$manager = new Models\States\StatesManager($redisClient, $dateTimeFactory, Fixtures\CustomState::class);
 
 		$original = new Fixtures\CustomState($originalData['id'], Utils\Json::encode($originalData));
 

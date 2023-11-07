@@ -82,7 +82,7 @@ final class Device implements Client
 	 */
 	public function connect(): void
 	{
-		$findDevicesQuery = new Queries\FindGatewayDevices();
+		$findDevicesQuery = new Queries\Entities\FindGatewayDevices();
 		$findDevicesQuery->forConnector($this->connector);
 
 		foreach ($this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\Gateway::class) as $gateway) {
@@ -93,7 +93,7 @@ final class Device implements Client
 				continue;
 			}
 
-			$findDevicesQuery = new Queries\FindThirdPartyDevices();
+			$findDevicesQuery = new Queries\Entities\FindThirdPartyDevices();
 			$findDevicesQuery->forConnector($this->connector);
 			$findDevicesQuery->forParent($gateway);
 
@@ -255,7 +255,7 @@ final class Device implements Client
 							);
 
 							foreach ($response->getPayload()->getEndpoints() as $endpoint) {
-								$findDeviceQuery = new Queries\FindThirdPartyDevices();
+								$findDeviceQuery = new Queries\Entities\FindThirdPartyDevices();
 								$findDeviceQuery->byId($endpoint->getThirdSerialNumber());
 								$findDeviceQuery->forConnector($this->connector);
 								$findDeviceQuery->forParent($gateway);
@@ -384,7 +384,7 @@ final class Device implements Client
 										continue;
 									}
 
-									$findDevicesQuery = new Queries\FindThirdPartyDevices();
+									$findDevicesQuery = new Queries\Entities\FindThirdPartyDevices();
 									$findDevicesQuery->forParent($gateway);
 									$findDevicesQuery->byId($subDevice->getThirdSerialNumber());
 
@@ -584,7 +584,7 @@ final class Device implements Client
 	 */
 	public function disconnect(): void
 	{
-		$findDevicesQuery = new Queries\FindGatewayDevices();
+		$findDevicesQuery = new Queries\Entities\FindGatewayDevices();
 		$findDevicesQuery->forConnector($this->connector);
 
 		foreach ($this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\Gateway::class) as $gateway) {
@@ -595,7 +595,7 @@ final class Device implements Client
 				continue;
 			}
 
-			$findDevicesQuery = new Queries\FindThirdPartyDevices();
+			$findDevicesQuery = new Queries\Entities\FindThirdPartyDevices();
 			$findDevicesQuery->forConnector($this->connector);
 			$findDevicesQuery->forParent($gateway);
 

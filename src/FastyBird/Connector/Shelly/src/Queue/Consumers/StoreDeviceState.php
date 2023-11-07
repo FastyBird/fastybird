@@ -74,7 +74,7 @@ final class StoreDeviceState implements Queue\Consumer
 			return false;
 		}
 
-		$findDeviceQuery = new Queries\FindDevices();
+		$findDeviceQuery = new Queries\Entities\FindDevices();
 		$findDeviceQuery->byConnectorId($entity->getConnector());
 		$findDeviceQuery->startWithIdentifier($entity->getIdentifier());
 
@@ -108,7 +108,7 @@ final class StoreDeviceState implements Queue\Consumer
 
 		foreach ($entity->getStates() as $state) {
 			if ($state instanceof Entities\Messages\PropertyState) {
-				$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+				$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
 				$findDevicePropertyQuery->forDevice($device);
 
 				if (Utils\Strings::startsWith($state->getIdentifier(), '_')) {
@@ -149,13 +149,13 @@ final class StoreDeviceState implements Queue\Consumer
 						);
 					}
 				} else {
-					$findChannelsQuery = new DevicesQueries\FindChannels();
+					$findChannelsQuery = new DevicesQueries\Entities\FindChannels();
 					$findChannelsQuery->forDevice($device);
 
 					$channels = $this->channelsRepository->findAllBy($findChannelsQuery);
 
 					foreach ($channels as $channel) {
-						$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+						$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
 						$findChannelPropertyQuery->forChannel($channel);
 
 						if (Utils\Strings::startsWith($state->getIdentifier(), '_')) {
@@ -201,7 +201,7 @@ final class StoreDeviceState implements Queue\Consumer
 					}
 				}
 			} else {
-				$findChannelQuery = new DevicesQueries\FindChannels();
+				$findChannelQuery = new DevicesQueries\Entities\FindChannels();
 				$findChannelQuery->forDevice($device);
 
 				if (Utils\Strings::startsWith($state->getIdentifier(), '_')) {
@@ -216,7 +216,7 @@ final class StoreDeviceState implements Queue\Consumer
 
 				if ($channel !== null) {
 					foreach ($state->getSensors() as $sensor) {
-						$findChannelPropertyQuery = new DevicesQueries\FindChannelProperties();
+						$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
 						$findChannelPropertyQuery->forChannel($channel);
 
 						if (Utils\Strings::startsWith($sensor->getIdentifier(), '_')) {

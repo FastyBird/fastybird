@@ -52,7 +52,7 @@ final class ControlsRepository
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function findOneBy(Queries\FindDeviceControls $queryObject): Entities\Devices\Controls\Control|null
+	public function findOneBy(Queries\Entities\FindDeviceControls $queryObject): Entities\Devices\Controls\Control|null
 	{
 		return $this->database->query(
 			fn (): Entities\Devices\Controls\Control|null => $queryObject->fetchOne($this->getRepository()),
@@ -64,7 +64,7 @@ final class ControlsRepository
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
-	public function findAllBy(Queries\FindDeviceControls $queryObject): array
+	public function findAllBy(Queries\Entities\FindDeviceControls $queryObject): array
 	{
 		try {
 			/** @var array<Entities\Devices\Controls\Control> $result */
@@ -82,7 +82,7 @@ final class ControlsRepository
 	 * @throws Exceptions\InvalidState
 	 */
 	public function getResultSet(
-		Queries\FindDeviceControls $queryObject,
+		Queries\Entities\FindDeviceControls $queryObject,
 	): DoctrineOrmQuery\ResultSet
 	{
 		$result = $this->database->query(

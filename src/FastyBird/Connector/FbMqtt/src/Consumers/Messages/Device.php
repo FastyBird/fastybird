@@ -75,7 +75,7 @@ final class Device implements Consumers\Consumer
 			return false;
 		}
 
-		$findDeviceQuery = new DevicesQueries\FindDevices();
+		$findDeviceQuery = new DevicesQueries\Entities\FindDevices();
 		$findDeviceQuery->byConnectorId($entity->getConnector());
 		$findDeviceQuery->byIdentifier($entity->getDevice());
 
@@ -176,7 +176,7 @@ final class Device implements Consumers\Consumer
 					MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_UNKNOWN),
 				);
 			} else {
-				$findDevicePropertyQuery = new DevicesQueries\FindDeviceProperties();
+				$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
 				$findDevicePropertyQuery->forDevice($device);
 				$findDevicePropertyQuery->byIdentifier($propertyName);
 
@@ -226,7 +226,7 @@ final class Device implements Consumers\Consumer
 			}
 		}
 
-		$findDevicePropertiesQuery = new DevicesQueries\FindDeviceProperties();
+		$findDevicePropertiesQuery = new DevicesQueries\Entities\FindDeviceProperties();
 		$findDevicePropertiesQuery->forDevice($device);
 
 		// Cleanup for unused properties
@@ -255,7 +255,7 @@ final class Device implements Consumers\Consumer
 					Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL,
 					Types\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_VERSION,
 				] as $propertyName) {
-					$findPropertyQuery = new DevicesQueries\FindDeviceProperties();
+					$findPropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
 					$findPropertyQuery->forDevice($device);
 					$findPropertyQuery->byIdentifier($propertyName);
 
@@ -274,7 +274,7 @@ final class Device implements Consumers\Consumer
 					Types\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_NAME,
 					Types\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_VERSION,
 				] as $propertyName) {
-					$findPropertyQuery = new DevicesQueries\FindDeviceProperties();
+					$findPropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
 					$findPropertyQuery->forDevice($device);
 					$findPropertyQuery->byIdentifier($propertyName);
 
@@ -303,7 +303,7 @@ final class Device implements Consumers\Consumer
 	): void
 	{
 		foreach ($controls as $controlName) {
-			$findDeviceControlQuery = new DevicesQueries\FindDeviceControls();
+			$findDeviceControlQuery = new DevicesQueries\Entities\FindDeviceControls();
 			$findDeviceControlQuery->forDevice($device);
 			$findDeviceControlQuery->byName($controlName);
 
@@ -317,7 +317,7 @@ final class Device implements Consumers\Consumer
 			}
 		}
 
-		$findDeviceControlsQuery = new DevicesQueries\FindDeviceControls();
+		$findDeviceControlsQuery = new DevicesQueries\Entities\FindDeviceControls();
 		$findDeviceControlsQuery->forDevice($device);
 
 		// Cleanup for unused control
@@ -340,7 +340,7 @@ final class Device implements Consumers\Consumer
 	): void
 	{
 		foreach ($channels as $channelName) {
-			$findChannelQuery = new DevicesQueries\FindChannels();
+			$findChannelQuery = new DevicesQueries\Entities\FindChannels();
 			$findChannelQuery->forDevice($device);
 			$findChannelQuery->byIdentifier($channelName);
 
@@ -354,7 +354,7 @@ final class Device implements Consumers\Consumer
 			}
 		}
 
-		$findChannelsQuery = new DevicesQueries\FindChannels();
+		$findChannelsQuery = new DevicesQueries\Entities\FindChannels();
 		$findChannelsQuery->forDevice($device);
 
 		// Cleanup for unused channels

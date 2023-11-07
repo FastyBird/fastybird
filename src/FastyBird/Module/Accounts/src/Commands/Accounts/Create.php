@@ -49,11 +49,11 @@ class Create extends Console\Command\Command
 	public const NAME = 'fb:accounts-module:create:account';
 
 	public function __construct(
-		private readonly Models\Accounts\AccountsManager $accountsManager,
-		private readonly Models\Emails\EmailsRepository $emailsRepository,
-		private readonly Models\Emails\EmailsManager $emailsManager,
-		private readonly Models\Identities\IdentitiesManager $identitiesManager,
-		private readonly Models\Roles\RolesRepository $rolesRepository,
+		private readonly Models\Entities\Accounts\AccountsManager $accountsManager,
+		private readonly Models\Entities\Emails\EmailsRepository $emailsRepository,
+		private readonly Models\Entities\Emails\EmailsManager $emailsManager,
+		private readonly Models\Entities\Identities\IdentitiesManager $identitiesManager,
+		private readonly Models\Entities\Roles\RolesRepository $rolesRepository,
 		private readonly Localization\Translator $translator,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 		string|null $name = null,
@@ -174,7 +174,7 @@ class Create extends Console\Command\Command
 			SimpleAuth\Constants::ROLE_MANAGER,
 			SimpleAuth\Constants::ROLE_ADMINISTRATOR,
 		], true)) {
-			$findRoleQuery = new Queries\FindRoles();
+			$findRoleQuery = new Queries\Entities\FindRoles();
 			$findRoleQuery->byName($input->getArgument('role'));
 
 			$role = $this->rolesRepository->findOneBy($findRoleQuery);
@@ -213,7 +213,7 @@ class Create extends Console\Command\Command
 						break;
 				}
 
-				$findRoleQuery = new Queries\FindRoles();
+				$findRoleQuery = new Queries\Entities\FindRoles();
 				$findRoleQuery->byName(strval($roleName));
 
 				$role = $this->rolesRepository->findOneBy($findRoleQuery);

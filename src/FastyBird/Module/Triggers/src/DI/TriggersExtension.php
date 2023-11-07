@@ -90,41 +90,41 @@ class TriggersExtension extends DI\CompilerExtension
 			->setType(Router\Validator::class);
 
 		$builder->addDefinition($this->prefix('models.triggersRepository'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Triggers\TriggersRepository::class);
+			->setType(Models\Entities\Triggers\TriggersRepository::class);
 
 		$builder->addDefinition(
 			$this->prefix('models.triggeControlsRepository'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Triggers\Controls\ControlsRepository::class);
+			->setType(Models\Entities\Triggers\Controls\ControlsRepository::class);
 
 		$builder->addDefinition($this->prefix('models.actionsRepository'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Actions\ActionsRepository::class);
+			->setType(Models\Entities\Actions\ActionsRepository::class);
 
 		$builder->addDefinition($this->prefix('models.conditionsRepository'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Conditions\ConditionsRepository::class);
+			->setType(Models\Entities\Conditions\ConditionsRepository::class);
 
 		$builder->addDefinition($this->prefix('models.notificationsRepository'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Notifications\NotificationsRepository::class);
+			->setType(Models\Entities\Notifications\NotificationsRepository::class);
 
 		$builder->addDefinition($this->prefix('models.triggersManager'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Triggers\TriggersManager::class)
+			->setType(Models\Entities\Triggers\TriggersManager::class)
 			->setArgument('entityCrud', '__placeholder__');
 
 		$builder->addDefinition($this->prefix('models.triggersControlsManager'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Triggers\Controls\ControlsManager::class)
+			->setType(Models\Entities\Triggers\Controls\ControlsManager::class)
 			->setArgument('entityCrud', '__placeholder__');
 
 		$builder->addDefinition($this->prefix('models.actionsManager'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Actions\ActionsManager::class)
+			->setType(Models\Entities\Actions\ActionsManager::class)
 			->setArgument('entityCrud', '__placeholder__');
 
 		$builder->addDefinition($this->prefix('models.conditionsManager'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Conditions\ConditionsManager::class)
+			->setType(Models\Entities\Conditions\ConditionsManager::class)
 			->setArgument('entityCrud', '__placeholder__');
 
 		$builder->addDefinition($this->prefix('models.notificationsManager'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Notifications\NotificationsManager::class)
+			->setType(Models\Entities\Notifications\NotificationsManager::class)
 			->setArgument('entityCrud', '__placeholder__');
 
 		$builder->addDefinition($this->prefix('subscribers.notificationEntity'), new DI\Definitions\ServiceDefinition())
@@ -262,7 +262,7 @@ class TriggersExtension extends DI\CompilerExtension
 			'createService' . ucfirst($this->name) . '__models__triggersManager',
 		);
 		$triggersManagerService->setBody(
-			'return new ' . Models\Triggers\TriggersManager::class
+			'return new ' . Models\Entities\Triggers\TriggersManager::class
 			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Triggers\Trigger::class . '\'));',
 		);
 
@@ -270,13 +270,13 @@ class TriggersExtension extends DI\CompilerExtension
 			'createService' . ucfirst($this->name) . '__models__triggersControlsManager',
 		);
 		$triggersControlsManagerService->setBody(
-			'return new ' . Models\Triggers\Controls\ControlsManager::class
+			'return new ' . Models\Entities\Triggers\Controls\ControlsManager::class
 			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Triggers\Controls\Control::class . '\'));',
 		);
 
 		$actionsManagerService = $class->getMethod('createService' . ucfirst($this->name) . '__models__actionsManager');
 		$actionsManagerService->setBody(
-			'return new ' . Models\Actions\ActionsManager::class
+			'return new ' . Models\Entities\Actions\ActionsManager::class
 			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Actions\Action::class . '\'));',
 		);
 
@@ -284,7 +284,7 @@ class TriggersExtension extends DI\CompilerExtension
 			'createService' . ucfirst($this->name) . '__models__conditionsManager',
 		);
 		$conditionsManagerService->setBody(
-			'return new ' . Models\Conditions\ConditionsManager::class
+			'return new ' . Models\Entities\Conditions\ConditionsManager::class
 			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Conditions\Condition::class . '\'));',
 		);
 
@@ -292,7 +292,7 @@ class TriggersExtension extends DI\CompilerExtension
 			'createService' . ucfirst($this->name) . '__models__notificationsManager',
 		);
 		$notificationsManagerService->setBody(
-			'return new ' . Models\Notifications\NotificationsManager::class
+			'return new ' . Models\Entities\Notifications\NotificationsManager::class
 			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Notifications\Notification::class . '\'));',
 		);
 	}

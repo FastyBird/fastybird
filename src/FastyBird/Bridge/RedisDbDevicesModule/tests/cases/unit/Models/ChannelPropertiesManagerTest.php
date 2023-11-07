@@ -63,7 +63,7 @@ final class ChannelPropertiesManagerTest extends BaseTestCase
 
 		$this->mockContainerService(RedisDbClient\Client::class, $redisDbClient);
 
-		$manager = $this->container->getByType(Models\ChannelPropertiesManager::class);
+		$manager = $this->container->getByType(Models\States\ChannelPropertiesManager::class);
 
 		$property = $this->createMock(DevicesEntities\Channels\Properties\Dynamic::class);
 		$property
@@ -133,13 +133,13 @@ final class ChannelPropertiesManagerTest extends BaseTestCase
 			->method('getId')
 			->willReturn($id);
 
-		$repository = $this->container->getByType(Models\ChannelPropertiesRepository::class);
+		$repository = $this->container->getByType(Models\States\ChannelPropertiesRepository::class);
 
 		$state = $repository->findOne($property);
 
 		self::assertNotNull($state);
 
-		$manager = $this->container->getByType(Models\ChannelPropertiesManager::class);
+		$manager = $this->container->getByType(Models\States\ChannelPropertiesManager::class);
 
 		$state = $manager->update($state, Utils\ArrayHash::from([
 			DevicesStates\Property::EXPECTED_VALUE_KEY => 40,

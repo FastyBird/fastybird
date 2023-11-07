@@ -77,7 +77,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 			$entity instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty
 			|| $entity instanceof MetadataEntities\DevicesModule\ChannelMappedProperty
 		) {
-			$findChannelQuery = new DevicesQueries\FindChannels();
+			$findChannelQuery = new DevicesQueries\Entities\FindChannels();
 			$findChannelQuery->byId($entity->getChannel());
 
 			$channel = $this->channelsRepository->findOneBy($findChannelQuery);

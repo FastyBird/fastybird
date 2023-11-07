@@ -81,7 +81,7 @@ final class ChannelPropertiesV1 extends BaseV1
 		// & channel
 		$channel = $this->findChannel(strval($request->getAttribute(Router\ApiRoutes::URL_CHANNEL_ID)), $device);
 
-		$findQuery = new Queries\FindChannelProperties();
+		$findQuery = new Queries\Entities\FindChannelProperties();
 		$findQuery->forChannel($channel);
 
 		$properties = $this->channelPropertiesRepository->getResultSet($findQuery);

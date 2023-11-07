@@ -34,7 +34,7 @@ final class DevicePropertyEntityTest extends DbTestCase
 
 		$repository = $this->getContainer()->getByType(Models\Entities\Devices\Properties\PropertiesRepository::class);
 
-		$findQuery = new Queries\FindDeviceProperties();
+		$findQuery = new Queries\Entities\FindDeviceProperties();
 		$findQuery->byIdentifier('status_led');
 
 		$parent = $repository->findOneBy($findQuery);
@@ -71,7 +71,7 @@ final class DevicePropertyEntityTest extends DbTestCase
 
 		$repository = $this->getContainer()->getByType(Models\Entities\Devices\Properties\PropertiesRepository::class);
 
-		$findQuery = new Queries\FindDeviceProperties();
+		$findQuery = new Queries\Entities\FindDeviceProperties();
 		$findQuery->byIdentifier('status_led');
 
 		$parent = $repository->findOneBy($findQuery);
@@ -91,7 +91,7 @@ final class DevicePropertyEntityTest extends DbTestCase
 		self::assertSame('new-child-property', $child->getIdentifier());
 		self::assertSame($parent, $child->getParent());
 
-		$findQuery = new Queries\FindDeviceProperties();
+		$findQuery = new Queries\Entities\FindDeviceProperties();
 		$findQuery->byIdentifier('status_led');
 
 		$parent = $repository->findOneBy($findQuery);
@@ -102,7 +102,7 @@ final class DevicePropertyEntityTest extends DbTestCase
 
 		$manager->delete($child);
 
-		$findQuery = new Queries\FindDeviceProperties();
+		$findQuery = new Queries\Entities\FindDeviceProperties();
 		$findQuery->byIdentifier('status_led');
 
 		$parent = $repository->findOneBy($findQuery);
@@ -129,7 +129,7 @@ final class DevicePropertyEntityTest extends DbTestCase
 
 		$repository = $this->getContainer()->getByType(Models\Entities\Devices\Properties\PropertiesRepository::class);
 
-		$findQuery = new Queries\FindDeviceProperties();
+		$findQuery = new Queries\Entities\FindDeviceProperties();
 		$findQuery->byIdentifier('status_led');
 
 		$parent = $repository->findOneBy($findQuery);
@@ -149,7 +149,7 @@ final class DevicePropertyEntityTest extends DbTestCase
 		self::assertSame('new-child-property', $child->getIdentifier());
 		self::assertSame($parent, $child->getParent());
 
-		$findQuery = new Queries\FindDeviceProperties();
+		$findQuery = new Queries\Entities\FindDeviceProperties();
 		$findQuery->byIdentifier('new-child-property');
 
 		$child = $repository->findOneBy($findQuery);
@@ -157,7 +157,7 @@ final class DevicePropertyEntityTest extends DbTestCase
 		self::assertIsObject($child);
 		self::assertTrue($child instanceof Entities\Devices\Properties\Mapped);
 
-		$findQuery = new Queries\FindDeviceProperties();
+		$findQuery = new Queries\Entities\FindDeviceProperties();
 		$findQuery->byIdentifier('status_led');
 
 		$parent = $repository->findOneBy($findQuery);
@@ -168,7 +168,7 @@ final class DevicePropertyEntityTest extends DbTestCase
 
 		$manager->delete($parent);
 
-		$findQuery = new Queries\FindDeviceProperties();
+		$findQuery = new Queries\Entities\FindDeviceProperties();
 		$findQuery->byIdentifier('new-child-property');
 
 		$child = $repository->findOneBy($findQuery);

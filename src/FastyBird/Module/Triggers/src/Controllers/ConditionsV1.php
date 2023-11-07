@@ -57,9 +57,9 @@ final class ConditionsV1 extends BaseV1
 	use Controllers\Finders\TTrigger;
 
 	public function __construct(
-		private readonly Models\Triggers\TriggersRepository $triggersRepository,
-		private readonly Models\Conditions\ConditionsRepository $conditionsRepository,
-		private readonly Models\Conditions\ConditionsManager $conditionsManager,
+		private readonly Models\Entities\Triggers\TriggersRepository $triggersRepository,
+		private readonly Models\Entities\Conditions\ConditionsRepository $conditionsRepository,
+		private readonly Models\Entities\Conditions\ConditionsManager $conditionsManager,
 	)
 	{
 	}
@@ -84,7 +84,7 @@ final class ConditionsV1 extends BaseV1
 			);
 		}
 
-		$findQuery = new Queries\FindConditions();
+		$findQuery = new Queries\Entities\FindConditions();
 		$findQuery->forTrigger($trigger);
 
 		$rows = $this->conditionsRepository->getResultSet($findQuery);
@@ -435,7 +435,7 @@ final class ConditionsV1 extends BaseV1
 	): Entities\Conditions\Condition
 	{
 		try {
-			$findQuery = new Queries\FindConditions();
+			$findQuery = new Queries\Entities\FindConditions();
 			$findQuery->byId(Uuid\Uuid::fromString($id));
 			$findQuery->forTrigger($trigger);
 

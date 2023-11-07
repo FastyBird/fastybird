@@ -39,7 +39,7 @@ final class EmailEntity implements Common\EventSubscriber
 
 	use Nette\SmartObject;
 
-	public function __construct(private readonly Models\Emails\EmailsRepository $emailsRepository)
+	public function __construct(private readonly Models\Entities\Emails\EmailsRepository $emailsRepository)
 	{
 	}
 
