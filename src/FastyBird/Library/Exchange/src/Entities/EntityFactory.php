@@ -221,7 +221,7 @@ final class EntityFactory
 					MetadataEntities\DevicesModule\ConnectorDynamicProperty::class,
 					$data,
 				);
-			} elseif ($type->equalsValue(MetadataTypes\PropertyType::TYPE_MAPPED)) {
+			} elseif ($type->equalsValue(MetadataTypes\PropertyType::TYPE_VARIABLE)) {
 				return $this->entityFactory->create(
 					MetadataEntities\DevicesModule\ConnectorVariableProperty::class,
 					$data,
