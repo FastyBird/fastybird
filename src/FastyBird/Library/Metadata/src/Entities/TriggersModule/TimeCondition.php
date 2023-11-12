@@ -16,8 +16,9 @@
 namespace FastyBird\Library\Metadata\Entities\TriggersModule;
 
 use DateTimeInterface;
-use FastyBird\Library\Metadata\Exceptions;
-use Nette\Utils;
+use FastyBird\Library\Metadata\Types;
+use Orisai\ObjectMapper;
+use Ramsey\Uuid;
 use function array_merge;
 
 /**
@@ -31,34 +32,27 @@ use function array_merge;
 final class TimeCondition extends Condition
 {
 
-	private DateTimeInterface $time;
-
 	/**
 	 * @param array<int> $days
-	 *
-	 * @throws Exceptions\InvalidArgument
 	 */
 	public function __construct(
-		string $id,
-		string $trigger,
-		string $type,
+		Uuid\UuidInterface $id,
+		Uuid\UuidInterface $trigger,
+		Types\TriggerConditionType $type,
 		bool $enabled,
-		string $time,
+		#[ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM)]
+		private readonly DateTimeInterface $time,
+		#[ObjectMapper\Rules\ArrayOf(
+			item: new ObjectMapper\Rules\IntValue(min: 1, max: 7, unsigned: true),
+			minItems: 1,
+			maxItems: 7,
+		)]
 		private readonly array $days,
 		bool|null $isFulfilled = null,
-		string|null $owner = null,
+		Uuid\UuidInterface|null $owner = null,
 	)
 	{
 		parent::__construct($id, $trigger, $type, $enabled, $isFulfilled, $owner);
-
-		$time = Utils\DateTime::createFromFormat(DateTimeInterface::ATOM, $time);
-
-		if ($time instanceof DateTimeInterface) {
-			$this->time = $time;
-
-		} else {
-			throw new Exceptions\InvalidArgument('Provided time attribute is not valid');
-		}
 	}
 
 	public function getTime(): DateTimeInterface

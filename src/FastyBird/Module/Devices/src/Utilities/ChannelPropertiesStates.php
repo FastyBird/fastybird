@@ -137,10 +137,6 @@ final class ChannelPropertiesStates
 	): States\ChannelProperty|null
 	{
 		if ($property instanceof MetadataEntities\DevicesModule\ChannelMappedProperty) {
-			if ($property->getParent() === null) {
-				throw new Exceptions\InvalidState('Parent identifier for mapped property is missing');
-			}
-
 			$findPropertyQuery = new Queries\Entities\FindChannelProperties();
 			$findPropertyQuery->byId($property->getParent());
 
@@ -274,10 +270,6 @@ final class ChannelPropertiesStates
 	): void
 	{
 		if ($property instanceof MetadataEntities\DevicesModule\ChannelMappedProperty) {
-			if ($property->getParent() === null) {
-				throw new Exceptions\InvalidState('Parent identifier for mapped property is missing');
-			}
-
 			$findPropertyQuery = new Queries\Entities\FindChannelProperties();
 			$findPropertyQuery->byId($property->getParent());
 

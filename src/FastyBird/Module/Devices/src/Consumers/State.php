@@ -28,7 +28,6 @@ use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\States;
 use FastyBird\Module\Devices\Utilities;
-use IPub\Phone\Exceptions as PhoneExceptions;
 use Nette\Utils;
 use function array_merge;
 use function in_array;
@@ -65,15 +64,11 @@ final class State implements ExchangeConsumers\Consumer
 
 	/**
 	 * @throws Exceptions\InvalidState
+	 * @throws ExchangeExceptions\InvalidArgument
 	 * @throws ExchangeExceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
 	 * @throws MetadataExceptions\MalformedInput
-	 * @throws PhoneExceptions\NoValidCountryException
-	 * @throws PhoneExceptions\NoValidPhoneException
 	 * @throws Utils\JsonException
 	 */
 	public function consume(

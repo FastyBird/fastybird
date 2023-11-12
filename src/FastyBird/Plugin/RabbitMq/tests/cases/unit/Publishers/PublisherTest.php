@@ -13,6 +13,7 @@ use Nette;
 use Nette\Utils;
 use PHPUnit\Framework\TestCase;
 use Psr\Log;
+use Ramsey\Uuid;
 use const DATE_ATOM;
 
 final class PublisherTest extends TestCase
@@ -81,10 +82,10 @@ final class PublisherTest extends TestCase
 			MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
 			MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::ROUTE_DEVICE_ENTITY_UPDATED),
 			new MetadataEntities\Actions\ActionChannelProperty(
-				MetadataTypes\PropertyAction::ACTION_SET,
-				'593397b2-fd40-4da2-a66a-3687ca50761b',
-				'06a64596-ca03-478b-ad1e-4f53731e66a5',
-				'60d754c2-4590-4eff-af1e-5c45f4234c7b',
+				MetadataTypes\PropertyAction::get(MetadataTypes\PropertyAction::ACTION_SET),
+				Uuid\Uuid::fromString('593397b2-fd40-4da2-a66a-3687ca50761b'),
+				Uuid\Uuid::fromString('06a64596-ca03-478b-ad1e-4f53731e66a5'),
+				Uuid\Uuid::fromString('60d754c2-4590-4eff-af1e-5c45f4234c7b'),
 				10,
 			),
 		);

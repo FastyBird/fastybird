@@ -498,7 +498,17 @@ abstract class Property implements Entity,
 
 	public function setDefault(string|null $default): void
 	{
-		$this->default = $default;
+		$default = Utilities\ValueHelper::flattenValue($default);
+
+		if (is_bool($default)) {
+			$this->default = $default ? '1' : '0';
+
+		} elseif ($default !== null) {
+			$this->default = strval($default);
+
+		} else {
+			$this->default = null;
+		}
 	}
 
 	/**
@@ -570,6 +580,7 @@ abstract class Property implements Entity,
 				MetadataTypes\DataType::DATA_TYPE_ENUM,
 				MetadataTypes\DataType::DATA_TYPE_BUTTON,
 				MetadataTypes\DataType::DATA_TYPE_SWITCH,
+				MetadataTypes\DataType::DATA_TYPE_COVER,
 			], true)
 		) {
 			if (preg_match(Metadata\Constants::VALUE_FORMAT_COMBINED_ENUM, $format) === 1) {

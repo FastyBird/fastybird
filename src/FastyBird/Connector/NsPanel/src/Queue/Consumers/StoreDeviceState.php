@@ -33,7 +33,6 @@ use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
-use IPub\Phone\Exceptions as PhoneExceptions;
 use Nette;
 use Nette\Utils;
 use function assert;
@@ -68,15 +67,11 @@ final class StoreDeviceState implements Queue\Consumer
 	/**
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws ExchangeExceptions\InvalidArgument
 	 * @throws ExchangeExceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
 	 * @throws MetadataExceptions\MalformedInput
-	 * @throws PhoneExceptions\NoValidCountryException
-	 * @throws PhoneExceptions\NoValidPhoneException
 	 * @throws Utils\JsonException
 	 */
 	public function consume(Entities\Messages\Entity $entity): bool
@@ -194,15 +189,11 @@ final class StoreDeviceState implements Queue\Consumer
 	 *
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws ExchangeExceptions\InvalidArgument
 	 * @throws ExchangeExceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
 	 * @throws MetadataExceptions\MalformedInput
-	 * @throws PhoneExceptions\NoValidCountryException
-	 * @throws PhoneExceptions\NoValidPhoneException
 	 * @throws Utils\JsonException
 	 */
 	private function processThirdPartyDevice(
@@ -255,15 +246,11 @@ final class StoreDeviceState implements Queue\Consumer
 	/**
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws ExchangeExceptions\InvalidArgument
 	 * @throws ExchangeExceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
 	 * @throws MetadataExceptions\MalformedInput
-	 * @throws PhoneExceptions\NoValidCountryException
-	 * @throws PhoneExceptions\NoValidPhoneException
 	 * @throws Utils\JsonException
 	 */
 	private function writeProperty(

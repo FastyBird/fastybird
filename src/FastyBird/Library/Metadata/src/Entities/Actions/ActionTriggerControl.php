@@ -15,8 +15,10 @@
 
 namespace FastyBird\Library\Metadata\Entities\Actions;
 
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Library\Metadata\Entities;
 use FastyBird\Library\Metadata\Types;
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 
 /**
@@ -30,27 +32,24 @@ use Ramsey\Uuid;
 final class ActionTriggerControl implements Entities\Entity
 {
 
-	private Types\TriggerAction $action;
-
-	private Uuid\UuidInterface $trigger;
-
-	private Uuid\UuidInterface $control;
-
-	private string|int|bool|float|null $expectedValue;
-
 	public function __construct(
-		string $action,
-		string $trigger,
-		string $control,
-		float|bool|int|string|null $expectedValue = null,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\TriggerAction::class)]
+		private readonly Types\TriggerAction $action,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $trigger,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $control,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('expected_value')]
+		private readonly bool|float|int|string|null $expectedValue = null,
 	)
 	{
-		$this->action = Types\TriggerAction::get($action);
-
-		$this->trigger = Uuid\Uuid::fromString($trigger);
-		$this->control = Uuid\Uuid::fromString($control);
-
-		$this->expectedValue = $expectedValue;
 	}
 
 	public function getAction(): Types\TriggerAction

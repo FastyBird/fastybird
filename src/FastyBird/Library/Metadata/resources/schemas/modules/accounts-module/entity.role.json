@@ -11,7 +11,8 @@
       "type": "string"
     },
     "comment": {
-      "type": "string"
+      "type": "string",
+      "default": null
     },
     "anonymous": {
       "type": "boolean",

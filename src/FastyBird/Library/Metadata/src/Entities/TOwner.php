@@ -24,11 +24,11 @@ use Ramsey\Uuid;
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
+ *
+ * @property-read Uuid\UuidInterface|null $owner
  */
 trait TOwner
 {
-
-	protected Uuid\UuidInterface|null $owner;
 
 	public function getOwner(): Uuid\UuidInterface|null
 	{

@@ -20,7 +20,8 @@
       "type": "string"
     },
     "hash": {
-      "type": "string"
+      "type": "string",
+      "default": null
     },
     "account": {
       "type": "string",

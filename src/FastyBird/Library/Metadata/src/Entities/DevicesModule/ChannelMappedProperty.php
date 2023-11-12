@@ -15,7 +15,10 @@
 
 namespace FastyBird\Library\Metadata\Entities\DevicesModule;
 
+use DateTimeInterface;
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Library\Metadata\Exceptions;
+use FastyBird\Library\Metadata\Types;
 use Ramsey\Uuid;
 use function array_merge;
 
@@ -30,37 +33,35 @@ use function array_merge;
 final class ChannelMappedProperty extends MappedProperty
 {
 
-	private Uuid\UuidInterface $channel;
-
-	private Uuid\UuidInterface|null $parent;
-
 	/**
-	 * @param array<int, string>|array<int, string|int|float|array<int, string|int|float>|null>|array<int, array<int, string|array<int, string|int|float|bool>|null>>|null $format
+	 * @param string|array<int, string>|array<int, int>|array<int, float>|array<int, bool|string|int|float|array<int, bool|string|int|float>|null>|array<int, array<int, string|array<int, string|int|float|bool>|null>>|null $format
 	 */
 	public function __construct(
-		string $id,
-		string $channel,
-		string $type,
-		string $category,
+		Uuid\UuidInterface $id,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $channel,
+		Types\PropertyType $type,
+		Types\PropertyCategory $category,
 		string $identifier,
 		string|null $name,
-		bool $settable,
-		bool $queryable,
-		string $dataType,
+		Types\DataType $dataType,
 		string|null $unit = null,
-		array|null $format = null,
-		string|int|float|null $invalid = null,
+		string|array|null $format = null,
+		float|int|string|null $invalid = null,
 		int|null $scale = null,
-		float|null $step = null,
-		float|bool|int|string|null $actualValue = null,
-		float|bool|int|string|null $previousValue = null,
-		float|bool|int|string|null $expectedValue = null,
-		bool|string $pending = false,
-		bool $valid = false,
-		float|bool|int|string|null $value = null,
-		float|bool|int|string|null $default = null,
-		string|null $parent = null,
-		string|null $owner = null,
+		int|float|null $step = null,
+		bool|null $settable = null,
+		bool|null $queryable = null,
+		bool|float|int|string|null $actualValue = null,
+		bool|float|int|string|null $previousValue = null,
+		bool|float|int|string|null $expectedValue = null,
+		bool|DateTimeInterface|null $pending = null,
+		bool|null $valid = null,
+		bool|float|int|string|null $value = null,
+		bool|float|int|string|null $default = null,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $parent,
+		Uuid\UuidInterface|null $owner = null,
 	)
 	{
 		parent::__construct(
@@ -69,14 +70,14 @@ final class ChannelMappedProperty extends MappedProperty
 			$category,
 			$identifier,
 			$name,
-			$settable,
-			$queryable,
 			$dataType,
 			$unit,
 			$format,
 			$invalid,
 			$scale,
 			$step,
+			$settable,
+			$queryable,
 			$actualValue,
 			$previousValue,
 			$expectedValue,
@@ -86,9 +87,6 @@ final class ChannelMappedProperty extends MappedProperty
 			$default,
 			$owner,
 		);
-
-		$this->channel = Uuid\Uuid::fromString($channel);
-		$this->parent = $parent !== null ? Uuid\Uuid::fromString($parent) : null;
 	}
 
 	public function getChannel(): Uuid\UuidInterface
@@ -96,25 +94,27 @@ final class ChannelMappedProperty extends MappedProperty
 		return $this->channel;
 	}
 
-	public function getParent(): Uuid\UuidInterface|null
+	public function getParent(): Uuid\UuidInterface
 	{
 		return $this->parent;
 	}
 
 	/**
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 */
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), [
 			'channel' => $this->getChannel()->toString(),
-			'parent' => $this->getParent()?->toString(),
+			'parent' => $this->getParent()->toString(),
 		]);
 	}
 
 	/**
 	 * @return array<string, mixed>
 	 *
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 */
 	public function __serialize(): array

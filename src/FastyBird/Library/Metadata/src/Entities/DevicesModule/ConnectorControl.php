@@ -15,6 +15,7 @@
 
 namespace FastyBird\Library\Metadata\Entities\DevicesModule;
 
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use Ramsey\Uuid;
 use function array_merge;
 
@@ -29,18 +30,15 @@ use function array_merge;
 final class ConnectorControl extends Control
 {
 
-	private Uuid\UuidInterface $connector;
-
 	public function __construct(
-		string $id,
-		string $connector,
+		Uuid\UuidInterface $id,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $connector,
 		string $name,
-		string|null $owner = null,
+		Uuid\UuidInterface|null $owner = null,
 	)
 	{
 		parent::__construct($id, $name, $owner);
-
-		$this->connector = Uuid\Uuid::fromString($connector);
 	}
 
 	public function getConnector(): Uuid\UuidInterface

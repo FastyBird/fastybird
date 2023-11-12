@@ -137,10 +137,6 @@ final class DevicePropertiesStates
 	): States\DeviceProperty|null
 	{
 		if ($property instanceof MetadataEntities\DevicesModule\DeviceMappedProperty) {
-			if ($property->getParent() === null) {
-				throw new Exceptions\InvalidState('Parent identifier for mapped property is missing');
-			}
-
 			$findDevicePropertyQuery = new Queries\Entities\FindDeviceProperties();
 			$findDevicePropertyQuery->byId($property->getParent());
 
@@ -274,10 +270,6 @@ final class DevicePropertiesStates
 	): void
 	{
 		if ($property instanceof MetadataEntities\DevicesModule\DeviceMappedProperty) {
-			if ($property->getParent() === null) {
-				throw new Exceptions\InvalidState('Parent identifier for mapped property is missing');
-			}
-
 			$findPropertyQuery = new Queries\Entities\FindDeviceProperties();
 			$findPropertyQuery->byId($property->getParent());
 

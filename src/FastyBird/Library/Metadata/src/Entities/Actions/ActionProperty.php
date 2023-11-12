@@ -15,9 +15,11 @@
 
 namespace FastyBird\Library\Metadata\Entities\Actions;
 
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Library\Metadata\Entities;
 use FastyBird\Library\Metadata\Exceptions;
 use FastyBird\Library\Metadata\Types;
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_merge;
 use function sprintf;
@@ -33,23 +35,22 @@ use function sprintf;
 abstract class ActionProperty implements Entities\Entity
 {
 
-	protected Types\PropertyAction $action;
-
-	protected Uuid\UuidInterface $property;
-
-	protected string|int|bool|float|null $expectedValue;
-
 	public function __construct(
-		string $action,
-		string $property,
-		float|bool|int|string|null $expectedValue = null,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\PropertyAction::class)]
+		private readonly Types\PropertyAction $action,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $property,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('expected_value')]
+		private readonly bool|float|int|string|null $expectedValue = null,
 	)
 	{
-		$this->action = Types\PropertyAction::get($action);
-
-		$this->property = Uuid\Uuid::fromString($property);
-
-		$this->expectedValue = $expectedValue;
 	}
 
 	public function getAction(): Types\PropertyAction

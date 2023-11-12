@@ -15,6 +15,8 @@
 
 namespace FastyBird\Library\Metadata\Entities;
 
+use Orisai\ObjectMapper;
+
 /**
  * Data entity interface
  *
@@ -23,7 +25,7 @@ namespace FastyBird\Library\Metadata\Entities;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-interface Entity
+interface Entity extends ObjectMapper\MappedObject
 {
 
 	/**

@@ -187,6 +187,7 @@ final class CombinedEnumFormatItem
 			Types\DataTypeShort::DATA_TYPE_STRING,
 			Types\DataTypeShort::DATA_TYPE_BUTTON,
 			Types\DataTypeShort::DATA_TYPE_SWITCH,
+			Types\DataTypeShort::DATA_TYPE_COVER,
 		], true);
 	}
 

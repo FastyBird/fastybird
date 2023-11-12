@@ -15,9 +15,10 @@
 
 namespace FastyBird\Library\Metadata\Entities\DevicesModule;
 
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Library\Metadata\Entities;
 use FastyBird\Library\Metadata\Types;
-use Nette\Utils;
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_map;
 
@@ -34,74 +35,61 @@ final class Device implements Entities\Entity, Entities\Owner
 
 	use Entities\TOwner;
 
-	private Uuid\UuidInterface $id;
-
-	private Types\DeviceCategory $category;
-
-	private Uuid\UuidInterface $connector;
-
-	/** @var array<Uuid\UuidInterface> */
-	private array $parents;
-
-	/** @var array<Uuid\UuidInterface> */
-	private array $children;
-
-	/** @var array<Uuid\UuidInterface> */
-	private array $properties;
-
-	/** @var array<Uuid\UuidInterface> */
-	private array $controls;
-
-	/** @var array<Uuid\UuidInterface> */
-	private array $channels;
-
 	/**
-	 * @param array<string>|Utils\ArrayHash<string> $parents
-	 * @param array<string>|Utils\ArrayHash<string> $children
-	 * @param array<string>|Utils\ArrayHash<string> $properties
-	 * @param array<string>|Utils\ArrayHash<string> $controls
-	 * @param array<string>|Utils\ArrayHash<string> $channels
+	 * @param array<Uuid\UuidInterface> $parents
+	 * @param array<Uuid\UuidInterface> $children
+	 * @param array<Uuid\UuidInterface> $properties
+	 * @param array<Uuid\UuidInterface> $controls
+	 * @param array<Uuid\UuidInterface> $channels
 	 */
 	public function __construct(
-		string $id,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $id,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $type,
-		string $category,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\DeviceCategory::class)]
+		private readonly Types\DeviceCategory $category,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $identifier,
-		string $connector,
-		array|Utils\ArrayHash $parents,
-		array|Utils\ArrayHash $children,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $connector,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly string|null $name = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly string|null $comment = null,
-		array|Utils\ArrayHash $properties = [],
-		array|Utils\ArrayHash $controls = [],
-		array|Utils\ArrayHash $channels = [],
-		string|null $owner = null,
+		#[ObjectMapper\Rules\ArrayOf(
+			new BootstrapObjectMapper\Rules\UuidValue(),
+		)]
+		private readonly array $parents = [],
+		#[ObjectMapper\Rules\ArrayOf(
+			new BootstrapObjectMapper\Rules\UuidValue(),
+		)]
+		private readonly array $children = [],
+		#[ObjectMapper\Rules\ArrayOf(
+			new BootstrapObjectMapper\Rules\UuidValue(),
+		)]
+		private readonly array $properties = [],
+		#[ObjectMapper\Rules\ArrayOf(
+			new BootstrapObjectMapper\Rules\UuidValue(),
+		)]
+		private readonly array $controls = [],
+		#[ObjectMapper\Rules\ArrayOf(
+			new BootstrapObjectMapper\Rules\UuidValue(),
+		)]
+		private readonly array $channels = [],
+		#[ObjectMapper\Rules\AnyOf([
+			new BootstrapObjectMapper\Rules\UuidValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		protected readonly Uuid\UuidInterface|null $owner = null,
 	)
 	{
-		$this->id = Uuid\Uuid::fromString($id);
-		$this->category = Types\DeviceCategory::get($category);
-		$this->connector = Uuid\Uuid::fromString($connector);
-		$this->parents = array_map(
-			static fn (string $item): Uuid\UuidInterface => Uuid\Uuid::fromString($item),
-			(array) $parents,
-		);
-		$this->children = array_map(
-			static fn (string $item): Uuid\UuidInterface => Uuid\Uuid::fromString($item),
-			(array) $children,
-		);
-		$this->properties = array_map(
-			static fn (string $id): Uuid\UuidInterface => Uuid\Uuid::fromString($id),
-			(array) $properties,
-		);
-		$this->controls = array_map(
-			static fn (string $id): Uuid\UuidInterface => Uuid\Uuid::fromString($id),
-			(array) $controls,
-		);
-		$this->channels = array_map(
-			static fn (string $id): Uuid\UuidInterface => Uuid\Uuid::fromString($id),
-			(array) $channels,
-		);
-		$this->owner = $owner !== null ? Uuid\Uuid::fromString($owner) : null;
 	}
 
 	public function getId(): Uuid\UuidInterface

@@ -15,6 +15,9 @@
 
 namespace FastyBird\Library\Metadata\Entities\DevicesModule;
 
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Metadata\Exceptions;
+use FastyBird\Library\Metadata\Types;
 use Ramsey\Uuid;
 use function array_merge;
 
@@ -29,27 +32,26 @@ use function array_merge;
 final class ConnectorVariableProperty extends VariableProperty
 {
 
-	private Uuid\UuidInterface $connector;
-
 	/**
-	 * @param array<int, string>|array<int, string|int|float|array<int, string|int|float>|null>|array<int, array<int, string|array<int, string|int|float|bool>|null>>|null $format
+	 * @param string|array<int, string>|array<int, int>|array<int, float>|array<int, bool|string|int|float|array<int, bool|string|int|float>|null>|array<int, array<int, string|array<int, string|int|float|bool>|null>>|null $format
 	 */
 	public function __construct(
-		string $id,
-		string $connector,
-		string $type,
-		string $category,
+		Uuid\UuidInterface $id,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $connector,
+		Types\PropertyType $type,
+		Types\PropertyCategory $category,
 		string $identifier,
 		string|null $name,
-		string $dataType,
+		Types\DataType $dataType,
 		string|null $unit = null,
-		array|null $format = null,
-		string|int|float|null $invalid = null,
+		string|array|null $format = null,
+		float|int|string|null $invalid = null,
 		int|null $scale = null,
-		float|null $step = null,
-		float|bool|int|string|null $value = null,
-		float|bool|int|string|null $default = null,
-		string|null $owner = null,
+		int|float|null $step = null,
+		bool|float|int|string|null $value = null,
+		bool|float|int|string|null $default = null,
+		Uuid\UuidInterface|null $owner = null,
 	)
 	{
 		parent::__construct(
@@ -68,8 +70,6 @@ final class ConnectorVariableProperty extends VariableProperty
 			$default,
 			$owner,
 		);
-
-		$this->connector = Uuid\Uuid::fromString($connector);
 	}
 
 	public function getConnector(): Uuid\UuidInterface
@@ -77,6 +77,10 @@ final class ConnectorVariableProperty extends VariableProperty
 		return $this->connector;
 	}
 
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 */
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), [
@@ -86,6 +90,9 @@ final class ConnectorVariableProperty extends VariableProperty
 
 	/**
 	 * @return array<string, mixed>
+	 *
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
 	 */
 	public function __serialize(): array
 	{

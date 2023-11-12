@@ -15,11 +15,13 @@
 
 namespace FastyBird\Library\Metadata\Entities\DevicesModule;
 
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Entities;
 use FastyBird\Library\Metadata\Exceptions;
 use FastyBird\Library\Metadata\Types;
 use FastyBird\Library\Metadata\ValueObjects;
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_map;
 use function implode;
@@ -41,46 +43,117 @@ abstract class Property implements Entities\Entity, Entities\Owner
 
 	use Entities\TOwner;
 
-	private Uuid\UuidInterface $id;
-
-	private Types\PropertyType $type;
-
-	private Types\PropertyCategory $category;
-
-	private Types\DataType $dataType;
-
-	private ValueObjects\StringEnumFormat|ValueObjects\NumberRangeFormat|ValueObjects\CombinedEnumFormat|ValueObjects\EquationFormat|null $format;
-
-	private string|int|float|null $invalid;
-
 	/**
-	 * @param array<int, string>|array<int, string|int|float|array<int, string|int|float>|null>|array<int, array<int, string|array<int, string|int|float|bool>|null>>|string|null $format
-	 *
-	 * @throws Exceptions\InvalidArgument
+	 * @param string|array<int, string>|array<int, bool|string|int|float|array<int, bool|string|int|float>|null>|array<int, array<int, string|array<int, string|int|float|bool>|null>>|null $format
 	 */
 	public function __construct(
-		string $id,
-		string $type,
-		string $category,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $id,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\PropertyType::class)]
+		private readonly Types\PropertyType $type,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\PropertyCategory::class)]
+		private readonly Types\PropertyCategory $category,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $identifier,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly string|null $name,
-		string $dataType,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\DataType::class)]
+		#[ObjectMapper\Modifiers\FieldName('data_type')]
+		private readonly Types\DataType $dataType,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly string|null $unit = null,
-		array|string|null $format = null,
-		float|int|string|null $invalid = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\ArrayOf(
+				item: new ObjectMapper\Rules\StringValue(notEmpty: true),
+				key: new ObjectMapper\Rules\IntValue(unsigned: true),
+			),
+			new ObjectMapper\Rules\ArrayOf(
+				item: new ObjectMapper\Rules\ArrayOf(
+					item: new ObjectMapper\Rules\AnyOf([
+						new ObjectMapper\Rules\IntValue(),
+						new ObjectMapper\Rules\FloatValue(),
+						new ObjectMapper\Rules\StringValue(notEmpty: true),
+						new ObjectMapper\Rules\ArrayOf(
+							item: new ObjectMapper\Rules\AnyOf([
+								new ObjectMapper\Rules\ArrayEnumValue(
+									// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+									cases: [Types\DataTypeShort::DATA_TYPE_CHAR, Types\DataTypeShort::DATA_TYPE_UCHAR, Types\DataTypeShort::DATA_TYPE_SHORT, Types\DataTypeShort::DATA_TYPE_USHORT, Types\DataTypeShort::DATA_TYPE_INT, Types\DataTypeShort::DATA_TYPE_UINT, Types\DataTypeShort::DATA_TYPE_FLOAT, Types\DataTypeShort::DATA_TYPE_BOOLEAN, Types\DataTypeShort::DATA_TYPE_STRING, Types\DataTypeShort::DATA_TYPE_BUTTON, Types\DataTypeShort::DATA_TYPE_SWITCH, Types\DataTypeShort::DATA_TYPE_COVER],
+								),
+								new ObjectMapper\Rules\StringValue(notEmpty: true),
+								new ObjectMapper\Rules\IntValue(),
+								new ObjectMapper\Rules\FloatValue(),
+								new ObjectMapper\Rules\BoolValue(castBoolLike: true),
+							]),
+							key: new ObjectMapper\Rules\IntValue(unsigned: true),
+							minItems: 2,
+							maxItems: 2,
+						),
+						new ObjectMapper\Rules\NullValue(castEmptyString: true),
+					]),
+					key: new ObjectMapper\Rules\IntValue(unsigned: true),
+					minItems: 3,
+					maxItems: 3,
+				),
+				key: new ObjectMapper\Rules\IntValue(unsigned: true),
+			),
+			new ObjectMapper\Rules\ArrayOf(
+				item: new ObjectMapper\Rules\AnyOf([
+					new ObjectMapper\Rules\IntValue(),
+					new ObjectMapper\Rules\FloatValue(),
+					new ObjectMapper\Rules\ArrayOf(
+						item: new ObjectMapper\Rules\AnyOf([
+							new ObjectMapper\Rules\ArrayEnumValue(
+								// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+								cases: [Types\DataTypeShort::DATA_TYPE_CHAR, Types\DataTypeShort::DATA_TYPE_UCHAR, Types\DataTypeShort::DATA_TYPE_SHORT, Types\DataTypeShort::DATA_TYPE_USHORT, Types\DataTypeShort::DATA_TYPE_INT, Types\DataTypeShort::DATA_TYPE_UINT, Types\DataTypeShort::DATA_TYPE_FLOAT],
+							),
+							new ObjectMapper\Rules\IntValue(),
+							new ObjectMapper\Rules\FloatValue(),
+						]),
+						key: new ObjectMapper\Rules\IntValue(unsigned: true),
+						minItems: 2,
+						maxItems: 2,
+					),
+					new ObjectMapper\Rules\NullValue(castEmptyString: true),
+				]),
+				key: new ObjectMapper\Rules\IntValue(unsigned: true),
+				minItems: 2,
+				maxItems: 2,
+			),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		private readonly string|array|null $format = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		private readonly float|int|string|null $invalid = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly int|null $scale = null,
-		private readonly float|null $step = null,
-		string|null $owner = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		private readonly int|float|null $step = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new BootstrapObjectMapper\Rules\UuidValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		protected readonly Uuid\UuidInterface|null $owner = null,
 	)
 	{
-		$this->id = Uuid\Uuid::fromString($id);
-		$this->type = Types\PropertyType::get($type);
-		$this->category = Types\PropertyCategory::get($category);
-		$this->dataType = Types\DataType::get($dataType);
-		$this->invalid = $invalid;
-		$this->owner = $owner !== null ? Uuid\Uuid::fromString($owner) : null;
-
-		$this->format = $this->buildFormat($format);
 	}
 
 	public function getId(): Uuid\UuidInterface
@@ -117,10 +190,14 @@ abstract class Property implements Entities\Entity, Entities\Owner
 	{
 		return $this->unit;
 	}
+
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 */
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 	public function getFormat(): ValueObjects\StringEnumFormat|ValueObjects\NumberRangeFormat|ValueObjects\CombinedEnumFormat|ValueObjects\EquationFormat|null
 	{
-		return $this->format;
+		return $this->buildFormat($this->format);
 	}
 
 	public function getInvalid(): float|int|string|null
@@ -133,12 +210,13 @@ abstract class Property implements Entities\Entity, Entities\Owner
 		return $this->scale;
 	}
 
-	public function getStep(): float|null
+	public function getStep(): int|float|null
 	{
 		return $this->step;
 	}
 
 	/**
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 */
 	public function toArray(): array
@@ -160,7 +238,7 @@ abstract class Property implements Entities\Entity, Entities\Owner
 	}
 
 	/**
-	 * @param array<int, string>|array<int, string|int|float|array<int, string|int|float>|null>|array<int, array<int, string|array<int, string|int|float|bool>|null>>|string|null $format
+	 * @param string|array<int, string>|array<int, bool|string|int|float|array<int, bool|string|int|float>|null>|array<int, array<int, string|array<int, string|int|float|bool>|null>>|null $format
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 */
@@ -189,7 +267,9 @@ abstract class Property implements Entities\Entity, Entities\Owner
 						return implode(
 							'|',
 							array_map(
-								static fn ($part): string|int|float|null => is_array($part) ? implode($part) : $part,
+								static fn ($part): bool|int|float|string|null => is_array($part) ? implode(
+									$part,
+								) : $part,
 								$item,
 							),
 						);
@@ -209,6 +289,7 @@ abstract class Property implements Entities\Entity, Entities\Owner
 				Types\DataType::DATA_TYPE_ENUM,
 				Types\DataType::DATA_TYPE_BUTTON,
 				Types\DataType::DATA_TYPE_SWITCH,
+				Types\DataType::DATA_TYPE_COVER,
 			], true)
 		) {
 			if (is_array($format)) {
@@ -240,6 +321,7 @@ abstract class Property implements Entities\Entity, Entities\Owner
 	/**
 	 * @return array<string, mixed>
 	 *
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 */
 	public function __serialize(): array

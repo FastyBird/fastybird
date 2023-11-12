@@ -15,7 +15,10 @@
 
 namespace FastyBird\Library\Metadata\Entities\Actions;
 
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Metadata\Entities;
 use FastyBird\Library\Metadata\Exceptions;
+use FastyBird\Library\Metadata\Types;
 use Ramsey\Uuid;
 use function array_merge;
 
@@ -30,18 +33,15 @@ use function array_merge;
 final class ActionConnectorProperty extends ActionProperty
 {
 
-	private Uuid\UuidInterface $connector;
-
 	public function __construct(
-		string $action,
-		string $connector,
-		string $property,
-		float|bool|int|string|null $expectedValue = null,
+		Types\PropertyAction $action,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $connector,
+		Uuid\UuidInterface $property,
+		bool|float|int|string|null $expectedValue = null,
 	)
 	{
 		parent::__construct($action, $property, $expectedValue);
-
-		$this->connector = Uuid\Uuid::fromString($connector);
 	}
 
 	public function getConnector(): Uuid\UuidInterface
@@ -49,6 +49,9 @@ final class ActionConnectorProperty extends ActionProperty
 		return $this->connector;
 	}
 
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), [

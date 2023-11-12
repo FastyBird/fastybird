@@ -12,11 +12,7 @@ final class ActionChannelPropertyEntityTest extends BaseTestCase
 {
 
 	/**
-	 * @throws Exceptions\FileNotFound
 	 * @throws Exceptions\InvalidArgument
-	 * @throws Exceptions\InvalidData
-	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\Logic
 	 * @throws Exceptions\MalformedInput
 	 * @throws Nette\DI\MissingServiceException
 	 *
@@ -24,19 +20,15 @@ final class ActionChannelPropertyEntityTest extends BaseTestCase
 	 */
 	public function testCreateEntity(string $data, string $class): void
 	{
-		$factory = $this->container->getByType(Entities\Actions\ActionChannelPropertyEntityFactory::class);
+		$factory = $this->container->getByType(Entities\EntityFactory::class);
 
-		$entity = $factory->create($data);
+		$entity = $factory->create(Entities\Actions\ActionChannelProperty::class, $data);
 
 		self::assertTrue($entity instanceof $class);
 	}
 
 	/**
-	 * @throws Exceptions\FileNotFound
 	 * @throws Exceptions\InvalidArgument
-	 * @throws Exceptions\InvalidData
-	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\Logic
 	 * @throws Exceptions\MalformedInput
 	 * @throws Nette\DI\MissingServiceException
 	 *
@@ -44,11 +36,11 @@ final class ActionChannelPropertyEntityTest extends BaseTestCase
 	 */
 	public function testCreateEntityInvalid(string $data): void
 	{
-		$factory = $this->container->getByType(Entities\Actions\ActionChannelPropertyEntityFactory::class);
+		$factory = $this->container->getByType(Entities\EntityFactory::class);
 
-		$this->expectException(Exceptions\InvalidData::class);
+		$this->expectException(Exceptions\InvalidArgument::class);
 
-		$factory->create($data);
+		$factory->create(Entities\Actions\ActionChannelProperty::class, $data);
 	}
 
 	/**

@@ -16,8 +16,9 @@
 namespace FastyBird\Library\Metadata\Entities\TriggersModule;
 
 use DateTimeInterface;
-use FastyBird\Library\Metadata\Exceptions;
-use Nette\Utils;
+use FastyBird\Library\Metadata\Types;
+use Orisai\ObjectMapper;
+use Ramsey\Uuid;
 use function array_merge;
 
 /**
@@ -31,31 +32,18 @@ use function array_merge;
 final class DateCondition extends Condition
 {
 
-	private DateTimeInterface $date;
-
-	/**
-	 * @throws Exceptions\InvalidArgument
-	 */
 	public function __construct(
-		string $id,
-		string $trigger,
-		string $type,
+		Uuid\UuidInterface $id,
+		Uuid\UuidInterface $trigger,
+		Types\TriggerConditionType $type,
 		bool $enabled,
-		string $date,
+		#[ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM)]
+		private readonly DateTimeInterface $date,
 		bool|null $isFulfilled = null,
-		string|null $owner = null,
+		Uuid\UuidInterface|null $owner = null,
 	)
 	{
 		parent::__construct($id, $trigger, $type, $enabled, $isFulfilled, $owner);
-
-		$date = Utils\DateTime::createFromFormat(DateTimeInterface::ATOM, $date);
-
-		if ($date instanceof DateTimeInterface) {
-			$this->date = $date;
-
-		} else {
-			throw new Exceptions\InvalidArgument('Provided time attribute is not valid');
-		}
 	}
 
 	public function getDate(): DateTimeInterface

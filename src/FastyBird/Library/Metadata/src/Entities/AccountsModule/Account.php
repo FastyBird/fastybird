@@ -16,9 +16,10 @@
 namespace FastyBird\Library\Metadata\Entities\AccountsModule;
 
 use DateTimeInterface;
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Library\Metadata\Entities;
 use FastyBird\Library\Metadata\Types;
-use Nette\Utils;
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_map;
 
@@ -33,66 +34,61 @@ use function array_map;
 final class Account implements Entities\Entity
 {
 
-	private Uuid\UuidInterface $id;
-
-	private Types\AccountState $state;
-
-	private DateTimeInterface|null $registered = null;
-
-	private DateTimeInterface|null $lastVisit = null;
-
-	/** @var array<string> */
-	private array $roles;
-
-	protected Uuid\UuidInterface|null $parent;
-
-	/** @var array<Uuid\UuidInterface> */
-	protected array $children;
-
 	/**
-	 * @param array<int, string>|Utils\ArrayHash<string> $roles
-	 * @param array<int, string>|Utils\ArrayHash<string> $children
+	 * @param array<int, string> $roles
+	 * @param array<int, Uuid\UuidInterface> $children
 	 */
 	public function __construct(
-		string $id,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $id,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		#[ObjectMapper\Modifiers\FieldName('first_name')]
 		private readonly string $firstName,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		#[ObjectMapper\Modifiers\FieldName('last_name')]
 		private readonly string $lastName,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $language,
-		string $state,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\AccountState::class)]
+		private readonly Types\AccountState $state,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('middle_name')]
 		private readonly string|null $middleName = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(pattern: '/^[\w\-\.]+@[\w\-\.]+\.+[\w-]{2,63}$/', notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly string|null $email = null,
-		string|null $registered = null,
-		string|null $lastVisit = null,
-		array|Utils\ArrayHash $roles = [],
-		string|null $parent = null,
-		array|Utils\ArrayHash $children = [],
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		private readonly DateTimeInterface|null $registered = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('last_visit')]
+		private readonly DateTimeInterface|null $lastVisit = null,
+		#[ObjectMapper\Rules\ArrayOf(
+			item: new ObjectMapper\Rules\StringValue(notEmpty: true),
+			minItems: 1,
+		)]
+		private readonly array $roles = [],
+		#[ObjectMapper\Rules\AnyOf([
+			new BootstrapObjectMapper\Rules\UuidValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		private readonly Uuid\UuidInterface|null $parent = null,
+		#[ObjectMapper\Rules\ArrayOf(
+			new BootstrapObjectMapper\Rules\UuidValue(),
+		)]
+		private readonly array $children = [],
 	)
 	{
-		$this->id = Uuid\Uuid::fromString($id);
-		$this->state = Types\AccountState::get($state);
-		$this->roles = (array) $roles;
-
-		if ($registered !== null) {
-			$registered = Utils\DateTime::createFromFormat(DateTimeInterface::ATOM, $registered);
-
-			if ($registered instanceof DateTimeInterface) {
-				$this->registered = $registered;
-			}
-		}
-
-		if ($lastVisit !== null) {
-			$lastVisit = Utils\DateTime::createFromFormat(DateTimeInterface::ATOM, $lastVisit);
-
-			if ($lastVisit instanceof DateTimeInterface) {
-				$this->lastVisit = $lastVisit;
-			}
-		}
-
-		$this->parent = $parent !== null ? Uuid\Uuid::fromString($parent) : null;
-		$this->children = array_map(
-			static fn (string $item): Uuid\UuidInterface => Uuid\Uuid::fromString($item),
-			(array) $children,
-		);
 	}
 
 	public function getId(): Uuid\UuidInterface
@@ -148,6 +144,19 @@ final class Account implements Entities\Entity
 		return $this->roles;
 	}
 
+	public function getParent(): Uuid\UuidInterface|null
+	{
+		return $this->parent;
+	}
+
+	/**
+	 * @return array<Uuid\UuidInterface>
+	 */
+	public function getChildren(): array
+	{
+		return $this->children;
+	}
+
 	public function toArray(): array
 	{
 		return [
@@ -161,6 +170,11 @@ final class Account implements Entities\Entity
 			'registered' => $this->getRegistered()?->format(DateTimeInterface::ATOM),
 			'last_visit' => $this->getLastVisit()?->format(DateTimeInterface::ATOM),
 			'roles' => $this->getRoles(),
+			'parent' => $this->getParent()?->toString(),
+			'children' => array_map(
+				static fn (Uuid\UuidInterface $id): string => $id->toString(),
+				$this->getChildren(),
+			),
 		];
 	}
 

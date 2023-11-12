@@ -15,7 +15,10 @@
 
 namespace FastyBird\Library\Metadata\Entities\Actions;
 
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Metadata\Entities;
 use FastyBird\Library\Metadata\Exceptions;
+use FastyBird\Library\Metadata\Types;
 use Ramsey\Uuid;
 use function array_merge;
 
@@ -30,18 +33,15 @@ use function array_merge;
 final class ActionDeviceProperty extends ActionProperty
 {
 
-	private Uuid\UuidInterface $device;
-
 	public function __construct(
-		string $action,
-		string $device,
-		string $property,
-		float|bool|int|string|null $expectedValue = null,
+		Types\PropertyAction $action,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $device,
+		Uuid\UuidInterface $property,
+		bool|float|int|string|null $expectedValue = null,
 	)
 	{
 		parent::__construct($action, $property, $expectedValue);
-
-		$this->device = Uuid\Uuid::fromString($device);
 	}
 
 	public function getDevice(): Uuid\UuidInterface
@@ -49,6 +49,9 @@ final class ActionDeviceProperty extends ActionProperty
 		return $this->device;
 	}
 
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), [
