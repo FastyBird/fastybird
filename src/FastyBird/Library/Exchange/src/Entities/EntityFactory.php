@@ -206,7 +206,7 @@ final class EntityFactory
 			try {
 				$schema = $this->schemaLoader->loadByNamespace(
 					'schemas/modules/devices-module',
-					'entity.channel.property.json',
+					'entity.connector.property.json',
 				);
 
 				$parsedData = $this->validator->validate($data, $schema);
@@ -278,7 +278,10 @@ final class EntityFactory
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_TRIGGER_ACTION_ENTITY_DELETED)
 		) {
 			try {
-				$schema = $this->schemaLoader->loadByNamespace('schemas/modules/triggers-module', 'entity.action.json');
+				$schema = $this->schemaLoader->loadByNamespace(
+					'schemas/modules/triggers-module',
+					'entity.action.json',
+				);
 
 				$parsedData = $this->validator->validate($data, $schema);
 
