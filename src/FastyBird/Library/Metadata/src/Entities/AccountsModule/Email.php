@@ -15,7 +15,9 @@
 
 namespace FastyBird\Library\Metadata\Entities\AccountsModule;
 
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Library\Metadata\Entities;
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 
 /**
@@ -29,22 +31,23 @@ use Ramsey\Uuid;
 final class Email implements Entities\Entity
 {
 
-	private Uuid\UuidInterface $id;
-
-	private Uuid\UuidInterface $account;
-
 	public function __construct(
-		string $id,
-		string $account,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $id,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $account,
+		#[ObjectMapper\Rules\StringValue(pattern: '/^[\w\-\.]+@[\w\-\.]+\.+[\w-]{2,63}$/', notEmpty: true)]
 		private readonly string $address,
-		private readonly bool $default,
-		private readonly bool $verified,
-		private readonly bool $private,
-		private readonly bool $public,
+		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
+		private readonly bool $default = false,
+		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
+		private readonly bool $verified = false,
+		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
+		private readonly bool $private = false,
+		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
+		private readonly bool $public = false,
 	)
 	{
-		$this->id = Uuid\Uuid::fromString($id);
-		$this->account = Uuid\Uuid::fromString($account);
 	}
 
 	public function getId(): Uuid\UuidInterface

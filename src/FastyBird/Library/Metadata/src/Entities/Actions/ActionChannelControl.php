@@ -15,6 +15,9 @@
 
 namespace FastyBird\Library\Metadata\Entities\Actions;
 
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Metadata\Entities;
+use FastyBird\Library\Metadata\Types;
 use Ramsey\Uuid;
 use function array_merge;
 
@@ -26,25 +29,20 @@ use function array_merge;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ActionChannelControl extends Action
+final class ActionChannelControl extends ActionControl
 {
 
-	private Uuid\UuidInterface $device;
-
-	private Uuid\UuidInterface $channel;
-
 	public function __construct(
-		string $action,
-		string $device,
-		string $channel,
-		string $control,
-		float|bool|int|string|null $expectedValue = null,
+		Types\ControlAction $action,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $device,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $channel,
+		Uuid\UuidInterface $control,
+		bool|float|int|string|null $expectedValue = null,
 	)
 	{
 		parent::__construct($action, $control, $expectedValue);
-
-		$this->device = Uuid\Uuid::fromString($device);
-		$this->channel = Uuid\Uuid::fromString($channel);
 	}
 
 	public function getDevice(): Uuid\UuidInterface

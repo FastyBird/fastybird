@@ -49,6 +49,26 @@
       "format": "uuid",
       "description": "Device unique uuid v4 identifier"
     },
+    "properties": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "description": "Property entities uuid v4 identifiers",
+      "default": []
+    },
+    "controls": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "description": "Control entities uuid v4 identifiers",
+      "default": []
+    },
     "owner": {
       "oneOf": [
         {
@@ -69,6 +89,8 @@
     "identifier",
     "name",
     "comment",
-    "device"
+    "device",
+    "properties",
+    "controls"
   ]
 }

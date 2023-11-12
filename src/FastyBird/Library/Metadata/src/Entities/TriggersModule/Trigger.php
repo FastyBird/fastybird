@@ -15,8 +15,10 @@
 
 namespace FastyBird\Library\Metadata\Entities\TriggersModule;
 
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Library\Metadata\Entities;
 use FastyBird\Library\Metadata\Types;
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 
 /**
@@ -32,26 +34,33 @@ abstract class Trigger implements Entities\Entity, Entities\Owner
 
 	use Entities\TOwner;
 
-	private Uuid\UuidInterface $id;
-
-	private Types\TriggerType $type;
-
-	private bool|null $triggered;
-
 	public function __construct(
-		string $id,
-		string $type,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $id,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\TriggerType::class)]
+		private readonly Types\TriggerType $type,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $name,
-		private readonly bool $enabled,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly string|null $comment = null,
-		bool|null $isTriggered = null,
-		string|null $owner = null,
+		#[ObjectMapper\Rules\BoolValue()]
+		private readonly bool $enabled = false,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('is_triggered')]
+		private readonly bool|null $isTriggered = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new BootstrapObjectMapper\Rules\UuidValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		protected readonly Uuid\UuidInterface|null $owner = null,
 	)
 	{
-		$this->id = Uuid\Uuid::fromString($id);
-		$this->type = Types\TriggerType::get($type);
-		$this->triggered = $isTriggered;
-		$this->owner = $owner !== null ? Uuid\Uuid::fromString($owner) : null;
 	}
 
 	public function getId(): Uuid\UuidInterface
@@ -81,7 +90,7 @@ abstract class Trigger implements Entities\Entity, Entities\Owner
 
 	public function isTriggered(): bool|null
 	{
-		return $this->triggered;
+		return $this->isTriggered;
 	}
 
 	public function toArray(): array

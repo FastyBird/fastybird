@@ -15,7 +15,9 @@
 
 namespace FastyBird\Library\Metadata\Entities\TriggersModule;
 
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Library\Metadata\Types;
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_merge;
 
@@ -30,34 +32,26 @@ use function array_merge;
 final class ChannelPropertyCondition extends Condition
 {
 
-	private Uuid\UuidInterface $device;
-
-	private Uuid\UuidInterface $channel;
-
-	private Uuid\UuidInterface $property;
-
-	private Types\TriggerConditionOperator $operator;
-
 	public function __construct(
-		string $id,
-		string $trigger,
-		string $type,
+		Uuid\UuidInterface $id,
+		Uuid\UuidInterface $trigger,
+		Types\TriggerConditionType $type,
 		bool $enabled,
-		string $device,
-		string $channel,
-		string $property,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $device,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $channel,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $property,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $operand,
-		string $operator,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\TriggerConditionOperator::class)]
+		private readonly Types\TriggerConditionOperator $operator,
 		bool|null $isFulfilled = null,
-		string|null $owner = null,
+		Uuid\UuidInterface|null $owner = null,
 	)
 	{
 		parent::__construct($id, $trigger, $type, $enabled, $isFulfilled, $owner);
-
-		$this->device = Uuid\Uuid::fromString($device);
-		$this->channel = Uuid\Uuid::fromString($channel);
-		$this->property = Uuid\Uuid::fromString($property);
-		$this->operator = Types\TriggerConditionOperator::get($operator);
 	}
 
 	public function getDevice(): Uuid\UuidInterface

@@ -15,8 +15,10 @@
 
 namespace FastyBird\Library\Metadata\Entities\TriggersModule;
 
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Library\Metadata\Entities;
 use FastyBird\Library\Metadata\Types;
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 
 /**
@@ -32,24 +34,22 @@ abstract class Notification implements Entities\Entity, Entities\Owner
 
 	use Entities\TOwner;
 
-	private Uuid\UuidInterface $id;
-
-	private Uuid\UuidInterface $trigger;
-
-	private Types\TriggerNotificationType $type;
-
 	public function __construct(
-		string $id,
-		string $trigger,
-		string $type,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $id,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $trigger,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\TriggerNotificationType::class)]
+		private readonly Types\TriggerNotificationType $type,
+		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $enabled,
-		string|null $owner = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new BootstrapObjectMapper\Rules\UuidValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		protected readonly Uuid\UuidInterface|null $owner = null,
 	)
 	{
-		$this->id = Uuid\Uuid::fromString($id);
-		$this->trigger = Uuid\Uuid::fromString($trigger);
-		$this->type = Types\TriggerNotificationType::get($type);
-		$this->owner = $owner !== null ? Uuid\Uuid::fromString($owner) : null;
 	}
 
 	public function getId(): Uuid\UuidInterface

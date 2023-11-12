@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ChannelPropertyAction.php
+ * DummyAction.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,7 +10,7 @@
  * @subpackage     Entities
  * @since          1.0.0
  *
- * @date           02.06.22
+ * @date           12.11.23
  */
 
 namespace FastyBird\Library\Metadata\Entities\TriggersModule;
@@ -22,14 +22,14 @@ use Ramsey\Uuid;
 use function array_merge;
 
 /**
- * Device channel property action entity
+ * Dummy action entity
  *
  * @package        FastyBird:MetadataLibrary!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ChannelPropertyAction extends Action
+final class DummyAction extends Action
 {
 
 	public function __construct(
@@ -38,13 +38,13 @@ final class ChannelPropertyAction extends Action
 		Types\TriggerActionType $type,
 		bool $enabled,
 		#[BootstrapObjectMapper\Rules\UuidValue()]
-		private readonly Uuid\UuidInterface $device,
-		#[BootstrapObjectMapper\Rules\UuidValue()]
-		private readonly Uuid\UuidInterface $channel,
-		#[BootstrapObjectMapper\Rules\UuidValue()]
-		private readonly Uuid\UuidInterface $property,
-		#[ObjectMapper\Rules\BoolValue()]
-		private readonly string $value,
+		#[ObjectMapper\Modifiers\FieldName('do_item')]
+		private readonly Uuid\UuidInterface $doItem,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+		])]
+		private readonly string|bool $value,
 		bool|null $isTriggered = null,
 		Uuid\UuidInterface|null $owner = null,
 	)
@@ -52,22 +52,12 @@ final class ChannelPropertyAction extends Action
 		parent::__construct($id, $trigger, $type, $enabled, $isTriggered, $owner);
 	}
 
-	public function getDevice(): Uuid\UuidInterface
+	public function getDoItem(): Uuid\UuidInterface
 	{
-		return $this->device;
+		return $this->doItem;
 	}
 
-	public function getChannel(): Uuid\UuidInterface
-	{
-		return $this->channel;
-	}
-
-	public function getProperty(): Uuid\UuidInterface
-	{
-		return $this->property;
-	}
-
-	public function getValue(): string
+	public function getValue(): string|bool
 	{
 		return $this->value;
 	}
@@ -75,9 +65,7 @@ final class ChannelPropertyAction extends Action
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), [
-			'device' => $this->getDevice()->toString(),
-			'channel' => $this->getChannel()->toString(),
-			'property' => $this->getProperty()->toString(),
+			'do_item' => $this->getDoItem()->toString(),
 			'value' => $this->getValue(),
 		]);
 	}

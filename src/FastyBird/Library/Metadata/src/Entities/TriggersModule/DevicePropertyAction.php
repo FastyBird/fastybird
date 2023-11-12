@@ -15,6 +15,9 @@
 
 namespace FastyBird\Library\Metadata\Entities\TriggersModule;
 
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Metadata\Types;
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_merge;
 
@@ -29,26 +32,22 @@ use function array_merge;
 final class DevicePropertyAction extends Action
 {
 
-	private Uuid\UuidInterface $device;
-
-	private Uuid\UuidInterface $property;
-
 	public function __construct(
-		string $id,
-		string $trigger,
-		string $type,
+		Uuid\UuidInterface $id,
+		Uuid\UuidInterface $trigger,
+		Types\TriggerActionType $type,
 		bool $enabled,
-		string $device,
-		string $property,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $device,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $property,
+		#[ObjectMapper\Rules\BoolValue()]
 		private readonly string $value,
 		bool|null $isTriggered = null,
-		string|null $owner = null,
+		Uuid\UuidInterface|null $owner = null,
 	)
 	{
 		parent::__construct($id, $trigger, $type, $enabled, $isTriggered, $owner);
-
-		$this->device = Uuid\Uuid::fromString($device);
-		$this->property = Uuid\Uuid::fromString($property);
 	}
 
 	public function getDevice(): Uuid\UuidInterface

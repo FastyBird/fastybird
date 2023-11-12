@@ -130,6 +130,9 @@ export interface ConnectorEntity {
 	name: string;
 	comment: string | null;
 	enabled: boolean;
+	properties: string[];
+	controls: string[];
+	devices: string[];
 	owner: string | null;
 }
 
@@ -173,6 +176,9 @@ export interface DeviceEntity {
 	connector: string;
 	parents: string[];
 	children: string[];
+	properties: string[];
+	controls: string[];
+	channels: string[];
 	owner: string | null;
 }
 
@@ -215,6 +221,8 @@ export interface ChannelEntity {
 	name: string | null;
 	comment: string | null;
 	device: string;
+	properties: string[];
+	controls: string[];
 	owner: string | null;
 }
 

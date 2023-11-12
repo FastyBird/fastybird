@@ -15,6 +15,10 @@
 
 namespace FastyBird\Library\Metadata\Entities\TriggersModule;
 
+use FastyBird\Library\Metadata\Entities;
+use FastyBird\Library\Metadata\Types;
+use Orisai\ObjectMapper;
+use Ramsey\Uuid;
 use function array_merge;
 
 /**
@@ -28,27 +32,28 @@ use function array_merge;
 final class AutomaticTrigger extends Trigger
 {
 
-	private bool|null $fulfilled;
-
 	public function __construct(
-		string $id,
-		string $type,
+		Uuid\UuidInterface $id,
+		Types\TriggerType $type,
 		string $name,
-		bool $enabled,
 		string|null $comment = null,
+		bool $enabled = false,
 		bool|null $isTriggered = null,
-		bool|null $isFulfilled = null,
-		string|null $owner = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('is_fulfilled')]
+		private readonly bool|null $isFulfilled = null,
+		Uuid\UuidInterface|null $owner = null,
 	)
 	{
-		parent::__construct($id, $type, $name, $enabled, $comment, $isTriggered, $owner);
-
-		$this->fulfilled = $isFulfilled;
+		parent::__construct($id, $type, $name, $comment, $enabled, $isTriggered, $owner);
 	}
 
 	public function isFulfilled(): bool|null
 	{
-		return $this->fulfilled;
+		return $this->isFulfilled;
 	}
 
 	public function toArray(): array

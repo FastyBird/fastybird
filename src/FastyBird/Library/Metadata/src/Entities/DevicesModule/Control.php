@@ -15,7 +15,9 @@
 
 namespace FastyBird\Library\Metadata\Entities\DevicesModule;
 
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Library\Metadata\Entities;
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 
 /**
@@ -31,12 +33,15 @@ abstract class Control implements Entities\Entity, Entities\Owner
 
 	use Entities\TOwner;
 
-	private Uuid\UuidInterface $id;
-
-	public function __construct(string $id, private readonly string $name, string|null $owner = null)
+	public function __construct(
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $id,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		private readonly string $name,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		protected readonly Uuid\UuidInterface|null $owner = null,
+	)
 	{
-		$this->id = Uuid\Uuid::fromString($id);
-		$this->owner = $owner !== null ? Uuid\Uuid::fromString($owner) : null;
 	}
 
 	public function getId(): Uuid\UuidInterface

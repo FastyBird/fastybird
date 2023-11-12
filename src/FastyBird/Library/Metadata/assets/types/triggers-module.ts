@@ -4,11 +4,13 @@ export enum TriggerType {
 }
 
 export enum ActionType {
+	DUMMY = 'dummy',
 	DEVICE_PROPERTY = 'device_property',
 	CHANNEL_PROPERTY = 'channel_property',
 }
 
 export enum ConditionType {
+	DUMMY = 'dummy',
 	CHANNEL_PROPERTY = 'channel_property',
 	DEVICE_PROPERTY = 'device_property',
 	TIME = 'time',

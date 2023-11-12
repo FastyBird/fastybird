@@ -18,8 +18,10 @@ namespace FastyBird\Library\Exchange\Entities;
 use FastyBird\Library\Exchange\Exceptions;
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Loaders as MetadataLoaders;
+use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use IPub\Phone\Exceptions as PhoneExceptions;
+use Throwable;
 
 /**
  * Exchange entity factory
@@ -33,63 +35,36 @@ final class EntityFactory
 {
 
 	public function __construct(
-		private readonly MetadataEntities\Actions\ActionConnectorControlEntityFactory $actionConnectorControlEntityFactory,
-		private readonly MetadataEntities\Actions\ActionConnectorPropertyEntityFactory $actionConnectorPropertyEntityFactory,
-		private readonly MetadataEntities\Actions\ActionDeviceControlEntityFactory $actionDeviceControlEntityFactory,
-		private readonly MetadataEntities\Actions\ActionDevicePropertyEntityFactory $actionDevicePropertyEntityFactory,
-		private readonly MetadataEntities\Actions\ActionChannelControlEntityFactory $actionChannelControlEntityFactory,
-		private readonly MetadataEntities\Actions\ActionChannelPropertyEntityFactory $actionChannelPropertyEntityFactory,
-		private readonly MetadataEntities\Actions\ActionTriggerControlEntityFactory $actionTriggerControlEntityFactory,
-		private readonly MetadataEntities\AccountsModule\AccountEntityFactory $accountEntityFactory,
-		private readonly MetadataEntities\AccountsModule\EmailEntityFactory $emailEntityFactory,
-		private readonly MetadataEntities\AccountsModule\IdentityEntityFactory $identityEntityFactory,
-		private readonly MetadataEntities\AccountsModule\RoleEntityFactory $roleEntityFactory,
-		private readonly MetadataEntities\TriggersModule\ActionEntityFactory $triggerActionEntityFactory,
-		private readonly MetadataEntities\TriggersModule\ConditionEntityFactory $triggerConditionEntityFactory,
-		private readonly MetadataEntities\TriggersModule\NotificationEntityFactory $triggerNotificationEntityFactory,
-		private readonly MetadataEntities\TriggersModule\TriggerControlEntityFactory $triggerControlEntityFactory,
-		private readonly MetadataEntities\TriggersModule\TriggerEntityFactory $triggerEntityFactory,
-		private readonly MetadataEntities\DevicesModule\ConnectorEntityFactory $connectorEntityFactory,
-		private readonly MetadataEntities\DevicesModule\ConnectorControlEntityFactory $connectorControlEntityFactory,
-		private readonly MetadataEntities\DevicesModule\ConnectorPropertyEntityFactory $connectorPropertyEntityFactory,
-		private readonly MetadataEntities\DevicesModule\DeviceEntityFactory $deviceEntityFactory,
-		private readonly MetadataEntities\DevicesModule\DeviceControlEntityFactory $deviceControlEntityFactory,
-		private readonly MetadataEntities\DevicesModule\DevicePropertyEntityFactory $devicePropertyEntityFactory,
-		private readonly MetadataEntities\DevicesModule\ChannelEntityFactory $channelEntityFactory,
-		private readonly MetadataEntities\DevicesModule\ChannelControlEntityFactory $channelControlEntityFactory,
-		private readonly MetadataEntities\DevicesModule\ChannelPropertyEntityFactory $channelPropertyEntityFactory,
+		private readonly MetadataEntities\EntityFactory $entityFactory,
+		private readonly MetadataLoaders\SchemaLoader $schemaLoader,
+		private readonly MetadataSchemas\Validator $validator,
 	)
 	{
 	}
 
 	/**
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws PhoneExceptions\NoValidCountryException
-	 * @throws PhoneExceptions\NoValidPhoneException
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
 	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function create(string $data, MetadataTypes\RoutingKey $routingKey): MetadataEntities\Entity
 	{
 		// ACTIONS
 		if ($routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_CONNECTOR_CONTROL_ACTION)) {
-			return $this->actionConnectorControlEntityFactory->create($data);
+			return $this->entityFactory->create(MetadataEntities\Actions\ActionConnectorControl::class, $data);
 		} elseif ($routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_CONNECTOR_PROPERTY_ACTION)) {
-			return $this->actionConnectorPropertyEntityFactory->create($data);
+			return $this->entityFactory->create(MetadataEntities\Actions\ActionConnectorProperty::class, $data);
 		} elseif ($routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_DEVICE_CONTROL_ACTION)) {
-			return $this->actionDeviceControlEntityFactory->create($data);
+			return $this->entityFactory->create(MetadataEntities\Actions\ActionDeviceControl::class, $data);
 		} elseif ($routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_DEVICE_PROPERTY_ACTION)) {
-			return $this->actionDevicePropertyEntityFactory->create($data);
+			return $this->entityFactory->create(MetadataEntities\Actions\ActionDeviceProperty::class, $data);
 		} elseif ($routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_CHANNEL_CONTROL_ACTION)) {
-			return $this->actionChannelControlEntityFactory->create($data);
+			return $this->entityFactory->create(MetadataEntities\Actions\ActionChannelControl::class, $data);
 		} elseif ($routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_CHANNEL_PROPERTY_ACTION)) {
-			return $this->actionChannelPropertyEntityFactory->create($data);
+			return $this->entityFactory->create(MetadataEntities\Actions\ActionChannelProperty::class, $data);
 		} elseif ($routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_TRIGGER_CONTROL_ACTION)) {
-			return $this->actionTriggerControlEntityFactory->create($data);
+			return $this->entityFactory->create(MetadataEntities\Actions\ActionTriggerControl::class, $data);
 
 			// ACCOUNTS MODULE
 		} elseif (
@@ -98,28 +73,28 @@ final class EntityFactory
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_ACCOUNT_ENTITY_UPDATED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_ACCOUNT_ENTITY_DELETED)
 		) {
-			return $this->accountEntityFactory->create($data);
+			return $this->entityFactory->create(MetadataEntities\AccountsModule\Account::class, $data);
 		} elseif (
 			$routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_EMAIL_ENTITY_REPORTED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_EMAIL_ENTITY_CREATED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_EMAIL_ENTITY_UPDATED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_EMAIL_ENTITY_DELETED)
 		) {
-			return $this->emailEntityFactory->create($data);
+			return $this->entityFactory->create(MetadataEntities\AccountsModule\Email::class, $data);
 		} elseif (
 			$routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_IDENTITY_ENTITY_REPORTED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_IDENTITY_ENTITY_CREATED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_IDENTITY_ENTITY_UPDATED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_IDENTITY_ENTITY_DELETED)
 		) {
-			return $this->identityEntityFactory->create($data);
+			return $this->entityFactory->create(MetadataEntities\AccountsModule\Identity::class, $data);
 		} elseif (
 			$routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_ROLE_ENTITY_REPORTED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_ROLE_ENTITY_CREATED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_ROLE_ENTITY_UPDATED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_ROLE_ENTITY_DELETED)
 		) {
-			return $this->roleEntityFactory->create($data);
+			return $this->entityFactory->create(MetadataEntities\AccountsModule\Role::class, $data);
 
 			// DEVICES MODULE
 		} elseif (
@@ -128,63 +103,139 @@ final class EntityFactory
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_DEVICE_ENTITY_UPDATED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_DEVICE_ENTITY_DELETED)
 		) {
-			return $this->deviceEntityFactory->create($data);
+			return $this->entityFactory->create(MetadataEntities\DevicesModule\Device::class, $data);
 		} elseif (
 			$routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_DEVICE_PROPERTY_ENTITY_REPORTED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_DEVICE_PROPERTY_ENTITY_CREATED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_DEVICE_PROPERTY_ENTITY_UPDATED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_DEVICE_PROPERTY_ENTITY_DELETED)
 		) {
-			return $this->devicePropertyEntityFactory->create($data);
+			try {
+				$schema = $this->schemaLoader->loadByNamespace(
+					'schemas/modules/devices-module',
+					'entity.device.property.json',
+				);
+
+				$parsedData = $this->validator->validate($data, $schema);
+
+				$type = MetadataTypes\PropertyType::get($parsedData->offsetGet('type'));
+			} catch (Throwable $ex) {
+				throw new Exceptions\InvalidArgument('Provided data could not be validated', $ex->getCode(), $ex);
+			}
+
+			if ($type->equalsValue(MetadataTypes\PropertyType::TYPE_DYNAMIC)) {
+				return $this->entityFactory->create(MetadataEntities\DevicesModule\DeviceDynamicProperty::class, $data);
+			} elseif ($type->equalsValue(MetadataTypes\PropertyType::TYPE_VARIABLE)) {
+				return $this->entityFactory->create(
+					MetadataEntities\DevicesModule\DeviceVariableProperty::class,
+					$data,
+				);
+			} elseif ($type->equalsValue(MetadataTypes\PropertyType::TYPE_MAPPED)) {
+				return $this->entityFactory->create(MetadataEntities\DevicesModule\DeviceMappedProperty::class, $data);
+			} else {
+				throw new Exceptions\InvalidArgument('Provided data and routing key is for unsupported property type');
+			}
 		} elseif (
 			$routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_DEVICE_CONTROL_ENTITY_REPORTED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_DEVICE_CONTROL_ENTITY_CREATED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_DEVICE_CONTROL_ENTITY_UPDATED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_DEVICE_CONTROL_ENTITY_DELETED)
 		) {
-			return $this->deviceControlEntityFactory->create($data);
+			return $this->entityFactory->create(MetadataEntities\DevicesModule\DeviceControl::class, $data);
 		} elseif (
 			$routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_CHANNEL_ENTITY_REPORTED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_CHANNEL_ENTITY_CREATED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_CHANNEL_ENTITY_UPDATED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_CHANNEL_ENTITY_DELETED)
 		) {
-			return $this->channelEntityFactory->create($data);
+			return $this->entityFactory->create(MetadataEntities\DevicesModule\Channel::class, $data);
 		} elseif (
 			$routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_CHANNEL_PROPERTY_ENTITY_REPORTED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_CHANNEL_PROPERTY_ENTITY_CREATED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_CHANNEL_PROPERTY_ENTITY_UPDATED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_CHANNEL_PROPERTY_ENTITY_DELETED)
 		) {
-			return $this->channelPropertyEntityFactory->create($data);
+			try {
+				$schema = $this->schemaLoader->loadByNamespace(
+					'schemas/modules/devices-module',
+					'entity.channel.property.json',
+				);
+
+				$parsedData = $this->validator->validate($data, $schema);
+
+				$type = MetadataTypes\PropertyType::get($parsedData->offsetGet('type'));
+			} catch (Throwable $ex) {
+				throw new Exceptions\InvalidArgument('Provided data could not be validated', $ex->getCode(), $ex);
+			}
+
+			if ($type->equalsValue(MetadataTypes\PropertyType::TYPE_DYNAMIC)) {
+				return $this->entityFactory->create(
+					MetadataEntities\DevicesModule\ChannelDynamicProperty::class,
+					$data,
+				);
+			} elseif ($type->equalsValue(MetadataTypes\PropertyType::TYPE_VARIABLE)) {
+				return $this->entityFactory->create(
+					MetadataEntities\DevicesModule\ChannelVariableProperty::class,
+					$data,
+				);
+			} elseif ($type->equalsValue(MetadataTypes\PropertyType::TYPE_MAPPED)) {
+				return $this->entityFactory->create(MetadataEntities\DevicesModule\ChannelMappedProperty::class, $data);
+			} else {
+				throw new Exceptions\InvalidArgument('Provided data and routing key is for unsupported property type');
+			}
 		} elseif (
 			$routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_CHANNEL_CONTROL_ENTITY_REPORTED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_CHANNEL_CONTROL_ENTITY_CREATED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_CHANNEL_CONTROL_ENTITY_UPDATED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_CHANNEL_CONTROL_ENTITY_DELETED)
 		) {
-			return $this->channelControlEntityFactory->create($data);
+			return $this->entityFactory->create(MetadataEntities\DevicesModule\ChannelControl::class, $data);
 		} elseif (
 			$routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_CONNECTOR_ENTITY_REPORTED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_CONNECTOR_ENTITY_CREATED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_CONNECTOR_ENTITY_UPDATED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_CONNECTOR_ENTITY_DELETED)
 		) {
-			return $this->connectorEntityFactory->create($data);
+			return $this->entityFactory->create(MetadataEntities\DevicesModule\Connector::class, $data);
 		} elseif (
 			$routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_CONNECTOR_PROPERTY_ENTITY_REPORTED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_CONNECTOR_PROPERTY_ENTITY_CREATED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_CONNECTOR_PROPERTY_ENTITY_UPDATED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_CONNECTOR_PROPERTY_ENTITY_DELETED)
 		) {
-			return $this->connectorPropertyEntityFactory->create($data);
+			try {
+				$schema = $this->schemaLoader->loadByNamespace(
+					'schemas/modules/devices-module',
+					'entity.channel.property.json',
+				);
+
+				$parsedData = $this->validator->validate($data, $schema);
+
+				$type = MetadataTypes\PropertyType::get($parsedData->offsetGet('type'));
+			} catch (Throwable $ex) {
+				throw new Exceptions\InvalidArgument('Provided data could not be validated', $ex->getCode(), $ex);
+			}
+
+			if ($type->equalsValue(MetadataTypes\PropertyType::TYPE_DYNAMIC)) {
+				return $this->entityFactory->create(
+					MetadataEntities\DevicesModule\ConnectorDynamicProperty::class,
+					$data,
+				);
+			} elseif ($type->equalsValue(MetadataTypes\PropertyType::TYPE_MAPPED)) {
+				return $this->entityFactory->create(
+					MetadataEntities\DevicesModule\ConnectorVariableProperty::class,
+					$data,
+				);
+			} else {
+				throw new Exceptions\InvalidArgument('Provided data and routing key is for unsupported property type');
+			}
 		} elseif (
 			$routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_CONNECTOR_CONTROL_ENTITY_REPORTED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_CONNECTOR_CONTROL_ENTITY_CREATED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_CONNECTOR_CONTROL_ENTITY_UPDATED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_CONNECTOR_CONTROL_ENTITY_DELETED)
 		) {
-			return $this->connectorControlEntityFactory->create($data);
+			return $this->entityFactory->create(MetadataEntities\DevicesModule\ConnectorControl::class, $data);
 
 			// TRIGGERS MODULE
 		} elseif (
@@ -193,35 +244,127 @@ final class EntityFactory
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_TRIGGER_ENTITY_UPDATED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_TRIGGER_ENTITY_DELETED)
 		) {
-			return $this->triggerEntityFactory->create($data);
+			try {
+				$schema = $this->schemaLoader->loadByNamespace(
+					'schemas/modules/triggers-module',
+					'entity.trigger.json',
+				);
+
+				$parsedData = $this->validator->validate($data, $schema);
+
+				$type = MetadataTypes\TriggerType::get($parsedData->offsetGet('type'));
+			} catch (Throwable $ex) {
+				throw new Exceptions\InvalidArgument('Provided data could not be validated', $ex->getCode(), $ex);
+			}
+
+			if ($type->equalsValue(MetadataTypes\TriggerType::TYPE_MANUAL)) {
+				return $this->entityFactory->create(MetadataEntities\TriggersModule\ManualTrigger::class, $data);
+			} elseif ($type->equalsValue(MetadataTypes\TriggerType::TYPE_AUTOMATIC)) {
+				return $this->entityFactory->create(MetadataEntities\TriggersModule\AutomaticTrigger::class, $data);
+			} else {
+				throw new Exceptions\InvalidArgument('Provided data and routing key is for unsupported trigger type');
+			}
 		} elseif (
 			$routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_TRIGGER_CONTROL_ENTITY_REPORTED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_TRIGGER_CONTROL_ENTITY_CREATED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_TRIGGER_CONTROL_ENTITY_UPDATED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_TRIGGER_CONTROL_ENTITY_DELETED)
 		) {
-			return $this->triggerControlEntityFactory->create($data);
+			return $this->entityFactory->create(MetadataEntities\TriggersModule\TriggerControl::class, $data);
 		} elseif (
 			$routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_TRIGGER_ACTION_ENTITY_REPORTED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_TRIGGER_ACTION_ENTITY_CREATED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_TRIGGER_ACTION_ENTITY_UPDATED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_TRIGGER_ACTION_ENTITY_DELETED)
 		) {
-			return $this->triggerActionEntityFactory->create($data);
+			try {
+				$schema = $this->schemaLoader->loadByNamespace('schemas/modules/triggers-module', 'entity.action.json');
+
+				$parsedData = $this->validator->validate($data, $schema);
+
+				$type = MetadataTypes\TriggerActionType::get($parsedData->offsetGet('type'));
+			} catch (Throwable $ex) {
+				throw new Exceptions\InvalidArgument('Provided data could not be validated', $ex->getCode(), $ex);
+			}
+
+			if ($type->equalsValue(MetadataTypes\TriggerActionType::TYPE_DUMMY)) {
+				return $this->entityFactory->create(MetadataEntities\TriggersModule\DummyAction::class, $data);
+			} elseif ($type->equalsValue(MetadataTypes\TriggerActionType::TYPE_DEVICE_PROPERTY)) {
+				return $this->entityFactory->create(MetadataEntities\TriggersModule\DevicePropertyAction::class, $data);
+			} elseif ($type->equalsValue(MetadataTypes\TriggerActionType::TYPE_CHANNEL_PROPERTY)) {
+				return $this->entityFactory->create(
+					MetadataEntities\TriggersModule\ChannelPropertyAction::class,
+					$data,
+				);
+			} else {
+				throw new Exceptions\InvalidArgument('Provided data and routing key is for unsupported action type');
+			}
 		} elseif (
 			$routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_TRIGGER_NOTIFICATION_ENTITY_REPORTED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_TRIGGER_NOTIFICATION_ENTITY_CREATED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_TRIGGER_NOTIFICATION_ENTITY_UPDATED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_TRIGGER_NOTIFICATION_ENTITY_DELETED)
 		) {
-			return $this->triggerNotificationEntityFactory->create($data);
+			try {
+				$schema = $this->schemaLoader->loadByNamespace(
+					'schemas/modules/triggers-module',
+					'entity.notification.json',
+				);
+
+				$parsedData = $this->validator->validate($data, $schema);
+
+				$type = MetadataTypes\TriggerNotificationType::get($parsedData->offsetGet('type'));
+			} catch (Throwable $ex) {
+				throw new Exceptions\InvalidArgument('Provided data could not be validated', $ex->getCode(), $ex);
+			}
+
+			if ($type->equalsValue(MetadataTypes\TriggerNotificationType::TYPE_EMAIL)) {
+				return $this->entityFactory->create(MetadataEntities\TriggersModule\EmailNotification::class, $data);
+			} elseif ($type->equalsValue(MetadataTypes\TriggerNotificationType::TYPE_SMS)) {
+				return $this->entityFactory->create(MetadataEntities\TriggersModule\SmsNotification::class, $data);
+			} else {
+				throw new Exceptions\InvalidArgument(
+					'Provided data and routing key is for unsupported notification type',
+				);
+			}
 		} elseif (
 			$routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_TRIGGER_CONDITION_ENTITY_REPORTED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_TRIGGER_CONDITION_ENTITY_CREATED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_TRIGGER_CONDITION_ENTITY_UPDATED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::ROUTE_TRIGGER_CONDITION_ENTITY_DELETED)
 		) {
-			return $this->triggerConditionEntityFactory->create($data);
+			try {
+				$schema = $this->schemaLoader->loadByNamespace(
+					'schemas/modules/triggers-module',
+					'entity.condition.json',
+				);
+
+				$parsedData = $this->validator->validate($data, $schema);
+
+				$type = MetadataTypes\TriggerConditionType::get($parsedData->offsetGet('type'));
+			} catch (Throwable $ex) {
+				throw new Exceptions\InvalidArgument('Provided data could not be validated', $ex->getCode(), $ex);
+			}
+
+			if ($type->equalsValue(MetadataTypes\TriggerConditionType::TYPE_DUMMY)) {
+				return $this->entityFactory->create(MetadataEntities\TriggersModule\DummyCondition::class, $data);
+			} elseif ($type->equalsValue(MetadataTypes\TriggerConditionType::TYPE_DEVICE_PROPERTY)) {
+				return $this->entityFactory->create(
+					MetadataEntities\TriggersModule\DevicePropertyCondition::class,
+					$data,
+				);
+			} elseif ($type->equalsValue(MetadataTypes\TriggerConditionType::TYPE_CHANNEL_PROPERTY)) {
+				return $this->entityFactory->create(
+					MetadataEntities\TriggersModule\ChannelPropertyCondition::class,
+					$data,
+				);
+			} elseif ($type->equalsValue(MetadataTypes\TriggerConditionType::TYPE_TIME)) {
+				return $this->entityFactory->create(MetadataEntities\TriggersModule\TimeCondition::class, $data);
+			} elseif ($type->equalsValue(MetadataTypes\TriggerConditionType::TYPE_DATE)) {
+				return $this->entityFactory->create(MetadataEntities\TriggersModule\DateCondition::class, $data);
+			} else {
+				throw new Exceptions\InvalidArgument('Provided data and routing key is for unsupported condition type');
+			}
 		}
 
 		throw new Exceptions\InvalidState('Transformer could not be created');

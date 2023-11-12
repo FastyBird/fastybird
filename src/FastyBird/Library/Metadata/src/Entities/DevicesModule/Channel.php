@@ -15,9 +15,12 @@
 
 namespace FastyBird\Library\Metadata\Entities\DevicesModule;
 
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Library\Metadata\Entities;
 use FastyBird\Library\Metadata\Types;
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
+use function array_map;
 
 /**
  * Channel entity
@@ -32,27 +35,46 @@ final class Channel implements Entities\Entity, Entities\Owner
 
 	use Entities\TOwner;
 
-	private Uuid\UuidInterface $id;
-
-	private Types\ChannelCategory $category;
-
-	private Uuid\UuidInterface $device;
-
+	/**
+	 * @param array<Uuid\UuidInterface> $properties
+	 * @param array<Uuid\UuidInterface> $controls
+	 */
 	public function __construct(
-		string $id,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $id,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $type,
-		string $category,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\ChannelCategory::class)]
+		private readonly Types\ChannelCategory $category,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $identifier,
-		string $device,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $device,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly string|null $name = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly string|null $comment = null,
-		string|null $owner = null,
+		#[ObjectMapper\Rules\ArrayOf(
+			new BootstrapObjectMapper\Rules\UuidValue(),
+		)]
+		private readonly array $properties = [],
+		#[ObjectMapper\Rules\ArrayOf(
+			new BootstrapObjectMapper\Rules\UuidValue(),
+		)]
+		private readonly array $controls = [],
+		#[ObjectMapper\Rules\AnyOf([
+			new BootstrapObjectMapper\Rules\UuidValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		protected readonly Uuid\UuidInterface|null $owner = null,
 	)
 	{
-		$this->id = Uuid\Uuid::fromString($id);
-		$this->category = Types\ChannelCategory::get($category);
-		$this->device = Uuid\Uuid::fromString($device);
-		$this->owner = $owner !== null ? Uuid\Uuid::fromString($owner) : null;
 	}
 
 	public function getId(): Uuid\UuidInterface
@@ -90,6 +112,22 @@ final class Channel implements Entities\Entity, Entities\Owner
 		return $this->device;
 	}
 
+	/**
+	 * @return array<Uuid\UuidInterface>
+	 */
+	public function getProperties(): array
+	{
+		return $this->properties;
+	}
+
+	/**
+	 * @return array<Uuid\UuidInterface>
+	 */
+	public function getControls(): array
+	{
+		return $this->controls;
+	}
+
 	public function toArray(): array
 	{
 		return [
@@ -100,6 +138,14 @@ final class Channel implements Entities\Entity, Entities\Owner
 			'name' => $this->getName(),
 			'comment' => $this->getComment(),
 			'device' => $this->getDevice()->toString(),
+			'properties' => array_map(
+				static fn (Uuid\UuidInterface $id): string => $id->toString(),
+				$this->getProperties(),
+			),
+			'controls' => array_map(
+				static fn (Uuid\UuidInterface $id): string => $id->toString(),
+				$this->getControls(),
+			),
 			'owner' => $this->getOwner()?->toString(),
 		];
 	}

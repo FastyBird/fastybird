@@ -15,7 +15,9 @@
 
 namespace FastyBird\Library\Metadata\Entities\AccountsModule;
 
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Library\Metadata\Entities;
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 
 /**
@@ -29,22 +31,29 @@ use Ramsey\Uuid;
 final class Role implements Entities\Entity
 {
 
-	private Uuid\UuidInterface $id;
-
-	private Uuid\UuidInterface|null $parent;
-
 	public function __construct(
-		string $id,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $id,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $name,
-		private readonly string $comment,
-		private readonly bool $anonymous,
-		private readonly bool $authenticated,
-		private readonly bool $administrator,
-		string|null $parent = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		private readonly string|null $comment = null,
+		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
+		private readonly bool $anonymous = false,
+		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
+		private readonly bool $authenticated = false,
+		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
+		private readonly bool $administrator = false,
+		#[ObjectMapper\Rules\AnyOf([
+			new BootstrapObjectMapper\Rules\UuidValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		private readonly Uuid\UuidInterface|null $parent = null,
 	)
 	{
-		$this->id = Uuid\Uuid::fromString($id);
-		$this->parent = $parent !== null ? Uuid\Uuid::fromString($parent) : null;
 	}
 
 	public function getId(): Uuid\UuidInterface
@@ -57,7 +66,7 @@ final class Role implements Entities\Entity
 		return $this->name;
 	}
 
-	public function getComment(): string
+	public function getComment(): string|null
 	{
 		return $this->comment;
 	}

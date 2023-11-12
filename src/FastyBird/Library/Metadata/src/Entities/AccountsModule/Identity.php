@@ -15,8 +15,10 @@
 
 namespace FastyBird\Library\Metadata\Entities\AccountsModule;
 
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Library\Metadata\Entities;
 use FastyBird\Library\Metadata\Types;
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 
 /**
@@ -30,23 +32,22 @@ use Ramsey\Uuid;
 final class Identity implements Entities\Entity
 {
 
-	private Uuid\UuidInterface $id;
-
-	private Uuid\UuidInterface $account;
-
-	private Types\IdentityState $state;
-
 	public function __construct(
-		string $id,
-		string $account,
-		string $state,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $id,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $account,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\IdentityState::class)]
+		private readonly Types\IdentityState $state,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $uid,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly string|null $hash = null,
 	)
 	{
-		$this->id = Uuid\Uuid::fromString($id);
-		$this->account = Uuid\Uuid::fromString($account);
-		$this->state = Types\IdentityState::get($state);
 	}
 
 	public function getId(): Uuid\UuidInterface

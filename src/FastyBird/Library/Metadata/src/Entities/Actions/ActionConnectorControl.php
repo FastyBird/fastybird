@@ -15,6 +15,9 @@
 
 namespace FastyBird\Library\Metadata\Entities\Actions;
 
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Metadata\Entities;
+use FastyBird\Library\Metadata\Types;
 use Ramsey\Uuid;
 use function array_merge;
 
@@ -26,21 +29,18 @@ use function array_merge;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ActionConnectorControl extends Action
+final class ActionConnectorControl extends ActionControl
 {
 
-	private Uuid\UuidInterface $connector;
-
 	public function __construct(
-		string $action,
-		string $connector,
-		string $control,
-		float|bool|int|string|null $expectedValue = null,
+		Types\ControlAction $action,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $connector,
+		Uuid\UuidInterface $control,
+		bool|float|int|string|null $expectedValue = null,
 	)
 	{
 		parent::__construct($action, $control, $expectedValue);
-
-		$this->connector = Uuid\Uuid::fromString($connector);
 	}
 
 	public function getConnector(): Uuid\UuidInterface

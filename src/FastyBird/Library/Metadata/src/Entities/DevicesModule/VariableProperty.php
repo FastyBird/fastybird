@@ -16,6 +16,9 @@
 namespace FastyBird\Library\Metadata\Entities\DevicesModule;
 
 use FastyBird\Library\Metadata\Exceptions;
+use FastyBird\Library\Metadata\Types;
+use Orisai\ObjectMapper;
+use Ramsey\Uuid;
 use function array_merge;
 
 /**
@@ -29,28 +32,38 @@ use function array_merge;
 abstract class VariableProperty extends Property
 {
 
-	private string|int|bool|float|null $value;
-
-	private string|int|bool|float|null $default;
-
 	/**
-	 * @param array<int, string>|array<int, string|int|float|array<int, string|int|float>|null>|array<int, array<int, string|array<int, string|int|float|bool>|null>>|null $format
+	 * @param string|array<int, string>|array<int, int>|array<int, float>|array<int, bool|string|int|float|array<int, bool|string|int|float>|null>|array<int, array<int, string|array<int, string|int|float|bool>|null>>|null $format
 	 */
 	public function __construct(
-		string $id,
-		string $type,
-		string $category,
+		Uuid\UuidInterface $id,
+		Types\PropertyType $type,
+		Types\PropertyCategory $category,
 		string $identifier,
 		string|null $name,
-		string $dataType,
+		Types\DataType $dataType,
 		string|null $unit = null,
-		array|null $format = null,
-		string|int|float|null $invalid = null,
+		string|array|null $format = null,
+		float|int|string|null $invalid = null,
 		int|null $scale = null,
-		float|null $step = null,
-		float|bool|int|string|null $value = null,
-		float|bool|int|string|null $default = null,
-		string|null $owner = null,
+		int|float|null $step = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		private readonly bool|float|int|string|null $value = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		private readonly bool|float|int|string|null $default = null,
+		Uuid\UuidInterface|null $owner = null,
 	)
 	{
 		parent::__construct(
@@ -67,9 +80,6 @@ abstract class VariableProperty extends Property
 			$step,
 			$owner,
 		);
-
-		$this->value = $value;
-		$this->default = $default;
 	}
 
 	public function getValue(): float|bool|int|string|null
@@ -82,6 +92,10 @@ abstract class VariableProperty extends Property
 		return $this->default;
 	}
 
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 */
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), [
@@ -93,6 +107,7 @@ abstract class VariableProperty extends Property
 	/**
 	 * @return array<string, mixed>
 	 *
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 */
 	public function __serialize(): array

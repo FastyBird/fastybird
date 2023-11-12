@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ChannelPropertyAction.php
+ * DummyCondition.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,7 +10,7 @@
  * @subpackage     Entities
  * @since          1.0.0
  *
- * @date           02.06.22
+ * @date           12.11.23
  */
 
 namespace FastyBird\Library\Metadata\Entities\TriggersModule;
@@ -22,63 +22,56 @@ use Ramsey\Uuid;
 use function array_merge;
 
 /**
- * Device channel property action entity
+ * Dummy condition entity
  *
  * @package        FastyBird:MetadataLibrary!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ChannelPropertyAction extends Action
+final class DummyCondition extends Condition
 {
 
 	public function __construct(
 		Uuid\UuidInterface $id,
 		Uuid\UuidInterface $trigger,
-		Types\TriggerActionType $type,
+		Types\TriggerConditionType $type,
 		bool $enabled,
 		#[BootstrapObjectMapper\Rules\UuidValue()]
-		private readonly Uuid\UuidInterface $device,
-		#[BootstrapObjectMapper\Rules\UuidValue()]
-		private readonly Uuid\UuidInterface $channel,
-		#[BootstrapObjectMapper\Rules\UuidValue()]
-		private readonly Uuid\UuidInterface $property,
-		#[ObjectMapper\Rules\BoolValue()]
-		private readonly string $value,
-		bool|null $isTriggered = null,
+		#[ObjectMapper\Modifiers\FieldName('watch_item')]
+		private readonly Uuid\UuidInterface $watchItem,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		private readonly string $operand,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\TriggerConditionOperator::class)]
+		private readonly Types\TriggerConditionOperator $operator,
+		bool|null $isFulfilled = null,
 		Uuid\UuidInterface|null $owner = null,
 	)
 	{
-		parent::__construct($id, $trigger, $type, $enabled, $isTriggered, $owner);
+		parent::__construct($id, $trigger, $type, $enabled, $isFulfilled, $owner);
 	}
 
-	public function getDevice(): Uuid\UuidInterface
+	public function getWatchItem(): Uuid\UuidInterface
 	{
-		return $this->device;
+		return $this->watchItem;
 	}
 
-	public function getChannel(): Uuid\UuidInterface
+	public function getOperand(): string
 	{
-		return $this->channel;
+		return $this->operand;
 	}
 
-	public function getProperty(): Uuid\UuidInterface
+	public function getOperator(): Types\TriggerConditionOperator
 	{
-		return $this->property;
-	}
-
-	public function getValue(): string
-	{
-		return $this->value;
+		return $this->operator;
 	}
 
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), [
-			'device' => $this->getDevice()->toString(),
-			'channel' => $this->getChannel()->toString(),
-			'property' => $this->getProperty()->toString(),
-			'value' => $this->getValue(),
+			'watch_item' => $this->getWatchItem()->toString(),
+			'operand' => $this->getOperand(),
+			'operator' => $this->getOperator()->getValue(),
 		]);
 	}
 

@@ -17,11 +17,11 @@ namespace FastyBird\Library\Metadata\Entities\DevicesModule;
 
 use DateTimeInterface;
 use FastyBird\Library\Metadata\Exceptions;
-use Nette\Utils;
-use Throwable;
+use FastyBird\Library\Metadata\Types;
+use Orisai\ObjectMapper;
+use Ramsey\Uuid;
 use function array_merge;
 use function is_bool;
-use function is_string;
 
 /**
  * Mapped property entity
@@ -35,30 +35,85 @@ abstract class MappedProperty extends Property
 {
 
 	/**
-	 * @param array<int, string>|array<int, string|int|float|array<int, string|int|float>|null>|array<int, array<int, string|array<int, string|int|float|bool>|null>>|null $format
+	 * @param string|array<int, string>|array<int, int>|array<int, float>|array<int, bool|string|int|float|array<int, bool|string|int|float>|null>|array<int, array<int, string|array<int, string|int|float|bool>|null>>|null $format
 	 */
 	public function __construct(
-		string $id,
-		string $type,
-		string $category,
+		Uuid\UuidInterface $id,
+		Types\PropertyType $type,
+		Types\PropertyCategory $category,
 		string $identifier,
 		string|null $name,
-		private readonly bool|null $settable,
-		private readonly bool|null $queryable,
-		string $dataType,
+		Types\DataType $dataType,
 		string|null $unit = null,
-		array|null $format = null,
-		string|int|float|null $invalid = null,
+		string|array|null $format = null,
+		float|int|string|null $invalid = null,
 		int|null $scale = null,
-		float|null $step = null,
-		private readonly float|bool|int|string|null $actualValue = null,
-		private readonly float|bool|int|string|null $previousValue = null,
-		private readonly float|bool|int|string|null $expectedValue = null,
-		private readonly bool|string $pending = false,
-		private readonly bool $valid = false,
-		private readonly float|bool|int|string|null $value = null,
-		private readonly float|bool|int|string|null $default = null,
-		string|null $owner = null,
+		int|float|null $step = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\NullValue(),
+		])]
+		private readonly bool|null $settable = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\NullValue(),
+		])]
+		private readonly bool|null $queryable = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('actual_value')]
+		private readonly bool|float|int|string|null $actualValue = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('previous_value')]
+		private readonly bool|float|int|string|null $previousValue = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('expected_value')]
+		private readonly bool|float|int|string|null $expectedValue = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		private readonly bool|DateTimeInterface|null $pending = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		private readonly bool|null $valid = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		private readonly bool|float|int|string|null $value = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		private readonly bool|float|int|string|null $default = null,
+		Uuid\UuidInterface|null $owner = null,
 	)
 	{
 		parent::__construct(
@@ -102,27 +157,14 @@ abstract class MappedProperty extends Property
 		return $this->expectedValue;
 	}
 
-	/**
-	 * @throws Exceptions\InvalidState
-	 */
-	public function getPending(): bool|string|null
+	public function getPending(): bool|DateTimeInterface|null
 	{
-		if (is_string($this->pending)) {
-			try {
-				$pending = Utils\DateTime::from($this->pending);
-
-				return $pending->format(DateTimeInterface::ATOM);
-			} catch (Throwable $ex) {
-				throw new Exceptions\InvalidState('Pending value could not be created', $ex->getCode(), $ex);
-			}
-		}
-
 		return $this->pending;
 	}
 
-	public function isPending(): bool|null
+	public function isPending(): bool
 	{
-		return is_bool($this->pending) ? $this->pending : true;
+		return is_bool($this->pending) ? $this->pending : $this->pending !== null;
 	}
 
 	public function isValid(): bool|null
@@ -130,17 +172,18 @@ abstract class MappedProperty extends Property
 		return $this->valid;
 	}
 
-	public function getValue(): float|bool|int|string|null
+	public function getValue(): bool|float|int|string|null
 	{
 		return $this->value;
 	}
 
-	public function getDefault(): float|bool|int|string|null
+	public function getDefault(): bool|float|int|string|null
 	{
 		return $this->default;
 	}
 
 	/**
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 */
 	public function toArray(): array
@@ -160,6 +203,7 @@ abstract class MappedProperty extends Property
 	/**
 	 * @return array<string, mixed>
 	 *
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 */
 	public function __serialize(): array

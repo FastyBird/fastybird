@@ -15,13 +15,10 @@ final class ChannelPropertyEntityTest extends BaseTestCase
 {
 
 	/**
+	 * @param class-string<Entities\Entity> $class
 	 * @param array<string, mixed> $fixture
 	 *
-	 * @throws Exceptions\FileNotFound
 	 * @throws Exceptions\InvalidArgument
-	 * @throws Exceptions\InvalidData
-	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\Logic
 	 * @throws Exceptions\MalformedInput
 	 * @throws Nette\DI\MissingServiceException
 	 *
@@ -29,9 +26,9 @@ final class ChannelPropertyEntityTest extends BaseTestCase
 	 */
 	public function testCreateEntity(string $data, string $class, array $fixture): void
 	{
-		$factory = $this->container->getByType(Entities\DevicesModule\ChannelPropertyEntityFactory::class);
+		$factory = $this->container->getByType(Entities\EntityFactory::class);
 
-		$entity = $factory->create($data);
+		$entity = $factory->create($class, $data);
 
 		self::assertTrue($entity instanceof $class);
 		self::assertTrue(method_exists($entity, 'getChannel'));
@@ -40,26 +37,24 @@ final class ChannelPropertyEntityTest extends BaseTestCase
 	}
 
 	/**
-	 * @throws Exceptions\FileNotFound
+	 * @param class-string<Entities\Entity> $class
+	 *
 	 * @throws Exceptions\InvalidArgument
-	 * @throws Exceptions\InvalidData
-	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\Logic
 	 * @throws Exceptions\MalformedInput
 	 * @throws Nette\DI\MissingServiceException
 	 *
 	 * @dataProvider channelPropertyInvalid
 	 */
-	public function testCreateEntityInvalid(string $data): void
+	public function testCreateEntityInvalid(string $data, string $class): void
 	{
-		$factory = $this->container->getByType(Entities\DevicesModule\ChannelPropertyEntityFactory::class);
+		$factory = $this->container->getByType(Entities\EntityFactory::class);
 
 		/** @var class-string<Throwable> $exception */
 		$exception = Exceptions\Exception::class;
 
 		$this->expectException($exception);
 
-		$factory->create($data);
+		$factory->create($class, $data);
 	}
 
 	/**
@@ -249,6 +244,7 @@ final class ChannelPropertyEntityTest extends BaseTestCase
 		return [
 			'missing' => [
 				file_get_contents(__DIR__ . '/../../../../fixtures/Entities/Modules/channel.property.missing.json'),
+				Entities\DevicesModule\ChannelDynamicProperty::class,
 			],
 		];
 	}

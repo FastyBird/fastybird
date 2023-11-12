@@ -15,9 +15,10 @@
 
 namespace FastyBird\Library\Metadata\Entities\DevicesModule;
 
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Library\Metadata\Entities;
 use FastyBird\Library\Metadata\Types;
-use Nette\Utils;
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_map;
 
@@ -34,47 +35,61 @@ final class Device implements Entities\Entity, Entities\Owner
 
 	use Entities\TOwner;
 
-	private Uuid\UuidInterface $id;
-
-	private Types\DeviceCategory $category;
-
-	private Uuid\UuidInterface $connector;
-
-	/** @var array<Uuid\UuidInterface> */
-	private array $parents;
-
-	/** @var array<Uuid\UuidInterface> */
-	private array $children;
-
 	/**
-	 * @param array<string>|Utils\ArrayHash<string> $parents
-	 * @param array<string>|Utils\ArrayHash<string> $children
+	 * @param array<Uuid\UuidInterface> $parents
+	 * @param array<Uuid\UuidInterface> $children
+	 * @param array<Uuid\UuidInterface> $properties
+	 * @param array<Uuid\UuidInterface> $controls
+	 * @param array<Uuid\UuidInterface> $channels
 	 */
 	public function __construct(
-		string $id,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $id,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $type,
-		string $category,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\DeviceCategory::class)]
+		private readonly Types\DeviceCategory $category,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $identifier,
-		string $connector,
-		array|Utils\ArrayHash $parents,
-		array|Utils\ArrayHash $children,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $connector,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly string|null $name = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly string|null $comment = null,
-		string|null $owner = null,
+		#[ObjectMapper\Rules\ArrayOf(
+			new BootstrapObjectMapper\Rules\UuidValue(),
+		)]
+		private readonly array $parents = [],
+		#[ObjectMapper\Rules\ArrayOf(
+			new BootstrapObjectMapper\Rules\UuidValue(),
+		)]
+		private readonly array $children = [],
+		#[ObjectMapper\Rules\ArrayOf(
+			new BootstrapObjectMapper\Rules\UuidValue(),
+		)]
+		private readonly array $properties = [],
+		#[ObjectMapper\Rules\ArrayOf(
+			new BootstrapObjectMapper\Rules\UuidValue(),
+		)]
+		private readonly array $controls = [],
+		#[ObjectMapper\Rules\ArrayOf(
+			new BootstrapObjectMapper\Rules\UuidValue(),
+		)]
+		private readonly array $channels = [],
+		#[ObjectMapper\Rules\AnyOf([
+			new BootstrapObjectMapper\Rules\UuidValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		protected readonly Uuid\UuidInterface|null $owner = null,
 	)
 	{
-		$this->id = Uuid\Uuid::fromString($id);
-		$this->category = Types\DeviceCategory::get($category);
-		$this->connector = Uuid\Uuid::fromString($connector);
-		$this->parents = array_map(
-			static fn (string $item): Uuid\UuidInterface => Uuid\Uuid::fromString($item),
-			(array) $parents,
-		);
-		$this->children = array_map(
-			static fn (string $item): Uuid\UuidInterface => Uuid\Uuid::fromString($item),
-			(array) $children,
-		);
-		$this->owner = $owner !== null ? Uuid\Uuid::fromString($owner) : null;
 	}
 
 	public function getId(): Uuid\UuidInterface
@@ -128,6 +143,30 @@ final class Device implements Entities\Entity, Entities\Owner
 		return $this->children;
 	}
 
+	/**
+	 * @return array<Uuid\UuidInterface>
+	 */
+	public function getProperties(): array
+	{
+		return $this->properties;
+	}
+
+	/**
+	 * @return array<Uuid\UuidInterface>
+	 */
+	public function getControls(): array
+	{
+		return $this->controls;
+	}
+
+	/**
+	 * @return array<Uuid\UuidInterface>
+	 */
+	public function getChannels(): array
+	{
+		return $this->channels;
+	}
+
 	public function toArray(): array
 	{
 		return [
@@ -139,12 +178,24 @@ final class Device implements Entities\Entity, Entities\Owner
 			'comment' => $this->getComment(),
 			'connector' => $this->getConnector()->toString(),
 			'parents' => array_map(
-				static fn (Uuid\UuidInterface $parent): string => $parent->toString(),
+				static fn (Uuid\UuidInterface $id): string => $id->toString(),
 				$this->getParents(),
 			),
 			'children' => array_map(
-				static fn (Uuid\UuidInterface $child): string => $child->toString(),
+				static fn (Uuid\UuidInterface $id): string => $id->toString(),
 				$this->getChildren(),
+			),
+			'properties' => array_map(
+				static fn (Uuid\UuidInterface $id): string => $id->toString(),
+				$this->getProperties(),
+			),
+			'controls' => array_map(
+				static fn (Uuid\UuidInterface $id): string => $id->toString(),
+				$this->getControls(),
+			),
+			'channels' => array_map(
+				static fn (Uuid\UuidInterface $id): string => $id->toString(),
+				$this->getChannels(),
 			),
 			'owner' => $this->getOwner()?->toString(),
 		];

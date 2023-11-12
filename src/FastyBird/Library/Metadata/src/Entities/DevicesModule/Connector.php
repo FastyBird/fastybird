@@ -15,9 +15,12 @@
 
 namespace FastyBird\Library\Metadata\Entities\DevicesModule;
 
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Library\Metadata\Entities;
 use FastyBird\Library\Metadata\Types;
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
+use function array_map;
 
 /**
  * Connector entity
@@ -32,24 +35,51 @@ final class Connector implements Entities\Entity, Entities\Owner
 
 	use Entities\TOwner;
 
-	private Types\ConnectorCategory $category;
-
-	private Uuid\UuidInterface $id;
-
+	/**
+	 * @param array<Uuid\UuidInterface> $properties
+	 * @param array<Uuid\UuidInterface> $controls
+	 * @param array<Uuid\UuidInterface> $devices
+	 */
 	public function __construct(
-		string $id,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $id,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $type,
-		string $category,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\ConnectorCategory::class)]
+		private readonly Types\ConnectorCategory $category,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $identifier,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly string|null $name = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		private readonly string|null $comment = null,
+		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $enabled = false,
-		string|null $owner = null,
+		#[ObjectMapper\Rules\ArrayOf(
+			new BootstrapObjectMapper\Rules\UuidValue(),
+		)]
+		private readonly array $properties = [],
+		#[ObjectMapper\Rules\ArrayOf(
+			new BootstrapObjectMapper\Rules\UuidValue(),
+		)]
+		private readonly array $controls = [],
+		#[ObjectMapper\Rules\ArrayOf(
+			new BootstrapObjectMapper\Rules\UuidValue(),
+		)]
+		private readonly array $devices = [],
+		#[ObjectMapper\Rules\AnyOf([
+			new BootstrapObjectMapper\Rules\UuidValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		protected readonly Uuid\UuidInterface|null $owner = null,
 	)
 	{
-		$this->id = Uuid\Uuid::fromString($id);
-		$this->category = Types\ConnectorCategory::get($category);
-		$this->owner = $owner !== null ? Uuid\Uuid::fromString($owner) : null;
 	}
 
 	public function getId(): Uuid\UuidInterface
@@ -87,6 +117,30 @@ final class Connector implements Entities\Entity, Entities\Owner
 		return $this->enabled;
 	}
 
+	/**
+	 * @return array<Uuid\UuidInterface>
+	 */
+	public function getProperties(): array
+	{
+		return $this->properties;
+	}
+
+	/**
+	 * @return array<Uuid\UuidInterface>
+	 */
+	public function getControls(): array
+	{
+		return $this->controls;
+	}
+
+	/**
+	 * @return array<Uuid\UuidInterface>
+	 */
+	public function getDevices(): array
+	{
+		return $this->devices;
+	}
+
 	public function toArray(): array
 	{
 		return [
@@ -97,6 +151,15 @@ final class Connector implements Entities\Entity, Entities\Owner
 			'name' => $this->getName(),
 			'comment' => $this->getComment(),
 			'enabled' => $this->isEnabled(),
+			'properties' => array_map(
+				static fn (Uuid\UuidInterface $id): string => $id->toString(),
+				$this->getProperties(),
+			),
+			'controls' => array_map(
+				static fn (Uuid\UuidInterface $id): string => $id->toString(),
+				$this->getControls(),
+			),
+			'devices' => array_map(static fn (Uuid\UuidInterface $id): string => $id->toString(), $this->getDevices()),
 			'owner' => $this->getOwner()?->toString(),
 		];
 	}

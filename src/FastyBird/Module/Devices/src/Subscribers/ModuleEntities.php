@@ -28,7 +28,6 @@ use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Utilities;
-use IPub\Phone\Exceptions as PhoneExceptions;
 use Nette;
 use Nette\Utils;
 use ReflectionClass;
@@ -83,16 +82,12 @@ final class ModuleEntities implements Common\EventSubscriber
 	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
 	 *
 	 * @throws Exceptions\InvalidState
+	 * @throws ExchangeExceptions\InvalidArgument
 	 * @throws ExchangeExceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
 	 * @throws Utils\JsonException
-	 * @throws PhoneExceptions\NoValidCountryException
-	 * @throws PhoneExceptions\NoValidPhoneException
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function postPersist(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
@@ -110,17 +105,13 @@ final class ModuleEntities implements Common\EventSubscriber
 	/**
 	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
 	 *
-	 * @throws ExchangeExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ExchangeExceptions\InvalidArgument
+	 * @throws ExchangeExceptions\InvalidState
 	 * @throws Utils\JsonException
-	 * @throws PhoneExceptions\NoValidCountryException
-	 * @throws PhoneExceptions\NoValidPhoneException
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function postUpdate(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
@@ -152,17 +143,13 @@ final class ModuleEntities implements Common\EventSubscriber
 	/**
 	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
 	 *
-	 * @throws ExchangeExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ExchangeExceptions\InvalidArgument
+	 * @throws ExchangeExceptions\InvalidState
 	 * @throws Utils\JsonException
-	 * @throws PhoneExceptions\NoValidCountryException
-	 * @throws PhoneExceptions\NoValidPhoneException
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function postRemove(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
@@ -200,15 +187,11 @@ final class ModuleEntities implements Common\EventSubscriber
 
 	/**
 	 * @throws Exceptions\InvalidState
+	 * @throws ExchangeExceptions\InvalidArgument
 	 * @throws ExchangeExceptions\InvalidState
-	 * @throws PhoneExceptions\NoValidPhoneException
-	 * @throws PhoneExceptions\NoValidCountryException
 	 * @throws Utils\JsonException
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
 	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function publishEntity(Entities\Entity $entity, string $action): void
@@ -265,7 +248,12 @@ final class ModuleEntities implements Common\EventSubscriber
 					$this->publisher->publish(
 						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
 						$publishRoutingKey,
-						$this->entityFactory->create(Utils\Json::encode($entity->toArray()), $publishRoutingKey),
+						$this->entityFactory->create(
+							Utils\Json::encode(
+								$entity->toArray(),
+							),
+							$publishRoutingKey,
+						),
 					);
 				}
 			} elseif ($entity instanceof Entities\Channels\Properties\Dynamic) {
@@ -290,7 +278,12 @@ final class ModuleEntities implements Common\EventSubscriber
 					$this->publisher->publish(
 						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
 						$publishRoutingKey,
-						$this->entityFactory->create(Utils\Json::encode($entity->toArray()), $publishRoutingKey),
+						$this->entityFactory->create(
+							Utils\Json::encode(
+								$entity->toArray(),
+							),
+							$publishRoutingKey,
+						),
 					);
 				}
 			} elseif ($entity instanceof Entities\Connectors\Properties\Dynamic) {
@@ -315,14 +308,24 @@ final class ModuleEntities implements Common\EventSubscriber
 					$this->publisher->publish(
 						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
 						$publishRoutingKey,
-						$this->entityFactory->create(Utils\Json::encode($entity->toArray()), $publishRoutingKey),
+						$this->entityFactory->create(
+							Utils\Json::encode(
+								$entity->toArray(),
+							),
+							$publishRoutingKey,
+						),
 					);
 				}
 			} else {
 				$this->publisher->publish(
 					MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
 					$publishRoutingKey,
-					$this->entityFactory->create(Utils\Json::encode($entity->toArray()), $publishRoutingKey),
+					$this->entityFactory->create(
+						Utils\Json::encode(
+							$entity->toArray(),
+						),
+						$publishRoutingKey,
+					),
 				);
 			}
 		}

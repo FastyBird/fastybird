@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * TriggerControlEntity.php
+ * TriggerControl.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -15,7 +15,9 @@
 
 namespace FastyBird\Library\Metadata\Entities\TriggersModule;
 
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Library\Metadata\Entities;
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 
 /**
@@ -26,25 +28,22 @@ use Ramsey\Uuid;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class TriggerControlEntity implements Entities\Entity, Entities\Owner
+final class TriggerControl implements Entities\Entity, Entities\Owner
 {
 
 	use Entities\TOwner;
 
-	private Uuid\UuidInterface $id;
-
-	private Uuid\UuidInterface $trigger;
-
 	public function __construct(
-		string $id,
-		string $trigger,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $id,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $trigger,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $name,
-		string|null $owner = null,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		protected readonly Uuid\UuidInterface|null $owner = null,
 	)
 	{
-		$this->id = Uuid\Uuid::fromString($id);
-		$this->trigger = Uuid\Uuid::fromString($trigger);
-		$this->owner = $owner !== null ? Uuid\Uuid::fromString($owner) : null;
 	}
 
 	public function getId(): Uuid\UuidInterface

@@ -17,11 +17,11 @@ namespace FastyBird\Library\Metadata\Entities\DevicesModule;
 
 use DateTimeInterface;
 use FastyBird\Library\Metadata\Exceptions;
-use Nette\Utils;
-use Throwable;
+use FastyBird\Library\Metadata\Types;
+use Orisai\ObjectMapper;
+use Ramsey\Uuid;
 use function array_merge;
 use function is_bool;
-use function is_string;
 
 /**
  * Dynamic property entity
@@ -35,28 +35,59 @@ abstract class DynamicProperty extends Property
 {
 
 	/**
-	 * @param array<int, string>|array<int, string|int|float|array<int, string|int|float>|null>|array<int, array<int, string|array<int, string|int|float|bool>|null>>|null $format
+	 * @param string|array<int, string>|array<int, int>|array<int, float>|array<int, bool|string|int|float|array<int, bool|string|int|float>|null>|array<int, array<int, string|array<int, string|int|float|bool>|null>>|null $format
 	 */
 	public function __construct(
-		string $id,
-		string $type,
-		string $category,
+		Uuid\UuidInterface $id,
+		Types\PropertyType $type,
+		Types\PropertyCategory $category,
 		string $identifier,
 		string|null $name,
-		private readonly bool $settable,
-		private readonly bool $queryable,
-		string $dataType,
+		Types\DataType $dataType,
 		string|null $unit = null,
-		array|null $format = null,
-		string|int|float|null $invalid = null,
+		string|array|null $format = null,
+		float|int|string|null $invalid = null,
 		int|null $scale = null,
-		float|null $step = null,
-		private readonly float|bool|int|string|null $actualValue = null,
-		private readonly float|bool|int|string|null $previousValue = null,
-		private readonly float|bool|int|string|null $expectedValue = null,
-		private readonly bool|string $pending = false,
+		int|float|null $step = null,
+		#[ObjectMapper\Rules\BoolValue()]
+		private readonly bool $settable = false,
+		#[ObjectMapper\Rules\BoolValue()]
+		private readonly bool $queryable = false,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('actual_value')]
+		private readonly bool|float|int|string|null $actualValue = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('previous_value')]
+		private readonly bool|float|int|string|null $previousValue = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('expected_value')]
+		private readonly bool|float|int|string|null $expectedValue = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
+		])]
+		private readonly bool|DateTimeInterface $pending = false,
+		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $valid = false,
-		string|null $owner = null,
+		Uuid\UuidInterface|null $owner = null,
 	)
 	{
 		parent::__construct(
@@ -100,21 +131,8 @@ abstract class DynamicProperty extends Property
 		return $this->expectedValue;
 	}
 
-	/**
-	 * @throws Exceptions\InvalidState
-	 */
-	public function getPending(): bool|string
+	public function getPending(): bool|DateTimeInterface
 	{
-		if (is_string($this->pending)) {
-			try {
-				$pending = Utils\DateTime::from($this->pending);
-
-				return $pending->format(DateTimeInterface::ATOM);
-			} catch (Throwable $ex) {
-				throw new Exceptions\InvalidState('Pending value could not be created', $ex->getCode(), $ex);
-			}
-		}
-
 		return $this->pending;
 	}
 
@@ -129,6 +147,7 @@ abstract class DynamicProperty extends Property
 	}
 
 	/**
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 */
 	public function toArray(): array
@@ -146,6 +165,7 @@ abstract class DynamicProperty extends Property
 	/**
 	 * @return array<string, mixed>
 	 *
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 */
 	public function __serialize(): array

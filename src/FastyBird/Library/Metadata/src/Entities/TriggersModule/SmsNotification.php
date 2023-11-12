@@ -15,8 +15,11 @@
 
 namespace FastyBird\Library\Metadata\Entities\TriggersModule;
 
-use FastyBird\Library\Metadata\Exceptions;
+use FastyBird\Library\Metadata\Types;
 use IPub\Phone\Entities as PhoneEntities;
+use IPub\Phone\Exceptions as PhoneExceptions;
+use Orisai\ObjectMapper;
+use Ramsey\Uuid;
 use function array_merge;
 
 /**
@@ -30,27 +33,31 @@ use function array_merge;
 final class SmsNotification extends Notification
 {
 
-	private PhoneEntities\Phone|null $phone = null;
+	public function __construct(
+		Uuid\UuidInterface $id,
+		Uuid\UuidInterface $trigger,
+		Types\TriggerNotificationType $type,
+		bool $enabled,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		private readonly string $phone,
+		Uuid\UuidInterface|null $owner = null,
+	)
+	{
+		parent::__construct($id, $trigger, $type, $enabled, $owner);
+	}
 
 	/**
-	 * @throws Exceptions\InvalidState
+	 * @throws PhoneExceptions\NoValidCountryException
+	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
 	public function getPhone(): PhoneEntities\Phone
 	{
-		if ($this->phone === null) {
-			throw new Exceptions\InvalidState('Transformer was not properly created');
-		}
-
-		return $this->phone;
-	}
-
-	public function setPhone(PhoneEntities\Phone $phone): void
-	{
-		$this->phone = $phone;
+		return PhoneEntities\Phone::fromNumber($this->phone);
 	}
 
 	/**
-	 * @throws Exceptions\InvalidState
+	 * @throws PhoneExceptions\NoValidCountryException
+	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
 	public function toArray(): array
 	{
@@ -62,7 +69,8 @@ final class SmsNotification extends Notification
 	/**
 	 * @return array<string, mixed>
 	 *
-	 * @throws Exceptions\InvalidState
+	 * @throws PhoneExceptions\NoValidCountryException
+	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
 	public function __serialize(): array
 	{

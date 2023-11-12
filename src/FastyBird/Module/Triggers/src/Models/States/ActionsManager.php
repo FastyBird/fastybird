@@ -24,7 +24,6 @@ use FastyBird\Module\Triggers\Entities;
 use FastyBird\Module\Triggers\Exceptions;
 use FastyBird\Module\Triggers\Models;
 use FastyBird\Module\Triggers\States;
-use IPub\Phone\Exceptions as PhoneExceptions;
 use Nette;
 use Nette\Utils;
 use function array_merge;
@@ -51,16 +50,11 @@ final class ActionsManager
 	}
 
 	/**
-	 * @throws ExchangeExceptions\InvalidState
 	 * @throws Exceptions\NotImplemented
-	 * @throws MetadataExceptions\FileNotFound
+	 * @throws ExchangeExceptions\InvalidArgument
+	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
 	 * @throws MetadataExceptions\MalformedInput
-	 * @throws PhoneExceptions\NoValidCountryException
-	 * @throws PhoneExceptions\NoValidPhoneException
 	 * @throws Utils\JsonException
 	 */
 	public function create(
@@ -80,16 +74,11 @@ final class ActionsManager
 	}
 
 	/**
-	 * @throws ExchangeExceptions\InvalidState
 	 * @throws Exceptions\NotImplemented
-	 * @throws MetadataExceptions\FileNotFound
+	 * @throws ExchangeExceptions\InvalidArgument
+	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
 	 * @throws MetadataExceptions\MalformedInput
-	 * @throws PhoneExceptions\NoValidCountryException
-	 * @throws PhoneExceptions\NoValidPhoneException
 	 * @throws Utils\JsonException
 	 */
 	public function update(
@@ -110,16 +99,11 @@ final class ActionsManager
 	}
 
 	/**
-	 * @throws ExchangeExceptions\InvalidState
 	 * @throws Exceptions\NotImplemented
-	 * @throws MetadataExceptions\FileNotFound
+	 * @throws ExchangeExceptions\InvalidArgument
+	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
 	 * @throws MetadataExceptions\MalformedInput
-	 * @throws PhoneExceptions\NoValidCountryException
-	 * @throws PhoneExceptions\NoValidPhoneException
 	 * @throws Utils\JsonException
 	 */
 	public function delete(
@@ -141,15 +125,10 @@ final class ActionsManager
 	}
 
 	/**
+	 * @throws ExchangeExceptions\InvalidArgument
 	 * @throws ExchangeExceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
 	 * @throws MetadataExceptions\MalformedInput
-	 * @throws PhoneExceptions\NoValidCountryException
-	 * @throws PhoneExceptions\NoValidPhoneException
 	 * @throws Utils\JsonException
 	 */
 	private function publishEntity(

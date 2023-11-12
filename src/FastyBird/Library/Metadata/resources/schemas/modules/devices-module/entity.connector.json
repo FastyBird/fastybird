@@ -48,6 +48,36 @@
       "type": "boolean",
       "default": false
     },
+    "properties": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "description": "Property entities uuid v4 identifiers",
+      "default": []
+    },
+    "controls": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "description": "Control entities uuid v4 identifiers",
+      "default": []
+    },
+    "devices": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "description": "Device entities uuid v4 identifiers",
+      "default": []
+    },
     "owner": {
       "oneOf": [
         {
@@ -69,6 +99,9 @@
     "name",
     "comment",
     "enabled",
+    "properties",
+    "controls",
+    "devices",
     "owner"
   ]
 }

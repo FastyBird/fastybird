@@ -15,7 +15,10 @@
 
 namespace FastyBird\Library\Metadata\Entities\DevicesModule;
 
+use DateTimeInterface;
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Library\Metadata\Exceptions;
+use FastyBird\Library\Metadata\Types;
 use Ramsey\Uuid;
 use function array_merge;
 
@@ -30,32 +33,31 @@ use function array_merge;
 final class ConnectorDynamicProperty extends DynamicProperty
 {
 
-	private Uuid\UuidInterface $connector;
-
 	/**
-	 * @param array<int, string>|array<int, string|int|float|array<int, string|int|float>|null>|array<int, array<int, string|array<int, string|int|float|bool>|null>>|null $format
+	 * @param string|array<int, string>|array<int, int>|array<int, float>|array<int, bool|string|int|float|array<int, bool|string|int|float>|null>|array<int, array<int, string|array<int, string|int|float|bool>|null>>|null $format
 	 */
 	public function __construct(
-		string $id,
-		string $connector,
-		string $type,
-		string $category,
+		Uuid\UuidInterface $id,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $connector,
+		Types\PropertyType $type,
+		Types\PropertyCategory $category,
 		string $identifier,
 		string|null $name,
-		bool $settable,
-		bool $queryable,
-		string $dataType,
+		Types\DataType $dataType,
 		string|null $unit = null,
-		array|null $format = null,
-		string|int|float|null $invalid = null,
+		string|array|null $format = null,
+		float|int|string|null $invalid = null,
 		int|null $scale = null,
-		float|null $step = null,
-		float|bool|int|string|null $actualValue = null,
-		float|bool|int|string|null $previousValue = null,
-		float|bool|int|string|null $expectedValue = null,
-		bool|string $pending = false,
+		int|float|null $step = null,
+		bool $settable = false,
+		bool $queryable = false,
+		bool|float|int|string|null $actualValue = null,
+		bool|float|int|string|null $previousValue = null,
+		bool|float|int|string|null $expectedValue = null,
+		bool|DateTimeInterface $pending = false,
 		bool $valid = false,
-		string|null $owner = null,
+		Uuid\UuidInterface|null $owner = null,
 	)
 	{
 		parent::__construct(
@@ -64,14 +66,14 @@ final class ConnectorDynamicProperty extends DynamicProperty
 			$category,
 			$identifier,
 			$name,
-			$settable,
-			$queryable,
 			$dataType,
 			$unit,
 			$format,
 			$invalid,
 			$scale,
 			$step,
+			$settable,
+			$queryable,
 			$actualValue,
 			$previousValue,
 			$expectedValue,
@@ -79,8 +81,6 @@ final class ConnectorDynamicProperty extends DynamicProperty
 			$valid,
 			$owner,
 		);
-
-		$this->connector = Uuid\Uuid::fromString($connector);
 	}
 
 	public function getConnector(): Uuid\UuidInterface
@@ -89,6 +89,7 @@ final class ConnectorDynamicProperty extends DynamicProperty
 	}
 
 	/**
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 */
 	public function toArray(): array
@@ -101,6 +102,7 @@ final class ConnectorDynamicProperty extends DynamicProperty
 	/**
 	 * @return array<string, mixed>
 	 *
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 */
 	public function __serialize(): array

@@ -69,6 +69,36 @@
       "description": "Entity children uuid v4 identifiers",
       "default": []
     },
+    "properties": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "description": "Property entities uuid v4 identifiers",
+      "default": []
+    },
+    "controls": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "description": "Control entities uuid v4 identifiers",
+      "default": []
+    },
+    "channels": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "description": "Channel entities uuid v4 identifiers",
+      "default": []
+    },
     "owner": {
       "oneOf": [
         {
@@ -91,6 +121,9 @@
     "comment",
     "connector",
     "parents",
-    "children"
+    "children",
+    "properties",
+    "controls",
+    "channels"
   ]
 }
