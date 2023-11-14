@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * FindDevices.php
+ * FindChannels.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -21,13 +21,13 @@ use Flow\JSONPath;
 use Ramsey\Uuid;
 
 /**
- * Find devices configuration query
+ * Find channels configuration query
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Queries
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class FindDevices extends QueryObject
+class FindChannels extends QueryObject
 {
 
 	/** @var array<string> */
@@ -53,39 +53,39 @@ class FindDevices extends QueryObject
 		$this->filter[] = '.[?(@.identifier =~ /^[\w\d\-_]+' . $identifier . '$/)]';
 	}
 
-	public function forConnector(MetadataEntities\DevicesModule\Connector $connector): void
+	public function forDevice(MetadataEntities\DevicesModule\Device $device): void
 	{
-		$this->filter[] = '.[?(@.connector == ' . $connector->getId()->toString() . ')]';
+		$this->filter[] = '.[?(@.device == ' . $device->getId()->toString() . ')]';
 	}
 
-	public function byConnectorId(Uuid\UuidInterface $connectorId): void
+	public function byDeviceId(Uuid\UuidInterface $deviceId): void
 	{
-		$this->filter[] = '.[?(@.connector == ' . $connectorId->toString() . ')]';
-	}
-
-	public function forParent(MetadataEntities\DevicesModule\Device $parent): void
-	{
-		$this->filter[] = '.[?(@.parents in "' . $parent->getId()->toString() . '")]';
-	}
-
-	public function forChild(MetadataEntities\DevicesModule\Device $child): void
-	{
-		$this->filter[] = '.[?(@.children in "' . $child->getId()->toString() . '")]';
+		$this->filter[] = '.[?(@.device == ' . $deviceId->toString() . ')]';
 	}
 
 	/**
 	 * @throws Exceptions\NotImplemented
 	 */
-	public function withSettableChannelProperties(string $deviceIdentifier): void
+	public function byDeviceIdentifier(string $deviceIdentifier): void
 	{
 		throw new Exceptions\NotImplemented(
-			'Query by "withSettableChannelProperties" is not supported by this type of repository',
+			'Query by "byDeviceIdentifier" is not supported by this type of repository',
 		);
 	}
 
-	public function withChannels(): void
+	public function withProperties(): void
 	{
-		$this->filter[] = '.[?(@.channels > 0)]';
+		$this->filter[] = '.[?(@.properties > 0)]';
+	}
+
+	/**
+	 * @throws Exceptions\NotImplemented
+	 */
+	public function withSettableProperties(): void
+	{
+		throw new Exceptions\NotImplemented(
+			'Query by "withSettableProperties" is not supported by this type of repository',
+		);
 	}
 
 	/**

@@ -71,19 +71,6 @@ class FindDevices extends DoctrineOrmQuery\QueryObject
 		};
 	}
 
-	public function byConnectorId(Uuid\UuidInterface $connectorId): void
-	{
-		$this->select[] = static function (ORM\QueryBuilder $qb): void {
-			$qb->addSelect('connector');
-			$qb->join('d.connector', 'connector');
-		};
-
-		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($connectorId): void {
-			$qb->andWhere('connector.id = :connector')
-				->setParameter('connector', $connectorId, Uuid\Doctrine\UuidBinaryType::NAME);
-		};
-	}
-
 	public function forConnector(Entities\Connectors\Connector $connector): void
 	{
 		$this->select[] = static function (ORM\QueryBuilder $qb): void {
@@ -94,6 +81,19 @@ class FindDevices extends DoctrineOrmQuery\QueryObject
 		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($connector): void {
 			$qb->andWhere('connector.id = :connector')
 				->setParameter('connector', $connector->getId(), Uuid\Doctrine\UuidBinaryType::NAME);
+		};
+	}
+
+	public function byConnectorId(Uuid\UuidInterface $connectorId): void
+	{
+		$this->select[] = static function (ORM\QueryBuilder $qb): void {
+			$qb->addSelect('connector');
+			$qb->join('d.connector', 'connector');
+		};
+
+		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($connectorId): void {
+			$qb->andWhere('connector.id = :connector')
+				->setParameter('connector', $connectorId, Uuid\Doctrine\UuidBinaryType::NAME);
 		};
 	}
 
