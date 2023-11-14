@@ -195,6 +195,18 @@ class DevicesExtension extends DI\CompilerExtension
 			->setType(Models\Entities\Connectors\Controls\ControlsManager::class)
 			->setArgument('entityCrud', '__placeholder__');
 
+		$builder->addDefinition(
+			$this->prefix('models.configuration.builder'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\Configuration\Builder::class);
+
+		$builder->addDefinition(
+			$this->prefix('models.configuration.connectorsRepository'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\Configuration\Connectors\ConnectorsRepository::class);
+
 		$builder->addDefinition($this->prefix('subscribers.entities'), new DI\Definitions\ServiceDefinition())
 			->setType(Subscribers\ModuleEntities::class);
 

@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace FastyBird\Module\Devices\Tests\Cases\Unit\Models\Repositories;
+namespace FastyBird\Module\Devices\Tests\Cases\Unit\Models\Entities\Repositories;
 
 use Error;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
@@ -12,7 +12,7 @@ use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette;
 use RuntimeException;
 
-final class DevicesRepositoryTest extends DbTestCase
+final class ChannelsRepositoryTest extends DbTestCase
 {
 
 	/**
@@ -25,23 +25,15 @@ final class DevicesRepositoryTest extends DbTestCase
 	 */
 	public function testReadOne(): void
 	{
-		$repository = $this->getContainer()->getByType(Models\Entities\Devices\DevicesRepository::class);
+		$repository = $this->getContainer()->getByType(Models\Entities\Channels\ChannelsRepository::class);
 
-		$findQuery = new Queries\Entities\FindDevices();
-		$findQuery->byIdentifier('first-device');
-
-		$parent = $repository->findOneBy($findQuery);
-
-		self::assertIsObject($parent);
-		self::assertSame('first-device', $parent->getIdentifier());
-
-		$findQuery = new Queries\Entities\FindDevices();
-		$findQuery->forParent($parent);
+		$findQuery = new Queries\Entities\FindChannels();
+		$findQuery->byIdentifier('channel-one');
 
 		$entity = $repository->findOneBy($findQuery);
 
 		self::assertIsObject($entity);
-		self::assertSame('child-device', $entity->getIdentifier());
+		self::assertSame('channel-one', $entity->getIdentifier());
 	}
 
 	/**
@@ -54,13 +46,13 @@ final class DevicesRepositoryTest extends DbTestCase
 	 */
 	public function testReadResultSet(): void
 	{
-		$repository = $this->getContainer()->getByType(Models\Entities\Devices\DevicesRepository::class);
+		$repository = $this->getContainer()->getByType(Models\Entities\Channels\ChannelsRepository::class);
 
-		$findQuery = new Queries\Entities\FindDevices();
+		$findQuery = new Queries\Entities\FindChannels();
 
 		$resultSet = $repository->getResultSet($findQuery);
 
-		self::assertSame(4, $resultSet->getTotalCount());
+		self::assertSame(3, $resultSet->getTotalCount());
 	}
 
 }

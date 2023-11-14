@@ -67,6 +67,7 @@
         "nettrine/fixtures": "^0.6",
         "nettrine/orm": "^0.8",
         "opis/json-schema": "^2.3",
+        "orisai/data-sources": "^1.0",
         "orisai/nette-object-mapper": "^0.1",
         "orisai/object-mapper": "^0.1",
         "php-on-couch/php-on-couch": "^4.0",

@@ -19,6 +19,7 @@ use FastyBird\Library\Metadata\Entities;
 use FastyBird\Library\Metadata\Exceptions;
 use Nette\Utils;
 use Orisai\ObjectMapper;
+use function is_object;
 use function is_string;
 
 /**
@@ -42,18 +43,25 @@ final class EntityFactory
 	 * @template T of Entities\Entity
 	 *
 	 * @param class-string<T> $entity
-	 * @param array<mixed>|string $data
+	 * @param array<mixed>|string|object $data
 	 *
 	 * @return T
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\MalformedInput
 	 */
-	public function create(string $entity, array|string $data): Entities\Entity
+	public function create(string $entity, array|string|object $data): Entities\Entity
 	{
 		if (is_string($data)) {
 			try {
 				$data = Utils\Json::decode($data, Utils\Json::FORCE_ARRAY);
+
+			} catch (Utils\JsonException $ex) {
+				throw new Exceptions\MalformedInput('Failed to decode input data', 0, $ex);
+			}
+		} elseif (is_object($data)) {
+			try {
+				$data = Utils\Json::decode(Utils\Json::encode($data), Utils\Json::FORCE_ARRAY);
 
 			} catch (Utils\JsonException $ex) {
 				throw new Exceptions\MalformedInput('Failed to decode input data', 0, $ex);
