@@ -100,9 +100,6 @@ class Control implements Entities\Entity,
 
 			'channel' => $this->getChannel()->getId()->toString(),
 
-			'device' => $this->getChannel()->getDevice()->getId()->toString(),
-			'connector' => $this->getChannel()->getDevice()->getConnector()->getId()->toString(),
-
 			'owner' => $this->getChannel()->getDevice()->getOwnerId(),
 		];
 	}

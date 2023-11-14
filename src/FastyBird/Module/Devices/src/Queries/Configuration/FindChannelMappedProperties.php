@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * QueryObject.php
+ * FindChannelMappedProperties.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,31 +10,32 @@
  * @subpackage     Queries
  * @since          1.0.0
  *
- * @date           13.11.23
+ * @date           14.11.23
  */
 
 namespace FastyBird\Module\Devices\Queries\Configuration;
 
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
-use Flow\JSONPath;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 
 /**
- * Configuration query object
+ * Find channel mapped properties entities query
  *
- * @template T of MetadataEntities\Entity
+ * @template T of MetadataEntities\DevicesModule\ChannelMappedProperty
+ * @extends  FindChannelProperties<T>
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Queries
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-abstract class QueryObject
+class FindChannelMappedProperties extends FindChannelProperties
 {
 
-	public function fetch(JSONPath\JSONPath $repository): mixed
+	public function __construct()
 	{
-		return $this->doCreateQuery($repository)->getData();
-	}
+		parent::__construct();
 
-	abstract protected function doCreateQuery(JSONPath\JSONPath $repository): JSONPath\JSONPath;
+		$this->filter[] = '.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_MAPPED . '")]';
+	}
 
 }

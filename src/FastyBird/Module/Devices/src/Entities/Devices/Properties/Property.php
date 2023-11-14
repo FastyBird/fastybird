@@ -157,7 +157,6 @@ abstract class Property extends Entities\Property
 	{
 		return array_merge(parent::toArray(), [
 			'device' => $this->getDevice()->getId()->toString(),
-			'connector' => $this->getDevice()->getConnector()->getId()->toString(),
 
 			'owner' => $this->getDevice()->getOwnerId(),
 		]);

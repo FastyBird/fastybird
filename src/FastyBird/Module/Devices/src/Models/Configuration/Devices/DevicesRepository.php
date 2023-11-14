@@ -46,6 +46,7 @@ final class DevicesRepository
 	/**
 	 * @template T of MetadataEntities\DevicesModule\Device
 	 *
+	 * @param Queries\Configuration\FindDevices<T> $queryObject
 	 * @param class-string<T> $type
 	 *
 	 * @return T|null
@@ -80,6 +81,7 @@ final class DevicesRepository
 	/**
 	 * @template T of MetadataEntities\DevicesModule\Device
 	 *
+	 * @param Queries\Configuration\FindDevices<T> $queryObject
 	 * @param class-string<T> $type
 	 *
 	 * @return array<T>

@@ -47,6 +47,7 @@ final class ChannelsRepository
 	/**
 	 * @template T of MetadataEntities\DevicesModule\Channel
 	 *
+	 * @param Queries\Configuration\FindChannels<T> $queryObject
 	 * @param class-string<T> $type
 	 *
 	 * @throws Exceptions\InvalidState
@@ -79,6 +80,7 @@ final class ChannelsRepository
 	/**
 	 * @template T of MetadataEntities\DevicesModule\Channel
 	 *
+	 * @param Queries\Configuration\FindChannels<T> $queryObject
 	 * @param class-string<T> $type
 	 *
 	 * @return array<T>

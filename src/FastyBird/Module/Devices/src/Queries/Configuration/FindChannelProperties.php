@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * FindChannels.php
+ * FindChannelProperties.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -16,25 +16,29 @@
 namespace FastyBird\Module\Devices\Queries\Configuration;
 
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
-use FastyBird\Module\Devices\Exceptions;
 use Flow\JSONPath;
 use Ramsey\Uuid;
 
 /**
- * Find channels configuration query
+ * Find channels properties configuration query
  *
- * @template T of MetadataEntities\DevicesModule\Channel
+ * @template T of MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelVariableProperty|MetadataEntities\DevicesModule\ChannelMappedProperty
  * @extends  QueryObject<T>
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Queries
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class FindChannels extends QueryObject
+class FindChannelProperties extends QueryObject
 {
 
 	/** @var array<string> */
-	private array $filter = [];
+	protected array $filter = [];
+
+	public function __construct()
+	{
+		$this->filter[] = '.[?(@.channel != "")]';
+	}
 
 	public function byId(Uuid\UuidInterface $id): void
 	{
@@ -56,39 +60,26 @@ class FindChannels extends QueryObject
 		$this->filter[] = '.[?(@.identifier =~ /^[\w\d\-_]+' . $identifier . '$/)]';
 	}
 
-	public function forDevice(MetadataEntities\DevicesModule\Device $device): void
+	public function forChannel(MetadataEntities\DevicesModule\Channel $channel): void
 	{
-		$this->filter[] = '.[?(@.device == ' . $device->getId()->toString() . ')]';
+		$this->filter[] = '.[?(@.channel == ' . $channel->getId()->toString() . ')]';
 	}
 
-	public function byDeviceId(Uuid\UuidInterface $deviceId): void
+	public function byChannelId(Uuid\UuidInterface $channelId): void
 	{
-		$this->filter[] = '.[?(@.device == ' . $deviceId->toString() . ')]';
+		$this->filter[] = '.[?(@.channel == ' . $channelId->toString() . ')]';
 	}
 
-	/**
-	 * @throws Exceptions\NotImplemented
-	 */
-	public function byDeviceIdentifier(string $deviceIdentifier): void
+	public function forParent(
+		MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelVariableProperty $parent,
+	): void
 	{
-		throw new Exceptions\NotImplemented(
-			'Query by "byDeviceIdentifier" is not supported by this type of repository',
-		);
+		$this->filter[] = '.[?(@.parent == ' . $parent->getId()->toString() . ')]';
 	}
 
-	public function withProperties(): void
+	public function byParentId(Uuid\UuidInterface $parentId): void
 	{
-		$this->filter[] = '.[?(@.properties > 0)]';
-	}
-
-	/**
-	 * @throws Exceptions\NotImplemented
-	 */
-	public function withSettableProperties(): void
-	{
-		throw new Exceptions\NotImplemented(
-			'Query by "withSettableProperties" is not supported by this type of repository',
-		);
+		$this->filter[] = '.[?(@.parent == ' . $parentId->toString() . ')]';
 	}
 
 	/**

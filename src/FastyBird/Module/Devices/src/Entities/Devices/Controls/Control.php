@@ -99,7 +99,6 @@ class Control implements Entities\Entity,
 			'name' => $this->getName(),
 
 			'device' => $this->getDevice()->getId()->toString(),
-			'connector' => $this->getDevice()->getConnector()->getId()->toString(),
 
 			'owner' => $this->getDevice()->getOwnerId(),
 		];

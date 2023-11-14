@@ -23,6 +23,9 @@ use Ramsey\Uuid;
 /**
  * Find devices configuration query
  *
+ * @template T of MetadataEntities\DevicesModule\Device
+ * @extends  QueryObject<T>
+ *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Queries
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

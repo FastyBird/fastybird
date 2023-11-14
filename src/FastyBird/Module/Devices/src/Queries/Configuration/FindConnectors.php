@@ -15,11 +15,15 @@
 
 namespace FastyBird\Module\Devices\Queries\Configuration;
 
+use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use Flow\JSONPath;
 use Ramsey\Uuid;
 
 /**
  * Find connectors configuration query
+ *
+ * @template T of MetadataEntities\DevicesModule\Connector
+ * @extends  QueryObject<T>
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Queries

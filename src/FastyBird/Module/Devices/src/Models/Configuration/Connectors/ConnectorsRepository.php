@@ -46,6 +46,7 @@ final class ConnectorsRepository
 	/**
 	 * @template T of MetadataEntities\DevicesModule\Connector
 	 *
+	 * @param Queries\Configuration\FindConnectors<T> $queryObject
 	 * @param class-string<T> $type
 	 *
 	 * @return T|null
@@ -80,6 +81,7 @@ final class ConnectorsRepository
 	/**
 	 * @template T of MetadataEntities\DevicesModule\Connector
 	 *
+	 * @param Queries\Configuration\FindConnectors<T> $queryObject
 	 * @param class-string<T> $type
 	 *
 	 * @return array<T>
