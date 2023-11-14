@@ -97,27 +97,27 @@ class FindDevices extends DoctrineOrmQuery\QueryObject
 		};
 	}
 
-	public function forParent(Entities\Devices\Device $device): void
+	public function forParent(Entities\Devices\Device $parent): void
 	{
 		$this->select[] = static function (ORM\QueryBuilder $qb): void {
 			$qb->innerJoin('d.parents', 'dp');
 		};
 
-		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($device): void {
+		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($parent): void {
 			$qb->andWhere('dp.id = :parentDevice')
-				->setParameter('parentDevice', $device->getId(), Uuid\Doctrine\UuidBinaryType::NAME);
+				->setParameter('parentDevice', $parent->getId(), Uuid\Doctrine\UuidBinaryType::NAME);
 		};
 	}
 
-	public function forChild(Entities\Devices\Device $device): void
+	public function forChild(Entities\Devices\Device $child): void
 	{
 		$this->select[] = static function (ORM\QueryBuilder $qb): void {
 			$qb->innerJoin('d.children', 'dch');
 		};
 
-		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($device): void {
+		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($child): void {
 			$qb->andWhere('dch.id = :childDevice')
-				->setParameter('childDevice', $device->getId(), Uuid\Doctrine\UuidBinaryType::NAME);
+				->setParameter('childDevice', $child->getId(), Uuid\Doctrine\UuidBinaryType::NAME);
 		};
 	}
 
@@ -178,12 +178,6 @@ class FindDevices extends DoctrineOrmQuery\QueryObject
 	protected function createBasicDql(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{
 		$qb = $repository->createQueryBuilder('d');
-
-		// $qb->select('nd');
-		// $qb->leftJoin(Entities\Devices\NetworkDevice::class, 'nd', ORM\Query\Expr\Join::WITH, 'd = nd');
-
-		// $qb->select('ld');
-		// $qb->leftJoin(Entities\Devices\LocalDevice::class, 'ld', ORM\Query\Expr\Join::WITH, 'd = ld');
 
 		foreach ($this->filter as $modifier) {
 			$modifier($qb);
