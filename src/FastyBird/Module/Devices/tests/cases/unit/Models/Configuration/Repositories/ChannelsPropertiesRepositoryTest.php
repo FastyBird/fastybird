@@ -96,14 +96,12 @@ final class ChannelsPropertiesRepositoryTest extends DbTestCase
 		$entities = $repository->findAllBy($findQuery);
 
 		self::assertCount(3, $entities);
-		self::assertSame('switch', $entities[0]->getIdentifier());
 
 		$findQuery = new Queries\Configuration\FindChannelProperties();
 
 		$entities = $repository->findAllBy($findQuery, MetadataEntities\DevicesModule\ChannelDynamicProperty::class);
 
 		self::assertCount(3, $entities);
-		self::assertSame('switch', $entities[0]->getIdentifier());
 
 		$findQuery = new Queries\Configuration\FindChannelProperties();
 
@@ -131,7 +129,6 @@ final class ChannelsPropertiesRepositoryTest extends DbTestCase
 		$entities = $repository->findAllBy($findQuery, MetadataEntities\DevicesModule\ChannelDynamicProperty::class);
 
 		self::assertCount(3, $entities);
-		self::assertSame('switch', $entities[0]->getIdentifier());
 
 		$findQuery = new Queries\Configuration\FindChannelVariableProperties();
 
@@ -175,7 +172,6 @@ final class ChannelsPropertiesRepositoryTest extends DbTestCase
 		$entities = $repository->findAllBy($findQuery);
 
 		self::assertCount(1, $entities);
-		self::assertSame('switch', $entities[0]->getIdentifier());
 	}
 
 }

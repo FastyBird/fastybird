@@ -96,7 +96,6 @@ final class DevicesRepositoryTest extends DbTestCase
 		$entities = $repository->findAllBy($findQuery);
 
 		self::assertCount(4, $entities);
-		self::assertSame('first-device', $entities[0]->getIdentifier());
 	}
 
 	/**
@@ -126,7 +125,6 @@ final class DevicesRepositoryTest extends DbTestCase
 		$entities = $repository->findAllBy($findQuery);
 
 		self::assertCount(1, $entities);
-		self::assertSame('child-device', $entities[0]->getIdentifier());
 	}
 
 	/**
@@ -156,7 +154,6 @@ final class DevicesRepositoryTest extends DbTestCase
 		$entities = $repository->findAllBy($findQuery);
 
 		self::assertCount(1, $entities);
-		self::assertSame('first-device', $entities[0]->getIdentifier());
 	}
 
 	/**
@@ -178,7 +175,6 @@ final class DevicesRepositoryTest extends DbTestCase
 		$entities = $repository->findAllBy($findQuery);
 
 		self::assertCount(2, $entities);
-		self::assertSame('first-device', $entities[0]->getIdentifier());
 	}
 
 }

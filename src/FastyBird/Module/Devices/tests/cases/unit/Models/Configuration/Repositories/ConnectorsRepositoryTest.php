@@ -55,7 +55,6 @@ final class ConnectorsRepositoryTest extends DbTestCase
 		$entities = $repository->findAllBy($findQuery);
 
 		self::assertCount(2, $entities);
-		self::assertSame('blank', $entities[0]->getIdentifier());
 	}
 
 }

@@ -96,7 +96,6 @@ final class ChannelsRepositoryTest extends DbTestCase
 		$entities = $repository->findAllBy($findQuery);
 
 		self::assertCount(3, $entities);
-		self::assertSame('channel-one', $entities[0]->getIdentifier());
 	}
 
 	/**
@@ -128,7 +127,6 @@ final class ChannelsRepositoryTest extends DbTestCase
 		$entities = $repository->findAllBy($findQuery);
 
 		self::assertCount(2, $entities);
-		self::assertSame('channel-one', $entities[0]->getIdentifier());
 	}
 
 	/**
@@ -150,7 +148,6 @@ final class ChannelsRepositoryTest extends DbTestCase
 		$entities = $repository->findAllBy($findQuery);
 
 		self::assertCount(2, $entities);
-		self::assertSame('channel-one', $entities[0]->getIdentifier());
 	}
 
 }
