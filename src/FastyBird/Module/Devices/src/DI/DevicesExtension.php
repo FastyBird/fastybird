@@ -205,6 +205,12 @@ class DevicesExtension extends DI\CompilerExtension
 			->setType(Models\Configuration\Connectors\Repository::class);
 
 		$builder->addDefinition(
+			$this->prefix('models.configuration.connectorsControlsRepository'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\Configuration\Connectors\Controls\Repository::class);
+
+		$builder->addDefinition(
 			$this->prefix('models.configuration.devicesRepository'),
 			new DI\Definitions\ServiceDefinition(),
 		)
