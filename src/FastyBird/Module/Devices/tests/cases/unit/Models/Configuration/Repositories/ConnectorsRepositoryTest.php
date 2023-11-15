@@ -26,7 +26,7 @@ final class ConnectorsRepositoryTest extends DbTestCase
 	 */
 	public function testReadOne(): void
 	{
-		$repository = $this->getContainer()->getByType(Models\Configuration\Connectors\ConnectorsRepository::class);
+		$repository = $this->getContainer()->getByType(Models\Configuration\Connectors\Repository::class);
 
 		$findQuery = new Queries\Configuration\FindConnectors();
 		$findQuery->byIdentifier('dummy');
@@ -48,7 +48,7 @@ final class ConnectorsRepositoryTest extends DbTestCase
 	 */
 	public function testReadAll(): void
 	{
-		$repository = $this->getContainer()->getByType(Models\Configuration\Connectors\ConnectorsRepository::class);
+		$repository = $this->getContainer()->getByType(Models\Configuration\Connectors\Repository::class);
 
 		$findQuery = new Queries\Configuration\FindConnectors();
 

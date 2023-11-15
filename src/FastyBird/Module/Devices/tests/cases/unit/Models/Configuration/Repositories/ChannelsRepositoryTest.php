@@ -28,7 +28,7 @@ final class ChannelsRepositoryTest extends DbTestCase
 	 */
 	public function testReadOne(): void
 	{
-		$repository = $this->getContainer()->getByType(Models\Configuration\Channels\ChannelsRepository::class);
+		$repository = $this->getContainer()->getByType(Models\Configuration\Channels\Repository::class);
 
 		$findQuery = new Queries\Configuration\FindChannels();
 		$findQuery->byIdentifier('channel-one');
@@ -89,7 +89,7 @@ final class ChannelsRepositoryTest extends DbTestCase
 	 */
 	public function testReadAll(): void
 	{
-		$repository = $this->getContainer()->getByType(Models\Configuration\Channels\ChannelsRepository::class);
+		$repository = $this->getContainer()->getByType(Models\Configuration\Channels\Repository::class);
 
 		$findQuery = new Queries\Configuration\FindChannels();
 
@@ -109,7 +109,7 @@ final class ChannelsRepositoryTest extends DbTestCase
 	 */
 	public function testReadAllByDevice(): void
 	{
-		$devicesRepository = $this->getContainer()->getByType(Models\Configuration\Devices\DevicesRepository::class);
+		$devicesRepository = $this->getContainer()->getByType(Models\Configuration\Devices\Repository::class);
 
 		$findQuery = new Queries\Configuration\FindDevices();
 		$findQuery->byIdentifier('first-device');
@@ -119,7 +119,7 @@ final class ChannelsRepositoryTest extends DbTestCase
 		self::assertInstanceOf(MetadataEntities\DevicesModule\Device::class, $device);
 		self::assertSame('69786d15-fd0c-4d9f-9378-33287c2009fa', $device->getId()->toString());
 
-		$repository = $this->getContainer()->getByType(Models\Configuration\Channels\ChannelsRepository::class);
+		$repository = $this->getContainer()->getByType(Models\Configuration\Channels\Repository::class);
 
 		$findQuery = new Queries\Configuration\FindChannels();
 		$findQuery->forDevice($device);
@@ -140,7 +140,7 @@ final class ChannelsRepositoryTest extends DbTestCase
 	 */
 	public function testReadAllWithProperties(): void
 	{
-		$repository = $this->getContainer()->getByType(Models\Configuration\Channels\ChannelsRepository::class);
+		$repository = $this->getContainer()->getByType(Models\Configuration\Channels\Repository::class);
 
 		$findQuery = new Queries\Configuration\FindChannels();
 		$findQuery->withProperties();

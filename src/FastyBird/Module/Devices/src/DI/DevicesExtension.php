@@ -202,19 +202,19 @@ class DevicesExtension extends DI\CompilerExtension
 			$this->prefix('models.configuration.connectorsRepository'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Configuration\Connectors\ConnectorsRepository::class);
+			->setType(Models\Configuration\Connectors\Repository::class);
 
 		$builder->addDefinition(
 			$this->prefix('models.configuration.devicesRepository'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Configuration\Devices\DevicesRepository::class);
+			->setType(Models\Configuration\Devices\Repository::class);
 
 		$builder->addDefinition(
 			$this->prefix('models.configuration.channelsRepository'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Configuration\Channels\ChannelsRepository::class);
+			->setType(Models\Configuration\Channels\Repository::class);
 
 		$builder->addDefinition(
 			$this->prefix('models.configuration.channelsPropertiesRepository'),

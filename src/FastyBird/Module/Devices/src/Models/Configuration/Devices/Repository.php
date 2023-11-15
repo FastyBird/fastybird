@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ChannelsRepository.php
+ * Repository.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,10 +13,9 @@
  * @date           14.11.23
  */
 
-namespace FastyBird\Module\Devices\Models\Configuration\Channels;
+namespace FastyBird\Module\Devices\Models\Configuration\Devices;
 
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
-use FastyBird\Library\Metadata\Entities\DevicesModule\Channel as T;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
@@ -27,14 +26,14 @@ use function array_map;
 use function is_array;
 
 /**
- * Channels configuration repository
+ * Devices configuration repository
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Models
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ChannelsRepository
+final class Repository
 {
 
 	public function __construct(
@@ -45,10 +44,12 @@ final class ChannelsRepository
 	}
 
 	/**
-	 * @template T of MetadataEntities\DevicesModule\Channel
+	 * @template T of MetadataEntities\DevicesModule\Device
 	 *
-	 * @param Queries\Configuration\FindChannels<T> $queryObject
+	 * @param Queries\Configuration\FindDevices<T> $queryObject
 	 * @param class-string<T> $type
+	 *
+	 * @return T|null
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
@@ -56,14 +57,14 @@ final class ChannelsRepository
 	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function findOneBy(
-		Queries\Configuration\FindChannels $queryObject,
-		string $type = MetadataEntities\DevicesModule\Channel::class,
-	): MetadataEntities\DevicesModule\Channel|null
+		Queries\Configuration\FindDevices $queryObject,
+		string $type = MetadataEntities\DevicesModule\Device::class,
+	): MetadataEntities\DevicesModule\Device|null
 	{
 		try {
 			$space = $this->builder
 				->load()
-				->find('.channels.*');
+				->find('.devices.*');
 		} catch (JSONPath\JSONPathException $ex) {
 			throw new Exceptions\InvalidState('', $ex->getCode(), $ex);
 		}
@@ -78,9 +79,9 @@ final class ChannelsRepository
 	}
 
 	/**
-	 * @template T of MetadataEntities\DevicesModule\Channel
+	 * @template T of MetadataEntities\DevicesModule\Device
 	 *
-	 * @param Queries\Configuration\FindChannels<T> $queryObject
+	 * @param Queries\Configuration\FindDevices<T> $queryObject
 	 * @param class-string<T> $type
 	 *
 	 * @return array<T>
@@ -90,14 +91,14 @@ final class ChannelsRepository
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function findAllBy(
-		Queries\Configuration\FindChannels $queryObject,
-		string $type = MetadataEntities\DevicesModule\Channel::class,
+		Queries\Configuration\FindDevices $queryObject,
+		string $type = MetadataEntities\DevicesModule\Device::class,
 	): array
 	{
 		try {
 			$space = $this->builder
 				->load()
-				->find('.channels.*');
+				->find('.devices.*');
 		} catch (JSONPath\JSONPathException $ex) {
 			throw new Exceptions\InvalidState('Fetch all data by query failed', $ex->getCode(), $ex);
 		}
@@ -109,7 +110,7 @@ final class ChannelsRepository
 		}
 
 		return array_map(
-			fn (stdClass $item): MetadataEntities\DevicesModule\Channel => $this->entityFactory->create($type, $item),
+			fn (stdClass $item): MetadataEntities\DevicesModule\Device => $this->entityFactory->create($type, $item),
 			$result,
 		);
 	}

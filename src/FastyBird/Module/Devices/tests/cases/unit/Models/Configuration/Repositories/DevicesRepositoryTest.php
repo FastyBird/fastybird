@@ -28,7 +28,7 @@ final class DevicesRepositoryTest extends DbTestCase
 	 */
 	public function testReadOne(): void
 	{
-		$repository = $this->getContainer()->getByType(Models\Configuration\Devices\DevicesRepository::class);
+		$repository = $this->getContainer()->getByType(Models\Configuration\Devices\Repository::class);
 
 		$findQuery = new Queries\Configuration\FindDevices();
 		$findQuery->byIdentifier('first-device');
@@ -89,7 +89,7 @@ final class DevicesRepositoryTest extends DbTestCase
 	 */
 	public function testReadAll(): void
 	{
-		$repository = $this->getContainer()->getByType(Models\Configuration\Devices\DevicesRepository::class);
+		$repository = $this->getContainer()->getByType(Models\Configuration\Devices\Repository::class);
 
 		$findQuery = new Queries\Configuration\FindDevices();
 
@@ -109,7 +109,7 @@ final class DevicesRepositoryTest extends DbTestCase
 	 */
 	public function testReadAllByParent(): void
 	{
-		$repository = $this->getContainer()->getByType(Models\Configuration\Devices\DevicesRepository::class);
+		$repository = $this->getContainer()->getByType(Models\Configuration\Devices\Repository::class);
 
 		$findQuery = new Queries\Configuration\FindDevices();
 		$findQuery->byIdentifier('first-device');
@@ -138,7 +138,7 @@ final class DevicesRepositoryTest extends DbTestCase
 	 */
 	public function testReadAllByChild(): void
 	{
-		$repository = $this->getContainer()->getByType(Models\Configuration\Devices\DevicesRepository::class);
+		$repository = $this->getContainer()->getByType(Models\Configuration\Devices\Repository::class);
 
 		$findQuery = new Queries\Configuration\FindDevices();
 		$findQuery->byIdentifier('child-device');
@@ -167,7 +167,7 @@ final class DevicesRepositoryTest extends DbTestCase
 	 */
 	public function testReadAllWithChannels(): void
 	{
-		$repository = $this->getContainer()->getByType(Models\Configuration\Devices\DevicesRepository::class);
+		$repository = $this->getContainer()->getByType(Models\Configuration\Devices\Repository::class);
 
 		$findQuery = new Queries\Configuration\FindDevices();
 		$findQuery->withChannels();

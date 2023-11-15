@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ConnectorsRepository.php
+ * Repository.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -33,7 +33,7 @@ use function is_array;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ConnectorsRepository
+final class Repository
 {
 
 	public function __construct(

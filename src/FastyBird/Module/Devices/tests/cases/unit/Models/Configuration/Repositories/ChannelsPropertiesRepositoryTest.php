@@ -154,7 +154,7 @@ final class ChannelsPropertiesRepositoryTest extends DbTestCase
 	 */
 	public function testReadAllByChannel(): void
 	{
-		$devicesRepository = $this->getContainer()->getByType(Models\Configuration\Channels\ChannelsRepository::class);
+		$devicesRepository = $this->getContainer()->getByType(Models\Configuration\Channels\Repository::class);
 
 		$findQuery = new Queries\Configuration\FindChannels();
 		$findQuery->byId(Uuid\Uuid::fromString('17c59dfa-2edd-438e-8c49-faa4e38e5a5e'));
