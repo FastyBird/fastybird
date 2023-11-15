@@ -115,15 +115,6 @@ final class ChannelsPropertiesRepositoryTest extends DbTestCase
 
 		self::assertCount(0, $entities);
 
-		$findQuery = new Queries\Configuration\FindChannelProperties();
-
-		$entities = $repository->findAllBy($findQuery, [
-			MetadataEntities\DevicesModule\ChannelVariableProperty::class,
-			MetadataEntities\DevicesModule\ChannelMappedProperty::class,
-		]);
-
-		self::assertCount(0, $entities);
-
 		$findQuery = new Queries\Configuration\FindChannelDynamicProperties();
 
 		$entities = $repository->findAllBy($findQuery, MetadataEntities\DevicesModule\ChannelDynamicProperty::class);

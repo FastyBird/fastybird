@@ -28,16 +28,16 @@ use Throwable;
 use function array_filter;
 use function array_map;
 use function implode;
-use function in_array;
 use function is_array;
 use function is_string;
 
 /**
  * Channels properties configuration repository
  *
+ * @phpstan-type SupportedClasses MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelVariableProperty|MetadataEntities\DevicesModule\ChannelMappedProperty
+ *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Models
- *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 final class Repository
@@ -51,12 +51,12 @@ final class Repository
 	}
 
 	/**
-	 * @template T of MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelVariableProperty|MetadataEntities\DevicesModule\ChannelMappedProperty
+	 * @template T of SupportedClasses
 	 *
 	 * @param Queries\Configuration\FindChannelProperties<T> $queryObject
-	 * @param class-string<T>|array<class-string<T>> $type
+	 * @param class-string<T>|null $type
 	 *
-	 * @return T|null
+	 * @return ($type is class-string<T> ? T|null : SupportedClasses|null)
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
@@ -65,11 +65,7 @@ final class Repository
 	 */
 	public function findOneBy(
 		Queries\Configuration\FindChannelProperties $queryObject,
-		string|array $type = [
-			MetadataEntities\DevicesModule\ChannelDynamicProperty::class,
-			MetadataEntities\DevicesModule\ChannelVariableProperty::class,
-			MetadataEntities\DevicesModule\ChannelMappedProperty::class,
-		],
+		string|null $type = null,
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 	): MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelVariableProperty|MetadataEntities\DevicesModule\ChannelMappedProperty|null
 	{
@@ -89,27 +85,11 @@ final class Repository
 					$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_MAPPED . '")]');
 				}
 			} else {
-				$types = [];
-
-				foreach (
-					[
-						MetadataEntities\DevicesModule\ChannelDynamicProperty::class,
-						MetadataEntities\DevicesModule\ChannelVariableProperty::class,
-						MetadataEntities\DevicesModule\ChannelMappedProperty::class,
-					] as $class
-				) {
-					if (in_array($class, $type, true)) {
-						if ($class === MetadataEntities\DevicesModule\ChannelDynamicProperty::class) {
-							$types[] = MetadataTypes\PropertyType::TYPE_DYNAMIC;
-
-						} elseif ($class === MetadataEntities\DevicesModule\ChannelVariableProperty::class) {
-							$types[] = MetadataTypes\PropertyType::TYPE_VARIABLE;
-
-						} elseif ($class === MetadataEntities\DevicesModule\ChannelMappedProperty::class) {
-							$types[] = MetadataTypes\PropertyType::TYPE_MAPPED;
-						}
-					}
-				}
+				$types = [
+					MetadataTypes\PropertyType::TYPE_DYNAMIC,
+					MetadataTypes\PropertyType::TYPE_VARIABLE,
+					MetadataTypes\PropertyType::TYPE_MAPPED,
+				];
 
 				$space = $space->find('.[?(@.type in ["' . implode('","', $types) . '"])]');
 			}
@@ -126,7 +106,13 @@ final class Repository
 		if (is_string($type)) {
 			return $this->entityFactory->create($type, $result[0]);
 		} else {
-			foreach ($type as $class) {
+			foreach (
+				[
+					MetadataEntities\DevicesModule\ChannelDynamicProperty::class,
+					MetadataEntities\DevicesModule\ChannelVariableProperty::class,
+					MetadataEntities\DevicesModule\ChannelMappedProperty::class,
+				] as $class
+			) {
 				try {
 					return $this->entityFactory->create($class, $result[0]);
 				} catch (Throwable) {
@@ -139,12 +125,12 @@ final class Repository
 	}
 
 	/**
-	 * @template T of MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelVariableProperty|MetadataEntities\DevicesModule\ChannelMappedProperty
+	 * @template T of SupportedClasses
 	 *
 	 * @param Queries\Configuration\FindChannelProperties<T> $queryObject
-	 * @param class-string<T>|array<class-string<T>> $type
+	 * @param class-string<T>|null $type
 	 *
-	 * @return array<T>
+	 * @return ($type is class-string<T> ? array<T> : array<SupportedClasses>)
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
@@ -152,11 +138,7 @@ final class Repository
 	 */
 	public function findAllBy(
 		Queries\Configuration\FindChannelProperties $queryObject,
-		string|array $type = [
-			MetadataEntities\DevicesModule\ChannelDynamicProperty::class,
-			MetadataEntities\DevicesModule\ChannelVariableProperty::class,
-			MetadataEntities\DevicesModule\ChannelMappedProperty::class,
-		],
+		string|null $type = null,
 	): array
 	{
 		try {
@@ -175,27 +157,11 @@ final class Repository
 					$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_MAPPED . '")]');
 				}
 			} else {
-				$types = [];
-
-				foreach (
-					[
-						MetadataEntities\DevicesModule\ChannelDynamicProperty::class,
-						MetadataEntities\DevicesModule\ChannelVariableProperty::class,
-						MetadataEntities\DevicesModule\ChannelMappedProperty::class,
-					] as $class
-				) {
-					if (in_array($class, $type, true)) {
-						if ($class === MetadataEntities\DevicesModule\ChannelDynamicProperty::class) {
-							$types[] = MetadataTypes\PropertyType::TYPE_DYNAMIC;
-
-						} elseif ($class === MetadataEntities\DevicesModule\ChannelVariableProperty::class) {
-							$types[] = MetadataTypes\PropertyType::TYPE_VARIABLE;
-
-						} elseif ($class === MetadataEntities\DevicesModule\ChannelMappedProperty::class) {
-							$types[] = MetadataTypes\PropertyType::TYPE_MAPPED;
-						}
-					}
-				}
+				$types = [
+					MetadataTypes\PropertyType::TYPE_DYNAMIC,
+					MetadataTypes\PropertyType::TYPE_VARIABLE,
+					MetadataTypes\PropertyType::TYPE_MAPPED,
+				];
 
 				$space = $space->find('.[?(@.type in ["' . implode('","', $types) . '"])]');
 			}
@@ -216,7 +182,13 @@ final class Repository
 					if (is_string($type)) {
 						return $this->entityFactory->create($type, $item);
 					} else {
-						foreach ($type as $class) {
+						foreach (
+							[
+								MetadataEntities\DevicesModule\ChannelDynamicProperty::class,
+								MetadataEntities\DevicesModule\ChannelVariableProperty::class,
+								MetadataEntities\DevicesModule\ChannelMappedProperty::class,
+							] as $class
+						) {
 							try {
 								return $this->entityFactory->create($class, $item);
 							} catch (Throwable) {
