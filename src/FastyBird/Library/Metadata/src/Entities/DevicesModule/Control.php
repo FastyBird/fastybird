@@ -38,7 +38,10 @@ abstract class Control implements Entities\Entity, Entities\Owner
 		private readonly Uuid\UuidInterface $id,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $name,
-		#[BootstrapObjectMapper\Rules\UuidValue()]
+		#[ObjectMapper\Rules\AnyOf([
+			new BootstrapObjectMapper\Rules\UuidValue(),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		protected readonly Uuid\UuidInterface|null $owner = null,
 	)
 	{
