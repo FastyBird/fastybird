@@ -16,7 +16,6 @@
 namespace FastyBird\Module\Devices\Models\Configuration\Channels\Properties;
 
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
-use FastyBird\Library\Metadata\Entities\DevicesModule\Channel as T;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions;

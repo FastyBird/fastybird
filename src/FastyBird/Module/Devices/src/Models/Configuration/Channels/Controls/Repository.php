@@ -10,10 +10,10 @@
  * @subpackage     Models
  * @since          1.0.0
  *
- * @date           14.11.23
+ * @date           15.11.23
  */
 
-namespace FastyBird\Module\Devices\Models\Configuration\Channels;
+namespace FastyBird\Module\Devices\Models\Configuration\Channels\Controls;
 
 use FastyBird\Library\Metadata\Entities as MetadataEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -26,11 +26,10 @@ use function array_map;
 use function is_array;
 
 /**
- * Channels configuration repository
+ * Channels controls configuration repository
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Models
- *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 final class Repository
@@ -44,10 +43,7 @@ final class Repository
 	}
 
 	/**
-	 * @template T of MetadataEntities\DevicesModule\Channel
-	 *
-	 * @param Queries\Configuration\FindChannels<T> $queryObject
-	 * @param class-string<T> $type
+	 * @param Queries\Configuration\FindChannelControls<MetadataEntities\DevicesModule\ChannelControl> $queryObject
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
@@ -55,14 +51,13 @@ final class Repository
 	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function findOneBy(
-		Queries\Configuration\FindChannels $queryObject,
-		string $type = MetadataEntities\DevicesModule\Channel::class,
-	): MetadataEntities\DevicesModule\Channel|null
+		Queries\Configuration\FindChannelControls $queryObject,
+	): MetadataEntities\DevicesModule\ChannelControl|null
 	{
 		try {
 			$space = $this->builder
 				->load()
-				->find('.channels.*');
+				->find('.controls.*');
 		} catch (JSONPath\JSONPathException $ex) {
 			throw new Exceptions\InvalidState('', $ex->getCode(), $ex);
 		}
@@ -73,30 +68,26 @@ final class Repository
 			return null;
 		}
 
-		return $this->entityFactory->create($type, $result[0]);
+		return $this->entityFactory->create(MetadataEntities\DevicesModule\ChannelControl::class, $result[0]);
 	}
 
 	/**
-	 * @template T of MetadataEntities\DevicesModule\Channel
+	 * @param Queries\Configuration\FindChannelControls<MetadataEntities\DevicesModule\ChannelControl> $queryObject
 	 *
-	 * @param Queries\Configuration\FindChannels<T> $queryObject
-	 * @param class-string<T> $type
-	 *
-	 * @return array<T>
+	 * @return array<MetadataEntities\DevicesModule\ChannelControl>
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function findAllBy(
-		Queries\Configuration\FindChannels $queryObject,
-		string $type = MetadataEntities\DevicesModule\Channel::class,
+		Queries\Configuration\FindChannelControls $queryObject,
 	): array
 	{
 		try {
 			$space = $this->builder
 				->load()
-				->find('.channels.*');
+				->find('.controls.*');
 		} catch (JSONPath\JSONPathException $ex) {
 			throw new Exceptions\InvalidState('Fetch all data by query failed', $ex->getCode(), $ex);
 		}
@@ -108,7 +99,10 @@ final class Repository
 		}
 
 		return array_map(
-			fn (stdClass $item): MetadataEntities\DevicesModule\Channel => $this->entityFactory->create($type, $item),
+			fn (stdClass $item): MetadataEntities\DevicesModule\ChannelControl => $this->entityFactory->create(
+				MetadataEntities\DevicesModule\ChannelControl::class,
+				$item,
+			),
 			$result,
 		);
 	}
