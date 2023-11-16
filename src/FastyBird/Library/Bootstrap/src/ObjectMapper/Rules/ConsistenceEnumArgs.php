@@ -23,10 +23,12 @@ final class ConsistenceEnumArgs implements Args
 
 	/**
 	 * @param class-string<Enum> $class
+	 * @param array<mixed>|null $allowedValues
 	 */
 	public function __construct(
 		public string $class,
 		public bool $allowUnknown,
+		public array|null $allowedValues,
 	)
 	{
 	}

@@ -6,8 +6,8 @@ import { v4 as uuid } from 'uuid';
 import get from 'lodash/get';
 import isEqual from 'lodash/isEqual';
 
-import exchangeEntitySchema from '@fastybird/metadata-library/resources/schemas/modules/devices-module/entity.connector.control.json';
-import { ConnectorControlEntity as ExchangeEntity, DevicesModuleRoutes as RoutingKeys, ModulePrefix } from '@fastybird/metadata-library';
+import exchangeDocumentSchema from '../../../../../Library/Metadata/resources/schemas/modules/devices-module/document.connector.control.json';
+import { ConnectorControlDocument, DevicesModuleRoutes as RoutingKeys, ModulePrefix } from '@fastybird/metadata-library';
 
 import { ApiError } from '@/errors';
 import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '@/jsonapi';
@@ -391,18 +391,18 @@ export const useConnectorControls = defineStore<string, IConnectorControlsState,
 			async socketData(payload: IConnectorControlsSocketDataActionPayload): Promise<boolean> {
 				if (
 					![
-						RoutingKeys.CONNECTOR_CONTROL_ENTITY_REPORTED,
-						RoutingKeys.CONNECTOR_CONTROL_ENTITY_CREATED,
-						RoutingKeys.CONNECTOR_CONTROL_ENTITY_UPDATED,
-						RoutingKeys.CONNECTOR_CONTROL_ENTITY_DELETED,
+						RoutingKeys.CONNECTOR_CONTROL_DOCUMENT_REPORTED,
+						RoutingKeys.CONNECTOR_CONTROL_DOCUMENT_CREATED,
+						RoutingKeys.CONNECTOR_CONTROL_DOCUMENT_UPDATED,
+						RoutingKeys.CONNECTOR_CONTROL_DOCUMENT_DELETED,
 					].includes(payload.routingKey as RoutingKeys)
 				) {
 					return false;
 				}
 
-				const body: ExchangeEntity = JSON.parse(payload.data);
+				const body: ConnectorControlDocument = JSON.parse(payload.data);
 
-				const isValid = jsonSchemaValidator.compile<ExchangeEntity>(exchangeEntitySchema);
+				const isValid = jsonSchemaValidator.compile<ConnectorControlDocument>(exchangeDocumentSchema);
 
 				try {
 					if (!isValid(body)) {
@@ -412,7 +412,7 @@ export const useConnectorControls = defineStore<string, IConnectorControlsState,
 					return false;
 				}
 
-				if (payload.routingKey === RoutingKeys.CONNECTOR_CONTROL_ENTITY_DELETED) {
+				if (payload.routingKey === RoutingKeys.CONNECTOR_CONTROL_DOCUMENT_DELETED) {
 					if (body.id in this.data) {
 						delete this.data[body.id];
 					}

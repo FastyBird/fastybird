@@ -5,10 +5,10 @@ namespace FastyBird\Module\Devices\Tests\Cases\Unit\Subscribers;
 use Doctrine\ORM;
 use Doctrine\Persistence;
 use Exception;
-use FastyBird\Library\Exchange\Entities as ExchangeEntities;
+use FastyBird\Library\Exchange\Documents as ExchangeEntities;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Subscribers;
@@ -48,7 +48,7 @@ final class ModuleEntitiesTest extends TestCase
 
 		$channelPropertiesStateManager = $this->createMock(Models\States\ChannelPropertiesManager::class);
 
-		$entityFactory = $this->createMock(ExchangeEntities\EntityFactory::class);
+		$entityFactory = $this->createMock(ExchangeEntities\DocumentFactory::class);
 
 		$subscriber = new Subscribers\ModuleEntities(
 			$entityManager,
@@ -88,7 +88,7 @@ final class ModuleEntitiesTest extends TestCase
 				self::callback(static function ($key): bool {
 					self::assertTrue($key instanceof Metadata\Types\RoutingKey);
 					self::assertSame(
-						Metadata\Constants::MESSAGE_BUS_DEVICE_ENTITY_CREATED_ROUTING_KEY,
+						Metadata\Constants::MESSAGE_BUS_DEVICE_DOCUMENT_CREATED_ROUTING_KEY,
 						$key->getValue(),
 					);
 
@@ -137,7 +137,7 @@ final class ModuleEntitiesTest extends TestCase
 
 		$channelPropertiesStateManager = $this->createMock(Models\States\ChannelPropertiesManager::class);
 
-		$entityItem = $this->createMock(MetadataEntities\DevicesModule\Device::class);
+		$entityItem = $this->createMock(MetadataDocuments\DevicesModule\Device::class);
 		$entityItem
 			->method('toArray')
 			->willReturn([
@@ -151,7 +151,7 @@ final class ModuleEntitiesTest extends TestCase
 				'children' => [],
 			]);
 
-		$entityFactory = $this->createMock(ExchangeEntities\EntityFactory::class);
+		$entityFactory = $this->createMock(ExchangeEntities\DocumentFactory::class);
 		$entityFactory
 			->method('create')
 			->willReturn($entityItem);
@@ -204,7 +204,7 @@ final class ModuleEntitiesTest extends TestCase
 				self::callback(static function ($key): bool {
 					self::assertTrue($key instanceof Metadata\Types\RoutingKey);
 					self::assertSame(
-						Metadata\Constants::MESSAGE_BUS_DEVICE_ENTITY_UPDATED_ROUTING_KEY,
+						Metadata\Constants::MESSAGE_BUS_DEVICE_DOCUMENT_UPDATED_ROUTING_KEY,
 						$key->getValue(),
 					);
 
@@ -253,7 +253,7 @@ final class ModuleEntitiesTest extends TestCase
 
 		$channelPropertiesStateManager = $this->createMock(Models\States\ChannelPropertiesManager::class);
 
-		$entityItem = $this->createMock(MetadataEntities\DevicesModule\Device::class);
+		$entityItem = $this->createMock(MetadataDocuments\DevicesModule\Device::class);
 		$entityItem
 			->method('toArray')
 			->willReturn([
@@ -267,7 +267,7 @@ final class ModuleEntitiesTest extends TestCase
 				'children' => [],
 			]);
 
-		$entityFactory = $this->createMock(ExchangeEntities\EntityFactory::class);
+		$entityFactory = $this->createMock(ExchangeEntities\DocumentFactory::class);
 		$entityFactory
 			->method('create')
 			->willReturn($entityItem);
@@ -320,7 +320,7 @@ final class ModuleEntitiesTest extends TestCase
 				self::callback(static function ($key): bool {
 					self::assertTrue($key instanceof Metadata\Types\RoutingKey);
 					self::assertSame(
-						Metadata\Constants::MESSAGE_BUS_DEVICE_ENTITY_DELETED_ROUTING_KEY,
+						Metadata\Constants::MESSAGE_BUS_DEVICE_DOCUMENT_DELETED_ROUTING_KEY,
 						$key->getValue(),
 					);
 
@@ -377,7 +377,7 @@ final class ModuleEntitiesTest extends TestCase
 
 		$channelPropertiesStateManager = $this->createMock(Models\States\ChannelPropertiesManager::class);
 
-		$entityItem = $this->createMock(MetadataEntities\DevicesModule\Device::class);
+		$entityItem = $this->createMock(MetadataDocuments\DevicesModule\Device::class);
 		$entityItem
 			->method('toArray')
 			->willReturn([
@@ -391,7 +391,7 @@ final class ModuleEntitiesTest extends TestCase
 				'children' => [],
 			]);
 
-		$entityFactory = $this->createMock(ExchangeEntities\EntityFactory::class);
+		$entityFactory = $this->createMock(ExchangeEntities\DocumentFactory::class);
 		$entityFactory
 			->method('create')
 			->willReturn($entityItem);

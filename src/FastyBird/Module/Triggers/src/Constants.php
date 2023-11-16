@@ -67,24 +67,24 @@ final class Constants
 	 * Message bus routing keys mapping
 	 */
 	public const MESSAGE_BUS_CREATED_ENTITIES_ROUTING_KEYS_MAPPING = [
-		TriggersModuleEntities\Triggers\Trigger::class => Metadata\Constants::MESSAGE_BUS_TRIGGER_ENTITY_CREATED_ROUTING_KEY,
-		TriggersModuleEntities\Actions\Action::class => Metadata\Constants::MESSAGE_BUS_TRIGGER_ACTION_ENTITY_CREATED_ROUTING_KEY,
-		TriggersModuleEntities\Notifications\Notification::class => Metadata\Constants::MESSAGE_BUS_TRIGGER_NOTIFICATION_ENTITY_CREATED_ROUTING_KEY,
-		TriggersModuleEntities\Conditions\Condition::class => Metadata\Constants::MESSAGE_BUS_TRIGGER_CONDITION_ENTITY_CREATED_ROUTING_KEY,
+		TriggersModuleEntities\Triggers\Trigger::class => Metadata\Constants::MESSAGE_BUS_TRIGGER_DOCUMENT_CREATED_ROUTING_KEY,
+		TriggersModuleEntities\Actions\Action::class => Metadata\Constants::MESSAGE_BUS_TRIGGER_ACTION_DOCUMENT_CREATED_ROUTING_KEY,
+		TriggersModuleEntities\Notifications\Notification::class => Metadata\Constants::MESSAGE_BUS_TRIGGER_NOTIFICATION_DOCUMENT_CREATED_ROUTING_KEY,
+		TriggersModuleEntities\Conditions\Condition::class => Metadata\Constants::MESSAGE_BUS_TRIGGER_CONDITION_DOCUMENT_CREATED_ROUTING_KEY,
 	];
 
 	public const MESSAGE_BUS_UPDATED_ENTITIES_ROUTING_KEYS_MAPPING = [
-		TriggersModuleEntities\Triggers\Trigger::class => Metadata\Constants::MESSAGE_BUS_TRIGGER_ENTITY_UPDATED_ROUTING_KEY,
-		TriggersModuleEntities\Actions\Action::class => Metadata\Constants::MESSAGE_BUS_TRIGGER_ACTION_ENTITY_UPDATED_ROUTING_KEY,
-		TriggersModuleEntities\Notifications\Notification::class => Metadata\Constants::MESSAGE_BUS_TRIGGER_NOTIFICATION_ENTITY_UPDATED_ROUTING_KEY,
-		TriggersModuleEntities\Conditions\Condition::class => Metadata\Constants::MESSAGE_BUS_TRIGGER_CONDITION_ENTITY_UPDATED_ROUTING_KEY,
+		TriggersModuleEntities\Triggers\Trigger::class => Metadata\Constants::MESSAGE_BUS_TRIGGER_DOCUMENT_UPDATED_ROUTING_KEY,
+		TriggersModuleEntities\Actions\Action::class => Metadata\Constants::MESSAGE_BUS_TRIGGER_ACTION_DOCUMENT_UPDATED_ROUTING_KEY,
+		TriggersModuleEntities\Notifications\Notification::class => Metadata\Constants::MESSAGE_BUS_TRIGGER_NOTIFICATION_DOCUMENT_UPDATED_ROUTING_KEY,
+		TriggersModuleEntities\Conditions\Condition::class => Metadata\Constants::MESSAGE_BUS_TRIGGER_CONDITION_DOCUMENT_UPDATED_ROUTING_KEY,
 	];
 
 	public const MESSAGE_BUS_DELETED_ENTITIES_ROUTING_KEYS_MAPPING = [
-		TriggersModuleEntities\Triggers\Trigger::class => Metadata\Constants::MESSAGE_BUS_TRIGGER_ENTITY_DELETED_ROUTING_KEY,
-		TriggersModuleEntities\Actions\Action::class => Metadata\Constants::MESSAGE_BUS_TRIGGER_ACTION_ENTITY_DELETED_ROUTING_KEY,
-		TriggersModuleEntities\Notifications\Notification::class => Metadata\Constants::MESSAGE_BUS_TRIGGER_NOTIFICATION_ENTITY_DELETED_ROUTING_KEY,
-		TriggersModuleEntities\Conditions\Condition::class => Metadata\Constants::MESSAGE_BUS_TRIGGER_CONDITION_ENTITY_DELETED_ROUTING_KEY,
+		TriggersModuleEntities\Triggers\Trigger::class => Metadata\Constants::MESSAGE_BUS_TRIGGER_DOCUMENT_DELETED_ROUTING_KEY,
+		TriggersModuleEntities\Actions\Action::class => Metadata\Constants::MESSAGE_BUS_TRIGGER_ACTION_DOCUMENT_DELETED_ROUTING_KEY,
+		TriggersModuleEntities\Notifications\Notification::class => Metadata\Constants::MESSAGE_BUS_TRIGGER_NOTIFICATION_DOCUMENT_DELETED_ROUTING_KEY,
+		TriggersModuleEntities\Conditions\Condition::class => Metadata\Constants::MESSAGE_BUS_TRIGGER_CONDITION_DOCUMENT_DELETED_ROUTING_KEY,
 	];
 
 }

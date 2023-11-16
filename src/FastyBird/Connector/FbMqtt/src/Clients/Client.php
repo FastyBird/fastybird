@@ -22,7 +22,7 @@ use FastyBird\Connector\FbMqtt\Consumers;
 use FastyBird\Connector\FbMqtt\Entities;
 use FastyBird\Connector\FbMqtt\Exceptions;
 use FastyBird\Connector\FbMqtt\Writers;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
@@ -129,7 +129,7 @@ abstract class Client
 	 */
 	abstract public function writeDeviceProperty(
 		Entities\FbMqttDevice $device,
-		DevicesEntities\Devices\Properties\Dynamic|MetadataEntities\DevicesModule\DeviceDynamicProperty $property,
+		DevicesEntities\Devices\Properties\Dynamic|MetadataDocuments\DevicesModule\DeviceDynamicProperty $property,
 	): Promise\PromiseInterface;
 
 	/**
@@ -138,7 +138,7 @@ abstract class Client
 	abstract public function writeChannelProperty(
 		Entities\FbMqttDevice $device,
 		DevicesEntities\Channels\Channel $channel,
-		DevicesEntities\Channels\Properties\Dynamic|MetadataEntities\DevicesModule\ChannelDynamicProperty $property,
+		DevicesEntities\Channels\Properties\Dynamic|MetadataDocuments\DevicesModule\ChannelDynamicProperty $property,
 	): Promise\PromiseInterface;
 
 	/**

@@ -143,7 +143,6 @@ export interface DeviceControlAction {
 export interface ChannelControlAction {
 	action: ControlAction;
 	control: string;
-	device: string;
 	channel: string;
 	expected_value?: null | string | number | boolean;
 }
@@ -166,7 +165,6 @@ export interface DevicePropertyAction {
 
 export interface ChannelPropertyAction {
 	action: PropertyAction;
-	device: string;
 	channel: string;
 	property: string;
 	expected_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload;

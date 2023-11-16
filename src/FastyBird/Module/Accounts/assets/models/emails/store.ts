@@ -5,8 +5,8 @@ import Ajv from 'ajv/dist/2020';
 import { v4 as uuid } from 'uuid';
 import get from 'lodash/get';
 
-import exchangeEntitySchema from '@fastybird/metadata-library/resources/schemas/modules/accounts-module/entity.email.json';
-import { EmailEntity as ExchangeEntity, AccountsModuleRoutes as RoutingKeys, ModulePrefix, ModuleSource } from '@fastybird/metadata-library';
+import exchangeDocumentSchema from '../../../../../Library/Metadata/resources/schemas/modules/accounts-module/document.email.json';
+import { EmailDocument, AccountsModuleRoutes as RoutingKeys, ModulePrefix, ModuleSource } from '@fastybird/metadata-library';
 
 import { ApiError } from '@/errors';
 import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '@/jsonapi';
@@ -427,18 +427,18 @@ export const useEmails = defineStore('accounts_module_emails', {
 		async socketData(payload: IEmailsSocketDataActionPayload): Promise<boolean> {
 			if (
 				![
-					RoutingKeys.EMAIL_ENTITY_REPORTED,
-					RoutingKeys.EMAIL_ENTITY_CREATED,
-					RoutingKeys.EMAIL_ENTITY_UPDATED,
-					RoutingKeys.EMAIL_ENTITY_DELETED,
+					RoutingKeys.EMAIL_DOCUMENT_REPORTED,
+					RoutingKeys.EMAIL_DOCUMENT_CREATED,
+					RoutingKeys.EMAIL_DOCUMENT_UPDATED,
+					RoutingKeys.EMAIL_DOCUMENT_DELETED,
 				].includes(payload.routingKey as RoutingKeys)
 			) {
 				return false;
 			}
 
-			const body: ExchangeEntity = JSON.parse(payload.data);
+			const body: EmailDocument = JSON.parse(payload.data);
 
-			const isValid = jsonSchemaValidator.compile<ExchangeEntity>(exchangeEntitySchema);
+			const isValid = jsonSchemaValidator.compile<EmailDocument>(exchangeDocumentSchema);
 
 			try {
 				if (!isValid(body)) {
@@ -450,15 +450,15 @@ export const useEmails = defineStore('accounts_module_emails', {
 
 			if (
 				!Object.keys(this.data).includes(body.id) &&
-				(payload.routingKey === RoutingKeys.EMAIL_ENTITY_UPDATED || payload.routingKey === RoutingKeys.EMAIL_ENTITY_DELETED)
+				(payload.routingKey === RoutingKeys.EMAIL_DOCUMENT_UPDATED || payload.routingKey === RoutingKeys.EMAIL_DOCUMENT_DELETED)
 			) {
 				throw new Error('accounts-module.emails.update.failed');
 			}
 
-			if (payload.routingKey === RoutingKeys.EMAIL_ENTITY_DELETED) {
+			if (payload.routingKey === RoutingKeys.EMAIL_DOCUMENT_DELETED) {
 				delete this.data[body.id];
 			} else {
-				if (payload.routingKey === RoutingKeys.EMAIL_ENTITY_UPDATED && this.semaphore.updating.includes(body.id)) {
+				if (payload.routingKey === RoutingKeys.EMAIL_DOCUMENT_UPDATED && this.semaphore.updating.includes(body.id)) {
 					return true;
 				}
 

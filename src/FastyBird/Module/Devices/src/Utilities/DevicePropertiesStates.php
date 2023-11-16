@@ -16,9 +16,10 @@
 namespace FastyBird\Module\Devices\Utilities;
 
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
@@ -26,7 +27,6 @@ use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\States;
 use Nette;
 use Nette\Utils;
-use Psr\Log;
 use function is_array;
 
 /**
@@ -43,10 +43,10 @@ final class DevicePropertiesStates
 	use Nette\SmartObject;
 
 	public function __construct(
-		private readonly Models\Entities\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
+		private readonly Models\Configuration\Devices\Properties\Repository $devicePropertiesRepository,
 		private readonly Models\States\DevicePropertiesRepository $devicePropertyStateRepository,
 		private readonly Models\States\DevicePropertiesManager $devicePropertiesStatesManager,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
+		private readonly Devices\Logger $logger,
 	)
 	{
 	}
@@ -55,9 +55,10 @@ final class DevicePropertiesStates
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function readValue(
-		MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
+		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
 	): States\DeviceProperty|null
 	{
 		return $this->loadValue($property, true);
@@ -67,9 +68,10 @@ final class DevicePropertiesStates
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getValue(
-		MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
+		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
 	): States\DeviceProperty|null
 	{
 		return $this->loadValue($property, false);
@@ -79,9 +81,10 @@ final class DevicePropertiesStates
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function writeValue(
-		MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
+		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
 		Utils\ArrayHash $data,
 	): void
 	{
@@ -92,9 +95,10 @@ final class DevicePropertiesStates
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function setValue(
-		MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
+		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
 		Utils\ArrayHash $data,
 	): void
 	{
@@ -102,14 +106,15 @@ final class DevicePropertiesStates
 	}
 
 	/**
-	 * @param MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty|array<MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty>|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped|array<Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped> $property
+	 * @param MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty|array<MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty>|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped|array<Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped> $property
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function setValidState(
-		MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped|array $property,
+		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped|array $property,
 		bool $state,
 	): void
 	{
@@ -130,19 +135,20 @@ final class DevicePropertiesStates
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function loadValue(
-		MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
+		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
 		bool $forReading,
 	): States\DeviceProperty|null
 	{
-		if ($property instanceof MetadataEntities\DevicesModule\DeviceMappedProperty) {
-			$findDevicePropertyQuery = new Queries\Entities\FindDeviceProperties();
-			$findDevicePropertyQuery->byId($property->getParent());
+		if ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
+			$findPropertyQuery = new Queries\Configuration\FindDeviceProperties();
+			$findPropertyQuery->byId($property->getParent());
 
-			$parent = $this->devicePropertiesRepository->findOneBy($findDevicePropertyQuery);
+			$parent = $this->devicePropertiesRepository->findOneBy($findPropertyQuery);
 
-			if (!$parent instanceof Entities\Devices\Properties\Dynamic) {
+			if (!$parent instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
 				throw new Exceptions\InvalidState('Mapped property parent could not be loaded');
 			}
 
@@ -262,20 +268,21 @@ final class DevicePropertiesStates
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function saveValue(
-		MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
+		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
 		Utils\ArrayHash $data,
 		bool $forWriting,
 	): void
 	{
-		if ($property instanceof MetadataEntities\DevicesModule\DeviceMappedProperty) {
-			$findPropertyQuery = new Queries\Entities\FindDeviceProperties();
+		if ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
+			$findPropertyQuery = new Queries\Configuration\FindDeviceProperties();
 			$findPropertyQuery->byId($property->getParent());
 
 			$parent = $this->devicePropertiesRepository->findOneBy($findPropertyQuery);
 
-			if (!$parent instanceof Entities\Devices\Properties\Dynamic) {
+			if (!$parent instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
 				throw new Exceptions\InvalidState('Mapped property parent could not be loaded');
 			}
 

@@ -57,6 +57,20 @@ class FindConnectorProperties extends DoctrineOrmQuery\QueryObject
 		};
 	}
 
+	public function startWithIdentifier(string $identifier): void
+	{
+		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($identifier): void {
+			$qb->andWhere('p.identifier LIKE :identifier')->setParameter('identifier', $identifier . '%');
+		};
+	}
+
+	public function endWithIdentifier(string $identifier): void
+	{
+		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($identifier): void {
+			$qb->andWhere('p.identifier LIKE :identifier')->setParameter('identifier', '%' . $identifier);
+		};
+	}
+
 	public function forConnector(Entities\Connectors\Connector $connector): void
 	{
 		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($connector): void {

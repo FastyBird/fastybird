@@ -18,7 +18,7 @@ namespace FastyBird\Module\Accounts\Subscribers;
 use Doctrine\Common;
 use Doctrine\ORM;
 use Doctrine\Persistence;
-use FastyBird\Library\Exchange\Entities as ExchangeEntities;
+use FastyBird\Library\Exchange\Documents as ExchangeEntities;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata;
@@ -57,7 +57,7 @@ final class ModuleEntities implements Common\EventSubscriber
 	private const ACTION_DELETED = 'deleted';
 
 	public function __construct(
-		private readonly ExchangeEntities\EntityFactory $entityFactory,
+		private readonly ExchangeEntities\DocumentFactory $entityFactory,
 		private readonly ORM\EntityManagerInterface $entityManager,
 		private readonly ExchangePublisher\Publisher $publisher,
 	)

@@ -5,11 +5,11 @@ import get from 'lodash/get';
 import { DataType, PropertyType } from '@fastybird/metadata-library';
 
 import {
-	ANY_CONTROL_ENTITY_REG_EXP,
-	ANY_PROPERTY_ENTITY_REG_EXP,
-	CHANNEL_ENTITY_REG_EXP,
-	CONNECTOR_ENTITY_REG_EXP,
-	DEVICE_ENTITY_REG_EXP,
+	ANY_CONTROL_DOCUMENT_REG_EXP,
+	ANY_PROPERTY_DOCUMENT_REG_EXP,
+	CHANNEL_DOCUMENT_REG_EXP,
+	CONNECTOR_DOCUMENT_REG_EXP,
+	DEVICE_DOCUMENT_REG_EXP,
 } from '@/jsonapi/utilities';
 import { useNormalizeValue } from '@/composables';
 
@@ -25,11 +25,11 @@ class JsonApiJsonPropertiesMapper extends JsonPropertiesMapper implements IJsonP
 	constructor() {
 		super();
 
-		this.connectorTypeRegex = new RegExp(CONNECTOR_ENTITY_REG_EXP);
-		this.deviceTypeRegex = new RegExp(DEVICE_ENTITY_REG_EXP);
-		this.channelTypeRegex = new RegExp(CHANNEL_ENTITY_REG_EXP);
-		this.controlTypeRegex = new RegExp(ANY_CONTROL_ENTITY_REG_EXP);
-		this.propertyTypeRegex = new RegExp(ANY_PROPERTY_ENTITY_REG_EXP);
+		this.connectorTypeRegex = new RegExp(CONNECTOR_DOCUMENT_REG_EXP);
+		this.deviceTypeRegex = new RegExp(DEVICE_DOCUMENT_REG_EXP);
+		this.channelTypeRegex = new RegExp(CHANNEL_DOCUMENT_REG_EXP);
+		this.controlTypeRegex = new RegExp(ANY_CONTROL_DOCUMENT_REG_EXP);
+		this.propertyTypeRegex = new RegExp(ANY_PROPERTY_DOCUMENT_REG_EXP);
 	}
 
 	createModel(type: string): TJsonaModel {

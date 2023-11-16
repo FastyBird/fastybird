@@ -87,11 +87,11 @@ class FindChannelProperties extends DoctrineOrmQuery\QueryObject
 		};
 	}
 
-	public function forParent(Entities\Channels\Properties\Property $property): void
+	public function forParent(Entities\Channels\Properties\Property $parent): void
 	{
-		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($property): void {
+		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($parent): void {
 			$qb->andWhere('p.parent = :parent')
-				->setParameter('parent', $property->getId(), Uuid\Doctrine\UuidBinaryType::NAME);
+				->setParameter('parent', $parent->getId(), Uuid\Doctrine\UuidBinaryType::NAME);
 		};
 	}
 

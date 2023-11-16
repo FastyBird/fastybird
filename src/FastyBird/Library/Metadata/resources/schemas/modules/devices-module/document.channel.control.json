@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Document unique uuid v4 identifier"
+    },
+    "name": {
+      "type": "string"
+    },
+    "channel": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Channel unique uuid v4 identifier"
+    },
+    "owner": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "format": "uuid"
+        }
+      ],
+      "description": "Document owner uuid v4 identifier"
+    }
+  },
+  "required": [
+    "id",
+    "name",
+    "channel"
+  ]
+}

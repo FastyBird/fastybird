@@ -20,7 +20,6 @@ use Doctrine\Persistence;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Queries;
-use FastyBird\Module\Devices\Queries\Entities\FindDevices;
 use FastyBird\Module\Devices\Utilities;
 use IPub\DoctrineOrmQuery;
 use Nette;
@@ -53,7 +52,7 @@ final class DevicesRepository
 	/**
 	 * @template T of Entities\Devices\Device
 	 *
-	 * @param FindDevices<T> $queryObject
+	 * @param Queries\Entities\FindDevices<T> $queryObject
 	 * @param class-string<T> $type
 	 *
 	 * @return T|null
@@ -73,7 +72,7 @@ final class DevicesRepository
 	/**
 	 * @template T of Entities\Devices\Device
 	 *
-	 * @param FindDevices<T> $queryObject
+	 * @param Queries\Entities\FindDevices<T> $queryObject
 	 * @param class-string<T> $type
 	 *
 	 * @return array<T>
@@ -98,7 +97,7 @@ final class DevicesRepository
 	/**
 	 * @template T of Entities\Devices\Device
 	 *
-	 * @param FindDevices<T> $queryObject
+	 * @param Queries\Entities\FindDevices<T> $queryObject
 	 * @param class-string<T> $type
 	 *
 	 * @return DoctrineOrmQuery\ResultSet<T>

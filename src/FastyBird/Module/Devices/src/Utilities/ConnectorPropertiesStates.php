@@ -16,16 +16,16 @@
 namespace FastyBird\Module\Devices\Utilities;
 
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\States;
 use Nette;
 use Nette\Utils;
-use Psr\Log;
 use function is_array;
 
 /**
@@ -44,7 +44,7 @@ final class ConnectorPropertiesStates
 	public function __construct(
 		private readonly Models\States\ConnectorPropertiesRepository $connectorPropertyStateRepository,
 		private readonly Models\States\ConnectorPropertiesManager $connectorPropertiesStatesManager,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
+		private readonly Devices\Logger $logger,
 	)
 	{
 	}
@@ -55,7 +55,7 @@ final class ConnectorPropertiesStates
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function readValue(
-		MetadataEntities\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
+		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
 	): States\ConnectorProperty|null
 	{
 		return $this->loadValue($property, true);
@@ -67,7 +67,7 @@ final class ConnectorPropertiesStates
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function getValue(
-		MetadataEntities\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
+		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
 	): States\ConnectorProperty|null
 	{
 		return $this->loadValue($property, false);
@@ -79,7 +79,7 @@ final class ConnectorPropertiesStates
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function writeValue(
-		MetadataEntities\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
+		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
 		Utils\ArrayHash $data,
 	): void
 	{
@@ -92,7 +92,7 @@ final class ConnectorPropertiesStates
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function setValue(
-		MetadataEntities\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
+		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
 		Utils\ArrayHash $data,
 	): void
 	{
@@ -100,14 +100,14 @@ final class ConnectorPropertiesStates
 	}
 
 	/**
-	 * @param MetadataEntities\DevicesModule\ConnectorDynamicProperty|array<MetadataEntities\DevicesModule\ConnectorDynamicProperty>|Entities\Connectors\Properties\Dynamic|array<Entities\Connectors\Properties\Dynamic> $property
+	 * @param MetadataDocuments\DevicesModule\ConnectorDynamicProperty|array<MetadataDocuments\DevicesModule\ConnectorDynamicProperty>|Entities\Connectors\Properties\Dynamic|array<Entities\Connectors\Properties\Dynamic> $property
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function setValidState(
-		MetadataEntities\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic|array $property,
+		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic|array $property,
 		bool $state,
 	): void
 	{
@@ -130,7 +130,7 @@ final class ConnectorPropertiesStates
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	private function loadValue(
-		MetadataEntities\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
+		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
 		bool $forReading,
 	): States\ConnectorProperty|null
 	{
@@ -243,7 +243,7 @@ final class ConnectorPropertiesStates
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	private function saveValue(
-		MetadataEntities\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
+		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
 		Utils\ArrayHash $data,
 		bool $forWriting,
 	): void

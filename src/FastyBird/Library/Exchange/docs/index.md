@@ -30,7 +30,7 @@ implement `FastyBird\Library\Exchange\Publisher\Publisher` interface and registe
 namespace Your\CoolApp\Publishers;
 
 use FastyBird\Library\Exchange\Publisher\Publisher;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette\Utils;
 
@@ -40,7 +40,7 @@ class ModuleDataPublisher implements Publisher
     public function publish(
         MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource $source,
         MetadataTypes\RoutingKey $routingKey,
-        MetadataEntities\Entity|null $entity,
+        MetadataDocuments\Document|null $entity,
     ) : void {
         // Service logic here, e.g. publish message to RabbitMQ or Redis etc. 
     }
@@ -97,7 +97,7 @@ implement `FastyBird\Library\Exchange\Consumer\Consumer` interface and register 
 namespace Your\CoolApp\Publishers;
 
 use FastyBird\Library\Exchange\Consumers\Consumer;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 
 class DataConsumer implements Consumer
@@ -106,7 +106,7 @@ class DataConsumer implements Consumer
     public function consume(
         MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource $source,
         MetadataTypes\RoutingKey $routingKey,
-        MetadataEntities\Entity|null $entity,
+        MetadataDocuments\Document|null $entity,
     ) : void {
         // Do your data processing logic here 
     }

@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Exchange.php
+ * Sockets.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -17,12 +17,12 @@ namespace FastyBird\Module\Devices\Consumers;
 
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumer;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices;
 use IPub\WebSockets;
 use IPub\WebSocketsWAMP;
 use Nette\Utils;
-use Psr\Log;
 use Throwable;
 
 /**
@@ -37,9 +37,9 @@ final class Sockets implements ExchangeConsumer\Consumer
 {
 
 	public function __construct(
+		private readonly Devices\Logger $logger,
 		private readonly WebSockets\Router\LinkGenerator $linkGenerator,
 		private readonly WebSocketsWAMP\Topics\IStorage $topicsStorage,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
 	}
@@ -47,7 +47,7 @@ final class Sockets implements ExchangeConsumer\Consumer
 	public function consume(
 		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource $source,
 		MetadataTypes\RoutingKey $routingKey,
-		MetadataEntities\Entity|null $entity,
+		MetadataDocuments\Document|null $entity,
 	): void
 	{
 		if ($source->equalsValue(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES)) {

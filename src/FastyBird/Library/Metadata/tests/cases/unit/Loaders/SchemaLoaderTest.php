@@ -18,7 +18,7 @@ final class SchemaLoaderTest extends BaseTestCase
 		$loader = new Loaders\SchemaLoader();
 
 		$result = $loader->loadByRoutingKey(
-			Metadata\Types\RoutingKey::get(Metadata\Types\RoutingKey::ROUTE_DEVICE_ENTITY_CREATED),
+			Metadata\Types\RoutingKey::get(Metadata\Types\RoutingKey::DEVICE_DOCUMENT_CREATED),
 		);
 
 		self::assertNotSame('', $result);

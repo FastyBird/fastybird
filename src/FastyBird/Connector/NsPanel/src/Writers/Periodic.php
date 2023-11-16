@@ -112,6 +112,7 @@ class Periodic implements Writer
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function handleCommunication(): void
 	{
@@ -171,6 +172,7 @@ class Periodic implements Writer
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function writeSubDeviceChannelProperty(
 		Entities\Devices\SubDevice $device,
@@ -258,6 +260,7 @@ class Periodic implements Writer
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function writeThirdPartyDeviceChannelProperty(
 		Entities\Devices\ThirdPartyDevice $device,

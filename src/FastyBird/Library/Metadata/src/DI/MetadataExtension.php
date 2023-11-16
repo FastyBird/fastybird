@@ -16,7 +16,7 @@
 namespace FastyBird\Library\Metadata\DI;
 
 use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
-use FastyBird\Library\Metadata\Entities;
+use FastyBird\Library\Metadata\Documents;
 use FastyBird\Library\Metadata\Loaders;
 use FastyBird\Library\Metadata\Schemas;
 use Nette\DI;
@@ -59,8 +59,8 @@ class MetadataExtension extends DI\CompilerExtension
 			->setType(Loaders\SchemaLoader::class);
 
 		// Transformer factories
-		$builder->addDefinition('entity.factory', new DI\Definitions\ServiceDefinition())
-			->setType(Entities\EntityFactory::class);
+		$builder->addDefinition('document.factory', new DI\Definitions\ServiceDefinition())
+			->setType(Documents\DocumentFactory::class);
 	}
 
 }

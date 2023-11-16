@@ -15,7 +15,7 @@
 
 namespace FastyBird\Module\Devices\Models\States;
 
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\States;
 use Ramsey\Uuid;
@@ -32,7 +32,7 @@ interface IDevicePropertiesRepository
 {
 
 	public function findOne(
-		MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
+		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
 	): States\DeviceProperty|null;
 
 	public function findOneById(Uuid\UuidInterface $id): States\DeviceProperty|null;

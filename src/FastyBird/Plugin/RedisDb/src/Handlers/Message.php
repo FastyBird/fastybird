@@ -18,7 +18,7 @@ namespace FastyBird\Plugin\RedisDb\Handlers;
 use Evenement;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumer;
-use FastyBird\Library\Exchange\Entities as ExchangeEntities;
+use FastyBird\Library\Exchange\Documents as ExchangeEntities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\RedisDb\Events;
 use FastyBird\Plugin\RedisDb\Exceptions;
@@ -44,7 +44,7 @@ final class Message extends Evenement\EventEmitter
 
 	public function __construct(
 		private readonly Utilities\IdentifierGenerator $identifier,
-		private readonly ExchangeEntities\EntityFactory $entityFactory,
+		private readonly ExchangeEntities\DocumentFactory $entityFactory,
 		private readonly ExchangeConsumer\Container $consumer,
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),

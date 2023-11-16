@@ -21,7 +21,7 @@ use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Queue;
-use FastyBird\Library\Exchange\Entities as ExchangeEntities;
+use FastyBird\Library\Exchange\Documents as ExchangeEntities;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -58,7 +58,7 @@ final class StoreDeviceState implements Queue\Consumer
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
-		private readonly ExchangeEntities\EntityFactory $entityFactory,
+		private readonly ExchangeEntities\DocumentFactory $entityFactory,
 		private readonly ExchangePublisher\Publisher $publisher,
 	)
 	{
@@ -135,6 +135,7 @@ final class StoreDeviceState implements Queue\Consumer
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function processSubDevice(
 		Entities\Devices\SubDevice $device,
@@ -277,7 +278,7 @@ final class StoreDeviceState implements Queue\Consumer
 					MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
 				),
 				MetadataTypes\RoutingKey::get(
-					MetadataTypes\RoutingKey::ROUTE_CHANNEL_PROPERTY_ACTION,
+					MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION,
 				),
 				$this->entityFactory->create(
 					Utils\Json::encode([
@@ -288,7 +289,7 @@ final class StoreDeviceState implements Queue\Consumer
 						'expected_value' => DevicesUtilities\ValueHelper::flattenValue($value),
 					]),
 					MetadataTypes\RoutingKey::get(
-						MetadataTypes\RoutingKey::ROUTE_CHANNEL_PROPERTY_ACTION,
+						MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION,
 					),
 				),
 			);

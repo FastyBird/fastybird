@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Document unique uuid v4 identifier"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "manual",
+        "automatic"
+      ]
+    },
+    "name": {
+      "type": "string"
+    },
+    "comment": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string"
+        }
+      ],
+      "default": null
+    },
+    "enabled": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_triggered": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "boolean"
+        }
+      ],
+      "default": null
+    },
+    "owner": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "format": "uuid"
+        }
+      ],
+      "description": "Document owner uuid v4 identifier"
+    }
+  },
+  "if": {
+    "properties": {
+      "type": {
+        "const": "automatic"
+      }
+    }
+  },
+  "then": {
+    "properties": {
+      "is_fulfilled": {
+        "oneOf": [
+          {
+            "type": "null"
+          },
+          {
+            "type": "boolean"
+          }
+        ],
+        "default": null
+      }
+    },
+    "required": [
+      "id",
+      "type",
+      "name",
+      "comment",
+      "enabled"
+    ]
+  },
+  "else": {
+    "required": [
+      "id",
+      "type",
+      "name",
+      "comment",
+      "enabled"
+    ]
+  }
+}

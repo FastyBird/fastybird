@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * States.php
+ * State.php
  *
  * @license        More in license.md
  * @copyright      https://www.fastybird.com
@@ -16,10 +16,10 @@
 namespace FastyBird\Module\Devices\Consumers;
 
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
-use FastyBird\Library\Exchange\Entities as ExchangeEntities;
+use FastyBird\Library\Exchange\Documents as ExchangeEntities;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities;
@@ -44,14 +44,14 @@ final class State implements ExchangeConsumers\Consumer
 {
 
 	private const PROPERTIES_ACTIONS_ROUTING_KEYS = [
-		MetadataTypes\RoutingKey::ROUTE_CONNECTOR_PROPERTY_ACTION,
-		MetadataTypes\RoutingKey::ROUTE_DEVICE_PROPERTY_ACTION,
-		MetadataTypes\RoutingKey::ROUTE_CHANNEL_PROPERTY_ACTION,
+		MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_ACTION,
+		MetadataTypes\RoutingKey::DEVICE_PROPERTY_ACTION,
+		MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION,
 	];
 
 	public function __construct(
 		private readonly ExchangePublisher\Publisher $publisher,
-		private readonly ExchangeEntities\EntityFactory $entityFactory,
+		private readonly ExchangeEntities\DocumentFactory $entityFactory,
 		private readonly Models\Entities\Connectors\Properties\PropertiesRepository $connectorPropertiesRepository,
 		private readonly Models\Entities\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
 		private readonly Models\Entities\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
@@ -74,7 +74,7 @@ final class State implements ExchangeConsumers\Consumer
 	public function consume(
 		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource $source,
 		MetadataTypes\RoutingKey $routingKey,
-		MetadataEntities\Entity|null $entity,
+		MetadataDocuments\Document|null $entity,
 	): void
 	{
 		if ($entity === null) {
@@ -82,7 +82,7 @@ final class State implements ExchangeConsumers\Consumer
 		}
 
 		if (in_array($routingKey->getValue(), self::PROPERTIES_ACTIONS_ROUTING_KEYS, true)) {
-			if ($entity instanceof MetadataEntities\Actions\ActionConnectorProperty) {
+			if ($entity instanceof MetadataDocuments\Actions\ActionConnectorProperty) {
 				if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_SET)) {
 					$findConnectorPropertyQuery = new Queries\Entities\FindConnectorProperties();
 					$findConnectorPropertyQuery->byId($entity->getProperty());
@@ -115,7 +115,7 @@ final class State implements ExchangeConsumers\Consumer
 						: null;
 
 					$publishRoutingKey = MetadataTypes\RoutingKey::get(
-						MetadataTypes\RoutingKey::ROUTE_CONNECTOR_PROPERTY_ENTITY_REPORTED,
+						MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_DOCUMENT_REPORTED,
 					);
 
 					$this->publisher->publish(
@@ -132,7 +132,7 @@ final class State implements ExchangeConsumers\Consumer
 						),
 					);
 				}
-			} elseif ($entity instanceof MetadataEntities\Actions\ActionDeviceProperty) {
+			} elseif ($entity instanceof MetadataDocuments\Actions\ActionDeviceProperty) {
 				if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_SET)) {
 					$findConnectorPropertyQuery = new Queries\Entities\FindDeviceProperties();
 					$findConnectorPropertyQuery->byId($entity->getProperty());
@@ -168,7 +168,7 @@ final class State implements ExchangeConsumers\Consumer
 					 ? $this->devicePropertiesStates->readValue($property) : null;
 
 					$publishRoutingKey = MetadataTypes\RoutingKey::get(
-						MetadataTypes\RoutingKey::ROUTE_DEVICE_PROPERTY_ENTITY_REPORTED,
+						MetadataTypes\RoutingKey::DEVICE_PROPERTY_DOCUMENT_REPORTED,
 					);
 
 					$this->publisher->publish(
@@ -185,7 +185,7 @@ final class State implements ExchangeConsumers\Consumer
 						),
 					);
 				}
-			} elseif ($entity instanceof MetadataEntities\Actions\ActionChannelProperty) {
+			} elseif ($entity instanceof MetadataDocuments\Actions\ActionChannelProperty) {
 				if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_SET)) {
 					$findConnectorPropertyQuery = new Queries\Entities\FindChannelProperties();
 					$findConnectorPropertyQuery->byId($entity->getProperty());
@@ -221,7 +221,7 @@ final class State implements ExchangeConsumers\Consumer
 					 ? $this->channelPropertiesStates->readValue($property) : null;
 
 					$publishRoutingKey = MetadataTypes\RoutingKey::get(
-						MetadataTypes\RoutingKey::ROUTE_CHANNEL_PROPERTY_ENTITY_REPORTED,
+						MetadataTypes\RoutingKey::CHANNEL_PROPERTY_DOCUMENT_REPORTED,
 					);
 
 					$this->publisher->publish(

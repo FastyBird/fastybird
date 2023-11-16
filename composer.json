@@ -67,6 +67,7 @@
         "nettrine/fixtures": "^0.6",
         "nettrine/orm": "^0.8",
         "opis/json-schema": "^2.3",
+        "orisai/data-sources": "^1.0",
         "orisai/nette-object-mapper": "^0.1",
         "orisai/object-mapper": "^0.1",
         "php-on-couch/php-on-couch": "^4.0",
@@ -210,7 +211,6 @@
         }
     },
     "extra": {
-        "enable-patching": false,
         "patches": {
             "dg/bypass-finals": {
                 "Bug: mkdir check": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/dg-bypass-finals-src-nativewrapper-php.patch"
@@ -227,8 +227,12 @@
             },
             "react/event-loop": {
                 "Bug: Use native return type": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/react-event-loop-src-loop-php.patch"
+            },
+            "softcreatr/jsonpath": {
+                "Feature: enable extended queries": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/softcreatr-jsonpath-src-filters-querymatchfilter-php.patch"
             }
-        }
+        },
+        "enable-patching": false
     },
     "config": {
         "sort-packages": true,

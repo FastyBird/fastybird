@@ -1,0 +1,129 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Document unique uuid v4 identifier"
+    },
+    "type": {
+      "type": "string",
+      "description": "Device type"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "generic"
+      ],
+      "description": "Device category"
+    },
+    "identifier": {
+      "type": "string",
+      "description": "Unique human readable identifier"
+    },
+    "name": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string"
+        }
+      ],
+      "default": null
+    },
+    "comment": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string"
+        }
+      ],
+      "default": null
+    },
+    "connector": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Document connector uuid v4 identifier"
+    },
+    "parents": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "description": "Document parents uuid v4 identifiers",
+      "default": []
+    },
+    "children": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "description": "Document children uuid v4 identifiers",
+      "default": []
+    },
+    "properties": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "description": "Property documents uuid v4 identifiers",
+      "default": []
+    },
+    "controls": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "description": "Control documents uuid v4 identifiers",
+      "default": []
+    },
+    "channels": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "description": "Channel documents uuid v4 identifiers",
+      "default": []
+    },
+    "owner": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "format": "uuid"
+        }
+      ],
+      "description": "Document owner uuid v4 identifier"
+    }
+  },
+  "required": [
+    "id",
+    "type",
+    "category",
+    "identifier",
+    "name",
+    "comment",
+    "connector",
+    "parents",
+    "children",
+    "properties",
+    "controls",
+    "channels"
+  ]
+}

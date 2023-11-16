@@ -6,10 +6,10 @@ import { v4 as uuid } from 'uuid';
 import get from 'lodash/get';
 import isEqual from 'lodash/isEqual';
 
-import exchangeEntitySchema from '@fastybird/metadata-library/resources/schemas/modules/devices-module/entity.connector.json';
+import exchangeDocumentSchema from '../../../../../Library/Metadata/resources/schemas/modules/devices-module/document.connector.json';
 import {
 	ConnectorCategory,
-	ConnectorEntity as ExchangeEntity,
+	ConnectorDocument,
 	DevicePropertyIdentifier,
 	DevicesModuleRoutes as RoutingKeys,
 	ModulePrefix,
@@ -475,18 +475,18 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 		async socketData(payload: IConnectorsSocketDataActionPayload): Promise<boolean> {
 			if (
 				![
-					RoutingKeys.CONNECTOR_ENTITY_REPORTED,
-					RoutingKeys.CONNECTOR_ENTITY_CREATED,
-					RoutingKeys.CONNECTOR_ENTITY_UPDATED,
-					RoutingKeys.CONNECTOR_ENTITY_DELETED,
+					RoutingKeys.CONNECTOR_DOCUMENT_REPORTED,
+					RoutingKeys.CONNECTOR_DOCUMENT_CREATED,
+					RoutingKeys.CONNECTOR_DOCUMENT_UPDATED,
+					RoutingKeys.CONNECTOR_DOCUMENT_DELETED,
 				].includes(payload.routingKey as RoutingKeys)
 			) {
 				return false;
 			}
 
-			const body: ExchangeEntity = JSON.parse(payload.data);
+			const body: ConnectorDocument = JSON.parse(payload.data);
 
-			const isValid = jsonSchemaValidator.compile<ExchangeEntity>(exchangeEntitySchema);
+			const isValid = jsonSchemaValidator.compile<ConnectorDocument>(exchangeDocumentSchema);
 
 			try {
 				if (!isValid(body)) {
@@ -496,7 +496,7 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 				return false;
 			}
 
-			if (payload.routingKey === RoutingKeys.CONNECTOR_ENTITY_DELETED) {
+			if (payload.routingKey === RoutingKeys.CONNECTOR_DOCUMENT_DELETED) {
 				if (body.id in this.data) {
 					const recordToDelete = this.data[body.id];
 
@@ -509,7 +509,7 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 					controlsStore.unset({ connector: recordToDelete });
 				}
 			} else {
-				if (payload.routingKey === RoutingKeys.CONNECTOR_ENTITY_UPDATED && this.semaphore.updating.includes(body.id)) {
+				if (payload.routingKey === RoutingKeys.CONNECTOR_DOCUMENT_UPDATED && this.semaphore.updating.includes(body.id)) {
 					return true;
 				}
 

@@ -18,6 +18,7 @@ namespace FastyBird\Library\Bootstrap\ObjectMapper\Rules;
 use Consistence\Enum\Enum;
 use Orisai\Exceptions\Logic\InvalidArgument;
 use Orisai\ObjectMapper;
+use function in_array;
 use function is_string;
 use function is_subclass_of;
 
@@ -29,7 +30,8 @@ final class ConsistenceEnumRule implements ObjectMapper\Rules\Rule
 
 	private const
 		ClassName = 'class',
-		AllowUnknown = 'allowUnknown';
+		AllowUnknown = 'allowUnknown',
+		AllowedValues = 'allowedValues';
 
 	/**
 	 * @throws InvalidArgument
@@ -37,7 +39,7 @@ final class ConsistenceEnumRule implements ObjectMapper\Rules\Rule
 	public function resolveArgs(array $args, ObjectMapper\Context\ArgsContext $context): ConsistenceEnumArgs
 	{
 		$checker = new ObjectMapper\Args\ArgsChecker($args, self::class);
-		$checker->checkAllowedArgs([self::ClassName, self::AllowUnknown]);
+		$checker->checkAllowedArgs([self::ClassName, self::AllowUnknown, self::AllowedValues]);
 
 		$checker->checkRequiredArg(self::ClassName);
 		$class = $args[self::ClassName];
@@ -56,7 +58,12 @@ final class ConsistenceEnumRule implements ObjectMapper\Rules\Rule
 			$allowUnknown = $checker->checkBool(self::AllowUnknown);
 		}
 
-		return new ConsistenceEnumArgs($class, $allowUnknown);
+		$allowedValues = null;
+		if ($checker->hasArg(self::AllowedValues)) {
+			$allowedValues = $checker->checkNullableArray(self::AllowedValues);
+		}
+
+		return new ConsistenceEnumArgs($class, $allowUnknown, $allowedValues);
 	}
 
 	public function getArgsType(): string
@@ -98,7 +105,19 @@ final class ConsistenceEnumRule implements ObjectMapper\Rules\Rule
 			);
 		}
 
-		return $class::get($value);
+		$value = $class::get($value);
+
+		if (
+			$args->allowedValues !== null
+			&& !in_array($value->getValue(), $args->allowedValues, true)
+		) {
+			throw ObjectMapper\Exception\ValueDoesNotMatch::create(
+				$this->createType($args, $context),
+				ObjectMapper\Processing\Value::of($value),
+			);
+		}
+
+		return $value;
 	}
 
 	/**

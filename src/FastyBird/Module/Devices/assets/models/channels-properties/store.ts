@@ -6,9 +6,9 @@ import { v4 as uuid } from 'uuid';
 import get from 'lodash/get';
 import isEqual from 'lodash/isEqual';
 
-import exchangeEntitySchema from '@fastybird/metadata-library/resources/schemas/modules/devices-module/entity.channel.property.json';
+import exchangeDocumentSchema from '../../../../../Library/Metadata/resources/schemas/modules/devices-module/document.channel.property.json';
 import {
-	ChannelPropertyEntity as ExchangeEntity,
+	ChannelPropertyDocument,
 	DevicesModuleRoutes as RoutingKeys,
 	ModulePrefix,
 	PropertyCategory,
@@ -641,18 +641,18 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 			async socketData(payload: IChannelPropertiesSocketDataActionPayload): Promise<boolean> {
 				if (
 					![
-						RoutingKeys.CHANNEL_PROPERTY_ENTITY_REPORTED,
-						RoutingKeys.CHANNEL_PROPERTY_ENTITY_CREATED,
-						RoutingKeys.CHANNEL_PROPERTY_ENTITY_UPDATED,
-						RoutingKeys.CHANNEL_PROPERTY_ENTITY_DELETED,
+						RoutingKeys.CHANNEL_PROPERTY_DOCUMENT_REPORTED,
+						RoutingKeys.CHANNEL_PROPERTY_DOCUMENT_CREATED,
+						RoutingKeys.CHANNEL_PROPERTY_DOCUMENT_UPDATED,
+						RoutingKeys.CHANNEL_PROPERTY_DOCUMENT_DELETED,
 					].includes(payload.routingKey as RoutingKeys)
 				) {
 					return false;
 				}
 
-				const body: ExchangeEntity = JSON.parse(payload.data);
+				const body: ChannelPropertyDocument = JSON.parse(payload.data);
 
-				const isValid = jsonSchemaValidator.compile<ExchangeEntity>(exchangeEntitySchema);
+				const isValid = jsonSchemaValidator.compile<ChannelPropertyDocument>(exchangeDocumentSchema);
 
 				try {
 					if (!isValid(body)) {
@@ -662,12 +662,12 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 					return false;
 				}
 
-				if (payload.routingKey === RoutingKeys.CHANNEL_PROPERTY_ENTITY_DELETED) {
+				if (payload.routingKey === RoutingKeys.CHANNEL_PROPERTY_DOCUMENT_DELETED) {
 					if (body.id in this.data) {
 						delete this.data[body.id];
 					}
 				} else {
-					if (payload.routingKey === RoutingKeys.CHANNEL_PROPERTY_ENTITY_UPDATED && this.semaphore.updating.includes(body.id)) {
+					if (payload.routingKey === RoutingKeys.CHANNEL_PROPERTY_DOCUMENT_UPDATED && this.semaphore.updating.includes(body.id)) {
 						return true;
 					}
 

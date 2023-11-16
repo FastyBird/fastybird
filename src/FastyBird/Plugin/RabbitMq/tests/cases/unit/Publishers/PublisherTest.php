@@ -4,7 +4,7 @@ namespace FastyBird\Plugin\RabbitMq\Tests\Cases\Unit\Publishers;
 
 use DateTime;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\RabbitMq\Channels;
 use FastyBird\Plugin\RabbitMq\Publishers;
@@ -33,10 +33,9 @@ final class PublisherTest extends TestCase
 			->with(
 				Nette\Utils\Json::encode([
 					'action' => MetadataTypes\PropertyAction::ACTION_SET,
+					'channel' => '06a64596-ca03-478b-ad1e-4f53731e66a5',
 					'property' => '60d754c2-4590-4eff-af1e-5c45f4234c7b',
 					'expected_value' => 10,
-					'device' => '593397b2-fd40-4da2-a66a-3687ca50761b',
-					'channel' => '06a64596-ca03-478b-ad1e-4f53731e66a5',
 				]),
 				[
 					'sender_id' => 'rabbitmq_client_identifier',
@@ -44,7 +43,7 @@ final class PublisherTest extends TestCase
 					'created' => $now->format(DATE_ATOM),
 				],
 				'exchange_name',
-				MetadataTypes\RoutingKey::ROUTE_DEVICE_ENTITY_UPDATED,
+				MetadataTypes\RoutingKey::DEVICE_DOCUMENT_UPDATED,
 			)
 			->willReturn(true);
 
@@ -80,10 +79,9 @@ final class PublisherTest extends TestCase
 
 		$publisher->publish(
 			MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
-			MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::ROUTE_DEVICE_ENTITY_UPDATED),
-			new MetadataEntities\Actions\ActionChannelProperty(
+			MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::DEVICE_DOCUMENT_UPDATED),
+			new MetadataDocuments\Actions\ActionChannelProperty(
 				MetadataTypes\PropertyAction::get(MetadataTypes\PropertyAction::ACTION_SET),
-				Uuid\Uuid::fromString('593397b2-fd40-4da2-a66a-3687ca50761b'),
 				Uuid\Uuid::fromString('06a64596-ca03-478b-ad1e-4f53731e66a5'),
 				Uuid\Uuid::fromString('60d754c2-4590-4eff-af1e-5c45f4234c7b'),
 				10,

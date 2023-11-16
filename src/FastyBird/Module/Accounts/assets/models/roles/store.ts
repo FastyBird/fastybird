@@ -5,8 +5,8 @@ import Ajv from 'ajv/dist/2020';
 import { v4 as uuid } from 'uuid';
 import get from 'lodash/get';
 
-import exchangeEntitySchema from '@fastybird/metadata-library/resources/schemas/modules/accounts-module/entity.role.json';
-import { RoleEntity as ExchangeEntity, AccountsModuleRoutes as RoutingKeys, ModulePrefix, ModuleSource } from '@fastybird/metadata-library';
+import exchangeDocumentSchema from '../../../../../Library/Metadata/resources/schemas/modules/accounts-module/document.role.json';
+import { RoleDocument, AccountsModuleRoutes as RoutingKeys, ModulePrefix, ModuleSource } from '@fastybird/metadata-library';
 
 import { ApiError } from '@/errors';
 import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '@/jsonapi';
@@ -310,18 +310,18 @@ export const useRoles = defineStore('accounts_module_roles', {
 		async socketData(payload: IRolesSocketDataActionPayload): Promise<boolean> {
 			if (
 				![
-					RoutingKeys.ROLE_ENTITY_REPORTED,
-					RoutingKeys.ROLE_ENTITY_CREATED,
-					RoutingKeys.ROLE_ENTITY_UPDATED,
-					RoutingKeys.ROLE_ENTITY_DELETED,
+					RoutingKeys.ROLE_DOCUMENT_REPORTED,
+					RoutingKeys.ROLE_DOCUMENT_CREATED,
+					RoutingKeys.ROLE_DOCUMENT_UPDATED,
+					RoutingKeys.ROLE_DOCUMENT_DELETED,
 				].includes(payload.routingKey as RoutingKeys)
 			) {
 				return false;
 			}
 
-			const body: ExchangeEntity = JSON.parse(payload.data);
+			const body: RoleDocument = JSON.parse(payload.data);
 
-			const isValid = jsonSchemaValidator.compile<ExchangeEntity>(exchangeEntitySchema);
+			const isValid = jsonSchemaValidator.compile<RoleDocument>(exchangeDocumentSchema);
 
 			try {
 				if (!isValid(body)) {
@@ -333,15 +333,15 @@ export const useRoles = defineStore('accounts_module_roles', {
 
 			if (
 				!Object.keys(this.data).includes(body.id) &&
-				(payload.routingKey === RoutingKeys.ROLE_ENTITY_UPDATED || payload.routingKey === RoutingKeys.ROLE_ENTITY_DELETED)
+				(payload.routingKey === RoutingKeys.ROLE_DOCUMENT_UPDATED || payload.routingKey === RoutingKeys.ROLE_DOCUMENT_DELETED)
 			) {
 				throw new Error('accounts-module.roles.update.failed');
 			}
 
-			if (payload.routingKey === RoutingKeys.ROLE_ENTITY_DELETED) {
+			if (payload.routingKey === RoutingKeys.ROLE_DOCUMENT_DELETED) {
 				delete this.data[body.id];
 			} else {
-				if (payload.routingKey === RoutingKeys.ROLE_ENTITY_UPDATED && this.semaphore.updating.includes(body.id)) {
+				if (payload.routingKey === RoutingKeys.ROLE_DOCUMENT_UPDATED && this.semaphore.updating.includes(body.id)) {
 					return true;
 				}
 

@@ -15,7 +15,7 @@
 
 namespace FastyBird\Library\Exchange\Events;
 
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Symfony\Contracts\EventDispatcher;
 
@@ -33,7 +33,7 @@ class AfterMessageConsumed extends EventDispatcher\Event
 	public function __construct(
 		private readonly MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|MetadataTypes\AutomatorSource $source,
 		private readonly MetadataTypes\RoutingKey $routingKey,
-		private readonly MetadataEntities\Entity|null $entity,
+		private readonly MetadataDocuments\Document|null $entity,
 	)
 	{
 	}
@@ -48,7 +48,7 @@ class AfterMessageConsumed extends EventDispatcher\Event
 		return $this->routingKey;
 	}
 
-	public function getEntity(): MetadataEntities\Entity|null
+	public function getEntity(): MetadataDocuments\Document|null
 	{
 		return $this->entity;
 	}

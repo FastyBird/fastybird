@@ -6,9 +6,9 @@ import { v4 as uuid } from 'uuid';
 import get from 'lodash/get';
 import isEqual from 'lodash/isEqual';
 
-import exchangeEntitySchema from '@fastybird/metadata-library/resources/schemas/modules/devices-module/entity.connector.property.json';
+import exchangeDocumentSchema from '../../../../../Library/Metadata/resources/schemas/modules/devices-module/document.connector.property.json';
 import {
-	ConnectorPropertyEntity as ExchangeEntity,
+	ConnectorPropertyDocument,
 	DevicesModuleRoutes as RoutingKeys,
 	ModulePrefix,
 	PropertyCategory,
@@ -521,18 +521,18 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 			async socketData(payload: IConnectorPropertiesSocketDataActionPayload): Promise<boolean> {
 				if (
 					![
-						RoutingKeys.CONNECTOR_PROPERTY_ENTITY_REPORTED,
-						RoutingKeys.CONNECTOR_PROPERTY_ENTITY_CREATED,
-						RoutingKeys.CONNECTOR_PROPERTY_ENTITY_UPDATED,
-						RoutingKeys.CONNECTOR_PROPERTY_ENTITY_DELETED,
+						RoutingKeys.CONNECTOR_PROPERTY_DOCUMENT_REPORTED,
+						RoutingKeys.CONNECTOR_PROPERTY_DOCUMENT_CREATED,
+						RoutingKeys.CONNECTOR_PROPERTY_DOCUMENT_UPDATED,
+						RoutingKeys.CONNECTOR_PROPERTY_DOCUMENT_DELETED,
 					].includes(payload.routingKey as RoutingKeys)
 				) {
 					return false;
 				}
 
-				const body: ExchangeEntity = JSON.parse(payload.data);
+				const body: ConnectorPropertyDocument = JSON.parse(payload.data);
 
-				const isValid = jsonSchemaValidator.compile<ExchangeEntity>(exchangeEntitySchema);
+				const isValid = jsonSchemaValidator.compile<ConnectorPropertyDocument>(exchangeDocumentSchema);
 
 				try {
 					if (!isValid(body)) {
@@ -542,12 +542,12 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 					return false;
 				}
 
-				if (payload.routingKey === RoutingKeys.CONNECTOR_PROPERTY_ENTITY_DELETED) {
+				if (payload.routingKey === RoutingKeys.CONNECTOR_PROPERTY_DOCUMENT_DELETED) {
 					if (body.id in this.data) {
 						delete this.data[body.id];
 					}
 				} else {
-					if (payload.routingKey === RoutingKeys.CONNECTOR_PROPERTY_ENTITY_UPDATED && this.semaphore.updating.includes(body.id)) {
+					if (payload.routingKey === RoutingKeys.CONNECTOR_PROPERTY_DOCUMENT_UPDATED && this.semaphore.updating.includes(body.id)) {
 						return true;
 					}
 

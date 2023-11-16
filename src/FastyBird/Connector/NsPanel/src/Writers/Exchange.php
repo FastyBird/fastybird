@@ -21,7 +21,7 @@ use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -72,13 +72,13 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 	public function consume(
 		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|MetadataTypes\AutomatorSource $source,
 		MetadataTypes\RoutingKey $routingKey,
-		MetadataEntities\Entity|null $entity,
+		MetadataDocuments\Document|null $entity,
 	): void
 	{
 		if (
-			$entity instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty
-			|| $entity instanceof MetadataEntities\DevicesModule\ChannelMappedProperty
-			|| $entity instanceof MetadataEntities\DevicesModule\ChannelVariableProperty
+			$entity instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+			|| $entity instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
+			|| $entity instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty
 		) {
 			$findChannelQuery = new Queries\Entities\FindChannels();
 			$findChannelQuery->byId($entity->getChannel());
@@ -98,8 +98,8 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 			if ($device instanceof Entities\Devices\SubDevice) {
 				if (
 					(
-						$entity instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty
-						|| $entity instanceof MetadataEntities\DevicesModule\ChannelMappedProperty
+						$entity instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+						|| $entity instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
 					)
 					&& (
 						$entity->getExpectedValue() === null
@@ -114,8 +114,8 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 			} elseif ($device instanceof Entities\Devices\ThirdPartyDevice) {
 				if (
 					(
-						$entity instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty
-						|| $entity instanceof MetadataEntities\DevicesModule\ChannelMappedProperty
+						$entity instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+						|| $entity instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
 					)
 					&& $entity->isValid() !== true
 				) {

@@ -5,14 +5,8 @@ import Ajv from 'ajv/dist/2020';
 import { v4 as uuid } from 'uuid';
 import get from 'lodash/get';
 
-import exchangeEntitySchema from '@fastybird/metadata-library/resources/schemas/modules/accounts-module/entity.identity.json';
-import {
-	IdentityEntity as ExchangeEntity,
-	AccountsModuleRoutes as RoutingKeys,
-	ModulePrefix,
-	ModuleSource,
-	IdentityState,
-} from '@fastybird/metadata-library';
+import exchangeDocumentSchema from '../../../../../Library/Metadata/resources/schemas/modules/accounts-module/document.identity.json';
+import { IdentityDocument, AccountsModuleRoutes as RoutingKeys, ModulePrefix, ModuleSource, IdentityState } from '@fastybird/metadata-library';
 
 import { ApiError } from '@/errors';
 import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '@/jsonapi';
@@ -394,18 +388,18 @@ export const useIdentities = defineStore('accounts_module_identities', {
 		async socketData(payload: IIdentitiesSocketDataActionPayload): Promise<boolean> {
 			if (
 				![
-					RoutingKeys.IDENTITY_ENTITY_REPORTED,
-					RoutingKeys.IDENTITY_ENTITY_CREATED,
-					RoutingKeys.IDENTITY_ENTITY_UPDATED,
-					RoutingKeys.IDENTITY_ENTITY_DELETED,
+					RoutingKeys.IDENTITY_DOCUMENT_REPORTED,
+					RoutingKeys.IDENTITY_DOCUMENT_CREATED,
+					RoutingKeys.IDENTITY_DOCUMENT_UPDATED,
+					RoutingKeys.IDENTITY_DOCUMENT_DELETED,
 				].includes(payload.routingKey as RoutingKeys)
 			) {
 				return false;
 			}
 
-			const body: ExchangeEntity = JSON.parse(payload.data);
+			const body: IdentityDocument = JSON.parse(payload.data);
 
-			const isValid = jsonSchemaValidator.compile<ExchangeEntity>(exchangeEntitySchema);
+			const isValid = jsonSchemaValidator.compile<IdentityDocument>(exchangeDocumentSchema);
 
 			try {
 				if (!isValid(body)) {
@@ -417,15 +411,15 @@ export const useIdentities = defineStore('accounts_module_identities', {
 
 			if (
 				!Object.keys(this.data).includes(body.id) &&
-				(payload.routingKey === RoutingKeys.IDENTITY_ENTITY_UPDATED || payload.routingKey === RoutingKeys.IDENTITY_ENTITY_DELETED)
+				(payload.routingKey === RoutingKeys.IDENTITY_DOCUMENT_UPDATED || payload.routingKey === RoutingKeys.IDENTITY_DOCUMENT_DELETED)
 			) {
 				throw new Error('accounts-module.identities.update.failed');
 			}
 
-			if (payload.routingKey === RoutingKeys.IDENTITY_ENTITY_DELETED) {
+			if (payload.routingKey === RoutingKeys.IDENTITY_DOCUMENT_DELETED) {
 				delete this.data[body.id];
 			} else {
-				if (payload.routingKey === RoutingKeys.IDENTITY_ENTITY_UPDATED && this.semaphore.updating.includes(body.id)) {
+				if (payload.routingKey === RoutingKeys.IDENTITY_DOCUMENT_UPDATED && this.semaphore.updating.includes(body.id)) {
 					return true;
 				}
 

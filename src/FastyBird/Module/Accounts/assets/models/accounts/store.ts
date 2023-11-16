@@ -6,14 +6,8 @@ import { v4 as uuid } from 'uuid';
 import { format } from 'date-fns';
 import get from 'lodash/get';
 
-import exchangeEntitySchema from '@fastybird/metadata-library/resources/schemas/modules/accounts-module/entity.account.json';
-import {
-	AccountEntity as ExchangeEntity,
-	AccountsModuleRoutes as RoutingKeys,
-	AccountState,
-	ModulePrefix,
-	ModuleSource,
-} from '@fastybird/metadata-library';
+import exchangeDocumentSchema from '../../../../../Library/Metadata/resources/schemas/modules/accounts-module/document.account.json';
+import { AccountDocument, AccountsModuleRoutes as RoutingKeys, AccountState, ModulePrefix, ModuleSource } from '@fastybird/metadata-library';
 
 import { ApiError } from '@/errors';
 import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '@/jsonapi';
@@ -409,18 +403,18 @@ export const useAccounts = defineStore('accounts_module_accounts', {
 		async socketData(payload: IAccountsSocketDataActionPayload): Promise<boolean> {
 			if (
 				![
-					RoutingKeys.ACCOUNT_ENTITY_REPORTED,
-					RoutingKeys.ACCOUNT_ENTITY_CREATED,
-					RoutingKeys.ACCOUNT_ENTITY_UPDATED,
-					RoutingKeys.ACCOUNT_ENTITY_DELETED,
+					RoutingKeys.ACCOUNT_DOCUMENT_REPORTED,
+					RoutingKeys.ACCOUNT_DOCUMENT_CREATED,
+					RoutingKeys.ACCOUNT_DOCUMENT_UPDATED,
+					RoutingKeys.ACCOUNT_DOCUMENT_DELETED,
 				].includes(payload.routingKey as RoutingKeys)
 			) {
 				return false;
 			}
 
-			const body: ExchangeEntity = JSON.parse(payload.data);
+			const body: AccountDocument = JSON.parse(payload.data);
 
-			const isValid = jsonSchemaValidator.compile<ExchangeEntity>(exchangeEntitySchema);
+			const isValid = jsonSchemaValidator.compile<AccountDocument>(exchangeDocumentSchema);
 
 			try {
 				if (!isValid(body)) {
@@ -432,12 +426,12 @@ export const useAccounts = defineStore('accounts_module_accounts', {
 
 			if (
 				!Object.keys(this.data).includes(body.id) &&
-				(payload.routingKey === RoutingKeys.ACCOUNT_ENTITY_UPDATED || payload.routingKey === RoutingKeys.ACCOUNT_ENTITY_DELETED)
+				(payload.routingKey === RoutingKeys.ACCOUNT_DOCUMENT_UPDATED || payload.routingKey === RoutingKeys.ACCOUNT_DOCUMENT_DELETED)
 			) {
 				throw new Error('accounts-module.accounts.update.failed');
 			}
 
-			if (payload.routingKey === RoutingKeys.ACCOUNT_ENTITY_DELETED) {
+			if (payload.routingKey === RoutingKeys.ACCOUNT_DOCUMENT_DELETED) {
 				const recordToDelete = this.data[body.id];
 
 				delete this.data[body.id];
@@ -448,7 +442,7 @@ export const useAccounts = defineStore('accounts_module_accounts', {
 				emailsStore.unset({ account: recordToDelete });
 				identitiesStore.unset({ account: recordToDelete });
 			} else {
-				if (payload.routingKey === RoutingKeys.ACCOUNT_ENTITY_UPDATED && this.semaphore.updating.includes(body.id)) {
+				if (payload.routingKey === RoutingKeys.ACCOUNT_DOCUMENT_UPDATED && this.semaphore.updating.includes(body.id)) {
 					return true;
 				}
 

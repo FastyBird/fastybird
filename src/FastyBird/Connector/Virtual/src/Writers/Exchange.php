@@ -20,7 +20,7 @@ use FastyBird\Connector\Virtual\Entities;
 use FastyBird\Connector\Virtual\Helpers;
 use FastyBird\Connector\Virtual\Queue;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -70,12 +70,12 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 	public function consume(
 		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|MetadataTypes\AutomatorSource $source,
 		MetadataTypes\RoutingKey $routingKey,
-		MetadataEntities\Entity|null $entity,
+		MetadataDocuments\Document|null $entity,
 	): void
 	{
 		if (
-			$entity instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty
-			|| $entity instanceof MetadataEntities\DevicesModule\ChannelMappedProperty
+			$entity instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+			|| $entity instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
 		) {
 			$findChannelQuery = new DevicesQueries\Entities\FindChannels();
 			$findChannelQuery->byId($entity->getChannel());

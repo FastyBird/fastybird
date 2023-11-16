@@ -15,7 +15,7 @@
 
 namespace FastyBird\Module\Devices\Models\States;
 
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\States;
@@ -46,7 +46,7 @@ final class ChannelPropertiesRepository
 	 * @interal
 	 */
 	public function findOne(
-		MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped $property,
+		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped $property,
 	): States\ChannelProperty|null
 	{
 		if ($this->repository === null) {
@@ -54,7 +54,7 @@ final class ChannelPropertiesRepository
 		}
 
 		if (
-			$property instanceof MetadataEntities\DevicesModule\ChannelMappedProperty
+			$property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
 			|| $property instanceof Entities\Channels\Properties\Mapped
 		) {
 			$parent = $property->getParent();

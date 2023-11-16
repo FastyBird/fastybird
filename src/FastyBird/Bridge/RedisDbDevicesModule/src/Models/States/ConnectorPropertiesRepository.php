@@ -16,7 +16,7 @@
 namespace FastyBird\Bridge\RedisDbDevicesModule\Models\States;
 
 use FastyBird\Bridge\RedisDbDevicesModule\States;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Plugin\RedisDb\Exceptions as RedisDbExceptions;
@@ -58,7 +58,7 @@ class ConnectorPropertiesRepository implements DevicesModels\States\IConnectorPr
 	 * @throws RedisDbExceptions\InvalidState
 	 */
 	public function findOne(
-		MetadataEntities\DevicesModule\ConnectorDynamicProperty|DevicesEntities\Connectors\Properties\Dynamic $property,
+		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|DevicesEntities\Connectors\Properties\Dynamic $property,
 	): States\ConnectorProperty|null
 	{
 		return $this->stateRepository->findOne($property->getId(), $this->database);

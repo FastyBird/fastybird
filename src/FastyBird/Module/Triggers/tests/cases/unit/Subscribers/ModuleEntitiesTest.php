@@ -5,10 +5,10 @@ namespace FastyBird\Module\Triggers\Tests\Cases\Unit\Subscribers;
 use Doctrine\ORM;
 use Doctrine\Persistence;
 use Exception;
-use FastyBird\Library\Exchange\Entities as ExchangeEntities;
+use FastyBird\Library\Exchange\Documents as ExchangeEntities;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Module\Triggers\Entities;
 use FastyBird\Module\Triggers\Exceptions;
 use FastyBird\Module\Triggers\Models;
@@ -36,7 +36,7 @@ final class ModuleEntitiesTest extends TestCase
 			->method('findOne')
 			->willThrowException(new Exceptions\NotImplemented());
 
-		$entityFactory = $this->createMock(ExchangeEntities\EntityFactory::class);
+		$entityFactory = $this->createMock(ExchangeEntities\DocumentFactory::class);
 
 		$subscriber = new Subscribers\ModuleEntities(
 			$actionStateRepository,
@@ -68,7 +68,7 @@ final class ModuleEntitiesTest extends TestCase
 				self::callback(static function ($key): bool {
 					self::assertTrue($key instanceof Metadata\Types\RoutingKey);
 					self::assertSame(
-						Metadata\Constants::MESSAGE_BUS_TRIGGER_ENTITY_CREATED_ROUTING_KEY,
+						Metadata\Constants::MESSAGE_BUS_TRIGGER_DOCUMENT_CREATED_ROUTING_KEY,
 						$key->getValue(),
 					);
 
@@ -104,7 +104,7 @@ final class ModuleEntitiesTest extends TestCase
 			->method('findOne')
 			->willThrowException(new Exceptions\NotImplemented());
 
-		$entityItem = $this->createMock(MetadataEntities\TriggersModule\ManualTrigger::class);
+		$entityItem = $this->createMock(MetadataDocuments\TriggersModule\ManualTrigger::class);
 		$entityItem
 			->method('toArray')
 			->willReturn([
@@ -116,7 +116,7 @@ final class ModuleEntitiesTest extends TestCase
 				'is_triggered' => false,
 			]);
 
-		$entityFactory = $this->createMock(ExchangeEntities\EntityFactory::class);
+		$entityFactory = $this->createMock(ExchangeEntities\DocumentFactory::class);
 		$entityFactory
 			->method('create')
 			->willReturn($entityItem);
@@ -159,7 +159,7 @@ final class ModuleEntitiesTest extends TestCase
 				self::callback(static function ($key): bool {
 					self::assertTrue($key instanceof Metadata\Types\RoutingKey);
 					self::assertSame(
-						Metadata\Constants::MESSAGE_BUS_TRIGGER_ENTITY_UPDATED_ROUTING_KEY,
+						Metadata\Constants::MESSAGE_BUS_TRIGGER_DOCUMENT_UPDATED_ROUTING_KEY,
 						$key->getValue(),
 					);
 
@@ -195,7 +195,7 @@ final class ModuleEntitiesTest extends TestCase
 			->method('findOne')
 			->willThrowException(new Exceptions\NotImplemented());
 
-		$entityItem = $this->createMock(MetadataEntities\TriggersModule\ManualTrigger::class);
+		$entityItem = $this->createMock(MetadataDocuments\TriggersModule\ManualTrigger::class);
 		$entityItem
 			->method('toArray')
 			->willReturn([
@@ -207,7 +207,7 @@ final class ModuleEntitiesTest extends TestCase
 				'is_triggered' => false,
 			]);
 
-		$entityFactory = $this->createMock(ExchangeEntities\EntityFactory::class);
+		$entityFactory = $this->createMock(ExchangeEntities\DocumentFactory::class);
 		$entityFactory
 			->method('create')
 			->willReturn($entityItem);
@@ -250,7 +250,7 @@ final class ModuleEntitiesTest extends TestCase
 				self::callback(static function ($key): bool {
 					self::assertTrue($key instanceof Metadata\Types\RoutingKey);
 					self::assertSame(
-						Metadata\Constants::MESSAGE_BUS_TRIGGER_ENTITY_DELETED_ROUTING_KEY,
+						Metadata\Constants::MESSAGE_BUS_TRIGGER_DOCUMENT_DELETED_ROUTING_KEY,
 						$key->getValue(),
 					);
 
@@ -304,7 +304,7 @@ final class ModuleEntitiesTest extends TestCase
 			->method('findOne')
 			->willThrowException(new Exceptions\NotImplemented());
 
-		$entityItem = $this->createMock(MetadataEntities\TriggersModule\ManualTrigger::class);
+		$entityItem = $this->createMock(MetadataDocuments\TriggersModule\ManualTrigger::class);
 		$entityItem
 			->method('toArray')
 			->willReturn([
@@ -316,7 +316,7 @@ final class ModuleEntitiesTest extends TestCase
 				'is_triggered' => false,
 			]);
 
-		$entityFactory = $this->createMock(ExchangeEntities\EntityFactory::class);
+		$entityFactory = $this->createMock(ExchangeEntities\DocumentFactory::class);
 		$entityFactory
 			->method('create')
 			->willReturn($entityItem);

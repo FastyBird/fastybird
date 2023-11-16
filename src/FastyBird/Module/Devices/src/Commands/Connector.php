@@ -16,10 +16,12 @@
 namespace FastyBird\Module\Devices\Commands;
 
 use BadMethodCallException;
+use Doctrine\DBAL;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Exchange\Exchange as ExchangeExchange;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Connectors;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Events;
@@ -27,9 +29,9 @@ use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\Utilities;
+use Nette\Localization;
 use Nette\Utils;
 use Psr\EventDispatcher as PsrEventDispatcher;
-use Psr\Log;
 use Ramsey\Uuid;
 use React\EventLoop;
 use SplObjectStorage;
@@ -103,11 +105,12 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 		private readonly Utilities\ConnectorPropertiesStates $connectorPropertiesStateManager,
 		private readonly Utilities\DevicePropertiesStates $devicePropertiesStateManager,
 		private readonly Utilities\ChannelPropertiesStates $channelPropertiesStateManager,
+		private readonly Devices\Logger $logger,
 		private readonly BootstrapHelpers\Database $database,
 		private readonly EventLoop\LoopInterface $eventLoop,
+		private readonly Localization\Translator $translator,
 		private readonly array $exchangeFactories = [],
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 		string|null $name = null,
 	)
 	{
@@ -203,14 +206,14 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 		$io = new Style\SymfonyStyle($input, $output);
 
 		if ($input->getOption('quiet') === false) {
-			$io->title('Devices module - connector');
+			$io->title($this->translator->translate('//devices-module.cmd.connector.title'));
 
-			$io->note('This action will run module connector service');
+			$io->note($this->translator->translate('//devices-module.cmd.connector.subtitle'));
 		}
 
 		if ($input->getOption('no-interaction') === false) {
 			$question = new Console\Question\ConfirmationQuestion(
-				'Would you like to continue?',
+				$this->translator->translate('//devices-module.cmd.base.questions.continue'),
 				false,
 			);
 
@@ -257,7 +260,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 			]);
 
 			if ($input->getOption('quiet') === false) {
-				$io->error('Something went wrong, service could not be finished. Error was logged.');
+				$io->error($this->translator->translate('//devices-module.cmd.connector.messages.error'));
 			}
 
 			return Console\Command\Command::FAILURE;
@@ -276,7 +279,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 	): void
 	{
 		if ($input->getOption('quiet') === false) {
-			$io->section('Preparing connector');
+			$io->section($this->translator->translate('//devices-module.cmd.connector.info.preparing'));
 		}
 
 		if (
@@ -306,7 +309,9 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 
 			if ($this->connector === null) {
 				if ($input->getOption('quiet') === false) {
-					$io->warning('Connector was not found in system');
+					$io->warning(
+						$this->translator->translate('//devices-module.cmd.connector.messages.connectorNotFound'),
+					);
 				}
 
 				return;
@@ -336,9 +341,15 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 			if (count($connectors) === 0) {
 				if ($input->getOption('quiet') === false) {
 					if ($this->mode === self::MODE_DISCOVER) {
-						$io->warning('No connectors with discovery support registered in system');
+						$io->warning(
+							$this->translator->translate(
+								'//devices-module.cmd.connector.messages.noDiscoverableConnectors',
+							),
+						);
 					} else {
-						$io->warning('No connectors registered in system');
+						$io->warning(
+							$this->translator->translate('//devices-module.cmd.connector.messages.noConnectors'),
+						);
 					}
 				}
 
@@ -346,17 +357,21 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 			}
 
 			$question = new Console\Question\ChoiceQuestion(
-				'Please select connector to execute',
+				$this->translator->translate('//devices-module.cmd.connector.questions.selectConnector'),
 				array_values($connectors),
 			);
 
-			$question->setErrorMessage('Selected connector: %s is not valid.');
+			$question->setErrorMessage(
+				$this->translator->translate('//devices-module.cmd.base.messages.answerNotValid'),
+			);
 
 			$connectorIdentifierKey = array_search($io->askQuestion($question), $connectors, true);
 
 			if ($connectorIdentifierKey === false) {
 				if ($input->getOption('quiet') === false) {
-					$io->error('Something went wrong, connector could not be loaded');
+					$io->error(
+						$this->translator->translate('//devices-module.cmd.connector.messages.loadConnectorError'),
+					);
 				}
 
 				$this->logger->error('Connector identifier was not able to get from answer', [
@@ -374,7 +389,9 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 
 			if ($this->connector === null) {
 				if ($input->getOption('quiet') === false) {
-					$io->error('Something went wrong, connector could not be loaded');
+					$io->error(
+						$this->translator->translate('//devices-module.cmd.connector.messages.loadConnectorError'),
+					);
 				}
 
 				$this->logger->error('Connector was not found', [
@@ -388,7 +405,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 
 		if (!$this->connector->isEnabled()) {
 			if ($input->getOption('quiet') === false) {
-				$io->warning('Connector is disabled. Disabled connector could not be executed');
+				$io->warning($this->translator->translate('//devices-module.cmd.connector.messages.connectorDisabled'));
 			}
 
 			return;
@@ -403,7 +420,9 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 
 			if ($control === null) {
 				if ($input->getOption('quiet') === false) {
-					$io->warning('Connector does not support devices discovery');
+					$io->warning(
+						$this->translator->translate('//devices-module.cmd.connector.messages.notSupportedConnector'),
+					);
 				}
 
 				return;
@@ -411,7 +430,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 		}
 
 		if ($input->getOption('quiet') === false) {
-			$io->section('Initializing connector');
+			$io->section($this->translator->translate('//devices-module.cmd.connector.info.initialization'));
 		}
 
 		$this->dispatcher?->dispatch(new Events\ConnectorStartup($this->connector));
@@ -607,9 +626,12 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 	}
 
 	/**
+	 * @throws DBAL\Exception
 	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function resetConnector(
 		Entities\Connectors\Connector $connector,
@@ -635,9 +657,12 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 	}
 
 	/**
+	 * @throws DBAL\Exception
 	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function resetDevice(
 		Entities\Devices\Device $device,

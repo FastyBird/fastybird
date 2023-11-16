@@ -32,6 +32,8 @@ final class DevicesModuleExtensionTests extends DbTestCase
 	{
 		self::assertNotNull($this->getContainer()->getByType(Commands\Initialize::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Commands\Connector::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Commands\Exchange::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Commands\Configuration::class, false));
 
 		self::assertNotNull($this->getContainer()->getByType(Middleware\Access::class, false));
 
@@ -89,6 +91,34 @@ final class DevicesModuleExtensionTests extends DbTestCase
 		self::assertNotNull($this->getContainer()->getByType(Models\States\DevicePropertiesManager::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Models\States\ChannelPropertiesManager::class, false));
 
+		self::assertNotNull(
+			$this->getContainer()->getByType(Models\Configuration\Connectors\Repository::class, false),
+		);
+		self::assertNotNull(
+			$this->getContainer()->getByType(Models\Configuration\Connectors\Properties\Repository::class, false),
+		);
+		self::assertNotNull(
+			$this->getContainer()->getByType(Models\Configuration\Connectors\Controls\Repository::class, false),
+		);
+		self::assertNotNull(
+			$this->getContainer()->getByType(Models\Configuration\Devices\Repository::class, false),
+		);
+		self::assertNotNull(
+			$this->getContainer()->getByType(Models\Configuration\Devices\Properties\Repository::class, false),
+		);
+		self::assertNotNull(
+			$this->getContainer()->getByType(Models\Configuration\Devices\Controls\Repository::class, false),
+		);
+		self::assertNotNull(
+			$this->getContainer()->getByType(Models\Configuration\Channels\Repository::class, false),
+		);
+		self::assertNotNull(
+			$this->getContainer()->getByType(Models\Configuration\Channels\Properties\Repository::class, false),
+		);
+		self::assertNotNull(
+			$this->getContainer()->getByType(Models\Configuration\Channels\Controls\Repository::class, false),
+		);
+
 		self::assertNotNull($this->getContainer()->getByType(Controllers\DevicesV1::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Controllers\DeviceChildrenV1::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Controllers\DevicePropertiesV1::class, false));
@@ -124,7 +154,6 @@ final class DevicesModuleExtensionTests extends DbTestCase
 		self::assertNotNull($this->getContainer()->getByType(Router\ApiRoutes::class, false));
 
 		self::assertNotNull($this->getContainer()->getByType(Subscribers\ModuleEntities::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Subscribers\VariablePropertiesEntities::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Subscribers\StateEntities::class, false));
 
 		self::assertNotNull($this->getContainer()->getByType(Utilities\Database::class, false));
