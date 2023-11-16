@@ -17,6 +17,7 @@ namespace FastyBird\Module\Devices\Models\Configuration\Devices;
 
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
@@ -64,7 +65,7 @@ final class Repository
 		try {
 			$space = $this->builder
 				->load()
-				->find('.devices.*');
+				->find('.' . Devices\Constants::DATA_STORAGE_DEVICES_KEY . '.*');
 		} catch (JSONPath\JSONPathException $ex) {
 			throw new Exceptions\InvalidState('', $ex->getCode(), $ex);
 		}
@@ -98,7 +99,7 @@ final class Repository
 		try {
 			$space = $this->builder
 				->load()
-				->find('.devices.*');
+				->find('.' . Devices\Constants::DATA_STORAGE_DEVICES_KEY . '.*');
 		} catch (JSONPath\JSONPathException $ex) {
 			throw new Exceptions\InvalidState('Fetch all data by query failed', $ex->getCode(), $ex);
 		}

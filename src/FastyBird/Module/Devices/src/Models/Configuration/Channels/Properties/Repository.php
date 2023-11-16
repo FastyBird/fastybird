@@ -18,6 +18,7 @@ namespace FastyBird\Module\Devices\Models\Configuration\Channels\Properties;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
@@ -71,7 +72,7 @@ final class Repository
 		try {
 			$space = $this->builder
 				->load()
-				->find('.properties.*');
+				->find('.' . Devices\Constants::DATA_STORAGE_PROPERTIES_KEY . '.*');
 
 			if (is_string($type)) {
 				if ($type === MetadataDocuments\DevicesModule\ChannelDynamicProperty::class) {
@@ -143,7 +144,7 @@ final class Repository
 		try {
 			$space = $this->builder
 				->load()
-				->find('.properties.*');
+				->find('.' . Devices\Constants::DATA_STORAGE_PROPERTIES_KEY . '.*');
 
 			if (is_string($type)) {
 				if ($type === MetadataDocuments\DevicesModule\ChannelDynamicProperty::class) {

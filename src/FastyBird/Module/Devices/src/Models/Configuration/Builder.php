@@ -16,6 +16,7 @@
 namespace FastyBird\Module\Devices\Models\Configuration;
 
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
@@ -65,65 +66,65 @@ final class Builder
 	public function build(): void
 	{
 		$data = [
-			'connectors' => [],
-			'devices' => [],
-			'channels' => [],
-			'properties' => [],
-			'controls' => [],
+			Devices\Constants::DATA_STORAGE_CONNECTORS_KEY => [],
+			Devices\Constants::DATA_STORAGE_DEVICES_KEY => [],
+			Devices\Constants::DATA_STORAGE_CHANNELS_KEY => [],
+			Devices\Constants::DATA_STORAGE_PROPERTIES_KEY => [],
+			Devices\Constants::DATA_STORAGE_CONTROLS_KEY => [],
 		];
 
 		$findConnectorsQuery = new Queries\Entities\FindConnectors();
 
 		foreach ($this->connectorsRepository->findAllBy($findConnectorsQuery) as $connector) {
-			$data['connectors'][] = $connector->toArray();
+			$data[Devices\Constants::DATA_STORAGE_CONNECTORS_KEY][] = $connector->toArray();
 		}
 
 		$findConnectorsPropertiesQuery = new Queries\Entities\FindConnectorProperties();
 
 		foreach ($this->connectorsPropertiesRepository->findAllBy($findConnectorsPropertiesQuery) as $property) {
-			$data['properties'][] = $property->toArray();
+			$data[Devices\Constants::DATA_STORAGE_PROPERTIES_KEY][] = $property->toArray();
 		}
 
 		$findConnectorsControlsQuery = new Queries\Entities\FindConnectorControls();
 
 		foreach ($this->connectorsControlsRepository->findAllBy($findConnectorsControlsQuery) as $control) {
-			$data['controls'][] = $control->toArray();
+			$data[Devices\Constants::DATA_STORAGE_CONTROLS_KEY][] = $control->toArray();
 		}
 
 		$findDevicesQuery = new Queries\Entities\FindDevices();
 
 		foreach ($this->devicesRepository->findAllBy($findDevicesQuery) as $device) {
-			$data['devices'][] = $device->toArray();
+			$data[Devices\Constants::DATA_STORAGE_DEVICES_KEY][] = $device->toArray();
 		}
 
 		$findDevicesPropertiesQuery = new Queries\Entities\FindDeviceProperties();
 
 		foreach ($this->devicesPropertiesRepository->findAllBy($findDevicesPropertiesQuery) as $property) {
-			$data['properties'][] = $property->toArray();
+			$data[Devices\Constants::DATA_STORAGE_PROPERTIES_KEY][] = $property->toArray();
 		}
 
 		$findDevicesControlsQuery = new Queries\Entities\FindDeviceControls();
 
 		foreach ($this->devicesControlsRepository->findAllBy($findDevicesControlsQuery) as $control) {
-			$data['controls'][] = $control->toArray();
+			$data[Devices\Constants::DATA_STORAGE_CONTROLS_KEY][] = $control->toArray();
 		}
 
 		$findChannelsQuery = new Queries\Entities\FindChannels();
 
 		foreach ($this->channelsRepository->findAllBy($findChannelsQuery) as $channel) {
-			$data['channels'][] = $channel->toArray();
+			$data[Devices\Constants::DATA_STORAGE_CHANNELS_KEY][] = $channel->toArray();
 		}
 
 		$findChannelsPropertiesQuery = new Queries\Entities\FindChannelProperties();
 
 		foreach ($this->channelsPropertiesRepository->findAllBy($findChannelsPropertiesQuery) as $property) {
-			$data['properties'][] = $property->toArray();
+			$data[Devices\Constants::DATA_STORAGE_PROPERTIES_KEY][] = $property->toArray();
 		}
 
 		$findChannelsControlsQuery = new Queries\Entities\FindChannelControls();
 
 		foreach ($this->channelsControlsRepository->findAllBy($findChannelsControlsQuery) as $control) {
-			$data['controls'][] = $control->toArray();
+			$data[Devices\Constants::DATA_STORAGE_CONTROLS_KEY][] = $control->toArray();
 		}
 
 		$this->encode($data);
@@ -148,7 +149,7 @@ final class Builder
 	{
 		try {
 			Utils\FileSystem::write(
-				FB_TEMP_DIR . DIRECTORY_SEPARATOR . 'devices_module.json',
+				FB_TEMP_DIR . DIRECTORY_SEPARATOR . Devices\Constants::CONFIGURATION_FILE_FILENAME,
 				$this->dataSource->encode($data, 'json'),
 			);
 		} catch (Throwable $ex) {
@@ -165,7 +166,9 @@ final class Builder
 	{
 		try {
 			return $this->dataSource->decode(
-				Utils\FileSystem::read(FB_TEMP_DIR . DIRECTORY_SEPARATOR . 'devices_module.json'),
+				Utils\FileSystem::read(
+					FB_TEMP_DIR . DIRECTORY_SEPARATOR . Devices\Constants::CONFIGURATION_FILE_FILENAME,
+				),
 				'json',
 			);
 		} catch (Nette\IOException) {
