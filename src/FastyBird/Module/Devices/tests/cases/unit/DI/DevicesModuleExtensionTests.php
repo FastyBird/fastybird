@@ -93,10 +93,16 @@ final class DevicesModuleExtensionTests extends DbTestCase
 			$this->getContainer()->getByType(Models\Configuration\Connectors\Repository::class, false),
 		);
 		self::assertNotNull(
+			$this->getContainer()->getByType(Models\Configuration\Connectors\Properties\Repository::class, false),
+		);
+		self::assertNotNull(
 			$this->getContainer()->getByType(Models\Configuration\Connectors\Controls\Repository::class, false),
 		);
 		self::assertNotNull(
 			$this->getContainer()->getByType(Models\Configuration\Devices\Repository::class, false),
+		);
+		self::assertNotNull(
+			$this->getContainer()->getByType(Models\Configuration\Devices\Properties\Repository::class, false),
 		);
 		self::assertNotNull(
 			$this->getContainer()->getByType(Models\Configuration\Devices\Controls\Repository::class, false),
