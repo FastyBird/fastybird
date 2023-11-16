@@ -18,6 +18,7 @@ namespace FastyBird\Module\Devices\Commands;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Models;
+use Nette\Localization;
 use Psr\Log;
 use Symfony\Component\Console;
 use Symfony\Component\Console\Input;
@@ -40,6 +41,7 @@ class Configuration extends Console\Command\Command
 
 	public function __construct(
 		private readonly Models\Configuration\Builder $configurationBuilder,
+		private readonly Localization\Translator $translator,
 		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 		string|null $name = null,
 	)
@@ -71,14 +73,14 @@ class Configuration extends Console\Command\Command
 		$io = new Style\SymfonyStyle($input, $output);
 
 		if ($input->getOption('quiet') === false) {
-			$io->title('Devices module - configuration');
+			$io->title($this->translator->translate('//devices-module.cmd.configuration.title'));
 
-			$io->note('This action will create|update module configuration.');
+			$io->note($this->translator->translate('//devices-module.cmd.configuration.subtitle.command'));
 		}
 
 		if ($input->getOption('no-interaction') === false) {
 			$question = new Console\Question\ConfirmationQuestion(
-				'Would you like to continue?',
+				$this->translator->translate('//devices-module.cmd.base.questions.continue'),
 				false,
 			);
 
@@ -93,7 +95,7 @@ class Configuration extends Console\Command\Command
 			$this->configurationBuilder->build();
 
 			if ($input->getOption('quiet') === false) {
-				$io->success('Devices module configuration has been successfully build.');
+				$io->success($this->translator->translate('//devices-module.cmd.configuration.messages.success'));
 			}
 
 			return Console\Command\Command::SUCCESS;
@@ -106,9 +108,7 @@ class Configuration extends Console\Command\Command
 			]);
 
 			if ($input->getOption('quiet') === false) {
-				$io->error(
-					'Something went wrong, configuration initialization could not be finished. Error was logged.',
-				);
+				$io->error($this->translator->translate('//devices-module.cmd.configuration.messages.error'));
 			}
 
 			return Console\Command\Command::FAILURE;

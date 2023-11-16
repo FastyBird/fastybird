@@ -22,6 +22,7 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Consumers;
 use FastyBird\Module\Devices\Events;
 use Nette;
+use Nette\Localization;
 use Psr\EventDispatcher;
 use Psr\Log;
 use React\EventLoop;
@@ -54,6 +55,7 @@ final class Exchange extends Console\Command\Command
 	public function __construct(
 		private readonly EventLoop\LoopInterface $eventLoop,
 		private readonly ExchangeConsumers\Container $consumer,
+		private readonly Localization\Translator $translator,
 		private readonly array $exchangeFactories = [],
 		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
@@ -84,14 +86,14 @@ final class Exchange extends Console\Command\Command
 		$io = new Style\SymfonyStyle($input, $output);
 
 		if ($input->getOption('quiet') === false) {
-			$io->title('Devices module - exchange');
+			$io->title($this->translator->translate('//devices-module.cmd.exchange.title'));
 
-			$io->note('This action will run module exchange service');
+			$io->note($this->translator->translate('//devices-module.cmd.exchange.subtitle'));
 		}
 
 		if ($input->getOption('no-interaction') === false) {
 			$question = new Console\Question\ConfirmationQuestion(
-				'Would you like to continue?',
+				$this->translator->translate('//devices-module.cmd.base.questions.continue'),
 				false,
 			);
 
@@ -130,7 +132,7 @@ final class Exchange extends Console\Command\Command
 			]);
 
 			if ($input->getOption('quiet') === false) {
-				$io->error('Something went wrong, service could not be finished. Error was logged.');
+				$io->error($this->translator->translate('//devices-module.cmd.exchange.messages.error'));
 			}
 
 			return Console\Command\Command::FAILURE;

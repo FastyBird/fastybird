@@ -72,3 +72,62 @@ base:
         uniqueAttribute:
             heading	: "Attribute not unique"
             message	: "Provided attribute is not unique"
+
+cmd:
+    base:
+        questions:
+            continue: "Would you like to continue?"
+            whatToDo: "What would you like to do?"
+            exit: "Do you want to exit?"
+
+        messages:
+            answerNotValid: "Selected answer: \"%s\" is not valid."
+
+    initialize:
+        title: "Devices module - initialization"
+        subtitle: "This action will create|update module database structure and build module configuration"
+
+        info:
+            database: "Preparing module database"
+
+        messages:
+            success: "Devices module has been successfully initialized and can be now used."
+            error: "Something went wrong, initialization could not be finished. Error was logged."
+            databaseReady: "Devices module database has been successfully initialized."
+            initialisationFailed: "Something went wrong, initialization could not be finished."
+            databaseFailed: "Something went wrong, database initialization could not be finished."
+
+    configuration:
+        title: "Devices module - configuration"
+        subtitle: "This action will create|update module configuration"
+
+        messages:
+            success: "Devices module configuration has been successfully build."
+            error: "Something went wrong, configuration initialization could not be finished. Error was logged."
+
+    exchange:
+        title: "Devices module - exchange"
+        subtitle: "This action will run module exchange service"
+
+        messages:
+            error: "Something went wrong, service could not be finished. Error was logged."
+
+    connector:
+        title: "Devices module - connector"
+        subtitle: "This action will run module connector service"
+
+        questions:
+            selectConnector: "Please select connector to execute"
+
+        info:
+            initialization: "Initializing connector"
+            preparing: "Preparing connector"
+
+        messages:
+            error: "Something went wrong, service could not be finished. Error was logged."
+            connectorNotFound: "Connector was not found in system."
+            noDiscoverableConnectors: "No connectors with discovery support registered in system."
+            noConnectors: "No connectors registered in system."
+            loadConnectorError: "Something went wrong, connector could not be loaded."
+            connectorDisabled: "Connector is disabled. Disabled connector could not be executed."
+            notSupportedConnector: "Connector does not support devices discovery."
