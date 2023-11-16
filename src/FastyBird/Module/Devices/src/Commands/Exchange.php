@@ -19,12 +19,12 @@ use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
 use FastyBird\Library\Exchange\Exchange as ExchangeExchange;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Consumers;
 use FastyBird\Module\Devices\Events;
 use Nette;
 use Nette\Localization;
 use Psr\EventDispatcher;
-use Psr\Log;
 use React\EventLoop;
 use Symfony\Component\Console;
 use Symfony\Component\Console\Input;
@@ -53,12 +53,12 @@ final class Exchange extends Console\Command\Command
 	 * @param array<ExchangeExchange\Factory> $exchangeFactories
 	 */
 	public function __construct(
+		private readonly Devices\Logger $logger,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		private readonly ExchangeConsumers\Container $consumer,
 		private readonly Localization\Translator $translator,
 		private readonly array $exchangeFactories = [],
 		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 		string|null $name = null,
 	)
 	{

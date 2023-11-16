@@ -24,6 +24,7 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Loaders as MetadataLoaders;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
@@ -33,7 +34,6 @@ use FastyBird\Module\Devices\Utilities;
 use IPub\WebSockets;
 use IPub\WebSocketsWAMP;
 use Nette\Utils;
-use Psr\Log;
 use Throwable;
 use function array_key_exists;
 use function array_merge;
@@ -57,10 +57,10 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 		private readonly Utilities\ConnectorPropertiesStates $connectorPropertiesStates,
 		private readonly Utilities\DevicePropertiesStates $devicePropertiesStates,
 		private readonly Utilities\ChannelPropertiesStates $channelPropertiesStates,
+		private readonly Devices\Logger $logger,
 		private readonly MetadataLoaders\SchemaLoader $schemaLoader,
 		private readonly MetadataSchemas\Validator $jsonValidator,
 		private readonly ExchangeEntities\DocumentFactory $entityFactory,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
 		parent::__construct();

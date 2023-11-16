@@ -19,6 +19,7 @@ use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
@@ -26,7 +27,6 @@ use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\States;
 use Nette;
 use Nette\Utils;
-use Psr\Log;
 use function is_array;
 
 /**
@@ -46,7 +46,7 @@ final class DevicePropertiesStates
 		private readonly Models\Entities\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
 		private readonly Models\States\DevicePropertiesRepository $devicePropertyStateRepository,
 		private readonly Models\States\DevicePropertiesManager $devicePropertiesStatesManager,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
+		private readonly Devices\Logger $logger,
 	)
 	{
 	}

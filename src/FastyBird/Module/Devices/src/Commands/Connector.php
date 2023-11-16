@@ -20,6 +20,7 @@ use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Exchange\Exchange as ExchangeExchange;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Connectors;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Events;
@@ -30,7 +31,6 @@ use FastyBird\Module\Devices\Utilities;
 use Nette\Localization;
 use Nette\Utils;
 use Psr\EventDispatcher as PsrEventDispatcher;
-use Psr\Log;
 use Ramsey\Uuid;
 use React\EventLoop;
 use SplObjectStorage;
@@ -104,12 +104,12 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 		private readonly Utilities\ConnectorPropertiesStates $connectorPropertiesStateManager,
 		private readonly Utilities\DevicePropertiesStates $devicePropertiesStateManager,
 		private readonly Utilities\ChannelPropertiesStates $channelPropertiesStateManager,
+		private readonly Devices\Logger $logger,
 		private readonly BootstrapHelpers\Database $database,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		private readonly Localization\Translator $translator,
 		private readonly array $exchangeFactories = [],
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 		string|null $name = null,
 	)
 	{

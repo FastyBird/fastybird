@@ -21,6 +21,7 @@ use Exception;
 use FastyBird\JsonApi\Builder as JsonApiBuilder;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
 use FastyBird\JsonApi\Hydrators as JsonApiHydrators;
+use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Router;
 use Fig\Http\Message\RequestMethodInterface;
@@ -33,7 +34,6 @@ use Nette\Localization;
 use Nette\Utils;
 use Psr\Http\Message;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Log;
 use RuntimeException;
 use stdClass;
 use function array_key_exists;
@@ -65,7 +65,12 @@ abstract class BaseV1
 
 	protected JsonApiHydrators\Container $hydratorsContainer;
 
-	protected Log\LoggerInterface $logger;
+	protected Devices\Logger $logger;
+
+	public function setLogger(Devices\Logger $logger): void
+	{
+		$this->logger = $logger;
+	}
 
 	public function injectTranslator(Localization\Translator $translator): void
 	{
@@ -75,11 +80,6 @@ abstract class BaseV1
 	public function injectManagerRegistry(Persistence\ManagerRegistry $managerRegistry): void
 	{
 		$this->managerRegistry = $managerRegistry;
-	}
-
-	public function injectLogger(Log\LoggerInterface|null $logger = null): void
-	{
-		$this->logger = $logger ?? new Log\NullLogger();
 	}
 
 	public function injectJsonApiBuilder(JsonApiBuilder\Builder $builder): void

@@ -17,9 +17,9 @@ namespace FastyBird\Module\Devices\Commands;
 
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Models;
 use Nette\Localization;
-use Psr\Log;
 use Symfony\Component\Console;
 use Symfony\Component\Console\Input;
 use Symfony\Component\Console\Output;
@@ -41,8 +41,8 @@ class Initialize extends Console\Command\Command
 
 	public function __construct(
 		private readonly Models\Configuration\Builder $configurationBuilder,
+		private readonly Devices\Logger $logger,
 		private readonly Localization\Translator $translator,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 		string|null $name = null,
 	)
 	{

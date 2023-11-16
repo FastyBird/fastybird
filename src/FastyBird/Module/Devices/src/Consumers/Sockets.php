@@ -19,10 +19,10 @@ use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumer;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices;
 use IPub\WebSockets;
 use IPub\WebSocketsWAMP;
 use Nette\Utils;
-use Psr\Log;
 use Throwable;
 
 /**
@@ -37,9 +37,9 @@ final class Sockets implements ExchangeConsumer\Consumer
 {
 
 	public function __construct(
+		private readonly Devices\Logger $logger,
 		private readonly WebSockets\Router\LinkGenerator $linkGenerator,
 		private readonly WebSocketsWAMP\Topics\IStorage $topicsStorage,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
 	}

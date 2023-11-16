@@ -19,13 +19,13 @@ use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\States;
 use Nette;
 use Nette\Utils;
-use Psr\Log;
 use function is_array;
 
 /**
@@ -44,7 +44,7 @@ final class ConnectorPropertiesStates
 	public function __construct(
 		private readonly Models\States\ConnectorPropertiesRepository $connectorPropertyStateRepository,
 		private readonly Models\States\ConnectorPropertiesManager $connectorPropertiesStatesManager,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
+		private readonly Devices\Logger $logger,
 	)
 	{
 	}
