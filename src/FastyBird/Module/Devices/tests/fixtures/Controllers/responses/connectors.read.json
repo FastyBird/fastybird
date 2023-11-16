@@ -46,11 +46,20 @@
           "related": {
             "href": "/devices-module/v1/connectors/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/properties",
             "meta": {
-              "count": 0
+              "count": 2
             }
           }
         },
-        "data": []
+        "data": [
+          {
+            "type": "com.fastybird.devices-module/property/connector/variable",
+            "id": "28cb8a0f-b33d-4398-bf6c-5d1a0594524c"
+          },
+          {
+            "type": "com.fastybird.devices-module/property/connector/variable",
+            "id": "5a8b01f2-621c-4c41-bc83-c089d72b2366"
+          }
+        ]
       },
       "controls": {
         "links": {
