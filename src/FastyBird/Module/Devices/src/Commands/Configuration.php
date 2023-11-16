@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Initialize.php
+ * Configuration.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,7 +10,7 @@
  * @subpackage     Commands
  * @since          1.0.0
  *
- * @date           08.08.20
+ * @date           16.11.23
  */
 
 namespace FastyBird\Module\Devices\Commands;
@@ -26,17 +26,17 @@ use Symfony\Component\Console\Style;
 use Throwable;
 
 /**
- * Module initialize command
+ * Module configuration command
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Commands
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Initialize extends Console\Command\Command
+class Configuration extends Console\Command\Command
 {
 
-	public const NAME = 'fb:devices-module:initialize';
+	public const NAME = 'fb:devices-module:configuration';
 
 	public function __construct(
 		private readonly Models\Configuration\Builder $configurationBuilder,
@@ -54,7 +54,7 @@ class Initialize extends Console\Command\Command
 	{
 		$this
 			->setName(self::NAME)
-			->setDescription('Devices module initialization');
+			->setDescription('Devices module configuration');
 	}
 
 	/**
@@ -71,9 +71,9 @@ class Initialize extends Console\Command\Command
 		$io = new Style\SymfonyStyle($input, $output);
 
 		if ($input->getOption('quiet') === false) {
-			$io->title('Devices module - initialization');
+			$io->title('Devices module - configuration');
 
-			$io->note('This action will create|update module database structure and build module configuration.');
+			$io->note('This action will create|update module configuration.');
 		}
 
 		if ($input->getOption('no-interaction') === false) {
@@ -90,12 +90,10 @@ class Initialize extends Console\Command\Command
 		}
 
 		try {
-			$this->initializeDatabase($io, $input, $output);
-
 			$this->configurationBuilder->build();
 
 			if ($input->getOption('quiet') === false) {
-				$io->success('Devices module has been successfully initialized and can be now used.');
+				$io->success('Devices module configuration has been successfully build.');
 			}
 
 			return Console\Command\Command::SUCCESS;
@@ -108,63 +106,12 @@ class Initialize extends Console\Command\Command
 			]);
 
 			if ($input->getOption('quiet') === false) {
-				$io->error('Something went wrong, initialization could not be finished. Error was logged.');
+				$io->error(
+					'Something went wrong, configuration initialization could not be finished. Error was logged.',
+				);
 			}
 
 			return Console\Command\Command::FAILURE;
-		}
-	}
-
-	/**
-	 * @throws Console\Exception\InvalidArgumentException
-	 * @throws Console\Exception\ExceptionInterface
-	 */
-	private function initializeDatabase(
-		Style\SymfonyStyle $io,
-		Input\InputInterface $input,
-		Output\OutputInterface $output,
-	): void
-	{
-		$symfonyApp = $this->getApplication();
-
-		if ($symfonyApp === null) {
-			return;
-		}
-
-		if ($input->getOption('quiet') === false) {
-			$io->section('Preparing module database');
-		}
-
-		$databaseCmd = $symfonyApp->find('orm:schema-tool:update');
-
-		$result = $databaseCmd->run(new Input\ArrayInput([
-			'--force' => true,
-		]), $output);
-
-		if ($result !== Console\Command\Command::SUCCESS) {
-			if ($input->getOption('quiet') === false) {
-				$io->error('Something went wrong, initialization could not be finished.');
-			}
-
-			return;
-		}
-
-		$databaseProxiesCmd = $symfonyApp->find('orm:generate-proxies');
-
-		$result = $databaseProxiesCmd->run(new Input\ArrayInput([
-			'--quiet' => true,
-		]), $output);
-
-		if ($result !== 0) {
-			if ($input->getOption('quiet') === false) {
-				$io->error('Something went wrong, database initialization could not be finished.');
-			}
-
-			return;
-		}
-
-		if ($input->getOption('quiet') === false) {
-			$io->success('Devices module database has been successfully initialized.');
 		}
 	}
 

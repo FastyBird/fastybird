@@ -547,6 +547,9 @@ class DevicesExtension extends DI\CompilerExtension
 			->setArguments([
 				'exchangeFactories' => $builder->findByType(ExchangeExchange\Factory::class),
 			]);
+
+		$builder->addDefinition($this->prefix('commands.configuration'), new DI\Definitions\ServiceDefinition())
+			->setType(Commands\Configuration::class);
 	}
 
 	/**
