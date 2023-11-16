@@ -70,7 +70,7 @@ final class DevicesPropertiesRepositoryTest extends DbTestCase
 		self::assertSame('uptime', $entity->getIdentifier());
 
 		$findQuery = new Queries\Configuration\FindDeviceProperties();
-		$findQuery->byDeviceId(Uuid\Uuid::fromString('69786d15-fDd0c-4d9f-9378-33287c2009fa'));
+		$findQuery->byDeviceId(Uuid\Uuid::fromString('69786d15-fd0c4-d9f9-3783-3287c2009fa'));
 
 		$entity = $repository->findOneBy($findQuery);
 
@@ -148,7 +148,7 @@ final class DevicesPropertiesRepositoryTest extends DbTestCase
 		$devicesRepository = $this->getContainer()->getByType(Models\Configuration\Devices\Repository::class);
 
 		$findQuery = new Queries\Configuration\FindDevices();
-		$findQuery->byId(Uuid\Uuid::fromString('69786d15-fDd0c-4d9f-9378-33287c2009fa'));
+		$findQuery->byId(Uuid\Uuid::fromString('69786d15-fd0c4-d9f9-3783-3287c2009fa'));
 
 		$device = $devicesRepository->findOneBy($findQuery);
 
