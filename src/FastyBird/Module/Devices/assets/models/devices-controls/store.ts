@@ -6,8 +6,8 @@ import { v4 as uuid } from 'uuid';
 import get from 'lodash/get';
 import isEqual from 'lodash/isEqual';
 
-import exchangeEntitySchema from '../../../../../Library/Metadata/resources/schemas/modules/devices-module/document.device.control.json';
-import { DeviceControlEntity as ExchangeEntity, DevicesModuleRoutes as RoutingKeys, ModulePrefix } from '@fastybird/metadata-library';
+import exchangeDocumentSchema from '../../../../../Library/Metadata/resources/schemas/modules/devices-module/document.device.control.json';
+import { DeviceControlDocument, DevicesModuleRoutes as RoutingKeys, ModulePrefix } from '@fastybird/metadata-library';
 
 import { ApiError } from '@/errors';
 import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '@/jsonapi';
@@ -399,9 +399,9 @@ export const useDeviceControls = defineStore<string, IDeviceControlsState, IDevi
 					return false;
 				}
 
-				const body: ExchangeEntity = JSON.parse(payload.data);
+				const body: DeviceControlDocument = JSON.parse(payload.data);
 
-				const isValid = jsonSchemaValidator.compile<ExchangeEntity>(exchangeEntitySchema);
+				const isValid = jsonSchemaValidator.compile<DeviceControlDocument>(exchangeDocumentSchema);
 
 				try {
 					if (!isValid(body)) {

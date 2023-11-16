@@ -5,14 +5,8 @@ import Ajv from 'ajv/dist/2020';
 import { v4 as uuid } from 'uuid';
 import get from 'lodash/get';
 
-import exchangeEntitySchema from '../../../../../Library/Metadata/resources/schemas/modules/accounts-module/document.identity.json';
-import {
-	IdentityEntity as ExchangeEntity,
-	AccountsModuleRoutes as RoutingKeys,
-	ModulePrefix,
-	ModuleSource,
-	IdentityState,
-} from '@fastybird/metadata-library';
+import exchangeDocumentSchema from '../../../../../Library/Metadata/resources/schemas/modules/accounts-module/document.identity.json';
+import { IdentityDocument, AccountsModuleRoutes as RoutingKeys, ModulePrefix, ModuleSource, IdentityState } from '@fastybird/metadata-library';
 
 import { ApiError } from '@/errors';
 import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '@/jsonapi';
@@ -403,9 +397,9 @@ export const useIdentities = defineStore('accounts_module_identities', {
 				return false;
 			}
 
-			const body: ExchangeEntity = JSON.parse(payload.data);
+			const body: IdentityDocument = JSON.parse(payload.data);
 
-			const isValid = jsonSchemaValidator.compile<ExchangeEntity>(exchangeEntitySchema);
+			const isValid = jsonSchemaValidator.compile<IdentityDocument>(exchangeDocumentSchema);
 
 			try {
 				if (!isValid(body)) {

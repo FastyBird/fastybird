@@ -6,9 +6,9 @@ import { v4 as uuid } from 'uuid';
 import get from 'lodash/get';
 import isEqual from 'lodash/isEqual';
 
-import exchangeEntitySchema from '../../../../../Library/Metadata/resources/schemas/modules/devices-module/document.device.property.json';
+import exchangeDocumentSchema from '../../../../../Library/Metadata/resources/schemas/modules/devices-module/document.device.property.json';
 import {
-	DevicePropertyEntity as ExchangeEntity,
+	DevicePropertyDocument,
 	DevicesModuleRoutes as RoutingKeys,
 	ModulePrefix,
 	PropertyCategory,
@@ -611,9 +611,9 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 					return false;
 				}
 
-				const body: ExchangeEntity = JSON.parse(payload.data);
+				const body: DevicePropertyDocument = JSON.parse(payload.data);
 
-				const isValid = jsonSchemaValidator.compile<ExchangeEntity>(exchangeEntitySchema);
+				const isValid = jsonSchemaValidator.compile<DevicePropertyDocument>(exchangeDocumentSchema);
 
 				try {
 					if (!isValid(body)) {

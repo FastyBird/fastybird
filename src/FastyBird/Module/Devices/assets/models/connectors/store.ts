@@ -6,10 +6,10 @@ import { v4 as uuid } from 'uuid';
 import get from 'lodash/get';
 import isEqual from 'lodash/isEqual';
 
-import exchangeEntitySchema from '../../../../../Library/Metadata/resources/schemas/modules/devices-module/document.connector.json';
+import exchangeDocumentSchema from '../../../../../Library/Metadata/resources/schemas/modules/devices-module/document.connector.json';
 import {
 	ConnectorCategory,
-	ConnectorEntity as ExchangeEntity,
+	ConnectorDocument,
 	DevicePropertyIdentifier,
 	DevicesModuleRoutes as RoutingKeys,
 	ModulePrefix,
@@ -484,9 +484,9 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 				return false;
 			}
 
-			const body: ExchangeEntity = JSON.parse(payload.data);
+			const body: ConnectorDocument = JSON.parse(payload.data);
 
-			const isValid = jsonSchemaValidator.compile<ExchangeEntity>(exchangeEntitySchema);
+			const isValid = jsonSchemaValidator.compile<ConnectorDocument>(exchangeDocumentSchema);
 
 			try {
 				if (!isValid(body)) {

@@ -6,14 +6,8 @@ import { v4 as uuid } from 'uuid';
 import { format } from 'date-fns';
 import get from 'lodash/get';
 
-import exchangeEntitySchema from '../../../../../Library/Metadata/resources/schemas/modules/accounts-module/document.account.json';
-import {
-	AccountEntity as ExchangeEntity,
-	AccountsModuleRoutes as RoutingKeys,
-	AccountState,
-	ModulePrefix,
-	ModuleSource,
-} from '@fastybird/metadata-library';
+import exchangeDocumentSchema from '../../../../../Library/Metadata/resources/schemas/modules/accounts-module/document.account.json';
+import { AccountDocument, AccountsModuleRoutes as RoutingKeys, AccountState, ModulePrefix, ModuleSource } from '@fastybird/metadata-library';
 
 import { ApiError } from '@/errors';
 import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '@/jsonapi';
@@ -418,9 +412,9 @@ export const useAccounts = defineStore('accounts_module_accounts', {
 				return false;
 			}
 
-			const body: ExchangeEntity = JSON.parse(payload.data);
+			const body: AccountDocument = JSON.parse(payload.data);
 
-			const isValid = jsonSchemaValidator.compile<ExchangeEntity>(exchangeEntitySchema);
+			const isValid = jsonSchemaValidator.compile<AccountDocument>(exchangeDocumentSchema);
 
 			try {
 				if (!isValid(body)) {
