@@ -16,6 +16,7 @@
 namespace FastyBird\Library\Metadata\Entities\DevicesModule;
 
 use DateTimeInterface;
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Library\Metadata\Exceptions;
 use FastyBird\Library\Metadata\Types;
 use Orisai\ObjectMapper;
@@ -39,7 +40,11 @@ abstract class DynamicProperty extends Property
 	 */
 	public function __construct(
 		Uuid\UuidInterface $id,
-		Types\PropertyType $type,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(
+			class: Types\PropertyType::class,
+			allowedValues: [Types\PropertyType::TYPE_DYNAMIC],
+		)]
+		private readonly Types\PropertyType $type,
 		Types\PropertyCategory $category,
 		string $identifier,
 		string|null $name,
@@ -92,7 +97,6 @@ abstract class DynamicProperty extends Property
 	{
 		parent::__construct(
 			$id,
-			$type,
 			$category,
 			$identifier,
 			$name,
@@ -104,6 +108,11 @@ abstract class DynamicProperty extends Property
 			$step,
 			$owner,
 		);
+	}
+
+	public function getType(): Types\PropertyType
+	{
+		return $this->type;
 	}
 
 	public function isSettable(): bool
@@ -153,6 +162,7 @@ abstract class DynamicProperty extends Property
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), [
+			'type' => $this->getType()->getValue(),
 			'settable' => $this->isSettable(),
 			'queryable' => $this->isQueryable(),
 			'actual_value' => $this->getActualValue(),

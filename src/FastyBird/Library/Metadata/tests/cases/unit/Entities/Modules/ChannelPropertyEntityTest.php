@@ -246,6 +246,10 @@ final class ChannelPropertyEntityTest extends BaseTestCase
 				file_get_contents(__DIR__ . '/../../../../fixtures/Entities/Modules/channel.property.missing.json'),
 				Entities\DevicesModule\ChannelDynamicProperty::class,
 			],
+			'type-mismatch' => [
+				file_get_contents(__DIR__ . '/../../../../fixtures/Entities/Modules/channel.property.mismatch.json'),
+				Entities\DevicesModule\ChannelDynamicProperty::class,
+			],
 		];
 	}
 

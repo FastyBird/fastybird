@@ -49,8 +49,6 @@ abstract class Property implements Entities\Entity, Entities\Owner
 	public function __construct(
 		#[BootstrapObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $id,
-		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\PropertyType::class)]
-		private readonly Types\PropertyType $type,
 		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\PropertyCategory::class)]
 		private readonly Types\PropertyCategory $category,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
@@ -161,11 +159,6 @@ abstract class Property implements Entities\Entity, Entities\Owner
 		return $this->id;
 	}
 
-	public function getType(): Types\PropertyType
-	{
-		return $this->type;
-	}
-
 	public function getCategory(): Types\PropertyCategory
 	{
 		return $this->category;
@@ -223,7 +216,6 @@ abstract class Property implements Entities\Entity, Entities\Owner
 	{
 		return [
 			'id' => $this->getId()->toString(),
-			'type' => $this->getType()->getValue(),
 			'category' => $this->getCategory()->getValue(),
 			'identifier' => $this->getIdentifier(),
 			'name' => $this->getName(),

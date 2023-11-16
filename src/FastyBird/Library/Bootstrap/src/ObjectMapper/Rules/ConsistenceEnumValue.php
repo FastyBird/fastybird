@@ -25,10 +25,12 @@ final class ConsistenceEnumValue implements ObjectMapper\Rules\RuleDefinition
 
 	/**
 	 * @param class-string<Enum> $class
+	 * @param array<mixed>|null $allowedValues
 	 */
 	public function __construct(
 		private readonly string $class,
 		private readonly bool $allowUnknown = false,
+		private readonly array|null $allowedValues = null,
 	)
 	{
 	}
@@ -43,6 +45,7 @@ final class ConsistenceEnumValue implements ObjectMapper\Rules\RuleDefinition
 		return [
 			'class' => $this->class,
 			'allowUnknown' => $this->allowUnknown,
+			'allowedValues' => $this->allowedValues,
 		];
 	}
 

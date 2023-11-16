@@ -15,6 +15,7 @@
 
 namespace FastyBird\Library\Metadata\Entities\DevicesModule;
 
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Library\Metadata\Exceptions;
 use FastyBird\Library\Metadata\Types;
 use Orisai\ObjectMapper;
@@ -37,7 +38,11 @@ abstract class VariableProperty extends Property
 	 */
 	public function __construct(
 		Uuid\UuidInterface $id,
-		Types\PropertyType $type,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(
+			class: Types\PropertyType::class,
+			allowedValues: [Types\PropertyType::TYPE_VARIABLE],
+		)]
+		private readonly Types\PropertyType $type,
 		Types\PropertyCategory $category,
 		string $identifier,
 		string|null $name,
@@ -68,7 +73,6 @@ abstract class VariableProperty extends Property
 	{
 		parent::__construct(
 			$id,
-			$type,
 			$category,
 			$identifier,
 			$name,
@@ -80,6 +84,11 @@ abstract class VariableProperty extends Property
 			$step,
 			$owner,
 		);
+	}
+
+	public function getType(): Types\PropertyType
+	{
+		return $this->type;
 	}
 
 	public function getValue(): float|bool|int|string|null
@@ -99,6 +108,7 @@ abstract class VariableProperty extends Property
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), [
+			'type' => $this->getType()->getValue(),
 			'value' => $this->getValue(),
 			'default' => $this->getDefault(),
 		]);
