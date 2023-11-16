@@ -101,6 +101,7 @@ class Thermostat implements Driver
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function connect(): Promise\PromiseInterface
 	{

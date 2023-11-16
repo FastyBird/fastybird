@@ -96,6 +96,7 @@ final class FbMqttV1 extends Client
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function writeDeviceProperty(
 		Entities\FbMqttDevice $device,
@@ -121,6 +122,7 @@ final class FbMqttV1 extends Client
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function writeChannelProperty(
 		Entities\FbMqttDevice $device,

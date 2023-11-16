@@ -43,7 +43,7 @@ final class ChannelPropertiesStates
 	use Nette\SmartObject;
 
 	public function __construct(
-		private readonly Models\Entities\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
+		private readonly Models\Configuration\Channels\Properties\Repository $channelPropertiesRepository,
 		private readonly Models\States\ChannelPropertiesRepository $channelPropertyStateRepository,
 		private readonly Models\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly Devices\Logger $logger,
@@ -55,6 +55,7 @@ final class ChannelPropertiesStates
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function readValue(
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped $property,
@@ -67,6 +68,7 @@ final class ChannelPropertiesStates
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getValue(
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped $property,
@@ -79,6 +81,7 @@ final class ChannelPropertiesStates
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function writeValue(
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped $property,
@@ -92,6 +95,7 @@ final class ChannelPropertiesStates
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function setValue(
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped $property,
@@ -107,6 +111,7 @@ final class ChannelPropertiesStates
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function setValidState(
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped|array $property,
@@ -130,6 +135,7 @@ final class ChannelPropertiesStates
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function loadValue(
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped $property,
@@ -137,12 +143,12 @@ final class ChannelPropertiesStates
 	): States\ChannelProperty|null
 	{
 		if ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
-			$findPropertyQuery = new Queries\Entities\FindChannelProperties();
+			$findPropertyQuery = new Queries\Configuration\FindChannelProperties();
 			$findPropertyQuery->byId($property->getParent());
 
 			$parent = $this->channelPropertiesRepository->findOneBy($findPropertyQuery);
 
-			if (!$parent instanceof Entities\Channels\Properties\Dynamic) {
+			if (!$parent instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
 				throw new Exceptions\InvalidState('Mapped property parent could not be loaded');
 			}
 
@@ -262,6 +268,7 @@ final class ChannelPropertiesStates
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function saveValue(
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped $property,
@@ -270,12 +277,12 @@ final class ChannelPropertiesStates
 	): void
 	{
 		if ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
-			$findPropertyQuery = new Queries\Entities\FindChannelProperties();
+			$findPropertyQuery = new Queries\Configuration\FindChannelProperties();
 			$findPropertyQuery->byId($property->getParent());
 
 			$parent = $this->channelPropertiesRepository->findOneBy($findPropertyQuery);
 
-			if (!$parent instanceof Entities\Channels\Properties\Dynamic) {
+			if (!$parent instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
 				throw new Exceptions\InvalidState('Mapped property parent could not be loaded');
 			}
 

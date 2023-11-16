@@ -135,6 +135,7 @@ final class StoreDeviceState implements Queue\Consumer
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function processSubDevice(
 		Entities\Devices\SubDevice $device,

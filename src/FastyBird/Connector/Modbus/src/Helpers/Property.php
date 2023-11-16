@@ -47,6 +47,7 @@ final class Property
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function setValue(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong

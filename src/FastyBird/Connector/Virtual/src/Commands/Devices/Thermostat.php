@@ -1739,6 +1739,7 @@ class Thermostat extends Device
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function editPreset(Style\SymfonyStyle $io, Entities\Devices\Thermostat $device): void
 	{
@@ -2250,6 +2251,7 @@ class Thermostat extends Device
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function askTargetTemperature(
 		Style\SymfonyStyle $io,

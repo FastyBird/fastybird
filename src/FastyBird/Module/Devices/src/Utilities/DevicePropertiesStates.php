@@ -43,7 +43,7 @@ final class DevicePropertiesStates
 	use Nette\SmartObject;
 
 	public function __construct(
-		private readonly Models\Entities\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
+		private readonly Models\Configuration\Devices\Properties\Repository $devicePropertiesRepository,
 		private readonly Models\States\DevicePropertiesRepository $devicePropertyStateRepository,
 		private readonly Models\States\DevicePropertiesManager $devicePropertiesStatesManager,
 		private readonly Devices\Logger $logger,
@@ -55,6 +55,7 @@ final class DevicePropertiesStates
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function readValue(
 		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
@@ -67,6 +68,7 @@ final class DevicePropertiesStates
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getValue(
 		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
@@ -79,6 +81,7 @@ final class DevicePropertiesStates
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function writeValue(
 		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
@@ -92,6 +95,7 @@ final class DevicePropertiesStates
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function setValue(
 		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
@@ -107,6 +111,7 @@ final class DevicePropertiesStates
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function setValidState(
 		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped|array $property,
@@ -130,6 +135,7 @@ final class DevicePropertiesStates
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function loadValue(
 		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
@@ -137,12 +143,12 @@ final class DevicePropertiesStates
 	): States\DeviceProperty|null
 	{
 		if ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
-			$findDevicePropertyQuery = new Queries\Entities\FindDeviceProperties();
-			$findDevicePropertyQuery->byId($property->getParent());
+			$findPropertyQuery = new Queries\Configuration\FindDeviceProperties();
+			$findPropertyQuery->byId($property->getParent());
 
-			$parent = $this->devicePropertiesRepository->findOneBy($findDevicePropertyQuery);
+			$parent = $this->devicePropertiesRepository->findOneBy($findPropertyQuery);
 
-			if (!$parent instanceof Entities\Devices\Properties\Dynamic) {
+			if (!$parent instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
 				throw new Exceptions\InvalidState('Mapped property parent could not be loaded');
 			}
 
@@ -262,6 +268,7 @@ final class DevicePropertiesStates
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function saveValue(
 		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
@@ -270,12 +277,12 @@ final class DevicePropertiesStates
 	): void
 	{
 		if ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
-			$findPropertyQuery = new Queries\Entities\FindDeviceProperties();
+			$findPropertyQuery = new Queries\Configuration\FindDeviceProperties();
 			$findPropertyQuery->byId($property->getParent());
 
 			$parent = $this->devicePropertiesRepository->findOneBy($findPropertyQuery);
 
-			if (!$parent instanceof Entities\Devices\Properties\Dynamic) {
+			if (!$parent instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
 				throw new Exceptions\InvalidState('Mapped property parent could not be loaded');
 			}
 
